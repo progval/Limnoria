@@ -45,6 +45,10 @@ class GameknotTestCase(PluginTestCase):
         self.assertRegexp('http://gameknot.com/stats.pl?ddipaolo&1',
                           r'^[^&]+$')
 
+    def testSnarfer(self):
+        self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
+                          '\x02ddipaolo\x02 won')
+
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
