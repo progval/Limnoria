@@ -201,6 +201,9 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        pass
+        print
+        output("""It looks like you cancelled out of this script before it was
+        finished.  Obviously, nothing was written, but just run this script
+        again whenever you want to generate a template for a plugin.""")
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
