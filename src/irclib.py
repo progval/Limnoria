@@ -737,5 +737,8 @@ class Irc(IrcCommandDispatcher):
     def __str__(self):
         return 'Irc object for %s' % self.network
 
+    def __repr__(self):
+        return '<irclib.Irc object for %s>' % self.network
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
