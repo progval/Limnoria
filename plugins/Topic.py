@@ -44,12 +44,12 @@ import random
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
-from supybot.commands import wrap, addWrapper, inChannel, getChannel
 
 class TopicFormat(registry.String):
     "Value must include $topic, otherwise the actual topic would be left out."
@@ -82,8 +82,8 @@ conf.registerChannelValue(conf.supybot.plugins.Topic.undo, 'max',
 
 def canChangeTopic(irc, msg, args, state):
     assert not state.channel
-    getChannel(irc, msg, args, state)
-    inChannel(irc, msg, args, state)
+    callConverter('channel', irc, msg, args, state)
+    callConverter('inChannel', irc, msg, args, state)
     if state.channel not in irc.state.channels:
         irc.error('I\'m not currently in %s.' % state.channel, Raise=True)
     c = irc.state.channels[state.channel]
@@ -128,9 +128,9 @@ def getTopicNumber(irc, msg, args, state):
         n += len(topics)
     state.args.append(n)
 
-addWrapper('topic', getTopic)
-addWrapper('topicNumber', getTopicNumber)
-addWrapper('canChangeTopic', canChangeTopic)
+addConverter('topic', getTopic)
+addConverter('topicNumber', getTopicNumber)
+addConverter('canChangeTopic', canChangeTopic)
 
 def splitTopic(topic, separator):
     return filter(None, topic.split(separator))

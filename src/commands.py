@@ -188,9 +188,8 @@ def getNonInt(irc, msg, args, state, type='non-integer value'):
 
 def getFloat(irc, msg, args, state):
     try:
-        x = float(args[0])
+        state.args.append(float(args[0]))
         del args[0]
-        return x
     except ValueError:
         irc.errorInvalid('floating point number', args[0])
 
@@ -498,8 +497,14 @@ wrappers = ircutils.IrcDict({
     'checkChannelCapability': checkChannelCapability,
 })
 
-def addWrapper(name, wrapper):
+def addConverter(name, wrapper):
     wrappers[name] = wrapper
+
+def getConverter(name):
+    return wrappers[name]
+
+def callConverter(name, irc, msg, args, state, *L):
+    getConverter(name)(irc, msg, args, state, *L)
 
 class State(object):
     def __init__(self, name=None, logger=None):
@@ -511,6 +516,23 @@ class State(object):
         self.log = logger
         self.getopts = []
         self.channel = None
+
+class context(object):
+    def __init__(self, spec):
+        self.args = ()
+        if isinstance(spec, tuple):
+            assert spec, 'tuple spec must not be empty.'
+            self.args = spec[1:]
+            self.converter = getConverter(spec[0])
+        elif spec is None:
+            self.converter = getConverter('anything')
+        else:
+            assert isinstance(spec, basestring)
+            self.args = ()
+            self.converter = getConverter(spec)
+
+    def __call__(self, irc, msg, args, state):
+        self.converter(irc, msg, args, state, *self.args)
 
 # getopts:  None means "no conversion", '' means "takes no argument"
 def args(irc,msg,args, types=[], state=None,
@@ -659,4 +681,6 @@ def wrap(f, *argsArgs, **argsKwargs):
     return newf
 
 
+__all__ = ['wrap', 'args',
+           'getConverter', 'addConverter', 'callConverter']
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
