@@ -115,11 +115,18 @@ class ChannelLogger(irclib.IrcCallback):
                       (msg.nick or msg.prefix, channel))
 
     def doKick(self, irc, msg):
-        (channel, target, kickmsg) = msg.args
+        if len(msg.args) == 3:
+            (channel, target, kickmsg) = msg.args
+        else:
+            (channel, target) = msg.args
+            kickmsg = ''
         log = self.getLog(channel)
         self.timestamp(log)
-        log.write('*** %s was kicked by %s (%s)\n' % \
-                  (target, msg.nick, kickmsg))
+        if kickmsg:
+            log.write('*** %s was kicked by %s (%s)\n' % \
+                      (target, msg.nick, kickmsg))
+        else:
+            log.write('*** %s was kicked by %s\n' % (target, msg.nick)
 
     def doPart(self, irc, msg):
         for channel in msg.args[0].split(','):
