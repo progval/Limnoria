@@ -154,7 +154,7 @@ class Utilities(callbacks.Privmsg):
         f = None
         try:
             r = utils.perlReToPythonRe(regexp)
-            f = lambda s: ' '.join(r.findall(text))
+            f = lambda s: r.search(s) and r.search(s).group(0) or ''
         except ValueError, e:
             try:
                 f = utils.perlReToReplacer(regexp)
