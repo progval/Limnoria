@@ -597,15 +597,14 @@ class Privmsg(irclib.IrcCallback):
         else:
             return False
 
-    def callCommand(self, f, irc, msg, args, *L):
+    def callCommand(self, f, irc, msg, *L):
         # Exceptions aren't caught here because IrcObjectProxy.finalEval
         # catches them and does The Right Thing.
         start = time.time()
-        f(irc, msg, args, *L)
+        f(irc, msg, *L)
         elapsed = time.time() - start
-        funcname = f.im_func.func_name
-        debug.msg('%s.%s took %s seconds' % \
-                  (f.im_class.__name__, funcname, elapsed), 'verbose')
+        funcname = '%s.%s' % (f.im_class.__name__, f.im_func.func_name)
+        debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
 
     _r = re.compile(r'^([^\s[]+)(?:\[|\s+|$)')
     def doPrivmsg(self, irc, msg, rateLimit=True):
@@ -695,6 +694,13 @@ class PrivmsgRegexp(Privmsg):
                     debug.msg(s)
         self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
 
+    def callCommand(self, irc, msg, *L):
+        try:
+            Privmsg.callCommand(self, irc, msg, *L)
+        except Exception, e:
+            debug.recoverableException()
+            irc.error(msg, debug.exnToString(e))
+
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
             debug.msg('PrivmsgRegexp.doPrivmsg: ignoring %s' % msg.prefix)
@@ -741,6 +747,13 @@ class PrivmsgCommandAndRegexp(Privmsg):
         self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
         self.addressedRes.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__,
                                                               m2.__name__))
+    def callCommand(self, f, irc, msg, *L):
+        try:
+            Privmsg.callCommand(self, f, irc, msg, *L)
+        except Exception, e:
+            print irc.__class__
+            irc.error(msg, debug.exnToString(e))
+            debug.recoverableException()
 
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
@@ -753,7 +766,8 @@ class PrivmsgCommandAndRegexp(Privmsg):
                     self.rateLimiter.put(msg)
                     msg = self.rateLimiter.get()
                 if msg:
-                    self.callCommand(method, IrcObjectProxyRegexp(irc), msg, m)
+                    proxy = IrcObjectProxyRegexp(irc)
+                    self.callCommand(method, proxy, msg, m)
         s = addressed(irc.nick, msg)
         if s:
             for (r, method) in self.addressedRes:
