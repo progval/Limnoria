@@ -31,10 +31,10 @@
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import re
-import conf
+import supybot.conf as conf
 import socket
 import urllib2
 import urlparse
@@ -71,10 +71,12 @@ def strError(e):
 def getUrlFd(url):
     """Gets a file-like object for a url."""
     try:
-        if '#' in url:
-            i = url.index('#')
-            url = url[:i]
-        request = urllib2.Request(url)
+        if not isinstance(url, urllib2.Request):
+            if '#' in url:
+                url = url[:url.index('#')]
+            request = urllib2.Request(url)
+        else:
+            request = url
         httpProxy = conf.supybot.protocols.http.proxy()
         if httpProxy:
             request.set_proxy(httpProxy, 'http')
