@@ -220,10 +220,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             assert hasattr(irc, 'msg')
             if ircutils.strEqual(irc.msg.args[0], channel):
                 irc.error('I can\'t change nicks, '
-                          '%s is +m and I\'m -v.' % channel)
+                          '%s is +m and I\'m -v.' % channel, private=True)
             else:
                 irc.error('I can\'t change nicks, '
-                          'a channel is +m and I\'m -v in it.')
+                          'a channel I\'m in is +m and I\'m -v in it.')
         else:
             self.log.debug('Got 438 without Admin.nick being called.')
             
