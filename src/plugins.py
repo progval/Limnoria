@@ -36,15 +36,18 @@ import fix
 import gc
 import os
 import re
+import csv
 import sys
 import sets
 import time
 import types
 import random
 import urllib2
+import UserDict
 import threading
 
 import cdb
+import log
 import conf
 import utils
 import world
@@ -156,6 +159,86 @@ class ChannelDBHandler(object):
             del db
         gc.collect()
 
+
+class ChannelUserDictionary(UserDict.DictMixin):
+    def __init__(self):
+        self.channels = ircutils.IrcDict()
+
+    def __getitem__(self, (channel, id)):
+        return self.channels[channel][id]
+
+    def __setitem__(self, (channel, id), v):
+        if channel not in self.channels:
+            self.channels[channel] = {}
+        self.channels[channel][id] = v
+
+    def __delitem__(self, (channel, id)):
+        del self.channels[channel][id]
+        
+    def iteritems(self):
+        for (channel, ids) in self.channels.iteritems():
+            for (id, v) in ids.iteritems():
+                yield ((channel, id), v)
+                
+    def keys(self):
+        L = []
+        for (k, _) in self.iteritems():
+            L.append(k)
+        return L
+        
+
+class ChannelUserDatabase(ChannelUserDictionary):
+    def __init__(self, filename):
+        ChannelUserDictionary.__init__(self)
+        self.filename = filename
+        try:
+            fd = file(self.filename)
+        except EnvironmentError, e:
+            log.warning('Couldn\'t open %s: %s.', self.filename, e)
+            return
+        reader = csv.reader(fd)
+        try:
+            lineno = 0
+            for t in reader:
+                lineno += 1
+                try:
+                    channel = t.pop(0)
+                    id = t.pop(0)
+                    id = int(id)
+                    v = self.deserialize(t)
+                    self[channel, id] = v
+                except Exception, e:
+                    log.warning('Invalid line #%s in %s.',
+                                lineno, self.__class__.__name__)
+        except Exception, e: # This catches exceptions from csv.reader.
+            log.warning('Invalid line #%s in %s.',
+                        lineno, self.__class__.__name__)
+
+    def flush(self):
+        fd = file(self.filename, 'w')
+        writer = csv.writer(fd)
+        items = self.items()
+        items.sort()
+        for ((channel, id), v) in items:
+            L = self.serialize(v)
+            L.insert(0, id)
+            L.insert(0, channel)
+            writer.writerow(L)
+        fd.close()
+
+    def close(self):
+        self.flush()
+        self.clear()
+
+    def deserialize(self, L):
+        """Should take a list of strings and return an object to be accessed
+        via self.get(channel, id)."""
+        raise NotImplementedError
+
+    def serialize(self, x):
+        """Should take an object (as returned by self.get(channel, id)) and
+        return a list (of any type serializable to csv)."""
+        raise NotImplementedError
 
 class PeriodicFileDownloader(object):
     """A class to periodically download a file/files.

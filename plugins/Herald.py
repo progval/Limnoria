@@ -42,6 +42,7 @@ import time
 import log
 import conf
 import utils
+import world
 import ircdb
 import ircmsgs
 import ircutils
@@ -49,47 +50,16 @@ import privmsgs
 import registry
 import callbacks
 
+filename = os.path.join(conf.supybot.directories.data(), 'Herald.db')
 
-class HeraldDB(object):
-    def __init__(self):
-        self.heralds = {}
-        dataDir = conf.supybot.directories.data()
-        self.filename = os.path.join(dataDir, 'Herald.db')
-        self.open()
+class HeraldDB(plugins.ChannelUserDatabase):
+    def serialize(self, v):
+        return [v]
 
-    def open(self):
-        dataDir = conf.supybot.directories.data()
-        if os.path.exists(self.filename):
-            fd = file(self.filename)
-            for line in fd:
-                line = line.rstrip()
-                try:
-                    (idChannel, msg) = line.split(':', 1)
-                    (id, channel) = idChannel.split(',', 1)
-                    id = int(id)
-                except ValueError:
-                    log.warning('Invalid line in HeraldDB: %r', line)
-                    continue
-                self.heralds[(id, channel)] = msg
-            fd.close()
-
-    def close(self):
-        fd = file(self.filename, 'w')
-        L = self.heralds.items()
-        L.sort()
-        for ((id, channel), msg) in L:
-            fd.write('%s,%s:%s%s' % (id, channel, msg, os.linesep))
-        fd.close()
-        
-    def getHerald(self, id, channel):
-        return self.heralds[(id, channel)]
-
-    def setHerald(self, id, channel, msg):
-        self.heralds[(id, channel)] = msg
-
-    def delHerald(self, id, channel):
-        del self.heralds[(id, channel)]
-
+    def deserialize(self, L):
+        if len(L) != 1:
+            raise ValueError
+        return L[0]
 
 conf.registerPlugin('Herald')
 conf.registerChannelValue(conf.supybot.plugins.Herald, 'heralding',
@@ -107,11 +77,14 @@ conf.registerChannelValue(conf.supybot.plugins.Herald, 'throttleTimeAfterPart',
 class Herald(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.db = HeraldDB()
-        self.lastParts = {}
-        self.lastHerald = {}
+        self.db = HeraldDB(filename)
+        world.flushers.append(self.db.flush)
+        self.lastParts = plugins.ChannelUserDictionary()
+        self.lastHerald = plugins.ChannelUserDictionary()
 
     def die(self):
+        if self.db.flush in world.flushers:
+            world.flushers.remove(self.db.flush)
         self.db.close()
         callbacks.Privmsg.die(self)
 
@@ -120,17 +93,17 @@ class Herald(callbacks.Privmsg):
         if self.registryValue('heralding', channel):
             try:
                 id = ircdb.users.getUserId(msg.prefix)
-                herald = self.db.getHerald(id, channel)
+                herald = self.db[channel, id]
             except KeyError:
                 return
             now = time.time()
             throttle = self.registryValue('throttleTime', channel)
-            if now - self.lastHerald.get((id, channel), 0) > throttle:
-                if (id, channel) in self.lastParts:
+            if now - self.lastHerald.get((channel, id), 0) > throttle:
+                if (channel, id) in self.lastParts:
                    i = self.registryValue('throttleTimeAfterPart', channel) 
-                   if now - self.lastParts[(id, channel)] < i:
+                   if now - self.lastParts[channel, id] < i:
                        return
-                self.lastHerald[(id, channel)] = now
+                self.lastHerald[channel, id] = now
                 irc.queueMsg(ircmsgs.privmsg(channel, herald))
 
     def doPart(self, irc, msg):
@@ -165,7 +138,7 @@ class Herald(callbacks.Privmsg):
         except KeyError:
             irc.errorNoUser()
             return
-        self.db.setHerald(id, channel, herald)
+        self.db[channel, id] = herald
         irc.replySuccess()
 
     def remove(self, irc, msg, args):
@@ -183,7 +156,7 @@ class Herald(callbacks.Privmsg):
         except KeyError:
             irc.errorNoUser()
             return
-        self.db.delHerald(id, channel)
+        del self.db[channel, id]
         irc.replySuccess()
 
 
