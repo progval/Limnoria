@@ -353,7 +353,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                       'mean that its spelling was too whacked out even for '
                       'Google to figure out.')
 
-    def info(self, irc, msg, args):
+    def stats(self, irc, msg, args):
         """takes no arguments
 
         Returns interesting information about this Google module.  Mostly
