@@ -26,6 +26,7 @@ class ChannelDBHandler(object):
         self.suffix = suffix
 
     def makeFilename(self, channel):
+        channel = ircutils.toLower(channel)
         prefix = '%s-%s%s' % (channel, self.__class__.__name__, self.suffix)
         return os.path.join(conf.dataDir, prefix)
 
@@ -33,6 +34,7 @@ class ChannelDBHandler(object):
         return cdb.shelf(filename)
 
     def getDb(self, channel):
+        channel = ircutils.toLower(channel)
         try:
             return self.dbCache[channel]
         except KeyError:
