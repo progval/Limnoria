@@ -42,6 +42,8 @@ Commands include:
 
 from baseplugin import *
 
+import re
+
 import ircdb
 import debug
 import irclib
@@ -125,27 +127,29 @@ class Relay(callbacks.Privmsg):
         else:
             irc.reply(msg, conf.replyNoCapability % 'owner')
 
+    def _formatPrivmsg(self, nick, abbreviation, msg):
+        if ircmsgs.isAction(msg):
+            return '* %s/%s %s' % (nick, abbreviation, ircmsgs.unAction(msg))
+        else:
+            return '<%s@%s> %s' % (nick, abbreviation, msg.args[1])
+
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
         if self.started and ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
-            debug.printf('self.abbreviations = %s' % self.abbreviations)
-            debug.printf('self.ircs = %s' % self.ircs)
-            debug.printf('irc = %s' % irc)
+            #debug.printf('self.abbreviations = %s' % self.abbreviations)
+            #debug.printf('self.ircs = %s' % self.ircs)
+            #debug.printf('irc = %s' % irc)
             abbreviation = self.abbreviations[irc]
-            if ircmsgs.isAction(msg):
-                _args1 = '* %s %s' % (msg.nick, ircmsgs.unAction(msg))
-            else:
-                _args1 = msg.args[1]
-            s = '<%s@%s> %s' % (msg.nick, abbreviation, _args1)
+            s = self._formatPrivmsg(msg.nick, abbreviation, msg)
             for otherIrc in self.ircs:
-                debug.printf('otherIrc = %s' % otherIrc)
+                #debug.printf('otherIrc = %s' % otherIrc)
                 if otherIrc != irc:
-                    debug.printf('otherIrc != irc')
-                    debug.printf('id(irc) = %s, id(otherIrc) = %s' % \
-                                 (id(irc), id(otherIrc)))
+                    #debug.printf('otherIrc != irc')
+                    #debug.printf('id(irc) = %s, id(otherIrc) = %s' % \
+                    #             (id(irc), id(otherIrc)))
                     if channel in otherIrc.state.channels:
                         otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
 
@@ -171,6 +175,19 @@ class Relay(callbacks.Privmsg):
                 for channel in channels:
                     if channel in otherIrc.state.channels:
                         otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+
+    def outFilter(self, irc, msg):
+        if msg.command == 'PRIVMSG':
+            abbreviations = self.abbreviations.values()
+            r = re.compile(r'<([^@]+@(?:%s)>' % '|'.join(abbreviations))
+            if r.match(msg.args[1]):
+                channel = msg.args[0]
+                abbreviation = self.abbreviations[irc]
+                s = self._formatPrivmsg(irc.nick, abbreviation, msg)
+                for otherIrc in self.ircs:
+                    if otherIrc != irc:
+                        if channel in otherIrc.state.channels:
+                            msg = ircmsgs.privmsg(channel, s)
 
 Class = Relay
         
