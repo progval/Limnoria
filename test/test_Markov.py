@@ -36,9 +36,9 @@ try:
 except ImportError:
     sqlite = None
 
-class MarkovTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Markov',)
-    if sqlite is not None:
+if sqlite is not None:
+    class MarkovTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Markov',)
         pass # Put actual tests here.
 
 

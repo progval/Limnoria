@@ -40,14 +40,14 @@ except ImportError:
 
 import conf
 
-class LookupTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Lookup', 'Alias')
-    d = {
-        'foo': 'bar',
-        'bar': 'baz',
-        'your mom': 'my mom',
+if sqlite:
+    class LookupTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Lookup', 'Alias')
+        d = {
+            'foo': 'bar',
+            'bar': 'baz',
+            'your mom': 'my mom',
         }
-    if sqlite:
         def setUp(self):
             PluginTestCase.setUp(self)
             fd = file(os.path.join(conf.dataDir, 'foo.supyfact'), 'w')

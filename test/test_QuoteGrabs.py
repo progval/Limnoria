@@ -39,9 +39,9 @@ except ImportError:
     sqlite = None
 
 
-class QuoteGrabsTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('QuoteGrabs',)
-    if sqlite:
+if sqlite:
+    class QuoteGrabsTestCase(ChannelPluginTestCase, PluginDocumentation):
+        plugins = ('QuoteGrabs',)
         def testQuoteGrab(self):
             testPrefix = 'foo!bar@baz'
             self.assertError('grab foo')    
