@@ -224,7 +224,13 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         Runs the standard upkeep stuff (flushes and gc.collects()).
         """
         world.upkeep()
-        irc.reply(msg, conf.replySuccess)
+        if gc.garbage:
+            if len(gc.garbage) < 10:
+                irc.reply(msg, 'Garbage!  %r' % gc.garbage)
+            else:
+                irc.reply(msg, 'Garbage!  %s items.' % len(gc.garbage))
+        else:
+            irc.reply(msg, conf.replySuccess)
 
     def set(self, irc, msg, args):
         """<name> <value>
