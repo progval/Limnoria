@@ -145,7 +145,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         (id, url, added, addedBy, _, _, _, _, _, _) = cursor.fetchone()
         when = time.strftime(conf.humanTimestampFormat,
                              time.localtime(int(added)))
-        s = '%s: <%s> (added by %s at %s)' % (id, url, addedBy, when)
+        s = '<%s> (added by %s at %s)' % (id, url, addedBy, when)
         irc.reply(msg, s)
 
     def numurls(self, irc, msg, args):
