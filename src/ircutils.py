@@ -326,6 +326,9 @@ class IrcString(str):
         except:
             return False
 
+    def __ne__(self, s):
+        return not self == s
+
     def __hash__(self):
         return hash(self.lowered)
 
