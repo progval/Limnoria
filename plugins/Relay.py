@@ -36,9 +36,10 @@ Handles relaying between networks.
 from baseplugin import *
 
 import re
-import copy
+import time
 
 import conf
+import utils
 import ircdb
 import irclib
 import drivers
@@ -90,6 +91,7 @@ class Relay(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.ircs = {}
+        self.whois = {}
         self.started = False
         self.ircstates = {}
         self.lastmsg = ircmsgs.ping('this is just a fake message')
@@ -213,7 +215,50 @@ class Relay(callbacks.Privmsg):
                 usersS = ', '.join([s for s in Channel.users if s.strip()!=''])
                 users.append('\x02%s\x02: %s' % (abbreviation, usersS))
         irc.reply(msg, '; '.join(users))
-        
+
+    def relaywhois(self, irc, msg, args):
+        """<nick>@<network>
+
+        Returns the WHOIS response <network> gives for <nick>.
+        """
+        nickAtNetwork = privmsgs.getArgs(args)
+        (nick, network) = nickAtNetwork.split('@', 1)
+        if network not in self.ircs:
+            irc.error(msg, 'I\'m not on that network.')
+            return
+        otherIrc = self.ircs[network]
+        otherIrc.queueMsg(ircmsgs.whois(nick))
+        self.whois[(otherIrc, nick)] = (irc, msg, {})
+
+    def do311(self, irc, msg):
+        if not isinstance(irc, irclib.Irc):
+            realIrc = irc.getRealIrc()
+        nick = msg.args[1]
+        if (realIrc, nick) not in self.whois:
+            return
+        else:
+            self.whois[(realIrc, nick)][-1][msg.command] = msg
+
+    do312 = do311
+    do317 = do311
+    do319 = do311
+    
+    def do318(self, irc, msg):
+        if not isinstance(irc, irclib.Irc):
+            realIrc = irc.getRealIrc()
+        nick = msg.args[1]
+        if (realIrc, nick) not in self.whois:
+            return
+        (replyIrc, replyMsg, d) = self.whois[(realIrc, nick)]
+        hostmask = '@'.join(d['311'].args[2:])
+        channels = d['319'].args[-1].split()
+        channels = ', and '.join([', '.join(channels[:-1]), channels[-1]])
+        idle = utils.timeElapsed(d['317'].args[2])
+        signon = time.ctime(d['317'][3])
+        s = '%s (%s) has been online since %s (idle for %s) and is on %s' % \
+            (nick, hostmask, signon, idle, channels)
+        replyIrc.reply(replyMsg, s)
+            
     def _formatPrivmsg(self, nick, abbreviation, msg):
         if ircmsgs.isAction(msg):
             return '* %s@%s %s' % (nick, abbreviation, ircmsgs.unAction(msg))
@@ -293,7 +338,7 @@ class Relay(callbacks.Privmsg):
             if not isinstance(irc, irclib.Irc):
                 irc = irc.getRealIrc()
             network = self.abbreviations[irc]
-            if len(msg.args) > 0:
+            if msg.args:
                 s = '%s has quit %s (%s)' % (msg.nick, network, msg.args[0])
             else:
                 s = '%s has quit %s.' % (msg.nick, network)
