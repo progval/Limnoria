@@ -47,7 +47,7 @@ class DebianTestCase(PluginTestCase, PluginDocumentation):
                 pass
             else:
                 print
-                print "Dowloading files, this may take awhile"
+                print "Downloading files, this may take awhile"
                 filename = os.path.join(conf.dataDir, 'Contents-i386.gz')
                 while not os.path.exists(filename):
                     time.sleep(1)
