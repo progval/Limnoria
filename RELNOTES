@@ -14,6 +14,11 @@ configuration variable formerly known as
 accepts the languages that *will* be translated as opposed to ones
 that are *not* translated.
 
+Tests and the developer sandbox are not longer delivered with our
+release tarballs.  If you're a developer and you want these, you
+should either check out CVS or download one of our weekly CVS
+snapshots, available at http://supybot.sourceforge.net/snapshots/ .
+
 Version 0.77.1
 
 This is a drop-in replacement for 0.77.0 -- no incompatibilities, to
