@@ -97,6 +97,8 @@ class Observer(callbacks.Privmsg):
     def __init__(self):
         self.__parent = super(Observer, self)
         self.__parent.__init__()
+        for name in self.registryValue('observers'):
+            registerObserver(name)
 
     def callCommand(self, *args, **kwargs):
         self.commandCalled = True
