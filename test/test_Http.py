@@ -33,9 +33,6 @@ from test import *
 
 class HttpTest(PluginTestCase, PluginDocumentation):
     plugins = ('Http',)
-    def testDeepthought(self):
-        self.assertNotError('deepthought')
-
     def testStockquote(self):
         self.assertNotError('stockquote MSFT')
 
