@@ -407,7 +407,11 @@ supybot.directories.register('data', registry.String('data', """
 Determines what directory data is put into."""))
 supybot.directories.register('plugins',
 registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir],
-"""Determines what directories the bot will look for plugins in."""))
+"""Determines what directories the bot will look for plugins in.  Accepts a
+comma-separated list of strings.  This means that to add another directory,
+you can nest the former value and add a new one.  E.g. you can say: bot:
+'config supybot.directories.plugins [config supybot.directories.plugins],
+newPluginDirectory'."""))
 
 supybot.register('databases')
 supybot.databases.register('users')
