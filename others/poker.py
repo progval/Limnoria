@@ -90,13 +90,13 @@ def getFlush(hand):
 
 def getStraight(hand):
     sort(hand)
-    if all(lambda i: i==1, [x.rank-y.rank for (x,y) in window(hand,2)]):
+    diffs = [x.rank-y.rank for (x,y) in window(hand,2)]
+    if diffs == [1,1,1,1]:
         return hand
-    elif hand[0].rank == A:
-        (hand[0], hand[-1]) = (hand[-1], hand[0])
-        if all(lambda i: i == 1, [x.rank-y.rank for (x,y) in window(hand,2)]):
-            return hand
-    sort(hand)
+    elif hand[0].rank == A and diffs == [9,1,1,1]:
+        ace = hand.pop(0)
+        hand.append(ace)
+        return hand
     return []
 
 def getPair(hand):
@@ -120,6 +120,16 @@ def getFours(hand):
             return ([x,y,z,w], [c for c in hand if c.rank != x.rank])
     return ([], hand)
 
+STRAIGHT_FLUSH = '8:straight flush'
+FOUR_OF_A_KIND = '7:four of a kind'
+FULL_HOUSE = '6:full house'
+FLUSH = '5:flush'
+STRAIGHT = '4:straight'
+THREE_OF_A_KIND = '3:three of a kind'
+TWO_PAIR = '2:two pair'
+PAIR = '1:pair'
+RUNT = '0:runt'
+
 def score(cards):
     """Returns a comparable value for a list of cards."""
     def getRank(hand):
@@ -131,33 +141,33 @@ def score(cards):
             if trips:
                 (fours, fourRest) = getFours(hand)
                 if fours:
-                    return (7, fours + fourRest)
+                    return (FOUR_OF_A_KIND, fours + fourRest)
                 (pair, _) = getPair(tripRest)
                 if pair:
                     # Full house.
-                    return (6, trips + pair)
+                    return (FULL_HOUSE, trips + pair)
                 sort(tripRest)
-                return (3, trips + tripRest)
+                return (THREE_OF_A_KIND, trips + tripRest)
             (otherPair, twoPairRest) = getPair(pairRest)
             if otherPair:
                 if otherPair[0] > pair[0]:
-                    return (2, otherPair + pair + twoPairRest)
+                    return (TWO_PAIR, otherPair + pair + twoPairRest)
                 else:
-                    return (2, pair + otherPair + twoPairRest)
+                    return (TWO_PAIR, pair + otherPair + twoPairRest)
             sort(pairRest)
-            return (1, pair + pairRest)
+            return (PAIR, pair + pairRest)
         else:
             flush = getFlush(hand)
             if flush:
                 straight = getStraight(hand)
                 if straight:
-                    return (8, straight)
-                return (5, flush)
+                    return (STRAIGHT_FLUSH, straight)
+                return (FLUSH, flush)
             straight = getStraight(hand)
             if straight:
-                return (4, straight)
+                return (STRAIGHT, straight)
             hand.sort()
-            return (0, hand)
+            return (RUNT, hand)
     first = 0
     second = None
     for hand in combinations(cards, 5):
