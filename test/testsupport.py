@@ -134,13 +134,15 @@ class PluginTestCase(unittest.TestCase):
             pass
         #OwnerModule = Owner.loadPluginModule('Owner')
         MiscModule = Owner.loadPluginModule('Misc')
+        ConfigModule = Owner.loadPluginModule('Config')
         _ = Owner.loadPluginClass(self.irc, Owner)
         _ = Owner.loadPluginClass(self.irc, MiscModule)
+        _ = Owner.loadPluginClass(self.irc, ConfigModule)
         if isinstance(self.plugins, str):
             self.plugins = [self.plugins]
         else:
             for name in self.plugins:
-                if name not in ('Owner', 'Misc'):
+                if name not in ('Owner', 'Misc', 'Config'):
                     try:
                         module = Owner.loadPluginModule(name)
                     except Owner.Deprecated, e:
