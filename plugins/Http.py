@@ -217,13 +217,17 @@ class Http(callbacks.Privmsg):
             else:
                 seen = '%s was last seen on Gameknot %s.' % (name,
                 seen.group(2))
+            if games == 1:
+                games = '1 active game'
+            else:
+                games = '%s active games' % games
             if profile.find('Team:') >= 0:
                 team = self._gkteam.search(profile).group('name')
-                irc.reply(msg, '%s (team: %s) is rated %s and has %s active ' \
-                          'games and a record of W-%s, L-%s, D-%s.  %s' % \
+                irc.reply(msg, '%s (team: %s) is rated %s and has %s ' \
+                          'and a record of W-%s, L-%s, D-%s.  %s' % \
                           (name, team, rating, games, w, l, d, seen))
             else:
-                irc.reply(msg, '%s is rated %s and has %s active games ' \
+                irc.reply(msg, '%s is rated %s and has %s ' \
                           'and a record of W-%s, L-%s, D-%s.  %s' % \
                           (name, rating, games, w, l, d, seen))
         except AttributeError:
