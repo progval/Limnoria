@@ -32,6 +32,7 @@
 from test import *
 
 import conf
+import OwnerCommands
 
 class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('OwnerCommands',)
@@ -129,7 +130,13 @@ class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
                 conf.replyWhenNotCommand = originalReplyWhenNotCommand
         finally:
             conf.allowEval = originalConfAllowEval
+
         
+class FunctionsTestCase(unittest.TestCase):
+    def testLoadPluginModule(self):
+        self.assertRaises(ImportError, OwnerCommands.loadPluginModule, 'asldj')
+        self.failUnless(OwnerCommands.loadPluginModule('OwnerCommands'))
+        self.failUnless(OwnerCommands.loadPluginModule('ownercommands'))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -37,6 +37,7 @@ their caller to have the 'owner' capability.  This plugin is loaded by default.
 import fix
 
 import gc
+import os
 import imp
 import sys
 import linecache
@@ -54,6 +55,15 @@ import callbacks
 
 def loadPluginModule(name):
     """Loads (and returns) the module for the plugin with the given name."""
+    files = []
+    for dir in conf.pluginDirs:
+        files.extend(os.listdir(dir))
+    loweredFiles = map(str.lower, files)
+    try:
+        index = map(str.lower, files).index(name.lower()+'.py')
+        name = os.path.splitext(files[index])[0]
+    except ValueError: # We'd rather raise the ImportError, so we'll let go...
+        pass
     moduleInfo = imp.find_module(name, conf.pluginDirs)
     module = imp.load_module(name, *moduleInfo)
     linecache.checkcache()
@@ -244,7 +254,8 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
 
         Loads the plugin <plugin> from any of the directories in
         conf.pluginDirs; usually this includes the main installed directory
-        and 'plugins' in the current directory.
+        and 'plugins' in the current directory.  Be sure not to have ".py" at
+        the end.
         """
         name = privmsgs.getArgs(args)
         for cb in irc.callbacks:
