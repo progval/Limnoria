@@ -239,7 +239,10 @@ class User(callbacks.Privmsg):
         except ValueError, e:
             irc.error(str(e))
             return
-        ircdb.users.setUser(id, user)
+        try:
+            ircdb.users.setUser(id, user)
+        except ValueError, e:
+            irc.error(str(e))
         irc.replySuccess()
 
     def removehostmask(self, irc, msg, args):

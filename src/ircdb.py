@@ -713,9 +713,11 @@ class UsersDictionary(utils.IterableMap):
                     continue
                 elif u.checkHostmask(hostmask):
                     s = '%s is someone else\'s hostmask.' % hostmask
+                    user.removeHostmask(hostmask)
                     raise ValueError, s
                 for otherHostmask in u.hostmasks:
                     if ircutils.hostmaskPatternEqual(hostmask, otherHostmask):
+                        user.removeHostmask(hostmask)
                         s = '%s is someone else\'s hostmask.' % hostmask
                         raise ValueError, s
         self.invalidateCache(id)
