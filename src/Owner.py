@@ -122,6 +122,30 @@ conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
 conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
                          'ignore', registry.String('Admin', ''))
 
+
+class holder(object):
+    pass
+
+class LogProxy(object):
+    """<text>
+
+    Logs <text> to the global supybot log at critical priority.  Useful for
+    marking logfiles for later searching.
+    """
+    def __init__(self, log):
+        self.log = log
+        self.im_func = holder()
+        self.im_func.func_name = 'log'
+
+    def __call__(self, irc, msg, args):
+        text = privmsgs.getArgs(args)
+        log.critical(text)
+        irc.replySuccess()
+
+    def __getattr__(self, attr):
+        return getattr(self.log, attr)
+
+
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
@@ -130,6 +154,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     _srcPlugins = ('Admin', 'Channel', 'Config', 'Misc', 'Owner', 'User')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        self.log = LogProxy(self.log)
         setattr(self.__class__, 'exec', self.__class__._exec)
         for (name, s) in registry._cache.iteritems():
             if name.startswith('supybot.plugins'):
@@ -138,6 +163,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 except ValueError: #unpack list of wrong size.
                     continue
                 conf.registerPlugin(name)
+
+    def isCommand(self, methodName):
+        return methodName == 'log' or \
+               privmsgs.CapabilityCheckingPrivmsg.isCommand(self, methodName)
 
     def do001(self, irc, msg):
         self.log.info('Loading other src/ plugins.')
