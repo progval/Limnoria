@@ -54,6 +54,8 @@ unitAbbrevs = utils.abbrev(['Fahrenheit', 'Celsius', 'Centigrade', 'Kelvin'])
 unitAbbrevs['C'] = 'Celsius'
 unitAbbrevs['Ce'] = 'Celsius'
 
+noLocationError = 'No such location could be found.'
+
 class WeatherUnit(registry.String):
     def setValue(self, s):
         #print '***', repr(s)
@@ -103,7 +105,7 @@ class Weather(callbacks.Privmsg):
                               location, ignoreNoUser=True)
         realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)
-        realCommand(irc, msg, args)
+        ret = realCommand(irc, msg, args)
 
     def _toCelsius(self, temp, unit):
         if unit == 'K':
@@ -207,8 +209,7 @@ class Weather(callbacks.Privmsg):
                       'place=%s&state=&country=%s' % (city, state)
                 html = webutils.getUrl(url)
                 if 'was not found' in html: # Still.
-                    irc.error('No such location could be found.')
-                    return
+                    irc.error(noLocationError, Raise=True)
 
         #We received a single argument.  Zipcode or station id.
         else:
@@ -219,8 +220,7 @@ class Weather(callbacks.Privmsg):
                   'config=&forecast=zandh&pands=%s&Submit=GO' % zip
             html = webutils.getUrl(url)
             if 'was not found' in html:
-                irc.error('No such location could be found.')
-                return
+                irc.error(noLocationError, Raise=True)
 
         headData = self._hamLoc.search(html)
         if headData is not None:
@@ -230,8 +230,7 @@ class Weather(callbacks.Privmsg):
             if headData:
                 (city, state) = headData.groups()
             else:
-                irc.error('No such location could be found.')
-                return
+                irc.error(noLocationError, Raise=True)
 
         city = city.strip()
         state = state.strip()
@@ -310,14 +309,9 @@ class Weather(callbacks.Privmsg):
             zip = privmsgs.getArgs(args)
             loc = zip.replace(',', '').lower()
         url = '%s%s' % (self._cnnUrl, urllib.quote(loc))
-        try:
-            text = webutils.getUrl(url)
-        except webutils.WebError, e:
-            irc.error(str(e))
-            return
+        text = webutils.getUrl(url) # Errors caught in callCommand.
         if "No search results" in text or "does not match a zip code" in text:
-            irc.error('No such location could be found.')
-            return
+            irc.error(noLocationError, Raise=True)
         location = self._cnnLoc.search(text)
         temp = self._cnnFTemp.search(text)
         conds = self._cnnCond.search(text)
@@ -344,8 +338,8 @@ class Weather(callbacks.Privmsg):
         else:
             irc.error('Could not find weather information.')
 
-    _wunderUrl = 'http://www.weatherunderground.com/cgi-bin/findweather/'\
-                 'getForecast?query='
+    _wunderUrl = 'http://www.weatherunderground.com/' \
+                 'cgi-bin/findweather/getForecast?query='
     _wunderLoc = re.compile(r'<title>[^:]+: ([^<]+)</title>', re.I | re.S)
     _wunderFTemp = re.compile(
         r'graphics/conds.*?<nobr><b>(-?\d+)</b>&nbsp;(&#176;)(F)</nobr>',
@@ -371,7 +365,8 @@ class Weather(callbacks.Privmsg):
         r'Visibility:</td><td[^>]+><b>\s+<nobr><b>([\w.]+)</b>&nbsp;(miles)'
         r'</nobr>\s+/\s+<nobr><b>([\w.]+)</b>&nbsp;(kilometers)</nobr>',
         re.I | re.S)
-    _wunderUv = re.compile(r'UV:</td><td[^>]+><b>(\d\d?)</b>( out of \d\d?)', re.I | re.S)
+    _wunderUv = re.compile(r'UV:</td><td[^>]+><b>(\d\d?)</b>( out of \d\d?)',
+                           re.I | re.S)
     _wunderTime = re.compile(r'Updated:\s+<b>([\w\s:,]+)</b>', re.I | re.S)
     def wunder(self, irc, msg, args):
         """<US zip code | US/Canada city, state | Foreign city, country>
@@ -380,17 +375,12 @@ class Weather(callbacks.Privmsg):
         """
         loc = ' '.join(args)
         url = '%s%s' % (self._wunderUrl, urllib.quote(loc))
-        try:
-            text = webutils.getUrl(url)
-        except webutils.WebError, e:
-            irc.error(str(e))
-            return
+        text = webutils.getUrl(url) # Caught in callCommand.
         if 'Search not found' in text:
-            irc.error('No such location could be found.')
-            return
+            irc.error(noLocationError, Raise=True)
         if 'Search results for' in text:
-            irc.error('Multiple locations found.  Please be more specific.')
-            return
+            irc.error('Multiple locations found.  Please be more specific.',
+                      raise=True)
         location = self._wunderLoc.search(text)
         temp = self._wunderFTemp.search(text)
         convert = self.registryValue('convert', msg.args[0])
