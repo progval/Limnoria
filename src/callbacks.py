@@ -346,11 +346,9 @@ class Privmsg(irclib.IrcCallback):
             thread.start()
             debug.printf('Spawned new thread: %s' % thread)
         else:
-            try:
-                f(irc, msg, args)
-            except Exception, e:
-                debug.recoverableException()
-                irc.error(msg, debug.exnToString(e))
+            # Exceptions aren't caught here because IrcObjectProxy.finalEval
+            # catches them and does The Right Thing.
+            f(irc, msg, args)
 
     _r = re.compile(r'^(\S+)')
     def doPrivmsg(self, irc, msg):
