@@ -85,16 +85,16 @@ class Currency(callbacks.Privmsg):
         (number, curr1, curr2) = privmsgs.getArgs(args, required=2,
                                                   optional=1)
         try:
-            int(number)
+            number = int(number)
         except ValueError:
             curr2 = curr1
             curr1 = number
-            number = "1"
+            number = 1
         curr1 = curr1.lower()
         curr2 = curr2.lower()
         if curr2.startswith('to '):
             curr2 = curr2[3:]
-        if len(curr1) != 3 or len(curr2) != 3:
+        if len(curr1) != 3 and len(curr2) != 3:
             irc.error(self._symbolError)
             return
         url = 'http://www.xe.com/ucc/convert.cgi?Amount=%s&From=%s&To=%s'
@@ -109,7 +109,12 @@ class Currency(callbacks.Privmsg):
             return
         conv = self._xeConvert.search(text)
         if conv is not None:
-            irc.reply(conv.group(1))
+            resp = conv.group(1).split()
+            resp[0] = str(float(resp[0]) * number)
+            if resp[0].endswith('.0'):
+                resp[0] = '%s.00' % resp[0][:-2]
+            resp[3] = str(float(resp[3]) * number)
+            irc.reply(' '.join(resp))
             return
         else:
             irc.error('XE must\'ve changed the format of their site.')
@@ -128,16 +133,16 @@ class Currency(callbacks.Privmsg):
         (number, curr1, curr2) = privmsgs.getArgs(args, required=2,
                                                   optional=1)
         try:
-            int(number)
+            number = int(number)
         except ValueError:
             curr2 = curr1
             curr1 = number
-            number = "1"
+            number = 1
         curr1 = curr1.lower()
         curr2 = curr2.lower()
         if curr2.startswith('to '):
             curr2 = curr2[3:]
-        if len(curr1) != 3 or len(curr2) != 3:
+        if len(curr1) != 3 and len(curr2) != 3:
             irc.error(self._symbolError)
             return
         url = 'http://finance.yahoo.com/currency/convert?amt=%s&from=%s&'\
@@ -149,8 +154,13 @@ class Currency(callbacks.Privmsg):
             return
         conv = self._yahooConvert.search(text)
         if conv is not None:
-            irc.reply('%s %s = %s %s' % (conv.group(1), curr1.upper(),
-                                         conv.group(2), curr2.upper()))
+            resp = [conv.group(1), curr1.upper(), '=',
+                    conv.group(2), curr2.upper()]
+            if '.' not in resp[0]:
+                resp[0] = '%s.00' % resp[0]
+            elif resp[0].endswith('.0'):
+                resp[0] = '%.00' % resp[:-2]
+            irc.reply(' '.join(resp))
             return
         else:
             irc.error('Either you used the wrong currency symbol(s) or Yahoo '
@@ -159,7 +169,7 @@ class Currency(callbacks.Privmsg):
 
 conf.registerPlugin('Currency')
 conf.registerChannelValue(conf.supybot.plugins.Currency, 'command',
-    CurrencyCommand('xe', """Sets the default command to use when retrieving
+    CurrencyCommand('yahoo', """Sets the default command to use when retrieving
     the currency conversion.  Command must be one of %s.""" %
     utils.commaAndify(Currency.currencyCommands, And='or')))
 
