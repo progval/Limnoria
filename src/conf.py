@@ -197,4 +197,6 @@ driverModule = 'asyncoreDrivers'
 ###############################
 version ='0.70.0'
 
+commandsOnStart = []
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
