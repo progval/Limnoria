@@ -122,20 +122,19 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         self.last24hours = structures.queue()
 
     def formatData(self, data):
-        time = '(search took %s seconds)' % data.meta.searchTime
+        time = 'Search took %s seconds: ' % data.meta.searchTime
         results = []
         for result in data.results:
             title = utils.htmlToText(result.title.encode('utf-8'))
             url = result.URL
             if title:
-                results.append('\x02%s\x02: %s' % (title, url))
+                results.append('\x02%s\x02: <%s>' % (title, url))
             else:
                 results.append(url)
         if not results:
             return 'No matches found %s' % time
         else:
-            s = ircutils.privmsgPayload(results, ' :: ', 375)
-            return '%s %s' % (s, time)
+            return '%s %s' % (time, '; '.join(results))
 
     def googlelicensekey(self, irc, msg, args):
         """<key>
@@ -146,7 +145,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         key = privmsgs.getArgs(args)
         google.setLicense(key)
         irc.reply(msg, conf.replySuccess)
-
     googlelicensekey = privmsgs.checkCapability(googlelicensekey, 'admin')
 
     def google(self, irc, msg, args):
