@@ -348,10 +348,11 @@ class Relay(callbacks.Privmsg):
                 L.append('is a halfop on %s' % utils.commaAndify(halfops))
             if voices:
                 L.append('is voiced on %s' % utils.commaAndify(voices))
-            if L:
-                L.append('is also on %s' % utils.commaAndify(normal))
-            else:
-                L.append('is on %s' % utils.commaAndify(normal))
+            if normal:
+                if L:
+                    L.append('is also on %s' % utils.commaAndify(normal))
+                else:
+                    L.append('is on %s' % utils.commaAndify(normal))
         else:
             L = ['isn\'t on any non-secret channels']
         channels = utils.commaAndify(L)
