@@ -196,7 +196,8 @@ class Unix(callbacks.Privmsg):
         if ' ' in word:
             irc.error('Spaces aren\'t allowed in the word.')
             return
-        (r, w) = popen2.popen4([spellCmd, '-a'])
+        inst = popen2.Popen4([spellCmd, '-a'])
+        (r, w) = (inst.fromchild, inst.tochild)
         try:
             s = r.readline() # Banner, hopefully.
             if 'sorry' in s.lower():
@@ -216,6 +217,7 @@ class Unix(callbacks.Privmsg):
         finally:
             r.close()
             w.close()
+            inst.wait()
         # parse the output
         if line[0] in '*+':
             resp = '"%s" may be spelled correctly.' % word
@@ -245,7 +247,8 @@ class Unix(callbacks.Privmsg):
             if self.registryValue('fortune.offensive'):
                 args.append('-a')
             args.extend(self.registryValue('fortune.files'))
-            (r, w) = popen2.popen4(args)
+            inst = popen2.Popen4(args)
+            (r, w) = (inst.fromchild, inst.tochild)
             try:
                 lines = r.readlines()
                 lines = map(str.rstrip, lines)
@@ -254,6 +257,7 @@ class Unix(callbacks.Privmsg):
             finally:
                 w.close()
                 r.close()
+                inst.wait()
         else:
             irc.error('I couldn\'t find the fortune command on this system. '
                       'If it is installed on this system, reconfigure the '
@@ -270,13 +274,15 @@ class Unix(callbacks.Privmsg):
         wtfCmd = self.registryValue('wtf.command')
         if wtfCmd:
             something = something.rstrip('?')
-            (r, w) = popen2.popen4([wtfCmd, something])
+            inst = popen2.Popen4([wtfCmd, something])
+            (r, w) = (inst.fromchild, inst.tochild)
             try:
                 response = utils.normalizeWhitespace(r.readline().strip())
                 irc.reply(response)
             finally:
                 r.close()
                 w.close()
+                inst.wait()
         else:
             irc.error('I couldn\'t find the wtf command on this system.  '
                       'If it is installed on this system, reconfigure the '
