@@ -64,13 +64,14 @@ class AsyncoreDriver(asynchat.async_chat, object):
         self.server = (server, port)
         self.reconnect = reconnect
         self.irc = irc
+        self.irc.driver = self
         self.buffer = ''
         self.set_terminator('\n')
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.connect(self.server)
         except:
-            debug.recoverableException()
+            debug.recoverableException('terse')
             self.scheduleReconnect()
             self.close()
 
@@ -123,6 +124,9 @@ class AsyncoreDriver(asynchat.async_chat, object):
         #debug.methodNamePrintf(self, 'handle_close')
         self.scheduleReconnect()
         self.die()
+
+    def handle_connect(self):
+        pass
 
     def die(self):
         self.close()
