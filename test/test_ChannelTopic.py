@@ -31,8 +31,8 @@
 
 from test import *
 
-class TopicTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Topic', 'AdminCommands')
+class ChannelTopicTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('ChannelTopic', 'AdminCommands')
     def testAddtopic(self):
         _ = self.getMsg('join #foo')
         _ = self.getMsg(' ') # Get the WHO.
