@@ -1,3 +1,8 @@
+	* Changed the Words plugin not to use SQLite.  We lose the
+	anagram command, but crossword and hangman become much easier to
+	use, since all the user has to do is put a words file in
+	data/words.
+	
 	* Changed the Relay plugin to rely only on the registry, allowing
 	it to start and join all networks and channels with no user/owner
 	interaction at all.  Also, removed the Relay.say and
