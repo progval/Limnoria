@@ -72,6 +72,12 @@ class LookupTestCase(PluginTestCase, PluginDocumentation):
 
         def testNotEscapingIOError(self):
             self.assertNotRegexp('lookup add foo asdlfkjsdalfkj', 'IOError')
+
+        def testEmptyLines(self):
+            fd = file(os.path.join(conf.dataDir, 'foo.supyfact'), 'a')
+            fd.write('\n')
+            fd.close()
+            self.assertNotError('lookup add test foo.supyfact')
         
 
 

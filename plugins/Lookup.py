@@ -136,9 +136,9 @@ class Lookup(callbacks.Privmsg):
             cursor.execute("""CREATE TABLE %s (key TEXT, value TEXT)""" % name)
             sql = """INSERT INTO %s VALUES (%%s, %%s)""" % name
             for line in fd:
-                if line.startswith('#'):
-                    continue
                 line = line.rstrip('\r\n')
+                if not line or line.startswith('#'):
+                    continue
                 try:
                     (key, value) = line.split(':', 1)
                 except ValueError:
