@@ -179,11 +179,6 @@ nickmods = ['%s^', '^%s^', '__%s__', '%s_', '%s__', '__%s', '^^%s^^', '{%s}',
 defaultAllow = True
 
 ###
-# defaultChannelAllow: does an IrcChannel allow a command by by default?
-###
-defaultChannelAllow = True
-
-###
 # defaultIgnore: True if users should be ignored by default.
 #                It's a really easy way to make sure that people who want to
 #                talk to the bot register first.  (Of course, they can't
@@ -226,5 +221,59 @@ driverModule = 'socketDrivers'
 version ='0.72.0'
 
 commandsOnStart = []
+
+# This is a dictionary mapping names to converter functions for use in the
+# OwnerCommands.setconf command.
+def mybool(s):
+    if s.capitalize() == 'False' or s == '0':
+        return False
+    elif s.capitalize() == 'True' or s == '1':
+        return True
+    else:
+        raise ValueError, 'invalid literal for mybool()'
+
+def mystr(s):
+    while s and s[0] in "'\"" and s[0] == s[-1]:
+        s = s[1:-1]
+    return s
+
+types = {
+    'logDir': mystr,
+    'confDir': mystr,
+    'dataDir': mystr,
+    #'pluginDirs': (list, str),
+    'userfile': mystr,
+    'channelfile': mystr,
+    'logTimestampFormat': mystr,
+    'humanTimestampFormat': mystr,
+    'throttleTime': float,
+    #'allowEval': mybool,
+    'replyWhenNotCommand': mybool,
+    'requireRegistration': mybool,
+    'enablePipeSyntax': mybool,
+    'replyError': mystr,
+    'replyNoCapability': mystr,
+    'replySuccess': mystr,
+    'replyIncorrectAuth': mystr,
+    'replyNoUser': mystr,
+    'replyNotRegistered': mystr,
+    'replyInvalidArgument': mystr,
+    'replyRequiresPrivacy': mystr,
+    'replyEvalNotAllowed': mystr,
+    'errorReplyPrivate': mybool,
+    #'telnetEnable': mybool,
+    #'telnetPort': int,
+    'poll': float,
+    #'maxHistory': int,
+    'pingInterval': float,
+    #'nickmods': (list, str),
+    'defaultAllow': mybool,
+    'defaultIgnore': mybool,
+    #'ignores': (list, str),
+    'prefixChars': mystr,
+    'detailedTracebacks': mybool,
+    'driverModule': mystr,
+}
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

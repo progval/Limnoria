@@ -36,15 +36,28 @@ import conf
 class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('OwnerCommands',)
     def testEval(self):
-        conf.allowEval = True
-        s = "[irc.__class__ for irc in " \
-            "irc.getCallback('Relay').ircstates.keys()]" 
-        self.assertNotRegexp('eval ' + s, '^SyntaxError')
+        try:
+            originalConfAllowEval = conf.allowEval
+            conf.allowEval = True
+            s = "[irc.__class__ for irc in " \
+                "irc.getCallback('Relay').ircstates.keys()]" 
+            self.assertNotRegexp('eval ' + s, '^SyntaxError')
+            conf.allowEval = False
+            self.assertError('eval 100')
+        finally:
+            conf.allowEval = originalConfAllowEval
 
     def testExec(self):
-        self.assertNotError('exec conf.foo = True')
-        self.failUnless(conf.foo)
-        del conf.foo
+        try:
+            originalConfAllowEval = conf.allowEval
+            conf.allowEval = True
+            self.assertNotError('exec conf.foo = True')
+            self.failUnless(conf.foo)
+            del conf.foo
+            conf.allowEval = False
+            self.assertError('exec conf.foo = True')
+        finally:
+            conf.allowEval = originalConfAllowEval
 
     def testSettrace(self):
         self.assertNotError('settrace')
@@ -84,6 +97,38 @@ class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
 
     def testSay(self):
         self.assertResponse('say %s foo' % self.irc.nick, 'foo')
+
+    def testSetconf(self):
+        try:
+            originalConfAllowEval = conf.allowEval
+            conf.allowEval = False
+            self.assertError('setconf alsdkfj 100')
+            self.assertError('setconf poll "foo"')
+            try:
+                originalReplySuccess = conf.replySuccess
+                self.assertResponse('setconf replySuccess foo', 'foo')
+                self.assertResponse('setconf replySuccess "foo"', 'foo')
+                self.assertResponse('setconf replySuccess \'foo\'', 'foo')
+            finally:
+                conf.replySuccess = originalReplySuccess
+            try:
+                originalReplyWhenNotCommand = conf.replyWhenNotCommand
+                self.assertNotError('setconf replyWhenNotCommand True')
+                self.failUnless(conf.replyWhenNotCommand)
+                self.assertNotError('setconf replyWhenNotCommand False')
+                self.failIf(conf.replyWhenNotCommand)
+                self.assertNotError('setconf replyWhenNotCommand true')
+                self.failUnless(conf.replyWhenNotCommand)
+                self.assertNotError('setconf replyWhenNotCommand false')
+                self.failIf(conf.replyWhenNotCommand)
+                self.assertNotError('setconf replyWhenNotCommand 1')
+                self.failUnless(conf.replyWhenNotCommand)
+                self.assertNotError('setconf replyWhenNotCommand 0')
+                self.failIf(conf.replyWhenNotCommand)
+            finally:
+                conf.replyWhenNotCommand = originalReplyWhenNotCommand
+        finally:
+            conf.allowEval = originalConfAllowEval
         
 
 

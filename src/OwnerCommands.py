@@ -102,6 +102,37 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         else:
             irc.error(msg, conf.replyEvalNotAllowed)
 
+    def setconf(self, irc, msg, args):
+        """<name> <value>
+
+        Sets the value of the conf-module variable <name> to <value>.
+        """
+        (name, value) = privmsgs.getArgs(args, needed=2)
+        if conf.allowEval:
+            try:
+                value = eval(value)
+            except Exception, e:
+                irc.error(msg, debug.exnToString(e))
+                return
+            setattr(conf, name, value)
+            irc.reply(msg, conf.replySuccess)
+        else:
+            if name == 'allowEval':
+                irc.error(msg, 'You can\'t set the value of allowEval.')
+                return
+            elif name not in conf.types:
+                irc.error(msg, 'I can\'t set that conf variable.')
+                return
+            else:
+                converter = conf.types[name]
+                try:
+                    value = converter(value)
+                except ValueError, e:
+                    irc.error(msg, str(e))
+                    return
+                setattr(conf, name, value)
+                irc.reply(msg, conf.replySuccess)
+
     def setdefaultcapability(self, irc, msg, args):
         """<capability>
 
