@@ -82,6 +82,128 @@ irclib.Irc:
 	This is the object to handle everything about IRC except the
 	actual connection to the server itself.
 
+	Interesting Methods:
+		    The two following messages (queueMsg and
+		    sendMsg) are the methods by far most commonly
+		    called by plugin authors.  They're generally
+		    the only methods you need to pay attention to
+		    if you're writing plugins.
+		    
+		    queueMsg: Queues a message for sending to the
+		    server.  The queue is generally FIFO, but it
+		    does prioritize messages based on their command.
+
+		    sendMsg: Queues a message for sneding to the
+		    server prior to any messages in the normal
+		    queue.  This is exactly a FIFO queue, no
+		    reordering is done at all.
+
+		    The following two methods are the most important
+		    for people writing new IrcDrivers.  Otherwise,
+		    you really don't need to pay attention to them.
+
+		    feedMsg: Feeds the Irc object a message for it
+		    handle appropriately, as well as passing it on
+		    to callbacks.
+
+		    takeMsg: If the Irc object has a message it's
+		    ready to send to the server, this will return
+		    it.  Otherwise, it will return None.
+
+		    The next several methods are of far more marginal
+		    utility.  But someone may need them, so they're
+		    documented here.
+
+		    addCallback: Takes a callback to add to the list
+		    of callbacks in the Irc object.  See the
+		    interface for IrcCallback for more information.
+
+		    getCallback: Gets a callback by name, if it is
+                    in the Irc object's list of callbacks.  If it
+		    it isn't, returns None.
+
+		    removeCallback: Removes a callback by name.
+                    Returns a list of the callbacks removed (since
+                    it is technically possible to have multiple
+		    callbacks with the same name.  This list may
+		    be empty.
+
+		    __init__: Requires a nick.  Optional arguments
+		    include user and ident, which default to the
+		    nick given, password, which defaults to the empty
+                    password, and callbacks, a list of callbacks
+                    (which defaults to nothing, an empty list).
+
+		    reset: Resets the Irc object to its original
+		    state, as well as sends a reset() to every
+		    callbacks.
+
+		    die: Kills the IRC object and all its callbacks.
+
 	Interesting attributes:
-		    nick: the current nick of the bot.
-		    prefix: the current prefix of the bot.
+		    nick: The current nick of the bot.
+
+		    prefix: The current prefix of the bot.
+
+		    server: The current server the bot is connected to.
+                    Usually consists of a (host, port) pair.
+
+                    afterConnect: False until the bot has received a
+                    command sent after the connection is finished --
+                    376, 377, or 422.
+
+		    state: An IrcState object for this particular
+                    connection.  See the interface for the IrcState
+                    object for more information.
+
+
+irclib.IrcCallback:
+	Interesting Methods:
+		    name: Returns the name of the callback.  The
+		    default implementation simply returns the name
+		    of the class.
+
+		    __call__: Called by the Irc object with itself
+		    and the message whenever a message is fed to
+		    the Irc object.  Nothing is done with the return
+		    value.
+
+		    inFilter: Called by the Irc object with itself
+		    and the message whenever a message is fed to
+		    the Irc object.  The return value should be an
+		    IrcMsg object to be passed to the next callback
+		    in the Irc's list of callbacks.  If None is
+		    returned, all processing stops.  This gives
+		    callbacks an oppurtunity to "filter" incoming
+		    messages before general callbacks are given
+		    them.
+
+		    outFilter: Basically equivalent to inFilter,
+		    except instead of being called on messages
+		    as they enter the Irc object, it's called on
+		    messages as they leave the Irc object.
+
+		    die: Called when the parent Irc is told to
+		    die.  This gives callbacks an oppurtunity to
+		    close open files, network connections, or
+		    databases before they're deleted.
+
+		    reset: Called when the parent Irc is told to
+		    reset (which is generally when reconnecting
+		    to the server).  Most callbacks don't need
+		    to define this.
+
+	Interesting attributes:
+		    priority: Determines the priority of the
+		    callback in the Irc object's list of
+		    callbacks.  Defaults to 99; the valid range
+		    includes 0 through sys.maxint-1 (don't use
+		    sys.maxint itself, that's reserved for the
+		    Misc plugin).  The lower the number, the
+		    higher the priority.  High priority
+		    callbacks are called earlier in the
+		    inFilter cycle, earlier in the __call__
+		    cycle, and later in the outFilter cycle --
+		    basically, they're given the first chances
+		    on the way in and the last chances on the
+		    way out.
