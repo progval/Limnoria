@@ -81,6 +81,7 @@ class SupyIrcProtocol(LineReceiver):
         log.warning(failure.getErrorMessage())
 
     def connectionMade(self):
+        self.factory.irc.reset()
         self.factory.irc.driver = self
 
     def die(self):
