@@ -51,4 +51,4 @@ able to check your code with the same stringent guidelines I've found
 useful to check my code. (deja vu? :))
 
 If you run the tests on Windows (or on a modem connection), be sure to 
-exclude (test/test.py -e) test\test_Debian.py.  
+exclude (test\test.py -e) test\test_Debian.py.  
