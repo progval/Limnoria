@@ -77,11 +77,10 @@ class UrbanDict(callbacks.Privmsg):
 
         Returns the definition and usage of a random word from 
         UrbanDictionary.com.  The optional argument <phrase> specifies
-        what phrase to define
+        what phrase to define; if not given, a random phrase will be provided.
         """
-        phrase = '+'.join(privmsgs.getArgs(args, required=0).split())
-        if phrase:
-            phrase = 'define.php?term=%s' % phrase
+        if args:
+            phrase = 'define.php?term=%s' % '+'.join(args)
         else:
             phrase = 'random.php'
         site = 'www.urbandictionary.com'
