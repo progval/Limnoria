@@ -480,7 +480,13 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     def reset(self):
         self.db.close()
 
-    def error(self, s):
+    def error(self, s, irc=None, msg=None):
+        if irc is None:
+            assert self.irc is not None
+            irc = self.irc
+        if msg is None:
+            assert self.msg is not None
+            msg = self.msg
         if msg.repliedTo:
             self.log.debug('Already replied, not replying again.')
             return
@@ -490,15 +496,15 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.log.warning(s)
 
     def reply(self, s, irc=None, msg=None, action=False, substitute=True):
-        if msg.repliedTo:
-            self.log.debug('Already replied, not replying again.')
-            return
         if irc is None:
             assert self.irc is not None
             irc = self.irc
         if msg is None:
             assert self.msg is not None
             msg = self.msg
+        if msg.repliedTo:
+            self.log.debug('Already replied, not replying again.')
+            return
         if substitute:
             s = ircutils.standardSubstitute(irc, msg, s)
         irc.reply(s, prefixName=False, action=action, msg=msg)
