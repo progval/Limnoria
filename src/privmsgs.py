@@ -37,9 +37,12 @@ import fix
 
 import time
 import types
+import threading
 
 import conf
+import debug
 import ircdb
+import world
 import ircutils
 import callbacks
 import structures
@@ -168,7 +171,14 @@ def urlSnarfer(f):
             debug.msg('Refusing to snarf %s.')
         else:
             q.enqueue((url, msg.args[0], now))
-            f(self, irc, msg, match, *L)
+            if self.threaded:
+                f(self, irc, msg, match, *L)
+            else:
+                L = list(L)
+                t = threading.Thread(target=f, args=[self, irc, msg, match]+L)
+                t.setDaemon(True)
+                t.start()
+                world.threadsSpawned += 1
     newf = types.FunctionType(newf.func_code, newf.func_globals,
                               f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
