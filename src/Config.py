@@ -88,7 +88,7 @@ class Config(callbacks.Privmsg):
             irc.error(str(e))
 
     def _canonicalizeName(self, name):
-        if not name.startswith('supybot.'):
+        if not name.startswith('supybot'):
             name = 'supybot.' + name
         return name
 
