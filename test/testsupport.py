@@ -142,7 +142,7 @@ class PluginTestCase(SupyTestCase):
             raise ValueError, 'PluginTestCase must have a "plugins" attribute.'
         self.nick = nick
         self.prefix = ircutils.joinHostmask(nick, 'user', 'host.domain.tld')
-        self.irc = irclib.Irc(nick)
+        self.irc = irclib.Irc('test')
         while self.irc.takeMsg():
             pass
         #OwnerModule = Owner.loadPluginModule('Owner')
@@ -311,8 +311,10 @@ class ChannelPluginTestCase(PluginTestCase):
         PluginTestCase.setUp(self)
         self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
         m = self.irc.takeMsg()
+        self.failIf(m is None, 'No message back from joining channel.')
         self.assertEqual(m.command, 'MODE')
         m = self.irc.takeMsg()
+        self.failIf(m is None, 'No message back from joining channel.')
         self.assertEqual(m.command, 'WHO')
 
     def _feedMsg(self, query, timeout=None, to=None, frm=None):
