@@ -35,19 +35,6 @@
 """
 Provides several commands that shamelessly imitate Moobot, if only to show
 developers coming from Moobot how to code to Supybot.
-
-Commands include:
-  cool
-  hi
-  morse
-  unmorse
-  ditdaw
-  dawdit
-  reverse
-  mime
-  unmime
-  stack
-  give
 """
 
 from baseplugin import *
@@ -161,11 +148,7 @@ class Moobot(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         s = base64.encodestring(text).strip()
-        if ircutils.isValidArgument(s):
-            irc.reply(msg, s)
-        else:
-            irc.error(msg, 'Base64 requires a newline in that string. '\
-                       'Try a smaller string.')
+        irc.reply(msg, s)
 
     def unmime(self, irc, msg, args):
         """<text>
@@ -175,10 +158,7 @@ class Moobot(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         s = base64.decodestring(text)
-        if ircutils.isValidArgument(s):
-            irc.reply(msg, s)
-        else:
-            irc.error(msg, 'I can\'t send \\n, \\r, or \\0.')
+        irc.reply(msg, s)
 
     _stack = []
     def stack(self, irc, msg, args):
