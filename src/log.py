@@ -64,7 +64,11 @@ class Formatter(logging.Formatter):
             if issubclass(e.__class__, exn):
                 raise
         if conf.detailedTracebacks:
-            return cgitb.text((E, e, tb)).rstrip('\r\n')
+            try:
+                return cgitb.text((E, e, tb)).rstrip('\r\n')
+            except:
+                log.error('Cgitb.text raised an exception.')
+                return logging.Formatter.formatException(self, (E, e, tb))
         else:
             return logging.Formatter.formatException(self, (E, e, tb))
 
