@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2004-2005, Jeremiah Fincher
+# Copyright (c) 2005, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,32 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import sys
+from supybot.test import *
 
-class DynamicScope(object):
-    def _getLocals(self, name):
-        f = sys._getframe().f_back.f_back # _getLocals <- __[gs]etattr__ <- ...
-        while f:
-            if name in f.f_locals:
-                return f.f_locals
-            f = f.f_back
-        raise NameError, name
-    
-    def __getattr__(self, name):
-        try:
-            return self._getLocals(name)[name]
-        except (NameError, KeyError):
-            return None
-            
-    def __setattr__(self, name, value):
-        self._getLocals(name)[name] = value
+class TestDynamic(SupyTestCase):
+    def test(self):
+        def f(x):
+            i = 2
+            return g(x)
+        def g(y):
+            j = 3
+            return h(y)
+        def h(z):
+            self.assertEqual(dynamic.z, z)
+            self.assertEqual(dynamic.j, 3)
+            self.assertEqual(dynamic.i, 2)
+            self.assertEqual(dynamic.y, z)
+            self.assertEqual(dynamic.x, z)
+            #self.assertRaises(NameError, getattr, dynamic, 'asdfqwerqewr')
+            self.assertEqual(dynamic.self, self)
+            return z
+        self.assertEqual(f(10), 10)
 
-__builtins__['dynamic'] = DynamicScope()
+    def testCommonUsage(self):
+        foo = 'bar'
+        def f():
+            foo = dynamic.foo
+            self.assertEqual(foo, 'bar')
+        f()
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
