@@ -127,10 +127,10 @@ def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
     """
     ret = []
     def format(s, i):
-        if short:
-            ret.append('%s%s' % (i, s[0]))
-        else:
-            if leadingZeroes or ret or i:
+        if i or leadingZeroes or ret:
+            if short:
+                ret.append('%s%s' % (i, s[0]))
+            else:
                 ret.append(nItems(s, i))
     elapsed = int(elapsed)
     assert years or weeks or days or \

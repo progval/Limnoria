@@ -98,6 +98,9 @@ class UtilsTest(SupyTestCase):
                                        'and 2 seconds')]:
             self.assertEqual(utils.timeElapsed(now - then), expected)
 
+    def timeElapsedShort(self):
+        self.assertEqual(utils.timeElapsed(123, short=True), '2m 3s')
+
     def testEachSubstring(self):
         s = 'foobar'
         L = ['f', 'fo', 'foo', 'foob', 'fooba', 'foobar']
