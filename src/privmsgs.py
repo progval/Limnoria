@@ -134,24 +134,6 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         else:
             irc.error(msg, conf.replyEvalNotAllowed)
 
-    '''
-    def _import(self, irc, msg, args):
-        """<module to import>"""
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            if conf.allowEval:
-                s = getArgs(args)
-                try:
-                    exec ('global %s' % s)
-                    exec ('import %s' % s)
-                    irc.reply(msg, conf.replySuccess)
-                except Exception, e:
-                    irc.reply(msg, debug.exnToString(e))
-            else:
-                irc.error(msg, conf.replyEvalNotAllowed)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
-    '''
-
     def _exec(self, irc, msg, args):
         """<code to exec>"""
         if conf.allowEval:
@@ -234,31 +216,6 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         world.flush()
         irc.reply(msg, conf.replySuccess)
             
-    '''
-    def reload(self, irc, msg, args):
-        "<module>"
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            module = getArgs(args)
-            if module == 'all':
-                for name, module in sys.modules.iteritems():
-                    if name != '__main__':
-                        try:
-                            world.superReload(module)
-                        except Exception, e:
-                            m = '%s: %s' % (name, debug.exnToString(e))
-                            irc.reply(msg, m)
-            else:
-                try:
-                    module = sys.modules[module]
-                except KeyError:
-                    irc.error(msg, 'Module %s not found.' % module)
-                    return
-                world.superReload(module)
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
-    '''
-
     def set(self, irc, msg, args):
         """<name> <value>
 
@@ -302,6 +259,11 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         irc.reply(msg, conf.replySuccess)
 
     def superreload(self, irc, msg, args):
+        """<module name>
+
+        Reloads a module, hopefully such that all vestiges of the old module
+        are gone.
+        """
         name = getArgs(args)
         world.superReload(__import__(name))
         irc.reply(msg, conf.replySuccess)
