@@ -149,6 +149,30 @@ class Math(callbacks.Privmsg):
         except Exception, e:
             irc.error(msg, utils.exnToString(e))
 
+    def icalc(self, irc, msg, args):
+        """<math expression>
+
+        This is the same as the calc command except that it allows integer
+        math, and can thus cause the bot to suck up CPU.  Hence it requires
+        the 'trusted' capability to use.
+        """
+        text = privmsgs.getArgs(args)
+        text = text.translate(string.ascii, '_[] \t')
+        text = text.replace('lambda', '')
+        try:
+            self.log.info('evaluating %r from %s' % (text, msg.prefix))
+            irc.reply(msg, str(eval(text, self._mathEnv, self._mathEnv)))
+        except OverflowError:
+            maxFloat = math.ldexp(0.9999999999999999, 1024)
+            irc.error(msg, 'The answer exceeded %s or so.' % maxFloat)
+        except TypeError:
+            irc.error(msg, 'Something in there wasn\'t a valid number.')
+        except NameError, e:
+            irc.error(msg, '%s is not a defined function.' % str(e).split()[1])
+        except Exception, e:
+            irc.error(msg, utils.exnToString(e))
+    icalc = privmsgs.checkCapability(icalc, 'trusted')
+            
     _rpnEnv = {
         'dup': lambda s: s.extend([s.pop()]*2),
         'swap': lambda s: s.extend([s.pop(), s.pop()])
