@@ -310,7 +310,6 @@ class FunDB(callbacks.Privmsg):
                 'lart, excuse, insult, praise.' % table)
             return
         cursor = self.db.cursor()
-        print "%s %s" % (table, table+'s')
         cursor.execute("""SELECT %s FROM %s WHERE id=%s""", table, table+'s',
             id)
         if cursor.rowcount == 0:
