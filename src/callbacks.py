@@ -271,19 +271,42 @@ def formatArgumentError(method, name=None):
         return 'Invalid arguments for %s.' % method.__name__
 
 def checkCommandCapability(msg, cb, command):
-    anticap = ircdb.makeAntiCapability(command)
-    if ircdb.checkCapability(msg.prefix, anticap):
-        log.info('Preventing because of anticap: %s', msg.prefix)
-        return False
-    if ircutils.isChannel(msg.args[0]):
-        channel = msg.args[0]
-        antichancap = ircdb.makeChannelCapability(channel, anticap)
-        if ircdb.checkCapability(msg.prefix, antichancap):
-            log.info('Preventing because of antichancap: %s', msg.prefix)
-            return False
-    return conf.supybot.defaultAllow() or \
-           ircdb.checkCapability(msg.prefix, command) or \
-           ircdb.checkCapability(msg.prefix, chancap)
+    plugin = cb.name().lower()
+    pluginCommand = '%s.%s' % (plugin, command)
+    def checkCapability(capability):
+        assert ircdb.isAntiCapability(capability)
+        if ircdb.checkCapability(msg.prefix, capability):
+            log.info('Preventing %s from calling %s because of %s.',
+                     msg.prefix, pluginCommand, capability)
+            raise RuntimeError, capability
+    try:
+        antiPlugin = ircdb.makeAntiCapability(plugin)
+        antiCommand = ircdb.makeAntiCapability(command)
+        antiPluginCommand = ircdb.makeAntiCapability(pluginCommand)
+        checkCapability(antiPlugin)
+        checkCapability(antiCommand)
+        checkCapability(antiPluginCommand)
+        checkAtEnd = [command, pluginCommand]
+        default = conf.supybot.defaultAllow()
+        if ircutils.isChannel(msg.args[0]):
+            channel = msg.args[0]
+            checkCapability(ircdb.makeChannelCapability(channel, antiCommand))
+            checkCapability(ircdb.makeChannelCapability(channel, antiPlugin))
+            checkCapability(ircdb.makeChannelCapability(channel,
+                                                        antiPluginCommand))
+            chanPlugin = ircdb.makeChannelCapability(channel, plugin)
+            chanCommand = ircdb.makeChannelCapability(channel, command)
+            chanPluginCommand = ircdb.makeChannelCapability(channel,
+                                                            pluginCommand)
+            checkAtEnd += [chanCommand, chanPluginCommand]
+            default &= ircdb.channels.getChannel(channel).defaultAllow
+        return not (default or \
+                    any(lambda x: ircdb.checkCapability(msg.prefix, x),
+                        checkAtEnd))
+    except RuntimeError, e:
+        s = ircdb.unAntiCapability(str(e))
+        return s
+
 
 
 class RichReplyMethods(object):
@@ -330,12 +353,18 @@ class RichReplyMethods(object):
                     self.reply(prefixer(s))
 
     def errorNoCapability(self, capability, s='', **kwargs):
-        log.warning('Denying %s for lacking %r capability',
-                    self.msg.prefix, capability)
-        if not conf.supybot.reply.noCapabilityError():
-            v = conf.supybot.replies.noCapability.get(self.msg.args[0])()
-            s = self.__makeReply(v % capability, s)
-            self.error(s, **kwargs)
+        if isinstance(capability, basestring): # checkCommandCapability!
+            log.warning('Denying %s for lacking %r capability',
+                        self.msg.prefix, capability)
+            if not conf.supybot.reply.noCapabilityError():
+                v = conf.supybot.replies.noCapability.get(self.msg.args[0])()
+                s = self.__makeReply(v % capability, s)
+                self.error(s, **kwargs)
+        else:
+            log.warning('Denying %s for some unspecified capability '
+                        '(or a default)', self.msg.prefix)
+            v = conf.supybot.replies.genericNoCapability.get(msg.args[0])()
+            self.error(self.__makeReply(v, s), **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
         v = conf.supybot.replies.possibleBug.get(self.msg.args[0])()
@@ -470,8 +499,9 @@ class IrcObjectProxy(RichReplyMethods):
             else:
                 del self.args[0]
                 cb = cbs[0]
-            if not checkCommandCapability(self.msg, cb, name):
-                self.errorNoCapability(name)
+            cap = checkCommandCapability(self.msg, cb, name)
+            if cap:
+                self.errorNoCapability(cap)
                 return
             command = getattr(cb, name)
             Privmsg.handled = True
@@ -673,8 +703,9 @@ class Privmsg(irclib.IrcCallback):
                 if name == canonicalName(self.name()):
                     handleBadArgs()
                 elif self.isCommand(name):
-                    if not checkCommandCapability(msg, self, name):
-                        irc.errorNoCapability(name)
+                    cap = checkCommandCapability(msg, self, name)
+                    if cap:
+                        irc.errorNoCapability(cap)
                         return
                     del args[0]
                     method = getattr(self, name)

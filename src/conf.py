@@ -278,6 +278,19 @@ registerChannelValue(supybot.replies, 'noCapability',
     telling someone they aren't cool enough to use the command they tried to
     use."""))
 
+registerChannelValue(supybot.replies, 'genericNoCapability',
+    registry.NormalizedString("""You're missing some capability you need.
+    This could be because you actually possess the anti-capability for the
+    capability that's required of you, or because the channel provides that
+    anti-capability by default, or because the global capabilities include
+    that anti-capability.  Or, it could be because the channel or the global
+    defaultAllow is set to False, meaning that no commands are allowed unless
+    explicitly in your capabilities.  Either way, you can't do what you want
+    to do.""", """Dertermines what generic error message is given when the bot
+    is telling someone that they aren't cool enough to use the command they
+    tried to use, and the author of the code calling errorNoCapability didn't
+    provide an explicit capability for whatever reason."""))
+
 registerChannelValue(supybot.replies, 'success',
     registry.NormalizedString("""The operation succeeded.""", """Determines
     what message the bot replies with when a command succeeded."""))
