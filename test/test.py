@@ -141,8 +141,9 @@ class PluginTestCase(unittest.TestCase):
     def _feedMsg(self, query, timeout=None):
         if timeout is None:
             timeout = self.timeout
-        self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, query,
-                                         prefix=self.prefix))
+        msg = ircmsgs.privmsg(self.irc.nick, query, prefix=self.prefix)
+        #debug.printf(msg)
+        self.irc.feedMsg(msg)
         fed = time.time()
         response = self.irc.takeMsg()
         while response is None and time.time() - fed < timeout:
@@ -152,7 +153,7 @@ class PluginTestCase(unittest.TestCase):
         return response
 
     def getMsg(self, query, timeout=None):
-        return self._feedMsg(query)
+        return self._feedMsg(query, timeout=timeout)
 
     def feedMsg(self, query):
         """Just feeds it a message, that's all."""
@@ -226,6 +227,15 @@ class PluginTestCase(unittest.TestCase):
         self.assertEqual(len(expectedResponses), len(responses))
         for (m, expected) in zip(responses, expectedResponses):
             self.assertEqual(m.args[1], expected)
+
+    def assertAction(self, query, expectedResponse=None):
+        m = self._feedMsg(query)
+        if m is None:
+            raise TimeoutError, query
+        self.failUnless(ircmsgs.isAction(m))
+        if expectedResponse is not None:
+            self.assertEqual(ircmsgs.unAction(m), expectedResponse)
+        
 
 class ChannelPluginTestCase(PluginTestCase):
     channel = '#test'
