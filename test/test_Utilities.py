@@ -70,6 +70,9 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('re s/user/luser/g user user', 'luser luser')
         self.assertResponse('re s/user/luser/ user user', 'luser user')
         self.assertNotRegexp('re m/foo/ bar', 'has no attribute')
+        # tests to make jemfinch fix the code
+        self.assertResponse('re m/a\S+y/ "the bot angryman is hairy"','angry')
+        self.assertResponse('re m/a\S+y/g "the bot angryman is hairy"',
+            'angry airy')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
-
