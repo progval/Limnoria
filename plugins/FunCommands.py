@@ -34,6 +34,7 @@ Provides a multitude of fun, useless commands.
 """
 
 from baseplugin import *
+from itertools import imap, ifilter
 
 import os
 import gc
@@ -61,7 +62,6 @@ import utils
 import ircmsgs
 import privmsgs
 import callbacks
-
 
 class FunCommands(callbacks.Privmsg):
     def __init__(self):
@@ -473,20 +473,22 @@ class FunCommands(callbacks.Privmsg):
         if len(stack) == 1:
             irc.reply(msg, str(self._complexToString(complex(stack[0]))))
         else:
-            s = ', '.join(map(self._complexToString, map(complex, stack)))
+            s = ', '.join(imap(self._complexToString, imap(complex, stack)))
             irc.reply(msg, 'Stack: [%s]' % s)
 
     def objects(self, irc, msg, args):
         """takes no arguments.
 
         Returns the number and types of Python objects in memory."""
+        def istype(t):
+            return lambda x: isinstance(x, t)
         objs = gc.get_objects()
-        classes = len([obj for obj in objs if inspect.isclass(obj)])
-        functions = len([obj for obj in objs if inspect.isroutine(obj)])
-        modules = len([obj for obj in objs if inspect.ismodule(obj)])
-        dicts = len([obj for obj in objs if type(obj) == types.DictType])
-        lists = len([obj for obj in objs if type(obj) == types.ListType])
-        tuples = len([obj for obj in objs if type(obj) == types.TupleType])
+        classes = ilen(itertools.ifilter(inspect.isclass, objs))
+        functions = ilen(itertools.ifilter(inspect.isroutine, objs))
+        modules = ilen(itertools.ifilter(inspect.ismodule, objs))
+        dicts = ilen(itertools.ifilter(istype(dict), objs))
+        lists = ilen(itertools.ifilter(istype(list), objs))
+        tuples = ilen(itertools.ifilter(istype(tuple), objs))
         response = 'I have %s objects: %s modules, %s classes, %s functions, '\
                    '%s dictionaries, %s lists, and %s tuples (and a few other'\
                    ' different types).' %\
