@@ -31,9 +31,9 @@
 
 from testsupport import *
 
-if network:
-    class HttpTest(PluginTestCase):
-        plugins = ('Http',)
+class HttpTest(PluginTestCase):
+    plugins = ('Http',)
+    if network:
         def testExtension(self):
             self.assertHelp('extension')
             self.assertRegexp('extension doc', r'Microsoft\'s Word Document')
