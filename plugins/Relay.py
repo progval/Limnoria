@@ -216,7 +216,7 @@ class Relay(callbacks.Privmsg):
         
     def _formatPrivmsg(self, nick, abbreviation, msg):
         if ircmsgs.isAction(msg):
-            return '* %s/%s %s' % (nick, abbreviation, ircmsgs.unAction(msg))
+            return '* %s@%s %s' % (nick, abbreviation, ircmsgs.unAction(msg))
         else:
             return '<%s@%s> %s' % (nick, abbreviation, msg.args[1])
 
@@ -311,7 +311,7 @@ class Relay(callbacks.Privmsg):
         if msg.command == 'PRIVMSG':
             abbreviations = self.abbreviations.values()
             rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
-            rAction = re.compile(r'\* [^/]+/(?:%s) ' % '|'.join(abbreviations))
+            rAction = re.compile(r'\* [^/]+@(?:%s) ' % '|'.join(abbreviations))
             if not (rPrivmsg.match(msg.args[1]) or \
                     rAction.match(msg.args[1]) or \
                     msg.args[1].find('has left on ') != -1 or \
