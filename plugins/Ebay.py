@@ -80,6 +80,8 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     _reopts = re.I | re.S
+    _invalid = re.compile(r'(is invalid, still pending, or no longer in our '\
+        'database)', _reopts)
     _info = re.compile(r'<title>eBay item (\d+) \([^)]+\) - ([^<]+)</title>',
         _reopts)
 
@@ -134,6 +136,12 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         s = fd.read()
         fd.close()
         resp = []
+        m = self._invalid.search(s)
+        if m:
+            if snarf:
+                return
+            irc.reply(msg, 'That auction %s' % m.group(1))
+            return
         m = self._info.search(s)
         if m:
             (num, desc) = m.groups()

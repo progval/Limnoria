@@ -36,6 +36,8 @@ class EbayTest(PluginTestCase, PluginDocumentation):
     def testEbay(self):
         self.assertResponse('ebay --link 3053641570',
             'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=3053641570')
+        # test 'Invalid Item' checking
+        self.assertRegexp('ebay 2357056673', 'That auction is invalid')
 
     def testSnarfer(self):
         self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'
@@ -46,7 +48,7 @@ class EbayTest(PluginTestCase, PluginDocumentation):
             'RESERVE.*izontech \(.*')
         # test snarfing other countries
         self.assertRegexp('http://cgi.ebay.ca/ws/eBayISAPI.dll?ViewItem&'
-            'item=2357056673', 'Buffalo Pemmican')
+            'item=3636820075', 'NEW 34" Itech 8.8 Profile')
         self.assertRegexp('http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&'
             'item=2355464443', 'Any Clear Crazy')
         self.assertRegexp('http://cgi.ebay.com.au/ws/eBayISAPI.dll?ViewItem&'
@@ -54,6 +56,5 @@ class EbayTest(PluginTestCase, PluginDocumentation):
         # test .com/.*/ws/eBat compatibility
         self.assertRegexp('http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'
             'ViewItem&item=2439393310&category=33708', '88-89 CRX amber')
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
