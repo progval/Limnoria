@@ -297,8 +297,10 @@ class String(Value):
             raise InvalidRegistryValue, '%r is not a string.' % s
 
 class OnlySomeStrings(String):
+    normalize = staticmethod(str.lower)
     validStrings = ()
     def setValue(self, s):
+        s = self.normalize(s)
         if s in self.validStrings:
             String.setValue(self, s)
         else:
