@@ -32,7 +32,7 @@
 from test import *
 
 class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('MiscCommands',)
+    plugins = ('MiscCommands', 'Utilities')
     def testHelp(self):
         self.assertNotError('help list')
         self.assertNotError('help help')
@@ -78,6 +78,12 @@ class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('last --with foo', 'foo bar baz')
         self.assertResponse('last --regexp m/\s+/', 'last --with foo')
         self.assertResponse('last --regexp m/bar/', 'foo bar baz')
+
+    def testMore(self):
+        self.assertRegexp('echo %s' % ('abc'*300), 'more')
+        self.assertRegexp('more', 'more')
+        self.assertNotRegexp('more', 'more')
+        
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
