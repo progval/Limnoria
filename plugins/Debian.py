@@ -40,6 +40,7 @@ import gzip
 import sets
 import popen2
 import random
+import fnmatch
 import os.path
 import urllib2
 from itertools import imap, ifilter
@@ -203,35 +204,25 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
             (numberOfPackages, len(responses), ', '.join(responses))
         irc.reply(msg, s)
 
+    _incomingRe = re.compile(r'<a href="(.*?)\.deb">', re.I)
     def debincoming(self, irc, msg, args):
         """<package name>
         
         checks debian incoming for specified package name"""
         pkgname = privmsgs.getArgs(args) 
-        _maxnum = 15
-        fd = urllib2.urlopen('http://incoming.debian.org')
-        pkgre = pkgname.replace('.','\.').replace('*','.*')
-        pkgre = re.compile(r'<a href="(%s)">%s</a>' % (pkgre, pkgre))
-        line = fd.readline()
-        pkgs = []
-        while len(line) != 0:
-            if '.deb"' not in line:
-                pass
-            else:
-                try:
-                    pkgs.append('%s :: '  % pkgre.search(line).group(1))
-                except AttributeError:
-                    pass
-            line = fd.readline()
-        fd.close()
-        if len(pkgs) <= _maxnum:
-            s = 'Total matches: %s.   %s' % (len(pkgs), ', '.join(pkgs))
-        elif len(pkgs) > _maxnum:
-            s = 'Total matches: %s, shown: %s.  %s' % \
-                (len(pkgs), _maxnum, ', '.join(pkgs[:14]))
+        packages = []
+        fd = urllib2.urlopen('http://incoming.debian.org/')
+        for line in fd:
+            m = self._incomingRe.search(line)
+            if m:
+                name = m.group(1)
+                if fnmatch.fnmatch(name, pkgname):
+                    packages.append(name)
+        if len(packages) == 0:
+            irc.error(msg, 'No packages matched that search.')
         else:
-            s = 'I didn\'t find any matches for %s' % pkgname
-        irc.reply(msg, s)
+            irc.reply(msg, utils.commaAndify(packages))
+    debincoming = privmsgs.thread(debincoming)
         
 Class = Debian
 
