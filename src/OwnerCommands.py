@@ -247,20 +247,14 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         """
         name = privmsgs.getArgs(args)
         callbacks = irc.removeCallback(name)
-
         if callbacks:
             try:
-                moduleInfo = imp.find_module(name, conf.pluginDirs)
-                module = imp.load_module(name, *moduleInfo)
-                linecache.checkcache()
+                module = loadPluginModule(name)
                 for callback in callbacks:
                     callback.die()
                     del callback
                 gc.collect()
-                callback = module.Class()
-                irc.addCallback(callback)
-                if hasattr(callback, 'configure'):
-                    callback.configure(irc)
+                callback = loadPluginClass(irc, module)
                 irc.reply(msg, conf.replySuccess)
             except ImportError:
                 for callback in callbacks:
