@@ -595,7 +595,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                         s = 'You have not said %r' % word
                     ret = '%s %s.  %s' % (ret, utils.commaAndify(L), s)
                 except KeyError:
-                    ret = '%s %s.' % utils.commaAndify(L)
+                    ret = '%s %s.' % (ret, utils.commaAndify(L))
                 irc.reply(msg, ret)
                            
 Class = ChannelDB
