@@ -132,8 +132,12 @@ class Misc(callbacks.Plugin):
                 commands.sort()
                 irc.reply(format('%L', commands))
             else:
-                irc.error('That plugin exists, but it has no '
-                          'commands with help.')
+                irc.reply(format('That plugin exists, but has no commands.  '
+                                 'This probably means that it has some '
+                                 'configuration variables that can be '
+                                 'changed in order to modify its behavior.  '
+                                 'Try "config list %s" to see what '
+                                 'configuration variables it has.', cb.name()))
     list = wrap(list, [getopts({'private':''}), additional('plugin')])
 
     def apropos(self, irc, msg, args, s):
