@@ -49,6 +49,8 @@ import ircdb
 import ircutils
 import privmsgs
 import callbacks
+import re
+import random
 
 __all__ = ['ChannelDBHandler', 'PeriodicFileDownloader', 'ToggleDictionary']
 
@@ -307,4 +309,27 @@ class Toggleable(object):
             irc.error(msg, '%r isn\'t a valid name to toggle.  '
                            'Valid names are %s' % (name, self._toggleNames()))
 
+randomnickre = re.compile ("\$randomnick", re.I)
+randomdatere = re.compile ("\$randomdate", re.I)
+whore = re.compile ("\$who", re.I)
+botnickre = re.compile("\$botnick", re.I)
+todayre = re.compile("\$today", re.I)
+def standardSubstitute(irc, msg, text):
+    """Do the standard set of substitutions on text, and return it"""
+    nochannel = False
+    try:
+        channel = privmsgs.getChannel(msg, None)
+    except:
+        nochannel = True
+    if nochannel:
+        text = randomnickre.sub('anyone', text)
+    else:
+        text = randomnickre.sub(random.choice(irc.state.channels[channel].users._data.keys()),
+                text)
+    t = pow(2,30)*random.random()+time.time()/4.0 
+    text = randomdatere.sub(time.ctime(t), text)
+    text = whore.sub(msg.nick, text)
+    text = botnickre.sub(irc.nick, text)
+    text = todayre.sub(time.ctime(), text)
+    return text
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
