@@ -48,6 +48,19 @@ class HttpTest(PluginTestCase):
         self.assertResponse('title http://www.slashdot.org/',
                             'Slashdot: News for nerds, stuff that matters')
 
+    def testTranslate(self):
+        self.assertResponse('translate en sp food',
+                            'alimento')
+        self.assertError('translate foo en food')
+        self.assertError('translate en foo food')
+
+    def testBabelize(self):
+        self.assertNotError('babelize en sp foo')
+        self.assertError('translate sp fr foo')
+
+    def testRandomlanguage(self):
+        self.assertNotError('randomlanguage')
+
     def testFoldoc(self):
         self.assertNotError('foldoc perl')
 
