@@ -82,7 +82,7 @@ def addressed(nick, msg):
                 return rest
             else:
                 return ''
-        except IndexError:
+        except ValueError: # split didn't work.
             return ''
     elif msg.args[1] and msg.args[1][0] in conf.prefixChars:
         return msg.args[1][1:].strip()
