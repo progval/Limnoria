@@ -373,9 +373,9 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
                 record = self.Record(at=at, by=by, text=text, **kwargs)
                 return super(self.__class__, self).add(record)
 
-    def __init__(self):
+    def __init__(self, irc):
         self.__parent = super(ChannelIdDatabasePlugin, self)
-        self.__parent.__init__()
+        self.__parent.__init__(irc)
         self.db = DB(self.name(), {'flat': self.DB})()
 
     def die(self):
