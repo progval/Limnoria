@@ -1,3 +1,5 @@
+	* Added Debian.bug, which retrieve bug info from Debian's BTS.
+
 	* Changed Relay.names to Relay.nicks, to be consistent with
 	Channel.nicks.
 	

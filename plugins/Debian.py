@@ -315,6 +315,48 @@ class Debian(callbacks.Privmsg,
             irc.reply(utils.commaAndify(packages))
         else:
             irc.error('No packages matched that search.')
+
+    _severity = re.compile(r'.*(?:severity set to `([^\']+)\'|'
+                           r'severity:\s+([^\s]+))', re.I)
+    _package = re.compile(r'Package: <[^>]+>([^<]+)<', re.I | re.S)
+    _reporter = re.compile(r'Reported by: <[^>]+>([^<]+)<', re.I | re.S)
+    _subject = re.compile(r'<br>([^<]+)</h1>', re.I | re.S)
+    _date = re.compile(r'Date: ([^;]+);', re.I | re.S)
+    _searches = (_package, _subject, _reporter, _date)
+    def bug(self, irc, msg, args):
+        """<num>
+
+        Returns a description of the bug with bug id <num>.
+        """
+        bug = privmsgs.getArgs(args)
+        if ' ' in bug:
+            irc.error('Only one bug can be looked up at a time.')
+            return
+        try:
+            int(bug)
+        except ValueError:
+            irc.error('<num> must be an integer.')
+            return
+        url = 'http://bugs.debian.org/%s' % bug
+        text = webutils.getUrl(url)
+        if "There is no record of Bug" in text:
+            irc.error('I could not find a bug report matching that number.')
+            return
+        searches = map(lambda p: p.search(text), self._searches)
+        sev = self._severity.search(text)
+        # This section should be cleaned up to ease future modifications
+        if all(None, searches):
+            resp = 'Package: %s; Subject: %s; Reported by %s on %s' %\
+                tuple(map(utils.htmlToText,
+                          map(lambda p: p.group(1), searches)))
+            if sev:
+                sev = filter(None, sev.groups())
+                if sev:
+                    resp = '; '.join([resp, 'Severity: %s' % sev[0],
+                                      '<%s>' % url])
+            irc.reply(resp)
+        else:
+            irc.reply('I was unable to properly parse the BTS page.')
         
 Class = Debian
 
