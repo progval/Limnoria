@@ -143,6 +143,7 @@ def babelize(phrase, from_language, through_language, limit = 12, callback = Non
     for i in range(limit):
         phrase = translate(phrase, next, flip[next])
         if seen.has_key(phrase):
+            next = flip[next]
             break
         seen[phrase] = 1
         if callback:
