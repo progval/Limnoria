@@ -96,7 +96,8 @@ conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'short',
 conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'file',
     registry.String('', """Determines what specific file (if any) will be used
     with the fortune command; if none is given, the system-wide default will
-    be used."""))
+    be used.  Do note that this fortune file must be placed with the rest of
+    your system's fortune files."""))
 
 conf.registerGroup(conf.supybot.plugins.Unix, 'spell')
 conf.registerGlobalValue(conf.supybot.plugins.Unix.spell, 'command',
