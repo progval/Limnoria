@@ -104,7 +104,7 @@ class Http(callbacks.Privmsg):
         self.deepthoughts.add(thought)
         irc.reply(msg, thought)
 
-    _titleRe = re.compile(r'<title>(.*)</title>', re.I)
+    _titleRe = re.compile(r'<title>(.*)</title>', re.I | re.S)
     def title(self, irc, msg, args):
         """<url>
 
@@ -118,7 +118,7 @@ class Http(callbacks.Privmsg):
             text = fd.read()
             m = self._titleRe.search(text)
             if m is not None:
-                irc.reply(msg, utils.htmlToText(m.group(1)))
+                irc.reply(msg, utils.htmlToText(m.group(1).strip()))
             else:
                 irc.reply(msg, 'That URL appears to have no HTML title.')
         except ValueError, e:
