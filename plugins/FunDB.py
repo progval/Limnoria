@@ -264,7 +264,7 @@ class FunDB(callbacks.Privmsg):
         try:
             name = ircdb.users.getUserName(msg.prefix)
         except KeyError:
-            irc.error(msg, 'You must register first')
+            irc.error(msg, conf.replyNotRegistered)
             return
         if table == "lart" or table == "praise":
             if '$who' not in s:
@@ -297,7 +297,7 @@ class FunDB(callbacks.Privmsg):
         try:
             ircdb.users.getUserName(msg.prefix)
         except KeyError:
-            irc.error(msg, 'You must register first')
+            irc.error(msg, conf.replyNotRegistered)
             return
         try:
             id = int(id)
