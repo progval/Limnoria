@@ -149,11 +149,14 @@ number of seconds to throttle snarfed URLs, in order to prevent loops between
 two bots snarfing the same URLs and having the snarfed URL in the output of
 the snarf message."""))
 
+supybot.register('threadAllCommands', registry.Boolean(False, """Determines
+whether the bot will automatically thread all commands.  At this point this
+option exists almost exclusively for debugging purposes; it can do very little
+except to take up more CPU."""))
+
 ###
 # Reply/error tweaking.
 ###
-
-# TODO: These should probably all be channel-specific.
 supybot.registerGroup('reply')
 supybot.reply.register('oneToOne', registry.Boolean(True, """Determines whether
 the bot will send multi-message replies in a single messsage or in multiple

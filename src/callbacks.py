@@ -474,7 +474,7 @@ class IrcObjectProxy(RichReplyMethods):
                 return
             command = getattr(cb, name)
             Privmsg.handled = True
-            if cb.threaded:
+            if cb.threaded or conf.supybot.threadAllCommands():
                 t = CommandThread(target=self._callCommand,
                                   args=(name, command, cb))
                 t.start()
@@ -595,14 +595,22 @@ class CommandThread(threading.Thread):
     to run in threads.
     """
     def __init__(self, target=None, args=None):
-        (name, command, cb) = args
+        (self.name, self.command, self.cb) = args
         world.threadsSpawned += 1
         threadName = 'Thread #%s for %s.%s' % (world.threadsSpawned,
-                                               cb.name(), name)
+                                               self.cb.name(), self.name)
         log.debug('Spawning thread %s' % threadName)
         threading.Thread.__init__(self, target=target,
                                   name=threadName, args=args)
         self.setDaemon(True)
+        self.originalThreaded = self.cb.threaded
+        self.cb.threaded = True
+
+    def run(self):
+        try:
+            threading.Thread.run(self)
+        finally:
+            self.cb.threaded = self.originalThreaded
 
 
 class ConfigIrcProxy(RichReplyMethods):
