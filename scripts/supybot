@@ -72,7 +72,7 @@ def main():
     # is a failure between now and the time it takes the Owner plugin to load
     # all the various plugins, our registry file might be wiped.  That's bad.
     interrupted = False
-    when = time.time() + conf.supybot.upkeepInterval()
+    when = conf.supybot.upkeepInterval()
     schedule.addPeriodicEvent(world.upkeep, when, name='upkeep', now=False)
     world.startedAt = started
     while world.ircs:
