@@ -323,7 +323,10 @@ class IrcObjectProxy:
         self.finalEval()
 
     def _callInvalidCommands(self):
-        log.debug('Calling invalid commands.')
+        if ircutils.isCtcp(self.msg):
+            log.debug('Skipping invalidCommand, msg is CTCP.')
+            return
+        log.debug('Calling invalidCommands.')
         for cb in self.irc.callbacks:
             log.debug('Trying to call %s.invalidCommand' % cb.name())
             if self.finished:
@@ -455,6 +458,7 @@ class IrcObjectProxy:
                     response = '%s %s' % (response, n)
                 prefix = msg.prefix
                 if self.to and ircutils.isNick(self.to):
+                    ### TODO: catch this KeyError.
                     prefix = self.getRealIrc().state.nickToHostmask(self.to)
                 mask = prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
