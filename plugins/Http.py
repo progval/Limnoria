@@ -192,57 +192,6 @@ class Http(callbacks.Privmsg):
             s = 'There appears to be no definition for %s.' % search
             irc.reply(msg, s)
 
-    _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
-    _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
-    _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
-        '"#FFFF00">(\d+)')
-    _gkteam = re.compile(r'Team:(<.*?>)+(?P<name>.*?)</span>')
-    _gkseen = re.compile(r'(seen on GK:\s+([^[]+)\s+|.*?is hiding.*?)')
-    def gkstats(self, irc, msg, args):
-        """<name>
-
-        Returns the stats Gameknot keeps on <name>.  Gameknot is an online
-        website for playing chess (rather similar to correspondence chess, just
-        somewhat faster) against players from all over the world.
-        """
-        name = privmsgs.getArgs(args)
-        gkprofile = 'http://www.gameknot.com/stats.pl?%s' % name
-        try:
-            fd = urllib2.urlopen(gkprofile)
-            profile = fd.read()
-            fd.close()
-            rating = self._gkrating.search(profile).group(1)
-            games = self._gkgames.search(profile).group(1)
-            (w, l, d) = self._gkrecord.search(profile).groups()
-            seen = self._gkseen.search(utils.htmlToText(profile))
-            if seen.group(0).find("is hiding") != -1:
-                seen = '%s is hiding his/her online status.' % name
-            elif seen.group(2).startswith('0'):
-                seen = '%s is on gameknot right now.' % name
-            else:
-                seen = '%s was last seen on Gameknot %s.' % (name,
-                seen.group(2))
-            if games == '1':
-                games = '1 active game'
-            else:
-                games = '%s active games' % games
-            if profile.find('Team:') >= 0:
-                team = self._gkteam.search(profile).group('name')
-                irc.reply(msg, '%s (team: %s) is rated %s and has %s ' \
-                          'and a record of W-%s, L-%s, D-%s.  %s' % \
-                          (name, team, rating, games, w, l, d, seen))
-            else:
-                irc.reply(msg, '%s is rated %s and has %s ' \
-                          'and a record of W-%s, L-%s, D-%s.  %s' % \
-                          (name, rating, games, w, l, d, seen))
-        except AttributeError:
-            if profile.find('User %s not found!' % name) != -1:
-                irc.error(msg, 'No user %s exists.' % name)
-            else:
-                irc.error(msg, 'The format of the page was odd.')
-        except urllib2.URLError:
-            irc.error(msg, 'Couldn\'t connect to gameknot.com.')
-
     _zipcode = re.compile(r'Local Forecast for (.*), (.*?) ')
     def zipcode(self, irc, msg, args):
         """<US zip code>
