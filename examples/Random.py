@@ -42,22 +42,31 @@ import utils
 import ircmsgs
 import ircutils
 import privmsgs
+import registry
 import callbacks
 
 
-def configure(onStart, afterConnect, advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
+def configure(advanced):
     from questions import expect, anything, something, yn
-    onStart.append('load Random')
-    if yn('Do you want to specify a seed to be used for the RNG')=='y':
-        seed = something('What seed?  It must be an int or long.')
+    conf.registerPlugin('Random', True)
+    if yn('Do you want to specify a seed to be used for the RNG'):
+        seed = something('What seed?  It must be an integer or long.')
         while not seed.isdigit():
             print 'That\'s not a valid seed.'
             seed = something('What seed?')
-        onStart.append('seed %s' % seed)
+        conf.supybot.plugins.Random.seed.setValue(seed)
+
+class Seed(registry.Value):
+    def set(self, s):
+        try:
+            self.setValue(long(s))
+        except ValueError:
+            raise registry.InvalidRegistryValue, 'Value must be an integer.'
+        
+conf.registerPlugin('Random')
+conf.registerGlobalValue(conf.supybot.plugins.Random, 'seed', Seed(0, """
+Sets the seed of the random number generator.  The seen must be a valid
+Python integer or long."""))
 
 class Random(callbacks.Privmsg):
     rng = random.Random()
@@ -67,7 +76,7 @@ class Random(callbacks.Privmsg):
         Returns the next random number from the random number
         generator.
         """
-        irc.reply(msg, str(self.rng.random()))
+        irc.reply(str(self.rng.random()))
 
     def seed(self, irc, msg, args):
         """<seed>
@@ -80,10 +89,10 @@ class Random(callbacks.Privmsg):
             seed = long(seed)
         except ValueError:
             # It wasn't a valid long!
-            irc.error(msg, '<seed> must be a valid int or long.')
+            irc.error('<seed> must be a valid int or long.')
             return
         self.rng.seed(seed)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess()
 
     def range(self, irc, msg, args):
         """<start> <end>
@@ -96,10 +105,10 @@ class Random(callbacks.Privmsg):
             end = int(end)
             start = int(start)
         except ValueError:
-            irc.error(msg, '<start> and <end> must both be integers.')
+            irc.error('<start> and <end> must both be integers.')
             return
         # .randrange() doesn't include the endpoint, so we use end+1.
-        irc.reply(msg, str(self.rng.randrange(start, end+1)))
+        irc.reply(str(self.rng.randrange(start, end+1)))
 
     def sample(self, irc, msg, args):
         """<number of items> [<text> ...]
@@ -113,14 +122,14 @@ class Random(callbacks.Privmsg):
         except IndexError: # raised by .pop(0)
             raise callbacks.ArgumentError
         except ValueError:
-            irc.error(msg, '<number of items> must be an integer.')
+            irc.error('<number of items> must be an integer.')
             return
         if n > len(args):
-            irc.error(msg, '<number of items> must be less than the number '
-                           'of arguments.')
+            irc.error('<number of items> must be less than the number '
+                      'of arguments.')
             return
         sample = self.rng.sample(args, n)
-        irc.reply(msg, utils.commaAndify(map(repr, sample)))
+        irc.reply(utils.commaAndify(map(repr, sample)))
 
     def diceroll(self, irc, msg, args):
         """[<number of sides>]
@@ -134,7 +143,7 @@ class Random(callbacks.Privmsg):
                 n = 6
             n = int(n)
         except ValueError:
-            irc.error(msg, 'Dice have integer numbers of sides.  Use one.')
+            irc.error('Dice have integer numbers of sides.  Use one.')
             return
         s = 'rolls a %s' % self.rng.randrange(1, n)
         irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), s))
