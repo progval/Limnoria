@@ -40,6 +40,7 @@ import traceback
 
 import ansi
 import conf
+import world
 
 ###
 # CONFIGURATION
@@ -130,6 +131,8 @@ def unrecoverableError(msg):
     exit(-1)
 
 def recoverableException():
+    if world.testing:
+        return
     (E, e, tb) = sys.exc_info()
     for exn in deadlyExceptions:
         if issubclass(e.__class__, exn):
