@@ -50,7 +50,7 @@ import ircutils
 import callbacks
 import structures
 
-def getChannel(msg, args):
+def getChannel(msg, args, raiseError=True):
     """Returns the channel the msg came over or the channel given in args.
 
     If the channel was given in args, args is modified (the channel is
@@ -70,8 +70,11 @@ def getChannel(msg, args):
     elif ircutils.isChannel(msg.args[0]):
         return msg.args[0]
     else:
-        raise callbacks.Error, 'Command must be sent in a channel or ' \
-                               'include a channel in its arguments.'
+        if raiseError:
+            raise callbacks.Error, 'Command must be sent in a channel or ' \
+                                   'include a channel in its arguments.'
+        else:
+            return None
 
 def getArgs(args, required=1, optional=0):
     """Take the required/optional arguments from args.
