@@ -1,0 +1,714 @@
+<!DOCTYPE article SYSTEM "supybot.dtd">
+
+<article>
+	<articleinfo>
+		<authorgroup>
+			<author>
+				<firstname>Jeremiah</firstname>
+				<surname>Fincher</surname>
+			</author>
+			<editor>
+				<firstname>Daniel</firstname>
+				<surname>DiPaolo</surname>
+				<contrib>DocBook translator</contrib>
+			</editor>
+		</authorgroup>
+		<title>Supybot plugin author example</title>
+		<revhistory>
+			<revision>
+				<revnumber>0.1</revnumber>
+				<date>13 Sep 2003</date>
+				<revremark>Initial revision</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.2</revnumber>
+				<date>14 Sep 2003</date>
+				<revremark>Converted to DocBook</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3</revnumber>
+				<date>24 Nov 2003</date>
+				<revremark>
+					Updated to match EXAMPLE included with 0.75.0
+				</revremark>
+			</revision>
+            <revision>
+                <revnumber>0.4</revnumber>
+                <date>26 Feb 2004</date>
+                <revremark>Converted to use Supybot DTD</revremark>
+            </revision>
+		</revhistory>
+	</articleinfo>
+	<sect1>
+		<title>Introduction</title>
+		<para>
+			Ok, so you want to write a callback for supybot.  Good, then this
+			is the place to be.  We're going to start from the top (the
+			highest level, where supybot code does the most work for you) and
+			move lower after that.
+		</para>
+		<para>
+			So have you used supybot?  If not, you need to go use it, get a
+			feel for it, see how the various commands work and such.
+		</para>
+		<para>
+			So now that we know you've used supybot, we'll start getting into
+			details.
+		</para>
+	</sect1>
+
+	<sect1>
+		<title>Creating your own plugin</title>
+		<sect2>
+			<title>
+				Using <script>scripts/newplugin.py</script>
+			</title>
+			<para>
+                First, the easiest way to start writing a module is to use the
+                wizard provided, <script>scripts/newplugin.py</script>.
+                Here's an example session:
+			</para>
+			<screen>
+functor% scripts/newplugin.py
+What should the name of the plugin be? Random
+Supybot offers two major types of plugins: command-based and regexp-
+based.  Command-based plugins are the kind of plugins you've seen most
+when you've used supybot.  They're also the most featureful and
+easiest to write.  Commands can be nested,  for instance, whereas
+regexp-based callbacks can't do nesting.  That doesn't mean that
+you'll never want regexp-based callbacks. They offer a flexibility
+that command-based callbacks don't offer; however, they don't tie into
+the whole system as well.  If you need to combine a command-based
+callback with some regexp-based methods, you can do so by subclassing
+callbacks.PrivmsgCommandAndRegexp and then adding a class-level
+attribute "regexps" that is a sets.Set of methods that are regexp-
+based.  But you'll have to do that yourself after this wizard is
+finished :)
+Do you want a command-based plugin or a regexp-based plugin? [command/
+                                                              regexp] command
+Sometimes you'll want a callback to be threaded.  If its methods
+(command or regexp-based, either one) will take a signficant amount
+of time to run, you'll want to thread them so they don't block
+the entire bot.
+
+Does your plugin need to be threaded? [y/n] n
+Your new plugin template is in plugins/Random.py
+functor%
+			</screen>
+			<para>
+				So that's what it looks like.  Now let's look at the source
+				code (if you'd like to look at it in your programming editor,
+				the whole plugin is available as
+				<filename>examples/Random.py</filename>): 
+			</para>
+			<programlisting>
+#!/usr/bin/env python
+
+###
+# Copyright (c) 2002, Jeremiah Fincher
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   * Redistributions of source code must retain the above copyright notice,
+#     this list of conditions, and the following disclaimer.
+#   * Redistributions in binary form must reproduce the above copyright notice,
+#     this list of conditions, and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#   * Neither the name of the author of this software nor the name of
+#     contributors to this software may be used to endorse or promote products
+#     derived from this software without specific prior written consent.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+###
+
+"""
+Add the module docstring here.  This will be used by the setup.py script.
+"""
+
+from baseplugin import *
+
+import utils
+import privmsgs
+import callbacks
+
+
+def configure(onStart, afterConnect, advanced):
+    # This will be called by setup.py to configure this module.  onStart and
+    # afterConnect are both lists.  Append to onStart the commands you would
+    # like to be run when the bot is started; append to afterConnect the
+    # commands you would like to be run when the bot has finished connecting.
+    from questions import expect, anything, something, yn
+    onStart.append('load Random')
+
+class Random(callbacks.Privmsg):
+    pass
+
+
+Class = Random
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+			</programlisting>
+		</sect2>
+		<sect2>
+			<title>Customizing the boilerplate code</title>
+			<para>
+				So a few notes, before we customize it.
+			</para>
+			<para>
+				You'll probably want to change the copyright notice to be your
+				name.  It wouldn't stick even if you kept my name, so you
+				might as well :)
+			</para>
+			<para>
+				Describe what you want the plugin to do in the docstring.
+				This is used in <script>scripts/setup.py</script> in
+				order to explain to the user the purpose of the module.  It's
+				also returned when someone asks the bot for help for a given
+				module (instead of help for a certain command).  We'll change
+				this one to <literal>"Lots of stuff relating to random
+				numbers."</literal>
+			</para>
+			<para>
+				Then there are the imports.  The
+                <module>callbacks</module>
+				module is used (the class you're given subclasses
+				<classname>callbacks.Privmsg</classname>) but the
+				<module>privmsgs</module> module isn't used.  That's
+				alright; we can almost guarantee you'll use it, so we go ahead
+				and add the import to the template.
+			</para>
+			<para>
+				Then you see a <function>configure</function> function.  This
+				the function that's called when users decide to add your
+				module in <script>scripts/setup.py</script>.  You'll
+				note that by default it simply adds <literal>"load
+				Example"</literal> (where 'Example' is the name you provided
+				as the name of your plugin, so in our case it is
+				<literal>"load Random"</literal>) at the bottom.  For many
+				plugins this is all you need; for more complex plugins, you
+				might need to ask questions and add commands based on the
+				answers.
+			</para>
+		</sect2>
+		<sect2>
+			<title>Digging in: customizing the plugin class</title>
+			<para>
+				Now comes the meat of the plugin: the plugin class.
+			</para>
+			<para>
+				What you're given is a skeleton: a simple subclass of
+                <classname>callbacks.Privmsg</classname> for you to start
+                with.  Now let's add a command.
+			</para>
+			<para>
+				I don't know what you know about random number generators, but
+				the short of it is that they start at a certain number (a
+				seed) and they continue (via some somewhat
+				complicated/unpredictable algorithm) from there.  This seed
+				(and the rest of the sequence, really) is all nice and
+				packaged up in Python's <module>random</module> module, the
+				<varname>Random</varname> object.  So the first thing we're
+				going to have to do is give our plugin a
+				<varname>Random</varname> object.
+			</para>
+			<para>
+				Normally, when we want to give instances of a class an object,
+				we'll do so in the <function>__init__</function> method.  And
+				that works great for plugins, too.  The one thing you have to
+				be careful of is that you call the superclass
+				<function>__init__</function> method at the end of your own
+				<function>__init__</function>.  So to add this
+                <classname>random.Random</classname> object to our plugin, we
+                can replace the <keyword>pass</keyword> statement with
+				this:
+			</para>
+			<programlisting>
+def __init__(self):
+        self.rng = random.Random()
+        callbacks.Privmsg.__init__(self)
+			</programlisting>
+			<para>
+				(<varname>rng</varname>is an abbreviation for "random number
+				generator," in case you were curious)
+			</para>
+			<para>
+				Do be careful not to give your <function>__init__</function>
+				any arguments (other than <varname>self</varname>, of course).
+				There's no way anything will ever get to them!  If you have
+				some sort of initial values you need to get to your plugin
+				before it can do anything interesting, add a command that gets
+				those values.  By convention, those commands begin with
+				"start" -- check out the Relay and Enforcer plugins for
+				examples of such commands.
+			</para>
+			<para>
+				There's an easier way to get our plugin to have its own rng
+				than to define an <function>__init__</function>.  Plugins are
+				unique among classes because we're always certain that there
+				will only be one instance -- supybot doesn't allow us to load
+				multiple instances of a single plugin.  So instead of adding
+				the rng in <function>__init__</function>, we can just add it
+				as a attribute to the class itself.  Like so (replacing the
+				<function>pass</function> statement again):
+			</para>
+			<programlisting>
+    rng = random.Random()
+			</programlisting>
+			<para>
+				And we save two lines of code and make our code a little more
+				clear :) 
+			</para>
+			<para>
+				Now that we have an RNG, we need some way to get random
+				numbers.  So first, we'll add a command that simply gets the
+				next random number and gives it back to the user.  It takes no
+				arguments, of course (what would you give it?).  Here's the
+				command, and I'll follow that with the explanation of what
+				each part means.
+			</para>
+			<programlisting>
+    def random(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the next random number generated by the random number
+        generator.
+        """
+        irc.reply(msg, str(self.rng.random()))
+			</programlisting>
+			<para>
+				And that's it!  Pretty simple, huh?  Anyway, you're probably
+				wondering what all that <emphasis>means</emphasis>.  We'll
+				start with the <keyword>def</keyword> statement:
+			</para>
+			<programlisting>
+    def random(self, irc, msg, args):
+			</programlisting>
+			<para>
+                What that does is define a command
+                <function>random</function>.  You can call it by saying
+                "@random" (or whatever prefix character your specific bot
+                uses).  The arguments are a bit less obvious.
+                <varname>self</varname> is self-evident (hah!).
+                <varname>irc</varname> is the <classname>Irc</classname>
+                object passed to the command; <varname>msg</varname> is the
+                original <classname>IrcMsg</classname> object.  But you're
+                really not going to have to deal with either of these too much
+                (with the exception of calling <function>irc.reply</function>
+                or <function>irc.error</function>).  What you're
+                <emphasis>really</emphasis> interested in is the
+                <varname>args</varname> arg.  That if a list of all the
+                arguments passed to your command, pre-parsed and already
+                evaluated (i.e., you never have to worry about nested
+                commands, or handling double quoted strings, or splitting on
+                whitespace -- the work has already been done for you).  You
+                can read about the <classname>Irc</classname> object in
+                <filename>irclib.py</filename> (you won't find
+                <function>.reply</function> or <function>.error</function>
+                there, though, because you're actually getting an
+                <classname>IrcObjectProxy</classname>, but that's beyond the
+                level we want to describe here :)).  You can read about the
+                <varname>msg</varname> object in
+                <filename>ircmsgs.py</filename>.  But again, aside from
+                calling <function>irc.reply</function> or
+                <function>irc.error</function>, you'll very rarely be using
+                these objects.
+			</para>
+			<para>
+				(In case you're curious, the answer is yes, you
+				<emphasis>must</emphasis> name your arguments <varname>(self,
+				irc, msg, args)</varname>.  The names of those arguments is
+				one of the ways that supybot uses to determine which methods
+				in a plugin class are commands and which aren't.  And while
+				we're talking about naming restrictions, all your commands
+				should be named in all-lowercase with no underscores.  Before
+				calling a command, supybot always converts the command name to
+				lowercase and removes all dashes and underscores.  On the
+				other hand, you now know an easy way to make sure a method is
+				never called (even if its arguments are <varname>(self, irc,
+				msg, args)</varname>, however unlikely that may be).  Just
+				name it with an underscore or an uppercase letter in it :)) 
+			</para>
+			<para>
+				You'll also note that the docstring is odd.  The wonderful
+				thing about the supybot framework is that it's easy to write
+				complete commands with help and everything: the docstring
+				<emphasis>is</emphasis> the help!  Given the above docstring,
+				this is what a supybot does:
+			</para>
+			<ircsession>
+    &lt;angryman&gt; jemfinch: random takes no arguments (for more help 
+               use the morehelp command)
+    &lt;jemfinch&gt; $morehelp random
+    &lt;angryman&gt; jemfinch: Returns the next random number from the 
+               current random number generator. 
+			</ircsession>
+			<para>
+				'help &lt;command&gt;' replies with the command name followed
+				by the first line of the command's docstring; there should be
+				a blank line following, and then 'morehelp &lt;command&gt;'
+				will reply with the remainder of the docstring.  So that
+				explains the docstring.  Now on to the actual body of the
+				function:
+			</para>
+			<programlisting>
+    irc.reply(msg, str(self.rng.random()))
+			</programlisting>
+			<para>
+                <function>irc.reply</function> takes two arguments, an
+                <classname>IrcMsg</classname> (like the one passed into your
+                function) and a string.  The <classname>IrcMsg</classname> is
+                used to determine who the reply should go to and whether or
+                not it should be sent in private message (commands sent in
+                private are replied to in private).  The string is the reply
+                to be sent.  Don't worry about length restrictions or anything
+                -- if the string you want to send is too big for an IRC
+                message (and oftentimes that turns out to be the case :)) the
+                supybot framework handles that entirely transparently to you.
+                Do make sure, however, that you give
+                <function>irc.reply</function> a string.  It doesn't take
+                anything else (sometimes even unicode fails!).  That's why we
+                have "str(self.rng.random())" instead of simply
+                "self.rng.random()" -- we had to give
+                <function>irc.reply</function> a string.
+			</para>
+			<para>
+				Anyway, now that we have an RNG, we have a need for seed!  Of
+				course, Python gives us a good seed already (it uses the
+				current time as a seed if we don't give it one) but users
+				might want to be able to repeat "random" sequences, so letting
+				them set the seed is a good thing.  So we'll add a seed
+				command to give the RNG a specific seed:
+			</para>
+			<programlisting>
+    def seed(self, irc, msg, args):
+        """&lt;seed&gt;
+
+        Sets the seed of the random number generator.  &lt;seed&gt; must be 
+        an int or a long.
+        """
+        seed = privmsgs.getArgs(args)
+        try:
+            seed = long(seed)
+        except ValueError:
+            # It wasn't a valid long!
+            irc.error(msg, '&lt;seed&gt; must be a valid int or long.')
+            return
+        self.rng.seed(seed)
+        irc.reply(msg, conf.replySuccess)
+			</programlisting>
+			<para>
+				So this one's a bit more complicated.  But it's still pretty
+				simple.  The method name is "seed" so that'll be the command
+				name.  The arguments are the same, the docstring is of the
+				same form, so we don't need to go over that again.  The body
+				of the function, however, is significantly different.
+			</para>
+			<para>
+				<function>privmsgs.getArgs</function> is a function you're
+				going to be seeing a lot of when you write plugins for
+				supybot.  What it does is basically give you the right number
+				of arguments for your comamnd.  In this case, we want one
+				argument.  But we might have been given any number of
+				arguments by the user.  So
+				<function>privmsgs.getArgs</function> joins them
+				appropriately, leaving us with one single "seed" argument (by
+				default, it returns one argument as a single value; more
+				arguments are returned in a tuple/list).  Yes, we could've
+				just said "seed = args[0]" and gotten the first argument, but
+				what if the user didn't pass us an argument at all?  Then
+				we've got to catch the <classname>IndexError</classname> from
+				<varname>args[0]</varname> and complain to the user about it.
+				<function>privmsgs.getArgs</function>, on the other hand,
+				handles all that for us.  If the user didn't give us enough
+				arguments, it'll reply with the help string for the command,
+				thus saving us the effort.
+			</para>
+			<para>
+				So we have the seed from
+				<function>privmsgs.getArgs</function>.  But it's a string.
+				The next three lines is pretty darn obvious: we're just
+				converting the string to a int of some sort.  But if it's not,
+				that's when we're going to call
+				<function>irc.error</function>.  It has the same interface as
+				we saw before in <function>irc.reply</function>, but it makes
+				sure to remind the user that an error has been encountered
+				(currently, that means it puts "Error: " at the beginning of
+				the message).  After erroring, we return.  It's important to
+				remember this <keyword>return</keyword> here; otherwise,
+				we'll just keep going down through the function and try to use
+				this "seed" variable that never got assigned.  A good general
+				rule of thumb is that any time you use
+				<function>irc.error</function>, you'll want to return
+				immediately afterwards.
+			</para>
+			<para>
+				Then we set the seed -- that's a simple function on our rng
+				object.  Assuming that succeeds (and doesn't raise an
+				exception, which it shouldn't, because we already read the
+				documentation and know that it should work) we reply to say
+				that everything worked fine.  That's what
+				<varname>conf.replySuccess</varname> says.  By default, it has
+				the very dry (and appropriately robot-like) "The operation
+				succeeded." but you're perfectly welcome to customize it
+				yourself -- <filename>conf.py</filename> was written to be
+				modified!
+			</para>
+			<para>
+					So that's a bit more complicated command.  But we still
+					haven't dealt with multiple arguments.  Let's do that
+					next.
+			</para>
+			<para>
+				So these random numbers are useful, but they're not the kind
+				of random numbers we usually want in Real Life.  In Real Life,
+				we like to tell someone to "pick a number between 1 and 10."
+				So let's write a function that does that.  Of course, we won't
+				hardcode the 1 or the 10 into the function, but we'll take
+				them as arguments.  First the function:
+			</para>
+			<programlisting>
+    def range(self, irc, msg, args):
+        """&lt;start&gt; &lt;end&gt;
+
+        Returns a number between &lt;start&gt; and &lt;end&gt;, inclusive (i.e., the number
+        can be either of the endpoints.
+        """
+        (start, end) = privmsgs.getArgs(args, required=2)
+        try:
+            end = int(end)
+            start = int(start)
+        except ValueError:
+            irc.error(msg, '&lt;start&gt; and &lt;end&gt; must both be integers.')
+            return
+        # .randrange() doesn't include the endpoint, so we use end+1.
+        irc.reply(msg, str(self.rng.randrange(start, end+1)))
+			</programlisting>
+			<para>
+				Pretty simple.  This is becoming old hat by now.  The only new
+				thing here is the call to
+				<function>privmsgs.getArgs</function>.  We have to make sure,
+				since we want two values, to pass a keyword parameter
+				"required" into <function>privmsgs.getArgs</function>.  Of
+				course, <function>privmsgs.getArgs</function> handles all the
+				checking for missing arguments and whatnot so we don't have
+				to.
+			</para>
+			<para>
+                The <classname>Random</classname> object we're using offers us
+                a "sample" method that takes a sequence and a number (we'll
+                call it <varname>N</varname>) and returns a list of
+				<varname>N</varname> items taken randomly from the sequence.
+				So I'll show you an example that takes advantage of multiple
+				arguments but doesn't use
+				<function>privmsgs.getArgs</function> (and thus has to handle
+				its own errors if the number of arguments isn't right).
+				Here's the code:
+			</para>
+			<programlisting>
+    def sample(self, irc, msg, args):
+        """&lt;number of items&gt; [&lt;text&gt; ...]
+
+        Returns a sample of the &lt;number of items&gt; taken from the remaining
+        arguments.  Obviously &lt;number of items&gt; must be less than the number
+        of arguments given.
+        """
+        try:
+            n = int(args.pop(0))
+        except IndexError: # raised by .pop(0)
+            raise callbacks.ArgumentError
+        except ValueError:
+            irc.error(msg, '&lt;number of items&gt; must be an integer.')
+            return
+        if n &gt; len(args):
+            irc.error(msg, '&lt;number of items&gt; must be less than the number '
+                           'of arguments.')
+            return
+        sample = self.rng.sample(args, n)
+        irc.reply(msg, utils.commaAndify(map(repr, sample)))
+			</programlisting>
+			<para>
+				Most everything here is familiar.  The difference between this
+				and the previous examples is that we're dealing with
+				<varname>args</varname> directly, rather than through
+				<function>getArgs</function>.  Since we already have the
+				arguments in a list, it doesn't make any sense to have
+				<function>privmsgs.getArgs</function> smush them all together
+				into a big long string that we'll just have to re-split.  But
+				we still want the nice error handling of
+				<function>privmsgs.getArgs</function>.  So what do we do?  We
+                raise <classname>callbacks.ArgumentError</classname>!  That's
+                the secret juju that <function>privmsgs.getArgs</function> is
+                doing; now we're just doing it ourself.  Someone up our
+                callchain knows how to handle it so a neat error message is
+                returned.  So in this function, if
+                <function>.pop(0)</function> fails, we weren't given enough
+                arguments and thus need to tell the user how to call us.  
+			</para>
+			<para>
+				So we have the args, we have the number, we do a simple call
+				to <function>random.sample</function> and then we do this
+				funky <function>utils.commaAndify</function> to it.  Yeah, so
+				I was running low on useful names :)  Anyway, what it does is
+				take a list of strings and return a string with them joined by
+				a comma, the last one being joined with a comma and "and".  So
+				the list ['foo', 'bar', 'baz'] becomes "foo, bar, and baz".
+				It's pretty useful for showing the user lists in a useful
+				form.  We map the strings with <function>repr()</function>
+				first just to surround them with quotes.
+			</para>
+			<para>
+				So we have one more example.  Yes, I hear your groans, but
+				it's pedagogically useful :)  This time we're going to write a
+				command that makes the bot roll a die.  It'll take one
+				argument (the number of sides on the die) and will respond
+				with the equivalent of "/me rolls a __" where __ is the number
+				the bot rolled.  So here's the code: 
+			</para>
+			<programlisting>
+    def diceroll(self, irc, msg, args):
+        """[&lt;number of sides&gt;]
+
+        Rolls a die with &lt;number of sides&gt; sides.  The default number
+        of sides is 6.
+        """
+        try:
+            n = privmsgs.getArgs(args, required=0, optional=1)
+            if not n:
+                n = 6
+            n = int(n)
+        except ValueError:
+            irc.error(msg, 'Dice have integer numbers of sides.  Use one.')
+            return
+        s = 'rolls a %s' % self.rng.randrange(1, n+1)
+        irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), s))
+        raise callbacks.CannotNest
+			</programlisting>
+			<para>
+				There's a lot of stuff you haven't seen before in there.  The
+				most important, though, is the first thing you'll notice
+				that's different: the <function>privmsg.getArgs</function>
+				call.  Here we're offering a default argument in case the user
+				is too lazy to supply one (or just wants a nice, standard
+				six-sided die :))  <function>privmsgs.getArgs</function>
+				supports that; we'll just tell it that we don't
+				<emphasis>need</emphasis> any arguments (via
+				<varname>required=0</varname>) and that we <emphasis>might
+				like</emphasis> one argument (<varname>optional=1</varname>).
+				If the user provides an argument, we'll get it -- if they
+				don't, we'll just get an empty string.  Hence the "if not n: n
+				= 6", where we provide the default.
+			</para>
+			<para>
+				Later, though, you'll see something other than
+				<function>irc.reply</function>.  This is
+                <function>irc.queueMsg</function>, the general interface for
+                sending messages to the server.  It's what
+                <function>irc.reply</function> is using under the covers.  It
+                takes an <classname>IrcMsg</classname> object.  Fortunately,
+                that's exactly what's returned by
+                <function>ircmsgs.action</function>.  An action message, just
+                in case you don't know, is a /me kind of message.
+                <function>ircmsgs.action</function> is a helper function that
+                takes a target (a place to send the message, either a channel
+                or a person) and a payload (the thing to /me) and returns the
+                appropriate <classname>IrcMsg</classname> object.
+                <function>ircutils.replyTo</function> simply takes an
+                <classname>IrcMsg</classname> and returns where we should
+                reply to; if the message was originally sent to a channel,
+                we'll reply to there, if it was originally sent to us
+                privately, we'll reply in private.
+			</para>
+			<para>
+				At the end, you might be surprised by the "raise
+				callbacks.CannotNest".  That's used simply because at the
+				moment you can't nest actions (just like you can't nest
+				anything that doesn't go through
+				<function>irc.reply</function>).  That raise just makes sure
+				the user finds this out if he tries to nest this like "@rot13
+				[diceroll]".
+			</para>
+			<para>
+				So that's our plugin.  5 commands, each building in
+				complexity.  You should now be able to write most anything you
+				want to do in Supybot.  Except regexp-based plugins, but
+				that's a story for another day (and those aren't nearly as
+				cool as these command-based callbacks anyway :)).  Now we need
+				to flesh it out to make it a full-fledged plugin.
+			</para>
+		</sect2>
+		<sect2>
+			<title>Finishing touches</title>
+			<para>
+				Let's take a look at that <function>configure</function>
+				function <script>scripts/newplugin.py</script> made
+				for us.  Here it is, in case you've forgotten:
+			</para>
+			<programlisting>
+def configure(onStart, afterConnect, advanced):
+    # This will be called by setup.py to configure this module.  onStart and
+    # afterConnect are both lists.  Append to onStart the commands you would
+    # like to be run when the bot is started; append to afterConnect the
+    # commands you would like to be run when the bot has finished connecting.
+    from questions import expect, anything, something, yn
+    onStart.append('load Random')
+			</programlisting>
+			<para>
+				You remember when you first started running supybot and ran
+				<script>scripts/setup.py</script> and it asked you
+				all those questions?  Well, now's your chance to ask other
+				users some questions of your own.  In our case, with our
+				<plugin>Random</plugin> plugin, it might be nice to offer
+				the user the ability to specify a seed to use whenever the
+				plugin is loaded.  So let's ask him if he wants to do that,
+				and if so, let's ask him what the seed should be.
+			</para>
+			<programlisting>
+def configure(onStart, afterConnect, advanced):
+    # This will be called by setup.py to configure this module.  onStart and
+    # afterConnect are both lists.  Append to onStart the commands you would
+    # like to be run when the bot is started; append to afterConnect the
+    # commands you would like to be run when the bot has finished connecting.
+    from questions import expect, anything, something, yn
+    onStart.append('load Random')
+    if yn('Do you want to specify a seed to be used for the RNG')=='y':
+        seed = something('What seed?  It must be an int or long.')
+        while not seed.isdigit():
+            print 'That\'s not a valid seed.'
+            seed = something('What seed?')
+        onStart.append('seed %s' % seed)
+			</programlisting>
+			<para>
+				As you can see, what the <module>questions</module> module
+				does is fairly self-evident: <function>yn</function> returns
+				either 'y' or 'n'; <function>something</function> returns
+				<emphasis>something</emphasis> (but not nothing; for nothing,
+				you'd want <function>anything</function>).  So basically we
+				ask some questions until we get a good seed.  Then we do this
+				"onStart.append('seed %s' % seed)" doohickey.
+				<varname>onStart</varname> is a list of the commands to run
+				when the bot starts; we're just throwing our little piece into
+				it.  These commands will then be written into the template
+				<script>scripts/setup.py</script> creates for the bot.
+			</para>
+			<para>
+				We've written our own plugin from scratch (well, from the
+				boilerplate that we got from
+				<script>scripts/newplugin.py</script> :)) and
+				survived!  Now go write more plugins for supybot, and send
+				them to me so I can use them too :)
+			</para>
+		</sect2>
+	</sect1>
+</article>
