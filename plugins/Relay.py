@@ -98,17 +98,20 @@ class Relay(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         self.ircs = {}
         self.started = False
-        self.channels = set()
         self.ircstates = {}
+        self.lastmsg = ircmsgs.ping('this is just a fake message')
+        self.channels = set()
         self.abbreviations = {}
         
     def inFilter(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
         try:
-            self.ircstates[irc].enqueue(irc.state.copy())
+            self.ircstates[irc].addMsg(irc, self.lastmsg)
         except KeyError:
-            self.ircstates[irc] = MaxLengthQueue(2, (irc.state.copy(),))
+            self.ircstates[irc] = irclib.IrcState()
+            self.ircstates[irc].addMsg(irc, self.lastmsg)
+        self.lastmsg = msg
         return msg
     
     def startrelay(self, irc, msg, args):
@@ -310,9 +313,8 @@ class Relay(callbacks.Privmsg):
                 s = '%s/%s has quit.' % (msg.nick, network)
             for channel in self.channels:
                 debug.printf(self.ircstates[irc])
-                debug.printf(self.ircstates[irc][0])
-                debug.printf(self.ircstates[irc][0].channels[channel].users)
-                if msg.nick in self.ircstates[irc][0].channels[channel].users:
+                debug.printf(self.ircstates[irc].channels[channel].users)
+                if msg.nick in self.ircstates[irc].channels[channel].users:
                     for otherIrc in self.ircs.itervalues():
                         if otherIrc != irc:
                             otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
