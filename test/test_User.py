@@ -52,6 +52,9 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
         self.prefix = self.prefix2
         self.assertNotError('register biff quux')
         self.assertResponse('user list', 'biff and foo')
+        self.assertResponse('user list f', 'biff and foo')
+        self.assertResponse('user list f*', 'foo')
+        self.assertResponse('user list *f', 'biff')
         self.assertNotError('unregister biff quux')
         self.assertResponse('user list', 'foo')
         self.assertNotError('unregister foo bar')

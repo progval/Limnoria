@@ -39,8 +39,10 @@ import fix
 
 import getopt
 import string
+from itertools import imap, ifilter
 
 import conf
+import utils
 import ircdb
 import ircutils
 import privmsgs
@@ -53,6 +55,33 @@ class User(callbacks.Privmsg):
             return False
         else:
             return True
+
+    def list(self, irc, msg, args):
+        """[<glob>]
+
+        Returns the valid registered usernames matching <glob>.  If <glob> is
+        not given, returns all registered usernames.
+        """
+        glob = privmsgs.getArgs(args, required=0, optional=1)
+        if glob:
+            if '*' not in glob and '?' not in glob:
+                glob = '*%s*' % glob
+            def p(s):
+                return fnmatch.fnmatch(s, glob)
+        else:
+            def p(s):
+                return True
+        users = ifilter(p, ifilter(None, ircdb.users.users))
+        users = [u.name for u in users]
+        assert users, 'There should be a bot user first.'
+        if users[0] != irc.nick:
+            self.log.warning('First user isn\'t the bot nick: %s' % users[0])
+        del users[0] # The bot user.  Implementation detail.
+        if users:
+            utils.sortBy(str.lower, users)
+            irc.reply(msg, utils.commaAndify(users))
+        else:
+            irc.reply(msg, 'There are no registered users.')
 
     def register(self, irc, msg, args):
         """[--hashed] <name> <password>
