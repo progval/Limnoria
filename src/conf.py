@@ -186,6 +186,7 @@ detailedTracebacks = True
 #               bot will be found.
 ###
 driverModule = 'asyncoreDrivers'
+#driverModule = 'socketDrivers'
 #driverModule = 'twistedDrivers'
 
 ###############################
