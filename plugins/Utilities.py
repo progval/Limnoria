@@ -128,7 +128,10 @@ class Utilities(callbacks.Privmsg):
     def echo(self, irc, msg, args):
         """takes any number of arguments
 
-        Returns the arguments given it.
+        Returns the arguments given it.  Uses our standard substitute on the
+        string(s) given to it; $nick (or $who), $randomNick, $randomInt,
+        $botnick, $channel, $user, $host, $today, $now, and $randomDate are all
+        handled appropriately.
         """
         if not args:
             raise callbacks.ArgumentError
