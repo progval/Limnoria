@@ -241,6 +241,11 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertResponse('first firstcmd', 'foo')
         self.assertResponse('firstrepeat firstcmd', 'baz')
 
+    def testAmbiguousHelpError(self):
+        self.irc.addCallback(self.First())
+        self.irc.addCallback(self.FirstRepeat())
+        self.assertError('help first')
+        
     def testHelpDispatching(self):
         self.irc.addCallback(self.First())
         self.assertHelp('help firstcmd')
@@ -280,7 +285,7 @@ class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
             raise callbacks.ArgumentError
     def testNoEscapingArgumentError(self):
         self.irc.addCallback(self.PCAR())
-        self.assertResponse('test', 'PCAR test <foo>')
+        self.assertResponse('test', 'test <foo>')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

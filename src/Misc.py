@@ -98,7 +98,7 @@ class Misc(callbacks.Privmsg):
                         'Please specify the plugin whose command you ' \
                         'wish to call by using its name as a command ' \
                         'before calling it.' % \
-                        (command, utils.commaAndify(names), command)
+                        (command, utils.commaAndify(names))
                 else:
                     L = []
                     while ambiguousCommands:
