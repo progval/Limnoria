@@ -78,6 +78,12 @@ class ValidNickSet(conf.ValidNicks):
 conf.registerGlobalValue(conf.supybot.plugins.Services, 'nicks',
     ValidNickSet([], """Determines what nicks the bot will use with
     services."""))
+conf.registerGlobalValue(conf.supybot.plugins.Services,
+    'noJoinsUntilIdentified',
+    registry.Boolean(False, """Determines whether the bot will not join any
+    channels until it is identified.  This may be useful, for instances, if
+    you have a vhost that isn't set until you're identified, or if you're
+    joining +r channels that won't allow you to join unless you identify."""))
 conf.registerGlobalValue(conf.supybot.plugins.Services, 'NickServ',
     ValidNickOrEmptyString('', """Determines what nick the 'NickServ' service
     has."""))
@@ -113,6 +119,17 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self.channels = []
         self.sentGhost = False
         self.identified = False
+        self.waitingJoins = []
+
+    def outFilter(self, irc, msg):
+        if msg.command == 'JOIN':
+            if not self.identified:
+                if self.registryValue('noJoinsUntilIdentified'):
+                    self.log.info('Holding JOIN to %s until identified.',
+                                  msg.args[0])
+                    self.waitingJoins.append(msg)
+                    return None
+        return msg
 
     def _registerNick(self, nick, password=''):
         p = self.registryValue('NickServ.password', value=False)
@@ -279,6 +296,10 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                     self.checkPrivileges(irc, channel)
                 if self.channels:
                     irc.queueMsg(ircmsgs.joins(self.channels))
+                if self.waitingJoins:
+                    for m in self.waitingJoins:
+                        irc.sendMsg(m)
+                    self.waitingJoins = []
             else:
                 self.log.debug('Unexpected notice from NickServ: %r.', s)
 
