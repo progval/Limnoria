@@ -33,7 +33,9 @@
 Fixes stuff that Python should have but doesn't.
 """
 
-__all__ = ['ignore', 'catch', 'reviter', 'window', 'group',
+__all__ = []
+
+exported = ['ignore', 'catch', 'reviter', 'window', 'group',
            'partition', 'any', 'all', 'rsplit']
 
 import string
@@ -129,7 +131,7 @@ def rsplit(s, sep=None, maxsplit=-1):
     L.reverse()
     return [s[::-1] for s in L]
 
-for name in __all__:
+for name in exported:
     __builtins__[name] = globals()[name]
 
 
