@@ -99,6 +99,12 @@ def cachingGetHelp(method, name=None):
     return lastGetHelp
 callbacks.getHelp = cachingGetHelp
 
+def getTestIrc():
+    irc = irclib.Irc('test')
+    while irc.takeMsg():
+        pass
+    return irc
+
 class TimeoutError(AssertionError):
     def __str__(self):
         return '%r timed out' % self.args[0]
@@ -161,10 +167,7 @@ class PluginTestCase(SupyTestCase):
             raise ValueError, 'PluginTestCase must have a "plugins" attribute.'
         self.nick = nick
         self.prefix = ircutils.joinHostmask(nick, 'user', 'host.domain.tld')
-        self.irc = irclib.Irc('test')
-        while self.irc.takeMsg():
-            pass
-        #OwnerModule = Owner.loadPluginModule('Owner')
+        self.irc = getTestIrc()
         MiscModule = Owner.loadPluginModule('Misc')
         ConfigModule = Owner.loadPluginModule('Config')
         _ = Owner.loadPluginClass(self.irc, Owner)
