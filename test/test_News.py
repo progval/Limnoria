@@ -33,57 +33,57 @@ import time
 
 import supybot.utils as utils
 
-try:
-    import sqlite
-except ImportError:
-    sqlite = None
+class NewsTestCase(ChannelPluginTestCase):
+    plugins = ('News','User')
+    def setUp(self):
+        ChannelPluginTestCase.setUp(self)
+        # Create a valid user to use
+        self.prefix = 'news!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.nick, 'register tester moo',
+                                         prefix=self.prefix))
+        m = self.irc.takeMsg() # Response to register.
 
+    def testAddnews(self):
+        self.assertNotError('add 0 subject: foo')
+        self.assertRegexp('news', 'subject')
+        self.assertNotError('add 0 subject2: foo2')
+        self.assertRegexp('news', 'subject.*subject2')
+        self.assertNotError('add 5 subject3: foo3')
+        self.assertRegexp('news', 'subject3')
+        print
+        print 'Sleeping to expire the news item (testAddnews)'
+        time.sleep(6)
+        print 'Done sleeping.'
+        self.assertNotRegexp('news', 'subject3')
 
-if sqlite is not None:
-    class NewsTestCase(ChannelPluginTestCase):
-        plugins = ('News',)
-        def testAddnews(self):
-            self.assertNotError('add 0 subject: foo')
-            self.assertRegexp('news', 'subject')
-            self.assertNotError('add 0 subject2: foo2')
-            self.assertRegexp('news', 'subject.*subject2')
-            self.assertNotError('add 5 subject3: foo3')
-            self.assertRegexp('news', 'subject3')
-            print
-            print 'Sleeping to expire the news item (testAddnews)'
-            time.sleep(6)
-            print 'Done sleeping.'
-            self.assertNotRegexp('news', 'subject3')
+    def testNews(self):
+        # These should both fail first, as they will have nothing in the DB
+        self.assertRegexp('news', 'no news')
+        self.assertRegexp('news #channel', 'no news')
+        # Now we'll add news and make sure listnews doesn't fail
+        self.assertNotError('add #channel 0 subject: foo')
+        self.assertNotError('news #channel')
+        self.assertNotError('add 0 subject: foo')
+        self.assertRegexp('news', '#1')
+        self.assertNotError('news 1')
 
-        def testNews(self):
-            # These should both fail first, as they will have nothing in the DB
-            self.assertRegexp('news', 'no news')
-            self.assertRegexp('news #channel', 'no news')
-            # Now we'll add news and make sure listnews doesn't fail
-            self.assertNotError('add #channel 0 subject: foo')
-            self.assertNotError('news #channel')
-            self.assertNotError('add 0 subject: foo')
-            self.assertRegexp('news', '#1')
-            self.assertNotError('news 1')
+    def testChangenews(self):
+        self.assertNotError('add 0 Foo: bar')
+        self.assertNotError('change 1 s/bar/baz/')
+        self.assertNotRegexp('news 1', 'bar')
+        self.assertRegexp('news 1', 'baz')
 
-        def testChangenews(self):
-            self.assertNotError('add 0 Foo: bar')
-            self.assertNotError('change 1 s/bar/baz/')
-            self.assertNotRegexp('news 1', 'bar')
-            self.assertRegexp('news 1', 'baz')
-
-        def testOldnews(self):
-            self.assertRegexp('old', 'No old news')
-            self.assertNotError('add 0 a: b')
-            self.assertRegexp('old', 'No old news')
-            self.assertNotError('add 5 foo: bar')
-            self.assertRegexp('old', 'No old news')
-            print
-            print 'Sleeping to expire the news item (testOldnews)'
-            time.sleep(6)
-            print 'Done sleeping.'
-            self.assertNotError('old')
-
+    def testOldnews(self):
+        self.assertRegexp('old', 'No old news')
+        self.assertNotError('add 0 a: b')
+        self.assertRegexp('old', 'No old news')
+        self.assertNotError('add 5 foo: bar')
+        self.assertRegexp('old', 'No old news')
+        print
+        print 'Sleeping to expire the news item (testOldnews)'
+        time.sleep(6)
+        print 'Done sleeping.'
+        self.assertNotError('old')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
