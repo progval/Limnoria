@@ -36,7 +36,6 @@ class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
     def testReplyWhenNotCommand(self):
         conf.replyWhenNotCommand = True
         self.prefix = 'somethingElse!user@host.domain.tld'
-        self.irc.nick = 'foobarlkajdf'
         self.assertRegexp('foo bar baz', 'not.*command')
         self.assertRegexp('foo | bar | baz', 'not.*commands')
         self.assertRegexp('baz [foo] [bar]', 'not.*commands')
@@ -47,6 +46,13 @@ class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
         self.prefix = 'somethingElse!user@host.domain.tld'
         self.assertNoResponse('@coffee++', 2)
         conf.replyWhenNotCommand = False
+
+    def testNotReplyWhenNotCanonicalName(self):
+        conf.replyWhenNotCommand = True
+        self.prefix = 'somethingElse!user@host.domain.tld'
+        self.assertNotRegexp('STrLeN foobar', 'command')
+        self.assertResponse('StRlEn foobar', '6')
+        conf.repylWhenNotCommand = False
         
     def testHelp(self):
         self.assertNotError('help list')

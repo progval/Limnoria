@@ -68,6 +68,7 @@ class MiscCommands(callbacks.Privmsg):
                 notCommands = []
                 tokens = callbacks.tokenize(s)
                 for command in callbacks.getCommands(tokens):
+                    command = callbacks.canonicalName(command)
                     if not callbacks.findCallbackForCommand(irc, command):
                         notCommands.append(repr(command))
                 if notCommands:
@@ -308,7 +309,6 @@ class MiscCommands(callbacks.Privmsg):
         message; --regexp requires a regular expression the message must match
         --fancy determines whether or not to show the nick; the default is not
         """
-
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
                                                    'with=', 'regexp=',
                                                    'fancy'])

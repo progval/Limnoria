@@ -579,6 +579,7 @@ class Privmsg(irclib.IrcCallback):
                     try:
                         args = tokenize(s)
                         for command in getCommands(args):
+                            command = canonicalName(command)
                             if not findCallbackForCommand(irc, command):
                                 return
                         self.Proxy(irc, msg, args)
