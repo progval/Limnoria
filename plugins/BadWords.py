@@ -70,7 +70,8 @@ class BadWords(callbacks.Privmsg):
         "<word> [<word> ...]"
         if ircdb.checkCapability(msg.prefix, 'admin'):
             words = privmsgs.getArgs(args).split()
-            self.badwords.extend(words)
+            for word in words:
+                self.badwords.add(word)
             self.makeRegexp()
             irc.reply(msg, conf.replySuccess)
             return
