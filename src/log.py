@@ -38,6 +38,7 @@ import sys
 import atexit
 import logging
 
+import ansi
 import conf
 
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
@@ -63,6 +64,7 @@ class Formatter(logging.Formatter):
         ### TODO: formatException should use cgitb.
         return logging.Formatter.formatException(self, (E, e, tb))
 
+
 class DailyRotatingHandler(logging.FileHandler):
     def __init__(self, *args):
         self.lastRollover = time.localtime()
@@ -81,7 +83,36 @@ class DailyRotatingHandler(logging.FileHandler):
         os.rename(self.baseFilename, '%s.%s' % (self.baseFilename, extension))
         self.stream = file(self.baseFilename, 'w')
 
-# This is available publically.
+
+class ColorizedFormatter(Formatter):
+    def formatException(self, (E, e, tb)):
+        if conf.colorizedStdoutLogging:
+            return ''.join([ansi.BOLD, ansi.RED,
+                            Formatter.formatException(self, (E, e, tb)),
+                            ansi.RESET])
+        else:
+            return Formatter.formatException(self, (E, e, tb))
+
+    def format(self, record, *args, **kwargs):
+        if conf.colorizedStdoutLogging:
+            color = ''
+            if record.levelno == logging.CRITICAL:
+                color = ansi.WHITE + ansi.BOLD
+            elif record.levelno == logging.ERROR:
+                color = ansi.RED
+            elif record.levelno == logging.WARNING:
+                color = ansi.YELLOW
+            elif record.levelno == logging.VERBOSE:
+                color = ansi.BLUE
+            elif record.levelno == logging.PRINTF:
+                color = ansi.CYAN
+            return ''.join([color,
+                            Formatter.format(self, record, *args, **kwargs),
+                            ansi.RESET])
+        else:
+            return Formatter.format(self, record, *args, **kwargs)
+
+# These are public.
 formatter = Formatter('%(levelname)s %(asctime)s %(message)s')
 pluginFormatter = Formatter('%(levelname)s %(asctime)s %(name)s %(message)s')
 
@@ -95,6 +126,9 @@ _logger.setLevel(-1)
 
 if conf.stdoutLogging:
     _stdoutHandler = logging.StreamHandler(sys.stdout)
+    _formatString = '%(name)s: %(levelname)s %(asctime)s %(message)s'
+    _stdoutFormatter = ColorizedFormatter(_formatString)
+    _stdoutHandler.setFormatter(_stdoutFormatter)
     _stdoutHandler.setLevel(conf.minimumLogPriority)
     _logger.addHandler(_stdoutHandler)
 

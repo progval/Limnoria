@@ -487,7 +487,7 @@ def main():
         logged to stderr.  By default, though, we turn the colors off for
         Windows machines and leave it on for *nix machines.""")
         if yn('Would you like to turn this colorization off?') == 'y':
-            confVariables['colorterm'] = False
+            confVariables['colorizedStdoutLogging'] = False
 
 ##     # conf.minimumLogPriority
 ##     myPrint("""Your bot can handle debug messages at several priorities,

@@ -33,6 +33,7 @@ __revision__ = "$Id$"
 
 import fix
 
+import os
 import sys
 
 import sets
@@ -71,6 +72,12 @@ minimumLogPriority = logging.INFO
 # stdoutLogging: Determines whether or not the bot logs to stdout.
 ###
 stdoutLogging = True
+
+###
+# colorizedStdoutLogging: Determines whether or not the bot logs colored logs
+#                         to stdout.
+###
+colorizedStdoutLogging = True
 
 ###
 # logTimestampFormat: A format string defining how timestamps should be.  Check
@@ -327,5 +334,7 @@ types = {
     'showOnlySyntax': mybool,
 }
 
+if os.name == 'nt':
+    colorizedStdoutLogging = False
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
