@@ -407,6 +407,7 @@ class ChannelPluginTestCase(PluginTestCase):
         fed = time.time()
         response = self.irc.takeMsg()
         while response is None and time.time() - fed < timeout:
+            time.sleep(0.1)
             drivers.run()
             response = self.irc.takeMsg()
         if response is not None:
