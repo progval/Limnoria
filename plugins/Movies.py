@@ -62,7 +62,7 @@ example = utils.wrapLines("""
 <supybot> "Kevin Spacey" is apparently a person.  More information is available at <http://us.imdb.com/Name?Spacey,+Kevin>
 """)
 
-class IMDB(callbacks.Privmsg):
+class Movies(callbacks.Privmsg):
     threaded = True
     def _formatMovie(self, movie):
         title = utils.unCommaThe(movie.title())
@@ -109,6 +109,7 @@ class IMDB(callbacks.Privmsg):
             irc.reply(msg, 'Matches: ' + utils.commaAndify(titles))
 
 
-Class = IMDB
+Class = Movies
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
