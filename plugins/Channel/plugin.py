@@ -296,7 +296,7 @@ class Channel(callbacks.Plugin):
         try:
             bannedHostmask = irc.state.nickToHostmask(bannedNick)
         except KeyError:
-            irc.error('I haven\'t seen %s.' % bannedNick, Raise=True)
+            irc.error(format('I haven\'t seen %s.', bannedNick), Raise=True)
         capability = ircdb.makeChannelCapability(channel, 'op')
         def makeBanmask(bannedHostmask, options):
             (nick, user, host) = ircutils.splitHostmask(bannedHostmask)
@@ -350,8 +350,8 @@ class Channel(callbacks.Plugin):
             if ircdb.checkCapability(bannedHostmask, capability):
                 self.log.warning('%s tried to ban %q, but both have %s',
                                  msg.prefix, bannedHostmask, capability)
-                irc.error('%s has %s too, you can\'t ban him/her/it.' %
-                          (bannedNick, capability))
+                irc.error(format('%s has %s too, you can\'t ban him/her/it.',
+                                 bannedNick, capability))
             else:
                 doBan()
         else:
@@ -372,7 +372,7 @@ class Channel(callbacks.Plugin):
 
         Unbans <hostmask> on <channel>.  If <hostmask> is not given, unbans
         any hostmask currently banned on <channel> that matches your current
-        hostmask.  Especially useful for unbanning yourself when you get 
+        hostmask.  Especially useful for unbanning yourself when you get
         unexpectedly (or accidentally) banned from the channel.  <channel> is
         only necessary if the message isn't sent in the channel itself.
         """
@@ -385,8 +385,9 @@ class Channel(callbacks.Plugin):
                     bans.append(banmask)
             if bans:
                 irc.queueMsg(ircmsgs.unbans(channel, bans))
-                irc.replySuccess('All bans on %s matching %s '
-                                 'have been removed.' % (channel, msg.prefix))
+                irc.replySuccess(format('All bans on %s matching %s '
+                                        'have been removed.',
+                                        channel, msg.prefix))
             else:
                 irc.error('No bans matching %s were found on %s.' %
                           (msg.prefix, channel))
@@ -423,21 +424,21 @@ class Channel(callbacks.Plugin):
         nick = ircutils.toLower(nick)
         replyIrc = self.invites.pop((irc, nick), None)
         if replyIrc is not None:
-            replyIrc.error('%s is already in %s.' % (nick, channel))
+            replyIrc.error(format('%s is already in %s.', nick, channel))
 
     def do401(self, irc, msg):
         nick = msg.args[1]
         nick = ircutils.toLower(nick)
         replyIrc = self.invites.pop((irc, nick), None)
         if replyIrc is not None:
-            replyIrc.error('There is no %s on this network.' % nick)
+            replyIrc.error(format('There is no %s on this network.', nick))
 
     def do504(self, irc, msg):
         nick = msg.args[1]
         nick = ircutils.toLower(nick)
         replyIrc = self.invites.pop((irc, nick), None)
         if replyirc is not None:
-            replyIrc.error('There is no %s on this server.' % nick)
+            replyIrc.error(format('There is no %s on this server.', nick))
 
     def lobotomize(self, irc, msg, args, channel):
         """[<channel>]
@@ -677,14 +678,14 @@ class Channel(callbacks.Plugin):
         L = sorted(c.capabilities)
         irc.reply(' '.join(L))
     capabilities = wrap(capabilities, ['channel'])
-    
+
     def disable(self, irc, msg, args, channel, plugin, command):
         """[<channel>] [<plugin>] [<command>]
 
-        If you have the #channel,op capability, this will disable the <command> 
-        in <channel>.  If <plugin> is provided, <command> will be disabled only 
-        for that plugin.  If only <plugin> is provided, all commands in the 
-        given plugin will be disabled.  <channel> is only necessary if the 
+        If you have the #channel,op capability, this will disable the <command>
+        in <channel>.  If <plugin> is provided, <command> will be disabled only
+        for that plugin.  If only <plugin> is provided, all commands in the
+        given plugin will be disabled.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
         chan = ircdb.channels.getChannel(channel)
@@ -695,15 +696,15 @@ class Channel(callbacks.Plugin):
                 if plugin.isCommand(command):
                     s = '-%s.%s' % (plugin.name(), command)
                 else:
-                    failMsg = 'The %s plugin does not have a command called %s.'\
-                                % (plugin.name(), command)
+                    failMsg = format('The %s plugin does not have a command '
+                                     'called %s.', plugin.name(), command)
         elif command:
             # findCallbackForCommand
             if irc.findCallbackForCommand(command):
                 s = '-%s' % command
             else:
-                failMsg = 'No plugin or command named %s could be found.'\
-                            % (command)
+                failMsg = format('No plugin or command named %s could be '
+                                 'found.', command)
         else:
             raise callbacks.ArgumentError
         if failMsg:
@@ -713,16 +714,16 @@ class Channel(callbacks.Plugin):
             ircdb.channels.setChannel(channel, chan)
             irc.replySuccess()
     disable = wrap(disable, [('checkChannelCapability', 'op'),
-                                optional(('plugin', False)), 
+                                optional(('plugin', False)),
                                 additional('commandName')])
-                                
+
     def enable(self, irc, msg, args, channel, plugin, command):
         """[<channel>] [<plugin>] [<command>]
 
-        If you have the #channel,op capability, this will enable the <command> 
-        in <channel> if it has been disabled.  If <plugin> is provided, 
-        <command> will be enabled only for that plugin.  If only <plugin> is 
-        provided, all commands in the given plugin will be enabled.  <channel> 
+        If you have the #channel,op capability, this will enable the <command>
+        in <channel> if it has been disabled.  If <plugin> is provided,
+        <command> will be enabled only for that plugin.  If only <plugin> is
+        provided, all commands in the given plugin will be enabled.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
         chan = ircdb.channels.getChannel(channel)
@@ -733,15 +734,15 @@ class Channel(callbacks.Plugin):
                 if plugin.isCommand(command):
                     s = '-%s.%s' % (plugin.name(), command)
                 else:
-                    failMsg = 'The %s plugin does not have a command called %s.'\
-                                % (plugin.name(), command)
+                    failMsg = format('The %s plugin does not have a command '
+                                     'called %s.', plugin.name(), command)
         elif command:
             # findCallbackForCommand
             if irc.findCallbackForCommand(command):
                 s = '-%s' % command
             else:
-                failMsg = 'No plugin or command named %s could be found.'\
-                            % (command)
+                failMsg = format('No plugin or command named %s could be '
+                                 'found.', command)
         else:
             raise callbacks.ArgumentError
         if failMsg:
@@ -754,11 +755,11 @@ class Channel(callbacks.Plugin):
                 fail.append(s)
             ircdb.channels.setChannel(channel, chan)
             if fail:
-                irc.error('%s was not disabled.' % s[1:])
+                irc.error(format('%s was not disabled.', s[1:]))
             else:
                 irc.replySuccess()
     enable = wrap(enable, [('checkChannelCapability', 'op'),
-                                optional(('plugin', False)), 
+                                optional(('plugin', False)),
                                 additional('commandName')])
 
     def lobotomies(self, irc, msg, args):
@@ -772,7 +773,7 @@ class Channel(callbacks.Plugin):
                 L.append(channel)
         if L:
             L.sort()
-            s = 'I\'m currently lobotomized in %s.' % utils.str.commaAndify(L)
+            s = format('I\'m currently lobotomized in %L.', L)
             irc.reply(s)
         else:
             irc.reply('I\'m not currently lobotomized in any channels.')
@@ -792,9 +793,9 @@ class Channel(callbacks.Plugin):
         """Internal message for notifying all the #channel,ops in a channel of
         a given situation."""
         capability = ircdb.makeChannelCapability(channel, 'op')
-        s = 'Alert to all %s ops: %s' % (channel, s)
+        s = format('Alert to all %s ops: %s', channel, s)
         if frm is not None:
-            s += ' (from %s)' % frm
+            s += format(' (from %s)', frm)
         for nick in irc.state.channels[channel].users:
             hostmask = irc.state.nickToHostmask(nick)
             if ircdb.checkCapability(hostmask, capability):
