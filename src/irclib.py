@@ -439,7 +439,10 @@ class Irc(IrcCommandDispatcher):
 
     def removeCallback(self, name):
         """Removes a callback from the callback list."""
-        (bad, good) = partition(lambda cb: cb.name() == name, self.callbacks)
+        name = name.lower()
+        def nameMatches(cb):
+            return cb.name().lower() == name
+        (bad, good) = partition(nameMatches, self.callbacks)
         self.callbacks[:] = good
         return bad
 

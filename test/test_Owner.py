@@ -99,12 +99,15 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
         self.assertError('reload Admin')
         self.assertNotError('load Admin')
         self.assertNotError('reload Admin')
+        self.assertNotError('reload ADMIN')
 
     def testUnload(self):
         self.assertError('unload Admin')
         self.assertNotError('load Admin')
         self.assertNotError('unload Admin')
         self.assertError('unload Admin')
+        self.assertNotError('load ADMIN')
+        self.assertNotError('unload ADMIN')
 
     def testSetconf(self):
         self.assertRegexp('setconf', 'confDir')
