@@ -98,6 +98,8 @@ class IrcCallback(IrcCommandDispatcher):
 # Basic queue for IRC messages.  It doesn't presently (but should at some
 # later point) reorder messages based on priority or penalty calculations.
 ###
+_high = sets.ImmutableSet(['MODE', 'KICK', 'PONG', 'NICK', 'PASS'])
+_low = sets.ImmutableSet(['PRIVMSG', 'PING', 'WHO', 'NOTICE'])
 class IrcMsgQueue(object):
     """Class for a queue of IrcMsgs.  Eventually, it should be smart.
 
@@ -122,9 +124,9 @@ class IrcMsgQueue(object):
                 debug.msg('Not adding msg %s to queue' % msg, 'normal')
         else:
             self.msgs.add(msg)
-            if msg.command in ('MODE', 'KICK', 'PONG', 'NICK'):
+            if msg.command in _high:
                 self.highpriority.enqueue(msg)
-            elif msg.command in ('PRIVMSG', 'PING', 'WHO', 'NOTICE'):
+            elif msg.command in _low:
                 self.lowpriority.enqueue(msg)
             else:
                 self.normal.enqueue(msg)
