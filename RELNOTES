@@ -1,0 +1,14 @@
+Version 0.75.0
+
+Don't forget to reinstall (i.e., run "python setup.py install" as
+root).
+
+You will need to re-run supybot-wizard and generate a new botscript.
+
+The Infobot plugin has been removed from this release; it's not ready
+for prime time.  If you're interested in getting it running (i.e., you
+want full Infobot compatibility and aren't satisfied with either
+MoobotFactoids or Factoids) then swing over to #supybot and we can
+discuss the tests.  We simply don't know enough about Infobot to make
+sure our Infobot plugin is an exact replica, and need someone's help
+with making the changes necessary for that.
