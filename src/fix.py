@@ -338,5 +338,5 @@ def flatten(seq, strings=False):
                     yield x
             except TypeError:
                 yield elt
-            
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
