@@ -107,7 +107,7 @@ class Topic(callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'topic')
         if ircdb.checkCapability(msg.prefix, capability):
             newtopic = irc.state.getTopic(channel)
-            while newtopic = irc.state.getTopic(channel):
+            while newtopic == irc.state.getTopic(channel):
                 topics = irc.state.getTopic(channel).split(self.topicSeparator)
                 random.shuffle(topics)
                 newtopic = self.topicSeparator.join(topics)
