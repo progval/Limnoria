@@ -109,7 +109,6 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
         drivers.ServersMixin.__init__(self, irc)
         (server, port) = self._getNextServer()
         reactor.connectTCP(server, port, self)
-        ReconnectingClientFactory.__init__(self)
 
     def clientConnectionFailed(self, connector, r):
         drivers.log.connectError(self.currentServer, errorMsg(r))
@@ -123,7 +122,6 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
 
     def startedConnecting(self, connector):
         drivers.log.connect(self.currentServer)
-        ReconnectingClientFactory.startedConnecting(self, connector)
 
     def buildProtocol(self, addr):
         protocol = ReconnectingClientFactory.buildProtocol(self, addr)
