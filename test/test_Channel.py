@@ -87,17 +87,32 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         self.assertNotError('voice')
         
-    def testKban(self):
-        self.irc.feedMsg(ircmsgs.join(self.channel, prefix='foobar!user@host'))
-        self.assertError('kban foobar')
-        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
-        m = self.getMsg('kban foobar')
-        self.assertEqual(m, ircmsgs.ban(self.channel, '*!*@host'))
+    def assertBan(self, query, hostmask, **kwargs):
+        m = self.getMsg(query, **kwargs)
+        self.assertEqual(m, ircmsgs.ban(self.channel, hostmask))
         m = self.getMsg(' ')
-        self.assertEqual(m, ircmsgs.kick(self.channel, 'foobar', self.nick))
+        self.assertEqual(m.command, 'KICK')
+
+    def testKban(self):
+        self.irc.prefix = 'something!else@somehwere.else'
+        self.irc.nick = 'something'
+        self.irc.feedMsg(ircmsgs.join(self.channel,
+                                      prefix='foobar!user@host.domain.tld'))
+        self.assertError('kban foobar')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
+        self.assertBan('kban foobar', '*!*@*.domain.tld')
+        self.assertBan('kban --exact foobar', 'foobar!user@host.domain.tld')
+        self.assertBan('kban --host foobar', '*!*@host.domain.tld')
+        self.assertBan('kban --user foobar', '*!user@*')
+        self.assertBan('kban --nick foobar', 'foobar!*@*')
+        self.assertBan('kban --nick --user foobar', 'foobar!user@*')
+        self.assertBan('kban --nick --host foobar', 'foobar!*@host.domain.tld')
+        self.assertBan('kban --user --host foobar', '*!user@host.domain.tld')
+        self.assertBan('kban --nick --user --host foobar',
+                       'foobar!user@host.domain.tld')
         self.assertNotRegexp('kban adlkfajsdlfkjsd', 'KeyError')
         self.assertNotRegexp('kban foobar time', 'ValueError')
-        self.assertError('kban %s' % self.nick)
+        self.assertError('kban %s' % self.irc.nick)
 
     def testLobotomizers(self):
         self.assertNotError('lobotomize')

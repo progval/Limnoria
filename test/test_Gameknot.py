@@ -33,50 +33,51 @@ from testsupport import *
 
 import utils
 
-class GameknotTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Gameknot',)
-    def testGkstats(self):
-        self.assertNotRegexp('gkstats jemfinch', 'Old GK rating')
-        self.assertError('gkstats %s' % utils.mktemp())
-        self.assertNotError('gkstats Strike')
+if network:
+    class GameknotTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Gameknot',)
+        def testGkstats(self):
+            self.assertNotRegexp('gkstats jemfinch', 'Old GK rating')
+            self.assertError('gkstats %s' % utils.mktemp())
+            self.assertNotError('gkstats Strike')
 
-    def testUrlSnarfer(self):
-        self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
-        self.assertNotError('here\'s a link: '
-                            'http://gameknot.com/chess.pl?bd=1077350&r=394 '
-                            'and here\'s another one: '
-                            'http://gameknot.com/chess.pl?bd=1116828&r=250')
-        self.assertNotError(' ') # The next snarfed response.
-        self.assertNotRegexp('http://gameknot.com/chess.pl?bd=1019508',
-                             self.nick)
+        def testUrlSnarfer(self):
+            self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
+            self.assertNotError('here\'s a link: '
+                                'http://gameknot.com/chess.pl?bd=1077350&r=394 '
+                                'and here\'s another one: '
+                                'http://gameknot.com/chess.pl?bd=1116828&r=250')
+            self.assertNotError(' ') # The next snarfed response.
+            self.assertNotRegexp('http://gameknot.com/chess.pl?bd=1019508',
+                                 self.nick)
 
-    def testStatsUrlSnarfer(self):
-        self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
-        self.assertRegexp('http://gameknot.com/stats.pl?ddipaolo&1',
-                          r'^[^&]+$')
+        def testStatsUrlSnarfer(self):
+            self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
+            self.assertRegexp('http://gameknot.com/stats.pl?ddipaolo&1',
+                              r'^[^&]+$')
 
-    def testConfig(self):
-        self.assertNotError('gameknot config game-snarfer off')
-        self.assertNotError('gameknot config stats-snarfer off')
-        self.assertNoResponse('http://gameknot.com/stats.pl?ironchefchess')
-        self.assertNoResponse('http://gameknot.com/chess.pl?bd=907498')
-        self.assertNotError('gameknot config game-snarfer on')
-        self.assertNotError('gameknot config stats-snarfer on')
-        self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
-        self.assertNotError('http://gameknot.com/chess.pl?bd=907498')
+        def testConfig(self):
+            self.assertNotError('gameknot config game-snarfer off')
+            self.assertNotError('gameknot config stats-snarfer off')
+            self.assertNoResponse('http://gameknot.com/stats.pl?ironchefchess')
+            self.assertNoResponse('http://gameknot.com/chess.pl?bd=907498')
+            self.assertNotError('gameknot config game-snarfer on')
+            self.assertNotError('gameknot config stats-snarfer on')
+            self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
+            self.assertNotError('http://gameknot.com/chess.pl?bd=907498')
         
 
-    def testSnarfer(self):
-        # This game expired.
-##         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-##                           '\x02ddipaolo\x0f won')
-        # As did this :(
-##         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-##                           '\x02chroniqueur\x0f resigned')
-        self.assertRegexp('http://gameknot.com/chess.pl?bd=955432',
-                          '\x02ddipaolo\x0f lost')
-        self.assertRegexp('http://gameknot.com/chess.pl?bd=1077345&r=365',
-                          'draw')
+        def testSnarfer(self):
+            # This game expired.
+##             self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
+##                               '\x02ddipaolo\x0f won')
+            # As did this :(
+##             self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
+##                               '\x02chroniqueur\x0f resigned')
+            self.assertRegexp('http://gameknot.com/chess.pl?bd=955432',
+                              '\x02ddipaolo\x0f lost')
+            self.assertRegexp('http://gameknot.com/chess.pl?bd=1077345&r=365',
+                              'draw')
 
 
 

@@ -31,90 +31,91 @@
 
 from testsupport import *
 
-class HttpTest(PluginTestCase, PluginDocumentation):
-    plugins = ('Http',)
-    def testExtension(self):
-        self.assertHelp('extension')
-        self.assertRegexp('extension doc', r'Microsoft\'s Word Document')
-        self.assertError('extension zapohd')
-        self.assertError('extension fo<')
+if network:
+    class HttpTest(PluginTestCase, PluginDocumentation):
+        plugins = ('Http',)
+        def testExtension(self):
+            self.assertHelp('extension')
+            self.assertRegexp('extension doc', r'Microsoft\'s Word Document')
+            self.assertError('extension zapohd')
+            self.assertError('extension fo<')
 
-    def testHeaders(self):
-        self.assertError('headers ftp://ftp.cdrom.com/pub/linux')
-        self.assertNotError('headers http://www.slashdot.org/')
+        def testHeaders(self):
+            self.assertError('headers ftp://ftp.cdrom.com/pub/linux')
+            self.assertNotError('headers http://www.slashdot.org/')
         
-    def testDoctype(self):
-        self.assertError('doctype ftp://ftp.cdrom.com/pub/linux')
-        self.assertNotError('doctype http://www.slashdot.org/')
-        m = self.getMsg('doctype http://moobot.sf.net/')
-        self.failUnless(m.args[1].endswith('>'))
+        def testDoctype(self):
+            self.assertError('doctype ftp://ftp.cdrom.com/pub/linux')
+            self.assertNotError('doctype http://www.slashdot.org/')
+            m = self.getMsg('doctype http://moobot.sf.net/')
+            self.failUnless(m.args[1].endswith('>'))
 
-    def testSize(self):
-        self.assertError('size ftp://ftp.cdrom.com/pub/linux')
-        self.assertNotError('size http://supybot.sf.net/')
-        self.assertNotError('size http://www.slashdot.org/')
+        def testSize(self):
+            self.assertError('size ftp://ftp.cdrom.com/pub/linux')
+            self.assertNotError('size http://supybot.sf.net/')
+            self.assertNotError('size http://www.slashdot.org/')
 
-    def testStockquote(self):
-        self.assertNotError('stockquote MSFT')
+        def testStockquote(self):
+            self.assertNotError('stockquote MSFT')
 
-    def testFreshmeat(self):
-        self.assertNotError('freshmeat supybot')
-        self.assertNotError('freshmeat My Classifieds')
-        self.assertNotRegexp('freshmeat supybot', 'DOM Element')
+        def testFreshmeat(self):
+            self.assertNotError('freshmeat supybot')
+            self.assertNotError('freshmeat My Classifieds')
+            self.assertNotRegexp('freshmeat supybot', 'DOM Element')
 
-    def testTitle(self):
-        self.assertResponse('title slashdot.org',
-                            'Slashdot: News for nerds, stuff that matters')
-        self.assertResponse('title http://www.slashdot.org/',
-                            'Slashdot: News for nerds, stuff that matters')
-        self.assertNotRegexp('title '
-                             'http://www.amazon.com/exec/obidos/tg/detail/-/'
-                             '1884822312/qid=1063140754/sr=8-1/ref=sr_8_1/'
-                             '002-9802970-2308826?v=glance&s=books&n=507846',
-                             'no HTML title')
-        # Checks the non-greediness of the regexp
-        self.assertResponse('title '
-                            'http://www.space.com/scienceastronomy/'
-                            'jupiter_dark_spot_031023.html',
-                            'Mystery Spot on Jupiter Baffles Astronomers')
-        # Checks for @title not-working correctly
-        self.assertResponse('title '\
-            'http://www.catb.org/~esr/jargon/html/F/foo.html',
-            'foo')
+        def testTitle(self):
+            self.assertResponse('title slashdot.org',
+                                'Slashdot: News for nerds, stuff that matters')
+            self.assertResponse('title http://www.slashdot.org/',
+                                'Slashdot: News for nerds, stuff that matters')
+            self.assertNotRegexp('title '
+                                 'http://www.amazon.com/exec/obidos/tg/detail/-/'
+                                 '1884822312/qid=1063140754/sr=8-1/ref=sr_8_1/'
+                                 '002-9802970-2308826?v=glance&s=books&n=507846',
+                                 'no HTML title')
+            # Checks the non-greediness of the regexp
+            self.assertResponse('title '
+                                'http://www.space.com/scienceastronomy/'
+                                'jupiter_dark_spot_031023.html',
+                                'Mystery Spot on Jupiter Baffles Astronomers')
+            # Checks for @title not-working correctly
+            self.assertResponse('title '\
+                'http://www.catb.org/~esr/jargon/html/F/foo.html',
+                'foo')
 
-    def testGeekquote(self):
-        self.assertNotError('geekquote')
-        self.assertNotError('geekquote 4848')
-        # It's not an error, it just truncates at the first non-number
-        #self.assertError('geekquote 48a8')
-        self.assertError('geekquote asdf')
+        def testGeekquote(self):
+            self.assertNotError('geekquote')
+            self.assertNotError('geekquote 4848')
+            # It's not an error, it just truncates at the first non-number
+            #self.assertError('geekquote 48a8')
+            self.assertError('geekquote asdf')
 
-    def testAcronym(self):
-        self.assertRegexp('acronym ASAP', 'as soon as possible')
-        self.assertNotRegexp('acronym asap', 'Definition')
-        self.assertNotRegexp('acronym UNIX', 'not an acronym')
-        # Used to pass requests with spaces ... make sure that stays fixed
-        self.assertNotError('acronym W T F')
+        def testAcronym(self):
+            self.assertRegexp('acronym ASAP', 'as soon as possible')
+            self.assertNotRegexp('acronym asap', 'Definition')
+            self.assertNotRegexp('acronym UNIX', 'not an acronym')
+            # Used to pass requests with spaces ... make sure that stays fixed
+            self.assertNotError('acronym W T F')
 
-    def testNetcraft(self):
-        self.assertNotError('netcraft slashdot.org')
+        def testNetcraft(self):
+            self.assertNotError('netcraft slashdot.org')
 
-    def testWeather(self):
-        self.assertNotError('weather Columbus, OH')
-        self.assertNotError('weather 43221')
-        self.assertNotRegexp('weather Paris, FR', 'Virginia')
-        self.assertError('weather alsdkfjasdl, asdlfkjsadlfkj')
-        self.assertNotError('weather London, uk')
-        self.assertNotError('weather London, UK')
-        self.assertNotError('weather Munich, de')
-        self.assertNotError('weather Tucson, AZ')
-	self.assertError('weather hell')
+        def testWeather(self):
+            self.assertNotError('weather Columbus, OH')
+            self.assertNotError('weather 43221')
+            self.assertNotRegexp('weather Paris, FR', 'Virginia')
+            self.assertError('weather alsdkfjasdl, asdlfkjsadlfkj')
+            self.assertNotError('weather London, uk')
+            self.assertNotError('weather London, UK')
+            self.assertNotError('weather Munich, de')
+            self.assertNotError('weather Tucson, AZ')
+            self.assertError('weather hell')
 
-    def testKernel(self):
-        self.assertNotError('kernel')
+        def testKernel(self):
+            self.assertNotError('kernel')
 
-    def testPgpkey(self):
-        self.assertNotError('pgpkey jeremiah fincher')
+        def testPgpkey(self):
+            self.assertNotError('pgpkey jeremiah fincher')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

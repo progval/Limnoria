@@ -31,20 +31,21 @@
 
 from testsupport import *
 
-class BabelFishTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Babelfish',)
-    def testTranslate(self):
-        self.assertResponse('translate en sp food',
-                            'alimento')
-        self.assertError('translate foo en food')
-        self.assertError('translate en foo food')
+if network:
+    class BabelFishTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Babelfish',)
+        def testTranslate(self):
+            self.assertResponse('translate en sp food',
+                                'alimento')
+            self.assertError('translate foo en food')
+            self.assertError('translate en foo food')
 
-    def testBabelize(self):
-        self.assertNotError('babelize en sp foo')
-        self.assertError('babelize sp fr foo')
+        def testBabelize(self):
+            self.assertNotError('babelize en sp foo')
+            self.assertError('babelize sp fr foo')
 
-    def testRandomlanguage(self):
-        self.assertNotError('randomlanguage')
+        def testRandomlanguage(self):
+            self.assertNotError('randomlanguage')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

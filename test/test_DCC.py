@@ -36,21 +36,22 @@ import telnetlib
 
 import ircutils
 
-class DCCTestCase(PluginTestCase):
-    plugins = ('DCC', 'Utilities')
-    def testChat(self):
-        self.nick = 'foo'
-        self.prefix = 'foo!bar@baz'
-        self.irc.prefix = '%s!%s@localhost' % (self.irc.nick, self.irc.nick)
-        m = self.getMsg('chat [echo foo]')
-        time.sleep(.1) # Give it a second to bind the port.
-        self.failIf(ircutils.isChannel(m.args[0]))
-        s = m.args[1]
-        (ip, port) = s[15:-1].split()
-        ip = ircutils.unDccIP(long(ip))
-        port = int(port)
-        t = telnetlib.Telnet(ip, port)
-        self.assertEqual(t.read_all(), 'foo\n')
+if network:
+    class DCCTestCase(PluginTestCase):
+        plugins = ('DCC', 'Utilities')
+        def testChat(self):
+            self.nick = 'foo'
+            self.prefix = 'foo!bar@baz'
+            self.irc.prefix = '%s!%s@localhost' % (self.irc.nick, self.irc.nick)
+            m = self.getMsg('chat [echo foo]')
+            time.sleep(.1) # Give it a second to bind the port.
+            self.failIf(ircutils.isChannel(m.args[0]))
+            s = m.args[1]
+            (ip, port) = s[15:-1].split()
+            ip = ircutils.unDccIP(long(ip))
+            port = int(port)
+            t = telnetlib.Telnet(ip, port)
+            self.assertEqual(t.read_all(), 'foo\n')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

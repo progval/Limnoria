@@ -31,16 +31,18 @@
 
 from testsupport import *
 
-class NetworkTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ['Network']
-    def testDns(self):
-        self.assertNotError('dns slashdot.org')
-        self.assertResponse('dns alsdkjfaslkdfjaslkdfj.com', 'Host not found.')
+if network:
+    class NetworkTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ['Network']
+        def testDns(self):
+            self.assertNotError('dns slashdot.org')
+            self.assertResponse('dns alsdkjfaslkdfjaslkdfj.com',
+                                'Host not found.')
 
-    def testWhois(self):
-        self.assertNotError('network whois ohio-state.edu')
-        self.assertError('network whois www.ohio-state.edu')
-        self.assertError('network whois slashdot.org')
+        def testWhois(self):
+            self.assertNotError('network whois ohio-state.edu')
+            self.assertError('network whois www.ohio-state.edu')
+            self.assertError('network whois slashdot.org')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

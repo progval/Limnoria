@@ -48,13 +48,14 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         finally:
             conf.replyWhenNotCommand = False
 
-    def testNotReplyWhenRegexpsMatch(self):
-        try:
-            conf.replyWhenNotCommand = True
-            self.prefix = 'somethingElse!user@host.domain.tld'
-            self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
-        finally:
-            conf.replyWhenNotCommand = False
+    if network:
+        def testNotReplyWhenRegexpsMatch(self):
+            try:
+                conf.replyWhenNotCommand = True
+                self.prefix = 'somethingElse!user@host.domain.tld'
+                self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
+            finally:
+                conf.replyWhenNotCommand = False
 
     def testNotReplyWhenNotCanonicalName(self):
         try:

@@ -31,26 +31,27 @@
 
 from testsupport import *
 
-class BugzillaTest(PluginTestCase, PluginDocumentation):
-    plugins = ('Bugzilla',)
-    def testBug(self):
-        self.assertNotError('bug gcc 5')
+if network:
+    class BugzillaTest(PluginTestCase, PluginDocumentation):
+        plugins = ('Bugzilla',)
+        def testBug(self):
+            self.assertNotError('bug gcc 5')
 
-    def testAddRemove(self):
-        self.assertNotError('add xiph http://bugs.xiph.org/ Xiph')
-        self.assertNotError('bug xiph 413')
-        self.assertNotError('remove xiph')
-        self.assertError('bug xiph 413')
+        def testAddRemove(self):
+            self.assertNotError('add xiph http://bugs.xiph.org/ Xiph')
+            self.assertNotError('bug xiph 413')
+            self.assertNotError('remove xiph')
+            self.assertError('bug xiph 413')
 
-    def testSearch(self):
-        self.assertNotError('search gcc alpha')
-        self.assertNotError('search --keywords=fixed gcc alpha')
+        def testSearch(self):
+            self.assertNotError('search gcc alpha')
+            self.assertNotError('search --keywords=fixed gcc alpha')
 
-    def testConfigBugzillaSnarfer(self):
-        self.assertNotError('bugzilla config bug-snarfer off')
-        self.assertNoResponse('http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
-        self.assertNotError('bugzilla config bug-snarfer on')
-        self.assertNotError('http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
+        def testConfigBugzillaSnarfer(self):
+            self.assertNotError('bugzilla config bug-snarfer off')
+            self.assertNoResponse('http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
+            self.assertNotError('bugzilla config bug-snarfer on')
+            self.assertNotError('http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

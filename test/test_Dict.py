@@ -31,19 +31,19 @@
 
 from testsupport import *
 
-class DictTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Dict', 'Misc')
-    def testDict(self):
-        self.assertNotError('dict slash')
-        self.assertNotRegexp('dict web1913 slash', 'foldoc')
-        self.assertNotError('dict ""')
+if network:
+    class DictTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Dict', 'Misc')
+        def testDict(self):
+            self.assertNotError('dict slash')
+            self.assertNotRegexp('dict web1913 slash', 'foldoc')
+            self.assertNotError('dict ""')
 
-    def testDictionaries(self):
-        self.assertNotError('dictionaries')
+        def testDictionaries(self):
+            self.assertNotError('dictionaries')
 
-    def testRandomDictionary(self):
-        self.assertNotError('random')
-        self.assertNotError('dict [random] moo')
+        def testRandomDictionary(self):
+            self.assertNotError('random')
+            self.assertNotError('dict [random] moo')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
-

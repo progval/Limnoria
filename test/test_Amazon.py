@@ -33,7 +33,7 @@ from testsupport import *
 
 LICENSE_KEY = 'INITIAL_NON_LICENSE_KEY'
 
-if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY':
+if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY' and network:
     class AmazonTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('Amazon',)
         def setUp(self):

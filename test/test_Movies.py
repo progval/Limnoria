@@ -31,15 +31,16 @@
 
 from testsupport import *
 
-class MoviesTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Movies',)
-    def testImdb(self):
-        self.assertNotError('imdb die hard')
-        self.assertRegexp('imdb kevin spacey', 'is apparently a person')
+if network:
+    class MoviesTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Movies',)
+        def testImdb(self):
+            self.assertNotError('imdb die hard')
+            self.assertRegexp('imdb kevin spacey', 'is apparently a person')
 
-    def testGenrePluralization(self):
-        self.assertNotRegexp('imdb 24', 'genres')
-        self.assertRegexp('imdb die hard', 'genres')
+        def testGenrePluralization(self):
+            self.assertNotRegexp('imdb 24', 'genres')
+            self.assertRegexp('imdb die hard', 'genres')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

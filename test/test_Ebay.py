@@ -31,45 +31,46 @@
 
 from testsupport import *
 
-class EbayTest(PluginTestCase, PluginDocumentation):
-    plugins = ('Ebay',)
-    def testAuction(self):
-        self.assertNotError('auction 3053641570')
-        # test 'Invalid Item' checking
-        self.assertRegexp('auction 2357056673', 'That auction is invalid')
-        self.assertError('auction foobar')
+if network:
+    class EbayTest(PluginTestCase, PluginDocumentation):
+        plugins = ('Ebay',)
+        def testAuction(self):
+            self.assertNotError('auction 3053641570')
+            # test 'Invalid Item' checking
+            self.assertRegexp('auction 2357056673', 'That auction is invalid')
+            self.assertError('auction foobar')
 
-    def testSnarfer(self):
-        self.assertNotError('ebay config auction-snarfer on')
-        self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'
-                          '&category=176&item=3053767552',
-                         r'.*Cisco NP-4T.*Serial Module.*US \$74\.95.*')
-        self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&'
-                          'category=28033&item=3053353651',
-                         r'.*Cisco 2524 Router - NO RESERVE.*izontech \(.*')
-        # test snarfing other countries
-        self.assertRegexp('http://cgi.ebay.ca/ws/eBayISAPI.dll?ViewItem&'
-                          'item=3636820075',
-                         r'NEW 34" Itech 8.8 Profile')
-        self.assertRegexp('http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&'
-                          'item=2355464443',
-                         r'Any Clear Crazy')
-        self.assertRegexp('http://cgi.ebay.com.au/ws/eBayISAPI.dll?ViewItem&'
-                          'item=2762983161&category=4607',
-                         r'Apple Mac G4')
-        # test .com/.*/ws/eBat compatibility
-        self.assertRegexp('http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'
-                          'ViewItem&item=2439393310&category=33708',
-                         r'88-89 CRX amber')
+        def testSnarfer(self):
+            self.assertNotError('ebay config auction-snarfer on')
+            self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'
+                              '&category=176&item=3053767552',
+                             r'.*Cisco NP-4T.*Serial Module.*US \$74\.95.*')
+            self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&'
+                              'category=28033&item=3053353651',
+                             r'.*Cisco 2524 Router - NO RESERVE.*izontech \(.*')
+            # test snarfing other countries
+            self.assertRegexp('http://cgi.ebay.ca/ws/eBayISAPI.dll?ViewItem&'
+                              'item=3636820075',
+                             r'NEW 34" Itech 8.8 Profile')
+            self.assertRegexp('http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&'
+                              'item=2355464443',
+                             r'Any Clear Crazy')
+            self.assertRegexp('http://cgi.ebay.com.au/ws/eBayISAPI.dll?ViewItem&'
+                              'item=2762983161&category=4607',
+                             r'Apple Mac G4')
+            # test .com/.*/ws/eBat compatibility
+            self.assertRegexp('http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'
+                              'ViewItem&item=2439393310&category=33708',
+                             r'88-89 CRX amber')
 
-    def testConfigSnarfer(self):
-        self.assertNotError('ebay config auction-snarfer off')
-        self.assertNoResponse('http://cgi.ebay.com/ebaymotors/ws/'
-                              'eBayISAPI.dll?ViewItem&item=2439393310&'
-                              'category=33708')
-        self.assertNotError('ebay config auction-snarfer on')
-        self.assertNotError('http://cgi.ebay.com/ebaymotors/ws/'
-                            'eBayISAPI.dll?ViewItem&item=2439393310&'
-                            'category=33708')
+        def testConfigSnarfer(self):
+            self.assertNotError('ebay config auction-snarfer off')
+            self.assertNoResponse('http://cgi.ebay.com/ebaymotors/ws/'
+                                  'eBayISAPI.dll?ViewItem&item=2439393310&'
+                                  'category=33708')
+            self.assertNotError('ebay config auction-snarfer on')
+            self.assertNotError('http://cgi.ebay.com/ebaymotors/ws/'
+                                'eBayISAPI.dll?ViewItem&item=2439393310&'
+                                'category=33708')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

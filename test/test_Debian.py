@@ -34,46 +34,49 @@ import time
 
 from testsupport import *
 
-class DebianTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Debian',)
-    timeout = 100
-    cleanDataDir = False
-    fileDownloaded = False
+if network:
+    class DebianTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Debian',)
+        timeout = 100
+        cleanDataDir = False
+        fileDownloaded = False
 
-    def setUp(self, nick='test'):
-        PluginTestCase.setUp(self)
-        try:
-            if os.path.exists(os.path.join(conf.dataDir, 'Contents-i386.gz')):
+        def setUp(self, nick='test'):
+            PluginTestCase.setUp(self)
+            try:
+                if os.path.exists(os.path.join(conf.dataDir,
+                                  'Contents-i386.gz')):
+                    pass
+                else:
+                    print
+                    print "Downloading files, this may take awhile"
+                    filename = os.path.join(conf.dataDir, 'Contents-i386.gz')
+                    while not os.path.exists(filename):
+                        time.sleep(1)
+                    print "Download complete"
+                    print "Starting test ..."
+                    self.fileDownloaded = True
+            except KeyboardInterrupt:
                 pass
-            else:
-                print
-                print "Downloading files, this may take awhile"
-                filename = os.path.join(conf.dataDir, 'Contents-i386.gz')
-                while not os.path.exists(filename):
-                    time.sleep(1)
-                print "Download complete"
-                print "Starting test ..."
-                self.fileDownloaded = True
-        except KeyboardInterrupt:
-            pass
 
-    def testDebversion(self):
-        self.assertHelp('debian version')
-        self.assertRegexp('debian version lakjdfad', r'^No package.*\(all\)')
-        self.assertRegexp('debian version unstable alkdjfad',
-            r'^No package.*\(unstable\)')
-        self.assertRegexp('debian version gaim',
-                          r'Total matches:.*gaim.*\(stable\)')
-        self.assertError('debian version unstable')
+        def testDebversion(self):
+            self.assertHelp('debian version')
+            self.assertRegexp('debian version lakjdfad',
+                              r'^No package.*\(all\)')
+            self.assertRegexp('debian version unstable alkdjfad',
+                r'^No package.*\(unstable\)')
+            self.assertRegexp('debian version gaim',
+                              r'Total matches:.*gaim.*\(stable\)')
+            self.assertError('debian version unstable')
 
-    def testDebfile(self):
-        self.assertHelp('file')
-        if not self.fileDownloaded:
-            pass
-        self.assertRegexp('file --exact bin/gaim', r'net/gaim')
+        def testDebfile(self):
+            self.assertHelp('file')
+            if not self.fileDownloaded:
+                pass
+            self.assertRegexp('file --exact bin/gaim', r'net/gaim')
 
-    def testDebincoming(self):
-        self.assertHelp('incoming')
+        def testDebincoming(self):
+            self.assertHelp('incoming')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

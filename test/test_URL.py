@@ -100,30 +100,38 @@ if sqlite is not None:
             self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
             self.assertNotRegexp('url last', '\\x01')
 
-        def testTinyurl(self):
-            self.assertNotError('url config tinyurlsnarfer off')
-            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'
-                              'func=add&group_id=58965&atid=489447',
-                              r'http://tinyurl.com/rqac')
-            self.assertNotError('url config tinyurlsnarfer on')
-            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'
-                              'func=add&group_id=58965&atid=489447',
-                              r'http://tinyurl.com/rqac')
+        def testNonSnarfingRegexpConfigurable(self):
+            self.assertNoResponse('http://foo.bar.baz/', 2)
+            self.assertResponse('url last', 'http://foo.bar.baz/')
+            self.assertNotError('url config non-snarfing-regexp m/biff/i')
+            self.assertNoResponse('http://biff.bar.baz/', 2)
+            self.assertResponse('url last', 'http://foo.bar.baz/')
 
-        def testTinysnarf(self):
-            self.assertNotError('url config tinyurlsnarfer on')
-            self.assertRegexp('http://sourceforge.net/tracker/?'
-                              'func=add&group_id=58965&atid=489447',
-                              r'http://tinyurl.com/rqac.* \(was')
-            self.assertRegexp('http://www.urbandictionary.com/define.php?'
-                              'term=all+your+base+are+belong+to+us',
-                              r'http://tinyurl.com/u479.* \(was')
+        if network:
+            def testTinyurl(self):
+                self.assertNotError('url config tinyurlsnarfer off')
+                self.assertRegexp('url tiny http://sourceforge.net/tracker/?'
+                                  'func=add&group_id=58965&atid=489447',
+                                  r'http://tinyurl.com/rqac')
+                self.assertNotError('url config tinyurlsnarfer on')
+                self.assertRegexp('url tiny http://sourceforge.net/tracker/?'
+                                  'func=add&group_id=58965&atid=489447',
+                                  r'http://tinyurl.com/rqac')
 
-        def testTitleSnarfer(self):
-            self.assertNoResponse('http://microsoft.com/')
-            self.assertNotError('url config title-snarfer on')
-            self.assertResponse('http://microsoft.com/',
-                                'Title: Microsoft Corporation')
+            def testTinysnarf(self):
+                self.assertNotError('url config tinyurlsnarfer on')
+                self.assertRegexp('http://sourceforge.net/tracker/?'
+                                  'func=add&group_id=58965&atid=489447',
+                                  r'http://tinyurl.com/rqac.* \(was')
+                self.assertRegexp('http://www.urbandictionary.com/define.php?'
+                                  'term=all+your+base+are+belong+to+us',
+                                  r'http://tinyurl.com/u479.* \(was')
+
+            def testTitleSnarfer(self):
+                self.assertNoResponse('http://microsoft.com/')
+                self.assertNotError('url config title-snarfer on')
+                self.assertResponse('http://microsoft.com/',
+                                    'Title: Microsoft Corporation')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

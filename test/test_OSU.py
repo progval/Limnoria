@@ -33,15 +33,18 @@ from testsupport import *
 
 class OSUTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('OSU',)
-    def testOsuemail(self):
-        self.assertResponse('osu email jeremiah fincher', 'fincher.8@osu.edu')
-        self.assertResponse('osu email jeremiah d fincher','fincher.8@osu.edu')
+    if network:
+        def testOsuemail(self):
+            self.assertResponse('osu email jeremiah fincher',
+                                'fincher.8@osu.edu')
+            self.assertResponse('osu email jeremiah d fincher',
+                                'fincher.8@osu.edu')
 
     def testOsubuilding(self):
-        self.assertRegexp('osu building DL', '^Dreese Lab')
-        self.assertRegexp('osu building Dl', '^Dreese Lab')
-        self.assertRegexp('osu building dL', '^Dreese Lab')
-        self.assertRegexp('osu building dl', '^Dreese Lab')
+        self.assertRegexp('osu building DL', r'^Dreese Lab')
+        self.assertRegexp('osu building Dl', r'^Dreese Lab')
+        self.assertRegexp('osu building dL', r'^Dreese Lab')
+        self.assertRegexp('osu building dl', r'^Dreese Lab')
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

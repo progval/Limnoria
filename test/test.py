@@ -30,6 +30,7 @@
 ###
 
 import supybot
+import logging
 
 import conf
 conf.dataDir = 'test-data'
@@ -37,6 +38,7 @@ conf.confDir = 'test-conf'
 conf.logDir = 'test-log'
 conf.replyWhenNotCommand = False
 conf.stdoutLogging = False
+conf.minimumLogPriority = logging.DEBUG
 conf.detailedTracebacks = False # Bugs in cgitb can be bad.
 
 import fix
@@ -57,6 +59,7 @@ class path(str):
         return self._r.split(self) == self._r.split(other)
 
 if __name__ == '__main__':
+    import testsupport
     import optparse
 
     if not os.path.exists(conf.dataDir):
@@ -68,11 +71,6 @@ if __name__ == '__main__':
     if not os.path.exists(conf.logDir):
         os.mkdir(conf.logDir)
 
-##     for filename in os.listdir(conf.logDir):
-##         if filename == 'plugins':
-##             continue
-##         filename = os.path.join(conf.logDir, filename)
-##         os.remove(filename)
     pluginLogDir = os.path.join(conf.logDir, 'plugins')
     for filename in os.listdir(pluginLogDir):
         os.remove(os.path.join(pluginLogDir, filename))
@@ -92,9 +90,17 @@ if __name__ == '__main__':
     parser.add_option('-v', '--verbose', action='store_true', default=False,
                       help='Sets the verbose flag, printing extra information '
                            'about each test that runs.')
+    parser.add_option('', '--nonetwork', action='store_true', default=False,
+                      help='Causes the network-based tests not to run.')
+    parser.add_option('', '--noplugins', action='store_true', default=False,
+                      help='Causes the plugin tests not to run.')
     (options, args) = parser.parse_args()
     if not args:
-        args = map(path, glob.glob(os.path.join('test', 'test_*.py')))
+        if options.noplugins:
+            pattern = 'test_[a-z]*.py'
+        else:
+            pattern = 'test_*.py'
+        args = map(path, glob.glob(os.path.join('test', pattern)))
 
     if options.exclusions:
         for name in map(path, options.exclusions):
@@ -112,6 +118,9 @@ if __name__ == '__main__':
         world.myVerbose = True
     else:
         world.myVerbose = False
+
+    if options.nonetwork:
+        testsupport.network = False
 
     world.testing = True
     names = [os.path.splitext(os.path.basename(name))[0] for name in args]
