@@ -133,7 +133,7 @@ class Bayes(callbacks.Privmsg):
             (kind, prob) = kind
             prob *= 100
             text = utils.ellipsisify(text, 30)
-            self.log.warning('Classified %r as %s. (%.2f%%)', text, kind, prob)
+            self.log.debug('Classified %r as %s. (%.2f%%)', text, kind, prob)
         self.db.trainNick(channel, msg.nick, text)
                 
     def guess(self, irc, msg, args, channel, text):
