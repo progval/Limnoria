@@ -201,13 +201,15 @@ def makePluginDocumentation(pluginWindow):
     <div class="mainbody" style="padding: 0;">
     %s
     <table>
-    <tr id="trheader"><td>Command</td><td>Args</td><td>
+    <tr><th colspan="3">Commands for %s</th></tr>
+    <tr class="trheader"><td>Command</td><td>Args</td><td>
     Detailed Help</td></tr>
     ''' % (genHeader(title, meta),
            cgi.escape(module.__doc__ or ""),
            pluginhelp,
            deprecated,
-           genNavbar('../../'))))
+           genNavbar('../../'),
+           pluginName)))
     attrs = [x for x in dir(plugin) if plugin.isCommand(x) and not
              x.startswith('_')]
     id.write('(%s)<br />\n' % ', '.join(attrs))
@@ -236,18 +238,25 @@ def makePluginDocumentation(pluginWindow):
             ''' % (trClass, attr, attr, help, morehelp)))
     try:
         pluginconf = conf.supybot.plugins.get(pluginName)
-        fd.write(textwrap.dedent('''</table><br /><table><tr id="trheader">
-            <td>Config Var</td><td>Default Value</td><td>Help</td>'''))
+        fd.write(textwrap.dedent(
+            '''</table><br /><table>
+            <tr><th colspan="3">Configuration Variables for %s</th></tr>
+            <tr class="trheader">
+            <td>Config Var</td>
+            <td>Default Value</td>
+            <td>Help</td></tr>''' % pluginName))
         trClass = trClasses[trClass]
-        for config in [(c[0], c[1], c[1].help) for c in\
+        for config in [(c[0], c[1]) for c in\
                        pluginconf.getValues(getChildren=True,fullNames=False)]:
                 name = config[0]
                 default = str(config[1])
-                help = config[2]
+                if isinstance(config[1]._default, basestring):
+                    default = utils.dqrepr(default)
+                help = config[1].help
                 help = cgi.escape(help)
                 trClass = trClasses[trClass]
                 fd.write(textwrap.dedent('''
-                <tr class="%s" id="%s"><td>%s</td><td>%r</td>
+                <tr class="%s" id="%s"><td>%s</td><td>%s</td>
                 <td class="detail">%s</td></tr>
                 ''' % (trClass, name, name, default, help)))
     except registry.NonExistentRegistryEntry:
