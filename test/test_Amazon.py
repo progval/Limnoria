@@ -31,14 +31,14 @@
 
 from testsupport import *
 
-LICENSE_KEY = 'INITIAL_NON_LICENSE_KEY'
+LICENSE_KEY = 'AMAZONS_NOT_CHECKING_KEYS'
 
 if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY' and network:
     class AmazonTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('Amazon',)
         def setUp(self):
             PluginTestCase.setUp(self)
-            self.assertNotError('licensekey %s' % LICENSE_KEY)
+            conf.supybot.plugins.amazon.licensekey.set(LICENSE_KEY)
 
         def testIsbn(self):
             self.assertHelp('isbn')
@@ -62,7 +62,7 @@ if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY' and network:
         def testAuthor(self):
             self.assertHelp('author')
             self.assertRegexp('author torvalds', r'Just for Fun')
-            self.assertRegexp('author --url torvalds', r'Linus.*/exec/obidos')
+            self.assertRegexp('author --url torvalds', r'Reilly.*/exec/obidos')
 
         def testArtist(self):
             self.assertHelp('artist')

@@ -40,12 +40,13 @@ import plugins
 
 import amazon
 
+import registry
+
 import conf
 import utils
 import ircutils
 import privmsgs
 import callbacks
-import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -59,21 +60,30 @@ def configure(onStart, afterConnect, advanced):
         key = anything('What is it?')
 
         onStart.append('load Amazon')
-        onStart.append('amazon licensekey %s' % key)
+        conf.supybot.plugins.Amazon.licenseKey.set(key)
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
         print 'You can apply for a key at http://www.amazon.com/webservices'
-        
 
-class Amazon(callbacks.Privmsg,configurable.Mixin):
+class LicenseKey(registry.String):
+    def set(self, s):
+        # In case we decide we need to recover
+        original = getattr(self, 'value', self.default)
+        registry.String.set(self, s)
+        if self.value:
+            amazon.setLicense(self.value)
+        
+conf.registerPlugin('Amazon')
+conf.registerChannelValue(conf.supybot.plugins.Amazon, 'bold',
+    registry.Boolean(True, """Determines whether the results are bolded."""))
+conf.registerGlobalValue(conf.supybot.plugins.Amazon, 'licenseKey',
+    LicenseKey('', """Sets the license key for using Amazon Web Services.
+    Must be set before any other commands in the plugin are used."""))
+
+class Amazon(callbacks.Privmsg):
     threaded = True
-    configurables = configurable.Dictionary(
-        [('bold', configurable.BoolType, True,
-         """Determines whether the results are bolded.""")]
-    )
 
     def __init__(self):
-        configurable.Mixin.__init__(self)
         callbacks.Privmsg.__init__(self)
     
     def _genResults(self, reply, attribs, items, url, bold, bold_item):
@@ -104,17 +114,6 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
                 self.log.warning(str(e))
         return res
 
-    def licensekey(self, irc, msg, args):
-        """<key>
-
-        Sets the license key for using Amazon Web Services.  Must be set before
-        any other commands in this module are used.
-        """
-        key = privmsgs.getArgs(args)
-        amazon.setLicense(key)
-        irc.replySuccess()
-    licensekey = privmsgs.checkCapability(licensekey, 'admin')
-
     def isbn(self, irc, msg, args):
         """[--url] <isbn>
 
@@ -140,7 +139,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             '%(publisher)s%(url)s'
         try:
             book = amazon.searchByKeyword(isbn)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, book, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -173,7 +172,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             '%(publisher)s%(url)s'
         try:
             books = amazon.searchByKeyword(keyword)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -212,7 +211,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             videos = amazon.searchByKeyword(keyword, product_line=product)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, videos, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -243,7 +242,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
         s = '"%(title)s"%(url)s'
         try:
             item = amazon.searchByASIN(asin)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -277,7 +276,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
         s = '"%(title)s" %(manufacturer)s%(url)s'
         try:
             item = amazon.searchByUPC(upc)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -310,7 +309,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             '%(publisher)s%(url)s'
         try:
             books = amazon.searchByAuthor(author)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -408,7 +407,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             '%(publisher)s%(url)s'
         try:
             items = amazon.searchByArtist(artist, product_line=product)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -448,7 +447,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             items = amazon.searchByActor(actor, product_line=product)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -488,7 +487,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             items = amazon.searchByDirector(director, product_line=product)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -527,7 +526,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
         try:
             items = amazon.searchByManufacturer(manufacturer,
                                                 product_line=product)
-            bold = self.configurables.get('bold', msg.args[0])
+            bold = conf.supybot.plugins.Amazon.bold()
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
