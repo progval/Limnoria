@@ -76,6 +76,8 @@ class Protector(callbacks.Plugin):
             ignore('no msg.args')
         elif not irc.isChannel(msg.args[0]):
             ignore('not on a channel')
+        elif not self.registryValue('enable', msg.args[0]):
+            ignore('supybot.plugins.Protector.enable is False.')
         elif msg.args[0] not in irc.state.channels:
             # One has to wonder how this would happen, but just in case...
             ignore('bot isn\'t in channel')
