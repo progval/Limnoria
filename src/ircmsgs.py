@@ -166,17 +166,7 @@ class IrcMsg(object):
         return self._str
 
     def __len__(self):
-        if self._len is not None:
-            return self._len
-        self._len = 0
-        if self.prefix:
-            self._len += len(self.prefix)
-        self._len += len(self.command)
-        if self.args:
-            for arg in self.args:
-                self._len += len(arg) + 1 # Remember space prior to the arg.
-        self._len += 2 # For colon before the prefix and before the last arg.
-        return self._len
+        return len(str(self))
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and \
@@ -184,9 +174,11 @@ class IrcMsg(object):
                self.command == other.command and \
                self.prefix == other.prefix and \
                self.args == other.args
-
+    __req__ = __eq__ # I don't know exactly what this does, but it can't hurt.
+    
     def __ne__(self, other):
         return not (self == other)
+    __rne__ = __ne__ # Likewise as above.
 
     def __hash__(self):
         if self._hash is not None:
@@ -215,12 +207,6 @@ class IrcMsg(object):
 
     def __getattr__(self, attr):
         return self.tagged(attr)
-
-## try:
-##     import _ircmsg
-##     IrcMsg = _ircmsg.IrcMsg
-## except:
-##     pass
 
 
 def isCtcp(msg):
