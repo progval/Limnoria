@@ -114,7 +114,9 @@ class SocketDriver(drivers.IrcDriver):
         self._sendIfMsgs()
         
     def reconnect(self, wait=False):
+        log.info('Reconnect called.')
         if wait:
+            log.info('Reconnect waiting.')
             self._scheduleReconnect()
             return
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -132,6 +134,8 @@ class SocketDriver(drivers.IrcDriver):
         self.reconnectWaitPeriodsIndex = 0
         
     def die(self):
+        log.info('Driver for %s dying.', irc)
+        self.conn.close()
         self.irc.die()
 
     def _scheduleReconnect(self):
