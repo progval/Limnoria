@@ -203,6 +203,7 @@ class ToggleDictionary(object):
         self.defaults = toggles
 
     def _getDict(self, channel):
+        #debug.printf('_getDict(%s)' % channel)
         if channel is None:
             return self.defaults
         else:
@@ -214,6 +215,7 @@ class ToggleDictionary(object):
         return self._getDict(channel)[key]
 
     def toggle(self, key, value=None, channel=None):
+        #debug.printf('inside toggle: %s %s %s' % (key, value, channel))
         d = self._getDict(channel)
         if value is None:
             d[key] = not d[key] # Raises KeyError, we want this.
@@ -256,7 +258,7 @@ class Toggleable(object):
         closure = self.toggle.im_func.func_closure
         newf = types.FunctionType(code, globals, None, closure=closure)
         newf.__doc__ = s
-        self.toggle = types.MethodType(newf, self, self.__class__)
+        self.__class__.toggle = types.MethodType(newf, self, self.__class__)
 
     def _toggleNames(self):
         names = self.toggles.defaults.keys()
@@ -268,9 +270,12 @@ class Toggleable(object):
 
         The author of my plugin didn't call Toggleable.__init__.
         """
+        #debug.printf('%s.toggle called.' % self.__class__)
         try:
             channel = privmsgs.getChannel(msg, args)
             capability = ircdb.makeChannelCapability(channel, 'op')
+        except callbacks.ArgumentError:
+            raise
         except callbacks.Error:
             channel = None
             capability = 'admin'
