@@ -73,7 +73,7 @@ class IrcCallback(object):
             method = getattr(self, commandName)
             try:
                 method(irc, msg)
-            except Exception, e:
+            except Exception:
                 debug.recoverableException()
                 s = 'Exception raised by %s.%s' % \
                     (self.__class__.__name__, method.im_func.func_name)
@@ -224,6 +224,15 @@ class IrcState(object):
             channel = msg.args[1].lower()
             chan = self.channels[channel]
             chan.topic = msg.args[2]
+        elif msg.command == 'NICK':
+            newNick = msg.args[0]
+            for channel in self.channels.itervalues():
+                chan = self.channels[channel]
+                for s in (chan.users, chan.ops, chan.halfops, chan.voices):
+                    if msg.nick in s:
+                        s.remove(msg.nick)
+                        s.add(newNick)
+                        
 
     def getTopic(self, channel):
         return self.channels[channel.lower()].topic
