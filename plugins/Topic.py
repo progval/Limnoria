@@ -151,7 +151,7 @@ class Topic(callbacks.Privmsg):
                 except ValueError:
                     irc.error('The positions must be valid integers.')
                     return
-            if utils.sorted(order) != range(num):
+            if sorted(order) != range(num):
                 irc.error('Duplicate topic numbers cannot be specified.')
                 return
             try:

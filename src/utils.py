@@ -394,12 +394,17 @@ def sortBy(f, L, cmp=cmp):
     for (i, elt) in enumerate(L):
         L[i] = L[i][2]
 
-def sorted(iterable, *args, **kwargs):
-    """Returns a sorted list made from iterable.  All other args are given to
-    list.sort unchanged."""
+def sorted(iterable, cmp=None, key=None, reversed=False):
     L = list(iterable)
-    L.sort(*args, **kwargs)
+    if key is not None:
+        sortBy(key, L, cmp=cmp)
+    else:
+        L.sort(cmp)
+    if reversed:
+        L.reverse()
     return L
+
+__builtins__['sorted'] = sorted
 
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
