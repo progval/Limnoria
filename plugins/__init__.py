@@ -323,7 +323,7 @@ class ChannelUserDB(ChannelUserDictionary):
             log.debug('Exception: %s', utils.exnToString(e))
 
     def flush(self):
-        fd = utils.transactionalFile(self.filename)
+        fd = utils.transactionalFile(self.filename, makeBackupIfSmaller=False)
         writer = csv.writer(fd)
         items = self.items()
         if not items:
