@@ -421,8 +421,6 @@ def public(irc, msg, args, state, errmsg=None):
 def checkCapability(irc, msg, args, state, cap):
     cap = ircdb.canonicalCapability(cap)
     if not ircdb.checkCapability(msg.prefix, cap):
-##         state.log.warning('%s tried %s without %s.',
-##                           msg.prefix, state.name, cap)
         irc.errorNoCapability(cap, Raise=True)
 
 def anything(irc, msg, args, state):
