@@ -212,6 +212,13 @@ class IrcUserTestCase(unittest.TestCase):
         self.failUnless(u.checkPassword('foobar'))
         self.failIf(u.checkPassword('somethingelse'))
 
+    def testHashedPassword(self):
+        u = ircdb.IrcUser()
+        u.setPassword('foobar', hashed=True)
+        self.failUnless(u.checkPassword('foobar'))
+        self.failIf(u.checkPassword('somethingelse'))
+        self.assertNotEqual(u.password, 'foobar')
+
     def testHostmasks(self):
         prefix = 'foo!bar@baz'
         hostmasks = ['*!bar@baz', 'foo!*@*']

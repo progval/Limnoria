@@ -412,7 +412,7 @@ def saltHash(password, salt=None, hash='sha'):
         hasher = md5.md5
     elif hash == 'sha':
         hasher = sha.sha
-    return salt + hasher(salt + password).hexdigest()
+    return '|'.join([salt, hasher(salt + password).hexdigest()])
 
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.

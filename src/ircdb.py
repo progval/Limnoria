@@ -186,11 +186,12 @@ class UserCapabilitySet(CapabilitySet):
 class IrcUser(object):
     """This class holds the capabilities and authentications for a user."""
     def __init__(self, ignore=False, password='', name='',
-                 capabilities=(), hostmasks=None, secure=False):
+                 capabilities=(), hostmasks=None, secure=False, hashed=False):
         self.auth = None # The (time, hostmask) a user authenticated under
         self.name = name # The name of the user.
         self.ignore = ignore # A boolean deciding if the person is ignored.
         self.secure = secure # A boolean describing if hostmasks *must* match.
+        self.hashed = hashed # True if the password is hashed on disk.
         self.password = password # password (plaintext? hashed?)
         self.capabilities = UserCapabilitySet()
         for capability in capabilities:
@@ -201,10 +202,11 @@ class IrcUser(object):
             self.hostmasks = hostmasks
 
     def __repr__(self):
-        return '%s(ignore=%s, password=%r, name=%r, '\
+        return '%s(ignore=%s, password=%r, name=%r, hashed=%r, '\
                'capabilities=%r, hostmasks=%r, secure=%r)\n' %\
-               (self.__class__.__name__, self.ignore, self.password,
-                self.name, self.capabilities, self.hostmasks, self.secure)
+               (self.__class__.__name__,
+                self.ignore, self.password, self.name, self.hashed,
+                self.capabilities, self.hostmasks, self.secure)
 
     def addCapability(self, capability):
         """Gives the user the given capability."""
@@ -224,13 +226,21 @@ class IrcUser(object):
         else:
             return self.capabilities.check(capability)
 
-    def setPassword(self, password):
+    def setPassword(self, password, hashed=False):
         """Sets the user's password."""
-        self.password = password
+        if hashed or self.hashed:
+            self.hashed = True
+            self.password = utils.saltHash(password)
+        else:
+            self.password = password
 
     def checkPassword(self, password):
         """Checks the user's password."""
-        return (self.password == password)
+        if self.hashed:
+            (salt, _) = self.password.split('|')
+            return (self.password == utils.saltHash(password, salt=salt))
+        else:
+            return (self.password == password)
 
     def checkHostmask(self, hostmask, useAuth=True):
         """Checks a given hostmask against the user's hostmasks or current

@@ -33,6 +33,7 @@
 Provides commands useful to users in general. This plugin is loaded by default.
 """
 
+import getopt
 import string
 
 import conf
@@ -50,14 +51,20 @@ class User(callbacks.Privmsg):
             return True
 
     def register(self, irc, msg, args):
-        """<name> <password>
+        """[--hashed] <name> <password>
 
         Registers <name> with the given password <password> and the current
         hostmask of the person registering.  This command (and all other
         commands that include a password) must be sent to the bot privately,
-        not in a channel.
+        not in a channel.  If --hashed is given, the password will be hashed
+        on disk, rather than being stored in plaintext.
         """
-        (name, password) = privmsgs.getArgs(args, needed=2)
+        (optlist, rest) = getopt.getopt(args, '', ['hashed'])
+        (name, password) = privmsgs.getArgs(rest, needed=2)
+        hashed = False
+        for (option, arg) in optlist:
+            if option == '--hashed':
+                hashed = True
         if not self._checkNotChannel(irc, msg, password):
             return
         try:
@@ -77,7 +84,7 @@ class User(callbacks.Privmsg):
             pass
         (id, user) = ircdb.users.newUser()
         user.name = name
-        user.setPassword(password)
+        user.setPassword(password, hashed=hashed)
         user.addHostmask(msg.prefix)
         ircdb.users.setUser(id, user)
         irc.reply(msg, conf.replySuccess)
@@ -200,13 +207,19 @@ class User(callbacks.Privmsg):
             return
 
     def setpassword(self, irc, msg, args):
-        """<name> <old password> <new password>
+        """[--hashed] <name> <old password> <new password>
 
         Sets the new password for the user specified by <name> to
         <new password>.  Obviously this message must be sent to the bot
-        privately (not on a channel).
+        privately (not in a channel).  If --hashed is given, the password will
+        be hashed on disk (rather than being stored in plaintext.
         """
-        (name, oldpassword, newpassword) = privmsgs.getArgs(args, 3)
+        (optlist, rest) = getopt.getopt(args, '', ['hashed'])
+        (name, oldpassword, newpassword) = privmsgs.getArgs(rest, 3)
+        hashed = False
+        for (option, arg) in optlist:
+            if option == '--hashed':
+                hashed = True
         if not self._checkNotChannel(irc, msg, oldpassword+newpassword):
             return
         try:
@@ -216,7 +229,7 @@ class User(callbacks.Privmsg):
             irc.error(msg, conf.replyNoUser)
             return
         if user.checkPassword(oldpassword):
-            user.setPassword(newpassword)
+            user.setPassword(newpassword, hashed=hashed)
             ircdb.users.setUser(id, user)
             irc.reply(msg, conf.replySuccess)
         else:

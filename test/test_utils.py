@@ -277,7 +277,8 @@ class UtilsTest(unittest.TestCase):
 
     def testSaltHash(self):
         s = utils.saltHash('jemfinch')
-        self.assertEqual(utils.saltHash('jemfinch', salt=s[:8]), s)
+        (salt, hash) = s.split('|')
+        self.assertEqual(utils.saltHash('jemfinch', salt=salt), s)
 
 
 
