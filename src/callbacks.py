@@ -295,6 +295,7 @@ class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     threaded = False
     public = True
+    commandArgs = ['self', 'irc', 'msg', 'args']
     def __init__(self):
         self.rateLimiter = RateLimiter()
         if self.threaded:
@@ -317,8 +318,7 @@ class Privmsg(irclib.IrcCallback):
             method = getattr(self, methodName)
             if inspect.ismethod(method):
                 code = method.im_func.func_code
-                return inspect.getargs(code) == (['self','irc', 'msg', 'args'],
-                                                 None, None)
+                return inspect.getargs(code) == (self.commandArgs, None, None)
             else:
                 return False
         else:
