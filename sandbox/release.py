@@ -77,6 +77,7 @@ if __name__ == '__main__':
                }
     system('python sandbox/generate-plugin-documentation.py')
     pwd = os.getcwd()
+    os.chmod('docs/plugins', 0775)
     sh = 'tar rf %s/docs.tar %%s' % pwd
     for (dir, L) in docFiles.iteritems():
         os.chdir(os.path.join(pwd, dir))
