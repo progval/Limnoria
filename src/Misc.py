@@ -232,23 +232,28 @@ class Misc(callbacks.Privmsg):
             if name.endswith('.py'):
                 name = name[:-3]
             try:
+                def startsWithPluginsDir(filename):
+                    for dir in conf.supybot.directories.plugins():
+                        if filename.startswith(dir):
+                            return True
+                    return False
                 modules = {}
                 for (moduleName, module) in sys.modules.iteritems():
                     if hasattr(module, '__file__'):
-                        if module.__file__.startswith(conf.installDir):
+                        if startsWithPluginsDir(module.__file__):
                             modules[moduleName.lower()] = moduleName
                 try:
                     module = sys.modules[name]
-                    if not module.__file__.startswith(conf.installDir):
+                    if not startsWithPluginsDir(module.__file__):
                         raise KeyError
                 except KeyError:
                     try:
                         module = sys.modules[modules[name.lower()]]
-                        if not module.__file__.startswith(conf.installDir):
+                        if not startsWithPluginsDir(module.__file__):
                             raise KeyError
                     except KeyError:
                         module = sys.modules[name.lower()]
-                        if not module.__file__.startswith(conf.installDir):
+                        if not startsWithPluginsDir(module.__file__):
                             raise KeyError
             except KeyError:
                 irc.error('I couldn\'t find a Supybot module named %s' % name)
@@ -256,7 +261,7 @@ class Misc(callbacks.Privmsg):
             if hasattr(module, '__revision__'):
                 irc.reply(module.__revision__)
             else:
-                irc.error('Module %s has no __revision__.' % name)
+                irc.error('Module %s has no __revision__ string.' % name)
         else:
             def getVersion(s):
                 try:
