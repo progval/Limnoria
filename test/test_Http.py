@@ -109,5 +109,14 @@ if network:
         def testPgpkey(self):
             self.assertNotError('pgpkey jeremiah fincher')
 
+        def testZipinfo(self):
+            self.assertRegexp('zipinfo 02135',
+                              r'City: Brighton; State: MA; County: Suffolk')
+            self.assertError('zipinfo 123456')
+            self.assertError('zipinfo O1233')
+            self.assertRegexp('zipinfo 00000',
+                              r'Only about \d+,\d+ of the \d+,\d+ possible')
+            self.assertRegexp('zipinfo 78014', 'County: La Salle')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

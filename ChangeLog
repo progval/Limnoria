@@ -1,24 +1,27 @@
+	* Added Http.zipinfo, which returns a veritable plethora of
+	information about the supplied zip code.
+
 	* Added a configuration variable for every plugin, "public", that
 	determines whether the plugin is considered public (i.e., whether
 	it will show up in the list command when the list command isn't
 	given the --private option).
-	
+
 	* Added Misc.author, a command for finding out which author
 	claims a particular plugin.
-	
+
 	* Added Topic.lock and Topic.unlock, for locking and unlocking
 	the topic.
 
 	* Added Topic.restore, for restoring the topic to the last-sent
 	topic.  Useful for when people change your carefully crafted
 	topic through means other than the bot.
-	
+
 	* Changed supybot.brackets so you can now provide the empty
 	string, which means you cannot do nesting with brackets.
-	
+
 	* Added Anonymous, a plugin for anonymously saying things to a
 	channel.
-	
+
 	* Added Utilities.last, which replies with the last string
 	given.  This is useful for sequencing commands and then replying
 	with the output of the last commnad.
@@ -27,7 +30,7 @@
 
 	* Added a signal handler for SIGTERM, so you folks killing your
 	bots uncleanly won't have as many bugs :)
-	
+
 	* Added a new configuration variable, supybot.pidFile, which
 	determines what file the bot should write its PID to.  The
 	default is not to write the PID file at all.
@@ -35,29 +38,29 @@
 	* Added a comma argument to utils.commaAndify, which specifies the
 	character to use in place of the comma.
 
-	
+
 2004-04-16  Jeremy Fincher  <jemfinch@supybot.org>
-	
+
 	* Version 0.77.2!
-	
+
 	* Fixed numerous bugs, high and low, big and small and
 	in-between.  Definitely worthy of a release.
-	
+
 	* Added supybot.plugins.ChannelLogger.includeNetworkName, so the
 	logs aren't strangified when relaying between channels.
-	
+
 	* Added a --capability option to User.list, to allow people to
 	list all the users possessing a certain capability.  The main
 	reason this was added is so jemfinch can tell who owns which
 	Supybots on #supybot :)
-	
+
 	* Added Utilities.success, mostly for making aliases such that
 	they can respond with success if no errors were encountered in
 	any nested commands.
-	
+
 	* Changed the name of the new filter, colorstrip, to be
 	stripcolor.  Better now than after it was highly established :)
-	
+
 	* Added configuration variables
 	supybot.plugins.Services.NickServ.password (which replaces the
 	old supybot.plugins.Services.password) for specifying the
@@ -71,7 +74,7 @@
 	supybot.plugins.Babelfish.languages (which replaces the old
 	supybot.plugins.Babelfish.disabledLanguages) for specifying
 	which languages will be translated/spoken.
-	
+
 	* Fixed bug #863601, plugin BadWords fails on color codes.
 
 	* Replaced Sourceforge.{rfe,bug} with Sourceforge.tracker, which
@@ -81,18 +84,18 @@
 	* Added supybot.log.individualPluginLogfiles, which determines
 	whether plugin logs will be logged to their individual logfiles
 	in addition to the misc.log logfile.
-	
+
 	* Added supybot.plugins.WordStats.ignoreQueries, which, when
 	true, makes the bot ignore queries (and not increment its word
 	statistics).
-	
+
 	* Added the LogToIrc plugin, for sending logs to an IRC
 	channel or nick.  Useful for traceback notification and whatnot.
-	
+
 	* Changed supybot.log.timestampFormat to specially handle the
 	empty string -- if it's set to the empty string, it will log
 	times in seconds-since-epoch format.
-	
+
 	* Added supybot.plugins.Weather.convert, which determines whether
 	or not Weather.{weather,cnn,ham} will convert temperature to the
 	configured temperatureUnit.
@@ -100,63 +103,63 @@
 	* Changed User.setpassword not to require the <old password> to
 	be correct if the requesting user has the owner capability (and
 	isn't the owner himself).
-	
+
 	* Added ircutils.strip{Bold,Reverse,Underline,Formatting}, which
 	will remove the specified formatting or all forms of formatting
 	in the case of stripFormatting.
 
-	
+
 2004-04-09  Jeremy Fincher  <jemfinch@supybot.org>
-	
+
 	* Version 0.77.1!
-	
+
 	* Added supybot.reply.errorWithNotice to make the bot give its
 	error messages in a notice.
-	
+
 	* Added Filter.colorstrip, an outfilter that strips all color
 	codes from messages.
 
 	* Added supybot.plugins.BadWords.{replaceMethod, nastyChars,
 	simpleReplacement, requireWordBoundaries}; see the associated
 	help strings to find out what they do.
-	
+
 	* Added supybot.plugins.Babelfish.disabledLanguages, to disable
 	certain languages from being translated/spoken.
 
 	* Added supybot.reply.maximumMores, to give users the ability to
 	set the maximum number of "more" chunks replies will generate.
-	
+
 	* Added supybot.reply.truncate, to turn off the normal chunking
 	of replies that later can be retrieved with the more command.
 	Setting this variable to On means that no chunks will ever be
 	created.
-	
+
 	* Added supybot.plugins.Enforcer.takeRevengeOnOps, which makes
 	the bot even take revenge on #channel,ops who try to violate the
 	channel configuration.  Of course, such people can change the
 	channel configuration to their bidding, but it's a decent
 	protection against errant botscripts or something.
-	
+
 	* Added supybot.plugins.Channels.alwaysRejoin, to make the bot
 	always rejoin when it's kicked.
-	
+
 	* Added supybot.databases.users.hash, allowing those running bots
 	to specify the default hashed/unhashed state of user passwords in
 	the config file.
-	
+
 	* Added Debian.bug, which retrieve bug info from Debian's BTS.
 
 	* Changed Relay.names to Relay.nicks, to be consistent with
 	Channel.nicks.
-	
+
 	* Added supybot.brackets, a configuration variable for specifying
 	which set of matching brackets to use for nested commands.  Valid
 	values are [] (the default), {}, <>, and ().
-	
+
 	* Added a configuration variable to ChannelLogger, timestamp,
 	which determines whether the bot will timestamp its logfiles.
 	This is a channel-specific variable, of course.
-	
+
 	* Updated ChannelLogger not to log messages starting with
 	[nolog], in order to allow private information to remain private.
 
@@ -164,7 +167,7 @@
 	flushImmediately, to cause all channel logs to be flushed every
 	time they're modified, for those people who like to read the logs
 	through tail -f or something similar.
-	
+
 	* Updated WordStats to allow removing of tracked words.
 
 	* Updated Seen.seen to accept no arguments and return the last

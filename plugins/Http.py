@@ -358,6 +358,64 @@ class Http(callbacks.Privmsg):
         else:
             irc.error('No matching file extenstions were found.')
 
+    _zipinfore = re.compile(r'Latitude<BR>\(([^)]+)\)</th><th>Longitude<BR>'
+                            r'\(([^)]+)\).*?<tr>(.*?)</tr>', re.I)
+    _zipstatre = re.compile(r'(Only about \d+,\d{3} of.*?in use.)')
+    def zipinfo(self, irc, msg, args):
+        """<zip code>
+
+        Returns a plethora of information for the given <zip code>.
+        """
+        zipcode = privmsgs.getArgs(args)
+        try:
+            int(zipcode)
+        except ValueError:
+            irc.error('Zip code must be a 5-digit integer.')
+            return
+        if len(zipcode) != 5:
+            irc.error('Zip code must be a 5-digit integer.')
+            return
+        url = 'http://zipinfo.com/cgi-local/zipsrch.exe?cnty=cnty&ac=ac&'\
+              'tz=tz&ll=ll&zip=%s&Go=Go' % zipcode
+        try:
+            text = webutils.getUrl(url)
+        except webutils.WebError, e:
+            irc.error(str(e))
+        if 'daily usage limit' in text:
+            irc.error('I have exceeded the site\'s daily usage limit.')
+            return
+        m = self._zipstatre.search(text)
+        if m:
+            irc.reply('%s  %s is not one of them.' % (m.group(1), zipcode))
+            return
+        n = self._zipinfore.search(text)
+        if not n:
+            irc.error('Unable to retrieve information for that zip code.')
+            return
+        (latdir, longdir, rawinfo) = n.groups()
+        # Info consists of the following (whitespace separated):
+        # City, State Abbrev., Zip Code, County, FIPS Code, Area Code, Time
+        # Zone, Daylight Time(?), Latitude, Longitude
+        info = utils.htmlToText(rawinfo)
+        info = info.split()
+        resp = []
+        # County was more than one word. Hopfully it was only two words
+        if (len(info[-9]) > 2):
+            resp.append('City: %s' % ' '.join(info[:-10]))
+            resp.append('State: %s' % info[-10])
+            resp.append('County: %s' % ' '.join(info [-6:-8]))
+        else:
+            resp.append('City: %s' % ' '.join(info[:-9]))
+            resp.append('State: %s' % info[-9])
+            resp.append('County: %s' % info[-7])
+        resp.append('Area Code: %s' % info[-5])
+        resp.append('Time Zone: %s' % info[-4])
+        resp.append('Daylight Savings: %s' % info[-3])
+        resp.append('Latitude: %s (%s)' % (info[-2], latdir))
+        resp.append('Longitude: %s (%s)' % (info[-1], longdir))
+        irc.reply('; '.join(resp))
+
+
 Class = Http
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
