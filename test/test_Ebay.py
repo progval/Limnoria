@@ -31,9 +31,9 @@
 
 from testsupport import *
 
-if network:
-    class EbayTest(PluginTestCase, PluginDocumentation):
-        plugins = ('Ebay',)
+class EbayTest(ChannelPluginTestCase):
+    plugins = ('Ebay',)
+    if network:
         def testAuction(self):
             self.assertNotError('auction 3053641570')
             # test 'Invalid Item' checking
