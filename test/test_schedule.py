@@ -41,10 +41,8 @@ class TestSchedule(unittest.TestCase):
         sched = schedule.Schedule()
         i = [0]
         def add10():
-            debug.printf('add10 ran.')
             i[0] = i[0] + 10
         def add1():
-            debug.printf('add1 ran.')
             i[0] = i[0] + 1
 
         sched.addEvent(add10, time.time() + 3)
