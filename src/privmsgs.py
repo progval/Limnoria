@@ -114,27 +114,6 @@ def checkCapability(f, capability):
             irc.errorNoCapability(cap)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
-def checkChannelCapability(f, capability):
-    """Makes sure a user has a certain channel capability before running f.
-
-    Do note that you need to add a "channel" argument to your argument list.
-    """
-    def newf(self, irc, msg, args, *L, **kwargs):
-        channel = getChannel(msg, args)
-        cap = capability
-        if callable(cap):
-            cap = cap()
-        chancap = ircdb.makeChannelCapability(channel, cap)
-        if ircdb.checkCapability(msg.prefix, chancap):
-            L += (channel,)
-            ff = types.MethodType(f, self, self.__class__)
-            ff(irc, msg, args, *L, **kwargs)
-        else:
-            self.log.info('%s attempted %s without %s.',
-                          msg.prefix, f.func_name, chancap)
-            irc.errorNoCapability(chancap)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
-
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
     """A small subclass of callbacks.Privmsg that checks self.capability
     before allowing any command to be called.
