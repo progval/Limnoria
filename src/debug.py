@@ -105,6 +105,18 @@ priorityColors.setdefault('')
 # If the most recent time is
 lastTimes = [time.time()-1] * 10
 
+def reset():
+    global _errorfd, _debugfd, _tracefd
+    _errorfd.flush()
+    _errorfd.close()
+    _errorfd = file(_errorfd.name, 'a')
+    _debugfd.flush()
+    _debugfd.close()
+    _debugfd = file(_errorfd.name, 'a')
+    _tracefd.flush()
+    _tracefd.close()
+    _tracefd = file(_errorfd.name, 'w')
+
 def exit(i=-1):
     class E(Exception):
         pass
