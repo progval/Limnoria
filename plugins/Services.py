@@ -143,7 +143,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         nick = self.registryValue('nick')
         if nick and irc.nick != nick:
             if irc.afterConnect and not self.sentGhost:
-                self._doGhost(irc)
+                irc.sendMsg(ircmsgs.nick(nick)) # The 433 is handled elsewhere.
             
     def do001(self, irc, msg):
         # New connection, make sure sentGhost is False.
