@@ -743,7 +743,7 @@ class Privmsg(irclib.IrcCallback):
         elapsed = time.time() - start
         self.log.info('%s took %s seconds', name, elapsed)
 
-    def registryValue(name, channel=None):
+    def registryValue(self, name, channel=None):
         plugin = self.name()
         if channel is None:
             return conf.supybot.plugins.get(plugin).get(name)()
