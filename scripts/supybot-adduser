@@ -36,72 +36,96 @@ from questions import *
 
 import os
 import sys
-import logging
 import optparse
 
-import conf
-
-conf.minimumLogPriority = logging.CRITICAL
+import registry
 
 def main():
-    parser = optparse.OptionParser(usage='Usage: %prog [options]',
-                                   version='supybot %s' % conf.version)
+    from conf import version
+    parser = optparse.OptionParser(usage='Usage: %prog [options] <configFile>',
+                                   version='supybot %s' % version)
     parser.add_option('-u', '--username', action='store', default='',
                       dest='name',
                       help='username for the user.')
     parser.add_option('-p', '--password', action='store', default='',
                       dest='password',
                       help='password for the user.')
+    parser.add_option('-x', '--hashed', action='store_const', const=1,
+                      default=0, dest='hashed',
+                      help='hash encrypt the password.')
+    parser.add_option('-n', '--plain', action='store_const', const=2,
+                      default=0, dest='hashed',
+                      help='store the password in plain text.')
     parser.add_option('-c', '--capability', action='append',
                       dest='capabilities', metavar='CAPABILITY',
                       help='capability the user should have; '
                            'this option may be given multiple times.')
-    filename = os.path.join(conf.confDir, conf.userfile)
-    parser.add_option('-f', '--filename', action='store', default=filename,
-                      dest='filename',
-                      help='filename of your users.conf; '
-                           'defaults to %s' % filename)
-
     (options, args) = parser.parse_args()
+    if len(args) is not 1:
+        parser.error('specify the configuration file you\'d like to use.')
+
+    registry.open(args[0])
+    import conf
+    import log
+    import ircdb
+
+    oldPriority = conf.supybot.log.minimumPriority()
+    conf.supybot.log.minimumPriority.set('CRITICAL')
+
     if not options.name:
-        name = something('What is the user\'s name?')
+        name = ''
+        while not name:
+            name = something('What is the user\'s name?')
+            try:
+                # Check to see if the user is already in the database.
+                _ = ircdb.users.getUser(name)
+                # Uh oh.  That user already exists;
+                # otherwise we'd have KeyError'ed.
+                output('That user already exists.  Try another name.')
+                name = ''
+            except KeyError:
+                # Good.  No such user exists.  We'll pass.
+                pass
     else:
-        name = options.name
+        try:
+            # Same as above. We exit here instead.
+            _ = ircdb.users.getUser(options.name)
+            output('That user already exists.  Try another name.')
+            sys.exit(-1)
+        except KeyError:
+            name = options.name
 
     if not options.password:
         password = getpass('What is %s\'s password? ' % name)
     else:
         password = options.password
+    
+    if options.hashed is 0:
+        hashed = yn('Do you want the password to be hashed instead of '
+                    'storing it as plain text?', default=False)
+    elif options.hashed is 1:
+        hashed = True
+    else:
+        hashed = False
 
     if not options.capabilities:
         capabilities = []
         prompt = 'Would you like to give %s a capability?' % name
-        while yn(prompt) == 'y':
+        while yn(prompt):
             capabilities.append(anything('What capability?'))
             prompt = 'Would you like to give %s another capability?' % name
     else:
         capabilities = options.capabilities
 
-    conf.confDir = os.path.dirname(options.filename)
-    conf.userfile = os.path.basename(options.filename)
-    import ircdb
-
-    try:
-        # First, let's check to see if the user is already in the database.
-        _ = ircdb.users.getUser(name)
-        # Uh oh.  That user already exists; otherwise we'd have KeyError'ed.
-        sys.stderr.write('That user already exists.  Try another name.\n')
-        sys.exit(-1)
-    except KeyError:
-        # Good.  No such user exists.  We'll pass.
-        pass
     (id, user) = ircdb.users.newUser()
     user.name = name
-    user.setPassword(password)
+    user.setPassword(password, hashed=hashed)
     for capability in capabilities:
         user.addCapability(capability)
     ircdb.users.setUser(id, user)
     print 'User %s added.' % name
+    conf.supybot.log.minimumPriority.setValue(oldPriority)
+    registry.close(conf.supybot, args[0])
 
 if __name__ == '__main__':
     try:

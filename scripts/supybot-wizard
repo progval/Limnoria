@@ -130,7 +130,7 @@ def main():
     
     filename = ''
     if len(args) > 1:
-        parser.error()
+        parser.error('the wizard takes one argument at most.')
     elif len(args) == 1:
         filename = args[0]
         try:
