@@ -174,14 +174,12 @@ class Math(callbacks.Privmsg):
         text = self._mathRe.sub(handleMatch, text)
         try:
             self.log.info('evaluating %r from %s' % (text, msg.prefix))
-            print text
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(self._complexToString(x))
         except OverflowError:
             maxFloat = math.ldexp(0.9999999999999999, 1024)
             irc.error('The answer exceeded %s or so.' % maxFloat)
         except TypeError:
-            print "hey"
             irc.error('Something in there wasn\'t a valid number.')
         except NameError, e:
             irc.error('%s is not a defined function.' % str(e).split()[1])
@@ -215,7 +213,6 @@ class Math(callbacks.Privmsg):
             maxFloat = math.ldexp(0.9999999999999999, 1024)
             irc.error('The answer exceeded %s or so.' % maxFloat)
         except TypeError:
-            print "ho"
             irc.error('Something in there wasn\'t a valid number.')
         except NameError, e:
             irc.error('%s is not a defined function.' % str(e).split()[1])
