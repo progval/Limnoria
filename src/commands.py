@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # All rights reserved.
@@ -59,6 +57,9 @@ import supybot.structures as structures
 # Non-arg wrappers -- these just change the behavior of a command without
 # changing the arguments given to it.
 ###
+
+# Thread has to be a non-arg wrapper because by the time we're parsing and
+# validating arguments, we're inside the function we'd want to thread.
 def thread(f):
     """Makes sure a command spawns a thread when called."""
     def newf(self, irc, msg, args, *L, **kwargs):
@@ -141,11 +142,8 @@ decorators = ircutils.IrcDict({
 
 
 ###
-# Arg wrappers, wrappers that add arguments to the command.  They accept the
-# irc, msg, and args, of course, as well as a State object which holds the args
-# (and kwargs, though none currently take advantage of that) to be given to the
-# command being decorated, as well as the name of the command, the plugin, the
-# log, etc.
+# Converters, which take irc, msg, args, and a state object, and build up the
+# validated and converted args for the method in state.args.
 ###
 
 # This is just so we can centralize this, since it may change.
@@ -396,8 +394,8 @@ def public(irc, msg, args, state, errmsg=None):
 def checkCapability(irc, msg, args, state, cap):
     cap = ircdb.canonicalCapability(cap)
     if not ircdb.checkCapability(msg.prefix, cap):
-        state.log.warning('%s tried %s without %s.',
-                          msg.prefix, state.name, cap)
+##         state.log.warning('%s tried %s without %s.',
+##                           msg.prefix, state.name, cap)
         irc.errorNoCapability(cap, Raise=True)
 
 def anything(irc, msg, args, state):
@@ -507,16 +505,15 @@ def getConverter(name):
 def callConverter(name, irc, msg, args, state, *L):
     getConverter(name)(irc, msg, args, state, *L)
 
-class State(object):
-    def __init__(self, name=None, logger=None):
-        if logger is None:
-            logger = log
-        self.args = []
-        self.kwargs = {}
-        self.name = name
-        self.log = logger
-        self.getopts = []
-        self.channel = None
+###
+# Contexts.  These determine what the nature of conversions is; whether they're
+# defaulted, or many of them are allowed, etc.  Contexts should be reusable;
+# i.e., they should not maintain state between calls.
+###
+def contextify(spec):
+    if not isinstance(spec, context):
+        spec = context(spec)
+    return spec
 
 class context(object):
     def __init__(self, spec):
@@ -551,9 +548,9 @@ class additional(context):
 class optional(additional):
     def __call__(self, irc, msg, args, state):
         try:
-            self.__parent.__call__(irc, msg, args, state)
+            super(optional, self).__call__(irc, msg, args, state)
         except (callbacks.ArgumentError, callbacks.Error), e:
-            log.debug('Got %s, returning default.', utils.exntoString(e))
+            log.debug('Got %s, returning default.', utils.exnToString(e))
             state.args.append(self.default)
 
 class any(context):
@@ -571,153 +568,98 @@ class any(context):
 
 class many(any):
     def __call__(self, irc, msg, args, state):
+        context.__call__(self, irc, msg, args, state)
         super(many, self).__call__(irc, msg, args, state)
-        assert state.args
-        if not state.args[-1]:
-            raise callbacks.ArgumentError
 
-# getopts:  None means "no conversion", '' means "takes no argument"
-def args(irc,msg,args, types=[], state=None,
-         getopts=None, allowExtra=False, requireExtra=False, combineRest=True):
-    if state is None:
-        state = State(name='unknown', logger=log)
-    if requireExtra:
-        # Implied by requireExtra.
-        allowExtra = True
-        combineRest = False
-    types = types[:] # We're going to destroy this.
-    if getopts is not None:
-        getoptL = []
-        for (key, value) in getopts.iteritems():
-            if value != '': # value can be None, remember.
-                key += '='
-            getoptL.append(key)
-        log.debug('getoptL: %r', getoptL)
-
-    def callWrapper(spec):
-        if isinstance(spec, tuple):
-            assert spec, 'tuple specification cannot be empty.'
-            name = spec[0]
-            specArgs = spec[1:]
-        else:
-            assert isinstance(spec, basestring) or spec is None
-            name = spec
-            specArgs = ()
-        if name is None:
-            name = 'anything'
-        enforce = True
-        optional = False
-        if name.startswith('?'):
-            optional = True
-            name = name[1:]
-        elif name.endswith('?'):
-            optional = True
-            enforce = False
-            name = name[:-1]
-        elif name[-1] in '*+':
-            name = name[:-1]
-        default = ''
-        wrapper = wrappers[name]
-        if optional and specArgs:
-            # First arg is default.
-            default = specArgs[0]
-            specArgs = specArgs[1:]
-            if callable(default):
-                default = default()
-        try:
-            wrapper(irc, msg, args, state, *specArgs)
-        except (callbacks.Error, ValueError, callbacks.ArgumentError), e:
-            state.log.debug('%r when calling wrapper.', utils.exnToString(e))
-            if not enforce:
-                state.args.append(default)
+class getopts(context):
+    """The empty string indicates that no argument is taken; None indicates
+    that there is no converter for the argument."""
+    def __init__(self, getopts):
+        self.getopts = {}
+        self.getoptL = []
+        for (name, spec) in getopts.iteritems():
+            if spec == '':
+                self.getoptL.append(name)
+                self.getopts[name] = None
             else:
-                state.log.debug('Re-raising %s because of enforce.', e)
-                raise
-        except IndexError, e:
-            state.log.debug('%r when calling wrapper.', utils.exnToString(e))
-            if optional:
-                state.args.append(default)
-            else:
-                state.log.debug('Raising ArgumentError because of '
-                                'non-optional args: %r', spec)
-                raise callbacks.ArgumentError
+                self.getoptL.append(name + '=')
+                self.getopts[name] = contextify(spec)
 
-    # First, we getopt stuff.
-    if getopts is not None:
-        (optlist, args) = getopt.getopt(args, '', getoptL)
+    def __call__(self, irc, msg, args, state):
+        (optlist, args) = getopt.getopt(args, '', self.getoptL)
+        getopts = []
         for (opt, arg) in optlist:
             opt = opt[2:] # Strip --
-            log.debug('getopt %s: %r', opt, arg)
-            if getopts[opt] != '':
-                # This is a MESS.  But I can't think of a better way to do it.
-                originalArgs = args
-                args = [arg]
-                originalStateArgsLen = len(state.args)
-                callWrapper(getopts[opt])
-                args = originalArgs
-                if originalStateArgsLen < len(state.args):
-                    assert originalStateArgsLen == len(state.args)-1
-                    arg = state.args.pop()
-                else:
-                    arg = None
-                state.getopts.append((opt, arg))
+            context = self.getopts[opt]
+            if context is not None:
+                st = state.essence()
+                context(irc, msg, args, st)
+                assert len(st.args) == 1
+                getopts.append((opt, st.args[0]))
             else:
-                state.getopts.append((opt, True))
-    #log.debug('Finished getopts: %s', state.getopts)
+                getopts.append((opt, True))
+        state.args.append(getopts)
+                
 
-    # Second, we get out everything but the last argument (or, if combineRest
-    # is False, we'll clear out all the types).
-    while len(types) > 1 or (types and not combineRest):
-        callWrapper(types.pop(0))
-    # Third, if there is a remaining required or optional argument
-    # (there's a possibility that there were no required or optional
-    # arguments) then we join the remaining args and work convert that.
-    if types:
-        name = types[0]
-        if isinstance(name, tuple):
-            name = name[0]
-        if name[-1] in '*+':
-            originalStateArgs = state.args
-            state.args = []
-            if name.endswith('+'):
-                callWrapper(types[0]) # So it raises an error if no args.
-            while args:
-                callWrapper(types[0])
-            lastArgs = state.args
-            state.args = originalStateArgs
-            state.args.append(lastArgs)
-        else:
-            if args:
-                rest = ' '.join(args)
-                args = [rest]
-            callWrapper(types.pop(0))
-    if args and not allowExtra and isinstance(args, list):
-        # args could be a regexp in a urlSnarfer.
-        log.debug('args but not allowExtra: %r', args)
-        raise callbacks.ArgumentError
-    if requireExtra and not args:
-        log.debug('requireExtra and not args: %r', args)
-    log.debug('command.args args: %r' % args)
-    log.debug('command.args state.args: %r' % state.args)
-    log.debug('command.args state.getopts: %r' % state.getopts)
-    return state
 
-# These are used below, but we need to rename them so their names aren't
+###
+# This is our state object, passed to converters along with irc, msg, and args.
+###
+class State(object):
+    log = log
+    def __init__(self):
+        self.args = []
+        self.kwargs = {}
+        self.channel = None
+
+    def essence(self):
+        st = State()
+        for (attr, value) in self.__dict__.iteritems():
+            if attr not in ('args', 'kwargs', 'channel'):
+                setattr(st, attr, value)
+        return st
+
+###
+# This is a compiled Spec object.
+###
+class Spec(object):
+    def _state(self, attrs={}):
+        st = State()
+        st.__dict__.update(attrs)
+        return st
+    
+    def __init__(self, types, allowExtra=False, combineRest=True):
+        self.types = types
+        self.allowExtra = allowExtra
+        self.combineRest = combineRest
+        utils.mapinto(contextify, self.types)
+
+    def __call__(self, irc, msg, args, stateAttrs={}):
+        state = self._state(stateAttrs)
+        if self.types:
+            types = self.types[:]
+            while types:
+                if len(types) == 1 and self.combineRest and args:
+                    break
+                context = types.pop(0)
+                context(irc, msg, args, state)
+            if types and args:
+                assert self.combineRest
+                args[:] = [' '.join(args)]
+                types[0](irc, msg, args, state)
+        if args and not self.allowExtra:
+            raise callbacks.ArgumentError
+        return state
+
+# This is used below, but we need to rename it so its name isn't
 # shadowed by our locals.
-_args = args
 _decorators = decorators
-def wrap(f, *argsArgs, **argsKwargs):
+def wrap(f, specList, decorators=None, **kw):
+    spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
-        state = State('%s.%s' % (self.name(), f.func_name), self.log)
-        state.cb = self # This should probably be in State.__init__.
-        _args(irc,msg,args, state=state, *argsArgs, **argsKwargs)
-        if 'getopts' in argsKwargs:
-            f(self, irc, msg, args, state.getopts, *state.args, **state.kwargs)
-        else:
-            f(self, irc, msg, args, *state.args, **state.kwargs)
-
+        spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
+        f(self, irc, msg, args, *state.args, **state.kwargs)
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
-    decorators = argsKwargs.pop('decorators', None)
     if decorators is not None:
         decorators = map(_decorators.__getitem__, decorators)
         for decorator in decorators:
@@ -725,6 +667,9 @@ def wrap(f, *argsArgs, **argsKwargs):
     return newf
 
 
-__all__ = ['wrap', 'args',
-           'getConverter', 'addConverter', 'callConverter']
+__all__ = ['wrap', 'context', 'additional', 'optional', 'any',
+           'many', 'getopts', 'getConverter', 'addConverter', 'callConverter']
+
+if world.testing:
+    __all__.append('Spec')
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
