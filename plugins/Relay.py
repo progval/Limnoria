@@ -577,7 +577,7 @@ class Relay(callbacks.Privmsg):
                     'has left on ' in text or \
                     'has joined on ' in text or \
                     'has quit' in text or \
-                    'was kicked by' in text \
+                    'was kicked by' in text or \
                     text.startswith('mode change') or \
                     text.startswith('nick change') or \
                     text.startswith('topic change')):
