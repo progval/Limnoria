@@ -1,0 +1,6 @@
+No, really.  Darcs is way cooler and the Darcs repository has all the new
+code (like our new supybot-newplugin and supybot-test).
+
+"darcs get http://source.supybot.com/supybot/" for the new Supybot code.
+"darcs get http://source.supybot.com/plugins/" for plugins that aren't
+included in the official Supybot.
