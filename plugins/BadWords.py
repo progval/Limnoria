@@ -81,7 +81,7 @@ class String256(registry.String):
     def setValue(self, s):
         multiplier = int(math.ceil(1024/len(s)))
         registry.String.setValue(self, s*multiplier)
-                               
+
 conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'nastyChars',
     String256('!@#&', """Determines what characters will replace bad words; a
     chunk of these characters matching the size of the replaced bad word will
@@ -89,7 +89,7 @@ conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'nastyChars',
 
 class ReplacementMethods(registry.OnlySomeStrings):
     validStrings = ('simple', 'nastyCharacters')
-    
+
 conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'replaceMethod',
     ReplacementMethods('nastyCharacters', """Determines the manner in which
     bad words will be replaced.  'nastyCharacters' (the default) will replace a
@@ -121,7 +121,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
     def inFilter(self, irc, msg):
         self.filtering = True
         return msg
-        
+
     def outFilter(self, irc, msg):
         if self.filtering and msg.command == 'PRIVMSG':
             if self.lastModified < self.words.lastModified:
@@ -151,7 +151,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('I\'m not currently censoring any bad words.')
-        
+
     def add(self, irc, msg, args):
         """<word> [<word> ...]
 
@@ -172,7 +172,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
             set.discard(word)
         self.words.setValue(set)
         irc.replySuccess()
-            
+
 
 Class = BadWords
 
