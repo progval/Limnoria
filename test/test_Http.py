@@ -33,6 +33,19 @@ from testsupport import *
 
 class HttpTest(PluginTestCase, PluginDocumentation):
     plugins = ('Http',)
+    def testHeaders(self):
+        self.assertError('headers ftp://ftp.cdrom.com/pub/linux')
+        self.assertNotError('headers http://www.slashdot.org/')
+        
+    def testDoctype(self):
+        self.assertError('doctype ftp://ftp.cdrom.com/pub/linux')
+        self.assertNotError('doctype http://www.slashdot.org/')
+
+    def testSize(self):
+        self.assertError('size ftp://ftp.cdrom.com/pub/linux')
+        self.assertNotError('size http://supybot.sf.net/')
+        self.assertNotError('size http://www.slashdot.org/')
+
     def testStockquote(self):
         self.assertNotError('stockquote MSFT')
 

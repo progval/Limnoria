@@ -1,3 +1,6 @@
+	* Added Http.size and Http.doctype and Http.headers to retrieve
+	various meta-information on URLs.
+	
 	* Added a ranking to ChannelDB.wordstats.
 	
 	* Added 'roulette' command to Fun plugin.

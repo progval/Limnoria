@@ -56,13 +56,78 @@ class FreshmeatException(Exception):
 
 class Http(callbacks.Privmsg):
     threaded = True
+    maxSize = 4096
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
     def callCommand(self, method, irc, msg, *L):
         try:
             callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
-        except webutils.WebException, e:
+        except webutils.WebError, e:
             irc.error(msg, str(e))
             
+    def headers(self, irc, msg, args):
+        """<url>
+
+        Returns the HTTP headers of <url>.  Only HTTP urls are valid, of
+        course.
+        """
+        url = privmsgs.getArgs(args)
+        if not url.startswith('http://'):
+            irc.error(msg, 'Only HTTP urls are valid.')
+            return
+        try:
+            fd = webutils.getUrlFd(url)
+            s = ', '.join(['%s: %s' % (k, v) for (k, v) in fd.headers.items()])
+            irc.reply(msg, s)
+        except webutils.WebError, e:
+            irc.error(msg, str(e))
+            
+    def doctype(self, irc, msg, args):
+        """<url>
+
+        Returns the DOCTYPE string of <url>.  Only HTTP urls are valid, of
+        course.
+        """
+        url = privmsgs.getArgs(args)
+        if not url.startswith('http://'):
+            irc.error(msg, 'Only HTTP urls are valid.')
+            return
+        try:
+            s = webutils.getUrl(url, size=self.maxSize)
+            if 'DOCTYPE' in s and '\n' in s:
+                line = s.splitlines()[0]
+                s = utils.normalizeWhitespace(line.strip())
+                irc.reply(msg, '%s has the following doctype: %s' % (url, s))
+            else:
+                irc.reply(msg, '%s has no specified doctype.' % url)
+        except webutils.WebError, e:
+            irc.error(msg, str(e))
+            
+    def size(self, irc, msg, args):
+        """<url>
+
+        Returns the Content-Length header of <url>.  Only HTTP urls are valid,
+        of course.
+        """
+        url = privmsgs.getArgs(args)
+        if not url.startswith('http://'):
+            irc.error(msg, 'Only HTTP urls are valid.')
+            return
+        try:
+            fd = webutils.getUrlFd(url)
+            try:
+                size = fd.headers['Content-Length']
+                irc.reply(msg, '%s is %s bytes long.' % (url, size))
+            except KeyError:
+                s = fd.read(self.maxSize)
+                if len(s) != self.maxSize:
+                    irc.reply(msg, '%s is %s bytes long.' % (url, size))
+                else:
+                    irc.reply(msg, 'The server didn\'t tell me how long %s is '
+                                   'but it\'s longer than %s bytes.' %
+                                   (url,self.maxSize))
+        except webutils.WebError, e:
+            irc.error(msg, str(e))
+
     def title(self, irc, msg, args):
         """<url>
 
@@ -72,7 +137,7 @@ class Http(callbacks.Privmsg):
         if '://' not in url:
             url = 'http://%s' % url
         try:
-            text = webutils.getUrl(url, size=4096)
+            text = webutils.getUrl(url, size=self.maxSize)
             m = self._titleRe.search(text)
             if m is not None:
                 irc.reply(msg, utils.htmlToText(m.group(1).strip()))
@@ -315,7 +380,7 @@ class Http(callbacks.Privmsg):
         try:
             try:
                 fd = webutils.getUrlFd('http://kernel.org/kdist/finger_banner')
-            except webutils.WebException, e:
+            except webutils.WebError, e:
                 irc.error(msg, str(e))
                 return
             for line in fd:
