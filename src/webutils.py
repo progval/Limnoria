@@ -70,7 +70,11 @@ def strError(e):
 def getUrlFd(url):
     """Gets a file-like object for a url."""
     try:
-        fd = urllib2.urlopen(url)
+        request = urllib2.Request(url)
+        httpProxy = conf.supybot.protocols.http.proxy()
+        if httpProxy:
+            request.set_proxy(httpProxy, 'http')
+        fd = urllib2.urlopen(request)
         return fd
     except socket.timeout, e:
         raise WebError, TIMED_OUT

@@ -115,7 +115,6 @@ def registerUserValue(group, name, value):
     value.supplyDefault = True
     group.register(name, value)
 
-
 class ValidNick(registry.String):
     """Value must be a valid IRC nick."""
     def setValue(self, v):
@@ -167,7 +166,6 @@ def registerNetwork(name, password='', server=''):
 for (name, s) in registry._cache.iteritems():
     if name.startswith('supybot.networks.'):
         parts = name.split('.')
-        print parts
         name = parts[2]
         if name != 'default':
             registerNetwork(name)
@@ -395,6 +393,7 @@ registerChannelValue(supybot.replies, 'incorrectAuthentication',
     tries to use a command that requires being identified or having a password
     and neither credential is correct."""))
 
+# XXX: This should eventually check that there's one and only one %s here.
 registerChannelValue(supybot.replies, 'noUser',
     registry.NormalizedString("""I can't find %s in my user
     database.  If you didn't give a user name, then I might not know what your
@@ -548,7 +547,14 @@ def isNick(s, strictRfc=None):
     return originalIsNick(s, strictRfc=strictRfc)
 ircutils.isNick = isNick
 
+###
+# supybot.protocols
+###
 registerGroup(supybot, 'protocols')
+
+###
+# supybot.protocols.irc
+###
 registerGroup(supybot.protocols, 'irc')
 registerGlobalValue(supybot.protocols.irc, 'strictRfc',
     registry.Boolean(False, """Determines whether the bot will strictly follow
@@ -573,16 +579,24 @@ registerGlobalValue(supybot.protocols.irc, 'ping',
     earlier when it breaks.  Really, this option only exists for debugging
     purposes: you always should make it True unless you're testing some strange
     server issues."""))
+
 registerGlobalValue(supybot.protocols.irc.ping, 'interval',
     registry.Integer(120, """Determines the number of seconds between sending
     pings to the server, if pings are being sent to the server."""))
 
+###
+# supybot.protocols.http
+###
 registerGroup(supybot.protocols, 'http')
 registerGlobalValue(supybot.protocols.http, 'peekSize',
     registry.PositiveInteger(4096, """Determines how many bytes the bot will
     'peek' at when looking through a URL for a doctype or title or something
     similar.  It'll give up after it reads this many bytes, even if it hasn't
     found what it was looking for."""))
+
+registerGlobalValue(supybot.protocols.http, 'proxy',
+    registry.String('', """Determines what proxy all HTTP requests should go
+    through."""))
 
 
 ###
