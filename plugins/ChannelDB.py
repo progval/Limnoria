@@ -92,7 +92,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
             cursor = db.cursor()
             cursor.execute("""CREATE TABLE user_stats (
                               id INTEGER PRIMARY KEY,
-                              name TEXT UNIQUE,
+                              user_id INTEGER UNIQUE,
                               last_seen TIMESTAMP,
                               last_msg TEXT,
                               smileys INTEGER,
@@ -177,19 +177,19 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
             cursor.execute("""INSERT INTO nick_seen VALUES (%s, %s, %s)""",
                            msg.nick, int(time.time()), s)
             try:
-                name = ircdb.users.getUser(msg.prefix).name
+                id = ircdb.users.getUserId(msg.prefix)
             except KeyError:
                 return
             cursor.execute("""SELECT COUNT(*)
                               FROM user_stats
-                              WHERE nickeq(name,%s)""", name)
+                              WHERE user_id=%s""", id)
             count = int(cursor.fetchone()[0])
             if count == 0: # User isn't in database.
                 cursor.execute("""INSERT INTO user_stats VALUES (
                                   NULL, %s, %s, %s, %s, %s,
                                   %s, %s, 1, %s,
                                   0, 0, 0, 0, 0, 0, 0)""",
-                               name, int(time.time()), s,
+                               id, int(time.time()), s,
                                smileys, frowns, chars, words, int(isAction))
             else:
                 cursor.execute("""UPDATE user_stats SET
@@ -197,10 +197,10 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                                   words=words+%s, msgs=msgs+1,
                                   actions=actions+%s, smileys=smileys+%s,
                                   frowns=frowns+%s
-                                  WHERE nickeq(name,%s)""",
+                                  WHERE user_id=%s""",
                                int(time.time()), s,
                                chars, words, int(isAction),
-                               smileys, frowns, name)
+                               smileys, frowns, id)
             db.commit()
 
     def doPart(self, irc, msg):
@@ -209,12 +209,9 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         cursor = db.cursor()
         cursor.execute("""UPDATE channel_stats SET parts=parts+1""")
         try:
-            if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUser(msg.prefix).name
-            else:
-                name = msg.prefix
+            id = ircdb.users.getUserId(msg.prefix)
             cursor.execute("""UPDATE user_stats SET parts=parts+1
-                              WHERE nickeq(name,%s)""", name)
+                              WHERE user_id=%s""", id)
         except KeyError:
             pass
         db.commit()
@@ -225,13 +222,10 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         cursor = db.cursor()
         cursor.execute("""UPDATE channel_stats SET topics=topics+1""")
         try:
-            if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUser(msg.prefix).name
-            else:
-                name = msg.prefix
+            id = ircdb.users.getUserId(msg.prefix)
             cursor.execute("""UPDATE user_stats
                               SET topics=topics+1
-                              WHERE nickeq(name,%s)""", name)
+                              WHERE user_id=%s""", id)
         except KeyError:
             pass
         db.commit()
@@ -242,13 +236,10 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         cursor = db.cursor()
         cursor.execute("""UPDATE channel_stats SET modes=modes+1""")
         try:
-            if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUser(msg.prefix).name
-            else:
-                name = msg.prefix
+            id = ircdb.users.getUserId(msg.prefix)
             cursor.execute("""UPDATE user_stats
                               SET modes=modes+1
-                              WHERE nickeq(name,%s)""", name)
+                              WHERE user_id=%s""", id)
         except KeyError:
             pass
         db.commit()
@@ -259,21 +250,18 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         cursor = db.cursor()
         cursor.execute("""UPDATE channel_stats SET kicks=kicks+1""")
         try:
-            if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUser(msg.prefix).name
-            else:
-                name = msg.prefix
+            id = ircdb.users.getUserId(msg.prefix)
             cursor.execute("""UPDATE user_stats
                               SET kicks=kicks+1
-                              WHERE nickeq(name,%s)""", name)
+                              WHERE user_id=%s""", id)
         except KeyError:
             pass
         try:
             kicked = msg.args[1]
-            name = ircdb.users.getUser(irc.state.nickToHostmask(kicked)).name
+            id = ircdb.users.getUserId(irc.state.nickToHostmask(kicked))
             cursor.execute("""UPDATE user_stats
                               SET kicked=kicked+1
-                              WHERE nickeq(name,%s)""", name)
+                              WHERE user_id=%s""", id)
         except KeyError:
             pass
         db.commit()
@@ -284,13 +272,10 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         cursor = db.cursor()
         cursor.execute("""UPDATE channel_stats SET joins=joins+1""")
         try:
-            if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUser(msg.prefix).name
-            else:
-                name = msg.prefix
+            id = ircdb.users.getUserId(msg.prefix)
             cursor.execute("""UPDATE user_stats
                               SET joins=joins+1
-                              WHERE nickeq(name,%s)""", name)
+                              WHERE user_id=%s""", id)
         except KeyError:
             pass
         db.commit()
@@ -302,9 +287,9 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                 cursor = db.cursor()
                 cursor.execute("""UPDATE channel_stats SET quits=quits+1""")
                 try:
-                    name = ircdb.users.getUser(msg.prefix).name
+                    id = ircdb.users.getUserId(msg.prefix)
                     cursor.execute("""UPDATE user_stats SET quits=quits+1
-                                      WHERE nickeq(name,%s)""", name)
+                                      WHERE user_id=%s""", id)
                 except KeyError:
                     pass
                 db.commit()
@@ -326,16 +311,18 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         #debug.printf(optlist)
         if ('--user', '') in optlist:
             table = 'user_stats'
+            criterion = 'user_id=%s'
             if not ircdb.users.hasUser(name):
                 try:
                     hostmask = irc.state.nickToHostmask(name)
-                    name = ircdb.users.getUser(hostmask).name
+                    name = ircdb.users.getUserId(hostmask)
                 except KeyError:
                     irc.error(msg, conf.replyNoUser)
                     return
         else:
             table = 'nick_seen'
-        sql = "SELECT last_seen, last_msg FROM %s WHERE nickeq(name,%%s)"%table
+            criterion = 'nickeq(name,%s)'
+        sql = "SELECT last_seen, last_msg FROM %s WHERE %s" % (table,criterion)
         #debug.printf(sql)
         cursor.execute(sql, name)
         if cursor.rowcount == 0:
@@ -343,6 +330,8 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
+            if name.isdigit():
+                name = ircdb.getUser(int(name)).name
             s = '%s was last seen here %s ago saying %r' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
             irc.reply(msg, s)
@@ -425,14 +414,15 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         if not ircdb.users.hasUser(name):
             try:
                 hostmask = irc.state.nickToHostmask(name)
-                name = ircdb.users.getUser(hostmask).name
+                id = ircdb.users.getUserId(hostmask)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
                 return
+        else:
+            id = ircdb.users.getUserId(name)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT *
-                          FROM user_stats WHERE nickeq(name,%s)""", name)
+        cursor.execute("""SELECT * FROM user_stats WHERE user_id=%s""", id)
         if cursor.rowcount == 0:
             irc.error(msg, 'I have no stats for that user.')
             return
