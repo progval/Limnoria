@@ -144,7 +144,14 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testPermban(self):
         self.assertNotError('permban foo!bar@baz')
         self.assertNotError('unpermban foo!bar@baz')
-        self.assertError('permban not!a.hostmask')
+        orig = conf.supybot.protocols.irc.strictRfc()
+        try:
+            conf.supybot.protocols.irc.strictRfc.setValue(True)
+            # something wonky is going on here. irc.error (src/Channel.py|449)
+            # is being called but the assert is failing
+            self.assertError('permban not!a.hostmask')
+        finally:
+            conf.supybot.protocols.irc.strictRfc.setValue(orig)
 
     def testIgnore(self):
         self.assertNotError('Channel ignore foo!bar@baz')
