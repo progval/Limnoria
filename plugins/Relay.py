@@ -114,7 +114,10 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
     configurables = configurable.Dictionary(
         [('color', configurable.BoolType, True,
           """Determines whether the bot will color relayed PRIVMSGs so as to
-          make the messages easier to read."""),]
+          make the messages easier to read."""),
+         ('topic-sync', configurable.BoolType, True,
+          """Determines whether the bot will synchronize topics between
+          networks in the channels it relays.""")]
     )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -591,10 +594,13 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
                 irc = irc.getRealIrc()
             if msg.nick == irc.nick:
                 return
-            newTopic = msg.args[1]
+            (channel, newTopic) = msg.args
             network = self.abbreviations[irc]
-            s = 'topic change by %s on %s: %s' % (msg.nick, network, newTopic)
-            m = ircmsgs.privmsg(msg.args[0], s)
+            if self.configurables.get('topic-sync', channel):
+                m = ircmsgs.topic(channel, newTopic)
+            else:
+                s = 'topic change by %s on %s: %s' %(msg.nick,network,newTopic)
+                m = ircmsgs.privmsg(channel, s)
             self._sendToOthers(irc, m)
 
     def doQuit(self, irc, msg):
@@ -638,7 +644,8 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
                         if otherIrc != irc:
                             if channel in otherIrc.state.channels:
                                 otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
-        elif msg.command == 'TOPIC' and len(msg.args) > 1:
+        elif msg.command == 'TOPIC' and len(msg.args) > 1 and \
+             self.configurables.get('topic-sync', msg.args[0]):
             (channel, topic) = msg.args
             if channel in self.channels:
                 for otherIrc in self.ircs.itervalues():
