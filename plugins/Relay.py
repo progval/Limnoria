@@ -422,24 +422,14 @@ class Relay(callbacks.Privmsg):
             else:
                 network = self._getIrcName(irc)
                 s = self._formatPrivmsg(msg.nick, network, msg)
-                m = ircmsgs.privmsg(channel, s)
+                m = self._msgmaker(channel, s)
                 self._sendToOthers(irc, m)
             
-    _noticeCommands = sets.Set([
-        'JOIN',
-        'PART',
-        'QUIT',
-        'NICK',
-        'MODE',
-        'KICK',
-        'TOPIC',
-        'ERROR',
-        ])
     def _msgmaker(self, target, s):
         msg = dynamic.msg
         channel = dynamic.channel
         if self.registryValue('noticeNonPrivmsgs', dynamic.channel) and \
-           msg.command in self._noticeCommands:
+           msg.command != 'PRIVMSG':
             return ircmsgs.notice(target, s)
         else:
             return ircmsgs.privmsg(target, s)
@@ -567,7 +557,7 @@ class Relay(callbacks.Privmsg):
                 if channel in self.registryValue('channels'):
                     network = self._getIrcName(irc)
                     s = self._formatPrivmsg(irc.nick, network, msg)
-                    relayMsg = ircmsgs.privmsg(channel, s)
+                    relayMsg = self._msgmaker(channel, s)
                     self._sendToOthers(irc, relayMsg)
         return msg
 
