@@ -67,8 +67,9 @@ class GameknotTestCase(PluginTestCase, PluginDocumentation):
         
 
     def testSnarfer(self):
-        self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-                          '\x02ddipaolo\x0f won')
+        # This game expired.
+##         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
+##                           '\x02ddipaolo\x0f won')
         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
                           '\x02chroniqueur\x0f resigned')
         self.assertRegexp('http://gameknot.com/chess.pl?bd=955432',

@@ -33,6 +33,8 @@
 Handles URL snarfing for Gameknot.com and the gkstats command.
 """
 
+__revision__ = "$id$"
+
 import plugins
 
 import re
@@ -189,9 +191,21 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         #debug.printf('Got the string.')
         fd.close()
         try:
-            gameTitle = self._gkGameTitle.search(s).groups()
+            if 'no longer available' in s:
+                s = 'That game is no longer available.'
+                irc.reply(msg, s, prefixName=True)
+                return
+            m = self._gkGameTitle.search(s)
+            if m is None:
+                debug.msg('Gameknot._gkGameTitle didn\'t match (%s).' % url)
+                return
+            gameTitle = m.groups()
             gameTitle = ircutils.bold(gameTitle)
-            ((wRating, wName), (bRating, bName)) = self._gkPlayer.findall(s)
+            L = self._gkPlayer.findall(s)
+            if not L:
+                debug.msg('Gameknot._gkPlayer didn\'t match (%s).' % url)
+                return
+            ((wRating, wName), (bRating, bName)) = L
             wName = ircutils.bold(wName)
             bName = ircutils.bold(bName)
             if 'to move...' in s:
