@@ -113,10 +113,7 @@ class SocketDriver(drivers.IrcDriver):
                 start = time.time()
                 msg = ircmsgs.IrcMsg(line)
                 #log.debug('Time to parse IrcMsg: %s', time.time()-start)
-                try:
-                    self.irc.feedMsg(msg)
-                except:
-                    log.exception('Uncaught exception outside Irc object:')
+                self.irc.feedMsg(msg)
         except socket.timeout:
             pass
         except socket.error, e:
@@ -164,6 +161,7 @@ class SocketDriver(drivers.IrcDriver):
         self.reconnectWaitPeriodsIndex = 0
         
     def _checkAndWriteOrReconnect(self):
+        log.debug('Checking whether we are connected.')
         (_, w, _) = select.select([], [self.conn], [], 0)
         if w:
             log.info('Socket is writable, it might be connected.')

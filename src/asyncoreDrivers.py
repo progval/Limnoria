@@ -101,15 +101,11 @@ class AsyncoreDriver(asynchat.async_chat, object):
         msg = ircmsgs.IrcMsg(self.buffer)
         #log.debug('Time to parse IrcMsg: %s', time.time()-start)
         self.buffer = ''
-        try:
-            self.irc.feedMsg(msg)
-        except:
-            log.exception('Uncaught exception outside Irc object:')
+        self.irc.feedMsg(msg)
 
     def handle_close(self):
         self.scheduleReconnect()
         self.die()
-
     reconnect = handle_close
 
     def handle_connect(self):
