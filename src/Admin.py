@@ -54,6 +54,7 @@ import utils
 import ircmsgs
 import ircutils
 import privmsgs
+import schedule
 import callbacks
 
     
