@@ -544,7 +544,7 @@ class Relay(callbacks.Privmsg):
                         if otherIrc != irc:
                             if channel in otherIrc.state.channels:
                                 otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
-        elif msg.command == 'TOPIC':
+        elif msg.command == 'TOPIC' and len(msg.args) > 1:
             (channel, topic) = msg.args
             if channel in self.channels:
                 for otherIrc in self.ircs.itervalues():
