@@ -50,7 +50,6 @@ import supybot.conf as conf
 import supybot.drivers as drivers
 import supybot.ircutils as ircutils
 import supybot.registry as registry
-import supybot.schedule as schedule
 
 startedAt = time.time() # Just in case it doesn't get set later.
 
@@ -87,7 +86,7 @@ def debugFlush(s=''):
             log.debug(s)
         flush()
 
-def upkeep(scheduleNext=True):
+def upkeep():
     """Does upkeep (like flushing, garbage collection, etc.)"""
     sys.exc_clear() # Just in case, let's clear the exception info.
     if os.name == 'nt':
@@ -115,8 +114,8 @@ def upkeep(scheduleNext=True):
             log.error('Printed to stderr after daemonization: %s', s)
             sys.stderr.reset() # Seeks to 0.
             sys.stderr.truncate() # Truncates to current offset.
-    flushed = conf.supybot.flush() and not starting
-    if flushed:
+    doFlush = conf.supybot.flush() and not starting
+    if doFlush:
         flush()
         # This is so registry._cache gets filled.
         if registryFilename is not None:
@@ -127,12 +126,10 @@ def upkeep(scheduleNext=True):
         log.debug('HostmaskPatternEqual cache size: %s' %
                   len(ircutils._hostmaskPatternEqualCache))
         #timestamp = log.timestamp()
-        if flushed:
+        if doFlush:
             log.info('Flushers flushed and garbage collected.')
         else:
             log.info('Garbage collected.')
-    if scheduleNext:
-        schedule.addEvent(upkeep, time.time() + conf.supybot.upkeepInterval())
     collected = gc.collect()
     if gc.garbage:
         log.warning('Noncollectable garbage (file this as a bug on SF.net): %s',

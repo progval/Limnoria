@@ -73,7 +73,7 @@ def main():
     # all the various plugins, our registry file might be wiped.  That's bad.
     interrupted = False
     when = time.time() + conf.supybot.upkeepInterval()
-    schedule.addEvent(world.upkeep, when, name='upkeep')
+    schedule.addPeriodicEvent(world.upkeep, when, name='upkeep', now=False)
     world.startedAt = started
     while world.ircs:
         try:
