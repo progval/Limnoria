@@ -231,7 +231,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             self.pendingNickChanges[irc.getRealIrc()] = irc
         else:
             irc.reply(irc.nick)
-    nick = wrap(nick, ['?nick'])
+    nick = wrap(nick, [additional('nick')])
 
     def part(self, irc, msg, args):
         """<channel> [<channel> ...] [<reason>]
@@ -342,7 +342,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             expires += time.time()
         ircdb.ignores.add(hostmask, expires)
         irc.replySuccess()
-    ignore = wrap(ignore, ['hostmask', ('?int', 0)])
+    ignore = wrap(ignore, ['hostmask', additional('int', 0)])
 
     def unignore(self, irc, msg, args, hostmask):
         """<hostmask|nick>
