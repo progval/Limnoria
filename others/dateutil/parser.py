@@ -8,6 +8,8 @@ datetime module.
 __author__ = "Gustavo Niemeyer <niemeyer@conectiva.com>"
 __license__ = "PSF License"
 
+# Gotten from: http://moin.conectiva.com.br/DateUtil
+
 import os.path
 import string
 import sys
