@@ -54,6 +54,7 @@ def expect(prompt, possibilities, recursed=False, doindent=True, default=None):
 
     If possibilities is empty, allow anything.
     """
+    prompt = utils.normalizeWhitespace(prompt)
     originalPrompt = prompt
     if doindent:
         indent = ' ' * ((len(originalPrompt)%68) + 2)
