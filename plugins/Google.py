@@ -95,8 +95,6 @@ totalSearches = 0
 totalTime = 0
 last24hours = structures.queue()
 
-
-
 def search(log, queries, **kwargs):
     assert not isinstance(queries, basestring), 'Old code: queries is a list.'
     try:
@@ -104,6 +102,9 @@ def search(log, queries, **kwargs):
         for (i, query) in enumerate(queries):
             if len(query.split(None, 1)) > 1:
                 queries[i] = repr(query)
+        proxy = conf.supybot.protocols.http.proxy()
+        if proxy:
+            kwargs['http_proxy'] = proxy
         data = google.doGoogleSearch(' '.join(queries), **kwargs)
         now = time.time()
         totalSearches += 1
