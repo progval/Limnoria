@@ -45,6 +45,9 @@ import time
 
 import sqlite
 
+import debug
+import ircdb
+import ircmsgs
 import privmsgs
 import ircutils
 import callbacks
@@ -81,16 +84,18 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                           kicks INTEGER,
                           kicked INTEGER,
                           modes INTEGER,
-                          topics INTEGER,
+                          topics INTEGER
                           )""")
         cursor.execute("""CREATE INDEX stats_username ON stats (username)""")
         db.commit()
         return db
     
     def doPrivmsg(self, irc, msg):
+        callbacks.Privmsg.doPrivmsg(self, irc, msg)
         if ircutils.isChannel(msg.args[0]):
             (channel, s) = msg.args
             db = self.getDb(channel)
+            cursor = db.cursor()
             try:
                 name = ircdb.users.getUserName(msg.prefix)
             except KeyError:
@@ -100,7 +105,7 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                 cursor.execute("""INSERT INTO stats VALUES (
                                   NULL, %s, %s, %s, %s, %s,
                                   %s, %s, 1, %s,
-                                  0, 0, 0, 0, 0 )""",
+                                  0, 0, 0, 0, 0, 0 )""",
                                name, int(time.time()), msg.args[1],
                                len(smileyre.findall(s)),
                                len(frownre.findall(s)), len(s), len(s.split()),
@@ -117,12 +122,12 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                                   WHERE username=%s""",
                                int(time.time()),
                                s,
-                               values.chars + len(s),
-                               values.words + len(s.split()),
-                               values.msgs + 1,
-                               values.actions + ircmsgs.isAction(msg),
-                               values.smileys + len(smileyre.findall(s)),
-                               values.frowns + len(frownre.findall(s)),
+                               int(values.chars) + len(s),
+                               int(values.words) + len(s.split()),
+                               int(values.msgs) + 1,
+                               int(values.actions) + ircmsgs.isAction(msg),
+                               int(values.smileys) + len(smileyre.findall(s)),
+                               int(values.frowns) + len(frownre.findall(s)),
                                name)
             db.commit()
 
@@ -220,7 +225,7 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
         "[<channel>] (if not sent on the channel itself) <nick>"
         channel = privmsgs.getChannel(msg, args)
         name = privmsgs.getArgs(args)
-        if not irc.users.hasUser(name):
+        if not ircdb.users.hasUser(name):
             hostmask = irc.state.nickToHostmask(name)
             try:
                 name = irc.users.getUserName(hostmask)
@@ -229,12 +234,13 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                 return
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT (last_seen, last_msg) FROM stats
+        cursor.execute("""SELECT last_seen, last_msg FROM stats
                           WHERE username=%s""", name)
         if cursor.rowcount == 0:
             irc.reply(msg, 'I have no stats for that user.')
         else:
             (seen, m) = cursor.fetchone()
+            seen = int(seen)
             ago = int(time.time()) - seen
             days = ago / 86400
             ago %= 86400
@@ -242,19 +248,19 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
             ago %= 3600
             minutes = ago / 60
             seconds = ago % 60
-            s = '%s day%s %s hour%s %s minute%s %s second%s ago' % \
+            s = '%s day%s %s hour%s %s minute%s %s second%sago' % \
                 (days, days == 1 and ',' or 's,',
                  hours, hours == 1 and ',' or 's,',
                  minutes, minutes == 1 and ',' or 's,',
-                 seconds, seconds == 1 and ',' or 's,')
-            irc.reply(msg, '%s was last seen here at %s saying %s' % \
+                 seconds, seconds == 1 and ' ' or 's ')
+            irc.reply(msg, '%s was last seen here at %s saying %r' % \
                            (name, s, m))
 
     def stats(self, irc, msg, args):
         "[<channel>] (if not sent in the channel itself) <nick>"
         channel = privmsgs.getChannel(msg, args)
         name = privmsgs.getArgs(args)
-        if not irc.users.hasUser(name):
+        if not ircdb.users.hasUser(name):
             hostmask = irc.state.nickToHostmask(name)
             try:
                 name = irc.users.getUserName(hostmask)
@@ -270,14 +276,14 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
             irc.reply(msg, 'I have no stats for that user.')
             return
         values = cursor.fetchone()
-        s = '%s has %s messages, with a total of %s chars, %s words, ' \
+        s = '%s has sent %s messages; a total of %s characters, %s words, ' \
             '%s smileys, and %s frowns; %s of those messages were ACTIONs.  ' \
             '%s has joined %s times, parted %s times, kicked someone %s times'\
             ' been kicked %s times, changed the topic %s times, ' \
             'and changed the mode %s times.' % \
-            (values.msgs, values.chars, values.words,
+            (name, values.msgs, values.chars, values.words,
              values.smileys, values.frowns, values.actions,
-             values.joins, values.parts, values.kicks,
+             name, values.joins, values.parts, values.kicks,
              values.kicked, values.topics,
              values.modes)
         irc.reply(msg, s)
