@@ -66,7 +66,8 @@ class Misc(callbacks.Privmsg):
                 # to log this in that case anyway, it being a nested command.
                 self.log.info('Not replying to %s, not a command.' % tokens[0])
             if not isinstance(irc.irc, irclib.Irc):
-                irc.reply('[%s]' % ' '.join(tokens))
+                brackets = conf.supybot.reply.brackets.get(msg.args[0])()
+                irc.reply(''.join([brackets[0],' '.join(tokens), brackets[1]]))
         
     def list(self, irc, msg, args):
         """[--private] [<module name>]
