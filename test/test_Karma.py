@@ -42,6 +42,7 @@ if sqlite is not None:
     class KarmaTestCase(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('Karma',)
         def testKarma(self):
+            self.assertError('karma')
             self.assertRegexp('karma foobar', 'no karma')
             try:
                 conf.replyWhenNotCommand = True
@@ -65,7 +66,6 @@ if sqlite is not None:
                               '.*total.*1')
             self.assertRegexp('karma MoO', 'Karma for \'MoO\'.*increased 1'
                               '.*total.*1')
-
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

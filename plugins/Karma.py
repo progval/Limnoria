@@ -131,9 +131,12 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                               ORDER BY added-subtracted ASC
                               LIMIT 3""")
             lowest = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
-            s = 'Highest karma: %s.  Lowest karma: %s.' % \
-                (utils.commaAndify(highest), utils.commaAndify(lowest))
-            irc.reply(msg, s)
+            if not (highest and lowest):
+                irc.error(msg, 'I have no karma for this channel.')
+            else:
+                s = 'Highest karma: %s.  Lowest karma: %s.' % \
+                    (utils.commaAndify(highest), utils.commaAndify(lowest))
+                irc.reply(msg, s)
             
     def increaseKarma(self, irc, msg, match):
         r"^(\S+)\+\+$"
