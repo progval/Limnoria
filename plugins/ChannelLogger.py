@@ -70,7 +70,9 @@ conf.registerChannelValue(conf.supybot.plugins.ChannelLogger,
     channel."""))
 conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'rotateLogs',
     registry.Boolean(False, """Determines whether the bot will automatically
-    rotate the logs for this channel."""))
+    rotate the logs for this channel.  The bot will rotate logs when the
+    timestamp for the log changes.  The timestamp is set according to
+    the 'filenameTimestamp' configuration variable."""))
 conf.registerChannelValue(conf.supybot.plugins.ChannelLogger,
     'filenameTimestamp', registry.String('%d-%a-%Y', """Determines how to
     represent the timestamp used for the filename in rotated logs.  When this
