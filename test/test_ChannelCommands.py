@@ -33,20 +33,30 @@ from test import *
 
 import conf
 import ircdb
+import ircmsgs
 
 class ChannelCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('ChannelCommands',)
-    def testOpWithoutOps(self):
+    def testOp(self):
         self.assertError('op')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('op')
         
-    def testHalfOpWithoutOps(self):
+    def testHalfOp(self):
         self.assertError('halfop')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('halfop')
 
-    def testVoiceWithoutOps(self):
+    def testVoice(self):
         self.assertError('voice')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('voice')
         
-    def testKbanWithoutOps(self):
+    def testKban(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix='foobar!user@host'))
         self.assertError('kban foobar')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('kban foobar')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
