@@ -379,11 +379,11 @@ def main():
     defaultIdent = 'supybot'
     if advanced:
         output("""IRC servers also allow you to set your ident, which they
-        might need if they can't find your identd server.  What would you
-        like your ident to be?  If you don't care, press enter and we'll
-        use 'supybot'.  In fact, we prefer that you
-        do this, because it provides free advertising for Supybot when users
-        /whois your bot.  But, of course, it's your call.""")
+        might need if they can't find your identd server.  What would you like
+        your ident to be?  If you don't care, press enter and we'll use
+        'supybot'.  In fact, we prefer that you do this, because it provides
+        free advertising for Supybot when users /whois your bot.  But, of
+        course, it's your call.""")
         while True:
             ident = something('What would you like your bot\'s ident to be?',
                               default=defaultIdent)
@@ -391,8 +391,8 @@ def main():
                 conf.supybot.ident.set(ident)
                 break
             except registry.InvalidRegistryValue:
-                output("""That was not a valid ident.
-                       Go ahead and pick another.""")
+                output("""That was not a valid ident.  Go ahead and pick
+                another.""")
     else:
         conf.supybot.ident.set(defaultIdent)
 
@@ -562,26 +562,23 @@ def main():
     # logging variables.
     ###
 
-    # conf.supybot.log.stdout
-    output("""By default, your bot will log not only to files in the logs
-    directory you gave it, but also to stdout.  We find this useful for
-    debugging, and also just for the pretty output (it's colored!)""")
-    stdout = not yn('Would you like to turn off this logging to stdout?',
-                    default=False)
-    conf.supybot.log.stdout.setValue(stdout)
-    if conf.supybot.log.stdout():
-        # conf.something
-        output("""Some terminals may not be able to display the pretty colors
-        logged to stderr.  By default, though, we turn the colors off for
-        Windows machines and leave it on for *nix machines.""")
-        if os.name is not 'nt':
-            conf.supybot.log.stdout.colorized.setValue(
-                not yn('Would you like to turn this colorization off?',
-                default=False))
-
     if advanced:
-        output("""Here's some stuff you only get to choose if you're an
-        advanced user :)""")
+        # conf.supybot.log.stdout
+        output("""By default, your bot will log not only to files in the logs
+        directory you gave it, but also to stdout.  We find this useful for
+        debugging, and also just for the pretty output (it's colored!)""")
+        stdout = not yn('Would you like to turn off this logging to stdout?',
+                        default=False)
+        conf.supybot.log.stdout.setValue(stdout)
+        if conf.supybot.log.stdout():
+            # conf.something
+            output("""Some terminals may not be able to display the pretty
+            colors logged to stderr.  By default, though, we turn the colors
+            off for Windows machines and leave it on for *nix machines.""")
+            if os.name is not 'nt':
+                conf.supybot.log.stdout.colorized.setValue(
+                    not yn('Would you like to turn this colorization off?',
+                    default=False))
 
         # conf.supybot.log.level
         output("""Your bot can handle debug messages at several priorities,
