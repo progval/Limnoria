@@ -13,6 +13,7 @@ import pprint
 import socket
 import optparse
 import textwrap
+from itertools import imap
 
 import ansi
 import conf
@@ -337,7 +338,8 @@ def main():
             prefix the channel with # (or +, or !, or &, but no one uses those
             channels, really).""")
             channels = something('What channels?')
-        afterConnect.append('admin join %s' % map(utils.dqrepr, channels))
+        afterConnect.append('admin join %s' %
+                            ' '.join(imap(utils.dqrepr, channels)))
 
     ###
     # Plugins
