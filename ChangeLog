@@ -1,3 +1,13 @@
+	* Updated Network.whois so that it can now retrieve
+	information on all domains.
+
+	* Updated the Weather plugin to be retrieve weather from
+	either hamweather.net or cnn.com.  Also added
+	supybot.plugins.Weather.{weatherCommand,temperatureUnit} so
+	that you can specify which command (Weather.cnn or
+	Weather.ham) to use when Weather.weather is called and in which
+	unit (C, F, K) to report the weather.
+
 	* Made standard replies (such as supybot.replies.success, etc.)
 	use the standard substitute (such as $nick, $who, $channel, etc.)
 	in their text.

@@ -71,75 +71,80 @@ class Network(callbacks.Privmsg):
             except socket.error:
                 irc.reply('Host not found.')
 
-    _tlds = sets.Set(['com', 'net', 'edu', 'org'])
+    _tlds = sets.Set(['com', 'net', 'edu'])
+    _registrar = ['Sponsoring Registrar', 'Registrar', 'source']
+    _updated = ['Last Updated On', 'Domain Last Updated Date', 'Updated Date',
+                'Last Modified', 'changed']
+    _created = ['Created On', 'Domain Registration Date', 'Creation Date']
+    _expires = ['Expiration Date', 'Domain Expiration Date']
+    _status = ['Status', 'Domain Status', 'status']
     def whois(self, irc, msg, args):
         """<domain>
 
-        Returns WHOIS information on the registration of <domain>.  <domain>
-        must be in tlds .com, .net, .edu, or .org.
+        Returns WHOIS information on the registration of <domain>.
         """
         domain = privmsgs.getArgs(args)
         usertld = domain.split('.')[-1]
-        if '.' not in domain or usertld not in self._tlds:
+        if '.' not in domain:
             irc.error('<domain> must be in .com, .net, .edu, or .org.')
             return
         elif len(domain.split('.')) != 2:
             irc.error('<domain> must be a domain, not a hostname.')
             return
-        if usertld == 'org':
-            t = telnetlib.Telnet('whois.pir.org', 43)
-            t.write(domain)
-            t.write('\n')
-            s = t.read_all()
-            for line in s.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                if line.startswith('Sponsoring Registrar'):
-                    registar = ':'.join(line.split(':')[1:])
-                elif line.startswith('Last Updated On'):
-                     updated = ':'.join(line.split(':')[1:])
-                elif line.startswith('Created On'):
-                     created = ':'.join(line.split(':')[1:])
-                elif line.startswith('Expiration Date'):
-                     expires = ':'.join(line.split(':')[1:])
-                elif line.startswith('Status'):
-                     status = ':'.join(line.split(':')[1:]).lower()
-            t = telnetlib.Telnet('whois.pir.org', 43)
-            t.write('registrar id ')
-            t.write(registar)
-            t.write('\n')
-            s = t.read_all()
-            for line in s.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                if line.startswith('Email'):
-                    url = 'registered at '
-                    url += line.split('@')[-1]
+        if usertld in self._tlds:
+            server = 'rs.internic.net'
+            search = '=%s' % domain
         else:
-            t = telnetlib.Telnet('rs.internic.net', 43)
-            t.write('=')
-            t.write(domain)
-            t.write('\n')
-            s = t.read_all()
-            for line in s.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                elif line.startswith('Referral'):
-                    url = line.split()[-1]
-                elif line.startswith('Updated'):
-                    updated = line.split()[-1]
-                elif line.startswith('Creation'):
-                    created = line.split()[-1]
-                elif line.startswith('Expiration'):
-                    expires = line.split()[-1]
-                elif line.startswith('Status'):
-                    status = line.split()[-1].lower()
+            server = '%s.whois-servers.net' % usertld
+            search = domain
         try:
-            s = '%s <%s> is %s; registered %s, updated %s, expires %s.' % \
-                (domain, url, status, created, updated, expires)
+            t = telnetlib.Telnet(server, 43)
+        except socket.error, e:
+            irc.error(str(e))
+            return
+        t.write(search)
+        t.write('\n')
+        s = t.read_all()
+        (registrar, updated, created, expires, status) = ('', '', '', '', '')
+        for line in s.splitlines():
+            line = line.strip()
+            if not line or ':' not in line:
+                continue
+            if not registrar and any(line.startswith, self._registrar):
+                registrar = ':'.join(line.split(':')[1:]).strip()
+            elif not updated and any(line.startswith, self._updated):
+                s = ':'.join(line.split(':')[1:]).strip()
+                updated = 'updated %s' % s
+            elif not created and any(line.startswith, self._created):
+                s = ':'.join(line.split(':')[1:]).strip()
+                created = 'registered %s' % s
+            elif not expires and any(line.startswith, self._expires):
+                s = ':'.join(line.split(':')[1:]).strip()
+                expires = 'expires %s' % s
+            elif not status and any(line.startswith, self._status):
+                status = ':'.join(line.split(':')[1:]).strip().lower()
+        if not status:
+            status = 'unknown'
+        try:
+            t = telnetlib.Telnet('whois.pir.org', 43)
+        except socket.error, e:
+            irc.error(str(e))
+            return
+        t.write('registrar id ')
+        t.write(registrar)
+        t.write('\n')
+        s = t.read_all()
+        for line in s.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith('Email'):
+                url = ' <registered at %s>' % line.split('@')[-1]
+            if line == 'Not a valid ID pattern':
+                url = ''
+        try:
+            s = '%s%s is %s; %s.' % (domain, url, status,
+                 ', '.join(filter(None, [created, updated, expires])))
             irc.reply(s)
         except NameError, e:
             irc.error('I couldn\'t find such a domain.')

@@ -32,7 +32,7 @@
 from testsupport import *
 
 if network:
-    class NetworkTestCase(PluginTestCase, PluginDocumentation):
+    class NetworkTestCase(PluginTestCase):
         plugins = ['Network']
         def testDns(self):
             self.assertNotError('dns slashdot.org')
@@ -45,6 +45,7 @@ if network:
             self.assertNotError('network whois kuro5hin.org')
             self.assertError('network whois www.kuro5hin.org')
             self.assertNotError('network whois microsoft.com')
+            self.assertNotError('network whois goatse.cx')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
