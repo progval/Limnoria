@@ -43,7 +43,10 @@ class FunTest(PluginTestCase, PluginDocumentation):
         self.assertNotError('objects')
         self.assertNotError('levenshtein Python Perl')
         self.assertNotError('soundex jemfinch')
-        self.assertNotError('jeffk the quick brown fox is ghetto')
+
+    def testJeffk(self):
+        for i in range(100):
+            self.assertNotError('jeffk the quick brown fox is ghetto')
 
     def testMorse(self):
         self.assertResponse('unmorse [morse jemfinch]', 'JEMFINCH')

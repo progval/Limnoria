@@ -413,6 +413,10 @@ class Fun(callbacks.Privmsg):
         text = text.replace('Z', 'Th')
         text = text.replace('x', 'kth')
         text = text.replace('X', 'KTH')
+        text = text.replace('cce', 'kth')
+        text = text.replace('CCE', 'KTH')
+        text = text.replace('tion', 'thion')
+        text = text.replace('TION', 'THION')
         irc.reply(msg, text)
 
     _leettrans = string.maketrans('oOaAeElBTiIts', '004433187!1+5')
@@ -644,7 +648,34 @@ class Fun(callbacks.Privmsg):
             if random.random() < .4:
                 random.shuffle(L)
             return ''.join(L)
+        def randomlyLaugh(text, probability=.3):
+            if random.random() < probability:
+                if random.random() < .5:
+                    insult = random.choice([' fagot1', ' fagorts', ' jerks',
+                                            'fagot' ' jerk', ' dumbshoes',
+                                            ' dumbshoe'])
+                else:
+                    insult = ''
+                laugh1 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
+                laugh2 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
+                laugh1 = laugh1 * random.randrange(1, 5)
+                laugh2 = laugh2 * random.randrange(1, 5)
+                exclaim = random.choice(['!', '~', '!~', '~!!~~',
+                                         '!!~', '~~~!'])
+                exclaim += random.choice(['!', '~', '!~', '~!!~~',
+                                          '!!~', '~~~!'])
+                if random.random() < 0.5:
+                    exclaim += random.choice(['!', '~', '!~', '~!!~~',
+                                              '!!~', '~~~!'])
+                laugh = ''.join([' ', laugh1, laugh2, insult, exclaim])
+                text += laugh
+            return text
+            
         text = privmsgs.getArgs(args)
+
+        if random.random() < .03:
+            irc.reply(msg, randomlyLaugh('NO YUO'))
+            return
 
         alwaysInsertions = {
             r'er\b': 'ar',
@@ -682,21 +713,8 @@ class Fun(callbacks.Privmsg):
         text = re.sub(r'([bcdfghkjlmnpqrstvwxyz])([bcdfghkjlmnpqrstvwxyz])',
                       lessRandomlyShuffle, text)
 
-        if random.random() < .3:
-            if random.random() < .5:
-                insult = random.choice([' fagot1', ' fagorts', ' jerks',
-                                        'fagot'
-                                        ' jerk', ' dumbshoes', ' dumbshoe'])
-            else:
-                insult = ''
-            laugh1 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
-            laugh2 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
-            laugh1 = laugh1 * random.randrange(1, 5)
-            laugh2 = laugh2 * random.randrange(1, 5)
-            exclaim = random.choice(['!', '~', '!~', '~!!~~', '!!~', '~~~!'])*2
-            laugh = ''.join([' ', laugh1, laugh2, insult, exclaim])
-            text += laugh
-            
+        text = randomlyLaugh(text)
+
         if random.random() < .4:
             text = text.upper()
 
