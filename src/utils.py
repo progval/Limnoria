@@ -476,7 +476,6 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     else:
         raise ValueError, 'Unsafe string.'
 
-
 def exnToString(e):
     """Turns a simple exception instance into a string (better than str(e))"""
     return '%s: %s' % (e.__class__.__name__, e)
