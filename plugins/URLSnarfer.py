@@ -37,6 +37,7 @@ URLs in the database.
 
 from baseplugin import *
 
+import os
 import re
 import time
 import getopt
@@ -44,6 +45,7 @@ import urlparse
 
 import sqlite
 
+import conf
 import utils
 import ircmsgs
 import privmsgs

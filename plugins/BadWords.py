@@ -39,6 +39,7 @@ from baseplugin import *
 import re
 import sets
 
+import conf
 import utils
 import ircdb
 import ircmsgs

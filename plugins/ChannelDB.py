@@ -37,6 +37,7 @@ statistics about smileys, actions, characters, and words.
 
 from baseplugin import *
 
+import os
 import re
 import sets
 import time

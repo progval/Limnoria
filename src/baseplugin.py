@@ -15,12 +15,15 @@ import time
 import urllib2
 import threading
 
+import fix
 import cdb
 import conf
 import debug
 import utils
 import world
 import ircutils
+
+__all__ = fix.__all__ + ['ChannelDBHandler', 'PeriodicFileDownloader']
 
 class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.

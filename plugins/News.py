@@ -36,10 +36,15 @@ when they join the channel.  News items may have expiration dates.
 
 from baseplugin import *
 
+import os
+import time
+
 import sqlite
 
+import conf
 import ircdb
 import utils
+import ircutils
 import privmsgs
 import callbacks
 

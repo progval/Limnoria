@@ -36,6 +36,9 @@ current status and statistics.
 from baseplugin import *
 
 import os
+import sets
+import time
+import threading
 
 import utils
 import world

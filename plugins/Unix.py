@@ -38,6 +38,7 @@ from baseplugin import *
 import os
 import re
 import pwd
+import sys
 import crypt
 import errno
 import random
