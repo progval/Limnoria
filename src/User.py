@@ -289,7 +289,9 @@ class User(callbacks.Privmsg):
     def identify(self, irc, msg, args):
         """<name> <password>
 
-        Identifies the user as <name>.
+        Identifies the user as <name>. This command (and all other
+        commands that include a password) must be sent to the bot privately,
+        not in a channel.
         """
         (name, password) = privmsgs.getArgs(args, 2)
         if not self._checkNotChannel(irc, msg):
