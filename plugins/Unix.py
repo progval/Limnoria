@@ -102,7 +102,7 @@ def progstats():
 class TimeoutError(IOError):
     pass
 
-def pipeReadline(fd, timeout=0.75):
+def pipeReadline(fd, timeout=2):
     (r, _, _) = select.select([fd], [], [], timeout)
     if r:
         return r[0].readline()
