@@ -90,6 +90,8 @@ class FunctionsTestCase(unittest.TestCase):
         self.failUnless(ircutils.isNick('jemfinch0'))
         self.failUnless(ircutils.isNick('[0]'))
         self.failUnless(ircutils.isNick('{jemfinch}'))
+        self.failUnless(ircutils.isNick('[jemfinch]'))
+        self.failUnless(ircutils.isNick('jem|finch'))
         self.failUnless(ircutils.isNick('\\```'))
         self.failIf(ircutils.isNick(''))
         self.failIf(ircutils.isNick('8foo'))
