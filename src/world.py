@@ -49,6 +49,7 @@ import threading
 
 import log
 import conf
+import drivers
 import ircutils
 
 socket.setdefaulttimeout(10)
@@ -94,6 +95,12 @@ def upkeep():
         log.info('%s upkeep ran.', time.strftime(conf.logTimestampFormat))
     return collected
 
+def makeDriversDie():
+    """Kills drivers."""
+    log.info('Killing Driver objects.')
+    for driver in drivers._drivers.itervalues():
+        driver.die()
+
 def makeIrcsDie():
     """Kills Ircs."""
     log.info('Killing Irc objects.')
@@ -112,6 +119,7 @@ def finished():
 atexit.register(finished)
 atexit.register(upkeep)
 atexit.register(makeIrcsDie)
+atexit.register(makeDriversDie)
 atexit.register(startDying)
 
 ##################################################
