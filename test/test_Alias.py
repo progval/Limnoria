@@ -92,8 +92,8 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testNoRecursion(self):
         self.assertError('alias add rotinfinity "rot13 [rotinfinity $1]"')
-        self.assertNotError('alias add rotinfinitnot "rot13 [rotinfinity '\
-            '$1]"')
+        self.assertNotError('alias add rotinfintynot "rot13 [rotinfinity $1]"')
+        self.assertNotError('alias add rotinfin "rot13 [rotinfinity $1]"')
 
     def testNonCanonicalName(self):
         self.assertError('alias add FOO foo')
