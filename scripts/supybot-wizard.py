@@ -287,9 +287,9 @@ if __name__ == '__main__':
     if yn('Do you want your bot to join some channels when he connects?')=='y':
         channels = something('What channels?')
         while not all(ircutils.isChannel, channels.split()):
-            myPrint('Not all of those are valid IRC channels.  Be sure to
+            myPrint("""Not all of those are valid IRC channels.  Be sure to
             prefix the channel with # (or +, or !, or &, but no one uses those
-            channels, really).')
+            channels, really).""")
             channels = something('What channels?')
         afterConnect.append('join %s' % channels)
 
