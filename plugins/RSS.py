@@ -176,6 +176,7 @@ class RSS(callbacks.Privmsg):
                     pre = '%s%s: ' % (prefix, name)
                     if bold:
                         pre = ircutils.bold(pre)
+                        sep = ircutils.bold(sep)
                     irc.replies(newheadlines, prefixer=pre, joiner=sep,
                                 to=channel, prefixName=False, private=True)
         finally:
