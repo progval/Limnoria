@@ -87,12 +87,13 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                     lines.insert(0, '\n')
                 if hasattr(value, 'value'):
                     lines.append('#\n')
-                    try:
-                        original = value.value
-                        value.value = value.default
-                        lines.append('# Default value: %s\n' % value)
-                    finally:
-                        value.value = original
+                    if value.showDefault:
+                        try:
+                            original = value.value
+                            value.value = value.default
+                            lines.append('# Default value: %s\n' % value)
+                        finally:
+                            value.value = original
                 lines.append('###\n')
                 fd.writelines(lines)
         if hasattr(value, 'value'): # This lets us print help for non-valued.
@@ -190,9 +191,10 @@ class Group(object):
 
 
 class Value(Group):
-    def __init__(self, default, help, **kwargs):
+    def __init__(self, default, help, showDefault=True, **kwargs):
         Group.__init__(self, **kwargs)
         self.default = default
+        self.showDefault = showDefault
         self.help = utils.normalizeWhitespace(help.strip())
         self.setValue(default)
 

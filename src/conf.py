@@ -59,7 +59,7 @@ supybot.setName('supybot')
 
 def registerPlugin(name, currentValue=None):
     supybot.plugins.register(name, registry.Boolean(False, """Determines
-    whether this plugin is loaded by default."""))
+    whether this plugin is loaded by default.""", showDefault=False))
     if currentValue is not None:
         supybot.plugins.get(name).setValue(currentValue)
 
