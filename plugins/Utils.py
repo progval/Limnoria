@@ -37,8 +37,12 @@ import callbacks
 class Utils(callbacks.Privmsg):
     def strjoin(self, irc, msg, args):
         "<separator> <strings to join>"
-        (sep, text) = privmsgs.getArgs(args, needed=2)
-        irc.reply(msg, sep.join(text.split()))
+        sep = args.pop(0)
+        irc.reply(msg, sep.join(args))
 
+    def strconcat(self, irc, msg, args):
+        "<string 1> <string 2>"
+        (first, second) = privmsgs.getArgs(args, needed=2)
+        irc.reply(msg, first+second)
 
 Class = Utils
