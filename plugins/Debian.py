@@ -35,12 +35,12 @@ Add the module docstring here.  This will be used by the setup.py script.
 
 from baseplugin import *
 
+import re
 import gzip
 import popen2
 import random
 import os.path
 import urllib2
-import re, sre_constants
 from itertools import imap, ifilter
 
 import conf
@@ -103,7 +103,7 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         regexp = '^' + regexp
         try:
             r = re.compile(regexp, re.I)
-        except sre_constants.error, e:
+        except re.error, e:
             irc.error(msg, e)
             return
         if self.usePythonZegrep:

@@ -42,7 +42,6 @@ from baseplugin import *
 
 import re
 import random
-import sre_constants
 
 import debug
 import utils
@@ -140,7 +139,7 @@ class Topic(callbacks.Privmsg):
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
             irc.error(msg, 'The regexp wasn\'t valid: %s' % e.args[0])
-        except sre_constants.error, e:
+        except re.error, e:
             irc.error(msg, debug.exnToString(e))
             return
         topics = irc.state.getTopic(channel).split(self.topicSeparator)

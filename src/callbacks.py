@@ -48,7 +48,6 @@ import shlex
 import getopt
 import inspect
 import threading
-import sre_constants
 from cStringIO import StringIO
 
 import conf
@@ -337,6 +336,7 @@ class IrcObjectProxy:
             return self.irc.getRealIrc()
 
     def __getattr__(self, attr):
+        #return getattr(self.getRealIrc(), attr)
         return getattr(self.irc, attr)
 
 
@@ -539,7 +539,7 @@ class PrivmsgRegexp(Privmsg):
                 try:
                     r = re.compile(value.__doc__, self.flags)
                     self.res.append((r, value))
-                except sre_constants.error, e:
+                except re.error, e:
                     s = '%s.%s has an invalid regexp %s: %s' % \
                         (self.__class__.__name__, name,
                          value.__doc__, debug.exnToString(e))
