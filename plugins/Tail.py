@@ -38,9 +38,10 @@ __author__ = ''
 
 import supybot.plugins as plugins
 
+import getopt
+
 import supybot.conf as conf
 import supybot.utils as utils
-import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -66,7 +67,6 @@ conf.registerGlobalValue(conf.supybot.plugins.Tail, 'bold',
 conf.registerGlobalValue(conf.supybot.plugins.Tail, 'files',
     registry.SpaceSeparatedSetOfStrings([], """Determines what files the bot
     will tail to its targets."""))
-
 conf.registerGlobalValue(conf.supybot.plugins.Tail, 'notice',
     registry.Boolean(False, """Determines whether the bot will send its tail
     messages to the targets via NOTICEs rather than PRIVMSGs."""))
@@ -75,45 +75,60 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
     def __init__(self):
         privmsgs.CapabilityCheckingPrivmsg.__init__(self)
-        self.files = {}
+        self.lastPos = {}
         for filename in self.registryValue('files'):
             self._add(filename)
 
     def __call__(self, irc, msg):
         irc = callbacks.SimpleProxy(irc, msg)
-        for (filename, fd) in self.files.iteritems():
-            pos = fd.tell()
-            line = fd.readline()
-            while line:
-                self.log.debug('pos: %s, line: %s', pos, line)
-                line = line.strip()
-                self._send(irc, filename, line)
-                pos = fd.tell()
-                line = fd.readline()
-            fd.seek(pos)
+        self.lastIrc = irc
+        self.lastMsg = msg
+        self._checkFiles()
 
-    def die(self):
-        for fd in self.files.values():
-            fd.close()
+    def _checkFiles(self):
+        for filename in self.registryValue('files'):
+            self._checkFile(filename)
+
+    def _checkFile(self, filename):
+        try:
+            fd = file(filename)
+        except EnvironmentError, e:
+            self.log.warning('Couldn\'t tail %s: %s', filename, e)
+            return
+        fd.seek(self.lastPos.get(filename, 0))
+        line = fd.readline()
+        while line:
+            line = line.strip()
+            if line:
+                self._send(self.lastIrc, filename, line)
+            self.lastPos[filename] = fd.tell()
+            line = fd.readline()
+        fd.close()
 
     def _add(self, filename):
-        fd = file(filename)
+        try:
+            fd = file(filename)
+        except EnvironmentError, e:
+            self.log.warning('Couldn\'t open %s: %s', filename, e)
+            return
         fd.seek(0, 2) # 0 bytes, offset from the end of the file.
-        self.files[filename] = fd
+        self.lastPos[filename] = fd.tell()
+        fd.close()
         self.registryValue('files').add(filename)
 
+    def _remove(self, filename):
+        del self.lastPos[filename]
+        self.registryValue('files').remove(filename)
+        
     def _send(self, irc, filename, text):
-        targets = self.registryValue('targets')
         if self.registryValue('bold'):
             filename = ircutils.bold(filename)
         notice = self.registryValue('notice')
         payload = '%s: %s' % (filename, text)
-        for target in targets:
-            msgmaker = ircmsgs.privmsg
-            if notice and not ircutils.isChannel(target):
-                msgmaker = ircmsgs.notice
-            irc.sendMsg(msgmaker(target, payload))
-
+        for target in self.registryValue('targets'):
+            self.log.warning('Sending %r to %s.', payload, target)
+            irc.reply(payload, to=target, notice=notice)
+            
     def add(self, irc, msg, args):
         """<filename>
 
@@ -134,14 +149,34 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
         """
         filename = privmsgs.getArgs(args)
         try:
-            fd = self.files[filename]
-            del self.files[filename]
-            self.registryValue('files').remove(filename)
-            fd.close()
+            self._remove(filename)
             irc.replySuccess()
         except KeyError:
             irc.error('I\'m not currently announcing %s.' % filename)
 
+    def target(self, irc, msg, args):
+        """[--remove] [<target> ...]
+
+        If given no arguments, returns the current list of targets for this
+        plugin.  If given any number of targets, will add these targets to
+        the current list of targets.  If given --remove and any number of
+        targets, will remove those targets from the current list of targets.
+        """
+        (optlist, args) = getopt.getopt(args, '', ['remove'])
+        remove = False
+        for (option, arg) in optlist:
+            if option == '--remove':
+                remove = True
+        if not args:
+            L = self.registryValue('targets')
+            if L:
+                utils.sortBy(ircutils.toLower, L)
+                irc.reply(utils.commaAndify(L))
+            else:
+                irc.reply('I\'m not currently targetting anywhere.')
+        elif remove:
+            pass #XXX
+        
 
 Class = Tail
 
