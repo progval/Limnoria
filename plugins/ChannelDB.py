@@ -52,22 +52,6 @@ import privmsgs
 import ircutils
 import callbacks
 
-example = utils.wrapLines("""
-<jemfinch> @list ChannelDB
-<supybot> channelstats, karma, seen, stats
-<jemfinch> @channelstats
-<supybot> Error: Command must be sent in a channel or include a channel in its arguments.
-<jemfinch> (Obviously, you gotta give it a channel :))
-<jemfinch> @channelstats #sourcereview
-<supybot> On #sourcereview there have been 46965 messages, containing 1801703 characters, 319510 words, 4663 smileys, and 657 frowns; 2262 of those messages were ACTIONs.  There have been 2404 joins, 139 parts, 1 kicks, 323 mode changes, and 129 topic changes.
-<jemfinch> @stats #sourcereview jemfinch
-<supybot> jemfinch has sent 16131 messages; a total of 687961 characters, 118915 words, 1482 smileys, and 226 frowns; 797 of those messages were ACTIONs.  jemfinch has joined 284 times, parted 25 times, kicked someone 0 times been kicked 0 times, changed the topic 2 times, and changed the mode 2 times.
-<jemfinch> @karma #sourcereview birthday_sex
-<supybot> Karma for 'birthday_sex' has been increased 1 time and decreased 0 times for a total karma of 1.
-<jemfinch> @seen #sourcereview inkedmn
-<supybot> inkedmn was last seen here 1 day, 18 hours, 42 minutes, and 23 seconds ago saying 'ah'
-""")
-
 smileys = (':)', ';)', ':]', ':-)', ':-D', ':D', ':P', ':p', '(=', '=)')
 frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 
@@ -131,6 +115,21 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
             cursor.execute("""INSERT INTO channel_stats
                               VALUES (0, 0, 0, 0, 0, 0,
                                       0, 0, 0, 0, 0, 0)""")
+            cursor.execute("""CREATE TABLE words (
+                              id INTEGER PRIMARY KEY,
+                              word TEXT UNIQUE ON CONFLICT IGNORE
+                              )""")
+            cursor.execute("""CREATE TABLE word_stats (
+                              id INTEGER PRIMARY KEY,
+                              word_id INTEGER,
+                              user_id INTEGER,
+                              count INTEGER,
+                              UNIQUE (word_id, user_id) ON CONFLICT IGNORE
+                              )""")
+            cursor.execute("""CREATE INDEX word_stats_word_id
+                              ON word_stats (word_id)""")
+            cursor.execute("""CREATE INDEX word_stats_user_id
+                              ON word_stats (user_id)""")
             db.commit()
         def p(s1, s2):
             return int(ircutils.nickEqual(s1, s2))
@@ -150,6 +149,30 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):
             self._updatePrivmsgStats(msg)
+            self._updateWordStats(msg)
+
+    def _updateWordStats(self, msg):
+        try:
+            if self.outFiltering:
+                id = 0
+            else:
+                id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            return
+        (channel, s) = msg.args
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        words = s.lower().split()
+        criteria = ['word=%s'] * len(words)
+        criterion = ' OR '.join(criteria)
+        cursor.execute("SELECT id, word FROM words WHERE %s"%criterion, *words)
+        for (wordId, word) in cursor.fetchall():
+            cursor.execute("""INSERT INTO word_stats
+                              VALUES(NULL, %s, %s, 0)""", wordId, id)
+            cursor.execute("""UPDATE word_stats SET count=count+%s
+                              WHERE word_id=%s AND user_id=%s""",
+                           words.count(word), wordId, id)
+        db.commit()
 
     def _updatePrivmsgStats(self, msg):
         (channel, s) = msg.args
@@ -413,6 +436,59 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
              values.words, values.smileys, values.frowns, values.actions,
              values.joins, values.parts, values.quits,
              values.kicks, values.modes, values.topics)
+        irc.reply(msg, s)
+
+    def addword(self, irc, msg, args):
+        """[<channel>] <word>
+
+        Keeps stats on <word> in <channel>.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        word = privmsgs.getArgs(args)
+        word = word.strip()
+        if len(word.split()) > 1:
+            irc.error(msg, 'You can\'t have spaces in <word>.')
+            return
+        word = word.lower()
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""INSERT INTO words VALUES (NULL, %s)""", word)
+        db.commit()
+        irc.reply(msg, conf.replySuccess)
+
+    def wordstats(self, irc, msg, args):
+        """[<channel>] <user> <word>
+
+        Gets the stats kept on <user> for the number of times he's used <word>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        (user, word) = privmsgs.getArgs(args, needed=2)
+        try:
+            id = ircdb.users.getUserId(user)
+        except KeyError: # Maybe it was a nick.  We'll look up by hostmask.
+            hostmask = irc.state.nickToHostmask(user)
+            try:
+                id = ircdb.users.getUserId(hostmask)
+            except KeyError:
+                irc.error(msg, conf.replyNoUser)
+                return
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        word = word.lower()
+        cursor.execute("""SELECT word_stats.count FROM words, word_stats
+                          WHERE words.word=%s AND
+                                word_id=words.id AND
+                                word_stats.user_id=%s""", word, id)
+        if cursor.rowcount == 0:
+            cursor.execute("""SELECT id FROM words WHERE word=%s""", word)
+            if cursor.rowcount == 0:
+                irc.error(msg, 'I\'m not keeping stats on %r.' % word)
+            else:
+                irc.error(msg, '%s has never said %r.' % (user, word))
+            return
+        count = int(cursor.fetchone()[0])
+        s = '%s has said %r %s.' % (user, word, utils.nItems(count, 'time'))
         irc.reply(msg, s)
 
 
