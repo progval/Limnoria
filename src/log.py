@@ -237,7 +237,7 @@ conf.registerGlobalValue(conf.supybot.log, 'statistics',
     took to parse a message, process a command, etc.  You probably don't care
     about this."""))
 conf.registerGlobalValue(conf.supybot.log, 'timestampFormat',
-    registry.String('[%d-%b-%Y %H:%M:%S]', """Determines the format string for
+    registry.String('%Y-%m-%dT%H:%M:%S', """Determines the format string for
     timestamps in logfiles.  Refer to the Python documentation for the time
     module to see what formats are accepted. If you set this variable to the
     empty string, times will be logged in a simple seconds-since-epoch
