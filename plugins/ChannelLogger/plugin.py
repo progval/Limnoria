@@ -69,7 +69,7 @@ class ChannelLogger(callbacks.Privmsg):
             # I don't know why I put this in, but it doesn't work, because it
             # doesn't call doNick or doQuit.
             # if msg.args and irc.isChannel(msg.args[0]):
-            super(self.__class__, self).__call__(irc, msg)
+            self.__parent.__call__(irc, msg)
             if irc in self.lastMsgs:
                 if irc not in self.lastStates:
                     self.lastStates[irc] = irc.state.copy()
