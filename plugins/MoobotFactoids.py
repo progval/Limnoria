@@ -82,7 +82,9 @@ class OptionList(object):
             elif token == ')':
                 if len(ret) > 1:
                     if '|' in ret:
-                        L = map(''.join,utils.itersplit(lambda x: x=='|', ret))
+                        L = map(''.join,
+                                utils.itersplit('|'.__eq__, ret,
+                                                yieldEmpty=True))
                         return random.choice(L)
                     else:
                         return ''.join(ret)
