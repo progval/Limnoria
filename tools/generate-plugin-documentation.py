@@ -93,6 +93,7 @@ def prepIndex():
         %s
         <div class="maintitle">Supybot Plugin Documentation Index</div>
         <br />
+        <div class="whitebox">
         ''' % genHeader('Supybot Plugin Documentation')))
     fd.close()
 
@@ -103,25 +104,27 @@ def makePluginDocumentation(pluginWindow):
     trClass = 'even'
     (pluginName, module, plugin) = pluginWindow[1]
     print 'Generating documentation for %s.py' % pluginName
-    prev = pluginWindow[0][0] or 'index'
-    next = pluginWindow[2][0] or 'index'
+    prev = pluginWindow[0][0] or '../plugins'
+    next = pluginWindow[2][0] or '../plugins'
     # can't use string.capitalize() because it lowercases every character
     # except the first. must create our own capitalized names
     cpluginName = '%s%s' % (pluginName[0].upper(), pluginName[1:])
-    cprev = '%s%s' % (prev[0].upper(), prev[1:])
-    cnext = '%s%s' % (next[0].upper(), next[1:])
+    temp = prev.strip('./')
+    cprev = '%s%s' % (temp[0].upper(), temp[1:])
+    temp = next.strip('./')
+    cnext = '%s%s' % (temp[0].upper(), temp[1:])
     directory = os.path.join('docs', 'plugins')
     if not os.path.exists(directory):
         os.mkdir(directory)
     id = file(os.path.join('docs', 'plugins.html'), 'a')
-    id.write('<strong><a href="%s.html">%s</a></strong>\n' %
+    id.write('<strong><a href="plugins/%s.html">%s</a></strong>\n' %
              (pluginName, cpluginName))
     fd = file(os.path.join(directory,'%s.html' % pluginName), 'w')
     title = 'Documentation for the %s plugin for Supybot' % pluginName
     meta = '''
-    <link rel="home" title="Plugin Documentation Index" href="index.html">
-    <link rel="next" href="plugins/%s.html">
-    <link rel="previous" href="plugins/%s.html">
+    <link rel="home" title="Plugin Documentation Index" href="../plugins.html">
+    <link rel="next" href="%s.html">
+    <link rel="previous" href="%s.html">
     ''' % (next, prev)
     fd.write(textwrap.dedent('''
     %s
@@ -175,7 +178,7 @@ def finishIndex():
     if not os.path.exists(directory):
         os.mkdir(directory)
     fd = file(os.path.join(directory, 'plugins.html'), 'a')
-    fd.write(textwrap.dedent(genFooter()))
+    fd.write(textwrap.dedent('</div>\n%s' % genFooter()))
     fd.close()
 
 def makeCommandsIndex():
