@@ -389,10 +389,12 @@ def unDccIP(i):
 
 class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""
+    def __new__(cls, s=''):
+        return str.__new__(cls, intern(s))
+    
     def __init__(self, s):
         assert isinstance(s, basestring), \
                'Cannot make an IrcString from %s' % type(s)
-        str.__init__(self, intern(s)) # This does nothing, I fear.
         self.lowered = toLower(s)
 
     def __eq__(self, s):
