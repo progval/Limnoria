@@ -1,3 +1,5 @@
+        * Added Lookup.search
+
         * Updated Todo.remove to allow removing multiple taskids
 
         * Added Topic.reorder, a new command for reordering the topics in a

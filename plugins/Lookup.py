@@ -42,6 +42,8 @@ import re
 import sys
 import sets
 import types
+import getopt
+import string
 
 import conf
 import utils
@@ -98,6 +100,9 @@ class Lookup(callbacks.Privmsg):
         self.lookupDomains = sets.Set()
         self.dbHandler = LookupDB(name=os.path.join(conf.dataDir, 'Lookup'))
         
+    def _shrink(self, s):
+        return utils.ellipsisify(s, 50)
+
     def die(self):
         self.dbHandler.die()
 
@@ -195,6 +200,56 @@ class Lookup(callbacks.Privmsg):
         f.__doc__ = docstring
         self.lookupDomains.add(name)
         setattr(self.__class__, name, f)
+
+    _sqlTrans = string.maketrans('*?', '%_')
+    def search(self, irc, msg, args):
+        """[--{regexp,exact}=<value>] <name> <glob>
+
+        Searches the domain <name> for lookups matching <glob>.  If --regexp
+        is given, its associated value is taken as a regexp and matched
+        against the lookups; if --exact is given, its associated value is
+        taken as an exact string to match against the lookups.
+        """
+        (options, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
+        (name, globs) = privmsgs.getArgs(rest, optional=1)
+        db = self.dbHandler.getDb()
+        criteria = []
+        formats = []
+        predicateName = 'p'
+        for (option, arg) in options:
+            if option == '--exact':
+                criteria.append('value LIKE %s')
+                formats.append('%' + arg + '%')
+            elif option == '--regexp':
+                criteria.append('%s(value)' % predicateName)
+                try:
+                    r = utils.perlReToPythonRe(arg)
+                except ValueError, e:
+                    irc.error(msg, '%r is not a valid regular expression' %
+                              arg)
+                    return
+                def p(s, r=r):
+                    return int(bool(r.search(s)))
+                db.create_function(predicateName, 1, p)
+                predicateName += 'p'
+        for glob in globs.split():
+            criteria.append('value LIKE %s')
+            if '?' not in glob and '*' not in glob:
+                glob = '*%s*' % glob
+            formats.append(glob.translate(self._sqlTrans))
+        #print 'criteria: %s' % repr(criteria)
+        #print 'formats: %s' % repr(formats)
+        cursor = db.cursor()
+        sql = """SELECT key, value FROM %s WHERE %s""" % (name,
+                ' AND '.join(criteria))
+        #print 'sql: %s' % sql
+        cursor.execute(sql, formats)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'No %ss matched that query.' % name)
+        else:
+            lookups = ['%s: %s' % (item[0], self._shrink(item[1]))
+                       for item in cursor.fetchall()]
+            irc.reply(msg, utils.commaAndify(lookups))
 
     def _lookup(self, irc, msg, args):
         """<name> <key>

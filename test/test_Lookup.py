@@ -87,8 +87,13 @@ if sqlite:
             fd.write('\n')
             fd.close()
             self.assertNotError('lookup add test foo.supyfact')
-        
 
+        def testSearch(self):
+            self.assertNotError('lookup add test foo.supyfact')
+            self.assertResponse('search test mom', 'your mom: my mom')
+            self.assertResponse('search test b?r', 'foo: bar')
+            self.assertResponse('search --exact bar test', 'foo: bar')
+            self.assertResponse('search --regexp m/bar/ test', 'foo: bar')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
