@@ -297,7 +297,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         """
         (name, capability) = privmsgs.getArgs(args, 2)
         if ircdb.checkCapability(msg.prefix, capability) or \
-           '!' in capability:
+           ircdb.isAntiCapability(capability):
             try:
                 id = ircdb.users.getUserId(name)
                 user = ircdb.users.getUser(id)
