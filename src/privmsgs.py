@@ -149,6 +149,24 @@ def channel(f):
                               f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
     return newf
+
+def urlSnarfer(f):
+    """Protects the snarfer from loops and whatnot."""
+    def newf(self, irc, msg, match, *L):
+        now = time.time()
+        cutoff = now - conf.snarfThrottle
+        while self._snarfedUrls and self._snarfedUrls[0][2] < cutoff:
+            self._snarfedUrls.dequeue()
+        url = match.group(0)
+        if any(lambda t: t[0]==url and t[1]==msg.args[0], self._snarfedUrls):
+            debug.msg('Refusing to snarf %s.')
+        else:
+            self._snarfedUrls.enqueue((url, msg.args[0], now))
+            f(self, irc, msg, match, *L)
+    newf = types.FunctionType(newf.func_code, newf.func_globals,
+                              f.func_name, closure=newf.func_closure)
+    newf.__doc__ = f.__doc__
+    return newf
         
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
