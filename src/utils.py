@@ -191,6 +191,6 @@ def soundex(s, length=4):
             L.append(c)
     L = [c for c in L if c != '0'] + ['0', '0', '0']
     s = ''.join(L)
-    return length and s[:length] or s
+    return length and s[:length] or s.rstrip('0')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
