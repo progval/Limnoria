@@ -142,8 +142,8 @@ if sqlite is not None:
             self.assertNotError('karma config karma-most-display 25')
             self.assertRegexp('karma most active', 'bar')
 
-       def testIncreaseKarmaWithNickNotCallingInvalidCommand(self):
-           self.assertNoResponse('%s: foo++' % self.irc.nick, 3)
+        def testIncreaseKarmaWithNickNotCallingInvalidCommand(self):
+            self.assertNoResponse('%s: foo++' % self.irc.nick, 3)
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
