@@ -84,5 +84,5 @@ class URLTestCase(ChannelPluginTestCase):
         self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
         self.assertNotRegexp('url last', '\\x01')
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 

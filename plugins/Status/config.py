@@ -50,4 +50,4 @@ conf.registerChannelValue(Status.cpu, 'memory',
     registry.Boolean(True, """Determines whether the cpu command will report
     the amount of memory being used by the bot."""))
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

@@ -54,4 +54,4 @@ class GamesTestCase(ChannelPluginTestCase):
         self.assertNotError('eightball ab')
         self.assertNotError('eightball abc')
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

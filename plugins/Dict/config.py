@@ -47,4 +47,4 @@ conf.registerChannelValue(Dict, 'default',
     ask for definitions in.  If this value is '*' (without the quotes) the bot
     will use all dictionaries to define words."""))
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

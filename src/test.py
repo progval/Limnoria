@@ -443,5 +443,5 @@ class ChannelPluginTestCase(PluginTestCase):
         self.irc.feedMsg(ircmsgs.privmsg(to, query, prefix=frm))
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 

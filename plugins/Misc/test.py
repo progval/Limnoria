@@ -211,5 +211,5 @@ class MiscTestCase(ChannelPluginTestCase):
     def testAproposDoesntReturnNonCanonicalNames(self):
         self.assertNotRegexp('apropos exec', '_exec')
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 

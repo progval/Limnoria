@@ -46,4 +46,4 @@ conf.registerGlobalValue(Later, 'private',
     registry.Boolean(True, """Determines whether users will be notified in the
     first place in which they're seen, or in private."""))
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

@@ -1093,4 +1093,4 @@ conf.registerGlobalValue(conf.supybot.capabilities, 'default',
     have the capability for whatever command he wishes to run."""))
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

@@ -596,4 +596,4 @@ class PeriodicFileDownloader(object):
 
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

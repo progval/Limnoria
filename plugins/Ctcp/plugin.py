@@ -149,4 +149,4 @@ class Ctcp(callbacks.PluginRegexp):
     version = wrap(version, ['channel', getopts({'nicks':''})])
 
 Class = Ctcp
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

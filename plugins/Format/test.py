@@ -86,4 +86,4 @@ class FormatTestCase(PluginTestCase):
         self.assertResponse('field 2 foo bar baz', 'bar')
         self.assertResponse('field -1 foo bar baz', 'baz')
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

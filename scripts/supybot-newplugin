@@ -100,7 +100,7 @@ class %s(callbacks.Plugin):
 Class = %s
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 '''.lstrip() # This removes the newlines that precede and follow the text.
 
 configTemplate = '''
@@ -124,7 +124,7 @@ def configure(advanced):
 #     registry.Boolean(False, """Help for someConfigVariableName."""))
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 '''.lstrip()
 
 
@@ -166,7 +166,7 @@ Class = plugin.Class
 configure = config.configure
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 '''.lstrip()
 
 testTemplate = '''
@@ -178,7 +178,7 @@ class %sTestCase(PluginTestCase):
     plugins = (%r,)
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 '''.lstrip()
 
 readmeTemplate = '''
@@ -273,4 +273,4 @@ if __name__ == '__main__':
         finished.  Obviously, nothing was written, but just run this script
         again whenever you want to generate a template for a plugin.""")
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

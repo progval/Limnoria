@@ -64,4 +64,4 @@ class authors(object): # This is basically a bag.
         except AttributeError:
             return self.unknown
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

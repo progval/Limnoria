@@ -62,4 +62,4 @@ conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs.randomGrabber,
     minimum number of characters in a message for it to be considered for
     random grabbing."""))
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

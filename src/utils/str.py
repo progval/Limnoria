@@ -413,4 +413,4 @@ def format(s, *args, **kwargs):
     except IndexError:
         raise ValueError, 'Extra format chars in format spec: %r' % s
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

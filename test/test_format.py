@@ -37,4 +37,4 @@ class FormatTestCase(SupyTestCase):
         self.assertEqual(format('%.2f', 0.12345), '0.12')
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

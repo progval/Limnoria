@@ -49,4 +49,4 @@ conf.registerGlobalValue(NickCapture.ison, 'period',
     will check whether its nick ISON."""))
 
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

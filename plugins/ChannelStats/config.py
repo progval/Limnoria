@@ -66,4 +66,4 @@ conf.registerChannelValue(ChannelStats, 'frowns',
     (i.e., pieces of text with no spaces in them ) are considered 'frowns' for
     the purposes of stats-keeping."""))
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

@@ -38,4 +38,4 @@ class PraiseTestCase(PluginTestCase):
     def testPraise(self):
         self.assertError('praise foo')  # no praises!
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
