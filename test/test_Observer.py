@@ -75,5 +75,10 @@ class ObserverTestCase(ChannelPluginTestCase):
         self.assertNotError('remove foo')
         self.assertRegexp('observer list', 'no relevant')
 
+    def testObserverWithEmptyGroup(self):
+        self.assertNotError('add foo m/foo(bar)?/i echo I saw foo.')
+        self.assertNotError('observer enable foo')
+        self.assertSnarfRegexp('foo', 'saw foo')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

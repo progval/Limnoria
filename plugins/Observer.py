@@ -136,7 +136,7 @@ class Observer(callbacks.Privmsg):
             m = r.search(msg.args[1])
             if m is not None:
                 command = observer.command()
-                groups = list(m.groups())
+                groups = filter(None, list(m.groups()))
                 groups.insert(0, m.group(0))
                 for (i, group) in enumerate(groups):
                     command = command.replace('$%s' % i, group)
