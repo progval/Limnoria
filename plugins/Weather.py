@@ -75,10 +75,12 @@ class Weather(callbacks.Privmsg):
         r'([^<]+)</font></strong></td>', re.I)
     _chillregex = re.compile(
         r'Wind Chill</font></strong>:</small></a></td>\s+<td align="right">'
-        r'<small><font face="arial">([^<]+)</font></small></td>', re.I | re.S)
+        r'<small><font face="arial">([^N][^<]+)</font></small></td>',
+         re.I | re.S)
     _heatregex = re.compile(
         r'Heat Index</font></strong>:</small></a></td>\s+<td align="right">'
-        r'<small><font face="arial">([^<]+)</font></small></td>', re.I | re.S)
+        r'<small><font face="arial">([^N][^<]+)</font></small></td>',
+         re.I | re.S)
     # States
     _realStates = sets.Set(['ak', 'al', 'ar', 'az', 'ca', 'co', 'ct', 
     			    'dc', 'de', 'fl', 'ga', 'hi', 'ia', 'id',
@@ -168,21 +170,18 @@ class Weather(callbacks.Privmsg):
         conds = self._condregex.search(html)
         if conds:
             conds = conds.group(1)
+        index = ''
         chill = self._chillregex.search(html)
         if chill:
             #self.log.warning(chill.groups())
             chill = chill.group(1)
+            if int(chill[:-2]) < int(temp[:-2]):
+                index = ' (Wind Chill: %s)' % chill
         heat = self._heatregex.search(html)
         if heat:
             heat = heat.group(1)
-
-        if int(heat[:-2]) > int(temp[:-2]):
-            index = ' (Heat Index: %s)' % heat
-        elif int(chill[:-2]) < int(temp[:-2]):
-            index = ' (Wind Chill: %s)' % chill
-        else:
-            index = ''
-
+            if int(heat[:-2]) > int(temp[:-2]):
+                index = ' (Heat Index: %s)' % heat
         if temp and conds and city and state:
             conds = conds.replace('Tsra', 'Thunder Storms')
             s = 'The current temperature in %s, %s is %s%s. Conditions: %s' % \
