@@ -42,6 +42,7 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertNotError('learn jemfinch as my primary author')
         self.assertNotError('factoidinfo jemfinch')
         self.assertRegexp('whatis jemfinch', 'my primary author')
+        self.assertRegexp('whatis JEMFINCH', 'my primary author')
         self.assertNotError('learn jemfinch as a crappy assembly programmer')
         self.assertRegexp('whatis jemfinch', r'.*primary author.*assembly')
         self.assertError('unlearn jemfinch')
