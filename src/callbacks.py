@@ -837,7 +837,7 @@ class Privmsg(irclib.IrcCallback):
             group = group.get(name)
         return group.get(id)()
 
-    def setUserValue(self, prefixOrName, name, value,
+    def setUserValue(self, name, prefixOrName, value,
                      ignoreNoUser=True, setValue=False):
         try:
             id = str(ircdb.users.getUserId(prefixOrName))

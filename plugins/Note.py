@@ -321,7 +321,7 @@ class Note(callbacks.Privmsg):
                     return
             else:
                 L.add(user)
-            self.setUserValue(msg.prefix, 'ignores', L, setValue=True)
+            self.setUserValue('ignores', msg.prefix, L, setValue=True)
             irc.replySuccess()
         except KeyError:
             irc.errorNoUser()
