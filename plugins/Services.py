@@ -102,7 +102,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     do377 = do376
     do422 = do376
 
-    _owned = re.compile('nick.*(?<!not)(?:registered|protected|owned)')
+    _owned = re.compile(r'nick.*(?<!n[\'o]t)\s*(?:registered|protected|owned)')
     def doNotice(self, irc, msg):
         if self.nickserv:
             if msg.nick == self.nickserv:
