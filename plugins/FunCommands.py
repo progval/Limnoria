@@ -103,11 +103,29 @@ class FunCommands(callbacks.Privmsg):
         Returns the character associated with the 8-bit value <number>
         """
         try:
-            i = int(privmsgs.getArgs(args))
+            i = privmsgs.getArgs(args)
+            if i.startswith('0x'):
+                base = 16
+            elif i.startswith('0b'):
+                base = 2
+                i = i[2:]
+            elif i.startswith('0'):
+                base = 8
+            else:
+                base = 10
+            i = int(i, base)
             irc.reply(msg, chr(i))
         except ValueError:
             irc.error(msg, 'That number doesn\'t map to an 8-bit character.')
                 
+    def base(self, irc, msg, args):
+        """<base> <number>
+
+        Converts to base <base> the number <number>
+        """
+        (base, number) = privmsgs.getArgs(args, needed=2)
+        irc.reply(msg, str(long(number, int(base))))
+        
     def hexlify(self, irc, msg, args):
         "<text>; turn string into a hexstring."
         text = privmsgs.getArgs(args)
