@@ -36,6 +36,7 @@ class ConfigTestCase(ChannelPluginTestCase):
     plugins = ('Config', 'Ebay')
     def testGet(self):
         self.assertNotRegexp('config get supybot.reply', r'registry\.Group')
+        self.assertResponse('config supybot.protocols.irc.throttleTime', '0.0')
 
     def testList(self):
         self.assertError('config list asldfkj')
