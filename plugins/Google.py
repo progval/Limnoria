@@ -36,6 +36,7 @@ Acceses Google for various things.
 from baseplugin import *
 
 import re
+import sets
 import time
 import getopt
 import urllib2
@@ -85,10 +86,11 @@ def search(*args, **kwargs):
         last24hours.dequeue()
     return data
             
-class GooglePrivmsg(callbacks.Privmsg):
+class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
+    regexps = sets.Set(['googleSnarfer', 'googleGroups'])
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.total = 0
         self.totalTime = 0
         self.last24hours = structures.queue()
@@ -217,9 +219,6 @@ class GooglePrivmsg(callbacks.Privmsg):
                    recent, recent != 1 and 's ' or ' ',
                    totalTime))
 
-
-class GooglePrivmsgRegexp(callbacks.PrivmsgRegexp):
-    threaded = True
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
         searchString = match.group(1)
@@ -233,7 +232,7 @@ class GooglePrivmsgRegexp(callbacks.PrivmsgRegexp):
 
     _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
     _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
-    def googlegroups(self, irc, msg, match):
+    def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
         request = urllib2.Request(match.group(0), headers=\
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
@@ -261,9 +260,6 @@ class GooglePrivmsgRegexp(callbacks.PrivmsgRegexp):
               'That doesn\'t appear to be a proper Google Groups page.'))
 
 
-
-class Google(callbacks.Combine):
-    classes = [GooglePrivmsg, GooglePrivmsgRegexp]
 
 Class = Google
 
