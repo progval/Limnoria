@@ -370,8 +370,8 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                 total = added - subtracted
                 s = 'Karma for %r has been increased %s %s ' \
                     'and decreased %s %s for a total karma of %s.' % \
-                    (name, added, added == 1 and 'time' or 'times',
-                     subtracted, subtracted == 1 and 'time' or 'times', total)
+                    (name, added, utils.pluralize(added, 'time'),
+                     subtracted, utils.pluralize(subtracted, 'time'), total)
                 irc.reply(msg, s)
         elif len(args) > 1:
             criteria = ' OR '.join(['name=%s'] * len(args))
