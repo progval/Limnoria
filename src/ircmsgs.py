@@ -277,16 +277,21 @@ def devoices(channel, nicks, prefix=''):
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('v'*len(nicks)), nicks))
 
-def ban(channel, hostmask, prefix=''):
+def ban(channel, hostmask, exception='', prefix=''):
     """Returns a MODE to ban nick on channel."""
     assert isChannel(channel) and isUserHostmask(hostmask)
-    return IrcMsg(prefix=prefix, command=MODE, args=(channel, '+b', hostmask))
+    modes = [('+b', hostmask)]
+    if exception:
+        modes.append(('+e', exception))
+    return IrcMsg(prefix=prefix, command=MODE,
+                  args=[channel] + ircutils.joinModes(modes))
 
-def bans(channel, hostmasks, prefix=''):
+def bans(channel, hostmasks, exceptions=(), prefix=''):
     """Returns a MODE to ban each of nicks on channel."""
     assert filter(isUserHostmask, hostmasks) == hostmasks
+    modes = [('+b', s) for s in hostmasks] + [('+e', s) for s in exceptions]
     return IrcMsg(prefix=prefix, command=MODE,
-                  args=(channel, '+' + ('b'*len(hostmasks)), hostmasks))
+                  args=[channel] + ircutils.joinModes(modes))
 
 def unban(channel, hostmask, prefix=''):
     """Returns a MODE to unban nick on channel."""
@@ -379,7 +384,7 @@ def nick(nick, prefix=''):
     assert isNick(nick)
     return IrcMsg(prefix=prefix, command='NICK', args=(nick,))
 
-def user(user, ident, prefix=''):
+def user(ident, user, prefix=''):
     """Returns a USER with ident ident and user user."""
     return IrcMsg(prefix=prefix, command='USER', args=(ident, '0', '*', user))
 
@@ -397,5 +402,8 @@ def invite(channel, nick, prefix=''):
     """Returns an INVITE for nick."""
     assert isNick(nick)
     return IrcMsg(prefix=prefix, command='INVITE', args=(channel, nick))
+
+def password(password, prefix=''):
+    return IrcMsg(prefix=prefix, command='PASS', args=(password,))
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
