@@ -150,7 +150,23 @@ decorators = ircutils.IrcDict({
 
 # This is just so we can centralize this, since it may change.
 def _int(s):
-    return int(float(s))
+    base = 10
+    if s.startswith('0x'):
+        base = 16
+        s = s[2:]
+    elif s.startswith('0b'):
+        base = 2
+        s = s[2:]
+    elif s.startswith('0') and len(s) > 1:
+        base = 8
+        s = s[1:]
+    try:
+        return int(s, base)
+    except ValueError:
+        if base == 10:
+            return int(float(s))
+        else:
+            raise
 
 def getInt(irc, msg, args, state, type='integer', p=None):
     try:
@@ -356,6 +372,12 @@ def private(irc, msg, args, state):
     if ircutils.isChannel(msg.args[0]):
         irc.errorRequiresPrivacy(Raise=True)
 
+def public(irc, msg, args, state, errmsg=None):
+    if not ircutils.isChannel(msg.args[0]):
+        if errmsg is None:
+            errmsg = 'This message must be sent in a channel.'
+        irc.error(errmsg, Raise=True)
+
 def checkCapability(irc, msg, args, state, cap):
     cap = ircdb.canonicalCapability(cap)
     if not ircdb.checkCapability(msg.prefix, cap):
@@ -377,9 +399,40 @@ def getNow(irc, msg, args, state):
 
 def getCommandName(irc, msg, args, state):
     state.args.append(callbacks.canonicalName(args.pop(0)))
+
+def getIp(irc, msg, args, state):
+    if utils.isIP(args[0]):
+        state.args.append(args.pop(0))
+    else:
+        irc.errorInvalid('ip', args[0])
+
+def getLetter(irc, msg, args, state):
+    if len(args[0]) == 1:
+        state.args.append(args.pop(0))
+    else:
+        irc.errorInvalid('letter', args[0])
+
+def getMatch(irc, msg, args, state, regexp, errmsg):
+    m = regexp.search(args[0])
+    if m is not None:
+        state.args.append(m)
+        del args[0]
+    else:
+        irc.error(errmsg, Raise=True)
+
+def getLiteral(irc, msg, args, state, literals, errmsg=None):
+    if isinstance(literals, basestring):
+        literals = (literals,)
+    if args[0] in literals:
+        state.args.append(args.pop(0))
+    elif errmsg is not None:
+        irc.error(errmsg, Raise=True)
+    else:
+        raise callbacks.ArgumentError
     
 wrappers = ircutils.IrcDict({
     'id': getId,
+    'ip': getIp,
     'int': getInt,
     'now': getNow,
     'url': getUrl,
@@ -387,8 +440,10 @@ wrappers = ircutils.IrcDict({
     'nonInt': getNonInt,
     'positiveInt': getPositiveInt,
     'nonNegativeInt': getNonNegativeInt,
+    'letter': getLetter,
     'haveOp': getHaveOp,
     'expiry': getExpiry,
+    'literal': getLiteral,
     'nick': getNick,
     'channel': getChannel,
     'inChannel': inChannel,
@@ -405,6 +460,7 @@ wrappers = ircutils.IrcDict({
     'hostmask': getHostmask,
     'banmask': getBanmask,
     'user': getUser,
+    'public': public,
     'private': private,
     'otherUser': getOtherUser,
     'regexpMatcher': getMatcher,
