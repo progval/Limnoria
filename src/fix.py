@@ -37,7 +37,8 @@ __revision__ = "$Id$"
 
 __all__ = []
 
-exported = ['ignore', 'window', 'group', 'partition', 'any', 'all', 'rsplit']
+exported = ['ignore', 'window', 'group', 'partition',
+            'any', 'all', 'rsplit', 'dynamic']
 
 import sys
 import new
@@ -66,6 +67,23 @@ random.choice = choice
 def ignore(*args, **kwargs):
     """Simply ignore the arguments sent to it."""
     pass
+
+class DynamicScope(object):
+    def _getLocals(self, name):
+        f = sys._getframe().f_back.f_back # _getLocals <- __[gs]etattr__ <- ...
+        while f:
+            if name in f.f_locals:
+                return f.f_locals
+            f = f.f_back
+        raise NameError, name
+    
+    def __getattr__(self, name):
+        return self._getLocals(name)[name]
+
+    def __setattr__(self, name, value):
+        self._getLocals(name)[name] = value
+dynamic = DynamicScope()
+        
 
 if sys.version_info < (2, 4, 0):
     def reversed(L):
@@ -230,7 +248,6 @@ def _replace_original__init__():
 atexit.register(_replace_original__init__)
 
 g = globals()
-
 for name in exported:
     __builtins__[name] = g[name]
 

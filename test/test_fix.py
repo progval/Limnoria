@@ -98,4 +98,23 @@ class FunctionsTest(SupyTestCase):
         self.assertEqual(rsplit('foobarbaz', 'bar'), ['foo', 'baz'])
 
 
+class TestDynamic(SupyTestCase):
+    def test(self):
+        def f(x):
+            i = 2
+            return g(x)
+        def g(y):
+            j = 3
+            return h(y)
+        def h(z):
+            self.assertEqual(dynamic.z, z)
+            self.assertEqual(dynamic.j, 3)
+            self.assertEqual(dynamic.i, 2)
+            self.assertEqual(dynamic.y, z)
+            self.assertEqual(dynamic.x, z)
+            self.assertRaises(NameError, getattr, dynamic, 'asdfqwerqewr')
+            self.assertEqual(dynamic.self, self)
+            return z
+        self.assertEqual(f(10), 10)
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
