@@ -67,8 +67,9 @@ class UrbanDict(callbacks.Privmsg):
             irc.error(str(e))
 
     _wordRE = re.compile(r'<title>UrbanDictionary.com/(?P<word>.*?)</title>')
-    _defUsageRE = re.compile(r'<blockquote><p>(?P<definition>.*?)</p>'
-                             r'<p><i>(?P<usage>.*?)</i></p>',
+    _defUsageRE = re.compile(r'<div style="padding-left: 30px; padding-right: '
+                              r'30px"><p>(?P<definition>.*?)</p><p><i>'
+                              r'(?P<usage>.*?)</i></p>.*?</div>',
                              re.MULTILINE | re.DOTALL)
     def urbandict(self, irc, msg, args):
         """[<phrase>]
