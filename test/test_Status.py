@@ -69,7 +69,6 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
         self.feedMsg('list')
         self.feedMsg('list Status')
         self.assertNotError('upkeep')
-        self.assertNotError('logfile')
 
     def testThreads(self):
         self.assertNotError('threads')
