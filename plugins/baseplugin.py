@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 
-import sys
-
-if 'sys' not in sys.path:
-    sys.path.insert(0, 'src')
-if 'others' not in sys.path:
-    sys.path.insert(0, 'others')
-
 from fix import *
 
 import os

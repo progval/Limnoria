@@ -29,11 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import sys
-if 'src' not in sys.path:
-    sys.path.insert(0, 'src')
-if 'test' not in sys.path:
-    sys.path.insert(0, 'test')
+import supybot
 
 import conf
 conf.dataDir = 'test-data'
@@ -45,6 +41,7 @@ from fix import *
 
 import gc
 import re
+import sys
 import imp
 import glob
 import time

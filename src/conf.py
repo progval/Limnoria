@@ -31,6 +31,8 @@
 
 from fix import *
 
+import sys
+
 import sets
 import os.path
 
@@ -46,7 +48,8 @@ import os.path
 logDir = 'logs'
 confDir = 'conf'
 dataDir = 'data'
-pluginDirs = ['src', 'plugins']
+installDir = os.path.dirname(os.path.dirname(sys.modules[__name__].__file__))
+pluginDirs = [os.path.join(installDir, s) for s in ('src', 'plugins')]
 
 ###
 # Files.

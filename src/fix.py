@@ -35,11 +35,6 @@
 Fixes stuff that Python should have but doesn't.
 """
 
-import sys
-
-if 'others' not in sys.path:
-    sys.path.insert(0, 'others')
-
 import string
 string.ascii = string.maketrans('', '')
 
