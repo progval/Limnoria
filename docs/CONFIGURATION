@@ -44,15 +44,11 @@ under the "supybot" (the base group) hierarchy.  You would simply
 issue this command:
 
 <jemfinch|lambda> @config list supybot
-<supybot> jemfinch|lambda: nick, ident, user, server,
-	  password, channels, prefixChars, defaultCapabilities,
-	  defaultAllow, defaultIgnore, humanTimestampFormat,
-	  externalIP, pipeSyntax,
-	  followIdentificationThroughNickChanges, alwaysJoinOnInvite,
-	  showSimpleSyntax, maxHistoryLength, nickmods, throttleTime,
-	  snarfThrottle, threadAllCommands, pingServer, pingInterval,
-	  upkeepInterval, flush, httpPeekSize, and
-	  defaultSocketTimeout
+<supybot> jemfinch|lambda: alwaysJoinOnInvite, capabilities, channels,
+          defaultIgnore, defaultSocketTimeout, externalIP, flush,
+          followIdentificationThroughNickChanges,
+          humanTimestampFormat, ident, networks, nick, pidFile,
+          snarfThrottle, upkeepInterval, and user
 
 These are all the configuration values you can set which are under the
 base "supybot" group.  Actually, their full names would each have a
@@ -63,8 +59,9 @@ Now, to see all of the available configuration groups under the base
 "supybot" group, we simply use the "--groups" flag to config list:
 
 <jemfinch|lambda> @config list --groups supybot
-<supybot> jemfinch|lambda: commands, databases,
-	  directories, drivers, log, plugins, replies, and reply
+<supybot> jemfinch|lambda: capabilities, commands, databases, debug,
+          directories, drivers, log, networks, nick, plugins,
+          protcols, replies, and reply
 
 These are all the subgroups of "supybot".  Again, the full name of
 these would have "supybot." prepended to them.  So really, we have
@@ -73,20 +70,7 @@ supybot.commands, supybot.databases, etc.
 Note: an item can show up in both lists if it is a group that itself
 has a value.  For example, all plugins fall under this category, as
 their value is a boolean value determining whether or not that plugin
-is to be loaded when the bot is started.  
-
-One last listing example, and then we'll start actually reading and
-modifying the configuration values.  It's important to know that when
-you provide the group argument to config list that you must always
-provide the full name of the group.  For example, "config list
-commands" would be incorrect, even though we see "commands" in the
-listing above.  Remember, we just shorten the names by the group we're
-listing so we can fit more such names in a single message. In this
-case, that would be "supybot", so to list everything in the commands
-subgroup of supybot, we do:
-
-<jemfinch|lambda> @config list supybot.commands
-<supybot> jemfinch|lambda: defaultPlugins
+is to be loaded when the bot is started.
 
 Okay, now that you've used the Config plugin to list configuration
 variables, it's time that we start looking at individual variables and
@@ -100,12 +84,17 @@ group, simply use the "config help" command.  For example, to see what
 this "supybot.prefixChars" configuration variable is all about, we'd
 do this:
 
-<jemfinch|lambda> @config help supybot.prefixChars
-<supybot> jemfinch|lambda: Determines what prefix
-	  characters the bot will reply to. A prefix character is a
-	  single character that the bot will use to determine what
-	  messages are addressed to it; when there are no prefix
-	  characters set, it just uses its nick.
+<jemfinch|lambda> @config help supybot.reply.whenAddressedBy.chars
+
+<supybot> jemfinch|lambda: Determines what prefix characters the bot
+          will reply to. A prefix character is a single character that
+          the bot will use to determine what messages are addressed to
+          it; when there are no prefix characters set, it just uses
+          its nick. Each character in this string is interpreted
+          individually; you can have multiple prefix chars
+          simultaneously, and if any one of them is used as a prefix
+          the bot will assume it is being addressed.  (Current value:
+          @)
 
 Pretty simple, eh?
 
@@ -113,17 +102,17 @@ Now, if you're curious what the current value of a configuration
 variable is, you'll use the "config" command with one argument, the
 name of the variable you want to see the value of:
 
-<jemfinch|lambda> @config supybot.prefixChars
+<jemfinch|lambda> @config supybot.reply.whenAddressedBy.chars
 <supybot> jemfinch|lambda: '@'
 
 To set this value, just stick an extra argument after the name:
 
-<jemfinch|lambda> @config supybot.prefixChars @$
+<jemfinch|lambda> @config supybot.reply.whenAddressedBy.chars @$
 <supybot> jemfinch|lambda: The operation succeeded.
 
 Now, check this out:
 
-<jemfinch|lambda> $config supybot.prefixChars
+<jemfinch|lambda> $config supybot.reply.whenAddressedBy.chars
 <supybot> jemfinch|lambda: '@$'
 
 Note that we used $ as our prefix character, and that the value of the
@@ -132,21 +121,21 @@ now, this change would be flushed to the registry file on disk (this
 would also happen if I made the bot quit, or pressed Ctrl-C in the
 terminal the bot was running in).  Instead, I'll revert the change:
 
-<jemfinch|lambda> $config supybot.prefixChars @
+<jemfinch|lambda> $config supybot.reply.whenAddressedBy.chars @
 <supybot> jemfinch|lambda: The operation succeeded.
 <jemfinch|lambda> $note that this makes no response.
 
 If you're ever curious what the default for a given configuration
 variable is, use the "config default" command:
 
-<jemfinch|lambda> @config default supybot.prefixChars
+<jemfinch|lambda> @config default supybot.reply.whenAddressedBy.chars
 <supybot> jemfinch|lambda: ''
 
 Thus, to reset a configuration variable to its default value, you can
 simply say:
 
-<jemfinch|lambda> @config supybot.prefixChars [config default
-		  supybot.prefixChars]
+<jemfinch|lambda> @config supybot.reply.whenAddressedBy.chars [config
+                  default supybot.reply.whenAddressedBy.chars]
 <supybot> jemfinch|lambda: The operation succeeded.
 <jemfinch|lambda> @note that this does nothing
 
@@ -158,12 +147,17 @@ search" command.  Check this out:
 
 <jemfinch|lambda> @config search op
 <supybot> jemfinch|lambda:
-	  supybot.plugins.Enforcer.autoOp,
-	  supybot.plugins.Enforcer.autoOp.#supybot,
-	  supybot.plugins.Enforcer.autoHalfop,
-	  supybot.plugins.Enforcer.cycleToGetOps, supybot.plugins.Topic,
-	  supybot.plugins.Topic.separator, and
-	  supybot.plugins.Relay.topicSync
+          supybot.plugins.Enforcer.autoOp,
+          supybot.plugins.Enforcer.autoHalfop,
+          supybot.plugins.Enforcer.takeRevenge.onOps,
+          supybot.plugins.Enforcer.cycleToGetOps,
+          supybot.plugins.Topic, supybot.plugins.Topic.public,
+          supybot.plugins.Topic.separator,
+          supybot.plugins.Topic.format,
+          supybot.plugins.Topic.recognizeTopiclen,
+          supybot.plugins.Topic.default,
+          supybot.plugins.Topic.undo.maz, and
+          supybot.plugins.Relay.topicSync
 
 Sure, it showed up all the topic-related stuff in there, but it also
 showed you all the op-related stuff, too.  Do note, however, that you
@@ -186,12 +180,12 @@ automatic flushing will occur.
 
 Many configuration variables can be specific to individual channels.
 The Config plugin provides an easy way to configure something for a
-specific channel; for instance, in order to set the prefixChar for a
+specific channel; for instance, in order to set the prefix chars for a
 specific channel, do this in that channel:
 
-config channel supybot.prefixChars !
+config channel supybot.reply.whenAddressedBy.chars !
 
-That'll set the prefixChar in the channel that message is sent in to
+That'll set the prefix chars in the channel that message is sent in to
 !.  Voila, channel-specific values!
 
 Anyway, that's about it for configuration.  Have fun, and enjoy your
