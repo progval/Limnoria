@@ -94,3 +94,21 @@ class IrcMsgTestCase(unittest.TestCase):
         for msg in msgs:
             self.assertEqual(msg, pickle.loads(pickle.dumps(msg)))
             self.assertEqual(msg, copy.copy(msg))
+
+    def testIsAction(self):
+        L = [':jemfinch!~jfincher@ts26-2.homenet.ohio-state.edu PRIVMSG'
+             ' #sourcereview :ACTION does something',
+             ':supybot!~supybot@underthemain.net PRIVMSG #sourcereview '
+             ':ACTION beats angryman senseless with a Unix manual (#2)',
+             ':supybot!~supybot@underthemain.net PRIVMSG #sourcereview '
+             ':ACTION beats ang senseless with a 50lb Unix manual (#2)',
+             ':supybot!~supybot@underthemain.net PRIVMSG #sourcereview '
+             ':ACTION resizes angryman\'s terminal to 40x24 (#16)']
+        msgs = map(ircmsgs.IrcMsg, L)
+        for msg in msgs:
+            self.failUnless(ircmsgs.isAction(msg))
+
+    def testUnAction(self):
+        s = 'foo bar baz'
+        msg = ircmsgs.action('#foo', s)
+        self.assertEqual(ircmsgs.unAction(msg), s)
