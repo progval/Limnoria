@@ -305,7 +305,7 @@ def getNick(irc, msg, args, state):
     if ircutils.isNick(args[0]):
         if 'nicklen' in irc.state.supported:
             if len(args[0]) > irc.state.supported['nicklen']:
-                irc.errorInvalid('nick', s,
+                irc.errorInvalid('nick', args[0],
                                  'That nick is too long for this server.')
         state.args.append(args.pop(0))
     else:
