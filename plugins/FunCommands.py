@@ -244,6 +244,8 @@ class FunCommands(callbacks.Privmsg):
     def lithp(self, irc, msg, args):
         "<text>"
         text = privmsgs.getArgs(args)
+        text = text.replace('sh', 'th')
+        text = text.replace('SH', 'TH')
         text = text.replace('ss', 'th')
         text = text.replace('SS', 'th')
         text = text.replace('s', 'th')
