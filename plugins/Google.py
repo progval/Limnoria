@@ -69,30 +69,29 @@ def configure(onStart, afterConnect, advanced):
         if key:
             onStart.append('load Google')
             onStart.append('google licensekey %s' % key)
+        print 'The Google plugin has the functionality to watch for URLs'
+        print 'that match a specific pattern (we call this a snarfer).'
+        print 'When supybot sees such a URL, he will parse the web page'
+        print 'for information and reply with the results.\n'
+        print 'Google has two available snarfers: Google Groups link'
+        print 'snarfing and a google search snarfer.\n'
+        if yn('Do you want the Google Groups link snarfer enabled by '
+            'default?') == 'n':
+            onStart.append('Google config groups-snarfer off')
+        if yn('Do you want the Google search snarfer enabled by default?')\
+            == 'y':
+            onStart.append('Google config search-snarfer on')
         if 'load Alias' not in onStart:
-            print 'Google depends on the Alias module for some commands.'
+            print 'Google depends on the Alias module for some extra commands.'
             if yn('Would you like to load the Alias module now?') == 'y':
                 onStart.append('load Alias')
             else:
-                print 'You can still use the Google module, but you won\'t ' \
-                      'be asked any further questions.'
+                print 'You can still use the Google module, but you won\'t '\
+                      'have these extra commands enabled.'
                 return
         onStart.append('alias googlelinux "google --restrict=linux $1"')
         onStart.append('alias googlebsd "google --restrict=bsd $1"')
         onStart.append('alias googlemac "google --restrict=mac $1"')
-        if advanced:
-            print 'The Google plugin has the functionality to watch for URLs'
-            print 'that match a specific pattern (we call this a snarfer).'
-            print 'When supybot sees such a URL, he will parse the web page'
-            print 'for information and reply with the results.\n'
-            print 'Google has two available snarfers: Google Groups link'
-            print 'snarfing and a google search snarfer.\n'
-            if yn('Do you want the Google Groups link snarfer enabled by '\
-                'default?') == 'n':
-                onStart.append('Google config groups-snarfer off')
-            if yn('Do you want the Google search snarfer enabled by default?')\
-                == 'y':
-                onStart.append('Google config search-snarfer on')
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
         print 'You can apply for a key at http://www.google.com/apis/'
