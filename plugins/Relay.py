@@ -198,8 +198,8 @@ class Relay(callbacks.Privmsg):
             channel = msg.args[0]
             if channel in self.channels:
                 abbreviation = self.abbreviations[irc]
-                s = 'mode change on %s/%s %s' % \
-                    (channel, abbreviation, ' '.join(msg.args[1:]))
+                s = 'mode change by %s on %s/%s %s' % \
+                    (msg.nick, channel, abbreviation, ' '.join(msg.args[1:]))
                 for otherIrc in self.ircs.itervalues():
                     if otherIrc != irc:
                         otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
