@@ -91,6 +91,17 @@ def upkeep(scheduleNext=True):
             pass
     if gc.garbage:
         log.warning('Uncollectable garbage: %s', gc.garbage)
+    if conf.daemonized:
+        # If we're daemonized, sys.stdout has been replaced with a StringIO
+        # object, so let's see if anything's been printed, and if so, let's
+        # log.warning it (things shouldn't be printed, and we're more likely
+        # to get bug reports if we make it a warning).
+        assert not type(sys.stdout) == file, 'Not a StringIO object!'
+        s = sys.stdout.getvalue()
+        if s:
+            log.warning('Printed to stdout after daemonization: %s', s)
+            sys.stdout.reset()
+            sys.stdout.truncate()
     flushed = conf.supybot.flush() and not starting
     if flushed:
         flush()
