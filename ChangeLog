@@ -1,5 +1,9 @@
-2003-10-11  Jeremy Fincher  <jfincher@functor>
+2003-10-12  Jeremy Fincher  <jemfinch@users.sf.net>
+	
+	* Version 0.73.1!
 
+	* Fixed bolding in supybot-wizard.py.
+	
 	* Fixed handling of the secure flag by ircdb.IrcUser.setAuth;
 	previously it didn't prevent someone with an unmatched hostmask
 	from identifying.
