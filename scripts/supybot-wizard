@@ -506,7 +506,7 @@ def main():
     output("""By default, your bot will log not only to files in the logs
     directory you gave it, but also to stdout.  We find this useful for
     debugging, and also just for the pretty output (it's colored!)""")
-    stdout = not yn('Would you like to turn off this logging to stdout?'
+    stdout = not yn('Would you like to turn off this logging to stdout?',
                     default=False)
     conf.supybot.log.stdout.setValue(stdout)
     if conf.supybot.log.stdout():
