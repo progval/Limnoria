@@ -35,12 +35,12 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Google',)
     if network:
         def testNoNoLicenseKeyError(self):
-            conf.supybot.plugins.Google.groupsSnarfer.set('on')
+            conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))
             self.assertNoResponse(' ')
         
         def testGroupsSnarfer(self):
-            conf.supybot.plugins.Google.groupsSnarfer.set('on')
+            conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
             self.assertRegexp('http://groups.google.com/groups?dq=&hl=en&'
                               'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
                               '0310132012.738e22fc%40posting.google.com',
@@ -65,11 +65,11 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
                               r'comp\.lang\.python.*What exactly are bound')
 
         def testConfig(self):
-            conf.supybot.plugins.Google.groupsSnarfer.set('off')
+            conf.supybot.plugins.Google.groupsSnarfer.setValue(False)
             self.assertNoResponse('http://groups.google.com/groups?dq=&hl=en&'
                                   'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
                                   '0310132012.738e22fc%40posting.google.com')
-            conf.supybot.plugins.Google.groupsSnarfer.set('on')
+            conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
             self.assertNotError('http://groups.google.com/groups?dq=&hl=en&'
                                 'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
                                 '0310132012.738e22fc%40posting.google.com')

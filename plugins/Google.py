@@ -73,7 +73,7 @@ def configure(onStart, afterConnect, advanced):
                 break
         if key:
             onStart.append('load Google')
-            conf.supybot.plugins.Google.licenseKey.set(key)
+            conf.supybot.plugins.Google.licenseKey.setValue(key)
         print 'The Google plugin has the functionality to watch for URLs'
         print 'that match a specific pattern (we call this a snarfer).'
         print 'When supybot sees such a URL, he will parse the web page'
@@ -84,10 +84,10 @@ def configure(onStart, afterConnect, advanced):
         print
         if yn('Do you want the Google Groups link snarfer enabled by '
             'default?') == 'y':
-            conf.supybot.plugins.Google.groupsSnarfer.set(True)
+            conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
         if yn('Do you want the Google search snarfer enabled by default?') \
             == 'y':
-            conf.supybot.plugins.Google.searchSnarfer.set(True)
+            conf.supybot.plugins.Google.searchSnarfer.setValue(True)
         if 'load Alias' not in onStart:
             print 'Google depends on the Alias module for some extra commands.'
             if yn('Would you like to load the Alias module now?') == 'y':
@@ -132,6 +132,17 @@ def search(log, *args, **kwargs):
         raise callbacks.Error, 'Google returned an unparseable response.  ' \
                                'The full traceback has been logged.'
 
+class LicenseKey(registry.String):
+    def set(self, s):
+        original = getattr(self, 'value', self.default)
+        registry.String.set(self, s)
+        if self.value and len(self.value) != 32:
+            setattr(self, 'value', original)
+            google.setLicense(self.value)
+            raise registry.InvalidRegistryValue, 'Invalid Google license key.'
+        if self.value:
+            google.setLicense(self.value)
+        
 conf.registerPlugin('Google')
 conf.registerChannelValue(conf.supybot.plugins.Google, 'groupsSnarfer',
     registry.Boolean(False, """Determines whether the groups snarfer is
@@ -144,13 +155,14 @@ conf.registerChannelValue(conf.supybot.plugins.Google, 'searchSnarfer',
     channel."""))
 conf.registerChannelValue(conf.supybot.plugins.Google, 'bold',
     registry.Boolean(True, """Determines whether results are bolded."""))
-conf.registerChannelValue(conf.supybot.plugins.Google, 'maximum-results',
+conf.registerChannelValue(conf.supybot.plugins.Google, 'maximumResults',
     registry.PositiveInteger(10, """Determines the maximum number of results
     returned from the google command."""))
 conf.registerGlobalValue(conf.supybot.plugins.Google, 'licenseKey',
-    registry.String('', """Sets the Google license key for using Google's Web
+    LicenseKey('', """Sets the Google license key for using Google's Web
     Services API.  This is necessary before you can do any searching with this
     module."""))
+
 class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
@@ -210,7 +222,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             irc.error(str(e))
             return
         bold = conf.supybot.plugins.Google.bold()
-        max = conf.supybot.plugins.Google.get('maximum-results')
+        max = conf.supybot.plugins.Google.maximumResults()
         irc.reply(self.formatData(data, bold=bold, max=max))
 
     def metagoogle(self, irc, msg, args):
