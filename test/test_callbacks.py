@@ -154,13 +154,14 @@ class FunctionsTestCase(unittest.TestCase):
         msg1 = ircmsgs.privmsg('#foo', '@bar')
         msg2 = ircmsgs.privmsg('#foo', 'bar')
         self.assertEqual(callbacks.addressed('blah', msg1), 'bar')
+        self.assertEqual(callbacks.addressed('blah', msg2), '')
         try:
-            original = str(conf.supybot.reply.whenNotAddressed)
-            conf.supybot.reply.whenNotAddressed.set('True')
+            original = conf.supybot.reply.whenNotAddressed()
+            conf.supybot.reply.whenNotAddressed.setValue(True)
             self.assertEqual(callbacks.addressed('blah', msg1), 'bar')
             self.assertEqual(callbacks.addressed('blah', msg2), 'bar')
         finally:
-            conf.supybot.reply.whenNotAddressed.set(original)
+            conf.supybot.reply.whenNotAddressed.setValue(original)
 
     def testReply(self):
         prefix = 'foo!bar@baz'

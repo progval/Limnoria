@@ -48,6 +48,7 @@ supybot.log.stdout: False
 supybot.log.level: DEBUG
 supybot.log.detailedTracebacks: False
 supybot.throttleTime: 0
+supybot.prefixChars: @
 """)
 fd.close()
 
@@ -57,6 +58,7 @@ registry.open(registryFilename)
 import log
 import conf
 conf.allowEval = True
+conf.supybot.flush.setValue(False)
 
 import fix
 
@@ -123,6 +125,11 @@ if __name__ == '__main__':
         args = map(path, glob.glob(os.path.join('test', pattern)))
 
     if options.exclusions:
+        for (i, s) in enumerate(options.exclusions):
+            if not s.startswith('test/') and not s.startswith('test\\'):
+                s = 'test/' + s
+            if not s.endswith('.py'):
+                s += '.py'
         for name in map(path, options.exclusions):
             args = [s for s in args if s != name]
 
