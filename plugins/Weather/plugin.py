@@ -352,7 +352,7 @@ class Weather(callbacks.Plugin):
         if m:
             severe = ircutils.bold(format('  %s', m.group(1)))
         if 'Search not found' in text or \
-           re.search(text, r'size="2"> Place </font>', re.I):
+           re.search(r'size="2"> Place </font>', text, re.I):
             self._noLocation()
         soup = BeautifulSoup.BeautifulSoup()
         soup.feed(text)
