@@ -123,7 +123,6 @@ def isIP(s):
     >>> isIP('abc.abc.abc.abc')
     0
     """
-
     if s.translate(string.ascii, _ipchars) == '':
         quads = s.split('.')
         if len(quads) <= 4:
@@ -145,6 +144,7 @@ def banmask(hostmask):
     >>> banmask('nick!user@10.0.0.1')
     '*!*@10.0.0.*'
     """
+    assert isUserHostmask(hostmask)
     host = hostFromHostmask(hostmask)
     if isIP(host):
         return ('*!*@%s.*' % host[:host.rfind('.')])
