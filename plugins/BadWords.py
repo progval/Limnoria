@@ -80,8 +80,9 @@ nastyChars = '!@#$' * 256
 def subber(m):
     return nastyChars[:len(m.group(1))]
 
-class BadWords(callbacks.Privmsg):
+class BadWords(privmsgs.CapabilityCheckingPrivmsg):
     priority = 1
+    capability = 'admin'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.badwords = sets.Set()
@@ -102,63 +103,45 @@ class BadWords(callbacks.Privmsg):
 
         Adds <word> to the list of words the bot isn't to say.
         """
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            word = privmsgs.getArgs(args)
-            self.badwords.add(word)
-            self.makeRegexp()
-            irc.reply(msg, conf.replySuccess)
-            return
-        else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
-
+        word = privmsgs.getArgs(args)
+        self.badwords.add(word)
+        self.makeRegexp()
+        irc.reply(msg, conf.replySuccess)
+    
     def addbadwords(self, irc, msg, args):
         """<word> [<word> ...]
 
         Adds all <word>s to the list of words the bot isn't to say.
         """
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            words = privmsgs.getArgs(args).split()
-            for word in words:
-                self.badwords.add(word)
-            self.makeRegexp()
-            irc.reply(msg, conf.replySuccess)
-            return
-        else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
+        words = privmsgs.getArgs(args).split()
+        for word in words:
+            self.badwords.add(word)
+        self.makeRegexp()
+        irc.reply(msg, conf.replySuccess)
 
     def removebadword(self, irc, msg, args):
         """<word>
 
         Removes <word> from the list of words the bot isn't to say.
         """
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            word = privmsgs.getArgs(args)
-            self.badwords.remove(word)
-            self.makeRegexp()
-            irc.reply(msg, conf.replySuccess)
-            return
-        else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
+        word = privmsgs.getArgs(args)
+        self.badwords.remove(word)
+        self.makeRegexp()
+        irc.reply(msg, conf.replySuccess)
 
     def removebadwords(self, irc, msg, args):
         """<word> [<word> ...]
 
         Removes all <word>s from the list of words the bot isn't to say.
         """
-        if ircdb.checkCapability(msg.prefix, 'admin'):
-            words = privmsgs.getArgs(args).split()
-            for word in words:
-                self.badwords.remove(word)
-            self.makeRegexp()
-            irc.reply(msg, conf.replySuccess)
-            return
-        else:
-            irc.error(msg, conf.replyNoCapability % 'admin')
-            return
+        words = privmsgs.getArgs(args).split()
+        for word in words:
+            self.badwords.remove(word)
+        self.makeRegexp()
+        irc.reply(msg, conf.replySuccess)
 
 
 Class = BadWords
+
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
