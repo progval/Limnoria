@@ -41,22 +41,28 @@ if sqlite is not None:
     MoobotFactoids = Owner.loadPluginModule('MoobotFactoids')
     MF = MoobotFactoids
     class OptionListTestCase(SupyTestCase):
+        maxIterations = 267
+        def _testOptions(self, s, L):
+            max = self.maxIterations
+            original = L[:]
+            while max and L:
+                max -= 1
+                option = MF.pickOptions(s)
+                self.failUnless(option in original,
+                                'Option %s not in %s' % (option, original))
+                if option in L:
+                    L.remove(option)
+            self.failIf(L, 'Some options never seen: %s' % L)
+            
         def testPickOptions(self):
-            for i in xrange(10):
-                self.failUnless(MF.pickOptions('(a|b)') in ['a', 'b'])
-                self.failUnless(MF.pickOptions('a') == 'a')
-                self.failUnless(MF.pickOptions('(a|b (c|d))') in
-                                ['a', 'b c', 'b d'])
-                self.failUnless(MF.pickOptions('(a|(b|)c)') in
-                                ['a', 'bc', 'c'])
-                self.failUnless(MF.pickOptions('(a(b|)|(c|)d)') in
-                                ['a', 'ab', 'cd', 'd'])
-                self.failUnless(MF.pickOptions('(a|)') in
-                                ['a', ''])
-                self.failUnless(MF.pickOptions('(|a)') in
-                                ['a', ''])
-                self.failUnless(MF.pickOptions('((a)|(b))') in
-                                ['(a)', '(b)'])
+            self._testOptions('(a|b)', ['a', 'b'])
+            self._testOptions('a', ['a'])
+            self._testOptions('(a|b (c|d))', ['a', 'b c', 'b d'])
+            self._testOptions('(a|(b|)c)', ['a', 'ab', 'cd', 'd'])
+            self._testOptions('(a|(b|)|(c|)d)', ['a', 'ab', 'cd', 'd'])
+            self._testOptions('(a|)', ['a', ''])
+            self._testOptions('(|a)', ['a', ''])
+            self._testOptions('((a)|(b))', ['(a)', '(b)'])
 
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('MoobotFactoids', 'User', 'Utilities')
