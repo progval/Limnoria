@@ -221,13 +221,14 @@ driverModule = 'socketDrivers'
 ###############################
 ###############################
 ###############################
-version ='0.72.0'
+version ='0.73.0'
 
 commandsOnStart = []
 
 # This is a dictionary mapping names to converter functions for use in the
 # OwnerCommands.setconf command.
 def mybool(s):
+    """Converts a string read from the user into a bool, fuzzily."""
     if s.capitalize() == 'False' or s == '0':
         return False
     elif s.capitalize() == 'True' or s == '1':
@@ -236,6 +237,7 @@ def mybool(s):
         raise ValueError, 'invalid literal for mybool()'
 
 def mystr(s):
+    """Converts a string read from the user into a real string."""
     while s and s[0] in "'\"" and s[0] == s[-1]:
         s = s[1:-1]
     return s
