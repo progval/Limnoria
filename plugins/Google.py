@@ -150,15 +150,17 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(msg, conf.replySuccess)
     licensekey = privmsgs.checkCapability(licensekey, 'admin')
 
-    def disablesnarfer(self, irc, msg, args):
+    def togglesnarfer(self, irc, msg, args):
         """takes no argument
 
-        Disables the snarfer that responds to all messages that begin with
-        'google'
+        Disables the snarfer that responds to all Sourceforge Tracker links
         """
-        self.snarfer = False
-        irc.reply(msg, conf.replySuccess)
-    disablesnarfer=privmsgs.checkCapability(disablesnarfer, 'admin')
+        self.snarfer = not self.snarfer
+        if self.snarfer:
+            irc.reply(msg, '%s (Snarfer is enabled)' % conf.replySuccess)
+        else:
+            irc.reply(msg, '%s (Snarfer is disabled)' % conf.replySuccess)
+    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
 
     def google(self, irc, msg, args):
         """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
@@ -267,10 +269,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         data = search(searchString, safeSearch=1)
         if data.results:
             url = data.results[0].URL
-            irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg), url))
+            irc.reply(msg, url)
         else:
-            irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg),
-                                         'No results for "%s"' % searchString))
+            irc.reply(msg, 'No results for "%s"' % searchString)
 
     _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
     _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
@@ -297,11 +298,11 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         mThread = self._ggThread.search(text)
         mGroup = self._ggGroup.search(text)
         if mThread and mGroup:
-            irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg),
-              'Google Groups: %s, %s' % (mGroup.group(1), mThread.group(1))))
+            irc.reply(msg, 'Google Groups: %s, %s' % (mGroup.group(1),
+                mThread.group(1)), prefixName = False)
         else:
-            irc.queueMsg(ircmsgs.privmsg(msg.args[0],
-              'That doesn\'t appear to be a proper Google Groups page.'))
+            irc.error(msg, 'That doesn\'t appear to be a proper '\
+                'Google Groups page. (%s)' % conf.replyPossibleBug)
 
 
 Class = Google

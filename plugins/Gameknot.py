@@ -69,6 +69,11 @@ example = utils.wrapLines("""
 class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = sets.Set(['gameknotSnarfer', 'gameknotStatsSnarfer'])
+
+    def __init__(self):
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        self.snarfer = True
+
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
     _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
@@ -141,6 +146,18 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
         name = privmsgs.getArgs(args)
         irc.reply(msg, self.getStats(name))
 
+    def togglesnarfer(self, irc, msg, args):
+        """takes no argument
+
+        Disables the snarfer that responds to all Sourceforge Tracker links
+        """
+        self.snarfer = not self.snarfer
+        if self.snarfer:
+            irc.reply(msg, '%s (Snarfer is enabled)' % conf.replySuccess)
+        else:
+            irc.reply(msg, '%s (Snarfer is disabled)' % conf.replySuccess)
+    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
+
     _gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
     _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
     _gkGameTitle = re.compile(r"<p><b>(.*?)\s*</b>&nbsp;\s*<span.*?>\(started")
@@ -148,6 +165,8 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     _gkReason = re.compile(r'won\s+\(\S+\s+(\S+)\)')
     def gameknotSnarfer(self, irc, msg, match):
         r"http://(?:www\.)?gameknot\.com/chess\.pl\?bd=\d+(&r=\d+)?"
+        if not self.snarfer:
+            return
         #debug.printf('Got a GK URL from %s' % msg.prefix)
         url = match.group(0)
         fd = urllib2.urlopen(url)
@@ -192,12 +211,15 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 (gameTitle, wName, wStats, bName, bStats, toMove)
             irc.reply(msg, s, prefixName=False)
         except ValueError:
-            irc.error(msg,'That doesn\'t appear to be a proper Gameknot game.')
+            irc.error(msg,'That doesn\'t appear to be a proper Gameknot game.'\
+                ' (%s)' % conf.replyPossibleBug)
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 
     def gameknotStatsSnarfer(self, irc, msg, match):
         r"http://gameknot\.com/stats\.pl\?([^&]+)"
+        if not self.snarfer:
+            return
         name = match.group(1)
         s = self.getStats(name)
         irc.reply(msg, s, prefixName=False)

@@ -34,7 +34,7 @@ import re
 from test import *
 
 class SfTest(PluginTestCase, PluginDocumentation):
-    plugins = ('Sf',)
+    plugins = ('Sourceforge',)
     def testBugs(self):
         self.assertNotError('bugs')
         self.assertResponse('bugs alkjfi83fa8', 'Can\'t find the "Bugs" link.')
@@ -107,9 +107,13 @@ class SfTest(PluginTestCase, PluginDocumentation):
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235', 
             r';.*Status.*: \w+;')
-        self.assertNotError('disablesfsnarfer')
+        self.assertNotError('togglesnarfer')
         self.assertNoResponse('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235')
+        self.assertNotError('togglesnarfer')
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=540223&group_id=235&atid=300235', 
+            r';.*Status.*: \w+;')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

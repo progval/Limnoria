@@ -53,7 +53,7 @@ def configure(onStart, afterConnect, advanced):
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load Sf')
+    onStart.append('load Sourceforge')
 
 example = utils.wrapLines("""
 <@jamessan|work> @bugs
@@ -69,7 +69,7 @@ in 0.71, Bug #820961: dock icon doesn't show up with..., Bug #820879: Cannot con
 < supybot> jamessan|work: Improve CLI interface <http://sourceforge.net/tracker/index.php?func=detail&aid=720757&group_id=75946&atid=545548>
 """)
 
-class Sf(callbacks.PrivmsgCommandAndRegexp):
+class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     """
     Module for Sourceforge stuff. Currently contains commands to query a
     project's most recent bugs and rfes.
@@ -117,14 +117,17 @@ class Sf(callbacks.PrivmsgCommandAndRegexp):
                 matches.append((item[0], utils.htmlToText(item[2])))
         return matches
 
-    def disablesfsnarfer(self, irc, msg, args):
+    def togglesnarfer(self, irc, msg, args):
         """takes no argument
 
         Disables the snarfer that responds to all Sourceforge Tracker links
         """
-        self.snarfer = False
-        irc.reply(msg, conf.replySuccess)
-    disablesfsnarfer=privmsgs.checkCapability(disablesfsnarfer,'admin')
+        self.snarfer = not self.snarfer
+        if self.snarfer:
+            irc.reply(msg, '%s (Snarfer is enabled)' % conf.replySuccess)
+        else:
+            irc.reply(msg, '%s (Snarfer is disabled)' % conf.replySuccess)
+    togglesnarfer=privmsgs.checkCapability(togglesnarfer,'admin')
 
     _bugLink = re.compile(r'"([^"]+)">Bugs')
     def bugs(self, irc, msg, args):
@@ -263,13 +266,13 @@ class Sf(callbacks.PrivmsgCommandAndRegexp):
                     pass
             linktype = utils.depluralize(linktype)
             irc.reply(msg, '%s #%s: %s' % (ircutils.bold(linktype),
-                ircutils.bold(num), '; '.join(resp)))
+                ircutils.bold(num), '; '.join(resp)), prefixName = False)
         except AttributeError, e:
             irc.error(msg, 'That doesn\'t appear to be a proper Sourceforge '\
-                'Tracker page.')
+                'Tracker page. (%s)' % conf.replyPossibleBug)
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 
-Class = Sf
+Class = Sourceforge
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
