@@ -47,6 +47,7 @@ import crypt
 import errno
 import random
 import struct
+import popen2
 
 
 import privmsgs
@@ -54,6 +55,15 @@ import callbacks
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
+    cmdLine = getSpellBinary()
+    if not cmdLine:
+        print 'NOTE: I couldn\'t find aspell or ispell in your path,'
+        print 'so that function of this module will not work.  You may'
+        print 'choose to install it later, and then the module will'
+        print 'automatically work, as long as it is in the path of the'
+        print 'user that supybot runs under.'
+        print 
+
     print 'The "progstats" command can reveal potentially sensitive'
     print 'information about your machine.  Here\'s an example of its output:'
     print
@@ -61,6 +71,18 @@ def configure(onStart, afterConnect, advanced):
     print
     if yn('Would you like to disable this command?') == 'y':
         onStart.append('disable progstats')
+
+def getSpellBinary():
+    cmdLine = None
+    for dir in os.getenv('PATH').split(':'):
+        for command in ('aspell', 'ispell'):
+            filename = os.path.join(dir, command)
+            if os.path.exists(filename):
+                cmdLine = filename
+                break
+        if cmdLine:
+            break
+    return cmdLine
     
 def progstats():
     pw = pwd.getpwuid(os.getuid())
@@ -74,6 +96,20 @@ def progstats():
     
 
 class Unix(callbacks.Privmsg):
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        # Initialize a file descriptor for the spell module.
+        cmdLine = getSpellBinary()
+        (self._spellRead, self._spellWrite, self._spellErr) = \
+            popen2.popen3(cmdLine + ' -a', 0)
+        # Ignore the banner
+        self._spellRead.readline()
+
+    def __del__(self):
+        # close up the filehandles
+        for h in (self._spellRead, self._spellWrite, self._spellErr):
+                h.close()
+
     def errno(self, irc, msg, args):
         "<error number or code>"
         s = privmsgs.getArgs(args)
@@ -108,6 +144,34 @@ class Unix(callbacks.Privmsg):
             salt = makeSalt()
         irc.reply(msg, crypt.crypt(password, salt))
 
+    def spell(self, irc, msg, args): 
+        "<word>"
+        # We are only checking the first word
+        word = privmsgs.getArgs(args).split()[0]
+        self._spellWrite.write(word + '\n')
+        line = self._spellRead.readline()
+
+        # aspell puts extra whitespace, ignore it
+        while line == '\n':
+            line = self._spellRead.readline()
+
+        # parse the output
+        if line[0] in '*+':
+            resp = '\'%s\' may be spelled correctly.' % word
+        elif line[0] == '#':
+            resp = 'Could not find an alternate spelling for \'%s\'' % word
+        elif line[0] == '&':
+            matches = line.split(':')[1].strip()
+            match_list = matches.split(',')
+            ircutils.shrinkList(match_list, ', ', 400)
+            resp = 'Possible spellings for \'%s\': %s' % \
+                (word, ','.join(match_list))
+        else:
+            resp = 'Something unexpected was seen in the *spell output.'
+
+        irc.reply(msg, resp)
+            
 
 Class = Unix
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+
