@@ -437,8 +437,13 @@ the default timeout for socket objects will be.  This means that *all* sockets
 will timeout when this many seconds has gone by (unless otherwise modified by
 the author of the code that uses the sockets)."""))
 
+supybot.register('pidFile', registry.String('', """Determines what file the bot
+should write its PID (Process ID) to, so you can kill it more easily.  If it's
+left unset (as is the default) then no PID file will be written.  A restart is
+required for changes to this variable to take effect."""))
+
 ###
-# Driver stuff.
+# supybot.drivers.  For stuff relating to Supybot's drivers (duh!)
 ###
 supybot.register('drivers')
 supybot.drivers.register('poll', registry.Float(1.0, """Determines the default
@@ -468,6 +473,10 @@ you can nest the former value and add a new one.  E.g. you can say: bot:
 'config supybot.directories.plugins [config supybot.directories.plugins],
 newPluginDirectory'."""))
 
+
+###
+# supybot.databases.  For stuff relating to Supybot's databases (duh!)
+###
 supybot.register('databases')
 supybot.databases.register('users')
 supybot.databases.users.register('filename', registry.String('users.conf', """
