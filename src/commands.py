@@ -162,6 +162,21 @@ def getInt(irc, msg, args, state, type='integer', p=None):
     except ValueError:
         irc.errorInvalid(type, args[0])
 
+def getNonInt(irc, msg, args, state, type='non-integer value'):
+    try:
+        i = _int(args[0])
+        irc.errorInvalid(type, args[0])
+    except ValueError:
+        state.args.append(args.pop(0))
+
+def getFloat(irc, msg, args, state):
+    try:
+        x = float(args[0])
+        del args[0]
+        return x
+    except ValueError:
+        irc.errorInvalid('floating point number', args[0])
+
 def getPositiveInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
            p=lambda i: i<=0, type='positive integer', *L)
@@ -288,6 +303,12 @@ def getChannel(irc, msg, args, state):
     state.channel = channel
     state.args.append(channel)
 
+def getChannelOrNone(irc, msg, args, state):
+    try:
+        getChannel(irc, msg, args, state)
+    except callbacks.ArgumentError:
+        state.args.append(None)
+
 def checkChannelCapability(irc, msg, args, state, cap):
     assert state.channel, \
            'You must use a channel arg before you use checkChannelCapability.'
@@ -338,6 +359,8 @@ def anything(irc, msg, args, state):
 wrappers = ircutils.IrcDict({
     'id': getId,
     'int': getInt,
+    'float': getFloat,
+    'nonInt': getNonInt,
     'positiveInt': getPositiveInt,
     'nonNegativeInt': getNonNegativeInt,
     'haveOp': getHaveOp,
@@ -408,6 +431,7 @@ def args(irc,msg,args, types=[], state=None,
             optional = True
             enforce = False
             name = name[:-1]
+        default = ''
         wrapper = wrappers[name]
         if optional and specArgs:
             # First arg is default.
@@ -420,14 +444,14 @@ def args(irc,msg,args, types=[], state=None,
         except (callbacks.Error, ValueError, callbacks.ArgumentError), e:
             state.log.debug('%r when calling wrapper.', utils.exnToString(e))
             if not enforce:
-                state.args.append('')
+                state.args.append(default)
             else:
                 state.log.debug('Re-raising %s because of enforce.', e)
                 raise
         except IndexError, e:
             state.log.debug('%r when calling wrapper.', utils.exnToString(e))
             if optional:
-                state.args.append('')
+                state.args.append(default)
             else:
                 state.log.debug('Raising ArgumentError because of '
                                 'non-optional args.')
