@@ -197,8 +197,7 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
                           actions=actions+%s, smileys=smileys+%s,
                           frowns=frowns+%s
                           WHERE user_id=%s""",
-                       int(time.time()), s, chars, words, int(isAction),
-                       smileys, frowns, id)
+                       chars, words, int(isAction), smileys, frowns, id)
         db.commit()
 
     def outFilter(self, irc, msg):
@@ -312,7 +311,9 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         name = privmsgs.getArgs(args, required=0, optional=1)
-        if not name:
+        if name == irc.nick:
+            id = 0
+        elif not name:
             try:
                 id = ircdb.users.getUserId(msg.prefix)
                 name = ircdb.users.getUser(id).name
