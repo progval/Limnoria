@@ -76,6 +76,8 @@ if sqlite is not None:
             # Check substitution
             self.assertNotError('who is <reply>$who')
             self.assertResponse('who', 'foo')
+            # Check that actions ("\x01ACTION...") don't match
+            self.assertNoResponse('\x01ACTION\x01 is doing something', 3)
 
         def testLiteral(self):
             self.assertError('literal moo') # no factoids yet

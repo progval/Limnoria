@@ -202,6 +202,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         (fact, key) = cursor.fetchone()
         irc.reply("%r is %r" % (key, fact))
 
+
     def invalidCommand(self, irc, msg, tokens):
         key = ' '.join(tokens)
         key = key.rstrip('?!')
@@ -231,7 +232,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             return True
 
     def addFactoid(self, irc, msg, match):
-        r"^(.+?)\s+(?:is|_is_)\s+(.+)"
+        r"^(?!\x01)(.+?)\s+(?:is|_is_)\s+(.+)"
         # Check and see if there is a command that matches this that didn't
         # get caught due to nesting
 #        cb = callbacks.findCallbackForCommand(irc, msg)
@@ -657,6 +658,20 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""DELETE FROM factoids WHERE key = %s""", key)
         db.commit()
         irc.replySuccess()
+
+    def randomfactoid(self, irc, msg, args):
+        """<takes no arguments>
+
+        Displays a random factoid (along with its key) from the database.
+        """
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT fact, key FROM factoids 
+                          ORDER BY random() LIMIT 1""")
+        if cursor.rowcount == 0:
+            irc.error(msg, 'No factoids in the database.')
+            return
+        (fact, key) = cursor.fetchone()
+        irc.reply(msg, "Random factoid: %r is %r" % (key, fact))
 
 Class = MoobotFactoids
 
