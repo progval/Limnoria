@@ -57,8 +57,9 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('zen')
 
     def testAspnRecipes(self):
-        self.assertRegexp('http://aspn.activestate.com/ASPN/Cookbook/Python/'\
-            'Recipe/230113', 'Implementation of sets using sorted lists')
+        self.assertRegexp('http://aspn.activestate.com/ASPN/Cookbook/Python/'
+                          'Recipe/230113',
+                          'Implementation of sets using sorted lists')
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
