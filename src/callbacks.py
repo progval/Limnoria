@@ -745,10 +745,14 @@ class Privmsg(irclib.IrcCallback):
 
     def registryValue(self, name, channel=None):
         plugin = self.name()
+        group = conf.supybot.plugins.get(plugin)
+        names = name.split('.')
+        for name in names:
+            group = group.get(name)
         if channel is None:
-            return conf.supybot.plugins.get(plugin).get(name)()
+            return group()
         else:
-            return conf.supybot.plugins.get(plugin).get(name).get(channel)()
+            return group.get(channel)()
 
 
 class IrcObjectProxyRegexp(RichReplyMethods):
