@@ -138,6 +138,10 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         m = self.getMsg('tell me you love me')
         self.failUnless(m.args[0] == self.nick)
 
+    def testTellDoesNotPropogateAction(self):
+        m = self.getMsg('tell foo [action bar]')
+        self.failIf(ircmsgs.isAction(m))
+
     def testLast(self):
         self.feedMsg('foo bar baz')
         self.assertResponse('last', '<%s> foo bar baz' % self.nick)

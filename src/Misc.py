@@ -438,6 +438,9 @@ class Misc(callbacks.Privmsg):
             if c.lobotomized:
                 irc.error('I\'m lobotomized in %s.' % target)
                 return
+        if irc.action:
+            irc.action = False
+            text = '* %s %s' % (irc.nick, text)
         s = '%s wants me to tell you: %s' % (msg.nick, text)
         irc.reply(s, to=target, private=True)
 
@@ -457,9 +460,9 @@ class Misc(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         if text:
-            irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), ' '.join(args)))
+            irc.reply(text, action=True)
         else:
-            raise callbacks.Error
+            raise callbacks.ArgumentError
 
     def notice(self, irc, msg, args):
         """<text>
