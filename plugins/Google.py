@@ -104,27 +104,35 @@ totalTime = 0
 last24hours = structures.queue()
 
 def search(*args, **kwargs):
-    global totalSearches, totalTime, last24hours
-    data = google.doGoogleSearch(*args, **kwargs)
-    now = time.time()
-    totalSearches += 1
-    totalTime += data.meta.searchTime
-    last24hours.enqueue(now)
-    while last24hours and now - last24hours.peek() > 86400:
-        last24hours.dequeue()
-    return data
+    try:
+        global totalSearches, totalTime, last24hours
+        data = google.doGoogleSearch(*args, **kwargs)
+        now = time.time()
+        totalSearches += 1
+        totalTime += data.meta.searchTime
+        last24hours.enqueue(now)
+        while last24hours and now - last24hours.peek() > 86400:
+            last24hours.dequeue()
+        return data
+    except socket.error, e:
+        if e.args[0] == 110:
+            return 'Connection timed out to Google.com.'
+        else:
+            raise
 
 class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
     def __init__(self):
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        super(self.__class__, self).__init__()
         self.total = 0
         self.totalTime = 0
         self.snarfer = True
         self.last24hours = structures.queue()
 
     def formatData(self, data):
+        if isinstance(data, basestring):
+            return data
         time = 'Search took %s seconds: ' % data.meta.searchTime
         results = []
         for result in data.results:
