@@ -91,10 +91,10 @@ def canonicalName(command):
     """
     return command.translate(string.ascii, '\t -_').lower()
 
-def reply(msg, s, prefixName=True):
+def reply(msg, s, prefixName=True, private=False):
     """Makes a reply to msg with the payload s"""
     s = ircutils.safeArgument(s)
-    if ircutils.isChannel(msg.args[0]):
+    if ircutils.isChannel(msg.args[0]) and not private:
         if prefixName:
             m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (msg.nick, s))
         else:
@@ -383,7 +383,8 @@ class IrcObjectProxy:
         self.noLengthCheck |= noLengthCheck
         if self.finalEvaled:
             if isinstance(self.irc, self.__class__):
-                self.irc.reply(msg, s, self.noLengthCheck, self.prefixName)
+                self.irc.reply(msg, s, self.noLengthCheck, self.prefixName,
+                               self.action, self.private)
             elif self.noLengthCheck:
                 self.irc.queueMsg(reply(msg, s, self.prefixName))
             elif self.action:
@@ -406,7 +407,7 @@ class IrcObjectProxy:
                 # " (more)" to the end, so that's 7 more characters.
                 # 512 - 51 == 461.
                 s = ircutils.safeArgument(s)
-                allowedLength = 459 - len(self.irc.prefix)
+                allowedLength = 450 - len(self.irc.prefix)
                 msgs = textwrap.wrap(s, allowedLength-30) # -30 is for "nick:"
                 msgs.reverse()
                 response = msgs.pop()
@@ -617,8 +618,12 @@ class IrcObjectProxyRegexp:
     def error(self, msg, s):
         self.reply(msg, 'Error: ' + s)
 
-    def reply(self, msg, s):
-        self.irc.queueMsg(reply(msg, s))
+    def reply(self, msg, s, prefixName=True, action=False, private=False,):
+        if action:
+            self.irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), s))
+        else:
+            self.irc.queueMsg(reply(msg, s, private=private,
+                                    prefixName=prefixName))
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)

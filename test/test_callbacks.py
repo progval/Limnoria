@@ -131,10 +131,15 @@ class FunctionsTestCase(unittest.TestCase):
         channelMsg = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)
         nonChannelMsg = ircmsgs.privmsg('supybot', 'bar baz', prefix=prefix)
         self.assertEqual(ircmsgs.privmsg(nonChannelMsg.nick, 'foo'),
+                         callbacks.reply(channelMsg, 'foo', private=True))
+        self.assertEqual(ircmsgs.privmsg(nonChannelMsg.nick, 'foo'),
                          callbacks.reply(nonChannelMsg, 'foo'))
         self.assertEqual(ircmsgs.privmsg(channelMsg.args[0],
                                          '%s: foo' % channelMsg.nick),
                          callbacks.reply(channelMsg, 'foo'))
+        self.assertEqual(ircmsgs.privmsg(channelMsg.args[0],
+                                         'foo'),
+                         callbacks.reply(channelMsg, 'foo', prefixName=False))
 
     def testGetCommands(self):
         self.assertEqual(callbacks.getCommands(['foo']), ['foo'])
