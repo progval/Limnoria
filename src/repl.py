@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""Old REPL from back in the day.  Deprecated."""
+
 import sys
 import traceback
 from cStringIO import StringIO
