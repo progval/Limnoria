@@ -79,6 +79,20 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         irc.queueMsg(ircmsgs.joins(chans, keys))
     do422 = do377 = do376
         
+    def do437(self, irc, msg):
+        """Nick/channel temporarily unavailable."""
+        target = msg.args[0]
+        if ircutils.isChannel(target): # We don't care about nicks.
+            t = time.time() + 30
+            # Let's schedule a rejoin.
+            def rejoin():
+                irc.queueMsg(ircmsgs.join(target))
+                # We don't need to schedule something because we'll get another
+                # 437 when we try to join later.
+            schedule.addEvent(rejoin, t)
+            self.log.info('Scheduling a rejoin to %s at %s; '
+                          'Channel temporarily unavailable.', target, t)
+            
     def do471(self, irc, msg):
         try:
             channel = msg.args[1]
