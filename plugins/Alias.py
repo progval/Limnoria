@@ -36,8 +36,8 @@ Allows 'aliases' for other commands.
 import plugins
 
 import re
-import new
 import sets
+import types
 
 import conf
 import debug
@@ -148,7 +148,8 @@ def makeNewAlias(name, alias):
         alias_ = atRe.sub(replace, alias_)
         alias_ = alias_.replace('$*', ' '.join(map(utils.dqrepr, args)))
         self.Proxy(irc.irc, msg, callbacks.tokenize(alias_))
-    f = new.function(f.func_code, f.func_globals, name, closure=f.func_closure)
+    f = types.FunctionType(f.func_code, f.func_globals,
+                           name, closure=f.func_closure)
     f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \
                 (utils.nItems(biggestDollar, 'argument'), alias)
     return f

@@ -36,9 +36,9 @@ Various math-related commands.
 import plugins
 
 import re
-import new
 import math
 import cmath
+import types
 import string
 from itertools import imap
 
@@ -77,7 +77,7 @@ class Math(callbacks.Privmsg):
     # Then we delete all square brackets, underscores, and whitespace, so no
     # one can do list comprehensions or call __...__ functions.
     ###
-    _mathEnv = {'__builtins__': new.module('__builtins__'), 'i': 1j}
+    _mathEnv = {'__builtins__': types.ModuleType('__builtins__'), 'i': 1j}
     _mathEnv.update(math.__dict__)
     _mathEnv.update(cmath.__dict__)
     _mathRe = re.compile(r'((?:(?<![A-Fa-f\d])-)?'
@@ -207,7 +207,7 @@ class Math(callbacks.Privmsg):
             s = ', '.join(imap(self._complexToString, imap(complex, stack)))
             irc.reply(msg, 'Stack: [%s]' % s)
 
-    _convertEnv = {'__builtins__': new.module('__builtins__')}
+    _convertEnv = {'__builtins__': types.ModuleType('__builtins__')}
     for (k, v) in unum.units.__dict__.iteritems():
         if isinstance(v, unum.Unum):
             _convertEnv[k.lower()] = v
