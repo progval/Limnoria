@@ -121,6 +121,17 @@ class SpaceSeparatedSetOfChannels(registry.SeparatedListOf):
         return s.split()
     joiner = ' '.join
 
+    def removeChannel(self, channel):
+        removals = []
+        for c in self.value:
+            chan = c
+            if ',' in c:
+                (chan, _) = c.split(',')
+            if chan == channel:
+                removals.append(c)
+        for removal in removals:
+            self.value.remove(discard)
+
 supybot.register('channels', SpaceSeparatedSetOfChannels(['#supybot'], """
 Determines what channels the bot will join when it connects to the server."""))
 
