@@ -66,7 +66,9 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         self.pendingNickChanges = {}
 
     def do376(self, irc, msg):
-        channels = list(conf.supybot.channels())
+        channels = ircutils.IrcSet(conf.supybot.channels())
+        channels |= conf.supybot.networks.get(irc.network).channels()
+        channels = list(channels)
         if not channels:
             return
         utils.sortBy(lambda s: ',' not in s, channels)
@@ -269,17 +271,18 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             reason = ' '.join(args)
         for chan in channels:
             if chan not in irc.state.channels:
-                irc.error('I\'m not currently in %s' % chan)
+                irc.error('I\'m not currently in %s.' % chan)
                 return
         for chan in channels:
-            L = []
-            for channelWithPass in conf.supybot.channels():
-                channel = channelWithPass.split(',')[0]
-                if ircutils.strEqual(chan, channel):
-                    L.append(channelWithPass)
-            # This is necessary so the set doesn't change size while iterating.
-            for channel in L:
-                conf.supybot.channels().remove(channel)
+            try:
+                conf.supybot.channels.removeChannel(chan)
+            except KeyError:
+                pass # It might be in the network thingy.
+            try:
+                networkGroup = conf.supybot.networks.get(irc.network)
+                networkGroup.channels.removeChannel(chan)
+            except KeyError:
+                pass # It might be in the non-network thingy.
         irc.queueMsg(ircmsgs.parts(channels, reason or msg.nick))
         inAtLeastOneChannel = False
         for chan in channels:

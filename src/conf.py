@@ -187,28 +187,6 @@ class Servers(registry.SpaceSeparatedListOfStrings):
     def __str__(self):
         return ' '.join(registry.SpaceSeparatedListOfStrings.__call__(self))
         
-def registerNetwork(name, password='', servers=()):
-    name = intern(name)
-    network = registerGroup(supybot.networks, name)
-    registerGlobalValue(network, 'password', registry.String(password,
-        """Determines what password will be used on %s.  Yes, we know that
-        technically passwords are server-specific and not network-specific,
-        but this is the best we can do right now.""" % name))
-    registerGlobalValue(network, 'servers', Servers(servers,
-        """Determines what servers the bot will connect to for %s.  Each will
-        be tried in order, wrapping back to the first when the cycle is
-        completed.""" % name))
-    return network
-
-# Let's fill our networks.
-for (name, s) in registry._cache.iteritems():
-    if name.startswith('supybot.networks.'):
-        parts = name.split('.')
-        name = parts[2]
-        if name != 'default':
-            registerNetwork(name)
-
-
 class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
     List = ircutils.IrcSet
     Value = ValidChannel
@@ -221,7 +199,31 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
             if chan == channel:
                 removals.append(c)
         for removal in removals:
-            self.value.remove(discard)
+            self.value.remove(removal)
+
+def registerNetwork(name, password='', servers=()):
+    name = intern(name)
+    network = registerGroup(supybot.networks, name)
+    registerGlobalValue(network, 'password', registry.String(password,
+        """Determines what password will be used on %s.  Yes, we know that
+        technically passwords are server-specific and not network-specific,
+        but this is the best we can do right now.""" % name))
+    registerGlobalValue(network, 'servers', Servers(servers,
+        """Determines what servers the bot will connect to for %s.  Each will
+        be tried in order, wrapping back to the first when the cycle is
+        completed.""" % name))
+    registerGlobalValue(network, 'channels', SpaceSeparatedSetOfChannels([],
+        """Determines what channels the bot will join only on %s.""" % name))
+    return network
+
+# Let's fill our networks.
+for (name, s) in registry._cache.iteritems():
+    if name.startswith('supybot.networks.'):
+        parts = name.split('.')
+        name = parts[2]
+        if name != 'default':
+            registerNetwork(name)
+
 
 registerGlobalValue(supybot, 'channels',
     SpaceSeparatedSetOfChannels(['#supybot'], """Determines what channels the
