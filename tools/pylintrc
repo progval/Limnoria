@@ -1,0 +1,204 @@
+#  lint Python modules using external checkers.
+#     
+[MASTER]
+# add <file> (may be a directory) to the black list. It should be a base name, not a path. You may set this option multiple times.
+ignore=CVS
+
+# make statistics on collected data.
+statistics=yes
+
+# pickle collected data for later comparisons.
+persistent=yes
+
+# Python expression which should return a note lesser than 10 (10 is the highest note).You have access to the variables errors, warnings, statements which respectivly contains the number of errors / warnings messages and the total number of statements analyzed.
+evaluation='10.0 - ((float(2 * errors + warnings) / statements) * 10)'
+
+# Add a comment according to your evaluation note.
+comment=no
+
+
+
+# checks for                                                              
+#     * external modules dependancies                                            
+#     * relative / wildcard imports                                                         
+#     * cyclic imports                                                           
+#     * uses of depreceted modules
+#     
+[IMPORTS]
+# enable/disable this checker
+enable-imports=yes
+
+# check external dependencies
+dependencies=yes
+
+# check relative imports
+relative=no
+
+# check wildcard imports
+wildcard=no
+
+# check cyclic imports
+cycles=yes
+
+# Deprecated modules which should not be used, separated by a comma
+deprecated-modules=regsub,TERMIOS
+
+
+
+# checks for :                                                            
+#     * doc strings                                                              
+#     * modules / classes / functions / methods / arguments / variables name     
+#     * number of arguments, local variables, branchs, returns and statements in
+# functions, methods                                                       
+#     * required module's attributes                                             
+#     * dangerous default values as arguments                                    
+#     * redefinition of function / method / class
+#     * uses of the global statement                                             
+#     
+[BASIC]
+# enable/disable this checker
+enable-basic=yes
+
+# Maximum number of arguments for function / method
+max-args=5
+
+# Maximum number of locals for function / method body
+max-locals=15
+
+# Maximum number of return / yield for function / method body
+max-returns=12
+
+# Maximum number of branch for function / method body
+max-branchs=12
+
+# Maximum number of statements in function / method body
+max-statements=50
+
+# Required attributes for module, separated by a comma
+required-attributes=
+
+# Warning on global statements
+global-warning=no
+
+# Check for unreachable code
+unreachable=yes
+
+# Check for function / method / class redefinition
+redefinition=yes
+
+# Regular expression which should only match functions which do not require a docstring
+no-docstring-rgx=_.*
+
+# Minimal length for module / class / function / method / argument / variable names
+min-name-length=0
+
+# Regular expression which should only match correct module name
+module-rgx=[a-z_]+
+
+# Regular expression which should only match correct class name
+class-rgx=[A-Z][a-zA-Z]+
+
+# Regular expression which should only match correct function name
+function-rgx=[a-zA-Z_]+
+
+# Regular expression which should only match correct argument name
+argument-rgx=[a-z_]+
+
+# Regular expression which should only match correct variable name
+variable-rgx=[a-z_]+
+
+# Good variable names which are lesser than min-name-length or wouldn't match the variable-rgx, separated by a comma
+good-variable-names=i,j,k,ex
+
+# Bad variable names which are greater than min-name-length or would match the variable-rgx, separated by a comma
+bad-variable-names=foo,bar,baz,toto,tutu,tata
+
+
+
+# checks for                                                              
+#     * unused variables / imports                                               
+#     * undefined variables                                                      
+#     * redefinition of variable from builtins or from an outer scope            
+#     * use of variable before assigment                                         
+#     
+[VARIABLES]
+# enable/disable this checker
+enable-variables=yes
+
+
+
+# checks for :                                                            
+#     * methods without self as first argument                                   
+#     * overriden methods signature                                              
+#     * access only to existant members via self                                 
+#     * attributes not defined in the __init__ method                            
+#     * supported interfaces implementation                                      
+#     * unreachable code                                                         
+#     
+[CLASSES]
+# enable/disable this checker
+enable-classes=yes
+
+# print a warning method without self as first argument
+self-warning=yes
+
+# check that attributes are defined in the __init__ method
+init=yes
+
+# check that accessed members are defined
+members=yes
+
+# check declared interfaces are truly implemented
+interfaces=yes
+
+
+
+# gives some raw metrics :                                                
+#     * total number of lines                                                    
+#     * total number of code lines                                               
+#     * total number of docstring lines                                          
+#     * total number of comments lines                                           
+#     * total number of empty lines                                              
+#     
+[METRICS]
+# enable/disable this checker
+enable-metrics=yes
+
+
+
+# checks for:
+#     * source code with non ascii characters but np encoding declaration (PEP 263)
+#     * warning notes in the code like FIXME, XXX
+#     
+[MISCELLANEOUS]
+# enable/disable this checker
+enable-miscellaneous=yes
+
+# check or not for source code encoding
+encoding=yes
+
+# list of notes to take in consideration, separated by a comma. Default to FIXME,XXX
+notes=FIXME,XXX,TODO
+
+
+
+# checks for :                                                            
+#     * unauthorized constructions                                               
+#     * strict indentation                                                       
+#     * lines'length                                                             
+#     
+[FORMAT]
+# enable/disable this checker
+enable-format=yes
+
+# Maximum number of characters on a single line.
+max-line-length=78
+
+# Maximum number of lines in a module
+max-module-lines=1000
+
+# Indicate whether to check or not for bad construction
+bad-construction=yes
+
+
+
