@@ -516,7 +516,10 @@ class UsersDictionary(utils.IterableMap):
         if self.filename is not None:
             self.nextId = 0
             self.users.clear()
-            self.open(self.filename)
+            try:
+                self.open(self.filename)
+            except EnvironmentError, e:
+                log.warning('UsersDictionary.reload failed: %s', e)
         else:
             log.warning('UsersDictionary.reload called without self.filename.')
 
@@ -660,15 +663,18 @@ class ChannelsDictionary(utils.IterableMap):
                 c.preserve(fd, indent='  ')
             fd.close()
         else:
-            log.warning('ChannelsDictionary.flush called with self.filename.')
+            log.warning('ChannelsDictionary.flush without self.filename.')
 
     def reload(self):
         """Reloads the channel database from its file."""
         if self.filename:
             self.channels.clear()
-            self.open(self.filename)
+            try:
+                self.open(self.filename)
+            except EnvironmentError, e:
+                log.warning('ChannelsDictionary.reload failed: %s', e)
         else:
-            log.warning('ChannelsDictionary.reload called with self.filename.')
+            log.warning('ChannelsDictionary.reload without self.filename.')
 
     def getChannel(self, channel):
         """Returns an IrcChannel object for the given channel."""
