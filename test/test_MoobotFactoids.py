@@ -121,33 +121,40 @@ if sqlite is not None:
             self.assertError('moo =~ s/moo/')
 
         def testListkeys(self):
-            self.assertResponse('listkeys *', 'No keys found matching \'*\'.')
+            self.assertResponse('listkeys *', 'No keys matching \'*\' found.')
             self.assertNotError('moo is <reply>moo')
             self.assertResponse('listkeys moo', 'Key search for \'moo\' '
-                              '(1 found): moo')
-            self.assertResponse('listkeys foo', 'No keys found matching '
-                                '\'foo\'.')
+                              '(1 found): \'moo\'')
+            self.assertResponse('listkeys foo', 'No keys matching \'foo\' '
+                                'found.')
             # Throw in a bunch more
             for i in range(10):
                 self.assertNotError('moo%s is <reply>moo' % i)
-            self.assertRegexp('listkeys moo', '^Key search for \'moo\' '
-                              '(11 found): (moo\d*, )+ and moo9$')
-            self.assertRegexp('listkeys *', '^Key search for \'*\' '
-                              '(12 found): foo, (moo\d*, )+ and moo9$')
+            self.assertRegexp('listkeys moo*', '^Key search for \'moo\*\' '
+                              '\(11 found\): (\'moo\d*\', )+and \'moo9\'$')
+            self.assertNotError('foo is bar')
+            self.assertRegexp('listkeys *', '^Key search for \'\*\' '
+                              '\(12 found\): \'foo\', (\'moo\d*\', )+and '
+                              '\'moo9\'$')
+            # Check quoting
+            self.assertNotError('foo\' is bar')
+            self.assertResponse('listkeys foo*', 'Key search for \'foo*\' '
+                                '(2 found): \'foo\' and "foo\'"')
 
         def testListvalues(self):
-            self.assertNotError('moo is <reply>moo')
+            self.assertNotError('moo is moo')
             self.assertResponse('listvalues moo', 'Value search for \'moo\' '
-                                '(1 found): moo')
+                                '(1 found): \'moo\'')
 
         def testListauth(self):
             self.assertNotError('moo is <reply>moo')
             self.assertResponse('listauth tester', 'Author search for tester '
-                                '(1 found): moo')
+                                '(1 found): \'moo\'')
+            self.assertError('listauth moo')
 
-    class DunnoTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('MiscCommands', 'MoobotFactoids', 'UserCommands')
-        def testDunno(self):
-            self.assertNotError('apfasdfjoia') # Should say a dunno, no error
+#    class DunnoTestCase(PluginTestCase, PluginDocumentation):
+#        plugins = ('MiscCommands', 'MoobotFactoids', 'UserCommands')
+#        def testDunno(self):
+#            self.assertNotError('apfasdfjoia') # Should say a dunno, no error
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

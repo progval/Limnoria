@@ -397,6 +397,73 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         """
         self._lock(irc, msg, args, False)
 
+    def listauth(self, irc, msg, args):
+        """<author name>
+
+        Lists the keys of the factoids with the given author.  Note that if an
+        author has an integer name, you'll have to use that author's id to use
+        this function (so don't use integer usernames!).
+        """
+        author = privmsgs.getArgs(args, needed=1)
+        try:
+            id = ircdb.users.getUserId(author)
+        except KeyError:
+            irc.error(msg, "No such user: %s" % author)
+            return
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT key FROM factoids
+                          WHERE created_by = %s
+                          ORDER BY key""", id)
+        if cursor.rowcount == 0:
+            irc.reply(msg, "No factoids by %s found." % author)
+            return
+        keys = [repr(tup[0]) for tup in cursor.fetchall()]
+        s = "Author search for %s (%d found): %s" % \
+            (author, len(keys), utils.commaAndify(keys))
+        irc.reply(msg, s)
+
+    _sqlTrans = string.maketrans('*?', '%_')
+    def listkeys(self, irc, msg, args):
+        """<glob>
+
+        Lists the keys of the factoids whose key matches the provided glob.
+        """
+        glob = privmsgs.getArgs(args, needed=1)
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT key FROM factoids
+                          WHERE key LIKE %s
+                          ORDER BY key""",
+                          glob.translate(self._sqlTrans))
+        if cursor.rowcount == 0:
+            irc.reply(msg, "No keys matching %r found." % glob)
+            return
+        keys = [repr(tup[0]) for tup in cursor.fetchall()]
+        s = "Key search for %r (%d found): %s" % \
+            (glob, len(keys), utils.commaAndify(keys))
+        irc.reply(msg, s)
+
+    def listvalues(self, irc, msg, args):
+        """<glob>
+
+
+        Lists the keys of the factoids whose value matches the provided glob.
+        """
+        glob = privmsgs.getArgs(args, needed=1)
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT key FROM factoids
+                          WHERE fact LIKE %s
+                          ORDER BY key""",
+                          glob.translate(self._sqlTrans))
+        if cursor.rowcount == 0:
+            irc.reply(msg, "No values matching %r found." % glob)
+            return
+        keys = [repr(tup[0]) for tup in cursor.fetchall()]
+        s = "Value search for %r (%d found): %s" % \
+            (glob, len(keys), utils.commaAndify(keys))
+        irc.reply(msg, s)
+
+
+
 Class = MoobotFactoids
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
