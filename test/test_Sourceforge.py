@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2003, James Vega
+# Copyright (c) 2003-2004, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without

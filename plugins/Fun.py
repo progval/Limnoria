@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002, 2003, 2004, Jeremiah Fincher, Grant Bowman, et alii
+# Copyright (c) 2002-2004, Jeremiah Fincher, Grant Bowman, et alii
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
