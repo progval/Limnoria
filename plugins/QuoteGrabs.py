@@ -114,6 +114,9 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
                                        channel)
             length = self.registryValue('randomGrabber.minimumCharacters',
                                         channel)
+            grabTime = \
+            self.registryValue('randomGrabber.averageTimeBetweenGrabs',
+                               channel)
             if self.registryValue('randomGrabber', channel):
                 if len(payload) > length and len(payload.split()) > words:
                     db = self.getDb(channel)
