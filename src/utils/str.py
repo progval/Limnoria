@@ -247,28 +247,25 @@ def matchCase(s1, s2):
 
 consonants = 'bcdfghjklmnpqrstvwxz'
 _pluralizeRegex = re.compile('[%s]y$' % consonants)
-def pluralize(s, i=2):
-    """Returns the plural of s based on its number i.  Put any exceptions to
-    the general English rule of appending 's' in the plurals dictionary.
+def pluralize(s):
+    """Returns the plural of s.  Put any exceptions to the general English
+    rule of appending 's' in the plurals dictionary.
     """
-    if i == 1:
-        return s
+    lowered = s.lower()
+    # Exception dictionary
+    if lowered in plurals:
+        return matchCase(s, plurals[lowered])
+    # Words ending with 'ch', 'sh' or 'ss' such as 'punch(es)', 'fish(es)
+    # and miss(es)
+    elif any(lowered.endswith, ['x', 'ch', 'sh', 'ss']):
+        return matchCase(s, s+'es')
+    # Words ending with a consonant followed by a 'y' such as
+    # 'try (tries)' or 'spy (spies)'
+    elif _pluralizeRegex.search(lowered):
+        return matchCase(s, s[:-1] + 'ies')
+    # In all other cases, we simply add an 's' to the base word
     else:
-        lowered = s.lower()
-        # Exception dictionary
-        if lowered in plurals:
-            return matchCase(s, plurals[lowered])
-        # Words ending with 'ch', 'sh' or 'ss' such as 'punch(es)', 'fish(es)
-        # and miss(es)
-        elif any(lowered.endswith, ['x', 'ch', 'sh', 'ss']):
-            return matchCase(s, s+'es')
-        # Words ending with a consonant followed by a 'y' such as
-        # 'try (tries)' or 'spy (spies)'
-        elif _pluralizeRegex.search(lowered):
-            return matchCase(s, s[:-1] + 'ies')
-        # In all other cases, we simply add an 's' to the base word
-        else:
-            return matchCase(s, s+'s')
+        return matchCase(s, s+'s')
 
 _depluralizeRegex = re.compile('[%s]ies' % consonants)
 def depluralize(s):
