@@ -38,7 +38,7 @@ except ImportError:
 
 if sqlite is not None:
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('MoobotFactoids', 'UserCommands')
+        plugins = ('MiscCommands', 'MoobotFactoids', 'UserCommands')
         def setUp(self):
             PluginTestCase.setUp(self)
             # Create a valid user to use
