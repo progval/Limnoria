@@ -250,7 +250,7 @@ class Http(callbacks.Privmsg):
             s = ', or '.join(defs)
             irc.reply('%s could be %s' % (acronym, s))
 
-    _netcraftre = re.compile(r'whatos text -->(.*?)<a href="/up/acc', re.S)
+    _netcraftre = re.compile(r'td align="left">\s+<a[^>]+>(.*?)<a href', re.S)
     def netcraft(self, irc, msg, args):
         """<hostname|ip>
 
@@ -263,8 +263,9 @@ class Http(callbacks.Privmsg):
         m = self._netcraftre.search(html)
         if m:
             html = m.group(1)
-            s = utils.htmlToText(html, tagReplace='').strip('\xa0 ')
-            irc.reply(s[9:]) # Snip off "the site"
+            s = utils.htmlToText(html, tagReplace='').strip()
+            s = s.rstrip('-').strip()
+            irc.reply(s) # Snip off "the site"
         elif 'We could not get any results' in html:
             irc.reply('No results found for %s.' % hostname)
         else:
@@ -398,21 +399,16 @@ class Http(callbacks.Privmsg):
         # Zone, Daylight Time(?), Latitude, Longitude
         info = utils.htmlToText(rawinfo)
         info = info.split()
-        resp = []
-        # County was more than one word. Hopfully it was only two words
-        if (len(info[-9]) > 2):
-            resp.append('City: %s' % ' '.join(info[:-10]))
-            resp.append('State: %s' % info[-10])
-            resp.append('County: %s' % ' '.join(info [-6:-8]))
-        else:
-            resp.append('City: %s' % ' '.join(info[:-9]))
-            resp.append('State: %s' % info[-9])
-            resp.append('County: %s' % info[-7])
-        resp.append('Area Code: %s' % info[-5])
-        resp.append('Time Zone: %s' % info[-4])
-        resp.append('Daylight Savings: %s' % info[-3])
-        resp.append('Latitude: %s (%s)' % (info[-2], latdir))
-        resp.append('Longitude: %s (%s)' % (info[-1], longdir))
+        zipindex = info.index(zipcode)
+        resp = ['City: %s' % ' '.join(info[:zipindex-1]),
+                'State: %s' % info[zipindex-1],
+                'County: %s' % ' '.join(info[zipindex+1:-6]),
+                'Area Code: %s' % info[-5],
+                'Time Zone: %s' % info[-4],
+                'Daylight Savings: %s' % info[-3],
+                'Latitude: %s (%s)' % (info[-2], latdir),
+                'Longitude: %s (%s)' % (info[-1], longdir),
+               ]
         irc.reply('; '.join(resp))
 
 

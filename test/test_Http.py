@@ -117,6 +117,8 @@ if network:
             self.assertRegexp('zipinfo 00000',
                               r'Only about \d+,\d+ of the \d+,\d+ possible')
             self.assertRegexp('zipinfo 78014', 'County: La Salle')
+            self.assertRegexp('zipinfo 90001',
+                              r'City: Los Angeles.*County: Los Angeles')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
