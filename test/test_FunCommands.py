@@ -54,16 +54,6 @@ class FunCommandsTest(PluginTestCase, PluginDocumentation):
         for s in nicks[:10]: # 10 is probably enough.
             self.assertResponse('rot13 [rot13 %s]' % s, s)
 
-    def testCalc(self):
-        self.assertResponse('calc 5*0.06', str(5*0.06))
-        self.assertResponse('calc 2.0-7.0', str(2-7))
-        self.assertResponse('calc (-1)**.5', 'i')
-        self.assertResponse('calc e**(i*pi)+1', '0')
-        self.assertResponse('calc (-5)**.5', '2.2360679775i')
-        self.assertResponse('calc -((-5)**.5)', '-2.2360679775i')
-        self.assertNotRegexp('calc [9, 5] + [9, 10]', 'TypeError')
-        self.assertError('calc [9, 5] + [9, 10]')
-
     def testChr(self):
         for i in range(256):
             c = chr(i)
@@ -104,12 +94,6 @@ class FunCommandsTest(PluginTestCase, PluginDocumentation):
     def testWhois(self):
         self.assertNotError('whois ohio-state.edu')
         self.assertError('whois slashdot.org')
-
-    def testRpn(self):
-        self.assertResponse('rpn 5 2 +', '7')
-        self.assertResponse('rpn 1 2 3 +', 'Stack: [1, 5]')
-        self.assertResponse('rpn 1 dup', 'Stack: [1, 1]')
-        self.assertResponse('rpn 2 3 4 + -', str(2-7))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

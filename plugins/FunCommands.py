@@ -73,7 +73,7 @@ import callbacks
 
 example = utils.wrapLines("""
 <jemfinch> @list FunCommands
-<supybot> base, binary, calc, chr, coin, cpustats, decode, dice, dns, encode, hexlify, kernel, last, lastfrom, leet, levenshtein, lithp, md5, mimetype, netstats, objects, ord, pydoc, rot13, rpn, sha, soundex, unhexlify, uptime, urlquote, urlunquote, xor
+<supybot> base, binary, chr, coin, cpustats, decode, dice, dns, encode, hexlify, kernel, last, lastfrom, leet, levenshtein, lithp, md5, mimetype, netstats, objects, ord, pydoc, rot13, sha, soundex, unhexlify, uptime, urlquote, urlunquote, xor
 <jemfinch> @netstats
 <supybot> I have received 211 messages for a total of 19535 bytes.  I have sent 109 messages for a total of 8672 bytes.
 <jemfinch> @ord A
@@ -129,12 +129,6 @@ example = utils.wrapLines("""
 <supybot> I have taken 5.4 seconds of user time and 0.29 seconds of system time, for a total of 5.69 seconds of CPU time.  My children have taken 0.0 seconds of user time and 0.0 seconds of system time for a total of 0.0 seconds of CPU time.  I've taken a total of 0.00329929635973% of this computer's time.  Out of 2 spawned threads, I have 1 active.
 <jemfinch> @uptime
 <supybot> I have been running for 28 minutes and 47 seconds.
-<jemfinch> @calc e**(i*pi) + 1
-<supybot> 0
-<jemfinch> @calc 1+2+3
-<supybot> 6
-<jemfinch> @rpn 1 2 3 + +
-<supybot> 6
 <jemfinch> @objects
 <supybot> I have 24941 objects: 234 modules, 716 classes, 5489 functions, 1656 dictionaries, 827 lists, and 14874 tuples (and a few other different types).  I have a total of 119242 references.
 <jemfinch> @levenshtein supybot supbot
@@ -486,128 +480,6 @@ class FunCommands(callbacks.Privmsg):
                    utils.timeElapsed(time.time() - world.startedAt)
         irc.reply(msg, response)
 
-
-    ###
-    # So this is how the 'calc' command works:
-    # First, we make a nice little safe environment for evaluation; basically,
-    # the names in the 'math' and 'cmath' modules.  Then, we remove the ability
-    # of a random user to get ints evaluated: this means we have to turn all
-    # int literals (even octal numbers and hexadecimal numbers) into floats.
-    # Then we delete all square brackets, underscores, and whitespace, so no
-    # one can do list comprehensions or call __...__ functions.
-    ###
-    _mathEnv = {'__builtins__': new.module('__builtins__'), 'i': 1j}
-    _mathEnv.update(math.__dict__)
-    _mathEnv.update(cmath.__dict__)
-    _mathRe = re.compile(r'((?:(?<![A-Fa-f\d])-)?'
-                         r'(?:0x[A-Fa-f\d]+|'
-                         r'0[0-7]+|'
-                         r'\d+\.\d+|'
-                         r'\.\d+|'
-                         r'\d+\.|'
-                         r'\d+))')
-    def _complexToString(self, x):
-        real = x.real
-        imag = x.imag
-        if -1e-12 < real < 1e-12 and -1e-12 < imag < 1e-12:
-            return '0'
-        if int(real) == real:
-            real = int(real)
-        if int(imag) == imag:
-            imag = int(imag)
-        if -1e-12 < real < 1e-12:
-            real = 0
-        if -1e-12 < imag < 1e-12:
-            imag = 0
-        if imag == 0:
-            return str(real)
-        elif imag == 1:
-            imag = 'i'
-        elif imag == -1:
-            imag = '-i'
-        elif imag < 0:
-            imag = '%si' % imag
-        elif imag > 0:
-            imag = '+%si' % imag
-        if real == 0:
-            return imag.lstrip('+')
-        else:
-            return '%s%s' % (real, imag)
-
-    def calc(self, irc, msg, args):
-        """<math expression>
-
-        Returns the value of the evaluted <math expression>.  The syntax is
-        Python syntax; the type of arithmetic is floating point.
-        """
-        text = privmsgs.getArgs(args)
-        text = text.translate(string.ascii, '_[] \t')
-        text = text.replace('lambda', '')
-        def handleMatch(m):
-            s = m.group(1)
-            if s.startswith('0x'):
-                i = int(s, 16)
-            elif s.startswith('0') and '.' not in s:
-                try:
-                    i = int(s, 8)
-                except ValueError:
-                    i = int(s)
-            else:
-                i = float(s)
-            return str(complex(i))
-        text = self._mathRe.sub(handleMatch, text)
-        try:
-            x = complex(eval(text, self._mathEnv, self._mathEnv))
-            irc.reply(msg, self._complexToString(x))
-        except OverflowError:
-            irc.error(msg, 'Go get scanez, this is a *real* math problem!')
-        except TypeError:
-            irc.error(msg, 'Something in there wasn\'t a valid number.')
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
-
-    _rpnEnv = {
-        'dup': lambda s: s.extend([s.pop()]*2),
-        }
-    def rpn(self, irc, msg, args):
-        """<rpn math expression>
-
-        Returns the value of an RPN expression.
-        """
-        stack = []
-        for arg in args:
-            try:
-                stack.append(complex(arg))
-            except ValueError: # Not a float.
-                if arg in self._mathEnv:
-                    f = self._mathEnv[arg]
-                    if callable(f):
-                        called = False
-                        arguments = []
-                        while not called and stack:
-                            arguments.append(stack.pop())
-                            try:
-                                stack.append(f(*arguments))
-                                called = True
-                            except TypeError:
-                                pass
-                        if not called:
-                            irc.error(msg, 'Not enough arguments for %s' % arg)
-                            return
-                    else:
-                        stack.append(f)
-                elif arg in self._rpnEnv:
-                    self._rpnEnv[arg](stack)
-                else:
-                    arg2 = stack.pop()
-                    arg1 = stack.pop()
-                    s = '%s%s%s' % (arg1, arg, arg2)
-                    stack.append(eval(s, self._mathEnv, self._mathEnv))
-        if len(stack) == 1:
-            irc.reply(msg, str(self._complexToString(complex(stack[0]))))
-        else:
-            s = ', '.join(imap(self._complexToString, imap(complex, stack)))
-            irc.reply(msg, 'Stack: [%s]' % s)
 
     def objects(self, irc, msg, args):
         """takes no arguments.
