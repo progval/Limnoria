@@ -48,6 +48,7 @@ import debug
 import callbacks
 
 commandDict = {}
+firstChars = {}
 
 def prepIndex():
     directory = os.path.join('docs', 'plugins')
@@ -70,6 +71,7 @@ def prepIndex():
 
 def makePluginDocumentation(pluginWindow):
     global commandDict
+    global firstChars
     trClasses = { 'treven':'trodd', 'trodd':'treven' }
     trClass = 'treven'
     (pluginName, module, plugin) = pluginWindow[1]
@@ -108,6 +110,8 @@ def makePluginDocumentation(pluginWindow):
             commandDict[attr].append(pluginName)
         else:
             commandDict[attr] = [pluginName]
+        if attr[0] not in firstChars:
+            firstChars[attr[0]] = ''
         method = getattr(plugin, attr)
         if hasattr(method, '__doc__'):
             doclines = method.__doc__.splitlines()
@@ -121,9 +125,9 @@ def makePluginDocumentation(pluginWindow):
             morehelp = cgi.escape(morehelp)
             trClass = trClasses[trClass]
             fd.write(textwrap.dedent("""
-            <tr class="%s"><td>%s</td><td>%s</td><td class="detail">%s
-            </td></tr>
-            """) % (trClass, attr, help, morehelp))
+            <tr class="%s" name="%s" id="%s"><td>%s</td><td>%s</td>
+            <td class="detail">%s</td></tr>
+            """) % (trClass, attr, attr, attr, help, morehelp))
     fd.write(textwrap.dedent("""
     </table>
     """))
@@ -163,7 +167,9 @@ def finishIndex():
     fd.close()
 
 def makeCommandsIndex():
+    from string import ascii_lowercase
     global commandDict
+    global firstChars
     directory = os.path.join('docs', 'plugins')
     if not os.path.exists(directory):
         os.mkdir(directory)
@@ -178,23 +184,26 @@ def makeCommandsIndex():
     <link rel="stylesheet" type="text/css" href="supybot.css">
     <body><div>
     <h2>Supybot Commands Index</h2>
-    <strong>Command</strong>   (Plugins)<br>
     """))
     commands = [c for c in commandDict.iterkeys()]
     commands.sort()
-    alphas = []
-    for command in commands:
-        char = command[0]
-        if char in alphas:
-            pass
+    for i in ascii_lowercase:
+        if i in firstChars:
+            fd.write('<a href="#%s">%s</a> ' % (i, i.capitalize()))
         else:
-            alphas.append(char)
-            fd.write('<h2 id="%s" style="text-decoration:underline">%s'\
-                     '</h2>\n' % (char, char.capitalize()))
+            fd.write('%s ' % i.capitalize())
+    firstChars.clear()
+    fd.write('\n<br><br><strong>Command</strong>   (Plugins)<br>')
+    for command in commands:
+        c = command[0]
+        if c not in firstChars:
+            firstChars[c] = ''
+            fd.write('<h2 name="%s" id="%s" class="underline">%s</h2>\n' %
+                     (c, c, c.capitalize()))
         plugins = commandDict[command]
         plugins.sort()
         fd.write('<strong>%s</strong>   (%s)<br>\n' % (command,
-                 ', '.join(['<a href="%s.html">%s</a>' % (p, p)
+                 ', '.join(['<a href="%s.html#%s">%s</a>' % (p,command,p)
                             for p in plugins])))
     fd.write(textwrap.dedent("""
     </div>
