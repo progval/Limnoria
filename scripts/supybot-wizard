@@ -139,7 +139,7 @@ def main():
     import supybot.log as log
     import supybot.conf as conf
     log._stdoutHandler.setLevel(100) # *Nothing* gets through this!
-    parser = optparse.OptionParser(usage='Usage: %prog [options] [configFile]',
+    parser = optparse.OptionParser(usage='Usage: %prog [options]',
                                    version='Supybot %s' % conf.version)
     parser.add_option('', '--allow-root', action='store_true',
                       dest='allowRoot',
@@ -153,21 +153,12 @@ def main():
             sys.stderr.write('Please, don\'t run this as root.\n')
 
     filename = ''
-    if len(args) > 1:
-        parser.error('the wizard takes one argument at most.')
-    elif len(args) == 1:
-        filename = args[0]
-        try:
-            registry.open(filename)
-        except OSError, msg:
-            raise SystemExit, 'Unable to open file %s: %s' % (filename, msg)
-        output("""It seems you already have a configuration file. We'll run
-        you through the options so you can change them if you want.""")
-    else:
-        output("""This is a wizard to help you start running supybot.  What it
-        will do is create a single Python file whose effect will be that of
-        starting an IRC bot with the options you select here.  So hold on tight
-        and be ready to be interrogated :)""")
+    if args:
+        parser.error('This program takes no non-option arguments.')
+    output("""This is a wizard to help you start running supybot.  What it
+    will do is create a single Python file whose effect will be that of
+    starting an IRC bot with the options you select here.  So hold on tight
+    and be ready to be interrogated :)""")
 
 
     output("""First of all, we can bold the questions you're asked so you can
@@ -211,12 +202,7 @@ def main():
     output("""Your bot will need to put his logs somewhere.  Do you have any
     specific place you'd like them?  If not, just press enter and we'll make
     a directory named "logs" right here.""")
-    try:
-        logDir = registry._cache['supybot.directories.log']
-        logDir = utils.safeEval(logDir)
-        (logDir, baseDir) = getDirectoryName(logDir)
-    except KeyError:
-        (logDir, basedir) = getDirectoryName('logs')
+    (logDir, basedir) = getDirectoryName('logs')
     conf.supybot.directories.log.setValue(logDir)
 
     # conf.supybot.directories.data
@@ -224,12 +210,7 @@ def main():
     databases, downloaded files, etc.  Do you have any specific place you'd
     like the bot to put these things?  If not, just press enter and we'll make
     a directory named "data" right here.""")
-    try:
-        dataDir = registry._cache['supybot.directories.data']
-        dataDir = utils.safeEval(dataDir)
-        (dataDir, basedir) = getDirectoryName(dataDir, basedir=basedir)
-    except KeyError:
-        (dataDir, basedir) = getDirectoryName('data', basedir=basedir)
+    (dataDir, basedir) = getDirectoryName('data', basedir=basedir)
     conf.supybot.directories.data.setValue(dataDir)
 
     # conf.supybot.directories.conf
@@ -237,12 +218,7 @@ def main():
     probably only make one or two, but it's gotta have some place to put them.
     Where should that place be?  If you don't care, just press enter and we'll
     make a directory right here named "conf" where it'll store his stuff. """)
-    try:
-        confDir = registry._cache['supybot.directories.conf']
-        confDir = utils.safeEval(confDir)
-        (confDir, basedir) = getDirectoryName(confDir, basedir=basedir)
-    except KeyError:
-        (confDir, basedir) = getDirectoryName('conf', basedir=basedir)
+    (confDir, basedir) = getDirectoryName('conf', basedir=basedir)
     conf.supybot.directories.conf.setValue(confDir)
 
     # pluginDirs
@@ -325,14 +301,9 @@ def main():
 
     # conf.supybot.nick
     # Force the user into specifying a nick if he didn't have one already
-    try:
-        defaultNick = registry._cache['supybot.nick']
-        defaultNick = utils.safeEval(defaultNick)
-    except KeyError:
-        defaultNick = None
     while True:
         nick = something('What nick would you like your bot to use?',
-                         default=defaultNick)
+                         default=None)
         try:
             conf.supybot.nick.set(nick)
             break
@@ -346,26 +317,16 @@ def main():
         you like your bot's full name to be?  If you don't care, just press
         enter and it'll be the same as your bot's nick.""")
         user = ''
-        try:
-            defaultUser = registry._cache['supybot.user']
-            defaultUser = utils.safeEval(defaultUser)
-        except KeyError:
-            defaultUser = nick
         user = something('What would you like your bot\'s full name to be?',
-                         default=defaultUser)
+                         default=nick)
         conf.supybot.user.set(user)
-
     # conf.supybot.ident (if advanced)
-    try:
-        defaultIdent = registry._cache['supybot.ident']
-        defaultIdent = utils.safeEval(defaultIdent)
-    except KeyError:
-        defaultIdent = nick
+    defaultIdent = 'supybot'
     if advanced:
         output("""IRC servers also allow you to set your ident, which they
         might need if they can't find your identd server.  What would you
         like your ident to be?  If you don't care, press enter and we'll
-        use the same string as your bot's nick.  In fact, we prefer that you
+        use 'supybot'.  In fact, we prefer that you
         do this, because it provides free advertising for Supybot when users
         /whois your bot.  But, of course, it's your call.""")
         while True:
@@ -545,7 +506,8 @@ def main():
     output("""By default, your bot will log not only to files in the logs
     directory you gave it, but also to stdout.  We find this useful for
     debugging, and also just for the pretty output (it's colored!)""")
-    stdout = not yn('Would you like to turn off this logging to stdout?')
+    stdout = not yn('Would you like to turn off this logging to stdout?'
+                    default=False)
     conf.supybot.log.stdout.setValue(stdout)
     if conf.supybot.log.stdout():
         # conf.something
