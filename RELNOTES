@@ -1,3 +1,20 @@
+Version 0.80.0pre4
+
+Mainly a bug fix release.  This will likely be the last release before
+0.80.0final, but we're gonna let it stew for a couple weeks to attempt
+to catch any lingering bugs.
+
+ansycoreDrivers is now deprecated in favor of socketDrivers or
+twistedDrivers.
+
+supybot.databases.plugins.channelSpecific.channel is now a channelValue
+so that you can link specific channels together (instead of all channels
+being linked together).
+
+For those of you that use eval and/or exec, they have been removed from
+the Owner plugin and are now in sandbox/Debug.py (which you'll have to
+grab from CVS).
+
 Version 0.80.0pre3
 
 The database format for the Note plugin has changed to a flatfile

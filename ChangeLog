@@ -1,3 +1,18 @@
+2004-12-17 James Vega <jamessan@supybot.org>
+
+	* Version 0.80.0pre4!
+
+	* supybot.databases.plugins.channelSpecific.channel is now a
+	channelValue so that individual channels can decide to link their
+	databases.
+
+	* Deprecated asyncoreDrivers.  Use twistedDrivers or socketDrivers
+	instead.
+
+	* Moved {eval,exec} from Owner.py to Debug.py in the sandbox.
+
+	* Numerous bug fixes.
+
 2004-09-30 Jeremy Fincher <jemfinch@supybot.org>
 
 	* Version 0.80.0pre3!
