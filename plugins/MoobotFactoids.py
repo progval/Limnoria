@@ -373,6 +373,9 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                 irc.error("Spurious type from _parseFactoid.")
             return True
 
+    # XXX It looks like all these could be converted to use invalidCommand
+    # instead, which would then also allow nested commands.  Strike may want
+    # to consider that implementation method.
     def addFactoid(self, irc, msg, match):
         r"^(?!\x01)(.+?)\s+(?:is|_is_)\s+(.+)"
         # First, check and see if the entire message matches a factoid key
@@ -609,8 +612,9 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         """
         self._lock(irc, msg, args, False)
 
-    class MostException:
+    class MostException(Exception):
         pass
+
     def most(self, irc, msg, args):
         """<popular|authored|recent>
 
@@ -626,7 +630,6 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             raise callbacks.ArgumentError
         limit = self.registryValue('mostCount', channel)
         irc.reply(method(channel, limit))
-
 
     def _mostAuthored(self, channel, limit):
         results = self.db.mostAuthored(channel, limit)
