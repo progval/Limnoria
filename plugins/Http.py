@@ -66,7 +66,10 @@ class Http(callbacks.Privmsg):
     _fmPopular=re.compile('<popularity_percent>([^<]+)</popularity_percent>')
     _fmLastUpdated = re.compile('<date_updated>([^<]+)</date_updated>')
     def freshmeat(self, irc, msg, args):
-        """<project name>"""
+        """<project name>
+
+        Returns Freshmeat data about a given project.
+        """
         project = privmsgs.getArgs(args)
         url = 'http://www.freshmeat.net/projects-xml/%s' % project
         try:
@@ -91,7 +94,11 @@ class Http(callbacks.Privmsg):
             irc.reply(msg, debug.exnToString(e))
 
     def stockquote(self, irc, msg, args):
-        """<company symbol>"""
+        """<company symbol>
+
+        Gets the information about the current price and change from the
+        previous day of a given compny (represented by a stock symbol).
+        """
         symbol = privmsgs.getArgs(args)
         url = 'http://finance.yahoo.com/d/quotes.csv?s=%s'\
               '&f=sl1d1t1c1ohgv&e=.csv' % symbol
@@ -116,7 +123,14 @@ class Http(callbacks.Privmsg):
             return
 
     def foldoc(self, irc, msg, args):
-        """<something to lookup on foldoc>"""
+        """<something to lookup on foldoc>
+
+        FOLDOC is a searchable dictionary of acryonyms, jargon, programming
+        languages, tools, architecture, operating systems, networking, theory,
+        conventions, standards, methamatics, telecoms, electronics, history,
+        in fact anything having to do with computing.  This commands searches
+        that dictionary.
+        """
         search = '+'.join([urllib.quote(arg) for arg in args])
         url = 'http://foldoc.doc.ic.ac.uk/foldoc/foldoc.cgi?query=%s' % search
         try:
@@ -135,10 +149,15 @@ class Http(callbacks.Privmsg):
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
     _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
         '"#FFFF00">(\d+)')
-    _gkteam = re.compile('Team:\s+(.*?)\s+Last time')
-    _gkseen = re.compile('seen on GK:\s+([^[]+)')
+    _gkteam = re.compile(r'Team:\s+(.*?)\s+Last time')
+    _gkseen = re.compile(r'seen on GK:\s+([^[]+)\s*')
     def gkstats(self, irc, msg, args):
-        """<name>"""
+        """<name>
+
+        Returns the stats Gameknot keeps on <name>.  Gameknot is an online
+        website for playing chess (rather similar to correspondence chess, just
+        somewhat faster) against players from all over the world.
+        """
         name = privmsgs.getArgs(args)
         gkprofile = 'http://www.gameknot.com/stats.pl?%s' % name
         try:
@@ -173,7 +192,10 @@ class Http(callbacks.Privmsg):
 
     _zipcode = re.compile(r'Local Forecast for (.*), (.*?) ')
     def zipcode(self, irc, msg, args):
-        """<US zip code>"""
+        """<US zip code>
+
+        Returns the city and state of a given US Zip code.
+        """
         zip = privmsgs.getArgs(args)
         url = "http://www.weather.com/weather/local/%s?lswe=%s" % (zip, zip)
         try:
@@ -192,7 +214,10 @@ class Http(callbacks.Privmsg):
     _condregex = re.compile('CLASS=obsInfo2><b CLASS=obsTextA>(.*)</b></td>',\
                          re.IGNORECASE)
     def weather(self, irc, msg, args):
-        """<US zip code>"""
+        """<US zip code>
+
+        Returns the approximate weather conditions at a given US Zip code.
+        """
         zip = privmsgs.getArgs(args)
         url = "http://www.weather.com/weather/local/%s?lswe=%s" % (zip, zip)
         try:
@@ -209,7 +234,11 @@ class Http(callbacks.Privmsg):
 
     _slashdotTime = 0.0
     def slashdot(self, irc, msg, args):
-        """takes no arguments"""
+        """takes no arguments
+
+        Returns the current headlines on slashdot.org, News for Nerds, Stuff
+        that Matters.
+        """
         if time.time() - self._slashdotTime > 1800:
             try:
                 fd = urllib2.urlopen('http://slashdot.org/slashdot.xml')
@@ -228,7 +257,12 @@ class Http(callbacks.Privmsg):
 
     _geekquotere = re.compile('<p class="qt">(.*?)</p>')
     def geekquote(self, irc, msg, args):
-        "[<multiline>]"
+        """[<multiline>]
+
+        Returns a random geek quote from bash.org; the optional argument
+        <multiline> specifies whether multi-line quotes (which are longer
+        than other quotes, generally) are to be allowed.
+        """
         multiline = privmsgs.getArgs(args, needed=0, optional=1)
         try:
             fd = urllib2.urlopen('http://bash.org/?random1')
@@ -252,7 +286,8 @@ class Http(callbacks.Privmsg):
     def acronym(self, irc, msg, args):
         """<acronym>
 
-        Displays the first 5 matches from acronymfinder.com"""
+        Displays the first 5 acronym matches from acronymfinder.com
+        """
         acronym = privmsgs.getArgs(args)
         try:
             url = 'http://www.acronymfinder.com/' \
@@ -274,7 +309,11 @@ class Http(callbacks.Privmsg):
 
     _netcraftre = re.compile(r'whatos text -->(.*?)<a href="/up/acc', re.S)
     def netcraft(self, irc, msg, args):
-        """<hostname>"""
+        """<hostname|ip>
+
+        Returns Netcraft.com's determination of what operating system and
+        webserver is running on the host given.
+        """
         hostname = privmsgs.getArgs(args)
         url = 'http://uptime.netcraft.com/up/graph/?host=%s' % hostname
         fd = urllib2.urlopen(url)
