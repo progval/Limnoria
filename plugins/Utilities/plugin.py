@@ -71,17 +71,6 @@ class Utilities(callbacks.Plugin):
         else:
             raise callbacks.ArgumentError
 
-    def strlen(self, irc, msg, args):
-        """<text>
-
-        Returns the length of <text>.
-        """
-        total = 0
-        for arg in args:
-            total += len(arg)
-        total += len(args)-1 # spaces between the arguments.
-        irc.reply(str(total))
-
     def echo(self, irc, msg, args, text):
         """<text>
 
@@ -102,27 +91,6 @@ class Utilities(callbacks.Plugin):
         random.shuffle(things)
         irc.reply(' '.join(things))
     shuffle = wrap(shuffle, [many('anything')])
-
-    def re(self, irc, msg, args, ff, text):
-        """<regexp> <text>
-
-        If <regexp> is of the form m/regexp/flags, returns the portion of
-        <text> that matches the regexp.  If <regexp> is of the form
-        s/regexp/replacement/flags, returns the result of applying such a
-        regexp to <text>
-        """
-        if isinstance(ff, (types.FunctionType, types.MethodType)):
-            f = ff
-        else:
-            f = lambda s: ff.search(s) and ff.search(s).group(0) or ''
-        if f('') and len(f(' ')) > len(f(''))+1: # Matches the empty string.
-            s = 'You probably don\'t want to match the empty string.'
-            irc.error(s)
-        else:
-            irc.reply(f(text))
-    re = wrap(re, [('checkCapability', 'trusted'),
-                   first('regexpMatcher', 'regexpReplacer'),
-                   'text'])
 
     def apply(self, irc, msg, args, command, rest):
         """<command> <text>

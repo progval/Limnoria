@@ -42,10 +42,6 @@ class UtilitiesTestCase(PluginTestCase):
     def testLast(self):
         self.assertResponse('utilities last foo bar baz', 'baz')
 
-    def testStrlen(self):
-        self.assertResponse('strlen %s' % ('s'*10), '10')
-        self.assertResponse('strlen a b', '3')
-
     def testEcho(self):
         self.assertHelp('echo')
         self.assertResponse('echo foo', 'foo')
@@ -55,30 +51,6 @@ class UtilitiesTestCase(PluginTestCase):
 
     def testEchoStandardSubstitute(self):
         self.assertNotRegexp('echo $nick', r'\$')
-
-    def testRe(self):
-        self.assertResponse('re "m/system time/" foo bar system time baz',
-                            'system time')
-        self.assertResponse('re s/user/luser/g user user', 'luser luser')
-        self.assertResponse('re s/user/luser/ user user', 'luser user')
-        self.assertNotRegexp('re m/foo/ bar', 'has no attribute')
-        self.assertResponse('re m/a\S+y/ "the bot angryman is hairy"','angry')
-
-    def testReNotEmptyString(self):
-        self.assertError('re s//foo/g blah')
-
-    def testReWorksWithJustCaret(self):
-        self.assertResponse('re s/^/foo/ bar', 'foobar')
-
-    def testReNoEscapingUnpackListOfWrongSize(self):
-        self.assertNotRegexp('re foo bar baz', 'unpack list of wrong size')
-
-    def testReBug850931(self):
-        self.assertResponse('re s/\b(\w+)\b/\1./g foo bar baz',
-                            'foo. bar. baz.')
-
-    def testNotOverlongRe(self):
-        self.assertError('re [strjoin "" s/./ [eval \'xxx\'*400]] blah blah')
 
     def testApply(self):
         self.assertResponse('apply "utilities last" a', 'a')
