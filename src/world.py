@@ -85,7 +85,7 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
     if os.name == 'nt':
         msvcrt.heapmin()
     if gc.garbage:
-        debug.msg('Uncollectable garbge: %s' % gc.garbage, 'normal')
+        debug.msg('Uncollectable garbage: %s' % gc.garbage, 'normal')
     if 'noflush' not in tempvars:
         flush()
     msg = '%s upkeep ran.' % time.strftime(conf.timestampFormat)
