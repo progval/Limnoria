@@ -1,10 +1,14 @@
-	* Added an Infobot plugin, to emulate Infobot.
+	* Added Infobot, a plugin to emulate Infobot.
 
 	* Added Anonymous, a plugin for anonymously saying things to a
 	channel.
 
-	* Added a new plugin, Tail, which will tail logfiles and send the
+	* Added Tail, a plugin which will tail logfiles and send the
 	new lines to a configurable list of targets.
+
+	* Added NickCapture, a plugin which tries to recapture a nick
+	that's being used by someone else, both by watching for QUITs
+	with that nick and by checking via ISON for that nick.
 	
 	* Changed the behavior of "seen" with the --user switch instead to
 	be a separated command, Seen.user.
