@@ -36,7 +36,7 @@ import utils
 class GameknotTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Gameknot',)
     def testGkstats(self):
-        self.assertNotError('gkstats jemfinch')
+        self.assertNotRegexp('gkstats jemfinch', 'Old GK rating')
         self.assertError('gkstats %s' % utils.mktemp())
         self.assertNotError('gkstats Strike')
 
