@@ -97,9 +97,10 @@ class Status(callbacks.Privmsg):
         activeThreads = threading.activeCount()
         response = ('I have taken %.2f seconds of user time and %.2f seconds '
                     'of system time, for a total of %.2f seconds of CPU '
-                    'time.  %sOut of %s I have %s active.' % 
+                    'time.  %s'
+                    'I have spawned %s; I currently have %s still running.' % 
                     (user, system, user + system, children,
-                     utils.nItems('thread', world.threadsSpawned, 'spawned'),
+                     utils.nItems('thread', world.threadsSpawned),
                      activeThreads))
         mem = 'an unknown amount'
         pid = os.getpid()
