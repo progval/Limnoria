@@ -135,7 +135,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                 irc.reply(msg, s)
             
     def increaseKarma(self, irc, msg, match):
-        r"^(\S+)\+\+$"
+        r"^(\S+)\+\+(|\s+)$"
         name = match.group(1)
         normalized = name.lower()
         db = self.getDb(msg.args[0])
@@ -147,7 +147,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                           WHERE normalized=%s""", normalized)
 
     def decreaseKarma(self, irc, msg, match):
-        r"^(\S+)--$"
+        r"^(\S+)--(|\s+)$"
         name = match.group(1)
         normalized = name.lower()
         db = self.getDb(msg.args[0])
