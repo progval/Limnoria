@@ -200,7 +200,8 @@ class FunctionsTestCase(SupyTestCase):
                                          'foo'),
                          callbacks.reply(channelMsg, 'foo', prefixName=False))
         self.assertEqual(ircmsgs.notice(nonChannelMsg.nick, 'foo'),
-                         callbacks.reply(channelMsg, 'foo', notice=True))
+                         callbacks.reply(channelMsg, 'foo',
+                                         notice=True, private=True))
 
     def testReplyTo(self):
         prefix = 'foo!bar@baz'
@@ -264,6 +265,15 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:
             conf.supybot.reply.errorInPrivate.setValue(original)
+
+    def testErrorWithNotice(self):
+        try:
+            original = conf.supybot.reply.errorWithNotice()
+            conf.supybot.reply.errorWithNotice.setValue(True)
+            m = self.getMsg("eval irc.error('foo')")
+            self.failUnless(m.command == 'NOTICE')
+        finally:
+            conf.supybot.reply.errorWithNotice.setValue(original)
 
     def testErrorReplyPrivate(self):
         try:

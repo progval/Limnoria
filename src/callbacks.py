@@ -111,29 +111,42 @@ def canonicalName(command):
         command = command[:-1]
     return command.translate(string.ascii, special).lower() + reAppend
 
-def reply(msg, s, prefixName=True, private=False, notice=False, to=None):
-    """Makes a reply to msg with the payload s"""
+def reply(msg, s, prefixName=True, private=False,
+          notice=False, to=None, action=False):
+    # Ok, let's make the target:
+    target = ircutils.replyTo(msg)
+    if private:
+        if to is not None:
+            target = to
+        else:
+            target = msg.nick
+    if to is None:
+        to = msg.nick
+    # Ok, now let's make the payload:
     s = ircutils.safeArgument(s)
-    to = to or msg.nick
-    if ircutils.isChannel(msg.args[0]) and not private:
-        if notice or conf.supybot.reply.withPrivateNotice():
-            m = ircmsgs.notice(to, s)
-        elif prefixName:
-            m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (to, s))
-        else:
-            m = ircmsgs.privmsg(msg.args[0], s)
-    else:
-        if s:
-            m = ircmsgs.privmsg(to, s)
-        else:
-            return error(msg, 'I tried to send you an empty message.',
-                         prefixName=prefixName, private=private,
-                         notice=notice, to=to)
-    return m
+    if not s:
+        s = 'Error: I tried to send you an empty message.'
+    if prefixName and ircutils.isChannel(target):
+        s = '%s: %s' % (to, s)
+    # And now, let's decide whether it's a PRIVMSG or a NOTICE.
+    msgmaker = ircmsgs.privmsg
+    if notice: 
+        msgmaker = ircmsgs.notice
+    if conf.supybot.reply.withPrivateNotice():
+        target = msg.nick
+        msgmaker = ircmsgs.notice
+    if action:
+        msgmaker = ircmsgs.action
+    # Finally, we'll return the actual message.
+    return msgmaker(target, s)
 
-def error(msg, s, **kwargs):
+def error(msg, s, private=None, notice=None, **kwargs):
     """Makes an error reply to msg with the appropriate error payload."""
-    return reply(msg, 'Error: ' + s, **kwargs)
+    if notice is None:
+        notice = conf.supybot.reply.errorWithNotice()
+    if private is None:
+        private = conf.supybot.reply.errorInPrivate()
+    return reply(msg, 'Error: ' + s, private=private, notice=notice, **kwargs)
 
 def getHelp(method, name=None):
     if name is None:
@@ -548,22 +561,18 @@ class IrcObjectProxy(RichReplyMethods):
         self.notice = notice or self.notice
         self.private = private or self.private
         self.to = to or self.to
-        self.prefixName = prefixName and self.prefixName
-        self.noLengthCheck = noLengthCheck or self.noLengthCheck
+        self.prefixName = prefixName and self.prefixName and not self.action
+        # action=True should imply noLengthCheck=True.  We can't more actions.
+        self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         if self.finalEvaled:
-            if isinstance(self.irc, self.__class__):
-                self.irc.reply(s, self.noLengthCheck, self.prefixName,
-                               self.action, self.private, self.notice, self.to)
+            if not isinstance(self.irc, irclib.Irc):
+                self.irc.reply(s, private=self.private, notice=self.notice,
+                               to=self.to, noLengthCheck=self.noLengthCheck,
+                               prefixName=self.prefixName, action=self.action)
             elif self.noLengthCheck:
-                self.irc.queueMsg(reply(msg, s, self.prefixName,
-                                        self.private, self.notice, self.to))
-            elif self.action:
-                target = ircutils.replyTo(msg)
-                if self.to:
-                    target = self.to
-                elif self.private:
-                    target = msg.nick
-                self.irc.queueMsg(ircmsgs.action(target, s))
+                self.irc.queueMsg(reply(msg, s, prefixName=self.prefixName,
+                                        private=self.private, to=self.to,
+                                        action=self.action,notice=self.notice))
             else:
                 s = ircutils.safeArgument(s)
                 allowedLength = 450 - len(self.irc.prefix)
@@ -587,33 +596,29 @@ class IrcObjectProxy(RichReplyMethods):
                     response = '%s %s' % (response, n)
                 prefix = msg.prefix
                 if self.to and ircutils.isNick(self.to):
-                    ### TODO: catch this KeyError.
-                    prefix = self.getRealIrc().state.nickToHostmask(self.to)
+                    try:
+                        prefix=self.getRealIrc().state.nickToHostmask(self.to)
+                    except KeyError:
+                        pass # We'll leave it as it is.
                 mask = prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
                 private = self.private or not ircutils.isChannel(msg.args[0])
                 Privmsg._mores[msg.nick] = (private, msgs)
-                self.irc.queueMsg(reply(msg, response, self.prefixName,
-                                        self.private, self.notice, self.to))
+                self.irc.queueMsg(reply(msg, response,
+                                        prefixName=self.prefixName,
+                                        private=self.private, to=self.to,
+                                        action=self.action,notice=self.notice))
             self.finished = True
         else:
             self.args[self.counter] = s
             self.evalArgs()
 
-    def error(self, s, private=False):
-        """error(text) -> replies to msg with an error message of text.
-
-        Keyword arguments:
-          private=False: True if the error should be given in private.
-        """
-        if isinstance(self.irc, self.__class__):
+    def error(self, s, private=None, notice=None, **kwargs):
+        if not isinstance(self.irc, irclib.Irc):
             self.irc.error(s, private)
         else:
-            s = 'Error: ' + s
-            if private or conf.supybot.reply.errorInPrivate():
-                self.irc.queueMsg(ircmsgs.privmsg(self.msg.nick, s))
-            else:
-                self.irc.queueMsg(reply(self.msg, s))
+            self.irc.queueMsg(error(self.msg, s, private=private,
+                                    notice=notice, **kwargs))
         self.finished = True
 
     def getRealIrc(self):
@@ -769,21 +774,14 @@ class IrcObjectProxyRegexp(RichReplyMethods):
         self.irc = irc
         self.msg = msg
 
-    def error(self, s, **kwargs):
-        self.reply('Error: ' + s, **kwargs)
+    def error(self, s, private=None, notice=None, **kwargs):
+        self.irc.queueMsg(error(self.msg, s, private=private,
+                                notice=notice, **kwargs))
 
-    def reply(self, s, action=False, to=None, private=False, **kwargs): 
+    def reply(self, s, **kwargs):
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
-        if action:
-            target = ircutils.replyTo(self.msg)
-            if to:
-                target = to
-            elif private:
-                target = msg.nick
-            self.irc.queueMsg(ircmsgs.action(target, s))
-        else:
-            self.irc.queueMsg(reply(self.msg,s,to=to,private=private,**kwargs))
+        self.irc.queueMsg(reply(self.msg, s, **kwargs))
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
