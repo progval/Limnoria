@@ -37,9 +37,14 @@ import supybot.ircdb as ircdb
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 
-from twisted.internet import reactor, error
+from twisted.internet import reactor, error, ssl
 from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import ReconnectingClientFactory
+
+try:
+    from OpenSSL import SSL
+except ImportError:
+    drivers.log.debug('PyOpenSSL is not available, can not connect to SSL servers.')
 
 class TwistedRunnerDriver(drivers.IrcDriver):
     def name(self):
@@ -109,8 +114,21 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
         drivers.ServersMixin.__init__(self, irc)
         (server, port) = self._getNextServer()
         vhost = conf.supybot.protocols.irc.vhost()
+        if self.networkGroup.get('ssl').value:
+            self.connectSSL(server, port, vhost)
+        else:
+            self.connectTCP(server, port, vhost)
+
+    def connectTCP(self, server, port, vhost):
+        """Connect to the server with a standard TCP connection."""
         reactor.connectTCP(server, port, self, bindAddress=(vhost, 0))
 
+    def connectSSL(self, server, port, vhost):
+        """Connect to the server using an SSL socket."""
+        drivers.log.debug('Attempting an SSL connection.')
+        reactor.connectSSL(server, port, self,
+                        ssl.ClientContextFactory(), bindAddress=(vhost, 0))
+                    
     def clientConnectionFailed(self, connector, r):
         drivers.log.connectError(self.currentServer, errorMsg(r))
         (connector.host, connector.port) = self._getNextServer()
@@ -128,7 +146,6 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
         protocol = ReconnectingClientFactory.buildProtocol(self, addr)
         protocol.irc = self.irc
         return protocol
-
 
 Driver = SupyReconnectingFactory
 
