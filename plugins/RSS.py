@@ -48,11 +48,13 @@ import callbacks
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load RSS')
-    if yn('RSS depends on the Alias module.  Is that module loaded?') == 'n':
-        if yn('Do you want to load that module now?') == 'y':
+    if 'load Alias' not in onStart:
+        print 'The RSS configure questions need the Alias plugin, but it is '
+        print 'not loaded.'
+        if yn('Do you want to load that plugin now?') == 'y':
             onStart.append('load Alias')
         else:
-            print 'You can still use the RSS module, but you won\'t be asked'
+            print 'You can still use the RSS plugin, but you won\'t be asked'
             print 'any further questions.'
             return
     prompt = 'Would you like to add an RSS feed?'
