@@ -80,7 +80,12 @@ class BetterStreamHandler(logging.StreamHandler):
             except UnicodeError:
                 self.stream.write("%s\n" % msg.encode("UTF-8"))
         self.flush()
-        
+
+class StdoutStreamHandler(BetterStreamHandler):
+    def emit(self, record):
+        if conf.supybot.log.stdout():
+            BetterStreamHandler.emit(self, record)
+            
 
 class BetterFileHandler(logging.FileHandler):
     def emit(self, record):
@@ -231,13 +236,12 @@ _handler.setLevel(-1)
 _logger.addHandler(_handler)
 _logger.setLevel(conf.supybot.log.level())
 
-if conf.supybot.log.stdout():
-    _stdoutHandler = BetterStreamHandler(sys.stdout)
-    _formatString = '%(name)s: %(levelname)s %(message)s'
-    _stdoutFormatter = ColorizedFormatter(_formatString)
-    _stdoutHandler.setFormatter(_stdoutFormatter)
-    _stdoutHandler.setLevel(-1)
-    _logger.addHandler(_stdoutHandler)
+_stdoutHandler = StdoutStreamHandler(sys.stdout)
+_formatString = '%(name)s: %(levelname)s %(message)s'
+_stdoutFormatter = ColorizedFormatter(_formatString)
+_stdoutHandler.setFormatter(_stdoutFormatter)
+_stdoutHandler.setLevel(-1)
+_logger.addHandler(_stdoutHandler)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
