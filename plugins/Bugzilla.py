@@ -214,12 +214,13 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             msgtouser = '%s. Try yourself: %s' % (e, queryurl)
             irc.reply(msgtouser)
             return
+        bold = self.registryValue('bold', msg.args[0])
         report = {}
         report['id'] = match.group(2)
         report['url'] = str('%s/show_bug.cgi?id=%s' % (match.group(1),
             match.group(2)))
         report['title'] = str(summary['title'])
-        report['summary'] = str(self._mk_summary_string(summary))
+        report['summary'] = str(self._mk_summary_string(summary, bold))
         report['product'] = str(summary['product'])
         s = '%(product)s bug #%(id)s: %(title)s %(summary)s' % report
         irc.reply(s, prefixName=False)
@@ -304,18 +305,19 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         except IOError, e:
             s = '%s.  Try yourself: %s' % (e, queryurl)
             irc.error(s)
+        bold = self.registryValue('bold', msg.args[0])
         report = {}
         report['zilla'] = description
         report['id'] = number
         report['url'] = '%s/show_bug.cgi?id=%s' % (url, number)
         report['title'] = str(summary['title'])
-        report['summary'] = self._mk_summary_string(summary)
+        report['summary'] = self._mk_summary_string(summary, bold)
         s = '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report
         irc.reply(s)
 
-    def _mk_summary_string(self, summary):
+    def _mk_summary_string(self, summary, bold):
         L = []
-        if self.registryValue('bold', msg.args[0]):
+        if bold:
             decorate = lambda s: ircutils.bold(s)
         else:
             decorate = lambda s: s
