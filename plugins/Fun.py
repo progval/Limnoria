@@ -613,7 +613,7 @@ class Fun(callbacks.Privmsg):
         text = re.sub(r'(\w)\'(\w)', quoteOrNothing, text)
         text = re.sub(r'\.(\s+|$)', randomExclaims, text)
         text = re.sub(r'([aeiou])([aeiou])', randomlyShuffle, text)
-        text = re.sub(r'to', randomlyReplace('too', 0.6))
+        text = re.sub(r'to', randomlyReplace('too', 0.6), text)
         text = re.sub(r'([bcdfghkjlmnpqrstvwxyz])([bcdfghkjlmnpqrstvwxyz])',
                       lessRandomlyShuffle, text)
         if random.random() < .4:
