@@ -217,9 +217,11 @@ mircColors = {
     'light grey': '15',
 }
 
-# Now add the reverse to the dictionary.
 for (k, v) in mircColors.items():
-    mircColors[int(v)] = k
+    if v: # Ignore empty string for None.
+        i = int(v)
+        mircColors[v] = i
+        mircColors[i] = i
 
 def mircColor(s, fg=None, bg=None):
     """Returns s, with the appropriate mIRC color codes applied."""
