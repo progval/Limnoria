@@ -191,7 +191,8 @@ class Enforcer(callbacks.Privmsg):
     def doTopic(self, irc, msg):
         channel = msg.args[0]
         topic = msg.args[1]
-        if msg.nick != irc.nick and channel in self.topics and \
+        if channel in self.topics and \
+           not ircutils.strEqual(msg.nick, irc.nick) and \
            not ircdb.checkCapabilities(msg.prefix,
                                        (_chanCap(channel, 'op'),
                                         _chanCap(channel, 'topic'))):
@@ -232,7 +233,7 @@ class Enforcer(callbacks.Privmsg):
             if self._isPowerful(irc, channel, hostmask) and \
                not self.registryValue('takeRevenge.onOps', channel):
                 return
-            if irc.nick != nick:
+            if not ircutils.strEqual(irc.nick, nick):
                 self._doBan(irc, channel, hostmask)
             else:
                 # This can happen if takeRevenge.onOps is True.
@@ -313,7 +314,7 @@ class Enforcer(callbacks.Privmsg):
                 self.log.info('Not cycling %s: it\'s +i or +k.', channel)
 
     def doPart(self, irc, msg):
-        if msg.prefix != irc.prefix:
+        if not ircutils.strEqual(msg.nick, irc.nick):
             channel = msg.args[0]
             c = irc.state.channels[channel]
             if len(c.users) == 1:
@@ -337,7 +338,7 @@ class Enforcer(callbacks.Privmsg):
             chanserv = self.registryValue('ChanServ', irc.network)
             if chanserv:
                 if ircutils.isUserHostmask(msg.prefix):
-                    if msg.nick != chanserv:
+                    if not ircutils.strEqual(msg.nick, chanserv):
                         callbacks.Privmsg.__call__(self, irc, msg)
             else:
                 callbacks.Privmsg.__call__(self, irc, msg)

@@ -212,7 +212,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             return
         nickserv = self.registryValue('NickServ')
         password = self._getNickServPassword(nick)
-        if nick and irc.nick != nick and nickserv and password:
+        if nick and nickserv and password and \
+           not ircutils.strEqual(nick, irc.nick):
             if irc.afterConnect and not self.sentGhost:
                 if nick in irc.state.nicksToHostmasks:
                     self._doGhost(irc)
