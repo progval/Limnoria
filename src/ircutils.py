@@ -356,10 +356,10 @@ def unDccIP(i):
     L.reverse()
     return '.'.join(imap(str, L))
 
-class IrcString(str):
+class _IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""
     def __init__(self, s):
-        str.__init__(self, intern(s))
+        str.__init__(self, intern(s)) # This does nothing, I fear.
         self.lowered = toLower(s)
 
     def __eq__(self, s):
