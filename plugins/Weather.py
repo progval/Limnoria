@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # All rights reserved.
@@ -34,13 +32,22 @@ This plugin does weather-related stuff.  It can't change the weather, though,
 so don't get your hopes up.  We just report it.
 """
 
-__revision__ = "$Id$"
+import supybot
 
-import supybot.plugins as plugins
+__revision__ = "$Id$"
+__contributors__ = {
+    supybot.authors.jamessan: ['cnn', 'wunder',
+                               'temperatureUnit configuration variable',
+                               'convert configuration variable'],
+    supybot.authors.jemfinch: ['weather'],
+    supybot.authors.bwp: ['ham'],
+    }
 
 import re
 import sets
 import urllib
+
+import BeautifulSoup
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -84,9 +91,13 @@ class Weather(callbacks.Privmsg):
     the name of 'weather' which should override this help."""
     weatherCommands = ['ham', 'cnn', 'wunder']
     threaded = True
+    def __init__(self):
+        self.__parent = super(Weather, self)
+        self.__parent.__init__()
+
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
-            super(Weather, self).callCommand(name, irc, msg, *L, **kwargs)
+            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
         except webutils.WebError, e:
             irc.error(str(e))
 
@@ -338,36 +349,9 @@ class Weather(callbacks.Privmsg):
         else:
             irc.error('Could not find weather information.')
 
-    _wunderUrl = 'http://www.weatherunderground.com/' \
-                 'cgi-bin/findweather/getForecast?query='
-    _wunderLoc = re.compile(r'<title>[^:]+: ([^<]+)</title>', re.I | re.S)
-    _wunderFTemp = re.compile(
-        r'graphics/conds.*?<nobr><b>(-?\d+)</b>&nbsp;(&#176;)(F)</nobr>',
-        re.I | re.S)
-    _wunderCond = re.compile(r'</b></font><br>\s+<font size=-1><b>([^<]+)</b>',
-                             re.I | re.S)
-    _wunderHumid = re.compile(r'Humidity:</td><td[^>]+><b>(\d+%)</b>',
-                              re.I | re.S)
-    _wunderDew = re.compile(r'Dew Point:</td><td[^>]+><b>\s+<nobr><b>'
-                            r'(-?\d+)</b>&nbsp;(&#176;)(F)</nobr>',
-                            re.I | re.S)
-    _wunderHeat = re.compile(
-        r'HeatIndex:</td><td[^>]+><b>\s+<nobr><b>(\d+)</b>&nbsp;([^F]+)(F)<',
-        re.I | re.S)
-    _wunderWind = re.compile(
-        r'Wind:</td><td[^>]+>\s+<b>\s+<nobr><b>(\d+)</b>&nbsp;(mph)'
-        r'</nobr>\s+/\s+<nobr><b>(\d+)</b>&nbsp;(km/h)</nobr>\s+</b>'
-        r'\s+from the\s+<b>(\w{3})</b>', re.I | re.S)
-    _wunderPressure = re.compile(
-        r'Pressure:</td><td[^<]+><b>\s+<b>(\d+\.\d+)</b>&nbsp;(in)\s+/\s+'
-        r'<b>(\d+)</b>&nbsp;(hPa)', re.I | re.S)
-    _wunderVisible = re.compile(
-        r'Visibility:</td><td[^>]+><b>\s+<nobr><b>([\w.]+)</b>&nbsp;(miles)'
-        r'</nobr>\s+/\s+<nobr><b>([\w.]+)</b>&nbsp;(kilometers)</nobr>',
-        re.I | re.S)
-    _wunderUv = re.compile(r'UV:</td><td[^>]+><b>(\d\d?)</b>( out of \d\d?)',
-                           re.I | re.S)
-    _wunderTime = re.compile(r'Updated:\s+<b>([\w\s:,]+)</b>', re.I | re.S)
+    _wunderUrl = 'http://mobile.wunderground.com/cgi-bin/' \
+                 'findweather/getForecast?query='
+    _wunderLoc = re.compile(r'Page (.+?) Forecast</title>', re.I | re.S)
     _wunderMultiLoc = re.compile(r'<a href="([^"]+)', re.I | re.S)
     def wunder(self, irc, msg, args):
         """<US zip code | US/Canada city, state | Foreign city, country>
@@ -376,74 +360,75 @@ class Weather(callbacks.Privmsg):
         """
         loc = ' '.join(args)
         url = '%s%s' % (self._wunderUrl, urllib.quote(loc))
-        text = webutils.getUrl(url) # Caught in callCommand.
+        text = webutils.getUrl(url)
         if 'Search not found' in text:
             irc.error(noLocationError, Raise=True)
-        if 'Search results for' in text:
-            text = text[text.index('Search results for'):]
-            newloc = self._wunderMultiLoc.search(text)
+        if 'Click on a city name' in text:
+            soup = BeautifulSoup.BeautifulSoup()
+            soup.feed(text)
+            newloc = soup.first('a').get('href')
             if newloc is None:
                 irc.error('Multiple locations found.  '
                           'Please be more specific.', Raise=True)
-            url = 'http://www.wunderground.com%s' % newloc.group(1)
-            try:
-                text = webutils.getUrl(url)
-            except webutils.WebError, e:
-                irc.error(str(e), Raise=True)
+            url = 'http://mobile.wunderground.com%s' % newloc
+            text = webutils.getUrl(url)
+            soup.close()
+        soup = BeautifulSoup.BeautifulSoup()
+        soup.feed(text)
+        # Get the table with all the weather info
+        table = soup.first('table', {'border':'1'})
+        trs = table.fetch('tr')
+        try:
+            time = trs.pop(0).first('b').string
+        except AttributeError:
+            time = ''
+        info = {}
+        def isText(t):
+            return not isinstance(t,BeautifulSoup.NavigableText) and t.contents
+        def getText(t):
+            s = getattr(t, 'string', None)
+            if s is None:
+                t = t.contents
+                num = t[0].string
+                units = t[1].string
+                # htmlToText strips leading whitespace, so we have to handle
+                # strings with &nbsp; differently.
+                if units.startswith('&nbsp;'):
+                    units = utils.htmlToText(units)
+                    s = ' '.join((num, units))
+                else:
+                    units = utils.htmlToText(units)
+                    s = ' '.join((num, units[0], units[1:]))
+            return s
+        for tr in trs:
+            k = tr.first('td').string
+            v = filter(isText, tr.fetch('td')[1].contents)
+            value = map(getText, v)
+            info[k] = ' '.join(value)
         location = self._wunderLoc.search(text)
-        temp = self._wunderFTemp.search(text)
+        temp = info['Temperature']
         convert = self.registryValue('convert', msg.args[0])
         if location and temp:
-            location = location.group(1)
-            location = location.replace(' Forecast', '')
-            (temp, deg, unit) = temp.groups()
+            (temp, deg, unit) = temp.split()
             if convert:
                 temp = self._getTemp(int(temp), deg, unit, msg.args[0])
             else:
                 temp = deg.join((temp, unit))
-            time = self._wunderTime.search(text)
-            if time is not None:
-                time = ' (%s)' % time.group(1)
+            resp = ['The current temperature in %s is %s (%s).' %\
+                    (location.group(1), temp, time)]
+            conds = info['Conditions']
+            resp.append('Conditions: %s.' % info['Conditions'])
+            humidity = info['Humidity']
+            resp.append('Humidity: %s.' % info['Humidity'])
+            (dew, deg, unit) = info['Dew Point'].split()
+            if convert:
+                dew = self._getTemp(int(dew), deg, unit, msg.args[0])
             else:
-                time = ''
-            resp = ['The current temperature in %s is %s%s.' %\
-                    (location, temp, time)]
-            heat = self._wunderHeat.search(text)
-            if heat is not None:
-                (heat, deg, unit) = map(str.strip, heat.groups())
-                if convert:
-                    heat = self._getTemp(int(heat), deg, unit, msg.args[0])
-                resp.append('Heat Index: %s.' % heat)
-            conds = self._wunderCond.search(text)
-            if conds is not None:
-                resp.append('Conditions: %s.' % conds.group(1))
-            humidity = self._wunderHumid.search(text)
-            if humidity is not None:
-                resp.append('Humidity: %s.' % humidity.group(1))
-            dewpt = self._wunderDew.search(text)
-            if dewpt is not None:
-                (dew, deg, unit) = dewpt.groups()
-                if convert:
-                    dew = self._getTemp(int(dew), deg, unit, msg.args[0])
-                else:
-                    dew = deg.join((dew, unit))
-                resp.append('Dew Point: %s.' % dew)
-            wind = self._wunderWind.search(text)
-            if wind is not None:
-                resp.append('Wind: %s at %s %s (%s %s).' % (wind.group(5),
-                                                            wind.group(1),
-                                                            wind.group(2),
-                                                            wind.group(3),
-                                                            wind.group(4)))
-            press = self._wunderPressure.search(text)
-            if press is not None:
-                resp.append('Pressure: %s %s (%s %s).' % press.groups())
-            vis = self._wunderVisible.search(text)
-            if vis is not None:
-                resp.append('Visibility: %s %s (%s %s).' % vis.groups())
-            uv = self._wunderUv.search(text)
-            if uv is not None:
-                resp.append('UV: %s%s' % uv.groups())
+                dew = deg.join((dew, unit))
+            resp.append('Dew Point: %s.' % dew)
+            resp.append('Wind: %s at %s %s.' % tuple(info['Wind'].split()))
+            resp.append('Pressure: %s.' % info['Pressure'])
+            resp.append('Visibility: %s.' % info['Visibility'])
             resp = map(utils.htmlToText, resp)
             irc.reply(' '.join(resp))
         else:
