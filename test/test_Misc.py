@@ -88,6 +88,9 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('list --private', name)
         self.assertNotRegexp('list Owner', '_exec')
 
+    def testListNoIncludeDispatcher(self):
+        self.assertNotRegexp('list Misc', 'misc')
+
     def testVersion(self):
         self.assertNotError('version')
 

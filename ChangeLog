@@ -1,3 +1,6 @@
+	* Stopped listing the plugin dispatcher command in the list of
+	commands for that plugin.
+	
 	* Fixed bug in Gameknot.gkstats when retrieving the stats for
 	users who haven't yet played a game.
 	

@@ -90,7 +90,8 @@ class Misc(callbacks.Privmsg):
                     commands = [x for x in dir(cls)
                                 if cb.isCommand(x) and
                                 hasattr(getattr(cb, x), '__doc__') and
-                                callbacks.canonicalName(x) == x]
+                                callbacks.canonicalName(x) == x and
+                                callbacks.canonicalName(x)!=cb.name().lower()]
                     commands.sort()
                     irc.reply(msg, ', '.join(commands))
                     return
