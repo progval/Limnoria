@@ -368,7 +368,7 @@ class MoobotFactoids(callbacks.Privmsg):
                 if 'is' in tokens or '_is_' in tokens:
                     self.addFactoid(irc, msg, tokens)
 
-    def _getUserId(self, prefix):
+    def _getUserId(self, irc, prefix):
         try:
             return ircdb.users.getUserId(prefix)
         except KeyError:
@@ -404,7 +404,7 @@ class MoobotFactoids(callbacks.Privmsg):
         r"^(?!\x01)(.+?)\s+(?:is|_is_)\s+(.+)"
         # First, check and see if the entire message matches a factoid key
         channel = getChannel(msg)
-        id = self._getUserId(msg.prefix)
+        id = self._getUserId(irc, msg.prefix)
         (key, fact) = self._getKeyAndFactoid(tokens)
         # Check and make sure it's not in the DB already
         if self.db.getFactoid(channel, key):
@@ -414,7 +414,7 @@ class MoobotFactoids(callbacks.Privmsg):
 
     def changeFactoid(self, irc, msg, tokens):
         r"(.+)\s+=~\s+(.+)"
-        id = self._getUserId(msg.prefix)
+        id = self._getUserId(irc, msg.prefix)
         (key, regexp) = map(' '.join,
                             utils.itersplit('=~'.__eq__, tokens, maxsplit=1))
         channel = getChannel(msg)
@@ -434,7 +434,7 @@ class MoobotFactoids(callbacks.Privmsg):
     def augmentFactoid(self, irc, msg, tokens):
         r"(.+?) is also (.+)"
         # Must be registered!
-        id = self._getUserId(msg.prefix)
+        id = self._getUserId(irc, msg.prefix)
         pairs = list(window(tokens, 2))
         isAlso = pairs.index(['is', 'also'])
         key = ' '.join(tokens[:isAlso])
@@ -452,7 +452,7 @@ class MoobotFactoids(callbacks.Privmsg):
         r"^no,?\s+(.+?)\s+is\s+(.+)"
         # Must be registered!
         channel = getChannel(msg)
-        id = self._getUserId(msg.prefix)
+        id = self._getUserId(irc, msg.prefix)
         del tokens[0] # remove the "no,"
         (key, fact) = self._getKeyAndFactoid(tokens)
         _ = self._getFactoid(channel, key) # Complains if not already in db.
@@ -700,7 +700,7 @@ class MoobotFactoids(callbacks.Privmsg):
         """
         channel = getChannel(msg, args)
         key = privmsgs.getArgs(args)
-        _ = self._getUserId(msg.prefix)
+        _ = self._getUserId(irc, msg.prefix)
         _ = self._getFactoid(channel, key)
         self._checkNotLocked(irc, channel, key)
         self.db.removeFactoid(channel, key)
