@@ -320,7 +320,10 @@ if __name__ == '__main__':
             fd.write('%s\n' % pid)
             fd.close()
             def removePidFile():
-                os.remove(pidFile)
+                try:
+                    os.remove(pidFile)
+                except EnvironmentError, e:
+                    log.error('Could not remove pid file: %s', e)
             atexit.register(removePidFile)
         except EnvironmentError, e:
             log.error('Error opening pid file %s: %s', pidFile, e)
