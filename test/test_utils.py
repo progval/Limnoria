@@ -126,3 +126,10 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(f('foobarbaz'), 'foorz')
         f = utils.perlReToReplacer('s/ba\\///g')
         self.assertEqual(f('fooba/rba/z'), 'foorz')
+		
+    def testFindBinaryInPath(self):
+        self.assertEqual(None, utils.findBinaryInPath('asdfhjklasdfhjkl'))
+        self.assertEqual('/bin/sh', utils.findBinaryInPath('sh'))
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+
