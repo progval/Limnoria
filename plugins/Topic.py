@@ -84,6 +84,7 @@ class Topic(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.undos = ircutils.IrcDict()
+        self.redos = ircutils.IrcDict()
         self.lastTopics = ircutils.IrcDict()
 
     def _splitTopic(self, topic, channel):
@@ -100,23 +101,30 @@ class Topic(callbacks.Privmsg):
         return plugins.standardSubstitute(irc, msg, formatter, env)
 
     def _addUndo(self, channel, topics):
-        try:
-            stack = self.undos[channel]
-        except KeyError:
-            stack = []
-            self.undos[channel] = stack
+        stack = self.undos.setdefault(channel, [])
         stack.append(topics)
         maxLen = self.registryValue('undo.max', channel)
-        while len(stack) > maxLen:
-            del stack[0]
+        del stack[:len(stack)-maxLen]
 
+    def _addRedo(self, channel, topics):
+        stack = self.redos.setdefault(channel, [])
+        stack.append(topics)
+        maxLen = self.registryValue('undo.max', channel)
+        del stack[:len(stack)-maxLen]
+            
     def _getUndo(self, channel):
         try:
             return self.undos[channel].pop()
         except (KeyError, IndexError):
             return None
+
+    def _getRedo(self, channel):
+        try:
+            return self.redos[channel].pop()
+        except (KeyError, IndexError):
+            return None
         
-    def _sendTopics(self, irc, channel, topics):
+    def _sendTopics(self, irc, channel, topics, isDo=False):
         topics = [s for s in topics if s and not s.isspace()]
         self.lastTopics[channel] = topics
         newTopic = self._joinTopic(channel, topics)
@@ -129,6 +137,8 @@ class Topic(callbacks.Privmsg):
         except KeyError:
             pass
         self._addUndo(channel, topics)
+        if not isDo and channel in self.redos:
+            del self.redos[channel]
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
 
     def _canChangeTopic(self, irc, channel):
@@ -376,13 +386,26 @@ class Topic(callbacks.Privmsg):
         set it.  <channel> is only necessary if the message isn't sent in the
         channel itself.
         """
-        topics = self._getUndo(channel) # This is the last topic sent.
+        self._addRedo(channel, self._getUndo(channel)) # current topic.
         topics = self._getUndo(channel) # This is the topic list we want.
         if topics is not None:
-            self._sendTopics(irc, channel, topics)
+            self._sendTopics(irc, channel, topics, isDo=True)
         else:
             irc.error('There are no more undos for %s.' % channel)
     undo = privmsgs.channel(undo)
+
+    def redo(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Undoes the last undo.  <channel> is only necessary if the message isn't
+        sent in the channel itself.
+        """
+        topics = self._getRedo(channel)
+        if topics is not None:
+            self._sendTopics(irc, channel, topics, isDo=True)
+        else:
+            irc.error('There are no redos for %s.' % channel)
+    redo = privmsgs.channel(redo)
 
     def swap(self, irc, msg, args, channel):
         """[<channel>] <first topic number> <second topic number>

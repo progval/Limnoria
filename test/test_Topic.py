@@ -131,6 +131,28 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         finally:
             conf.supybot.plugins.Topic.format.setValue(original)
 
+    def testUndoRedo(self):
+        try:
+            original = conf.supybot.plugins.Topic.format()
+            conf.supybot.plugins.Topic.format.setValue('$topic')
+            self.assertResponse('topic set ""', '')
+            self.assertResponse('topic add foo', 'foo')
+            self.assertResponse('topic add bar', 'foo || bar')
+            self.assertResponse('topic add baz', 'foo || bar || baz')
+            self.assertResponse('topic undo', 'foo || bar')
+            self.assertResponse('topic undo', 'foo')
+            self.assertResponse('topic undo', '')
+            self.assertResponse('topic redo', 'foo')
+            self.assertResponse('topic redo', 'foo || bar')
+            self.assertResponse('topic redo', 'foo || bar || baz')
+            self.assertResponse('topic undo', 'foo || bar')
+            self.assertResponse('topic undo', 'foo')
+            self.assertResponse('topic redo', 'foo || bar')
+            self.assertResponse('topic undo', 'foo')
+            self.assertResponse('topic redo', 'foo || bar')
+        finally:
+            conf.supybot.plugins.Topic.format.setValue(original)
+
     def testSwap(self):
         try:
             original = conf.supybot.plugins.Topic.format()
