@@ -105,7 +105,7 @@ class Relay(callbacks.Privmsg):
     def inFilter(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
-        self.ircstates[irc] = copy.copy(irc.state)
+        self.ircstates[irc] = irc.state.copy()
         return msg
     
     def startrelay(self, irc, msg, args):
