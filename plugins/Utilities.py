@@ -39,6 +39,7 @@ __author__ = supybot.authors.jemfinch
 import supybot.plugins as plugins
 
 import types
+import random
 import string
 
 import supybot.utils as utils
@@ -114,6 +115,15 @@ class Utilities(callbacks.Privmsg):
         irc.reply(text, prefixName=False)
     echo = wrap(echo, ['text'])
 
+    def shuffle(self, irc, msg, args, things):
+        """<arg> [<arg> ...]
+
+        Shuffles the arguments given it.
+        """
+        random.shuffle(things)
+        irc.reply(' '.join(things))
+    shuffle = wrap(shuffle, [many('anything')])
+
     def re(self, irc, msg, args, ff, text):
         """<regexp> <text>
 
@@ -135,22 +145,20 @@ class Utilities(callbacks.Privmsg):
                    first('regexpMatcher', 'regexpReplacer'),
                    'text'])
 
-    def apply(self, irc, msg, args, command):
+    def apply(self, irc, msg, args, command, rest):
         """<command> <text>
 
         Tokenizes <text> and calls <command> with the resulting arguments.
         """
-        if not args:
-            raise callbacks.ArgumentError
-        command = args.pop(0)
-        args = [token and token or '""' for token in args]
+        args = [token and token or '""' for token in rest]
         text = ' '.join(args)
         commands = command.split()
         commands = map(callbacks.canonicalName, commands)
         tokens = callbacks.tokenize(text)
         allTokens = commands + tokens
+        print '***', allTokens
         self.Proxy(irc, msg, allTokens)
-    apply = wrap(apply, ['something'], allowExtra=True)
+    apply = wrap(apply, ['something', many('anything')])
 
 
 Class = Utilities
