@@ -46,8 +46,8 @@ import time
 import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -123,14 +123,13 @@ class Later(callbacks.Privmsg):
             self.wildcards.append(nick)
         self._flushNotes()
         
-    def tell(self, irc, msg, args):
+    def tell(self, irc, msg, args, nick, text):
         """<nick> <text>
 
         Tells <nick> <text> the next time <nick> is in seen.  <nick> can
         contain wildcard characters, and the first matching nick will be
         given the note.
         """
-        (nick, text) = privmsgs.getArgs(args, required=2)
         if ircutils.strEqual(nick, irc.nick):
             irc.error('I can\'t send notes to myself.')
             return
@@ -139,6 +138,7 @@ class Later(callbacks.Privmsg):
             irc.replySuccess()
         except ValueError:
             irc.error('That person\'s message queue is already full.')
+    tell = wrap(tell, ['nick', 'text'])
 
     def doPrivmsg(self, irc, msg):
         try:
