@@ -167,6 +167,7 @@ if __name__ == '__main__':
     if len(args) > 1:
         parser.error()
     elif not args:
+        import supybot.questions as questions
         questions.output("""It seems you've given me no configuration file.  If
         you have a configuration file, be sure to tell its filename.  If you
         don't have a configuration file, read docs/GETTING_STARTED and follow
