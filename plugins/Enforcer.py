@@ -109,6 +109,8 @@ class Enforcer(callbacks.Privmsg):
 
     def do332(self, irc, msg):
         # This command gets sent right after joining a channel.
+        if not self.started:
+            return
         (channel, topic) = msg.args[1:]
         self.topics[channel] = topic
 
