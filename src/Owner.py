@@ -750,7 +750,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         (network, server) = privmsgs.getArgs(args, optional=1)
         for otherIrc in world.ircs:
             if otherIrc.network == network:
-                irc.error('I\'m already connected to %s.' % network,Raise=True)
+                irc.error('I\'m already connected to %s.' % network)
+                return
         if server:
             if ':' in server:
                 (server, port) = server.split(':')
