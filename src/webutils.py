@@ -33,11 +33,14 @@ __revision__ = "$Id$"
 
 import fix
 
+import re
 import socket
 import urllib2
 
 class WebError(Exception):
     pass
+
+urlRe = re.compile(r"(\w+://[^\])>\s]+)", re.I)
 
 def getUrlFd(url):
     """Gets a file-like object for a url."""

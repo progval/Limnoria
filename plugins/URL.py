@@ -147,7 +147,6 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         db.commit()
         return db
 
-    _urlRe = re.compile(r"(\w+://[^\])>\s]+)", re.I)
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
         db = self.getDb(channel)
@@ -162,7 +161,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
             text = ircmsgs.unAction(msg)
         else:
             text = msg.args[1]
-        for url in self._urlRe.findall(text):
+        for url in webutils.urlRe.findall(text):
             r = self.configurables.get('non-snarfing-regexp', channel)
             if r and r.search(url):
                 continue
