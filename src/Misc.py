@@ -346,7 +346,7 @@ class Misc(callbacks.Privmsg):
             if hasattr(module, '__revision__'):
                 irc.reply(module.__revision__)
             else:
-                irc.error('Module %s has no __revision__ string.' % name)
+                irc.error('The %s module has no __revision__ string.' % name)
         else:
             names = []
             if not args:
