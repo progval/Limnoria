@@ -30,7 +30,7 @@
 ###
 
 """
-The Lookup plugin handles looking up various values by their key.
+The FileLookup plugin handles looking up various values by their key.
 """
 
 import plugins
@@ -52,7 +52,7 @@ def configure(onStart, afterConnect, advanced):
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load Lookup')
+    onStart.append('load FileLookup')
     print 'This module allows you to define commands that do a simple key'
     print 'lookup and return some simple value.  It has a command "addlookup"'
     print 'that takes a command name and a file in conf.dataDir and adds a'
@@ -98,9 +98,9 @@ example = utils.wrapLines("""
 """)
 
 def getDb():
-    return sqlite.connect(os.path.join(conf.dataDir, 'Lookup.db'))
+    return sqlite.connect(os.path.join(conf.dataDir, 'FileLookup.db'))
 
-class Lookup(callbacks.Privmsg):
+class FileLookup(callbacks.Privmsg):
     def die(self):
         db = getDb()
         db.commit()
@@ -216,7 +216,6 @@ class Lookup(callbacks.Privmsg):
             irc.reply(msg, '%s: %s' % (key, value))
             
             
-
-Class = Lookup
+Class = FileLookup
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
