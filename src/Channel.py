@@ -311,18 +311,6 @@ class Channel(callbacks.Privmsg):
             self.log.warning('%r tried to make me kban myself.', msg.prefix)
             irc.error('I cowardly refuse to kickban myself.')
             return
-        try:
-            length = int(length or 0)
-            if length < 0:
-                irc.error('Ban length must be a non-negative integer.')
-                return
-        except ValueError:
-            if reason:
-                reason = ' '.join((length, reason))
-                length = 0
-            else:
-                irc.error('Ban length must be a non-negative integer.')
-                return
         if not reason:
             reason = msg.nick
         try:
