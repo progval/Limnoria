@@ -293,6 +293,7 @@ if __name__ == '__main__':
                 if module.__file__.startswith(supybot.installDir):
                     print '%s: %s' % (name, module.__revision__.split()[2])
 
+    # XXX This should go before we instantiate Irc objects, so we don't print.
     if os.name == 'posix' and options.daemon:
         def fork():
             child = os.fork()
