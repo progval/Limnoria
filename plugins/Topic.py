@@ -149,6 +149,7 @@ class Topic(callbacks.Privmsg):
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
             irc.error(msg, 'The regexp wasn\'t valid: %s' % e.args[0])
+            return
         except re.error, e:
             irc.error(msg, debug.exnToString(e))
             return
