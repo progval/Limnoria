@@ -124,12 +124,12 @@ def main():
     else:
         capabilities = options.capabilities
 
-    (id, user) = ircdb.users.newUser()
+    user = ircdb.users.newUser()
     user.name = name
     user.setPassword(password, hashed=hashed)
     for capability in capabilities:
         user.addCapability(capability)
-    ircdb.users.setUser(id, user)
+    ircdb.users.setUser(user)
     ircdb.users.flush()
     #os.system('cat %s' % filename) # Was this here just for debugging?
     ircdb.users.close()
