@@ -97,6 +97,8 @@ class Schedule(drivers.IrcDriver):
     removePeriodicEvent = removeEvent
 
     def run(self):
+        if len(drivers._drivers) == 1:
+            time.sleep(1) # We're the only driver; let's pause to think.
         while self.schedule and self.schedule[0][0] < time.time():
             (t, name) = heapq.heappop(self.schedule)
             f = self.events[name]
