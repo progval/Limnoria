@@ -594,19 +594,6 @@ class Irc(IrcCommandDispatcher):
         else:
             return None
 
-    def do001(self, msg):
-        """Logs (and stores) the name of the network."""
-        welcome = msg.args[1]
-        if self.network == 'unset':
-            if not welcome.startswith('Welcome to the '):
-                log.info('Unexpected 001 welcome, guessing at network name.')
-                self.network = msg.prefix
-            else:
-                words = welcome.split()
-                # We assume there is one more word after "Welcome to the ".
-                self.network = words[3].lower()
-        log.info('Setting network to %s.', self.network)
-
     def do002(self, msg):
         """Logs the ircd version."""
         (beginning, version) = rsplit(msg.args[-1], maxsplit=1)
@@ -690,11 +677,11 @@ class Irc(IrcCommandDispatcher):
         # This keeps our nick and server attributes updated.
         if msg.command in self._nickSetters:
             if msg.args[0] != self.nick:
-                log.info('Updating nick attribute.')
                 self.nick = msg.args[0]
+                log.debug('Updating nick attribute to %s.', self.nick)
             if msg.prefix != self.server:
-                log.info('Updating server attribute.')
                 self.server = msg.prefix
+                log.debug('Updating server attribute to %s.')
 
         # Dispatch to specific handlers for commands.
         method = self.dispatchCommand(msg.command)
