@@ -38,8 +38,8 @@ import supybot.callbacks as callbacks
 
 class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
-    regexps = ['titleSnarfer']
     threaded = True
+    regexps = ['titleSnarfer']
     def callCommand(self, command, irc, msg, *args, **kwargs):
         try:
             super(Web, self).callCommand(command, irc, msg, *args, **kwargs)
@@ -184,9 +184,22 @@ class Web(callbacks.PluginRegexp):
         irc.reply(s)
     urlunquote = wrap(urlunquote, ['text'])
 
+    def fetch(self, irc, msg, args, url):
+        """<url>
 
+        Returns the contents of <url>, or as much as is configured in
+        supybot.plugins.Web.fetch.maximum.  If that configuration variable is
+        set to 0, this command will be effectively disabled.
+        """
+        max = self.registryValue('fetch.maximum')
+        if not max:
+            irc.error('This command is disabled '
+                      '(supybot.plugins.Web.fetch.maximum is set to 0).',
+                      Raise=True)
+        fd = utils.web.getUrlFd(url)
+        irc.reply(fd.read(max))
+    fetch = wrap(fetch, ['url'])
 
 Class = Web
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

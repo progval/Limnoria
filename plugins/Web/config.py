@@ -53,4 +53,9 @@ conf.registerChannelValue(Web, 'nonSnarfingRegexp',
     snarfed.  Give the empty string if you have no URLs that you'd like to
     exclude from being snarfed."""))
 
+conf.registerGroup(Web, 'fetch')
+conf.registerGlobalValue(Web.fetch, 'maximum',
+    registry.NonNegativeInteger(0, """Determines the maximum number of
+    bytes the bot will download via the 'fetch' command in this plugin."""))
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78
