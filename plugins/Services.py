@@ -56,7 +56,7 @@ def configure(advanced):
     password = something('What is your password for that nick?')
     chanserv = something('What is your ChanServ named?', default='ChanServ')
     nickserv = something('What is your NickServ named?', default='NickServ')
-    conf.supybot.plugins.Services.nick.setValue(nick)
+    conf.supybot.plugins.Services.nicks.setValue(nick)
     conf.supybot.plugins.Services.NickServ.setValue(nickserv)
     conf.supybot.plugins.Services.NickServ.password.setValue(password)
     conf.supybot.plugins.Services.ChanServ.setValue(chanserv)
