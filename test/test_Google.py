@@ -34,7 +34,6 @@ from test import *
 class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Google',)
     def testNoNoLicenseKeyError(self):
-        self.assertNotError('toggle 
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))
         self.assertNoResponse(' ')
         
