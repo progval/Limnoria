@@ -85,12 +85,23 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         setattr(self.__class__, 'exec', self.__class__._exec)
+        self.defaultPlugins = {}
+
+    def _disambiguate(self, tokens):
+        if tokens:
+            command = callbacks.canonicalName(tokens[0])
+            if command in self.defaultPlugins:
+                tokens.insert(0, self.defaultPlugins[command])
+            for elt in tokens:
+                if isinstance(elt, list):
+                    self._disambiguate(elt)
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
         s = callbacks.addressed(irc.nick, msg)
         if s:
             tokens = callbacks.tokenize(s)
+            self._disambiguate(tokens)
             ambiguousCommands = {}
             commands = callbacks.getCommands(tokens)
             for command in commands:
@@ -119,6 +130,29 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 irc.queueMsg(callbacks.error(msg, s))
             else:
                 callbacks.IrcObjectProxy(irc, msg, tokens)
+
+    def defaultplugin(self, irc, msg, args):
+        """<command> [<plugin>]
+
+        Calls <command> from <plugin> by default, rather than complaining about
+        multiple plugins providing it.  If <plugin> is not provided, remove the
+        currently used default plugin.
+        """
+        (command, plugin) = privmsgs.getArgs(args, optional=1)
+        command = callbacks.canonicalName(command)
+        cbs = callbacks.findCallbackForCommand(irc, command)
+        if not cbs:
+            irc.error(msg, 'That\'t not a valid command.')
+            return
+        if plugin:
+            self.defaultPlugins[command] = plugin
+        else:
+            try:
+                del self.defaultPlugins[command]
+            except KeyError:
+                irc.error(msg, 'I have no default for that command.')
+                return
+        irc.reply(msg, conf.replySuccess)
                                 
     def eval(self, irc, msg, args):
         """<expression>
@@ -329,18 +363,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             return
         loadPluginClass(irc, module)
         irc.reply(msg, conf.replySuccess)
-
-    '''
-    def superreload(self, irc, msg, args):
-        """<module name>
-
-        Reloads a module, hopefully such that all vestiges of the old module
-        are gone.
-        """
-        name = privmsgs.getArgs(args)
-        world.superReload(__import__(name))
-        irc.reply(msg, conf.replySuccess)
-    '''
 
     def reload(self, irc, msg, args):
         """<plugin>

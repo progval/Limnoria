@@ -35,7 +35,15 @@ import conf
 import Owner
 
 class OwnerTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Utilities',)
+    plugins = ('Utilities', 'Relay', 'Network')
+    def testDefaultPlugin(self):
+        self.assertError('whois osu.edu')
+        self.assertNotError('defaultplugin whois network')
+        self.assertNotError('whois osu.edu')
+        self.assertNotError('defaultplugin whois')
+        self.assertError('whois osu.edu')
+        self.assertError('defaultplugin asdlfkjasdflkjsad Owner')
+        
     def testEval(self):
         try:
             originalConfAllowEval = conf.allowEval
