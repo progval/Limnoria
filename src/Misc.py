@@ -77,8 +77,8 @@ class Misc(callbacks.Privmsg):
 
     callAfter = utils.Everything()
     callBefore = utils.Nothing()
-    def __cmp__(self, other):
-        return 1 # We should always be the last plugin.
+    def __lt__(self, other):
+        return False # We should always be the last plugin.
     
     def invalidCommand(self, irc, msg, tokens):
         self.log.debug('Misc.invalidCommand called (tokens %s)', tokens)

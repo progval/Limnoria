@@ -82,19 +82,19 @@ class IrcCallback(IrcCommandDispatcher):
     __firewalled__ = {'die': None,
                       'reset': None,
                       '__call__': None,
-                      '__cmp__': lambda self: 0,
+                      '__lt__': lambda self: 0,
                       'inFilter': lambda self, irc, msg: msg,
                       'outFilter': lambda self, irc, msg: msg,
                       'name': lambda self: self.__class__.__name__,}
 
-    def __cmp__(self, other):
+    def __lt__(self, other):
         if isinstance(other, IrcCallback):
-            ret = cmp(self.priority, other.priority)
-            if ret == 0:
-                ret = cmp(self.name(), other.name())
+            ret = self.priority < other.priority
+            if not ret:
+                ret = self.name() < other.name()
             return ret
         else:
-            return super(IrcCallback, self).__cmp__(other)
+            return super(IrcCallback, self).__lt__(other)
     
     def name(self):
         """Returns the name of the callback."""

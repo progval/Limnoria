@@ -228,8 +228,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
     callAfter = utils.Nothing()
     callBefore = utils.Everything()
-    def __cmp__(self, other):
-        return -1 # We should always be the first plugin.
+    def __lt__(self, other):
+        return True # We should always be the first plugin.
     
     def _getIrc(self, network):
         network = network.lower()
