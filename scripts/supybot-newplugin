@@ -85,6 +85,7 @@ import supybot
 
 __revision__ = "$%s$"
 __author__ = supybot.authors.unknown
+__contributors__ = {}
 
 import supybot.plugins as plugins
 
