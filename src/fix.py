@@ -149,6 +149,15 @@ def rsplit(s, sep=None, maxsplit=-1):
     L.reverse()
     return [s[::-1] for s in L]
 
+import operator
+def itemgetter(i):
+    return lambda x: x[i]
+
+def attrgetter(attr):
+    return lambda x: getattr(x, attr)
+operator.itemgetter = itemgetter
+operator.attrgetter = attrgetter
+
 for name in exported:
     __builtins__[name] = globals()[name]
 
