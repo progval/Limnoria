@@ -287,7 +287,33 @@ class FunDB(callbacks.Privmsg):
         else:
             irc.reply(msg, 'That word has no anagrams that I know of.')
 
+    def numlarts(self, irc, msg, args):
+        """<takes no arguments>
+        
+        Returns the number of 'larts' currently in the database"""
+        cursor = self.db.cursor()
+        cursor.execute('SELECT count(*) FROM larts')
+        total = cursor.fetchone()[0]
+        irc.reply(msg, 'There are currently %s larts in my database' % total)
 
+    def numinsults(self, irc, msg, args):
+        """<takes no arguments>
+
+        Returns the number of insults currently in the database"""
+        cursor = self.db.cursor()
+        cursor.execute('SELECT count(*) FROM insults')
+        total = cursor.fetchone()[0]
+        irc.reply(msg, 'There are currently %s insults in my database' % total)
+
+    def numexcuses(self, irc, msg, args):
+        """<takes no arguments
+
+        Returns the number of excuses currently in the database"""
+        cursor = self.db.cursor()
+        cursor.execute('SELECT count(*) FROM excuses')
+        total = cursor.fetchone()[0]
+        irc.reply(msg, 'There are currently %s excuses in my database' % total)
+        
 Class = FunDB
 
 
