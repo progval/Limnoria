@@ -48,7 +48,7 @@ import ircdb
 import privmsgs
 import callbacks
 
-class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
+class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg, plugins.Toggleable):
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
@@ -69,7 +69,9 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("""CREATE TABLE quotegrabs (
                           id INTEGER PRIMARY KEY,
                           nick TEXT,
+                          hostmask TEXT,
                           added_by TEXT,
+                          added_at TIMESTAMP,
                           quote TEXT
                           );""")
         db.commit()
@@ -114,7 +116,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         s = 'There %s %s %s in my database.' % (utils.be(maxid), maxid, QUOTE)
         irc.reply(msg, s)
 
-    def quote(self, irc, msg, args):
+    def get(self, irc, msg, args):
         """[<channel>] --{id,regexp,from,with}=<value> ]
 
         Returns quote(s) matching the given criteria.  --from is who added the
@@ -205,7 +207,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
             irc.error(msg, 'It seems that quote database is empty.')
             return
         (id,) = cursor.fetchone()
-        self.quote(irc, msg, [channel, '--id', str(id)])
+        self.get(irc, msg, [channel, '--id', str(id)])
 
     def info(self, irc, msg, args):
         """[<channel>] <id>
