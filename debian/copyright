@@ -1,0 +1,25 @@
+This package was debianized by Jonathan Hseu <vomjom@debian.org> on
+Tue,  3 Feb 2004 21:45:46 -0600.
+
+It was downloaded from http://supybot.sf.net/
+
+Upstream Authors:
+
+/usr/share/doc/supybot/DEVS includes the names and descriptions of the
+developers.
+
+Copyright:
+
+A BSD-style license which you can find in:
+/usr/share/doc/supybot/LICENSE
+
+Files located in /usr/lib/python2.3/site-packages/supybot/others/ have their
+own respective licenses, which are either commented at the top of the file, or
+are held in the __license__ variable.
+
+The licenses in that directory are either:
+BSD-style, GPL, or the Python License
+The first two can be found in /usr/share/common-licenses/
+
+The Python License can be found in:
+/usr/share/doc/python/copyright
