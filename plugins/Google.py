@@ -445,8 +445,10 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
 
     _ggThread = re.compile(r'Subject: <b>([^<]+)</b>', re.I)
     _ggGroup = re.compile(r'<TITLE>Google Groups :\s*([^<]+)</TITLE>', re.I)
-    _ggThreadm = re.compile(r'view the <a href=([^>]+)>no', re.I)
+    _ggThreadm = re.compile(r'src="(/group[^"]+)">', re.I)
     _ggSelm = re.compile(r'selm=[^&]+', re.I)
+    _threadmThread = re.compile(r'TITLE="([^"]+)">', re.I)
+    _threadmGroup = re.compile(r'class=groupname[^>]+>([^<]+)<', re.I)
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.[\w.]+/\S+\?(\S+)"
         if not self.registryValue('groupsSnarfer', msg.args[0]):
@@ -461,22 +463,21 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         mThread = None
         mGroup = None
         if 'threadm=' in url:
-            # Let's just return from here until google decides to stop being
-            # in beta for their groups site
-            return
             path = self._ggThreadm.search(text)
-            if path is None:
-                return
-            url = 'http://groups.google.com%s' % path.group(1)
-            text = webutils.getUrl(url)
-        mThread = self._ggThread.search(text)
-        mGroup = self._ggGroup.search(text)
+            if path is not None:
+                url = 'http://groups-beta.google.com%s' % path.group(1)
+                text = webutils.getUrl(url)
+                mThread = self._threadmThread.search(text)
+                mGroup = self._threadmGroup.search(text)
+        else:
+            mThread = self._ggThread.search(text)
+            mGroup = self._ggGroup.search(text)
         if mThread and mGroup:
             irc.reply('Google Groups: %s, %s' % (mGroup.group(1),
                       mThread.group(1)), prefixName=False)
         else:
-            irc.errorPossibleBug('That doesn\'t appear to be a proper '
-                                 'Google Groups page.')
+            self.log.debug('Unable to snarf.  %s doesn\'t appear to be a '
+                           'proper Google Groups page.' % match.group(1))
     googleGroups = urlSnarfer(googleGroups)
 
     def _googleUrl(self, s):
@@ -525,8 +526,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         else:
             irc.reply('Google return not phonebook results.')
     phonebook = wrap(phonebook, ['text'])
-                
-            
 
 
 Class = Google
