@@ -48,8 +48,20 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.callbacks as callbacks
 
+conf.registerPlugin('Status')
+conf.registerGroup(conf.supybot.plugins.Status, 'cpu')
+conf.registerChannelValue(conf.supybot.plugins.Status.cpu, 'children',
+    registry.Boolean(True, """Determines whether the cpu command will list the
+    time taken by children as well as the bot's process."""))
+conf.registerChannelValue(conf.supybot.plugins.Status.cpu, 'threads',
+    registry.Boolean(True, """Determines whether the cpu command will provide
+    the number of threads spawned and active."""))
+conf.registerChannelValue(conf.supybot.plugins.Status.cpu, 'memory',
+    registry.Boolean(True, """Determines whether the cpu command will report
+    the amount of memory being used by the bot."""))
 
 class Status(callbacks.Privmsg):
     def __init__(self):
@@ -110,8 +122,10 @@ class Status(callbacks.Privmsg):
         """
         (user, system, childUser, childSystem, elapsed) = os.times()
         now = time.time()
+        target = msg.args[0]
         timeRunning = now - world.startedAt
-        if user+system < timeRunning+1: # Fudge for FPU inaccuracies.
+        if self.registryValue('cpu.children', target) and \
+           user+system < timeRunning+1: # Fudge for FPU inaccuracies.
             children = 'My children have taken %.2f seconds of user time ' \
                        'and %.2f seconds of system time ' \
                        'for a total of %.2f seconds of CPU time.  ' % \
@@ -119,32 +133,33 @@ class Status(callbacks.Privmsg):
         else:
             children = ''
         activeThreads = threading.activeCount()
-        response = ('I have taken %.2f seconds of user time and %.2f seconds '
-                    'of system time, for a total of %.2f seconds of CPU '
-                    'time.  %s'
-                    'I have spawned %s; I currently have %s still running.' %
-                    (user, system, user + system, children,
-                     utils.nItems('thread', world.threadsSpawned),
-                     activeThreads))
-        mem = 'an unknown amount'
-        pid = os.getpid()
-        plat = sys.platform
-        try:
-            if plat.startswith('linux') or plat.startswith('sunos') or \
-               plat.startswith('freebsd') or plat.startswith('openbsd') or \
-               plat.startswith('darwin'):
-                try:
-                    r = os.popen('ps -o rss -p %s' % pid)
-                    r.readline() # VSZ Header.
-                    mem = r.readline().strip()
-                finally:
-                    r.close()
-            elif sys.platform.startswith('netbsd'):
-                mem = '%s kB' % os.stat('/proc/%s/mem')[7]
-            response += '  I\'m taking up %s kB of memory.' % mem
-        except Exception:
-            self.log.exception('Uncaught exception in cpu:')
-        irc.reply(response)
+        response = 'I have taken %.2f seconds of user time and %.2f seconds ' \
+                   'of system time, for a total of %.2f seconds of CPU ' \
+                   'time.  %s' % (user, system, user + system, children)
+        if self.registryValue('cpu.threads', target):
+            spawned = utils.nItems('thread', world.threadsSpawned)
+            response += 'I have spawned %s; I currently have %s still ' \
+                        'running.' % (spawned, activeThreads)
+        if self.registryValue('cpu.memory', target):
+            mem = 'an unknown amount'
+            pid = os.getpid()
+            plat = sys.platform
+            try:
+                if plat.startswith('linux') or plat.startswith('sunos') or \
+                   plat.startswith('freebsd') or plat.startswith('openbsd') or \
+                   plat.startswith('darwin'):
+                    try:
+                        r = os.popen('ps -o rss -p %s' % pid)
+                        r.readline() # VSZ Header.
+                        mem = r.readline().strip()
+                    finally:
+                        r.close()
+                elif sys.platform.startswith('netbsd'):
+                    mem = '%s kB' % os.stat('/proc/%s/mem')[7]
+                response += '  I\'m taking up %s kB of memory.' % mem
+            except Exception:
+                self.log.exception('Uncaught exception in cpu.memory:')
+        irc.reply(utils.normalizeWhitespace(response))
 
     def cmd(self, irc, msg, args):
         """takes no arguments
