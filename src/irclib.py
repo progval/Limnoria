@@ -157,7 +157,7 @@ class Channel(object):
 
     def addUser(self, user):
         nick = user.lstrip('@%+')
-        while user[0] in '@%+':
+        while user and user[0] in '@%+':
             (marker, user) = (user[0], user[1:])
             if marker == '@':
                 self.ops.add(nick)
