@@ -465,7 +465,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.removeBan(banmask)
         ircdb.channels.setChannel(channel, c)
-        irc.queueMsg(ircmsgs.unban(channel, banmask))
+        #irc.queueMsg(ircmsgs.unban(channel, banmask))
         irc.replySuccess()
     unpermban = privmsgs.checkChannelCapability(unpermban, 'op')
 
