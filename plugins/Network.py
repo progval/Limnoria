@@ -132,6 +132,9 @@ class Network(callbacks.Privmsg):
         on.
         """
         network = self._getNetwork(irc, args)
+        if args:
+            irc.error('I\'m not connected to %s.' % privmsgs.getArgs(args))
+            return
         badIrc = self._getIrc(network)
         try:
             badIrc.driver.reconnect()
@@ -292,6 +295,9 @@ class Network(callbacks.Privmsg):
         apply.
         """
         network = self._getNetwork(irc, args)
+        if args:
+            irc.error('I\'m not connected to %s.' % privmsgs.getArgs(args))
+            return
         otherIrc = self._getIrc(network)
         otherIrc.queueMsg(ircmsgs.ping('Latency check (from %s).' % msg.nick))
         self._latency[otherIrc] = (irc, time.time())
