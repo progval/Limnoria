@@ -212,6 +212,10 @@ class Quotes(callbacks.Privmsg):
         self.__parent.die()
         self.db.close()
 
+    # XXX I was going to convert this to use commands.wrap, but we need to fix
+    #     this so it's not the got the completely type-unsafe int-or-nick "by"
+    #     column; chances are, that's going to be something we'll have a
+    #     converter for.
     def add(self, irc, msg, args):
         """[<channel>] <quote>
 
