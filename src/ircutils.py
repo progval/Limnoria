@@ -381,36 +381,10 @@ class IrcString(str):
         return hash(self.lowered)
 
 
-class IrcDict(dict):
+class IrcDict(utils.InsensitivePreservingDict):
     """Subclass of dict to make key comparison IRC-case insensitive."""
-    def __init__(self, *args, **kwargs):
-        self.__parent = super(IrcDict, self)
-        self.__parent.__init__(*args, **kwargs)
-        
-    def __contains__(self, s):
-        return self.__parent.__contains__(IrcString(s))
-    has_key = __contains__
+    key = staticmethod(toLower)
 
-    def __setitem__(self, s, v):
-        self.__parent.__setitem__(IrcString(s), v)
-
-    def __getitem__(self, s):
-        return self.__parent.__getitem__(IrcString(s))
-
-    def __delitem__(self, s):
-        self.__parent.__delitem__(IrcString(s))
-
-    def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, self.__parent.__repr__())
-
-    def __reduce__(self):
-        return (self.__class__, (dict(self),))
-
-    def setdefault(self, s, v):
-        return self.__parent.setdefault(IrcString(s), v)
-
-    def get(self, s, d=None):
-        return self.__parent.get(IrcString(s), d)
 
 class IrcSet(sets.Set):
     """A sets.Set using IrcStrings instead of regular strings."""

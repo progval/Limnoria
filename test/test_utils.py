@@ -345,6 +345,11 @@ class UtilsTest(unittest.TestCase):
         self.failUnless(f('2001::'))
         self.failUnless(f('2001:888:0:1::666'))
 
+    def testInsensitivePreservingDict(self):
+        ipd = utils.InsensitivePreservingDict
+        d = ipd(dict(Foo=10))
+        self.failUnless(d['foo'] == 10)
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -33,8 +33,6 @@
 Simple utility functions.
 """
 
-## from __future__ import generators
-
 __revision__ = "$Id$"
 
 import fix
@@ -49,6 +47,7 @@ import string
 import sgmllib
 import compiler
 import textwrap
+import UserDict
 import htmlentitydefs
 from itertools import imap, ifilter
 
@@ -582,6 +581,32 @@ def isIPV6(s):
                                 return False
                     return True
         return False
+
+class InsensitivePreservingDict(UserDict.DictMixin, object):
+    key = staticmethod(str.lower)
+    def __init__(self, dict=None, key=None):
+        if key is not None:
+            self.key = key
+        self.data = {}
+        if dict is not None:
+            self.update(dict)
+
+    def __getitem__(self, k):
+        return self.data[self.key(k)][1]
+
+    def __setitem__(self, k, v):
+        self.data[self.key(k)] = (k, v)
+
+    def __delitem__(self, k):
+        del self.data[self.key(k)]
+
+    def iteritems(self):
+        for t in self.data.itervalues():
+            yield t
+    
+    def __reduce__(self):
+        return (self.__class__, (dict(self.data.values()),))
+
 
 if __name__ == '__main__':
     import sys, doctest
