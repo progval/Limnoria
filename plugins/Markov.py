@@ -94,51 +94,48 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
             id = int(cursor.fetchone()[0])
             cursor.execute("""INSERT INTO follows VALUES (NULL, %s, %s)""",
                            id, follower)
-            db.commit()
+        cursor.execute("""INSERT INTO pairs VALUES (NULL, %s, %s)""",
+                       second, follower)
+        cursor.execute("""SELECT id FROM pairs
+                          WHERE first=%s AND second=%s""", second, follower)
+        id = int(cursor.fetchone()[0])
+        cursor.execute("""INSERT INTO follows VALUES (NULL, %s, NULL)""", id)
+        db.commit()
         return callbacks.Privmsg.doPrivmsg(self, irc, msg)
 
+    _maxMarkovLength = 80
     def markov(self, irc, msg, args):
-        """[<channel>] [<length>]
+        """[<channel>]
 
         Returns a randomly-generated Markov Chain generated sentence from the
         data kept on <channel> (which is only necessary if not sent in the
-        channel itself) with <length> words.  <length> must be less than 80.
+        channel itself).
         """
         channel = privmsgs.getChannel(msg, args)
-        length = privmsgs.getArgs(args, needed=0, optional=1)
         db = self.getDb(channel)
         cursor = db.cursor()
-        if not length:
-            length = random.randrange(30, 50)
-        try:
-            length = int(length)
-            assert 0 <= length <= 80
-        except (ValueError, AssertionError):
-            irc.error(msg, 'Length must be an integer between 0 and 80')
-            return
         words = []
         cursor.execute("""SELECT id, first, second FROM pairs
                           ORDER BY random()
                           LIMIT 1""")
         (id, first, second) = cursor.fetchone()
-        debug.printf((id, first, second))
         id = int(id)
         words.append(first)
         words.append(second)
-        debug.printf(words)
-        while len(words) < length:
-            debug.printf((words[-2], words[-1]))
-            sql = """SELECT follows.word FROM pairs, follows
-                     WHERE pairs.first=%s AND
-                           pairs.second=%s AND
-                           pairs.id=follows.pair_id
-                     ORDER BY random()
-                     LIMIT 1"""
+        sql = """SELECT follows.word FROM pairs, follows
+                 WHERE pairs.first=%s AND
+                       pairs.second=%s AND
+                       pairs.id=follows.pair_id
+                 ORDER BY random()
+                 LIMIT 1"""
+        while len(words) < self._maxMarkovLength:
             cursor.execute(sql, words[-2], words[-1])
             results = cursor.fetchone()
             if not results:
                 break
             word = results[0]
+            if word is None:
+                break
             words.append(word)
         irc.reply(msg, ' '.join(words))
 
