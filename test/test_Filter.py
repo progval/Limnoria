@@ -39,6 +39,7 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Filter',)
     def testNoErrors(self):
         self.assertNotError('leet foobar')
+        self.assertNotError('supa1337 foobar')
         self.assertNotError('lithp meghan sweeney')
 
     def testJeffk(self):
