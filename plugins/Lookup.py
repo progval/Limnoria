@@ -38,6 +38,7 @@ __revision__ = "$Id$"
 import plugins
 
 import os
+import re
 import sys
 
 import sqlite
@@ -110,6 +111,7 @@ class Lookup(callbacks.Privmsg):
         except sqlite.DatabaseError:
             irc.error(msg, 'No such lookup exists.')
 
+    _splitRe = re.compile(r'(?<!\\):')
     def add(self, irc, msg, args):
         """<name> <filename>
 
@@ -145,7 +147,8 @@ class Lookup(callbacks.Privmsg):
                 if not line or line.startswith('#'):
                     continue
                 try:
-                    (key, value) = line.split(':', 1)
+                    (key, value) = self._splitRe.split(line, 1)
+                    key = key.replace('\\:', ':')
                 except ValueError:
                     irc.error(msg, 'Invalid line in %s: %r' % (filename, line))
                     return

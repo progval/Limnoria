@@ -47,6 +47,7 @@ if sqlite:
             'foo': 'bar',
             'bar': 'baz',
             'your mom': 'my mom',
+            'foo\\:bar': 'baz',
         }
         def setUp(self):
             PluginTestCase.setUp(self)
@@ -62,6 +63,7 @@ if sqlite:
             self.assertResponse('test bar', 'baz')
             self.assertResponse('test your mom', 'my mom')
             self.assertError('test something not in there')
+            self.assertResponse('test foo:bar', 'baz')
             self.assertNotError('lookup remove test')
             try:
                 original = conf.replyWhenNotCommand
