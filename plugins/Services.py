@@ -153,7 +153,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             if nickserv:
                 self._doGhost(irc)
             else:
-                self.log.warning('do433 called without plugin being started.')
+                self.log.warning('do433 called without NickServ being set.')
 
     def doNick(self, irc, msg):
         nick = self.registryValue('nick', irc.network)
