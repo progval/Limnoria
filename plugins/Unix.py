@@ -194,7 +194,7 @@ class Unix(callbacks.Privmsg):
             try:
                 line = pipeReadline(r)
                 # aspell puts extra whitespace, ignore it
-                while line == '\n':
+                while not line.strip('\r\n'):
                     line = pipeReadline(r)
             except TimeoutError:
                 irc.error(msg, 'The spell command timed out.')
