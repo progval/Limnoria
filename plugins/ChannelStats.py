@@ -67,32 +67,31 @@ except ImportError:
 class Smileys(registry.Value):
     def set(self, s):
         L = s.split()
-        self.s = s
         self.setValue(L)
 
     def setValue(self, v):
+        self.s = ' '.join(v)
         self.value = re.compile('|'.join(imap(re.escape, v)))
 
     def __str__(self):
         return self.s
 
-conf.registerPlugin('ChannelDB')
-conf.registerChannelValue(conf.supybot.plugins.ChannelDB, 'selfStats',
+conf.registerPlugin('ChannelStats')
+conf.registerChannelValue(conf.supybot.plugins.ChannelStats, 'selfStats',
     registry.Boolean(True, """Determines whether the bot will keep channel
     statistics on itself, possibly skewing the channel stats (especially in
     cases where the bot is relaying between channels on a network)."""))
-conf.registerChannelValue(conf.supybot.plugins.ChannelDB, 'smileys',
+conf.registerChannelValue(conf.supybot.plugins.ChannelStats, 'smileys',
     Smileys(':) ;) ;] :-) :-D :D :P :p (= =)'.split(), """Determines what
     words (i.e., pieces of text with no spaces in them) are considered
     'smileys' for the purposes of stats-keeping."""))
-conf.registerChannelValue(conf.supybot.plugins.ChannelDB, 'frowns',
+conf.registerChannelValue(conf.supybot.plugins.ChannelStats, 'frowns',
     Smileys(':| :-/ :-\\ :\\ :/ :( :-( :\'('.split(), """Determines what words
     (i.e., pieces of text with no spaces in them ) are considered 'frowns' for
     the purposes of stats-keeping."""))
 
         
-class ChannelDB(plugins.ChannelDBHandler,
-                callbacks.Privmsg):
+class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
     noIgnore = True
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -167,11 +166,15 @@ class ChannelDB(plugins.ChannelDBHandler,
                 self.laststate = irc.state.copy()
         finally:
             self.lastmsg = msg
-        super(ChannelDB, self).__call__(irc, msg)
+        super(ChannelStats, self).__call__(irc, msg)
         
     def doPrivmsg(self, irc, msg):
         if not ircutils.isChannel(msg.args[0]):
             return
+        else:
+            self._updatePrivmsgStats(msg)
+
+    def _updatePrivmsgStats(self, msg):
         (channel, s) = msg.args
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -433,6 +436,6 @@ class ChannelDB(plugins.ChannelDBHandler,
         irc.reply(s)
 
                            
-Class = ChannelDB
+Class = ChannelStats
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -33,12 +33,18 @@
 Keeps statistics on who says what words in a channel.
 """
 
-import plugins
+import os
+import string
+
+import sqlite
 
 import conf
 import utils
+import ircdb
 import plugins
+import ircutils
 import privmsgs
+import registry
 import callbacks
 
 
@@ -51,6 +57,10 @@ conf.registerChannelValue(conf.supybot.plugins.WordStats,
 
 class WordStats(callbacks.Privmsg, plugins.ChannelDBHandler):
     noIgnore = True
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
+
     def die(self):
         callbacks.Privmsg.die(self)
         plugins.ChannelDBHandler.die(self)
@@ -84,7 +94,6 @@ class WordStats(callbacks.Privmsg, plugins.ChannelDBHandler):
     def doPrivmsg(self, irc, msg):
         if not ircutils.isChannel(msg.args[0]):
             return
-        callbacks.Privmsg.doPrivmsg(self, irc, msg)
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
@@ -127,7 +136,7 @@ class WordStats(callbacks.Privmsg, plugins.ChannelDBHandler):
         db.commit()
         irc.replySuccess()
 
-    def stats(self, irc, msg, args):
+    def wordstats(self, irc, msg, args):
         """[<channel>] [<user>] [<word>]
 
         With no arguments, returns the list of words that are being monitored
