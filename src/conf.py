@@ -35,6 +35,7 @@ import fix
 
 import os
 import sys
+import socket
 import string
 
 import utils
@@ -334,11 +335,6 @@ whether the bot will automatically thread all commands.  At this point this
 option exists almost exclusively for debugging purposes; it can do very little
 except to take up more CPU."""))
 
-supybot.register('httpPeekSize', registry.PositiveInteger(4096, """Determines
-how many bytes the bot will 'peek' at when looking through a URL for a
-doctype or title or something similar.  It'll give up after it reads this many
-bytes."""))
-
 supybot.register('pingServer', registry.Boolean(True, """Determines whether
 the bot will send PINGs to the server it's connected to in order to keep the
 connection alive and discover earlier when it breaks.  Really, this option
@@ -356,6 +352,21 @@ configuration files by hand and don't want the bot to flush its current version
 over your modifications.  Do note that if you change this to False inside the
 bot, your changes won't be flushed.  To make this change permanent, you must
 edit the registry yourself."""))
+
+supybot.register('httpPeekSize', registry.PositiveInteger(4096, """Determines
+how many bytes the bot will 'peek' at when looking through a URL for a
+doctype or title or something similar.  It'll give up after it reads this many
+bytes."""))
+
+class SocketTimeout(registry.PositiveInteger):
+    def setValue(self, v):
+        registry.PositiveInteger.setValue(self, v)
+        socket.setdefaulttimeout(self.value)
+        
+supybot.register('defaultSocketTimeout', SocketTimeout(10, """Determines what
+the default timeout for socket objects will be.  This means that *all* sockets
+will timeout when this many seconds has gone by (unless otherwise modified by
+the author of the code that uses the sockets).""")
 
 ###
 # Driver stuff.

@@ -44,15 +44,12 @@ import sre
 import time
 import types
 import atexit
-import socket
 import threading
 
 import log
 import conf
 import drivers
 import ircutils
-
-socket.setdefaulttimeout(10)
 
 startedAt = time.time() # Just in case it doesn't get set later.
 
