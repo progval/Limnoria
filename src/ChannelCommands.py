@@ -332,7 +332,7 @@ class ChannelCommands(callbacks.Privmsg):
                     value = True
                 elif value == 'False':
                     value = False
-                c = ircdb.channels.privmsgs.getChannel(channel)
+                c = ircdb.channels.getChannel(channel)
                 c.addCapability(capability, value)
                 ircdb.channels.setChannel(channel, c)
                 irc.reply(msg, conf.replySuccess)
