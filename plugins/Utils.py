@@ -53,5 +53,12 @@ class Utils(callbacks.Privmsg):
         (first, second) = privmsgs.getArgs(args, needed=2)
         irc.reply(msg, first+second)
 
+    def strsplit(self, irc, msg, args):
+        "<separator> <text"
+        (sep, text) = privmsgs.getArgs(args, needed=2)
+        if sep == '':
+            sep = None
+        irc.reply(msg, text.split(sep))
+        
 Class = Utils
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
