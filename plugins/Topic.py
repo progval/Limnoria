@@ -150,6 +150,9 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
                 except ValueError:
                     irc.error(msg, 'The positions must be valid integers.')
                     return
+            if utils.sorted(order) != range(num):
+                irc.error(msg, 'All topic numbers must be specified uniquely')
+                return
             try:
                 newtopics = [topics[i] for i in order]
                 newtopic = self._joinTopic(newtopics, channel)
