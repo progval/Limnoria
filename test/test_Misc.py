@@ -101,6 +101,8 @@ class MiscTestCase(ChannelPluginTestCase):
         self.failIf(self.irc.getCallback(name).public)
         self.assertNotRegexp('list', name)
         self.assertRegexp('list --private', name)
+
+    def testListDoesNotIncludeNonCanonicalName(self):
         self.assertNotRegexp('list Owner', '_exec')
 
     def testListNoIncludeDispatcher(self):
@@ -109,8 +111,9 @@ class MiscTestCase(ChannelPluginTestCase):
     def testListIncludesDispatcherIfThereIsAnOriginalCommand(self):
         self.assertRegexp('list Dict', r'\bdict\b')
 
-    def testVersion(self):
-        self.assertNotError('version')
+    if network:
+        def testVersion(self):
+            self.assertNotError('version')
 
     def testSource(self):
         self.assertNotError('source')
