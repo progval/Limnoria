@@ -226,11 +226,11 @@ class Http(callbacks.Privmsg):
             #['Liberal', 'KS'].  We join it together with a + to pass
             #to our query
             if len(zip) > 2:
-                city = '+'.join(zip[:-1])
-                isState = zip[-1]
+                city = '+'.join(zip[:-1]).lower()
+                isState = zip[-1].lower()
             else:
-                city = zip[0]
-                isState = zip[1]
+                city = zip[0].lower()
+                isState = zip[1].lower()
             
             #We must break the States up into two sections.  The US and
             #Canada are the only countries that require a State argument.
