@@ -64,6 +64,9 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
                     'http://aspn.activestate.com/ASPN/Cookbook/Python/'
                     'Recipe/230113',
                     'Implementation of sets using sorted lists')
+                self.assertNotRegexp('http://aspn.activestate.com/ASPN/'
+                                     'Cookbook/Python/Recipe/144183',
+                                     '\n')
             finally:
                 conf.supybot.plugins.Python.aspnSnarfer.setValue(False)
 
