@@ -292,7 +292,7 @@ class FunCommands(callbacks.Privmsg):
     def cpustats(self, irc, msg, args):
         "takes no arguments"
         (user, system, childUser, childSystem, elapsed) = os.times()
-        timeRunning = time.time() - self._startTime
+        timeRunning = time.time() - world.startedAt
         threads = threading.activeCount()
         response ='I have taken %s seconds of user time and %s seconds of '\
                   'system time, for a total of %s seconds of CPU time.  My '\
