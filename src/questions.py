@@ -38,9 +38,10 @@ def expect(prompt, possibilities, recursed=False):
     if possibilities:
         prompt = '%s [%s]' % (originalPrompt, '/'.join(possibilities))
     if len(prompt) > 70:
-        prompt = '%s [%s]' % (originalPrompt, ' / '.join(possibilities))
-    indent = ' ' * (len(originalPrompt) + 3)
+        prompt = '%s [%s]' % (originalPrompt, '/ '.join(possibilities))
+    indent = ' ' * (len(originalPrompt) + 2)
     prompt = textwrap.fill(prompt, subsequent_indent=indent)
+    prompt = prompt.replace('/ ', '/')
     prompt = prompt.strip() + ' '
     s = raw_input(prompt)
     s = s.strip()
@@ -53,7 +54,7 @@ def expect(prompt, possibilities, recursed=False):
         return s.strip()
 
 def expectWithDefault(prompt, possibilities, default):
-    indent = ' ' * (len(prompt) + 3)
+    indent = ' ' * (len(prompt) + 2)
     prompt = '%s [%s] (default: %s) ' % \
              (prompt.strip(), '/'.join(possibilities), default)
     if len(prompt) > 70:
