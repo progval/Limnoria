@@ -267,7 +267,7 @@ def toXml(msg, pretty=True, includeTime=True):
     L.append('</msg>\n')
     return ''.join(L)
 
-def prettyPrint(msg, addRecipients=False, timestampFormat=None):
+def prettyPrint(msg, addRecipients=False, timestampFormat=None, showNick=True):
     """Provides a client-friendly string form for messages.
 
     IIRC, I copied BitchX's (or was it XChat's?) format for messages.
@@ -284,9 +284,15 @@ def prettyPrint(msg, addRecipients=False, timestampFormat=None):
         if m:
             s = '* %s %s' % (nick(), m.group(1))
         else:
-            s = '<%s> %s' % (nick(), msg.args[1])
+            if not showNick:
+                s = '%s' % msg.args[1]
+            else:
+                s = '<%s> %s' % (nick(), msg.args[1])
     elif msg.command == 'NOTICE':
-        s = '-%s- %s' % (nick(), msg.args[1])
+        if not showNick:
+            s = '%s' % msg.args[1]
+        else:
+            s = '-%s- %s' % (nick(), msg.args[1])
     elif msg.command == 'JOIN':
         s = '*** %s has joined %s' % (msg.nick, msg.args[0])
     elif msg.command == 'PART':
@@ -311,7 +317,7 @@ def prettyPrint(msg, addRecipients=False, timestampFormat=None):
         s = '*** %s has quit IRC%s' % (msg.nick, quitmsg)
     elif msg.command == 'TOPIC':
         s = '*** %s changes topic to %s' % (nickorprefix(), msg.args[1])
-    at = getattr(msg, 'receivedAt', False)
+    at = getattr(msg, 'receivedAt', None)
     if timestampFormat and at:
         s = '%s %s' % (time.strftime(timestampFormat, time.localtime(at)), s)
     return s

@@ -188,6 +188,28 @@ class MiscTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.plugins.Misc.timestampFormat.setValue(orig)
 
+    def testNestedLastTimestampConfig(self):
+        tsConfig = conf.supybot.plugins.Misc.last.nested.includeTimestamp
+        orig = tsConfig()
+        try:
+            tsConfig.setValue(True)
+            self.feedMsg('foo bar baz')
+            self.assertRegexp('echo [last]',
+                              '\[\d+:\d+:\d+\] foo bar baz')
+        finally:
+            tsConfig.setValue(orig)
+
+    def testNestedLastNickConfig(self):
+        nickConfig = conf.supybot.plugins.Misc.last.nested.includeNick
+        orig = nickConfig()
+        try:
+            nickConfig.setValue(True)
+            self.feedMsg('foo bar baz')
+            self.assertRegexp('echo [last]',
+                              '<%s> foo bar baz' % self.nick)
+        finally:
+            nickConfig.setValue(orig)
+
     def testMore(self):
         self.assertRegexp('echo %s' % ('abc'*300), 'more')
         self.assertRegexp('more', 'more')

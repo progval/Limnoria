@@ -71,6 +71,16 @@ conf.registerGlobalValue(conf.supybot.plugins.Misc, 'timestampFormat',
     timestamps in the Misc.last command.  Refer to the Python documentation
     for the time module to see what formats are accepted. If you set this
     variable to the empty string, the timestamp will not be shown."""))
+conf.registerGroup(conf.supybot.plugins.Misc, 'last')
+conf.registerGroup(conf.supybot.plugins.Misc.last, 'nested')
+conf.registerChannelValue(conf.supybot.plugins.Misc.last.nested,
+    'includeTimestamp', registry.Boolean(False, """Determines whether or not
+    the timestamp will be included in the output of last when it is part of a
+    nested command"""))
+conf.registerChannelValue(conf.supybot.plugins.Misc.last.nested,
+    'includeNick', registry.Boolean(False, """Determines whether or not the
+    nick will be included in the output of last when it is part of a nested
+    command"""))
 
 class Misc(callbacks.Privmsg):
     def __init__(self):
@@ -488,16 +498,28 @@ class Misc(callbacks.Privmsg):
         iterable.next() # Drop the first message.
         predicates = list(utils.flatten(predicates.itervalues()))
         resp = []
-        tsf = self.registryValue('timestampFormat')
+        if irc.nested and not \
+          self.registryValue('last.nested.includeTimestamp'):
+            tsf = None
+        else:
+            tsf = self.registryValue('timestampFormat')
+        if irc.nested and not self.registryValue('last.nested.includeNick'):
+            showNick = False
+        else:
+            showNick = True
         for m in iterable:
             for predicate in predicates:
                 if not predicate(m):
                     break
             else:
                 if nolimit:
-                    resp.append(ircmsgs.prettyPrint(m, timestampFormat=tsf))
+                    resp.append(ircmsgs.prettyPrint(m,
+                                                    timestampFormat=tsf,
+                                                    showNick=showNick))
                 else:
-                    irc.reply(ircmsgs.prettyPrint(m, timestampFormat=tsf))
+                    irc.reply(ircmsgs.prettyPrint(m,
+                                                  timestampFormat=tsf,
+                                                  showNick=showNick))
                     return
         if not resp:
             irc.error('I couldn\'t find a message matching that criteria in '
