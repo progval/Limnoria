@@ -53,7 +53,7 @@ _newDrivers = []
 class IrcDriver(object):
     """Base class for drivers."""
     def __init__(self):
-        _newDrivers.append((self.name(), self))
+        add(self.name(), self)
         if not hasattr(self, 'irc'):
             self.irc = None # This is to satisfy PyChecker.
 
@@ -64,7 +64,7 @@ class IrcDriver(object):
         # The end of any overrided die method should be
         # "super(Class, self).die()", in order to make
         # sure this (and anything else later added) is done.
-        _deadDrivers.append(self.name())
+        remove(self.name())
 
     def reconnect(self, wait=False):
         raise NotImplementedError
@@ -100,12 +100,15 @@ def run():
                 # The Schedule driver has no irc object, or it's None.
                 driver.irc.driver = None
             driver.irc = None
+            log.info('Removing driver %s.', name)
             del _drivers[name]
         except KeyError:
             pass
     while _newDrivers:
         (name, driver) = _newDrivers.pop()
+        log.debug('Adding new driver %s.', name)
         if name in _drivers:
+            log.warning('Driver %s already added, killing it.', name)
             _drivers[name].die()
             del _drivers[name]
         _drivers[name] = driver
@@ -125,6 +128,8 @@ def newDriver(server, irc, moduleName=None):
     elif not moduleName.startswith('supybot.'):
         moduleName = 'supybot.' + moduleName
     driverModule = __import__(moduleName, {}, {}, ['not empty'])
+    log.debug('Creating new driver for %s:%s (%s)',
+              server[0], server[1], moduleName)
     driver = driverModule.Driver(server, irc)
     irc.driver = driver
     return driver
