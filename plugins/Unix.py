@@ -150,6 +150,13 @@ class Unix(callbacks.Privmsg):
         """
         irc.reply(progstats())
 
+    def pid(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the current pid of the process for this Supybot.
+        """
+        irc.reply(str(os.getpid()))
+
     _cryptre = re.compile(r'[./0-9A-Za-z]')
     def crypt(self, irc, msg, args):
         """<password> [<salt>]
