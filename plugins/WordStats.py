@@ -185,6 +185,10 @@ class WordStats(callbacks.Privmsg):
         self.db.close()
         callbacks.Privmsg.die(self)
 
+    def callCommand(self, *args, **kwargs):
+        self.queried = True
+        return callbacks.Privmsg.callCommand(self, *args, **kwargs)
+
     def doPrivmsg(self, irc, msg):
         # This depends on the fact that it's called after the command.
         try:
@@ -211,7 +215,6 @@ class WordStats(callbacks.Privmsg):
             irc.error('<word> must not contain non-alphanumeric chars.')
             return
         self.db.addWord(channel, word)
-        self.queried = True
         irc.replySuccess()
 
     def remove(self, irc, msg, args):
@@ -276,7 +279,6 @@ class WordStats(callbacks.Privmsg):
             if count:
                 s = '%s has said %r %s.' % \
                     (user, word, utils.nItems('time', count))
-                self.queried = True
                 irc.reply(s)
             else:
                 irc.error('%s has never said %r.' % (user, word))
@@ -286,7 +288,6 @@ class WordStats(callbacks.Privmsg):
             if total == 0:
                 irc.reply('I\'m keeping stats on %s, but I haven\'t seen it '
                           'in this channel.' % word)
-                self.queried = True
                 return
             n = self.registryValue('rankingDisplay', channel)
             try:
@@ -318,7 +319,6 @@ class WordStats(callbacks.Privmsg):
             else:
                 s = ''
             ret = '%s %s.%s' % (ret, utils.commaAndify(L), s)
-            self.queried = True
             irc.reply(ret)
         else:
             user = arg1
