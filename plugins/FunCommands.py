@@ -175,6 +175,22 @@ class FunCommands(callbacks.Privmsg):
                    (self.recvdMsgs, self.recvdBytes,
                     self.sentMsgs, self.sentBytes))
 
+    def hexip(self, irc, msg, args):
+        """<ip>
+
+        Returns the hexadecimal IP for that IP.
+        """
+        ip = privmsgs.getArgs(args)
+        if not ircutils.isIP(ip):
+            irc.error(msg, '%r is not a valid IP.' % ip)
+            return
+        quads = ip.split('.')
+        ret = ""
+        for quad in quads:
+            i = int(quad)
+            ret += '%02x' % i
+        irc.reply(msg, ret.upper())
+            
     def ord(self, irc, msg, args):
         """<letter>
 
