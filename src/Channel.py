@@ -366,9 +366,9 @@ class Channel(callbacks.Privmsg):
         """[<channel>] <nick|hostmask>
 
         If you have the #channel,op capability, this will effect a permanent
-        (persistent) ban on the given <hostmask> (or the current hostmask
-        associated with <nick>.  <channel> is only necessary if the message
-        isn't sent in the channel itself.
+        (persistent) ban from interacting with the bot on the given <hostmask>
+        (or the current hostmask associated with <nick>.  <channel> is only
+         necessary if the message isn't sent in the channel itself.
         """
         arg = privmsgs.getArgs(args)
         if ircutils.isNick(arg):
