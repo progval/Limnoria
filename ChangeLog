@@ -1,3 +1,7 @@
+	* Changed User.setpassword not to require the <old password> to
+	be correct if the requesting user has the owner capability (and
+	isn't the owner himself).
+	
 2004-04-09  Jeremy Fincher  <jemfinch@supybot.org>
 	
 	* Added supybot.reply.errorWithNotice to make the bot give its
