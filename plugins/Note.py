@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2003, Brett Kelly
+# Copyright (c) 2004, Brett Kelly
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
