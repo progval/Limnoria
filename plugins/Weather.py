@@ -78,6 +78,8 @@ class WeatherCommand(registry.String):
 # Registry variables moved to the bottom to use Weather.weatherCommands.
 
 class Weather(callbacks.Privmsg):
+    """This should never be seen, because this plugin defines a command by
+    the name of 'weather' which should override this help."""
     weatherCommands = ['ham', 'cnn', 'wunder']
     threaded = True
     def callCommand(self, method, irc, msg, *L):
