@@ -296,13 +296,13 @@ class RichReplyMethods(object):
         return s
 
     def replySuccess(self, s='', **kwargs):
-        v = conf.supybot.replies.success.get(self.msg.args[0])
-        s = self.__makeReply(v(), s)
+        v = conf.supybot.replies.success.get(self.msg.args[0])()
+        s = self.__makeReply(v, s)
         self.reply(s, **kwargs)
 
     def replyError(self, s='', **kwargs):
-        v = conf.supybot.replies.error.get(self.msg.args[0])
-        s = self.__makeReply(v(), s)
+        v = conf.supybot.replies.error.get(self.msg.args[0])()
+        s = self.__makeReply(v, s)
         self.reply(s, **kwargs)
 
     def replies(self, L, prefixer=''.join,
@@ -332,29 +332,29 @@ class RichReplyMethods(object):
     def errorNoCapability(self, capability, s='', **kwargs):
         log.warning('Denying %s for lacking %r capability',
                     self.msg.prefix, capability)
-        v = conf.supybot.replies.noCapability.get(self.msg.args[0])
-        s = self.__makeReply(v() % capability, s)
+        v = conf.supybot.replies.noCapability.get(self.msg.args[0])()
+        s = self.__makeReply(v % capability, s)
         self.error(s, **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
-        v = conf.supybot.replies.possibleBug.get(self.msg.args[0])
+        v = conf.supybot.replies.possibleBug.get(self.msg.args[0])()
         if s:
-            s += '  (%s)' % v()
+            s += '  (%s)' % v
         else:
-            s = v()
+            s = v
         self.error(s, **kwargs)
 
     def errorNotRegistered(self, s='', **kwargs):
-        v = conf.supybot.replies.notRegistered.get(self.msg.args[0])
-        self.error(self.__makeReply(v(), s), **kwargs)
+        v = conf.supybot.replies.notRegistered.get(self.msg.args[0])()
+        self.error(self.__makeReply(v, s), **kwargs)
 
     def errorNoUser(self, s='', **kwargs):
-        v = conf.supybot.replies.noUser.get(self.msg.args[0])
-        self.error(self.__makeReply(v(), s), **kwargs)
+        v = conf.supybot.replies.noUser.get(self.msg.args[0])()
+        self.error(self.__makeReply(v, s), **kwargs)
 
     def errorRequiresPrivacy(self, s='', **kwargs):
-        v = conf.supybot.replies.requiresPrivacy.get(self.msg.args[0])
-        self.error(self.__makeReply(v(), s), **kwargs)
+        v = conf.supybot.replies.requiresPrivacy.get(self.msg.args[0])()
+        self.error(self.__makeReply(v, s), **kwargs)
 
             
 class IrcObjectProxy(RichReplyMethods):
@@ -733,6 +733,13 @@ class Privmsg(irclib.IrcCallback):
         method(irc, msg, *L)
         elapsed = time.time() - start
         self.log.info('%s took %s seconds', name, elapsed)
+
+    def registryValue(name, channel=None):
+        plugin = self.name()
+        if channel is None:
+            return conf.supybot.plugins.get(plugin).get(name)()
+        else:
+            return conf.supybot.plugins.get(plugin).get(name).get(channel)()
 
 
 class IrcObjectProxyRegexp(RichReplyMethods):
