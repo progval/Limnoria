@@ -197,7 +197,6 @@ class Group(object):
 
 
 class Value(Group):
-    # Docstrings should start with, "Value must be ..." whenever possible.
     """Invalid registry value.  If you're getting this message, report it,
     because someone forgot to put a proper help string here."""
     def __init__(self, default, help,
@@ -299,7 +298,7 @@ class Float(Value):
             self.error()
 
 class String(Value):
-    """Value must be a valid Python string."""
+    """Value is not a valid Python string."""
     def set(self, s):
         if not s:
             s = '""'
@@ -313,22 +312,18 @@ class String(Value):
         except ValueError: # This catches utils.safeEval(s) errors too.
             self.error()
 
-class MetaOnlySomeStrings(type):
-    def __new__(cls, name, bases, dict):
-        if 'validStrings' in dict:
-            validStrings = dict['validStrings']
-            dict['__doc__'] = 'Value must be one of %s.' % \
-                              utils.commaAndify(validStrings, And='or')
-        return type.__new__(cls, name, bases, dict)
-    
 class OnlySomeStrings(String):
     validStrings = ()
-    __metaclass__ = MetaOnlySomeStrings
     def __init__(self, *args, **kwargs):
         assert self.validStrings, 'There must be some valid strings.  ' \
                                   'This is a bug.'
         String.__init__(self, *args, **kwargs)
         
+    def error(self):
+        raise InvalidRegistryValue, \
+              'That is not a valid value.  Valid values include %s.' % \
+              utils.commaAndify(map(repr, self.validStrings))
+
     def normalize(self, s):
         lowered = s.lower()
         L = list(map(str.lower, self.validStrings))
@@ -373,7 +368,6 @@ class StringWithSpaceOnRight(String):
         String.setValue(self, v)
 
 class Regexp(Value):
-    """Value must be a valid Python regular expression of the form m/.../"""
     def error(self, e):
         raise InvalidRegistryValue, 'Invalid regexp: %s' % e
 
@@ -401,17 +395,9 @@ class Regexp(Value):
         self() # Gotta update if we've been reloaded.
         return self.sr
         
-class MetaSeparatedListOf(type):
-    def __new__(cls, name, bases, dict):
-        if 'Value' in dict:
-            Value = dict['Value']
-            dict['__doc__'] = """Value must be a list of """
-            # XXX
-            
 class SeparatedListOf(Value):
     List = list
     Value = Value
-    Separator = None
     def splitter(self, s):
         """Override this with a function that takes a string and returns a list
         of strings."""
@@ -444,7 +430,8 @@ class SeparatedListOf(Value):
         
 class SpaceSeparatedListOfStrings(SeparatedListOf):
     Value = String
-    splitter = staticmethod(str.split)
+    def splitter(self, s):
+        return s.split()
     joiner = ' '.join
     
 class CommaSeparatedListOfStrings(SeparatedListOf):
