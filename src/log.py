@@ -288,7 +288,7 @@ class LogLevel(ValidLogLevel):
         _logger.setLevel(self.value) # _logger defined later.
 
 conf.registerGlobalValue(conf.supybot.directories, 'log',
-    registry.String('logs', """Determines what directory the bot will store its
+    conf.Directory('logs', """Determines what directory the bot will store its
     logfiles in."""))
 
 conf.registerGroup(conf.supybot, 'log')
