@@ -58,7 +58,7 @@ class Utilities(callbacks.Privmsg):
         (sep, text) = privmsgs.getArgs(args, needed=2)
         if sep == '':
             sep = None
-        irc.reply(msg, text.split(sep))
+        irc.reply(msg, ' '.join(text.split(sep)))
 
     def echo(self, irc, msg, args):
         """takes any number of arguments
