@@ -401,7 +401,6 @@ class MoobotFactoids(callbacks.Privmsg):
         return (key, newfact)
         
     def addFactoid(self, irc, msg, tokens):
-        r"^(?!\x01)(.+?)\s+(?:is|_is_)\s+(.+)"
         # First, check and see if the entire message matches a factoid key
         channel = getChannel(msg)
         id = self._getUserId(irc, msg.prefix)
@@ -413,7 +412,6 @@ class MoobotFactoids(callbacks.Privmsg):
         irc.replySuccess()
 
     def changeFactoid(self, irc, msg, tokens):
-        r"(.+)\s+=~\s+(.+)"
         id = self._getUserId(irc, msg.prefix)
         (key, regexp) = map(' '.join,
                             utils.itersplit('=~'.__eq__, tokens, maxsplit=1))
@@ -432,7 +430,6 @@ class MoobotFactoids(callbacks.Privmsg):
         irc.replySuccess()
 
     def augmentFactoid(self, irc, msg, tokens):
-        r"(.+?) is also (.+)"
         # Must be registered!
         id = self._getUserId(irc, msg.prefix)
         pairs = list(window(tokens, 2))
@@ -449,7 +446,6 @@ class MoobotFactoids(callbacks.Privmsg):
         irc.replySuccess()
 
     def replaceFactoid(self, irc, msg, tokens):
-        r"^no,?\s+(.+?)\s+is\s+(.+)"
         # Must be registered!
         channel = getChannel(msg)
         id = self._getUserId(irc, msg.prefix)
