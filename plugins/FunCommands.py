@@ -630,12 +630,13 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, response)
 
     def last(self, irc, msg, args):
-        """[--{from,in,to,with,regexp,nodecorate}] <args>
+        """[--{from,in,to,with,regexp,fancy}] <args>
 
         Returns the last message matching the given criteria.  --from requires
         a nick from whom the message came; --in and --to require a channel the
         message was sent to; --with requires some string that had to be in the
         message; --regexp requires a regular expression the message must match
+        --fancy determines whether or not to show the nick; the default is not
         """
 
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
@@ -884,7 +885,7 @@ class FunCommands(callbacks.Privmsg):
         originalFirst = L[0]
         ircutils.shrinkList(L, '; ')
         if not L:
-            irc.reply(msg, 'Chopped: %s' % originalFirst[:400])
+            irc.reply(msg, '%s <snip>' % originalFirst[:400])
         elif dictionary == '*':
             s = '%s responded, %s shown: %s' % \
                 (utils.commaAndify(dbs), len(L), '; '.join(L))
