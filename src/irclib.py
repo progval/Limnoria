@@ -611,10 +611,10 @@ class Irc(IrcCommandDispatcher):
         # This keeps our nick and server attributes updated.
         if msg.command in self._nickSetters:
             if msg.args[0] != self.nick:
-                log.info('Nick attribute wasn\'t updated.')
+                log.info('Updating nick attribute.')
                 self.nick = msg.args[0]
             if msg.prefix != self.server:
-                log.info('Server attribute wasn\'t updated.')
+                log.info('Updating server attribute.')
                 self.server = msg.prefix
 
         # Dispatch to specific handlers for commands.
