@@ -132,7 +132,7 @@ class MiscCommands(callbacks.Privmsg):
         if not command:
             command = 'help'
         command = callbacks.canonicalName(command)
-        cb = irc.findCallback(command)
+        cb = callbacks.findCallbackForCommand(irc, command)
         if cb:
             method = getattr(cb, command)
             if hasattr(method, '__doc__') and method.__doc__ is not None:
@@ -171,7 +171,7 @@ class MiscCommands(callbacks.Privmsg):
         argument list given by the command 'syntax'.
         """
         command = callbacks.canonicalName(privmsgs.getArgs(args))
-        cb = irc.findCallback(command)
+        cb = callbacks.findCallbackForCommand(irc, command)
         if cb:
             method = getattr(cb, command)
             if hasattr(method, '__doc__') and method.__doc__ is not None:
@@ -252,7 +252,7 @@ class MiscCommands(callbacks.Privmsg):
         Returns the plugin <command> is in.
         """
         command = callbacks.canonicalName(privmsgs.getArgs(args))
-        cb = irc.findCallback(command)
+        cb = callbacks.findCallbackForCommand(irc, command)
         if cb is not None:
             irc.reply(msg, cb.name())
         else:
