@@ -1,4 +1,4 @@
-Ok, some some explanation of the capabilities system is probably in
+Ok, some explanation of the capabilities system is probably in
 order.  With most IRC bots (including the ones I've written myself
 prior to this one) "what a user can do" is set in one of two ways.  On
 the *really* simple bots, each user has a numeric "level" and commands
@@ -33,7 +33,7 @@ what a user *cannot* do.  It's formed rather simply by adding a dash
 command, perhaps "calc" or "help", the bot first checks to make sure
 the user doesn't have the "-calc" or the "-help" capabilities before
 even considering responding to the user.  So commands can be turned on
-or off on a *per user* basis, offering finegrained control not often
+or off on a *per user* basis, offering fine-grained control not often
 (if at all!) seen in other bots.
 
 But that's not all!  The capabilities system also supports *Channel*
@@ -50,7 +50,7 @@ individual channel!
 So when a user "foo" sends a command "bar" to the bot on channel
 "#baz", first the bot checks to see if the user has the anticapability
 for the command by itself, "-bar".  If so, it returns right then and
-there, compltely ignoring the fact that the user issued that command
+there, completely ignoring the fact that the user issued that command
 to it.  If the user doesn't have that anticapability, then the bot
 checks to see if the user issued the command over a channel, and if
 so, checks to see if the user has the antichannelcapability for that
@@ -59,7 +59,7 @@ and doesn't even think about responding to the bot.  If neither of
 these anticapabilities are present, then the bot just responds to the
 user like normal.
 
-From a programmatical perspective, capabilties are easy to use and
+From a programming perspective, capabilties are easy to use and
 flexible.  Any command can check if a user has any capability, even
 ones not thought of when the bot was originally written.
 Commands/Callbacks can add their own capabilities -- it's as easy as
@@ -110,7 +110,7 @@ Another command that requires the trusted capability is Utilties.re,
 which (due to the regular expression implementation in Python (and any
 other language that uses NFA regular expressions, like Perl or Ruby or
 Lua or ...) which can allow a regular expression to take exponential
-time to process).  Consider what would happen if the someone gave the
+time to process).  Consider what would happen if someone gave the
 bot the command 're [format join "" s/./ [dict go] /] [dict go]'
 
 Other plugins may require different capabilities; the Factoids plugin
