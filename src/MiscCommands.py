@@ -184,7 +184,7 @@ class MiscCommands(callbacks.Privmsg):
         command = privmsgs.getArgs(args)
         Class = irc.findCallback(command)
         if Class is not None:
-            irc.reply(msg, Class.__name__)
+            irc.reply(msg, Class.__class__.__name__)
         else:
             irc.error(msg, 'There is no such command %s' % command)
 
