@@ -262,7 +262,7 @@ def perlReToReplacer(s):
     else:
         return lambda s: r.sub(replace, s, 1)
 
-_perlVarSubstituteRe = re.compile(r'\$\{([^}]+)\}|\$(\S+)')
+_perlVarSubstituteRe = re.compile(r'\$\{([^}]+)\}|\$([a-zA-Z][a-zA-Z0-9]*)')
 def perlVariableSubstitute(vars, text):
     def replacer(m):
         (braced, unbraced) = m.groups()
