@@ -669,6 +669,12 @@ registerGlobalValue(supybot.protocols.irc, 'strictRfc',
     a nick such as services@this.network.server then you you should set this to
     False."""))
 
+registerGlobalValue(supybot.protocols.irc, 'umodes',
+    registry.String('', """Determines what user modes the bot will request from
+    the server when it first connects.  Many people might choose +i; some
+    networks allow +x, which indicates to the auth services on those networks
+    that you should be given a fake host."""))
+
 registerGlobalValue(supybot.protocols.irc, 'maxHistoryLength',
     registry.Integer(1000, """Determines how many old messages the bot will
     keep around in its history.  Changing this variable will not take effect
