@@ -347,6 +347,8 @@ class User(callbacks.Privmsg):
                 irc.error('Your secure flag is true and your hostmask '
                           'doesn\'t match any of your known hostmasks.')
         else:
+            self.log.warning('Failed identification attempt by %s (password '
+                             'did not match for %s).', msg.prefix, user.name)
             irc.error(conf.supybot.replies.incorrectAuthentication())
     identify = wrap(identify, ['private', 'otherUser', 'something'])
 
