@@ -89,12 +89,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                            r'"#FFFF00">(\d+)')
     _gkteam = re.compile(r'Team:(<.*?>)+(?P<name>.*?)</span>')
     _gkseen = re.compile(r'(seen on GK:\s+([^[]+ago)|.*?is hiding.*?)')
-    def __init__(self):
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
-    def die(self):
-        callbacks.PrivmsgCommandAndRegexp.die(self)
-        
     def getStats(self, name):
         gkprofile = 'http://www.gameknot.com/stats.pl?%s' % name
         try:

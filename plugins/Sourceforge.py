@@ -127,11 +127,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _statusOpt = {'any':100, 'open':1, 'closed':2, 'deleted':3, 'pending':4}
 
     _projectURL = 'http://sourceforge.net/projects/'
-    def __init__(self):
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
-
-    def die(self):
-        callbacks.PrivmsgCommandAndRegexp.die(self)
 
     def _formatResp(self, text, num=''):
         """

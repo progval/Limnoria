@@ -70,12 +70,6 @@ conf.registerGlobalValue(conf.supybot.plugins.Dict, 'server',
 
 class Dict(callbacks.Privmsg):
     threaded = True
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-
-    def die(self):
-        callbacks.Privmsg.die(self)
-
     def dictionaries(self, irc, msg, args):
         """takes no arguments.
 

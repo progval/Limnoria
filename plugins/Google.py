@@ -172,9 +172,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         self.totalTime = 0
         self.last24hours = structures.queue()
 
-    def die(self):
-        callbacks.PrivmsgCommandAndRegexp.die(self)
-
     def formatData(self, data, bold=True, max=0):
         if isinstance(data, basestring):
             return data

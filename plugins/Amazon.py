@@ -83,9 +83,6 @@ conf.registerGlobalValue(conf.supybot.plugins.Amazon, 'licenseKey',
 class Amazon(callbacks.Privmsg):
     threaded = True
 
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-    
     def _genResults(self, reply, attribs, items, url, bold, bold_item):
         results = {}
         res = []

@@ -81,11 +81,6 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
     """
     threaded = True
     regexps = ['ebaySnarfer']
-    def __init__(self):
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
-
-    def die(self):
-        callbacks.PrivmsgCommandAndRegexp.die(self)
 
     _reopts = re.I | re.S
     _invalid = re.compile(r'(is invalid, still pending, or no longer in our '
