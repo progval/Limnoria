@@ -365,7 +365,7 @@ class IrcState(IrcCommandDispatcher):
         # NAMES reply.
         (_, type, channel, names) = msg.args
         if channel not in self.channels:
-            self.channels[channel] = Channel()
+            self.channels[channel] = ChannelState()
         c = self.channels[channel]
         for name in names.split():
             c.addUser(name)
