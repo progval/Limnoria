@@ -56,7 +56,7 @@ def configure(onStart, afterConnect, advanced):
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load Dictionary')
+    onStart.append('load Dict')
     print 'The default dictd server is dict.org.'
     if yn('Would you like to specify a dictd server?') == 'y':
         server = something('What server?')
