@@ -141,7 +141,9 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def _registerNick(self, nick, password=''):
         p = self.registryValue('NickServ.password', value=False)
-        p.register(nick, registry.String(password, '', private=True))
+        v = p.register(nick, registry.String(password, '', private=True))
+        if password:
+            v.setValue(password)
 
     def _getNick(self):
         return conf.supybot.nick()
@@ -271,47 +273,68 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     def doNotice(self, irc, msg):
         if irc.afterConnect:
             nickserv = self.registryValue('NickServ')
-            if not nickserv or msg.nick != nickserv:
-                return
-            nick = self._getNick()
-            self.log.debug('Notice received from NickServ: %r.', msg)
-            s = msg.args[1].lower()
-            if 'incorrect' in s or 'denied' in s:
-                log = 'Received "Password Incorrect" from NickServ.  ' \
-                      'Resetting password to empty.'
-                self.log.warning(log)
-                self.sentGhost = False
-                self._setNickServPassword(nick, '')
-            elif self._ghosted(s):
-                self.log.info('Received "GHOST succeeded" from NickServ.')
-                self.sentGhost = False
-                self.identified = False
-                irc.queueMsg(ircmsgs.nick(nick))
-            elif 'currently' in s and 'isn\'t' in s or 'is not' in s:
-                # The nick isn't online, let's change our nick to it.
-                self.sentGhost = False
-                irc.queueMsg(ircmsgs.nick(nick))
-            elif ('registered' in s or 'protected' in s) and \
-               ('not' not in s and 'isn\'t' not in s):
-                self.log.info('Received "Registered Nick" from NickServ.')
-                if nick == irc.nick:
-                    self._doIdentify(irc)
-            elif '/msg' in s and 'identify' in s and 'password' in s:
-                # Usage info for identify command; ignore.
-                self.log.debug('Got usage info for identify command.')
-            elif 'now recognized' in s:
-                self.log.info('Received "Password accepted" from NickServ.')
-                self.identified = True
-                for channel in irc.state.channels.keys():
-                    self.checkPrivileges(irc, channel)
-                if self.channels:
-                    irc.queueMsg(ircmsgs.joins(self.channels))
-                if self.waitingJoins:
-                    for m in self.waitingJoins:
-                        irc.sendMsg(m)
-                    self.waitingJoins = []
-            else:
-                self.log.debug('Unexpected notice from NickServ: %r.', s)
+            chanserv = self.registryValue('ChanServ')
+            if nickserv and ircutils.strEqual(msg.nick, nickserv):
+                self.doNickservNotice(irc, msg)
+            elif chanserv and ircutils.strEqual(msg.nick, chanserv):
+                self.doChanservNotice(irc, msg)
+
+    _chanRe = re.compile('\x02(.*?)\x02')
+    def doChanservNotice(self, irc, msg):
+        s = msg.args[1].lower()
+        channel = None
+        m = self._chanRe.search(s)
+        if m is not None:
+            channel = m.group(1)
+        if 'all bans' in s or 'unbanned from' in s:
+            # All bans removed (freenode)
+            # You have been unbanned from (oftc)
+            irc.sendMsg(ircmsgs.join(channel))
+        elif 'isn\'t registered' in s:
+            self.log.info('Received "%s isn\'t registered" from ChanServ',
+                          channel)
+        else:
+            self.log.warning('Got unexpected notice from ChanServ: %r.', msg)
+
+    def doNickservNotice(self, irc, msg):
+        s = ircutils.stripFormatting(msg.args[1].lower())
+        nick = self._getNick()
+        if 'incorrect' in s or 'denied' in s:
+            log = 'Received "Password Incorrect" from NickServ.  ' \
+                  'Resetting password to empty.'
+            self.log.warning(log)
+            self.sentGhost = False
+            self._setNickServPassword(nick, '')
+        elif self._ghosted(s):
+            self.log.info('Received "GHOST succeeded" from NickServ.')
+            self.sentGhost = False
+            self.identified = False
+            irc.queueMsg(ircmsgs.nick(nick))
+        elif 'currently' in s and 'isn\'t' in s or 'is not' in s:
+            # The nick isn't online, let's change our nick to it.
+            self.sentGhost = False
+            irc.queueMsg(ircmsgs.nick(nick))
+        elif ('registered' in s or 'protected' in s) and \
+           ('not' not in s and 'isn\'t' not in s):
+            self.log.info('Received "Registered Nick" from NickServ.')
+            if nick == irc.nick:
+                self._doIdentify(irc)
+        elif '/msg' in s and 'identify' in s and 'password' in s:
+            # Usage info for identify command; ignore.
+            self.log.debug('Got usage info for identify command.')
+        elif 'now recognized' in s:
+            self.log.info('Received "Password accepted" from NickServ.')
+            self.identified = True
+            for channel in irc.state.channels.keys():
+                self.checkPrivileges(irc, channel)
+            if self.channels:
+                irc.queueMsg(ircmsgs.joins(self.channels))
+            if self.waitingJoins:
+                for m in self.waitingJoins:
+                    irc.sendMsg(m)
+                self.waitingJoins = []
+        else:
+            self.log.debug('Unexpected notice from NickServ: %r.', s)
 
     def checkPrivileges(self, irc, channel):
         chanserv = self.registryValue('ChanServ')
@@ -350,6 +373,14 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             channel = msg.args[1] # nick is msg.args[0].
             self.checkPrivileges(irc, channel)
 
+    def _chanservCommand(self, irc, channel, command):
+        chanserv = self.registryValue('ChanServ')
+        if chanserv:
+            irc.sendMsg(ircmsgs.privmsg(chanserv, '%s %s' % (command, channel)))
+            return True
+        else:
+            return False
+
     def op(self, irc, msg, args):
         """[<channel>]
 
@@ -361,10 +392,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             if irc.nick in irc.state.channels[channel].ops:
                 irc.error('I\'m already opped in %s.' % channel)
             else:
-                chanserv = self.registryValue('ChanServ')
-                if chanserv:
-                    irc.sendMsg(ircmsgs.privmsg(chanserv, 'op %s' % channel))
-                else:
+                if not self._chanservCommand(irc, channel, 'op'):
                     irc.error('You must set supybot.plugins.Services.ChanServ '
                               'before I\'m able to do get opped.')
         except KeyError:
@@ -381,14 +409,67 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             if irc.nick in irc.state.channels[channel].voices:
                 irc.error('I\'m already voiced in %s.' % channel)
             else:
-                chanserv = self.registryValue('ChanServ')
-                if chanserv:
-                    irc.sendMsg(ircmsgs.privmsg(chanserv,'voice %s' % channel))
-                else:
+                if self._chanservCommand(irc, channel, 'voice'):
                     irc.error('You must set supybot.plugins.Services.ChanServ '
                               'before I\'m able to do get voiced.')
         except KeyError:
             irc.error('I\'m not in %s.' % channel)
+
+    def do474(self, irc, msg):
+        channel = msg.args[1]
+        self.log.info('Banned from %s, attempting ChanServ unban.', channel)
+        if not self._chanservCommand(irc, channel, 'unban'):
+            self.log.info('Unable to send unban command, '
+                          'ChanServ is not configured.')
+        # Success log in doChanservNotice.
+
+    def unban(self, irc, msg, args):
+        """[<channel>]
+
+        Attempts to get unbanned by ChanServ in <channel>.  <channel> is only
+        necessary if the message isn't sent in the channel itself, but chances
+        are, if you need this command, you're not sending it in the channel
+        itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        try:
+            if self._chanservCommand(irc, channel, 'unban'):
+                irc.replySuccess()
+            else:
+                irc.error('You must set supybot.plugins.Services.ChanServ '
+                          'before I\'m able to do get voiced.')
+        except KeyError:
+            irc.error('I\'m not in %s.' % channel)
+
+    def do473(self, irc, msg):
+        channel = msg.args[1]
+        self.log.info('%s is +i, attempting ChanServ invite.', channel)
+        if not self._chanservCommand(irc, channel, 'invite'):
+            self.log.info('Unable to send invite command, '
+                          'ChanServ is not configured.')
+    def invite(self, irc, msg, args):
+        """[<channel>]
+
+        Attempts to get invited by ChanServ to <channel>.  <channel> is only
+        necessary if the message isn't sent in the channel itself, but chances
+        are, if you need this command, you're not sending it in the channel
+        itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        try:
+            if self._chanservCommand(irc, channel, 'invite'):
+                irc.replySuccess()
+            else:
+                irc.error('You must set supybot.plugins.Services.ChanServ '
+                          'before I\'m able to do get voiced.')
+        except KeyError:
+            irc.error('I\'m not in %s.' % channel)
+
+    def doInvite(self, irc, msg):
+        if msg.nick == self.registryValue('ChanServ'):
+            channel = msg.args[1]
+            self.log.info('Joining %s, invited by ChanServ.' % channel)
+            irc.queueMsg(ircmsgs.join(channel))
 
     def identify(self, irc, msg, args):
         """takes no arguments
