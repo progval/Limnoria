@@ -60,45 +60,7 @@ conf.registerChannelValue(conf.supybot.plugins.Dunno, 'prefixNick',
     registry.Boolean(True, """Determines whether the bot will prefix the nick
     of the user giving an invalid command to the "dunno" response."""))
 
-class DunnoDBInterface(object):
-    def flush(self):
-        pass
-
-    def close(self):
-        pass
-    
-    def add(self, channel, dunno, by, at):
-        """Adds a dunno and returns the id of the newly-added dunno."""
-        raise NotImplementedError
-
-    def remove(self, channel, id):
-        """Deletes the dunno with the given id."""
-        raise NotImplementedError
-
-    def get(self, channel, id):
-        """Returns the dunno with the given id."""
-        raise NotImplementedError
-
-    def change(self, channel, id, f):
-        """Changes the dunno with the given id using the given function f."""
-        dunno = self.get(id)
-        newDunno = f(dunno)
-        self.set(id, newDunno)
-
-    def random(self, channel):
-        """Returns a random (id, dunno) pair."""
-        raise NotImplementedError
-
-    def search(self, channel, p):
-        """Returns (id, dunno) pairs for each dunno that matches p."""
-        raise NotImplementedError
-
-    def size(self, channel):
-        """Returns the current number of dunnos in the database."""
-        raise NotImplementedError
-
-
-class DbiDunnoDB(DunnoDBInterface):
+class DbiDunnoDB(object):
     class DunnoDB(dbi.DB):
         class Record(object):
             __metaclass__ = dbi.Record
@@ -123,6 +85,9 @@ class DbiDunnoDB(DunnoDBInterface):
                 db.close()
             except EnvironmentError:
                 pass
+
+    def flush(self):
+        pass
     
     def add(self, channel, text, by, at):
         db = self._getDb(channel)
