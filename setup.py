@@ -32,6 +32,7 @@
 plugins = [
     'Admin',
     'AutoMode',
+    'Anonymous',
     'Babelfish',
     'Channel',
     'ChannelLogger',
