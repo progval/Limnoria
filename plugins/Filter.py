@@ -295,7 +295,7 @@ class Filter(callbacks.Privmsg):
     def unmorse(self, irc, msg, args):
         """<morse code text>
 
-        Does the reverse of the morse/ditdaw command.
+        Does the reverse of the morse command.
         """
         text = privmsgs.getArgs(args)
         text = text.replace('_', '-')
@@ -311,7 +311,7 @@ class Filter(callbacks.Privmsg):
     def morse(self, irc, msg, args):
         """<text>
 
-        Gives the more code equivalent of a given string.
+        Gives the morse code equivalent of a given string.
         """
         text = privmsgs.getArgs(args)
         L = []
