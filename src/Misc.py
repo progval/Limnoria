@@ -716,16 +716,15 @@ class Misc(callbacks.Privmsg):
             if getattr(module, '__author__', False) == authorInfo:
                 isAuthor = True
             # XXX Partition needs moved to utils.
-            splitContribs = fix.partition(lambda s: ' ' in s, contributions)
+            (nonCommands, commands) = fix.partition(lambda s: ' ' in s, 
+                                                    contributions)
             results = []
-            # XXX Assign splitContribs to specific names based on what it means
-            #     semantically -- (foo, bar) = partition(...)
-            if splitContribs[1]:
+            if commands:
                 results.append(
-                    'the %s %s' %(utils.commaAndify(splitContribs[1]),
-                                  utils.pluralize('command',splitContribs[1])))
-            if splitContribs[0]:
-                results.append('the %s' % utils.commaAndify(splitContribs[0]))
+                    'the %s %s' %(utils.commaAndify(commands),
+                                  utils.pluralize('command',len(commands))))
+            if nonCommands:
+                results.append('the %s' % utils.commaAndify(nonCommands))
             if results and isAuthor:
                 return '%s wrote the %s plugin and also contributed %s' % \
                     (fullName, plugin, utils.commaAndify(results))
