@@ -429,7 +429,7 @@ class Channel(callbacks.Privmsg):
         irc.replySuccess()
     unlobotomize = privmsgs.checkChannelCapability(unlobotomize, 'op')
 
-    def permban(self, irc, msg, args, channel):
+    def ban(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
 
         If you have the #channel,op capability, this will effect a permanent
@@ -449,9 +449,9 @@ class Channel(callbacks.Privmsg):
         c.addBan(banmask)
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
-    permban = privmsgs.checkChannelCapability(permban, 'op')
+    ban = privmsgs.checkChannelCapability(ban, 'op')
 
-    def unpermban(self, irc, msg, args, channel):
+    def unban(self, irc, msg, args, channel):
         """[<channel>] <hostmask>
 
         If you have the #channel,op capability, this will remove the permanent
@@ -463,19 +463,19 @@ class Channel(callbacks.Privmsg):
         c.removeBan(banmask)
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
-    unpermban = privmsgs.checkChannelCapability(unpermban, 'op')
+    unban = privmsgs.checkChannelCapability(unban, 'op')
 
-    def permbans(self, irc, msg, args, channel):
+    def bans(self, irc, msg, args, channel):
         """[<channel>]
 
         If you have the #channel,op capability, this will show you the
-        current permbans on #channel.
+        current bans on #channel.
         """
         c = ircdb.channels.getChannel(channel)
         if c.bans:
             irc.reply(utils.commaAndify(map(utils.dqrepr, c.bans)))
         else:
-            irc.reply('There are currently no permbans on %s' % channel)
+            irc.reply('There are currently no permanent bans on %s' % channel)
 
     def ignore(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
