@@ -40,11 +40,15 @@ import plugins
 import re
 import os.path
 
-import sqlite
-
 import conf
 import ircmsgs
 import callbacks
+
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 dbfilename = os.path.join(conf.dataDir, 'Infobot.db')
 

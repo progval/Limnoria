@@ -47,8 +47,6 @@ import getopt
 import string
 from itertools import imap, ifilter
 
-import sqlite
-
 import conf
 import utils
 import ircdb
@@ -58,6 +56,13 @@ import privmsgs
 import ircutils
 import callbacks
 import configurable
+
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
+
 
 smileys = (':)', ';)', ':]', ':-)', ':-D', ':D', ':P', ':p', '(=', '=)')
 frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')

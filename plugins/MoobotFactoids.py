@@ -46,7 +46,6 @@ import time
 import shlex
 import string
 import random
-import sqlite
 from itertools import imap
 from cStringIO import StringIO
 
@@ -59,6 +58,12 @@ import privmsgs
 import callbacks
 
 import Owner
+
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 dbfilename = os.path.join(conf.dataDir, 'MoobotFactoids')
 

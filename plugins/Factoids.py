@@ -44,14 +44,18 @@ import string
 import os.path
 from itertools import imap
 
-import sqlite
-
 import conf
 import utils
 import ircdb
 import ircutils
 import privmsgs
 import callbacks
+
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):

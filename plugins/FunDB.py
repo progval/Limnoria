@@ -45,8 +45,6 @@ import string
 import os.path
 from itertools import imap
 
-import sqlite
-
 import conf
 import ircdb
 import utils
@@ -56,6 +54,12 @@ import ircutils
 import privmsgs
 import callbacks
 import configurable
+
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 tableCreateStatements = {
     'larts': ("""CREATE TABLE larts (

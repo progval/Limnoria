@@ -44,13 +44,17 @@ import getopt
 import string
 import os.path
 
-import sqlite
-
 import conf
 import ircdb
 import utils
 import privmsgs
 import callbacks
+
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 dbfilename = os.path.join(conf.dataDir, 'Todo.db')
 

@@ -42,13 +42,17 @@ import time
 import getopt
 import os.path
 
-import sqlite
-
 import conf
 import utils
 import ircdb
 import privmsgs
 import callbacks
+
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):

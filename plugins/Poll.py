@@ -41,8 +41,6 @@ import plugins
 import os
 import time
 
-import sqlite
-
 import conf
 import utils
 import ircdb
@@ -50,6 +48,11 @@ import ircutils
 import privmsgs
 import callbacks
 
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and

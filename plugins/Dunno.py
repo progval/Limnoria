@@ -33,18 +33,23 @@
 Add the module docstring here.  This will be used by the setup.py script.
 """
 
-import os
-import conf
-import time
-import ircdb
-import sqlite
 __revision__ = "$Id$"
 
-import plugins
+import os
+import time
 
+import conf
 import utils
+import ircdb
+import plugins
 import privmsgs
 import callbacks
+
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 dbfilename = os.path.join(conf.dataDir, 'Dunno.db')
 
