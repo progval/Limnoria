@@ -43,7 +43,6 @@ import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 import supybot.structures as structures
 
@@ -78,7 +77,7 @@ class UrlSnarfThread(world.SupyThread):
     def run(self):
         try:
             super(UrlSnarfThread, self).run()
-        except webutils.WebError, e:
+        except utils.web.Error, e:
             log.debug('Exception in urlSnarfer: %s' % utils.exnToString(e))
 
 class SnarfQueue(ircutils.FloodQueue):
@@ -469,13 +468,13 @@ def getGlob(irc, msg, args, state):
     state.args.append(glob)
 
 def getUrl(irc, msg, args, state):
-    if webutils.urlRe.match(args[0]):
+    if utils.web.urlRe.match(args[0]):
         state.args.append(args.pop(0))
     else:
         irc.errorInvalid('url', args[0])
 
 def getHttpUrl(irc, msg, args, state):
-    if webutils.urlRe.match(args[0]) and args[0].startswith('http://'):
+    if utils.web.httpUrlRe.match(args[0]):
         state.args.append(args.pop(0))
     else:
         irc.errorInvalid('http url', args[0])

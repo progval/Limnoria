@@ -47,6 +47,8 @@ class CommandsTestCase(SupyTestCase):
         self.assertEqual(state.args, expected,
                          'Expected %r, got %r' % (expected, state.args))
 
+
+class GeneralContextTestCase(CommandsTestCase):
     def testEmptySpec(self):
         self.assertState([], [], [])
 
@@ -133,6 +135,11 @@ class CommandsTestCase(SupyTestCase):
         self.assertRaises(callbacks.ArgumentError,
                           self.assertState, spec, ['ba'], ['baz'])
         
+class ConverterTestCase(CommandsTestCase):
+    def testUrlAllowsHttps(self):
+        url = 'https://foo.bar/baz'
+        self.assertState(['url'], [url], [url])
+        self.assertState(['httpUrl'], [url], [url])
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
