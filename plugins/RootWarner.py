@@ -59,6 +59,7 @@ conf.registerChannelValue(conf.supybot.plugins.RootWarner, 'warning',
 conf.registerChannelValue(conf.supybot.plugins.RootWarner, 'kick',
     registry.Boolean(False, """Determines whether the bot will kick people who
     join the channel with an ident of 'root' or '~root'."""))
+
 class RootWarner(callbacks.Privmsg):
     def doJoin(self, irc, msg):
         user = ircutils.userFromHostmask(msg.prefix)
@@ -66,7 +67,7 @@ class RootWarner(callbacks.Privmsg):
             channel = msg.args[0]
             s = self.registryValue('warning', channel)
             if self.registryValue('warn', channel):
-                irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
+                irc.queueMsg(ircmsgs.notice(msg.nick, s))
             if self.registryValue('kick', channel):
                 irc.queueMsg(ircmsgs.kick(channel, msg.nick, s))
 
