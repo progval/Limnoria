@@ -94,15 +94,15 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
 '''
 def superReload(oldmodule):
     ###
-    # So here's how this baby works:
+    # So here is how this baby works:
     #   Reload the module.
     #   Iterate through the old module, finding classes and functions that are
     #     also in the new module.
     #   Add an __getattribute__ or __getattr__ method to those classes that are
     #     present in the new module.  This method will, when called, change
-    #     the instance's __class__ to point to the new class.
+    #     the __class__ of the instance to point to the new class.
     #   Change the func_code, func_defaults, and func_doc of any functions or
-    #     methods or generators we run across, just in case someone's holding
+    #     methods or generators we run across, just in case someone is holding
     #     a reference to them instead of calling them by name.
     ###
     """Reload a module and make objects auto-update."""
@@ -115,7 +115,7 @@ def superReload(oldmodule):
         if name in newdict:
             newvalue = newdict[name]
             oldtype = type(oldvalue)
-            # We have to pass in newvalue because of Python's scoping.
+            # We have to pass in newvalue because of Python scoping.
             def updater(self, s, newvalue=newvalue):
                 # This function is to be an __getattr__ or __getattribute__.
                 try:
@@ -131,7 +131,7 @@ def superReload(oldmodule):
                oldvalue.__module__ == newmodule.__name__:
                 # New-style classes support __getattribute__, which is
                 # called on *any* attribute access, so they get updated
-                # the first time they're used after a reload.
+                # the first time they are used after a reload.
                 if not (issubclass(oldvalue, str) or \
                         issubclass(oldvalue, long) or \
                         issubclass(oldvalue, tuple)):
