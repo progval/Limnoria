@@ -1,3 +1,79 @@
+2004-09-30 Jeremy Fincher <jemfinch@supybot.org>
+
+	* Version 0.80.0pre3!
+	
+	* Removed the tinyurl shrinking code from the URL plugin and put
+	it in the ShrinkUrl plugin, and added the ability to use ln-s.net
+	as different URL shrinker as well.
+
+	* Added an outFilter to the ShrinkUrl plugin that will shrink any
+	outgoing URL that is longer than the minimum length.
+	
+	* Added a Freenode plugin as proof-of-concept; the bot can now
+	use CAPAB IDENTIFY-MSG to ignore users that aren't identified.
+	
+	* Added the ability for the Seen plugin to match nicks with
+	wildcards.
+	
+	* Added a showLinks configuration option to the RSS plugin to
+	show links during announcements (and another such variable for
+	non-announcements).
+	
+	* Added the spellit and hebrew filters to the Filter plugin.
+	
+	* Added the ability to log to separate directories to
+	ChannelLogger.
+
+	* Added the option to Lookup.add to add lookups that don't reply
+	with the key.
+
+	* Added "at" and "until" commands to the Time plugin; they're not
+	perfect, and they don't parse nearly enough times, but they're
+	somewhat tolerable for now.
+	
+	* Added a Sourceforge.stats command.
+
+	* Added single-letter commands to the Words plugin when a hangman
+	game is active.
+
+	* Added a configuration variable determining the maximum length
+	of replies internally, so they can't suck up as much CPU as they
+	would otherwise.
+
+	* Added a configuration variable determining the maximum nesting
+	depth allowed, so exceedingly nested commands will be stopped
+	before they're executed.
+
+	* Added configuration variables concerning the formats used by
+	the central and plugin logging facilities.
+
+	* Added a configuration variable determining the quote characters
+	used by the bot to quote literal strings.
+
+	* Added support for line-wrapping the registry configuration
+	file.
+	
+	* Moved supybot.reply.{brackets,pipeSyntax} to
+	supybot.commands.nested.
+
+	* Fixed a longstanding bug with the bot "forgetting"
+	channel-specific configuration variables if they weren't
+	exercised during the duration of the bot's uptime.
+	
+	* Fixed renames so they're finally persistent.
+	
+	* Fixed a bug having to do with Note and unsent notes.
+	
+	* Fixed several bugs in the interaction of Infobot with other
+	plugins.
+	
+	* Added commands.wrap, the new method for wrapping commands and
+	handling type validation errors consistently throughout the bot.
+	
+	* Upgraded many of the outside projects we include to their
+	newest versions.
+
+	
 2004-09-17 James Vega <jamessan@users.sf.net>
 
 	* Version 0.80.0pre2!
