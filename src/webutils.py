@@ -69,10 +69,13 @@ def getUrlFd(url):
 def getUrl(url, size=None):
     """Gets a page.  Returns a string that is the page gotten."""
     fd = getUrlFd(url)
-    if size is None:
-        text = fd.read()
-    else:
-        text = fd.read(size)
+    try:
+        if size is None:
+            text = fd.read()
+        else:
+            text = fd.read(size)
+    except socket.timeout, e:
+        raise WebError, TIMED_OUT
     fd.close()
     return text
 
