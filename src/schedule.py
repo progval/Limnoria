@@ -84,8 +84,6 @@ class Schedule(drivers.IrcDriver):
         self.schedule = [(t, n) for (t, n) in self.schedule if n != name]
 
     def addPeriodicEvent(self, f, t, name=None):
-        # Note that you can't name a periodic event -- it'll be erased after
-        # it's been run only once.
         def wrapper():
             f()
             self.addEvent(wrapper, time.time() + t, name)
