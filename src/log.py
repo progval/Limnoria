@@ -89,7 +89,7 @@ class BetterFileHandler(logging.FileHandler):
             except UnicodeError:
                 self.stream.write("%s\n" % msg.encode("UTF-8"))
         self.flush()
-        
+
 
 class DailyRotatingHandler(BetterFileHandler):
     def __init__(self, *args):
@@ -159,6 +159,19 @@ def getPluginLogger(name):
         handler.setLevel(-1)
         handler.setFormatter(pluginFormatter)
         log.addHandler(handler)
+    if name in sys.modules:
+        # Let's log the version, this might be useful.
+        module = sys.modules[name]
+        try:
+            if hasattr(module, '__revision__'):
+                version = module.__revision__.split()[2]
+                log.info('Starting log for %s (revision %s)', name, version)
+            else:
+                debug('Module %s has no __revision__ string.', name)
+                log.info('Starting log for %s.', name)
+        except IndexError:
+            log.debug('Improper __revision__ string in %s.', name)
+            log.info('Starting log for %s.', name)
     return log
 
 def timestamp(when=None):
