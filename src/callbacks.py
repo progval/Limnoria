@@ -265,13 +265,15 @@ class IrcObjectProxy:
             if isinstance(self.irc, self.__class__):
                 self.irc.reply(msg, s)
             else:
+                if ircutils.funkyArgument(s):
+                    s = repr(s)
                 self.irc.queueMsg(reply(msg, s))
         else:
             self.args[self.counter] = s
             self.evalArgs()
 
     def error(self, msg, s):
-        raise Error, s
+        self.reply(msg, 'Error: ' + s)
 
     def killProxy(self):
         if not isinstance(self.irc, irclib.Irc):
@@ -287,10 +289,6 @@ class IrcObjectProxy:
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
 
-
-class IrcObjectProxyThreaded(IrcObjectProxy):
-    def error(self, msg, s):
-        self.reply(msg, 'Error: ' + s)
 
 class CommandThread(threading.Thread):
     def __init__(self, command, irc, msg, args):
@@ -319,10 +317,7 @@ class Privmsg(irclib.IrcCallback):
     commandArgs = ['self', 'irc', 'msg', 'args']
     def __init__(self):
         self.rateLimiter = RateLimiter()
-        if self.threaded:
-            self.Proxy = IrcObjectProxyThreaded
-        else:
-            self.Proxy = IrcObjectProxy
+        self.Proxy = IrcObjectProxy
 
     def __call__(self, irc, msg):
         irclib.IrcCallback.__call__(self, irc, msg)
@@ -379,18 +374,13 @@ class IrcObjectProxyRegexp:
         self.irc = irc
 
     def error(self, msg, s):
-        raise Error, s
+        self.reply(msg, 'Error: ' + s)
 
     def reply(self, msg, s):
         self.irc.queueMsg(reply(msg, s))
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
-
-
-class IrcObjectProxyRegexpThreaded(IrcObjectProxyRegexp):
-    def error(self, msg, s):
-        self.irc.queueMsg(reply(msg, 'Error: ' + s))
 
 
 class PrivmsgRegexp(Privmsg):
@@ -417,10 +407,7 @@ class PrivmsgRegexp(Privmsg):
     flags = re.I
     def __init__(self):
         Privmsg.__init__(self)
-        if self.threaded:
-            self.Proxy = IrcObjectProxyRegexpThreaded
-        else:
-            self.Proxy = IrcObjectProxyRegexp
+        self.Proxy = IrcObjectProxyRegexp
         self.res = []
         #for name, value in self.__class__.__dict__.iteritems():
         for name, value in self.__class__.__dict__.items():
