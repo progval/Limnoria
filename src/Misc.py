@@ -53,7 +53,7 @@ import callbacks
 class Misc(callbacks.Privmsg):
     priority = sys.maxint
     def invalidCommand(self, irc, msg, tokens):
-        self.log.debug('Misc.invalidCommand called')
+        self.log.debug('Misc.invalidCommand called (tokens %s)', tokens)
         if conf.replyWhenNotCommand:
             command = tokens and tokens[0] or ''
             irc.error(msg, '%r is not a valid command.' % command)
