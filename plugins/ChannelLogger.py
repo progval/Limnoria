@@ -69,7 +69,8 @@ conf.registerChannelValue(conf.supybot.plugins.ChannelLogger,
     represent the timestamp used for the filename in rotated logs.  When this
     timestamp changes, the old logfiles will be closed and a new one started.
     The format characters for the timestamp are in the time.strftime docs at
-    python.org."""))
+    python.org.  In order for your logs to be rotated, you'll also have to
+    enable supybot.plugins.ChannelLogger.rotateLogs."""))
 
 class FakeLog(object):
     def flush(self):
@@ -137,6 +138,7 @@ class ChannelLogger(callbacks.Privmsg):
                     del self.logs[channel]
 
     def getLog(self, channel):
+        channel = ircutils.toLower(channel)
         self.checkLogNames()
         if channel in self.logs:
             return self.logs[channel]
@@ -158,6 +160,7 @@ class ChannelLogger(callbacks.Privmsg):
             log.write('  ')
 
     def doLog(self, channel, s):
+        channel = ircutils.toLower(channel)
         log = self.getLog(channel)
         if self.registryValue('timestamp', channel):
             self.timestamp(log)
