@@ -1000,9 +1000,6 @@ registerGlobalValue(supybot.debug, 'flushVeryOften',
     registry.Boolean(False, """Determines whether the bot will automatically
     flush all flushers *very* often.  Useful for debugging when you don't know
     what's breaking or when, but think that it might be logged."""))
-registerGlobalValue(supybot.debug, 'generated',
-    registry.String('$Id: conf.py,v 1.237 2005/01/17 04:54:17 jamessan Exp $; %s' % time.ctime(), """Determines when this
-    configuration file was generated; it should be modified by
-    supybot-wizard"""))
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
