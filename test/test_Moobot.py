@@ -35,19 +35,9 @@ import base64
 
 class MoobotTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Moobot',)
-    def testMorse(self):
-        self.assertResponse('unmorse [morse jemfinch]', 'JEMFINCH')
-        self.assertResponse('dawdit [morse jemfinch]', 'JEMFINCH')
-        self.assertResponse('dawdit [ditdaw jemfinch]', 'JEMFINCH')
-        self.assertResponse('unmorse [ditdaw jemfinch]', 'JEMFINCH')
-
     def testCool(self):
         for nick in nicks[:10]:
             self.assertResponse('cool %s' % nick, ':cool: %s :cool:' % nick)
-
-    def testReverse(self):
-        for nick in nicks[:10]:
-            self.assertResponse('reverse %s' % nick, nick[::-1])
 
     def testMime(self):
         for nick in nicks[:10]:

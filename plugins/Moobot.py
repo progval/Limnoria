@@ -99,95 +99,12 @@ class Moobot(callbacks.Privmsg):
         something = privmsgs.getArgs(args)
         irc.reply(msg, ':cool: %s :cool:' % something)
 
-    _code = {
-        "A" : ".-",
-        "B" : "-...",
-        "C" : "-.-.",
-        "D" : "-..",
-        "E" : ".",
-        "F" : "..-.",
-        "G" : "--.",
-        "H" : "....",
-        "I" : "..",
-        "J" : ".---",
-        "K" : "-.-",
-        "L" : ".-..",
-        "M" : "--",
-        "N" : "-.",
-        "O" : "---",
-        "P" : ".--.",
-        "Q" : "--.-",
-        "R" : ".-.",
-        "S" : "...",
-        "T" : "-",
-        "U" : "..-",
-        "V" : "...-",
-        "W" : ".--",
-        "X" : "-..-",
-        "Y" : "-.--",
-        "Z" : "--..",
-        "0" : "-----",
-        "1" : ".----",
-        "2" : "..---",
-        "3" : "...--",
-        "4" : "....-",
-        "5" : ".....",
-        "6" : "-....",
-        "7" : "--...",
-        "8" : "---..",
-        "9" : "----.",
-    }
-
-    _revcode = dict([(y, x) for (x, y) in _code.items()])
-
-    _unmorsere = re.compile('([.-]+)')
-    def unmorse(self, irc, msg, args):
-        """<morse code text>
-
-        Does the reverse of the morse/ditdaw command.
-        """
-        text = privmsgs.getArgs(args)
-        text = text.replace('_', '-')
-        def morseToLetter(m):
-            s = m.group(1)
-            return self._revcode.get(s, s)
-        text = self._unmorsere.sub(morseToLetter, text)
-        text = text.replace('  ', '\x00')
-        text = text.replace(' ', '')
-        text = text.replace('\x00', ' ')
-        irc.reply(msg, text)
-
-    def morse(self, irc, msg, args):
-        """<text>
-
-        Gives the more code equivalent of a given string.
-        """
-        text = privmsgs.getArgs(args)
-        L = []
-        for c in text.upper():
-            if c in self._code:
-                L.append(self._code[c])
-            else:
-                L.append(c)
-        irc.reply(msg, ' '.join(L))
-
-    ditdaw = morse
-    dawdit = unmorse
-
     def hi(self, irc, msg, args):
         """takes no arguments
 
         Says hi to you.
         """
         irc.reply(msg, 'howdy, %s!' % msg.nick)
-
-    def reverse(self, irc, msg, args):
-        """<text>
-
-        Reverses <text>.
-        """
-        text = privmsgs.getArgs(args)
-        irc.reply(msg, text[::-1])
 
     def mime(self, irc, msg, args):
         """<text>

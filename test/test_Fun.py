@@ -44,6 +44,13 @@ class FunTest(PluginTestCase, PluginDocumentation):
         self.assertNotError('levenshtein Python Perl')
         self.assertNotError('soundex jemfinch')
 
+    def testMorse(self):
+        self.assertResponse('unmorse [morse jemfinch]', 'JEMFINCH')
+
+    def testReverse(self):
+        for nick in nicks[:10]:
+            self.assertResponse('reverse %s' % nick, nick[::-1])
+
     def testBinary(self):
         self.assertResponse('binary A', '01000001')
 
