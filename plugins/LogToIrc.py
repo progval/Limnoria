@@ -192,7 +192,7 @@ def configure(advanced):
         try:
             targets = anything('Which channels or users would you like to '
                                'send log messages to?')
-            conf.supybot.plugins.LogToIrc.target.set(target)
+            conf.supybot.plugins.LogToIrc.targets.set(targets)
         except registry.InvalidRegistryValue, e:
             output(str(e))
             targets = ''
