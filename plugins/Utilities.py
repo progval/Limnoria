@@ -137,6 +137,11 @@ class Utilities(callbacks.Privmsg):
         regexp to <text>
         """
         (regexp, text) = privmsgs.getArgs(args, required=2)
+        self.log.info('re command called with regexp %r from %s' %
+                      (regexp, msg.prefix))
+        if len(regexp) > 512:
+            irc.error(msg, 'Your regexp is just plain too long.')
+            return
         f = None
         try:
             r = utils.perlReToPythonRe(regexp)
