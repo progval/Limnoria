@@ -29,6 +29,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+This module contains the basic callbacks for handling PRIVMSGs.  Both Privmsg
+and PrivmsgRegexp classes are provided; for offering callbacks based on
+commands and their arguments (much like *nix command line programs) use the
+Privmsg class; for offering callbacks based on regular expressions, use the
+PrivmsgRegexp class.  Read their respective docstrings for more information on
+how to use them.
+"""
+
 from fix import *
 
 import re
@@ -158,7 +167,16 @@ class ArgumentError(Error):
     pass
 
 class Tokenizer:
+    # This will be used as a global environment to evaluate strings in.
+    # Evaluation is, of course, necessary in order to allowed escaped
+    # characters to be properly handled.
+    #
+    # Recall that environments which contain an __builtins__ variable will
+    # have no access to the builtins except through that variable.  What I'm
+    # doing here is establishing an empty builtin environment.
     _env = {'__builtins__': new.module('__builtins__')}
+    # These are the characters valid in a token.  Everything printable except
+    # double-quote, left-bracket, and right-bracket.
     validChars = string.ascii[33:].translate(string.ascii, '"[]')
     def __init__(self, tokens=''):
         self.validChars = self.validChars.translate(string.ascii, tokens)
