@@ -129,7 +129,8 @@ class FunDB(callbacks.Privmsg):
 
     def die(self):
         self.db.close()
-    """
+        
+    '''
     def praise(self, irc, msg, args):
         """<something>
 
@@ -148,7 +149,8 @@ class FunDB(callbacks.Privmsg):
         (id, insult) = cursor.fetchone()
         s = insul
         irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg),
-    """
+    '''
+
     def insult(self, irc, msg, args):
         """<nick>"""
         nick = privmsgs.getArgs(args)
