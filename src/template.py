@@ -36,6 +36,11 @@ customized startup files for bots.
 
 import re
 import sys
+
+if sys.version_info < (2, 3, 0):
+    sys.stderr.write('This program requires Python >= 2.3.0\n')
+    sys.exit(-1)
+
 import time
 import optparse
 
