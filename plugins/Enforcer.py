@@ -31,7 +31,9 @@
 
 """
 Enforcer: Enforces capabilities on a channel, watching MODEs, KICKs,
-                 JOINs, etc. to make sure they match the channel's config.
+JOINs, etc. to make sure they match the channel's config.  Also handles
+auto-opping, auto-halfopping, or auto-voicing, as well as cycling an otherwise
+empty channel in order to get ops.
 """
 
 __revision__ = "$Id$"
@@ -50,12 +52,14 @@ import callbacks
 def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('Enforcer', True)
-    chanserv = something('What\'s the name of ChanServ on your network?')
-    if yn('Do you want the bot to take revenge on rule breakers?') == 'y':
+    chanserv = anything("""What\'s the name of ChanServ on your network?  If
+    there is no ChanServ on your network, just press enter without entering
+    anything.""")
+    if yn('Do you want the bot to take revenge on rule breakers?'):
         revenge = True
     else:
         revenge = False
-    onStart.append('enforcer start %s' % chanserv)
+    conf.supybot.plugins.Enforcer.ChanServ.set(chanserv)
     conf.supybot.plugins.Enforcer.takeRevenge.setValue(revenge)
 
 class ValidNickOrEmptyString(registry.String):
@@ -93,6 +97,10 @@ conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'ChanServ',
 
 _chanCap = ircdb.makeChannelCapability
 class Enforcer(callbacks.Privmsg):
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        self.topics = ircutils.IrcDict()
+        
     def doJoin(self, irc, msg):
         channel = msg.args[0]
         c = ircdb.channels.getChannel(channel)
@@ -112,7 +120,7 @@ class Enforcer(callbacks.Privmsg):
     def doTopic(self, irc, msg):
         channel = msg.args[0]
         topic = msg.args[1]
-        if msg.nick != irc.nick and \
+        if msg.nick != irc.nick and channel in self.topics and \
            not ircdb.checkCapabilities(msg.prefix,
                                        (_chanCap(channel, 'op'),
                                         _chanCap(channel, 'topic'))):
@@ -161,7 +169,9 @@ class Enforcer(callbacks.Privmsg):
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
-        if not ircutils.isChannel(channel) or msg.nick == self.chanserv:
+        chanserv = self.registryValue('ChanServ', channel)
+        if not ircutils.isChannel(channel) or \
+               (chanserv and msg.nick == chanserv):
             return
         if msg.nick != irc.nick and \
            not ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
@@ -228,9 +238,10 @@ class Enforcer(callbacks.Privmsg):
                 self.log.warning('Not cycling %s: it\'s +i', channel)
             
     def doPart(self, irc, msg):
-        channel = msg.args[0]
-        if len(irc.state.channels[channel].users) == 1:
-            self._cycle(irc, channel)
+        if msg.prefix != irc.prefix:
+            channel = msg.args[0]
+            if len(irc.state.channels[channel].users) == 1:
+                self._cycle(irc, channel)
 
     def doQuit(self, irc, msg):
         for (channel, c) in irc.state.channels.iteritems():
@@ -239,9 +250,12 @@ class Enforcer(callbacks.Privmsg):
 
     def __call__(self, irc, msg):
         chanserv = self.registryValue('ChanServ', irc.network)
-        if chanserv and ircutils.isUserHostmask(msg.prefix):
-            if msg.nick != chanserv:
-                callbacks.Privmsg.__call__(self, irc, msg)
+        if chanserv:
+            if ircutils.isUserHostmask(msg.prefix):
+                if msg.nick != chanserv:
+                    callbacks.Privmsg.__call__(self, irc, msg)
+        else:
+            callbacks.Privmsg.__call__(self, irc, msg)
 
 
 Class = Enforcer
