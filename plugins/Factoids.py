@@ -377,7 +377,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         except ValueError:
             irc.error('Invalid key id.')
             return
-        db = self._getDb(channel)
+        db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT factoids.id, factoids.fact
                           FROM keys, factoids
