@@ -136,16 +136,11 @@ class Dict(callbacks.Privmsg):
             s = utils.normalizeWhitespace(s).rstrip(';.,')
             L.append('%s: %s' % (db, s))
         utils.sortBy(len, L)
-        originalFirst = L[0]
-        ircutils.shrinkList(L, '; ')
-        if not L:
-            irc.reply(msg, '%s \x02<snip>\x0f' % originalFirst[:400])
-        elif dictionary == '*':
-            s = '%s responded, %s shown: %s' % \
-                (utils.commaAndify(dbs), len(L), '; '.join(L))
-            irc.reply(msg, s)
+        if dictionary == '*':
+            s = '%s responded: %s' % (utils.commaAndify(dbs), '; '.join(L)) 
         else:
-            irc.reply(msg, '; '.join(L))
+            s = '; '.join(L)
+        irc.reply(msg, s)
 
 
 Class = Dict
