@@ -201,13 +201,19 @@ class Http(callbacks.Privmsg):
         r'(.*?), (.*?),(.*?)</b></font></td>', re.IGNORECASE)
     _interregex = re.compile(
         r'<td><font size="4" face="arial"><b>'\
-        r'(.*?), (.*?)</b></font></td>', re.IGNORECASE)
+        r'([^,]+), ([^<]+)</b></font></td>', re.IGNORECASE)
     _condregex = re.compile(
         r'<td width="100%" colspan="2" align="center"><strong>'\
-        r'<font face="arial">(.*?)</font></strong></td>', re.IGNORECASE)
+        r'<font face="arial">([^<]+)</font></strong></td>', re.IGNORECASE)
     _tempregex = re.compile(
         r'<td valign="top" align="right"><strong><font face="arial">'\
-        r'(.*?)</font></strong></td>', re.IGNORECASE)
+        r'([^<]+)</font></strong></td>', re.IGNORECASE)
+    _chillregex = re.compile(
+        r'Wind Chill</font></strong>:</small></a></td>\s+<td align="right">'\
+        r'<small><font face="arial">([^<]+)</font></small></td>', re.I | re.S)
+    _heatregex = re.compile(
+        r'Heat Index</font></strong>:</small></a></td>\s+<td align="right">'\
+        r'<small><font face="arial">([^<]+)</font></small></td>', re.I | re.S)
     # States
     _realStates = sets.Set(['ak', 'al', 'ar', 'az', 'ca', 'co', 'ct', 
     			    'dc', 'de', 'fl', 'ga', 'hi', 'ia', 'id',
@@ -291,14 +297,32 @@ class Http(callbacks.Privmsg):
 	        irc.error(msg, 'No such location could be found.')
 		return
 
-        temp = self._tempregex.search(html).group(1)
-        conds = self._condregex.search(html).group(1)
+        city = city.strip()
+        state = state.strip()
+        temp = self._tempregex.search(html)
+        if temp:
+            temp = temp.group(1)
+        conds = self._condregex.search(html)
+        if conds:
+            conds = conds.group(1)
+        chill = self._chillregex.search(html)
+        if chill:
+            chill = chill.group(1)
+        heat = self._heatregex.search(html)
+        if heat:
+            heat = heat.group(1)
+
+        if heat[:-2] > temp[:-2]:
+            index = ' (Heat Index: %s)' % heat
+        elif chill[:-2] < temp[:-2]:
+            index = ' (Wind Chill: %s)' % chill
+        else:
+            index = ''
 
         if temp and conds and city and state:
             conds = conds.replace('Tsra', 'Thunder Storms')
-            s = 'The current temperature in %s, %s is %s.  ' \
-                'Conditions: %s.' % \
-                (city.strip(), state.strip(), temp, conds)
+            s = 'The current temperature in %s, %s is %s%s. Conditions: %s' % \
+                (city, state, temp, index, conds)
             irc.reply(msg, s)
         else:
             irc.error(msg, 'The format of the page was odd.')
