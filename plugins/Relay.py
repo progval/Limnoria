@@ -79,6 +79,10 @@ conf.registerChannelValue(conf.supybot.plugins.Relay, 'color',
 conf.registerChannelValue(conf.supybot.plugins.Relay, 'topicSync',
     registry.Boolean(True, """Determines whether the bot will synchronize
     topics between networks in the channels it relays."""))
+conf.registerChannelValue(conf.supybot.plugins.Relay, 'hostmasks',
+    registry.Boolean(False, """Determines whether the bot will relay the
+    hostmask of the person joining or parting the channel when he or she joins
+    or parts."""))
 conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
     conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
     will relay in."""))
@@ -489,14 +493,18 @@ class Relay(callbacks.Privmsg):
             s = self._formatPrivmsg(msg.nick, network, msg)
             m = ircmsgs.privmsg(channel, s)
             self._sendToOthers(irc, m)
-
+            
     def doJoin(self, irc, msg):
         irc = self._getRealIrc(irc)
         channel = msg.args[0]
         if channel not in self.registryValue('channels'):
             return
         network = self._getIrcName(irc)
-        s = '%s (%s) has joined on %s' % (msg.nick, msg.prefix, network)
+        if not self.registryValue('hostmasks', channel):
+            hostmask = ' '
+        else:
+            hostmask = ' (%s) ' % msg.prefix
+        s = '%s%shas joined on %s' % (msg.nick, hostmask, network)
         m = ircmsgs.privmsg(channel, s)
         self._sendToOthers(irc, m)
 
@@ -506,7 +514,11 @@ class Relay(callbacks.Privmsg):
         if channel not in self.registryValue('channels'):
             return
         network = self._getIrcName(irc)
-        s = '%s (%s) has left on %s' % (msg.nick, msg.prefix, network)
+        if not self.registryValue('hostmasks', channel):
+            hostmask = ' '
+        else:
+            hostmask = ' (%s) ' % msg.prefix
+        s = '%s%s has left on %s' % (msg.nick, hostmask, network)
         m = ircmsgs.privmsg(channel, s)
         self._sendToOthers(irc, m)
 
