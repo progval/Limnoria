@@ -154,7 +154,7 @@ if __name__ == '__main__':
         world.myVerbose = False
 
     if options.nonetwork:
-        testsupport.network = False
+        test.network = False
 
     log.testing = True
     world.testing = True
