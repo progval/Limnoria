@@ -9,13 +9,20 @@ OSes.
 # COMMON:
 ###
 
-First things first: Supybot *requires* Python 2.3.  There ain't no
-getting around it.  If you're a Python developer, you probably know
-how superior 2.3 is to previous incarnations.  If you're not, just
-think about the difference between a bowl of plain vanilla ice cream
-and a banana split.  Or something like that.  Either way, *We're*
-Python developers and we like banana splits.  So, be sure to install
-python2.3 before continuing.  You can get it from http://www.python.org/
+First things first: Supybot *requires* at least Python 2.3.  There ain't
+no getting around it.  We do not require any version greater than 2.3,
+but we will be compatible with any version of Python >= 2.3.  If you're
+a Python developer, you probably know how superior 2.3 is to previous
+incarnations.  If you're not, just think about the difference between a
+bowl of plain vanilla ice cream and a banana split.  Or something like
+that.  Either way, *We're* Python developers and we like banana splits.
+So, be sure to install python2.3 or greater before continuing.  You can
+get it from http://www.python.org/
+
+For more information and help on how to use Supybot, checkout
+the documents under docs/ (especially GETTING_STARTED and CONFIGURATION).
+Our forums (http://forums.supybot.org/) may also be of use, especially
+the "Tips and Tricks" topic under "Supybot User Discussion".
 
 
 ###
@@ -96,11 +103,6 @@ unless you turned off logging to stdout, you'll see some nice log
 messages describing what the bot is doing at any particular moment; it
 may pause for a significant amount of time after saying "Connecting
 to ..." while the server tries to check its ident.
-
-For more information and help on how to use Supybot, checkout
-docs/GETTING_STARTED.  Our forums (http://forums.supybot.org/) may
-also be of use, especially the "Tips and Tricks" topic under "Supybot
-User Discussion".
 
 ###
 # Addenda
