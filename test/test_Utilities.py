@@ -81,4 +81,11 @@ class UtilitiesTestCase(PluginTestCase):
     def testNotOverlongRe(self):
         self.assertError('re [strjoin "" s/./ [eval \'xxx\'*400]] blah blah')
 
+    def testApply(self):
+        self.assertResponse('apply "utilities last" a', 'a')
+        self.assertResponse('apply "utilities last" a b', 'b')
+
+    def testShuffle(self):
+        self.assertResponse('shuffle a', 'a')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
