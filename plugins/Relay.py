@@ -97,17 +97,16 @@ def configure(advanced):
 
 ircs = ircutils.IrcDict()
 lastmsg = {} # Not IrcDict.  Doesn't map strings.
-channels = ircutils.IrcSet()
 ircstates = {} # Not IrcDict.  Doesn't map strings.
 abbreviations = {} # Not IrcDict.  Doesn't map strings.
 originalIrc = None
 
 def reload(x=None):
-    global ircs, ircstates, lastmsg, channels, abbreviations, originalIrc
+    global ircs, ircstates, lastmsg, abbreviations, originalIrc
     if x is None:
-        return (ircs, ircstates, lastmsg, channels, abbreviations, originalIrc)
+        return (ircs, ircstates, lastmsg, abbreviations, originalIrc)
     else:
-        (ircs, ircstates, lastmsg, channels, abbreviations, originalIrc) = x
+        (ircs, ircstates, lastmsg, abbreviations, originalIrc) = x
 
 conf.registerPlugin('Relay')
 conf.registerChannelValue(conf.supybot.plugins.Relay, 'color',
@@ -137,7 +136,6 @@ class Relay(callbacks.Privmsg):
         self.started = False
         self.ircstates = ircstates
         self.lastmsg = lastmsg
-        self.channels = self.registryValue('channels')
         self._whois = {}
         self.abbreviations = abbreviations
 
@@ -152,7 +150,7 @@ class Relay(callbacks.Privmsg):
 
     def do376(self, irc, msg):
         L = []
-        for channel in self.channels:
+        for channel in self.registryValue('channels'):
             if channel not in irc.state.channels:
                 L.append(channel)
         if L:
@@ -249,7 +247,7 @@ class Relay(callbacks.Privmsg):
         if not ircutils.isChannel(channel):
             irc.error('%r is not a valid channel.' % channel)
             return
-        self.channels.add(ircutils.toLower(channel))
+        self.registryValue('channels').add(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
@@ -270,7 +268,7 @@ class Relay(callbacks.Privmsg):
         if not ircutils.isChannel(channel):
             irc.error('%r is not a valid channel.' % channel)
             return
-        self.channels.remove(ircutils.toLower(channel))
+        self.registryValue('channels').remove(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
@@ -316,7 +314,7 @@ class Relay(callbacks.Privmsg):
         if network not in self.ircs:
             irc.error('I\'m not currently on %s.' % network)
             return
-        if channel not in self.channels:
+        if channel not in self.registryValue('channels'):
             irc.error('I\'m not currently relaying to %s.' % channel)
             return
         self.ircs[network].queueMsg(ircmsgs.privmsg(channel, text))
@@ -334,7 +332,7 @@ class Relay(callbacks.Privmsg):
             return
         realIrc = self._getRealIrc(irc)
         channel = privmsgs.getChannel(msg, args)
-        if channel not in self.channels:
+        if channel not in self.registryValue('channels'):
             irc.error('I\'m not relaying %s.' % channel)
             return
         users = []
@@ -534,7 +532,7 @@ class Relay(callbacks.Privmsg):
         if self.started and ircutils.isChannel(msg.args[0]):
             irc = self._getRealIrc(irc)
             channel = msg.args[0]
-            if channel not in self.channels:
+            if channel not in self.registryValue('channels'):
                 return
             if ircutils.isCtcp(msg) and \
                not 'AWAY' in msg.args[1] and \
@@ -549,7 +547,7 @@ class Relay(callbacks.Privmsg):
         if self.started:
             irc = self._getRealIrc(irc)
             channel = msg.args[0]
-            if channel not in self.channels:
+            if channel not in self.registryValue('channels'):
                 return
             abbreviation = self.abbreviations[irc]
             s = '%s (%s) has joined on %s' % (msg.nick,msg.prefix,abbreviation)
@@ -560,7 +558,7 @@ class Relay(callbacks.Privmsg):
         if self.started:
             irc = self._getRealIrc(irc)
             channel = msg.args[0]
-            if channel not in self.channels:
+            if channel not in self.registryValue('channels'):
                 return
             abbreviation = self.abbreviations[irc]
             s = '%s (%s) has left on %s' % (msg.nick, msg.prefix, abbreviation)
@@ -571,7 +569,7 @@ class Relay(callbacks.Privmsg):
         if self.started:
             irc = self._getRealIrc(irc)
             channel = msg.args[0]
-            if channel not in self.channels:
+            if channel not in self.registryValue('channels'):
                 return
             abbreviation = self.abbreviations[irc]
             s = 'mode change by %s on %s: %s' % \
@@ -583,7 +581,7 @@ class Relay(callbacks.Privmsg):
         if self.started:
             irc = self._getRealIrc(irc)
             channel = msg.args[0]
-            if channel not in self.channels:
+            if channel not in self.registryValue('channels'):
                 return
             abbrev = self.abbreviations[irc]
             if len(msg.args) == 3:
@@ -601,7 +599,7 @@ class Relay(callbacks.Privmsg):
             newNick = msg.args[0]
             network = self.abbreviations[irc]
             s = 'nick change by %s to %s on %s' % (msg.nick, newNick, network)
-            for channel in self.channels:
+            for channel in self.registryValue('channels'):
                 if newNick in irc.state.channels[channel].users:
                     m = ircmsgs.privmsg(channel, s)
                     self._sendToOthers(irc, m)
@@ -628,7 +626,7 @@ class Relay(callbacks.Privmsg):
                 s = '%s has quit %s (%s)' % (msg.nick, network, msg.args[0])
             else:
                 s = '%s has quit %s.' % (msg.nick, network)
-            for channel in self.channels:
+            for channel in self.registryValue('channels'):
                 if msg.nick in self.ircstates[irc].channels[channel].users:
                     m = ircmsgs.privmsg(channel, s)
                     self._sendToOthers(irc, m)
@@ -652,7 +650,7 @@ class Relay(callbacks.Privmsg):
                     text.startswith('nick change') or \
                     text.startswith('topic change')):
                 channel = msg.args[0]
-                if channel in self.channels:
+                if channel in self.registryValue('channels'):
                     abbreviation = self.abbreviations[irc]
                     s = self._formatPrivmsg(irc.nick, abbreviation, msg)
                     for otherIrc in self.ircs.itervalues():
@@ -662,7 +660,7 @@ class Relay(callbacks.Privmsg):
         elif msg.command == 'TOPIC' and len(msg.args) > 1 and \
              self.registryValue('topicSync', msg.args[0]):
             (channel, topic) = msg.args
-            if channel in self.channels:
+            if channel in self.registryValue('channels'):
                 for otherIrc in self.ircs.itervalues():
                     if otherIrc != irc:
                         try:
