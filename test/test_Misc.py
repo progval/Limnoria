@@ -183,6 +183,7 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testRevision(self):
         self.assertNotError('revision Misc')
+        self.assertNotError('revision Misc.py')
         self.assertNotError('revision')
 
     def testRevisionIsCaseInsensitive(self):

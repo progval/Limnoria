@@ -214,6 +214,8 @@ class Misc(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args, required=0, optional=1)
         if name:
+            if name.endswith('.py'):
+                name = name[:-3]
             try:
                 modules = {}
                 for moduleName in sys.modules:
