@@ -199,13 +199,19 @@ if not hasattr(socket, 'sslerror'):
     socket.sslerror = socket.error
 
 # Trick to get an __revision__ attribute in all exceptions, if possible.
-Exception__init__ = Exception.__init__
-def __init__(self, *args, **kwargs):
-    caller = sys._getframe(1)
-    module = sys.modules.get(caller.f_globals.get('__name__'))
-    self.__revision__ = getattr(module, '__revision__', None)
-    Exception__init__(self, *args, **kwargs)
-Exception.__init__ = __init__
+if not hasattr(Exception, '_original__init__'):
+    Exception._original__init__ = Exception.__init__
+    def __init__(self, *args, **kwargs):
+        # We had sys._getframe(1) here for awhile, but in the interactive
+        # interpreter, there isn't enough call stack.  Thanks, Rafterman, for
+        # pointing that out.
+        me = sys._getframe(0)
+        caller = me.f_back
+        callerGlobals = getattr(caller, 'f_globals', {})
+        callerModule = sys.modules.get(callerGlobals.get('__name__'))
+        self.__revision__ = getattr(callerModule, '__revision__', None)
+        self._original__init__(*args, **kwargs)
+    Exception.__init__ = __init__
     
     
 for name in exported:
