@@ -196,12 +196,12 @@ class Group(object):
     def getValues(self, askChildren=False):
         L = []
         items = self.values.items()
-        items.sort()
+        utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
         for (name, value) in items:
             L.append(('%s.%s' % (self.getName(), name), str(value)))
         if askChildren:
             items = self.children.items()
-            items.sort()
+            utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
             for (_, child) in items:
                 L.extend(child.getValues(askChildren))
         return L
