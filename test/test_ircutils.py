@@ -166,18 +166,25 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(colors, ircutils.safeArgument(colors))
 
     def testIsNick(self):
-        self.failUnless(ircutils.isNick('jemfinch'))
-        self.failUnless(ircutils.isNick('jemfinch0'))
-        self.failUnless(ircutils.isNick('[0]'))
-        self.failUnless(ircutils.isNick('{jemfinch}'))
-        self.failUnless(ircutils.isNick('[jemfinch]'))
-        self.failUnless(ircutils.isNick('jem|finch'))
-        self.failUnless(ircutils.isNick('\\```'))
-        self.failUnless(ircutils.isNick('`'))
-        self.failUnless(ircutils.isNick('A'))
-        self.failIf(ircutils.isNick(''))
-        self.failIf(ircutils.isNick('8foo'))
-        self.failIf(ircutils.isNick('10'))
+        try:
+            original = conf.supybot.protocols.irc.strictRfc()
+            conf.supybot.protocols.irc.strictRfc.setValue(True)
+            self.failUnless(ircutils.isNick('jemfinch'))
+            self.failUnless(ircutils.isNick('jemfinch0'))
+            self.failUnless(ircutils.isNick('[0]'))
+            self.failUnless(ircutils.isNick('{jemfinch}'))
+            self.failUnless(ircutils.isNick('[jemfinch]'))
+            self.failUnless(ircutils.isNick('jem|finch'))
+            self.failUnless(ircutils.isNick('\\```'))
+            self.failUnless(ircutils.isNick('`'))
+            self.failUnless(ircutils.isNick('A'))
+            self.failIf(ircutils.isNick(''))
+            self.failIf(ircutils.isNick('8foo'))
+            self.failIf(ircutils.isNick('10'))
+            conf.supybot.protocols.irc.strictRfc.setValue(False)
+            self.failUnless(ircutils.isNick('services@something.undernet.net'))
+        finally:
+            conf.supybot.protocols.irc.strictRfc.setValue(original)
 
     def testBanmask(self):
         for msg in msgs:

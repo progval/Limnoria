@@ -305,26 +305,26 @@ isUserHostmask = ircutils.isUserHostmask
 
 def pong(payload, prefix=''):
     """Takes a payload and returns the proper PONG IrcMsg."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert payload, 'PONG requires a payload'
     return IrcMsg(prefix=prefix, command='PONG', args=(payload,))
 
 def ping(payload, prefix=''):
     """Takes a payload and returns the proper PING IrcMsg."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert payload, 'PING requires a payload'
     return IrcMsg(prefix=prefix, command='PING', args=(payload,))
 
 def op(channel, nick, prefix=''):
     """Returns a MODE to op nick on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '+o', nick))
 
 def ops(channel, nicks, prefix=''):
     """Returns a MODE to op each of nicks on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert nicks, 'Nicks must not be empty.'
         assert all(isNick, nicks), nicks
@@ -333,14 +333,14 @@ def ops(channel, nicks, prefix=''):
 
 def deop(channel, nick, prefix=''):
     """Returns a MODE to deop nick on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '-o', nick))
 
 def deops(channel, nicks, prefix=''):
     """Returns a MODE to deop each of nicks on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert nicks, 'Nicks must not be empty.'
         assert all(isNick, nicks), nicks
@@ -349,14 +349,14 @@ def deops(channel, nicks, prefix=''):
 
 def halfop(channel, nick, prefix=''):
     """Returns a MODE to halfop nick on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '+h', nick))
 
 def halfops(channel, nicks, prefix=''):
     """Returns a MODE to halfop each of nicks on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert nicks, 'Nicks must not be empty.'
         assert all(isNick, nicks), nicks
@@ -366,14 +366,14 @@ def halfops(channel, nicks, prefix=''):
 
 def dehalfop(channel, nick, prefix=''):
     """Returns a MODE to dehalfop nick on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '-h', nick))
 
 def dehalfops(channel, nicks, prefix=''):
     """Returns a MODE to dehalfop each of nicks on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert nicks, 'Nicks must not be empty.'
         assert all(isNick, nicks), nicks
@@ -382,14 +382,14 @@ def dehalfops(channel, nicks, prefix=''):
 
 def voice(channel, nick, prefix=''):
     """Returns a MODE to voice nick on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '+v', nick))
 
 def voices(channel, nicks, prefix=''):
     """Returns a MODE to voice each of nicks on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert nicks, 'Nicks must not be empty.'
         assert all(isNick, nicks)
@@ -398,14 +398,14 @@ def voices(channel, nicks, prefix=''):
 
 def devoice(channel, nick, prefix=''):
     """Returns a MODE to devoice nick on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '-v', nick))
 
 def devoices(channel, nicks, prefix=''):
     """Returns a MODE to devoice each of nicks on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert nicks, 'Nicks must not be empty.'
         assert all(isNick, nicks), nicks
@@ -414,7 +414,7 @@ def devoices(channel, nicks, prefix=''):
 
 def ban(channel, hostmask, exception='', prefix=''):
     """Returns a MODE to ban nick on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isUserHostmask(hostmask), repr(hostmask)
     modes = [('+b', hostmask)]
@@ -425,7 +425,7 @@ def ban(channel, hostmask, exception='', prefix=''):
 
 def bans(channel, hostmasks, exceptions=(), prefix=''):
     """Returns a MODE to ban each of nicks on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert all(isUserHostmask, hostmasks), hostmasks
     modes = [('+b', s) for s in hostmasks] + [('+e', s) for s in exceptions]
@@ -434,14 +434,14 @@ def bans(channel, hostmasks, exceptions=(), prefix=''):
 
 def unban(channel, hostmask, prefix=''):
     """Returns a MODE to unban nick on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isUserHostmask(hostmask), repr(hostmask)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '-b', hostmask))
 
 def unbans(channel, hostmasks, prefix=''):
     """Returns a MODE to unban each of nicks on channel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert all(isUserHostmask, hostmasks), hostmasks
     return IrcMsg(prefix=prefix, command=MODE,
@@ -449,7 +449,7 @@ def unbans(channel, hostmasks, prefix=''):
 
 def kick(channel, nick, msg='', prefix=''):
     """Returns a KICK to kick nick from channel with the message msg."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isNick(nick), repr(nick)
     if msg:
@@ -460,7 +460,7 @@ def kick(channel, nick, msg='', prefix=''):
 def kicks(channel, nicks, msg='', prefix=''):
     """Returns a KICK to kick each of nicks from channel with the message msg.
     """
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert all(isNick, nicks), nicks
     if msg:
@@ -472,33 +472,33 @@ def kicks(channel, nicks, msg='', prefix=''):
 
 def privmsg(recipient, msg, prefix=''):
     """Returns a PRIVMSG to recipient with the message msg."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
         assert msg, 'msg must not be empty.'
     return IrcMsg(prefix=prefix, command='PRIVMSG', args=(recipient, msg))
 
 def action(recipient, msg, prefix=''):
     """Returns a PRIVMSG ACTION to recipient with the message msg."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
     return IrcMsg(prefix=prefix, command='PRIVMSG',
                   args=(recipient,'\x01ACTION %s\x01'% msg))
 
 def notice(recipient, msg, prefix=''):
     """Returns a NOTICE to recipient with the message msg."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
         assert msg, 'msg must not be empty.'
     return IrcMsg(prefix=prefix, command='NOTICE', args=(recipient, msg))
 
 def join(channel, key=None, prefix=''):
     """Returns a JOIN to a channel"""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
     if key is None:
         return IrcMsg(prefix=prefix, command='JOIN', args=(channel,))
     else:
-        if conf.strictRfc:
+        if conf.supybot.protocols.irc.strictRfc():
             assert key.translate(string.ascii, string.ascii[128:]) == key and \
                    '\x00' not in key and \
                    '\r' not in key and \
@@ -511,7 +511,7 @@ def join(channel, key=None, prefix=''):
 
 def joins(channels, keys=None, prefix=''):
     """Returns a JOIN to each of channels."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert all(isChannel, channels), channels
     if keys is None:
         keys = []
@@ -522,7 +522,7 @@ def joins(channels, keys=None, prefix=''):
                       args=(','.join(channels),))
     else:
         for key in keys:
-            if conf.strictRfc:
+            if conf.supybot.protocols.irc.strictRfc():
                 assert key.translate(string.ascii,string.ascii[128:])==key and\
                        '\x00' not in key and \
                        '\r' not in key and \
@@ -537,7 +537,7 @@ def joins(channels, keys=None, prefix=''):
 
 def part(channel, msg='', prefix=''):
     """Returns a PART from channel with the message msg."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
     if msg:
         return IrcMsg(prefix=prefix, command='PART', args=(channel, msg))
@@ -546,7 +546,7 @@ def part(channel, msg='', prefix=''):
 
 def parts(channels, msg='', prefix=''):
     """Returns a PART from each of channels with the message msg."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert all(isChannel, channels), channels
     if msg:
         return IrcMsg(prefix=prefix, command='PART',
@@ -564,7 +564,7 @@ def quit(msg='', prefix=''):
 
 def topic(channel, topic=None, prefix=''):
     """Returns a TOPIC for channel with the topic topic."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
     if topic is None:
         return IrcMsg(prefix=prefix, command='TOPIC', args=(channel,))
@@ -573,13 +573,13 @@ def topic(channel, topic=None, prefix=''):
 
 def nick(nick, prefix=''):
     """Returns a NICK with nick nick."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command='NICK', args=(nick,))
 
 def user(ident, user, prefix=''):
     """Returns a USER with ident ident and user user."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert '\x00' not in ident and \
                '\r' not in ident and \
                '\n' not in ident and \
@@ -589,14 +589,14 @@ def user(ident, user, prefix=''):
 
 def who(hostmaskOrChannel, prefix=''):
     """Returns a WHO for the hostmask or channel hostmaskOrChannel."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(hostmaskOrChannel) or \
                isUserHostmask(hostmaskOrChannel), repr(hostmaskOrChannel)
     return IrcMsg(prefix=prefix, command='WHO', args=(hostmaskOrChannel,))
 
 def whois(nick, mask='', prefix=''):
     """Returns a WHOIS for nick."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command='WHOIS', args=(nick, mask))
 
@@ -611,13 +611,13 @@ def mode(channel, args=None, prefix=''):
 
 def invite(nick, channel, prefix=''):
     """Returns an INVITE for nick."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command='INVITE', args=(nick, channel))
 
 def password(password, prefix=''):
     """Returns a PASS command for accessing a server."""
-    if conf.strictRfc:
+    if conf.supybot.protocols.irc.strictRfc():
         assert password, 'password must not be empty.'
     return IrcMsg(prefix=prefix, command='PASS', args=(password,))
 
