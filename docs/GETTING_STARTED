@@ -111,6 +111,8 @@ So the command above adds the hostmask I'm currently using to my
 user's list of recognized hostmasks.  I'm only required to give
 mypassword if I'm not already identified with the bot.
 
+# TODO: Explain the more command.  Possibly find a config variable
+# with a long help.
 # TODO: Explain the Config plugin.
 
 
