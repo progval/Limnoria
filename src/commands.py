@@ -35,10 +35,9 @@ __revision__ = "$Id$"
 
 import supybot.fix as fix
 
-import getopt
-
 import time
 import types
+import getopt
 import threading
 
 import supybot.log as log
@@ -280,7 +279,8 @@ def getOtherUser(irc, msg, args, state):
             hostmask = state.args.pop()
             state.args.append(ircdb.users.getUser(hostmask))
         except (KeyError, IndexError, callbacks.Error):
-            irc.errorNoUser(Raise=True)
+            # XXX We should eventually give the user here.
+            irc.errorNoUser()
 
 def _getRe(f):
     def get(irc, msg, args, state):
@@ -293,9 +293,12 @@ def _getRe(f):
             except ValueError:
                 return False
         try:
-            while not isRe(s):
+            while len(s) < 512 and not isRe(s):
                 s += ' ' + args.pop(0)
-            state.args.append(f(s))
+            if len(s) < 512:
+                state.args.append(f(s))
+            else:
+                irc.errorInvalid('regular expression')
         except IndexError:
             args[:] = original
             raise
@@ -628,6 +631,26 @@ class many(any):
             state.args.pop()
             raise callbacks.ArgumentError
 
+class first(context):
+    def __init__(self, *specs, **kw):
+        if 'default' in kw:
+            self.default = kw.pop('default')
+            assert not kw, 'Bad kwargs for first.__init__'
+        self.specs = map(contextify, specs)
+
+    def __call__(self, irc, msg, args, state):
+        for spec in self.specs:
+            try:
+                spec(irc, msg, args, state)
+                return
+            except Exception, e:
+                continue
+        if hasattr(self, 'default'):
+            state.args.append(self.default)
+        else:
+            raise e
+            
+
 class getopts(context):
     """The empty string indicates that no argument is taken; None indicates
     that there is no converter for the argument."""
@@ -751,7 +774,8 @@ def wrap(f, specList=[], decorators=None, **kw):
     return newf
 
 
-__all__ = ['wrap', 'context', 'additional', 'optional', 'any', 'compose','Spec',
+__all__ = ['wrap', 'context', 'additional', 'optional', 'any', 'compose',
+           'Spec', 'first',
            'many', 'getopts', 'getConverter', 'addConverter', 'callConverter']
 
 if world.testing:
