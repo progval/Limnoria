@@ -52,7 +52,7 @@ import ircutils
 class ChannelLogger(irclib.IrcCallback):
     logs = ircutils.IrcDict()
     def __init__(self):
-        self.laststate = irclib.IrcState()
+        self.laststate = None
         self.lastMsg = None
         world.flushers.append(self.flush)
 
@@ -66,6 +66,8 @@ class ChannelLogger(irclib.IrcCallback):
             super(self.__class__, self).__call__(irc, msg)
             if self.lastMsg:
                 self.laststate.addMsg(irc, self.lastMsg)
+            else:
+                self.laststate = irc.state.copy()
         finally:
             # We must make sure this always gets updated.
             self.lastMsg = msg
@@ -172,8 +174,9 @@ class ChannelLogger(irclib.IrcCallback):
     def outFilter(self, irc, msg):
         # Gotta catch my own messages *somehow* :)
         # Let's try this little trick...
-        m = ircmsgs.IrcMsg(msg=msg, prefix=irc.prefix)
-        self(irc, m)
+        if msg.command != 'PART':
+            m = ircmsgs.IrcMsg(msg=msg, prefix=irc.prefix)
+            self(irc, m)
         return msg
 
 
