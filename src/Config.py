@@ -118,6 +118,9 @@ class Config(callbacks.Privmsg):
     def _list(self, group):
         L = []
         for (vname, v) in group._children.iteritems():
+            if hasattr(group, 'channelValue') and group.channelValue and \
+               ircutils.isChannel(vname) and not v._children:
+                continue
             if hasattr(v, 'channelValue') and v.channelValue:
                 vname = '#' + vname
             if v._added and not all(ircutils.isChannel, v._added):
@@ -139,7 +142,7 @@ class Config(callbacks.Privmsg):
         if L:
             irc.reply(utils.commaAndify(L))
         else:
-            irc.error('There don\'t seem to be any values in %s.' % name)
+            irc.error('There don\'t seem to be any values in %s.' % group._name)
     list = wrap(list, ['configVar'])
 
     def search(self, irc, msg, args, word):
