@@ -101,7 +101,8 @@ if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY' and network:
 
         def testBooks(self):
             self.assertHelp('books')
-            self.assertRegexp('books linux', r'Linux Kernel Development')
+            self.assertRegexp('books knowledge of the holy',
+                              r'Knowledge of the Holy - Reissue')
 
         def testVideos(self):
             self.assertHelp('videos')
