@@ -39,6 +39,7 @@ import supybot.fix as fix
 
 import sys
 import time
+import socket
 
 import supybot.log as supylog
 import supybot.conf as conf
@@ -139,7 +140,10 @@ class Log(object):
 
     def connectError(self, server, e):
         if isinstance(e, Exception):
-            e = utils.exnToString(e)
+            if isinstance(e, socket.gaierror):
+                e = e.args[1]
+            else:
+                e = utils.exnToString(e)
         self.warning('Error connecting to %s: %s', server, e)
 
     def disconnect(self, server, e=None):
