@@ -115,27 +115,27 @@ class Nickometer(callbacks.Privmsg):
             irc.error('Give me a nick to judge as the argument, please.')
             return
         
-        specialCost = [(r'69', 500),
-                       (r'dea?th', 500),
-                       (r'dark', 400),
-                       (r'n[i1]ght', 300),
-                       (r'n[i1]te', 500),
-                       (r'fuck', 500),
-                       (r'sh[i1]t', 500),
-                       (r'coo[l1]', 500),
-                       (r'kew[l1]', 500),
-                       (r'lame', 500),
-                       (r'dood', 500),
-                       (r'dude', 500),
-                       (r'[l1](oo?|u)[sz]er', 500),
-                       (r'[l1]eet', 500),
-                       (r'e[l1]ite', 500),
-                       (r'[l1]ord', 500),
-                       (r'pron', 1000),
-                       (r'warez', 1000),
-                       (r'xx', 100),
-                       (r'\\[rkx]0', 1000),
-                       (r'\\0[rkx]', 1000)]
+        specialCost = [('69', 500),
+                       ('dea?th', 500),
+                       ('dark', 400),
+                       ('n[i1]ght', 300),
+                       ('n[i1]te', 500),
+                       ('fuck', 500),
+                       ('sh[i1]t', 500),
+                       ('coo[l1]', 500),
+                       ('kew[l1]', 500),
+                       ('lame', 500),
+                       ('dood', 500),
+                       ('dude', 500),
+                       ('[l1](oo?|u)[sz]er', 500),
+                       ('[l1]eet', 500),
+                       ('e[l1]ite', 500),
+                       ('[l1]ord', 500),
+                       ('pron', 1000),
+                       ('warez', 1000),
+                       ('xx', 100),
+                       ('\\[rkx]0', 1000),
+                       ('\\0[rkx]', 1000)]
 
         letterNumberTranslator = string.maketrans('023457+8', 'ozeasttb')
         for special in specialCost:
@@ -150,13 +150,13 @@ class Nickometer(callbacks.Privmsg):
         # I don't really know about either of these next two statements,
         # but they don't seem to do much harm.
         # Allow Perl referencing
-        nick=re.sub(r'^\\\\([A-Za-z])', r'\1', nick);
+        nick=re.sub('^\\\\([A-Za-z])', '\1', nick);
 
         # C-- ain't so bad either
-        nick=re.sub(r'^C--$', 'C', nick);
+        nick=re.sub('^C--$', 'C', nick);
 
         # Punish consecutive non-alphas
-        matches=re.findall(r'[^\w\d]{2,}',nick)
+        matches=re.findall('[^\w\d]{2,}',nick)
         for match in matches:
             score += self.punish(slowPow(10, len(match)), 
                                     '%s consecutive non-alphas ' % len(match))
@@ -164,9 +164,9 @@ class Nickometer(callbacks.Privmsg):
         # Remove balanced brackets ...
         while 1:
             nickInitial = nick
-            nick=re.sub(r'^([^()]*)(\()(.*)(\))([^()]*)$', r'\1\3\5', nick, 1)
-            nick=re.sub(r'^([^{}]*)(\{)(.*)(\})([^{}]*)$', r'\1\3\5', nick, 1)
-            nick=re.sub(r'^([^[\]]*)(\[)(.*)(\])([^[\]]*)$', r'\1\3\5', nick, 1)
+            nick=re.sub('^([^()]*)(\()(.*)(\))([^()]*)$', '\1\3\5', nick, 1)
+            nick=re.sub('^([^{}]*)(\{)(.*)(\})([^{}]*)$', '\1\3\5', nick, 1)
+            nick=re.sub('^([^[\]]*)(\[)(.*)(\])([^[\]]*)$', '\1\3\5', nick, 1)
             if nick == nickInitial:
                 break
             self.log.debug('Removed some matching brackets \'%s\' => \'%s\'' %
@@ -188,13 +188,13 @@ class Nickometer(callbacks.Privmsg):
         # An alpha caps is not lame in middle or at end, provided the first
         # alpha is caps.
         nickOriginalCase = nick
-        match = re.search(r'^([^A-Za-z]*[A-Z].*[a-z].*?)[-_]?([A-Z])', nick)
+        match = re.search('^([^A-Za-z]*[A-Z].*[a-z].*?)[-_]?([A-Z])', nick)
         if match:
             nick = ''.join([nick[:match.start(2)],
                                nick[match.start(2)].lower(),
                                nick[match.start(2)+1:]])
 
-        match = re.search(r'^([^A-Za-z]*)([A-Z])([a-z])', nick)
+        match = re.search('^([^A-Za-z]*)([A-Z])([a-z])', nick)
         if match:
             nick = ''.join([nick[:match.start(2)],
                                nick[match.start(2):match.end(2)].lower(),
@@ -208,12 +208,12 @@ class Nickometer(callbacks.Privmsg):
         # still be punished
         #cshifts = caseShifts(nickOriginalCase);
         cshifts = caseShifts(nick);
-        if cshifts > 1 and re.match(r'.*[A-Z].*', nick):
+        if cshifts > 1 and re.match('.*[A-Z].*', nick):
             score += self.punish(slowPow(9, cshifts),
                                  '%s case shifts' % cshifts)
             
         # Punish lame endings
-        if re.match(r'.*[XZ][^a-zA-Z]*$', nickOriginalCase):
+        if re.match('.*[XZ][^a-zA-Z]*$', nickOriginalCase):
             score += self.punish(50, 'the last alphanumeric character was lame')
 
         # Punish letter to numeric shifts and vice-versa
@@ -223,32 +223,32 @@ class Nickometer(callbacks.Privmsg):
                                  '%s letter/number shifts' % nshifts)
 
         # Punish extraneous caps
-        caps = re.findall(r'[A-Z]', nick)
+        caps = re.findall('[A-Z]', nick)
         if caps and len(caps) > 0:
             score += self.punish(slowPow(7, len(caps)),
                                  '%s extraneous caps' % len(caps)) 
 
         # one trailing underscore is ok. i also added a - for parasite-
-        nick = re.sub(r'[-_]$','',nick)
+        nick = re.sub('[-_]$','',nick)
 
         # Punish anything that's left
-        remains = re.findall(r'[^a-zA-Z0-9]', nick)
+        remains = re.findall('[^a-zA-Z0-9]', nick)
         if remains and len(remains) > 0:
             score += self.punish(50*len(remains) + slowPow(9, len(remains)),
                                      '%s extraneous symbols' % len(remains)) 
 
         # Use an appropriate function to map [0, +inf) to [0, 100)
         percentage = 100 * (1 + math.tanh((score - 400.0) / 400.0)) * \
-                                           (1 - 1 / (1 + score / 5.0)) / 2
+                     (1 - 1 / (1 + score / 5.0)) / 2
 
         # if it's above 99.9%, show as many digits as is insteresting
-        score_string=re.sub(r'(99\\.9*\\d|\\.\\d).*','\\1',`percentage`)
+        score_string=re.sub('(99\\.9*\\d|\\.\\d).*','\\1',`percentage`)
         
-        irc.reply(r'The \'lame nick-o-meter\' reading for %s is %s%%' % 
-                                                (originalNick, score_string))
+        irc.reply('The "lame nick-o-meter" reading for "%s" is %s%%.' % 
+                  (originalNick, score_string))
 
-        self.log.debug('Calculated lameness score for %s as %s'
-                       ' (raw score was %s)' %
+        self.log.debug('Calculated lameness score for %s as %s '
+                       '(raw score was %s)' %
                        (originalNick, score_string, score))
 
 
