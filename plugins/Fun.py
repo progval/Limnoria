@@ -290,7 +290,11 @@ class Fun(callbacks.Privmsg):
         between <string1> and <string2>)
         """
         (s1, s2) = privmsgs.getArgs(args, required=2)
-        irc.reply(str(utils.distance(s1, s2)))
+        if len(s1) > 512 or len(s2) > 512:
+            irc.error('Levenshtein distance is a complicated algorithm, try '
+                      'it with some smaller inputs.')
+        else:
+            irc.reply(str(utils.distance(s1, s2)))
 
     def soundex(self, irc, msg, args):
         """<string> [<length>]
