@@ -48,6 +48,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 import supybot.structures as structures
 
+# XXX Deprecated, will be removed in 0.90.0.
 def getChannel(msg, args=(), raiseError=True):
     """Returns the channel the msg came over or the channel given in args.
 
@@ -74,6 +75,7 @@ def getChannel(msg, args=(), raiseError=True):
         else:
             return None
 
+# XXX Deprecated, will be removed in 0.90.0.
 def getArgs(args, required=1, optional=0):
     """Take the required/optional arguments from args.
 
@@ -98,6 +100,7 @@ def getArgs(args, required=1, optional=0):
     else:
         return ret
 
+# XXX Deprecated, will be removed in 0.90.0.
 def checkCapability(f, capability):
     """Makes sure a user has a certain capability before a command will run.
     capability can be either a string or a callable object which will be called
