@@ -170,7 +170,7 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
     def markovfirsts(self, irc, msg, args):
         """[<channel>]
 
-        Returns the number of Markov's chain links in the database for
+        Returns the number of Markov's first links in the database for
         <channel>.
         """
         channel = privmsgs.getChannel(msg, args)
@@ -191,6 +191,20 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM follows""")
+        n = cursor.fetchone()[0]
+        s = 'There are %s follows in my Markov database for %s' % (n, channel)
+        irc.reply(msg, s)
+
+    def markovlasts(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the number of Markov's last links in the database for
+        <channel>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM follows WHERE word=NULL""")
         n = cursor.fetchone()[0]
         s = 'There are %s follows in my Markov database for %s' % (n, channel)
         irc.reply(msg, s)
