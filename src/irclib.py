@@ -332,16 +332,20 @@ class IrcState(IrcCommandDispatcher):
 
     _005converters = utils.InsensitivePreservingDict({
         'modes': int,
-        'maxchannels': int,
+        'keylen': int,
         'maxbans': int,
-        'maxtargets': int,
         'nicklen': int,
-        'maxnicklen': int,
-        'topiclen': int,
+        'userlen': int,
+        'hostlen': int,
         'kicklen': int,
         'awaylen': int,
         'silence': int,
-        'watch': int, # DynastyNet.
+        'topiclen': int,
+        'channellen': int,
+        'maxtargets': int,
+        'maxnicklen': int,
+        'maxchannels': int,
+        'watch': int, # DynastyNet, EnterTheGame
         })
     def _prefixParser(s):
         if ')' in s:
