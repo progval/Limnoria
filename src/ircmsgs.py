@@ -80,7 +80,7 @@ class IrcMsg(object):
     """
     __slots__ = ('args', 'command', 'host', 'nick', 'prefix', 'user',
                  '_hash', '_str', '_repr', '_len')
-    def __init__(self, s='', command='', args=None, prefix='', msg=None):
+    def __init__(self, s='', command='', args=(), prefix='', msg=None):
         assert not (msg and s), 'Ircmsg.__init__ cannot accept both s and msg'
         if not s and not command and not msg:
             raise MalformedIrcMsg, 'IRC messages require a command.'

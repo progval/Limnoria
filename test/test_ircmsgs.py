@@ -180,5 +180,8 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(ircmsgs.joins(channels, keys).args,
                          ('#osu,#umich', 'michiganSucks'))
 
+    def testQuit(self):
+        self.failUnless(ircmsgs.quit(prefix='foo!bar@baz'))
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
