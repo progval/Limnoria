@@ -35,7 +35,6 @@ import imp
 import sys
 import os.path
 import textwrap
-import traceback
 
 import supybot
 import supybot.world as world
@@ -57,8 +56,10 @@ fd.close()
 import supybot.registry as registry
 registry.open(registryFilename)
 
+import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.irclib as irclib
 import supybot.callbacks as callbacks
 
 commandDict = {}
@@ -75,6 +76,7 @@ def genHeader(title, meta=''):
     <link rel="stylesheet" type="text/css"
           href="http://supybot.sourceforge.net/css/supybot.css">
     %s
+    </head>
     <body><div>
     ''' % (title, meta)
 
@@ -147,6 +149,63 @@ def prepIndex():
         %s
         <div class="mainbody">
         ''' % (genHeader('Supybot Plugin Documentation'), genNavbar('../'))))
+    fd.close()
+
+def genConfigSection(fd, item, toplevel=False):
+    confVars = item.getValues(getChildren=False, fullNames=False)
+    if not confVars:
+        return
+    fd.write('''<ul>''')
+    for (c, v) in confVars:
+        if not toplevel:
+            name = '.%s' % c
+        else:
+            name = 'supybot.%s' % c
+        fd.write(textwrap.dedent('''
+        <li id="%s"><strong>%s</strong>
+        ''' % (v._name, name)))
+        try:
+            default = str(v)
+            if isinstance(v._default, basestring):
+                default = utils.dqrepr(default)
+            help = v.help()
+        except registry.NonExistentRegistryEntry:
+            pass
+        else:
+            help = cgi.escape(help)
+            default = cgi.escape(default)
+            fd.write(textwrap.dedent('''
+            <ul>
+            <li class="nonPlugin">Default: %s</li>
+            <li class="nonPlugin">Channel Specific: %s</li>
+            <li class="nonPlugin">Help: %s</li></ul>
+            ''' % (default, v.channelValue, help)))
+        genConfigSection(fd, v)
+        fd.write(textwrap.dedent('''</li>'''))
+    fd.write('''</ul>''')
+
+def makeNonPluginDocumentation():
+    fd = file(os.path.join('docs', 'config.html'), 'w')
+    title = 'Non-plugin configuration variables for Supybot'
+    meta = '''
+    <link rel="home" title="Supybot Homepage" href="../index.html">
+    '''
+    fd.write(textwrap.dedent('''
+    %s
+    <div class="mainbody" style="padding: 0;">
+    %s
+    <div style="margin: 1em;">
+    Configuration variables under conf.supybot:
+    ''' % (genHeader(title, meta), genNavbar('../'))))
+    genConfigSection(fd, conf.supybot, toplevel=True)
+    fd.write(textwrap.dedent('''
+    </div>
+    </div>
+    </div>
+    <div style="text-align: center;">
+    <br />
+    %s
+    ''' % (genFooter(),)))
     fd.close()
 
 def makePluginDocumentation(pluginWindow):
@@ -253,8 +312,9 @@ def makePluginDocumentation(pluginWindow):
                 default = str(config[1])
                 if isinstance(config[1]._default, basestring):
                     default = utils.dqrepr(default)
-                help = config[1]._help
+                help = config[1].help()
                 help = cgi.escape(help)
+                default = cgi.escape(default)
                 trClass = trClasses[trClass]
                 fd.write(textwrap.dedent('''
                 <tr class="%s"><td>%s</td><td>%s</td><td>%s</td>
@@ -364,6 +424,7 @@ if __name__ == '__main__':
         os.mkdir(conf.supybot.directories.conf())
     if not os.path.exists(conf.supybot.directories.log()):
         os.mkdir(conf.supybot.directories.log())
+    makeNonPluginDocumentation()
     prepIndex()
     plugins = [p for p in genPlugins()]
     plugins.sort()
