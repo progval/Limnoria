@@ -63,6 +63,8 @@ unitAbbrevs['C'] = 'Celsius'
 unitAbbrevs['Ce'] = 'Celsius'
 
 noLocationError = 'No such location could be found.'
+class NoLocation(callbacks.Error):
+    pass
 
 class WeatherUnit(registry.String):
     def setValue(self, s):
@@ -90,7 +92,7 @@ class WeatherCommand(registry.String):
 class Weather(callbacks.Privmsg):
     """This should never be seen, because this plugin defines a command by
     the name of 'weather' which should override this help."""
-    weatherCommands = ['ham', 'cnn', 'wunder']
+    weatherCommands = ['wunder', 'cnn', 'ham']
     threaded = True
     def __init__(self):
         self.__parent = super(Weather, self)
@@ -101,6 +103,9 @@ class Weather(callbacks.Privmsg):
             self.__parent.callCommand(name, irc, msg, *L, **kwargs)
         except webutils.WebError, e:
             irc.error(str(e))
+
+    def _noLocation(self):
+        raise NoLocation, noLocationError
 
     def weather(self, irc, msg, args):
         # This specifically does not have a docstring.
@@ -116,7 +121,20 @@ class Weather(callbacks.Privmsg):
                           location, ignoreNoUser=True)
         realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)
-        ret = realCommand(irc, msg, args)
+        try:
+            realCommand(irc, msg, args)
+        except NoLocation:
+            self.log.info('%s lookup failed, Trying others.', realCommandName)
+            for command in self.weatherCommands:
+                if command != realCommandName:
+                    self.log.info('Trying %s.', command)
+                    try:
+                        getattr(self, command)(irc, msg, args)
+                        self.log.info('%s lookup succeeded.', command)
+                        break
+                    except NoLocation:
+                        self.log.info('%s lookup failed as backup.', command)
+            
 
     def _toCelsius(self, temp, unit):
         if unit == 'K':
@@ -219,7 +237,7 @@ class Weather(callbacks.Privmsg):
                       'place=%s&state=&country=%s' % (city, state)
                 html = webutils.getUrl(url)
                 if 'was not found' in html: # Still.
-                    irc.error(noLocationError, Raise=True)
+                    self._noLocation()
 
         #We received a single argument.  Zipcode or station id.
         else:
@@ -229,7 +247,7 @@ class Weather(callbacks.Privmsg):
                   'config=&forecast=zandh&pands=%s&Submit=GO' % zip
             html = webutils.getUrl(url)
             if 'was not found' in html:
-                irc.error(noLocationError, Raise=True)
+                self._noLocation()
 
         headData = self._hamLoc.search(html)
         if headData is not None:
@@ -239,7 +257,7 @@ class Weather(callbacks.Privmsg):
             if headData:
                 (city, state) = headData.groups()
             else:
-                irc.error(noLocationError, Raise=True)
+                self._noLocation()
 
         city = city.strip()
         state = state.strip()
@@ -285,7 +303,7 @@ class Weather(callbacks.Privmsg):
                 (city, state, temp, index, conds)
             irc.reply(s)
         else:
-            irc.error('The format of the page was odd.')
+            irc.errorPossibleBug('The format of the page was odd.')
     ham = commands.wrap(ham, ['something'])
 
     _cnnUrl = 'http://weather.cnn.com/weather/search?wsearch='
@@ -319,8 +337,10 @@ class Weather(callbacks.Privmsg):
             loc = loc.replace(',', '')
         url = '%s%s' % (self._cnnUrl, urllib.quote(loc))
         text = webutils.getUrl(url) # Errors caught in callCommand.
-        if "No search results" in text or "does not match a zip code" in text:
-            irc.error(noLocationError, Raise=True)
+        if 'No search results' in text or \
+           'does not match a zip code' in text or \
+           'several matching locations for' in text: # XXX Goto first.
+            self._noLocation()
         location = self._cnnLoc.search(text)
         temp = self._cnnFTemp.search(text)
         conds = self._cnnCond.search(text)
@@ -345,7 +365,7 @@ class Weather(callbacks.Privmsg):
             resp = map(utils.htmlToText, resp)
             irc.reply(' '.join(resp))
         else:
-            irc.error('Could not find weather information.')
+            irc.errorPossibleBug('Could not find weather information.')
     cnn = commands.wrap(cnn, ['something'])
 
     _wunderUrl = 'http://mobile.wunderground.com/cgi-bin/' \
@@ -360,7 +380,7 @@ class Weather(callbacks.Privmsg):
         url = '%s%s' % (self._wunderUrl, urllib.quote(loc))
         text = webutils.getUrl(url)
         if 'Search not found' in text:
-            irc.error(noLocationError, Raise=True)
+            self._noLocation()
         if 'Click on a city name' in text:
             soup = BeautifulSoup.BeautifulSoup()
             soup.feed(text)
