@@ -149,5 +149,9 @@ class ConverterTestCase(CommandsTestCase):
         self.assertError(['email'], ['foo@'])
         self.assertError(['email'], ['@foo'])
 
+class FirstTestCase(CommandsTestCase):
+    def testRepr(self):
+        self.failUnless(repr(first('int')))
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
