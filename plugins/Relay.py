@@ -48,6 +48,7 @@ import copy
 import conf
 import ircdb
 import irclib
+import drivers
 import ircmsgs
 import ircutils
 import privmsgs
