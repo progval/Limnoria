@@ -494,7 +494,10 @@ class Misc(callbacks.Privmsg):
         (target, text) = privmsgs.getArgs(args, required=2)
         if target.lower() == 'me':
             target = msg.nick
-        if not ircutils.isNick(target) and not ircutils.isChannel(target):
+        if ircutils.isChannel(target):
+            irc.error('Dude, just give the command.  No need for the tell.')
+            return
+        if not ircutils.isNick(target):
             irc.error('%s is not a valid nick or channel.' % target)
             return
         if ircutils.isChannel(target):
