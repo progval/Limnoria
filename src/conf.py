@@ -252,22 +252,6 @@ registerGlobalValue(supybot, 'channels',
     SpaceSeparatedSetOfChannels([], """Determines what channels the bot will
     join when it connects to the server."""))
 
-class ValidPrefixChars(registry.String):
-    """Value must contain only ~!@#$%^&*()_-+=[{}]\\|'\";:,<.>/?"""
-    def setValue(self, v):
-        if v.translate(string.ascii, '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
-            self.error()
-        registry.String.setValue(self, v)
-
-registerChannelValue(supybot, 'prefixChars',
-    ValidPrefixChars('', """Determines what prefix characters the bot will
-    reply to.  A prefix character is a single character that the bot will use
-    to determine what messages are addressed to it; when there are no prefix
-    characters set, it just uses its nick.  Each character in this string is
-    interpreted individually; you can have multiple prefixChars simultaneously,
-    and if any one of them is used as a prefix the bot will assume it is being
-    addressed."""))
-
 class DefaultCapabilities(registry.SpaceSeparatedListOfStrings):
     List = ircutils.IrcSet
     # We use a keyword argument trick here to prevent eval'ing of code that
@@ -392,10 +376,6 @@ registerChannelValue(supybot.reply, 'withNickPrefix',
     registry.Boolean(True, """Determines whether the bot will always prefix the
     user's nick to its reply to that user's command."""))
 
-registerChannelValue(supybot.reply, 'whenAddressedByNick',
-    registry.Boolean(True, """Determines whether the bot will reply when people
-    address it by its nick, rather than with a prefix character."""))
-
 registerChannelValue(supybot.reply, 'whenNotAddressed',
     registry.Boolean(False, """Determines whether the bot should attempt to
     reply to all messages even if they don't address it (either via its nick
@@ -427,6 +407,35 @@ registerChannelValue(supybot.reply, 'showSimpleSyntax',
     whenever a user misuses a command.  If this value is set to True, the bot
     will only reply with the syntax of the command (the first line of the
     help) rather than the full help."""))
+
+class ValidPrefixChars(registry.String):
+    """Value must contain only ~!@#$%^&*()_-+=[{}]\\|'\";:,<.>/?"""
+    def setValue(self, v):
+        if v.translate(string.ascii, '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
+            self.error()
+        registry.String.setValue(self, v)
+
+registerGroup(supybot.reply, 'whenAddressedBy')
+registerChannelValue(supybot.reply.whenAddressedBy, 'chars',
+    ValidPrefixChars('', """Determines what prefix characters the bot will
+    reply to.  A prefix character is a single character that the bot will use
+    to determine what messages are addressed to it; when there are no prefix
+    characters set, it just uses its nick.  Each character in this string is
+    interpreted individually; you can have multiple prefixChars simultaneously,
+    and if any one of them is used as a prefix the bot will assume it is being
+    addressed."""))
+
+registerChannelValue(supybot.reply.whenAddressedBy, 'strings',
+    registry.SpaceSeparatedSetOfStrings([], """Determines what strings the bot
+    will reply to when they are at the beginning of the message.  Whereas
+    prefix.chars can only be one character (although there can be many of
+    them), this variable is a space-separated list of strings, so you can
+    set something like '@@ ??' and the bot will reply when a message is
+    prefixed by either @@ or ??."""))
+
+registerChannelValue(supybot.reply.whenAddressedBy, 'nick',
+    registry.Boolean(True, """Determines whether the bot will reply when people
+    address it by its nick, rather than with a prefix character."""))
 
 ###
 # Replies

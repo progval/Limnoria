@@ -145,9 +145,9 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual('foobar--', callbacks.canonicalName('foobar--'))
 
     def testAddressed(self):
-        oldprefixchars = str(conf.supybot.prefixChars)
+        oldprefixchars = str(conf.supybot.reply.whenAddressedBy.chars)
         nick = 'supybot'
-        conf.supybot.prefixChars.set('~!@')
+        conf.supybot.reply.whenAddressedBy.chars.set('~!@')
         inChannel = ['~foo', '@foo', '!foo',
                      '%s: foo' % nick, '%s foo' % nick,
                      '%s: foo' % nick.capitalize(), '%s: foo' % nick.upper()]
@@ -160,7 +160,7 @@ class FunctionsTestCase(SupyTestCase):
             self.assertEqual('foo', callbacks.addressed(nick, msg), msg)
         msg = ircmsgs.privmsg(nick, 'foo')
         self.assertEqual('foo', callbacks.addressed(nick, msg))
-        conf.supybot.prefixChars.set(oldprefixchars)
+        conf.supybot.reply.whenAddressedBy.chars.set(oldprefixchars)
         msg = ircmsgs.privmsg('#foo', '%s::::: bar' % nick)
         self.assertEqual('bar', callbacks.addressed(nick, msg))
         msg = ircmsgs.privmsg('#foo', '%s: foo' % nick.upper())

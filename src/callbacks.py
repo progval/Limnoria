@@ -65,27 +65,36 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 
-def addressed(nick, msg, prefixChars=None, whenAddressedByNick=None):
+def addressed(nick, msg, prefixChars=None,
+              prefixStrings=None, whenAddressedByNick=None):
     """If msg is addressed to 'name', returns the portion after the address.
     Otherwise returns the empty string.
     """
-    assert msg.command == 'PRIVMSG'
-    (target, payload) = msg.args
     def get(group):
         if ircutils.isChannel(target):
             group = group.get(target)
         return group()
+    def stripPrefixStrings(payload):
+        for prefixString in prefixStrings:
+            if payload.startswith(prefixString):
+                payload = payload[len(prefixString):].lstrip()
+        return payload
+
+    assert msg.command == 'PRIVMSG'
+    (target, payload) = msg.args
     if prefixChars is None:
-        prefixChars = get(conf.supybot.prefixChars)
+        prefixChars = get(conf.supybot.reply.whenAddressedBy.chars)
     if whenAddressedByNick is None:
-        whenAddressedByNick = get(conf.supybot.reply.whenAddressedByNick)
+        whenAddressedByNick = get(conf.supybot.reply.whenAddressedBy.nick)
+    if prefixStrings is None:
+        prefixStrings = get(conf.supybot.reply.whenAddressedBy.strings)
     nick = ircutils.toLower(nick)
     # Ok, let's see if it's a private message.
     if ircutils.nickEqual(target, nick):
-        if payload[0] in prefixChars:
-            return payload[1:].strip()
-        else:
-            return payload.strip()
+        payload = stripPrefixStrings(payload)
+        while payload and payload[0] in prefixChars:
+            payload = payload[1:].lstrip()
+        return payload
     # Ok, not private.  Does it start with our nick?
     elif whenAddressedByNick and \
          ircutils.toLower(payload).startswith(nick):
@@ -101,6 +110,8 @@ def addressed(nick, msg, prefixChars=None, whenAddressedByNick=None):
                 return ''
         except ValueError: # split didn't work.
             return ''
+    elif payload and any(payload.startswith, prefixStrings):
+        return stripPrefixStrings(payload)
     elif payload and payload[0] in prefixChars:
         return payload[1:].strip()
     elif conf.supybot.reply.whenNotAddressed():

@@ -132,7 +132,7 @@ class PluginTestCase(SupyTestCase):
         for irc in world.ircs[:]:
             irc._reallyDie()
         # Set conf variables appropriately.
-        conf.supybot.prefixChars.setValue('@')
+        conf.supybot.reply.whenAddressedBy.chars.setValue('@')
         conf.supybot.reply.detailedErrors.setValue(True)
         conf.supybot.reply.whenNotCommand.setValue(True)
         self.myVerbose = world.myVerbose
@@ -194,7 +194,8 @@ class PluginTestCase(SupyTestCase):
             timeout = self.timeout
         if self.myVerbose:
             print # Extra newline, so it's pretty.
-        if not usePrefixChar and query[0] in conf.supybot.prefixChars():
+        prefixChars = conf.supybot.reply.whenAddressedBy.chars()
+        if not usePrefixChar and query[0] in prefixChars:
             query = query[1:]
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose:
@@ -376,8 +377,9 @@ class ChannelPluginTestCase(PluginTestCase):
             timeout = self.timeout
         if self.myVerbose:
             print # Newline, just like PluginTestCase.
-        if query[0] not in conf.supybot.prefixChars() and usePrefixChar:
-            query = conf.supybot.prefixChars()[0] + query
+        prefixChars = conf.supybot.reply.whenAddressedBy.chars()
+        if query[0] not in prefixChars and usePrefixChar:
+            query = prefixChars[0] + query
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose:
             print 'Feeding: %r' % msg

@@ -491,12 +491,12 @@ def main():
             try:
                 c = anything('What would you like your bot\'s prefix '
                              'character(s) to be?')
-                conf.supybot.prefixChars.set(c)
+                conf.supybot.reply.whenAddressedBy.chars.set(c)
             except registry.InvalidRegistryValue, e:
                 output(str(e))
                 c = ''
     else:
-        conf.supybot.prefixChars.set('')
+        conf.supybot.reply.whenAddressedBy.chars.set('')
 
     ###
     # logging variables.

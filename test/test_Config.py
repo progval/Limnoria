@@ -61,9 +61,9 @@ class ConfigTestCase(ChannelPluginTestCase):
                              'AssertionError')
 
     def testSearch(self):
-        self.assertNotError('config search prefixChars')
-        self.assertNotError('config channel prefixChars @')
-        self.assertNotRegexp('config search prefixChars', self.channel)
+        self.assertNotError('config search chars')
+        self.assertNotError('config channel reply.whenAddressedBy.chars @')
+        self.assertNotRegexp('config search chars', self.channel)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -180,7 +180,8 @@ class Misc(callbacks.Privmsg):
             cb = irc.getCallback(args[0]) # No pop, we'll use this later.
             if cb is not None:
                 command = callbacks.canonicalName(privmsgs.getArgs(args[1:]))
-                command = command.lstrip(conf.supybot.prefixChars())
+                prefixChars = conf.supybot.reply.whenAddressedBy.chars()
+                command = command.lstrip(prefixChars)
                 name = ' '.join(args)
                 if hasattr(cb, 'isCommand') and cb.isCommand(command):
                     method = getattr(cb, command)
@@ -197,7 +198,7 @@ class Misc(callbacks.Privmsg):
             return
         command = callbacks.canonicalName(name)
         # Users might expect "@help @list" to work.
-        # command = command.lstrip(conf.supybot.prefixChars())
+        # command = command.lstrip(conf.supybot.reply.whenAddressedBy.chars())
         cbs = callbacks.findCallbackForCommand(irc, command)
         if len(cbs) > 1:
             tokens = [command]
