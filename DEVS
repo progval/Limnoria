@@ -57,3 +57,10 @@ so some day he can be a professor at a college near a snowy mountain where
 he will ski every morning. So far, he hasn't done much for the project 
 except squeeze Doug Bell's GPL'd unit conversion code into a supybot plugin. 
 
+Stéphan Kochen (G-LiTe) is a lazy (soon to be) computer science student.
+He's usually just freelancing and submitting patches here and there when he
+bumps into a bug that bothers him, but Supybot is one of the first projects
+he semi-actively tries to work on. ;) His biggest contribution has been the
+refactoring of the supybot-wizard script to use the registry, though he also
+likes to track down those nasty obscure bugs which haunt many of our fine
+applications these days.
