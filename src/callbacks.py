@@ -234,10 +234,13 @@ class IrcObjectProxy:
             if callback is None:
                 self.args.insert(0, name)
                 self.reply(self.msg, '[%s]' % ' '.join(self.args))
-            callback.callCommand(getattr(callback, name), 
-                                 self, self.msg, self.args)
+            command = getattr(callback, name)
+            callback.callCommand(command, self, self.msg, self.args)
         except Error, e:
-            self.reply(self.msg, debug.exnToString(e))
+            if str(e) == '':
+                self.reply(self.msg, command.__doc__.splitlines()[0])
+            else:
+                self.reply(self.msg, debug.exnToString(e))
         except Exception, e:
             debug.recoverableException()
             self.reply(self.msg, debug.exnToString(e))
