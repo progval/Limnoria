@@ -105,7 +105,7 @@ def getKeywordArgs(irc, msg, d=None):
     return (args, d)
             
 
-class CapabilityChecker(callbacks.Privmsg):
+class CapabilityCheckingPrivmsg(callbacks.Privmsg):
     def callCommand(self, f, irc, msg, args):
         if ircdb.checkCapability(msg.prefix, self.capability):
             callbacks.Privmsg.callCommand(self, f, irc, msg, args)
@@ -113,7 +113,7 @@ class CapabilityChecker(callbacks.Privmsg):
             irc.error(msg, conf.replyNoCapability % self.capability)
 
 
-class OwnerCommands(CapabilityChecker):
+class OwnerCommands(CapabilityCheckingPrivmsg):
     capability = 'owner'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -309,7 +309,6 @@ class OwnerCommands(CapabilityChecker):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'There was no callback %s' % name)
-
 
 
 standardPrivmsgModules = [OwnerCommands]

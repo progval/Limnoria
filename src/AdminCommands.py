@@ -41,7 +41,7 @@ import ircmsgs
 import privmsgs
 import callbacks
 
-class AdminCommands(privmsgs.CapabilityChecker):
+class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def join(self, irc, msg, args):
         """<channel> [<channel> ...]
