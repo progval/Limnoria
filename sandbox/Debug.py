@@ -53,9 +53,12 @@ def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('Debug', True)
 
-def tracer(frame, event, _):
-    if event == 'call':
-        print '%s: %s' % (frame.f_code.co_filename, frame.f_code.co_name)
+def getTracer(fd):
+    def tracer(frame, event, _):
+        if event == 'call':
+            code = frame.f_code
+            print >>fd, '%s: %s' % (code.co_filename, code.co_name)
+    return tracer
 
 
 class Debug(privmsgs.CapabilityCheckingPrivmsg):
@@ -89,11 +92,17 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
         irc.sendMsg(msg)
 
     def settrace(self, irc, msg, args):
-        """takes no arguments
+        """[<filename>]
 
-        Starts tracing function calls on stdout.  This causes much output.
+        Starts tracing function calls to <filename>.  If <filename> is not
+        given, sys.stdout is used.  This causes much output.
         """
-        sys.settrace(tracer)
+        filename = privmsgs.getArgs(args, optional=1, required=0)
+        if filename:
+            fd = file(filename, 'a')
+        else:
+            fd = sys.stdout
+        sys.settrace(getTracer(fd))
         irc.replySuccess()
 
     def unsettrace(self, irc, msg, args):
