@@ -44,6 +44,7 @@ from itertools import imap, ifilter
 
 import conf
 import utils
+import ircdb
 import irclib
 import ircmsgs
 import ircutils
