@@ -265,11 +265,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             if self.addressed:
                 try:
                     tokens = callbacks.tokenize(payload)
-                    getCallback = callbacks.findCallbackForCommand
-                    commands = filter(None,
-                                      map(lambda c, i=irc: getCallback(i, c),
-                                          tokens))
-                    if commands:
+                    if callbacks.findCallbackForCommand(irc, tokens[0]):
                         return
                     else:
                         payload += '?'
