@@ -130,7 +130,7 @@ class RSS(callbacks.Plugin):
             # We acquire the lock here so there's only one announcement thread
             # in this code at any given time.  Otherwise, several announcement
             # threads will getFeed (all blocking, in turn); then they'll all
-            # want to sent their news messages to the appropriate channels.
+            # want to send their news messages to the appropriate channels.
             # Note that we're allowed to acquire this lock twice within the
             # same thread because it's an RLock and not just a normal Lock.
             self.acquireLock(url)
