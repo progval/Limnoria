@@ -102,10 +102,13 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('mytell #foo bugs')
         self.assertNoResponse('blah blah blah', 2)
 
-    def testAddAlias(self):
+    def testAddRemoveAlias(self):
         cb = self.irc.getCallback('Alias')
-        cb.addAlias(self.irc, 'foobar', 'rot13 foobar')
+        cb.addAlias(self.irc, 'foobar', 'rot13 foobar', freeze=True)
         self.assertResponse('foobar', 'sbbone')
+        self.assertRaises(Alias.AliasError, cb.removeAlias, 'foobar')
+        cb.removeAlias('foobar', evenIfFrozen=True)
+        self.assertNoResponse('foobar', 2)
         
 
 

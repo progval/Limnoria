@@ -191,6 +191,16 @@ class Alias(callbacks.Privmsg):
         if freeze:
             self.frozen.add(name)
 
+    def removeAlias(self, name, evenIfFrozen=False):
+        name = callbacks.canonicalName(name)
+        if hasattr(self, name) and self.isCommand(name):
+            if evenIfFrozen or name not in self.frozen:
+                delattr(self.__class__, name)
+            else:
+                raise AliasError, 'That alias is frozen.'
+        else:
+            raise AliasError, 'There is no such alias.'
+
     def alias(self, irc, msg, args):
         """<name> <alias commands>
 
@@ -212,17 +222,11 @@ class Alias(callbacks.Privmsg):
         Removes the given alias, if unfrozen.
         """
         name = privmsgs.getArgs(args)
-        name = callbacks.canonicalName(name)
-        if hasattr(self, name) and self.isCommand(name):
-            if name not in self.frozen:
-                delattr(self.__class__, name)
-                irc.reply(msg, conf.replySuccess)
-            else:
-                irc.error(msg, 'That alias is frozen.')
-        else:
-            irc.error(msg, 'There is no such alias.')
-
-
+        try:
+            self.removeAlias(name)
+            irc.reply(msg, conf.replySuccess)
+        except AliasError, e:
+            irc.error(msg, str(e))
 
 
 Class = Alias
