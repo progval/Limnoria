@@ -32,6 +32,8 @@
 
 from test import *
 
+import random
+
 import ircmsgs
 import ircutils
 
@@ -141,13 +143,6 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual('jemfinch', ircutils.toLower('jemfinch'))
         self.assertEqual('{}|^', ircutils.toLower('[]\\~'))
 
-##     def testNick(self):
-##         nicks = ['jemfinch', 'jemfinch\\[]~']
-##         for nick in nicks:
-##             self.assertEqual(str(ircutils.nick(nick)), str(nick))
-##             self.assertEqual(ircutils.nick(nick), nick)
-##             self.assertEqual(ircutils.nick(nick), ircutils.toLower(nick))
-
     def testReplyTo(self):
         prefix = 'foo!bar@baz'
         channel = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)
@@ -170,6 +165,15 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(ircutils.unColor('\x0312,14foo\x03'), 'foo')
         self.assertEqual(ircutils.unColor('\x0312foo\x0F'), 'foo')
         self.assertEqual(ircutils.unColor('\x0312,14foo\x0F'), 'foo')
+
+    def testDccIpStuff(self):
+        def randomIP():
+            def rand():
+                return random.randrange(0, 256)
+            return '.'.join(map(str, [rand(), rand(), rand(), rand()]))
+        for _ in range(100): # 100 should be good :)
+            ip = randomIP()
+            self.assertEqual(ip, ircutils.unDccIP(ircutils.dccIP(ip)))
         
 
 class IrcDictTestCase(unittest.TestCase):

@@ -313,6 +313,25 @@ def shrinkList(L, sep='', limit=425):
         count += 1
     return count
 
+def dccIP(ip):
+    """Returns in IP in the proper for DCC."""
+    assert isIP(ip), 'argument must be a string ip in xxx.yyy.zzz.www format.'
+    i = 0
+    x = 256**3
+    for quad in ip.split('.'):
+        i += int(quad)*x
+        x /= 256
+    return i
+
+def unDccIP(i):
+    """Takes an integer DCC IP and return a normal string IP."""
+    assert isinstance(i, (int, long)), '%r is not an number.' % i
+    L = []
+    while len(L) < 4:
+        L.insert(0, i % 256)
+        i /= 256
+    return '.'.join(map(str, L))
+        
 
 class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""
