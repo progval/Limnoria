@@ -57,7 +57,10 @@ def loadPluginModule(name):
     """Loads (and returns) the module for the plugin with the given name."""
     files = []
     for dir in conf.pluginDirs:
-        files.extend(os.listdir(dir))
+        try:
+            files.extend(os.listdir(dir))
+        except EnvironmentError:
+            debug.msg('Invalid plugin directory: %s' % dir, 'verbose')
     loweredFiles = map(str.lower, files)
     try:
         index = loweredFiles.index(name.lower()+'.py')
