@@ -49,6 +49,7 @@ import utils
 import plugins
 import privmsgs
 import callbacks
+import ircutils
 
 dbfilename = os.path.join(conf.dataDir, 'Bugzilla.db')
 def makeDb(filename):
@@ -221,9 +222,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         report['url'] = str('%s/show_bug.cgi?id=%s' % (match.group(1), match.group(2)))
         report['title'] = str(summary['title'])
         report['summary'] = str(self._mk_summary_string(summary))
-        irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s' % report)
-        irc.reply(msg, '  %(summary)s' % report)
-        irc.reply(msg, '  %(url)s' % report)
+        irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report)
         
     def bug(self, irc, msg, args):
         """bug shorthand number
@@ -259,25 +258,23 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         report['url'] = str('%s/show_bug.cgi?id=%s' % (url, num))
         report['title'] = str(summary['title'])
         report['summary'] = str(self._mk_summary_string(summary))
-        irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s' % report)
-        irc.reply(msg, '  %(summary)s' % report)
-        irc.reply(msg, '  %(url)s' % report)
+        irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report)
         return
 
     def _mk_summary_string(self, summary):
         ary = []
         if summary.has_key('component'):
-            ary.append('Component: %s' % summary['component'])
+            ary.append(ircutils.bold('Component: ') + summary['component'])
         if summary.has_key('severity'):
-            ary.append('Severity: %s' % summary['severity'])
+            ary.append(ircutils.bold('Severity: ') + summary['severity'])
         if summary.has_key('assigned to'):
-            ary.append('Assigned to: %s' % summary['assigned to'])
+            ary.append(ircutils.bold('Assigned to: ') + summary['assigned to'])
         if summary.has_key('status'):
             if summary.has_key('resolution'):
-                ary.append('Status: %s/%s' %
+                ary.append(ircutils.bold('Status: ') + '%s/%s' %
                            (summary['status'], summary['resolution']))
             else:
-                ary.append('Status: %s' % summary['status'])
+                ary.append(ircutils.bold('Status: ') + summary['status'])
         out = string.join(ary, ', ')
         return out
 
