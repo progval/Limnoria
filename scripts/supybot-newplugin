@@ -91,7 +91,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 
-class %s(Plugin):
+class %s(callbacks.Plugin):
     """Add the help for "@plugin help %s" here
     This should describe *how* to use this plugin."""
     %s
