@@ -222,7 +222,11 @@ class User(callbacks.Privmsg):
             pass
         if not user.checkPassword(password) and \
            not user.checkHostmask(msg.prefix):
-            u = ircdb.users.getUser(msg.prefix)
+            try:
+                u = ircdb.users.getUser(msg.prefix)
+            except KeyError:
+                irc.error(conf.supybot.replies.incorrectAuthentication())
+                return
             if not u.checkCapability('owner'):
                 irc.error(conf.supybot.replies.incorrectAuthentication())
                 return
