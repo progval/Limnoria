@@ -216,7 +216,9 @@ class Owner(callbacks.Privmsg):
                         self.log.warning(s, name)
                         load = True
                 if load:
-                    if not irc.getCallback(name):
+                    # We don't load plugins that don't start with a capital
+                    # letter.
+                    if name[0].isupper() and not irc.getCallback(name):
                         # This is debug because each log logs its beginning.
                         self.log.debug('Loading %s.' % name)
                         try:
