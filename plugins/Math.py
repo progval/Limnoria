@@ -94,7 +94,7 @@ class Math(callbacks.Privmsg):
         if imag == 0:
             return str(real)
         elif imag == 1:
-            imag = 'i'
+            imag = '+i'
         elif imag == -1:
             imag = '-i'
         elif imag < 0:

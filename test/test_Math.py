@@ -49,6 +49,9 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
 
     def testCalcNoNameError(self):
         self.assertNotRegexp('calc foobar(x)', 'NameError')
+
+    def testCalcImaginary(self):
+        self.assertResponse('calc 3 + sqrt(-1)', '3+i')
         
     def testRpn(self):
         self.assertResponse('rpn 5 2 +', '7')
