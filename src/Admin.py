@@ -67,6 +67,8 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
 
     def do376(self, irc, msg):
         channels = list(conf.supybot.channels())
+        if not channels:
+            return
         utils.sortBy(lambda s: ',' not in s, channels)
         keys = []
         chans = []
