@@ -56,8 +56,6 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-dbfilename = os.path.join(conf.dataDir, 'Todo.db')
-
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
@@ -66,32 +64,34 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Todo')
 
+class TodoDB(plugins.DBHandler):
+    def makeDb(self, filename):
+        """create Todo database and tables"""
+        if os.path.exists(filename):
+            db = sqlite.connect(filename)
+        else:
+            db = sqlite.connect(filename, converters={'bool': bool})
+            cursor = db.cursor()
+            cursor.execute("""CREATE TABLE todo (
+                              id INTEGER PRIMARY KEY,
+                              priority INTEGER,
+                              added_at TIMESTAMP,
+                              userid INTEGER,
+                              task TEXT,
+                              active BOOLEAN
+                              )""")
+            db.commit()
+        return db
+
+    
 class Todo(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.makeDB(dbfilename)
-
-    def makeDB(self, filename):
-        """create Todo database and tables"""
-        if os.path.exists(filename):
-            self.db = sqlite.connect(filename)
-            return
-        self.db = sqlite.connect(filename, converters={'bool': bool})
-        cursor = self.db.cursor()
-        cursor.execute("""CREATE TABLE todo (
-                          id INTEGER PRIMARY KEY,
-                          priority INTEGER,
-                          added_at TIMESTAMP,
-                          userid INTEGER,
-                          task TEXT,
-                          active BOOLEAN
-                          )""")
-        self.db.commit()
+        self.dbHandler = TodoDB(os.path.join(conf.dataDir, 'Todo'))
 
     def die(self):
-        self.db.commit()
-        self.db.close()
-        del self.db
+        self.dbHandler.die()
+        callbacks.Privmsg.die(self)
 
     def _shrink(self, s):
         return utils.ellipsisify(s, 50)
@@ -119,7 +119,8 @@ class Todo(callbacks.Privmsg):
                     irc.error(msg,
                               '%r is not a valid task id or username' % arg)
                     return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         if not userid and not taskid:
             try:
                 id = ircdb.users.getUserId(msg.prefix)
@@ -188,12 +189,13 @@ class Todo(callbacks.Privmsg):
                     irc.error(msg, '%r is an invalid priority' % arg)
                     return
         text = privmsgs.getArgs(rest)
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         now = int(time.time())
         cursor.execute("""INSERT INTO todo
                           VALUES (NULL, %s, %s, %s, %s, 1)""",
                           priority, now, id, text)
-        self.db.commit()
+        db.commit()
         cursor.execute("""SELECT id FROM todo 
                           WHERE added_at=%s AND userid=%s""", now, id)
         todoId = cursor.fetchone()[0]
@@ -210,7 +212,8 @@ class Todo(callbacks.Privmsg):
             irc.error(msg, conf.replyNotRegistered)
             return
         taskid = privmsgs.getArgs(args)
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT * FROM todo
                           WHERE id = %s AND userid = %s
                           AND active = 1""", taskid, id)
@@ -218,7 +221,7 @@ class Todo(callbacks.Privmsg):
             irc.error(msg, 'None of your tasks match that id.')
             return
         cursor.execute("""UPDATE todo SET active = 0 WHERE id = %s""", taskid)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
     _sqlTrans = string.maketrans('*?', '%_')
@@ -239,6 +242,7 @@ class Todo(callbacks.Privmsg):
         (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
         if not optlist and not rest:
             raise callbacks.ArgumentError
+        db = self.dbHandler.getDb()
         criteria = ['userid=%s' % id, 'active=1']
         formats = []
         predicateName = 'p'
@@ -256,12 +260,12 @@ class Todo(callbacks.Privmsg):
                     return
                 def p(s, r=r):
                     return int(bool(r.search(s)))
-                self.db.create_function(predicateName, 1, p)
+                db.create_function(predicateName, 1, p)
                 predicateName += 'p'
         for glob in rest:
             criteria.append('task LIKE %s')
             formats.append(glob.translate(self._sqlTrans))
-        cursor = self.db.cursor()
+        cursor = db.cursor()
         sql = """SELECT id, task FROM todo WHERE %s""" % ' AND '.join(criteria)
         cursor.execute(sql, formats)
         if cursor.rowcount == 0:
@@ -282,7 +286,8 @@ class Todo(callbacks.Privmsg):
             irc.error(msg, conf.replyNotRegistered)
             return
         (id, priority) = privmsgs.getArgs(args, required=2)
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT userid, priority FROM todo
                           WHERE id = %s AND active = 1""", id)
         if cursor.rowcount == 0:
@@ -295,7 +300,7 @@ class Todo(callbacks.Privmsg):
         # If we make it here, we're okay
         cursor.execute("""UPDATE todo SET priority = %s
                           WHERE id = %s""", priority, id)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
     def change(self, irc, msg, args):
@@ -315,7 +320,8 @@ class Todo(callbacks.Privmsg):
         except ValueError:
             irc.error(msg, '%r is not a valid regexp' % regexp)
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT task FROM todo
                           WHERE userid = %s AND id = %s
                           AND active = 1""", userid, taskid)
@@ -325,7 +331,7 @@ class Todo(callbacks.Privmsg):
         newtext = replacer(cursor.fetchone()[0])
         cursor.execute("""UPDATE todo SET task = %s
                           WHERE id = %s""", newtext, taskid)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
 Class = Todo
