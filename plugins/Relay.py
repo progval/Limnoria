@@ -514,7 +514,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         return s
 
     def _sendToOthers(self, irc, msg):
-        assert msg.command == 'PRIVMSG'
+        assert msg.command == 'PRIVMSG' or msg.command == 'TOPIC'
         for otherIrc in self.ircs.itervalues():
             if otherIrc != irc:
                 if msg.args[0] in otherIrc.state.channels:
