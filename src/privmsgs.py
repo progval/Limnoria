@@ -171,9 +171,10 @@ def urlSnarfer(f):
         while q and q[0][2] < cutoff:
             q.dequeue()
         url = match.group(0)
-        if any(lambda t: t[0] == url and t[1] == msg.args[0], q) and \
-               not world.testing:
-            self.log.warning('Refusing to snarf %s from %r.', url, msg.prefix)
+        for (qUrl, target, when) in q:
+            if url == qUrl and target == msg.args[0] and not world.testing:
+                self.log.warning('Not snarfing %s from %r.', url, msg.prefix)
+                return
         else:
             q.enqueue((url, msg.args[0], now))
             if self.threaded:
