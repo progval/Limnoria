@@ -1,8 +1,14 @@
 Here's an example of how to code a few callbacks for SupyBot.
 
 Let's say you want to make an annoying "Mimic" callback that repeats everything
-anyone says to the bot or on the channels the bot is in.  Here's what it looks
-like:
+anyone says to the bot or on the channels the bot is in.  That
+shouldn't be too hard.  First, you'll need to make a new module to
+hold the plugin:
+
+$ scripts/newplugin.py Mimic
+
+That'll make the file plugins/Mimic.py, which will 
+
 
 [code]
 class AnnoyingMimic(irclib.IrcCallback):
