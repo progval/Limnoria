@@ -183,7 +183,6 @@ class LogProxy(object):
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
-    priority = ~sys.maxint-1 # This must be first!
     capability = 'owner'
     _srcPlugins = ircutils.IrcSet(('Admin', 'Channel', 'Config',
                                    'Misc', 'Owner', 'User'))
@@ -227,6 +226,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     continue
                 registerDefaultPlugin(name, s)
 
+    callAfter = utils.Nothing()
+    callBefore = utils.Everything()
+    def __cmp__(self, other):
+        return -1 # We should always be the first plugin.
+    
     def _getIrc(self, network):
         network = network.lower()
         for irc in world.ircs:
@@ -376,10 +380,12 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
         callbacks.Privmsg.errored = False
-        if ircdb.checkIgnored(msg.prefix):
-            return
+        ignored = ircdb.checkIgnored(msg.prefix)
         s = callbacks.addressed(irc.nick, msg)
         if s:
+            if ignored:
+                self.log.info('Ignoring command from %s.' % msg.prefix)
+                return
             brackets = conf.supybot.reply.brackets.get(msg.args[0])()
             try:
                 tokens = callbacks.tokenize(s, brackets=brackets)
@@ -595,17 +601,17 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         if name.endswith('.py'):
             name = name[:-3]
         if irc.getCallback(name):
-            irc.error('That plugin is already loaded.')
+            irc.error('%s is already loaded.' % name.capitalize())
             return
         try:
             module = loadPluginModule(name, ignoreDeprecation)
         except Deprecated:
-            irc.error('That plugin is deprecated.  '
-                      'Use --deprecated to force it to load.')
+            irc.error('%s is deprecated.  Use --deprecated '
+                      'to force it to load.' % name.capitalize())
             return
         except ImportError, e:
             if name in str(e):
-                irc.error('No plugin %s exists.' % name)
+                irc.error('No plugin named %s exists.' % utils.dqrepr(name))
             else:
                 irc.error(str(e))
             return

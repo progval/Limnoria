@@ -570,6 +570,7 @@ class IrcObjectProxy(RichReplyMethods):
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
+        # We can't canonicalName here because it might be a regexp method.
         name = self.args[0]
         cbs = findCallbackForCommand(self, name)
         if len(cbs) == 0:
@@ -595,6 +596,9 @@ class IrcObjectProxy(RichReplyMethods):
             # Ok, no regexp-based things matched.
             self._callInvalidCommands()
         else:
+            # But we must canonicalName here, since we're comparing to a
+            # canonicalName.
+            name = canonicalName(name)
             if len(cbs) > 1:
                 for cb in cbs:
                     if canonicalName(cb.name()) == name:
@@ -862,6 +866,8 @@ class Privmsg(irclib.IrcCallback):
     alwaysCall = ()
     threaded = False
     noIgnore = False
+    callAfter = ()
+    callBefore = ()
     Proxy = IrcObjectProxy
     commandArgs = ['self', 'irc', 'msg', 'args']
     # This must be class-scope, so all plugins use the same one.
@@ -871,6 +877,10 @@ class Privmsg(irclib.IrcCallback):
         self.__parent = super(Privmsg, self)
         myName = self.name()
         self.log = log.getPluginLogger(myName)
+        # We can't do this because of the specialness that Owner and Misc do.
+        # I guess plugin authors will have to get the capitalization right.
+        # self.callAfter = map(str.lower, self.callAfter)
+        # self.callBefore = map(str.lower, self.callBefore)
         ### Setup the dispatcher command.
         canonicalname = canonicalName(myName)
         self._original = getattr(self, canonicalname, None)
@@ -919,6 +929,37 @@ class Privmsg(irclib.IrcCallback):
             dispatcher.isDispatcher = True
         setattr(self.__class__, canonicalname, dispatcher)
 
+    # In addition to priority, plugins may specify callBefore and callAfter
+    # attributes which are lists of plugin names which the plugin should be
+    # called before and after, respectively.  We may, at some future point,
+    # remove priority entirely.
+    def __cmp__(self, other, doAssert=True):
+        selfName = self.name()
+        otherName = other.name()
+        # We can't be certain of the order the callbacks list is in, so we
+        # can't be certain that our __cmp__ is the most specific one, so
+        # we basically run the other callback's as well.
+        if isinstance(other, Privmsg):
+            if otherName in self.callAfter or selfName in other.callBefore:
+                ret = 1
+            elif otherName in self.callBefore or selfName in other.callAfter:
+                ret = -1
+            else:
+                ret = self.__parent.__cmp__(other)
+        else:
+            ret = self.__parent.__cmp__(other)
+        if doAssert:
+            try:
+                otherRet = other.__cmp__(self, doAssert=False)
+            except TypeError, e:
+                if 'doAssert' in str(e): # unexpected keyword argument.
+                    otherRet = cmp(other, self)
+                else:
+                    otherRet = ret
+            assert ret+otherRet==0, 'callbacks\' __cmp__ disagree: %s, %s' % \
+                                    (selfName, otherName)
+        return ret
+            
     def __call__(self, irc, msg):
         if msg.command == 'PRIVMSG':
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):

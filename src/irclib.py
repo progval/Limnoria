@@ -76,14 +76,23 @@ class IrcCallback(IrcCommandDispatcher):
     # numbers mean *higher* priority (like nice values in *nix).  Higher
     # priority means the callback is called *earlier* on the inFilter chain,
     # *earlier* on the __call__ chain, and *later* on the outFilter chain.
+
     priority = 99
     __metaclass__ = log.MetaFirewall
     __firewalled__ = {'die': None,
                       'reset': None,
                       '__call__': None,
+                      '__cmp__': lambda self: 0,
                       'inFilter': lambda self, irc, msg: msg,
                       'outFilter': lambda self, irc, msg: msg,
                       'name': lambda self: self.__class__.__name__,}
+
+    def __cmp__(self, other):
+       ret = cmp(self.priority, other.priority)
+       if not ret:
+          ret = cmp(self.name(), other.name())
+       return ret
+    
     def name(self):
         """Returns the name of the callback."""
         return self.__class__.__name__
@@ -586,7 +595,9 @@ class Irc(IrcCommandDispatcher):
     def addCallback(self, callback):
         """Adds a callback to the callbacks list."""
         self.callbacks.append(callback)
-        utils.sortBy(operator.attrgetter('priority'), self.callbacks)
+        self.callbacks.sort()
+        # We used to do this, then we implemented sorting in IrcCallback.
+        # utils.sortBy(operator.attrgetter('priority'), self.callbacks)
 
     def getCallback(self, name):
         """Gets a given callback by name."""

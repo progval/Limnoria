@@ -65,12 +65,16 @@ conf.registerGlobalValue(conf.supybot.plugins.Misc, 'listPrivatePlugins',
     are loaded."""))
 
 class Misc(callbacks.Privmsg):
-    priority = sys.maxint
     def __init__(self):
         super(Misc, self).__init__()
         timeout = conf.supybot.abuse.flood.command.invalid
         self.invalidCommands = ircutils.FloodQueue(timeout)
 
+    callAfter = utils.Everything()
+    callBefore = utils.Nothing()
+    def __cmp__(self, other):
+        return 1 # We should always be the last plugin.
+    
     def invalidCommand(self, irc, msg, tokens):
         self.log.debug('Misc.invalidCommand called (tokens %s)', tokens)
         # First, we check for invalidCommand floods.  This is rightfully done
