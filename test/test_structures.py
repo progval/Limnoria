@@ -549,5 +549,28 @@ class MaxLengthQueueTestCase(unittest.TestCase):
         self.assertEqual(q[0], 3)
 
 
+class TwoWayDictionaryTestCase(unittest.TestCase):
+    def testInit(self):
+        d = TwoWayDictionary(foo='bar')
+        self.failUnless('foo' in d)
+        self.failUnless('bar' in d)
+
+    def testSetitem(self):
+        d = TwoWayDictionary()
+        d['foo'] = 'bar'
+        self.failUnless('foo' in d)
+        self.failUnless('bar' in d)
+
+    def testDelitem(self):
+        d = TwoWayDictionary(foo='bar')
+        del d['foo']
+        self.failIf('foo' in d)
+        self.failIf('bar' in d)
+        d = TwoWayDictionary(foo='bar')
+        del d['bar']
+        self.failIf('bar' in d)
+        self.failIf('foo' in d)
+        
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

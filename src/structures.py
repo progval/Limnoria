@@ -39,8 +39,6 @@ import fix
 
 import types
 
-__all__ = ['RingBuffer', 'queue', 'smallqueue', 'MaxLengthQueue']
-
 class RingBuffer(object):
     """Class to represent a fixed-size ring buffer."""
     __slots__ = ('L', 'i', 'full', 'maxSize')
@@ -319,7 +317,22 @@ class MaxLengthQueue(queue):
         if len(self) > self.length:
             self.dequeue()
 
-## class MaxLengthQueue(RingBuffer):
-##     enqueue = RingBuffer.append
-##     def peek(self):
-##         return self[0]
+
+class TwoWayDictionary(dict):
+    __slots__ = ()
+    def __init__(self, seq=(), **kwargs):
+        for (key, value) in seq:
+            self[key] = value
+            self[value] = key
+        for (key, value) in kwargs.iteritems():
+            self[key] = value
+            self[value] = key
+            
+    def __setitem__(self, key, value):
+        dict.__setitem__(self, key, value)
+        dict.__setitem__(self, value, key)
+
+    def __delitem__(self, key):
+        value = self[key]
+        dict.__delitem__(self, key)
+        dict.__delitem__(self, value)
