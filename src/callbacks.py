@@ -379,7 +379,7 @@ class Privmsg(irclib.IrcCallback):
 
 
 class IrcObjectProxyRegexp:
-    def __init__(self, irc):
+    def __init__(self, irc, *args):
         self.irc = irc
 
     def error(self, msg, s):
@@ -389,7 +389,6 @@ class IrcObjectProxyRegexp:
         self.irc.queueMsg(reply(msg, s))
 
     def __getattr__(self, attr):
-        print attr
         return getattr(self.irc, attr)
 
 
