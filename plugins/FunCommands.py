@@ -461,7 +461,7 @@ class FunCommands(callbacks.Privmsg):
                      world.threadsSpawned,
                      world.threadsSpawned == 1 and 'thread' or 'threads',
                      activeThreads, world.commandsProcessed,
-                     world.commandProcessed == 1 and 'command' or 'commands')
+                     world.commandsProcessed == 1 and 'command' or 'commands')
         irc.reply(msg, response)
 
     def uptime(self, irc, msg, args):
