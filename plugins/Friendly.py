@@ -38,28 +38,33 @@ from baseplugin import *
 import re
 
 import ircmsgs
+import ircutils
 import callbacks
+
+def reply(msg, s):
+    return ircmsgs.privmsg(ircutils.replyTo(msg), s)
 
 class Friendly(callbacks.PrivmsgRegexp):
     def greet(self, irc, msg, match):
         r"(?:heya?|(?:w(?:hat'?s\b|as)s?up)|howdy|hi|hello)"
         if irc.nick in msg.args[1]:
-            irc.queueMsg(callbacks.reply(msg, 'howdy, %s :)' % msg.nick))
+            irc.queueMsg(reply(msg, 'howdy, %s :)' % msg.nick))
 
     def goodbye(self, irc, msg, match):
         r"(?:good)?bye|adios|vale|ciao|au revoir|seeya|night"
         if irc.nick in msg.args[1]:
-            irc.queueMsg(callbacks.reply(msg, 'seeya, %s!' % msg.nick))
+            irc.queueMsg(reply(msg, 'seeya, %s!' % msg.nick))
 
     def exclaim(self, irc, msg, match):
         r"^([^\s]+)!"
         if match.group(1) == irc.nick:
-            irc.queueMsg(callbacks.reply(msg, '%s!' % msg.nick))
+            irc.queueMsg(reply(msg, '%s!' % msg.nick))
 
     def beGracious(self, irc, msg, match):
         r"\b(?:thank'?s?|thx|tnks?)\b"
         if irc.nick in msg.args[1]:
-            irc.queueMsg(callbacks.reply(msg,'you\'re welcome, %s' % msg.nick))
+            s = 'you\'re welcome, %s' % msg.nick
+            irc.queueMsg(reply(msg, s))
 
 
 Class = Friendly
