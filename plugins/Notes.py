@@ -52,6 +52,27 @@ import callbacks
 
 dbfilename = os.path.join(conf.dataDir, 'Notes.db')
 
+example = utils.wrapLines("""
+<jemfinch> @list Notes
+<supybot> note, notes, oldnotes, sendnote
+<jemfinch> @notes
+<supybot> You have no unread notes.
+<jemfinch> @oldnotes
+<supybot> 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 15, 17, 18, 19, 25, 26, 27, 28, 37, 40, 41, 47
+<jemfinch> @note 1
+<supybot> I read their site, lurk on their forums and help out with the dc competitions (Sent by jamessan 18 weeks, 1 day, 6 hours, 46 minutes, and 53 seconds ago)
+<jemfinch> @note 28
+<supybot> er, you might want to change the ChannelStats module to ChannelDB in your conf file as well (Sent by Strike 2 weeks, 2 days, 20 hours, 11 minutes, and 58 seconds ago)
+<jemfinch> @sendnote jemfinch hey, this is a note from yourself.
+<supybot> The operation succeeded.
+* jemfinch blah blah (he'll tell me I have unread notes)
+<supybot> You have 1 unread note; 1 that I haven't told you about before now..
+<jemfinch> @notes
+<supybot> #49 from jemfinch
+<jemfinch> @note 49
+<supybot> hey, this is a note from yourself. (Sent by jemfinch 20 seconds ago)
+""")
+
 class Notes(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -116,6 +137,7 @@ class Notes(callbacks.Privmsg):
         "Called when module is unloaded/reloaded."
         self.db.commit()
         self.db.close()
+        del self.db
 
     def doJoin(self, irc, msg):
         try:
@@ -226,11 +248,11 @@ class Notes(callbacks.Privmsg):
             return
         cursor = self.db.cursor()
         cursor.execute("""SELECT notes.id, notes.from_id,
-                                      notes.public, notes.read
-                               FROM users, notes
-                               WHERE users.name=%s AND
-                                     notes.to_id=users.id AND
-                                     notes.read=0""", sender)
+                                 notes.public, notes.read
+                          FROM users, notes
+                          WHERE users.name=%s AND
+                                notes.to_id=users.id AND
+                                notes.read=0""", sender)
         count = cursor.rowcount
         notes = cursor.fetchall()
         L = []
@@ -241,7 +263,7 @@ class Notes(callbacks.Privmsg):
             for (id, from_id, public, read) in notes:
                 if not int(read):
                     sender = self.getUserName(from_id)
-                    if int(public):
+                    if int(public) or not ircutils.isChannel(msg.args[0]):
                         L.append(r'#%s from %s' % (id, sender))
                     else:
                         L.append(r'#%s (private)' % id)
