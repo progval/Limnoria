@@ -120,9 +120,10 @@ class UserCommands(callbacks.Privmsg):
             irc.error(msg, conf.replyNoUser)
             return
         try:
-            _ = ircdb.users.getUserId(hostmask)
-            irc.error(msg, 'That hostmask is already registered.')
-            return
+            otherId = ircdb.users.getUserId(hostmask)
+            if otherId != id:
+                irc.error(msg, 'That hostmask is already registered.')
+                return
         except KeyError:
             pass
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
