@@ -149,6 +149,7 @@ def recoverableError(msg):
     _errorfd.flush()
 
 def unrecoverableError(msg):
+    """Logs some error message and then exits."""
     recoverableError(msg)
     exit(-1)
 
