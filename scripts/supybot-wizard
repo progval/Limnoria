@@ -406,13 +406,13 @@ def main():
                 already.  Perhaps you added it before? """)
                 if yn('Do you want to remove its owner capability?')=='y':
                     u.removeCapability('owner')
-                    ircdb.setUser(id, u)
+                    ircdb.users.setUser(id, u)
             else:
                 myPrint("""That user already exists, but doesn't have owner
                 capabilities.""")
                 if yn('Do you want to add to it owner capabilities?') == 'y':
                     u.addCapability('owner')
-                    ircdb.setUser(id, u)
+                    ircdb.users.setUser(id, u)
         except KeyError:
             password = something('What should the owner\'s password be?')
             (id, u) = ircdb.users.newUser()
