@@ -366,6 +366,10 @@ class Http(callbacks.Privmsg):
         request = urllib2.Request(url, headers={'User-agent':
           'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
         html = webutils.getUrl(request)
+        if 'daily limit' in html:
+            s = 'Acronymfinder.com says I\'ve reached my daily limit.  Sorry.'
+            irc.error(msg, s)
+            return
         # The following definitions are stripped and empties are removed.
         defs = filter(None, imap(str.strip, self._acronymre.findall(html)))
         utils.sortBy(lambda s: not s.startswith('[not an acronym]'), defs)
