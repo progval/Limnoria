@@ -1,3 +1,8 @@
+	* Changed the supybot.user configuration variable so that if it
+	isn't configured, the user will stay up-to-date with the current
+	version of the bot.  To take advantage of this, set your
+	supybot.user configuration variable to ""
+	
 	* Fixed a bug with AutoMode's auto-banning feature; a variable
 	was misspelled.
 	

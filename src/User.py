@@ -259,31 +259,24 @@ class User(callbacks.Privmsg):
     removehostmask = wrap(removehostmask, ['private', 'otherUser', 'something',
                                            additional('something', '')])
 
-    def setpassword(self, irc, msg, args, optlist, user, password,newpassword):
-        """[--hashed] <name> <old password> <new password>
+    def setpassword(self, irc, msg, args, user, password,newpassword):
+        """<name> <old password> <new password>
 
         Sets the new password for the user specified by <name> to
         <new password>.  Obviously this message must be sent to the bot
-        privately (not in a channel).  If --hashed is given, the password will
-        be hashed on disk (rather than being stored in plaintext.  If the
-        requesting user is an owner user (and the user whose password is being
-        changed isn't that same owner user), then <old password> needn't be
-        correct.
+        privately (not in a channel). If the requesting user is an owner user
+        (and the user whose password is being changed isn't that same owner
+        user), then <old password> needn't be correct.
         """
-        hashed = conf.supybot.databases.users.hash()
-        for (option, arg) in optlist:
-            if option == 'hashed':
-                hashed = True
         u = ircdb.users.getUser(msg.prefix)
         if user.checkPassword(password) or \
            (u.checkCapability('owner') and not u == user):
-            user.setPassword(newpassword, hashed=hashed)
+            user.setPassword(newpassword)
             ircdb.users.setUser(user)
             irc.replySuccess()
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
-    setpassword = wrap(setpassword, [getopts({'hashed':''}), 'otherUser',
-                                     'something', 'something'])
+    setpassword = wrap(setpassword, ['otherUser', 'something', 'something'])
 
     def username(self, irc, msg, args, hostmask):
         """<hostmask|nick>
