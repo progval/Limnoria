@@ -35,7 +35,7 @@ class FriendlyTestCase(PluginTestCase):
     plugins = ('Friendly',)
     def testExclaim(self):
         s = '%s!' % self.irc.nick
-        self.assertEqual(s, s)
+        self.assertResponse(s, s)
 
     def testGreet(self):
         self.assertNotError('heya, %s' % self.irc.nick)
