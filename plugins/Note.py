@@ -188,8 +188,7 @@ class Note(callbacks.Privmsg):
             id = id.lstrip('#')
             return int(id)
         except ValueError:
-            irc.error('That\'s not a valid note id.')
-            return None
+            irc.error('That\'s not a valid note id.', Raise=True)
 
     def send(self, irc, msg, args):
         """<recipient>,[<recipient>,[...]] <text>
@@ -242,8 +241,6 @@ class Note(callbacks.Privmsg):
         if not args:
             raise callbacks.ArgumentError
         id = self._validId(irc, args[0])
-        if not id:
-            return
         args.append('(in reply to #%s)' % id)
         note = self.db.get(id)
         to = self.db.get(id).frm
@@ -269,8 +266,6 @@ class Note(callbacks.Privmsg):
             return
         id = privmsgs.getArgs(args)
         id = self._validId(irc, id)
-        if id is None:
-            return
         note = self.db.get(id)
         if note.frm == userid:
             if not note.read:
@@ -304,8 +299,6 @@ class Note(callbacks.Privmsg):
             return
         id = privmsgs.getArgs(args)
         id = self._validId(irc, id)
-        if id is None:
-            return
         try:
             note = self.db.get(id)
         except KeyError:
