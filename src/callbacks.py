@@ -194,6 +194,7 @@ def reply(msg, s, prefixName=None, private=None,
 def error(msg, s, **kwargs):
     """Makes an error reply to msg with the appropriate error payload."""
     kwargs['error'] = True
+    msg.errored = True
     return reply(msg, s, **kwargs)
 
 def getHelp(method, name=None):
@@ -504,7 +505,6 @@ class IrcObjectProxy(RichReplyMethods):
         # tokenized commands.
         self.args = copy.deepcopy(args)
         self.counter = 0
-        self.finished = False # Used in _callInvalidCommands.
         self.commandMethod = None # Used in error.
         self._resetReplyAttributes()
         if not args:
@@ -538,17 +538,34 @@ class IrcObjectProxy(RichReplyMethods):
                 return
         self.finalEval()
 
+
+    def _callTokenizedCommands(self):
+        log.debug('Calling tokenizedCommands.')
+        for cb in self.irc.callbacks:
+            if hasattr(cb, 'tokenizedCommand'):
+                log.debug('Trying to call %s.tokenizedCommand.' % cb.name())
+                self._callTokenizedCommand(cb)
+                if self.msg.repliedTo:
+                    log.debug('Done calling tokenizedCommands: %s.' % cb.name())
+                    return
+
+    def _callTokenizedCommand(self, cb):
+        try:
+            cb.tokenizedCommand(self, self.msg, self.args)
+        except Error, e:
+            self.error(str(e))
+        except Exception, e:
+            log.exception('Uncaught exception in %s.tokenizedCommand.' %
+                          cb.name())
+            
     def _callInvalidCommands(self):
-        if ircmsgs.isCtcp(self.msg):
-            log.debug('Skipping invalidCommand, msg is CTCP.')
-            return
         log.debug('Calling invalidCommands.')
         for cb in self.irc.callbacks:
-            log.debug('Trying to call %s.invalidCommand.' % cb.name())
             if hasattr(cb, 'invalidCommand'):
+                log.debug('Trying to call %s.invalidCommand.' % cb.name())
                 self._callInvalidCommand(cb)
-                if self.finished:
-                    log.debug('Finished calling invalidCommand: %s.',cb.name())
+                if self.msg.repliedTo:
+                    log.debug('Done calling invalidCommands: %s.',cb.name())
                     return
 
     def _callInvalidCommand(self, cb):
@@ -557,7 +574,8 @@ class IrcObjectProxy(RichReplyMethods):
         except Error, e:
             self.error(str(e))
         except Exception, e:
-            log.exception('Uncaught exception in %s.invalidCommand'% cb.name())
+            log.exception('Uncaught exception in %s.invalidCommand.'%
+                          cb.name())
 
     def _callCommand(self, name, cb):
         try:
@@ -581,31 +599,37 @@ class IrcObjectProxy(RichReplyMethods):
         name = self.args[0]
         cbs = findCallbackForCommand(self, name)
         if len(cbs) == 0:
+            # Normal command not found, let's go for the specialties now.
+            # First, check for addressedRegexps -- they take precedence over
+            # tokenizedCommands.
             for cb in self.irc.callbacks:
-# We used not to run invalidCommands if regexps matched, but now I'd say that
-# invalidCommands are more essential than regexps, so it is regexps that should
-# have to work around invalidCommands, not vice-versa.
-##                 if isinstance(cb, PrivmsgRegexp):
-##                     for (r, name) in cb.res:
-##                         if r.search(self.msg.args[1]):
-##                             log.debug('Skipping invalidCommand: %s.%s',
-##                                       cb.name(), name)
-##                             return
                 if isinstance(cb, PrivmsgCommandAndRegexp):
-##                     for (r, name) in cb.res:
-##                         if r.search(self.msg.args[1]):
-##                             log.debug('Skipping invalidCommand: %s.%s',
-##                                       cb.name(), name)
-##                             return
-# Although we still consider addressedRegexps to be commands, so we don't call
-# invalidCommnads if an addressedRegexp matches.
                     payload = addressed(self.irc.nick, self.msg)
                     for (r, name) in cb.addressedRes:
                         if r.search(payload):
                             log.debug('Skipping invalidCommand: %s.%s',
                                       cb.name(), name)
                             return
-            # Ok, no regexp-based things matched.
+            # Now we call tokenizedCommands.
+            self._callTokenizedCommands()
+            # Return if we've replied.
+            if self.msg.repliedTo:
+                return
+            # Now we check for regexp commands, which override invalidCommand.
+            for cb in self.irc.callbacks:
+                if isinstance(cb, PrivmsgRegexp):
+                    for (r, name) in cb.res:
+                        if r.search(self.msg.args[1]):
+                            log.debug('Skipping invalidCommand: %s.%s',
+                                      cb.name(), name)
+                            return
+                elif isinstance(cb, PrivmsgCommandAndRegexp):
+                    for (r, name) in cb.res:
+                        if r.search(self.msg.args[1]):
+                            log.debug('Skipping invalidCommand: %s.%s',
+                                      cb.name(), name)
+                            return
+            # No matching regexp commands, now we do invalidCommands.
             self._callInvalidCommands()
         else:
             # But we must canonicalName here, since we're comparing to a
@@ -623,7 +647,6 @@ class IrcObjectProxy(RichReplyMethods):
             else:
                 del self.args[0]
                 cb = cbs[0]
-            Privmsg.handled = True
             if cb.threaded or conf.supybot.debug.threadAllCommands():
                 t = CommandThread(target=self._callCommand,
                                   args=(name, cb))
@@ -706,7 +729,6 @@ class IrcObjectProxy(RichReplyMethods):
                                                 notice=self.notice,
                                                 private=self.private,
                                                 prefixName=self.prefixName))
-                        self.finished = True
                         return
                     msgs = ircutils.wrap(s, allowedLength-30) # -30 is for nick:
                     msgs.reverse()
@@ -742,7 +764,6 @@ class IrcObjectProxy(RichReplyMethods):
                                             notice=self.notice,
                                             private=self.private,
                                             prefixName=self.prefixName))
-                self.finished = True
             finally:
                 self._resetReplyAttributes()
         else:
@@ -766,10 +787,9 @@ class IrcObjectProxy(RichReplyMethods):
                 self.error(formatArgumentError(self.commandMethod), **kwargs)
             else:
                 raise ArgumentError # We shouldn't get here, but just in case.
-        self.finished = True
 
     def noReply(self):
-        self.finished = True
+        self.msg.repliedTo = True
         
     def getRealIrc(self):
         """Returns the real irclib.Irc object underlying this proxy chain."""
@@ -868,7 +888,6 @@ class DisabledCommands(object):
 
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
-    __metaclass__ = log.MetaFirewall
     # For awhile, a comment stood here to say, "Eventually callCommand."  But
     # that's wrong, because we can't do generic error handling in this
     # callCommand -- plugins need to be able to override callCommand and do
@@ -876,13 +895,9 @@ class Privmsg(irclib.IrcCallback):
     __firewalled__ = {'isCommand': None,}
                       # 'invalidCommand': None} # Gotta raise callbacks.Error.
     public = True
-    handled = False
-    errored = False
     alwaysCall = ()
     threaded = False
     noIgnore = False
-    callAfter = ()
-    callBefore = ()
     Proxy = IrcObjectProxy
     commandArgs = ['self', 'irc', 'msg', 'args']
     # This must be class-scope, so all plugins use the same one.
@@ -944,24 +959,6 @@ class Privmsg(irclib.IrcCallback):
             dispatcher.isDispatcher = True
         setattr(self.__class__, canonicalname, dispatcher)
 
-    # In addition to priority, plugins may specify callBefore and callAfter
-    # attributes which are lists of plugin names which the plugin should be
-    # called before and after, respectively.  We may, at some future point,
-    # remove priority entirely.
-    def __lt__(self, other):
-        selfName = self.name()
-        otherName = other.name()
-        # We can't be certain of the order the callbacks list is in, so we
-        # can't be certain that our __lt__ is the most specific one, so
-        # we basically run the other callback's as well.
-        if isinstance(other, Privmsg):
-            if other.name() in self.callBefore or \
-               self.name() in other.callAfter:
-                return True
-            else:
-                return False
-        return self.__parent.__lt__(other)
-            
     def __call__(self, irc, msg):
         if msg.command == 'PRIVMSG':
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
@@ -1151,9 +1148,8 @@ class PrivmsgRegexp(Privmsg):
                 irc.replyError()
 
     def doPrivmsg(self, irc, msg):
-        if Privmsg.errored:
-            self.log.info('%s not running due to Privmsg.errored.',
-                          self.name())
+        if msg.errored:
+            self.log.info('%s not running due to msg.errored.', self.name())
             return
         for (r, name) in self.res:
             spans = sets.Set()
@@ -1218,24 +1214,21 @@ class PrivmsgCommandAndRegexp(Privmsg):
                 raise
 
     def doPrivmsg(self, irc, msg):
-        if Privmsg.errored:
-            self.log.debug('%s not running due to Privmsg.errored.',
-                           self.name())
+        if msg.errored:
+            self.log.debug('%s not running due to msg.errored.', self.name())
             return
         for (r, name) in self.res:
             for m in r.finditer(msg.args[1]):
                 proxy = self.Proxy(irc, msg)
                 self.callCommand(name, proxy, msg, m, catchErrors=True)
-        if not Privmsg.handled:
-            s = addressed(irc.nick, msg)
-            if s:
-                for (r, name) in self.addressedRes:
-                    if Privmsg.handled and name not in self.alwaysCall:
-                        continue
-                    for m in r.finditer(s):
-                        proxy = self.Proxy(irc, msg)
-                        self.callCommand(name, proxy, msg, m, catchErrors=True)
-                        Privmsg.handled = True
+        s = addressed(irc.nick, msg)
+        if s:
+            for (r, name) in self.addressedRes:
+                if msg.repliedTo and name not in self.alwaysCall:
+                    continue
+                for m in r.finditer(s):
+                    proxy = self.Proxy(irc, msg)
+                    self.callCommand(name, proxy, msg, m, catchErrors=True)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

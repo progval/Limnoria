@@ -79,13 +79,12 @@ class Misc(callbacks.Privmsg):
         super(Misc, self).__init__()
         self.invalidCommands = ircutils.FloodQueue(60)
 
-    priority = sys.maxint + 1 # This is for working with IrcCallbacks.
-    callAfter = utils.Everything()
-    callBefore = utils.Nothing()
-    def __lt__(self, other):
-        return False # We should always be the last plugin.
-    
+    def callPrecedence(self, irc):
+        return ([cb for cb in irc.callbacks if cb is not self], [])
+
     def invalidCommand(self, irc, msg, tokens):
+        assert not msg.repliedTo, 'repliedTo msg in Misc.invalidCommand.'
+        assert self is irc.callbacks[-1], 'Misc isn\'t last callback.'
         self.log.debug('Misc.invalidCommand called (tokens %s)', tokens)
         # First, we check for invalidCommand floods.  This is rightfully done
         # here since this will be the last invalidCommand called, and thus it

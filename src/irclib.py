@@ -72,12 +72,8 @@ class IrcCallback(IrcCommandDispatcher):
     "doCommand" -- doPrivmsg, doNick, do433, etc.  These will be called
     on matching messages.
     """
-    # priority determines the order in which callbacks are called.  Lower
-    # numbers mean *higher* priority (like nice values in *nix).  Higher
-    # priority means the callback is called *earlier* on the inFilter chain,
-    # *earlier* on the __call__ chain, and *later* on the outFilter chain.
-
-    priority = 99
+    callAfter = ()
+    callBefore = ()
     __metaclass__ = log.MetaFirewall
     __firewalled__ = {'die': None,
                       'reset': None,
@@ -87,19 +83,30 @@ class IrcCallback(IrcCommandDispatcher):
                       'outFilter': lambda self, irc, msg: msg,
                       'name': lambda self: self.__class__.__name__,}
 
-    def __lt__(self, other):
-        if isinstance(other, IrcCallback):
-            ret = self.priority < other.priority
-            if not ret:
-                ret = self.name() < other.name()
-            return ret
-        else:
-            return super(IrcCallback, self).__lt__(other)
-    
+    def __repr__(self):
+        return '<%s %s>' % (self.__class__.__name__, self.name())
+
     def name(self):
         """Returns the name of the callback."""
         return self.__class__.__name__
 
+    def callPrecedence(self, irc):
+        """Returns a pair of (callbacks to call before me,
+                              callbacks to call after me)"""
+        after = []
+        before = []
+        for name in self.callAfter:
+            cb = irc.getCallback(name)
+            if cb is not None:
+                after.append(cb)
+        for name in self.callBefore:
+            cb = irc.getCallback(name)
+            if cb is not None:
+                before.append(cb)
+        assert self not in after, '%s was in its own after.' % self.name()
+        assert self not in before, '%s was in its own before.' % self.name()
+        return (before, after)
+                
     def inFilter(self, irc, msg):
         """Used for filtering/modifying messages as they're entering.
 
@@ -595,12 +602,43 @@ class Irc(IrcCommandDispatcher):
     def __repr__(self):
         return '<irclib.Irc object for %s>' % self.network
 
+    # This *isn't* threadsafe!
     def addCallback(self, callback):
         """Adds a callback to the callbacks list."""
         self.callbacks.append(callback)
-        self.callbacks.sort()
-        # We used to do this, then we implemented sorting in IrcCallback.
-        # utils.sortBy(operator.attrgetter('priority'), self.callbacks)
+        # This is the new list we're building, which will be tsorted.
+        cbs = []
+        # The vertices are self.callbacks itself.  Now we make the edges.
+        edges = sets.Set()
+        for cb in self.callbacks:
+            (before, after) = cb.callPrecedence(self)
+            assert cb not in after, 'cb was in its own after.'
+            assert cb not in before, 'cb was in its own before.'
+            for otherCb in before:
+                edges.add((otherCb, cb))
+            for otherCb in after:
+                edges.add((cb, otherCb))
+        def getFirsts():
+            firsts = sets.Set(self.callbacks) - sets.Set(cbs)
+            for (before, after) in edges:
+                firsts.discard(after)
+            return firsts
+        firsts = getFirsts()
+        while firsts:
+            # Then we add these to our list of cbs, and remove all edges that
+            # originate with these cbs.
+            for cb in firsts:
+                cbs.append(cb)
+                edgesToRemove = []
+                for edge in edges:
+                    if edge[0] is cb:
+                        edgesToRemove.append(edge)
+                for edge in edgesToRemove:
+                    edges.remove(edge)
+            firsts = getFirsts()
+        assert len(cbs) == len(self.callbacks), \
+               'cbs: %s, self.callbacks: %s' % (cbs, self.callbacks)
+        self.callbacks[:] = cbs
 
     def getCallback(self, name):
         """Gets a given callback by name."""

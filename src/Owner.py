@@ -202,7 +202,6 @@ class LogProxy(object):
     def __getattr__(self, attr):
         return getattr(self.log, attr)
 
-
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
@@ -249,12 +248,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     continue
                 registerDefaultPlugin(name, s)
 
-    priority = ~sys.maxint - 1 # For working with IrcCallbacks.
-    callAfter = utils.Nothing()
-    callBefore = utils.Everything()
-    def __lt__(self, other):
-        return True # We should always be the first plugin.
-    
+    def callPrecedence(self, irc):
+        return ([], [cb for cb in irc.callbacks if cb is not self])
+
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and not world.testing:
             if ircutils.strEqual(msg.args[0], irc.nick):
@@ -415,12 +411,14 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     do422 = do377 = do376
 
     def doPrivmsg(self, irc, msg):
-        callbacks.Privmsg.handled = False
-        callbacks.Privmsg.errored = False
+        assert self is irc.callbacks[0], 'Owner isn\'t first callback.'
+        msg.errored = False
         msg.repliedTo = False
-        ignored = ircdb.checkIgnored(msg.prefix)
+        if ircmsgs.isCtcp(msg):
+            return
         s = callbacks.addressed(irc.nick, msg)
         if s:
+            ignored = ircdb.checkIgnored(msg.prefix)
             if ignored:
                 self.log.info('Ignoring command from %s.' % msg.prefix)
                 return
@@ -434,9 +432,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     return
                 self.processTokens(irc, msg, tokens)
             except SyntaxError, e:
-                callbacks.Privmsg.errored = True
                 irc.queueMsg(callbacks.error(msg, str(e)))
-                return
 
     if conf.allowEval:
         _evalEnv = {'_': None,
