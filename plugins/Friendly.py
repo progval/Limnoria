@@ -35,10 +35,6 @@ Just a regexp module to make the bot a wee bit friendlier.
 
 import plugins
 
-import re
-
-import ircmsgs
-import ircutils
 import callbacks
 
 class Friendly(callbacks.PrivmsgRegexp):

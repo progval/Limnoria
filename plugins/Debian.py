@@ -40,7 +40,6 @@ import gzip
 import sets
 import getopt
 import popen2
-import random
 import fnmatch
 import os.path
 import urllib2

@@ -44,6 +44,7 @@ from itertools import imap
 
 import unum.units
 
+import debug
 import utils
 import privmsgs
 import callbacks
@@ -214,12 +215,12 @@ class Math(callbacks.Privmsg):
         try:
             u1 = eval(unit1.lower(), self._convertEnv, self._convertEnv)
         except:
-            irc.error(msg, '%s is not a valid units expression.' % units1)
+            irc.error(msg, '%s is not a valid units expression.' % unit1)
             return
         try:
             u2 = eval(unit2.lower(), self._convertEnv, self._convertEnv)
         except:
-            irc.error(msg, '%s is not a valid units expression.' % units2)
+            irc.error(msg, '%s is not a valid units expression.' % unit2)
             return
         try:
             irc.reply(msg, str((n*u1).as(u2)))

@@ -41,8 +41,8 @@ import plugins
 import conf
 import utils
 import ircdb
-import irclib
 import ircmsgs
+import ircutils
 import privmsgs
 import callbacks
 

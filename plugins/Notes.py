@@ -38,7 +38,6 @@ import plugins
 
 import time
 import os.path
-from itertools import imap
 
 import sqlite
 

@@ -36,13 +36,11 @@ Handles relaying between networks.
 import plugins
 
 import re
-import sets
 import time
 
 import conf
 import debug
 import utils
-import ircdb
 import irclib
 import drivers
 import ircmsgs

@@ -112,13 +112,8 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         maxid = int(cursor.fetchone()[0])
         if maxid is None:
             maxid = 0
-        if maxid == 1:
-            IS = 'is'
-            QUOTE = 'quote'
-        else:
-            IS = 'are'
-            QUOTE = 'quotes'
-        s = 'There %s %s %s in my database.' % (IS, maxid, QUOTE)
+        QUOTE = utils.pluralize(maxid, 'quote')
+        s = 'There %s %s %s in my database.' % (utils.be(maxid), maxid, QUOTE)
         irc.reply(msg, s)
 
     def quote(self, irc, msg, args):
@@ -208,7 +203,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("""SELECT id FROM quotes
                           ORDER BY random()
                           LIMIT 1""")
-	if cursor.rowcount != 1:
+        if cursor.rowcount != 1:
             irc.error(msg, 'It seems that quote database is empty.')
             return
         (id,) = cursor.fetchone()

@@ -40,7 +40,6 @@ import urllib2
 
 import debug
 import utils
-import ircmsgs
 import ircutils
 import privmsgs
 import callbacks

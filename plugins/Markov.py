@@ -58,7 +58,6 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Markov')
 
 class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
-    threaded = True
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
@@ -120,6 +119,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         return callbacks.Privmsg.doPrivmsg(self, irc, msg)
 
     _maxMarkovLength = 80
+    _minMarkovLength = 7
     def markov(self, irc, msg, args):
         """[<channel>]
 
@@ -157,7 +157,10 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
             if word is None:
                 break
             words.append(word)
-        irc.reply(msg, ' '.join(words))
+        if len(words) < self._minMarkovLength:
+            self.markov(irc, msg, args)
+        else:
+            irc.reply(msg, ' '.join(words))
 
     def markovpairs(self, irc, msg, args):
         """[<channel>]

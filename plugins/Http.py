@@ -37,14 +37,12 @@ import plugins
 
 import re
 import sets
-import time
 import urllib2
 
 import utils
 import debug
 import privmsgs
 import callbacks
-import structures
 
 example = utils.wrapLines("""
 <jemfinch> @list Http
@@ -105,7 +103,7 @@ class Http(callbacks.Privmsg):
     _fmProject = re.compile('<projectname_full>([^<]+)</projectname_full>')
     _fmVersion = re.compile('<latest_version>([^<]+)</latest_version>')
     _fmVitality = re.compile('<vitality_percent>([^<]+)</vitality_percent>')
-    _fmPopular=re.compile('<popularity_percent>([^<]+)</popularity_percent>')
+    _fmPopular = re.compile('<popularity_percent>([^<]+)</popularity_percent>')
     _fmLastUpdated = re.compile('<date_updated>([^<]+)</date_updated>')
     def freshmeat(self, irc, msg, args):
         """<project name>

@@ -35,14 +35,17 @@ Provides FreeBSD ports searching and other FreeBSD-specific services.
 
 import plugins
 
+import time
 import string
 import getopt
 import os.path
+import urllib2
 
 import sqlite
 
+import conf
 import debug
-import utils
+import ircutils
 import privmsgs
 import callbacks
 

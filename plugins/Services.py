@@ -39,7 +39,6 @@ import re
 import time
 
 import conf
-import ircdb
 import ircmsgs
 import privmsgs
 import ircutils

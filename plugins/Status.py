@@ -95,7 +95,7 @@ class Status(callbacks.Privmsg):
         (user, system, childUser, childSystem, elapsed) = os.times()
         timeRunning = time.time() - world.startedAt
         activeThreads = threading.activeCount()
-        response ='I have taken %s seconds of user time and %s seconds of '\
+        response = 'I have taken %s seconds of user time and %s seconds of '\
                   'system time, for a total of %s seconds of CPU time.  My '\
                   'children have taken %s seconds of user time and %s seconds'\
                   ' of system time for a total of %s seconds of CPU time.  ' \

@@ -44,7 +44,6 @@ import sqlite
 import conf
 import ircdb
 import utils
-import ircutils
 import privmsgs
 import callbacks
 

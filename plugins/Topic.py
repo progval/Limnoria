@@ -38,6 +38,7 @@ import plugins
 import re
 import random
 
+import conf
 import debug
 import utils
 import ircdb

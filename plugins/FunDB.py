@@ -35,16 +35,16 @@ Provides fun commands that require a database to operate.
 
 import plugins
 
+import re
 import sets
 import time
-import atexit
 import string
-import random
 import os.path
 
 import sqlite
 
 import conf
+import debug
 import ircdb
 import utils
 import world

@@ -39,7 +39,6 @@ import plugins
 import IMDb
 
 import utils
-import ircutils
 import privmsgs
 import callbacks
 

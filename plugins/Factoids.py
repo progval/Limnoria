@@ -233,7 +233,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'factoids')
         if ircdb.checkCapability(msg.prefix, capability):
             cursor = db.cursor()
-            cursor.execute("UPDATE keys SET locked=0 WHERE key LIKE %s",key)
+            cursor.execute("UPDATE keys SET locked=0 WHERE key LIKE %s", key)
             db.commit()
             irc.reply(msg, conf.replySuccess)
         else:

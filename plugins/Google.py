@@ -46,6 +46,7 @@ import google
 import conf
 import utils
 import ircmsgs
+import ircutils
 import privmsgs
 import callbacks
 import structures

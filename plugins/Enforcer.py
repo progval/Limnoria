@@ -37,6 +37,7 @@ Enforcer: Enforces capabilities on a channel, watching MODEs, KICKs,
 import plugins
 
 import conf
+import debug
 import ircdb
 import ircmsgs
 import privmsgs

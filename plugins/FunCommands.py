@@ -34,30 +34,22 @@ Provides a multitude of fun, useless commands.
 """
 
 import plugins
-from itertools import imap, ifilter
 
-import os
 import gc
 import re
-import imp
 import sys
-import new
 import md5
 import sha
-import time
-import socket
 import string
 import random
 import urllib
 import inspect
-import telnetlib
-import threading
 import mimetypes
 
 #import conf
 import debug
 import utils
-import ircmsgs
+import ircutils
 import privmsgs
 import callbacks
 
