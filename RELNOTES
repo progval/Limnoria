@@ -1,5 +1,26 @@
 Version 0.80.0pre3
 
+The database format for the Note plugin has changed to a flatfile
+format; use tools/noteConvert.py to convert it to the new format.
+
+Ditto that for the URL database.
+
+FunDB is deprecated and will be removed at the next major release;
+use tools/fundbConvert.py to convert your old FunDB databases to Lart
+and Praise databases.
+
+If you had turned off supybot.databases.plugins.channelSpecific, your
+non-channel-specific database files had gone directly into your data/
+directory.  We had some problems with poor interactions between that
+configuration variable and channel capabilities, though, so we
+changed the implementation so that non-channel-specific databases are
+considered databases of a single (configurable) channel (defaulting
+to "#").  This will also help others who are converting from
+channel-specific to non-channel-specific databases, but for you
+who've already made the switch, you'll need to move your database
+files again, from data/ to data/# (or whatever channel you might
+change that variable to).
+
 supybot.channels doesn't exist anymore; now the only list of channels
 to join is per-network, in supybot.networks.<network>.channels.
 
