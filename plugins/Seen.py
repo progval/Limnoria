@@ -57,49 +57,20 @@ import privmsgs
 import registry
 import callbacks
 
-class SeenDB(object):
-    def __init__(self, filename):
-        self.filename = filename
-        self.channels = ircutils.IrcDict()
-        try:
-            fd = file(filename)
-        except EnvironmentError, e:
-            log.info('Couldn\'t open %s: %s', filename, e)
-            return
-        lineno = 0
-        for line in fd:
-            lineno += 1
-            line = line.rstrip('\r\n')
-            (channel, nickOrId, when, said) = line.split(':', 3)
-            if channel not in self.channels:
-                self.channels[channel] = ircutils.IrcDict()
-            try:
-                self.channels[channel][nickOrId] = (float(when), said)
-            except ValueError: # Invalid float.
-                log.warning('Invalid line #%s in %s: %s',lineno,filename,line)
-                continue
-        fd.close()
+class SeenDB(plugins.ChannelUserDatabase):
+    def serialize(self, v):
+        return list(v)
 
-    def flush(self):
-        fd = file(self.filename, 'w')
-        for (channel, d) in self.channels.iteritems():
-            for (nickOrId, (when, said)) in d.iteritems():
-                fd.write('%s:%s:%s:%s\n' % (channel, nickOrId, when, said))
-        fd.close()
-
-    def close(self):
-        self.flush()
-        self.channels.clear()
-
-    def update(self, channel, nickOrId, said):
-        if channel not in self.channels:
-            self.channels[channel] = ircutils.IrcDict()
-        when = time.time()
-        self.channels[channel][str(nickOrId)] = (when, said)
+    def deserialize(self, L):
+        (seen, saying) = L
+        return (float(seen), saying)
+    
+    def update(self, channel, nickOrId, saying):
+        seen = time.time()
+        self[channel, nickOrId] = (seen, saying)
 
     def seen(self, channel, nickOrId):
-        return self.channels[channel][str(nickOrId)]
-        
+        return self[channel, nickOrId]
 
 filename = os.path.join(conf.supybot.directories.data(), 'Seen.db')
             
