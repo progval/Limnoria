@@ -155,7 +155,7 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
         sql = """SELECT id FROM %ss WHERE %s=%%s""" % (table, table)
         cursor.execute(sql, s)
         id = cursor.fetchone()[0]
-        irc.replySuccess('(%s #%s)' % (table, id))
+        irc.replySuccess('(%s #%s added)' % (table, id))
 
     def remove(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise> <id>
