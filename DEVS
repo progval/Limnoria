@@ -1,0 +1,34 @@
+These are the developers of Supybot, in approximate order of ____.
+
+Jeremy Fincher (jemfinch) is a Computer Science student at The Ohio State
+University.  He spends most of his free time with his girlfriend Meg, but
+also plays chess and is trying to break into the Rugby world.  He hopes to
+graduate with good enough grades to go to law school at some point in the
+future.  He initially wrote the majority of the Supybot framework and
+standard plugins, though he's been trying to slowly phase himself out of
+plugin-writing and more into framework-enhancement.  Rather than list the
+specific things he's done, you can just attribute anything that isn't
+otherwise attributed to other people to him.
+
+Daniel DiPaolo is a lazy Texan punk with no job who spends his free time
+coding, playing ultimate frisbee, and arguing pointless things on the
+internet.  As far as the bot goes, he's mainly a plugin developer but he
+has helped here and there with various under-the-hood things and is one
+of the few people (other than jemfinch) who understands the inner workings
+of Supybot.  His biggest plugin contribution (in terms of sheer lines of
+code) has been the MoobotFactoids plugin and all the workd involved in
+getting that plugin to work, but he has also helped with a lot of testing,
+debugging, and brainstorming.  He also wrote the Dunno, News, and Todo
+plugins and is responsible for a significant amount of code in the Poll,
+Debian, QuoteGrabs, Karma, and ChannelDB plugins.
+
+Brett Kelly (inkedmn) is a hobbyist (soon to be professional :)) coder
+from southern California who enjoys collecting tattoos (on his body) and
+drinking coffee with his wife.  He initially wrote the Note plugin as well
+as several commands in the Http plugin.
+
+Vincent Foley-Bourgon is a recently-graduated student from Quebec who
+enjoys anything pointless, unprofitable, and generally useless.  Recently
+returning to Supybot development (after writing the original freshmeat
+command for the Http plugin) he wrote the entire Hangman infrastructure
+for the Words plugin.
