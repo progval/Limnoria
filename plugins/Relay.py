@@ -443,8 +443,9 @@ class Relay(callbacks.Privmsg):
         color = self.registryValue('color', msg.args[0])
         if color:
             nick = ircutils.IrcString(nick)
-            nick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
+            newnick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
             colors = ircutils.canonicalColor(nick, shift=4)
+            nick = newnick
         if ircmsgs.isAction(msg):
             if color:
                 t = ircutils.mircColor('*', *colors)
