@@ -143,7 +143,7 @@ class RSS(callbacks.Privmsg):
         else:
             date = "unavailable"
         # The rest of the entries are all available in the channel key
-        response = "Title: %s :: URL: %s :: Description: %s :: Last updated: %s" % (
+        response = "Title: %s; URL: %s; Description: %s; Last updated: %s" % (
                 info.get('title', 'unavailable').strip(), 
                 info.get('link', 'unavailable').strip(),
                 info.get('description', 'unavailable').strip(),
