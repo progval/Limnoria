@@ -277,9 +277,9 @@ class Amazon(callbacks.Privmsg):
                   }
         s = '"%(title)s", from %(publisher)s.%(url)s'
         try:
-            self.log.warning(category)
+            #self.log.warning(category)
             items = amazon.browseBestSellers(category)
-            self.log.warning(items)
+            #self.log.warning(items)
             res = self._genResults(s, attribs, items, url)
             if res:
                 irc.reply(msg, utils.commaAndify(res))
