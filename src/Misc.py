@@ -573,6 +573,15 @@ class Misc(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         irc.reply(text, notice=True)
 
+    def networks(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the networks to which the bot is currently connected.
+        """
+        L = ['%s: %s' % (irc.network, irc.server) for irc in world.ircs]
+        utils.sortBy(str.lower, L)
+        irc.reply(utils.commaAndify(L))
+        
 
 Class = Misc
 
