@@ -39,6 +39,8 @@ import getopt
 
 from itertools import ifilter, imap
 
+import registry
+
 import conf
 import utils
 __revision__ = "$Id$"
@@ -48,7 +50,6 @@ import ircutils
 import privmsgs
 import webutils
 import callbacks
-import configurable
 
 
 def configure(onStart, afterConnect, advanced):
@@ -63,7 +64,7 @@ def configure(onStart, afterConnect, advanced):
     print 'supybot sees such a URL, he will parse the web page for'
     print 'information and reply with the results.\n'
     if yn('Do you want this snarfer to be enabled by default?') == 'y':
-        onStart.append('Sourceforge config tracker-snarfer on')
+        conf.supybot.plugins.Sourceforge.trackerSnarfer.setValue(True)
 
     print 'The bugs and rfes commands of the Sourceforge plugin can be set'
     print 'to query a default project when no project is specified.  If this'
@@ -74,7 +75,7 @@ def configure(onStart, afterConnect, advanced):
     if yn('Do you want to specify a default project?') == 'y':
         project = anything('Project name:')
         if project:
-            onStart.append('Sourceforge config defaultproject %s' % project)
+            conf.supybot.plugins.Sourceforge.project.set(project)
 
     print 'Sourceforge is quite the word to type, and it may get annoying'
     print 'typing it all the time because Supybot makes you use the plugin'
@@ -96,7 +97,15 @@ def configure(onStart, afterConnect, advanced):
 class TrackerError(Exception):
     pass
 
-class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
+conf.registerPlugin('Sourceforge')
+conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'trackerSnarfer',
+    registry.Boolean(False, """Determines whether the bot will reply to SF.net
+    Tracker URLs in the channel with a nice summary of the tracker item."""))
+conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'project',
+    registry.String('', """Sets the default project (used by the bugs/rfes
+    commands in the case that no explicit project is given)."""))
+
+class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     """
     Module for Sourceforge stuff. Currently contains commands to query a
     project's most recent bugs and rfes.
@@ -117,21 +126,11 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     _regexps =(_resolution, _assigned, _submitted, _priority, _status)
     _statusOpt = {'any':100, 'open':1, 'closed':2, 'deleted':3, 'pending':4}
 
-    configurables = configurable.Dictionary(
-        [('tracker-snarfer', configurable.BoolType, False,
-          """Determines whether the bot will reply to SF.net Tracker URLs in
-          the channel with a nice summary of the tracker item."""),
-         ('default-project', configurable.StrType, '',
-          """Sets the default project (used by the bugs/rfes commands in the
-          case that no explicit project is given).""")]
-    )
     _projectURL = 'http://sourceforge.net/projects/'
     def __init__(self):
-        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
-        configurable.Mixin.die(self)
         callbacks.PrivmsgCommandAndRegexp.die(self)
 
     def _formatResp(self, text, num=''):
@@ -210,7 +209,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         except ValueError:
             pass
         if not project:
-            project = self.configurables.get('default-project', msg.args[0])
+            project = conf.supybot.plugins.Sourceforge.project()
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -241,7 +240,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 irc.error('"%s" is not a proper bugnumber.' % project)
                 return
             bugnum = project
-            project = self.configurables.get('default-project', msg.args[0])
+            project = conf.supybot.plugins.Sourceforge.project()
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -276,7 +275,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         except ValueError:
             pass
         if not project:
-            project = self.configurables.get('default-project', msg.args[0])
+            project = conf.supybot.plugins.Sourceforge.project()
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -307,7 +306,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 irc.error('"%s" is not a proper rfenumber.' % project)
                 return
             rfenum = project
-            project = self.configurables.get('default-project', msg.args[0])
+            project = conf.supybot.plugins.Sourceforge.project()
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -323,7 +322,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     def sfSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/" \
         r".*\?(?:&?func=detail|&?aid=\d+|&?group_id=\d+|&?atid=\d+){4}"
-        if not self.configurables.get('tracker-snarfer', channel=msg.args[0]):
+        if not conf.supybot.plugins.Sourceforge.trackerSnarfer():
             return
         try:
             url = match.group(0)

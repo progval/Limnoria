@@ -101,11 +101,11 @@ if network:
 
         def testBugs(self):
             self.assertHelp('bugs')
-            self.assertNotError('config defaultproject supybot')
+            conf.supybot.plugins.Sourceforge.project.set('supybot')
             self.assertNotError('bugs')
             self.assertRegexp('bugs alkjfi83fa8', 'find the Bugs')
             self.assertNotError('bugs gaim')
-            self.assertNotError('config defaultproject')
+            conf.supybot.plugins.Sourceforge.project.set('')
             self.assertRegexp('bugs 83423', 'Use the bug command')
 
         def testRfe(self):
@@ -118,58 +118,70 @@ if network:
 
         def testRfes(self):
             self.assertHelp('rfes')
-            self.assertNotError('config defaultproject gaim')
+            conf.supybot.plugins.Sourceforge.project.set('gaim')
             self.assertNotError('rfes')
             self.assertRegexp('rfes alkjfi83hfa8', 'find the RFEs')
             self.assertNotError('rfes gaim')
-            self.assertNotError('config defaultproject')
+            conf.supybot.plugins.Sourceforge.project.set('')
             self.assertRegexp('rfes 83423', 'Use the rfe command')
 
         def testDefaultproject(self):
             self.assertHelp('bugs')
-            self.assertNotError('config defaultproject supybot')
+            conf.supybot.plugins.Sourceforge.project.set('supybot')
             self.assertNotError('bugs')
             m = self.getMsg('bugs')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('bug supybot %s' % n)
             # This should have the same effect as calling 'bug supybot %s'
             self.assertNotError('bug %s' % n)
-            self.assertNotError('config defaultproject ""')
+            conf.supybot.plugins.Sourceforge.project.set('')
 
         def testSnarfer(self):
             s = r'.*Status.*: \w+'
-            self.assertNotError('config tracker-snarfer on')
+            conf.supybot.plugins.Sourceforge.trackerSnarfer.setValue(True)
             self.assertRegexp('http://sourceforge.net/tracker/index.php?'
-                              'func=detail&aid=589953&group_id=58965&atid=489447',
+                              'func=detail&aid=589953&group_id=58965&'
+                              'atid=489447',
                               s)
             self.assertRegexp('http://sourceforge.net/tracker/index.php?'
-                              'func=detail&aid=712761&group_id=58965&atid=489450',
+                              'func=detail&aid=712761&group_id=58965&'
+                              'atid=489450',
                               s)
             self.assertRegexp('http://sourceforge.net/tracker/index.php?'
-                              'func=detail&aid=540223&group_id=235&atid=300235', s)
+                              'func=detail&aid=540223&group_id=235&'
+                              'atid=300235',
+                              s)
             self.assertRegexp('http://sourceforge.net/tracker/index.php?'
-                              'func=detail&aid=561547&group_id=235&atid=200235', s)
+                              'func=detail&aid=561547&group_id=235&'
+                              'atid=200235',
+                              s)
             self.assertRegexp('http://sourceforge.net/tracker/index.php?'
-                              'func=detail&aid=400942&group_id=235&atid=390395', s)
+                              'func=detail&aid=400942&group_id=235&'
+                              'atid=390395',
+                              s)
 
             # test that it works without index.php
             self.assertNotError('http://sourceforge.net/tracker/?'
-                                'func=detail&aid=540223&group_id=235&atid=300235')
+                                'func=detail&aid=540223&group_id=235&'
+                                'atid=300235')
             # test that it works with www
             self.assertNotError('http://www.sourceforge.net/tracker/index.php?'
-                                'func=detail&aid=540223&group_id=235&atid=300235')
+                                'func=detail&aid=540223&group_id=235&'
+                                'atid=300235')
             # test that it works with www and without index.php
             self.assertNotError('http://www.sourceforge.net/tracker/?'
-                                'func=detail&aid=540223&group_id=235&atid=300235')
+                                'func=detail&aid=540223&group_id=235&'
+                                'atid=300235')
             # test that it works with sf.net
             self.assertNotError('http://sf.net/tracker/?'
-                                'func=detail&aid=540223&group_id=235&atid=300235')
+                                'func=detail&aid=540223&group_id=235&'
+                                'atid=300235')
             # test that it works
             self.assertNotError('https://sourceforge.net/tracker/?'
-                                'func=detail&atid=105470&aid=827260&group_id=5470')
+                                'func=detail&atid=105470&aid=827260&'
+                                'group_id=5470')
             self.assertNoResponse('https://sourceforge.net/tracker/?'
                                   'group_id=58965&atid=489447')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
-
