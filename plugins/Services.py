@@ -104,7 +104,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             self.log.warning('_doIdentify called without a set NickServ.')
             return
         password = self.registryValue('password', irc.network)
-        assert irc.nick == self.nick, 'Identifying with not normal nick.'
+        assert irc.nick == self.registryValue('nick', irc.nick), \
+               'Identifying with not normal nick.'
         self.log.info('Sending identify (current nick: %s)' % irc.nick)
         identify = 'IDENTIFY %s' % password
         # It's important that this next statement is irc.sendMsg, not
@@ -159,6 +160,11 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         if msg.args[0] == nick:
             self._doIdentify(irc)
 
+    def _ghosted(self, irc, s):
+        r = re.compile(r'(Ghost|%s).*killed' %
+                       self.registryValue('nick', irc.network))
+        return bool(r.search(s))
+    
     def doNotice(self, irc, msg):
         if irc.afterConnect:
             nickserv = self.registryValue('NickServ', irc.network)
@@ -167,7 +173,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             nick = self.registryValue('nick', irc.network)
             self.log.debug('Notice received from NickServ: %r', msg)
             s = msg.args[1]
-            if self._ghosted.search(s):
+            if self._ghosted(irc, s):
                 self.log.info('Received "GHOST succeeded" from NickServ')
                 self.sentGhost = False
                 irc.queueMsg(ircmsgs.nick(nick))
