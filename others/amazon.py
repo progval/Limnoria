@@ -1,4 +1,7 @@
-"""Python wrapper for Amazon web APIs
+"""Python wrapper
+
+
+for Amazon web APIs
 
 This module allows you to access Amazon's web APIs,
 to do things like search Amazon and get the results programmatically.
@@ -40,6 +43,7 @@ Other available functions:
 - searchByManufacturer
 - searchByListMania
 - searchSimilar
+- searchByWishlist
 
 Other usage notes:
 - Most functions can take product_line as well, see source for possible values
@@ -50,11 +54,12 @@ Other usage notes:
 """
 
 __author__ = "Mark Pilgrim (f8dy@diveintomark.org)"
-__version__ = "0.4"
+__version__ = "0.61"
 __cvsversion__ = "$Revision$"[11:-2]
 __date__ = "$Date$"[7:-2]
 __copyright__ = "Copyright (c) 2002 Mark Pilgrim"
 __license__ = "Python"
+# Powersearch and return object type fix by Joseph Reagle <geek@goatee.net>
 
 from xml.dom import minidom
 import os, sys, getopt, cgi, urllib
@@ -152,6 +157,14 @@ def unmarshal(element):
                 if type(getattr(rc, key)) <> type([]):
                     setattr(rc, key, [getattr(rc, key)])
                 setattr(rc, key, getattr(rc, key) + [unmarshal(child)])
+            elif isinstance(child, minidom.Element) and (child.tagName == 'Details'):
+                # make the first Details element a key
+                setattr(rc,key,[unmarshal(child)])
+                #dbg: because otherwise 'hasattr' only tests
+                #dbg: on the second occurence: if there's a
+                #dbg: single return to a query, it's not a
+                #dbg: list. This module should always
+                #dbg: return a list of Details objects.
             else:
                 setattr(rc, key, unmarshal(child))
     else:
@@ -161,7 +174,7 @@ def unmarshal(element):
     return rc
 
 def buildURL(search_type, keyword, product_line, type, page, license_key):
-    url = "http://xml.amazon.com/onca/xml3?v=1.0&f=xml&t=webservices-20"
+    url = "http://xml.amazon.com/onca/xml?v=1.0&f=xml&t=webservices-20"
     url += "&dev-t=%s" % license_key.strip()
     url += "&type=%s" % type
     if page:
@@ -169,10 +182,12 @@ def buildURL(search_type, keyword, product_line, type, page, license_key):
     if product_line:
         url += "&mode=%s" % product_line
     url += "&%s=%s" % (search_type, urllib.quote(keyword))
-#    print url
     return url
 
+
 ## main functions
+
+
 def search(search_type, keyword, product_line, type="heavy", page=None,
            license_key = None, http_proxy = None):
     """search Amazon
@@ -225,6 +240,10 @@ def search(search_type, keyword, product_line, type="heavy", page=None,
     u = urllib.FancyURLopener(proxies)
     usock = u.open(url)
     xmldoc = minidom.parse(usock)
+
+#     from xml.dom.ext import PrettyPrint
+#     PrettyPrint(xmldoc)
+
     usock.close()
     data = unmarshal(xmldoc).ProductInfo
     if hasattr(data, 'ErrorMsg'):
@@ -272,4 +291,11 @@ def searchByListMania(listManiaID, type="heavy", page=1, license_key=None, http_
 
 def searchSimilar(ASIN, type="heavy", page=1, license_key=None, http_proxy=None):
     return search("SimilaritySearch", ASIN, None, type, page, license_key, http_proxy)
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+
+def searchByWishlist(wishlistID, type="heavy", page=1, license_key=None, http_proxy=None):
+    return search("WishlistSearch", wishlistID, None, type, page, license_key, http_proxy)
+
+def searchByPower(keyword, product_line="books", type="heavy", page=1, license_key=None, http_proxy=None):
+    return search("PowerSearch", keyword, product_line, type, page, license_key, http_proxy)
+    # >>> RecentKing = amazon.searchByPower('author:Stephen King and pubdate:2003')
+    # >>> SnowCrash = amazon.searchByPower('title:Snow Crash')
