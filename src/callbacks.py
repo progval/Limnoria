@@ -244,16 +244,20 @@ class IrcObjectProxy:
         try:
             if callback is not None:
                 anticap = ircdb.makeAntiCapability(name)
+                #debug.printf('Checking for %s' % anticap)
                 if ircdb.checkCapability(self.msg.prefix, anticap):
+                    #debug.printf('Being prevented with anticap')
                     debug.msg('Preventing %s from calling %s' % \
-                              (self.msg.nick, name))
+                              (self.msg.nick, name), 'normal')
                     return
                 recipient = self.msg.args[0]
                 if ircutils.isChannel(recipient):
                     chancap = ircdb.makeChannelCapability(recipient, anticap)
+                    #debug.printf('Checking for %s' % chancap)
                     if ircdb.checkCapability(self.msg.prefix, chancap):
+                        #debug.printf('Being prevented with chancap')
                         debug.msg('Preventing %s from calling %s' % \
-                                  (self.msg.nick, name))
+                                  (self.msg.nick, name), 'normal')
                         return
                 command = getattr(callback, name)
                 callback.callCommand(command, self, self.msg, self.args)
