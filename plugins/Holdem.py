@@ -150,6 +150,7 @@ class Table(object):
             self.irc.reply('You will leave this table when this hand ends.')
         elif player in self.waitingToJoin:
             self.waitingToJoin.remove(player)
+            self.irc.reply('You are no longer waiting to join this table.')
         else:
             self.error('You aren\'t currently seated.')
 
