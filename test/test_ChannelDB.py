@@ -42,6 +42,9 @@ class ChannelDBTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('seen asldfkjasdlfkj', 'I have not seen')
         self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
 
+    def testNoKeyErrorStats(self):
+        self.assertNotRegexp('stats sweede', 'KeyError')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -393,8 +393,8 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         channel = privmsgs.getChannel(msg, args)
         name = privmsgs.getArgs(args)
         if not ircdb.users.hasUser(name):
-            hostmask = irc.state.nickToHostmask(name)
             try:
+                hostmask = irc.state.nickToHostmask(name)
                 name = ircdb.users.getUser(hostmask).name
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
