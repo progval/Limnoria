@@ -83,7 +83,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
          ('headline-separator', configurable.SpaceSurroundedStrType, ' :: ',
           """Determines what string is used to seperate headlines in
           feeds."""),
-         ('announce-news-prefix', configurable.SpaceOnRightStrType,
+         ('announce-news-prefix', SpaceOnRightStrType,
           'New news from ',
           """Sets the prefix to be added (if any) to the new news item
           announcements made to the channel."""),]
