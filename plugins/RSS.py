@@ -367,6 +367,8 @@ class RSS(callbacks.Privmsg):
                 raise callbacks.ArgumentError
             headlines = headlines[:n]
         sep = self.registryValue('headlineSeparator', channel)
+        if self.registryValue('bold', channel):
+            sep = ircutils.bold(sep)
         irc.reply(sep.join(headlines))
 
     def info(self, irc, msg, args):
