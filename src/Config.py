@@ -131,10 +131,8 @@ class Config(callbacks.Privmsg):
         L = self._list(name)
         if L:
             irc.reply(utils.commaAndify(L))
-        elif groups:
-            irc.reply('%s has no subgroups.' % name)
         else:
-            irc.error('There don\'t seem to be any values in %s' % name)
+            irc.error('There don\'t seem to be any values in %s.' % name)
 
     def search(self, irc, msg, args):
         """<word>
