@@ -48,7 +48,16 @@ class Utilities(callbacks.Privmsg):
     def strjoin(self, irc, msg, args):
         "<separator> <strings to join>"
         sep = args.pop(0)
+        args = flatten(map(callbacks.tokenize, args))
         irc.reply(msg, sep.join(args))
+
+    def repr(self, irc, msg, args):
+        """<text>
+
+        Returns the text surrounded by double quotes.
+        """
+        text = privmsgs.getArgs(args)
+        irc.reply(msg, utils.dqrepr(text))
 
     def strconcat(self, irc, msg, args):
         "<string 1> <string 2>"
