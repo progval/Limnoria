@@ -32,6 +32,7 @@
 __revision__ = "$Id$"
 
 import os
+import csv
 import sys
 
 if len(sys.argv) <= 1:
@@ -78,9 +79,11 @@ if __name__ == '__main__':
         cursor = db.cursor()
         cursor.execute("""SELECT word_stats.user_id, words.word,
                                  word_stats.count
-                          FROM word_stats, words""")
+                          FROM word_stats, words
+                          WHERE word_stats.word_id = words.id""")
         d = {}
         for (id, word, count) in cursor.fetchall():
+            #print word, count
             d.setdefault(id, {})[word] = count
         for (id, d) in d.items():
             L = [channel, id]
