@@ -234,28 +234,28 @@ class queue(object):
         self.back = []
 
             
-class MaxLengthQueue(queue):
-    __slots__ = ('length',)
-    def __init__(self, length, seq=()):
-        self.length = length
-        queue.__init__(self, seq)
+## class MaxLengthQueue(queue):
+##     __slots__ = ('length',)
+##     def __init__(self, length, seq=()):
+##         self.length = length
+##         queue.__init__(self, seq)
 
-    def __getstate__(self):
-        return (self.length, queue.__getstate__(self))
+##     def __getstate__(self):
+##         return (self.length, queue.__getstate__(self))
 
-    def __setstate__(self, (length, q)):
-        self.length = length
-        queue.__setstate__(self, q)
+##     def __setstate__(self, (length, q)):
+##         self.length = length
+##         queue.__setstate__(self, q)
         
-    def enqueue(self, elt):
-        queue.enqueue(self, elt)
-        if len(self) > self.length:
-            self.dequeue()
+##     def enqueue(self, elt):
+##         queue.enqueue(self, elt)
+##         if len(self) > self.length:
+##             self.dequeue()
 
-## class MaxLengthQueue(RingBuffer):
-##     enqueue = RingBuffer.append
-##     def peek(self):
-##         return self[0]
+class MaxLengthQueue(RingBuffer):
+    enqueue = RingBuffer.append
+    def peek(self):
+        return self[0]
 
 
 def sliceIndices(slice, length):
