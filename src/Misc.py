@@ -436,7 +436,9 @@ class Misc(callbacks.Privmsg):
                          utils.nItems('message', len(L), 'more')
             irc.reply(chunk, True)
         except KeyError:
-            irc.error('You haven\'t asked me a command!')
+            irc.error('You haven\'t asked me a command; perhaps you want '
+                      'to see someone else\'s more.  To do so, call this '
+                      'command with that person\'s nick.')
         except IndexError:
             irc.error('That\'s all, there is no more.')
     more = wrap(more, [additional('seenNick')])
