@@ -91,7 +91,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         setattr(self.__class__, 'exec', self.__class__._exec)
-        self.defaultPlugins = {'capabilities': 'User'}
+        self.defaultPlugins = {'capabilities': 'User',
+                               'addcapability': 'Admin',
+                               'removecapability': 'Admin'}
 
     def disambiguate(self, irc, tokens, ambiguousCommands=None):
         if ambiguousCommands is None:
