@@ -256,6 +256,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertNotError('firstcmd')
         self.irc.addCallback(self.FirstRepeat())
         self.assertError('firstcmd')
+        self.assertError('firstcmd [firstcmd]')
         self.assertNotRegexp('firstcmd', '(foo.*baz|baz.*foo)')
         self.assertResponse('first firstcmd', 'foo')
         self.assertResponse('firstrepeat firstcmd', 'baz')

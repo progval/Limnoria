@@ -105,7 +105,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                         ambiguousCommands[command] = names
             for elt in tokens:
                 if isinstance(elt, list):
-                    self._disambiguate(elt)
+                    self._disambiguate(irc, elt, ambiguousCommands)
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
