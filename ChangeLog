@@ -1,4 +1,7 @@
-	* Fixed bug with ChannelValues picking up children that aren't
+	* Fixed a bug with AutoMode's auto-banning feature; a variable
+	was misspelled.
+	
+	* Fixed a bug with ChannelValues picking up children that aren't
 	channels.
 	
 	* Fixed Misc.apropos not to be case-sensitive.

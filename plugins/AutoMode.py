@@ -131,7 +131,7 @@ class AutoMode(callbacks.Privmsg):
                         pass
                 schedule.addEvent(unban, time.time()+period)
             irc.queueMsg(ircmsgs.ban(channel, msg.prefix))
-            irc.queueMsg(irmcsgs.kick(channel, msg.nick))
+            irc.queueMsg(ircmsgs.kick(channel, msg.nick))
                 
 
 Class = AutoMode
