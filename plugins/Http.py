@@ -182,9 +182,9 @@ class Http(callbacks.Privmsg):
         url = "http://www.weather.com/weather/local/%s?lswe=%s" % (zip, zip)
         try:
             html = urllib2.urlopen(url).read()
-            city, state = _cityregex.search(html).groups()
-            temp = _tempregex.search(html).group(1)
-            conds = _condregex.search(html).group(1)
+            city, state = self._cityregex.search(html).groups()
+            temp = self._tempregex.search(html).group(1)
+            conds = self._condregex.search(html).group(1)
             irc.reply(msg, 'The current temperature in %s, %s is %dF with %s\
                             conditions' % (city, state, int(temp), conds))
         except AttributeError:
