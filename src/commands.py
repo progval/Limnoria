@@ -275,6 +275,8 @@ def getUser(irc, msg, args, state):
         irc.errorNotRegistered(Raise=True)
 
 def getOtherUser(irc, msg, args, state):
+    if ircutils.isUserHostmask(args[0]):
+        irc.errorNoUser(args[0])
     try:
         state.args.append(ircdb.users.getUser(args[0]))
         del args[0]
@@ -283,9 +285,8 @@ def getOtherUser(irc, msg, args, state):
             getHostmask(irc, msg, args, state)
             hostmask = state.args.pop()
             state.args.append(ircdb.users.getUser(hostmask))
-        except (KeyError, IndexError, callbacks.Error):
-            # XXX We should eventually give the user here.
-            irc.errorNoUser()
+        except (KeyError, callbacks.Error):
+            irc.errorNoUser(name=hostmask)
 
 def _getRe(f):
     def get(irc, msg, args, state):
