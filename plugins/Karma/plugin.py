@@ -204,7 +204,7 @@ class SqliteKarmaDB(object):
                            name, normalized, added, subtracted)
         db.commit()
         fd.close()
-        
+
 KarmaDB = plugins.DB('Karma',
                      {'sqlite': SqliteKarmaDB})
 
@@ -282,26 +282,25 @@ class Karma(callbacks.Plugin):
             name = things[0]
             t = self.db.get(channel, name)
             if t is None:
-                irc.reply('%s has neutral karma.' % name)
+                irc.reply(format('%s has neutral karma.', name))
             else:
                 (added, subtracted) = t
                 total = added - subtracted
                 if self.registryValue('simpleOutput', channel):
-                    s = '%s: %s' % (name, total)
+                    s = format('%s: %i', name, total)
                 else:
-                    s = 'Karma for %s has been increased %s ' \
-                        'and decreased %s for a total karma of %s.' % \
-                        (utils.quoted(name), utils.nItems('time', added),
-                         utils.nItems('time', subtracted), total)
+                    s = format('Karma for %q has been increased %n and '
+                               'decreased %n for a total karma of %s.',
+                               name, (added, 'time'), (subtracted, 'time'),
+                               total)
                 irc.reply(s)
         elif len(things) > 1:
             (L, neutrals) = self.db.gets(channel, things)
             if L:
-                s = utils.commaAndify(['%s: %s' % t for t in L])
+                s = format('%L', [format('%s: %i', *t) for t in L])
                 if neutrals:
-                    neutral = '.  %s %s neutral karma' % \
-                              (utils.commaAndify(neutrals),
-                               utils.has(len(neutrals)))
+                    neutral = format('.  %L %h neutral karma',
+                                     neutrals, len(neutrals))
                     s += neutral
                 irc.reply(s + '.')
             else:
@@ -309,9 +308,9 @@ class Karma(callbacks.Plugin):
         else: # No name was given.  Return the top/bottom N karmas.
             limit = self.registryValue('rankingDisplay', channel)
             top = self.db.top(channel, limit)
-            highest = ['%s (%s)' % (utils.quoted(s), t)
+            highest = [format('%q (%s)', s, t)
                        for (s, t) in self.db.top(channel, limit)]
-            lowest = ['%s (%s)' % (utils.quoted(s), t)
+            lowest = [format('%q (%s)', s, t)
                       for (s, t) in self.db.bottom(channel, limit)]
             if not (highest and lowest):
                 irc.error('I have no karma for this channel.')
@@ -319,16 +318,16 @@ class Karma(callbacks.Plugin):
             rank = self.db.rank(channel, msg.nick)
             if rank is not None:
                 total = self.db.size(channel)
-                rankS = '  You (%s) are ranked %s out of %s.' % \
-                        (msg.nick, rank, total)
+                rankS = format('  You (%s) are ranked %i out of %i.',
+                               msg.nick, rank, total)
             else:
                 rankS = ''
-            s = 'Highest karma: %s.  Lowest karma: %s.%s' % \
-                (utils.commaAndify(highest), utils.commaAndify(lowest), rankS)
+            s = format('Highest karma: %L.  Lowest karma: %L.%s',
+                       highest, lowest, rankS)
             irc.reply(s)
     karma = wrap(karma, ['channel', any('something')])
 
-    _mostAbbrev = utils.abbrev(['increased', 'decreased', 'active'])
+    _mostAbbrev = utils.gen.abbrev(['increased', 'decreased', 'active'])
     def most(self, irc, msg, args, channel, kind):
         """[<channel>] {increased,decreased,active}
 
@@ -339,8 +338,8 @@ class Karma(callbacks.Plugin):
         L = self.db.most(channel, kind,
                          self.registryValue('mostDisplay', channel))
         if L:
-            L = ['%s: %s' % (utils.quoted(name), i) for (name, i) in L]
-            irc.reply(utils.commaAndify(L))
+            L = [format('%q: %i', name, i) for (name, i) in L]
+            irc.reply(format('%L', L))
         else:
             irc.error('I have no karma for this channel.')
     most = wrap(most, ['channel',
@@ -396,7 +395,7 @@ class Karma(callbacks.Plugin):
         self.db.load(channel, filename)
         irc.replySuccess()
     load = wrap(load, [('checkCapability', 'owner'), 'channeldb', 'filename'])
-    
+
 Class = Karma
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
