@@ -149,7 +149,7 @@ class User(callbacks.Privmsg):
         ircdb.users.delUser(user.id)
         irc.replySuccess()
     unregister = wrap(unregister, ['private', 'otherUser',
-                                   additional('something')])
+                                   additional('something', '')])
 
     def changename(self, irc, msg, args, user, newname, password):
         """<name> <new name> [<password>]
@@ -170,7 +170,7 @@ class User(callbacks.Privmsg):
             ircdb.users.setUser(user)
             irc.replySuccess()
     changename = wrap(changename, ['private', 'otherUser', 'something',
-                                   additional('something')])
+                                   additional('something', '')])
 
     def addhostmask(self, irc, msg, args, user, hostmask, password):
         """[<name>] [<hostmask>] [<password>]
@@ -195,7 +195,7 @@ class User(callbacks.Privmsg):
                       Raise=True)
         try:
             otherId = ircdb.users.getUserId(hostmask)
-            if otherId != id:
+            if otherId != user.id:
                 irc.error('That hostmask is already registered.', Raise=True)
         except KeyError:
             pass
@@ -220,7 +220,7 @@ class User(callbacks.Privmsg):
         irc.replySuccess()
     addhostmask = wrap(addhostmask, [first('otherUser', 'user'),
                                      optional('something'),
-                                     additional('something')])
+                                     additional('something', '')])
 
     def removehostmask(self, irc, msg, args, user, hostmask, password):
         """<name> <hostmask> [<password>]
@@ -250,7 +250,7 @@ class User(callbacks.Privmsg):
         ircdb.users.setUser(user)
         irc.replySuccess(s)
     removehostmask = wrap(removehostmask, ['private', 'otherUser', 'something',
-                                           additional('something')])
+                                           additional('something', '')])
 
     def setpassword(self, irc, msg, args, optlist, user, password,newpassword):
         """[--hashed] <name> <old password> <new password>
