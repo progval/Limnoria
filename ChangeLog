@@ -1,3 +1,6 @@
+	* Changed the name of the "bug" command in the AdminCommands
+	plugin to "reportbug" instead.
+	
 	* Added QUIT stat-keeping to ChannelDB.  This added another column
 	to the database; you'll need to add a 'quits' column to both
 	user_stats and channel_stats.  Good luck.

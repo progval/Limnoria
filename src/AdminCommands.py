@@ -191,7 +191,7 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
             conf.prefixChars = s
             irc.reply(msg, conf.replySuccess)
 
-    def bug(self, irc, msg, args):
+    def reportbug(self, irc, msg, args):
         """<description>
 
         Reports a bug to a private mailing list supybot-bugs.  <description>
@@ -211,7 +211,6 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         """) % (description, time.ctime(), conf.version, messages)
         email = email.strip()
         email = email.replace('\n', '\r\n')
-        #debug.printf(`email`)
         smtp = smtplib.SMTP('mail.sourceforge.net', 25)
         smtp.sendmail('jemfinch@users.sf.net',
                       ['supybot-bugs@lists.sourceforge.net'],
