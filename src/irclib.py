@@ -477,8 +477,11 @@ class IrcState(IrcCommandDispatcher):
 
     def doPart(self, irc, msg):
         for channel in msg.args[0].split(','):
-            chan = self.channels[channel]
-            if msg.nick == irc.nick:
+            try:
+                chan = self.channels[channel]
+            except KeyError:
+                continue
+            if ircutils.strEqual(msg.nick, irc.nick):
                 del self.channels[channel]
             else:
                 chan.removeUser(msg.nick)
