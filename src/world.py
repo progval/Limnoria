@@ -39,6 +39,7 @@ import fix
 
 import gc
 import os
+import sys
 import sre
 import time
 import types
@@ -74,6 +75,7 @@ tempvars = {} # A storage place for temporary variables that need to be
 
 def upkeep(): # Function to be run on occasion to do upkeep stuff.
     """Does upkeep (like flushing, garbage collection, etc.)"""
+    sys.exc_clear() # Just in case, let's clear the exception info.
     collected = gc.collect()
     if os.name == 'nt':
         try:
