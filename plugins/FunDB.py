@@ -117,6 +117,7 @@ class FunDB(callbacks.Privmsg):
         self.db = makeDb(dbFilename)
 
     def die(self):
+        self.db.commit()
         self.db.close()
         
     '''
@@ -425,6 +426,12 @@ class FunDB(callbacks.Privmsg):
         try:
             zipcode = int(privmsgs.getArgs(args))
         except ValueError:
+            # Must not be an integer.  Try zipcodefor.
+            try:
+                self.zipcodefor(irc, msg, args)
+                return
+            except:
+                pass
             irc.error(msg, 'Invalid zipcode.')
             return
         cursor = self.db.cursor()
@@ -444,6 +451,8 @@ class FunDB(callbacks.Privmsg):
         Returns the zipcode for a <city> in <state>.
         """
         (city, state) = privmsgs.getArgs(args, needed=2)
+        state = args.pop()
+        city = ' '.join(args)
         if '%' in msg.args[1]:
             irc.error(msg, '% wildcard is not allowed.  Use _ instead.')
             return
@@ -454,7 +463,8 @@ class FunDB(callbacks.Privmsg):
                           WHERE city LIKE %s AND
                                 state LIKE %s""", city, state)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'I have no zipcode for that city/state.')
+            irc.reply(msg, 'I have no zipcode for %r, %r.' % \
+                      (city, state))
         elif cursor.rowcount == 1:
             irc.reply(msg, str(cursor.fetchone()[0]))
         else:
