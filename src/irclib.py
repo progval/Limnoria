@@ -36,7 +36,7 @@ import fix
 import copy
 import sets
 import time
-from itertools import imap, chain
+from itertools import imap, chain, cycle
 
 import log
 import conf
@@ -106,7 +106,7 @@ class IrcCallback(IrcCommandDispatcher):
                 log.exception(s)
 
     def reset(self):
-        """Resets the callback.  Called when reconnected to the server."""
+        """Resets the callback.  Called when reconnecting to the server."""
         pass
 
     def die(self):
@@ -407,6 +407,7 @@ class Irc(IrcCommandDispatcher):
         world.ircs.append(self)
         self.originalNick = intern(nick)
         self.nick = self.originalNick
+        self.nickmods = cycle(conf.nickmods)
         self.password = password
         self.user = intern(user or nick)  # Default to nick
         self.ident = intern(ident or nick)  # Ditto.
@@ -417,7 +418,6 @@ class Irc(IrcCommandDispatcher):
             self.callbacks = callbacks
         self.state = IrcState()
         self.queue = IrcMsgQueue()
-        self._nickmods = copy.copy(conf.nickmods)
         self.lastTake = 0
         self.server = None
         self.afterConnect = False
@@ -431,7 +431,7 @@ class Irc(IrcCommandDispatcher):
         self.queue.enqueue(ircmsgs.user(self.ident, self.user))
 
     def reset(self):
-        """Resets the Irc object.  Useful for handling reconnects."""
+        """Resets the Irc object.  Called when the driver reconnects."""
         self.nick = self.originalNick
         self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         self.state.reset()
@@ -540,9 +540,14 @@ class Irc(IrcCommandDispatcher):
             return None
 
     def do001(self, msg):
-        """Prints some logging."""
+        """Does some logging."""
         log.info('Received 001 from the server.')
-        log.info('Hostmasks of user 0: %r' % ircdb.users.getUser(0).hostmasks)
+        log.info('Hostmasks of user 0: %r', ircdb.users.getUser(0).hostmasks)
+
+    def do002(self, msg):
+        """Logs the ircd version."""
+        (beginning, version) = rsplit(msg.args[0], maxsplit=1)
+        log.info('Server %s has version %s', self.server, version)
 
     def doPing(self, msg):
         """Handles PING messages."""
@@ -558,22 +563,15 @@ class Irc(IrcCommandDispatcher):
 
     def do433(self, msg):
         """Handles 'nickname already in use' messages."""
-        if not self._nickmods:
-            self._nickmods = conf.nickmods[:]
-        self.sendMsg(ircmsgs.nick(self._nickmods.pop(0) % self.originalNick))
+        self.sendMsg(ircmsgs.nick(self.nickmods.next() % self.originalNick))
     do432 = do433
 
     def doError(self, msg):
         """Handles ERROR messages."""
         if msg.args[0].startswith('Closing Link'):
-            if hasattr(self.driver, 'scheduleReconnect'):
-                self.driver.scheduleReconnect()
-            self.driver.die()
+           self.driver.reconnect()
         elif 'too fast' in msg.args[0]:
-            if hasattr(self.driver, 'reconnectWaitsIndex'):
-                newIndex = len(self.driver.reconnectWaits)-1
-                self.driver.reconnectWaitsIndex = newIndex
-            self.driver.die()
+           self.driver.reconnect(wait=True)
 
     def doNick(self, msg):
         """Handles NICK messages."""
@@ -594,6 +592,8 @@ class Irc(IrcCommandDispatcher):
             self.prefix = intern(self.prefix)
             log.info('Changing user 0 hostmask to %r' % self.prefix)
         elif conf.followIdentificationThroughNickChanges:
+            # We use elif here because this means it's someone else's nick
+            # change, not our own.
             try:
                 id = ircdb.users.getUserId(msg.prefix)
                 u = ircdb.users.getUser(id)
@@ -670,8 +670,6 @@ class Irc(IrcCommandDispatcher):
         log.info('Irc object for %s dying.' % self.server)
         for callback in self.callbacks:
             callback.die()
-        if self.driver is not None:
-            self.driver.die()
         if self in world.ircs:
             world.ircs.remove(self)
 

@@ -62,7 +62,7 @@ class SupyIrcProtocol(LineReceiver):
     def lineReceived(self, line):
         start = time.time()
         msg = ircmsgs.IrcMsg(line)
-        log.verbose('Time to parse IrcMsg: %s', time.time()-start)
+        log.debug('Time to parse IrcMsg: %s', time.time()-start)
         try:
             self.factory.irc.feedMsg(msg)
         except:

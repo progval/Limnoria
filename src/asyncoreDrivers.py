@@ -51,7 +51,7 @@ import schedule
 
 class AsyncoreRunnerDriver(drivers.IrcDriver):
     def run(self):
-        log.printf(repr(asyncore.socket_map))
+        log.debug(repr(asyncore.socket_map))
         try:
             asyncore.poll(conf.poll)
         except:
@@ -101,7 +101,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
     def found_terminator(self):
         start = time.time()
         msg = ircmsgs.IrcMsg(self.buffer)
-        log.verbose('Time to parse IrcMsg: %s', time.time()-start)
+        log.debug('Time to parse IrcMsg: %s', time.time()-start)
         self.buffer = ''
         try:
             self.irc.feedMsg(msg)

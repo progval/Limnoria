@@ -98,7 +98,7 @@ class SocketDriver(drivers.IrcDriver):
             for line in lines:
                 start = time.time()
                 msg = ircmsgs.IrcMsg(line)
-                log.verbose('Time to parse IrcMsg: %s', time.time()-start)
+                log.debug('Time to parse IrcMsg: %s', time.time()-start)
                 try:
                     self.irc.feedMsg(msg)
                 except:
@@ -113,7 +113,11 @@ class SocketDriver(drivers.IrcDriver):
             return
         self._sendIfMsgs()
         
-    def reconnect(self):
+    def reconnect(self, wait=False):
+        self.conn.close()
+        if wait:
+            self._scheduleReconnect()
+            return
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.conn.settimeout(conf.poll*10) # Allow more time for connect.
         if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
@@ -124,14 +128,15 @@ class SocketDriver(drivers.IrcDriver):
         except socket.error, e:
             if e.args[0] != 115:
                 log.warning('Error connecting to %s: %s', self.server, e)
-                self.die()
+                self.reconnect(wait=True)
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
         
-
     def die(self):
+        self.irc.die()
+
+    def _scheduleReconnect(self):
         self.irc.reset()
-        self.conn.close()
         self.connected = False
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
