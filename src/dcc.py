@@ -26,8 +26,13 @@ def isDCC(msg):
     return msg.command == 'PRIVMSG' and msg.args[1][:5] == '\x01DCC '
 
 
+conf.registerGroup(conf.supybot.protocols, 'dcc')
 conf.registerGlobalValue(conf.supybot.protocols.dcc, 'timeout',
                          registry.Integer(120, "Timeout on DCC sockets"))
+conf.registerGlobalValue(conf.supybot.protocols.dcc, 'packetSize',
+                         registry.Integer(1024, "Size of packet to send"))
+conf.registerGlobalValue(conf.supybot.protocols.dcc, 'chatLineLength',
+                         registry.Integer(1024, "Max size of line to read"))
 
 # ---- Out Handlers ----
 
