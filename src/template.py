@@ -56,7 +56,6 @@ started = time.time()
 
 import supybot
 
-import log
 import conf
 
 defaultNick = "%%nick%%"
@@ -80,6 +79,9 @@ if not os.path.exists(conf.dataDir):
 if not os.path.exists(conf.confDir):
     os.mkdir(conf.confDir)
     
+# Must be after import conf.
+import log
+
 def main():
     import world
     import drivers
