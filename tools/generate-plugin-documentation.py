@@ -94,6 +94,9 @@ def genNavbar(path, cActive=True):
             </a>
           </li>
           %s
+          <li>
+            <a href="http://forums.supybot.org"/>Forums</a>
+          </li>
         </ul>
         <p style="clear:both; margin:0; padding:0;"></p>
         </div>
