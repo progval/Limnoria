@@ -45,10 +45,10 @@ if __name__ == '__main__':
     for dirname in args:
         # XXX Sanity checking (syntax errors?)
         # XXX Sanity checking (__attrs__ -- url, contributors, version, etc.)
-        # XXX Documentation generation (jamesssan!)
+        # XXX Documentation generation (jamessan!)
         basename = os.path.basename(dirname)
         tf = tarfile.open('%s.tar.gz' % basename, mode='w:gz')
         tf.add(dirname, basename, True)
         tf.close()
-                                   
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
