@@ -145,7 +145,7 @@ replyNotRegistered = 'You must be registered to use this command.'
 replyInvalidArgument = 'I can\'t send \\r, \\n, or \\0 (\\x00).'
 replyRequiresPrivacy = 'That can\'t be done in a channel.'
 replyEvalNotAllowed = 'You must enable conf.allowEval for that to work.'
-replyPossibleBug = 'This may be a bug. If you think it is, please file a bug' \
+replyPossibleBug = 'This may be a bug. If you think it is, please file a bug '\
                    'report at <http://sourceforge.net/tracker/?' \
                    'func=add&group_id=58965&atid=489447>'
 

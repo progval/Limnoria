@@ -148,7 +148,8 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             if ('User %s not found!' % name) in profile:
                 raise callbacks.Error, 'No user %s exists.' % name
             else:
-                raise callbacks.Error, 'The format of the page was odd.'
+                raise callbacks.Error, 'The format of the page was odd. %s' %\
+                    conf.replyPossibleBug
         except urllib2.URLError:
             raise callbacks.Error, 'Couldn\'t connect to gameknot.com'
 
