@@ -166,6 +166,7 @@ class URLDB(object):
                       self.filename, notAdded)
 
 class URL(callbacks.PrivmsgCommandAndRegexp):
+    priority = 100 # lower than 99, the normal priority.
     regexps = ['tinyurlSnarfer', 'titleSnarfer']
     _titleRe = re.compile('<title>(.*?)</title>', re.I | re.S)
     def getDb(self, channel):
