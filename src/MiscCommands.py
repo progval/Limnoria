@@ -86,7 +86,7 @@ class MiscCommands(callbacks.Privmsg):
         cb = irc.findCallback(command)
         if cb:
             method = getattr(cb, command)
-            if hasattr(method, '__doc__'):
+            if hasattr(method, '__doc__') and method.__doc__ is not None:
                 doclines = method.__doc__.splitlines()
                 help = doclines.pop(0)
                 if doclines:
@@ -106,7 +106,7 @@ class MiscCommands(callbacks.Privmsg):
                     else:
                         irc.error(msg, 'That callback has no help.')
             else:
-                irc.error(msg, 'There is no such command')
+                irc.error(msg, 'There is no such command.')
 
     def morehelp(self, irc, msg, args):
         """<command>
@@ -155,7 +155,7 @@ class MiscCommands(callbacks.Privmsg):
 
         Returns a URL saying where to get SupyBot.
         """
-        irc.reply(msg, 'http://www.sf.net/projects/supybot/')
+        irc.reply(msg, 'My source is at http://www.sf.net/projects/supybot/')
 
     def logfilesize(self, irc, msg, args):
         """takes no arguments
