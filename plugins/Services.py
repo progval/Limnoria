@@ -58,7 +58,7 @@ def configure(advanced):
     nickserv = something('What is your NickServ named?', default='NickServ')
     conf.supybot.plugins.Services.nicks.setValue(nick)
     conf.supybot.plugins.Services.NickServ.setValue(nickserv)
-    conf.supybot.plugins.Services.NickServ.password.setValue(password)
+    registerNick(nick, password)
     conf.supybot.plugins.Services.ChanServ.setValue(chanserv)
 
 class ValidNickOrEmptyString(registry.String):
@@ -68,13 +68,19 @@ class ValidNickOrEmptyString(registry.String):
                   'Value must be a valid nick or the empty string.'
         registry.String.setValue(self, v)
 
+def registerNick(nick, password=''):
+    p = conf.supybot.plugins.Services.Nickserv.get('password')
+    v = p.register(nick, registry.String(password, '', private=True))
+    if password:
+        v.setValue(password)
+
 conf.registerPlugin('Services')
 # Not really ChannelValues: but we can have values for each network.  We
 # should probably document that this is possible.
 
 class ValidNickSet(conf.ValidNicks):
     List = ircutils.IrcSet
-    
+
 conf.registerGlobalValue(conf.supybot.plugins.Services, 'nicks',
     ValidNickSet([], """Determines what nicks the bot will use with
     services."""))
@@ -120,7 +126,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         for nick in self.registryValue('nicks'):
-            self._registerNick(nick)
+            registerNick(nick)
         self.reset()
 
     def reset(self):
@@ -138,12 +144,6 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                     self.waitingJoins.append(msg)
                     return None
         return msg
-
-    def _registerNick(self, nick, password=''):
-        p = self.registryValue('NickServ.password', value=False)
-        v = p.register(nick, registry.String(password, '', private=True))
-        if password:
-            v.setValue(password)
 
     def _getNick(self):
         return conf.supybot.nick()
@@ -545,7 +545,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 return
         else:
             self.registryValue('nicks').add(nick)
-            self._registerNick(nick, password)
+            registerNick(nick, password)
             irc.replySuccess()
 
     def nicks(self, irc, msg, args):
