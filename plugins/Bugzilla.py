@@ -93,11 +93,23 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.entre = re.compile('&(\S*?);')
         self.db = makeDb(dbfilename)
+        self.snarfer = True
 
     def die(self):
         self.db.close()
         del self.db
     
+    def togglesnarfer(self, irc, msg, args):
+        """takes no argument
+
+        Disables the snarfer that responds to all Bugzilla links
+        """
+        self.snarfer = not self.snarfer
+        if self.snarfer:
+            irc.reply(msg, '%s (Snarfer is enabled)' % conf.replySuccess)
+        else:
+            irc.reply(msg, '%s (Snarfer is disabled)' % conf.replySuccess)
+    togglesnarfer=privmsgs.checkCapability(togglesnarfer,'admin')
     def addzilla(self, irc, msg, args):
         """shorthand url description
         Add a bugzilla to the list of defined bugzillae.
@@ -158,6 +170,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             return    
     def bzSnarfer(self, irc, msg, match):
         r"(.*)/show_bug.cgi\?id=([0-9]+)"
+        if not self.snarfer:
+            return
         queryurl = '%s/xml.cgi?id=%s' % (match.group(1), match.group(2))
         try:
             summary = self._get_short_bug_summary(queryurl, "Snarfed Bugzilla URL", match.group(2))
