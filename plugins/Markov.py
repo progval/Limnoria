@@ -231,7 +231,8 @@ class Markov(callbacks.Privmsg):
             if now > self.lastSpoke + throttle:
                 canSpeak = True
             if canSpeak and random.random() < prob:
-                f = self._markov(channel, irc, private=True, to=channel)
+                f = self._markov(channel, irc, private=True, to=channel,
+                                 Random=True)
                 schedule.addEvent(lambda: self.q.enqueue(f), now + delay)
                 self.lastSpoke = now + delay
             words = self.tokenize(msg)
@@ -301,8 +302,13 @@ class Markov(callbacks.Privmsg):
                         return
                     else:
                         continue
-            irc.error('I was unable to generate a Markov chain at least %s '
-                      'long.' % utils.nItems('word', minLength))
+            if not Random:
+                irc.error('I was unable to generate a Markov chain at least %s'
+                          ' long.' % utils.nItems('word', minLength))
+            else:
+                self.log.debug('Not randomSpeaking.  Unable to generate a '
+                               'Markov chain at least %s long.' %
+                               utils.nItems('word', minLength))
         return f
 
     def markov(self, irc, msg, args, channel, word1, word2):
@@ -313,7 +319,7 @@ class Markov(callbacks.Privmsg):
         channel itself).  If word1 and word2 are specified, they will be used
         to start the Markov chain.
         """
-        f = self._markov(channel, irc, word1, word2)
+        f = self._markov(channel, irc, word1, word2, Random=False)
         self.q.enqueue(f)
     markov = wrap(markov, ['channeldb', optional('something'),
                            additional('something')])
