@@ -29,9 +29,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""Handles interactive questions; useful for wizards and whatnot."""
+
 import textwrap
 
 def expect(prompt, possibilities, recursed=False):
+    """Prompt the user with prompt, allow them to choose from possibilities.
+
+    If possibilities is empty, allow anything.
+    """
     originalPrompt = prompt
     indent = ' ' * ((len(originalPrompt)%68) + 2)
     if recursed:
@@ -56,6 +62,7 @@ def expect(prompt, possibilities, recursed=False):
         return s.strip()
 
 def expectWithDefault(prompt, possibilities, default):
+    """Same as expect, except with a default."""
     indent = ' ' * ((len(prompt)%68) + 2)
     prompt = '%s [%s] (default: %s) ' % \
              (prompt.strip(), '/'.join(possibilities), default)
@@ -71,9 +78,11 @@ def expectWithDefault(prompt, possibilities, default):
         return default
 
 def anything(prompt):
+    """Allow anything from the user."""
     return expect(prompt, [])
 
 def something(prompt):
+    """Allow anything *except* nothing from the user."""
     s = expect(prompt, [])
     while not s:
         print 'Sorry, you must enter a value.'
@@ -81,10 +90,8 @@ def something(prompt):
     return s
 
 def yn(prompt):
+    """Allow only 'y' or 'n' from the user."""
     return expect(prompt, ['y', 'n'])
 
-def ny(prompt):
-    return expect(prompt, ['n', 'y'])
 
-def quit(prompt):
-    return anything(prompt).lower() in ('q', 'quit')
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
