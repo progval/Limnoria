@@ -160,13 +160,17 @@ class Topic(callbacks.Privmsg):
             return
         topics = irc.state.getTopic(channel).split(self.topicSeparator)
         topic = topics.pop(number)
-        (topic, name) = self.topicUnformatter.match(topic).groups()
+        match = self.topicUnformatter.match(topic)
+        if match is None:
+            name = ''
+        else:
+            (topic, name) = match.groups()
         try:
             senderName = ircdb.users.getUserName(msg.prefix)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
-        if name != senderName and \
+        if name and name != senderName and \
            not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
             irc.error(msg, 'You can only modify your own topics.')
             return
@@ -176,7 +180,13 @@ class Topic(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
 
     def removetopic(self, irc, msg, args):
-        "[<channel>] (if not sent in the channel itself) <topic number>"
+        """[<channel>] <number>
+
+        Removes topic <number> from the topic for <channel>  Topics are
+        numbered starting from 0; you can also use negative indexes to refer
+        to topics starting the from the end of the topic.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         capability = ircdb.makeChannelCapability(channel, 'topic')
         try:
@@ -186,14 +196,22 @@ class Topic(callbacks.Privmsg):
             return
         if ircdb.checkCapability(msg.prefix, capability):
             topics = irc.state.getTopic(channel).split(self.topicSeparator)
-            topic = topics.pop(number)
+            try:
+                topic = topics.pop(number)
+            except IndexError:
+                irc.error(msg, 'That\'s not a valid topic number.')
+                return
             ## debug.printf(topic)
-            (topic, name) = self.topicUnformatter.match(topic).groups()
+            match = self.topicUnformatter.match(topic)
+            if match is None:
+                name = ''
+            else:
+                (topic, name) = match.groups()
             try:
                 username = ircdb.users.getUserName(msg.prefix)
             except KeyError:
                 username = msg.nick
-            if name != username and \
+            if name and name != username and \
                not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
                 irc.error(msg, 'You can only remove your own topics.')
                 return
