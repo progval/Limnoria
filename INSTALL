@@ -56,6 +56,11 @@ server tries to check its ident.
 # Windows:
 ###
 
+*** If you are using an IPV6 connection, you will not be able to run
+Supybot under Windows (unless Python has fixed things).  Current
+versions of Python for Windows are *not* built with IPV6 support. This
+isn't expected to be fixed until Python 2.4, at the earliest.
+
 Now that you have Python installed, open up a command prompt.  The
 easiest way to do this is to open the run dialog (Programs -> run) and
 type "cmd" (for Windows 2000/XP/2003) or "command" (for Windows 9x).
