@@ -61,7 +61,7 @@ def configure(advanced):
 
 replyTimeout = 'Timeout on the dictd server.'
 
-conf.registerPlugin('Dict', True)
+conf.registerPlugin('Dict')
 # TODO: We should make this check to see if there's actually a dictd server
 # running on the host given.
 conf.registerChannelValue(conf.supybot.plugins.Dict, 'server',
