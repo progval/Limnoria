@@ -590,7 +590,7 @@ class AdminCommands(callbacks.Privmsg):
         """
         s = getArgs(args)
         if ircdb.checkCapability(msg.prefix, 'admin'):
-            if s.translate(string.ascii, string.ascii_letters) != '':
+            if s.translate(string.ascii, string.ascii_letters) == '':
                 irc.error(msg, 'Prefixes cannot contain letters.')
             else:
                 conf.prefixChars = s
@@ -992,6 +992,7 @@ class UserCommands(callbacks.Privmsg):
                 name = ircdb.users.getUserName(msg.prefix)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
+                return
         else:
             name = getArgs(args)
         try:
@@ -1034,6 +1035,7 @@ class UserCommands(callbacks.Privmsg):
             u = ircdb.users.getUser(name)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
+            return
         if u.checkPassword(password):
             u.unsetAuth()
             ircdb.users.setUser(name, u)
