@@ -782,6 +782,11 @@ class AtomicFile(file):
                 # the latter doesn't work on Windows when self.filename
                 # (the target) already exists.  shutil.move handles those
                 # intricacies for us.
+
+                # XXX There's a bug in Python <= 2.4 that allows this to
+                #     clobber read-only files.  We should workaround this at
+                #     some point (probably by including a fixed shutil.py in
+                #     others/.
                 shutil.move(self.tempFilename, self.filename)
         else:
             raise ValueError, 'AtomicFile.close called after rollback.'
