@@ -48,7 +48,7 @@ import privmsgs
 import callbacks
 
 
-def configure(onStart, afterConnect):
+def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
