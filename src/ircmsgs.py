@@ -217,6 +217,7 @@ def isAction(msg):
 _unactionre = re.compile(r'^\x01ACTION (.*)\x01$')
 def unAction(msg):
     """Returns the payload (i.e., non-ACTION text) of an ACTION msg."""
+    assert isAction(msg)
     return _unactionre.match(msg.args[1]).group(1)
 
 def prettyPrint(msg, addRecipients=False):
