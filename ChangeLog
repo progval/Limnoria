@@ -1,3 +1,6 @@
+	* Added Anonymous.action, to anonymously perform actions in a
+	specified channel.
+
 	* Added a clear command to the Karma plugin, so channel ops can
 	clear the karma for a given name.
 	
