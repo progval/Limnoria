@@ -28,7 +28,7 @@
 ###
 
 """
-Shrinks URLs using tinyurl.com (and soon, ln-s.net as well).
+Shrinks URLs using tinyurl.com and ln-s.net.
 """
 
 __revision__ = "$Id$"
@@ -61,6 +61,9 @@ def configure(advanced):
              Would you like this snarfer to be enabled?""", default=False):
         conf.supybot.plugins.ShrinkUrl.tinyurlSnarfer.setValue(True)
 
+class ShrinkService(registry.OnlySomeStrings):
+    validStrings = ('ln', 'tiny')
+
 conf.registerPlugin('ShrinkUrl')
 conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'tinyurlSnarfer',
     registry.Boolean(False, """Determines whether the
@@ -79,16 +82,28 @@ conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'outFilter',
     registry.Boolean(False, """Determines whether the bot will shrink the URLs
     of outgoing messages if those URLs are longer than
     supybot.plugins.ShrinkUrl.minimumLength."""))
+conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'default',
+    ShrinkService('ln', """Determines what website the bot will use when
+    shrinking a URL."""))
 
 class CdbShrunkenUrlDB(object):
     def __init__(self, filename):
-        self.db = conf.supybot.databases.types.cdb.connect(filename)
+        self.tinyDb = conf.supybot.databases.types.cdb.connect(
+	    filename.replace('.db', '.Tiny.db'))
+        self.lnDb = conf.supybot.databases.types.cdb.connect(
+	    filename.replace('.db', '.Ln.db'))
         
-    def get(self, url):
-        return self.db[url]
+    def getTiny(self, url):
+        return self.tinyDb[url]
 
-    def set(self, url, tinyurl):
-        self.db[url] = tinyurl
+    def setTiny(self, url, tinyurl):
+        self.tinyDb[url] = tinyurl
+
+    def getLn(self, url):
+        return self.lnDb[url]
+
+    def setLn(self, url, lnurl):
+        self.lnDb[url] = lnurl
 
     def close(self):
         self.db.close()
@@ -99,7 +114,7 @@ class CdbShrunkenUrlDB(object):
 ShrunkenUrlDB = plugins.DB('ShrinkUrl', {'cdb': CdbShrunkenUrlDB})
         
 class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
-    regexps = ['tinyurlSnarfer']
+    regexps = ['tinyurlSnarfer', 'lnSnarfer']
     def __init__(self):
         self.db = ShrunkenUrlDB()
         self.__parent = super(ShrinkUrl, self)
@@ -120,7 +135,11 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
         for m in webutils.httpUrlRe.finditer(text):
             url = m.group(1)
             if len(url) > self.registryValue('minimumLength', channel):
-                shortUrl = self._getTinyUrl(url)
+		cmd = self.registryValue('default', channel)
+		if cmd == 'ln':
+		    (shortUrl, _) = self._getLnUrl(url)
+		elif cmd == 'tiny':
+		    shortUrl = self._getTinyUrl(url)
                 text = text.replace(url, shortUrl)
         newMsg = ircmsgs.privmsg(channel, text, msg=msg)
         newMsg.tag('shrunken')
@@ -136,37 +155,73 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
                         return None
         return msg
             
-    def tinyurlSnarfer(self, irc, msg, match):
+    def shrinkSnarfer(self, irc, msg, match):
         r"https?://[^\])>\s]{13,}"
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
-        if self.registryValue('tinyurlSnarfer', channel):
+        if self.registryValue('shrinkSnarfer', channel):
             url = match.group(0)
             r = self.registryValue('nonSnarfingRegexp', channel)
             if r and r.search(url) is not None:
                 self.log.debug('Matched nonSnarfingRegexp: %r', url)
                 return
-            minlen = self.registryValue('minimumLength',channel)
+            minlen = self.registryValue('minimumLength', channel)
+	    cmd = self.registryValue('default', channel)
             if len(url) >= minlen:
-                tinyurl = self._getTinyUrl(url)
-                if tinyurl is None:
-                    self.log.info('Couldn\'t get tinyurl for %r', url)
-                    return
+		shorturl = None
+		if cmd == 'tiny':
+		    shorturl = self._getTinyUrl(url)
+		elif cmd == 'ln':
+		    (shorturl, _) = self._getLnUrl(url)
+		if shorturl is None:
+		    self.log.info('Couldn\'t get shorturl for %r', url)
+		    return
                 domain = webutils.getDomain(url)
-                s = '%s (at %s)' % (ircutils.bold(tinyurl), domain)
+		s = '%s (at %s)' % (ircutils.bold(shorturl), domain)
                 m = irc.reply(s, prefixName=False)
                 if m is None:
                     print irc, irc.__class__
                 m.tag('shrunken')
     tinyurlSnarfer = wrap(tinyurlSnarfer, decorators=['urlSnarfer'])
 
+    def _getLnUrl(self, url):
+        try:
+            return self.db.getLn(url)
+        except KeyError:
+	    url = webutils.urlquote(url)
+	    text = webutils.getUrl('http://ln-s.net/home/api.jsp?url=%s' % url)
+	    (code, lnurl) = text.split(None, 1)
+	    if code == '200':
+		self.db.setLn(url, lnurl)
+	    else:
+		lnurl = None
+	    return lnurl
+
+    def ln(self, irc, msg, args, url):
+        """<url>
+
+        Returns an ln-s.net version of <url>.
+        """
+        if len(url) < 17:
+            irc.error('Stop being a lazy-biotch and type the URL yourself.')
+            return
+        (lnurl, error) = self._getLnUrl(url)
+	if lnurl is not None:
+	    s = lnurl.strip()
+	    domain = webutils.getDomain(url)
+            m = irc.reply(s)
+            m.tag('shrunken')
+        else:
+            irc.error(error)
+    ln = wrap(ln, ['url'], decorators=['thread'])
+
     _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
     def _getTinyUrl(self, url):
         # XXX This should use a database, eventually, especially once we write
         # the outFilter.
         try:
-            return self.db.get(url)
+            return self.db.getTiny(url)
         except KeyError:
             s = webutils.getUrl('http://tinyurl.com/create.php?url=%s' % url)
             m = self._tinyRe.search(s)
@@ -174,7 +229,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
                 tinyurl = None
             else:
                 tinyurl = m.group(1)
-                self.db.set(url, tinyurl)
+                self.db.setTiny(url, tinyurl)
             return tinyurl
 
     def tiny(self, irc, msg, args, url):
