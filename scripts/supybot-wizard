@@ -229,6 +229,7 @@ def main():
     except KeyError:
         priority = 'INFO'
     registry._cache['supybot.log.level'] = 'CRITICAL'
+    registry._cache['supybot.log.stdout'] = 'False'
     
     # Now that we're all set, import conf and log
     import conf
