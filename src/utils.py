@@ -214,16 +214,33 @@ def quoted(s):
     """Returns a quoted s."""
     return '"%s"' % s
 
-nonEscapedSlashes = re.compile(r'(?<!\\)/')
+def _getSep(s):
+    assert len(s) >= 2
+    if s.startswith('m') or s.startswith('s'):
+        separator = s[1]
+    else:
+        separator = s[0]
+    if separator.isalnum() or separator in '{}[]()<>':
+        raise ValueError, \
+              'Invalid separator: separator must not be alphanumeric or in ' \
+              '"{}[]()<>"'
+    return separator
+
+def _getSplitterRe(s):
+    separator = _getSep(s)
+    return re.compile(r'(?<!\\)%s' % re.escape(separator))
+        
 def perlReToPythonRe(s):
     """Converts a string representation of a Perl regular expression (i.e.,
     m/^foo$/i or /foo|bar/) to a Python regular expression.
     """
+    sep = _getSep(s)
+    splitter = _getSplitterRe(s)
     try:
-        (kind, regexp, flags) = nonEscapedSlashes.split(s)
+        (kind, regexp, flags) = splitter.split(s)
     except ValueError: # Unpack list of wrong size.
         raise ValueError, 'Must be of the form m/.../ or /.../'
-    regexp = regexp.replace('\\/', '/')
+    regexp = regexp.replace('\\'+sep, sep)
     if kind not in ('', 'm'):
         raise ValueError, 'Invalid kind: must be in ("", "m")'
     flag = 0
@@ -242,12 +259,14 @@ def perlReToReplacer(s):
     s/foo/bar/g or s/foo/bar/i) to a Python function doing the equivalent
     replacement.
     """
+    sep = _getSep(s)
+    splitter = _getSplitterRe(s)
     try:
-        (kind, regexp, replace, flags) = nonEscapedSlashes.split(s)
+        (kind, regexp, replace, flags) = splitter.split(s)
     except ValueError: # Unpack list of wrong size.
         raise ValueError, 'Must be of the form s/.../.../'
     regexp = regexp.replace('\x08', r'\b')
-    replace = replace.replace('\\/', '/')
+    replace = replace.replace('\\'+sep, sep)
     for i in xrange(10):
         replace = replace.replace(chr(i), r'\%s' % i)
     if kind != 's':

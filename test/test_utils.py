@@ -177,6 +177,10 @@ class UtilsTest(SupyTestCase):
         self.failUnless(r.search('CAT'))
         self.assertRaises(ValueError, utils.perlReToPythonRe, 'm/?/')
 
+    def testP2PReDifferentSeparator(self):
+        r = utils.perlReToPythonRe('m!foo!')
+        self.failUnless(r.search('foo'))
+
     def testPerlReToReplacer(self):
         f = utils.perlReToReplacer('s/foo/bar/')
         self.assertEqual(f('foobarbaz'), 'barbarbaz')
@@ -196,6 +200,10 @@ class UtilsTest(SupyTestCase):
         self.assertEqual(f('foo'), 'foo/bar')
         f = utils.perlReToReplacer('s/^/foo/')
         self.assertEqual(f('bar'), 'foobar')
+
+    def testPReToReplacerDifferentSeparator(self):
+        f = utils.perlReToReplacer('s#foo#bar#')
+        self.assertEqual(f('foobarbaz'), 'barbarbaz')
 
     def testPerlReToReplacerBug850931(self):
         f = utils.perlReToReplacer('s/\b(\w+)\b/\1./g')
