@@ -136,7 +136,7 @@ def make(dbFilename, readFilename=None):
 class Maker(object):
     """Class for making CDB databases."""
     def __init__(self, filename):
-        self.fd = file(filename, 'w')
+        self.fd = utils.AtomicFile(filename)
         self.filename = filename
         self.fd.seek(2048)
         self.hashPointers = [(0, 0)] * 256

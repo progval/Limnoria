@@ -472,7 +472,6 @@ class IrcString(str):
         x.lowered = toLower(x)
         return x
 
-
     def __eq__(self, s):
         try:
             return toLower(s) == self.lowered

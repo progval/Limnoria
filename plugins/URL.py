@@ -149,8 +149,7 @@ class URLDB(object):
         return [url for (url, nick) in self.getUrlsAndNicks(p)]
 
     def vacuum(self):
-        filename = utils.mktemp()
-        out = file(filename, 'w')
+        out = utils.AtomicFile(self.filename)
         notAdded = 0
         urls = self.getUrlsAndNicks(lambda *args: True)
         seen = sets.Set()
@@ -165,7 +164,6 @@ class URLDB(object):
             if urlNick is not None:
                 out.write(self._formatRecord(*urlNick))
         out.close()
-        shutil.move(filename, self.filename)
         self.log.info('Vacuumed %s, removed %s records.',
                       self.filename, notAdded)
                 

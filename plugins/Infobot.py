@@ -104,7 +104,7 @@ class InfobotDB(object):
                           'I hear ya']
 
     def flush(self):
-        fd = file(filename, 'w')
+        fd = utils.AtomicFile(filename)
         pickle.dump((self._is, self._are), fd)
         fd.close()
 

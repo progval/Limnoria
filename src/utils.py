@@ -676,17 +676,37 @@ def stackTrace():
 
 class AtomicFile(file):
     """Used for files that need to be atomically written -- i.e., if there's a
-    failure, the original file remains, unmodified."""
-    def __init__(self, filename, flags='w'):
-        if flags not in ('a', 'w'):
-            raise ValueError, 'AtomicFile should only be used for writing.'
+    failure, the original file remains, unmodified.
+
+    Opens the file in 'w' mode."""
+    def __init__(self, filename, allowEmptyOverwrite=False):
         self.filename = filename
+        self.rolledback = False
+        self.allowEmptyOverwrite = allowEmptyOverwrite
         self.tempFilename = '%s.%s' % (filename, mktemp())
-        super(AtomicFile, self).__init__(self.tempFilename, flags)
+        super(AtomicFile, self).__init__(self.tempFilename, 'w')
+
+    def rollback(self):
+        #print 'AtomicFile.rollback'
+        super(AtomicFile, self).close()
+        if os.path.exists(self.tempFilename):
+            print 'AtomicFile: Removing %s.' % self.tempFilename
+            os.remove(self.tempFilename)
+        self.rolledback = True
 
     def close(self):
-        super(AtomicFile, self).close()
-        shutil.move(self.tempFilename, self.filename)
+        #print 'AtomicFile.close'
+        if not self.rolledback:
+            #print 'AtomicFile.close: actually closing.'
+            super(AtomicFile, self).close()
+            size = os.stat(self.tempFilename).st_size
+            if size or self.allowEmptyOverwrite:
+                if os.path.exists(self.tempFilename):
+                    shutil.move(self.tempFilename, self.filename)
+
+    def __del__(self):
+        #print 'AtomicFile.__del__'
+        self.rollback()
 
 if __name__ == '__main__':
     import sys, doctest

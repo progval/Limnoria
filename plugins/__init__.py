@@ -221,9 +221,14 @@ class ChannelUserDB(ChannelUserDictionary):
             log.debug('Exception: %s', utils.exnToString(e))
 
     def flush(self):
-        fd = file(self.filename, 'w')
+        fd = utils.AtomicFile(self.filename)
         writer = csv.writer(fd)
         items = self.items()
+        if not items:
+            log.warning('%s: Refusing to write blank file.',
+                        self.__class__.__name__)
+            fd.rollback()
+            return
         items.sort()
         for ((channel, id), v) in items:
             L = self.serialize(v)
