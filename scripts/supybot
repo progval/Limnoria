@@ -206,7 +206,18 @@ if __name__ == '__main__':
             sys.stderr.write(os.linesep)
             sys.exit(-1)
 
-    import supybot.log as log
+    try:
+        import supybot.log as log
+    except supybot.registry.InvalidRegistryValue, e:
+        # This is raised here because supybot.log imports supybot.conf.
+        name = e.value._name
+        errmsg = textwrap.fill('%s: %s' % (name, e),
+                               width=78, subsequent_indent=' '*len(name))
+        sys.stderr.write(errmsg)
+        sys.stderr.write('\n')
+        sys.stderr.write('Please fix this error in your configuration file '
+                         'and restart your bot.\n')
+        sys.exit(-1)
     import supybot.conf as conf
     import supybot.world as world
     world.starting = True

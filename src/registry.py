@@ -306,7 +306,9 @@ class Value(Group):
         else:
             s = """Invalid registry value.  If you're getting this message,
             report it, because we forgot to put a proper help string here."""
-        raise InvalidRegistryValue, utils.normalizeWhitespace(s)
+        e = InvalidRegistryValue(utils.normalizeWhitespace(s))
+        e.value = self
+        raise e
 
     def setName(self, *args):
         if self._name == 'unset':
@@ -445,9 +447,9 @@ class OnlySomeStrings(String):
                 (self._help, utils.commaAndify(strings))
 
     def error(self):
-        raise InvalidRegistryValue, \
-              'That is not a valid value.  Valid values include %s.' % \
-              utils.commaAndify(map(repr, self.validStrings))
+        self.__parent.error('That is not a valid value.  '
+                            'Valid values include %s.' % \
+                            utils.commaAndify(map(repr, self.validStrings)))
 
     def normalize(self, s):
         lowered = s.lower()
@@ -517,10 +519,11 @@ class Regexp(Value):
         kwargs['setDefault'] = False
         self.sr = ''
         self.value = None
-        super(Regexp, self).__init__(*args, **kwargs)
+        self.__parent = super(Regexp, self)
+        self.__parent.__init__(*args, **kwargs)
 
     def error(self, e):
-        raise InvalidRegistryValue, 'Value must be a regexp of the form %s' % e
+        self.__parent.error('Value must be a regexp of the form %s' % e)
 
     def set(self, s):
         try:
