@@ -49,9 +49,9 @@ import plugins
 import privmsgs
 import callbacks
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     from questions import something, yn
-    onStart.append('load Parter')
+    conf.registerPlugin('Parter', True)
     s = ' '
     while s:
         if yn('Would you like to automatically part a channel?') == 'y':

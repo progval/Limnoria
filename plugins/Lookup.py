@@ -55,13 +55,13 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load Lookup')
+    conf.registerPlugin('Lookup', True)
     print 'This module allows you to define commands that do a simple key'
     print 'lookup and return some simple value.  It has a command "add"'
     ### TODO: fix conf.dataDir here.  I'm waiting until we rewrite this with

@@ -54,9 +54,9 @@ except ImportError:
 
 dbfilename = os.path.join(conf.supybot.directories.data(), 'Infobot.db')
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     from questions import expect, anything, something, yn
-    onStart.append('load Infobot')
+    conf.registerPlugin('Infobot', True)
 
 def makeDb(filename):
     if os.path.exists(filename):

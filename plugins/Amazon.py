@@ -49,7 +49,7 @@ import privmsgs
 import callbacks
 
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
@@ -59,7 +59,7 @@ def configure(onStart, afterConnect, advanced):
     if yn('Do you have a license key?') == 'y':
         key = anything('What is it?')
 
-        onStart.append('load Amazon')
+        conf.registerPlugin('Amazon', True)
         conf.supybot.plugins.Amazon.licenseKey.set(key)
     else:
         print 'You\'ll need to get a key before you can use this plugin.'

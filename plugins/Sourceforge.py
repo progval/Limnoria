@@ -52,13 +52,13 @@ import webutils
 import callbacks
 
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load Sourceforge')
+    conf.registerPlugin('Sourceforge', True)
     print 'The Sourceforge plugin has the functionality to watch for URLs'
     print 'that match a specific pattern (we call this a snarfer). When'
     print 'supybot sees such a URL, he will parse the web page for'
@@ -85,10 +85,10 @@ def configure(onStart, afterConnect, advanced):
     print 'bug command).  You may save some time by making an alias for'
     print '"sourceforge".  We like to make it "sf".'
     if yn('Would you like to add sf as an alias for Sourceforge?') == 'y':
-        if 'load Alias' not in onStart:
+        if not conf.supybot.plugins.Alias():
             print 'This depends on the Alias module.'
             if yn('Would you like to load the Alias plugin now?') == 'y':
-                onStart.append('load Alias')
+                conf.registerPlugin('Alias', True)
             else:
                 print 'Then I can\'t add such an alias.'
                 return

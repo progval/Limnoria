@@ -46,16 +46,16 @@ import privmsgs
 import ircutils
 import callbacks
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     from questions import expect, anything, something, yn
-    onStart.append('load Enforcer')
+    conf.registerPlugin('Enforcer', True)
     chanserv = something('What\'s the name of ChanServ on your network?')
     if yn('Do you want the bot to take revenge on rule breakers?') == 'y':
         revenge = True
     else:
         revenge = False
     onStart.append('enforcer start %s' % chanserv)
-    onStart.append('enforcer config revenge %s' % revenge)
+    conf.supybot.plugins.Enforcer.takeRevenge.setValue(revenge)
 
 conf.registerPlugin('Enforcer')
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoOp',

@@ -53,10 +53,10 @@ import privmsgs
 import callbacks
 import configurable
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     import socket
     from questions import expect, anything, something, yn
-    onStart.append('load Relay')
+    conf.registerPlugin('Relay', True)
     startNetwork = anything('What is the name of the network you\'re ' \
                             'connecting to first?')
     onStart.append('relay start %s' % startNetwork)

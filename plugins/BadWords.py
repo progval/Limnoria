@@ -48,9 +48,9 @@ import ircmsgs
 import privmsgs
 import callbacks
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     from questions import expect, anything, something, yn
-    onStart.append('load BadWords')
+    conf.registerPlugin('BadWords', True)
     while yn('Would you like to add some bad words?') == 'y':
         words = anything('What words? (separate individual words by spaces)')
         onStart.append('badwords add %s' % words)

@@ -45,9 +45,9 @@ import ircutils
 import privmsgs
 import callbacks
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     from questions import expect, anything, yn
-    onStart.append('load Utilities')
+    conf.registerPlugin('Utilities', True)
 
 class Utilities(callbacks.Privmsg):
     def ignore(self, irc, msg, args):

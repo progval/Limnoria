@@ -54,13 +54,13 @@ except ImportError:
 
 dbfilename = os.path.join(conf.supybot.directories.data(), 'Dunno.db')
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load Dunno')
+    conf.registerPlugin('Dunno', True)
 
 class Dunno(callbacks.Privmsg):
     priority = 100

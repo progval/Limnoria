@@ -52,13 +52,13 @@ import privmsgs
 import callbacks
 
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load Ebay')
+    conf.registerPlugin('Ebay', True)
     print 'The Ebay plugin has the functionality to watch for URLs'
     print 'that match a specific pattern (we call this a snarfer). When'
     print 'supybot sees such a URL, he will parse the web page for'

@@ -51,15 +51,15 @@ import privmsgs
 import registry
 import callbacks
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     from questions import expect, anything, something, yn
-    onStart.append('load RSS')
+    conf.registerPlugin('RSS', True)
     prompt = 'Would you like to add an RSS feed?'
     while yn(prompt) == 'y':
         prompt = 'Would you like to add another RSS feed?'
         name = something('What\'s the name of the website?')
         url = something('What\'s the URL of the RSS feed?')
-        onStart.append('rss add %s %s' % (name, url))
+        registerFeed(name, url)
 
 conf.registerPlugin('RSS')
 conf.registerChannelValue(conf.supybot.plugins.RSS, 'bold', registry.Boolean(

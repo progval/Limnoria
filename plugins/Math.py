@@ -51,13 +51,13 @@ import callbacks
 import convertcore 
 
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load Math')
+    conf.registerPlugin('Math', True)
 
 class Math(callbacks.Privmsg):
     ###

@@ -90,9 +90,9 @@ class BugzillaError(Exception):
     pass
 
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     from questions import expect, anything, yn
-    onStart.append('load Bugzilla')
+    conf.registerPlugin('Bugzilla', True)
     print 'The Bugzilla plugin has the functionality to watch for URLs'
     print 'that match a specific pattern (we call this a snarfer). When'
     print 'supybot sees such a URL, he will parse the web page for'

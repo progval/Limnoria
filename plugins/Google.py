@@ -59,7 +59,7 @@ import privmsgs
 import callbacks
 import structures
 
-def configure(onStart, afterConnect, advanced):
+def configure(onStart):
     from questions import expect, anything, something, yn
     print 'To use Google\'t Web Services, you must have a license key.'
     if yn('Do you have a license key?') == 'y':
@@ -72,7 +72,7 @@ def configure(onStart, afterConnect, advanced):
                 key = ''
                 break
         if key:
-            onStart.append('load Google')
+            conf.registerPlugin('Google', True)
             conf.supybot.plugins.Google.licenseKey.setValue(key)
         print 'The Google plugin has the functionality to watch for URLs'
         print 'that match a specific pattern (we call this a snarfer).'
@@ -88,10 +88,10 @@ def configure(onStart, afterConnect, advanced):
         if yn('Do you want the Google search snarfer enabled by default?') \
             == 'y':
             conf.supybot.plugins.Google.searchSnarfer.setValue(True)
-        if 'load Alias' not in onStart:
+        if not conf.supybot.plugins.Alias():
             print 'Google depends on the Alias module for some extra commands.'
             if yn('Would you like to load the Alias module now?') == 'y':
-                onStart.append('load Alias')
+                conf.registerPlugin('Alias', True)
             else:
                 print 'You can still use the Google module, but you won\'t ' \
                       'have these extra commands enabled.'
