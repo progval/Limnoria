@@ -243,6 +243,33 @@ class IrcUserTestCase(IrcdbTestCase):
         self.failUnless(u.checkPassword('foobar'))
         self.failIf(u.checkPassword('somethingelse'))
 
+    def testTimeoutAuth(self):
+        orig = conf.supybot.databases.users.timeoutIdentification()
+        try:
+            conf.supybot.databases.users.timeoutIdentification.setValue(2)
+            u = ircdb.IrcUser()
+            u.addAuth('foo!bar@baz')
+            self.failUnless(u.checkHostmask('foo!bar@baz'))
+            time.sleep(2.1)
+            self.failIf(u.checkHostmask('foo!bar@baz'))
+        finally:
+            conf.supybot.databases.users.timeoutIdentification.setValue(orig)
+            
+    def testMultipleAuth(self):
+        orig = conf.supybot.databases.users.timeoutIdentification()
+        try:
+            conf.supybot.databases.users.timeoutIdentification.setValue(2)
+            u = ircdb.IrcUser()
+            u.addAuth('foo!bar@baz')
+            self.failUnless(u.checkHostmask('foo!bar@baz'))
+            u.addAuth('boo!far@fizz')
+            self.failUnless(u.checkHostmask('boo!far@fizz'))
+            time.sleep(2.1)
+            self.failIf(u.checkHostmask('foo!bar@baz'))
+            self.failIf(u.checkHostmask('boo!far@fizz'))
+        finally:
+            conf.supybot.databases.users.timeoutIdentification.setValue(orig)
+
     def testHashedPassword(self):
         u = ircdb.IrcUser()
         u.setPassword('foobar', hashed=True)
@@ -262,9 +289,9 @@ class IrcUserTestCase(IrcdbTestCase):
     def testAuth(self):
         prefix = 'foo!bar@baz'
         u = ircdb.IrcUser()
-        u.setAuth(prefix)
+        u.addAuth(prefix)
         self.failUnless(u.auth)
-        u.unsetAuth()
+        u.clearAuth()
         self.failIf(u.auth)
 
     def testIgnore(self):
@@ -525,7 +552,7 @@ class CheckCapabilityTestCase(IrcdbTestCase):
         self.failUnless(self.checkCapability(self.securefoo, self.cap))
         id = self.users.getUserId(self.securefoo)
         u = self.users.getUser(id)
-        u.setAuth(self.securefoo)
+        u.addAuth(self.securefoo)
         self.users.setUser(id, u)
         try:
             originalConfDefaultAllow = conf.supybot.capabilities.default()

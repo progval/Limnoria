@@ -196,7 +196,7 @@ class IrcUser(object):
     """This class holds the capabilities and authentications for a user."""
     def __init__(self, ignore=False, password='', name='',
                  capabilities=(), hostmasks=None, secure=False, hashed=False):
-        self.auth = None # The (time, hostmask) a user authenticated under
+        self.auth = [] # The (time, hostmask) list of auth crap.
         self.name = name # The name of the user.
         self.ignore = ignore # A boolean deciding if the person is ignored.
         self.secure = secure # A boolean describing if hostmasks *must* match.
@@ -211,11 +211,10 @@ class IrcUser(object):
             self.hostmasks = hostmasks
 
     def __repr__(self):
-        return '%s(ignore=%s, password=%r, name=%r, hashed=%r, ' \
-               'capabilities=%r, hostmasks=%r, secure=%r)\n' % \
-               (self.__class__.__name__,
-                self.ignore, self.password, self.name, self.hashed,
-                self.capabilities, self.hostmasks, self.secure)
+        return '%s(ignore=%s, password="", name=%r, hashed=%r, ' \
+               'capabilities=%r, hostmasks=[], secure=%r)\n' % \
+               (self.__class__.__name__, self.ignore, self.name, self.hashed,
+                self.capabilities, self.secure)
 
     def addCapability(self, capability):
         """Gives the user the given capability."""
@@ -257,12 +256,17 @@ class IrcUser(object):
         hostmasks.
         """
         if useAuth:
-            if self.auth:
-                i = conf.supybot.databases.users.timeoutIdentification()
-                if i > 0 and self.auth[0] < time.time() - i:
-                    self.unsetAuth()
-                elif hostmask == self.auth[1]:
-                    return True
+            timeout = conf.supybot.databases.users.timeoutIdentification()
+            removals = []
+            try:
+                for (when, authmask) in self.auth:
+                    if timeout and when+timeout < time.time():
+                        removals.append((when, authmask))
+                    elif hostmask == authmask:
+                        return True
+            finally:
+                while removals:
+                    self.auth.remove(removals.pop())
         for pat in self.hostmasks:
             if ircutils.hostmaskPatternEqual(pat, hostmask):
                 return pat
@@ -280,18 +284,18 @@ class IrcUser(object):
         """Removes a hostmask from the user's hostmasks."""
         self.hostmasks = [s for s in self.hostmasks if s != hostmask]
 
-    def setAuth(self, hostmask):
+    def addAuth(self, hostmask):
         """Sets a user's authenticated hostmask.  This times out in 1 hour."""
         if self.checkHostmask(hostmask, useAuth=False) or not self.secure:
-            self.auth = (time.time(), hostmask)
+            self.auth.append((time.time(), hostmask))
         else:
             raise ValueError, 'secure flag set, unmatched hostmask'
 
-    def unsetAuth(self):
+    def clearAuth(self):
         """Unsets a user's authenticated hostmask."""
-        if self.auth is not None:
-            users.invalidateCache(hostmask=self.auth[1])
-            self.auth = None
+        for (when, hostmask) in self.auth:
+            users.invalidateCache(hostmask=hostmask)
+        self.auth = []
 
     def preserve(self, fd, indent=''):
         def write(s):
