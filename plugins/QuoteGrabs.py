@@ -45,7 +45,10 @@ import os
 import time
 import random
 
+import registry         # goes before conf! yell at jamessan, not me
+
 import conf
+import ircdb
 import utils
 import ircmsgs
 import plugins
@@ -72,14 +75,13 @@ grabTime = 864000 # 10 days
 minRandomLength = 8
 minRandomWords = 3
 
+conf.registerPlugin('QuoteGrabs')
+conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs, 'randomGrabber',
+    registry.Boolean(False, """Determines whether the bot will randomly grab
+    possibly-suitable quotes for someone."""))
+
 class QuoteGrabs(plugins.ChannelDBHandler,
-                 configurable.Mixin,
                  callbacks.Privmsg):
-    configurables = configurable.Dictionary(
-        [('random-grabber', configurable.BoolType, False,
-          """Determines whether the bot will randomly grab possibly-suitable
-          quotes for someone."""),]
-    )
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
@@ -107,7 +109,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
-            if self.configurables.get('random-grabber', channel):
+            if conf.supybot.plugins.QuoteGrabs.randomGrabber():
                 if len(msg.args[1]) > minRandomLength and \
                    len(msg.args[1].split()) > minRandomWords:
                     db = self.getDb(channel)
@@ -245,20 +247,25 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         try:
             id = int(id)
         except ValueError:
-            irc.error('%r does not appear to be a valid quotegrab id'%id)
+            irc.error('%r does not appear to be a valid quotegrab id' % id)
             return
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT quote, hostmask, added_at
+        cursor.execute("""SELECT quote, hostmask, added_at, added_by
                           FROM quotegrabs WHERE id = %s""", id)
         if cursor.rowcount == 0:
             irc.error('No quotegrab for id %r' % id)
             return
-        quote, hostmask, timestamp = cursor.fetchone()
+        quote, hostmask, timestamp, grabber_mask = cursor.fetchone()
         time_str = time.strftime(conf.supybot.humanTimestampFormat(),
                                  time.localtime(float(timestamp)))
-        irc.reply('%s (Said by: %s on %s)' % (quote, hostmask, time_str))
+        try:
+            grabber = ircdb.users.getUser(grabber_mask).name
+        except:
+            grabber = grabber_mask       
+        irc.reply('%s (Said by: %s; grabbed by %s on %s)' % \
+                  (quote, hostmask, grabber, time_str))
 
 
 Class = QuoteGrabs
