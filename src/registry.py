@@ -327,16 +327,14 @@ class Value(Group):
 class Boolean(Value):
     """Value must be either True or False (or On or Off)."""
     def set(self, s):
-        s = s.strip().lower()
-        if s in ('true', 'on', 'enable', 'enabled'):
-            value = True
-        elif s in ('false', 'off', 'disable', 'disabled'):
-            value = False
-        elif s == 'toggle':
-            value = not self.value
-        else:
-            self.error()
-        self.setValue(value)
+        try:
+            v = utils.toBool(s)
+        except ValueError:
+            if s.strip().lower() == 'toggle':
+                v = not self.value
+            else:
+                self.error()
+        self.setValue(v)
 
     def setValue(self, v):
         super(Boolean, self).setValue(bool(v))

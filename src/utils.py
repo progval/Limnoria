@@ -807,21 +807,15 @@ def callTracer(fd=None, basename=True):
     return tracer
 
 
-# These are used by Owner and Misc for their callBefore/callAfter attributes.
-class Everything(object):
-    def __contains__(self, x):
+def toBool(s):
+    s = s.strip().lower()
+    if s in ('true', 'on', 'enable', 'enabled'):
         return True
-
-    def __iter__(self):
-        return iter([])
-
-class Nothing(object):
-    def __contains__(self, x):
+    elif s in ('false', 'off', 'disable', 'disabled'):
         return False
+    else:
+        raise ValueError, 'Invalid string for toBool: %r' % s
     
-    def __iter__(self):
-        return iter([])
-
 if __name__ == '__main__':
     import doctest
     doctest.testmod(sys.modules['__main__'])
