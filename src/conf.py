@@ -119,9 +119,9 @@ telnetPort = 31337
 asyncorePoll = 1
 
 ###
-# minHistory: Minimum number of messages kept in an Irc object's state.
+# maxHistory: Maximum number of messages kept in an Irc object's state.
 ###
-minHistory = 100
+maxHistory = 100
 
 ###
 # pingInterval: Number of seconds between PINGs to the server.
