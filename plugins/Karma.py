@@ -44,10 +44,10 @@ from itertools import imap
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -276,7 +276,7 @@ class Karma(callbacks.Privmsg):
                 if thing[-2:] in ('++', '--'):
                     self._doKarma(irc, channel, thing)
 
-    def karma(self, irc, msg, args):
+    def karma(self, irc, msg, args, channel, things):
         """[<channel>] [<thing> [<thing> ...]]
 
         Returns the karma of <text>.  If <thing> is not given, returns the top
@@ -285,9 +285,8 @@ class Karma(callbacks.Privmsg):
         total karma of each of the the things. <channel> is only necessary if
         the message isn't sent on the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        if len(args) == 1:
-            name = args[0]
+        if len(things) == 1:
+            name = things[0]
             t = self.db.get(channel, name)
             if t is None:
                 irc.reply('%s has neutral karma.' % name)
@@ -302,8 +301,8 @@ class Karma(callbacks.Privmsg):
                         (utils.quoted(name), utils.nItems('time', added),
                          utils.nItems('time', subtracted), total)
                 irc.reply(s)
-        elif len(args) > 1:
-            (L, neutrals) = self.db.gets(channel, args)
+        elif len(things) > 1:
+            (L, neutrals) = self.db.gets(channel, things)
             if L:
                 s = utils.commaAndify(['%s: %s' % t for t in L])
                 if neutrals:
@@ -334,38 +333,34 @@ class Karma(callbacks.Privmsg):
             s = 'Highest karma: %s.  Lowest karma: %s.%s' % \
                 (utils.commaAndify(highest), utils.commaAndify(lowest), rankS)
             irc.reply(s)
+    karma = wrap(karma, ['channel', many('something')])
 
     _mostAbbrev = utils.abbrev(['increased', 'decreased', 'active'])
-    def most(self, irc, msg, args):
+    def most(self, irc, msg, args, channel, kind):
         """[<channel>] {increased,decreased,active}
 
         Returns the most increased, the most decreased, or the most active
         (the sum of increased and decreased) karma things.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        kind = privmsgs.getArgs(args)
-        try:
-            kind = self._mostAbbrev[kind]
-            L = self.db.most(channel, kind,
-                             self.registryValue('mostDisplay', channel))
-            if L:
-                L = ['%s: %s' % (utils.quoted(name), i) for (name, i) in L]
-                irc.reply(utils.commaAndify(L))
-            else:
-                irc.error('I have no karma for this channel.')
-        except (KeyError, ValueError):
-            raise callbacks.ArgumentError
+        L = self.db.most(channel, kind,
+                         self.registryValue('mostDisplay', channel))
+        if L:
+            L = ['%s: %s' % (utils.quoted(name), i) for (name, i) in L]
+            irc.reply(utils.commaAndify(L))
+        else:
+            irc.error('I have no karma for this channel.')
+    most = wrap(most, ['channel',
+                       ('literal', ['increased', 'decreased', 'active'])])
 
-    def clear(self, irc, msg, args, channel):
+    def clear(self, irc, msg, args, channel, name):
         """[<channel>] <name>
 
         Resets the karma of <name> to 0.
         """
-        name = privmsgs.getArgs(args)
         self.db.clear(channel, name)
         irc.replySuccess()
-    clear = privmsgs.checkChannelCapability(clear, 'op')
+    clear = wrap(clear, [('checkChannelCapability', 'op'), 'text'])
 
     def getName(self, nick, msg, match):
         addressed = callbacks.addressed(nick, msg)
