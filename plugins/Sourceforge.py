@@ -230,8 +230,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 linktype = linktype[:-1]
             irc.reply(msg, '%s #%s: %s' % (linktype, num, desc))
         except AttributeError, e:
-            irc.queueMsg(callbacks.reply(msg,
-            'That doesn\'t appear to be a proper Sourceforge bug/rfe.'))
+            irc.error(msg, 'That doesn\'t appear to be a proper Sourceforge '\
+                'Tracker page.')
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 

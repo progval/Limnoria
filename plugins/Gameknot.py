@@ -192,8 +192,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 (gameTitle, wName, wStats, bName, bStats, toMove)
             irc.reply(msg, s, prefixName=False)
         except ValueError:
-            irc.queueMsg(callbacks.reply(msg,
-              'That doesn\'t appear to be a proper Gameknot game.'))
+            irc.error(msg,'That doesn\'t appear to be a proper Gameknot game.')
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 
