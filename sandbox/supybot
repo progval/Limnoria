@@ -1,0 +1,56 @@
+#! /bin/sh
+#
+# startbot      /etc/init.d/ script for running an irc bot.
+#
+#               This is untested and not recommended for use yet!
+#               See the supybot documentation.
+#
+# Author:       Grant Bowman <grantbow@grantbow.com>
+#
+# Version:      $Id$
+#               @(#)skeleton  1.9.4  21-Mar-2004  miquels@cistron.nl
+#
+
+set -e
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/bin/supybot
+NAME=supybot
+DESC="irc bot"
+
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+CONFFILE=/etc/$NAME.conf
+
+# Gracefully exit if the package has been removed.
+test -x $DAEMON || exit 0
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: $NAME"
+	start-stop-daemon --start --quiet --pidfile $PIDFILE \
+		--exec $DAEMON $CONFFILE
+	echo "."
+	;;
+  stop)
+	echo -n "Stopping $DESC: $NAME"
+	start-stop-daemon --stop --quiet --pidfile $PIDFILE \
+		--exec $DAEMON $CONFFILE
+	echo "."
+	;;
+  restart|force-reload)
+	echo -n "Restarting $DESC: $NAME"
+	start-stop-daemon --stop --quiet --oknodo --pidfile \
+		$PIDFILE --exec $DAEMON $CONFFILE
+	sleep 1
+	start-stop-daemon --start --quiet --pidfile \
+		$PIDFILE --exec $DAEMON $CONFFILE
+	echo "."
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
