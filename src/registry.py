@@ -113,6 +113,9 @@ def split(name):
     # XXX: This should eventually handle escapes.
     return name.split('.')
 
+def join(names):
+    return '.'.join(names)
+
 class Group(object):
     def __init__(self, supplyDefault=False):
         self.name = 'unset'
@@ -168,7 +171,7 @@ class Group(object):
         if self.supplyDefault:
             for (k, v) in _cache.iteritems():
                 if k.startswith(self.name):
-                    (_, group) = rsplit(k, '.', 1)
+                    group = split(k)[-1]
                     try:
                         self.__makeChild(group, v)
                     except InvalidRegistryValue:
@@ -183,7 +186,7 @@ class Group(object):
         if name not in self.children: # XXX Is this right?
             self.children[name] = node
             self.added.append(name)
-            fullname = '%s.%s' % (self.name, name)
+            fullname = join([self.name, name])
             node.setName(fullname)
         return node
 
@@ -210,7 +213,7 @@ class Group(object):
             if getChildren:
                 L.extend(node.getValues(getChildren, fullNames))
         if not fullNames:
-            L = [(rsplit(s, '.', 1)[1], node) for (s, node) in L]
+            L = [(split(s)[-1], node) for (s, node) in L]
         return L
 
 
