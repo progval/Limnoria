@@ -53,12 +53,16 @@ def replyWhenNotCommand(irc, msg, notCommands):
     apparent command actually isn't a command.  Replace it with something that
     suits your purposes more, if you want.
     """
-    if len(notCommands) == 1:
-        s = '%s is not a command.' % notCommands[0]
-    else:
-        s = '%s are not commands' % \
-            utils.commaAndify(notCommands)
-    irc.queueMsg(callbacks.reply(msg, s))
+    def isCtcpCommand(s):
+        return s.startswith('\x01')
+    if not any(isCtcpCommand, notCommands):
+        notCommands = map(repr, notCommands)
+        if len(notCommands) == 1:
+            s = '%s is not a command.' % notCommands[0]
+        else:
+            s = '%s are not commands' % \
+                utils.commaAndify(notCommands)
+        irc.reply(msg, s)
     
 
 class MiscCommands(callbacks.Privmsg):
@@ -86,7 +90,7 @@ class MiscCommands(callbacks.Privmsg):
                     command = callbacks.canonicalName(command)
                     cbs = callbacks.findCallbackForCommand(irc, command)
                     if not cbs:
-                        notCommands.append(repr(command))
+                        notCommands.append(command)
                     elif len(cbs) > 1:
                         ambiguousCommands[command] = [cb.name() for cb in cbs]
                 if notCommands:
