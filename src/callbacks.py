@@ -435,16 +435,18 @@ class RichReplyMethods(object):
         if conf.supybot.reply.oneToOne():
             return self.reply(prefixer(joiner(L)), **kwargs)
         else:
+            msg = None
             first = True
             for s in L:
                 if onlyPrefixFirst:
                     if first:
                         first = False
-                        return self.reply(prefixer(s), **kwargs)
+                        msg = self.reply(prefixer(s), **kwargs)
                     else:
-                        return self.reply(s, **kwargs)
+                        msg = self.reply(s, **kwargs)
                 else:
-                    return self.reply(prefixer(s), **kwargs)
+                    msg = self.reply(prefixer(s), **kwargs)
+            return msg
 
     def noReply(self):
         self.msg.tag('repliedTo')
