@@ -25,6 +25,9 @@ wherever we can.  And by all means, if you find anything hard to
 understand or think you know of a better way to do something, *please*
 post it on Sourceforge.net so we can improve the bot!
 
+If you want, try out the included default botscripts.  Just be sure to
+actually add an owner user for yourself with supybot-adduser.  (An
+"owner user" is simply one with the owner capability).
 
 WINDOWS USERS:
 --------------
