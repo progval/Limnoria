@@ -1,3 +1,11 @@
+	* Added Math.icalc, a new command for doing integer arithmetic.
+	It requires...
+	
+	* Added a "trusted" capability that defaults to off (-trusted) and
+	is required for Utilities.re (with which it's possible to DoS the
+	bot) and for the new Math.icalc (with which it is trivially
+	possible to DoS the bot).
+	
 	* Added the Fun.ping command, because MozBot has it.
 	
 	* Added Note.unsend command, to allow users to "unsend" notes
