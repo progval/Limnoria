@@ -33,8 +33,6 @@
 Data structures for Python.
 """
 
-## from __future__ import generators
-
 __revision__ = "$Id$"
 
 import supybot.fix as fix
@@ -42,6 +40,7 @@ import supybot.fix as fix
 import types
 import pprint
 import string
+import threading
 from itertools import imap
 
 class RingBuffer(object):
@@ -153,10 +152,7 @@ class RingBuffer(object):
                 self.L[idx] = elt
 
     def __repr__(self):
-        if self.full:
-            return 'RingBuffer(%r, %r)' % (self.maxSize, list(self))
-        else:
-            return 'RingBuffer(%r, %r)' % (self.maxSize, list(self))
+        return 'RingBuffer(%r, %r)' % (self.maxSize, list(self))
 
     def __getstate__(self):
         return (self.maxSize, self.full, self.i, self.L)
@@ -353,30 +349,29 @@ class TwoWayDictionary(dict):
         dict.__delitem__(self, value)
 
 
-class PersistentDictionary(dict):
-    _trans = string.maketrans('\r\n', '  ')
-    _locals = locals
-    _globals = globals
-    def __init__(self, filename, globals=None, locals=None):
-        mylocals = locals
-        myglobals = globals
-        if mylocals is None:
-            mylocals = self._locals()
-        if myglobals is None:
-            myglobals = self._globals()
-        self.filename = filename
-        try:
-            fd = file(filename, 'r')
-            s = fd.read()
-            fd.close()
-            s.translate(self._trans)
-            super(self.__class__, self).__init__(eval(s, myglobals, mylocals))
-        except IOError:
-            pass
+class WorkQueue(object):
+    def __init__(self, q=None, n=1):
+        if q is None:
+            q = Queue.Queue()
+        self.q = q
+        self.numberOfThreads = n
+        self.threads = []
+        for _ in xrange(n):
+            t = threading.Thread(target=self.target)
+            self.threads.append(t)
+            t.start()
+        
+    def target(self):
+        while 1:
+            f = self.q.get()
+            if f is None:
+                self.q.put(None)
+                break
+            else:
+                f()
 
-    def close(self):
-        fd = file(self.filename, 'w')
-        fd.write(pprint.pformat(self))
-        fd.close()
+    def enqueue(self, f):
+        self.q.put(f)
 
-    flush = close
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -576,30 +576,5 @@ class TwoWayDictionaryTestCase(SupyTestCase):
         self.failIf('foo' in d)
 
 
-class PersistentDictionaryTestCase(SupyTestCase):
-    def test(self):
-        d = PersistentDictionary('test.dict')
-        d['foo'] = 'bar'
-        d[1] = 2
-        d.close()
-        d2 = PersistentDictionary('test.dict')
-        self.failUnless('foo' in d)
-        self.assertEqual(d['foo'], 'bar')
-        self.failUnless(1 in d)
-        self.assertEqual(d[1], 2)
-        self.failUnless('foo' in d2)
-        self.assertEqual(d2['foo'], 'bar')
-        self.failUnless(1 in d2)
-        self.assertEqual(d2[1], 2)
-
-    def testFlush(self):
-        d = PersistentDictionary('test.dict')
-        d[1] = 2
-        d.flush()
-        d2 = PersistentDictionary('test.dict')
-        self.failUnless(1 in d2)
-        self.assertEqual(d2[1], 2)
-
-
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

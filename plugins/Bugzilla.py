@@ -46,13 +46,13 @@ import xml.dom.minidom as minidom
 from itertools import imap, ifilter
 from htmlentitydefs import entitydefs as entities
 
-import supybot.registry as registry
 
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 import supybot.structures as structures
@@ -68,33 +68,16 @@ priorityKeys = ['p1', 'p2', 'p3', 'p4', 'p5', 'Low', 'Normal', 'High',
 severityKeys = ['enhancement', 'trivial', 'minor', 'normal', 'major',
                 'critical', 'blocker']
 
-dbfilename = os.path.join(conf.supybot.directories.data(), 'Bugzilla.db')
-
-def makeDb(filename):
-    if os.path.exists(filename):
-        d = structures.PersistentDictionary(filename)
-    else:
-        d = structures.PersistentDictionary(filename)
-        d['gcc'] = ['http://gcc.gnu.org/bugzilla', 'GCC']
-        d['rh'] = ['http://bugzilla.redhat.com/bugzilla', 'Red Hat']
-        d['gnome'] = ['http://bugzilla.gnome.org/bugzilla', 'Gnome']
-        d['mozilla'] = ['http://bugzilla.mozilla.org', 'Mozilla']
-        d['ximian'] = ['http://bugzilla.ximian.com/bugzilla', 'Ximian Gnome']
-        d.flush()
-    return d
-
-
 class BugzillaError(Exception):
     """A bugzilla error"""
     pass
-
 
 def configure(advanced):
     from supybot.questions import output, expect, anything, yn
     conf.registerPlugin('Bugzilla', True)
     output("""The Bugzilla plugin has the functionality to watch for URLs
               that match a specific pattern (we call this a snarfer). When
-              supybot sees such a URL, he will parse the web page for
+              a supybot sees such a URL, it will parse the web page for
               information and reply with the results.""")
     if yn('Do you want this bug snarfer enabled by default?', default=False):
         conf.supybot.plugins.Bugzilla.bugSnarfer.setValue(True)
@@ -111,6 +94,24 @@ conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'replyNoBugzilla',
     to use when notifying the user that there is no information about that
     bugzilla site."""))
 
+class Bugzillae(registry.SpaceSeparatedListOfStrings):
+    List = ircutils.IrcSet
+    
+conf.registerGlobalValue(conf.supybot.plugins.Bugzilla, 'bugzillae',
+    Bugzillae([], """Determines what bugzillas will be added to the bot when it
+    starts."""))
+
+def registerBugzilla(name, url='', description=''):
+    conf.supybot.plugins.Bugzilla.bugzillae().add(name)
+    group = conf.registerGroup(conf.supybot.plugins.Bugzilla.bugzillae, name)
+    URL = conf.registerGlobalValue(group, 'url', registry.String(url, ''))
+    DESC = conf.registerGlobalValue(group, 'description',
+                                    registry.String(description, ''))
+    if url:
+        URL.setValue(url)
+    if description:
+        DESC.setValue(description)
+
 class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
     """Show a link to a bug report with a brief description"""
     threaded = True
@@ -120,7 +121,11 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.entre = re.compile('&(\S*?);')
         # Schema: {name, [url, description]}
-        self.db = makeDb(dbfilename)
+        self.db = ircutils.IrcDict()
+        for name in self.registryValue('bugzillae'):
+            registerBugzilla(name)
+            group = self.registryValue('bugzillae.%s' % name, value=False)
+            self.db[name] = [group.url(), group.description()]
         self.shorthand = utils.abbrev(self.db.keys())
 
     def keywords2query(self, keywords):
@@ -139,9 +144,6 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         query.append('ctype=csv')
         return query
 
-    def die(self):
-        self.db.close()
-
     def add(self, irc, msg, args):
         """<name> <url> <description>
 
@@ -155,6 +157,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         if url[-1] == '/':
             url = url[:-1]
         self.db[name] = [url, description]
+        registerBugzilla(name, url, description)
         self.shorthand = utils.abbrev(self.db.keys())
         irc.replySuccess()
 
@@ -168,6 +171,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         try:
             name = self.shorthand[name]
             del self.db[name]
+            self.registryValue('bugzillae').remove(name)
             self.shorthand = utils.abbrev(self.db.keys())
             irc.replySuccess()
         except KeyError:

@@ -35,6 +35,7 @@ if network:
     class BugzillaTest(PluginTestCase, PluginDocumentation):
         plugins = ('Bugzilla',)
         def testBug(self):
+            self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
             self.assertNotError('bug gcc 5')
 
         def testAddRemove(self):
@@ -44,10 +45,12 @@ if network:
             self.assertError('bug xiph 413')
 
         def testSearch(self):
+            self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
             self.assertNotError('search gcc alpha')
             self.assertNotError('search --keywords=fixed gcc alpha')
 
         def testConfigBugzillaSnarfer(self):
+            self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
             conf.supybot.plugins.bugzilla.bugSnarfer.setValue(False)
             self.assertNoResponse(
                             'http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')

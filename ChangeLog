@@ -1,3 +1,6 @@
+	* Changed Bugzilla to use the registry, rather than a custom
+	flatfile database format.
+	
 	* Added the KeepAlive plugin, to send useless keepalive messages
 	to someone every some period.  It's mostly just because we
 	noticed that MozBot had one, and we couldn't allow ourselves to
