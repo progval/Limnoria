@@ -97,8 +97,9 @@ class Schedule(drivers.IrcDriver):
         #debug.printf(`(time.time(), self.schedule)`)
         while self.schedule and self.schedule[0][0] < time.time():
             (t, name) = heapq.heappop(self.schedule)
-            self.events[name]()
+            f = self.events[name]
             del self.events[name]
+            f()
 
 try:
     ignore(schedule)
