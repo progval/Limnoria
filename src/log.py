@@ -52,6 +52,12 @@ import supybot.ircutils as ircutils
 
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
 
+###
+# This is for testing, of course.  Mostly is just disables the firewall code
+# so exceptions can propagate.
+###
+testing = False
+
 class Formatter(logging.Formatter):
     def formatTime(self, record, datefmt=None):
         return timestamp(record.created)
@@ -220,6 +226,8 @@ def firewall(f, errorHandler=None):
         try:
             return f(self, *args, **kwargs)
         except Exception, e:
+            if testing:
+                raise
             logException(self)
             if errorHandler is not None:
                 try:

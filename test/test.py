@@ -154,6 +154,7 @@ if __name__ == '__main__':
     if options.nonetwork:
         testsupport.network = False
 
+    log.testing = True
     world.testing = True
     names = [os.path.splitext(os.path.basename(name))[0] for name in args]
     names.sort()
