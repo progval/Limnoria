@@ -104,7 +104,7 @@ class Dict(callbacks.Privmsg):
 
         Returns a random valid dictionary.
         """
-        irc.reply(msg, random.sample(list(self.dictdbs), 1)[0])
+        irc.reply(msg, random.choice(list(self.dictdbs)))
 
     def dict(self, irc, msg, args):
         """[<dictionary>] <word>

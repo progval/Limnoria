@@ -125,9 +125,9 @@ class Babelfish(callbacks.Privmsg):
         is provided, will include English in the list of possible languages.
         """
         allowEnglish = privmsgs.getArgs(args, needed=0, optional=1)
-        language = random.sample(babelfish.available_languages, 1)[0]
+        language = random.choice(babelfish.available_languages)
         while not allowEnglish and language == 'English':
-            language = random.sample(babelfish.available_languages, 1)[0]
+            language = random.choice(babelfish.available_languages, 1)
         irc.reply(msg, language)
 
     

@@ -45,15 +45,11 @@ import new
 import md5
 import sha
 import time
-import math
-import cmath
-import getopt
 import socket
 import string
 import random
 import urllib
 import inspect
-import textwrap
 import telnetlib
 import threading
 import mimetypes
@@ -599,7 +595,7 @@ class FunCommands(callbacks.Privmsg):
 
         Asks the magic eightball a question.
         """
-        irc.reply(msg, random.sample(self._eightballs, 1)[0])
+        irc.reply(msg, random.choice(self._eightballs))
 
 
     _these = [str(s) for s in this.s.decode('rot13').splitlines() if s]
@@ -609,7 +605,7 @@ class FunCommands(callbacks.Privmsg):
 
         Returns one of the zen of Python statements.
         """
-        irc.reply(msg, random.sample(self._these, 1)[0])
+        irc.reply(msg, random.choice(self._these))
 
     def dns(self, irc, msg, args):
         """<host|ip>
