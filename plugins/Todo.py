@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2003, Daniel DiPaolo
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,18 +30,22 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+The Todo module allows registered users to keep their own personal list of
+tasks to do, with an optional priority for each.
 """
 
 import plugins
 
+import glob
 import time
 import getopt
+import string
 import os.path
 
 import sqlite
 
 import conf
+import debug
 import ircdb
 import utils
 import privmsgs
@@ -124,16 +128,14 @@ class Todo(callbacks.Privmsg):
                 irc.reply(msg, s)
         else:
             cursor = self.db.cursor()
-            cursor.execute("""SELECT id FROM todo WHERE userid = %s""", id)
+            cursor.execute("""SELECT id, task FROM todo
+                              WHERE userid = %s""", id)
             if cursor.rowcount == 0:
                 irc.reply(msg, 'You have no tasks in your todo list.')
-            else:
-                ids = []
-                for (id,) in cursor.fetchall():
-                    ids.append(str(id))
-                s = 'Task ids: %s' % ', '.join(ids)
-                irc.reply(msg, s)
                 return
+            s = ['#%s: %s' % (item[0], utils.ellipsisify(item[1], 50)) \
+                     for item in cursor.fetchall()]
+            irc.reply(msg, utils.commaAndify(s))
 
     def addtodo(self, irc, msg, args):
         """[--priority=<num>] <text>
@@ -156,9 +158,10 @@ class Todo(callbacks.Privmsg):
                 except ValueError, e:
                     irc.error(msg, 'Invalid priority: %s' % e)
                     return
+        text = privmsgs.getArgs(rest, needed=1)
         cursor = self.db.cursor()
         cursor.execute("""INSERT INTO todo VALUES (NULL, %s, %s, %s, %s)""",
-                       priority, int(time.time()), id, ' '.join(rest))
+                       priority, int(time.time()), id, text)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
@@ -183,6 +186,55 @@ class Todo(callbacks.Privmsg):
         cursor.execute("""DELETE FROM todo WHERE id = %s""", taskid)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
+
+    _sqlTrans = string.maketrans('*?', '%_')
+    def searchtodo(self, irc, msg, args):
+        """[--{regexp,exact}=<value>] [<glob>]
+
+        Searches the keyspace for tasks matching <glob>.  If --regexp is given,
+        it associated value is taken as a regexp and matched against the tasks;
+        if --exact is given, its associated value is taken as an exact string
+        to match against the task.
+        """
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+
+        (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
+        if not optlist and not rest:
+            raise callbacks.ArgumentError
+        criteria = ['userid = %s' % id]
+        formats = []
+        predicateName = 'p'
+        for (option, arg) in optlist:
+            if option == '--exact':
+                criteria.append('task LIKE %s')
+                formats.append('%' + arg + '%')
+            elif option == '--regexp':
+                criteria.append('%s(task)' % predicateName)
+                try:
+                    r = utils.perlReToPythonRe(arg)
+                except ValueError, e:
+                    irc.error(msg, 'Invalid regexp: %s' % e)
+                    return
+                def p(s, r=r):
+                    return int(bool(r.search(s)))
+                self.db.create_function(predicateName, 1, p)
+                predicateName += 'p'
+        for glob in rest:
+            criteria.append('task LIKE %s')
+            formats.append(glob.translate(self._sqlTrans))
+        cursor = self.db.cursor()
+        sql = """SELECT id, task FROM todo WHERE %s""" % ' AND '.join(criteria)
+        cursor.execute(sql, formats)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'No tasks matched that query.')
+        else:
+            tasks = ['#%s: %s' % (item[0], utils.ellipsisify(item[1], 50)) \
+                     for item in cursor.fetchall()]
+            irc.reply(msg, utils.commaAndify(tasks))
 
 Class = Todo
 
