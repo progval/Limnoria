@@ -153,12 +153,15 @@ class Group(object):
         class X(OriginalClass):
             """This class exists to differentiate those values that have
             been changed from their default from those that haven't."""
-            def set(self, *args):
-                self.__class__ = OriginalClass
-                self.set(*args)
             def setValue(self, *args):
+                comeBack = self._lastModified == 0
+                if not comeBack:
+                    print '***', 'Changing %s to its OriginalClass.'%self._name
+                    print '******', utils.stackTrace(compact=True)
                 self.__class__ = OriginalClass
                 self.setValue(*args)
+                if comeBack:
+                    self.__class__ = X
         self.X = X
 
     def __call__(self):
@@ -172,7 +175,7 @@ class Group(object):
         v = self.__class__(self._default, self.help)
         v.set(s)
         v.__class__ = self.X
-        #v._supplyDefault = False
+        v._lastModified = time.time()
         v.help = '' # Clear this so it doesn't print a bazillion times.
         self.register(attr, v)
         return v
@@ -217,11 +220,13 @@ class Group(object):
         if name in self._children:
             # It's already here, let's copy some stuff over.
             oldNode = self._children[name]
+            node._name = oldNode._name
             node._added = oldNode._added
             node._children = oldNode._children
             for v in node._children.values():
                 if v.__class__ is oldNode.X:
                     v.__class__ = node.X
+            node._lastModified = oldNode._lastModified
         self._children[name] = node
         if name not in self._added:
             self._added.append(name)
@@ -280,9 +285,12 @@ class Value(Group):
         raise InvalidRegistryValue, utils.normalizeWhitespace(s)
 
     def setName(self, *args):
+        # If we're getting our name for the first time, we should definitely
+        # look in the _cache for our value.
         if self._name == 'unset':
             self._lastModified = 0
         Group.setName(self, *args)
+        # Now we can feel safe setting our _lastModified to now.
         self._lastModified = time.time()
 
     def set(self, s):

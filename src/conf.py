@@ -35,6 +35,7 @@ import supybot.fix as fix
 
 import os
 import sys
+import time
 import socket
 import string
 
@@ -90,11 +91,13 @@ def registerGroup(Group, name, group=None):
 
 def registerGlobalValue(group, name, value):
     value.channelValue = False
+    #value._lastModified = time.time() # So reloads don't change the value.
     return group.register(name, value)
 
 def registerChannelValue(group, name, value):
     value._supplyDefault = True
     value.channelValue = True
+    #value._lastModified = time.time() # So reloads don't change the value.
     return group.register(name, value)
 
 def registerPlugin(name, currentValue=None, public=True):
