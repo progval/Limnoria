@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -120,8 +120,6 @@ except ImportError, e:
     sys.stderr.write(os.linesep*2)
     sys.exit(-1)
     
-    
-
 srcFiles = glob.glob(os.path.join('src', '*.py'))
 pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
 
