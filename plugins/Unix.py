@@ -100,18 +100,20 @@ class Unix(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         # Initialize a file descriptor for the spell module.
         cmdLine = getSpellBinary()
-        (self._spellRead, self._spellWrite, self._spellErr) = \
-            popen2.popen3(cmdLine + ' -a', 0)
+        (self._spellRead, self._spellWrite) = popen2.popen4(cmdLine + ' -a', 0)
         # Ignore the banner
         self._spellRead.readline()
 
-    def __del__(self):
-        # close up the filehandles
-        for h in (self._spellRead, self._spellWrite, self._spellErr):
+    def die(self):
+        # close the filehandles
+        for h in (self._spellRead, self._spellWrite):
                 h.close()
 
     def errno(self, irc, msg, args):
-        "<error number or code>"
+        """<error number or code>
+
+        Returns the number of an errno code, or the errno code of a number.
+        """
         s = privmsgs.getArgs(args)
         try:
             i = int(s)
@@ -128,12 +130,19 @@ class Unix(callbacks.Privmsg):
         irc.reply(msg, '%s (#%s): %s' % (name, i, os.strerror(i)))
             
     def progstats(self, irc, msg, args):
-        "takes no arguments"
+        """takes no arguments
+
+        Returns various unix-y information on the running supybot process.
+        """
         irc.reply(msg, progstats())
 
     _cryptre = re.compile(r'[./0-9A-Za-z]')
     def crypt(self, irc, msg, args):
-        "<password> [<salt>]"
+        """<password> [<salt>]
+
+        Returns the resulting of doing a crypt() on <password>  If <salt> is
+        not given, uses a random salt.
+        """
         def makeSalt():
             s = '\x00'
             while self._cryptre.sub('', s) != '':
@@ -145,10 +154,17 @@ class Unix(callbacks.Privmsg):
         irc.reply(msg, crypt.crypt(password, salt))
 
     def spell(self, irc, msg, args): 
-        "<word>"
+        """<word>
+
+        Returns the result of passing <word> to aspell/ispell.
+        """
         # We are only checking the first word
-        word = privmsgs.getArgs(args).split()[0]
-        self._spellWrite.write(word + '\n')
+        word = privmsgs.getArgs(args)
+        if ' ' in word:
+            irc.error(msg, 'Aspell/ispell can\'t handle spaces in words.')
+            return
+        self._spellWrite.write(word)
+        self._spellWrite.write('\n')
         line = self._spellRead.readline()
 
         # aspell puts extra whitespace, ignore it
@@ -157,17 +173,16 @@ class Unix(callbacks.Privmsg):
 
         # parse the output
         if line[0] in '*+':
-            resp = '\'%s\' may be spelled correctly.' % word
+            resp = '"%s" may be spelled correctly.' % word
         elif line[0] == '#':
-            resp = 'Could not find an alternate spelling for \'%s\'' % word
+            resp = 'Could not find an alternate spelling for "%s"' % word
         elif line[0] == '&':
             matches = line.split(':')[1].strip()
-            match_list = matches.split(',')
-            ircutils.shrinkList(match_list, ', ', 400)
-            resp = 'Possible spellings for \'%s\': %s' % \
-                (word, ','.join(match_list))
+            match_list = matches.split(', ')
+            s = ircutils.privmsgPayload(match_list, ', ', 400)
+            resp = 'Possible spellings for "%s": %s.' % (word, s)
         else:
-            resp = 'Something unexpected was seen in the *spell output.'
+            resp = 'Something unexpected was seen in the [ai]spell output.'
 
         irc.reply(msg, resp)
             
