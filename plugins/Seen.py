@@ -96,6 +96,9 @@ class SeenDB(plugins.ChannelUserDB):
                     continue
                 nicks.append(s)
         L = [[nick, self.seen(channel, nick)] for nick in nicks]
+        def negativeTime(x):
+            return -x[1][0]
+        utils.sortBy(negativeTime, L)
         return L
 
     def seen(self, channel, nickOrId):
