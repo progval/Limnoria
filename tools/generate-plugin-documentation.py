@@ -50,61 +50,88 @@ import callbacks
 commandDict = {}
 firstChars = {}
 
-def prepIndex():
-    directory = os.path.join('docs', 'plugins')
-    if not os.path.exists(directory):
-        os.mkdir(directory)
-    fd = file(os.path.join(directory, 'index.html'), 'w')
-    fd.write(textwrap.dedent("""
+def genHeader(title, meta=''):
+    return """
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
                           "http://www.w3.org/TR/html4/strict.dtd">
     <html lang="en-us">
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Supybot plugin documentation</title>
-    <link rel="stylesheet" type="text/css" href="supybot.css">
+    <title>%s</title>
+    <link rel="stylesheet" type="text/css" href="http://supybot.sourceforge.net/css/supybot.css">
+    %s
     <body><div>
-    <h2>Supybot Plugin Documentation Index</h2>
-    <strong>Plugin</strong>   (Command list)<br><br>
-    """))
+    """ % (title, meta)
+
+def genFooter():
+    return """
+    </div>
+    <div style="text-align: center"><br /><!-- Buttons -->
+      <a href="http://validator.w3.org/check/referer"><img
+          src="http://www.w3.org/Icons/valid-html401"
+          alt="Valid HTML 4.01!" height="31" width="88" /></a>
+
+      <a href="http://jigsaw.w3.org/css-validator/check/referer"><img
+         src="http://jigsaw.w3.org/css-validator/images/vcss" 
+         alt="Valid CSS!" /></a>
+
+      <a href="http://sourceforge.net"><img
+         src="http://sourceforge.net/sflogo.php?group_id=58965&amp;type=1"
+         width="88" height="31" alt="SourceForge.net Logo" /></a>
+    </div>
+    </body>
+    </html>
+    """
+
+def prepIndex():
+    directory = os.path.join('docs', 'plugins')
+    if not os.path.exists(directory):
+        os.mkdir(directory)
+    fd = file(os.path.join(directory, 'plugins.html'), 'w')
+    fd.write(textwrap.dedent("""
+        %s
+        <div class="maintitle">Supybot Plugin Documentation Index</div>
+        <br />
+        """ % genHeader('Supybot Plugin Documentation')))
     fd.close()
 
 def makePluginDocumentation(pluginWindow):
     global commandDict
     global firstChars
-    trClasses = { 'treven':'trodd', 'trodd':'treven' }
-    trClass = 'treven'
+    trClasses = { 'even':'odd', 'odd':'even' }
+    trClass = 'even'
     (pluginName, module, plugin) = pluginWindow[1]
     print 'Generating documentation for %s.py' % pluginName
     prev = pluginWindow[0][0] or 'index'
     next = pluginWindow[2][0] or 'index'
+    # can't use string.capitalize() because it lowercases every character
+    # except the first. must create our own capitalized names
+    cpluginName = '%s%s' % (pluginName[0].upper(), pluginName[1:])
+    cprev = '%s%s' % (prev[0].upper(), prev[1:])
+    cnext = '%s%s' % (next[0].upper(), next[1:])
     directory = os.path.join('docs', 'plugins')
     if not os.path.exists(directory):
         os.mkdir(directory)
-    id = file(os.path.join(directory, 'index.html'), 'a')
+    id = file(os.path.join(directory, 'plugins.html'), 'a')
     id.write(textwrap.dedent("""
     <strong><a href="%s.html">%s</a></strong> 
-    """ % (pluginName, pluginName.capitalize())))
+    """ % (pluginName, cpluginName)))
     fd = file(os.path.join(directory,'%s.html' % pluginName), 'w')
-    fd.write(textwrap.dedent("""
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-                          "http://www.w3.org/TR/html4/strict.dtd">
-    <html lang="en-us">
-    <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Documentation for the %s plugin for Supybot</title>
-    <link rel="stylesheet" type="text/css" href="supybot.css">
+    title = 'Documentation for the %s plugin for Supybot' % pluginName
+    meta = """
     <link rel="home" title="Plugin Documentation Index" href="index.html">
     <link rel="next" href="%s.html">
     <link rel="previous" href="%s.html">
-    <body><div>
-    <h2>%s</h2><br><br><table>
+    """ % (next, prev)
+    fd.write(textwrap.dedent("""
+    %s
+    <div class="plugintitle">%s</div><br /><table>
     <tr id="headers"><td>Command</td><td>Args</td><td>
     Detailed Help</td></tr>
-    """) % (pluginName, next, prev, cgi.escape(module.__doc__ or "")))
+    """) % (genHeader(title, meta), cgi.escape(module.__doc__ or "")))
     attrs = [x for x in dir(plugin) if plugin.isCommand(x) and not
              x.startswith('_')]
-    id.write('(%s)<br>\n' % ', '.join(attrs))
+    id.write('(%s)<br />\n' % ', '.join(attrs))
     for attr in attrs:
         if attr in commandDict:
             commandDict[attr].append(pluginName)
@@ -143,14 +170,13 @@ def makePluginDocumentation(pluginWindow):
         """) % cgi.escape(s))
     fd.write(textwrap.dedent("""
     </div>
-    <div style="text-align:center">
-    <br>
-    <a href="%s.html">&lt;- %s</a> | <a href="index.html">Index</a> | <a
-    href="%s.html">%s -&gt;</a>
-    </div>
-    </body>
-    </html>
-    """ % (prev, prev.capitalize(), next, next.capitalize())))
+    <div style="text-align: center;">
+    <br />
+    <a href="%s.html">&lt;- %s</a> | <a href="plugins.html">Plugin Index</a> |
+    <a href="../index.html">Home</a> | <a href="commands.html">Command Index
+    </a> | <a href="%s.html">%s -&gt;</a>
+    %s
+    """ % (prev, cprev, next, cnext, genFooter())))
     fd.close()
     id.close()
 
@@ -158,12 +184,8 @@ def finishIndex():
     directory = os.path.join('docs', 'plugins')
     if not os.path.exists(directory):
         os.mkdir(directory)
-    fd = file(os.path.join(directory, 'index.html'), 'a')
-    fd.write(textwrap.dedent("""
-    </div>
-    </body>
-    </html>
-    """))
+    fd = file(os.path.join(directory, 'plugins.html'), 'a')
+    fd.write(textwrap.dedent(genFooter()))
     fd.close()
 
 def makeCommandsIndex():
@@ -174,17 +196,12 @@ def makeCommandsIndex():
     if not os.path.exists(directory):
         os.mkdir(directory)
     fd = file(os.path.join(directory, 'commands.html'), 'w')
+    title = 'Supybot Commands Index'
     fd.write(textwrap.dedent("""
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-                          "http://www.w3.org/TR/html4/strict.dtd">
-    <html lang="en-us">
-    <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Supybot Commands Index</title>
-    <link rel="stylesheet" type="text/css" href="supybot.css">
-    <body><div>
-    <h2>Supybot Commands Index</h2>
-    """))
+    %s
+    <div class="maintitle">%s</div><br />
+    <div class="whitebox" style="text-align: center;">
+    """ % (genHeader(title), title)))
     commands = [c for c in commandDict.iterkeys()]
     commands.sort()
     for i in ascii_lowercase:
@@ -193,23 +210,23 @@ def makeCommandsIndex():
         else:
             fd.write('%s ' % i.capitalize())
     firstChars.clear()
-    fd.write('\n<br><br><strong>Command</strong>   (Plugins)<br>')
+    fd.write('</div>\n<br />')
     for command in commands:
         c = command[0]
         if c not in firstChars:
+            if firstChars:
+                fd.write('\n</div><br />')
+            fd.write('\n<div class="whitebox">')
             firstChars[c] = ''
-            fd.write('<h2 name="%s" id="%s" class="underline">%s</h2>\n' %
+            fd.write('<div name="%s" id="%s" class="letter">%s</div>\n' %
                      (c, c, c.capitalize()))
         plugins = commandDict[command]
         plugins.sort()
-        fd.write('<strong>%s</strong>   (%s)<br>\n' % (command,
+        fd.write('<strong>%s</strong>   (%s)<br />\n' % (command,
                  ', '.join(['<a href="%s.html#%s">%s</a>' % (p,command,p)
                             for p in plugins])))
-    fd.write(textwrap.dedent("""
-    </div>
-    </body>
-    </html>
-    """))
+    fd.write('\n</div>')
+    fd.write(textwrap.dedent(genFooter()))
     fd.close()
 
 def genPlugins():
