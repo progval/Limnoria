@@ -39,8 +39,12 @@ __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import supybot.plugins as plugins
 
+import time
+
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -84,7 +88,7 @@ class NickCapture(callbacks.Privmsg):
             now = time.time()
             if now - self.lastIson > self.registryValue('ison.period'):
                 self.lastIson = now
-                self._sendIson(nick)
+                self._sendIson(irc, nick)
                 
     def _sendIson(self, irc, nick):
         self.log.info('Checking if %s ISON %s.', nick, irc.network)
