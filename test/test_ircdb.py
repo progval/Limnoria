@@ -34,6 +34,7 @@ from test import *
 import os
 import unittest
 
+import conf
 import debug
 import ircdb
 import ircutils
@@ -90,10 +91,19 @@ class CapabilitySetTestCase(unittest.TestCase):
 
 
 class UserCapabilitySetTestCase(unittest.TestCase):
-    def test(self):
+    def testOwnerHasAll(self):
         d = ircdb.UserCapabilitySet(('owner',))
         self.failIf(d.check('!foo'))
         self.failUnless(d.check('foo'))
+
+    def testOwnerIsAlwaysPresent(self):
+        d = ircdb.UserCapabilitySet()
+        self.failUnless('owner' in d)
+        self.failUnless('!owner' in d)
+        self.failIf(d.check('owner'))
+        d.add('owner')
+        self.failUnless(d.check('owner'))
+
         
 
 class CapabilitySetTestCase(unittest.TestCase):
@@ -358,8 +368,10 @@ class CheckCapabilityTestCase(unittest.TestCase):
         self.failUnless(self.checkCapability(self.nothing, self.antichancap))
 
     def testNothing(self):
-        self.failIf(self.checkCapability(self.nothing, self.cap))
-        self.failIf(self.checkCapability(self.nothing, self.anticap))
+        self.assertEqual(self.checkCapability(self.nothing, self.cap),
+                         conf.defaultAllow)
+        self.assertEqual(self.checkCapability(self.nothing, self.anticap),
+                         not conf.defaultAllow)
 
     def testJustFoo(self):
         self.failUnless(self.checkCapability(self.justfoo, self.cap))
