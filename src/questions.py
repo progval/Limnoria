@@ -38,9 +38,11 @@ def expect(prompt, possibilities, recursed=False):
         print 'Sorry, that response was not an option.'
     if possibilities:
         prompt = '%s [%s]' % (originalPrompt, '/'.join(possibilities))
-    if len(prompt) > 70:
-        prompt = '%s [%s]' % (originalPrompt, '/ '.join(possibilities))
-    prompt = textwrap.fill(prompt, subsequent_indent=indent)
+        if len(prompt) > 70:
+            prompt = '%s [%s]' % (originalPrompt, '/ '.join(possibilities))
+            prompt = textwrap.fill(prompt, subsequent_indent=indent)
+    else:
+        prompt = textwrap.fill(prompt)
     prompt = prompt.replace('/ ', '/')
     prompt = prompt.strip() + ' '
     s = raw_input(prompt)
