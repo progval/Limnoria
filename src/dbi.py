@@ -192,8 +192,8 @@ class FlatfileMapping(MappingInterface):
 
     def add(self, s):
         line = self._joinLine(self.currentId, s)
+        fd = file(self.filename, 'r+')
         try:
-            fd = file(self.filename, 'r+')
             fd.seek(0, 2) # End.
             fd.write(line)
             return self.currentId
