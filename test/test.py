@@ -55,6 +55,7 @@ for filename in os.listdir(conf.dataDir):
 
 import world
 import irclib
+import drivers
 import ircmsgs
 import ircutils
 
@@ -124,6 +125,7 @@ class PluginTestCase(unittest.TestCase):
         fed = time.time()
         response = self.irc.takeMsg()
         while response is None and time.time() - fed < timeout:
+            drivers.run()
             response = self.irc.takeMsg()
         return response
 
