@@ -94,8 +94,10 @@ class Weather(callbacks.Privmsg):
     def _toCelsius(self, temp, unit):
         if unit == 'K':
             return temp - 273.15
-        else:
+        elif unit == 'F':
             return (temp - 32) * 5 /9
+        else:
+            return temp
 
     def _getTemp(self, temp, deg, unit, chan):
         assert unit == unit.upper()
