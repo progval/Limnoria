@@ -118,18 +118,18 @@ if sqlite is not None:
             _ = self.irc.takeMsg()
             _ = self.irc.takeMsg()
             self.assertNotError('addword lol')
-            self.assertResponse('wordstats lol', 'Top 1 \'lol\'er: foo: 1')
+            self.assertRegexp('wordstats lol', 'foo: 1')
             for i in range(5):
                 self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
                                                  prefix=userPrefix1))
-            self.assertResponse('wordstats lol', 'Top 2 \'lol\'ers: %s: 5 '
-                                                 'and foo: 2' % userNick1)
+            self.assertRegexp('wordstats lol',
+                              '2.*%s: 5.*foo: 2' % userNick1)
             for i in range(10):
                 self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
                                                  prefix=userPrefix2))
-            self.assertResponse('wordstats lol', 'Top 3 \'lol\'ers: %s: 10, '
-                                                 '%s: 5, and foo: 3' % (\
-                                                 userNick2, userNick1))
+            self.assertRegexp('wordstats lol',
+                              '3.*%s: 10.*%s: 5.*foo: 3' %
+                              (userNick2, userNick1))
 
         def testWordStatsUserWord(self):
             self.assertNotError('addword lol')
