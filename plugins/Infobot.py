@@ -224,8 +224,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 self.dunno(irc=irc, msg=msg)
         else:
             # XXX
-            if value.startswith('<or>'):
-                value = random.choice(value[4:].split('|'))
+            value = random.choice(value.split('|'))
             if value.startswith('<reply>'):
                 self.reply('%s' % value[7:].strip(), irc=irc, msg=msg)
             elif value.startswith('<action>'):
@@ -322,8 +321,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         isAre = isAre.lower()
         key = plugins.standardSubstitute(irc, msg, key)
         value = plugins.standardSubstitute(irc, msg, value)
-        if '|' in value:
-            value = '<or>%s' % value
         if isAre in ('was', 'is', 'am'):
             if self.db.hasIs(key):
                 if also:
