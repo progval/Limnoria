@@ -56,16 +56,15 @@ if __name__ == '__main__':
         cursor.execute("""SELECT actions, chars, frowns, joins, kicks, modes,
                                  msgs, parts, quits, smileys, topics, words
                           FROM channel_stats""")
-        fd.write('%s:%s' % (channel, ','.join(map(str, cursor.fetchone()))))
+        fd.write('%s,channelStats,%s' % \
+                 (channel, ','join(map(str, cursor.fetchone()))))
         fd.write(os.linesep)
         cursor.execute("""SELECT user_id, kicked, actions, chars, frowns,
                                  joins, kicks, modes, msgs, parts, quits,
                                  smileys, topics, words
                           FROM user_stats ORDER BY user_id""")
         for t in cursor.fetchall():
-            L = list(t)
-            id = L.pop(0)
-            fd.write('%s:%s:%s' % (id, channel, ','.join(map(str, L))))
+            fd.write('%s,%s' % (channel, ','.join(map(str, L))))
             fd.write(os.linesep)
     fd.close()
 
