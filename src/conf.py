@@ -50,7 +50,7 @@ _pluginsDir = os.path.join(installDir, 'plugins')
 #            arbitrary Python code.  This is specifically *not* a registry
 #            variable because it shouldn't be modifiable in the bot.
 ###
-allowEval = True
+allowEval = False
 
 
 supybot = registry.Group()
