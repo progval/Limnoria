@@ -804,6 +804,46 @@ class FunCommands(callbacks.Privmsg):
                 irc.error(msg, 'Host not found.')
     dns = privmsgs.thread(dns)
 
+    _domains = sets.Set(['com', 'net', 'edu'])
+    def whois(self, irc, msg, args):
+        """<domain>
+
+        Returns WHOIS information on the registration of <domain>.  <domain>
+        must be in tlds .com, .net, or .edu.
+        """
+        domain = privmsgs.getArgs(args)
+        if '.' not in domain or domain.split('.')[-1] not in self._domains:
+            irc.error(msg, '<domain> must be in .com, .net, or .edu.')
+            return
+        t = telnetlib.Telnet('rs.internic.net', 43)
+        t.write(domain)
+        t.write('\n')
+        s = t.read_all()
+        for line in s.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith('Registrar'):
+                registrar = line.split()[-1].capitalize()
+            elif line.startswith('Referral'):
+                url = line.split()[-1]
+            elif line.startswith('Updated'):
+                updated = line.split()[-1]
+            elif line.startswith('Creation'):
+                created = line.split()[-1]
+            elif line.startswith('Expiration'):
+                expires = line.split()[-1]
+            elif line.startswith('Status'):
+                status = line.split()[-1].lower()
+        try:
+            s = '%s <%s> is %s; registered %s, updated %s, expires %s.' % \
+                (domain, url, status, created, updated, expires)
+            irc.reply(msg, s)
+        except NameError, e:
+            debug.printf(e)
+            irc.error(msg, 'I couldn\'t find such a domain.')
+    whois = privmsgs.thread(whois)
+        
     def dictionaries(self, irc, msg, args):
         """takes no arguments.
 
