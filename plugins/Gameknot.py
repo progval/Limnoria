@@ -111,7 +111,9 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 d = d
                 dp = 0.
             seen = self._gkseen.search(utils.htmlToText(profile))
-            if 'is hiding' in seen.group(0):
+            if seen is None:
+                seen = ''
+            elif 'is hiding' in seen.group(0):
                 seen = '%s is hiding his/her online status.' % name
             elif seen.group(2).startswith('0'):
                 seen = '%s is on gameknot right now.' % name
