@@ -108,38 +108,25 @@ class Config(callbacks.Privmsg):
             name = 'supybot.' + name
         return name
 
-    def _list(self, name, groups=False):
+    def _list(self, name):
         name = self._canonicalizeName(name)
         group = getWrapper(name)
-        if groups:
-            L = []
-            for (vname, v) in group._children.iteritems():
-                if v._added:
-                    L.append(vname)
-            utils.sortBy(str.lower, L)
-            return L
-        else:
-            try:
-                L = [t[0] for t in group.getValues(fullNames=False)]
-                utils.sortBy(str.lower, L)
-                return L
-            except TypeError:
-                return []
+        L = []
+        for (vname, v) in group._children.iteritems():
+            if v._added:
+                vname = '@' + vname
+            L.append(vname)
+        utils.sortBy(str.lower, L)
+        return L
         
     def list(self, irc, msg, args):
-        """[--groups] <group>
+        """<group>
 
         Returns the configuration variables available under the given
-        configuration <group>.  If --groups is given, return the subgroups of
-        the <group>.
+        configuration <group>.  Subgroups are indicated by a preceding @.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['groups'])
-        groups = False
-        for (name, arg) in optlist:
-            if name == '--groups':
-                groups = True
-        name = privmsgs.getArgs(rest)
-        L = self._list(name, groups=groups)
+        name = privmsgs.getArgs(args)
+        L = self._list(name)
         if L:
             irc.reply(utils.commaAndify(L))
         elif groups:
