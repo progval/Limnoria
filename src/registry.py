@@ -98,13 +98,22 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                         try:
                             original = value.value
                             value.value = value._default
-                            lines.append('# Default value: %s\n' % value)
+                            try:
+                                s = str(value)
+                            except Exception, e:
+                                s = 'Error converting to string: %s' % \
+                                    utils.exnToString(e)
+                            lines.append('# Default value: %s\n' % s)
                         finally:
                             value.value = original
                 lines.append('###\n')
                 fd.writelines(lines)
         if hasattr(value, 'value'): # This lets us print help for non-valued.
-            fd.write('%s: %s\n' % (name, value))
+            try:
+                s = str(value)
+            except Exception, e:
+                s = 'Error converting to string: %s' % utils.exnToString(e)
+            fd.write('%s: %s\n' % (name, s))
     fd.close()
 
 def isValidRegistryName(name):
