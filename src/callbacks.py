@@ -1215,21 +1215,28 @@ class PluginRegexp(Plugin):
             r = re.compile(method.__doc__, self.flags)
             self.addressedRes.append((r, name))
 
+    def _callRegexp(self, name, irc, msg, m):
+        method = getattr(self, name)
+        try:
+            method(irc, msg, m)
+        except Error, e:
+            irc.error(str(e))
+        except Exception, e:
+            self.log.exception('Uncaught exception in _callRegexp:')
+            
+    def invalidCommand(self, irc, msg, tokens):
+        s = ' '.join(tokens)
+        for (r, name) in self.addressedRes:
+            for m in r.finditer(s):
+                self._callRegexp(name, irc, msg, m)
+                
     def doPrivmsg(self, irc, msg):
         if msg.isError:
             return
-        s = addressed(irc.nick, msg)
-        if s:
-            for (r, name) in self.addressedRes:
-                if msg.repliedTo and name not in self.alwaysCall:
-                    continue
-                for m in r.finditer(s):
-                    proxy = self.Proxy(irc, msg)
-                    self._callCommand(name, proxy, msg, m)
+        proxy = self.Proxy(irc, msg)
         for (r, name) in self.res:
             for m in r.finditer(msg.args[1]):
-                proxy = self.Proxy(irc, msg)
-                self._callCommand(name, proxy, msg, m)
+                self._callRegexp(name, proxy, msg, m)
 PrivmsgCommandAndRegexp = PluginRegexp
 
 
