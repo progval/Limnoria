@@ -210,7 +210,7 @@ if __name__ == '__main__':
     
     if options.profile:
         import profile
-        profile.run('main()', '%s-%i.prof' % (nick, time.time())
+        profile.run('main()', '%s-%i.prof' % (nick, time.time()))
     else:
         main()
 
