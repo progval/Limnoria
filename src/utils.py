@@ -262,6 +262,24 @@ def perlReToReplacer(s):
     else:
         return lambda s: r.sub(replace, s, 1)
 
+_perlVarSubstituteRe = re.compile(r'\$\{([^}]+)\}|\$(\S+)')
+def perlVariableSubstitute(vars, text):
+    def replacer(m):
+        (braced, unbraced) = m.groups()
+        var = braced or unbraced
+        try:
+            x = vars[var]
+            if callable(x):
+                return x()
+            else:
+                return str(x)
+        except KeyError:
+            if braced:
+                return '${%s}' % braced
+            else:
+                return '$' + unbraced
+    return _perlVarSubstituteRe.sub(replacer, text)
+
 def findBinaryInPath(s):
     """Return full path of a binary if it's in PATH, otherwise return None."""
     cmdLine = None
