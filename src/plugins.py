@@ -33,10 +33,12 @@ import fix
 
 import gc
 import os
+import re
 import sys
 import sets
 import time
 import types
+import random
 import urllib2
 import threading
 
@@ -50,8 +52,6 @@ import ircdb
 import ircutils
 import privmsgs
 import callbacks
-import re
-import random
 
 __all__ = ['ChannelDBHandler', 'PeriodicFileDownloader', 'ToggleDictionary']
 
@@ -196,6 +196,50 @@ class PeriodicFileDownloader(object):
             t.start()
             world.threadsSpawned += 1
         
+
+class ConfigurableDictionary(object):
+    """This is a dictionary to handle configuration for individual channels,
+    including a default configuration for channels that haven't modified their
+    configuration from the default.
+    """
+    def __init__(self, seq):
+        self.helps = {}
+        self.types = {}
+        self.channels = {None: {}}
+        for (name, type, default, help) in seq:
+            self.helps[name] = help
+            self.types[name] = type
+            self.channels[None][name] = default
+
+    def get(self, name, channel=None):
+        return self.channels[channel][name]
+
+    def set(self, name, value, channel=None):
+        self.channels[channel][name] = self.types[value]
+
+    # XXX: Make persistent.
+
+class Configurable(object):
+    """A mixin class to provide a "config" command that can be consistent
+    across all plugins, in order to unify the configuration for each plugin.
+    """
+    def __init__(self):
+        self.configurables = ConfigurableDictionary(self.configurables)
+        s =
+
+    def config(self, irc, msg, args):
+        """[<channel>] <name> [<value>]
+
+        Sets the config variable <name> to <value> on <channel>.  If <value>
+        isn't given, returns the current value of <name> on <channel>.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        (name, value) = privmsgs.getArgs(args, needed=0, optional=2)
+        if not name:
+            pass
+            
 
 class ToggleDictionary(object):
     """I am ToggleDictionary! Hear me roar!
