@@ -268,6 +268,9 @@ class Channel(callbacks.Privmsg):
         """
         if self.haveOps(irc, channel, 'kick someone'):
             (nick, reason) = privmsgs.getArgs(args, optional=1)
+            if nick not in irc.channels[channel].users:
+                irc.error('%s isn\'t in %s.' % (nick, channel))
+                return
             if not reason:
                 reason = msg.nick
             irc.queueMsg(ircmsgs.kick(channel, nick, reason))
