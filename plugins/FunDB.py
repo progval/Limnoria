@@ -175,7 +175,7 @@ class FunDB(callbacks.Privmsg):
         cursor.execute("""SELECT word FROM words
                           WHERE word LIKE %s
                           ORDER BY word""", word)
-        words = map(lambda t: t[0], cursor.fetchall())
+        words = [t[0] for t in cursor.fetchall()]
         irc.reply(msg, ', '.join(words))
 
     def excuse(self, irc, msg, args):
@@ -513,7 +513,7 @@ class FunDB(callbacks.Privmsg):
                           WHERE sorted_word_id=(
                                 SELECT sorted_word_id FROM words
                                 WHERE word=%s)""", word)
-        words = map(lambda t: t[0], cursor.fetchall())
+        words = [t[0] for t in cursor.fetchall()]
         try:
             words.remove(word)
         except ValueError:
