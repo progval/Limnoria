@@ -69,10 +69,10 @@ conf.registerChannelValue(conf.supybot.plugins.URL, 'nonSnarfingRegexp',
 
 class UrlRecord(dbi.Record):
     __fields__ = [
-        'url',
-        'by',
-        'near',
-        'at',
+        ('url', eval),
+        ('by', eval),
+        ('near', eval),
+        ('at', eval),
         ]
 
 class DbiUrlDB(plugins.DbiChannelDB):
