@@ -547,7 +547,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             irc.finished = True
 
     def doFactoid(self, irc, msg, match):
-        r"^(.+)\s+(?<!\\)(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
+        r"^(.+?)\s+(?<!\\)(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
         (key, isAre, also, value) = match.groups()
         key = key.replace('\\', '')
         if key.lower() in ('where', 'what', 'who', 'wtf'):

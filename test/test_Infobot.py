@@ -118,4 +118,22 @@ if sqlite is not None:
                 ibot.answerUnaddressedQuestions.setValue(answer)
                 ibot.snarfUnaddressedDefinitions.setValue(learn)
 
+        def testDoubleIsAre(self):
+            answer = ibot.answerUnaddressedQuestions()
+            learn = ibot.snarfUnaddressedDefinitions()
+            try:
+                ibot.answerUnaddressedQuestions.setValue(True)
+                ibot.snarfUnaddressedDefinitions.setValue(True)
+                self.assertSnarfNoResponse('foo is <reply> foo is bar')
+                self.assertSnarfRegexp('foo?', 'foo is bar')
+                self.assertSnarfNoResponse('bars are <reply> bars are good')
+                self.assertSnarfRegexp('bars?', 'bars are good')
+                self.assertSnarfNoResponse('bees are <reply> honey is good')
+                self.assertSnarfRegexp('bees?', 'honey is good')
+                self.assertSnarfNoResponse('food is <reply> tacos are good')
+                self.assertSnarfRegexp('food?', 'tacos are good')
+            finally:
+                ibot.answerUnaddressedQuestions.setValue(answer)
+                ibot.snarfUnaddressedDefinitions.setValue(learn)
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
