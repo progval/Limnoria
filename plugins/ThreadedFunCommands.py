@@ -62,9 +62,13 @@ class ThreadedFunCommands(callbacks.Privmsg):
 
     def kernel(self, irc, msg, args):
         """takes no arguments"""
-        conn = telnetlib.Telnet('kernel.org', 79)
-        conn.write('\n')
-        text = conn.read_all()
+        try:
+            conn = telnetlib.Telnet('kernel.org', 79)
+            conn.write('\n')
+            text = conn.read_all()
+        except socket.error, e:
+            irc.error(msg, e.args[1])
+            return
         stable = 'unkown'
         beta = 'unknown'
         for line in text.splitlines():
