@@ -75,10 +75,10 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('unpermban foo!bar@baz')
         self.assertError('permban not!a.hostmask')
 
-    def testChanignore(self):
-        self.assertNotError('chanignore foo!bar@baz')
-        self.assertResponse('chanignores', "'foo!bar@baz'")
-        self.assertNotError('unchanignore foo!bar@baz')
+    def testIgnore(self):
+        self.assertNotError('Channel ignore foo!bar@baz')
+        self.assertResponse('Channel ignores', "'foo!bar@baz'")
+        self.assertNotError('Channel unignore foo!bar@baz')
         self.assertError('permban not!a.hostmask')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

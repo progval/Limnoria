@@ -206,7 +206,7 @@ class Channel(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
     unpermban = privmsgs.checkChannelCapability(unpermban, 'op')
 
-    def chanignore(self, irc, msg, args, channel):
+    def ignore(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
 
         The <channel> argument is only necessary if the message isn't being
@@ -226,9 +226,9 @@ class Channel(callbacks.Privmsg):
         c.addIgnore(banmask)
         ircdb.channels.setChannel(channel, c)
         irc.reply(msg, conf.replySuccess)
-    chanignore = privmsgs.checkChannelCapability(chanignore, 'op')
+    ignore = privmsgs.checkChannelCapability(ignore, 'op')
 
-    def unchanignore(self, irc, msg, args, channel):
+    def unignore(self, irc, msg, args, channel):
         """[<channel>] <hostmask>
 
         The <channel> argument is only necessary if the message isn't being
@@ -240,9 +240,9 @@ class Channel(callbacks.Privmsg):
         c.removeIgnore(banmask)
         ircdb.channels.setChannel(channel, c)
         irc.reply(msg, conf.replySuccess)
-    unchanignore = privmsgs.checkChannelCapability(unchanignore, 'op')
+    unignore = privmsgs.checkChannelCapability(unignore, 'op')
 
-    def chanignores(self, irc, msg, args, channel):
+    def ignores(self, irc, msg, args, channel):
         """[<channel>]
 
         Lists the hostmasks that the bot is ignoring on the given channel.
@@ -257,10 +257,10 @@ class Channel(callbacks.Privmsg):
                            'in %r' % channel)
             return
         irc.reply(msg, utils.commaAndify(map(repr,c.ignores)))
-    chanignores = privmsgs.checkChannelCapability(chanignores, 'op')
+    ignores = privmsgs.checkChannelCapability(ignores, 'op')
 
 
-    def addchancapability(self, irc, msg, args, channel):
+    def addcapability(self, irc, msg, args, channel):
         """[<channel>] <name|hostmask> <capability>
 
         The <channel> argument is only necessary if the message isn't being
@@ -278,9 +278,9 @@ class Channel(callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
-    addchancapability = privmsgs.checkChannelCapability(addchancapability,'op')
+    addcapability = privmsgs.checkChannelCapability(addcapability,'op')
 
-    def removechancapability(self, irc, msg, args, channel):
+    def removecapability(self, irc, msg, args, channel):
         """[<channel>] <name|hostmask> <capability>
 
         The <channel> argument is only necessary if the message isn't being
@@ -299,10 +299,9 @@ class Channel(callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
-    removechancapability = \
-        privmsgs.checkChannelCapability(removechancapability, 'op')
+    removecapability = privmsgs.checkChannelCapability(removecapability, 'op')
 
-    def setdefaultchancapability(self, irc, msg, args, channel):
+    def setdefaultcapability(self, irc, msg, args, channel):
         """[<channel>] <default response to unknown capabilities> <True|False>
 
         The <channel> argument is only necessary if the message isn't being
@@ -323,10 +322,10 @@ class Channel(callbacks.Privmsg):
             return
         ircdb.channels.setChannel(channel, c)
         irc.reply(msg, conf.replySuccess)
-    setdefaultchancapability = \
-        privmsgs.checkChannelCapability(setdefaultchancapability, 'op')
+    setdefaultcapability = \
+        privmsgs.checkChannelCapability(setdefaultcapability, 'op')
 
-    def setchancapability(self, irc, msg, args, channel):
+    def setcapability(self, irc, msg, args, channel):
         """[<channel>] <capability>
 
         The <channel> argument is only necessary if the message isn't being
@@ -339,10 +338,9 @@ class Channel(callbacks.Privmsg):
         c.addCapability(capability)
         ircdb.channels.setChannel(channel, c)
         irc.reply(msg, conf.replySuccess)
-    setchancapability = privmsgs.checkChannelCapability(setchancapability,
-                                                        'op')
+    setcapability = privmsgs.checkChannelCapability(setcapability, 'op')
 
-    def unsetchancapability(self, irc, msg, args, channel):
+    def unsetcapability(self, irc, msg, args, channel):
         """[<chanel>] <capability>
 
         The <channel> argument is only necessary if the message isn't being
@@ -356,10 +354,9 @@ class Channel(callbacks.Privmsg):
         c.removeCapability(capability)
         ircdb.channels.setChannel(channel, c)
         irc.reply(msg, conf.replySuccess)
-    unsetchancapability = privmsgs.checkChannelCapability(unsetchancapability,
-                                                          'op')
+    unsetcapability = privmsgs.checkChannelCapability(unsetcapability, 'op')
 
-    def chancapabilities(self, irc, msg, args):
+    def capabilities(self, irc, msg, args):
         """[<channel>]
 
         The <channel> argument is only necessary if the message isn't being
