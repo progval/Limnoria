@@ -363,9 +363,9 @@ class PluginTestCase(SupyTestCase):
                 continue
             self.failUnless(sys.modules[cb.__class__.__name__].__doc__,
                             '%s has no module documentation.' % name)
-            if hasattr(cb, 'isCommand'):
+            if hasattr(cb, 'isCommandMethod'):
                 for attr in dir(cb):
-                    if cb.isCommand(attr) and \
+                    if cb.isCommandMethod(attr) and \
                        attr == callbacks.canonicalName(attr):
                         self.failUnless(getattr(cb, attr, None).__doc__,
                                         '%s.%s has no help.' % (name, attr))

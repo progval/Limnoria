@@ -51,7 +51,7 @@ import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
-from supybot.utils.iter import any
+from supybot.utils.iter import any, all
 
 def _addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,
@@ -344,17 +344,6 @@ def tokenize(s, channel=None):
     except ValueError, e:
         raise SyntaxError, str(e)
 
-def findCallbackForCommand(irc, name):
-    """Given a command name and an Irc object, returns a list of callbacks that
-    commandName is in."""
-    L = []
-    name = canonicalName(name)
-    for callback in irc.callbacks:
-        if hasattr(callback, 'isCommand'):
-            if callback.isCommand(name):
-                L.append(callback)
-    return L
-
 def formatArgumentError(method, name=None):
     if name is None:
         name = method.__name__
@@ -365,6 +354,9 @@ def formatArgumentError(method, name=None):
             return getHelp(method, name=name)
     else:
         return 'Invalid arguments for %s.' % method.__name__
+
+def formatCommand(command):
+    return ' '.join(command)
 
 def checkCommandCapability(msg, cb, commandName):
     assert isinstance(commandName, basestring), commandName
@@ -606,22 +598,6 @@ class IrcObjectProxy(RichReplyMethods):
         assert all(lambda x: isinstance(x, basestring), self.args)
         self.finalEval()
 
-    def _callTokenizedCommands(self):
-        for cb in self.irc.callbacks:
-            if hasattr(cb, 'tokenizedCommand'):
-                self._callTokenizedCommand(cb)
-                if self.msg.repliedTo:
-                    return
-
-    def _callTokenizedCommand(self, cb):
-        try:
-            cb.tokenizedCommand(self, self.msg, self.args)
-        except Error, e:
-            return self.error(str(e))
-        except Exception, e:
-            log.exception('Uncaught exception in %s.tokenizedCommand.' %
-                          cb.name())
-
     def _callInvalidCommands(self):
         log.debug('Calling invalidCommands.')
         for cb in self.irc.callbacks:
@@ -641,40 +617,40 @@ class IrcObjectProxy(RichReplyMethods):
             log.exception('Uncaught exception in %s.invalidCommand.'%
                           cb.name())
 
-    def findCallbackForCommand(self, command):
-        cbs = findCallbackForCommand(self, command)
-        if len(cbs) > 1:
-            command = canonicalName(command)
-            # Check for whether it's the name of a callback; their dispatchers
-            # need to get precedence.
-            for cb in cbs:
-                if canonicalName(cb.name()) == command:
-                    return [cb]
+    def findCallbacksForArgs(self, args):
+        """Returns a two-tuple of (command, plugins) that has the command
+        (a list of strings) and the plugins for which it was a command."""
+        cbs = []
+        maxL = []
+        for cb in self.irc.callbacks:
+            L = cb.getCommand(args)
+            if L and L >= maxL:
+                maxL = L
+                cbs.append((cb, L))
+                assert isinstance(L, list), \
+                       'getCommand now returns a list, not a bool.'
+                assert utils.iter.startswith(L, args), \
+                       'getCommand must return a prefix of the args given.'
+        log.debug('findCallbacksForCommands: %r', cbs)
+        cbs = [cb for (cb, L) in cbs if L == maxL]
+        if len(maxL) == 1:
+            # Special case: one arg determines the callback.  In this case, we
+            # have to check defaultPlugins.
+            defaultPlugins = conf.supybot.commands.defaultPlugins
             try:
-                # Check if there's a configured defaultPlugin -- the user gets
-                # precedence in that case.
-                defaultPlugins = conf.supybot.commands.defaultPlugins
-                plugin = defaultPlugins.get(command)()
-                if plugin and plugin != '(Unused)':
-                    cb = self.irc.getCallback(plugin)
-                    if cb is None:
-                        log.warning('%s is set as a default plugin '
-                                    'for %s, but it isn\'t loaded.',
-                                    plugin, command)
-                        raise registry.NonExistentRegistryEntry
-                    else:
-                        return [cb]
-            except registry.NonExistentRegistryEntry, e:
-                # Check for whether it's a src/ plugin; they get precedence.
-                important = []
-                importantPlugins = defaultPlugins.importantPlugins()
-                for cb in cbs:
-                    if cb.name() in importantPlugins:
-                        # We do this to handle multiple importants matching.
-                        important.append(cb)
-                if len(important) == 1:
-                    return important
-        return cbs
+                defaultPlugin = defaultPlugins.get(maxL[0])()
+                log.debug('defaultPlugin: %r', defaultPlugin)
+                if defaultPlugin:
+                    cb = self.irc.getCallback(defaultPlugin)
+                    if cb in cbs:
+                        # This is just a sanity check, but there's a small
+                        # possibility that a default plugin for a command
+                        # is configured to point to a plugin that doesn't
+                        # actually have that command.
+                        return (maxL, [cb])
+            except registry.NonExistentRegistryEntry:
+                pass # No default plugin defined.
+        return (maxL, cbs)
 
     def finalEval(self):
         # Now that we've already iterated through our args and made sure
@@ -683,54 +659,41 @@ class IrcObjectProxy(RichReplyMethods):
         # evaluated our own list of arguments.
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
-        command = self.args[0]
-        cbs = self.findCallbackForCommand(command)
+        # Now, the way we call a command is we iterate over the loaded pluings,
+        # asking each one if the list of args we have interests it.  The
+        # way we do that is by calling getCommand on the plugin.
+        # The plugin will return a list of args which it considers to be
+        # "interesting."  We will then give our args to the plugin which
+        # has the *longest* list.  The reason we pick the longest list is
+        # that it seems reasonable that the longest the list, the more
+        # specific the command is.  That is, given a list of length X, a list
+        # of length X+1 would be even more specific (assuming that both lists
+        # used the same prefix. Of course, if two plugins return a list of the
+        # same length, we'll just error out with a message about ambiguity.
+        (command, cbs) = self.findCallbacksForArgs(self.args)
         if not cbs:
-            # Normal command not found, let's go for the specialties now.
-            # First, check for addressedRegexps -- they take precedence over
-            # tokenizedCommands.
-            for cb in self.irc.callbacks:
-                if isinstance(cb, PrivmsgCommandAndRegexp):
-                    payload = addressed(self.irc.nick, self.msg)
-                    for (r, name) in cb.addressedRes:
-                        if r.search(payload):
-                            log.debug('Skipping tokenizedCommands: %s.%s',
-                                      cb.name(), name)
-                            return
-            # Now we call tokenizedCommands.
-            self._callTokenizedCommands()
-            # Return if we've replied.
-            if self.msg.repliedTo:
-                log.debug('Not calling invalidCommands, '
-                          'tokenizedCommands replied.')
-                return
-            # Now we check for regexp commands, which override invalidCommand.
-            for cb in self.irc.callbacks:
-                if isinstance(cb, PrivmsgCommandAndRegexp):
-                    for (r, name) in cb.res:
-                        if r.search(self.msg.args[1]):
-                            log.debug('Skipping invalidCommand: %s.%s',
-                                      cb.name(), name)
-                            return
-            # No matching regexp commands, now we do invalidCommands.
+            # We used to handle addressedRegexps here, but I think we'll let
+            # them handle themselves in getCommand.  They can always just
+            # return the full list of args as their "command".
             self._callInvalidCommands()
         elif len(cbs) > 1:
             names = sorted([cb.name() for cb in cbs])
-            return self.error(format('The command %s is available in the %L '
-                                     'plugins.  Please specify the plugin '
-                                     'whose command you wish to call by using '
-                                     'its name as a command before %s.',
-                                     command, names, command))
+            command = formatCommand(command)
+            self.error(format('The command %q is available in the %L '
+                              'plugins.  Please specify the plugin '
+                              'whose command you wish to call by using '
+                              'its name as a command before %q.',
+                              command, names, command))
         else:
             cb = cbs[0]
-            del self.args[0] # Remove the command.
+            args = self.args[len(command):]
             if world.isMainThread() and \
                (cb.threaded or conf.supybot.debug.threadAllCommands()):
                 t = CommandThread(target=cb._callCommand,
-                                  args=(command, self, self.msg, self.args))
+                                  args=(command, self, self.msg, args))
                 t.start()
             else:
-                cb._callCommand(command, self, self.msg, self.args)
+                cb._callCommand(command, self, self.msg, args)
 
     def reply(self, s, noLengthCheck=False, prefixName=None,
               action=None, private=None, notice=None, to=None, msg=None):
@@ -1000,7 +963,7 @@ class Commands(object):
     def isDisabled(self, command):
         return self._disabled.disabled(command, self.name())
 
-    def isCommand(self, name):
+    def isCommandMethod(self, name):
         """Returns whether a given method name is a command in this plugin."""
         # This function is ugly, but I don't want users to call methods like
         # doPrivmsg or __init__ or whatever, and this is good to stop them.
@@ -1019,17 +982,41 @@ class Commands(object):
         else:
             return False
 
-    def getCommandMethod(self, name):
+    def isCommand(self, command):
+        if isinstance(command, basestring):
+            return self.isCommandMethod(command)
+        else:
+            # Since we're doing a little type dispatching here, let's not be
+            # too liberal.
+            assert isinstance(command, list)
+            return self.getCommand(command) == command
+
+    def getCommand(self, args):
+        first = canonicalName(args[0])
+        if len(args) >= 2 and first == self.canonicalName():
+            second = canonicalName(args[1])
+            if self.isCommandMethod(second):
+                return args[:2]
+        if self.isCommandMethod(first):
+            return args[:1]
+        return []
+    
+    def getCommandMethod(self, command):
         """Gets the given command from this plugin."""
-        name = canonicalName(name)
-        assert self.isCommand(name), format('%q is not a command.', name)
-        return getattr(self, name)
+        self.log.debug('*** command: %s', str(command))
+        command = map(canonicalName, command)
+        try:
+            return getattr(self, command[0])
+        except AttributeError:
+            assert command[0] == self.canonicalName()
+            assert len(command) >= 2
+            return getattr(self, command[1])
 
     def listCommands(self):
         commands = []
         name = canonicalName(self.name())
         for s in dir(self):
-            if self.isCommand(s) and \
+            if self.isCommandMethod(s) and \
                (s != name or self._original) and \
                s == canonicalName(s):
                 method = getattr(self, s)
@@ -1043,11 +1030,7 @@ class Commands(object):
         method(irc, msg, *args, **kwargs)
 
     def _callCommand(self, command, irc, msg, *args, **kwargs):
-        if command is None:
-            assert self.callingCommand, \
-                   'Received command=None without self.callingCommand.'
-            command = self.callingCommand
-        self.log.info('%s called by %s.', command, msg.prefix)
+        self.log.info('%s called by %q.', formatCommand(command), msg.prefix)
         try:
             try:
                 self.callingCommand = command
@@ -1056,7 +1039,7 @@ class Commands(object):
                 self.callingCommand = None
         except (getopt.GetoptError, ArgumentError):
             method = self.getCommandMethod(command)
-            irc.reply(formatArgumentError(method, name=command))
+            irc.reply(formatArgumentError(method, name=formatCommand(command)))
         except (SyntaxError, Error), e:
             self.log.debug('Error return: %s', utils.exnToString(e))
             irc.error(str(e))
@@ -1069,18 +1052,12 @@ class Commands(object):
             else:
                 irc.replyError()
 
-    def getCommandHelp(self, name):
-        name = canonicalName(name)
-        assert self.isCommand(name), \
-               '%s is not a command in %s.' % (name, self.name())
-        method = self.getCommandMethod(name)
-        if hasattr(method, 'isDispatcher') and \
-           method.isDispatcher and self.__doc__:
-            return utils.str.normalizeWhitespace(self.__doc__)
-        elif hasattr(method, '__doc__'):
+    def getCommandHelp(self, command):
+        method = self.getCommandMethod(command)
+        if hasattr(method, '__doc__'):
             return getHelp(method)
         else:
-            return format('The %q command has no help.', name)
+            return format('The %q command has no help.',formatCommand(command))
 
 
 class PluginMixin(irclib.IrcCallback):
@@ -1097,55 +1074,6 @@ class PluginMixin(irclib.IrcCallback):
         # I guess plugin authors will have to get the capitalization right.
         # self.callAfter = map(str.lower, self.callAfter)
         # self.callBefore = map(str.lower, self.callBefore)
-        ### Setup the dispatcher command.
-        canonicalname = canonicalName(myName)
-        self._original = getattr(self, canonicalname, None)
-        docstring = """<command> [<args> ...]
-
-        Command dispatcher for the %s plugin.  Use 'list %s' to see the
-        commands provided by this plugin.  Use 'config list plugins.%s' to see
-        the configuration values for this plugin.  In most cases this dispatcher
-        command is unnecessary; in cases where more than one plugin defines a
-        given command, use this command to tell the bot which plugin's command
-        to use.""" % (myName, myName, myName)
-        def dispatcher(self, irc, msg, args):
-            def handleBadArgs():
-                if self._original:
-                    self._original(irc, msg, args)
-                else:
-                    if args:
-                        irc.error('%s is not a valid command in this plugin.' %
-                                  args[0])
-                    else:
-                        irc.error()
-            if args:
-                name = canonicalName(args[0])
-                if name == canonicalName(self.name()):
-                    handleBadArgs()
-                elif self.isCommand(name):
-                    cap = checkCommandCapability(msg, self, name)
-                    if cap:
-                        irc.errorNoCapability(cap)
-                        return
-                    del args[0]
-                    method = getattr(self, name)
-                    try:
-                        realname = '%s.%s' % (canonicalname, name)
-                        method(irc, msg, args)
-                    except (getopt.GetoptError, ArgumentError):
-                        irc.reply(formatArgumentError(method, name))
-                else:
-                    handleBadArgs()
-            else:
-                handleBadArgs()
-        dispatcher = utils.changeFunctionName(dispatcher, canonicalname)
-        if self._original:
-            dispatcher.__doc__ = self._original.__doc__
-            dispatcher.isDispatcher = False
-        else:
-            dispatcher.__doc__ = docstring
-            dispatcher.isDispatcher = True
-        setattr(self.__class__, canonicalname, dispatcher)
 
     def canonicalName(self):
         return canonicalName(self.name())
@@ -1219,6 +1147,7 @@ class PluginMixin(irclib.IrcCallback):
 
 class Plugin(PluginMixin, Commands):
     pass
+Privmsg = Plugin # Backwards compatibility.
 
 
 class SimpleProxy(RichReplyMethods):
@@ -1253,8 +1182,6 @@ class SimpleProxy(RichReplyMethods):
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
 
-Privmsg = Plugin # Backwards compatibility.
-
 class PluginRegexp(Plugin):
     """Same as Plugin, except allows the user to also include regexp-based
     callbacks.  All regexp-based callbacks must be specified in a set (or
@@ -1278,21 +1205,6 @@ class PluginRegexp(Plugin):
             r = re.compile(method.__doc__, self.flags)
             self.addressedRes.append((r, name))
 
-    def isCommand(self, name):
-        return self.__parent.isCommand(name) or \
-               name in self.regexps or \
-               name in self.addressedRegexps
-
-    def getCommandMethod(self, command):
-        try:
-            # First we tried without canonizing, in case it's a regexp
-            # command.
-            return getattr(self, command)
-        except AttributeError:
-            # Now we try with canonization (or, rather, we let our parent do
-            # so) for normal commands.
-            return self.__parent.getCommandMethod(command)
-
     def doPrivmsg(self, irc, msg):
         if msg.isError:
             return
@@ -1308,7 +1220,6 @@ class PluginRegexp(Plugin):
             for m in r.finditer(msg.args[1]):
                 proxy = self.Proxy(irc, msg)
                 self._callCommand(name, proxy, msg, m)
-
 PrivmsgCommandAndRegexp = PluginRegexp
 
 
