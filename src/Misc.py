@@ -51,9 +51,9 @@ import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
+from supybot.commands import *
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
-from supybot.commands import additional, getopts, optional, wrap
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.webutils as webutils
@@ -262,7 +262,7 @@ class Misc(callbacks.Privmsg):
         if not nick:
             nick = msg.nick
         irc.reply(irc.state.nickToHostmask(nick))
-    hostmask = wrap(hostmask, [optional('seenNick')])
+    hostmask = wrap(hostmask, [additional('seenNick')])
 
     def version(self, irc, msg, args):
         """takes no arguments
@@ -441,7 +441,7 @@ class Misc(callbacks.Privmsg):
             irc.error('You haven\'t asked me a command!')
         except IndexError:
             irc.error('That\'s all, there is no more.')
-    more = wrap(more, [optional('seenNick')])
+    more = wrap(more, [additional('seenNick')])
 
     def _validLastMsg(self, msg):
         return msg.prefix and \
@@ -600,7 +600,6 @@ class Misc(callbacks.Privmsg):
         be listed.  Note: The <nick> is the part inside of the parentheses
         in the people listing.
         """
-        nick = ircutils.toLower(nick)
         def getShortName(authorInfo):
             """
             Take an Authors object, and return only the name and nick values
@@ -701,8 +700,9 @@ class Misc(callbacks.Privmsg):
         if not nick:
             irc.reply(buildPeopleString(module))
         else:
+            nick = ircutils.toLower(nick)
             irc.reply(buildPersonString(module))
-    contributors = wrap(contributors, ['plugin', optional('nick')])
+    contributors = wrap(contributors, ['plugin', additional('nick')])
 
 Class = Misc
 
