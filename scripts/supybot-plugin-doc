@@ -1,37 +1,68 @@
-
-
-
-
-
-
+###
+# Copyright (c) 2005, Ali Afshar
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   * Redistributions of source code must retain the above copyright notice,
+#     this list of conditions, and the following disclaimer.
+#   * Redistributions in binary form must reproduce the above copyright notice,
+#     this list of conditions, and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#   * Neither the name of the author of this software nor the name of
+#     contributors to this software may be used to endorse or promote products
+#     derived from this software without specific prior written consent.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+###
 
 import os
+import cgi
 import sys
 import imp
 import supybot.log as log
-import cgi
+
 log.setLevel(10)
 
 def genModules(*dirs):
-    log.info('Generating Documentation')
+    log.info('Generating plugin modules.')
     for plugindir in dirs:
+        log.info('Analysing %s', plugindir)
+        # strip the trailing separator
         path, plugin = os.path.split(plugindir.rstrip(os.sep))
+        # len(plugin) will ? always be true
         if len(plugin) and plugin[0].isupper():
             try:
                 fm = imp.find_module(plugin, [path])
             except ImportError:
+                log.warning('Failed find_module, skipping %s', plugin)
                 continue
             if fm[0]:
+                log.warning('Module is not a directory, skipping %s', plugin)
                 continue
             try:
-                yield imp.load_module(plugin, *fm)
+                mod = imp.load_module(plugin, *fm)
+                log.info('Successfully loaded %s', plugin)
+                yield mod
             except ImportError:
+                log.warning('Failed load_module, skipping %s', plugin)
                 continue
         else:
+            log.warning('Does not start with an uppercase, skipping %s', plugin)
             continue
        
 class PluginDoc(object):
-    
     def __init__(self, mod):
         self.mod = mod
         self.lines = []
@@ -40,17 +71,24 @@ class PluginDoc(object):
         self.lines.append('%s%s' % (' ' * indent * 2, cgi.escape(line)))
         
     def renderSTX(self):
-        lines = []
         inst = self.mod.Class(None)
-        self.appendLine('Documentation for the %s plugin for supybot' % self.mod.Class.__name__)
+        self.appendLine('Documentation for the %s plugin for'
+                        'supybot' % self.mod.Class.__name__)
         self.appendLine('')
         self.appendLine('Commands', 1)
         self.appendLine('')
         for command in inst.listCommands():
+            log.debug('command: %s', command)
             self.appendLine(command, 2)
             self.appendLine('')
-            help =  inst.getCommandHelp([command])
-            doc = getattr(self.mod.Class, command).__doc__.splitlines()
+            try:
+                help =  inst.getCommandHelp([command])
+            except AssertionError:
+                help = 'nested?'
+            com = getattr(self.mod.Class, command, False)
+            doc = None
+            if com:
+                doc = com.__doc__.splitlines()
             if doc:
                 args = doc.pop(0)
                 doc = [l.strip() for l in doc]
@@ -60,13 +98,17 @@ class PluginDoc(object):
                 self.appendLine('')
             else:
                 self.appendLine('No help Associated with this command', 3)
+        self.appendLine('')
         return '\n'.join(self.lines)
 
-f = open('f.stx', 'w')
 
 def main(*args):
     for m in genModules(*args):
         f.write(PluginDoc(m).renderSTX())
 
 if __name__ == '__main__':
+    f = open('f.stx', 'w')
     main(*sys.argv[1:])
+    f.close()
+
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=78:
