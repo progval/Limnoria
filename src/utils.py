@@ -63,4 +63,24 @@ def htmlToText(s):
     x.feed(s)
     return x.getText()
 
+def eachSubstring(s):
+    for i in range(1, len(s)+1):
+        yield s[:i]
+
+def abbrev(strings):
+    d = {}
+    for s in strings:
+        for abbreviation in eachSubstring(s):
+            if abbreviation not in d:
+                d[abbreviation] = s
+            else:
+                d[abbreviation] = None
+    removals = []
+    for key in d:
+        if d[key] is None:
+            removals.append(key)
+    for key in removals:
+        del d[key]
+    return d
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
