@@ -83,6 +83,7 @@ import mimetypes
 
 #import conf
 import debug
+import utils
 import ircmsgs
 import privmsgs
 import callbacks
@@ -308,15 +309,8 @@ class FunCommands(callbacks.Privmsg):
 
     def uptime(self, irc, msg, args):
         "takes no arguments"
-        elapsed = time.time() - world.startedAt
-        days, elapsed = elapsed // 86400, elapsed % 86400
-        hours, elapsed = elapsed // 3600, elapsed % 3600
-        minutes, seconds = elapsed // 60, elapsed % 60
-        response = 'I have been running for %i %s, %i %s, %i %s, and %i %s.' %\
-                   (days, days == 1 and 'day' or 'days',
-                    hours, hours == 1 and 'hour' or 'hours',
-                    minutes, minutes == 1 and 'minute' or 'minutes',
-                    seconds, seconds == 1 and 'second' or 'seconds')
+        response = 'I have been running for %s.' % \
+                   utils.timeElapsed(time.time(), world.startedAt)
         irc.reply(msg, response)
 
 

@@ -86,4 +86,72 @@ def abbrev(strings):
         del d[key]
     return d
 
+def timeElapsed(now, then, leadingZeroes=False, years=True, weeks=True,
+                days=True, hours=True, minutes=True, seconds=True):
+    assert days or hours or minutes or seconds, 'One flag must be True'
+    elapsed = int(now - then)
+    ret = []
+    if years:
+        yrs, elapsed = elapsed // 31536000, elapsed % 31536000
+        if leadingZeroes or yrs:
+            if yrs:
+                leadingZeroes = True
+            if yrs != 1:
+                yrs = '%s years' % yrs
+            else:
+                yrs = '1 year'
+            ret.append(yrs)
+    if weeks:
+        wks, elapsed = elapsed // 604800, elapsed % 604800
+        if leadingZeroes or wks:
+            if wks:
+                leadingZeroes = True
+            if wks != 1:
+                wks = '%s weeks' % wks
+            else:
+                wks = '1 week'
+            ret.append(wks)
+    if days:
+        ds, elapsed = elapsed // 86400, elapsed % 86400
+        if leadingZeroes or ds:
+            if ds:
+                leadingZeroes = True
+            if ds != 1:
+                ds = '%s days' % ds
+            else:
+                ds = '1 day'
+            ret.append(ds)
+    if hours:
+        hrs, elapsed = elapsed // 3600, elapsed % 3600
+        if leadingZeroes or hrs:
+            if hrs:
+                leadingZeroes = True
+            if hrs != 1:
+                hrs = '%s hours' % hrs
+            else:
+                hrs = '1 hour'
+            ret.append(hrs)
+    if minutes or seconds:
+        mins, secs = elapsed // 60, elapsed % 60
+        if leadingZeroes or mins:
+            if mins != 1:
+                mins = '%s minutes' % mins
+            else:
+                mins = '1 minute'
+            ret.append(mins)
+        if seconds:
+            if secs != 1:
+                secs = '%s seconds' % secs
+            else:
+                secs = '1 second'
+            ret.append(secs)
+    if len(ret) == 0:
+        raise ValueError, 'Time difference not great enough to be noted.'
+    if len(ret) == 1:
+        return ret[0]
+    else:
+        return ' and '.join([', '.join(ret[:-1]), ret[-1]])
+        
+    
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
