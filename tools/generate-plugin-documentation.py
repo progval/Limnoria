@@ -253,7 +253,7 @@ def makePluginDocumentation(pluginWindow):
                 default = str(config[1])
                 if isinstance(config[1]._default, basestring):
                     default = utils.dqrepr(default)
-                help = config[1].help
+                help = config[1]._help
                 help = cgi.escape(help)
                 trClass = trClasses[trClass]
                 fd.write(textwrap.dedent('''
