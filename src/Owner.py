@@ -217,11 +217,20 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
     def do001(self, irc, msg):
         self.log.info('Loading plugins.')
+        alwaysLoadSrcPlugins = conf.supybot.plugins.alwaysLoadDefault()
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):
-            if name.lower() == 'owner':
-                continue # Just in case.
+            if name.lower() in ('owner', 'alwaysloaddefault'):
+                continue
             if irc.getCallback(name) is None:
-                if value():
+                load = value()
+                if not load and name in self._srcPlugins:
+                    if alwaysLoadSrcPlugins:
+                        s = '%s is configured not to be loaded, but is being '\
+                            'loaded anyway because ' \
+                            'supybot.plugins.alwaysLoadDefault is True.'
+                        self.log.warning(s, name)
+                        load = True
+                if load:
                     if not irc.getCallback(name):
                         # This is debug because each log logs its beginning.
                         self.log.debug('Loading %s.' % name)
