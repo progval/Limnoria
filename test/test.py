@@ -34,13 +34,24 @@ sys.path.insert(0, 'src')
 sys.path.insert(0, 'test')
 sys.path.insert(0, 'plugins')
 
+
+import conf
+conf.dataDir = 'test-data'
+
 from fix import *
 
+import gc
 import re
 import glob
 import time
 import os.path
 import unittest
+
+if not os.path.exists(conf.dataDir):
+    os.mkdir(conf.dataDir)
+
+for filename in os.listdir(conf.dataDir):
+    os.remove(os.path.join(conf.dataDir, filename))
 
 import world
 import irclib
@@ -100,6 +111,10 @@ class PluginTestCase(unittest.TestCase):
             plugin = module.Class()
             self.irc.addCallback(plugin)
 
+    def tearDown(self):
+        self.irc.die()
+        gc.collect()
+
     def _feedMsg(self, query):
         self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
         fed = time.time()
@@ -119,12 +134,14 @@ class PluginTestCase(unittest.TestCase):
     def assertError(self, query):
         m = self._feedMsg(query)
         self.failUnless(m)
-        self.failUnless(m.args[1].startswith('Error:'), '%r errored' % query)
+        self.failUnless(m.args[1].startswith('Error:'),
+                        '%r did not error: %s' % (query, m.args[1]))
 
     def assertNotError(self, query):
         m = self._feedMsg(query)
         self.failUnless(m)
-        self.failIf(m.args[1].startswith('Error:'), '%r errored' % query)
+        self.failIf(m.args[1].startswith('Error:'),
+                    '%r errored: %s' % (query, m.args[1]))
 
     def assertResponse(self, query, expectedResponse):
         m = self._feedMsg(query)
