@@ -300,11 +300,12 @@ registerChannelValue(supybot.replies, 'requiresPrivacy',
     channel.""", """Determines what error messages the bot sends to people who
     try to do things in a channel that really should be done in private."""))
 
-supybot.replies.register('possibleBug', registry.NormalizedString("""This may
-be a bug.  If you think it is, please file a bug report at
-<http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>.""",
-"""Determines what message the bot sends when it thinks you've encountered a
-bug that the developers don't know about."""))
+registerChannelValue(supybot.replies, 'possibleBug',
+    registry.NormalizedString("""This may
+    be a bug.  If you think it is, please file a bug report at
+    <http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>.""",
+    """Determines what message the bot sends when it thinks you've encountered
+    a bug that the developers don't know about."""))
 ###
 # End supybot.replies.
 ###
