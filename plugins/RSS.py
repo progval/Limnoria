@@ -40,7 +40,6 @@ import plugins
 
 import sets
 import time
-import types
 from itertools import imap
 
 import rssparser
@@ -170,9 +169,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         def f(self, irc, msg, args):
             args.insert(0, url)
             self.rss(irc, msg, args)
-        f = types.FunctionType(f.func_code, f.func_globals,
-                               name, closure=f.func_closure)
-        f.__doc__ = docstring
+        f = utils.changeFunctionName(f, name, docstring)
         f.url = url # Used by __call__.
         self.feedNames.add(name)
         setattr(self.__class__, name, f)

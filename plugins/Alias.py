@@ -40,7 +40,6 @@ import plugins
 import os
 import re
 import sets
-import types
 
 import conf
 import utils
@@ -148,10 +147,9 @@ def makeNewAlias(name, alias):
         Owner = irc.getCallback('Owner')
         Owner.disambiguate(irc, tokens)
         self.Proxy(irc.irc, msg, tokens)
-    f = types.FunctionType(f.func_code, f.func_globals,
-                           name, closure=f.func_closure)
-    f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \
-                (utils.nItems('argument', biggestDollar), alias)
+    doc ='<an alias, %s>\n\nAlias for %r' % \
+          (utils.nItems('argument', biggestDollar), alias)
+    f = utils.changeFunctionName(f, name, doc)
     return f
 
 

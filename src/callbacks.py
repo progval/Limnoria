@@ -47,7 +47,6 @@ import copy
 import sets
 import time
 import shlex
-import types
 import getopt
 import string
 import inspect
@@ -649,8 +648,7 @@ class Privmsg(irclib.IrcCallback):
                     handleBadArgs()
             else:
                 handleBadArgs()
-        dispatcher = types.FunctionType(dispatcher.func_code,
-                                        dispatcher.func_globals, canonicalname)
+        dispatcher = utils.changeFunctionName(dispatcher, canonicalname)
         if self._original:
             dispatcher.__doc__ = self._original.__doc__
         else:

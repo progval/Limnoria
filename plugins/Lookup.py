@@ -41,7 +41,6 @@ import os
 import re
 import sys
 import sets
-import types
 import getopt
 import string
 
@@ -183,8 +182,6 @@ class Lookup(callbacks.Privmsg):
         def f(self, irc, msg, args):
             args.insert(0, name)
             self._lookup(irc, msg, args)
-        f = types.FunctionType(f.func_code, f.func_globals,
-                               name, closure=f.func_closure)
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
@@ -195,9 +192,7 @@ class Lookup(callbacks.Privmsg):
         returns a random key: value pair from the database.  There are
         %s in the database.
         """ % (name, utils.nItems(name, rows))
-        f = types.FunctionType(f.func_code, f.func_globals,
-                               f.func_name, closure=f.func_closure)
-        f.__doc__ = docstring
+        f = utils.changeFunctionName(f, name, docstring)
         self.lookupDomains.add(name)
         setattr(self.__class__, name, f)
 
