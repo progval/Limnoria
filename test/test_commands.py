@@ -55,7 +55,7 @@ class CommandsTestCase(SupyTestCase):
         self.assertState(['int', 'int', 'int'], ['1', '2', '3'], [1, 2, 3])
 
     def testRestHandling(self):
-        self.assertState([None], ['foo', 'bar', 'baz'], ['foo bar baz'])
+        self.assertState([rest(None)], ['foo', 'bar', 'baz'], ['foo bar baz'])
 
     def testOptional(self):
         spec = [optional('int', 999), None]
@@ -79,21 +79,10 @@ class CommandsTestCase(SupyTestCase):
                          ['12', '--foo', 'baz', '--bar', '13', '15'],
                          [12, [('foo', 'baz'), ('bar', 13)], 15])
 
-    def testCompose(self):
-        spec = [compose('somethingWithoutSpaces', 'lowered')]
-        self.assertState(spec, ['FOO'], ['foo'])
-        self.assertRaises(callbacks.Error,
-                          self.assertState, spec, ['foo bar'], ['asdf'])
-
     def testAny(self):
         self.assertState([any('int')], ['1', '2', '3'], [[1, 2, 3]])
         self.assertState([None, any('int')], ['1', '2', '3'], ['1', [2, 3]])
         self.assertState([any('int')], [], [[]])
-
-##     def testAny(self):
-##         self.assertState([None, any('int'), None],
-##                          ['foo', 'bar'],
-##                          ['foo', [], 'bar'])
 
     def testMany(self):
         spec = [many('int')]
@@ -114,6 +103,15 @@ class CommandsTestCase(SupyTestCase):
     def testGetId(self):
         spec = ['id']
         self.assertState(spec, ['#12'], [12])
+
+    def testCommaList(self):
+        spec = [commalist('int')]
+        self.assertState(spec, ['12'], [[12]])
+        self.assertState(spec, ['12,', '10'], [[12, 10]])
+        self.assertState(spec, ['12,11,10,', '9'], [[12, 11, 10, 9]])
+        spec.append('int')
+        self.assertState(spec, ['12,11,10', '9'], [[12, 11, 10], 9])
+        
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

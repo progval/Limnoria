@@ -289,7 +289,7 @@ def getOtherUser(irc, msg, args, state):
             irc.errorNoUser(name=hostmask)
 
 def _getRe(f):
-    def get(irc, msg, args, state):
+    def get(irc, msg, args, state, convert=True):
         original = args[:]
         s = args.pop(0)
         def isRe(s):
@@ -302,7 +302,10 @@ def _getRe(f):
             while len(s) < 512 and not isRe(s):
                 s += ' ' + args.pop(0)
             if len(s) < 512:
-                state.args.append(f(s))
+                if convert:
+                    state.args.append(f(s))
+                else:
+                    state.args.append(s)
             else:
                 irc.errorInvalid('regular expression', s)
         except IndexError:
@@ -331,7 +334,6 @@ def getSeenNick(irc, msg, args, state, errmsg=None):
         if errmsg is None:
             errmsg = 'I haven\'t seen %s.' % args[0]
         irc.error(errmsg)
-
 
 def getChannel(irc, msg, args, state):
     if args and irc.isChannel(args[0]):
@@ -497,6 +499,13 @@ def getIrcColor(irc, msg, args, state):
     else:
         irc.errorInvalid('irc color')
 
+def getText(irc, msg, args, state):
+    if args:
+        state.args.append(' '.join(args))
+        args[:] = []
+    else:
+        raise IndexError
+
 wrappers = ircutils.IrcDict({
     'id': getId,
     'ip': getIp,
@@ -528,8 +537,8 @@ wrappers = ircutils.IrcDict({
     'something': getSomething,
     'filename': getSomething, # XXX Check for validity.
     'commandName': getCommandName,
+    'text': getText,
     'glob': getGlob,
-    'text': anything,
     'somethingWithoutSpaces': getSomethingNoSpaces,
     'capability': getSomethingNoSpaces,
     'channelDb': getChannelDb,
@@ -594,16 +603,25 @@ class context(object):
             self.converter = getConverter(spec)
 
     def __call__(self, irc, msg, args, state):
-        if args and not (state.types or state.allowExtra):
-            # We're the last context/type, we should combine the remaining
-            # arguments into one string.
-            args[:] = [' '.join(args)]
+##         if args and not (state.types or state.allowExtra):
+##             # We're the last context/type, we should combine the remaining
+##             # arguments into one string.
+##             args[:] = [' '.join(args)]
         log.debug('args before %r: %r', self, args)
         self.converter(irc, msg, args, state, *self.args)
         log.debug('args after %r: %r', self, args)
 
     def __repr__(self):
         return '<%s for %s>' % (self.__class__.__name__, self.spec)
+
+class rest(context):
+    def __call__(self, irc, msg, args, state):
+        original = args[:]
+        args[:] = [' '.join(args)]
+        try:
+            super(rest, self).__call__(irc, msg, args, state)
+        except Exception, e:
+            args[:] = original
 
 # additional means:  Look for this (and make sure it's of this type).  If
 # there are no arguments for us to check, then use our default.
@@ -634,7 +652,6 @@ class optional(additional):
 class any(context):
     def __call__(self, irc, msg, args, state):
         st = state.essence()
-        st.types = ["something so context.__call__ won't combineRest."]
         try:
             while args:
                 super(any, self).__call__(irc, msg, args, st)
@@ -674,6 +691,25 @@ class reverse(context):
         super(reverse, self).__call__(irc, msg, args, state)
         args[:] = args[::-1]
 
+class commalist(context):
+    def __call__(self, irc, msg, args, state):
+        original = args[:]
+        st = state.essence()
+        trailingComma = True
+        try:
+            while trailingComma:
+                arg = args.pop(0)
+                if not arg.endswith(','):
+                    trailingComma = False
+                for part in arg.split(','):
+                    if part: # trailing commas
+                        super(commalist, self).__call__(irc, msg, [part], st)
+            state.args.append(st.args)
+        except Exception, e:
+            args[:] = original
+            raise
+                    
+
 class getopts(context):
     """The empty string indicates that no argument is taken; None indicates
     that there is no converter for the argument."""
@@ -710,20 +746,6 @@ class getopts(context):
         args[:] = rest
         log.debug('args after %r: %r', self, args)
                 
-# XXX Not ready.
-class compose(context):
-    def __init__(self, *specs):
-        self.spec = specs
-        self.specs = list(specs)
-        utils.mapinto(contextify, self.specs)
-
-    def __call__(self, irc, msg, args, state):
-        st = state.essence()
-        for context in self.specs:
-            context(irc, msg, args, st)
-            args = st.args
-        state.args.extend(st.args)
-
 ###
 # This is our state object, passed to converters along with irc, msg, and args.
 ###
@@ -777,8 +799,6 @@ class Spec(object):
             raise callbacks.ArgumentError
         return state
 
-# This is used below, but we need to rename it so its name isn't
-# shadowed by our locals.
 def wrap(f, specList=[], **kw):
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
@@ -787,10 +807,24 @@ def wrap(f, specList=[], **kw):
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 
-__all__ = ['wrap', 'context', 'additional', 'optional', 'any', 'compose',
-           'Spec', 'first', 'urlSnarfer', 'thread', 'reverse',
-           'many', 'getopts', 'getConverter', 'addConverter', 'callConverter']
+__all__ = [
+    # Contexts.
+    'any', 'many',
+    'optional', 'additional',
+    'rest', 'getopts',
+    'first', 'reverse',
+    'commalist',
+    # Converter helpers.
+    'getConverter', 'addConverter', 'callConverter',
+    # Decorators.
+    'urlSnarfer', 'thread',
+    # Functions.
+    'wrap',
+    # Stuff for testing.
+    'Spec',
+]
 
-if world.testing:
-    __all__.append('Spec')
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# This doesn't work.  Suck.
+## if world.testing:
+##     __all__.append('Spec')
+
