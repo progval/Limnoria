@@ -39,6 +39,7 @@ import re
 import sets
 import urllib2
 
+import conf
 import debug
 import utils
 import ircutils
