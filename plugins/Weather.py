@@ -226,9 +226,13 @@ class Weather(callbacks.Privmsg):
         city = city.strip()
         state = state.strip()
         temp = self._tempregex.search(html)
+        convert = self.registryValue('convert', msg.args[0])
         if temp is not None:
             (temp, deg, unit) = temp.groups()
-            temp = self._getTemp(int(temp), deg, unit, msg.args[0])
+            if convert:
+                temp = self._getTemp(int(temp), deg, unit, msg.args[0])
+            else:
+                temp = deg.join((temp, unit))
         conds = self._condregex.search(html)
         if conds is not None:
             conds = conds.group(1)
@@ -237,20 +241,23 @@ class Weather(callbacks.Privmsg):
         if chill is not None:
             chill = chill.group(1)
             chill = utils.htmlToText(chill)
-            tempsplit = self._temp.search(chill)
-            if tempsplit:
-                (chill, deg, unit) = tempsplit.groups()
-                chill = self._getTemp(int(chill), deg, unit,msg.args[0])
+            if convert:
+                tempsplit = self._temp.search(chill)
+                if tempsplit:
+                    (chill, deg, unit) = tempsplit.groups()
+                    chill = self._getTemp(int(chill), deg, unit,msg.args[0])
             if float(chill[:-2]) < float(temp[:-2]):
                 index = ' (Wind Chill: %s)' % chill
         heat = self._heatregex.search(html)
         if heat is not None:
             heat = heat.group(1)
             heat = utils.htmlToText(heat)
-            tempsplit = self._temp.search(heat)
-            if tempsplit:
-                (heat, deg, unit) = tempsplit.groups()
-                heat = self._getTemp(int(heat), deg, unit,msg.args[0])
+            if convert:
+                tempsplit = self._temp.search(heat)
+                if tempsplit:
+                    (heat, deg, unit) = tempsplit.groups()
+                    if convert:
+                        heat = self._getTemp(int(heat), deg, unit,msg.args[0])
             if float(heat[:-2]) > float(temp[:-2]):
                 index = ' (Heat Index: %s)' % heat
         if temp and conds and city and state:
@@ -304,11 +311,15 @@ class Weather(callbacks.Privmsg):
         conds = self._conds.search(text)
         humidity = self._humidity.search(text)
         wind = self._wind.search(text)
+        convert = self.registryValue('convert', msg.args[0])
         if location and temp:
             location = location.group(1)
             location = location.split('-')[-1].strip()
             (temp, deg, unit) = temp.groups()
-            temp = self._getTemp(int(temp), deg, unit, msg.args[0])
+            if convert:
+                temp = self._getTemp(int(temp), deg, unit, msg.args[0])
+            else:
+                temp = deg.join((temp, unit))
             resp = 'The current temperature in %s is %s.' % (location, temp)
             resp = [resp]
             if conds is not None:
@@ -330,6 +341,10 @@ conf.registerChannelValue(conf.supybot.plugins.Weather, 'command',
     WeatherCommand('cnn', """Sets the default command to use when retrieving 
     the weather.  Command must be one of %s.""" %
     utils.commaAndify(Weather.weatherCommands, And='or')))
+conf.registerChannelValue(conf.supybot.plugins.Weather, 'convert',
+    registry.Boolean(True, """Determines whether the weather commands will
+    automatically convert weather units to the unit specified in
+    supybot.plugins.Weather.temperatureUnit."""))
 
 Class = Weather
 

@@ -73,5 +73,27 @@ if network:
         def testNoEscapingWebError(self):
             self.assertNotRegexp('ham "buenos aires"', 'WebError')
 
+        def testConvertConfig(self):
+            try:
+                convert = conf.supybot.plugins.Weather.convert()
+                unit = conf.supybot.plugins.Weather.temperatureUnit()
+                conf.supybot.plugins.Weather.convert.setValue(False)
+                conf.supybot.plugins.Weather.temperatureUnit.setValue('C')
+                self.assertRegexp('ham london, gb', r'-?\d+.C')
+                self.assertRegexp('ham 02115', r'-?\d+.F')
+                conf.supybot.plugins.Weather.temperatureUnit.setValue('F')
+                self.assertRegexp('ham london, gb', r'-?\d+.C')
+                self.assertRegexp('ham 02115', r'-?\d+.F')
+                conf.supybot.plugins.Weather.convert.setValue(True)
+                conf.supybot.plugins.Weather.temperatureUnit.setValue('C')
+                self.assertRegexp('ham london, gb', r'-?\d+.C')
+                self.assertRegexp('ham 02115', r'-?\d+.C')
+                conf.supybot.plugins.Weather.temperatureUnit.setValue('F')
+                self.assertRegexp('ham london, gb', r'-?\d+.F')
+                self.assertRegexp('ham 02115', r'-?\d+.F')
+            finally:
+                conf.supybot.plugins.Weather.convert.setValue(convert)
+                conf.supybot.plugins.Weather.temperatureUnit.setValue(unit)
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
