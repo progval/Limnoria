@@ -56,6 +56,7 @@ Commands include:
   last
   lastfrom
   lithp
+  pydoc
 """
 
 from baseplugin import *
@@ -63,6 +64,8 @@ from baseplugin import *
 import os
 import gc
 import re
+import imp
+import sys
 import new
 import md5
 import sha
@@ -425,6 +428,42 @@ class FunCommands(callbacks.Privmsg):
                     irc.reply(msg, '<%s> %s' % (nick, m.args[1]))
                 return
         irc.error(msg, 'I don\'t remember a message from that person.')
+
+    modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
+    def pydoc(self, irc, msg, args):
+        """<python function>
+
+        Returns the __doc__ string for a given Python function.
+        """
+        funcname = privmsgs.getArgs(args)
+        if funcname.translate(string.ascii, self.modulechars) != '':
+            irc.error('That\'s not a valid module or function name.')
+            return
+        if '.' in funcname:
+            parts = funcname.split('.')
+            module = '.'.join(parts[:-1])
+            if module not in sys.modules:
+                path = os.path.dirname(os.__file__)
+                for name in parts[:-1]:
+                    try:
+                        info = imp.find_module(name, path)
+                        newmodule = imp.load_module(name, *info)
+                        path = newmodule.__path__
+                        info[1].close()
+                    except ImportError:
+                        irc.error(msg, 'No such module %s exists.' % module)
+                        return
+        try:
+            s = eval(funcname + '.__doc__')
+            s = s.replace('\n\n', '.  ')
+            s = s.replace('\n', ' ')
+        except NameError:
+            s = 'No such function exists.'
+        except AttributeError:
+            s = 'That function has no documentation.'
+        irc.reply(msg, s)
+                
+                
             
 
 Class = FunCommands
