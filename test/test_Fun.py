@@ -97,6 +97,10 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
         s = 'the recalc1trant jam3ssan tests his scramble fun><tion'
         self.assertNotRegexp('scramble %s' % s, s)
 
+    def testColorize(self):
+        self.assertNotRegexp('colorize foobar', r'\s+')
+        self.assertRegexp('colorize foobar', r'\x03')
+
     def testoutfilter(self):
         s = self.nick.encode('rot13')
         self.assertNotError('outfilter rot13')

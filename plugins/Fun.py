@@ -76,7 +76,8 @@ class Fun(callbacks.Privmsg):
         return msg
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
-                       'scramble', 'morse', 'reverse', 'urlquote', 'md5','sha']
+                       'scramble', 'morse', 'reverse', 'urlquote', 'md5','sha',
+                       'colorize']
     def outfilter(self, irc, msg, args, channel):
         """[<channel>] [<command>]
         
@@ -553,6 +554,21 @@ class Fun(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         irc.reply(msg, text[::-1])
+
+    def _color(self, c):
+        if c == ' ':
+            return c
+        fg = random.randint(2, 15)
+        return '\x03%s%s' % (fg, c)
+
+    def colorize(self, irc, msg, args):
+        """<text>
+
+        Returns <text> with each character randomly colorized.
+        """
+        text = privmsgs.getArgs(args)
+        L = [self._color(c) for c in text]
+        irc.reply(msg, ''.join(L))
 
     def jeffk(self, irc, msg, args):
         """<text>
