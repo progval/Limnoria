@@ -8,7 +8,10 @@ GETTING_STARTED document to see how to work with configuration
 variables now.  Your old botscripts from earlier versions *will not*
 work with the new configuration method.  We'd appreciate it if you'd
 rerun the wizard in order for us to find any bugs that remain in it
-before we officially declare ourselves Beta.
+before we officially declare ourselves Beta.  Note also that because
+of the new configuration method, the interface for plugins' configure
+function has changed: there are no longer any onStart or afterConnect
+arguments, so all configuration should be performed via the registry.
 
 Channel capabilities have been changed; rather than being
 #channel.capability, they're now #channel,capability.  It's a bit
