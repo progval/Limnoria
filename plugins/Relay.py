@@ -53,8 +53,7 @@ import privmsgs
 import callbacks
 import asyncoreDrivers
 
-class Relay(privmsgs.CapabilityCheckingPrivmsg):
-    capability = 'owner'
+class Relay(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.ircs = {}
@@ -70,6 +69,7 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
         self.abbreviations[realIrc] = abbreviation
         self.started = True
         irc.reply(msg, conf.replySuccess)
+    startrelay = privmsgs.checkCapability(startrelay, 'owner')
 
     def relayconnect(self, irc, msg, args):
         "<network abbreviation> <domain:port> (port defaults to 6667)"
@@ -86,14 +86,16 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
         self.ircs[abbreviation] = newIrc
         self.abbreviations[newIrc] = abbreviation
         irc.reply(msg, conf.replySuccess)
+    relayconnect = privmsgs.checkCapability(relayconnect, 'owner')
 
     def relaydisconnect(self, irc, msg, args):
         "<network>"
         network = privmsgs.getArgs(args)
         otherIrc = self.ircs[network]
-        otherIrc.die()
         otherIrc.driver.die()
-        irc.reply(conf.replySuccess)
+        otherIrc.die()
+        irc.reply(msg, conf.replySuccess)
+    relaydisconnect = privmsgs.checkCapability(relaydisconnect, 'owner')
 
     def relayjoin(self, irc, msg, args):
         "<channel>"
@@ -103,6 +105,7 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
         irc.reply(msg, conf.replySuccess)
+    relayjoin = privmsgs.checkCapability(relayjoin, 'owner')
 
     def relaypart(self, irc, msg, args):
         "<channel>"
@@ -112,6 +115,7 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
         irc.reply(msg, conf.replySuccess)
+    relaypart = privmsgs.checkCapability(relaypart, 'owner')
 
     def relaynames(self, irc, msg, args):
         "[<channel>] (only if not sent in the channel itself.)"
