@@ -139,6 +139,7 @@ class PluginTestCase(unittest.TestCase):
         fed = time.time()
         response = self.irc.takeMsg()
         while response is None and time.time() - fed < timeout:
+            time.sleep(0.1) # So it doesn't suck up 100% cpu.
             drivers.run()
             response = self.irc.takeMsg()
         return response
