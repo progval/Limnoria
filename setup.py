@@ -34,6 +34,7 @@ plugins = [
     'AutoMode',
     'Babelfish',
     'Channel',
+    'ChannelLogger',
     'ChannelStats',
     'Config',
     'Ctcp',
