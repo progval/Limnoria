@@ -75,7 +75,7 @@ def findBiggestDollar(alias):
 def makeNewAlias(name, alias):
     if findAliasCommand(name, alias):
         raise RecursiveAlias
-    doChannel = bool(alias.find('$channel') != -1)
+    doChannel = alias.find('$channel') != -1
     biggestDollar = findBiggestDollar(alias)
     doDollars = bool(biggestDollar)
     if biggestDollar is not None:
