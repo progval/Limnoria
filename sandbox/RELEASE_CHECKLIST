@@ -2,8 +2,9 @@ These are things not to be forgotten when making a Supybot release:
 
 Make sure the RELNOTES has "Version MAJOR.MINOR.PATCHLEVEL" at the top.
 Make sure the ChangeLog has been ordered by importance.
+  Feature additions first, changes second, fixes last (if at all)
 Make sure the ChangeLog has been given a proper header and that its
-  first change is "* Version MAJOR.MINOR.PATCHLEVEL!".
+  First change is "* Version MAJOR.MINOR.PATCHLEVEL!".
 Update the version in conf.py.
 Update the version in setup.py.
 Update the version in scripts/supybot
@@ -19,9 +20,11 @@ Create .tar.gz: tar czvf Supybot-MAJOR.MINOR.PATCHLEVEL.tar.gz <dir>
 Create .tar.bz2: tar cjvf Supybot-MAJOR.MINOR.PATCHLEVEL.tar.bz2 <dir>
 Create .zip: zip -r Supybot-MAJOR.MINOR.PATCHLEVEL.zip <dir>
 Add the release to the supybot package in SF.net.
+  The version should be Supybot-MAJOR.MINOR.PATCHLEVEL
 Upload the archives to upload.sf.net, add to the release on SF.net.
 Announce the release in a News item on SF.net.
 Announce the release on Freshmeat.net.
+  The version should be MAJOR.MINOR.PATCHLEVEL
 Announce the release on PyPI via "python setup.py register".
 Announce the release on the forums.
 Announce the release on comp.lang.python and comp.lang.python.announce.
