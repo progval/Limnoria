@@ -53,6 +53,19 @@ import ircutils
 import privmsgs
 import callbacks
 
+def replyWhenNotCommand(irc, msg, notCommands):
+    """This is called when supybot thinks he has received a command but the
+    apparent command actually isn't a command.  Replace it with something that
+    suits your purposes more, if you want.
+    """
+    if len(notCommands) == 1:
+        s = '%s is not a command.' % notCommands[0]
+    else:
+        s = '%s are not commands' % \
+            utils.commaAndify(notCommands)
+    irc.queueMsg(callbacks.reply(msg, s))
+    
+
 class MiscCommands(callbacks.Privmsg):
     def doPrivmsg(self, irc, msg):
         # This exists to be able to respond to attempts to command the bot
@@ -74,12 +87,7 @@ class MiscCommands(callbacks.Privmsg):
                     if not callbacks.findCallbackForCommand(irc, command):
                         notCommands.append(repr(command))
                 if notCommands:
-                    if len(notCommands) == 1:
-                        s = '%s is not a command.' % notCommands[0]
-                    else:
-                        s = '%s are not commands' % \
-                            utils.commaAndify(notCommands)
-                    irc.queueMsg(callbacks.reply(msg, s))
+                    replyWhenNotCommand(irc, msg, notCommands)
         
     def list(self, irc, msg, args):
         """[--private] [<module name>]
