@@ -45,5 +45,8 @@ if network:
             self.assertNotError('weather Tucson, AZ')
             self.assertError('weather hell')
 
+        def testNoEscapingWebError(self):
+            self.assertNotRegexp('weather "buenos aires"', 'WebError')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
