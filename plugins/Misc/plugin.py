@@ -585,6 +585,13 @@ class Misc(callbacks.Privmsg):
             irc.reply(buildPersonString(module))
     contributors = wrap(contributors, ['plugin', additional('nick')])
 
+    def ping(self, irc, msg, args):
+        """takes no arguments
+
+        Checks to see if the bot is alive.
+        """
+        irc.reply('pong', prefixName=False)
+
 Class = Misc
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
