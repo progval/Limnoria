@@ -56,7 +56,7 @@ def configure(onStart, afterConnect, advanced):
     if yn('Is your NickServ named something other than NickServ?') == 'y':
         nickserv = anything('What is your NickServ named?')
     onStart.append('load Services')
-    onStart.append('startservices %s %s %s %s' % \
+    onStart.append('services start %s %s %s %s' % \
                    (nick, password, nickserv, chanserv))
 
 class Services(privmsgs.CapabilityCheckingPrivmsg):
@@ -65,7 +65,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         callbacks.Privmsg.__init__(self)
         self.nickserv = ''
 
-    def startservices(self, irc, msg, args):
+    def start(self, irc, msg, args):
         """<nick> <password> [<nickserv> <chanserv>]
 
         Sets the necessary values for the services plugin to work.  <nick>
