@@ -41,6 +41,7 @@ except ImportError:
 if sqlite is not None:
     class WordsTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('Words',)
+        # Putting in a comment to make this different.
         def testAddWord(self):
             words = ('hello', 'world', 'mother', 'python')
             for word in words:
