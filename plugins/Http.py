@@ -150,7 +150,7 @@ class Http(callbacks.Privmsg):
     _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
         '"#FFFF00">(\d+)')
     _gkteam = re.compile(r'Team:\s+(.*?)\s+Last time')
-    _gkseen = re.compile(r'seen on GK:\s+([^[]+)\s*')
+    _gkseen = re.compile(r'seen on GK:\s+([^[]+)\s+')
     def gkstats(self, irc, msg, args):
         """<name>
 
