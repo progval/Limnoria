@@ -299,9 +299,10 @@ class PluginTestCase(SupyTestCase):
         m = self._feedMsg(query, **kwargs)
         if m is None:
             raise TimeoutError, query
-        self.failUnless(ircmsgs.isAction(m))
+        self.failUnless(ircmsgs.isAction(m), '%r is not an action.' % m)
         if expectedResponse is not None:
-            self.assertEqual(ircmsgs.unAction(m), expectedResponse)
+            s = ircmsgs.unAction(m)
+            self.assertEqual(s, expectedResponse, '%r != %r' % (s, m))
         return m
 
     def assertSnarfAction(self, query, expectedResponse=None, **kwargs):
@@ -354,10 +355,13 @@ class ChannelPluginTestCase(PluginTestCase):
         self.failIf(m is None, 'No message back from joining channel.')
         self.assertEqual(m.command, 'WHO')
 
-    def _feedMsg(self, query, timeout=None, to=None, frm=None,
+    def _feedMsg(self, query, timeout=None, to=None, frm=None, private=False,
                  usePrefixChar=True):
         if to is None:
-            to = self.channel
+            if private:
+                to = self.irc.nick
+            else:
+                to = self.channel
         if frm is None:
             frm = self.prefix
         if timeout is None:
@@ -395,10 +399,13 @@ class ChannelPluginTestCase(PluginTestCase):
             print 'Returning: %r' % ret
         return ret
 
-    def feedMsg(self, query, to=None, frm=None):
+    def feedMsg(self, query, to=None, frm=None, private=False):
         """Just feeds it a message, that's all."""
         if to is None:
-            to = self.channel
+            if private:
+                to = self.irc.nick
+            else:
+                to = self.channel
         if frm is None:
             frm = self.prefix
         self.irc.feedMsg(ircmsgs.privmsg(to, query, prefix=frm))
