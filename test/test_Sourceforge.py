@@ -170,10 +170,10 @@ if network:
                     original)
 
         def testTotal(self):
-            self.assertRegexp('totalbugs gaim', r'\d+ open / \d+ total')
-            self.assertRegexp('totalrfes gaim', r'\d+ open / \d+ total')
-            self.assertError('totalbugs lkjfad')
-            self.assertError('totalrfes lkjfad')
+            self.assertRegexp('total bugs gaim', r'\d+ open / \d+ total')
+            self.assertRegexp('total rfes gaim', r'\d+ open / \d+ total')
+            self.assertError('total bugs lkjfad')
+            self.assertError('total rfes lkjfad')
 
         def testFight(self):
             self.assertRegexp('fight gaim opengaim',

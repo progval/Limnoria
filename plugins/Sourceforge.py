@@ -265,7 +265,23 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
 
     # TODO: consolidate total* into one command which takes options for all
     # the viable statistics that can be snarfed from the project page
-    def totalbugs(self, irc, msg, args):
+    def total(self, irc, msg, args):
+        """[bugs|rfes] [<project>]
+
+        Returns the total count of open bugs or rfes.  <project> is only
+        necessary if a default project is not set.
+        """
+        if not args:
+            raise callbacks.ArgumentError
+        type = args.pop(0)
+        if type == 'bugs':
+            self._totalbugs(irc, msg, args)
+        elif type == 'rfes':
+            self._totalrfes(irc, msg, args)
+        else:
+            raise callbacks.ArgumentError
+        
+    def _totalbugs(self, irc, msg, args):
         """[<project>]
 
         Returns a count of the open/total bugs.  <project> is not needed if a
@@ -281,7 +297,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         else:
             irc.error('Could not find bug statistics.')
 
-    def totalrfes(self, irc, msg, args):
+    def _totalrfes(self, irc, msg, args):
         """[<project>]
 
         Returns a count of the open/total RFEs.  <project> is not needed if a
