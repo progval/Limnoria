@@ -236,10 +236,10 @@ class Notes(callbacks.Privmsg):
                     else:
                         L.append(r'#%s (private)' % id)
             if more:
-                utils.shrinkList(L, ', ', 400)
+                ircutils.shrinkList(L, ', ', 400)
                 L.append('and even more notes.')
             else:
-                utils.shrinkList(L, ', ', 450)
+                ircutils.shrinkList(L, ', ', 450)
             irc.reply(msg, ', '.join(L))
 
     def oldnotes(self, irc, msg, args):
@@ -262,7 +262,7 @@ class Notes(callbacks.Privmsg):
         else:
             ids = [str(t[0]) for t in cursor.fetchall()]
             ids.reverse()
-            utils.shrinkList(ids, ', ', 425)
+            ircutils.shrinkList(ids, ', ', 425)
             ids.reverse()
             irc.reply(msg, ', '.join(ids))
                           
