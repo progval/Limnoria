@@ -44,11 +44,11 @@ import types
 import string
 from itertools import imap
 
-import unum.units
-
 import utils
 import privmsgs
 import callbacks
+
+import convertcore 
 
 
 def configure(onStart, afterConnect, advanced):
@@ -103,15 +103,15 @@ class Math(callbacks.Privmsg):
                          r'\.\d+|'
                          r'\d+\.|'
                          r'\d+))')
-    # This is a comment so this PoS will commit.
+
     def _floatToString(self, x):
-        if -1e-12 < x < 1e-12:
+        if -1e-10 < x < 1e-10:
             return '0'
-        elif int(x) == x:
+        elif -1e-10 < int(x) - x < 1e-10:
             return str(int(x))
         else:
             return str(x)
-
+    
     def _complexToString(self, x):
         realS = self._floatToString(x.real)
         imagS = self._floatToString(x.imag)
@@ -138,7 +138,7 @@ class Math(callbacks.Privmsg):
         """<math expression>
 
         Returns the value of the evaluted <math expression>.  The syntax is
-        Python syntax; the type of arithmetic is floating point.  Floating
+        Pt's ython syntax; the type of arithmetic is floating point.  Floating
         point arithmetic is used in order to prevent a user from being able to
         crash to the bot with something like 10**10**10**10.  One consequence
         is that large values such as 10**24 might not be exact.
@@ -156,6 +156,7 @@ class Math(callbacks.Privmsg):
             irc.error('You can\'t use lambda in this command.')
             return
         text = text.replace('lambda', '') # Let's leave it in for safety.
+        
         def handleMatch(m):
             s = m.group(1)
             if s.startswith('0x'):
@@ -174,12 +175,14 @@ class Math(callbacks.Privmsg):
         text = self._mathRe.sub(handleMatch, text)
         try:
             self.log.info('evaluating %r from %s' % (text, msg.prefix))
+            print text
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(self._complexToString(x))
         except OverflowError:
             maxFloat = math.ldexp(0.9999999999999999, 1024)
             irc.error('The answer exceeded %s or so.' % maxFloat)
         except TypeError:
+            print "hey"
             irc.error('Something in there wasn\'t a valid number.')
         except NameError, e:
             irc.error('%s is not a defined function.' % str(e).split()[1])
@@ -213,6 +216,7 @@ class Math(callbacks.Privmsg):
             maxFloat = math.ldexp(0.9999999999999999, 1024)
             irc.error('The answer exceeded %s or so.' % maxFloat)
         except TypeError:
+            print "ho"
             irc.error('Something in there wasn\'t a valid number.')
         except NameError, e:
             irc.error('%s is not a defined function.' % str(e).split()[1])
@@ -271,58 +275,50 @@ class Math(callbacks.Privmsg):
             s = ', '.join(imap(self._complexToString, imap(complex, stack)))
             irc.reply('Stack: [%s]' % s)
 
-    _convertEnv = {'__builtins__': types.ModuleType('__builtins__')}
-    for (k, v) in unum.units.__dict__.iteritems():
-        if isinstance(v, unum.Unum):
-            _convertEnv[k.lower()] = v
     def convert(self, irc, msg, args):
-        """[<number>] <units> to <other units>
+        """[<number>] <unit> to <other unit>
 
-        Converts the first number of <units> to the <other units>.  Valid units
-        expressions include the standard Python math operators applied to valid
-        units.  If <number> isn't given, it defaults to 1.
+        Converts from <unit> to <other unit>. If number isn't given, it
+        defaults to 1. For unit information, see 'units' command.
         """
-        if args and args[0].isdigit():
-            n = args.pop(0)
+        
+        # see if the first arg is a number of some sort
+        if args:       
+            try:
+                num = float(args[0])
+                args.pop(0)
+            except ValueError:
+                num = 1.0
         else:
-            n = 1
-        (unit1, to, unit2) = privmsgs.getArgs(args, required=3)
-        if to != 'to':
             raise callbacks.ArgumentError
+
         try:
-            n = float(n)
+            the_rest = ' '.join(args)
+            (unit1, unit2) = the_rest.split(' to ')
         except ValueError:
-            irc.error('%s is not a valid number.' % n)
-            return
+            raise callbacks.ArgumentError
+
         try:
-            unit1 = unit1.lower()
-            self.log.info('evaluating %r from %s' % (unit1, msg.prefix))
-            u1 = eval(unit1, self._convertEnv, self._convertEnv)
-        except:
-            irc.error('%s is not a valid units expression.' % unit1)
-            return
-        try:
-            unit2 = unit2.lower()
-            self.log.info('evaluating %r from %s' % (unit2, msg.prefix))
-            u2 = eval(unit2, self._convertEnv, self._convertEnv)
-        except:
-            irc.error('%s is not a valid units expression.' % unit2)
-            return
-        try:
-            irc.reply(str((n*u1).as(u2)))
-        except Exception, e:
-            irc.error(str(e))
+            newNum = convertcore.convert(num, unit1, unit2)
+            newNum = self._floatToString(newNum)
+            
+            irc.reply('%s %s' % (newNum , unit2))
+        except convertcore.UnitDataError, ude:
+            irc.error(str(ude))
 
     def units(self, irc, msg, args):
-        """takes no arguments
+        """ [<type>]
 
-        Returns all the valid units.
+        With no arguments, returns a list of measurement types, which can be
+        passed as arguments. When called with a type as an argument, returns
+        the units of that type.
         """
-        L = self._convertEnv.keys()
-        L.remove('__builtins__')
-        L.sort()
-        irc.reply(utils.commaAndify(L))
         
+        if len(args) == 0:
+            type = None
+        else:
+            type = ' '.join(args)
+        irc.reply(convertcore.units(type))
         
 Class = Math
 
