@@ -243,6 +243,7 @@ class FunDB(callbacks.Privmsg):
         cursor = self.db.cursor()
         cursor.execute("""INSERT INTO larts VALUES (NULL, %s)""", lart)
         self.db.commit()
+        irc.reply(msg, conf.replySuccess)
 
     def removelart(self, irc, msg, args):
         """<number>"""
