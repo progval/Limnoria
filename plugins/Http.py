@@ -152,7 +152,6 @@ class Http(callbacks.Privmsg):
             seen = self._gkseen.search(profile).group(1)
             if profile.find('Team:') >= 0:
                 team = self._gkteam.search(profile).group(1)
-                print team
                 irc.reply(msg, '%s (team: %s) is rated %s and has %s active ' \
                           'games and a record of W-%s, L-%s, D-%s.  ' \
                           '%s was last seen on Gameknot %s' % \
