@@ -109,7 +109,7 @@ class RateLimiter:
 
     def put(self, msg):
         if self.limit(msg) and not world.testing:
-            debug.printf('Limiting message from %s' % msg.prefix)
+            debug.msg('Limiting message from %s' % msg.prefix, 'low')
             self.limited.append(msg)
         else:
             self.unlimited.append(msg)
@@ -464,7 +464,7 @@ class PrivmsgRegexp(Privmsg):
                     self.callCommand(method, irc, msg, m)
 
 
-class Combine:
+class Combine(Privmsg):
     classes = [] # Override in a subclass.
     def __getattr__(self, attr):
         for instance in self.instances:
