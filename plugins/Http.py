@@ -94,9 +94,9 @@ class Http(callbacks.Privmsg):
         m = self._doctypeRe.search(s)
         if m:
             s = utils.normalizeWhitespace(m.group(0))
-            irc.reply('%s has the following doctype: %s' % (url, s))
+            irc.reply(s)
         else:
-            irc.reply('%s has no specified doctype.' % url)
+            irc.reply('That URL has no specified doctype.')
             
     def size(self, irc, msg, args):
         """<url>
