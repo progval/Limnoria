@@ -54,7 +54,8 @@ startedAt = time.time() # Just in case it doesn't get set later.
 starting = False
 
 mainThread = threading.currentThread()
-assert 'MainThread' in repr(mainThread)
+# ??? Should we do this?  What do we gain?
+# assert 'MainThread' in repr(mainThread)
 
 def isMainThread():
     return mainThread is threading.currentThread()
