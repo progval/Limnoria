@@ -147,9 +147,10 @@ class Plugin(callbacks.Plugin):
             hasAuthor = False
             hasContribs = False
             if getattr(module, '__author__', None):
-                author = 'was written by %s' % \
-                    utils.web.mungeEmail(str(module.__author__))
-                hasAuthor = True
+                if module.__author__ != supybot.authors.unknown:
+                    author = 'was written by %s' % \
+                        utils.web.mungeEmail(str(module.__author__))
+                    hasAuthor = True
             if getattr(module, '__contributors__', None):
                 contribs = sortAuthors()
                 if hasAuthor:
