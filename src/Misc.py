@@ -327,32 +327,40 @@ class Misc(callbacks.Privmsg):
         Returns the last message matching the given criteria.  --from requires
         a nick from whom the message came; --in and --to require a channel the
         message was sent to; --with requires some string that had to be in the
-        message; --regexp requires a regular expression the message must match
+        message; --regexp requires a regular expression the message must
+        match.  By default, the current channel is searched.
         """
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
                                                    'with=', 'regexp='])
                                                    
-        predicates = []
+        predicates = {}
+        if ircutils.isChannel(msg.args[0]):
+            predicates['in'] = lambda m: m.args[0] == msg.args[0]
         for (option, arg) in optlist:
             if option == '--from':
-                predicates.append(lambda m, arg=arg: \
-                                  ircutils.hostmaskPatternEqual(arg, m.nick))
+                def f(m, arg=arg):
+                    return ircutils.hostmaskPatternEqual(arg, m.nick)
+                predicates['from'] = f
             elif option == '--in' or option == 'to':
-                if not ircutils.isChannel(arg):
-                    irc.error(msg, 'Argument to --%s must be a channel.' % arg)
-                    return
-                predicates.append(lambda m, arg=arg: m.args[0] == arg)
+                def f(m, arg=arg):
+                    return m.args[0] == arg
+                predicates['in'] = f
             elif option == '--with':
-                predicates.append(lambda m, arg=arg: arg in m.args[1])
+                def f(m, arg=arg):
+                    return arg in m.args[1]
+                predicates.setdefault('with', []).append(f)
             elif option == '--regexp':
                 try:
                     r = utils.perlReToPythonRe(arg)
+                    def f(m, r=r):
+                        return r.search(m.args[1])
+                    predicates.setdefault('regexp', []).append(f)
                 except ValueError, e:
                     irc.error(msg, str(e))
                     return
-                predicates.append(lambda m: r.search(m.args[1]))
         iterable = ifilter(self._validLastMsg, reviter(irc.state.history))
         iterable.next() # Drop the first message.
+        predicates = list(utils.flatten(predicates.itervalues()))
         for m in iterable:
             for predicate in predicates:
                 if not predicate(m):
