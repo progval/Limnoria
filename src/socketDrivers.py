@@ -75,11 +75,7 @@ class SocketDriver(drivers.IrcDriver):
         self.reconnect()
 
     def _sendIfMsgs(self):
-        try:
-            msgs = [self.irc.takeMsg()]
-        except Exception, e:
-            log.exception('Uncaught exception in irclib.Irc.takeMsg:')
-            return
+        msgs = [self.irc.takeMsg()]
         while msgs[-1] is not None:
             msgs.append(self.irc.takeMsg())
         del msgs[-1]

@@ -434,13 +434,7 @@ class IrcObjectProxy(RichReplyMethods):
                 log.debug('Finished calling invalidCommand: %s', cb.name())
                 return
             if hasattr(cb, 'invalidCommand'):
-                try:
-                    cb.invalidCommand(self, self.msg, self.args)
-                except Exception, e:
-                    cb.log.exception('Uncaught exception in invalidCommand:')
-                    log.warning('Uncaught exception in %s.invalidCommand, '
-                                'continuing to call other invalidCommands.' %
-                                cb.name())
+                cb.invalidCommand(self, self.msg, self.args)
 
     def _callCommand(self, name, command, cb):
         try:
@@ -669,6 +663,8 @@ class ConfigIrcProxy(RichReplyMethods):
     
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
+    __metaclass__ = log.MetaFirewall
+    __firewalled__ = {'invalidCommand': None} # Eventually callCommand.
     threaded = False
     public = True
     alwaysCall = ()

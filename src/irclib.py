@@ -75,6 +75,13 @@ class IrcCallback(IrcCommandDispatcher):
     # priority means the callback is called *earlier* on the inFilter chain,
     # *earlier* on the __call__ chain, and *later* on the outFilter chain.
     priority = 99
+    __metaclass__ = log.MetaFirewall
+    __firewalled__ = {'die': None,
+                      'reset': None,
+                      '__call__': None,
+                      'inFilter': lambda self, irc, msg: msg,
+                      'outFilter': lambda self, irc, msg: msg,
+                      'name': lambda self: self.__class__.__name__,}
     def name(self):
         """Returns the name of the callback."""
         return self.__class__.__name__
@@ -99,11 +106,7 @@ class IrcCallback(IrcCommandDispatcher):
         """Used for handling each message."""
         method = self.dispatchCommand(msg.command)
         if method is not None:
-            try:
-                method(irc, msg)
-            except Exception, e:
-                s = 'Exception caught in generic IrcCallback.__call__:'
-                log.exception(s)
+            method(irc, msg)
 
     def reset(self):
         """Resets the callback.  Called when reconnecting to the server."""
@@ -263,6 +266,8 @@ class IrcState(IrcCommandDispatcher):
     """Maintains state of the Irc connection.  Should also become smarter.
     """
     __slots__ = ('history', 'nicksToHostmasks', 'channels')
+    __metaclass__ = log.MetaFirewall
+    __firewalled__ = {'addMsg': None}
     def __init__(self):
         self.history = RingBuffer(conf.supybot.maxHistoryLength())
         self.reset()
@@ -411,6 +416,10 @@ class Irc(IrcCommandDispatcher):
 
     Handles PING commands already.
     """
+    __metaclass__ = log.MetaFirewall
+    __firewalled__ = {'die': None,
+                      'feedMsg': None,
+                      'takeMsg': None,}
     _nickSetters = sets.Set(['001', '002', '003', '004', '250', '251', '252',
                              '254', '255', '265', '266', '372', '375', '376',
                              '333', '353', '332', '366', '005'])
@@ -520,31 +529,16 @@ class Irc(IrcCommandDispatcher):
         if msg:
             log.debug(repr(msg))
             for callback in reviter(self.callbacks):
-                try:
-                    outFilter = getattr(callback, 'outFilter')
-                except AttributeError, e:
-                    continue
-                try:
-                    msg = outFilter(self, msg)
-                except:
-                    log.exception('Exception caught in outFilter:')
-                    continue
+                msg = callback.outFilter(self, msg)
                 if msg is None:
-                    log.debug('%s.outFilter returned None' % callback.name())
+                    log.debug('%s.outFilter returned None.' % callback.name())
                     return self.takeMsg()
             if len(str(msg)) > 512:
                 # Yes, this violates the contract, but at this point it doesn't
                 # matter.  That's why we gotta go munging in private attributes
                 msg._str = msg._str[:500] + '\r\n'
                 msg._len =  len(str(msg))
-            try:
-                self.state.addMsg(self, msg)
-            except Exception, e:
-                log.exception('Uncaught exception in IrcState.addMsg.  This '
-                              'could be a bug, but it could also be the '
-                              'result of an invalid message being sent via '
-                              'Owner.ircquote.')
-                return
+            self.state.addMsg(self, msg)
             log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
             return msg
         else:
@@ -668,10 +662,7 @@ class Irc(IrcCommandDispatcher):
         log.info('Irc object for %s dying.' % self.server)
         if self in world.ircs:
             for cb in self.callbacks:
-                try:
-                    cb.die()
-                except Exception, e:
-                    log.exception('Uncaught exception in %s.die:', cb.name())
+                cb.die()
             world.ircs.remove(self)
         else:
             log.warning('Irc object killed twice.')

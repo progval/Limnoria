@@ -69,11 +69,7 @@ class SupyIrcProtocol(LineReceiver):
 
     def checkIrcForMsgs(self):
         if self.connected:
-            try:
-                msg = self.irc.takeMsg()
-            except Exception, e:
-                log.exception('Uncaught exception in irclib.Irc.takeMsg:')
-                return
+            msg = self.irc.takeMsg()
             if msg:
                 self.transport.write(str(msg))
         self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)

@@ -42,6 +42,7 @@ import logging
 
 import ansi
 import conf
+import utils
 import registry
 
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
@@ -165,6 +166,45 @@ def timestamp(when=None):
         when = time.time()
     format = conf.supybot.log.timestampFormat()
     return time.strftime(format, time.localtime(when))
+
+def firewall(f, errorHandler=None):
+    def logException(self, s=None):
+        if s is None:
+            s = 'Uncaught exception'
+        if hasattr(self, 'log'):
+            self.log.exception('%s:', s)
+        else:
+            exception('%s in %s.%s:', s, self.__class__.__name__, f.func_name)
+    def m(self, *args, **kwargs):
+        try:
+            return f(self, *args, **kwargs)
+        except Exception, e:
+            logException(self)
+            if errorHandler is not None:
+                try:
+                    errorHandler(self, *args, **kwargs)
+                except Exception, e:
+                    logException(self, 'Uncaught exception in errorHandler')
+                    
+    m = utils.changeFunctionName(m, f.func_name, f.__doc__)
+    return m
+
+class MetaFirewall(type):
+    def __new__(cls, name, bases, dict):
+        firewalled = {}
+        for base in bases:
+            if hasattr(base, '__firewalled__'):
+                firewalled.update(base.__firewalled__)
+        if '__firewalled__' in dict:
+            firewalled.update(dict['__firewalled__'])
+        for attr in firewalled:
+            if attr in dict:
+                try:
+                    errorHandler = firewalled[attr]
+                except:
+                    errorHandler = None
+                dict[attr] = firewall(dict[attr], errorHandler)
+        return type.__new__(cls, name, bases, dict)
 
 
 class LogLevel(registry.Value):
