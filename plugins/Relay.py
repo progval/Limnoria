@@ -448,6 +448,13 @@ class Relay(callbacks.Privmsg):
             s = '%s%s@%s%s %s' % (lt, nick, network, gt, msg.args[1])
         return s
 
+    def _sendToOthers(self, irc, msg):
+        assert msg.command == 'PRIVMSG'
+        for otherIrc in self.ircs.itervalues():
+            if otherIrc != irc:
+                if msg.args[0] in otherIrc.state.channels:
+                    otherIrc.queueMsg(msg)
+
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
         if not isinstance(irc, irclib.Irc):
@@ -458,10 +465,8 @@ class Relay(callbacks.Privmsg):
                 return
             abbreviation = self.abbreviations[irc]
             s = self._formatPrivmsg(msg.nick, abbreviation, msg)
-            for otherIrc in self.ircs.itervalues():
-                if otherIrc != irc:
-                    if channel in otherIrc.state.channels:
-                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+            m = ircmsgs.privmsg(channel, s)
+            self._sendToOthers(irc, m)
 
     def doJoin(self, irc, msg):
         if self.started:
@@ -472,10 +477,8 @@ class Relay(callbacks.Privmsg):
                 return
             abbreviation = self.abbreviations[irc]
             s = '%s (%s) has joined on %s' % (msg.nick,msg.prefix,abbreviation)
-            for otherIrc in self.ircs.itervalues():
-                if otherIrc != irc:
-                    if channel in otherIrc.state.channels:
-                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+            m = ircmsgs.privmsg(channel, s)
+            self._sendToOthers(irc, m)
 
     def doPart(self, irc, msg):
         if self.started:
@@ -486,40 +489,38 @@ class Relay(callbacks.Privmsg):
                 return
             abbreviation = self.abbreviations[irc]
             s = '%s (%s) has left on %s' % (msg.nick, msg.prefix, abbreviation)
-            for otherIrc in self.ircs.itervalues():
-                if otherIrc != irc:
-                    if channel in otherIrc.state.channels:
-                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+            m = ircmsgs.privmsg(channel, s)
+            self._sendToOthers(irc, m)
 
     def doMode(self, irc, msg):
         if self.started:
             if not isinstance(irc, irclib.Irc):
                 irc = irc.getRealIrc()
             channel = msg.args[0]
-            if channel in self.channels:
-                abbreviation = self.abbreviations[irc]
-                s = 'mode change by %s on %s: %s' % \
-                    (msg.nick, abbreviation, ' '.join(msg.args[1:]))
-                for otherIrc in self.ircs.itervalues():
-                    if otherIrc != irc:
-                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+            if channel not in self.channels:
+                return
+            abbreviation = self.abbreviations[irc]
+            s = 'mode change by %s on %s: %s' % \
+                (msg.nick, abbreviation, ' '.join(msg.args[1:]))
+            m = ircmsgs.privmsg(channel, s)
+            self._sendToOthers(irc, m)
 
     def doKick(self, irc, msg):
         if self.started:
             if not isinstance(irc, irclib.Irc):
                 irc = irc.getRealIrc()
             channel = msg.args[0]
-            if channel in self.channels:
-                abbrev = self.abbreviations[irc]
-                if len(msg.args) == 3:
-                    s = '%s@%s was kicked by %s@%s (%s)' % \
-                        (msg.args[1], abbrev, msg.nick, abbrev, msg.args[2])
-                else:
-                    s = '%s@%s was kicked by %s@%s' % \
-                        (msg.args[1], abbrev, msg.nick, abbrev)
-                for otherIrc in self.ircs.itervalues():
-                    if otherIrc != irc:
-                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+            if channel not in self.channels:
+                return
+            abbrev = self.abbreviations[irc]
+            if len(msg.args) == 3:
+                s = '%s@%s was kicked by %s@%s (%s)' % \
+                    (msg.args[1], abbrev, msg.nick, abbrev, msg.args[2])
+            else:
+                s = '%s@%s was kicked by %s@%s' % \
+                    (msg.args[1], abbrev, msg.nick, abbrev)
+            m = ircmsgs.privmsg(channel, s)
+            self._sendToOthers(irc, m)
 
     def doNick(self, irc, msg):
         if self.started:
@@ -530,9 +531,18 @@ class Relay(callbacks.Privmsg):
             s = 'nick change by %s to %s on %s' % (msg.nick, newNick, network)
             for channel in self.channels:
                 if newNick in irc.state.channels[channel].users:
-                    for otherIrc in self.ircs.itervalues():
-                        if otherIrc != irc:
-                            otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                    m = ircmsgs.privmsg(channel, s)
+                    self._sendToOthers(irc, m)
+
+    def doTopic(self, irc, msg):
+        if self.started:
+            if not isinstance(irc, irclib.Irc):
+                irc = irc.getRealIrc()
+            newTopic = msg.args[1]
+            network = self.abbreviations[irc]
+            s = 'topic change by %s on %s: %s' % (msg.nick, network, newTopic)
+            m = ircmsgs.privmsg(msg.args[0], s)
+            self._sendToOthers(irc, m)
 
     def doQuit(self, irc, msg):
         if self.started:
@@ -545,9 +555,8 @@ class Relay(callbacks.Privmsg):
                 s = '%s has quit %s.' % (msg.nick, network)
             for channel in self.channels:
                 if msg.nick in self.ircstates[irc].channels[channel].users:
-                    for otherIrc in self.ircs.itervalues():
-                        if otherIrc != irc:
-                            otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                    m = ircmsgs.privmsg(channel, s)
+                    self._sendToOthers(irc, m)
 
     def outFilter(self, irc, msg):
         if not self.started:
@@ -565,7 +574,8 @@ class Relay(callbacks.Privmsg):
                     'has joined on ' in text or \
                     'has quit' in text or \
                     text.startswith('mode change') or \
-                    text.startswith('nick change')):
+                    text.startswith('nick change') or \
+                    text.startswith('topic change')):
                 channel = msg.args[0]
                 if channel in self.channels:
                     abbreviation = self.abbreviations[irc]
