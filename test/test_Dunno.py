@@ -74,3 +74,8 @@ if sqlite is not None:
             self.assertResponse('dunno get 2', 'Dunno #2: \'$who\'')
             self.assertError('dunno get 3')
             self.assertError('dunno get a')
+
+        def testDunnoChange(self):
+            self.assertNotError('dunno add moo')
+            self.assertNotError('dunno change 1 s/moo/bar/')
+            self.assertRegexp('dunno get 1', '.*?: \'bar\'')

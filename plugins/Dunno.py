@@ -202,11 +202,12 @@ class Dunno(callbacks.Privmsg):
         except:
             irc.error(msg, '%r is not a valid regexp' % regexp)
             return
+        dunno = cursor.fetchone()[0]
         new_dunno = replacer(dunno)
         cursor.execute("""UPDATE dunnos SET dunno=%s WHERE id=%s""",
                        new_dunno, id)
         self.db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess()
         
 
 
