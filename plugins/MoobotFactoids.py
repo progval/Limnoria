@@ -501,8 +501,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           ORDER BY count(key) DESC LIMIT %s""", limit)
         L = ['%s (%s)' % (ircdb.users.getUser(t[0]).name, t[1])
              for t in cursor.fetchall()]
-        return 'Top %s: %s' % \
-               (utils.nItems(len(L), 'author'), utils.commaAndify(L))
+        return 'Most prolific %s: %s' % \
+               (utils.pluralize(len(L), 'author'), utils.commaAndify(L))
 
     def _mostRecent(self, cursor, limit):
         cursor.execute("""SELECT key FROM factoids
@@ -520,7 +520,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             raise self.MostException, 'No factoids have been requested.'
         L = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
         return 'Top %s: %s' % \
-               (utils.nItems(len(L), 'factoid'), utils.commaAndify(L))
+               (utils.nItems(len(L), 'factoid', between='requested'),
+                utils.commaAndify(L))
 
     def listauth(self, irc, msg, args):
         """<author name>
