@@ -67,6 +67,26 @@ if __name__ == '__main__':
             fd.write('%s:%s:%s' % (id, channel, ','.join(map(str, L))))
             fd.write(os.linesep)
     fd.close()
+
+    fd = file('WordStats.db', 'w')
+    writer = csv.writer(fd)
+    for filename in sys.argv[1:]:
+        channel = os.path.basename(filename).split('-', 1)[0]
+        if not ircutils.isChannel(channel):
+            continue
+        db = sqlite.connect(filename)
+        cursor = db.cursor()
+        cursor.execute("""SELECT word_stats.user_id, words.word,
+                                 word_stats.count
+                          FROM word_stats, words""")
+        d = {}
+        for (id, word, count) in cursor.fetchall():
+            d.setdefault(id, {})[word] = count
+        for (id, d) in d.items():
+            L = [channel, id]
+            L += ['%s:%s' % (word, count) for (word, count) in d.items()]
+            writer.writerow(L)
+    fd.close()
         
     
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
