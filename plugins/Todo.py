@@ -211,7 +211,7 @@ class Todo(callbacks.Privmsg):
         irc.reply(msg, '%s (Todo #%s added)' % (conf.replySuccess, todoId))
 
     def remove(self, irc, msg, args):
-        """<task id>
+        """<task id> [<task id> ...]
 
         Removes <task id> from your personal todo list.
         """
@@ -220,18 +220,30 @@ class Todo(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        taskid = privmsgs.getArgs(args)
+        taskids = privmsgs.getArgs(args)
+        tasks = taskids.split()
+        #print 'Tasks: %s' % repr(tasks)
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        cursor.execute("""SELECT * FROM todo
-                          WHERE id = %s AND userid = %s
-                          AND active = 1""", taskid, id)
-        if cursor.rowcount == 0:
-            irc.error(msg, 'None of your tasks match that id.')
-            return
-        cursor.execute("""UPDATE todo SET active = 0 WHERE id = %s""", taskid)
-        db.commit()
-        irc.reply(msg, conf.replySuccess)
+        invalid = []
+        for taskid in tasks:
+            cursor.execute("""SELECT * FROM todo
+                              WHERE id = %s AND userid = %s
+                              AND active = 1""", taskid, id)
+            #print 'Rowcount: %s' % cursor.rowcount
+            if cursor.rowcount == 0:
+                invalid.append(taskid)
+        #print 'Invalid tasks: %s' % repr(invalid)
+        if invalid:
+            irc.error(msg, 'No tasks were removed because the following '\
+                           'tasks could not be removed: %s' % \
+                           utils.commaAndify(invalid))
+        else:
+            for taskid in tasks:
+                cursor.execute("""UPDATE todo SET active = 0 WHERE id = %s""",
+                               taskid)
+            db.commit()
+            irc.reply(msg, conf.replySuccess)
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args):

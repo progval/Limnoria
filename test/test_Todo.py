@@ -39,10 +39,14 @@ except ImportError:
 if sqlite is not None:
     class TodoTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('Todo', 'User')
+        _user1 = 'foo!bar@baz'
+        _user2 = 'bar!foo@baz'
         def setUp(self):
             PluginTestCase.setUp(self)
             # Create a valid user to use
-            self.prefix = 'foo!bar@baz'
+            self.prefix = self._user2
+            self.assertNotError('register testy oom')
+            self.prefix = self._user1
             self.assertNotError('register tester moo')
 
         def testTodo(self):
@@ -77,9 +81,28 @@ if sqlite is not None:
             self.assertNotError('todo add --priority=1000 fix all bugs')
 
         def testRemovetodo(self):
+            self.nick = 'testy'
+            self.prefix = self._user2
+            self.assertNotError('todo add do something')
             self.assertNotError('todo add do something else')
+            self.assertNotError('todo add do something again')
             self.assertNotError('todo remove 1')
             self.assertNotError('todo 1')
+            self.nick = 'tester'
+            self.prefix = self._user1
+            self.assertNotError('todo add make something')
+            self.assertNotError('todo add make something else')
+            self.assertNotError('todo add make something again')
+            self.assertError('todo remove 2 4')
+            self.assertNotRegexp('todo 2', r'Inactive')
+            self.assertNotRegexp('todo 4', r'Inactive')
+            self.assertError('todo remove 2')
+            self.assertNotRegexp('todo 2', r'Inactive')
+            self.assertNotError('todo')
+            self.assertNotError('todo remove 4 5')
+            self.assertNotError('todo')
+            self.assertRegexp('todo 4', r'Inactive')
+            self.assertRegexp('todo 5', r'Inactive')
 
         def testSearchtodo(self):
             self.assertNotError('todo add task number one')
