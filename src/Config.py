@@ -161,12 +161,12 @@ class Config(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         name = self._canonicalizeName(name)
         wrapper = getWrapper(name)
-        if wrapper.__class__ is registry.Group:
-            irc.error(msg, 'That\'s not a value, it\'s a group.  Use the list '
-                           'command in this plugin to see what values are '
-                           'available in this group.')
-            return
-        irc.reply(str(wrapper))
+        if hasattr(wrapper, 'value'):
+            irc.reply(str(wrapper))
+        else:
+            irc.error('That registry variable has no value.  Use the list '
+                      'command in this plugin to see what values are '
+                      'available in this group.')
 
     def _set(self, irc, msg, args):
         """<name> <value>
