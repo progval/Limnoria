@@ -46,7 +46,7 @@ SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 __author__ = "Steve Purcell"
 __email__ = "stephen_purcell at yahoo dot com"
-__version__ = "#Revision: 1.43 $"[11:-2]
+__version__ = "#Revision: 1.46 $"[11:-2]
 
 import time
 import sys
@@ -55,9 +55,20 @@ import string
 import os
 import types
 
+###
+# Globals
+###
+asserts = 0
+
 ##############################################################################
 # Test framework core
 ##############################################################################
+
+# All classes defined herein are 'new-style' classes, allowing use of 'super()'
+__metaclass__ = type
+
+def _strclass(cls):
+    return "%s.%s" % (cls.__module__, cls.__name__)
 
 class TestResult:
     """Holder for test result information.
@@ -109,11 +120,11 @@ class TestResult:
 
     def _exc_info_to_string(self, err):
         """Converts a sys.exc_info()-style tuple of values into a string."""
-        return string.join(apply(traceback.format_exception, err), '')
+        return string.join(traceback.format_exception(*err), '')
 
     def __repr__(self):
         return "<%s run=%i errors=%i failures=%i>" % \
-               (self.__class__, self.testsRun, len(self.errors),
+               (_strclass(self.__class__), self.testsRun, len(self.errors),
                 len(self.failures))
 
 
@@ -183,14 +194,14 @@ class TestCase:
         return doc and string.strip(string.split(doc, "\n")[0]) or None
 
     def id(self):
-        return "%s.%s" % (self.__class__, self.__testMethodName)
+        return "%s.%s" % (_strclass(self.__class__), self.__testMethodName)
 
     def __str__(self):
-        return "%s (%s)" % (self.__testMethodName, self.__class__)
+        return "%s (%s)" % (self.__testMethodName, _strclass(self.__class__))
 
     def __repr__(self):
         return "<%s testMethod=%s>" % \
-               (self.__class__, self.__testMethodName)
+               (_strclass(self.__class__), self.__testMethodName)
 
     def run(self, result=None):
         return self(result)
@@ -249,17 +260,27 @@ class TestCase:
             return (exctype, excvalue, tb)
         return (exctype, excvalue, newtb)
 
+    def _fail(self, msg):
+        """Underlying implementation of failure."""
+        raise self.failureException, msg
+    
     def fail(self, msg=None):
         """Fail immediately, with the given message."""
-        raise self.failureException, msg
+        global asserts
+        asserts += 1
+        self._fail(msg)
 
     def failIf(self, expr, msg=None):
         "Fail the test if the expression is true."
-        if expr: raise self.failureException, msg
+        global asserts
+        asserts += 1
+        if expr: self._fail(msg)
 
     def failUnless(self, expr, msg=None):
         """Fail the test unless the expression is true."""
-        if not expr: raise self.failureException, msg
+        global asserts
+        asserts += 1
+        if not expr: self._fail(msg)
 
     def failUnlessRaises(self, excClass, callableObj, *args, **kwargs):
         """Fail unless an exception of class excClass is thrown
@@ -269,34 +290,70 @@ class TestCase:
            deemed to have suffered an error, exactly as for an
            unexpected exception.
         """
+        global asserts
+        asserts += 1
         try:
-            apply(callableObj, args, kwargs)
+            callableObj(*args, **kwargs)
         except excClass:
             return
         else:
             if hasattr(excClass,'__name__'): excName = excClass.__name__
             else: excName = str(excClass)
-            raise self.failureException, excName
+            raise self._fail(excName)
 
     def failUnlessEqual(self, first, second, msg=None):
-        """Fail if the two objects are unequal as determined by the '!='
+        """Fail if the two objects are unequal as determined by the '=='
            operator.
         """
+        global asserts
+        asserts += 1
         if not first == second:
-            raise self.failureException, \
-                  (msg or '%s != %s' % (`first`, `second`))
+            self._fail(msg or '%s != %s' % (`first`, `second`))
 
     def failIfEqual(self, first, second, msg=None):
         """Fail if the two objects are equal as determined by the '=='
            operator.
         """
+        global asserts
+        asserts += 1
         if first == second:
-            raise self.failureException, \
-                  (msg or '%s == %s' % (`first`, `second`))
+            self._fail(msg or '%s == %s' % (`first`, `second`))
+
+    def failUnlessAlmostEqual(self, first, second, places=7, msg=None):
+        """Fail if the two objects are unequal as determined by their
+           difference rounded to the given number of decimal places
+           (default 7) and comparing to zero.
+
+           Note that decimal places (from zero) is usually not the same
+           as significant digits (measured from the most signficant digit).
+        """
+        global asserts
+        asserts += 1
+        if round(second-first, places) != 0:
+            self._fail(msg or '%s != %s within %s places' % \
+                              (`first`, `second`, `places`))
+
+    def failIfAlmostEqual(self, first, second, places=7, msg=None):
+        """Fail if the two objects are equal as determined by their
+           difference rounded to the given number of decimal places
+           (default 7) and comparing to zero.
+
+           Note that decimal places (from zero) is usually not the same
+           as significant digits (measured from the most signficant digit).
+        """
+        global asserts
+        asserts += 1
+        if round(second-first, places) == 0:
+            self._fail(msg or '%s == %s within %s places' % \
+                             (`first`, `second`, `places`))
 
     assertEqual = assertEquals = failUnlessEqual
 
     assertNotEqual = assertNotEquals = failIfEqual
+
+    assertAlmostEqual = assertAlmostEquals = failUnlessAlmostEqual
+
+    assertNotAlmostEqual = assertNotAlmostEquals = failIfAlmostEqual
 
     assertRaises = failUnlessRaises
 
@@ -318,7 +375,7 @@ class TestSuite:
         self.addTests(tests)
 
     def __repr__(self):
-        return "<%s tests=%s>" % (self.__class__, self._tests)
+        return "<%s tests=%s>" % (_strclass(self.__class__), self._tests)
 
     __str__ = __repr__
 
@@ -382,10 +439,10 @@ class FunctionTestCase(TestCase):
         return self.__testFunc.__name__
 
     def __str__(self):
-        return "%s (%s)" % (self.__class__, self.__testFunc.__name__)
+        return "%s (%s)" % (_strclass(self.__class__), self.__testFunc.__name__)
 
     def __repr__(self):
-        return "<%s testFunc=%s>" % (self.__class__, self.__testFunc)
+        return "<%s testFunc=%s>" % (_strclass(self.__class__), self.__testFunc)
 
     def shortDescription(self):
         if self.__description is not None: return self.__description
@@ -416,7 +473,8 @@ class TestLoader:
         tests = []
         for name in dir(module):
             obj = getattr(module, name)
-            if type(obj) == types.ClassType and issubclass(obj, TestCase):
+            if (isinstance(obj, (type, types.ClassType)) and
+                issubclass(obj, TestCase)):
                 tests.append(self.loadTestsFromTestCase(obj))
         return self.suiteClass(tests)
 
@@ -450,7 +508,8 @@ class TestLoader:
         import unittest
         if type(obj) == types.ModuleType:
             return self.loadTestsFromModule(obj)
-        elif type(obj) == types.ClassType and issubclass(obj, unittest.TestCase):
+        elif (isinstance(obj, (type, types.ClassType)) and
+              issubclass(obj, unittest.TestCase)):
             return self.loadTestsFromTestCase(obj)
         elif type(obj) == types.UnboundMethodType:
             return obj.im_class(obj.__name__)
@@ -525,7 +584,7 @@ class _WritelnDecorator:
         return getattr(self.stream,attr)
 
     def writeln(self, *args):
-        if args: apply(self.write, args)
+        if args: self.write(*args)
         self.write('\n') # text-mode streams translate to \r\n if needed
 
 
@@ -616,7 +675,7 @@ class TextTestRunner:
         self.stream.writeln(result.separator2)
         run = result.testsRun
         self.stream.writeln("Ran %d test%s in %.3fs" %
-                            (run, run == 1 and "" or "s", timeTaken))
+                            (run, run != 1 and "s" or "", timeTaken))
         self.stream.writeln()
         if not result.wasSuccessful():
             self.stream.write("FAILED (")
