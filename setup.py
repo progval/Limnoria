@@ -47,7 +47,7 @@ pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
 setup(
     # Metadata
     name='supybot',
-    version='0.76.0',
+    version='0.76.1',
     url='http://supybot.sf.net/',
     author='Jeremy Fincher',
     author_email='jemfinch@users.sf.net',
