@@ -483,28 +483,31 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     #   5) the word which describes what we are generating statistics about.
     #      This will be used in the string from 4)
     _mostDict = {'popular':
-                    ("""SELECT key,requested_count FROM factoids WHERE
-                        requested_count > 0 ORDER by requested_count DESC
-                        LIMIT %s""",
-                     '%s (%s)',
-                     lambda c: [(t[0], t[1]) for t in c],
-                     'Top %s %s: %s',
-                     'factoid'),
+                    {'sql':"""SELECT key,requested_count FROM factoids WHERE
+                           requested_count > 0 ORDER by requested_count DESC
+                           LIMIT %s""",
+                     'format':'%s (%s)',
+                     'genlist':lambda c: [(t[0], t[1]) for t in c],
+                     'head':'Top %s %s: %s',
+                     'desc':'factoid'
+                    },
                  'authored':
-                    ("""SELECT count(key),created_by FROM factoids GROUP BY
-                        created_by ORDER BY created_by DESC LIMIT %s""",
-                     '%s (%s)',
-                     lambda c: [(ircdb.users.getUser(t[1]).name, t[0]) for t
-                        in c],
-                     'Top %s %s: %s',
-                     'author'),
+                    {'sql':"""SELECT count(key),created_by FROM factoids GROUP
+                           BY created_by ORDER BY created_by DESC LIMIT %s""",
+                     'format':'%s (%s)',
+                     'genlist':lambda c: [(ircdb.users.getUser(t[1]).name,
+                        t[0]) for t in c],
+                     'head':'Top %s %s: %s',
+                     'desc':'author'
+                    },
                 'recent':
-                    ("""SELECT key FROM factoids ORDER by created_at DESC LIMIT
-                        %s""",
-                     '%s',
-                     lambda c: [t[0] for t in c],
-                     '%s latest %s: %s',
-                     'factoid')
+                    {'sql':"""SELECT key FROM factoids ORDER by created_at DESC
+                           LIMIT %s""",
+                     'format':'%s',
+                     'genlist':lambda c: [t[0] for t in c],
+                     'head':'%s latest %s: %s',
+                     'desc':'factoid'
+                    }
                }
     def most(self, irc, msg, args):
         """<popular|authored|recent>
@@ -518,14 +521,15 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         if arg in self._mostDict:
             args = self._mostDict[arg]
             cursor = self.db.cursor()
-            cursor.execute(args[0] % self._mostCount)
+            cursor.execute(args['sql'] % self._mostCount)
             if cursor.rowcount == 0:
                 irc.reply(msg, 'I can\'t find any factoids.')
             else:
-                resp = [args[1] % t for t in args[2](cursor.fetchall())]
+                resp = [args['format'] % t for t in args['genlist'](
+                    cursor.fetchall())]
                 l = len(resp)
-                irc.reply(msg, args[3] % (l, utils.pluralize(l, args[4]),
-                    utils.commaAndify(resp)))
+                irc.reply(msg, args['head'] % (l, utils.pluralize(l,
+                    args['desc']), utils.commaAndify(resp)))
         else:
             raise callbacks.ArgumentError
 
