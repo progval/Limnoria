@@ -755,7 +755,8 @@ registerChannelValue(supybot.databases.plugins, 'channelSpecific',
 
 class CDB(registry.Boolean):
     def connect(self, filename):
-        journalName = supybot.directories.data.tmp.dirize(filename+'.journal')
+        basename = os.path.basename(filename)
+        journalName = supybot.directories.data.tmp.dirize(basename+'.journal')
         return cdb.open(filename, 'c',
                         journalName=journalName,
                         maxmods=self.maximumModifications())
