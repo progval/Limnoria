@@ -50,10 +50,10 @@ if sqlite is not None:
         def testTodo(self):
             # Should not error, but no tasks yet.
             self.assertNotError('todo')
-            self.assertResponse('todo', 'You have no tasks in your todo list.')
+            self.assertRegexp('todo', 'has no Todos')
             # Add a task
             self.assertNotError('todo add wash my car')
-            self.assertResponse('todo', '#1: wash my car')
+            self.assertRegexp('todo', '#1: wash my car')
             # Check that task
             self.assertRegexp('todo 1',
                               'Todo for tester: wash my car \(Added .*?\)')
@@ -71,7 +71,7 @@ if sqlite is not None:
             # Check priority sorting
             self.assertNotError('todo setpriority 1 100')
             self.assertNotError('todo setpriority 2 10')
-            self.assertResponse('todo', '#2: moo and #1: wash my car')
+            self.assertRegexp('todo', '#2: moo and #1: wash my car')
 
         def testAddtodo(self):
             self.assertNotError('todo add code a new plugin')

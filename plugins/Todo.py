@@ -37,8 +37,6 @@ import supybot
 __revision__ = "$Id$"
 __author__ = supybot.authors.strike
 
-import supybot.plugins as plugins
-
 import glob
 import time
 import getopt
@@ -48,7 +46,8 @@ import os.path
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
-import supybot.privmsgs as privmsgs
+from supybot.commands import *
+import supybot.plugins as plugins
 import supybot.callbacks as callbacks
 
 try:
@@ -90,131 +89,81 @@ class Todo(callbacks.Privmsg):
     def _shrink(self, s):
         return utils.ellipsisify(s, 50)
 
-    def todo(self, irc, msg, args):
+    def todo(self, irc, msg, args, user, taskid):
         """[<username>|<task id>]
 
         Retrieves a task for the given task id.  If no task id is given, it
         will return a list of task ids that that user has added to their todo
         list.
         """
-        arg = privmsgs.getArgs(args, required=0, optional=1)
-        userid = None
-        taskid = None
         # Figure out what userid and taskid need to be set to (if anything)
-        if not arg:
-            pass
-        else:
-            try:
-                taskid = int(arg)
-            except ValueError:
-                try:
-                    userid = ircdb.users.getUserId(arg)
-                except KeyError:
-                    irc.errorInvalid('task id or username', arg)
-                    return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        if not userid and not taskid:
-            try:
-                id = ircdb.users.getUserId(msg.prefix)
-            except KeyError:
-                irc.errorNotRegistered()
-                return
+        if not taskid:
             cursor.execute("""SELECT id, task FROM todo
                               WHERE userid = %s AND active = 1
-                              ORDER BY priority, id""", id)
+                              ORDER BY priority, id""", user.id)
             if cursor.rowcount == 0:
-                irc.reply('You have no tasks in your todo list.')
+                irc.reply('That user has no todos.')
+                return
+            L = ['#%s: %s' % (item[0], self._shrink(item[1]))
+                 for item in cursor.fetchall()]
+            if len(L) == 1:
+                s = 'Todo for %s: %s' % (user.name, L[0])
             else:
-                L = ['#%s: %s' % (item[0], self._shrink(item[1]))
-                     for item in cursor.fetchall()]
-                irc.reply(utils.commaAndify(L))
+                s = 'Todos for %s: %s' % (user.name, utils.commaAndify(L))
+            irc.reply(s)
         else:
-            if userid:
-                cursor.execute("""SELECT id, task FROM todo
-                                  WHERE userid = %s AND active = 1
-                                  ORDER BY priority, id""", userid)
-                if cursor.rowcount == 0:
-                    irc.reply('That user has no todos.')
-                    return
-                L = ['#%s: %s' % (item[0], self._shrink(item[1]))
-                     for item in cursor.fetchall()]
-                if len(L) == 1:
-                    s = 'Todo for %s: %s' % (arg, L[0])
-                else:
-                    s = 'Todos for %s: %s' % (arg, utils.commaAndify(L))
-                irc.reply(s)
+            cursor.execute("""SELECT userid,priority,added_at,task,active
+                              FROM todo WHERE id = %s""", taskid)
+            if cursor.rowcount == 0:
+                irc.errorInvalid('task id', taskid)
+                return
+            (userid, pri, added_at, task, active) = cursor.fetchone()
+            # Construct and return the reply
+            user = plugins.getUserName(userid)
+            if int(active):
+                active = 'Active'
             else:
-                cursor.execute("""SELECT userid,priority,added_at,task,active
-                                  FROM todo WHERE id = %s""", taskid)
-                if cursor.rowcount == 0:
-                    irc.errorInvalid('task id', taskid)
-                    return
-                (userid, pri, added_at, task, active) = cursor.fetchone()
-                # Construct and return the reply
-                user = ircdb.users.getUser(userid)
-                if user is None:
-                    name = 'a removed user'
-                else:
-                    name = user.name
-                if int(active):
-                    active = 'Active'
-                else:
-                    active = 'Inactive'
-                if pri:
-                    task += ', priority: %s' % pri
-                added_at = time.strftime(conf.supybot.reply.format.time(),
-                                         time.localtime(int(added_at)))
-                s = "%s todo for %s: %s (Added at %s)" % \
-                    (active, name, task, added_at)
-                irc.reply(s)
+                active = 'Inactive'
+            if pri:
+                task += ', priority: %s' % pri
+            added_at = time.strftime(conf.supybot.reply.format.time(),
+                                     time.localtime(int(added_at)))
+            s = "%s todo for %s: %s (Added at %s)" % \
+                (active, user, task, added_at)
+            irc.reply(s)
+    todo = wrap(todo, [first('otherUser', 'user'), additional(('id', 'task'))])
 
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, user, optlist, text, now):
         """[--priority=<num>] <text>
 
         Adds <text> as a task in your own personal todo list.  The optional
         priority argument allows you to set a task as a high or low priority.
         Any integer is valid.
         """
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        (optlist, rest) = getopt.getopt(args, '', ['priority='])
         priority = 0
         for (option, arg) in optlist:
-            if option == '--priority':
-                try:
-                    priority = int(arg)
-                except ValueError, e:
-                    irc.errorInvalid('priority', arg)
-                    return
-        text = privmsgs.getArgs(rest)
+            if option == 'priority':
+                priority = arg
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        now = int(time.time())
         cursor.execute("""INSERT INTO todo
                           VALUES (NULL, %s, %s, %s, %s, 1)""",
-                          priority, now, id, text)
+                          priority, now, user.id, text)
         db.commit()
         cursor.execute("""SELECT id FROM todo
-                          WHERE added_at=%s AND userid=%s""", now, id)
+                          WHERE added_at=%s AND userid=%s""", now, user.id)
         todoId = cursor.fetchone()[0]
         irc.replySuccess('(Todo #%s added)' % (todoId))
+    add = wrap(add, ['user', getopts({'priority': ('int', 'priority')}),
+                     'text', 'now'])
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, user, tasks):
         """<task id> [<task id> ...]
 
         Removes <task id> from your personal todo list.
         """
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        taskids = privmsgs.getArgs(args)
-        tasks = taskids.split()
         #print 'Tasks: %s' % repr(tasks)
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -222,7 +171,7 @@ class Todo(callbacks.Privmsg):
         for taskid in tasks:
             cursor.execute("""SELECT * FROM todo
                               WHERE id = %s AND userid = %s
-                              AND active = 1""", taskid, id)
+                              AND active = 1""", taskid, user.id)
             #print 'Rowcount: %s' % cursor.rowcount
             if cursor.rowcount == 0:
                 invalid.append(taskid)
@@ -242,43 +191,31 @@ class Todo(callbacks.Privmsg):
                                taskid)
             db.commit()
             irc.replySuccess()
+    remove = wrap(remove, ['user', many(('id', 'task'))])
 
     _sqlTrans = string.maketrans('*?', '%_')
-    def search(self, irc, msg, args):
-        """[--{regexp}=<value>] [<glob>]
+    def search(self, irc, msg, args, user, optlist, globs):
+        """[--{regexp}=<value>] [<glob> <glob> ...]
 
-        Searches the todos for tasks matching <glob>.  If --regexp is given,
+        Searches your todos for tasks matching <glob>.  If --regexp is given,
         its associated value is taken as a regexp and matched against the
         tasks.
         """
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        (optlist, rest) = getopt.getopt(args, '', ['regexp='])
-        if not optlist and not rest:
+        if not optlist and not globs:
             raise callbacks.ArgumentError
         db = self.dbHandler.getDb()
-        criteria = ['userid=%s' % id, 'active=1']
+        criteria = ['userid=%s' % user.id, 'active=1']
         formats = []
         predicateName = 'p'
         for (option, arg) in optlist:
-            if option == '--regexp':
+            if option == 'regexp':
                 criteria.append('%s(task)' % predicateName)
-                try:
-                    r = utils.perlReToPythonRe(arg)
-                except ValueError, e:
-                    irc.errorInvalid('regular expression', arg)
-                    return
-                def p(s, r=r):
+                def p(s, r=arg):
                     return int(bool(r.search(s)))
                 db.create_function(predicateName, 1, p)
                 predicateName += 'p'
-        for glob in rest:
+        for glob in globs:
             criteria.append('task LIKE %s')
-            if '?' not in glob and '*' not in glob:
-                glob = '*%s*' % glob
             formats.append(glob.translate(self._sqlTrans))
         cursor = db.cursor()
         sql = """SELECT id, task FROM todo WHERE %s""" % ' AND '.join(criteria)
@@ -289,65 +226,49 @@ class Todo(callbacks.Privmsg):
             tasks = ['#%s: %s' % (item[0], self._shrink(item[1]))
                      for item in cursor.fetchall()]
             irc.reply(utils.commaAndify(tasks))
+    search = wrap(search,
+                  ['user', getopts({'regexp': 'regexpMatcher'}), any('glob')])
 
-    def setpriority(self, irc, msg, args):
+    def setpriority(self, irc, msg, args, user, id, priority):
         """<id> <priority>
 
         Sets the priority of the todo with the given id to the specified value.
         """
-        try:
-            user_id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        (id, priority) = privmsgs.getArgs(args, required=2)
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT userid, priority FROM todo
                           WHERE id = %s AND active = 1""", id)
         if cursor.rowcount == 0:
-            irc.error('No note with id %s' % id)
-            return
+            irc.error('No note with id %s' % id, Raise=True)
         (userid, oldpriority) = cursor.fetchone()
-        if userid != user_id:
-            irc.error('Todo #%s does not belong to you.' % id)
-            return
+        if userid != user.id:
+            irc.error('Todo #%s does not belong to you.' % id, Raise=True)
         # If we make it here, we're okay
         cursor.execute("""UPDATE todo SET priority = %s
                           WHERE id = %s""", priority, id)
         db.commit()
         irc.replySuccess()
+    setpriority = wrap(setpriority,
+                       ['user', ('id', 'task'), ('int', 'priority')])
 
-    def change(self, irc, msg, args):
+    def change(self, irc, msg, args, user, id, replacer):
         """<task id> <regexp>
 
         Modify the task with the given id using the supplied regexp.
         """
-        try:
-            userid = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        taskid, regexp = privmsgs.getArgs(args, required=2)
-        # Check the regexp first, it's easier and doesn't require a db query
-        try:
-            replacer = utils.perlReToReplacer(regexp)
-        except ValueError:
-            irc.errorInvalid('regexp', regexp)
-            return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT task FROM todo
                           WHERE userid = %s AND id = %s
-                          AND active = 1""", userid, taskid)
+                          AND active = 1""", user.id, id)
         if cursor.rowcount == 0:
-            irc.errorInvalid('task id', taskid)
-            return
+            irc.errorInvalid('task id', id)
         newtext = replacer(cursor.fetchone()[0])
         cursor.execute("""UPDATE todo SET task = %s
-                          WHERE id = %s""", newtext, taskid)
+                          WHERE id = %s""", newtext, id)
         db.commit()
         irc.replySuccess()
+    change = wrap(change, ['user', ('id', 'task'), 'regexpReplacer'])
 
 Class = Todo
 
