@@ -32,13 +32,13 @@
 """
 Bugzilla bug retriever
 """
-import urllib as _urllib
-import string as _string
-import xml.dom.minidom as _minidom
-import base64 as _base64
-import re as _re
+import urllib
+import string
+import xml.dom.minidom as minidom
+import base64
+import re
 import os
-from htmlentitydefs import entitydefs as _entities
+from htmlentitydefs import entitydefs as entities
 
 import plugins
 
@@ -85,28 +85,19 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, yn
     onStart.append('load Bugzilla')
 
-class Bugzilla(callbacks.Privmsg):
+class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
     """Show a link to a bug report with a brief description"""
     threaded = True
+    regexps = ['bzSnarfer']
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        self.entre = _re.compile('&(\S*?);')
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        self.entre = re.compile('&(\S*?);')
         self.db = makeDb(dbfilename)
 
     def die(self):
         self.db.close()
         del self.db
-        # quick hack for testing only
-        import sys
-        global _base64, _minidom
-        del _base64
-        del _minidom
-        for mod in ['xml.dom.minidom', 'base64']:
-            if sys.modules.has_key(mod):
-                del sys.modules[mod]
-        import gc
-        gc.collect()
-
+    
     def addzilla(self, irc, msg, args):
         """shorthand url description
         Add a bugzilla to the list of defined bugzillae.
@@ -165,7 +156,28 @@ class Bugzilla(callbacks.Privmsg):
             results = ['%s' % (item[0]) for item in cursor.fetchall()]
             irc.reply(msg, 'Defined bugzillae: %s' % ' '.join(results))
             return    
-
+    def bzSnarfer(self, irc, msg, match):
+        r"(.*)/show_bug.cgi\?id=([0-9]+)"
+        queryurl = '%s/xml.cgi?id=%s' % (match.group(1), match.group(2))
+        try:
+            summary = self._get_short_bug_summary(queryurl, "Snarfed Bugzilla URL", match.group(2))
+        except BugError, e:
+            irc.reply(msg, str(e))
+            return
+        except IOError, e:
+            msgtouser = '%s. Try yourself: %s' % (e, queryurl)
+            irc.reply(msg, msgtouser)
+            return
+        report = {}
+        report['zilla'] = "Snarfed Bugzilla URL"
+        report['id'] = match.group(2)
+        report['url'] = str('%s/show_bug.cgi?id=%s' % (match.group(1), match.group(2)))
+        report['title'] = str(summary['title'])
+        report['summary'] = str(self._mk_summary_string(summary))
+        irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s' % report)
+        irc.reply(msg, '  %(summary)s' % report)
+        irc.reply(msg, '  %(url)s' % report)
+        
     def bug(self, irc, msg, args):
         """bug shorthand number
         Look up a bug number in a bugzilla.
@@ -199,25 +211,27 @@ class Bugzilla(callbacks.Privmsg):
         report['id'] = str(num)
         report['url'] = str('%s/show_bug.cgi?id=%s' % (url, num))
         report['title'] = str(summary['title'])
-        report['summary'] = str(self._mk_component_severity_status(summary))
+        report['summary'] = str(self._mk_summary_string(summary))
         irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s' % report)
         irc.reply(msg, '  %(summary)s' % report)
         irc.reply(msg, '  %(url)s' % report)
         return
 
-    def _mk_component_severity_status(self, summary):
+    def _mk_summary_string(self, summary):
         ary = []
         if summary.has_key('component'):
             ary.append('Component: %s' % summary['component'])
         if summary.has_key('severity'):
             ary.append('Severity: %s' % summary['severity'])
+        if summary.has_key('assigned to'):
+            ary.append('Assigned to: %s' % summary['assigned to'])
         if summary.has_key('status'):
             if summary.has_key('resolution'):
                 ary.append('Status: %s/%s' %
                            (summary['status'], summary['resolution']))
             else:
                 ary.append('Status: %s' % summary['status'])
-        out = _string.join(ary, ', ')
+        out = string.join(ary, ', ')
         return out
 
     def _is_bug_number(self, bug):
@@ -227,7 +241,7 @@ class Bugzilla(callbacks.Privmsg):
         
     def _get_short_bug_summary(self, url, desc, num):
         bugxml = self._getbugxml(url, desc)
-        try: zilladom = _minidom.parseString(bugxml)
+        try: zilladom = minidom.parseString(bugxml)
         except Exception, e:
             msg = 'Could not parse XML returned by %s bugzilla: %s'
             raise BugError(str(msg % (desc, e)))
@@ -248,6 +262,8 @@ class Bugzilla(callbacks.Privmsg):
                 summary['resolution'] = self._getnodetxt(node)
             except:
                 pass
+            node = bug_n.getElementsByTagName('assigned_to')[0]
+            summary['assigned to'] = self._getnodetxt(node)
             node = bug_n.getElementsByTagName('component')[0]
             summary['component'] = self._getnodetxt(node)
             node = bug_n.getElementsByTagName('bug_severity')[0]
@@ -260,7 +276,7 @@ class Bugzilla(callbacks.Privmsg):
         return summary
 
     def _getbugxml(self, url, desc):
-        try: fh = _urllib.urlopen(url)
+        try: fh = urllib.urlopen(url)
         except: raise IOError('Connection to %s bugzilla failed' % desc)
         bugxml = ''
         while 1:
@@ -283,15 +299,15 @@ class Bugzilla(callbacks.Privmsg):
             encoding = node.getAttribute('encoding')
             if encoding == 'base64':
                 try:
-                    val = _base64.decodestring(val)
+                    val = base64.decodestring(val)
                 except:
                     val = 'Cannot convert bug data from base64!'
         entre = self.entre
         while entre.search(val):
             entity = entre.search(val).group(1)
-            if _entities.has_key(entity):
-                val = _re.sub(entre, _entities[entity], val)
+            if entities.has_key(entity):
+                val = re.sub(entre, entities[entity], val)
             else:
-                val = _re.sub(entre, '_', val)
+                val = re.sub(entre, '_', val)
         return val
 Class = Bugzilla

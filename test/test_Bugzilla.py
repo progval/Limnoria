@@ -35,5 +35,7 @@ class BugzillaTest(PluginTestCase, PluginDocumentation):
     plugins = ('Bugzilla',)
     def testBugzilla(self):
         self.assertNotError('bug gcc 5')
+        self.assertNotError('http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
