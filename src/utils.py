@@ -388,11 +388,11 @@ def be(i):
     else:
         return 'are'
 
-def sortBy(f, L, cmp=cmp):
+def sortBy(f, L):
     """Uses the decorate-sort-undecorate pattern to sort L by function f."""
     for (i, elt) in enumerate(L):
         L[i] = (f(elt), i, elt)
-    L.sort(cmp)
+    L.sort()
     for (i, elt) in enumerate(L):
         L[i] = L[i][2]
 
