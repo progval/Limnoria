@@ -121,7 +121,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             try:
                 del self.joins[msg.args[0]]
             except KeyError:
-                s = 'Joined a channel without Admin.join being called'
+                s = 'Joined a channel without Admin.join being called.'
                 self.log.debug(s)
 
     def doInvite(self, irc, msg):
@@ -129,7 +129,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         if channel not in irc.state.channels:
             if conf.supybot.alwaysJoinOnInvite() or \
                ircdb.checkCapability(msg.prefix, 'admin'):
-                self.log.info('Invited to %s by %s', channel, msg.prefix)
+                self.log.info('Invited to %s by %s.', channel, msg.prefix)
                 irc.queueMsg(ircmsgs.join(channel))
                 conf.supybot.channels().add(channel)
 
