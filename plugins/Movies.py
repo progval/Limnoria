@@ -49,10 +49,10 @@ def configure(onStart, afterConnect, advanced):
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load IMDB')
+    onStart.append('load Movies')
 
 example = utils.wrapLines("""
-<jemfinch> @list IMDB
+<jemfinch> @list Movies
 <supybot> imdb
 <jemfinch> @imdb die hard
 <supybot> "Die Hard" (1988) belongs to the action and thriller genres.  It's been rated 8.0 out of 10.  More information is available at <http://imdb.com/Title?0095016>
