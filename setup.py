@@ -91,6 +91,7 @@ plugins = [
     'Misc',
     'Owner',
     'User',
+    'Utilities',
     ]
 
 packages = ['supybot',
