@@ -68,6 +68,10 @@ class WordStatsDB(plugins.ChannelUserDB):
         self.channelWords = ircutils.IrcDict()
         plugins.ChannelUserDB.__init__(self, *args, **kwargs)
 
+    def close(self):
+        if self.channelWords:
+            plugins.ChannelUserDB.close(self)
+            
     def serialize(self, v):
         L = []
         for (word, count) in v.iteritems():
