@@ -67,7 +67,21 @@ class AsyncoreDriver(asynchat.async_chat, object):
         self.buffer = ''
         self.set_terminator('\n')
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect(self.server)
+        try:
+            self.connect(self.server)
+        except:
+            debug.recoverableException()
+            self.scheduleReconnect()
+            self.close()
+
+    def scheduleReconnect(self):
+        if self.reconnect:
+            def makeNewDriver():
+                self.irc.reset()
+                driver = self.__class__(self.server, reconnect=self.reconnect)
+                driver.irc = self.irc
+                driver.irc.driver = driver
+            schedule.addEvent(makeNewDriver, time.time() + 60)
 
     def writable(self):
         #debug.methodNamePrintf(self, 'writable')
@@ -83,6 +97,8 @@ class AsyncoreDriver(asynchat.async_chat, object):
 
     def handle_error(self):
         debug.recoverableException()
+        self.scheduleReconnect()
+        self.close()
 
     def collect_incoming_data(self, s):
         #debug.methodNamePrintf(self, 'collect_incoming_data')
@@ -109,19 +125,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
 
     def handle_close(self):
         #debug.methodNamePrintf(self, 'handle_close')
-        if self.reconnect:
-            #debug.printf('Yes, reconnect.')
-            def makeNewDriver():
-                #debug.printf('Called makeNewDriver')
-                self.irc.reset()
-                driver = self.__class__(self.server, reconnect=self.reconnect)
-                driver.irc = self.irc
-                driver.irc.driver = driver
-            schedule.addEvent(makeNewDriver, time.time() + 60)
-        self.die()
-
-    def die(self):
-        #debug.methodNamePrintf(self, 'die')
+        self.scheduleReconnect()
         self.close()
 
     
