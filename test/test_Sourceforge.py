@@ -38,44 +38,61 @@ Sf = conf.supybot.plugins.Sourceforge
 
 class SourceforgeTest(ChannelPluginTestCase):
     plugins = ('Sourceforge',)
+    config = {'supybot.plugins.Sourceforge.bold': False}
     if network:
         def testAny(self):
             m = self.getMsg('bugs --any gaim')
             self.failUnless(m, 'No response from Sourceforge.')
+            match = re.search(r'#(\d+)', m.args[1])
+            self.failUnless(match, 'no bug # found: %r' % m.args[1])
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
             m = self.getMsg('rfes --any gaim')
             self.failUnless(m, 'No response from Sourceforge.')
+            match = re.search(r'#(\d+)', m.args[1])
+            self.failUnless(match, 'no bug # found: %r' % m.args[1])
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testClosed(self):
             m = self.getMsg('bugs --closed gaim')
             self.failUnless(m, 'No response from Sourceforge.')
+            match = re.search(r'#(\d+)', m.args[1])
+            self.failUnless(match, 'no bug # found: %r' % m.args[1])
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
             m = self.getMsg('patches --closed gaim')
             self.failUnless(m, 'No response from Sourceforge.')
+            match = re.search(r'#(\d+)', m.args[1])
+            self.failUnless(match, 'no bug # found: %r' % m.args[1])
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testDeleted(self):
             m = self.getMsg('bugs --deleted gaim')
             self.failUnless(m, 'No response from Sourceforge.')
+            match = re.search(r'#(\d+)', m.args[1])
+            self.failUnless(match, 'no bug # found: %r' % m.args[1])
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
             m = self.getMsg('rfes --deleted gaim')
             self.failUnless(m, 'No response from Sourceforge.')
+            match = re.search(r'#(\d+)', m.args[1])
+            self.failUnless(match, 'no bug # found: %r' % m.args[1])
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
         def testOpen(self):
             m = self.getMsg('bugs --open gaim')
             self.failUnless(m, 'No response from Sourceforge.')
+            match = re.search(r'#(\d+)', m.args[1])
+            self.failUnless(match, 'no bug # found: %r' % m.args[1])
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
             m = self.getMsg('rfes --open gaim')
             self.failUnless(m, 'No response from Sourceforge.')
+            match = re.search(r'#(\d+)', m.args[1])
+            self.failUnless(match, 'no bug # found: %r' % m.args[1])
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('tracker %s' % n)
 
