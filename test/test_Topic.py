@@ -111,6 +111,11 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         _ = self.getMsg('topic add baz')
         self.assertRegexp('topic list', '1: foo .* 2: bar .* and 3: baz')
 
+    def testSet(self):
+        _ = self.getMsg('topic add foo')
+        self.assertRegexp('topic set -1 bar', 'bar')
+        self.assertNotRegexp('topic set -1 baz', 'bar')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -87,7 +87,7 @@ class Topic(callbacks.Privmsg):
         env = {'topic': topic}
         return plugins.standardSubstitute(irc, msg, formatter, env)
 
-    def _sendTopic(self, irc, channel, topics):
+    def _sendTopics(self, irc, channel, topics):
         topics = [s for s in topics if s and not s.isspace()]
         self.lastTopics[channel] = topics
         newTopic = self._joinTopic(channel, topics)
@@ -101,7 +101,29 @@ class Topic(callbacks.Privmsg):
         else:
             return True
             
-    def add(self, irc, msg, args, channel):
+    def _topicNumber(self, irc, n, topics=None):
+        try:
+            n = int(n)
+            if not n:
+                raise ValueError
+            if n > 0:
+                n -= 1
+            if topics is not None:
+                topics[n]
+            return n
+        except (ValueError, IndexError):
+            irc.error('That\'s not a valid topic number.', Raise=True)
+
+    def topic(self, irc, msg, args, channel):
+        """[<channel>] <topic>
+
+        Sets the topic of <channel> to <topic>.
+        """
+        topic = privmsgs.getArgs(args)
+        irc.queueMsg(ircmsgs.topic(channel, topic))
+    topic = privmsgs.channel(topic)
+
+    def add(self, irc, msg, args, channel, insert=False):
         """[<channel>] <topic>
 
         Adds <topic> to the topics for <channel>.  <channel> is only necessary
@@ -114,11 +136,23 @@ class Topic(callbacks.Privmsg):
             s = 'You can\'t have %s in your topic' % separator
             irc.error(s)
             return
-        currentTopic = irc.state.getTopic(channel)
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
         formattedTopic = self._formatTopic(irc, msg, channel, topic)
-        # Empties are removed by _sendTopic.
-        self._sendTopic(irc, channel, [currentTopic, formattedTopic])
+        if insert:
+            topics.insert(0, formattedTopic)
+        else:
+            topics.append(formattedTopic)
+        self._sendTopics(irc, channel, topics)
     add = privmsgs.channel(add)
+
+    def insert(self, irc, msg, args):
+        """[<channel>] <topic>
+
+        Adds <topic> to the topics for <channel> at the beginning of the topics
+        currently on <channel>.  <channel> is only necessary if the message
+        isn't sent in the channel itself.
+        """
+        self.add(irc, msg, args, insert=True)
 
     def shuffle(self, irc, msg, args, channel):
         """[<channel>]
@@ -138,7 +172,7 @@ class Topic(callbacks.Privmsg):
             original = topics[:]
             while topics == original:
                 random.shuffle(topics)
-        self._sendTopic(irc, channel, topics)
+        self._sendTopics(irc, channel, topics)
     shuffle = privmsgs.channel(shuffle)
 
     def reorder(self, irc, msg, args, channel):
@@ -159,30 +193,15 @@ class Topic(callbacks.Privmsg):
             irc.error('All topic numbers must be specified.')
             return
         order = privmsgs.getArgs(args, required=num)
-        if topics:
-            for i,p in enumerate(order):
-                try:
-                    p = int(p)
-                    if p > 0:
-                        order[i] = p - 1
-                    elif p == 0:
-                        irc.error('0 is not a valid topic number.')
-                        return
-                    else:
-                        order[i] = num + p
-                except ValueError:
-                    irc.error('The positions must be valid integers.')
-                    return
-            if sorted(order) != range(num):
-                irc.error('Duplicate topic numbers cannot be specified.')
-                return
-            try:
-                newtopics = [topics[i] for i in order]
-                self._sendTopic(irc, channel, newtopics)
-            except IndexError:
-                irc.error('An invalid topic number was specified.')
-        else:
-            irc.error('There are no topics to reorder.')
+        for i,p in enumerate(order):
+            order[i] = self._topicNumber(irc, p, topics=topics)
+            if order[i] < 0:
+                order[i] += num
+        if sorted(order) != range(num):
+            irc.error('Duplicate topic numbers cannot be specified.')
+            return
+        newtopics = [topics[i] for i in order]
+        self._sendTopics(irc, channel, newtopics)
     reorder = privmsgs.channel(reorder)
 
     def list(self, irc, msg, args, channel):
@@ -208,22 +227,10 @@ class Topic(callbacks.Privmsg):
         isn't sent in the channel itself.
         """
         number = privmsgs.getArgs(args)
-        try:
-            number = int(number)
-            if number > 0:
-                number -= 1
-            elif number == 0:
-                irc.error('That\'s not a valid topic number.')
-                return
-        except ValueError:
-            irc.error('The argument must be a valid integer.')
-            return
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if topics:
-            try:
-                irc.reply(topics[number])
-            except IndexError:
-                irc.error('That\'s not a valid topic.')
+            number = self._topicNumber(irc, number, topics=topics)
+            irc.reply(topics[number])
         else:
             irc.error('There are no topics to get.')
     get = privmsgs.channel(get)
@@ -239,35 +246,34 @@ class Topic(callbacks.Privmsg):
         """
         self._canChangeTopic(irc, channel)
         (number, regexp) = privmsgs.getArgs(args, required=2)
-        try:
-            number = int(number)
-            if number > 0:
-                number -= 1
-            elif number == 0:
-                irc.error('That\'s not a valid topic number.')
-                return
-        except ValueError:
-            irc.error('The <number> argument must be a number.')
-            return
-        try:
-            replacer = utils.perlReToReplacer(regexp)
-        except ValueError, e:
-            irc.error('The regexp wasn\'t valid: %s' % e.args[0])
-            return
-        except re.error, e:
-            irc.error(utils.exnToString(e))
-            return
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if not topics:
             irc.error('There are no topics to change.')
             return
-        topic = topics.pop(number)
-        newTopic = replacer(topic)
-        if number < 0:
-            number = len(topics)+1+number
-        topics.insert(number, newTopic)
-        self._sendTopic(irc, channel, topics)
+        number = self._topicNumber(irc, number, topics=topics)
+        try:
+            replacer = utils.perlReToReplacer(regexp)
+        except ValueError, e:
+            irc.error('The regexp wasn\'t valid: %s' % e)
+            return
+        topics[number] = replacer(topics[number])
+        self._sendTopics(irc, channel, topics)
     change = privmsgs.channel(change)
+
+    def set(self, irc, msg, args, channel):
+        """[<channel>] <number> <topic>
+
+        Sets the topic <number> to be <text>.  <channel> is only necessary if
+        the message isn't sent in the channel itself.
+        """
+        self._canChangeTopic(irc, channel)
+        (i, topic) = privmsgs.getArgs(args, required=2)
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        i = self._topicNumber(irc, i, topics=topics)
+        topic = self._formatTopic(irc, msg, channel, topic)
+        topics[i] = topic
+        self._sendTopics(irc, channel, topics)
+    set = privmsgs.channel(set)
 
     def remove(self, irc, msg, args, channel):
         """[<channel>] <number>
@@ -278,23 +284,11 @@ class Topic(callbacks.Privmsg):
         necessary if the message isn't sent in the channel itself.
         """
         self._canChangeTopic(irc, channel)
-        try:
-            number = int(privmsgs.getArgs(args))
-            if number > 0:
-                number -= 1
-            elif number == 0:
-                irc.error('That\'s not a valid topic number.')
-                return
-        except ValueError:
-            irc.error('The argument must be a number.')
-            return
+        i = privmsgs.getArgs(args)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
-        try:
-            topic = topics.pop(number)
-        except IndexError:
-            irc.error('That\'s not a valid topic number.')
-            return
-        self._sendTopic(irc, channel, topics)
+        i = self._topicNumber(irc, i, topics=topics)
+        topic = topics.pop(i)
+        self._sendTopics(irc, channel, topics)
     remove = privmsgs.channel(remove)
 
     def lock(self, irc, msg, args, channel):
@@ -333,7 +327,7 @@ class Topic(callbacks.Privmsg):
         except KeyError:
             irc.error('I haven\'t yet set the topic in %s.' % channel)
             return
-        self._sendTopic(irc, channel, topics)
+        self._sendTopics(irc, channel, topics)
     restore = privmsgs.channel(restore)
 
 Class = Topic
