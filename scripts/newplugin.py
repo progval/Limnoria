@@ -76,12 +76,34 @@ if __name__ == '__main__':
     name = anything('What should the name of the plugin be?')
     if name.endswith('.py'):
         name = name[:-3]
+    print 'Supybot offers two major types of plugins: command-based and '
+    print 'regexp-based.  Command-based plugins are the kind of plugins '
+    print 'you\'ve seen most when you\'ve used supybot.  They\'re also the '
+    print 'most featureful and easiest to write.  Commands can be nested, '
+    print 'for instance, whereas regexp-based callbacks can\'t do nesting.'
+    print
+    print 'That doesn\'t mean that you\'ll never want regexp-based callbacks.'
+    print 'They offer a flexibility that command-based callbacks don\'t offer;'
+    print 'however, they don\'t tie into the whole system as well.'
+    print
+    print 'If you need to combine a command-based callback with some'
+    print 'regexp-based methods, you can do so by subclassing '
+    print 'callbacks.PrivmsgCommandAndRegexp and then adding a class-level '
+    print 'attribute "regexps" that is a sets.Set of methods that are '
+    print 'regexp-based.  But you\'ll have to do that yourself after this '
+    print 'wizard is finished :)'
+    print
     if expect('Do you want a command-based plugin' \
               ' or a regexp-based plugin?',
               ['command', 'regexp']) == 'command':
         className = 'callbacks.Privmsg'
     else:
         className = 'callbacks.PrivmsgRegexp'
+    print 'Sometimes you\'t want a callback to be threaded.  If its methods'
+    print '(command or regexp-based, either one) will take a signficant amount'
+    print 'of time to run, you\'ll want to thread them so they don\'t block'
+    print 'the entire bot.'
+    print
     if yn('Does your plugin need to be threaded?') == 'y':
         threaded = 'threaded = True'
     else:
