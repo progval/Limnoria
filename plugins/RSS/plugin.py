@@ -318,7 +318,7 @@ class RSS(callbacks.Plugin):
             announce.get(channel).setValue(feeds)
             irc.replySuccess()
         elif not rest:
-            feeds = format('%L', announce.get(channel)())
+            feeds = format('%L', list(announce.get(channel)()))
             irc.reply(feeds or 'I am currently not announcing any feeds.')
             return
     announce = wrap(announce, [('checkChannelCapability', 'op'),

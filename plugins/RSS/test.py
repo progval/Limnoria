@@ -56,6 +56,11 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotRegexp('rss info http://slashdot.org/slashdot.rss',
                                  '-1 years')
 
+        def testAnnounce(self):
+            self.assertNotError('rss add advogato %s' % url)
+            self.assertNotError('rss announce advogato')
+            self.assertNotRegexp('rss announce', r'ValueError')
+
         def testRss(self):
             self.assertNotError('rss %s' % url)
             m = self.assertNotError('rss %s 2' % url)
