@@ -49,6 +49,7 @@ import time
 import urllib
 import urllib2
 import threading
+import htmlentitydefs
 import xml.dom.minidom
 
 import debug
@@ -70,7 +71,7 @@ class Http(callbacks.Privmsg):
     _fmPopular=re.compile('<popularity_percent>([^<]+)</popularity_percent>')
     _fmLastUpdated = re.compile('<date_updated>([^<]+)</date_updated>')
     def freshmeat(self, irc, msg, args):
-        "<project name>"
+        """<project name>"""
         project = privmsgs.getArgs(args)
         url = 'http://www.freshmeat.net/projects-xml/%s' % project
         try:
@@ -95,7 +96,7 @@ class Http(callbacks.Privmsg):
             irc.reply(msg, debug.exnToString(e))
 
     def stockquote(self, irc, msg, args):
-        "<company symbol>"
+        """<company symbol>"""
         symbol = privmsgs.getArgs(args)
         url = 'http://finance.yahoo.com/d/quotes.csv?s=%s'\
               '&f=sl1d1t1c1ohgv&e=.csv' % symbol
@@ -120,7 +121,7 @@ class Http(callbacks.Privmsg):
             return
 
     def foldoc(self, irc, msg, args):
-        "<something to lookup on foldoc>"
+        """<something to lookup on foldoc>"""
         search = '+'.join([urllib.quote(arg) for arg in args])
         url = 'http://foldoc.doc.ic.ac.uk/foldoc/foldoc.cgi?query=%s' % search
         try:
@@ -142,7 +143,7 @@ class Http(callbacks.Privmsg):
     _gkteam = re.compile('Team:([^\s]+)')
     _gkseen = re.compile('seen on GK:  ([^\n]+)')
     def gkstats(self, irc, msg, args):
-        "<name>"
+        """<name>"""
         name = privmsgs.getArgs(args)
         gkprofile = 'http://www.gameknot.com/stats.pl?%s' % name
         try:
@@ -175,7 +176,7 @@ class Http(callbacks.Privmsg):
 
     _zipcode = re.compile(r'Local Forecast for (.*), (.*?) ')
     def zipcode(self, irc, msg, args):
-        "<US zip code>"
+        """<US zip code>"""
         zip = privmsgs.getArgs(args)
         url = "http://www.weather.com/weather/local/%s?lswe=%s" % (zip, zip)
         try:
@@ -194,7 +195,7 @@ class Http(callbacks.Privmsg):
     _condregex = re.compile('CLASS=obsInfo2><b CLASS=obsTextA>(.*)</b></td>',\
                          re.IGNORECASE)
     def weather(self, irc, msg, args):
-        "<US zip code>"
+        """<US zip code>"""
         zip = privmsgs.getArgs(args)
         url = "http://www.weather.com/weather/local/%s?lswe=%s" % (zip, zip)
         try:
@@ -211,7 +212,7 @@ class Http(callbacks.Privmsg):
 
     _slashdotTime = 0.0
     def slashdot(self, irc, msg, args):
-        "takes no arguments"
+        """takes no arguments"""
         if time.time() - self._slashdotTime > 1800:
             try:
                 fd = urllib2.urlopen('http://slashdot.org/slashdot.xml')
@@ -228,6 +229,48 @@ class Http(callbacks.Privmsg):
                 return
         irc.reply(msg, self._slashdotResponse)
 
+    _geekquotere = re.compile('<p class="qt">(.*?)</p>')
+    def geekquote(self, irc, msg, args):
+        "[<multiline>]"
+        multiline = privmsgs.getArgs(args, needed=0, optional=1)
+        try:
+            fd = urllib2.urlopen('http://bash.org/?random1')
+        except urllib2.URLError:
+            irc.error(msg, 'Error connecting to geekquote server.')
+            return
+        html = fd.read()
+        fd.close()
+        if multiline:
+            m = self._geekquotere.search(html, re.M)
+        else:
+            m = self._geekquotere.search(html)
+        if m is None:
+            irc.error(msg, 'No quote found.')
+            return
+        quote = m.group(1)
+        quote = ' // '.join(quote.splitlines())
+        for (def, replacement) in htmlentitydefs.entitydefs.iteritems():
+            quote = quote.replace(def, replacement)
+        irc.reply(msg, quote)
+        
+    _acronymre = re.compile('<td[^>]*><b>[^<]+</b></td>[^<]+<td[^>]*>(\w+)')
+    def acronym(self, irc, msg, args):
+        """<acronym>"""
+        acronym = privmsgs.getArgs(args)
+        try:
+            url = 'http://www.acronymfinder.com/' \
+                  'af-query.asp?String=exact&Acronym=%s' % acronym
+            fd = urllib2.urlopen(url)
+        except urllib2.URLError:
+            irc.error(msg, 'Couldn\'t connect to acronymfinder.com')
+            return
+        html = fd.read()
+        fd.close()
+        defs = self._acronymre.findall(html)
+        if len(defs) == 0:
+            irc.reply(msg, 'No definitions found.')
+        else:
+            irc.reply(msg, '%s could be %s' % (acronym, ', or '.join(defs)))
 
 Class = Http
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
