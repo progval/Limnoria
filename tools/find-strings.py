@@ -45,7 +45,7 @@ def main():
             s = s.replace('%r', ' ')
             if not s:
                 continue
-            if len(s.translate(string.ascii, goodChars))/len(s) < 0.2:
+            if len(s.translate(string.ascii, goodChars))/len(s) > 0.8:
                 continue
             if len(s) <= 3:
                 continue
