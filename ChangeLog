@@ -906,7 +906,7 @@
 	SQL statement to do so:
 	    CREATE TABLE nick_seen (
 	    name TEXT UNIQUE ON CONFLICT REPLACE,
-	    last_seen Mon 23 Aug 2004 11:51:37 AM PDT,
+	    last_seen TIMESTAMP,
 	    last_msg TEXT
 	    );
 
