@@ -339,6 +339,11 @@ if sqlite is not None:
             MFconf.showFactoidIfOnlyOneMatch.setValue(False)
             self.assertResponse('listkeys foo', 'Key search for "foo" '
                                                 '(1 found): "foo"')
+
+        def testRandomFactoid(self):
+            self.assertNotError('foo is <reply>bar')
+            self.assertNotError('bar is <reply>baz')
+            self.assertRegexp('randomfactoid', r'bar|baz')
             
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -681,14 +681,15 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
 
         Displays a random factoid (along with its key) from the database.
         """
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT fact, key FROM factoids 
                           ORDER BY random() LIMIT 1""")
         if cursor.rowcount == 0:
-            irc.error(msg, 'No factoids in the database.')
+            irc.error('No factoids in the database.')
             return
         (fact, key) = cursor.fetchone()
-        irc.reply(msg, 'Random factoid: "%s" is "%s"' % (key, fact))
+        irc.reply('Random factoid: "%s" is "%s"' % (key, fact))
 
 Class = MoobotFactoids
 
