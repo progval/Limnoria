@@ -34,11 +34,13 @@ Provides fun/useless commands that require threads.
 
 Commands include:
   dns
+  kernel
 """
 
 from baseplugin import *
 
 import socket
+import telnetlib
 
 import ircutils
 import privmsgs
@@ -47,7 +49,7 @@ import callbacks
 class ThreadedFunCommands(callbacks.Privmsg):
     threaded = True
     def dns(self, irc, msg, args):
-        "<host|ip>"
+        """<host|ip>"""
         host = privmsgs.getArgs(args)
         if ircutils.isIP(host):
             hostname = socket.getfqdn(host)
@@ -62,6 +64,19 @@ class ThreadedFunCommands(callbacks.Privmsg):
             except socket.error:
                 irc.error(msg, 'Host not found.')
 
-
+    def kernel(self, irc, msg, args):
+        """takes no arguments"""
+        conn = telnetlib.Telnet('kernel.org', 79)
+        conn.write('\n')
+        text = connection.read_all()
+        for line in text.splitlines():
+            (name, version) = line.split(':')
+            if name.find('latest stable') != -1:
+                stable = version.strip()
+            elif name.find('latest beta') != -1:
+                beta = version.strip()
+        irc.reply(msg, 'The latest stable kernel is %s; ' \
+                       'the latest beta kernel is %s.' % (stable, beta))
+        
 Class = ThreadedFunCommands
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
