@@ -33,21 +33,21 @@
 Lots of stuff relating to random numbers.
 """
 
-import plugins
+import supybot.plugins as plugins
 
 import random
 
-import conf
-import utils
-import ircmsgs
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Random', True)
     if yn('Do you want to specify a seed to be used for the RNG'):
         seed = something('What seed?  It must be an integer or long.')
