@@ -130,6 +130,36 @@ class GooglePrivmsg(callbacks.Privmsg):
         data = google.doGoogleSearch(searchString, **kwargs)
         irc.reply(msg, self.formatData(data))
 
+    def metagoogle(self, irc, msg, args):
+        """<search string> [--(language,restrict,safe,filter)=<value>]
+
+        Searches google and gives all the interesting meta information about
+        the search.
+        """
+        (optlist, rest) = getopt.getopt(args, '', ['language=', 'restrict=',
+                                                   'safe=', 'filter='])
+        kwargs = {'language': 'lang_en', 'safeSearch': 1}
+        for option, argument in optlist:
+            kwargs[option[2:]] = argument
+        searchString = privmsgs.getArgs(rest)
+        data = google.doGoogleSearch(searchString, **kwargs)
+        meta = data.meta
+        categories = [d['fullViewableName'] for d in meta.directoryCategories]
+        if len(categories) > 1:
+            categories = ', and '.join([', '.join(categories[:-1]),
+                                        categories[-1]])
+        elif not categories:
+            categories = ''
+        else:
+            categories = categories[0]
+        s = 'Search for %r returned %s %s results in %s seconds.%s' % \
+            (meta.searchQuery,
+             meta.estimateIsExact and 'exactly' or 'approximately',
+             meta.estimatedTotalResultsCount,
+             meta.searchTime,
+             categories and '  Categories include %s.' % categories)
+        irc.reply(msg, s)
+
     def googlesite(self, irc, msg, args):
         """<site> <search string>
 
