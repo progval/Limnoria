@@ -90,6 +90,10 @@ class Math(callbacks.Privmsg):
         """
             Convert a decimal number to another base; returns a string.
         """
+        negative = False
+        if number < 0:
+            negative = True
+            number = -number
         valStr = ''
         if number == 0:
             return '0'
@@ -101,7 +105,10 @@ class Math(callbacks.Privmsg):
                 digit = str(digit)
             valStr = digit + valStr
             number = int(math.floor(number / base))
-        return valStr
+        if negative:
+            return '-%s' % valStr
+        else:
+            return valStr
         
     def _convertBaseToBase(self, number, toBase, fromBase):
         """
