@@ -46,6 +46,9 @@ import supybot.drivers as drivers
 import supybot.schedule as schedule
 
 class AsyncoreRunnerDriver(drivers.IrcDriver):
+    def name(self):
+        return self.__class__.__name__
+    
     def run(self):
         try:
             timeout = conf.supybot.drivers.poll()
