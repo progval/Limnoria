@@ -46,6 +46,16 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
                           '8bj.23%40gated-at.bofh.it&oe=UTF-8&output=gplain',
                           r'linux\.kernel.*NFS client freezes')
 
+    def testConfig(self):
+        self.assertNotError('google config groups-snarfer off')
+        self.assertNoResponse('http://groups.google.com/groups?dq=&hl=en&'
+                              'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
+                              '0310132012.738e22fc%40posting.google.com')
+        self.assertNotError('google config groups-snarfer on')
+        self.assertNotError('http://groups.google.com/groups?dq=&hl=en&'
+                            'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
+                            '0310132012.738e22fc%40posting.google.com')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -62,4 +62,14 @@ class EbayTest(PluginTestCase, PluginDocumentation):
                           'ViewItem&item=2439393310&category=33708',
                          r'88-89 CRX amber')
 
+    def testConfigSnarfer(self):
+        self.assertNotError('ebay config auction-snarfer off')
+        self.assertNoResponse('http://cgi.ebay.com/ebaymotors/ws/'
+                              'eBayISAPI.dll?ViewItem&item=2439393310&'
+                              'category=33708')
+        self.assertNotError('ebay config auction-snarfer on')
+        self.assertNotError('http://cgi.ebay.com/ebaymotors/ws/'
+                            'eBayISAPI.dll?ViewItem&item=2439393310&'
+                            'category=33708')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

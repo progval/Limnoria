@@ -55,6 +55,17 @@ class GameknotTestCase(PluginTestCase, PluginDocumentation):
         self.assertRegexp('http://gameknot.com/stats.pl?ddipaolo&1',
                           r'^[^&]+$')
 
+    def testConfig(self):
+        self.assertNotError('gameknot config game-snarfer off')
+        self.assertNotError('gameknot config stats-snarfer off')
+        self.assertNoResponse('http://gameknot.com/stats.pl?ironchefchess')
+        self.assertNoResponse('http://gameknot.com/chess.pl?bd=907498')
+        self.assertNotError('gameknot config game-snarfer on')
+        self.assertNotError('gameknot config stats-snarfer on')
+        self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
+        self.assertNotError('http://gameknot.com/chess.pl?bd=907498')
+        
+
     def testSnarfer(self):
         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
                           '\x02ddipaolo\x0f won')
