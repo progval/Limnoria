@@ -43,6 +43,8 @@ def main():
             s = eval(s)
             s = s.replace('%s', ' ')
             s = s.replace('%r', ' ')
+            if not s:
+                continue
             if len(s.translate(string.ascii, goodChars))/len(s) < 0.2:
                 continue
             if len(s) <= 3:
