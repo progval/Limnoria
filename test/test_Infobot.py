@@ -52,7 +52,8 @@ if sqlite is not None:
                 ibot.snarfUnaddressedDefinitions.setValue(True)
                 ibot.answerUnaddressedQuestions.setValue(True)
                 self.assertSnarfNoResponse('foo is at http://bar.com/', 2)
-                self.assertRegexp('infobot stats', '1 change')
+                self.assertRegexp('infobot stats', '1 modification')
+                self.assertRegexp('infobot status', '1 modification')
                 self.assertSnarfRegexp('foo?', r'foo.*is.*http://bar.com/')
                 self.assertSnarfNoResponse('foo is at http://baz.com/', 2)
                 self.assertSnarfNotRegexp('foo?', 'baz')
@@ -138,5 +139,9 @@ if sqlite is not None:
 
         def testNoKarmaDunno(self):
             self.assertNoResponse('foo++')
+
+        def testPredefinedFactoids(self):
+            self.assertSnarfNoResponse('what?', 3)
+            self.assertRegexp('roses?', 'roses are red')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -242,12 +242,12 @@ class SqliteInfobotDB(object):
                               key TEXT UNIQUE ON CONFLICT REPLACE,
                               value TEXT
                               );""")
+            db.commit()
             for (k, v) in initialIs.iteritems():
                 self.setIs(k, v)
             for (k, v) in initialAre.iteritems():
                 self.setAre(k, v)
             self._changes = 0
-            db.commit()
             return db
         except sqlite.DatabaseError, e:
             raise dbi.InvalidDBError, str(e)
