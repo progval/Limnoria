@@ -127,7 +127,6 @@ class Format(callbacks.Privmsg):
         irc.reply(s)
 
 
-
 Class = Format
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

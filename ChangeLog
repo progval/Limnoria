@@ -1,3 +1,7 @@
+	* Added a new plugin, Format, which offers several commands for
+	formatting strings on IRC.  Moved several commands from to it
+	from the Utilities plugin.
+	
 	* Improved the functionality of RSS.announce.  Calling it with
 	no arguments now lists the currently announced feeds.  Removing
 	feeds is done by specifying the --remove option.
