@@ -23,12 +23,7 @@ version = '1.0'
 def dequote(s):
     """Will remove single or double quotes from the start and end of a string
     and return the result."""
-    quotechars = "'\""
-    while s and s[0] in quotechars:
-        s = s[1:]
-    while str and str[-1] in quotechars:
-        s = s[0:-1]
-    return s
+    return s.strip('\'"')
 
 def enquote(s):
     """This function will put a string in double quotes, properly

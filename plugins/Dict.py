@@ -85,7 +85,7 @@ class Dict(callbacks.Privmsg, plugins.Configurable):
         """
         try:
             conn = dictclient.Connection(self.configurables.get('server'))
-            dbs = conf.getdbdescs()
+            dbs = conn.getdbdescs().keys()
             dbs.sort()
             irc.reply(msg, utils.commaAndify(dbs))
         except socket.timeout:
@@ -98,7 +98,7 @@ class Dict(callbacks.Privmsg, plugins.Configurable):
         """
         try:
             conn = dictclient.Connection(self.configurables.get('server'))
-            dbs = conf.getdbdescs()
+            dbs = conn.getdbdescs().keys()
             irc.reply(msg, random.choice(dbs))
         except socket.timeout:
             irc.error(msg, replyTimeout)
