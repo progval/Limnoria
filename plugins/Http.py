@@ -165,13 +165,14 @@ class Http(callbacks.Privmsg):
             rating = self._gkrating.search(profile).group(1)
             games = self._gkgames.search(profile).group(1)
             (w, l, d) = self._gkrecord.search(profile).groups()
-            seen = self._gkseen.search(utils.htmlToText(profile)).group(1)
-            if seen.find("is hiding") != -1:
+            seen = self._gkseen.search(utils.htmlToText(profile))
+            if seen.group(0).find("is hiding") != -1:
                 seen = '%s is hiding his/her online status.' % name
-            elif seen.startswith('0'):
+            elif seen.group(2).startswith('0'):
                 seen = '%s is on gameknot right now.' % name
             else:
-                seen = '%s was last seen on Gameknot %s.' % (name, seen)
+                seen = '%s was last seen on Gameknot %s.' % (name,
+                seen.group(2))
             if profile.find('Team:') >= 0:
                 team = self._gkteam.search(profile).group('name')
                 irc.reply(msg, '%s (team: %s) is rated %s and has %s active ' \
