@@ -137,7 +137,7 @@ def reply(msg, s, prefixName=True, private=False,
     s = ircutils.safeArgument(s)
     if not s:
         s = 'Error: I tried to send you an empty message.'
-    if prefixName and ircutils.isChannel(target):
+    if prefixName and not any(ircutils.isChannel, [target, to]):
         s = '%s: %s' % (to, s)
     # And now, let's decide whether it's a PRIVMSG or a NOTICE.
     msgmaker = ircmsgs.privmsg
@@ -764,8 +764,10 @@ class Privmsg(irclib.IrcCallback):
         dispatcher = utils.changeFunctionName(dispatcher, canonicalname)
         if self._original:
             dispatcher.__doc__ = self._original.__doc__
+            dispatcher.isDispatcher = False
         else:
             dispatcher.__doc__ = docstring
+            dispatcher.isDispatcher = True
         setattr(self.__class__, canonicalname, dispatcher)
 
     def __call__(self, irc, msg):
