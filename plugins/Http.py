@@ -148,7 +148,7 @@ class Http(callbacks.Privmsg):
             rating = self._gkrating.search(profile).group(1)
             games = self._gkgames.search(profile).group(1)
             (w, l, d) = self._gkrecord.search(profile).groups()
-            profile = stripHtml(profile)
+            profile = utils.htmlToText(profile)
             seen = self._gkseen.search(profile).group(1)
             if profile.find('Team:') >= 0:
                 team = self._gkteam.search(profile).group(1)
