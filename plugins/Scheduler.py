@@ -61,6 +61,7 @@ class Scheduler(callbacks.Privmsg):
         if ambiguous:
             raise callbacks.Error, callbacks.ambiguousReply(ambiguous)
         def f():
+            del self.events[f.eventId]
             self.Proxy(irc.irc, msg, tokens)
         return f
 
@@ -81,6 +82,7 @@ class Scheduler(callbacks.Privmsg):
             return
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addEvent(f, time.time() + seconds)
+        f.eventId = id
         self.events[str(id)] = command
         irc.replySuccess('Event #%s added.' % id)
 
@@ -131,6 +133,7 @@ class Scheduler(callbacks.Privmsg):
         id = schedule.addPeriodicEvent(f, seconds, name)
         assert id == name
         # We don't reply because the command runs immediately.
+        # But should we?  What if the command doesn't have visible output?
         # irc.replySuccess()
 
     def list(self, irc, msg, args):
