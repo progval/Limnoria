@@ -69,8 +69,6 @@ def flush():
     for f in flushers:
         f()
 
-atexit.register(flush)
-
 try:
     ignore(tempvars)
 except NameError:
@@ -89,6 +87,8 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
     msg = '%s upkeep ran.' % time.strftime(conf.logTimestampFormat)
     debug.msg(msg, 'verbose')
     return collected
+
+atexit.register(upkeep)
 
 '''
 def superReload(oldmodule):
