@@ -38,6 +38,7 @@ from baseplugin import *
 
 import base64
 
+import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
@@ -178,8 +179,15 @@ class Moobot(callbacks.Privmsg):
         else:
             irc.error(msg, 'I don\'t recognize that stack command.')
 
-
-
+    def give(self, irc, msg, args):
+        """<someone> <something>"""
+        (someone, something) = privmsgs.getArgs(args, needed=2)
+        if someone == 'me':
+            someone = msg.nick
+        elif someone in ('yourself', 'you', irc.nick):
+            someone = himself
+        response = 'gives %s %s' % (someone, something)
+        irc.queueMsg(ircmsgs.action(ircutils.reply(msg), response))
 
 
 Class = Moobot
