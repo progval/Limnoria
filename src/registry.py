@@ -401,7 +401,7 @@ class Float(Value):
             self.error()
 
 class PositiveFloat(Float):
-    """Value must be a float-point number greater than zero."""
+    """Value must be a floating-point number greater than zero."""
     def setValue(self, v):
         if v <= 0:
             self.error()
