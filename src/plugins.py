@@ -192,33 +192,39 @@ class ToggleDictionary(object):
     """I am ToggleDictionary! Hear me roar!
     """
     def __init__(self, toggles):
-        if toggles.keys() == []:
-            raise ValueError
-        self.toggles = {}
-        self.toggles['Default'] = toggles
+        if not toggles:
+            raise ValueError, 'At least one toggle must be provided.'
+        self.channels = {}
+        self.defaults = toggles
 
-    def get(self, key, channel='Default'):
-        if channel != 'Default':
-            try:
-                return self.toggles[channel][key]
-            except KeyError:
-                return self.toggles['Default'][key]
+    def _getDict(self, channel):
+        if channel is None:
+            return self.defaults
         else:
-            return self.toggles[channel][key]
+            if channel not in self.channels:
+                self.channels[channel] = self.defaults.copy()
+            return self.channels[channel]
 
-    def toggle(self, key, value=None, channel='Default'):
-        if value is not None and value != True and value != False:
-            raise ValueError
-        if not self.toggles.has_key(channel):
-            self.toggles[channel] = self.toggles['Default'].copy()
+    def get(self, key, channel=None):
+        return self._getDict(channel)[key]
+
+    def toggle(self, key, value=None, channel=None):
+        d = self._getDict(channel)
         if value is None:
-            self.toggles[channel][key] = not self.toggles[channel][key]
+            d[key] = not d[key] # Raises KeyError, we want this.
         else:
-            self.toggles[channel][key] = value
+            # I considered this, to save the if statement:
+            # d[key] = (d[key] ^ d[key]) or value
+            # But didn't, so people can provide non-boolean keys.
+            if key in d:
+                d[key] = value
+            else:
+                raise KeyError, key
 
-    def toString(self, channel='Default'):
+    def toString(self, channel=None):
         resp = []
-        for k,v in self.toggles[channel].iteritems():
+        d = self._getDict(channel)
+        for (k, v) in d.iteritems():
             if v:
                 resp.append('%s: On' % k)
             else:
