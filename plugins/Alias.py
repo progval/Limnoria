@@ -276,6 +276,9 @@ class Alias(callbacks.Privmsg):
         arguments.
         """
         (name, alias) = privmsgs.getArgs(args, required=2)
+        if ' ' not in alias:
+            # If it's a single word, they probably want $*.
+            alias += ' $*'
         try:
             self.addAlias(irc, name, alias)
             self.log.info('Adding alias %r for %r (from %s)' %

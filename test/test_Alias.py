@@ -79,7 +79,7 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         
     def testAliasHelp(self):
         self.assertNotError('alias add slashdot foo')
-        self.assertRegexp('help slashdot', "Alias for 'foo'")
+        self.assertRegexp('help slashdot', "Alias for 'foo.*'")
 
     def testRemove(self):
         self.assertNotError('alias add foo echo bar')
@@ -151,6 +151,10 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testNoExtraQuotes(self):
         self.assertNotError('alias add myre "echo s/$1/$2/g"')
         self.assertResponse('myre foo bar', 's/foo/bar/g')
+
+    def testSimpleAliasWithoutArgsImpliesDollarStar(self):
+        self.assertNotError('alias add exo echo')
+        self.assertResponse('exo foo bar baz', 'foo bar baz')
         
 
 
