@@ -524,7 +524,6 @@ def wrap(f, *argsArgs, **argsKwargs):
         if 'getopts' in argsKwargs:
             f(self, irc, msg, args, state.getopts, *state.args, **state.kwargs)
         else:
-            print state.args, state.kwargs
             f(self, irc, msg, args, *state.args, **state.kwargs)
 
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
