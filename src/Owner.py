@@ -244,8 +244,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     irc.reply(utils.exnToString(e))
             else:
                 # This should never happen, so I haven't bothered updating
-                # this error string to say --enable-eval.
-                irc.error('You must enable conf.allowEval for that to work.')
+                # this error string to say --allow-eval.
+                irc.error('You must run supybot with the --allow-eval '
+                          'option for this command to be enabled.')
 
         def _exec(self, irc, msg, args):
             """<statement>
@@ -261,12 +262,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     irc.reply(utils.exnToString(e))
             else:
                 # This should never happen, so I haven't bothered updating
-                # this error string to say --enable-eval.
-                irc.error('You must enable conf.allowEval for that to work.')
+                # this error string to say --allow-eval.
+                irc.error('You must run supybot with the --allow-eval '
+                          'option for this command to be enabled.')
     else:
         def eval(self, irc, msg, args):
-            """Run your bot with --enable-eval if you want this to work."""
-            irc.error('You must give your bot the --enable-eval switch for '
+            """Run your bot with --allow-eval if you want this to work."""
+            irc.error('You must give your bot the --allow-eval option for '
                       'this command to be enabled.')
         _exec = eval
             
