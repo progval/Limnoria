@@ -220,19 +220,28 @@ class MetaFirewall(type):
         return type.__new__(cls, name, bases, dict)
 
 
-class LogLevel(registry.Value):
-    """Invalid log level.  Value must be either DEBUG, INFO, WARNING, ERROR,
-    or CRITICAL."""
+class ValidLogLevel(registry.String):
+    """This should be overridden."""
+    minimumLevel = -1
     def set(self, s):
         s = s.upper()
         try:
-            self.setValue(getattr(logging, s))
-            _logger.setLevel(self.value) # _logger defined later.
+            level = getattr(logging, s)
+            if level < self.minimumLevel:
+                self.error()
+            self.setValue(level)
         except AttributeError:
             self.error()
 
     def __str__(self):
         return logging.getLevelName(self.value)
+    
+class LogLevel(ValidLogLevel):
+    """Invalid log level.  Value must be either DEBUG, INFO, WARNING, ERROR,
+    or CRITICAL."""
+    def setValue(self, v):
+        ValidLogLevel.setValue(self, v)
+        _logger.setLevel(self.value) # _logger defined later.
     
 conf.supybot.directories.register('log', registry.String('logs', """Determines
 what directory the bot will store its logfiles in."""))

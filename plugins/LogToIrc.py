@@ -130,24 +130,12 @@ _formatString = '%(name)s: %(levelname)s %(message)s'
 _ircFormatter = ColorizedIrcFormatter(_formatString)
 _ircHandler.setFormatter(_ircFormatter)
 
-class IrcLogLevel(log.LogLevel):
+class IrcLogLevel(log.ValidLogLevel):
     """Value must be one of INFO, WARNING, ERROR, or CRITICAL."""
-    def set(self, s):
-        # FIXME: Overriding set() here because log.LogLevel.set() sets the
-        # default log level as well. log.LogLevel and this class should be
-        # refactored and use registry.OnlySomeStrings in the future.
-        s = s.upper()
-        try:
-            self.setValue(getattr(logging, s))
-            _ircHandler.setLevel(self.value)
-        except AttributeError:
-            self.error()
-    
+    minimumLevel = logging.INFO
     def setValue(self, v):
-        if v <= logging.DEBUG:
-            self.error()
-        else:
-            log.LogLevel.setValue(self, v)
+        log.ValidLogLevel.setValue(self, v)
+        _ircHandler.setLevel(self.value)
 
 class ValidChannelOrNick(registry.String):
     """Value must be a valid channel or a valid nick."""
