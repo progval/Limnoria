@@ -91,7 +91,7 @@ class IrcMsg(object):
             self.prefix = prefix
             self.command = command
             if args is not None:
-                assert filter(ircutils.isValidArgument, args) == args
+                assert all(ircutils.isValidArgument, args)
                 self.args = tuple(args)
             else:
                 self.args = ()
@@ -279,7 +279,7 @@ def op(channel, nick, prefix=''):
 def ops(channel, nicks, prefix=''):
     """Returns a MODE to op each of nicks on channel."""
     assert isChannel(channel), channel
-    assert filter(isNick, nicks) == nicks, nicks
+    assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '+' + ('o'*len(nicks)), nicks))
 
@@ -292,7 +292,7 @@ def deop(channel, nick, prefix=''):
 def deops(channel, nicks, prefix=''):
     """Returns a MODE to deop each of nicks on channel."""
     assert isChannel(channel), channel
-    assert filter(isNick, nicks) == nicks, nicks
+    assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('o'*len(nicks)), nicks))
 
@@ -305,7 +305,7 @@ def halfop(channel, nick, prefix=''):
 def halfops(channel, nicks, prefix=''):
     """Returns a MODE to halfop each of nicks on channel."""
     assert isChannel(channel), channel
-    assert filter(isNick, nicks) == nicks, nicks
+    assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix,
                   command=MODE,
                   args=(channel, '+' + ('h'*len(nicks)), nicks))
@@ -319,7 +319,7 @@ def dehalfop(channel, nick, prefix=''):
 def dehalfops(channel, nicks, prefix=''):
     """Returns a MODE to dehalfop each of nicks on channel."""
     assert isChannel(channel), channel
-    assert filter(isNick, nicks) == nicks, nicks
+    assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('h'*len(nicks)), nicks))
 
@@ -332,7 +332,7 @@ def voice(channel, nick, prefix=''):
 def voices(channel, nicks, prefix=''):
     """Returns a MODE to voice each of nicks on channel."""
     assert isChannel(channel), channel
-    assert filter(isNick, nicks) == nicks
+    assert all(isNick, nicks)
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '+' + ('v'*len(nicks)), nicks))
 
@@ -345,7 +345,7 @@ def devoice(channel, nick, prefix=''):
 def devoices(channel, nicks, prefix=''):
     """Returns a MODE to devoice each of nicks on channel."""
     assert isChannel(channel), channel
-    assert filter(isNick, nicks) == nicks, nicks
+    assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('v'*len(nicks)), nicks))
 
@@ -362,7 +362,7 @@ def ban(channel, hostmask, exception='', prefix=''):
 def bans(channel, hostmasks, exceptions=(), prefix=''):
     """Returns a MODE to ban each of nicks on channel."""
     assert isChannel(channel), channel
-    assert filter(isUserHostmask, hostmasks) == hostmasks, hostmasks
+    assert all(isUserHostmask, hostmasks), hostmasks
     modes = [('+b', s) for s in hostmasks] + [('+e', s) for s in exceptions]
     return IrcMsg(prefix=prefix, command=MODE,
                   args=[channel] + ircutils.joinModes(modes))
@@ -376,7 +376,7 @@ def unban(channel, hostmask, prefix=''):
 def unbans(channel, hostmasks, prefix=''):
     """Returns a MODE to unban each of nicks on channel."""
     assert isChannel(channel), channel
-    assert filter(isUserHostmask, hostmasks) == hostmasks, hostmasks
+    assert all(isUserHostmask, hostmasks), hostmasks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('b'*len(hostmasks)), hostmasks))
 
@@ -393,7 +393,7 @@ def kicks(channel, nicks, msg='', prefix=''):
     """Returns a KICK to kick each of nicks from channel with the message msg.
     """
     assert isChannel(channel), channel
-    assert filter(isNick, nicks) == nicks, nicks
+    assert all(isNick, nicks), nicks
     if msg:
         return IrcMsg(prefix=prefix, command='KICK',
                       args=(channel, ','.join(nicks), msg))
@@ -438,7 +438,7 @@ def join(channel, key=None, prefix=''):
 
 def joins(channels, keys=None, prefix=''):
     """Returns a JOIN to each of channels."""
-    assert filter(isChannel, channels) == channels, channels
+    assert all(isChannel, channels), channels
     if keys is None:
         keys = []
     assert len(keys) <= len(channels)
@@ -470,7 +470,7 @@ def part(channel, msg='', prefix=''):
 
 def parts(channels, msg='', prefix=''):
     """Returns a PART from each of channels with the message msg."""
-    assert filter(isChannel, channels) == channels, channels
+    assert all(isChannel, channels), channels
     if msg:
         return IrcMsg(prefix=prefix, command='PART',
                       args=(','.join(channels), msg,))
