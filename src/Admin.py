@@ -67,7 +67,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
     def do437(self, irc, msg):
         """Nick/channel temporarily unavailable."""
         target = msg.args[0]
-        if ircutils.isChannel(target): # We don't care about nicks.
+        if irc.isChannel(target): # We don't care about nicks.
             t = time.time() + 30
             # Let's schedule a rejoin.
             def rejoin():
@@ -156,7 +156,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 keys.insert(0, key)
             else:
                 channels.append(channel)
-            if not ircutils.isChannel(channel):
+            if not irc.isChannel(channel):
                 irc.errorInvalid('channel', channel)
                 return
             conf.supybot.channels().add(original)
@@ -244,7 +244,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         channels = []
         reason = ''
         for (i, arg) in enumerate(args):
-            if ircutils.isChannel(arg):
+            if irc.isChannel(arg):
                 channels.append(args[i])
                 args[i] = None
             else:
