@@ -67,9 +67,6 @@ import supybot.registry as registry
 def _addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,
               whenAddressedByNickAtEnd=None):
-    """If msg is addressed to 'name', returns the portion after the address.
-    Otherwise returns the empty string.
-    """
     def get(group):
         if ircutils.isChannel(target):
             group = group.get(target)
@@ -145,6 +142,9 @@ def _addressed(nick, msg, prefixChars=None, nicks=None,
         return ''
 
 def addressed(nick, msg, **kwargs):
+    """If msg is addressed to 'name', returns the portion after the address.
+    Otherwise returns the empty string.
+    """
     payload = msg.addressed
     if payload is not None:
         return payload
