@@ -65,7 +65,7 @@ def isAntiCapability(capability):
     """Returns True if capability is an anticapability; False otherwise."""
     if isChannelCapability(capability):
         (_, capability) = fromChannelCapability(capability)
-    return capability[0] == '!'
+    return capability[0] == '-'
 
 def makeAntiCapability(capability):
     """Returns the anticapability of a given capability."""
@@ -73,9 +73,9 @@ def makeAntiCapability(capability):
            'work on anticapabilities; you probably want invertCapability.'
     if '.' in capability:
         (channel, capability) = fromChannelCapability(capability)
-        return '%s.!%s' % (channel, capability)
+        return '%s.-%s' % (channel, capability)
     else:
-        return '!' + capability
+        return '-' + capability
 
 def unAntiCapability(capability):
     """Takes an anticapability and returns the non-anti form."""
@@ -173,9 +173,9 @@ class UserCapabilitySet(CapabilitySet):
             return CapabilitySet.check(self, capability)
 
     def add(self, capability):
-        """Adds a capability to the set.  Just make sure it's not ~owner."""
+        """Adds a capability to the set.  Just make sure it's not -owner."""
         capability = ircutils.toLower(capability)
-        assert capability != '!owner', '"!owner" disallowed.'
+        assert capability != '-owner', '"-owner" disallowed.'
         CapabilitySet.add(self, capability)
 
 class IrcUser(object):

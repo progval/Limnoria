@@ -43,9 +43,9 @@ class FunctionsTestCase(unittest.TestCase):
     def testIsAntiCapability(self):
         self.failIf(ircdb.isAntiCapability('foo'))
         self.failIf(ircdb.isAntiCapability('#foo.bar'))
-        self.failUnless(ircdb.isAntiCapability('!foo'))
-        self.failUnless(ircdb.isAntiCapability('#foo.!bar'))
-        self.failUnless(ircdb.isAntiCapability('#foo.bar.!baz'))
+        self.failUnless(ircdb.isAntiCapability('-foo'))
+        self.failUnless(ircdb.isAntiCapability('#foo.-bar'))
+        self.failUnless(ircdb.isAntiCapability('#foo.bar.-baz'))
 
     def testIsChannelCapability(self):
         self.failIf(ircdb.isChannelCapability('foo'))
@@ -53,12 +53,12 @@ class FunctionsTestCase(unittest.TestCase):
         self.failUnless(ircdb.isChannelCapability('#foo.bar.baz'))
 
     def testMakeAntiCapability(self):
-        self.assertEqual(ircdb.makeAntiCapability('foo'), '!foo')
-        self.assertEqual(ircdb.makeAntiCapability('#foo.bar'), '#foo.!bar')
+        self.assertEqual(ircdb.makeAntiCapability('foo'), '-foo')
+        self.assertEqual(ircdb.makeAntiCapability('#foo.bar'), '#foo.-bar')
 
     def testMakeChannelCapability(self):
         self.assertEqual(ircdb.makeChannelCapability('#f', 'b'), '#f.b')
-        self.assertEqual(ircdb.makeChannelCapability('#f', '!b'), '#f.!b')
+        self.assertEqual(ircdb.makeChannelCapability('#f', '-b'), '#f.-b')
 
     def testFromChannelCapability(self):
         self.assertEqual(ircdb.fromChannelCapability('#foo.bar'),
@@ -67,16 +67,16 @@ class FunctionsTestCase(unittest.TestCase):
                          ['#foo.bar', 'baz'])
 
     def testUnAntiCapability(self):
-        self.assertEqual(ircdb.unAntiCapability('!bar'), 'bar')
-        self.assertEqual(ircdb.unAntiCapability('#foo.!bar'), '#foo.bar')
-        self.assertEqual(ircdb.unAntiCapability('#foo.bar.!baz'),
+        self.assertEqual(ircdb.unAntiCapability('-bar'), 'bar')
+        self.assertEqual(ircdb.unAntiCapability('#foo.-bar'), '#foo.bar')
+        self.assertEqual(ircdb.unAntiCapability('#foo.bar.-baz'),
                          '#foo.bar.baz')
 
     def testInvertCapability(self):
-        self.assertEqual(ircdb.invertCapability('bar'), '!bar')
-        self.assertEqual(ircdb.invertCapability('!bar'), 'bar')
-        self.assertEqual(ircdb.invertCapability('#foo.bar'), '#foo.!bar')
-        self.assertEqual(ircdb.invertCapability('#foo.!bar'), '#foo.bar')
+        self.assertEqual(ircdb.invertCapability('bar'), '-bar')
+        self.assertEqual(ircdb.invertCapability('-bar'), 'bar')
+        self.assertEqual(ircdb.invertCapability('#foo.bar'), '#foo.-bar')
+        self.assertEqual(ircdb.invertCapability('#foo.-bar'), '#foo.bar')
 
 
 class CapabilitySetTestCase(unittest.TestCase):
@@ -85,31 +85,31 @@ class CapabilitySetTestCase(unittest.TestCase):
         self.assertRaises(KeyError, d.check, 'foo')
         d = ircdb.CapabilitySet(('foo',))
         self.failUnless(d.check('foo'))
-        self.failIf(d.check('!foo'))
+        self.failIf(d.check('-foo'))
         d.add('bar')
         self.failUnless(d.check('bar'))
-        self.failIf(d.check('!bar'))
-        d.add('!baz')
+        self.failIf(d.check('-bar'))
+        d.add('-baz')
         self.failIf(d.check('baz'))
-        self.failUnless(d.check('!baz'))
-        d.add('!bar')
+        self.failUnless(d.check('-baz'))
+        d.add('-bar')
         self.failIf(d.check('bar'))
-        self.failUnless(d.check('!bar'))
-        d.remove('!bar')
-        self.assertRaises(KeyError, d.check, '!bar')
+        self.failUnless(d.check('-bar'))
+        d.remove('-bar')
+        self.assertRaises(KeyError, d.check, '-bar')
         self.assertRaises(KeyError, d.check, 'bar')
 
 
 class UserCapabilitySetTestCase(unittest.TestCase):
     def testOwnerHasAll(self):
         d = ircdb.UserCapabilitySet(('owner',))
-        self.failIf(d.check('!foo'))
+        self.failIf(d.check('-foo'))
         self.failUnless(d.check('foo'))
 
     def testOwnerIsAlwaysPresent(self):
         d = ircdb.UserCapabilitySet()
         self.failUnless('owner' in d)
-        self.failUnless('!owner' in d)
+        self.failUnless('-owner' in d)
         self.failIf(d.check('owner'))
         d.add('owner')
         self.failUnless(d.check('owner'))
@@ -120,43 +120,43 @@ class CapabilitySetTestCase(unittest.TestCase):
     def testContains(self):
         s = ircdb.CapabilitySet()
         self.failIf('foo' in s)
-        self.failIf('!foo' in s)
+        self.failIf('-foo' in s)
         s.add('foo')
         self.failUnless('foo' in s)
-        self.failUnless('!foo' in s)
+        self.failUnless('-foo' in s)
         s.remove('foo')
         self.failIf('foo' in s)
-        self.failIf('!foo' in s)
-        s.add('!foo')
+        self.failIf('-foo' in s)
+        s.add('-foo')
         self.failUnless('foo' in s)
-        self.failUnless('!foo' in s)
+        self.failUnless('-foo' in s)
 
     def testCheck(self):
         s = ircdb.CapabilitySet()
         self.assertRaises(KeyError, s.check, 'foo')
-        self.assertRaises(KeyError, s.check, '!foo')
+        self.assertRaises(KeyError, s.check, '-foo')
         s.add('foo')
         self.failUnless(s.check('foo'))
-        self.failIf(s.check('!foo'))
+        self.failIf(s.check('-foo'))
         s.remove('foo')
         self.assertRaises(KeyError, s.check, 'foo')
-        self.assertRaises(KeyError, s.check, '!foo')
-        s.add('!foo')
+        self.assertRaises(KeyError, s.check, '-foo')
+        s.add('-foo')
         self.failIf(s.check('foo'))
-        self.failUnless(s.check('!foo'))
-        s.remove('!foo')
+        self.failUnless(s.check('-foo'))
+        s.remove('-foo')
         self.assertRaises(KeyError, s.check, 'foo')
-        self.assertRaises(KeyError, s.check, '!foo')
+        self.assertRaises(KeyError, s.check, '-foo')
 
     def testAdd(self):
         s = ircdb.CapabilitySet()
         s.add('foo')
-        s.add('!foo')
+        s.add('-foo')
         self.failIf(s.check('foo'))
-        self.failUnless(s.check('!foo'))
+        self.failUnless(s.check('-foo'))
         s.add('foo')
         self.failUnless(s.check('foo'))
-        self.failIf(s.check('!foo'))
+        self.failIf(s.check('-foo'))
 
 
 class UserCapabilitySetTestCase(unittest.TestCase):
@@ -164,10 +164,10 @@ class UserCapabilitySetTestCase(unittest.TestCase):
         s = ircdb.UserCapabilitySet()
         s.add('owner')
         self.failUnless('foo' in s)
-        self.failUnless('!foo' in s)
+        self.failUnless('-foo' in s)
         self.failUnless(s.check('owner'))
-        self.failIf(s.check('!owner'))
-        self.failIf(s.check('!foo'))
+        self.failIf(s.check('-owner'))
+        self.failIf(s.check('-foo'))
         self.failUnless(s.check('foo'))
 
 
@@ -176,20 +176,20 @@ class IrcUserTestCase(unittest.TestCase):
         u = ircdb.IrcUser()
         u.addCapability('foo')
         self.failUnless(u.checkCapability('foo'))
-        self.failIf(u.checkCapability('!foo'))
-        u.addCapability('!bar')
-        self.failUnless(u.checkCapability('!bar'))
+        self.failIf(u.checkCapability('-foo'))
+        u.addCapability('-bar')
+        self.failUnless(u.checkCapability('-bar'))
         self.failIf(u.checkCapability('bar'))
         u.removeCapability('foo')
-        u.removeCapability('!bar')
+        u.removeCapability('-bar')
         self.assertRaises(KeyError, u.checkCapability, 'foo')
-        self.assertRaises(KeyError, u.checkCapability, '!bar')
+        self.assertRaises(KeyError, u.checkCapability, '-bar')
 
     def testOwner(self):
         u = ircdb.IrcUser()
         u.addCapability('owner')
         self.failUnless(u.checkCapability('foo'))
-        self.failIf(u.checkCapability('!foo'))
+        self.failIf(u.checkCapability('-foo'))
 
     def testInitCapabilities(self):
         u = ircdb.IrcUser(capabilities=['foo'])
@@ -221,7 +221,7 @@ class IrcUserTestCase(unittest.TestCase):
     def testIgnore(self):
         u = ircdb.IrcUser(ignore=True)
         self.failIf(u.checkCapability('foo'))
-        self.failUnless(u.checkCapability('!foo'))
+        self.failUnless(u.checkCapability('-foo'))
 
     def testRemoveCapability(self):
         u = ircdb.IrcUser(capabilities=('foo',))
@@ -247,10 +247,10 @@ class IrcChannelTestCase(unittest.TestCase):
         c = ircdb.IrcChannel()
         c.setDefaultCapability(False)
         self.failIf(c.checkCapability('foo'))
-        self.failUnless(c.checkCapability('!foo'))
+        self.failUnless(c.checkCapability('-foo'))
         c.setDefaultCapability(True)
         self.failUnless(c.checkCapability('foo'))
-        self.failIf(c.checkCapability('!foo'))
+        self.failIf(c.checkCapability('-foo'))
 
     def testLobotomized(self):
         c = ircdb.IrcChannel(lobotomized=True)
