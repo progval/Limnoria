@@ -861,7 +861,9 @@ class FunCommands(callbacks.Privmsg):
     def dict(self, irc, msg, args):
         """[<dictionary>] <word>
 
-        Looks up the definition of <word> on dict.org's dictd server.
+        Looks up the definition of <word> on dict.org's dictd server.  If a
+        a dictionary is specified and the definition is too long, snips it to
+        an appropriate length.
         """
         if args[0] in self.dictdbs:
             dictionary = args.pop(0)
