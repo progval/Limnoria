@@ -71,6 +71,8 @@ def loadPluginModule(name):
         pass
     moduleInfo = imp.find_module(name, conf.pluginDirs)
     module = imp.load_module(name, *moduleInfo)
+    if module.__name__ in sys.modules:
+        sys.modules[module.__name__] = module
     linecache.checkcache()
     return module
 
