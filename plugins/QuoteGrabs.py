@@ -54,8 +54,8 @@ import ircmsgs
 import plugins
 import ircutils
 import privmsgs
+import registry
 import callbacks
-import configurable
 
 try:
     import sqlite
@@ -63,25 +63,27 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-def configure(onStart, afterConnect, advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
-    from questions import expect, anything, something, yn
-    onStart.append('load QuoteGrabs')
-
-grabTime = 864000 # 10 days
-minRandomLength = 8
-minRandomWords = 3
-
 conf.registerPlugin('QuoteGrabs')
 conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs, 'randomGrabber',
     registry.Boolean(False, """Determines whether the bot will randomly grab
-    possibly-suitable quotes for someone."""))
+    possibly-suitable quotes on occasion.  The suitability of a given message
+    is determined by ..."""))
+conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs.randomGrabber,
+    'averageTimeBetweenGrabs',
+    registry.PositiveInteger(864000, """Determines about how many seconds, on
+    average, should elapse between random grabs.  This is only an average
+    value; grabs can happen from any time after half this time until never,
+    although that's unlikely to occur."""))
+conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs.randomGrabber,
+    'minimumWords', registry.PositiveInteger(3, """Determines the minimum
+    number of words in a message for it to be considered for random
+    grabbing."""))
+conf.registerChannelValue(conf.supybot.plugins.QuoteGrabs.randomGrabber,
+    'minimumCharacters', registry.PositiveInteger(8, """Determines the
+    minimum number of characters in a message for it to be considered for
+    random grabbing."""))
 
-class QuoteGrabs(plugins.ChannelDBHandler,
-                 callbacks.Privmsg):
+class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
@@ -108,10 +110,11 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):
-            channel = msg.args[0]
-            if conf.supybot.plugins.QuoteGrabs.randomGrabber():
-                if len(msg.args[1]) > minRandomLength and \
-                   len(msg.args[1].split()) > minRandomWords:
+            (channel, payload) = msg.args
+            length = self.registryValue('randomGrabber.minimumLength', channel)
+            words = self.registryValue('randomGrabber.minimumWords', channel)
+            if self.registryValue('randomGrabber', channel):
+                if len(payload) > length and len(payload.split()) > words:
                     db = self.getDb(channel)
                     cursor = db.cursor()
                     cursor.execute("""SELECT added_at FROM quotegrabs
