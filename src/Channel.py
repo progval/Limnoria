@@ -96,6 +96,8 @@ class Channel(callbacks.Privmsg):
         If you have the #channel.op capability, this will remove operator
         privileges from all the nicks given.
         """
+        if not args:
+            raise callbacks.ArgumentError
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.deops(channel, args))
         else:
@@ -108,6 +110,8 @@ class Channel(callbacks.Privmsg):
         If you have the #channel.op capability, this will remove half-operator
         privileges from all the nicks given.
         """
+        if not args:
+            raise callbacks.ArgumentError
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.dehalfops(channel, args))
         else:
@@ -120,6 +124,8 @@ class Channel(callbacks.Privmsg):
         If you have the #channel.op capability, this will remove voice from all
         the nicks given.
         """
+        if not args:
+            raise callbacks.ArgumentError
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.devoices(channel, args))
         else:
@@ -140,6 +146,20 @@ class Channel(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.part(channel))
         irc.queueMsg(ircmsgs.join(channel, key))
     cycle = privmsgs.checkChannelCapability(cycle, 'op')
+
+    def kick(self, irc, msg, args, channel):
+        """[<channel>] <nick> [<reason>]
+
+        Kicks <nick> from <channel> for <reason>.  If <reason> isn't given,
+        uses the nick of the person making the command as the reason.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        (nick, reason) = privmsgs.getArgs(args, optional=1)
+        if not reason:
+            reason = msg.nick
+        irc.queueMsg(ircmsgs.kick(channel, nick, reason))
+    kick = privmsgs.checkChannelCapability(kick, 'op')
 
     def kban(self, irc, msg, args):
         """[<channel>] <nick> [<number of seconds to ban>]

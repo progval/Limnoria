@@ -50,9 +50,9 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         
     def testErrorsWithoutOps(self):
         for s in ['op', 'deop', 'voice', 'devoice', 'halfop', 'dehalfop']:
-            self.assertError(s)
+            self.assertError('%s foo' % s)
             self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
-            self.assertNotError(s)
+            self.assertNotError('%s foo' % s)
             self.irc.feedMsg(ircmsgs.deop(self.channel, self.nick))
 
     def testOp(self):
