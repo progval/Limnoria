@@ -59,7 +59,7 @@ def configure(onStart, afterConnect, advanced):
         prompt = 'Would you like to add another RSS feed?'
         name = something('What\'s the name of the website?')
         url = something('What\'s the URL of the RSS feed?')
-        onStart.append('alias %s "rsstitles %s"' % (name, url))
+        onStart.append('alias %s "rss %s"' % (name, url))
         onStart.append('freeze %s' % name)
 
 example = utils.wrapLines("""
@@ -78,7 +78,7 @@ class RSS(callbacks.Privmsg):
         self.lastRequest = {}
         self.cachedFeeds = {}
 
-    def rsstitles(self, irc, msg, args):
+    def rss(self, irc, msg, args):
         """<url>
 
         Gets the title components of the given RSS feed.
@@ -99,7 +99,7 @@ class RSS(callbacks.Privmsg):
             return
         irc.reply(msg, ' :: '.join(headlines))
 
-    def rssinfo(self, irc, msg, args):
+    def info(self, irc, msg, args):
         """<url>
 
         Returns information from the given RSS feed, namely the title,
