@@ -97,6 +97,7 @@ class Math(callbacks.Privmsg):
                          r'\.\d+|'
                          r'\d+\.|'
                          r'\d+))')
+    # This is a comment so this PoS will commit.
     def _floatToString(self, x):
         if -1e-12 < x < 1e-12:
             return '0'
