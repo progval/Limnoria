@@ -39,21 +39,28 @@ if network:
         def testGkstats(self):
             self.assertNotRegexp('gkstats jemfinch', 'Old GK rating')
             self.assertError('gkstats %s' % utils.mktemp())
-            self.assertNotError('gkstats Strike')
+            self.assertError('gkstats Strike')
 
         def testNoHtmlInTeam(self):
             self.assertNotRegexp('gkstats jeffuk', '9608')
 
         def testUrlSnarfer(self):
-            conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
-            self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
-            self.assertNotError('here\'s a link: '
-                                'http://gameknot.com/chess.pl?bd=1077350&r=394 '
-                                'and here\'s another one: '
-                                'http://gameknot.com/chess.pl?bd=1116828&r=250')
-            self.assertNotError(' ') # The next snarfed response.
-            self.assertNotRegexp('http://gameknot.com/chess.pl?bd=1019508',
-                                 self.nick)
+            orig = conf.supybot.plugins.Gameknot.gameSnarfer()
+            try:
+                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
+                self.assertSnarfNotError(
+                        'http://gameknot.com/chess.pl?bd=1019508')
+                self.assertSnarfNotError(
+                        'here\'s a link: '
+                        'http://gameknot.com/chess.pl?bd=1077350&r=394 '
+                        'and here\'s another one: '
+                        'http://gameknot.com/chess.pl?bd=1116828&r=250')
+                self.irc.takeMsg() # The next snarfed response.
+                self.assertSnarfNotRegexp(
+                        'http://gameknot.com/chess.pl?bd=1019508',
+                        self.nick)
+            finally:
+                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(orig)
 
         def testStatsUrlSnarfer(self):
             conf.supybot.plugins.Gameknot.statSnarfer.setValue(True)
@@ -73,17 +80,17 @@ if network:
 
 
         def testSnarfer(self):
-            conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
-            # This game expired.
-##             self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-##                               '\x02ddipaolo\x0f won')
-            # As did this :(
-##             self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-##                               '\x02chroniqueur\x0f resigned')
-            self.assertRegexp('http://gameknot.com/chess.pl?bd=955432',
-                              '\x02ddipaolo\x0f lost')
-            self.assertRegexp('http://gameknot.com/chess.pl?bd=1077345&r=365',
-                              'draw')
+            orig = conf.supybot.plugins.Gameknot.gameSnarfer()
+            try:
+                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
+                self.assertSnarfRegexp(
+                        'http://gameknot.com/chess.pl?bd=955432',
+                        '\x02ddipaolo\x02 lost')
+                self.assertSnarfRegexp(
+                        'http://gameknot.com/chess.pl?bd=1077345&r=365',
+                        'draw')
+            finally:
+                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(orig)
 
 
 

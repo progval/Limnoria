@@ -52,12 +52,16 @@ class MiscTestCase(ChannelPluginTestCase):
     if network:
         def testNotReplyWhenRegexpsMatch(self):
             try:
-                original = str(conf.supybot.reply.whenNotCommand)
-                conf.supybot.reply.whenNotCommand.set('True')
+                orig = conf.supybot.reply.whenNotCommand()
+                gk = conf.supybot.plugins.Gameknot.gameSnarfer()
+                conf.supybot.reply.whenNotCommand.setValue(True)
+                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
                 self.prefix = 'somethingElse!user@host.domain.tld'
-                self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
+                self.assertSnarfNotError(
+                        'http://gameknot.com/chess.pl?bd=1019508')
             finally:
-                conf.supybot.reply.whenNotCommand.set(original)
+                conf.supybot.reply.whenNotCommand.setValue(orig)
+                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(gk)
 
     def testNotReplyWhenNotCanonicalName(self):
         try:
@@ -130,11 +134,9 @@ class MiscTestCase(ChannelPluginTestCase):
 
     def testTell(self):
         m = self.getMsg('tell foo [plugin tell]')
-        self.failUnless(m.args[0] == 'foo')
-        self.failUnless('Misc' in m.args[1])
+        self.failUnless('let you do' in m.args[1])
         m = self.getMsg('tell #foo [plugin tell]')
-        self.failUnless(m.args[0] == '#foo')
-        self.failUnless('Misc' in m.args[1])
+        self.failUnless('No need for' in m.args[1])
         m = self.getMsg('tell me you love me')
         self.failUnless(m.args[0] == self.nick)
 
@@ -162,7 +164,7 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertNotRegexp('more', 'more')
 
     def testInvalidCommand(self):
-        self.assertResponse('echo []', '[]')
+        self.assertError('echo []')
 
     def testMoreIsCaseInsensitive(self):
         self.assertNotError('echo %s' % ('abc'*2000))

@@ -60,9 +60,9 @@ if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY' and network:
                               r'Short Bus.*/exec/obidos')
 
         def testAuthor(self):
-            self.assertHelp('author')
-            self.assertRegexp('author torvalds', r'Just for Fun')
-            self.assertRegexp('author --url torvalds', r'Reilly.*/exec/obidos')
+            self.assertHelp('amazon author')
+            self.assertRegexp('amazon author torvalds', r'Just for Fun')
+            self.assertRegexp('amazon author --url torvalds', r'Reilly')
 
         def testArtist(self):
             self.assertHelp('artist')

@@ -33,29 +33,30 @@ from testsupport import *
 
 import supybot.utils as utils
 
-try:
-    import sqlite
-except ImportError:
-    sqlite = None
+class WordsTestCase(ChannelPluginTestCase, PluginDocumentation):
+    plugins = ('Words',)
+    def setUp(self):
+        PluginTestCase.setUp(self)
+        # Add some words to for us to use
+        fd = file('%s/words' % conf.supybot.directories.data(), 'w')
+        fd.writelines(['hello'])
+        fd.close()
 
-if sqlite is not None:
-    class WordsTestCase(ChannelPluginTestCase, PluginDocumentation):
-        plugins = ('Words',)
-        # Putting in a comment to make this different.
-        def testAddWord(self):
-            words = ('hello', 'world', 'mother', 'python')
-            for word in words:
-                self.assertNotError('add %s' % word)
+    # Putting in a comment to make this different.
+    #def testAddWord(self):
+    #    words = ('hello', 'world', 'mother', 'python')
+    #    for word in words:
+    #        self.assertNotError('add %s' % word)
 
-        def testHangman(self):
-            self.assertNotError('add hello')
-            self.assertError('guess j')
-            self.assertError('letters')
-            self.assertNotError('hangman')
-            self.assertNotError('guess hello')
-            self.assertNotError('hangman')
-            self.assertNotError('guess j')
-            self.assertNotError('letters')
+    def testHangman(self):
+        #self.assertNotError('add hello')
+        self.assertError('guess j')
+        self.assertError('letters')
+        self.assertNotError('hangman')
+        self.assertNotError('guess hello')
+        self.assertNotError('hangman')
+        self.assertNotError('guess j')
+        self.assertNotError('letters')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -86,13 +86,18 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('changename foo baz')
 
     def testSetpassword(self):
-        self.prefix = self.prefix1
-        self.assertNotError('register foo bar')
-        self.assertEqual(ircdb.users.getUser(self.prefix).password, 'bar')
-        self.assertNotError('setpassword foo bar baz')
-        self.assertEqual(ircdb.users.getUser(self.prefix).password, 'baz')
-        self.assertNotError('setpassword --hashed foo baz biff')
-        self.assertNotEqual(ircdb.users.getUser(self.prefix).password, 'biff')
+        orig = conf.supybot.databases.users.hash()
+        try:
+            conf.supybot.databases.users.hash.setValue(False)
+            self.prefix = self.prefix1
+            self.assertNotError('register foo bar')
+            self.assertEqual(ircdb.users.getUser(self.prefix).password, 'bar')
+            self.assertNotError('setpassword foo bar baz')
+            self.assertEqual(ircdb.users.getUser(self.prefix).password, 'baz')
+            self.assertNotError('setpassword --hashed foo baz biff')
+            self.assertNotEqual(ircdb.users.getUser(self.prefix).password, 'biff')
+        finally:
+            conf.supybot.databases.users.hash.setValue(orig)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

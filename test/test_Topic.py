@@ -87,7 +87,7 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
             m = self.getMsg('topic add bar')
             self.failUnless('<==>' in m.args[1])
         finally:
-            default = conf.supybot.plugins.Topic.separator.default
+            default = conf.supybot.plugins.Topic.separator.default()
             conf.supybot.plugins.Topic.separator.setValue(default)
 
     def testReorder(self):

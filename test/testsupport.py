@@ -39,6 +39,7 @@ import re
 import sys
 import time
 started = time.time()
+import shutil
 import unittest
 
 import supybot.log as log
@@ -125,22 +126,19 @@ class PluginTestCase(SupyTestCase):
         # Set conf variables appropriately.
         conf.supybot.prefixChars.setValue('@')
         conf.supybot.reply.detailedErrors.setValue(True)
-        conf.supybot.reply.whenNotCommand.setValue(False)
+        conf.supybot.reply.whenNotCommand.setValue(True)
         self.myVerbose = world.myVerbose
+        def rmFiles(dir):
+            for filename in os.listdir(dir):
+                file = os.path.join(dir, filename)
+                if os.path.isfile(file):
+                    os.remove(file)
+                else:
+                    shutil.rmtree(file)
         if self.cleanConfDir:
-            confDir = conf.supybot.directories.conf()
-            for (dirpath, dirnames, filenames) in os.walk(confDir):
-                for filename in filenames:
-                    filename = os.path.join(dirpath, filename)
-                    if os.path.isfile(filename):
-                        os.remove(filename)
+            rmFiles(conf.supybot.directories.conf())
         if self.cleanDataDir:
-            dataDir = conf.supybot.directories.data()
-            for (dirpath, dirnames, filenames) in os.walk(dataDir):
-                for filename in filenames:
-                    filename = os.path.join(dirpath, filename)
-                    if os.path.isfile(filename):
-                        os.remove(filename)
+            rmFiles(conf.supybot.directories.data())
         ircdb.users.reload()
         ircdb.ignores.reload()
         ircdb.channels.reload()
@@ -178,7 +176,8 @@ class PluginTestCase(SupyTestCase):
         ircdb.channels.close()
         gc.collect()
 
-    def _feedMsg(self, query, timeout=None, to=None, frm=None):
+    def _feedMsg(self, query, timeout=None, to=None, frm=None,
+                 usePrefixChar=True):
         if to is None:
             to = self.irc.nick
         if frm is None:
@@ -187,6 +186,8 @@ class PluginTestCase(SupyTestCase):
             timeout = self.timeout
         if self.myVerbose:
             print # Extra newline, so it's pretty.
+        if not usePrefixChar and query[0] in conf.supybot.prefixChars():
+            query = query[1:]
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose:
             print 'Feeding: %r' % msg
@@ -225,6 +226,9 @@ class PluginTestCase(SupyTestCase):
                             '%r did not error: %s' % (query, m.args[1]))
         return m
 
+    def assertSnarfError(self, query, **kwargs):
+        return self.assertError(query, usePrefixChar=False, **kwargs)
+
     def assertNotError(self, query, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
@@ -234,6 +238,9 @@ class PluginTestCase(SupyTestCase):
         self.failIf(lastGetHelp in m.args[1],
                     '%r returned the help string.' % query)
         return m
+
+    def assertSnarfNotError(self, query, **kwargs):
+        return self.assertNotError(query, usePrefixChar=False, **kwargs)
 
     def assertHelp(self, query, **kwargs):
         m = self._feedMsg(query, **kwargs)
@@ -248,6 +255,10 @@ class PluginTestCase(SupyTestCase):
         self.failIf(m, 'Unexpected response: %r' % m)
         return m
 
+    def assertSnarfNoResponse(self, query, timeout=0, **kwargs):
+        return self.assertNoResponse(query, timeout=timeout,
+                                     usePrefixChar=False, **kwargs)
+
     def assertResponse(self, query, expectedResponse, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
@@ -255,6 +266,10 @@ class PluginTestCase(SupyTestCase):
         self.assertEqual(m.args[1], expectedResponse,
                          '%r != %r' % (expectedResponse, m.args[1]))
         return m
+
+    def assertSnarfResponse(self, query, expectedResponse, **kwargs):
+        return self.assertResponse(query, expectedResponse,
+                                   usePrefixChar=False, **kwargs)
 
     def assertRegexp(self, query, regexp, flags=re.I, **kwargs):
         m = self._feedMsg(query, **kwargs)
@@ -264,6 +279,10 @@ class PluginTestCase(SupyTestCase):
                         '%r does not match %r' % (m.args[1], regexp))
         return m
 
+    def assertSnarfRegexp(self, query, regexp, flags=re.I, **kwargs):
+        return self.assertRegexp(query, regexp, flags=re.I,
+                                 usePrefixChar=False, **kwargs)
+
     def assertNotRegexp(self, query, regexp, flags=re.I, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
@@ -271,6 +290,10 @@ class PluginTestCase(SupyTestCase):
         self.failUnless(re.search(regexp, m.args[1], flags) is None,
                         '%r matched %r' % (m.args[1], regexp))
         return m
+
+    def assertSnarfNotRegexp(self, query, regexp, flags=re.I, **kwargs):
+        return self.assertNotRegexp(query, regexp, flags=re.I,
+                                    usePrefixChar=False, **kwargs)
 
     def assertAction(self, query, expectedResponse=None, **kwargs):
         m = self._feedMsg(query, **kwargs)
@@ -281,6 +304,10 @@ class PluginTestCase(SupyTestCase):
             self.assertEqual(ircmsgs.unAction(m), expectedResponse)
         return m
 
+    def assertSnarfAction(self, query, expectedResponse=None, **kwargs):
+        return self.assertAction(query, expectedResponse=None,
+                                 usePrefixChar=False, **kwargs)
+
     def assertActionRegexp(self, query, regexp, flags=re.I, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
@@ -289,6 +316,10 @@ class PluginTestCase(SupyTestCase):
         s = ircmsgs.unAction(m)
         self.failUnless(re.search(regexp, s, flags),
                         '%r does not match %r' % (s, regexp))
+
+    def assertSnarfActionRegexp(self, query, regexp, flags=re.I, **kwargs):
+        return self.assertActionRegexp(query, regexp, flags=re.I,
+                                       usePrefixChar=False, **kwargs)
 
     def testDocumentation(self):
         if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
@@ -323,7 +354,8 @@ class ChannelPluginTestCase(PluginTestCase):
         self.failIf(m is None, 'No message back from joining channel.')
         self.assertEqual(m.command, 'WHO')
 
-    def _feedMsg(self, query, timeout=None, to=None, frm=None):
+    def _feedMsg(self, query, timeout=None, to=None, frm=None,
+                 usePrefixChar=True):
         if to is None:
             to = self.channel
         if frm is None:
@@ -332,7 +364,7 @@ class ChannelPluginTestCase(PluginTestCase):
             timeout = self.timeout
         if self.myVerbose:
             print # Newline, just like PluginTestCase.
-        if query[0] not in conf.supybot.prefixChars():
+        if query[0] not in conf.supybot.prefixChars() and usePrefixChar:
             query = conf.supybot.prefixChars()[0] + query
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose:
@@ -374,9 +406,6 @@ class ChannelPluginTestCase(PluginTestCase):
 
 class PluginDocumentation:
     pass # This is old stuff, it should be removed some day.
-
-
-
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

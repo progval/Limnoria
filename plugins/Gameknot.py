@@ -145,7 +145,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                      wp, lp, dp, seen)
             return s
         except AttributeError:
-            if ('User %s not found!' % name) in profile:
+            if ('User %s not found!' % name.lower()) in profile:
                 raise callbacks.Error, 'No user %s exists.' % name
             else:
                 raise callbacks.Error,'The format of the page was odd.  %s' % \
@@ -166,7 +166,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
 
     _gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
     _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
-    _gkGameTitle = re.compile(r"<p><b>(.*?)\s*</b>&nbsp;\s*<span.*?>\(started")
+    _gkGameTitle = re.compile(r"<td[^<]+><p><b>(.*?)\s*</b>&nbsp;")
     _gkWon = re.compile(r'>(\S+)\s+won')
     _gkReason = re.compile(r'won\s+\(\S+\s+(\S+)\)')
     def gameknotSnarfer(self, irc, msg, match):

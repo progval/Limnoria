@@ -45,7 +45,6 @@ import sets
 import time
 import shutil
 import getopt
-import urllib2
 import urlparse
 import itertools
 
@@ -166,15 +165,13 @@ class URLDB(object):
         out.close()
         self.log.info('Vacuumed %s, removed %s records.',
                       self.filename, notAdded)
-                
-        
 
 class URL(callbacks.PrivmsgCommandAndRegexp):
     regexps = ['tinyurlSnarfer', 'titleSnarfer']
     _titleRe = re.compile('<title>(.*?)</title>', re.I | re.S)
     def getDb(self, channel):
         return URLDB(channel, self.log)
-    
+
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
         db = self.getDb(channel)
@@ -184,7 +181,6 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
             text = msg.args[1]
         for url in webutils.urlRe.findall(text):
             r = self.registryValue('nonSnarfingRegexp', channel)
-            #self.log.warning(repr(r))
             if r and r.search(url):
                 self.log.debug('Skipping adding %r to db.', url)
                 continue
@@ -193,14 +189,15 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
         callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
 
     def tinyurlSnarfer(self, irc, msg, match):
-        r"https?://[^\])>\s]{18,}"
+        r"https?://[^\])>\s]{13,}"
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
         r = self.registryValue('nonSnarfingRegexp', channel)
         if self.registryValue('tinyurlSnarfer', channel):
             url = match.group(0)
-            if r and r.search(url):
+            if r and r.search(url) is not None:
+                self.log.debug('Not tinyUrlSnarfing %r', url)
                 return
             minlen = self.registryValue('tinyurlSnarfer.minimumLength',channel)
             if len(url) >= minlen:
@@ -243,19 +240,16 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
     _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
     def _getTinyUrl(self, url, channel, cmd=False):
         try:
-            fd = urllib2.urlopen('http://tinyurl.com/create.php?url=%s' %
-                                 url)
-            s = fd.read()
-            fd.close()
+            s = webutils.getUrl('http://tinyurl.com/create.php?url=%s' % url)
             m = self._tinyRe.search(s)
             if m is None:
                 tinyurl = None
             else:
                 tinyurl = m.group(1)
             return tinyurl
-        except urllib2.HTTPError, e:
+        except webutils.WebError, e:
             if cmd:
-                raise callbacks.Error, e.msg()
+                raise callbacks.Error, e
             else:
                 self.log.warning(str(e))
 
@@ -271,13 +265,19 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
         channel = msg.args[0]
         snarf = self.registryValue('tinyurlSnarfer', channel)
         minlen = self.registryValue('tinyurlSnarfer.minimumLength', channel)
+        dontSnarf = False
         r = self.registryValue('nonSnarfingRegexp', channel)
-        if snarf and len(url) >= minlen and not r.search(url):
+        if r is not None:
+            dontSnarf = r.search(url)
+        dontSnarf = not dontSnarf
+        if snarf and len(url) >= minlen and dontSnarf:
             self.log.debug('Not applying tiny command, snarfer is active.')
             return
         tinyurl = self._getTinyUrl(url, channel, cmd=True)
+        domain = webutils.getDomain(url)
+        s = '%s (at %s)' % (ircutils.bold(tinyurl), domain)
         if tinyurl is not None:
-            irc.reply(tinyurl)
+            irc.reply(s)
         else:
             s = 'Could not parse the TinyURL.com results page.'
             irc.errorPossibleBug(s)

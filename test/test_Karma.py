@@ -43,7 +43,7 @@ if sqlite is not None:
         plugins = ('Karma',)
         def testKarma(self):
             self.assertError('karma')
-            self.assertRegexp('karma foobar', 'no karma')
+            self.assertRegexp('karma foobar', 'neutral karma')
             try:
                 conf.replyWhenNotCommand = True
                 self.assertNoResponse('foobar++', 2)
@@ -139,7 +139,7 @@ if sqlite is not None:
                 conf.supybot.plugins.Karma.allowSelfRating.setValue(False)
                 self.assertNoResponse('%s++' % nick, 2)
                 self.assertResponse('karma %s' % nick,
-                                    '%s has no karma.' % nick)
+                                    '%s has neutral karma.' % nick)
                 conf.supybot.plugins.Karma.allowSelfRating.setValue(True)
                 self.assertNoResponse('%s++' % nick, 2)
                 self.assertRegexp('karma %s' % nick,
@@ -177,7 +177,7 @@ if sqlite is not None:
 
 
         def testIncreaseKarmaWithNickNotCallingInvalidCommand(self):
-            self.assertNoResponse('%s: foo++' % self.irc.nick, 3)
+            self.assertSnarfNoResponse('%s: foo++' % self.irc.nick, 3)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -308,6 +308,9 @@ class PeriodicFileDownloader(object):
             except IOError, e:
                 self.log.warning('Error downloading %s: %s', url, e)
                 return
+            except webutils.WebError, e:
+                self.log.warning('Error downloading %s: %s', url, e)
+                return
             confDir = conf.supybot.directories.data()
             newFilename = os.path.join(confDir, utils.mktemp())
             outfd = file(newFilename, 'wb')

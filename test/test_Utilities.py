@@ -34,8 +34,8 @@ from testsupport import *
 class UtilitiesTestCase(PluginTestCase):
     plugins = ('Utilities', 'Status')
     def testIgnore(self):
-        self.assertNoResponse('ignore foo bar baz', 1)
-        self.assertError('ignore [re m/foo bar]')
+        self.assertNoResponse('utilities ignore foo bar baz', 1)
+        self.assertError('utilities ignore [re m/foo bar]')
 
     def testSuccess(self):
         self.assertNotError('success 1')

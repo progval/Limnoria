@@ -45,7 +45,7 @@ fd.write("""
 supybot.directories.data: test-data
 supybot.directories.conf: test-conf
 supybot.directories.log: test-logs
-supybot.reply.whenNotCommand: False
+supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
 supybot.log.level: DEBUG
 supybot.log.detailedTracebacks: False

@@ -118,7 +118,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                               FROM karma
                               WHERE normalized=%s""", normalized)
             if cursor.rowcount == 0:
-                irc.reply('%s has no karma.' % name)
+                irc.reply('%s has neutral karma.' % name)
             else:
                 (added, subtracted) = imap(int, cursor.fetchone())
                 total = added - subtracted

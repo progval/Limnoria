@@ -79,6 +79,19 @@ def configure(advanced):
 filename = os.path.join(conf.supybot.directories.data(), 'Infobot.db')
 
 class InfobotDB(object):
+    _ends = ['!',
+             '.',
+             ', $who.',]
+    _dunnos = ['Dunno',
+               'No idea',
+               'I don\'t know',
+               'I have no idea',
+               'I don\'t have a clue',]
+    _confirms = ['10-4',
+                 'Okay',
+                 'Got it',
+                 'Gotcha',
+                 'I hear ya']
     def __init__(self):
         try:
             fd = file(filename)
@@ -89,19 +102,6 @@ class InfobotDB(object):
             (self._is, self._are) = pickle.load(fd)
         self._changes = 0
         self._responses = 0
-        self._ends = ['!',
-                      '.',
-                      ', $who.',]
-        self._dunnos = ['Dunno',
-                        'No idea',
-                        'I don\'t know',
-                        'I have no idea',
-                        'I don\'t have a clue',]
-        self._confirms = ['10-4',
-                          'Okay',
-                          'Got it',
-                          'Gotcha',
-                          'I hear ya']
 
     def flush(self):
         fd = utils.transactionalFile(filename, 'wb')
@@ -175,6 +175,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         self.msg = None
         self.force = False
         self.replied = False
+        self.badForce = False
         self.addressed = False
 
     def die(self):
@@ -230,8 +231,11 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         else:
             value = random.choice(value.split('|'))
             if value.startswith('<reply>'):
-                self.reply(value[7:].strip(),
-                           irc=irc, msg=msg)
+                value = value[7:].strip()
+                if value:
+                    self.reply(value, irc=irc, msg=msg)
+                else:
+                    self.log.debug('Not sending empty factoid.')
             elif value.startswith('<action>'):
                 self.reply(value[8:].strip(),
                            irc=irc, msg=msg, action=True)
@@ -267,6 +271,18 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             maybeForced = self._forceRe.sub('', payload)
             if maybeForced != payload:
                 self.force = True
+                # Infobot requires that forces have the form "no, botname, ..."
+                # We think that's stupid to require the bot name if the bot is
+                # being directly addressed. The following makes sure both
+                # "botname: no, botname, ..." and "botname: no, ..." work the
+                # same and non-addressed forms require the bots nick.
+                nick = irc.nick.lower()
+                if not self.addressed:
+                    if not maybeForced.lower().startswith(nick):
+                        self.badForce = True
+                        self.force = False
+                if maybeForced.lower().startswith(nick):
+                    maybeForced = maybeForced[len(nick):].lstrip(', ')
                 payload = maybeForced
             # Let's make sure we dump out of Infobot if the privmsg is an
             # actual command otherwise we could get multiple responses.
@@ -289,6 +305,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         finally:
             self.force = False
             self.replied = False
+            self.badForce = False
             self.addressed = False
 
     def callCommand(self, f, irc, msg, *L, **kwargs):
@@ -322,7 +339,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         key = match.group(1)
         if self.addressed or self.registryValue('answerUnaddressedQuestions'):
             self.factoid(key) # Does the dunno'ing for us itself.
-    # TODO: Add invalidCommand.
+
+    def invalidCommand(self, irc, msg, tokens):
+        self.replied = True
 
     def doFactoid(self, irc, msg, match):
         r"^(.+)\s+(?<!\\)(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
@@ -345,9 +364,17 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                     value = '%s or %s' % (self.db.getIs(key), value)
                 elif self.force:
                     self.log.info('Forcing %r to %r.', key, value)
+                elif self.badForce:
+                    value = self.db.getIs(key)
+                    self.reply('... but %s is %s, %s ...' % (key, value,
+                                                             msg.nick))
+                    return
                 elif self.addressed:
                     value = self.db.getIs(key)
                     self.reply('But %s is %s, %s.' % (key, value, msg.nick))
+                    return
+                else:
+                    self.log.info('Already have a %r key.', key)
                     return
             self.db.setIs(key, value)
         else:
@@ -357,9 +384,17 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                     value = '%s or %s' % (self.db.getAre(key), value)
                 elif self.force:
                     self.log.info('Forcing %r to %r.', key, value)
+                elif self.badForce:
+                    value = self.db.getAre(key)
+                    self.reply('... but %s are %s, %s ...' % (key, value,
+                                                              msg.nick))
+                    return
                 elif self.addressed:
                     value = self.db.getAre(key)
                     self.reply('But %s are %s, %s.' % (key, value, msg.nick))
+                    return
+                else:
+                    self.log.info('Already have a %r key.', key)
                     return
             self.db.setAre(key, value)
         if self.addressed or self.force or also:

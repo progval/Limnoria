@@ -41,36 +41,49 @@ if network:
             self.assertError('auction foobar')
 
         def testSnarfer(self):
-            conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
-            self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'
-                              '&category=176&item=3053767552',
-                             r'.*Cisco NP-4T.*Serial Module.*US \$74\.95.*')
-            self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&'
-                              'category=28033&item=3053353651',
-                             r'.*Cisco 2524 Router - NO RESERVE.*izontech \(.*')
-            # test snarfing other countries
-            self.assertRegexp('http://cgi.ebay.ca/ws/eBayISAPI.dll?ViewItem&'
-                              'item=3636820075',
-                             r'NEW 34" Itech 8.8 Profile')
-            self.assertRegexp('http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&'
-                              'item=2355464443',
-                             r'Any Clear Crazy')
-            self.assertRegexp('http://cgi.ebay.com.au/ws/eBayISAPI.dll?ViewItem&'
-                              'item=2762983161&category=4607',
-                             r'Apple Mac G4')
-            # test .com/.*/ws/eBat compatibility
-            self.assertRegexp('http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'
-                              'ViewItem&item=2439393310&category=33708',
-                             r'88-89 CRX amber')
+            orig = conf.supybot.plugins.Ebay.auctionSnarfer()
+            try:
+                conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
+                self.assertSnarfRegexp(
+                        'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'
+                        '&category=176&item=3053767552',
+                        r'.*Cisco NP-4T.*Serial Module.*US \$74\.95.*')
+                self.assertSnarfRegexp(
+                        'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&'
+                        'category=28033&item=3053353651',
+                        r'.*Cisco 2524 Router - NO RESERVE.*izontech \(.*')
+                # test snarfing other countries
+                self.assertSnarfRegexp(
+                        'http://cgi.ebay.ca/ws/eBayISAPI.dll?ViewItem&'
+                        'item=3636820075',
+                        r'NEW 34" Itech 8.8 Profile')
+                self.assertSnarfRegexp(
+                        'http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&'
+                        'item=2355464443',
+                        r'Any Clear Crazy')
+                self.assertSnarfRegexp(
+                        'http://cgi.ebay.com.au/ws/eBayISAPI.dll?ViewItem&'
+                        'item=2762983161&category=4607',
+                        r'Apple Mac G4')
+                # test .com/.*/ws/eBat compatibility
+                self.assertSnarfRegexp(
+                        'http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'
+                        'ViewItem&item=2439393310&category=33708',
+                        r'88-89 CRX amber')
+            finally:
+                conf.supybot.plugins.Ebay.auctionSnarfer.setValue(orig)
 
         def testConfigSnarfer(self):
-            conf.supybot.plugins.Ebay.auctionSnarfer.setValue(False)
-            self.assertNoResponse('http://cgi.ebay.com/ebaymotors/ws/'
-                                  'eBayISAPI.dll?ViewItem&item=2439393310&'
-                                  'category=33708')
-            conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
-            self.assertNotError('http://cgi.ebay.com/ebaymotors/ws/'
-                                'eBayISAPI.dll?ViewItem&item=2439393310&'
-                                'category=33708')
+            try:
+                conf.supybot.plugins.Ebay.auctionSnarfer.setValue(False)
+                self.assertSnarfNoResponse(
+                        'http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'
+                        'ViewItem&item=2439393310&category=33708')
+                conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
+                self.assertSnarfNotError(
+                        'http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'
+                        'ViewItem&item=2439393310&category=33708')
+            finally:
+                conf.supybot.plugins.Ebay.auctionSnarfer.setValue(False)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

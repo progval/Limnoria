@@ -38,14 +38,15 @@ import supybot.utils as utils
 
 class FunTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Fun',)
+    _nonKickRe = re.compile(r'bang|click|spin', re.I)
     def testRoulette(self):
         self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
         sawKick = False
         for i in xrange(100):
             m = self.getMsg('roulette', frm='someoneElse')
             if m.command == 'PRIVMSG':
-                self.failUnless('click' in m.args[1].lower(),
-                                'Got a PRIVMSG without click in it.')
+                self.failUnless(self._nonKickRe.search(m.args[1]),
+                                'Got a PRIVMSG without bang|click|spin in it.')
             elif m.command == 'KICK':
                 sawKick = True
                 self.failUnless('bang' in m.args[2].lower(),

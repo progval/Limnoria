@@ -234,6 +234,8 @@ if __name__ == '__main__':
         os.mkdir(conf.supybot.directories.conf())
     if not os.path.exists(conf.supybot.directories.data()):
         os.mkdir(conf.supybot.directories.data())
+    if not os.path.exists(conf.supybot.directories.data.tmp()):
+        os.mkdir(conf.supybot.directories.tmp())
 
     userdataFilename = os.path.join(conf.supybot.directories.conf(),
                                     'userdata.conf')

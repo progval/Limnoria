@@ -85,7 +85,7 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('alias add foo echo bar')
         self.assertResponse('foo', 'bar')
         self.assertNotError('alias remove foo')
-        self.assertNoResponse('foo', 2)
+        self.assertError('foo')
 
     def testDollars(self):
         self.assertNotError('alias add rot26 "rot13 [rot13 $1]"')
@@ -133,7 +133,7 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRaises(Alias.AliasError, cb.removeAlias, 'foobar')
         cb.removeAlias('foobar', evenIfLocked=True)
         self.failIf('foobar' in cb.aliases)
-        self.assertNoResponse('foobar', 2)
+        self.assertError('foobar')
 
     def testOptionalArgs(self):
         self.assertNotError('alias add myrepr "repr @1"')

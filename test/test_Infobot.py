@@ -31,32 +31,73 @@
 
 from testsupport import *
 
-try:
-    import sqlite
-except ImportError:
-    sqlite = None
+import supybot.plugins.Infobot
+confirms = supybot.plugins.Infobot.InfobotDB._confirms
+dunnos = supybot.plugins.Infobot.InfobotDB._dunnos
 
-if sqlite is not None:
-    class InfobotTestCase(PluginTestCase):
-        plugins = ('Infobot',)
-        def testIsSnarf(self):
-            self.assertNoResponse('foo is at http://bar.com/', 2)
-            self.assertRegexp('foo?', r'foo.*is.*http://bar.com/')
-            self.assertNoResponse('foo is at http://baz.com/', 2)
-            self.assertNotRegexp('foo?', 'baz')
+class InfobotTestCase(ChannelPluginTestCase):
+    plugins = ('Infobot',)
+    _endRe = re.compile(r'!|, \S+\.|\.')
+    def testIsSnarf(self):
+        ibot = conf.supybot.plugins.Infobot
+        learn = ibot.snarfUnaddressedDefinitions()
+        answer = ibot.answerUnaddressedQuestions()
+        try:
+            ibot.snarfUnaddressedDefinitions.setValue(True)
+            ibot.answerUnaddressedQuestions.setValue(True)
+            self.assertSnarfNoResponse('foo is at http://bar.com/', 2)
+            self.assertSnarfRegexp('foo?', r'foo.*is.*http://bar.com/')
+            self.assertSnarfNoResponse('foo is at http://baz.com/', 2)
+            self.assertSnarfNotRegexp('foo?', 'baz')
+            m = self.getMsg('bar is at http://foo.com/')
+            self.failUnless(self._endRe.sub('', m.args[1]) in confirms)
+            self.assertRegexp('bar?', r'bar.*is.*http://foo.com/')
+        finally:
+            ibot.snarfUnaddressedDefinitions.setValue(learn)
+            ibot.answerUnaddressedQuestions.setValue(answer)
 
-        def testAreSnarf(self):
-            self.assertNoResponse('bars are dirty', 2)
-            self.assertRegexp('bars?', 'bars.*are.*dirty')
-            self.assertNoResponse('bars are not dirty', 2)
-            self.assertNotRegexp('bars?', 'not')
+    def testAreSnarf(self):
+        ibot = conf.supybot.plugins.Infobot
+        learn = ibot.snarfUnaddressedDefinitions()
+        answer = ibot.answerUnaddressedQuestions()
+        try:
+            ibot.snarfUnaddressedDefinitions.setValue(True)
+            ibot.answerUnaddressedQuestions.setValue(True)
+            self.assertSnarfNoResponse('bars are dirty', 2)
+            self.assertSnarfRegexp('bars?', 'bars.*are.*dirty')
+            self.assertSnarfNoResponse('bars are not dirty', 2)
+            self.assertSnarfNotRegexp('bars?', 'not')
+        finally:
+            ibot.snarfUnaddressedDefinitions.setValue(learn)
+            ibot.answerUnaddressedQuestions.setValue(answer)
 
-        def testIsResponses(self):
-            self.assertNoResponse('foo is bar', 2)
-            self.assertRegexp('foo?', 'foo.*is.*bar')
-            self.assertNoResponse('when is foo?', 2)
-            self.assertNoResponse('why is foo?', 2)
-            self.assertNoResponse('why foo?', 2)
-            self.assertNoResponse('when is foo?', 2)
+    def testIsResponses(self):
+        ibot = conf.supybot.plugins.Infobot
+        learn = ibot.snarfUnaddressedDefinitions()
+        answer = ibot.answerUnaddressedQuestions()
+        try:
+            ibot.snarfUnaddressedDefinitions.setValue(True)
+            ibot.answerUnaddressedQuestions.setValue(True)
+            self.assertSnarfNoResponse('foo is bar', 2)
+            self.assertSnarfRegexp('foo?', 'foo.*is.*bar')
+            self.assertSnarfNoResponse('when is foo?', 2)
+            self.assertSnarfNoResponse('why is foo?', 2)
+            self.assertSnarfNoResponse('why foo?', 2)
+            self.assertSnarfNoResponse('when is foo?', 2)
+        finally:
+            ibot.snarfUnaddressedDefinitions.setValue(learn)
+            ibot.answerUnaddressedQuestions.setValue(answer)
+
+    def testAnswerUnaddressed(self):
+        ibot = conf.supybot.plugins.Infobot
+        answer = ibot.answerUnaddressedQuestions()
+        try:
+            ibot.answerUnaddressedQuestions.setValue(True)
+            self.assertNotError('foo is bar')
+            self.assertSnarfRegexp('foo?', 'bar')
+            ibot.answerUnaddressedQuestions.setValue(False)
+            self.assertSnarfNoResponse('foo?', 2)
+        finally:
+            ibot.answerUnaddressedQuestions.setValue(answer)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -57,21 +57,21 @@ if sqlite is not None:
             self.assertError('dunno search moo')
             self.assertNotError('dunno add moo')
             self.assertResponse('dunno search moo', 'Dunno search for \'moo\' '
-                                '(1 found): 2')
+                                '(1 found): 2.')
             self.assertResponse('dunno search m', 'Dunno search for \'m\' '
-                                '(1 found): 2')
+                                '(1 found): 2.')
             # Test multiple adds
             for i in range(5):
                 self.assertNotError('dunno add moo%s' % i)
             self.assertResponse('dunno search moo',
                                 'Dunno search for \'moo\' (6 found): '
-                                '2, 3, 4, 5, 6, and 7')
+                                '2, 3, 4, 5, 6, and 7.')
 
         def testDunnoGet(self):
             self.assertNotError('dunno add moo')
-            self.assertResponse('dunno get 1', 'Dunno #1: \'moo\'')
+            self.assertResponse('dunno get 1', 'Dunno #1: \'moo\'.')
             self.assertNotError('dunno add $who')
-            self.assertResponse('dunno get 2', 'Dunno #2: \'$who\'')
+            self.assertResponse('dunno get 2', 'Dunno #2: \'$who\'.')
             self.assertError('dunno get 3')
             self.assertError('dunno get a')
 

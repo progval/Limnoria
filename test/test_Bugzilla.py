@@ -39,10 +39,10 @@ if network:
             self.assertNotError('bug gcc 5')
 
         def testAddRemove(self):
-            self.assertNotError('add xiph http://bugs.xiph.org/ Xiph')
-            self.assertNotError('bug xiph 413')
-            self.assertNotError('remove xiph')
-            self.assertError('bug xiph 413')
+            self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
+            self.assertNotError('bug gcc 5')
+            self.assertNotError('remove gcc')
+            self.assertError('bug gcc 413')
 
         def testSearch(self):
             self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')

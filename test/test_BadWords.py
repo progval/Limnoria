@@ -35,8 +35,10 @@ class BadWordsTestCase(PluginTestCase):
     plugins = ('BadWords', 'Utilities', 'Format')
     badwords = ('shit', 'ass')
     def tearDown(self):
-        default = conf.supybot.plugins.BadWords.words.default
-        conf.supybot.plugins.BadWords.words.setValue(default)
+        # .default() doesn't seem to be working for BadWords.words
+        #default = conf.supybot.plugins.BadWords.words.default()
+        #conf.supybot.plugins.BadWords.words.setValue(default)
+        conf.supybot.plugins.BadWords.words.setValue([])
 
     def _test(self):
         for word in self.badwords:

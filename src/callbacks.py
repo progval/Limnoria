@@ -138,7 +138,7 @@ def reply(msg, s, prefixName=True, private=False,
         to = msg.nick
     # Ok, now let's make the payload:
     s = ircutils.safeArgument(s)
-    if not s:
+    if not s and not action:
         s = 'Error: I tried to send you an empty message.'
     # Let's may sure we don't do, "#channel: foo.".
     if prefixName and ircutils.isChannel(target):

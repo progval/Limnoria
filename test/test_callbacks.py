@@ -229,7 +229,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     conf.allowEval = True
     timeout = 2
     def testEmptySquareBrackets(self):
-        self.assertResponse('echo []', '[]')
+        self.assertError('echo []')
 
     def testSimpleReply(self):
         self.assertResponse("eval irc.reply('foo')", 'foo')
