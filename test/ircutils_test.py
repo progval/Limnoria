@@ -81,6 +81,16 @@ class FunctionsTestCase(unittest.TestCase):
         self.failIf(ircutils.isIP('a.b.c'))
         self.failUnless(ircutils.isIP('100.100.100.100'))
 
+    def testIsNick(self):
+        self.failUnless(ircutils.isNick('jemfinch'))
+        self.failUnless(ircutils.isNick('jemfinch0'))
+        self.failUnless(ircutils.isNick('[0]'))
+        self.failUnless(ircutils.isNick('{jemfinch}'))
+        self.failUnless(ircutils.isNick('\\```'))
+        self.failIf(ircutils.isNick(''))
+        self.failIf(ircutils.isNick('8foo'))
+        self.failIf(ircutils.isNick('10'))
+
     def banmask(self):
         for msg in msgs:
             if ircutils.isUserHostmask(msg.prefix):
@@ -123,3 +133,19 @@ class FunctionsTestCase(unittest.TestCase):
         modes = [plusB, plusE, minusL]
         self.assertEqual(ircutils.joinModes(modes),
                          ['+be-l', plusB[1], plusE[1]])
+
+
+class IrcDictTestCase(unittest.TestCase):
+    def testContains(self):
+        d = ircutils.IrcDict()
+        d['#FOO'] = None
+        self.failUnless('#foo' in d)
+        d['#fOOBAR[]'] = None
+        self.failUnless('#foobar{}' in d)
+
+    def testGetSetItem(self):
+        d = ircutils.IrcDict()
+        d['#FOO'] = 12
+        self.assertEqual(12, d['#foo'])
+        d['#fOOBAR[]'] = 'blah'
+        self.assertEqual('blah', d['#foobar{}'])

@@ -79,8 +79,9 @@ def toLower(nick):
 def nickEqual(nick1, nick2):
     return toLower(nick1) == toLower(nick2)
 
-nickchars = string.ascii_lowercase + string.ascii_uppercase + r'-[]\\`^{}'
-_nickre = re.compile(r'^[%s]+$' % re.escape(nickchars))
+_nickchars = r'-[]\\`^{}'
+_nickre = re.compile(r'^[%sA-Za-z][%s0-9A-Za-z]+$' % (re.escape(_nickchars),
+                                                      re.escape(_nickchars)))
 def isNick(s):
     if re.match(_nickre, s):
         return True
@@ -192,6 +193,7 @@ def replyTo(msg):
     else:
         return msg.nick
 
+
 class nick(str):
     """This class does case-insensitive comparisons of nicks."""
     def __init__(self, s):
@@ -205,6 +207,16 @@ class nick(str):
 
     def __hash__(self):
         return hash(self.lowered)
+
+
+class IrcDict(dict):
+    def __contains__(self, s):
+        return dict.__contains__(self, toLower(s))
+    def __setitem__(self, s, v):
+        dict.__setitem__(self, toLower(s), v)
+    def __getitem__(self, s):
+        return dict.__getitem__(self, toLower(s))
+    has_key = __contains__
 
 if __name__ == '__main__':
     import sys, doctest
