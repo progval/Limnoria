@@ -1017,6 +1017,9 @@ class Privmsg(irclib.IrcCallback):
 
 
 class SimpleProxy(RichReplyMethods):
+    """This class is a thin wrapper around an irclib.Irc object that gives it
+    the reply() and error() methods (as well as everything in RichReplyMethods,
+    based on those two)."""
     def __init__(self, irc, msg):
         self.irc = irc
         self.msg = msg
