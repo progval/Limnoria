@@ -422,10 +422,10 @@ class Channel(callbacks.Privmsg):
         to join <channel>. <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        self._sendMsg(ircmsgs.invite(nick, channel))
+        self._sendMsg(ircmsgs.invite(nick or msg.nick, channel))
     invite = wrap(invite, [('checkChannelCapability', 'op'),
                            ('haveOp', 'invite someone'),
-                           'nick'])
+                           additional('nick')])
 
     def lobotomize(self, irc, msg, args, channel):
         """[<channel>]
