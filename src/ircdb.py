@@ -287,8 +287,9 @@ class IrcUser(object):
 
     def unsetAuth(self):
         """Unsets a use's authenticated hostmask."""
-        users.invalidateCache(hostmask=self.auth[1])
-        self.auth = None
+        if self.auth is not None:
+            users.invalidateCache(hostmask=self.auth[1])
+            self.auth = None
 
     def preserve(self, fd, indent=''):
         def write(s):
