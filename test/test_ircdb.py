@@ -328,7 +328,7 @@ class IrcChannelTestCase(IrcdbTestCase):
 
     def testLobotomized(self):
         c = ircdb.IrcChannel(lobotomized=True)
-        self.failUnless(c.checkIgnored(''))
+        self.failUnless(c.checkIgnored('foo!bar@baz'))
 
     def testIgnored(self):
         prefix = 'foo!bar@baz'
