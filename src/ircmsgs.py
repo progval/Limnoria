@@ -272,39 +272,39 @@ def ping(payload, prefix=''):
 
 def op(channel, nick, prefix=''):
     """Returns a MODE to op nick on channel."""
-    assert isChannel(channel), channel
-    assert isNick(nick), nick
+    assert isChannel(channel), repr(channel)
+    assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '+o', nick))
 
 def ops(channel, nicks, prefix=''):
     """Returns a MODE to op each of nicks on channel."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '+' + ('o'*len(nicks)), nicks))
 
 def deop(channel, nick, prefix=''):
     """Returns a MODE to deop nick on channel."""
-    assert isChannel(channel), channel
-    assert isNick(nick), nick
+    assert isChannel(channel), repr(channel)
+    assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '-o', nick))
 
 def deops(channel, nicks, prefix=''):
     """Returns a MODE to deop each of nicks on channel."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('o'*len(nicks)), nicks))
 
 def halfop(channel, nick, prefix=''):
     """Returns a MODE to halfop nick on channel."""
-    assert isChannel(channel), channel
-    assert isNick(nick), nick
+    assert isChannel(channel), repr(channel)
+    assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '+h', nick))
 
 def halfops(channel, nicks, prefix=''):
     """Returns a MODE to halfop each of nicks on channel."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix,
                   command=MODE,
@@ -312,47 +312,47 @@ def halfops(channel, nicks, prefix=''):
 
 def dehalfop(channel, nick, prefix=''):
     """Returns a MODE to dehalfop nick on channel."""
-    assert isChannel(channel), channel
-    assert isNick(nick), nick
+    assert isChannel(channel), repr(channel)
+    assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '-h', nick))
 
 def dehalfops(channel, nicks, prefix=''):
     """Returns a MODE to dehalfop each of nicks on channel."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('h'*len(nicks)), nicks))
 
 def voice(channel, nick, prefix=''):
     """Returns a MODE to voice nick on channel."""
-    assert isChannel(channel), channel
-    assert isNick(nick), nick
+    assert isChannel(channel), repr(channel)
+    assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '+v', nick))
 
 def voices(channel, nicks, prefix=''):
     """Returns a MODE to voice each of nicks on channel."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     assert all(isNick, nicks)
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '+' + ('v'*len(nicks)), nicks))
 
 def devoice(channel, nick, prefix=''):
     """Returns a MODE to devoice nick on channel."""
-    assert isChannel(channel), channel
-    assert isNick(nick), nick
+    assert isChannel(channel), repr(channel)
+    assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '-v', nick))
 
 def devoices(channel, nicks, prefix=''):
     """Returns a MODE to devoice each of nicks on channel."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('v'*len(nicks)), nicks))
 
 def ban(channel, hostmask, exception='', prefix=''):
     """Returns a MODE to ban nick on channel."""
-    assert isChannel(channel), channel
-    assert isUserHostmask(hostmask), hostmask
+    assert isChannel(channel), repr(channel)
+    assert isUserHostmask(hostmask), repr(hostmask)
     modes = [('+b', hostmask)]
     if exception:
         modes.append(('+e', exception))
@@ -361,7 +361,7 @@ def ban(channel, hostmask, exception='', prefix=''):
 
 def bans(channel, hostmasks, exceptions=(), prefix=''):
     """Returns a MODE to ban each of nicks on channel."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     assert all(isUserHostmask, hostmasks), hostmasks
     modes = [('+b', s) for s in hostmasks] + [('+e', s) for s in exceptions]
     return IrcMsg(prefix=prefix, command=MODE,
@@ -369,21 +369,21 @@ def bans(channel, hostmasks, exceptions=(), prefix=''):
 
 def unban(channel, hostmask, prefix=''):
     """Returns a MODE to unban nick on channel."""
-    assert isChannel(channel), channel
-    assert isUserHostmask(hostmask), hostmask
+    assert isChannel(channel), repr(channel)
+    assert isUserHostmask(hostmask), repr(hostmask)
     return IrcMsg(prefix=prefix, command=MODE, args=(channel, '-b', hostmask))
 
 def unbans(channel, hostmasks, prefix=''):
     """Returns a MODE to unban each of nicks on channel."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     assert all(isUserHostmask, hostmasks), hostmasks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('b'*len(hostmasks)), hostmasks))
 
 def kick(channel, nick, msg='', prefix=''):
     """Returns a KICK to kick nick from channel with the message msg."""
-    assert isChannel(channel), channel
-    assert isNick(nick), nick
+    assert isChannel(channel), repr(channel)
+    assert isNick(nick), repr(nick)
     if msg:
         return IrcMsg(prefix=prefix, command='KICK', args=(channel, nick, msg))
     else:
@@ -392,7 +392,7 @@ def kick(channel, nick, msg='', prefix=''):
 def kicks(channel, nicks, msg='', prefix=''):
     """Returns a KICK to kick each of nicks from channel with the message msg.
     """
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     if msg:
         return IrcMsg(prefix=prefix, command='KICK',
@@ -403,26 +403,26 @@ def kicks(channel, nicks, msg='', prefix=''):
 
 def privmsg(recipient, msg, prefix=''):
     """Returns a PRIVMSG to recipient with the message msg."""
-    assert (isChannel(recipient) or isNick(recipient)), recipient
+    assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
     assert msg, 'msg must not be empty.'
     return IrcMsg(prefix=prefix, command='PRIVMSG', args=(recipient, msg))
 
 def action(recipient, msg, prefix=''):
     """Returns a PRIVMSG ACTION to recipient with the message msg."""
-    assert (isChannel(recipient) or isNick(recipient)), recipient
+    assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
     assert msg, 'msg must not be empty.'
     return IrcMsg(prefix=prefix, command='PRIVMSG',
                   args=(recipient,'\x01ACTION %s\x01'% msg))
 
 def notice(recipient, msg, prefix=''):
     """Returns a NOTICE to recipient with the message msg."""
-    assert (isChannel(recipient) or isNick(recipient)), recipient
+    assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
     assert msg, 'msg must not be empty.'
     return IrcMsg(prefix=prefix, command='NOTICE', args=(recipient, msg))
 
 def join(channel, key=None, prefix=''):
     """Returns a JOIN to a channel"""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     if key is None:
         return IrcMsg(prefix=prefix, command='JOIN', args=(channel,))
     else:
@@ -462,7 +462,7 @@ def joins(channels, keys=None, prefix=''):
 
 def part(channel, msg='', prefix=''):
     """Returns a PART from channel with the message msg."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     if msg:
         return IrcMsg(prefix=prefix, command='PART', args=(channel, msg))
     else:
@@ -487,7 +487,7 @@ def quit(msg='', prefix=''):
 
 def topic(channel, topic=None, prefix=''):
     """Returns a TOPIC for channel with the topic topic."""
-    assert isChannel(channel), channel
+    assert isChannel(channel), repr(channel)
     if topic is None:
         return IrcMsg(prefix=prefix, command='TOPIC', args=(channel,))
     else:
@@ -495,7 +495,7 @@ def topic(channel, topic=None, prefix=''):
 
 def nick(nick, prefix=''):
     """Returns a NICK with nick nick."""
-    assert isNick(nick), nick
+    assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command='NICK', args=(nick,))
 
 def user(ident, user, prefix=''):
@@ -510,17 +510,17 @@ def user(ident, user, prefix=''):
 def who(hostmaskOrChannel, prefix=''):
     """Returns a WHO for the hostmask or channel hostmaskOrChannel."""
     assert isChannel(hostmaskOrChannel) or isUserHostmask(hostmaskOrChannel), \
-           hostmaskOrChannel
+           repr(hostmaskOrChannel)
     return IrcMsg(prefix=prefix, command='WHO', args=(hostmaskOrChannel,))
 
 def whois(nick, mask='', prefix=''):
     """Returns a WHOIS for nick."""
-    assert isNick(nick), nick
+    assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command='WHOIS', args=(nick, mask))
 
 def invite(channel, nick, prefix=''):
     """Returns an INVITE for nick."""
-    assert isNick(nick), nick
+    assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command='INVITE', args=(channel, nick))
 
 def password(password, prefix=''):
