@@ -41,9 +41,7 @@ Commands include:
 
 from baseplugin import *
 
-import new
-import copy
-import traceback
+import re
 
 import conf
 import debug
@@ -61,54 +59,49 @@ def configure(onStart, afterConnect, advanced):
 class RecursiveAlias(Exception):
     pass
 
-def findString(s, args):
-    n = 0
-    for elt in args:
-        if type(elt) == list:
-            n += findString(s, elt)
-        elif elt == s:
-            n += 1
-    return n
+def findAliasCommand(s, alias):
+    r = re.compile(r'(^|\[)\s*%s' % s)
+    return bool(r.search(alias))
 
-def findDollars(args, soFar=None, L=None):
-    if soFar is None:
-        soFar = []
-    if L is None:
-        L = []
-    for (i, elt) in enumerate(args):
-        if type(elt) == list:
-            nextSoFar = soFar[:]
-            nextSoFar.append(i)
-            findDollars(elt, soFar=nextSoFar, L=L)
-        if len(elt) >= 2:
-            if elt[0] == '$' and elt[1:].isdigit():
-                mySoFar = soFar[:]
-                mySoFar.append(i)
-                L.append((mySoFar, elt))
-    return L
-
-def replaceDollars(dollars, aliasArgs, realArgs):
-    for (indexes, dollar) in dollars:
-        L = aliasArgs
-        for i in indexes[:-1]:
-            L = L[i]
-        L[indexes[-1]] = realArgs[int(dollar[1:])-1]
-
-def makeNewAlias(name, alias, aliasArgs):
-    if findString(name, aliasArgs):
+dollarRe = re.compile(r'\$(\d+)')
+def findBiggestDollar(alias):
+    dollars = dollarRe.findall(alias)
+    dollars.sort()
+    if dollars:
+        return int(dollars[-1])
+    else:
+        return None
+    
+def makeNewAlias(name, alias):
+    if findAliasCommand(name, alias):
         raise RecursiveAlias
-    dollars = findDollars(aliasArgs)
-    numDollars = len(dollars)
+    doChannel = bool(alias.find('$channel') != -1)
+    biggestDollar = findBiggestDollar(alias)
+    doDollars = bool(biggestDollar)
+    if biggestDollar is not None:
+        biggestDollar = int(biggestDollar)
     def f(self, irc, msg, args):
-        #debug.printf('%s being called' % name)
-        realArgs = privmsgs.getArgs(args, needed=numDollars)
-        myArgs = copy.deepcopy(aliasArgs)
-        if dollars:
-            replaceDollars(dollars, myArgs, realArgs)
-        else:
-            myArgs.extend(args)
-        self.Proxy(irc, msg, myArgs)
-    f.__doc__ = '<an alias, arguments unknown>\n\nAlias for %r' % alias
+        alias_ = alias
+        if doChannel:
+            channel = privmsgs.getChannel(msg, args)
+            alias_ = alias.replace('$channel', channel)
+        if doDollars:
+            debug.printf(args)
+            args = privmsgs.getArgs(args, needed=biggestDollar)
+            if biggestDollar == 1:
+                args = (args,)
+            debug.printf(args)
+            def replace(m):
+                debug.printf(m.group(1))
+                idx = int(m.group(1))
+                debug.printf(args[idx-1])
+                return args[idx-1]
+            debug.printf(alias_)
+            alias_ = dollarRe.sub(replace, alias_)
+            debug.printf(alias_)
+        debug.printf(alias_)
+        self.Proxy(irc, msg, callbacks.tokenize(alias_))
+    f.__doc__ ='<an alias, %s arguments>\n\nAlias for %r'%(biggestDollar,alias)
     #f = new.function(f.func_code, f.func_globals, name)
     return f
 
@@ -164,9 +157,8 @@ class Alias(callbacks.Privmsg):
             if name in self.frozen:
                 irc.error(msg, 'That alias is frozen.')
                 return
-            args = callbacks.tokenize(alias)
             try:
-                f = makeNewAlias(name, alias, args)
+                f = makeNewAlias(name, alias)
             except RecursiveAlias:
                 irc.error(msg, 'You can\'t define a recursive alias.')
             #debug.printf('setting attribute')
