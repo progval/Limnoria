@@ -145,15 +145,17 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         return query
 
     def add(self, irc, msg, args):
-        """<name> <url> <description>
+        """<name> <url> [<description>]
 
         Add a bugzilla <url> to the list of defined bugzillae. <name>
         is the name that will be used to reference the zilla in all
         commands. Unambiguous abbreviations of <name> will be accepted also.
         <description> is the common name for the bugzilla and will
-        be listed with the bugzilla query.
+        be listed with the bugzilla query; if not given, it defaults to <name>.
         """
-        (name, url, description) = privmsgs.getArgs(args, required=3)
+        (name, url, description) = privmsgs.getArgs(args,required=2,optional=1)
+        if not description:
+            description = name
         if url[-1] == '/':
             url = url[:-1]
         self.db[name] = [url, description]
