@@ -298,7 +298,12 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
             voices = []
             usersS = []
             if abbreviation != self.abbreviations[realIrc]:
-                Channel = otherIrc.state.channels[channel]
+                try:
+                    Channel = otherIrc.state.channels[channel]
+                except KeyError:
+                    s = 'Somehow I\'m not in %s on %s.'%(channel,abbreviation))
+                    irc.error(msg, s)
+                    return
                 for s in Channel.users:
                     s = s.strip()
                     if not s:
