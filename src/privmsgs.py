@@ -96,6 +96,9 @@ def thread(f):
     return newf
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
+    """A small subclass of callbacks.Privmsg that checks self.capability
+    before allowing any command to be called.
+    """
     capability = '' # To satisfy PyChecker
     def callCommand(self, f, irc, msg, args):
         if ircdb.checkCapability(msg.prefix, self.capability):
