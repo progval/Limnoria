@@ -89,6 +89,7 @@ class Limiter(callbacks.Privmsg):
 
     def doJoin(self, irc, msg):
         if not ircutils.strEqual(msg.nick, irc.nick):
+            irc = callbacks.SimpleProxy(irc, msg)
             self._enforceLimit(irc, msg.args[0])
     doPart = doJoin
     doKick = doJoin
