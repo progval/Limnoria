@@ -61,13 +61,12 @@ class DCC(callbacks.Privmsg):
             try:
                 host = ircutils.hostFromHostmask(irc.prefix)
                 try:
-                    inet = utils.getSocket(host)
+                    sock = utils.getSocket(host)
                 except socket.error, e:
                     s = 'Error connecting to %s: %s'
                     self.log.warning(s, host, e)
                     irc.replyError()
                     return
-                sock = socket.socket(inet, socket.SOCK_STREAM)
                 sock.settimeout(60)
                 if conf.supybot.externalIP():
                     ip = conf.supybot.externalIP()
@@ -81,21 +80,32 @@ class DCC(callbacks.Privmsg):
                         irc.replyError()
                         return
                 i = ircutils.dccIP(ip)
-                sock.bind((host, 0))
+                try:
+                    sock.bind((host, 0))
+                except socket.error, e:
+                    irc.error('Unable to initiate DCC CHAT.')
+                    return
                 port = sock.getsockname()[1]
                 self.log.info('DCC CHAT port opened at (%s, %s)', host, port)
                 sock.listen(1)
                 irc.queueMsg(ircmsgs.privmsg(msg.nick,
                                              '\x01DCC CHAT chat %s %s\x01' % \
                                              (i, port)))
-                (realSock, addr) = sock.accept()
+                try:
+                    (realSock, addr) = sock.accept()
+                except socket.timeout:
+                    self.log.info('DCC CHAT timed out.')
+                    return
                 self.log.info('DCC CHAT accepted from %s', addr)
                 for line in textwrap.wrap(text, 80):
                     realSock.send(line)
                     realSock.send('\n')
             finally:
                 self.log.info('Finally closing sock and realSock.')
-                sock.close()
+                try:
+                    sock.close()
+                except UnboundLocalError:
+                    pass
                 try:
                     realSock.close()
                 except UnboundLocalError:
@@ -104,7 +114,7 @@ class DCC(callbacks.Privmsg):
         world.threadsSpawned += 1
         t.setDaemon(True)
         t.start()
-                         
+
 
 
 Class = DCC

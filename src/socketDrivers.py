@@ -140,12 +140,11 @@ class SocketDriver(drivers.IrcDriver):
             return
         self.irc.reset()
         try:
-            inet = utils.getSocket(self.server[0])
+            self.conn = utils.getSocket(self.server[0])
         except socket.error, e:
             log.warning('Error connecting to %s: %s', self.server[0], e)
             self.reconnect(wait=True)
             return
-        self.conn = socket.socket(inet, socket.SOCK_STREAM)
         # We allow more time for the connect here, since it might take longer.
         # At least 10 seconds.
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))

@@ -564,9 +564,9 @@ def getSocket(host):
     except socket.error:
         raise
     if isIP(host):
-        return socket.socket(socket.INET, socket.SOCK_STREAM)
+        return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     elif isIPV6(host):
-        return socket.socket(socket.INET6, socket.SOCK_STREAM)
+        return socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
     else:
         raise socket.error, 'Something wonky happened.'
 
