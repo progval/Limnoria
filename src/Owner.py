@@ -72,6 +72,7 @@ def loadPluginModule(name):
 def loadPluginClass(irc, module):
     """Loads the plugin Class from the given module into the given irc."""
     callback = module.Class()
+    assert not irc.getCallback(callback.name())
     irc.addCallback(callback)
     if hasattr(callback, 'configure'):
         callback.configure(irc)
@@ -285,10 +286,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         the end.
         """
         name = privmsgs.getArgs(args)
-        for cb in irc.callbacks:
-            if cb.name() == name:
-                irc.error(msg, 'That module is already loaded.')
-                return
+        if irc.getCallback(name):
+            irc.error(msg, 'That module is already loaded.')
+            return
         try:
             module = loadPluginModule(name)
         except ImportError, e:

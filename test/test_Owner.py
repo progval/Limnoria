@@ -83,6 +83,7 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
 
     def testLoad(self):
         self.assertError('load Owner')
+        self.assertError('load owner')
         self.assertNotError('load Misc')
         self.assertNotError('list Owner')
 
