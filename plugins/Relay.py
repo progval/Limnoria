@@ -53,79 +53,62 @@ import privmsgs
 import callbacks
 import asyncoreDrivers
 
-class IdDict(dict):
-    def __setitem__(self, key, value):
-        dict.__setitem__(self, id(key), value)
-
-    def __getitem__(self, key):
-        return dict.__getitem__(self, id(key))
-
-    def __contains__(self, key):
-        return dict.__contains__(self, id(key))
-
-class Relay(callbacks.Privmsg):
+class Relay(privmsgs.CapabilityCheckingPrivmsg):
+    capability = 'owner'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.ircs = []
+        self.ircs = {}
         self.started = False
-        self.abbreviations = {} #IdDict({})
+        self.abbreviations = {}
         
     def startrelay(self, irc, msg, args):
         "<network abbreviation for current server>"
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            realIrc = irc.getRealIrc()
-            abbreviation = privmsgs.getArgs(args)
-            self.ircs.append(realIrc)
-            self.abbreviations[realIrc] = abbreviation
-            self.started = True
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        realIrc = irc.getRealIrc()
+        abbreviation = privmsgs.getArgs(args)
+        self.ircs[abbreviation] = realIrc
+        self.abbreviations[realIrc] = abbreviation
+        self.started = True
+        irc.reply(msg, conf.replySuccess)
 
     def relayconnect(self, irc, msg, args):
         "<network abbreviation> <domain:port> (port defaults to 6667)"
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            abbreviation, server = privmsgs.getArgs(args, needed=2)
-            if ':' in server:
-                (server, port) = server.split(':')
-                port = int(port)
-            else:
-                port = 6667
-            newIrc = irclib.Irc(irc.nick, callbacks=irc.callbacks)
-            driver = asyncoreDrivers.AsyncoreDriver((server, port))
-            driver.irc = newIrc
-            newIrc.driver = driver
-            self.ircs.append(newIrc)
-            self.abbreviations[newIrc] = abbreviation
-            irc.reply(msg, conf.replySuccess)
+        abbreviation, server = privmsgs.getArgs(args, needed=2)
+        if ':' in server:
+            (server, port) = server.split(':')
+            port = int(port)
         else:
-            irc.reply(msg, conf.replyNoCapability % 'owner')
+            port = 6667
+        newIrc = irclib.Irc(irc.nick, callbacks=irc.callbacks)
+        driver = asyncoreDrivers.AsyncoreDriver((server, port))
+        driver.irc = newIrc
+        newIrc.driver = driver
+        self.ircs[abbreviation] = newIrc
+        self.abbreviations[newIrc] = abbreviation
+        irc.reply(msg, conf.replySuccess)
 
     def relaydisconnect(self, irc, msg, args):
         "<network>"
-        pass
+        network = privmsgs.getArgs(args)
+        otherIrc = self.ircs[network]
+        otherIrc.die()
+        otherIrc.driver.die()
+        irc.reply(conf.replySuccess)
 
     def relayjoin(self, irc, msg, args):
         "<channel>"
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            channel = privmsgs.getArgs(args)
-            for otherIrc in self.ircs:
-                if channel not in otherIrc.state.channels:
-                    otherIrc.queueMsg(ircmsgs.join(channel))
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.reply(msg, conf.replyNoCapability % 'owner')
+        channel = privmsgs.getArgs(args)
+        for otherIrc in self.ircs.itervalues():
+            if channel not in otherIrc.state.channels:
+                otherIrc.queueMsg(ircmsgs.join(channel))
+        irc.reply(msg, conf.replySuccess)
 
     def relaypart(self, irc, msg, args):
         "<channel>"
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            channel = privmsgs.getArgs(args)
-            for otherIrc in self.ircs:
-                if channel in otherIrc.state.channels:
-                    otherIrc.queueMsg(ircmsgs.part(channel))
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.reply(msg, conf.replyNoCapability % 'owner')
+        channel = privmsgs.getArgs(args)
+        for otherIrc in self.ircs.itervalues():
+            if channel in otherIrc.state.channels:
+                otherIrc.queueMsg(ircmsgs.part(channel))
+        irc.reply(msg, conf.replySuccess)
 
     def _formatPrivmsg(self, nick, abbreviation, msg):
         if ircmsgs.isAction(msg):
@@ -144,7 +127,7 @@ class Relay(callbacks.Privmsg):
             #debug.printf('irc = %s' % irc)
             abbreviation = self.abbreviations[irc]
             s = self._formatPrivmsg(msg.nick, abbreviation, msg)
-            for otherIrc in self.ircs:
+            for otherIrc in self.ircs.itervalues():
                 #debug.printf('otherIrc = %s' % otherIrc)
                 if otherIrc != irc:
                     #debug.printf('otherIrc != irc')
@@ -158,7 +141,7 @@ class Relay(callbacks.Privmsg):
             channels = msg.args[0].split(',')
             abbreviation = self.abbreviations[irc]
             s = '%s has joined on %s' % (msg.nick, abbreviation)
-            for otherIrc in self.ircs:
+            for otherIrc in self.ircs.itervalues():
                 if otherIrc != irc:
                     for channel in channels:
                         if channel in otherIrc.state.channels:
@@ -169,7 +152,7 @@ class Relay(callbacks.Privmsg):
             channels = msg.args[0].split(',')
             abbreviation = self.abbreviations[irc]
             s = '%s has left on %s' % (msg.nick, abbreviation)
-            for otherIrc in self.ircs:
+            for otherIrc in self.ircs.itervalues():
                 if otherIrc == irc:
                     continue
                 for channel in channels:
@@ -184,7 +167,7 @@ class Relay(callbacks.Privmsg):
                 channel = msg.args[0]
                 abbreviation = self.abbreviations[irc]
                 s = self._formatPrivmsg(irc.nick, abbreviation, msg)
-                for otherIrc in self.ircs:
+                for otherIrc in self.ircs.itervalues():
                     if otherIrc != irc:
                         if channel in otherIrc.state.channels:
                             msg = ircmsgs.privmsg(channel, s)
