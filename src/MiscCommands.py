@@ -189,7 +189,7 @@ class MiscCommands(callbacks.Privmsg):
 
         Returns the module <command> is in.
         """
-        command = privmsgs.getArgs(args)
+        command = callbacks.canonicalName(privmsgs.getArgs(args))
         Class = irc.findCallback(command)
         if Class is not None:
             irc.reply(msg, Class.name())
