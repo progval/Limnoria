@@ -93,7 +93,6 @@ class SendHandler(DCCHandler):
             self.log.warning('Requested file does not exist: %r',
                              self.filename)
             return
-
         sock = utils.getSocket(ip)
         try:
             sock.bind((ip, 0))
@@ -109,7 +108,7 @@ class SendHandler(DCCHandler):
         self.irc.queueMsg(msg)
 
         # Wait for possible RESUME request to be handled which may change
-        # self.startPosition
+        # self.startPosition on self
         # See Resume doc (URL in header)
         time.sleep(1)
 
@@ -242,6 +241,7 @@ class SendReqHandler(DCCReqHandler):
         self.ip = ircutils.unDccIP(int(self.args[1]))
         self.port = int(self.args[2])
         self.filesize = int(self.args[3])
+        self.filemode = 'w'
 
 
     def receivedPacket(self):
@@ -253,10 +253,15 @@ class SendReqHandler(DCCReqHandler):
             currsize = os.path.getsize(self.filename)
             if (self.filesize > currsize):
                 # Send RESUME DCC message and wait for ACCEPT
+                # See AcceptReqHandler below
                 msg = ircutils.dcc(self.nick, 'RESUME', self.filename,
                                    self.port, currsize)
                 self.irc.queueMsg(msg)
-                return
+                time.sleep(1)
+                if self.filemode != 'a':
+                    # Didn't get an acknowledge for the RESUME
+                    # Zero file and read from scratch
+                    os.remove(self.filename)
 
         sock = utils.getSocket(self.ip)
         try:
@@ -272,7 +277,7 @@ class SendReqHandler(DCCReqHandler):
             self.log.warning('%s tried to send relative file', self.msg.nick)
             return
            
-        fh = file(rootedName, 'w')
+        fh = file(rootedName, self.filemode)
         self.bytesReceived = 0
         self.startTime = time.time()
         pktSize = conf.supybot.protocols.dcc.packetSize()
@@ -327,71 +332,46 @@ class ResumeReqHandler(DCCReqHandler):
         self.log.info('%r: RESUME received for %s', self.filename,
                       self.startPosition)
 
-    # --- IGNORE FROM HERE DOWN ---
+class AcceptReqHandler(DCCReqHandler):
 
-    def handleACCEPT(self):
-        port = int(self.args[1])
-        # XXX I thought we got rid of caller?
-        (ip, filename, filesize) = self.caller.resumeSends[port]
-        recv = os.path.getsize(filename)
-        
-        sock = utils.getSocket(ip)
-        try:
-            sock.connect((ip, port))
-        except:
-            # XXX No log, blank except.
-            return
-        sock.settimeout(conf.supybot.plugins.FServe.timeout())
+    def _getReceiveHandler(self):
+        # We need the original SendReqHandler, which needs some cross request
+        # logic that we don't provide.
+        # The following may work, but this should be overridden
+        h = SendReqHandler(self.irc, self.msg, self.args)
+        return h
 
-        incoming = os.path.join(conf.supybot.directories.data(),
-                                conf.supybot.plugins.FServe.receiveDirectory())
-        rootedName = os.path.abspath(os.path.join(incoming, filename))
-        # XXX Use startswith, don't use <>
-        if (rootedName[:len(incoming)] <> incoming):
-            # XXX % in log.
-            self.caller.log.warning('%s tried to send relative file' %
-                                    self.msg.nick)
-            # XXX Shouldn't you close the sock?  If you had a finally block,
-            # you wouldn't have to worry about that :)
-            return
-           
-        f = file(rootedName, 'a')
-        start= time.time()
-        try:
-            # XXX () in while/if
-            while (recv < filesize):
-                amnt = min(filesize - recv, 1024)
-                d = sock.recv(amnt)
-                recv += len(d)
-                sock.send(struct.pack("!I", recv))
-                f.write(d)
-        except socket.error, e:
-            # XXX % in log, use %r
-            self.caller.log.info('\'%s\': Resume died with %s' %
-                                 (filename, e))
-        end = time.time()
-        durn = end - start
-        # XXX finally material, especially since you return early above.
-        sock.close()
-        f.close()
-        # XXX % in log, use %r.
-        self.caller.log.info('\'%s\': %s/%s received in %s seconds' %
-                             (filename, recv, filesize, durn))
+    def open(self):
+        self.filename = self.args[0]
+        self.port = int(self.args[1])
+        cxn = self._getReceiveHandler()
+        cxn.filemode = 'a'
+        self.log.info('%r: Got ACCEPT to resume file', self.filename)
 
 
-    def handleCHAT(self):
+class ChatReqHandler(DCCReqHandler):
+    
+    def open(self):
         ip = ircutils.unDccIP(int(self.args[1]))
         port = int(self.args[2])
+        lineLength = conf.supybot.protocols.dcc.chatLineLength()
 
         sock = utils.getSocket(ip)
         try:
             sock.connect((ip, port))
         except:
-            # XXX Log something!  Who, why.
+            self.log.error('Could not connect to chat socket.')           
             return
-        sock.settimeout(conf.supybot.plugins.FServe.timeout())
-        sock.send("Hi!\n")
-        sock.recv(1024)
+        self.sock = sock
+        sock.send('\n')
+        try:
+            while 1:
+                line = sock.recv(lineLength)
+                self.lineReceived(line)
+            except socket.error, e:
+                self.log.info('Chat finished')
+        finally:
+            sock.close()
 
 
-
+            
