@@ -213,6 +213,10 @@ class Filter(callbacks.Privmsg):
                           ('wW', '\\/\\/'), ('d', 'c|'), ('b', '|>'),
                           ('c', '<'), ('h', '|n'),] 
     def supa1337(self, irc, msg, args):
+        """<text>
+
+        Replies with an especially k-rad translation of <text>.
+        """
         s = privmsgs.getArgs(args)
         for (r, sub) in self._leetres:
             s = re.sub(r, sub, s)
