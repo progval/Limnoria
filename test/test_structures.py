@@ -576,5 +576,18 @@ class TwoWayDictionaryTestCase(SupyTestCase):
         self.failIf('foo' in d)
 
 
+class TestTimeoutQueue(SupyTestCase):
+    def test(self):
+        q = TimeoutQueue(1)
+        q.enqueue(1)
+        self.assertEqual(len(q), 1)
+        q.enqueue(2)
+        self.assertEqual(len(q), 2)
+        q.enqueue(3)
+        self.assertEqual(len(q), 3)
+        time.sleep(1)
+        self.assertEqual(len(q), 0)
+        
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

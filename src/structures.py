@@ -37,8 +37,9 @@ __revision__ = "$Id$"
 
 import supybot.fix as fix
 
+import time
 import types
-from itertools import imap
+from itertools import imap, ilen
 
 class RingBuffer(object):
     """Class to represent a fixed-size ring buffer."""
@@ -301,6 +302,39 @@ class smallqueue(list):
 
     def reset(self):
         self[:] = []
+
+
+class TimeoutQueue(object):
+    def __init__(self, timeout, queue=None):
+        if queue is None:
+            queue = smallqueue()
+        self.queue = queue
+        self.timeout = timeout
+
+    def _clearOldElements(self):
+        now = time.time()
+        while now - self.queue.peek()[0] > self.timeout:
+            self.queue.dequeue()
+
+    def enqueue(self, elt, at=None):
+        if at is None:
+            at = time.time()
+        self.queue.enqueue((at, elt))
+
+    def dequeue(self):
+        self._clearOldElements()
+        return self.queue.dequeue()[1]
+
+    def __iter__(self):
+        # We could _clearOldElements here, but what happens if someone stores
+        # the resulting generator and elements that should've timed out are
+        # yielded?  Hmm?  What happens then, smarty-pants?
+        for (t, elt) in self.queue:
+            if time.time() - t < self.timeout:
+                yield elt
+
+    def __len__(self):
+        return ilen(self)
 
 
 class MaxLengthQueue(queue):
