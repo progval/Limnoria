@@ -47,6 +47,10 @@ class CommandsTestCase(SupyTestCase):
         self.assertEqual(state.args, expected,
                          'Expected %r, got %r' % (expected, state.args))
 
+    def assertError(self, spec, given):
+        self.assertRaises(callbacks.Error,
+                          self.assertState, spec, given, given)
+
 
 class GeneralContextTestCase(CommandsTestCase):
     def testEmptySpec(self):
@@ -65,8 +69,7 @@ class GeneralContextTestCase(CommandsTestCase):
         self.assertState([rest(None)], ['foo', 'bar', 'baz'], ['foo bar baz'])
 
     def testRestRequiresArgs(self):
-        self.assertRaises(callbacks.ArgumentError,
-                          self.assertState, [rest('something')], [], ['asdf'])
+        self.assertError([rest('something')], [])
 
     def testOptional(self):
         spec = [optional('int', 999), None]
@@ -77,8 +80,7 @@ class GeneralContextTestCase(CommandsTestCase):
         spec = [additional('int', 999)]
         self.assertState(spec, ['12'], [12])
         self.assertState(spec, [], [999])
-        self.assertRaises(callbacks.Error,
-                          self.assertState, spec, ['foo'], ['asdf'])
+        self.assertError(spec, ['foo'])
 
     def testReverse(self):
         spec = [reverse('positiveInt'), 'float', 'text']
@@ -100,8 +102,8 @@ class GeneralContextTestCase(CommandsTestCase):
     def testMany(self):
         spec = [many('int')]
         self.assertState(spec, ['1', '2', '3'], [[1, 2, 3]])
-        self.assertRaises(callbacks.Error,
-                          self.assertState, spec, [], ['asdf'])
+        self.assertError(spec, [])
+
     def testChannelRespectsNetwork(self):
         spec = ['channel', 'text']
         self.assertState(spec, ['#foo', '+s'], ['#foo', '+s'])
@@ -132,8 +134,7 @@ class GeneralContextTestCase(CommandsTestCase):
         self.assertState(spec, ['f'], ['foo'])
         self.assertState(spec, ['bar'], ['bar'])
         self.assertState(spec, ['baz'], ['baz'])
-        self.assertRaises(callbacks.ArgumentError,
-                          self.assertState, spec, ['ba'], ['baz'])
+        self.assertError(spec, ['ba'])
         
 class ConverterTestCase(CommandsTestCase):
     def testUrlAllowsHttps(self):
