@@ -38,7 +38,6 @@ from baseplugin import *
 
 import time
 import os.path
-import operator
 
 import sqlite
 
@@ -48,8 +47,8 @@ import utils
 import ircdb
 import ircmsgs
 import privmsgs
-import callbacks
 import ircutils
+import callbacks
 
 dbfilename = os.path.join(conf.dataDir, 'Notes.db')
 
@@ -62,15 +61,14 @@ class Notes(callbacks.Privmsg):
         "create Notes database and tables"
         if os.path.exists(filename):
             self.db = sqlite.connect(filename)
-            self.cursor = self.db.cursor()
             return
         self.db = sqlite.connect(filename, converters={'bool': bool})
-        self.cursor = self.db.cursor()
-        self.cursor.execute("""CREATE TABLE users (
+        cursor = self.db.cursor()
+        cursor.execute("""CREATE TABLE users (
                                id INTEGER PRIMARY KEY,
                                name TEXT UNIQUE ON CONFLICT IGNORE
                                )""")
-        self.cursor.execute("""CREATE TABLE notes (
+        cursor.execute("""CREATE TABLE notes (
                                id INTEGER PRIMARY KEY,
                                from_id INTEGER,
                                to_id INTEGER,
@@ -84,34 +82,39 @@ class Notes(callbacks.Privmsg):
    
     def _addUser(self, username):
         "Not callable from channel, used to add users to database."
-        self.cursor.execute('INSERT INTO users VALUES (NULL, %s)', username)
+        cursor = self.db.cursor()
+        cursor.execute('INSERT INTO users VALUES (NULL, %s)', username)
         self.db.commit()
         
     def getUserId(self, username):
         "Returns the user id matching the given username from the users table."
-        self.cursor.execute('SELECT id FROM users where name=%s', username)
-        if self.cursor.rowcount != 0:
-            return self.cursor.fetchone()[0]
+        cursor = self.db.cursor()
+        cursor.execute('SELECT id FROM users where name=%s', username)
+        if cursor.rowcount != 0:
+            return cursor.fetchone()[0]
         else: 
             raise KeyError, username
 
     def getUserName(self, userid):
         "Returns the username matching the given user id from the users table."
-        self.cursor.execute('SELECT name FROM users WHERE id=%s', userid)
-        if self.cursor.rowcount != 0:
-            return self.cursor.fetchone()[0]
+        cursor = self.db.cursor()
+        cursor.execute('SELECT name FROM users WHERE id=%s', userid)
+        if cursor.rowcount != 0:
+            return cursor.fetchone()[0]
         else:
             raise KeyError, userid
 
     def setAsRead(self, noteid):
         "Changes a message's 'read' value to true in the notes table."
-        self.cursor.execute("""UPDATE notes
+        cursor = self.db.cursor()
+        cursor.execute("""UPDATE notes
                                SET read=1, notified=1
                                WHERE id=%s""", noteid)
         self.db.commit()
 
     def die(self):
         "Called when module is unloaded/reloaded."
+        self.db.commit()
         self.db.close()
     
     def doJoin(self, irc, msg):
@@ -166,7 +169,8 @@ class Notes(callbacks.Privmsg):
             public = 1
         else: 
             public = 0 
-        self.cursor.execute("""INSERT INTO notes VALUES 
+        cursor = self.db.cursor()
+        cursor.execute("""INSERT INTO notes VALUES 
                                (NULL, %s, %s, %s, 0, 0, %s, %s)""", 
                                senderId, recipId, int(time.time()),
                                public, note)
@@ -185,17 +189,18 @@ class Notes(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
-        self.cursor.execute("""SELECT notes.note, notes.to_id, notes.from_id,
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT notes.note, notes.to_id, notes.from_id,
                                       notes.added_at, notes.public 
                                FROM users, notes
                                WHERE users.name=%s AND
                                      notes.to_id=users.id AND
                                      notes.id=%s
                                LIMIT 1""", sender, noteid)
-        if self.cursor.rowcount == 0:
+        if cursor.rowcount == 0:
             irc.error(msg, 'That\'s not a valid note id.')
             return
-        note, to_id, from_id, added_at, public = self.cursor.fetchone()
+        (note, to_id, from_id, added_at, public) = cursor.fetchone()
         author = self.getUserName(from_id)
         if senderId != to_id:
             irc.error(msg, 'You are not the recipient of note %s.' % noteid)
@@ -219,14 +224,15 @@ class Notes(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
-        self.cursor.execute("""SELECT notes.id, notes.from_id,
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT notes.id, notes.from_id,
                                       notes.public, notes.read
                                FROM users, notes
                                WHERE users.name=%s AND
                                      notes.to_id=users.id AND
                                      notes.read=0""", sender)
-        count = self.cursor.rowcount
-        notes = self.cursor.fetchall()
+        count = cursor.rowcount
+        notes = cursor.fetchall()
         L = []
         more = False
         if count == 0:
