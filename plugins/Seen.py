@@ -111,7 +111,10 @@ class Seen(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
 
     def die(self):
-        world.flushers.remove(self.db.flush)
+        if self.db.flush in world.flushers:
+            world.flushers.remove(self.db.flush)
+        else:
+            self.log.debug('Odd, no flush in flushers: %r', world.flushers)
         self.db.close()
         callbacks.Privmsg.die(self)
         
