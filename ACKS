@@ -1,16 +1,17 @@
 GnuVince, who's helped tremendously with testing.
 johhnyace, who gave me the modem that helped me tremendously in development.
 inkedmn, who wrote the:
-    gkstats,
-    weather,
-    and zipcode commands for the Http plugin.
-    and the debincoming command for the Debian plugin.
-    AND the Notes plugin.
-jamessan, who wrote the:
-    babelfish related commands.
-    fixes for acronym, gkstats, google groups snarfer, setup.py stuff.
-bwp, who rewrote the weather command.
-Strike, who helped out on tons of stuff in general, and especially
+    Gameknot.gkstats,
+    Http.weather,
+    Http.zipcode command (now removed),
+    Debian.debincoming command,
+    and the Notes plugin.
+jamessan, who, in addition to doing general maintenance, wrote the:
+    Babelfish plugin,
+    Http.pgpkey command,
+    fixes for Http.acronym, Gameknot.gkstats, Google groups snarfer,
+bwp, who rewrote the Http.weather command.
+Strike, who helped out on tons of stuff in general, and especially some
     Debian-related stuff.
 sweede, for hosting the "main" supybot for awhile.
     
