@@ -108,15 +108,15 @@ telnetEnable = False
 telnetPort = 31337
 
 ###
-# asyncorePoll: the length of an asyncore's polling term.
-#               If asyncore drivers are all you're using, feel free to make
-#               this arbitrarily large -- be warned, however, that all other
-#               drivers are just sitting around while asyncore waits during
-#               this poll period (including the schedule).  It'll take more
-#               CPU, but you probably don't want to set this more than 0.01
-#               when you've got non-asyncore drivers to worry about.
+# poll: the length of a polling term.
+#       If asyncore drivers are all you're using, feel free to make
+#       this arbitrarily large -- be warned, however, that all other
+#       drivers are just sitting around while asyncore waits during
+#       this poll period (including the schedule).  It'll take more
+#       CPU, but you probably don't want to set this more than 0.01
+#       when you've got non-asyncore drivers to worry about.
 ###
-asyncorePoll = 1
+poll = 1
 
 ###
 # maxHistory: Maximum number of messages kept in an Irc object's state.
@@ -170,6 +170,7 @@ prefixChars = '@'
 #                     a lot of log file space.
 ###
 detailedTracebacks = True
+
 
 ###############################
 ###############################

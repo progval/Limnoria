@@ -52,7 +52,7 @@ class AsyncoreRunnerDriver(drivers.IrcDriver):
     def run(self):
         #debug.printf(asyncore.socket_map)
         try:
-            asyncore.poll(conf.asyncorePoll)
+            asyncore.poll(conf.poll)
         except:
             debug.recoverableException()
 
