@@ -56,7 +56,7 @@ class HttpTest(PluginTestCase):
 
     def testBabelize(self):
         self.assertNotError('babelize en sp foo')
-        self.assertError('translate sp fr foo')
+        self.assertError('babelize sp fr foo')
 
     def testRandomlanguage(self):
         self.assertNotError('randomlanguage')
