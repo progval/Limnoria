@@ -529,6 +529,7 @@ class Privmsg(irclib.IrcCallback):
     commandArgs = ['self', 'irc', 'msg', 'args']
     _mores = {} # This must be class-scope, so all subclasses use the same one.
     def __init__(self):
+        self.__parent = super(Privmsg, self)
         self.Proxy = IrcObjectProxy
         canonicalname = canonicalName(self.name())
         self._original = getattr(self, canonicalname, None)
@@ -588,11 +589,11 @@ class Privmsg(irclib.IrcCallback):
     def __call__(self, irc, msg):
         if msg.command == 'PRIVMSG':
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
-                irclib.IrcCallback.__call__(self, irc, msg)
+                self.__parent.__call__(irc, msg)
             else:
                 debug.msg('Ignoring %s.' % msg.prefix)
         else:
-            irclib.IrcCallback.__call__(self, irc, msg)
+            self.__parent.__call__(irc, msg)
 
     def isCommand(self, methodName):
         # This function is ugly, but I don't want users to call methods like
@@ -618,7 +619,7 @@ class Privmsg(irclib.IrcCallback):
         debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
 
 
-class IrcObjectProxyRegexp:
+class IrcObjectProxyRegexp(object):
     def __init__(self, irc, *args):
         self.irc = irc
 
@@ -661,7 +662,8 @@ class PrivmsgRegexp(Privmsg):
     flags = re.I
     commandArgs = ['self', 'irc', 'msg', 'match']
     def __init__(self):
-        Privmsg.__init__(self)
+        self.__parent = super(PrivmsgRegexp, self)
+        self.__parent.__init__()
         self.Proxy = IrcObjectProxyRegexp
         self.res = []
         #for name, value in self.__class__.__dict__.iteritems():
@@ -680,7 +682,7 @@ class PrivmsgRegexp(Privmsg):
 
     def callCommand(self, method, irc, msg, *L):
         try:
-            Privmsg.callCommand(self, method, irc, msg, *L)
+            self.__parent.callCommand(method, irc, msg, *L)
         except Exception, e:
             debug.recoverableException()
             irc.error(msg, debug.exnToString(e))
@@ -707,7 +709,8 @@ class PrivmsgCommandAndRegexp(Privmsg):
     regexps = ()
     addressedRegexps = ()
     def __init__(self):
-        Privmsg.__init__(self)
+        self.__parent = super(PrivmsgCommandAndRegexp, self)
+        self.__parent.__init__()
         self.res = []
         self.addressedRes = []
         for name in self.regexps:
@@ -721,7 +724,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
 
     def callCommand(self, f, irc, msg, *L, **kwargs):
         try:
-            Privmsg.callCommand(self, f, irc, msg, *L)
+            self.__parent.callCommand(f, irc, msg, *L)
         except Exception, e:
             if 'catchErrors' in kwargs and kwargs['catchErrors']:
                 irc.error(msg, debug.exnToString(e))
