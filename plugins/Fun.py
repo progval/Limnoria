@@ -61,7 +61,7 @@ conf.registerPlugin('Fun')
 conf.registerGroup(conf.supybot.plugins.Fun, 'levenshtein')
 conf.registerGlobalValue(conf.supybot.plugins.Fun.levenshtein, 'max',
     registry.PositiveInteger(256, """Determines the maximum size of a string
-    given to the levenhstein command.  The levenshtein command uses an O(n**3)
+    given to the levenshtein command.  The levenshtein command uses an O(n**3)
     algorithm, which means that with strings of length 256, it can take 1.5
     seconds to finish; with strings of length 384, though, it can take 4
     seconds to finish, and with strings of much larger lengths, it takes more
