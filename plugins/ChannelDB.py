@@ -289,18 +289,20 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         cursor = db.cursor()
         (optlist, rest) = getopt.getopt(args, '', ['user'])
         name = privmsgs.getArgs(rest)
-        if '--user' in optlist:
+        #debug.printf(optlist)
+        if ('--user', '') in optlist:
+            table = 'user_stats'
             if not ircdb.users.hasUser(name):
                 try:
                     hostmask = irc.state.nickToHostmask(name)
                     name = ircdb.users.getUser(hostmask).name
-                    table = 'user_stats'
                 except KeyError:
                     irc.error(msg, conf.replyNoUser)
                     return
         else:
             table = 'nick_seen'
         sql = """SELECT last_seen, last_msg FROM %s WHERE name=%%s""" % table
+        #debug.printf(sql)
         cursor.execute(sql, name)
         if cursor.rowcount == 0:
             irc.reply(msg, 'I have not seen %s.' % name)
