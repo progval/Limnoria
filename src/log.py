@@ -56,7 +56,8 @@ deadlyExceptions = [KeyboardInterrupt, SystemExit]
 ###
 testing = False
 
-logging.addLevelName(1, 'VERBOSE')
+VERBOSE = 1
+logging.addLevelName(VERBOSE, 'VERBOSE')
 
 class Formatter(logging.Formatter):
     _fmtConf = staticmethod(lambda : conf.supybot.log.format())
@@ -93,7 +94,7 @@ class Logger(logging.Logger):
         # self.error('Exception string: %s', eStrId)
 
     def verbose(self, *args, **kwargs):
-        self.log('VERBOSE', *args, **kwargs)
+        self.log(VERBOSE, *args, **kwargs)
 
 
 class StdoutStreamHandler(logging.StreamHandler):
@@ -111,6 +112,10 @@ class StdoutStreamHandler(logging.StreamHandler):
         if record.levelname != 'ERROR' and conf.supybot.log.stdout.wrap():
             # We check for ERROR there because otherwise, tracebacks (which are
             # already wrapped by Python itself) wrap oddly.
+            if not isinstance(record.levelname, basestring):
+                print record
+                print record.levelname
+                print utils.stackTrace()
             prefixLen = len(record.levelname) + 1 # ' '
             s = textwrap.fill(s, width=78, subsequent_indent=' '*prefixLen)
             s.rstrip('\r\n')
@@ -203,8 +208,8 @@ class ValidLogLevel(registry.String):
         return level
 
 class LogLevel(ValidLogLevel):
-    """Invalid log level.  Value must be either DEBUG, INFO, WARNING, ERROR,
-    or CRITICAL."""
+    """Invalid log level.  Value must be either VERBOSE, DEBUG, INFO, WARNING,
+    ERROR, or CRITICAL."""
     def setValue(self, v):
         ValidLogLevel.setValue(self, v)
         _logger.setLevel(self.value) # _logger defined later.
@@ -221,8 +226,8 @@ conf.registerGlobalValue(conf.supybot.log, 'format',
     its logging module."""))
 conf.registerGlobalValue(conf.supybot.log, 'level',
     LogLevel(logging.INFO, """Determines what the minimum priority level logged
-    will be.  Valid values are DEBUG, INFO, WARNING, ERROR, and CRITICAL, in
-    order of increasing priority."""))
+    will be.  Valid values are VERBOSE, DEBUG, INFO, WARNING, ERROR,
+    and CRITICAL, in order of increasing priority."""))
 conf.registerGlobalValue(conf.supybot.log, 'statistics',
     ValidLogLevel('VERBOSE', """Determines what level statistics reporting
     is to be logged at.  Mostly, this just includes, for instance, the time it
