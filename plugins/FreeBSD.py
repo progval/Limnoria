@@ -31,22 +31,18 @@
 
 """
 Provides FreeBSD ports searching and other FreeBSD-specific services.
-
-Commands include:
-  numports
-  searchports
-  randomport
-  portinfo
 """
 
 from baseplugin import *
 
 import string
+import getopt
 import os.path
 
 import sqlite
 
 import debug
+import utils
 import privmsgs
 import callbacks
 
@@ -66,6 +62,7 @@ def makeDb(dbfilename, indexfd, replace=False):
             return sqlite.connect(dbfilename)
     db = sqlite.connect(dbfilename)
     cursor = db.cursor()
+    cursor.execute("""PRAGMA cache_size=20000""")
     cursor.execute("""CREATE TABLE ports (
                       id INTEGER PRIMARY KEY,
                       name TEXT UNIQUE ON CONFLICT IGNORE,
@@ -117,7 +114,17 @@ def makeDb(dbfilename, indexfd, replace=False):
             depends_id = cursor.fetchone()[0]
             cursor.execute("INSERT INTO depends VALUES (%s, %s)",
                            port_id, depends_id)
+        for dep in r_deps.split():
+            cursor.execute("""SELECT id FROM ports WHERE name=%s""", name)
+            port_id = cursor.fetchone()[0]
+            cursor.execute("""SELECT id FROM ports WHERE name=%s""", dep)
+            depends_id = cursor.fetchone()[0]
+            cursor.execute("INSERT INTO depends VALUES (%s, %s)",
+                           port_id, depends_id)
     indexfd.close()
+    cursor.execute("CREATE INDEX in_category_port_id ON in_category (port_id)")
+    cursor.execute("CREATE INDEX depends_port_id ON depends (port_id)")
+    cursor.execute("CREATE INDEX depends_depends_id ON depends (depends_id)")
     db.commit()
     return db
 
@@ -131,6 +138,60 @@ class FreeBSD(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         self.db = makeDb(dbFile, getIndex())
 
+    _globtrans = string.maketrans('?*', '_%')
+    abbrev = utils.abbrev(['name', 'category', 'depends',
+                           'info', 'maintainer', 'website'])
+    def searchports(self, irc, msg, args):
+        """[--name=<glob>] [--category=<glob>] [--depends=<glob>] """ \
+        """[--info=<glob>] [--maintainer=<glob>] [--website=<glob>]
+
+        Returns the names of ports matching the constraints given.  Each
+        constraint can be specified as an unambiguous prefix of the constraint
+        name -- i.e., --n works for --name.  Arguments not preceded by switches
+        are interpreted as having been preceded by the --name switch.
+        """
+        (optlist, rest) = getopt.getopt(args, '', ['name=', 'category=',
+                                                   'depends=', 'info=',
+                                                   'maintainer=', 'website='])
+        for s in rest:
+            optlist.append(('--name', s))
+        cursor = self.db.cursor()
+        tables = ['ports']
+        constraints = []
+        arguments = []
+        for (option, argument) in optlist:
+            option = self.abbrev[option[2:].lower()]
+            argument = argument.translate(self._globtrans)
+            if option in ('name', 'info', 'maintainer', 'website'):
+                constraints.append('ports.%s LIKE %%s' % option)
+                arguments.append(argument)
+            elif option == 'category':
+                if 'categories' not in tables:
+                    tables.insert(0, 'categories')
+                    tables.insert(0, 'in_category')
+                constraints.append('categories.name LIKE %s')
+                arguments.append(argument)
+                constraints.append('in_category.category_id=categories.id')
+                constraints.append('in_category.port_id=ports.id')
+            elif option == 'depends':
+                if 'depends' not in tables:
+                    tables.append('depends')
+                constraints.append('ports.id=depends.port_id')
+                constraints.append("""depends.depends_id IN
+                                      (SELECT ports.id FROM ports
+                                       WHERE ports.name LIKE %s)""")
+                arguments.append(argument)
+        sql = """SELECT ports.name FROM %s WHERE %s """ % \
+              (', '.join(tables), ' AND '.join(constraints))
+        debug.printf(sql)
+        cursor.execute(sql, *arguments)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'No ports matched those constraints.')
+            return
+        names = [t[0] for t in cursor.fetchall()]
+        irc.reply(msg, ', '.join(names))
+                
+                
     def numports(self, irc, msg, args):
         """takes no arguments
 
@@ -140,52 +201,6 @@ class FreeBSD(callbacks.Privmsg):
         cursor.execute("""SELECT COUNT(id) FROM ports""")
         number = cursor.fetchone()[0]
         irc.reply(msg, 'There are %s ports in my database.' % number)
-
-    _globtrans = string.maketrans('?*', '_%')
-
-    def searchports(self, irc, msg, args):
-        """[name=<glob>] [category=<glob>] [depends=<glob>] """\
-        """[info=<glob>] [maintainer=<glob>] [website=<glob>]
-
-        Returns the names of ports matching the constraints given.
-        """
-        (args, kwargs) = privmsgs.getKeywordArgs(irc, msg)
-        if args and kwargs:
-            pass
-            #irc.error(msg, 'There must not be named and unnamed arguments.')
-            #return
-        elif args and not kwargs:
-            kwargs['name'] = ' '.join(args)
-        tables = ['ports']
-        if 'depends' in kwargs:
-            tables.append('depends')
-        if 'category' in kwargs:
-            tables += ['categories', 'in_category']
-        tables = ', '.join(tables)
-        wheres = {}
-        for (key, value) in kwargs.iteritems():
-            if key not in ('name', 'category', 'depends',
-                           'info', 'maintainer', 'website'):
-                irc.error(msg, '%s isn\'t a valid named argument.' % key)
-                return
-            value = value.translate(self._globtrans)
-            if '%' not in value and '_' not in value:
-                wheres['%s=%%s' % key] = value
-            else:
-                wheres['%s LIKE %%s' % key] = value
-        where = ' AND '.join(wheres)
-        cursor = self.db.cursor()
-        sql = """SELECT name FROM ports WHERE %s""" % where
-        cursor.execute(sql, *(wheres.values()))
-        if cursor.rowcount == 0:
-            irc.reply(msg, 'No ports matched those constraints')
-        elif cursor.rowcount > 50:
-            irc.reply(msg,
-                      'There were %s matches.  Please narrow your search.' %\
-                      cursor.rowcount)
-        else:
-            ports = map(lambda t: t[0], cursor.fetchall())
-            irc.reply(msg, ', '.join(ports))
 
     def randomport(self, irc, msg, args):
         """takes no arguments
