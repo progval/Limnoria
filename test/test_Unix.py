@@ -33,12 +33,26 @@ from test import *
 
 class UnixTestCase(PluginTestCase):
     plugins = ('Unix',)
-
     def testSpell(self):
         self.assertRegexp('spell Strike', 'correctly')
         self.assertRegexp('spell asdlkfjasdlfkjsdalfkjasdflkasjdflskdfjlsd',
                           'not find')
         self.assertNotError('spell Strizzike')
         self.assertError('spell foo bar baz')
+
+    def testErrno(self):
+        self.assertRegexp('errno 12', '^ENOMEM')
+        self.assertRegexp('errno ENOMEM', '#12')
+
+    def testProgstats(self):
+        self.assertNotError('progstats')
+
+    def testCrypt(self):
+        self.assertNotError('crypt jemfinch')
+
+    def testFortune(self):
+        self.assertNotError('fortune')
+
+    
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -52,16 +52,22 @@ import utils
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Unix')
-    cmdLine = utils.findBinaryInPath('aspell')
-    if not cmdLine:
+    spellCmd = utils.findBinaryInPath('aspell')
+    if not spellCmd:
         cmdLine = utils.findBinaryInPath('ispell')
-    if not cmdLine:
+    if not spellCmd:
         print 'NOTE: I couldn\'t find aspell or ispell in your path,'
         print 'so that function of this module will not work.  You may'
-        print 'choose to install it later, and then the module will'
-        print 'automatically work, as long as it is in the path of the'
-        print 'user that supybot runs under.'
-        print
+        print 'choose to install it later.  To re-enable this command then, '
+        print 'remove the "disable spell" line from your configuration file.'
+        onStart.append('disable spell')
+    fortuneCmd = utils.findBinaryInPath('fortune')
+    if not fortuneCmd:
+        print 'NOTE: I couldn\'t find fortune in your path, so that function '
+        print 'of this module will not work.  You may choose to install it '
+        print 'later.  To re-enable this command then, remove the '
+        print '"disable fortune" command from your configuration file.'
+        onStart.append('disable fortune')
 
     print 'The "progstats" command can reveal potentially sensitive'
     print 'information about your machine.  Here\'s an example of its output:'
@@ -86,17 +92,17 @@ class Unix(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         # Initialize a file descriptor for the spell module.
-        cmdLine = utils.findBinaryInPath('aspell')
-        if not cmdLine:
-            cmdLine = utils.findBinaryInPath('ispell')
-        (self._spellRead, self._spellWrite) = popen2.popen4(cmdLine + ' -a', 0)
-        # Ignore the banner
-        self._spellRead.readline()
+        spellCmd = utils.findBinaryInPath('aspell')
+        if not spellCmd:
+            spellCmd = utils.findBinaryInPath('ispell')
+        (self._spellRead, self._spellWrite) = popen2.popen4([spellCmd, '-a'],0)
+        self._spellRead.readline() # Ignore the banner.
+        self.fortuneCmd = utils.findBinaryInPath('fortune')
 
     def die(self):
         # close the filehandles
         for h in (self._spellRead, self._spellWrite):
-                h.close()
+            h.close()
 
     def errno(self, irc, msg, args):
         """<error number or code>
@@ -178,6 +184,17 @@ class Unix(callbacks.Privmsg):
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
         irc.reply(msg, resp)
+
+    def fortune(self, irc, msg, args):
+        """takes no arguments
+
+        Returns a fortune from the *nix fortune program.
+        """
+        (r, w) = popen2.popen4('%s -s' % self.fortuneCmd)
+        s = r.read()
+        w.close()
+        r.close()
+        irc.reply(msg, ' '.join(s.split()))
 
 
 Class = Unix
