@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#re!/usr/bin/env python
 
 ###
 # Copyright (c) 2002, Jeremiah Fincher
@@ -65,7 +65,7 @@ def configure(onStart, afterConnect, advanced):
                 break
         if key:
             onStart.append('load Google')
-            onStart.append('googlelicensekey %s' % key)
+            onStart.append('google licensekey %s' % key)
         if 'load Alias' not in onStart:
             print 'Google depends on the Alias module for some commands.'
             if yn('Would you like to load the Alias module now?') == 'y':
@@ -139,7 +139,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         else:
             return '%s %s' % (time, '; '.join(results))
 
-    def googlelicensekey(self, irc, msg, args):
+    def licensekey(self, irc, msg, args):
         """<key>
 
         Sets the Google license key for using Google's Web Services API.  This
@@ -148,9 +148,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         key = privmsgs.getArgs(args)
         google.setLicense(key)
         irc.reply(msg, conf.replySuccess)
-    googlelicensekey = privmsgs.checkCapability(googlelicensekey, 'admin')
+    licensekey = privmsgs.checkCapability(licensekey, 'admin')
 
-    def disablegooglesnarfer(self, irc, msg, args):
+    def disablesnarfer(self, irc, msg, args):
         """takes no argument
 
         Disables the snarfer that responds to all messages that begin with
@@ -158,7 +158,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         """
         self.snarfer = False
         irc.reply(msg, conf.replySuccess)
-    disablegooglesnarfer=privmsgs.checkCapability(disablegooglesnarfer,'admin')
+    disablesnarfer=privmsgs.checkCapability(disablesnarfer, 'admin')
 
     def google(self, irc, msg, args):
         """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
@@ -217,7 +217,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
              categories and '  Categories include %s.' % categories)
         irc.reply(msg, s)
 
-    def googlefight(self, irc, msg, args):
+    def fight(self, irc, msg, args):
         """<search string> <search string> [<search string> ...]
 
         Returns the results of each search, in order, from greatest number
@@ -233,17 +233,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         s = ', '.join(['%r: %s' % (s, i) for (i, s) in results])
         irc.reply(msg, s)
 
-    def googlesite(self, irc, msg, args):
-        """<site> <search string>
-
-        Searches Google on a specific site.
-        """
-        (site, s) = privmsgs.getArgs(args, needed=2)
-        searchString = 'site:%s %s' % (site, s)
-        data = search(searchString, language='lang_en', safeSearch=1)
-        irc.reply(msg, self.formatData(data))
-
-    def googlespell(self, irc, msg, args):
+    def spell(self, irc, msg, args):
         """<word>
 
         Returns Google's spelling recommendation for <word>.
@@ -255,7 +245,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         else:
             irc.reply(msg, 'No spelling suggestion made.')
 
-    def googleinfo(self, irc, msg, args):
+    def info(self, irc, msg, args):
         """takes no arguments
 
         Returns interesting information about this Google module.  Mostly
@@ -286,6 +276,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
+        if not self.snarfer:
+            return
         request = urllib2.Request(match.group(0), headers=\
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
         fd = urllib2.urlopen(request)
@@ -310,7 +302,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         else:
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
               'That doesn\'t appear to be a proper Google Groups page.'))
-
 
 
 Class = Google
