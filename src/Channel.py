@@ -54,7 +54,7 @@ import callbacks
 
 conf.registerPlugin('Channel')
 conf.registerChannelValue(conf.supybot.plugins.Channel, 'alwaysRejoin',
-    register.Boolean(True, """Determines whether the bot will always try to
+    registry.Boolean(True, """Determines whether the bot will always try to
     rejoin a channel whenever it's kicked from the channel."""))
 
 class Channel(callbacks.Privmsg):
