@@ -29,7 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-"""A complete messaging system that allows users to leave 'notes' for other
+"""
+A complete messaging system that allows users to leave 'notes' for other
 users that can be retrieved later.
 
 Commands include:
@@ -41,33 +42,34 @@ Commands include:
 from baseplugin import *
 
 import time
-import os.path
 import string
+import os.path
 
 import sqlite
 
 import conf
+import debug
 import ircdb
+import ircmsgs
 import privmsgs
 import callbacks
 import ircutils
-import debug
-import ircmsgs
+
+dbfilename = os.path.join(conf.dataDir, 'Notes.db')
 
 class Notes(callbacks.Privmsg):
     
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.filename = os.path.join(conf.dataDir, 'Notes.db')
-        if os.path.exists(self.filename):
-            self.db = sqlite.connect(self.filename)
-            self.cursor = self.db.cursor()
-        else:
-            self.makeDB()
+        self.makeDB(dbfilename)
 
-    def makeDB(self):
+    def makeDB(self, filename):
         "create Notes database and tables"
-        self.db = sqlite.connect(self.filename, converters={'bool': bool})
+        if os.path.exists(filename):
+            self.db = sqlite.connect(filename)
+            self.cursor = self.db.cursor()
+            return
+        self.db = sqlite.connect(filename, converters={'bool': bool})
         self.cursor = self.db.cursor()
         self.cursor.execute("""CREATE TABLE users (
                                id INTEGER PRIMARY KEY,
@@ -86,58 +88,54 @@ class Notes(callbacks.Privmsg):
         self.db.commit()
    
     def _addUser(self, username):
-        "not callable from channel, used to add users to database"
-        self.cursor.execute('INSERT INTO users VALUES (NULL,%s)', username)
+        "Not callable from channel, used to add users to database."
+        self.cursor.execute('INSERT INTO users VALUES (NULL, %s)', username)
         self.db.commit()
         
     def getUserID(self, username):
-        "returns the user id matching the given username from the users table"
+        "Returns the user id matching the given username from the users table."
         self.cursor.execute('SELECT id FROM users where name=%s', username)
         if self.cursor.rowcount != 0:
-            results = self.cursor.fetchall()
-            return results[0][0]
+            return self.cursor.fetchone()[0]
         else: 
-            assert False
+            raise KeyError, username
 
     def getUserName(self, userid):
-        "returns the username matching the given user id from the users table"
+        "Returns the username matching the given user id from the users table."
         self.cursor.execute('SELECT name FROM users WHERE id=%s', userid)
         if self.cursor.rowcount != 0:
-            results = self.cursor.fetchall()
-            return results[0][0]
+            return self.cursor.fetchone()[0]
         else:
-            raise KeyError
+            raise KeyError, userid
 
-    def isNote(self, noteid):
-        "checks to see if a note id represents a valid note in the table"
+    def isValidNote(self, noteid):
+        "Checks to see if a note id represents a valid note in the table."
         self.cursor.execute('SELECT * FROM notes WHERE id=%s', noteid)
         if self.cursor.rowcount == 0:
-            return 0
+            return False
         else:
-            return 1
+            return True
     
     def makePrivate(self, msg):
-        "returns a IrcMsg object with an updated target value"
-        args = list(msg.args)
-        args[0] = msg.nick
-        return ircmsgs.IrcMsg(command = msg.command, prefix = msg.prefix,
-                              args = tuple(args))
+        "Returns an IrcMsg object with an updated target value."
+        return ircmsgs.privmsg(msg.nick, msg.args[1])
 
     def setAsRead(self, noteid):
-        "changes a message's 'read' value to true in the notes table"
+        "Changes a message's 'read' value to true in the notes table."
         self.cursor.execute('UPDATE notes SET read=1 WHERE id=%s', noteid)
         self.db.commit()
 
     def die(self):
-        "called when module is unloaded/reloaded"
+        "Called when module is unloaded/reloaded."
         self.db.close()
     
     def sendnote(self, irc, msg, args):
         """<recipient> <text>
         
-        Sends a new note to the user specified."""
+        Sends a new note to the user specified.
+        """
         (name, note) = privmsgs.getArgs(args, needed=2)
-        sender = ircutils.nickFromHostmask(msg.prefix)
+        sender = msg.nick
         if ircdb.users.hasUser(name):
             recipient = name
         else:
@@ -161,9 +159,10 @@ class Notes(callbacks.Privmsg):
     def note(self, irc, msg, args):
         """<note id>
         
-        Retrieves a single note by unique note id."""
+        Retrieves a single note by unique note id.
+        """
         noteid = privmsgs.getArgs(args)
-        if not self.isNote(noteid):
+        if not self.isValidNote(noteid):
             irc.error(msg, 'Not a valid note id')
             return
         sender = ircdb.users.getUserName(msg.prefix)
@@ -174,7 +173,7 @@ class Notes(callbacks.Privmsg):
         author = self.getUserName(from_id)
         public = int(public)
         added_at = int(added_at)
-        senttime = time.asctime(time.gmtime(added_at))
+        senttime = time.strftime(conf.timestampFormat)
         newnote = "%s (Sent by %s on %s)" % (note, author, senttime)
         if senderID == to_id:
             if public:
@@ -182,7 +181,7 @@ class Notes(callbacks.Privmsg):
             else:
                 msg = self.makePrivate(msg)
                 irc.reply(msg, newnote)
-            debug.printf("setting note to read=true")
+            #debug.printf("setting note to read=true")
             self.setAsRead(noteid)
         else:
             irc.error(msg, 'You are not the recipient of note %s' % noteid)
@@ -191,7 +190,11 @@ class Notes(callbacks.Privmsg):
         """<takes no arguments>
         
         Retrieves all unread notes for the requesting user."""
-        sender = ircdb.users.getUserName(msg.prefix)
+        try:
+            sender = ircdb.users.getUserName(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNoUser)
+            return
         senderID = self.getUserID(sender)
         self.cursor.execute("""SELECT id, from_id, public, read FROM notes
                                WHERE to_id=%s
@@ -201,7 +204,7 @@ class Notes(callbacks.Privmsg):
                                WHERE to_id=%s
                                AND read=0""", senderID)
         count = int(self.cursor.fetchone()[0])
-        debug.printf("count: %d" % count)
+        #debug.printf("count: %d" % count)
         L = []
         for (id, from_id, public, read) in notes:
             if not int(read):
@@ -216,7 +219,10 @@ class Notes(callbacks.Privmsg):
         else:
             L = string.join(L, ', ')
             reply = "you have %s unread notes: %s" % (count, L)
-        debug.printf(L)
+        #debug.printf(L)
         irc.reply(msg, reply)
 
+
 Class = Notes
+
+# vim: shiftwidth=4 tabstop=8 expandtab textwidth=78:
