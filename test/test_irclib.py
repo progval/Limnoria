@@ -301,6 +301,11 @@ class IrcTestCase(unittest.TestCase):
         msg = self.irc.takeMsg()
         self.failUnless(msg.command == 'NOTICE')
 
+    def testNoMsgLongerThan512(self):
+        self.irc.queueMsg(ircmsgs.privmsg('whocares', 'x'*1000))
+        msg = self.irc.takeMsg()
+        self.failUnless(len(msg) <= 512, 'len(msg) was %s' % len(msg))
+
     def testReset(self):
         for msg in msgs:
             try:

@@ -488,6 +488,9 @@ class Irc(IrcCommandDispatcher):
                     s = '%s.outFilter returned None' % callback.name()
                     debug.msg(s)
                     return None
+            if len(str(msg)) > 512:
+                msg._str = msg._str[:500] + '\r\n'
+                msg._len =  len(str(msg))
             self.state.addMsg(self, msg)
             s = '%s  %s' % (time.strftime(conf.logTimestampFormat), msg)
             debug.msg(s, 'low')
@@ -523,6 +526,11 @@ class Irc(IrcCommandDispatcher):
         if msg.args[0].startswith('Closing Link'):
             if hasattr(self.driver, 'scheduleReconnect'):
                 self.driver.scheduleReconnect()
+            self.driver.die()
+        elif 'too fast' in msg.args[0]:
+            if hasattr(self.driver, 'reconnectWaitsIndex'):
+                newIndex = len(self.driver.reconnectWaits)-1
+                self.driver.reconnectWaitsIndex = newIndex
             self.driver.die()
 
     def doNick(self, msg):
