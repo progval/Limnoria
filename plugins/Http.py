@@ -37,6 +37,7 @@ from baseplugin import *
 
 import re
 import time
+import httplib
 import urllib
 import urllib2
 
@@ -355,6 +356,76 @@ class Http(callbacks.Privmsg):
         else:
             irc.error(msg, 'The format of the was odd.')
 
+    def deblookup(self, irc, msg, args):
+        """[stable|testing|unstable|experimental] <packagename>
+        Returns the current version(s) of a Debian package in the given branch
+        (if any, otherwise all available ones are displayed).
+        """
+        branches = ['stable', 'testing', 'unstable', 'experimental']
+        host = "packages.debian.org"
+        page = "/cgi-bin/search_packages.pl"
+        max_packages = 10
+
+        if args[0] in branches:
+            branch = args[0]
+            del args[0]	# Chop this part off, we don't need it
+        else:
+            branch = None
+
+        # Barf if we don't get a package
+        if len(args) == 0:
+            irc.error(msg, 'Please supply a package name.')
+
+        s = ""  # The reply string (to-be)
+        for package in args:
+            cgi_params = \
+                "?keywords=%s&searchon=names&version=%s&release=all" % \
+                    (package, branch or "all")
+            conn = httplib.HTTPConnection(host)
+            conn.request("GET", page + cgi_params)
+            response = conn.getresponse()
+
+            if response.status != 200:
+                irc.error(msg, "Bad response from debian.org: %d" % \
+                                response.status)
+            else:
+                data = response.read()
+                match = re.search('<TABLE .*?>.*?</TABLE>', \
+                                  data, re.DOTALL | re.I)
+                if match is None:
+                    s += "No package found for: %s (%s)" % \
+                         (package, branch or "all")
+                else:
+                    table_data = match.group()
+                    ## Now run through each of the rows, building up the reply
+                    rows = table_data.split("</TR>")
+
+                    # Check for greater than max_packages (note that the first
+                    # and last row don't have pkgs)
+                    num_pkgs_match = re.search('out of total of (?P<num>\d+)', \
+                                               data, re.DOTALL | re.I)
+                    num_pkgs = int(num_pkgs_match.group('num'))
+                                                                                
+                    if num_pkgs > max_packages:
+                        s += "%d packages found, displaying %d: " % \
+                             (num_pkgs, max_packages)
+                        last_row = max_packages
+                    else:
+                        last_row = -1
+                                                                                
+                    for row in rows[1:last_row]:
+                        pkg_match = re.search("<a.*>(?P<pkg_ver>.*?)</a>", \
+                                              row, re.DOTALL | re.I)
+                        br_match = re.search(
+                            "<td ALIGN=\"center\">(?P<pkg_br>.*?)</?td>", \
+                            row, re.DOTALL | re.I)
+                        s += "%s (%s) ;; " % \
+                              (pkg_match.group('pkg_ver').strip(),
+                               br_match.group('pkg_br').strip())
+        
+        irc.reply(msg, s)
+
+            
 
 Class = Http
 
