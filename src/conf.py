@@ -345,6 +345,13 @@ registerChannelValue(supybot.reply, 'withPrivateNotice',
     Private notices are particularly nice because they don't generally cause
     IRC clients to open a new query window."""))
 
+# XXX: User value.
+registerGlobalValue(supybot.reply, 'withNoticeWhenPrivate',
+    registry.Boolean(False, """Determines whether the bot will reply with a
+    notice when it is sending a private message, in order not to open a /query
+    window in clients.  This can be overridden by individual users via the user
+    configuration variable reply.withNoticeWhenPrivate."""))
+
 registerChannelValue(supybot.reply, 'withNickPrefix',
     registry.Boolean(True, """Determines whether the bot will always prefix the
     user's nick to its reply to that user's command."""))

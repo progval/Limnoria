@@ -1,3 +1,9 @@
+	* Added supybot.reply.withNoticeWhenPrivate, to make the bot
+	reply with a notice when it privately messages a user -- this
+	generally means that the user's client won't open a query window,
+	which may be nice.  Do note that users can override this setting
+	via the user registry variable of the same name.
+	
 	* Added supybot.nick.alternates, which allows a list of alternate
 	nicks to try, in order, if the primary nick (supybot.nick) is
 	taken.  Also added a nick-perturbation function that will change

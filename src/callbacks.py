@@ -131,6 +131,9 @@ def reply(msg, s, prefixName=True, private=False,
             target = to
         else:
             target = msg.nick
+        # XXX: User value.
+        if conf.supybot.reply.withNoticeWhenPrivate():
+            notice = True
     if to is None:
         to = msg.nick
     # Ok, now let's make the payload:
