@@ -223,6 +223,13 @@ class MaxLengthQueue(queue):
     def __init__(self, length, *args):
         self.length = length
         queue.__init__(self, *args)
+
+    def __getstate__(self):
+        return (self.length, queue.__getstate__(self))
+
+    def __setstate__(self, (length, q)):
+        self.length = length
+        queue.__getstate__(self, q)
         
     def enqueue(self, elt):
         if len(self) > self.length:
