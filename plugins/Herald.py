@@ -50,7 +50,7 @@ import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-filename = os.path.join(conf.supybot.directories.data(), 'Herald.db')
+filename = conf.supybot.directories.data.dirize('Herald.db')
 
 class HeraldDB(plugins.ChannelUserDB):
     def serialize(self, v):

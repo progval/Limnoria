@@ -76,11 +76,12 @@ class TodoDB(plugins.DBHandler):
         return db
 
 
+filename = conf.supybot.directories.data.dirize('Todo.db')
 class Todo(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         dataDir = conf.supybot.directories.data()
-        self.dbHandler = TodoDB(os.path.join(dataDir, 'Todo'))
+        self.dbHandler = TodoDB(filename)
 
     def die(self):
         self.dbHandler.die()

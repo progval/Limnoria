@@ -192,6 +192,7 @@ class StatsDB(plugins.ChannelUserDB):
     def getUserStats(self, channel, id):
         return self[channel, id]
 
+filename = conf.supybot.directories.data.dirize('ChannelStats.db')
 class ChannelStats(callbacks.Privmsg):
     noIgnore = True
     def __init__(self):
@@ -199,15 +200,12 @@ class ChannelStats(callbacks.Privmsg):
         self.lastmsg = None
         self.laststate = None
         self.outFiltering = False
-        self.db = StatsDB(os.path.join(conf.supybot.directories.data(),
-                                       'ChannelStats.db'))
-        world.flushers.append(self.db.flush)
+        self.db = StatsDB(filename)
+        self._flush = self.db.flush
+        world.flushers.append(self._flush)
 
     def die(self):
-        if self.db.flush in world.flushers:
-            world.flushers.remove(self.db.flush)
-        else:
-            self.log.debug('Odd, no flush in flushers: %r', world.flushers)
+        world.flushers.remove(self._flush)
         self.db.close()
         callbacks.Privmsg.die(self)
 

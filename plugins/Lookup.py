@@ -312,8 +312,7 @@ class Lookup(callbacks.Privmsg):
         group.unregister(name)
 
     def addDatabase(self, name, filename):
-        dataDir = conf.supybot.directories.data()
-        filename = os.path.join(dataDir, filename)
+        filename = conf.supybot.directories.data.dirize(filename)
         fd = file(filename)
         self.db.addLookup(name, fd, self._splitRe)
 

@@ -69,18 +69,13 @@ def configure(advanced):
 class XMLLogger(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        logDir = conf.supybot.directories.log()
-        self.fd = file(os.path.join(logDir, 'xml.log'), 'a')
-        self.boundFlushMethod = self.fd.flush
-        world.flushers.append(self.boundFlushMethod)
+        filename = conf.supybot.directories.log.dirize('xml.log')
+        self.fd = file(filename, 'a')
+        self._flush = self.fd.flush
+        world.flushers.append(self._flush)
 
     def die(self):
-        if self.boundFlushMethod in world.flushers:
-            world.flushers.remove(self.boundFlushMethod)
-        else:
-            if not world.dying:
-                self.log.warning('My flusher wasn\'t in world.flushers: %r',
-                                 world.flushers)
+        world.flushers.remove(self._flush)
         self.fd.close()
 
     def writeMsg(self, msg):

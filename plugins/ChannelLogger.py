@@ -168,8 +168,7 @@ class ChannelLogger(callbacks.Privmsg):
             return '%s.log' % channel
 
     def getLogDir(self, irc, channel):
-        logDir = conf.supybot.directories.log()
-        logDir = os.path.join(logDir, self.name())
+        logDir = conf.supybot.directories.log.dirize(self.name())
         if self.registryValue('directories'):
             if self.registryValue('directories.network'):
                 logDir = os.path.join(logDir,  irc.network)

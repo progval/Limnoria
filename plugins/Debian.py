@@ -102,7 +102,7 @@ class Debian(callbacks.Privmsg,
                              'debian/dists/unstable/Contents-i386.gz',
                              604800, None)
         }
-    contents = os.path.join(conf.supybot.directories.data(),'Contents-i386.gz')
+    contents = conf.supybot.directories.data.dirize('Contents-i386.gz')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         plugins.PeriodicFileDownloader.__init__(self)

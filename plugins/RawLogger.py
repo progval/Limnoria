@@ -45,10 +45,14 @@ import supybot.irclib as irclib
 ###
 class RawLogger(irclib.IrcCallback):
     def __init__(self):
-        logDir = conf.supybot.directories.log()
-        self.fd = file(os.path.join(logDir, 'raw.log'), 'a')
-        world.flushers.append(self.fd.flush)
+        self.fd = file(conf.supybot.directories.log.dirize('raw.log'), 'a')
+        self._flush = self.fd.flush
+        world.flushers.append(self._flush)
 
+    def die(self):
+        world.flushers.remove(self._flush)
+        self.fd.close()
+        
     def inFilter(self, irc, msg):
         self.fd.write(str(msg))
         return msg

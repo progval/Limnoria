@@ -172,7 +172,7 @@ class WordStatsDB(plugins.ChannelUserDB):
                     self[channel, id][word] += 1
 
 
-filename=os.path.join(conf.supybot.directories.data(), 'WordStats.db')
+filename = conf.supybot.directories.data.dirize('WordStats.db')
 class WordStats(callbacks.Privmsg):
     noIgnore = True
     def __init__(self):
@@ -180,11 +180,11 @@ class WordStats(callbacks.Privmsg):
         self.__parent.__init__()
         self.db = WordStatsDB(filename)
         self.queried = False
-        world.flushers.append(self.db.flush)
+        self._flush = self.db.flush
+        world.flushers.append(self._flush)
 
     def die(self):
-        if self.db.flush in world.flushers:
-            world.flushers.remove(self.db.flush)
+        world.flushers.remove(self._flush)
         self.db.close()
         self.__parent.die()
 

@@ -151,7 +151,6 @@ def makeNewAlias(name, alias):
 
 conf.registerPlugin('Alias')
 conf.registerGroup(conf.supybot.plugins.Alias, 'aliases')
-filename = os.path.join(conf.supybot.directories.conf(), 'aliases.conf')
 class Alias(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
