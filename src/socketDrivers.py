@@ -39,6 +39,7 @@ import fix
 
 import time
 import socket
+from itertools import imap
 
 import conf
 import debug
@@ -71,7 +72,7 @@ class SocketDriver(drivers.IrcDriver):
         while msgs[-1] is not None:
             msgs.append(self.irc.takeMsg())
         del msgs[-1]
-        self.outbuffer += ''.join(map(str, msgs))
+        self.outbuffer += ''.join(imap(str, msgs))
         if self.outbuffer:
             try:
                 sent = self.conn.send(self.outbuffer)

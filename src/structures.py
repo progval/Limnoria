@@ -40,6 +40,7 @@ import fix
 import types
 import pprint
 import string
+from itertools import imap
 
 class RingBuffer(object):
     """Class to represent a fixed-size ring buffer."""
@@ -219,7 +220,7 @@ class queue(object):
             return False
 
     def __repr__(self):
-        return 'queue([%s])' % ', '.join(map(repr, self))
+        return 'queue([%s])' % ', '.join(imap(repr, self))
 
     def __getitem__(self, oidx):
         if len(self) == 0:
@@ -295,7 +296,7 @@ class smallqueue(list):
         return self[0]
 
     def __repr__(self):
-        return 'smallqueue([%s])' % ', '.join(map(repr, self))
+        return 'smallqueue([%s])' % ', '.join(imap(repr, self))
 
     def reset(self):
         self[:] = []

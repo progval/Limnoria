@@ -584,7 +584,7 @@ class Privmsg(irclib.IrcCallback):
             if self.isCommand(command):
                 #debug.printf('%s: %r' % (command, args))
                 method = getattr(self, command)
-                line = '%s %s' % (command, ' '.join(map(utils.dqrepr, args)))
+                line = '%s %s' % (command, ' '.join(imap(utils.dqrepr, args)))
                 msg = ircmsgs.privmsg(fakeIrc.nick, line, fakeIrc.prefix)
                 try:
                     world.startup = True

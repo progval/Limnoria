@@ -45,6 +45,7 @@ import shlex
 import string
 import random
 import sqlite
+from itertools import imap
 from cStringIO import StringIO
 
 import conf
@@ -226,7 +227,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         # These are okay, unless there's an _is_ in there, in which case
         # we split on the leftmost one.
         if '_is_' in match.group():
-            key, fact = map(str.strip, match.group().split('_is_', 1))
+            key, fact = imap(str.strip, match.group().split('_is_', 1))
         # Strip the key of punctuation and spaces
         key = key.rstrip('?! ')
         # Check and make sure it's not in the DB already
@@ -319,7 +320,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         # These are okay, unless there's an _is_ in there, in which case
         # we split on the leftmost one.
         if '_is_' in match.group():
-            key, new_fact = map(str.strip, match.group().split('_is_', 1))
+            key, new_fact = imap(str.strip, match.group().split('_is_', 1))
             key = key.split(' ', 1)[1]  # Take out everything to first space
         cursor = self.db.cursor()
         # Check and make sure it's in the DB 

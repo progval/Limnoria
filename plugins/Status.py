@@ -40,7 +40,7 @@ import sys
 import sets
 import time
 import threading
-from itertools import islice, ifilter
+from itertools import islice, ifilter, imap
 
 import conf
 import utils
@@ -142,8 +142,7 @@ class Status(callbacks.Privmsg):
                     time.strftime(conf.humanTimestampFormat,
                                   time.localtime(ended)),
                     utils.timeElapsed(ended-started))
-        L = map(format, L)
-        irc.reply(msg, utils.commaAndify(L))
+        irc.reply(msg, utils.commaAndify(imap(format, L)))
 
     def netstats(self, irc, msg, args):
         """takes no arguments

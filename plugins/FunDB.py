@@ -38,11 +38,12 @@ import plugins
 import re
 import sets
 import time
+import getopt
 import string
 import os.path
+from itertools import imap
 
 import sqlite
-import getopt
 
 import conf
 import debug
@@ -231,7 +232,7 @@ class FunDB(callbacks.Privmsg):
                                'somewhere.')
                 return
         elif table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
@@ -263,7 +264,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
@@ -293,7 +294,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         try:
@@ -326,14 +327,14 @@ class FunDB(callbacks.Privmsg):
         table = privmsgs.getArgs(args)
         table = table.lower()
         if table not in self._tables:
-            irc.error(msg, '%r is not valid. Valid values include %s.' % \
+            irc.error(msg, '%r is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
         sql = """SELECT count(*) FROM %ss""" % table
         cursor.execute(sql)
         total = int(cursor.fetchone()[0])
-        irc.reply(msg, 'There %s currently %s in my database.' % \
+        irc.reply(msg, 'There %s currently %s in my database.' %
                   (utils.be(total), utils.nItems(total, table)))
 
     def get(self, irc, msg, args):
@@ -349,7 +350,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
@@ -374,7 +375,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' % \
+            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
@@ -406,7 +407,7 @@ class FunDB(callbacks.Privmsg):
             raise callbacks.ArgumentError
         
         try:
-            (nick, reason) = map(' '.join,
+            (nick, reason) = imap(' '.join,
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
@@ -457,14 +458,14 @@ class FunDB(callbacks.Privmsg):
             raise callbacks.ArgumentError
         
         try:
-            (nick, reason) = map(' '.join,
+            (nick, reason) = imap(' '.join,
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
         
         cursor = self.db.cursor()
         if id:
-            cursor.execute("""SELECT id, praise FROM praises WHERE id=%s""", id)
+            cursor.execute("""SELECT id, praise FROM praises WHERE id=%s""",id)
             if cursor.rowcount == 0:
                 irc.error(msg, 'There is no such praise.')
                 return

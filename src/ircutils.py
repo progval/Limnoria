@@ -41,11 +41,12 @@ import fix
 import re
 import copy
 import sets
+import time
+import random
 import string
 import fnmatch
 import operator
-import random
-import time
+from itertools import imap
 
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
@@ -318,10 +319,10 @@ def unDccIP(i):
     assert isinstance(i, (int, long)), '%r is not an number.' % i
     L = []
     while len(L) < 4:
-        L.insert(0, i % 256)
+        L.append(i % 256)
         i /= 256
-    return '.'.join(map(str, L))
-        
+    L.reverse()
+    return '.'.join(imap(str, L))
 
 class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""

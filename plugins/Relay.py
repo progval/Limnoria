@@ -38,6 +38,7 @@ import plugins
 import re
 import sys
 import time
+from itertools import imap, ifilter
 
 import conf
 import debug
@@ -319,9 +320,12 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
                         voices.append('+%s' % s)
                     else:
                         usersS.append(s)
-                map(list.sort, (ops, halfops, voices, usersS))
-                usersS = ', '.join(filter(None, map(', '.join,
-                    (ops,halfops,voices,usersS))))
+                ops.sort()
+                voices.sort()
+                usersS.sort()
+                halfops.sort()
+                usersS = ', '.join(ifilter(None, imap(', '.join,
+                                  (ops,halfops,voices,usersS))))
                 users.append('%s: %s' % (ircutils.bold(abbreviation), usersS))
         irc.reply(msg, '; '.join(users))
 

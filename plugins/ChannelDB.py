@@ -30,7 +30,10 @@
 ###
 
 """
-Silently listens to every message received on a channel and keeps statistics concerning joins, parts, and various other commands in addition to tracking statistics about smileys, actions, characters, and words. """
+Silently listens to every message received on a channel and keeps statistics
+concerning joins, parts, and various other commands in addition to tracking
+statistics about smileys, actions, characters, and words.
+"""
 
 import plugins
 
@@ -40,6 +43,7 @@ import sets
 import time
 import getopt
 import string
+from itertools import imap, ifilter
 
 import sqlite
 
@@ -56,8 +60,8 @@ import callbacks
 smileys = (':)', ';)', ':]', ':-)', ':-D', ':D', ':P', ':p', '(=', '=)')
 frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 
-smileyre = re.compile('|'.join(map(re.escape, smileys)))
-frownre = re.compile('|'.join(map(re.escape, frowns)))
+smileyre = re.compile('|'.join(imap(re.escape, smileys)))
+frownre = re.compile('|'.join(imap(re.escape, frowns)))
 
 class ChannelDB(plugins.ChannelDBHandler,
                 plugins.Configurable,

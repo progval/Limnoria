@@ -37,7 +37,7 @@ import re
 import sets
 import urllib2
 
-from itertools import ifilter
+from itertools import ifilter, imap
 
 import conf
 import debug
@@ -151,7 +151,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             resp = [head % entry for entry in self._formatResp(text)]
             if resp:
                 if len(resp) > 10:
-                    resp = map(lambda s: utils.ellipsisify(s, 50), resp)
+                    resp = imap(lambda s: utils.ellipsisify(s, 50), resp)
                 return '%s' % utils.commaAndify(resp)
             raise callbacks.Error, 'No Trackers were found. (%s)' %\
                 conf.replyPossibleBug

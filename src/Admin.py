@@ -41,6 +41,7 @@ import pprint
 import string
 import smtplib
 import textwrap
+from itertools import imap
 
 import conf
 import ircdb
@@ -233,7 +234,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         Returns the hostmasks currently being globally ignored.
         """
         if conf.ignores:
-            irc.reply(msg, utils.commaAndify(map(repr, conf.ignores)))
+            irc.reply(msg, utils.commaAndify(imap(repr, conf.ignores)))
         else:
             irc.reply(msg, 'I\'m not currently globally ignoring anyone.')
 

@@ -60,7 +60,7 @@ def loadPluginModule(name):
         files.extend(os.listdir(dir))
     loweredFiles = map(str.lower, files)
     try:
-        index = map(str.lower, files).index(name.lower()+'.py')
+        index = loweredFiles.index(name.lower()+'.py')
         name = os.path.splitext(files[index])[0]
     except ValueError: # We'd rather raise the ImportError, so we'll let go...
         pass

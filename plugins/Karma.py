@@ -34,6 +34,7 @@ Plugin for handling basic Karma stuff for a channel.
 """
 
 import os
+from itertools import imap
 
 import sqlite
 
@@ -95,7 +96,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
             if cursor.rowcount == 0:
                 irc.reply(msg, '%s has no karma.' % name)
             else:
-                (added, subtracted) = map(int, cursor.fetchone())
+                (added, subtracted) = imap(int, cursor.fetchone())
                 total = added - subtracted
                 s = 'Karma for %r has been increased %s %s ' \
                     'and decreased %s %s for a total karma of %s.' % \
@@ -103,7 +104,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                      subtracted, utils.pluralize(subtracted, 'time'), total)
                 irc.reply(msg, s)
         elif len(args) > 1:
-            normalizedArgs = map(str.lower, args)
+            normalizedArgs = imap(str.lower, args)
             criteria = ' OR '.join(['normalized=%s'] * len(args))
             sql = """SELECT name, added-subtracted
                      FROM karma WHERE %s

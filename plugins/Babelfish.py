@@ -36,6 +36,7 @@ Babelfish-related commands.
 import plugins
 
 import random
+from itertools import imap
 
 import babelfish
 
@@ -54,7 +55,7 @@ def configure(onStart, afterConnect, advanced):
 
 class Babelfish(callbacks.Privmsg):
     threaded = True
-    _abbrevs = utils.abbrev(map(str.lower, babelfish.available_languages))
+    _abbrevs = utils.abbrev(imap(str.lower, babelfish.available_languages))
     _abbrevs['de'] = 'german'
     _abbrevs['jp'] = 'japanese'
     _abbrevs['kr'] = 'korean'

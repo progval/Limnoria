@@ -39,9 +39,8 @@ import re
 import string
 import urllib2
 import xml.dom.minidom as minidom
+from itertools import imap, ifilter
 from htmlentitydefs import entitydefs as entities
-
-import sqlite
 
 import conf
 import utils
@@ -227,7 +226,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             L.append(ircutils.bold('Status: ') + summary['status'])
         if 'resolution' in summary:
             L.append(ircutils.bold('Resolution: ') + summary['resolution'])
-        return ', '.join(map(str, L))
+        return ', '.join(imap(str, L))
 
     def _get_short_bug_summary(self, url, desc, number):
         bugxml = self._getbugxml(url, desc)

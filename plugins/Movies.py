@@ -36,6 +36,8 @@ Database.
 
 import plugins
 
+from itertools import imap
+
 import IMDb
 
 import utils
@@ -55,7 +57,7 @@ class Movies(callbacks.Privmsg):
     threaded = True
     def _formatMovie(self, movie):
         title = utils.unCommaThe(movie.title())
-        genres = utils.commaAndify(map(str.lower, movie.genres()))
+        genres = utils.commaAndify(imap(str.lower, movie.genres()))
         s = '"%s" (%s) belongs to the %s %s.  ' \
             'It\'s been rated %s out of 10.  ' \
             'More information is available at <%s>' % \

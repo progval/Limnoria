@@ -41,6 +41,7 @@ import getopt
 import socket
 import urllib2
 import xml.dom.minidom
+from itertools import imap, ifilter
 
 import utils
 import debug
@@ -261,7 +262,7 @@ class Http(callbacks.Privmsg):
           'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
         html = getPage(request)
         # The following definitions are stripped and empties are removed.
-        defs = filter(None, map(str.strip, self._acronymre.findall(html)))
+        defs = filter(None, imap(str.strip, self._acronymre.findall(html)))
         utils.sortBy(lambda s: not s.startswith('[not an acronym]'), defs)
         for (i, s) in enumerate(defs):
             if s.startswith('[not an acronym]'):

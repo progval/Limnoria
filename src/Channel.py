@@ -35,6 +35,7 @@ to have the <channel>.op capability.  This plugin is loaded by default.
 """
 
 import time
+from itertools import imap
 
 import conf
 import debug
@@ -266,7 +267,7 @@ class Channel(callbacks.Privmsg):
             irc.reply(msg, 'I\'m not currently ignoring any hostmasks '
                            'in %r' % channel)
             return
-        irc.reply(msg, utils.commaAndify(map(repr,c.ignores)))
+        irc.reply(msg, utils.commaAndify(imap(repr,c.ignores)))
     ignores = privmsgs.checkChannelCapability(ignores, 'op')
 
 

@@ -45,6 +45,7 @@ import random
 import urllib
 import inspect
 import mimetypes
+from itertools import imap
 
 import conf
 import debug
@@ -326,7 +327,7 @@ class Fun(callbacks.Privmsg):
         arg = privmsgs.getArgs(args)
         m = re.match(self._dicere, arg)
         if m:
-            (dice, sides) = map(int, m.groups())
+            (dice, sides) = imap(int, m.groups())
             if dice > 6:
                 irc.error(msg, 'You can\'t roll more than 6 dice.')
             elif sides > 100:
