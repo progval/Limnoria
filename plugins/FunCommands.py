@@ -101,8 +101,7 @@ class FunCommands(callbacks.Privmsg):
         if len(letter) != 1:
             irc.error(msg, 'Letter must be of length 1 (for obvious reasons)')
         else:
-            i = ord(letter)
-            irc.reply(msg, str(i))
+            irc.reply(msg, str(ord(letter)))
 
     def chr(self, irc, msg, args):
         """<number>
