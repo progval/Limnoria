@@ -199,10 +199,6 @@ class RSS(callbacks.Privmsg):
                     self.log.debug('Downloading new feed from %u', url)
                     results = rssparser.parse(url)
                     if 'bozo_exception' in results:
-##                         for (k, v) in results.items():
-##                             s = '%r: %r' % (k, v)
-##                             if len(s) <= 80:
-##                                 print s
                         raise results['bozo_exception']
                 except sgmllib.SGMLParseError:
                     self.log.exception('Uncaught exception from rssparser:')
@@ -213,8 +209,11 @@ class RSS(callbacks.Privmsg):
                     # These seem mostly harmless.  We'll need reports of a
                     # kind that isn't.
                     self.log.debug('Allowing bozo_exception %r through.', e)
-                self.cachedFeeds[url] = results
-                self.lastRequest[url] = time.time()
+                if results.get('feed', {}):
+                    self.cachedFeeds[url] = results
+                    self.lastRequest[url] = time.time()
+                else:
+                    self.log.debug('Not caching results; feed is empty.')
             try:
                 return self.cachedFeeds[url]
             except KeyError:
