@@ -124,6 +124,7 @@ class PluginTestCase(unittest.TestCase):
                 os.remove(os.path.join(conf.supybot.directories.data(),
                                        filename))
         ircdb.users.reload()
+        ircdb.ignores.reload()
         ircdb.channels.reload()
         if self.plugins is None:
             raise ValueError, 'PluginTestCase must have a "plugins" attribute.'
@@ -154,6 +155,9 @@ class PluginTestCase(unittest.TestCase):
             # Necessary because there's a test in here that shouldn\'t run.
             return
         self.irc.die()
+        ircdb.users.close()
+        ircdb.ignores.close()
+        ircdb.channels.close()
         gc.collect()
 
     def _feedMsg(self, query, timeout=None, to=None, frm=None):
