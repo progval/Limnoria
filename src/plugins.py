@@ -241,14 +241,16 @@ class PeriodicFileDownloader(object):
             world.threadsSpawned += 1
         
 
-_randomnickRe = re.compile(r'\$randomnick', re.I)
+_randomnickRe = re.compile(r'\$rand(?:om)?nick', re.I)
 _randomdateRe = re.compile(r'\$randomdate', re.I)
-_randomintRe = re.compile(r'\$randomint', re.I)
+_randomintRe = re.compile(r'\$rand(?:omint)?', re.I)
 _channelRe = re.compile(r'\$channel', re.I)
 _whoRe = re.compile(r'\$(?:who|nick)', re.I)
 _botnickRe = re.compile(r'\$botnick', re.I)
-_todayRe = re.compile(r'\$today', re.I)
-_nowRe = re.compile(r'\$now', re.I)
+_todayRe = re.compile(r'\$(?:today|date)', re.I)
+_nowRe = re.compile(r'\$(?:now|time)', re.I)
+_userRe = re.compile(r'\$user', re.I)
+_hostRe = re.compile(r'\$host', re.I)
 def standardSubstitute(irc, msg, text):
     """Do the standard set of substitutions on text, and return it"""
     if ircutils.isChannel(msg.args[0]):
@@ -273,6 +275,8 @@ def standardSubstitute(irc, msg, text):
     text = _botnickRe.sub(irc.nick, text)
     text = _todayRe.sub(time.ctime(), text)
     text = _nowRe.sub(time.ctime(), text)
+    text = _userRe.sub(msg.user, text)
+    text = _hostRe.sub(msg.host, text)
     return text
 
 
