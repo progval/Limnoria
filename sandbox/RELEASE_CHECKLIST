@@ -6,6 +6,7 @@ Update the version in scripts/supybot
 Make a release-MAJOR_MINOR_PATCHLEVEL tag.  (cvs tag ...)
 Make a release-MAJOR_MINOR_PATCHLEVEL-branch branch tag.  (cvs tag -b ...)
 Remove CVS directories from the tarball.
+Remove sandbox directory from the tarball.
 Create .tar.gz, .tar.bz2, and .zip archives.
 Add the release to the supybot package in SF.net.
 Upload the archives to upload.sf.net, add to the release on SF.net.
