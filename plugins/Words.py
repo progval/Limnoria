@@ -155,13 +155,6 @@ class HangmanGame:
         else:
             return 'a'
 
-    configurables = configurable.Dictionary(
-        [('tries', configurable.IntType, 6, 'Number of tries to guess a word'),
-         ('prefix', configurable.StrType, '-= HANGMAN =-',
-             'Prefix string of the hangman plugin'),
-         ('timeout', configurable.IntType, 300, 'Time before a game times out')]
-    )
-    
 conf.registerPlugin('Words')
 conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanMaxTries',
     registry.Integer(6, """Number of tries to guess a word"""))
