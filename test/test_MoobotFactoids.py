@@ -108,6 +108,11 @@ if sqlite is not None:
             self.assertResponse('moo', 'foo')
             self.assertNotError('foo is bar _is_ baz')
             self.assertResponse('foo is bar', 'foo is bar is baz')
+            # Check the "see ..." referencing
+            self.assertNotError('bar is see moo')
+            self.assertResponse('bar', 'foo')
+            self.assertNotError('bar2 _is_ see foo is bar')
+            self.assertResponse('bar2', 'foo is bar is baz')
 
         def testFactinfo(self):
             self.assertNotError('moo is <reply>foo')
@@ -226,33 +231,40 @@ if sqlite is not None:
                                 'Most prolific authors: boo (2) and moo (1)')
 
         def testListkeys(self):
-            self.assertResponse('listkeys %', 'No keys matching \'%\' found.')
+            self.assertResponse('listkeys %', 'No keys matching "%" found.')
             self.assertNotError('moo is <reply>moo')
             # If only one key, it should respond with the factoid
             self.assertResponse('listkeys moo', 'moo')
-            self.assertResponse('listkeys foo', 'No keys matching \'foo\' '
+            self.assertResponse('listkeys foo', 'No keys matching "foo" '
                                 'found.')
             # Throw in a bunch more
             for i in range(10):
                 self.assertNotError('moo%s is <reply>moo' % i)
             self.assertRegexp('listkeys moo',
-                              '^Key search for \'moo\' '
-                              '\(11 found\): (\'moo\d*\', )+and \'moo9\'$')
+                              '^Key search for "moo" '
+                              '\(11 found\): ("moo\d*", )+and "moo9"$')
             self.assertNotError('foo is bar')
             self.assertRegexp('listkeys %',
-                              '^Key search for \'\%\' '
-                              '\(12 found\): \'foo\', (\'moo\d*\', )+and '
-                              '\'moo9\'$')
+                              '^Key search for "\%" '
+                              '\(12 found\): "foo", ("moo\d*", )+and '
+                              '"moo9"$')
             # Check quoting
             self.assertNotError('foo\' is bar')
             self.assertResponse('listkeys foo',
-                                'Key search for \'foo\' '
-                                '(2 found): \'foo\' and "foo\'"')
+                                'Key search for "foo" '
+                                '(2 found): "foo" and "foo\'"')
+            # Check unicode stuff
+            self.assertResponse('listkeys Б', 'No keys matching "Б" found.')
+            self.assertNotError('АБВГДЕЖ is foo')
+            self.assertNotError('АБВГДЕЖЗИ is foo')
+            self.assertResponse('listkeys Б',
+                                'Key search for "Б" '
+                                '(2 found): "АБВГДЕЖ" and "АБВГДЕЖЗИ"')
 
         def testListvalues(self):
             self.assertNotError('moo is moo')
             self.assertResponse('listvalues moo',
-                                'Value search for \'moo\' (1 found): \'moo\'')
+                                'Value search for "moo" (1 found): "moo"')
 
         def testListauth(self):
             self.assertNotError('moo is <reply>moo')
@@ -300,5 +312,17 @@ if sqlite is not None:
         def testAddFactoidNotCalledWithBadNestingSyntax(self):
             self.assertError('re s/Error:.*/jbm is a tard/ ]')
             self.assertNoResponse(' ', 3)
+
+        def testConfigShowFactoidIfOnlyOneMatch(self):
+            # man these are long
+            MFconf = conf.supybot.plugins.MoobotFactoids
+            self.assertNotError('foo is bar')
+            # Default to saying the factoid value
+            self.assertResponse('listkeys foo', 'foo is bar')
+            # Check the False setting
+            MFconf.showFactoidIfOnlyOneMatch.setValue(False)
+            self.assertResponse('listkeys foo', 'Key search for "foo" '
+                                                '(1 found): "foo"')
+            
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

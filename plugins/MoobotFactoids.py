@@ -205,7 +205,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error('No factoids in the database.')
             return
         (fact, key) = cursor.fetchone()
-        irc.reply("%r is %r" % (key, fact))
+        irc.reply('"%s" is "%s"' % (key, fact))
 
 
     def invalidCommand(self, irc, msg, tokens):
@@ -236,7 +236,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                 # text here is the new key to refer to 
                 msg.args = [s.replace(key, text) for s in msg.args]
                 newtokens = [s.replace(key, text) for s in tokens]
-                self.invalidCommand(irc, wmsg, newtokens) 
+                self.invalidCommand(irc, msg, newtokens) 
             else:
                 irc.error("Spurious type from _parseFactoid.")
             return True
@@ -274,7 +274,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         # Check and make sure it's not in the DB already
         cursor.execute("""SELECT * FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount != 0:
-            irc.error('Factoid %r already exists.' % key)
+            irc.error('Factoid "%s" already exists.' % key)
             return
         # Otherwise, 
         cursor.execute("""INSERT INTO factoids VALUES
@@ -299,18 +299,18 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""SELECT locked_at, fact FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
-            irc.error("Factoid %r not found." % key)
+            irc.error('Factoid "%s" not found.' % key)
             return
         # No dice if it's locked, no matter who it is
         (locked_at, fact) = cursor.fetchone()
         if locked_at is not None:
-            irc.error("Factoid %r is locked." % key)
+            irc.error('Factoid "%s" is locked.' % key)
             return
         # It's fair game if we get to here
         try:
             r = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.error("Invalid regexp: %r" % regexp)
+            irc.error('Invalid regexp: "%s"' % regexp)
             return
         new_fact = r(fact) 
         cursor.execute("""UPDATE factoids   
@@ -335,12 +335,12 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""SELECT locked_at, fact FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
-            irc.error("Factoid %r not found." % key)
+            irc.error('Factoid "%s" not found.' % key)
             return
         # No dice if it's locked, no matter who it is
         (locked_at, fact) = cursor.fetchone()
         if locked_at is not None:
-            irc.error("Factoid %r is locked." % key)
+            irc.error('Factoid "%s" is locked.' % key)
             return
         # It's fair game if we get to here
         new_fact = "%s, or %s" % (fact, new_text)
@@ -371,12 +371,12 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""SELECT locked_at, fact FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
-            irc.error("Factoid %r not found." % key)
+            irc.error('Factoid "%s" not found.' % key)
             return
         # No dice if it's locked, no matter who it is
         (locked_at, _) = cursor.fetchone()
         if locked_at is not None:
-            irc.error("Factoid %r is locked." % key)
+            irc.error('Factoid "%s" is locked.' % key)
             return
         # It's fair game if we get to here
         cursor.execute("""UPDATE factoids
@@ -401,7 +401,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor = db.cursor()
         cursor.execute("""SELECT fact FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
-            irc.error("No such factoid: %r" % key)
+            irc.error('No such factoid: "%s"' % key)
             return
         else:
             fact = cursor.fetchone()[0]
@@ -423,7 +423,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           requested_count, locked_by, locked_at FROM
                           factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
-            irc.error("No such factoid: %r" % key)
+            irc.error('No such factoid: "%s"' % key)
             return
         (created_by, created_at, modified_by, modified_at, last_requested_by,
          last_requested_at, requested_count, locked_by,
@@ -469,17 +469,17 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""SELECT created_by, locked_by FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
-            irc.error("No such factoid: %r" % key)
+            irc.error('No such factoid: "%s"' % key)
             return
         (created_by, locked_by) = cursor.fetchone()
         # Don't perform redundant operations
         if lock:
            if locked_by is not None:
-               irc.error("Factoid %r is already locked." % key)
+               irc.error('Factoid "%s" is already locked.' % key)
                return
         else:
            if locked_by is None:
-               irc.error("Factoid %r is not locked." % key)
+               irc.error('Factoid "%s" is not locked.' % key)
                return
         # Can only lock/unlock own factoids unless you're an admin
         if not (ircdb.checkCapability(id, 'admin') or created_by == id):
@@ -554,7 +554,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     def _mostRecent(self, cursor, limit):
         cursor.execute("""SELECT key FROM factoids
                           ORDER by created_at DESC LIMIT %s""", limit)
-        L = [repr(t[0]) for t in cursor.fetchall()]
+        L = ['"%s"' % t[0] for t in cursor.fetchall()]
         return '%s: %s' % \
                (utils.nItems('factoid', len(L), between='latest'),
                 utils.commaAndify(L))
@@ -565,7 +565,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           ORDER BY requested_count DESC LIMIT %s""", limit)
         if cursor.rowcount == 0:
             raise self.MostException, 'No factoids have been requested.'
-        L = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
+        L = ['"%s" (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
         return 'Top %s: %s' % \
                (utils.nItems('factoid', len(L), between='requested'),
                 utils.commaAndify(L))
@@ -589,10 +589,10 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           WHERE created_by = %s
                           ORDER BY key""", id)
         if cursor.rowcount == 0:
-            irc.reply("No factoids by %r found." % author)
+            irc.reply('No factoids by "%s" found.' % author)
             return
-        keys = [repr(tup[0]) for tup in cursor.fetchall()]
-        s = "Author search for %r (%s found): %s" % \
+        keys = ['"%s"' % tup[0] for tup in cursor.fetchall()]
+        s = 'Author search for "%s" (%s found): %s' % \
             (author, len(keys), utils.commaAndify(keys))
         irc.reply(s)
 
@@ -602,6 +602,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         Lists the keys of the factoids whose key contains the provided text.
         """
         search = privmsgs.getArgs(args, required=1)
+        # Don't error if we aren't in a channel, private messages are okay
+        channel = privmsgs.getChannel(msg, args, raiseError=False)
         glob = '%' + search + '%'
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -610,14 +612,14 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           ORDER BY key""",
                           glob)
         if cursor.rowcount == 0:
-            irc.reply("No keys matching %r found." % search)
+            irc.reply('No keys matching "%s" found.' % search)
         elif cursor.rowcount == 1 and \
-        self.registryValue('showFactoidIfOnlyOneMatch', msg.args[0]):
+        self.registryValue('showFactoidIfOnlyOneMatch', channel):
             key = cursor.fetchone()[0]
             self.invalidCommand(irc, msg, [key])
         else:
-            keys = [repr(tup[0]) for tup in cursor.fetchall()]
-            s = "Key search for %r (%s found): %s" % \
+            keys = ['"%s"' % tup[0] for tup in cursor.fetchall()]
+            s = 'Key search for "%s" (%s found): %s' % \
                 (search, len(keys), utils.commaAndify(keys))
             irc.reply(s)
 
@@ -635,10 +637,10 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           ORDER BY key""",
                           glob)
         if cursor.rowcount == 0:
-            irc.reply("No values matching %r found." % search)
+            irc.reply('No values matching "%s" found.' % search)
             return
-        keys = [repr(tup[0]) for tup in cursor.fetchall()]
-        s = "Value search for %r (%s found): %s" % \
+        keys = ['"%s"' % tup[0] for tup in cursor.fetchall()]
+        s = 'Value search for "%s" (%s found): %s' % \
             (search, len(keys), utils.commaAndify(keys))
         irc.reply(s)
 
@@ -659,7 +661,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""SELECT key, locked_at FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
-            irc.error("No such factoid: %r" % key)
+            irc.error('No such factoid: "%s"' % key)
             return
         (_, locked_at) = cursor.fetchone() 
         if locked_at is not None:
@@ -681,7 +683,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, 'No factoids in the database.')
             return
         (fact, key) = cursor.fetchone()
-        irc.reply(msg, "Random factoid: %r is %r" % (key, fact))
+        irc.reply(msg, 'Random factoid: "%s" is "%s"' % (key, fact))
 
 Class = MoobotFactoids
 
