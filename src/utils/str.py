@@ -334,6 +334,8 @@ def toBool(s):
 
 # Replace me!
 def timestamp(t):
+    if t is None:
+        t = time.time()
     return time.ctime(t)
 
 _formatRe = re.compile('%([bfhiLnpqstu%])')

@@ -282,6 +282,8 @@ registerChannelValue(supybot.reply.format, 'time',
     for the time module to see valid formatting characters for time
     formats."""))
 def timestamp(t):
+    if t is None:
+        t = time.time()
     t = time.localtime(t)
     format = conf.get(supybot.reply.format.time, dynamic.channel)
     return time.strftime(format, t)
