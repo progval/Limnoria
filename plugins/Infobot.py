@@ -713,7 +713,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         try:
             hostmask = irc.state.nickToHostmask(nick)
         except KeyError:
-            irc.error('I haven\'t seen %s, I\'ll let you do the telling.')
+            irc.error('I haven\'t seen %s, I\'ll let you '
+                      'do the telling.' % nick)
             return
         newmsg = ircmsgs.privmsg(irc.nick, factoid+'?', prefix=hostmask)
         try:
