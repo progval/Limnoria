@@ -363,10 +363,8 @@ class Lookup(callbacks.Privmsg):
                 irc.reply(utils.commaAndify(lookups))
             except dbi.NoRecordError:
                 irc.reply('No entries in %s matched that query.' % name)
-                return
         else:
-            irc.reply('I don\'t have a domain %s' % name)
-            return
+            irc.error('I don\'t have a domain %s' % name)
             
     def _lookup(self, irc, msg, args):
         """<name> <key>
