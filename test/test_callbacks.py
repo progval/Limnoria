@@ -143,6 +143,8 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual('foobar', callbacks.canonicalName('FOOBAR'))
         self.assertEqual('foobar', callbacks.canonicalName('foo___bar'))
         self.assertEqual('foobar', callbacks.canonicalName('_f_o_o-b_a_r'))
+        # The following seems to be a hack for the Karma plugin; I'm not
+        # entirely sure that it's completely necessary anymore.
         self.assertEqual('foobar--', callbacks.canonicalName('foobar--'))
 
     def testAddressed(self):
