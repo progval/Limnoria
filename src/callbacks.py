@@ -355,7 +355,7 @@ class Privmsg(irclib.IrcCallback):
             # catches them and does The Right Thing.
             f(irc, msg, args)
 
-    _r = re.compile(r'^(\S+)')
+    _r = re.compile(r'^(\w+)')
     def doPrivmsg(self, irc, msg):
         s = addressed(irc.nick, msg)
         #debug.printf('Privmsg.doPrivmsg: s == %r' % s)
