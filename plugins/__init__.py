@@ -423,7 +423,7 @@ def standardSubstitute(irc, msg, text, env=None):
             L = list(irc.state.channels[channel].users)
             if len(L) > 1:
                 n = msg.nick
-                while n != msg.nick:
+                while n == msg.nick:
                     n = random.choice(L)
                 return n
             else:
