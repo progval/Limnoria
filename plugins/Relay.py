@@ -177,6 +177,21 @@ class Relay(callbacks.Privmsg):
         irc.replySuccess()
     connect = privmsgs.checkCapability(connect, 'owner')
 
+    def reconnect(self, irc, msg, args):
+        """<network>
+
+        Reconnects the bot to <network> when it has become disconnected.
+        """
+        network = privmsgs.getArgs(args)
+        try:
+            toReconnect = self.ircs[network]
+        except KeyError:
+            irc.error('I\'m not connected to %s.' % network)
+            return
+        toReeconnect.driver.reconnect()
+        irc.replySuccess()
+    reconnect = privmsgs.checkCapability(reconnect, 'owner')
+
     def disconnect(self, irc, msg, args):
         """<network>
 
@@ -283,7 +298,7 @@ class Relay(callbacks.Privmsg):
         self.ircs[network].queueMsg(ircmsgs.privmsg(channel, text))
     say = privmsgs.checkCapability(say, 'admin')
 
-    def names(self, irc, msg, args):
+    def nicks(self, irc, msg, args):
         """[<channel>] (only if not sent in the channel itself.)
 
         The <channel> argument is only necessary if the message isn't sent on

@@ -1,6 +1,10 @@
+	* Changed Relay.names to Relay.nicks, to be consistent with
+	Channel.nicks.
+	
 	* Added supybot.brackets, a configuration variable for specifying
 	which set of matching brackets to use for nested commands.  Valid
 	values are [] (the default), {}, <>, and ().
+	
 	* Added a configuration variable to ChannelLogger, timestamp,
 	which determines whether the bot will timestamp its logfiles.
 	This is a channel-specific variable, of course.
