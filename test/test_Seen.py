@@ -34,7 +34,7 @@ from testsupport import *
 import ircdb
 
 class ChannelDBTestCase(ChannelPluginTestCase):
-    plugins = ('Seen',)
+    plugins = ('Seen', 'User')
     def setUp(self):
         ChannelPluginTestCase.setUp(self)
         self.prefix = 'foo!bar@baz'

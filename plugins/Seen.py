@@ -154,7 +154,7 @@ class Seen(callbacks.Privmsg):
             irc.reply('%s was last seen here %s ago saying: %s' % 
                       (name, utils.timeElapsed(time.time()-when), said))
         except KeyError:
-            irc.error('I have not seen %s.' % name)
+            irc.reply('I have not seen %s.' % name)
 
 
 Class = Seen
