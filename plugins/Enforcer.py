@@ -52,9 +52,12 @@ class Enforcer(callbacks.Privmsg):
     def startenforcer(self, irc, msg, args):
         """[<CHANSERV> <revenge> <topicPrefix>]"""
         self.topics = {}
-        (chanserv, revenge) = privmsgs.getArgs(args, needed=0, optional=2)
+        (chanserv, revenge, topicPrefix) = \
+                   privmsgs.getArgs(args, needed=0, optional=3)
         self.chanserv = chanserv or 'ChanServ'
         self.started = True
+        self.topicPrefix = topicPrefix
+        revenge = revenge.capitalize()
         if revenge == 'True' or revenge == '':
             self.revenge = True
         elif revenge == 'False':
