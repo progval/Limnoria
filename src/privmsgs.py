@@ -33,6 +33,7 @@ from fix import *
 
 import gc
 import os
+import new
 import sys
 import imp
 import linecache
@@ -81,32 +82,22 @@ def getArgs(args, needed=1, optional=0):
     else:
         return ret
 
-def getKeywordArgs(irc, msg, d=None):
-    if d is None:
-        d = {}
-    args = []
-    tokenizer = callbacks.Tokenizer('=')
-    s = callbacks.addressed(irc.nick, msg)
-    tokens = tokenizer.tokenize(s) + [None, None]
-    counter = 0
-    for (left, middle, right) in window(tokens, 3):
-        if counter:
-            counter -= 1
-            continue
-        elif middle == '=':
-            d[callbacks.canonicalName(left)] = right
-            counter = 2
-        else:
-            args.append(left)
-    del args[0] # The command name itself.
-    return (args, d)
-
 def checkCapability(f, capability):
+    """Makes sure a user has a certain capability before a command will run."""
     def newf(self, irc, msg, args):
         if ircdb.checkCapability(msg.prefix, capability):
             f(self, irc, msg, args)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
+    newf.__doc__ = f.__doc__
+    return newf
+
+def thread(f):
+    """Makes sure a command spawns a thread when called."""
+    def newf(self, irc, msg, args):
+        ff = new.instancemethod(f, self, self.__class__)
+        t = callbacks.CommandThread(ff, irc, msg, args)
+        t.start()
     newf.__doc__ = f.__doc__
     return newf
 
