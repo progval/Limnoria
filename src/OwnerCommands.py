@@ -52,6 +52,18 @@ import drivers
 import privmsgs
 import callbacks
 
+def loadPluginModule(name):
+    moduleInfo = imp.find_module(name, conf.pluginDirs)
+    module = imp.load_module(name, *moduleInfo)
+    linecache.checkcache()
+    return module
+
+def loadPluginClass(irc, module):
+    callback = module.Class()
+    irc.addCallback(callback)
+    if hasattr(callback, 'configure'):
+        callback.configure(irc)
+
 class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
     priority = ~sys.maxint # This must be first!
     capability = 'owner'
@@ -208,16 +220,11 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error(msg, 'That module is already loaded.')
                 return
         try:
-            moduleInfo = imp.find_module(name, conf.pluginDirs)
+            module = loadPluginModule(name)
         except ImportError:
             irc.error(msg, 'No plugin %s exists.' % name)
             return
-        module = imp.load_module(name, *moduleInfo)
-        linecache.checkcache()
-        callback = module.Class()
-        irc.addCallback(callback)
-        if hasattr(callback, 'configure'):
-            callback.configure(irc)
+        loadPluginClass(irc, module)
         irc.reply(msg, conf.replySuccess)
 
     '''
