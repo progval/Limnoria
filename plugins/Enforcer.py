@@ -69,7 +69,11 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
           the <channel>.voice capability when they join the channel."""),
          ('auto-halfop', plugins.ConfigurableBoolType, False,
           """Determines whether the bot will automatically halfop people with
-          the <channel>.halfop capability when they join the channel."""),]
+          the <channel>.halfop capability when they join the channel."""),
+         ('revenge', plugins.ConfigurableBoolType, False,
+          """Determines whether the bot will take revenge on people who do
+          things it doesn't like (somewhat like 'bitch mode' in other IRC
+          bots)."""),]
     )
     started = False
     def __init__(self):
@@ -81,25 +85,15 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
         plugins.Configurable.die(self)
 
     def start(self, irc, msg, args):
-        """[<CHANSERV> <revenge>]
+        """[<CHANSERV>]
 
         Starts the Enforcer plugin.  <chanserv> is the nick for the chanserv
-        aspect of Services (it defaults to ChanServ).  <revenge> is whether to
-        be *really* nasty to people who break the rules (it's often referred
-        to in other bots as 'bitch mode.')  It defaults to True.
+        aspect of Services (it defaults to ChanServ).
         """
         self.topics = {}
-        (chanserv, revenge) = privmsgs.getArgs(args, required=0, optional=2)
+        chanserv = privmsgs.getArgs(args, required=0, optional=2)
         self.chanserv = chanserv or 'ChanServ'
         self.started = True
-        revenge = revenge.capitalize()
-        if revenge == 'True' or revenge == '':
-            self.revenge = True
-        elif revenge == 'False':
-            self.revenge = False
-        else:
-            irc.error(msg,'Possible values for revenge are "True" and "False"')
-            return
         for channel in irc.state.channels:
             irc.queueMsg(ircmsgs.topic(channel))
         irc.reply(msg, conf.replySuccess)
@@ -135,7 +129,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
                                        (_chanCap(channel, 'op'),
                                         _chanCap(channel, 'topic'))):
             irc.queueMsg(ircmsgs.topic(channel, self.topics[channel]))
-            if self.revenge:
+            if self.configurables.get('revenge', channel):
                 irc.queueMsg(ircmsgs.kick(channel, msg.nick,
                                       conf.replyNoCapability % \
                                       _chanCap(channel, 'topic')))
@@ -178,7 +172,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
                     irc.queueMsg(ircmsgs.invite(channel, msg.args[1]))
             if deop:
                 deop = False
-                if self.revenge:
+                if self.configurables.get('revenge', channel):
                     self._revenge(irc, channel, msg.prefix)
                 else:
                     irc.queueMsg(ircmsgs.deop(channel, msg.nick))
@@ -214,7 +208,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
                     hostmask = irc.state.nickToHostmask(value)
                     if self._isProtected(channel, hostmask):
                         irc.queueMsg(ircmsgs.op(channel, value))
-                        if self.revenge:
+                        if self.configurables.get('revenge', channel):
                             self._revenge(irc, channel, msg.prefix)
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
@@ -222,7 +216,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
                     hostmask = irc.state.nickToHostmask(value)
                     if self._isProtected(channel, hostmask):
                         irc.queueMsg(ircmsgs.halfop(channel, value))
-                        if self.revenge:
+                        if self.configurables.get('revenge', channel):
                             self._revenge(irc, channel, msg.prefix)
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
@@ -230,7 +224,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
                     hostmask = irc.state.nickToHostmask(value)
                     if self._isProtected(channel, hostmask):
                         irc.queueMsg(ircmsgs.voice(channel, value))
-                        if self.revenge:
+                        if self.configurables.get('revenge', channel):
                             self._revenge(irc, channel, msg.prefix)
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
@@ -239,7 +233,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
                     if not ircdb.checkCapability(msg.prefix,
                                                  _chanCap(channel, 'op')):
                         irc.queueMsg(ircmsgs.unban(channel, value))
-                        if self.revenge:
+                        if self.configurables.get('revenge', channel):
                             self._revenge(irc, channel, msg.prefix)
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
