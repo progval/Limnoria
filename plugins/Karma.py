@@ -34,6 +34,9 @@ Plugin for handling Karma stuff for a channel.
 """
 
 __revision__ = "$Id$"
+__contributors__ = {
+    supybot.authors.jamessan: ['allowUnaddressedKarma'],
+    }
 
 import os
 import sets
@@ -42,6 +45,7 @@ from itertools import imap
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.plugins as plugins
+import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -70,6 +74,9 @@ conf.registerChannelValue(conf.supybot.plugins.Karma, 'mostDisplay',
 conf.registerChannelValue(conf.supybot.plugins.Karma, 'allowSelfRating',
     registry.Boolean(False, """Determines whether users can adjust the karma
     of their nick."""))
+conf.registerChannelValue(conf.supybot.plugins.Karma, 'allowUnaddressedKarma',
+    registry.Boolean(False, """Determines whether the bot will
+    increase/decrease karma without being addressed."""))
 
 class SqliteKarmaDB(object):
     def _getDb(self, channel):
@@ -200,10 +207,10 @@ def KarmaDB():
     return SqliteKarmaDB()
 
 class Karma(callbacks.PrivmsgCommandAndRegexp):
-    addressedRegexps = ['increaseKarma', 'decreaseKarma']
+    regexps = ['increaseKarma', 'decreaseKarma']
     def __init__(self):
         self.db = KarmaDB()
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        super(Karma, self).__init__()
 
     def karma(self, irc, msg, args):
         """[<channel>] [<thing> [<thing> ...]]
@@ -294,12 +301,34 @@ class Karma(callbacks.PrivmsgCommandAndRegexp):
         irc.replySuccess()
     clear = privmsgs.checkChannelCapability(clear, 'op')
 
+    def getName(self, nick, msg, match):
+        addressed = callbacks.addressed(nick, msg)
+        name = callbacks.addressed(nick,
+                   ircmsgs.IrcMsg(prefix='',
+                                  args=(msg.args[0], match.group(1)),
+                                  msg=msg))
+        if not name:
+            name = match.group(1)
+        if not addressed:
+            if not self.registryValue('allowUnaddressedKarma'):
+                return ''
+            if not msg.args[1].startswith(match.group(1)):
+                return ''
+            name = match.group(1)
+        elif addressed:
+            if not addressed.startswith(name):
+                return ''
+        name = name.strip('()')
+        return name
+
     def increaseKarma(self, irc, msg, match):
-        r"^(\S+|\(.+\))\+\+\s*$"
+        r"(\S+|\(.+\))\+\+\s*$"
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
-        name = match.group(1).strip('()')
+        name = self.getName(irc.nick, msg, match)
+        if not name:
+            return
         if not self.registryValue('allowSelfRating', msg.args[0]):
             if ircutils.strEqual(name, msg.nick):
                 return
@@ -308,11 +337,13 @@ class Karma(callbacks.PrivmsgCommandAndRegexp):
             irc.replySuccess()
 
     def decreaseKarma(self, irc, msg, match):
-        r"^(\S+|\(.+\))--\s*$"
+        r"(\S+|\(.+\))--\s*$"
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
-        name = match.group(1).strip('()')
+        name = self.getName(irc.nick, msg, match)
+        if not name:
+            return
         if not self.registryValue('allowSelfRating', msg.args[0]):
             if ircutils.strEqual(name, msg.nick):
                 return

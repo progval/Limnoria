@@ -39,7 +39,7 @@ except ImportError:
     sqlite = None
 
 if sqlite is not None:
-    class KarmaTestCase(ChannelPluginTestCase, PluginDocumentation):
+    class KarmaTestCase(ChannelPluginTestCase):
         plugins = ('Karma',)
         def testKarma(self):
             self.assertError('karma')
@@ -193,6 +193,24 @@ if sqlite is not None:
         def testMultiWordKarma(self):
             self.assertNoResponse('(foo bar)++', 1)
             self.assertRegexp('karma "foo bar"', '1')
+
+        def testUnaddressedKarma(self):
+            karma = conf.supybot.plugins.Karma
+            resp = karma.response()
+            unaddressed = karma.allowUnaddressedKarma()
+            try:
+                karma.response.setValue(True)
+                karma.allowUnaddressedKarma.setValue(True)
+                for m in ('++', '--'):
+                    self.assertRegexp('foo%s' % m, 'operation')
+                    self.assertSnarfRegexp('foo%s' % m, 'operation')
+                    self.assertNoResponse('foo bar%s' % m)
+                    self.assertSnarfNoResponse('foo bar%s' % m)
+                    self.assertRegexp('(foo bar)%s' % m, 'operation')
+                    self.assertSnarfRegexp('(foo bar)%s' % m, 'operation')
+            finally:
+                karma.response.setValue(resp)
+                karma.allowUnaddressedKarma.setValue(unaddressed)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
