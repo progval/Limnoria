@@ -51,7 +51,7 @@ if sqlite is not None:
             _ = self.irc.takeMsg()
             #ircdb.users.getUser('t3st').addCapability('admin')
             ircdb.users.getUser('t3st').addCapability('#test.op')
-            self.assertNotError('fundb config #test show-ids on')
+            conf.supybot.plugins.FunDB.showIds.setValue(True)
 
         def testAdd(self):
             self.assertError('add l4rt foo')
@@ -69,7 +69,7 @@ if sqlite is not None:
                                 '(#1)\x01')
             self.assertResponse('lart jemfinch',
                                 '\x01ACTION jabs jemfinch (#1)\x01')
-            self.assertRegexp('num lart', 'currently 1 lart')
+            self.assertRegexp('stats lart', 'currently 1 lart')
             self.assertNotError('add lart shoots $who')
             self.assertHelp('lart 1')
             self.assertResponse('lart 1 jemfinch',
@@ -79,11 +79,11 @@ if sqlite is not None:
                                 '(#2)\x01')
             self.assertNotRegexp('lart %s' % self.irc.nick, self.irc.nick)
             self.assertNotError('remove lart 1')
-            self.assertRegexp('num lart', 'currently 1 lart')
+            self.assertRegexp('stats lart', 'currently 1 lart')
             self.assertResponse('lart jemfinch',
                                 '\x01ACTION shoots jemfinch (#2)\x01')
             self.assertNotError('remove lart 2')
-            self.assertRegexp('num lart', 'currently 0')
+            self.assertRegexp('stats lart', 'currently 0')
             self.assertError('lart jemfinch')
 
         def testLartAndPraiseRemoveTrailingPeriods(self):
@@ -126,23 +126,23 @@ if sqlite is not None:
             self.assertNotError('add excuse Power failure')
             self.assertResponse('excuse', 'Power failure (#1)')
             self.assertError('excuse a few random words')
-            self.assertRegexp('num excuse', r'currently 1 excuse')
+            self.assertRegexp('stats excuse', r'currently 1 excuse')
             self.assertNotError('add excuse /pub/lunch')
             self.assertResponse('excuse 1', 'Power failure (#1)')
             self.assertNotError('remove excuse 1')
-            self.assertRegexp('num excuse', r'currently 1 excuse')
+            self.assertRegexp('stats excuse', r'currently 1 excuse')
             self.assertResponse('excuse', '/pub/lunch (#2)')
             self.assertNotError('remove excuse 2')
-            self.assertRegexp('num excuse', r'currently 0')
+            self.assertRegexp('stats excuse', r'currently 0')
             self.assertError('excuse')
 
         def testInsult(self):
             self.assertNotError('add insult Fatty McFatty')
             self.assertResponse('insult jemfinch',
                                 'jemfinch: Fatty McFatty (#1)')
-            self.assertRegexp('num insult', r'currently 1')
+            self.assertRegexp('stats insult', r'currently 1')
             self.assertNotError('remove insult 1')
-            self.assertRegexp('num insult', 'currently 0')
+            self.assertRegexp('stats insult', 'currently 0')
             self.assertError('insult jemfinch')
 
         def testPraise(self):
@@ -153,7 +153,7 @@ if sqlite is not None:
                                 '(#1)\x01')
             self.assertResponse('praise jemfinch',
                                 '\x01ACTION pets jemfinch (#1)\x01')
-            self.assertRegexp('num praise', r'currently 1')
+            self.assertRegexp('stats praise', r'currently 1')
             self.assertNotError('add praise gives $who a cookie')
             self.assertHelp('praise 1')
             self.assertResponse('praise 1 jemfinch',
@@ -162,11 +162,11 @@ if sqlite is not None:
                                 '\x01ACTION gives jemfinch a cookie for being '
                                 'him (#2)\x01')
             self.assertNotError('remove praise 1')
-            self.assertRegexp('num praise', r'currently 1')
+            self.assertRegexp('stats praise', r'currently 1')
             self.assertResponse('praise jemfinch',
                                 '\x01ACTION gives jemfinch a cookie (#2)\x01')
             self.assertNotError('remove praise 2')
-            self.assertRegexp('num praise', r'currently 0')
+            self.assertRegexp('stats praise', r'currently 0')
             self.assertError('praise jemfinch')
 
         def testInfo(self):
@@ -176,20 +176,20 @@ if sqlite is not None:
             self.assertError('info fake 1')
 
         def testGet(self):
-            self.assertError('get fake 1')
-            self.assertError('get lart foo')
+            self.assertError('fundb get fake 1')
+            self.assertError('fundb get lart foo')
             self.assertNotError('add praise pets $who')
-            self.assertResponse('get praise 1', 'pets $who')
+            self.assertResponse('fundb get praise 1', 'pets $who')
             self.assertNotError('remove praise 1')
-            self.assertError('get praise 1')
+            self.assertError('fundb get praise 1')
 
-        def testNum(self):
-            self.assertError('num fake')
-            self.assertError('num 1')
-            self.assertRegexp('num praise', r'currently 0')
-            self.assertRegexp('num lart',   r'currently 0')
-            self.assertRegexp('num excuse', r'currently 0')
-            self.assertRegexp('num insult', r'currently 0')
+        def testStats(self):
+            self.assertError('stats fake')
+            self.assertError('stats 1')
+            self.assertRegexp('stats praise', r'currently 0')
+            self.assertRegexp('stats lart',   r'currently 0')
+            self.assertRegexp('stats excuse', r'currently 0')
+            self.assertRegexp('stats insult', r'currently 0')
 
         def testChange(self):
             self.assertNotError('add praise teaches $who perl')
@@ -201,7 +201,7 @@ if sqlite is not None:
         def testConfig(self):
             self.assertNotError('add praise teaches $who perl')
             self.assertRegexp('praise jemfinch', r'\(#1\)')
-            self.assertNotError('fundb config show-ids off')
+            conf.supybot.plugins.FunDB.showIds.setValue(False)
             self.assertNotRegexp('praise jemfinch', r'\(#1\)')
 
         def testLartPraiseReasonPeriod(self):

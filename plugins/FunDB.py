@@ -45,6 +45,8 @@ import string
 import os.path
 from itertools import imap
 
+import registry
+
 import conf
 import ircdb
 import utils
@@ -53,7 +55,6 @@ import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
-import configurable
 
 try:
     import sqlite
@@ -83,27 +84,25 @@ tableCreateStatements = {
                    added_by TEXT
                    )""",),
     }
+
+conf.registerPlugin('FunDB')
+conf.registerChannelValue(conf.supybot.plugins.FunDB, 'showIds',
+    registry.Boolean(True, """Determine whether the bot will show the id of an
+    excuse/insult/praise/lart."""))
     
-class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
+class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
     """
     Contains the 'fun' commands that require a database.  Currently includes
     database-backed commands for crossword puzzle solving, anagram searching,
     larting, praising, excusing, and insulting.
     """
-    configurables = configurable.Dictionary(
-        [('show-ids', configurable.BoolType, False,
-          """Determines whether the bot will show the id of an
-          excuse/insult/praise/lart.""")]
-    )
     _tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
 
     def die(self):
         callbacks.Privmsg.die(self)
-        configurable.Mixin.die(self)
         plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, dbfilename, replace=False):
@@ -346,7 +345,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
             nick = re.sub(r'\bme\b', msg.nick, nick)
             nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
             insult = insult.replace('$who', nick)
-            showid = self.configurables.get('show-ids', channel)
+            showid = self.registryValue('showIds', channel)
             irc.reply(self._formatResponse(insult, id, showid), to=nick)
 
     def excuse(self, irc, msg, args):
@@ -380,7 +379,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
             irc.error('There are currently no available excuses.')
         else:
             (id, excuse) = cursor.fetchone()
-            showid = self.configurables.get('show-ids', channel)
+            showid = self.registryValue('showIds', channel)
             irc.reply(self._formatResponse(excuse, id, showid))
 
     def lart(self, irc, msg, args):
@@ -435,7 +434,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
             if reason:
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
-            showid = self.configurables.get('show-ids', channel)
+            showid = self.registryValue('showIds', channel)
             irc.reply(self._formatResponse(s, id, showid), action=True)
 
     def praise(self, irc, msg, args):
@@ -489,7 +488,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
             if reason:
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
-            showid = self.configurables.get('show-ids', channel)
+            showid = self.registryValue('showIds', channel)
             irc.reply(self._formatResponse(s, id, showid), action=True)
 
 Class = FunDB
