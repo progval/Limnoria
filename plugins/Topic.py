@@ -141,6 +141,7 @@ class Topic(callbacks.Privmsg):
         self.undos = ircutils.IrcDict()
         self.redos = ircutils.IrcDict()
         self.lastTopics = ircutils.IrcDict()
+        self.watchingFor332 = ircutils.IrcSet()
 
     def _splitTopic(self, topic, channel):
         separator = self.registryValue('separator', channel)
@@ -200,7 +201,7 @@ class Topic(callbacks.Privmsg):
     def do332(self, irc, msg):
         if msg.args[1] in self.watchingFor332:
             self.watchingFor332.remove(msg.args[1])
-            
+
     def topic(self, irc, msg, args, channel):
         """[<channel>]
 
