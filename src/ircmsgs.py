@@ -81,8 +81,10 @@ class IrcMsg(object):
 
     IrcMsg(prefix='', args=(newSource, otherMsg.args[1]), msg=otherMsg)
     """
-    __slots__ = ('args', 'command', 'host', 'nick', 'prefix', 'user',
-                 '_hash', '_str', '_repr', '_len')
+    # It's too useful to be able to tag IrcMsg objects with extra, unforeseen
+    # data.  Goodbye, __slots__.
+    #     __slots__ = ('args', 'command', 'host', 'nick', 'prefix', 'user',
+    #                  '_hash', '_str', '_repr', '_len')
     def __init__(self, s='', command='', args=(), prefix='', msg=None):
         assert not (msg and s), 'IrcMsg.__init__ cannot accept both s and msg'
         if not s and not command and not msg:

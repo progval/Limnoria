@@ -103,7 +103,6 @@ class Relay(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self._whois = {}
-        self.relayedMsgs = {}
         self.lastmsg = {}
         self.ircstates = {}
         self.last20Privmsgs = ircutils.IrcDict()
@@ -426,18 +425,12 @@ class Relay(callbacks.Privmsg):
             s = '%s%s%s%s %s' % (lt, nick, network, gt, msg.args[1])
         return s
 
-    def _addRelayedMsg(self, msg):
-        try:
-            self.relayedMsgs[msg] += 1
-        except KeyError:
-            self.relayedMsgs[msg] = 1
-
     def _sendToOthers(self, irc, msg):
         assert msg.command == 'PRIVMSG' or msg.command == 'TOPIC'
         for otherIrc in world.ircs:
             if otherIrc != irc and not otherIrc.zombie:
                 if msg.args[0] in otherIrc.state.channels:
-                    self._addRelayedMsg(msg)
+                    msg.relayedMsg = True
                     otherIrc.queueMsg(msg)
 
     def _detectRelays(self, irc, msg, channel):
@@ -592,19 +585,10 @@ class Relay(callbacks.Privmsg):
                 m = ircmsgs.privmsg(channel, s)
                 self._sendToOthers(irc, m)
 
-    def _isRelayedPrivmsg(self, msg):
-        if msg in self.relayedMsgs:
-            self.relayedMsgs[msg] -= 1
-            if not self.relayedMsgs[msg]:
-                del self.relayedMsgs[msg]
-            return True
-        else:
-            return False
-
     def outFilter(self, irc, msg):
         irc = self._getRealIrc(irc)
         if msg.command == 'PRIVMSG':
-            if not self._isRelayedPrivmsg(msg):
+            if not hasattr(msg, 'relayedMsg'):
                 channel = msg.args[0]
                 if channel in self.registryValue('channels'):
                     network = self._getIrcName(irc)

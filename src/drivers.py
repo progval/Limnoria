@@ -209,6 +209,7 @@ def parseMsg(s):
     if s:
         msg = ircmsgs.IrcMsg(s)
         log.stat('Time to parse IrcMsg: %s', time.time()-start)
+        msg.receivedAt = start
         return msg
     else:
         return None
