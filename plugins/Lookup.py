@@ -355,14 +355,19 @@ class Lookup(callbacks.Privmsg):
             args.remove('--values')
         (options, rest) = getopt.getopt(args, '', ['regexp='])
         (name, globs) = privmsgs.getArgs(rest, optional=1)
-        try:
-            results = self.db.searchResults(name, options, globs, column)
-        except dbi.NoRecordError:
-            irc.reply('No entries in %s matched that query.' % name)
-        lookups = ['%s: %s' % (item[0], self._shrink(item[1]))
-                   for item in results]
-        irc.reply(utils.commaAndify(lookups))
-
+        if self.db.checkLookup(name):
+            try:
+                results = self.db.searchResults(name, options, globs, column)
+                lookups = ['%s: %s' % (item[0], self._shrink(item[1]))
+                           for item in results]
+                irc.reply(utils.commaAndify(lookups))
+            except dbi.NoRecordError:
+                irc.reply('No entries in %s matched that query.' % name)
+                return
+        else:
+            irc.reply('I don\'t have a domain %s' % name)
+            return
+            
     def _lookup(self, irc, msg, args):
         """<name> <key>
 
