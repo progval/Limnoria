@@ -177,7 +177,7 @@ def urlSnarfer(f):
         while _snarfed and _snarfed[0][2] < cutoff:
             _snarfed.dequeue()
         url = match.group(0)
-        for (qUrl, target, when) in q:
+        for (qUrl, target, when) in _snarfed:
             if url == qUrl and target == channel and not world.testing:
                 self.log.info('Not snarfing %s from %r: in queue.',
                               url, msg.prefix)
