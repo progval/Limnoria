@@ -820,13 +820,24 @@ class Privmsg(irclib.IrcCallback):
     def registryValue(self, name, channel=None):
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
-        names = name.split('.')
+        names = registry.split(name)
         for name in names:
             group = group.get(name)
         if channel is None:
             return group()
         else:
             return group.get(channel)()
+
+    def setRegistryValue(self, name, value, channel=None):
+        plugin = self.name()
+        group = conf.supybot.plugins.get(plugin)
+        names = registry.split(name)
+        for name in names:
+            group = group.get(name)
+        if channel is None:
+            group.setValue(value)
+        else:
+            group.get(channel).setValue(value)
 
     def userValue(self, name, prefixOrName, default=None):
         try:
@@ -835,7 +846,7 @@ class Privmsg(irclib.IrcCallback):
             return None
         plugin = self.name()
         group = conf.users.plugins.get(plugin)
-        names = name.split('.')
+        names = registry.split(name)
         for name in names:
             group = group.get(name)
         return group.get(id)()
@@ -851,7 +862,7 @@ class Privmsg(irclib.IrcCallback):
                 raise
         plugin = self.name()
         group = conf.users.plugins.get(plugin)
-        names = name.split('.')
+        names = registry.split(name)
         for name in names:
             group = group.get(name)
         group = group.get(id)
