@@ -713,13 +713,13 @@ registerGlobalValue(supybot.directories, 'plugins',
     [config supybot.directories.plugins], newPluginDirectory'."""))
 
 registerGroup(supybot, 'plugins', orderAlphabetically=True)
-registerGlobalValue(supybot.plugins, 'alwaysLoadDefault',
+registerGlobalValue(supybot.plugins, 'alwaysLoadImportant',
     registry.Boolean(True, """Determines whether the bot will always load
-    the default plugins (Admin, Channel, Config, Misc, Owner, and User)
-    regardless of what their configured state is.  Generally, if these
-    plugins are configured not to load, you didn't do it on purpose, and
-    you still want them to load.  Users who don't want to load these plugins
-    are smart enough to change the value of this variable appropriately :)"""))
+    important plugins (Admin, Channel, Config, Misc, Owner, and User)
+    regardless of what their configured state is.  Generally, if these plugins
+    are configured not to load, you didn't do it on purpose, and you still
+    want them to load.  Users who don't want to load these plugins are smart
+    enough to change the value of this variable appropriately :)"""))
 
 ###
 # supybot.databases.  For stuff relating to Supybot's databases (duh!)
