@@ -208,20 +208,22 @@ class IrcStateTestCase(SupyTestCase):
         prefix = 'nick!user@host'
     irc = FakeIrc()
     def testHistory(self):
-        oldconfmaxhistory = str(conf.supybot.maxHistoryLength)
-        conf.supybot.maxHistoryLength.set('10')
+        oldconfmaxhistory = conf.supybot.protocols.irc.maxHistoryLength()
+        conf.supybot.protocols.irc.maxHistoryLength.setValue(10)
         state = irclib.IrcState()
         for msg in msgs:
             try:
                 state.addMsg(self.irc, msg)
             except Exception:
                 pass
-            self.failIf(len(state.history)>conf.supybot.maxHistoryLength())
+            self.failIf(len(state.history) >
+                        conf.supybot.protocols.irc.maxHistoryLength())
         self.assertEqual(len(state.history),
-                         conf.supybot.maxHistoryLength())
+                         conf.supybot.protocols.irc.maxHistoryLength())
         self.assertEqual(list(state.history),
-                         msgs[len(msgs)-conf.supybot.maxHistoryLength():])
-        conf.supybot.maxHistoryLength.set(oldconfmaxhistory)
+                         msgs[len(msgs) -
+                              conf.supybot.protocols.irc.maxHistoryLength():])
+        conf.supybot.protocols.irc.maxHistoryLength.setValue(oldconfmaxhistory)
 
     def testEmptyTopic(self):
         state = irclib.IrcState()
