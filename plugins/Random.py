@@ -35,6 +35,7 @@ Lots of stuff relating to random numbers.
 
 import supybot.plugins as plugins
 
+import time
 import random
 
 import supybot.conf as conf
@@ -56,20 +57,28 @@ def configure(advanced):
             seed = something('What seed?')
         conf.supybot.plugins.Random.seed.setValue(seed)
 
-class Seed(registry.Value):
-    def set(self, s):
-        try:
-            self.setValue(long(s))
-        except ValueError:
-            raise registry.InvalidRegistryValue, 'Value must be an integer.'
+class Seed(registry.Integer):
+    def __call__(self):
+        v = registry.Integer.__call__(self)
+        if not v:
+            v = int(time.time())
+        return v
 
+    def serialize(self):
+        # We do this so if it's 0, it doesn't store a real time.
+        return str(self.value)
+        
 conf.registerPlugin('Random')
 conf.registerGlobalValue(conf.supybot.plugins.Random, 'seed', Seed(0, """
-Sets the seed of the random number generator.  The seen must be a valid
-Python integer or long."""))
+Sets the seed of the random number generator.  The seed must be a valid
+Python integer or long.  If the seed is 0, a seed based on the current
+time will be used."""))
 
 class Random(callbacks.Privmsg):
-    rng = random.Random()
+    def __init__(self):
+        self.rng = random.Random(self.registryValue('seed'))
+        super(Random, self).__init__()
+
     def random(self, irc, msg, args):
         """takes no arguments
 
@@ -89,7 +98,7 @@ class Random(callbacks.Privmsg):
             seed = long(seed)
         except ValueError:
             # It wasn't a valid long!
-            irc.error('<seed> must be a valid int or long.')
+            irc.errorInvalid('number', seed)
             return
         self.rng.seed(seed)
         irc.replySuccess()
@@ -118,18 +127,20 @@ class Random(callbacks.Privmsg):
         of arguments given.
         """
         try:
-            n = int(args.pop(0))
+            n = args.pop(0)
+            n = int(n)
         except IndexError: # raised by .pop(0)
             raise callbacks.ArgumentError
         except ValueError:
-            irc.error('<number of items> must be an integer.')
+            irc.errorInvalid('number', n)
             return
         if n > len(args):
             irc.error('<number of items> must be less than the number '
                       'of arguments.')
             return
         sample = self.rng.sample(args, n)
-        irc.reply(utils.commaAndify(map(repr, sample)))
+        sample.sort()
+        irc.reply(utils.commaAndify(sample))
 
     def diceroll(self, irc, msg, args):
         """[<number of sides>]
@@ -146,8 +157,7 @@ class Random(callbacks.Privmsg):
             irc.error('Dice have integer numbers of sides.  Use one.')
             return
         s = 'rolls a %s' % self.rng.randrange(1, n)
-        irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), s))
-        raise callbacks.CannotNest
+        irc.reply(s, action=True)
 
 Class = Random
 
