@@ -31,19 +31,7 @@
 
 """
 Provides basic functionality for handling RSS/RDF feeds.  Depends on the Alias
-module for user-friendliness: instead of:
-
-rsstitles http://slashdot.org/slashdot.rss
-
-It'll make the alias:
-
-alias slashdot rsstitles http://slashdot.org/slashdot.rss
-
-And you'll be able to call the command like this:
-
-slashdot
-
-Also includes a function for getting info about a specific feed, rssinfo.
+module for user-friendliness.
 """
 
 from baseplugin import *
