@@ -48,6 +48,9 @@ import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.unpreserve as unpreserve
 
+def isCapability(capability):
+    return len(capability.split(None, 1)) == 1
+
 def fromChannelCapability(capability):
     """Returns a (channel, capability) tuple from a channel capability."""
     assert isChannelCapability(capability)
@@ -57,24 +60,28 @@ def isChannelCapability(capability):
     """Returns True if capability is a channel capability; False otherwise."""
     if ',' in capability:
         (channel, capability) = capability.split(',', 1)
-        return ircutils.isChannel(channel)
+        return ircutils.isChannel(channel) and isCapability(capability)
     else:
         return False
 
 def makeChannelCapability(channel, capability):
     """Makes a channel capability given a channel and a capability."""
+    assert isCapability(capability)
+    assert ircutils.isChannel(channel)
     return '%s,%s' % (channel, capability)
 
 def isAntiCapability(capability):
     """Returns True if capability is an anticapability; False otherwise."""
     if isChannelCapability(capability):
         (_, capability) = fromChannelCapability(capability)
-    return capability and capability[0] == '-'
+    return isCapability(capability) and capability[0] == '-'
 
 def makeAntiCapability(capability):
     """Returns the anticapability of a given capability."""
-    assert not isAntiCapability(capability), 'makeAntiCapability does not ' \
-           'work on anticapabilities; you probably want invertCapability.'
+    assert isCapability(capability)
+    assert not isAntiCapability(capability), \
+           'makeAntiCapability does not work on anticapabilities.  ' \
+           'You probably want invertCapability.'
     if isChannelCapability(capability):
         (channel, capability) = fromChannelCapability(capability)
         return makeChannelCapability(channel, '-' + capability)
@@ -83,6 +90,7 @@ def makeAntiCapability(capability):
 
 def unAntiCapability(capability):
     """Takes an anticapability and returns the non-anti form."""
+    assert isCapability(capability)
     if not isAntiCapability(capability):
         raise ValueError, '%s is not an anti capability' % capability
     if isChannelCapability(capability):
@@ -93,10 +101,17 @@ def unAntiCapability(capability):
 
 def invertCapability(capability):
     """Make a capability into an anticapability and vice versa."""
+    assert isCapability(capability)
     if isAntiCapability(capability):
         return unAntiCapability(capability)
     else:
         return makeAntiCapability(capability)
+
+def canonicalCapability(capability):
+    assert isCapability(capability)
+    if callable(capability):
+        capability = capability()
+    return capability.lower()
 
 def unWildcardHostmask(hostmask):
     return hostmask.translate(string.ascii, '!@*?')
@@ -339,14 +354,17 @@ class IrcChannel(object):
 
     def addBan(self, hostmask, expiration=0):
         """Adds a ban to the channel banlist."""
+        assert ircutils.isUserHostmask(hostmask)
         self.bans[hostmask] = int(expiration)
 
     def removeBan(self, hostmask):
         """Removes a ban from the channel banlist."""
+        assert ircutils.isUserHostmask(hostmask)
         return self.bans.pop(hostmask)
 
     def checkBan(self, hostmask):
         """Checks whether a given hostmask is banned by the channel banlist."""
+        assert ircutils.isUserHostmask(hostmask)
         now = time.time()
         for (pattern, expiration) in self.bans.items():
             if now < expiration or not expiration:
@@ -359,18 +377,22 @@ class IrcChannel(object):
 
     def addIgnore(self, hostmask, expiration=0):
         """Adds an ignore to the channel ignore list."""
+        assert ircutils.isUserHostmask(hostmask)
         self.ignores[hostmask] = int(expiration)
 
     def removeIgnore(self, hostmask):
         """Removes an ignore from the channel ignore list."""
+        assert ircutils.isUserHostmask(hostmask)
         return self.ignores.pop(hostmask)
 
     def addCapability(self, capability):
         """Adds a capability to the channel's default capabilities."""
+        assert isCapability(capability)
         self.capabilities.add(capability)
 
     def removeCapability(self, capability):
         """Removes a capability from the channel's default capabilities."""
+        assert isCapability(capability)
         self.capabilities.remove(capability)
 
     def setDefaultCapability(self, b):
@@ -379,6 +401,7 @@ class IrcChannel(object):
 
     def checkCapability(self, capability):
         """Checks whether a certain capability is allowed by the channel."""
+        assert isCapability(capability)
         if capability in self.capabilities:
             return self.capabilities.check(capability)
         else:
@@ -389,6 +412,7 @@ class IrcChannel(object):
 
     def checkIgnored(self, hostmask):
         """Checks whether a given hostmask is to be ignored by the channel."""
+        assert ircutils.isUserHostmask(hostmask)
         if self.lobotomized:
             return True
         if self.checkBan(hostmask):
