@@ -210,8 +210,8 @@ def makePluginDocumentation(pluginWindow):
            deprecated,
            genNavbar('../../'),
            pluginName)))
-    attrs = [x for x in dir(plugin) if plugin.isCommand(x) and not
-             x.startswith('_')]
+    attrs = [x for x in dir(plugin) if plugin.isCommand(x) and
+             callbacks.canonicalName(x) == x]
     id.write('(%s)<br />\n' % ', '.join(attrs))
     for attr in attrs:
         if attr in commandDict:
