@@ -51,11 +51,13 @@ import registry
 import callbacks
 
 conf.registerPlugin('WordStats')
-conf.registerChannelValue(conf.supybot.plugins.WordStats,
-    'rankingDisplay',
+conf.registerChannelValue(conf.supybot.plugins.WordStats, 'rankingDisplay',
     registry.PositiveInteger(3, """Determines the maximum number of top users
     to show for a given wordstat when someone requests the wordstats for a
     particular word."""))
+conf.registerChannelValue(conf.supybot.plugins.WordStats, 'ignoreQueries',
+    registry.Boolean(False, """Determines whether the bot will ignore words
+    said in a channel if they're in a wordstats query (command)."""))
 
 nonAlphaNumeric = filter(lambda s: not s.isalnum(), string.ascii)
 
@@ -143,13 +145,15 @@ class WordStatsDB(plugins.ChannelUserDB):
             
     def addMsg(self, msg):
         assert msg.command == 'PRIVMSG'
+        (channel, text) = msg.args
+        if not ircutils.isChannel(channel):
+            return
+        text = text.strip().lower()
+        if not text:
+            return
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            return
-        (channel, text) = msg.args
-        text = text.strip().lower()
-        if not ircutils.isChannel(channel) or not text:
             return
         msgwords = [s.strip(nonAlphaNumeric) for s in text.split()]
         if channel not in self.channelWords:
@@ -172,6 +176,7 @@ class WordStats(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.db = WordStatsDB(filename)
+        self.queried = False
         world.flushers.append(self.db.flush)
 
     def die(self):
@@ -181,7 +186,17 @@ class WordStats(callbacks.Privmsg):
         callbacks.Privmsg.die(self)
 
     def doPrivmsg(self, irc, msg):
-        self.db.addMsg(msg)
+        # This depends on the fact that it's called after the command.
+        try:
+            channel = msg.args[0]
+            if ircutils.isChannel(channel):
+                if not (self.queried and
+                        self.registryValue('ignoreQueries', channel)):
+                    self.db.addMsg(msg)
+                else:
+                    self.log.debug('Queried and ignoring.')
+        finally:
+            self.queried = False
         
     def add(self, irc, msg, args):
         """[<channel>] <word>
@@ -196,6 +211,7 @@ class WordStats(callbacks.Privmsg):
             irc.error('<word> must not contain non-alphanumeric chars.')
             return
         self.db.addWord(channel, word)
+        self.queried = True
         irc.replySuccess()
 
     def remove(self, irc, msg, args):
@@ -260,12 +276,18 @@ class WordStats(callbacks.Privmsg):
             if count:
                 s = '%s has said %r %s.' % \
                     (user, word, utils.nItems('time', count))
+                self.queried = True
                 irc.reply(s)
             else:
                 irc.error('%s has never said %r.' % (user, word))
         elif arg1 in WordDict.fromkeys(self.db.getWords(channel)):
             word = arg1
             total = self.db.getTotalWordCount(channel, word)
+            if total == 0:
+                irc.reply('I\'m keeping stats on %s, but I haven\'t seen it '
+                          'in this channel.' % word)
+                self.queried = True
+                return
             n = self.registryValue('rankingDisplay', channel)
             try:
                 id = ircdb.users.getUserId(msg.prefix)
@@ -296,6 +318,7 @@ class WordStats(callbacks.Privmsg):
             else:
                 s = ''
             ret = '%s %s.%s' % (ret, utils.commaAndify(L), s)
+            self.queried = True
             irc.reply(ret)
         else:
             user = arg1

@@ -1,3 +1,7 @@
+	* Added supybot.plugins.WordStats.ignoreQueries, which, when
+	true, makes the bot ignore queries (and not increment its word
+	statistics).
+	
 	* Added the LogToIrc plugin, for sending logs to an IRC
 	channel or nick.  Useful for traceback notification and whatnot.
 	
