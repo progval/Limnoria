@@ -45,6 +45,7 @@ import urllib2
 import utils
 import debug
 import privmsgs
+import babelfish
 import callbacks
 import structures
 
@@ -363,7 +364,56 @@ class Http(callbacks.Privmsg):
             (numberOfPackages, len(responses), ', '.join(responses))
         irc.reply(msg, s)
 
+    _abbrevs = utils.abbrev(map(str.lower, babelfish.available_languages))
+    def translate(self, irc, msg, args):
+        """<from-language> <to-language> <phrase>
 
+        Returns the phrase translated to the new language. One of the
+        languages must be English.
+        """
+        (flang, tlang, phrase) = privmsgs.getArgs(args, 3)
+        flang = str.lower(flang)
+        tlang = str.lower(tlang)
+        if self._abbrevs.has_key(flang):
+            flang = self._abbrevs[flang]
+        if self._abbrevs.has_key(tlang):
+            tlang = self._abbrevs[tlang]
+        try:
+            trans = babelfish.translate(phrase, flang, tlang)
+            irc.reply(msg, trans)
+        except babelfish.LanguageNotAvailableError, e:
+            irc.reply(msg, 'Valid languages: %s.' %\
+                ', '.join(babelfish.available_languages))
+        except babelfish.BabelizerIOError, e:
+            irc.reply(msg, e.args[0])
+        except babelfish.BabelfishChangedError, e:
+            irc.reply(msg, 'Babelfish has foiled our plans by changing their\
+                format')
+
+    def babelize(self, irc, msg, args):
+        """<from-language> <to-language> <phrase>
+
+        Returns the phrase translated to the new language. This is done 12
+        times, or until the output doesn't change anymore.
+        """
+        (flang, tlang, phrase) = privmsgs.getArgs(args, 3)
+        flang = str.lower(flang)
+        tlang = str.lower(tlang)
+        if self._abbrevs.has_key(flang):
+            flang = self._abbrevs[flang]
+        if self._abbrevs.has_key(tlang):
+            tlang = self._abbrevs[tlang]
+        try:
+            trans = babelfish.babelize(phrase, flang, tlang)
+            irc.reply(msg, trans[-1])
+        except babelfish.LanguageNotAvailableError, e:
+            irc.reply(msg, 'Valid languages: %s.' %\
+                ', '.join(babelfish.available_languages))
+        except babelfish.BabelizerIOError, e:
+            irc.reply(msg, e.args[0])
+        except babelfish.BabelfishChangedError, e:
+            irc.reply(msg, 'Babelfish has foiled our plans by changing their\
+                format')
 
 Class = Http
 
