@@ -401,6 +401,18 @@ class Channel(callbacks.Privmsg):
         irc.replySuccess()
     unpermban = privmsgs.checkChannelCapability(unpermban, 'op')
 
+    def permbans(self, irc, msg, args, channel):
+        """[<channel>]
+
+        If you have the #channel,op capability, this will show you the
+        current permbans on #channel.
+        """
+        c = ircdb.channels.getChannel(channel)
+        if c.bans:
+            irc.reply(utils.commaAndify(map(utils.dqrepr, c.bans)))
+        else:
+            irc.reply('There are currently no permbans on %s' % channel)
+
     def ignore(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
 
