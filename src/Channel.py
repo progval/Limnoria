@@ -326,10 +326,12 @@ class Channel(callbacks.Privmsg):
         channel = channelarg or channel
         c = ircdb.channels.getChannel(channel)
         if len(c.ignores) == 0:
-            irc.reply(msg, 'I\'m not currently ignoring any hostmasks '
-                           'in %r' % channel)
-            return
-        irc.reply(msg, utils.commaAndify(imap(repr, c.ignores)))
+            s = 'I\'m not currently ignoring any hostmasks in %r' % channel
+            irc.reply(msg, s)
+        else:
+            L = c.ignores[:]
+            L.sort()
+            irc.reply(msg, utils.commaAndify(imap(repr, L)))
     ignores = privmsgs.checkChannelCapability(ignores, 'op')
 
 
@@ -448,6 +450,7 @@ class Channel(callbacks.Privmsg):
             if c.lobotomized:
                 L.append(channel)
         if L:
+            L.sort()
             s = 'I\'m currently lobotomized in %s.' % utils.commaAndify(L)
             irc.reply(msg, s)
         else:
