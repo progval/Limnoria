@@ -57,35 +57,58 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Poll')
 
 example = utils.wrapLines("""
-mooooo
+<G-LiTe> @load Poll
+<supybot> G-LiTe: The operation succeeded.
+<G-LiTe> @list Poll
+<supybot> G-LiTe: close, new, open, poll, results, vote
+<G-LiTe> @poll new Got milk?
+<supybot> G-LiTe: The operation succeeded. (poll #1)
+<G-LiTe> @poll results 1
+<supybot> G-LiTe: Results for poll #1: "Got milk?" by G-LiTe - There have been no votes on this poll yet.
+<G-LiTe> @poll vote 1 yes
+<supybot> G-LiTe: You voted Yes on poll #1.
+<G-LiTe> @poll results 1
+<supybot> G-LiTe: Results for poll #1: "Got milk?" by G-LiTe - Yes: 1 (100%), No: 0 (0%), Total votes: 1.
+<G-LiTe> @poll close 1
+<supybot> G-LiTe: The operation succeeded.
+<G-LiTe> @poll results 1
+<supybot> G-LiTe: Results for poll #1: "Got milk?" by G-LiTe - Yes: 1 (100%), No: 0 (0%), Total votes: 1. Poll is closed.
+<G-LiTe> @poll vote 1 no
+<supybot> G-LiTe: Error: That poll is closed.
+<G-LiTe> @poll open 384 1
+<supybot> G-LiTe: The operation succeeded.
+<G-LiTe> @poll vote 1 no
+<supybot> G-LiTe: Your vote on poll #1 has been updated to No.
+<G-LiTe> @poll results 1
+<supybot> G-LiTe: Results for poll #1: "Got milk?" by G-LiTe - Yes: 0 (0%), No: 1 (100%), Total votes: 1. Poll expires in 6 minutes and 17 seconds
 """)
 
 dbFilename = os.path.join(conf.dataDir, 'Poll.db')
 
-def makeDb(dbfilename, replace=False):
+def makeDb(dbfilename):
     if os.path.exists(dbfilename):
-        if replace:
-            os.remove(dbfilename)
-    db = sqlite.connect(dbfilename)
-    cursor = db.cursor()
-    try:
-        cursor.execute("""SELECT * FROM polls LIMIT 1""")
-    except sqlite.DatabaseError:
-        cursor.execute("""CREATE TABLE polls (
-                          id INTEGER PRIMARY KEY,
-                          question TEXT,
-                          started_by INTEGER,
-                          yes INTEGER,
-                          no INTEGER,
-                          expires TIMESTAMP)""")
-    try:
-        cursor.execute("""SELECT * FROM votes LIMIT 1""")
-    except sqlite.DatabaseError:
-        cursor.execute("""CREATE TABLE votes (
-                          user_id INTEGER,
-                          poll_id INTEGER,
-                          vote BOOLEAN)""")
-    db.commit()
+        db = sqlite.connect(dbfilename)
+    else:
+        db = sqlite.connect(dbfilename)
+        cursor = db.cursor()
+        try:
+            cursor.execute("""SELECT * FROM polls LIMIT 1""")
+        except sqlite.DatabaseError:
+            cursor.execute("""CREATE TABLE polls (
+                              id INTEGER PRIMARY KEY,
+                              question TEXT,
+                              started_by INTEGER,
+                              yes INTEGER,
+                              no INTEGER,
+                              expires TIMESTAMP)""")
+        try:
+            cursor.execute("""SELECT * FROM votes LIMIT 1""")
+        except sqlite.DatabaseError:
+            cursor.execute("""CREATE TABLE votes (
+                              user_id INTEGER,
+                              poll_id INTEGER,
+                              vote BOOLEAN)""")
+        db.commit()
     return db
 
 class Poll(callbacks.Privmsg):
@@ -98,7 +121,7 @@ class Poll(callbacks.Privmsg):
         
         Creates a new poll with the given question and optional lifespan.
         Without a lifespan the poll will never expire and accept voting
-        until it is closed or deleted.
+        until it is closed or removed.
         """
         (lifespan, question) = privmsgs.getArgs(args, optional=1)
         try:
@@ -133,7 +156,7 @@ class Poll(callbacks.Privmsg):
         
         Reopens a closed poll with the given <id> and optional lifespan.
         Without a lifespan the poll will never expire and accept voting
-        until it is closed or deleted.
+        until it is closed or removed.
         """
         (lifespan, id) = privmsgs.getArgs(args, optional=1)
         if not id:
@@ -177,25 +200,6 @@ class Poll(callbacks.Privmsg):
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
-    def delete(self, irc, msg, args):
-        """<id>
-        
-        Deletes the poll with the given <id> from the history (thus also 
-        closing it if it's still active).
-        """
-        id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error(msg, 'The <id> argument must be an integer.')
-            return
-        
-        cursor = self.db.cursor()
-        cursor.execute("""DELETE FROM polls WHERE id=%s""", id)
-        cursor.execute("""DELETE FROM votes WHERE poll_id=%s""", id)
-        self.db.commit()
-        irc.reply(msg, conf.replySuccess)
-
     def vote(self, irc, msg, args):
         """<id> <Yes,No>
         
@@ -221,7 +225,8 @@ class Poll(callbacks.Privmsg):
             return
         
         cursor = self.db.cursor()
-        cursor.execute("""SELECT yes, no, expires FROM polls WHERE id=%s""", id)
+        cursor.execute("""SELECT yes, no, expires
+                          FROM polls WHERE id=%s""", id)
         if cursor.rowcount == 0:
             irc.error(msg, 'There is no such poll.')
             return
@@ -304,9 +309,9 @@ class Poll(callbacks.Privmsg):
             if time.time() >= expires:
                 reply = '%s Poll is closed.' % reply
             else:
-                reply = '%s Poll expires on %s %s' % (reply,
-                        time.asctime(time.localtime(expires)),
-                        time.tzname[0])
+                expires -= time.time()
+                reply = '%s Poll expires in %s' % (reply,
+                        utils.timeElapsed(expires))
         irc.reply(msg, reply)
 
 

@@ -59,8 +59,6 @@ if sqlite is not None:
             self.assertError('poll vote 1 Yes')
             self.assertNotError('poll open 1')
             self.assertNotError('poll vote 1 Yes')
-            self.assertNotError('poll delete 1')
-            self.assertError('poll vote 1 No')
 
         def testOpen(self):
             self.assertNotError('poll open 1')
@@ -69,10 +67,6 @@ if sqlite is not None:
         def testClose(self):
             self.assertNotError('poll close 1')
             self.assertError('poll close blah')
-
-        def testDelete(self):
-            self.assertNotError('poll delete 1')
-            self.assertError('poll delete blah')
 
         def testVote(self):
             self.assertHelp('poll vote 1 blah')
