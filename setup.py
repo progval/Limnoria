@@ -45,21 +45,24 @@ import glob
 import shutil
 import os.path
 
+def normalizeWhitespace(s):
+    return ' '.join(s.split())
+
 try:
     from distutils.core import setup
     from distutils.sysconfig import get_python_lib
 except ImportError, e:
-    s = ' '.join("""Supybot requires the distutils package to install. This
-    package is normally included with Python, but for some unfathomable reason,
-    many distributions to take it out of standard Python and put it in another
-    package, usually caled 'python-dev' or python-devel' or something similar.
-    This is one of the dumbest things a distribution can do, because it means
-    that developers cannot rely on *STANDARD* Python modules to be present on
-    systems of that distribution. Complain to your distribution, and loudly.
-    If you how much of our time we've wasted telling people to install what
-    should be included by default with Python you'd understand why we're
-    unhappy about this.  Anyway, to reiterate, install the development package
-    for Python that your distribution supplies.""".split())
+    s = normalizeWhitespace("""Supybot requires the distutils package to
+    install. This package is normally included with Python, but for some
+    unfathomable reason, many distributions to take it out of standard Python
+    and put it in another package, usually caled 'python-dev' or python-devel'
+    or something similar. This is one of the dumbest things a distribution can
+    do, because it means that developers cannot rely on *STANDARD* Python
+    modules to be present on systems of that distribution. Complain to your
+    distribution, and loudly. If you how much of our time we've wasted telling
+    people to install what should be included by default with Python you'd
+    understand why we're unhappy about this.  Anyway, to reiterate, install the
+    development package for Python that your distribution supplies.""")
     sys.stderr.write(textwrap.fill(s))
     sys.exit(-1)
     
@@ -89,10 +92,11 @@ setup(
     author_email='jemfinch@users.sf.net',
     download_url='http://www.sf.net/project/showfiles.php?group_id=58965',
     description='A flexible and extensible Python IRC bot and framework.',
-    long_description="""A robust, full-featured Python IRC bot with a clean and
-    flexible plugin API.  Equipped with a complete ACL system for specifying
-    user permissions with as much as per-command granularity.  Batteries are
-    included in the form of numerous plugins already written.""",
+    long_description=normalizeWhitespace("""A robust, full-featured Python IRC
+    bot with a clean and flexible plugin API.  Equipped with a complete ACL
+    system for specifying user permissions with as much as per-command
+    granularity.  Batteries are included in the form of numerous plugins
+    already written."""),
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -113,12 +117,14 @@ setup(
               'supybot.others',
               'supybot.plugins',
               'supybot.others.dateutil',
+              'supybot.others.reverend',
               'supybot.others.SOAPpy',
               'supybot.others.SOAPpy.wstools',],
     package_dir={'supybot': 'src',
                  'supybot.others': 'others',
                  'supybot.plugins': 'plugins',
                  'supybot.others.dateutil': 'others/dateutil',
+                 'supybot.others.reverend': 'others/reverend',
                  'supybot.others.SOAPpy': 'others/SOAPpy',
                  'supybot.others.SOAPpy.wstools': 'others/SOAPpy/wstools',},
     scripts=['scripts/supybot',
