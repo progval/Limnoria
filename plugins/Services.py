@@ -65,7 +65,7 @@ class ValidNickOrEmptyString(registry.String):
         if v and not ircutils.isNick(v):
             raise registry.InvalidRegistryValue, \
                   'Value must be a valid nick or the empty string.'
-        self.value = v
+        registry.String.setValue(self, v)
             
 conf.registerPlugin('Services')
 # Not really ChannelValues: but we can have values for each network.  We

@@ -215,6 +215,10 @@ class Value(Group):
         own setValue."""
         self._lastModified = time.time()
         self.value = v
+        if self.supplyDefault:
+            for (name, v) in self.children.items():
+                if v.__class__ is self.X:
+                    self.unregister(name)
     
     def __str__(self):
         return repr(self())
