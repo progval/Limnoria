@@ -85,10 +85,15 @@ class ChannelDBHandler(object):
 
     def die(self):
         for db in self.dbCache.itervalues():
-            db.commit()
-            db.close()
+            try:
+                db.commit()
+            except AttributeError: # In case it's not an SQLite database.
+                pass
+            try:
+                db.close()
+            except AttributeError: # In case it doesn't have a close method.
+                pass
             del db
-
 
 
 class PeriodicFileDownloader(object):
@@ -127,7 +132,11 @@ class PeriodicFileDownloader(object):
         self.lastDownloaded = {}
         self.downloadedCounter = {}
         for filename in self.periodicFiles:
-            self.lastDownloaded[filename] = 0
+            if self.periodicFiles[filename][-1] is None:
+                fullPathname = os.path.join(conf.dataDir, filename)
+                self.lastDownloaded[filename] = os.stat(fullPathname).st_ctime
+            else:
+                self.lastDownloaded[filename] = 0
             self.currentlyDownloading = sets.Set()
             self.downloadedCounter[filename] = 0
             self.getFile(filename)
