@@ -53,7 +53,21 @@ import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.callbacks as callbacks
+
+
+conf.registerPlugin('Fun')
+conf.registerGroup(conf.supybot.plugins.Fun, 'levenshtein')
+conf.registerGlobalValue(conf.supybot.plugins.Fun.levenshtein, 'max',
+    registry.PositiveInteger(256, """Determines the maximum size of a string
+    given to the levenhstein command.  The levenshtein command uses an O(n**3)
+    algorithm, which means that with strings of length 256, it can take 1.5
+    seconds to finish; with strings of length 384, though, it can take 4
+    seconds to finihs, and with strings of much larger lengths, it takes more
+    and more time.  Using nested commands, strings can get quite large, hence
+    this variable, to limit the size of arguments passed to the levenshtein
+    command."""))
 
 class MyFunProxy(object):
     def reply(self, msg, s):
@@ -290,7 +304,8 @@ class Fun(callbacks.Privmsg):
         between <string1> and <string2>)
         """
         (s1, s2) = privmsgs.getArgs(args, required=2)
-        if len(s1) > 512 or len(s2) > 512:
+        max = self.registryValue('levenshtein.max')
+        if len(s1) > max or len(s2) > max:
             irc.error('Levenshtein distance is a complicated algorithm, try '
                       'it with some smaller inputs.')
         else:
