@@ -173,7 +173,7 @@ def msg(s, priority='low'):
 
 def printf(msg):
     if printf:
-        print '*** %s' % (msg)
+        print '*** ' + str(msg)
 
 def methodNamePrintf(obj, methodName):
     printf('%s: %s' % (obj.__class__.__name__, methodName))
