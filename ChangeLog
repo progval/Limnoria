@@ -1,3 +1,6 @@
+	* Added Anonymous, a plugin for anonymously saying things to a
+	channel.
+	
 	* Added Utilities.last, which replies with the last string
 	given.  This is useful for sequencing commands and then replying
 	with the output of the last commnad.
