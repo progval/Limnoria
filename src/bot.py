@@ -182,6 +182,9 @@ if __name__ == '__main__':
     if '-p' in sys.args:
         import profile, time
         profile.run('main()', '%i.prof' % time.time())
+    if '-O' in sys.args:
+        import psyco
+        psyco.full()
     else:
         main()
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
