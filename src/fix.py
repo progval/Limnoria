@@ -33,6 +33,8 @@
 Fixes stuff that Python should have but doesn't.
 """
 
+from __future__ import division
+
 __revision__ = "$Id$"
 
 __all__ = []
@@ -43,6 +45,21 @@ exported = ['ignore', 'catch', 'reviter', 'window', 'group',
 import new
 import string
 string.ascii = string.maketrans('', '')
+
+import random
+_choice = random.choice
+def choice(iterable):
+    if isinstance(iterable, list):
+        return _choice(iterable)
+    else:
+        n = 1
+        ret = None
+        for x in iterable:
+            if random.random() < 1/n:
+                ret = x
+            n += 1
+        return ret
+random.choice = choice
 
 curry = new.instancemethod
 
