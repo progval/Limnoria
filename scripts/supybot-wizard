@@ -498,6 +498,16 @@ def main():
         myPrint("""Here's some stuff you only get to choose if you're an
         advanced user :)""")
 
+        # showOnlySyntax
+        myPrint("""By default, when the bot receives a message with invalid
+        arguments, the bot returns the full help (syntax and description) of
+        the command.  If showOnlySyntax is set to True, though, the bot will
+        return just the syntax of the command.  Of course, the help will still
+        be available via the help command.""")
+        if yn('Would you like to show only the syntax of commands when '
+              'they\'re given invalid arguments?') == 'y':
+            configVariables['showOnlySyntax'] = True
+
         # replyWhenNotCommand
         myPrint("""By default, when people address your bot but don't give it
         a valid command, it'll respond with a message saying that they didn't

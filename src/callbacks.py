@@ -51,6 +51,7 @@ import string
 import inspect
 import textwrap
 import threading
+from itertools import imap, ifilter
 from cStringIO import StringIO
 
 import conf
@@ -116,6 +117,23 @@ def reply(msg, s, prefixName=True, private=False, notice=False):
 def error(msg, s):
     """Makes an error reply to msg with the appropriate error payload."""
     return reply(msg, 'Error: ' + s)
+
+def getHelp(method, name=None):
+    if name is None:
+        name = method.__name__
+    doclines = method.__doc__.splitlines()
+    s = '(%s %s)' % (name, doclines.pop(0))
+    if doclines:
+        doclines = imap(str.strip, ifilter(None, doclines))
+        help = ' '.join(doclines)
+        s = '%s -- %s' % (ircutils.bold(s), help)
+    return s
+
+def getSyntax(method, name=None):
+    if name is None:
+        name = method.__name__
+    doclines = method.__doc__.splitlines()
+    return '%s %s' % (name, doclines[0])
 
 class RateLimiter:
     """This class is used to rate limit replies to certain people, in order to
@@ -312,10 +330,12 @@ def formatArgumentError(method, name=None):
     if name is None:
         name = method.__name__
     if hasattr(method, '__doc__') and method.__doc__:
-        s = '%s %s' % (method.__name__, method.__doc__.splitlines()[0])
+        if conf.showOnlySyntax:
+            return getSyntax(method, name=name)
+        else:
+            return getHelp(method, name=name)
     else:
-        s = 'Invalid arguments for %s.' % method.__name__
-    return s
+        return 'Invalid arguments for %s.' % method.__name__
 
 class IrcObjectProxy:
     "A proxy object to allow proper nested of commands (even threaded ones)."

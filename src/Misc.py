@@ -180,26 +180,15 @@ class Misc(callbacks.Privmsg):
         This command gives a useful description of what <command> does.
         <plugin> is only necessary if the command is in more than one plugin.
         """
-        def helpFor(method):
-            doclines = method.__doc__.splitlines()
-            simplehelp = '(%s %s)' % (method.__name__, doclines.pop(0))
-            if doclines:
-                doclines = filter(None, doclines)
-                doclines = map(str.strip, doclines)
-                help = ' '.join(doclines)
-                s = '%s -- %s' % (ircutils.bold(simplehelp), help)
-                return s
-            else:
-                return 'That command has no help.  The syntax is: %s' % \
-                       simplehelp[1:-1]
         if len(args) > 1:
             cb = irc.getCallback(args[0])
             if cb is not None:
                 command = callbacks.canonicalName(privmsgs.getArgs(args[1:]))
+                command = command.lstrip(conf.prefixChars)
                 if hasattr(cb, 'isCommand') and cb.isCommand(command):
                     method = getattr(cb, command)
                     if hasattr(method, '__doc__') and method.__doc__ != None:
-                        irc.reply(msg, helpFor(method))
+                        irc.reply(msg, callbacks.getHelp(method))
                     else:
                         irc.error(msg, 'That command has no help.')
                 else:
@@ -224,9 +213,9 @@ class Misc(callbacks.Privmsg):
             cb = cbs[0]
             method = getattr(cb, command)
             if hasattr(method, '__doc__') and method.__doc__ is not None:
-                irc.reply(msg, helpFor(method))
+                irc.reply(msg, callbacks.getHelp(method))
             else:
-                irc.error(msg, '%s has no help or syntax description.'%command)
+                irc.error(msg, '%s has no help.' % command)
 
     def hostmask(self, irc, msg, args):
         """[<nick>]

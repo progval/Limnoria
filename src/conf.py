@@ -120,6 +120,14 @@ requireRegistration = False
 enablePipeSyntax = False
 
 ###
+# showOnlySyntax : Supybot normally returns the full help whenever a user
+#                  misuses a command.  If this option is set to True, the bot
+#                  will only return the syntax of the command (the first line
+#                  of the docstring) rather than the full help.
+###
+showOnlySyntax = False
+
+###
 # defaultCapabilities: Capabilities allowed to everyone by default.  You almost
 #                      certainly want to have !owner and !admin in here.
 ###
@@ -288,6 +296,7 @@ types = {
     'prefixChars': mystr,
     'detailedTracebacks': mybool,
     'driverModule': mystr,
+    'showOnlySyntax': mybool,
 }
 
 
