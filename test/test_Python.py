@@ -52,6 +52,7 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('pydoc logging.Logger')
         self.assertNotRegexp('pydoc str.replace', r"^'")
         self.assertNotError('pydoc os.path.expanduser')
+        self.assertNotRegexp('pydoc math.hypot', r'\)\.R')
 
     def testZen(self):
         self.assertNotError('zen')

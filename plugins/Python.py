@@ -95,7 +95,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         Returns the __doc__ string for a given Python function.
         """
         def normalize(s):
-            return utils.normalizeWhitespace(s.replace('\n\n', '.'))
+            return utils.normalizeWhitespace(s.replace('\n\n', '.  '))
         def getModule(name, path=pythonPath):
             if name in sys.modules:
                 return sys.modules[name]
