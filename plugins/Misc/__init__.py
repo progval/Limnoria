@@ -42,9 +42,7 @@ __author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
-__contributors__ = {
-    supybot.authors.skorobeus: ['contributors'],
-    }
+__contributors__ = {}
 
 import config
 import plugin

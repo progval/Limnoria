@@ -45,7 +45,9 @@ __author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
-__contributors__ = {}
+__contributors__ = {
+    supybot.authors.skorobeus: ['contributors'],
+    }
 
 import config
 # This had to be renamed because of stupid case-insensitivity issues.

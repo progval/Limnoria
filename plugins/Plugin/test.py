@@ -30,7 +30,46 @@
 from supybot.test import *
 
 class PluginTestCase(PluginTestCase):
-    plugins = ('Plugin',)
+    plugins = ('Plugin', 'Utilities')
+    def testPlugin(self):
+        self.assertRegexp('plugin plugin', 'available.*Plugin plugin')
+        self.assertResponse('echo [plugin plugin]', 'Plugin')
+
+    def testList(self):
+        self.assertRegexp('plugin list', 'Plugin.*Utilities')
+
+    def testHelp(self):
+        self.assertRegexp('plugin help plugin', 'manage their plugins')
+
+    def testAuthor(self):
+        self.assertRegexp('plugin author plugin', 'jemfinch')
+
+    def testContributors(self):
+        # Test ability to list contributors
+        self.assertNotError('contributors Plugin')
+        # Test ability to list contributions
+        # Verify that when a single command contribution has been made,
+        # the word "command" is properly not pluralized.
+        # Note: This will break if the listed person ever makes more than
+        # one contribution to the Plugin plugin
+        self.assertRegexp('contributors Plugin skorobeus', 'command')
+        # Test handling of pluralization of "command" when person has
+        # contributed more than one command to the plugin.
+        # -- Need to create this case, check it with the regexp 'commands'
+        # Test handling of invalid plugin
+        self.assertRegexp('contributors InvalidPlugin', 'not a valid plugin')
+        # Test handling of invalid person
+        self.assertRegexp('contributors Plugin noname',
+                          'not a registered contributor')
+        # Test handling of valid person with no contributions
+        # Note: This will break if the listed person ever makes a contribution
+        # to the Plugin plugin
+        self.assertRegexp('contributors Plugin bwp',
+                          'listed as a contributor')
+
+    def testContributorsIsCaseInsensitive(self):
+        self.assertNotError('contributors Plugin Skorobeus')
+        self.assertNotError('contributors Plugin sKoRoBeUs')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -106,33 +106,6 @@ class MiscTestCase(ChannelPluginTestCase):
     def testListIncludesDispatcherIfThereIsAnOriginalCommand(self):
         self.assertRegexp('list Dict', r'\bdict\b')
 
-    def testContributors(self):
-        # Test ability to list contributors
-        self.assertNotError('contributors Misc')
-        # Test ability to list contributions
-        # Verify that when a single command contribution has been made,
-        # the word "command" is properly not pluralized.
-        # Note: This will break if the listed person ever makes more than
-        # one contribution to the Misc plugin
-        self.assertRegexp('contributors Misc skorobeus', 'command')
-        # Test handling of pluralization of "command" when person has
-        # contributed more than one command to the plugin.
-        # -- Need to create this case, check it with the regexp 'commands'
-        # Test handling of invalid plugin
-        self.assertRegexp('contributors InvalidPlugin', 'not a valid plugin')
-        # Test handling of invalid person
-        self.assertRegexp('contributors Misc noname',
-                          'not a registered contributor')
-        # Test handling of valid person with no contributions
-        # Note: This will break if the listed person ever makes a contribution
-        # to the Misc plugin
-        self.assertRegexp('contributors Misc bwp',
-                          'listed as a contributor')
-
-    def testContributorsIsCaseInsensitive(self):
-        self.assertNotError('contributors Misc Skorobeus')
-        self.assertNotError('contributors Misc sKoRoBeUs')
-
     if network:
         def testVersion(self):
             print '*** This test should start passing when we have our '\
@@ -141,10 +114,6 @@ class MiscTestCase(ChannelPluginTestCase):
 
     def testSource(self):
         self.assertNotError('source')
-
-    def testPlugin(self):
-        self.assertRegexp('plugin plugin', 'available.*Misc')
-        self.assertResponse('echo [plugin plugin]', 'Misc')
 
     def testTell(self):
         m = self.getMsg('tell foo [plugin tell]')
