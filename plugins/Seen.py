@@ -57,7 +57,7 @@ import privmsgs
 import registry
 import callbacks
 
-class SeenDB(plugins.ChannelUserDatabase):
+class SeenDB(plugins.ChannelUserDB):
     def serialize(self, v):
         return list(v)
 

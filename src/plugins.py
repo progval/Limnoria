@@ -187,7 +187,7 @@ class ChannelUserDictionary(UserDict.DictMixin):
         return L
         
 
-class ChannelUserDatabase(ChannelUserDictionary):
+class ChannelUserDB(ChannelUserDictionary):
     def __init__(self, filename):
         ChannelUserDictionary.__init__(self)
         self.filename = filename
@@ -204,15 +204,21 @@ class ChannelUserDatabase(ChannelUserDictionary):
                 try:
                     channel = t.pop(0)
                     id = t.pop(0)
-                    id = int(id)
+                    try:
+                        id = int(id)
+                    except ValueError:
+                        # We'll skip over this so, say, nicks can be kept here.
+                        pass
                     v = self.deserialize(t)
                     self[channel, id] = v
                 except Exception, e:
                     log.warning('Invalid line #%s in %s.',
                                 lineno, self.__class__.__name__)
+                    log.debug('Exception: %s', utils.exnToString(e))
         except Exception, e: # This catches exceptions from csv.reader.
             log.warning('Invalid line #%s in %s.',
                         lineno, self.__class__.__name__)
+            log.debug('Exception: %s', utils.exnToString(e))
 
     def flush(self):
         fd = file(self.filename, 'w')

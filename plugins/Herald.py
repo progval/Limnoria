@@ -52,7 +52,7 @@ import callbacks
 
 filename = os.path.join(conf.supybot.directories.data(), 'Herald.db')
 
-class HeraldDB(plugins.ChannelUserDatabase):
+class HeraldDB(plugins.ChannelUserDB):
     def serialize(self, v):
         return [v]
 
