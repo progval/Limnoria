@@ -48,6 +48,8 @@ import xml.sax
 import SOAP
 import google
 
+import registry
+
 import conf
 import utils
 import ircmsgs
@@ -56,7 +58,6 @@ import ircutils
 import privmsgs
 import callbacks
 import structures
-import configurable
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
@@ -72,7 +73,7 @@ def configure(onStart, afterConnect, advanced):
                 break
         if key:
             onStart.append('load Google')
-            onStart.append('google licensekey %s' % key)
+            conf.supybot.plugins.Google.licenseKey.set(key)
         print 'The Google plugin has the functionality to watch for URLs'
         print 'that match a specific pattern (we call this a snarfer).'
         print 'When supybot sees such a URL, he will parse the web page'
@@ -83,10 +84,10 @@ def configure(onStart, afterConnect, advanced):
         print
         if yn('Do you want the Google Groups link snarfer enabled by '
             'default?') == 'y':
-            onStart.append('Google config groups-snarfer on')
+            conf.supybot.plugins.Google.groupsSnarfer.set(True)
         if yn('Do you want the Google search snarfer enabled by default?') \
             == 'y':
-            onStart.append('Google config search-snarfer on')
+            conf.supybot.plugins.Google.searchSnarfer.set(True)
         if 'load Alias' not in onStart:
             print 'Google depends on the Alias module for some extra commands.'
             if yn('Would you like to load the Alias module now?') == 'y':
@@ -131,33 +132,35 @@ def search(log, *args, **kwargs):
         raise callbacks.Error, 'Google returned an unparseable response.  ' \
                                'The full traceback has been logged.'
 
-class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
+conf.registerPlugin('Google')
+conf.registerChannelValue(conf.supybot.plugins.Google, 'groupsSnarfer',
+    registry.Boolean(False, """Determines whether the groups snarfer is
+    enabled.  If so, URLs at groups.google.com will be snarfed and their
+    group/title messaged to the channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Google, 'searchSnarfer',
+    registry.Boolean(False, """Determines whether the search snarfer is
+    enabled.  If so, messages (even unaddressed ones) beginning with the word
+    'google' will result in the first URL Google returns being sent to the
+    channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Google, 'bold',
+    registry.Boolean(True, """Determines whether results are bolded."""))
+conf.registerChannelValue(conf.supybot.plugins.Google, 'maximum-results',
+    registry.PositiveInteger(10, """Determines the maximum number of results
+    returned from the google command."""))
+conf.registerGlobalValue(conf.supybot.plugins.Google, 'licenseKey',
+    registry.String('', """Sets the Google license key for using Google's Web
+    Services API.  This is necessary before you can do any searching with this
+    module."""))
+class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
-    configurables = configurable.Dictionary(
-        [('groups-snarfer', configurable.BoolType, False,
-          """Determines whether the groups snarfer is enabled.  If so, URLs at
-          groups.google.com will be snarfed and their group/title messaged to
-          the channel."""),
-         ('search-snarfer', configurable.BoolType, False,
-          """Determines whether the search snarfer is enabled.  If so, messages
-          (even unaddressed ones) beginning with the word 'google' will result
-          in the first URL Google returns being sent to the channel."""),
-         ('bold', configurable.BoolType, True,
-          """Determines whether results are bolded."""),
-         ('maximum-results', configurable.PositiveIntType, 10,
-          """Determines the maximum number of results returned from the
-          google command."""),]
-    )
     def __init__(self):
-        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.total = 0
         self.totalTime = 0
         self.last24hours = structures.queue()
 
     def die(self):
-        configurable.Mixin.die(self)
         callbacks.PrivmsgCommandAndRegexp.die(self)
 
     def formatData(self, data, bold=True, max=0):
@@ -181,20 +184,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         else:
             return '%s: %s' % (time, '; '.join(results))
 
-    def licensekey(self, irc, msg, args):
-        """<key>
-
-        Sets the Google license key for using Google's Web Services API.  This
-        is necessary before you can do any searching with this module.
-        """
-        key = privmsgs.getArgs(args)
-        if len(key) != 32:
-            irc.error('That doesn\'t seem to be a valid license key.')
-            return
-        google.setLicense(key)
-        irc.replySuccess()
-    licensekey = privmsgs.checkCapability(licensekey, 'admin')
-
     def google(self, irc, msg, args):
         """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
 
@@ -215,9 +204,13 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             else:
                 kwargs[option[2:]] = argument
         searchString = privmsgs.getArgs(rest)
-        data = search(self.log, searchString, **kwargs)
-        bold = self.configurables.get('bold', msg.args[0])
-        max = self.configurables.get('maximum-results', msg.args[0])
+        try:
+            data = search(self.log, searchString, **kwargs)
+        except google.NoLicenseKey, e:
+            irc.error(str(e))
+            return
+        bold = conf.supybot.plugins.Google.bold()
+        max = conf.supybot.plugins.Google.get('maximum-results')
         irc.reply(self.formatData(data, bold=bold, max=max))
 
     def metagoogle(self, irc, msg, args):
@@ -297,7 +290,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
-        if not self.configurables.get('search-snarfer', channel=msg.args[0]):
+        if not conf.supybot.plugins.Google.searchSnarfer():
             return
         searchString = match.group(1)
         try:
@@ -317,7 +310,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     _ggPlainGroup = re.compile(r'Newsgroups: (.*)')
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
-        if not self.configurables.get('groups-snarfer', channel=msg.args[0]):
+        if not conf.supybot.plugins.Google.groupsSnarfer():
             return
         request = urllib2.Request(match.group(0), headers= \
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})

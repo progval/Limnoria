@@ -114,6 +114,15 @@ class Integer(Value):
         except ValueError:
             raise InvalidRegistryValue, 'Value must be an integer.'
 
+class PositiveInteger(Value):
+    def set(self, s):
+        try:
+            self.value = int(s)
+            if self.value < 0:
+                raise InvalidRegistryValue, 'Value must be a positive integer.'
+        except ValueError:
+            raise InvalidRegistryValue, 'Value must be a positive integer.'
+
 class Float(Value):
     def set(self, s):
         try:

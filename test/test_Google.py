@@ -35,12 +35,12 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Google',)
     if network:
         def testNoNoLicenseKeyError(self):
-            self.assertNotError('google config groups-snarfer on')
+            conf.supybot.plugins.Google.groupsSnarfer.set('on')
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))
             self.assertNoResponse(' ')
         
         def testGroupsSnarfer(self):
-            self.assertNotError('google config groups-snarfer on')
+            conf.supybot.plugins.Google.groupsSnarfer.set('on')
             self.assertRegexp('http://groups.google.com/groups?dq=&hl=en&'
                               'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
                               '0310132012.738e22fc%40posting.google.com',
@@ -65,21 +65,20 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
                               r'comp\.lang\.python.*What exactly are bound')
 
         def testConfig(self):
-            self.assertNotError('google config groups-snarfer off')
+            conf.supybot.plugins.Google.groupsSnarfer.set('off')
             self.assertNoResponse('http://groups.google.com/groups?dq=&hl=en&'
                                   'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
                                   '0310132012.738e22fc%40posting.google.com')
-            self.assertNotError('google config groups-snarfer on')
+            conf.supybot.plugins.Google.groupsSnarfer.set('on')
             self.assertNotError('http://groups.google.com/groups?dq=&hl=en&'
                                 'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
                                 '0310132012.738e22fc%40posting.google.com')
 
     def testInvalidKeyCaught(self):
-        self.assertNotError(
-            'google licensekey abcdefghijklmnopqrstuvwxyz123456')
+        conf.supybot.plugins.Google.licenseKey.set(
+                                        'abcdefghijklmnopqrstuvwxyz123456')
         self.assertNotRegexp('google foobar', 'faultType')
         self.assertNotRegexp('google foobar', 'SOAP')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
-
