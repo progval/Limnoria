@@ -75,10 +75,10 @@ class Babelfish(callbacks.Privmsg):
     for language in babelfish.available_languages:
         _abbrevs[language] = language
 
-    def _getLang(self, fromLang, toLang):
+    def _getLang(self, fromLang, toLang, chan):
         fromLang = self._abbrevs[fromLang.lower()]
         toLang = self._abbrevs[toLang.lower()]
-        disabled = map(str.lower, self.registryValue('disabledLanguages'))
+        disabled = map(str.lower, self.registryValue('disabledLanguages',chan))
         if fromLang in disabled:
             fromLang = None
         if toLang in disabled:
@@ -101,9 +101,9 @@ class Babelfish(callbacks.Privmsg):
             args.pop(1)
         (fromLang, toLang, text) = privmsgs.getArgs(args, required=3)
         try:
-            (fromLang, toLang) = self._getLang(fromLang, toLang)
+            (fromLang, toLang) = self._getLang(fromLang, toLang, msg.args[0])
             if not fromLang or not toLang:
-                langs = self.registryValue('disabledLanguages')
+                langs = self.registryValue('disabledLanguages', msg.args[0])
                 irc.error('I do not speak %s.' % utils.commaAndify(langs,
                                                                    And='or'))
                 return
@@ -128,12 +128,12 @@ class Babelfish(callbacks.Privmsg):
         """
         (fromLang, toLang, text) = privmsgs.getArgs(args, required=3)
         try:
-            (fromLang, toLang) = self._getLang(fromLang, toLang)
+            (fromLang, toLang) = self._getLang(fromLang, toLang, msg.args[0])
             if fromLang != 'english' and toLang != 'english':
                 irc.error('One language must be English.')
                 return
             if not fromLang or not toLang:
-                langs = self.registryValue('disabledLanguages')
+                langs = self.registryValue('disabledLanguages', msg.args[0])
                 irc.error('I do not speak %s.' % utils.commaAndify(langs,
                                                                    And='or'))
                 return
@@ -157,7 +157,7 @@ class Babelfish(callbacks.Privmsg):
         """
         allowEnglish = privmsgs.getArgs(args, required=0, optional=1)
         language = random.choice(babelfish.available_languages)
-        disabled = self.registryValue('disabledLanguages')
+        disabled = self.registryValue('disabledLanguages', msg.args[0])
         while not allowEnglish and language == 'English' and\
                 language not in disabled:
             language = random.choice(babelfish.available_languages)

@@ -56,13 +56,13 @@ if network:
                 dl.set("")
                 self.assertResponse('translate sp en hola', 'hello')
                 dl.set("Spanish")
-                self.assertRegexp('translate sp en hola', 'forbidden')
-                self.assertRegexp('translate en sp hola', 'forbidden')
+                self.assertRegexp('translate sp en hola', 'do not speak')
+                self.assertRegexp('translate en sp hola', 'do not speak')
                 dl.set("Spanish Italian")
-                self.assertRegexp('translate sp en hola', 'forbidden')
-                self.assertRegexp('translate en it hello', 'forbidden')
+                self.assertRegexp('translate sp en hola', 'do not speak')
+                self.assertRegexp('translate en it hello', 'do not speak')
                 self.assertRegexp('translate en it [translate sp en hola]',
-                    'forbidden')
+                    'do not speak')
                 dl.set("")
                 self.assertResponse('translate en it hello', 'ciao')
             finally:
