@@ -194,4 +194,8 @@ def soundex(s, length=4):
     s = ''.join(L)
     return length and s[:length] or s.rstrip('0')
 
+def dqrepr(s):
+    """Returns a repr() of s guaranteed to be in double quotes."""
+    return '"' + repr("'\x00" + s)[6:]
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

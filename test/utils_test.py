@@ -97,3 +97,15 @@ class UtilsTest(unittest.TestCase):
             soundex = utils.soundex(name)
             self.assertEqual(soundex, key,
                              '%s was %s, not %s' % (name, soundex, key))
+
+    def testDQRepr(self):
+        L = [('foo', '"foo"'),
+             ('foo\'bar', '"foo\'bar"'),
+             ('foo"bar', '"foo\\"bar"'),
+             ('"', '"\\""'),
+             ('', '""'),
+             ('\x00', '"\\x00"')]
+        for (s, r) in L:
+            self.assertEqual(r, utils.dqrepr(s))
+            self.assertEqual(s, eval(utils.dqrepr(s)))
+             
