@@ -1,3 +1,6 @@
+	* Added the LogToIrc plugin, for sending logs to an IRC
+	channel or nick.  Useful for traceback notification and whatnot.
+	
 	* Changed supybot.log.timestampFormat to specially handle the
 	empty string -- if it's set to the empty string, it will log
 	times in seconds-since-epoch format.
