@@ -51,6 +51,16 @@ if sqlite is not None:
             self.assertRegexp('literal moo', '<reply>foo')
             self.assertNotError('moo2 is moo!')
             self.assertRegexp('literal moo2', 'moo!')
+            self.assertNotError('moo3 is <action>foo')
+            self.assertRegexp('literal moo3', '<action>foo')
+
+        def testGetFactoid(self):
+            self.assertNotError('moo is <reply>foo')
+            self.assertRegexp('moo', 'foo')
+            self.assertNotError('moo2 is moo!')
+            self.assertRegexp('moo2', 'moo2 is moo!')
+            self.assertNotError('moo3 is <action>foo')
+            self.assertAction('moo3', 'foo')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
