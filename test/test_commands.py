@@ -71,11 +71,27 @@ class CommandsTestCase(SupyTestCase):
         self.assertState(spec,
                          ['12', '--foo', 'baz', '--bar', '13', '15'],
                          [12, [('foo', 'baz'), ('bar', 13)], 15])
+
+    def testCompose(self):
+        spec = [compose('somethingWithoutSpaces', 'lowered')]
+        self.assertState(spec, ['FOO'], ['foo'])
+        self.assertRaises(callbacks.Error,
+                          self.assertState, spec, ['foo bar'], ['asdf'])
+
+    def testAny(self):
+        self.assertState([any('int')], ['1', '2', '3'], [[1, 2, 3]])
+        self.assertState([None, any('int')], ['1', '2', '3'], ['1', [2, 3]])
         
 ##     def testAny(self):
 ##         self.assertState([None, any('int'), None],
 ##                          ['foo', 'bar'],
 ##                          ['foo', [], 'bar'])
+
+    def testMany(self):
+        spec = [many('int')]
+        self.assertState(spec, ['1', '2', '3'], [[1, 2, 3]])
+        self.assertRaises(callbacks.Error,
+                          self.assertState, spec, [], ['asdf'])
         
 
 

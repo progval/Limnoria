@@ -169,9 +169,6 @@ def _int(s):
 def getInt(irc, msg, args, state, type='integer', p=None):
     try:
         i = _int(args[0])
-        if p is not None:
-            if not p(i):
-                raise ValueError
         state.args.append(i)
         del args[0]
     except ValueError:
@@ -477,7 +474,7 @@ wrappers = ircutils.IrcDict({
     'lowered': getLowered,
     'anything': anything,
     'something': getSomething,
-    'filename': getSomething,
+    'filename': getSomething, # XXX Check for validity.
     'commandName': getCommandName,
     'text': anything,
     'somethingWithoutSpaces': getSomethingNoSpaces,
@@ -537,6 +534,10 @@ class context(object):
             self.converter = getConverter(spec)
 
     def __call__(self, irc, msg, args, state):
+        if not state.types and args:
+            # We're the last context/type, we should combine the remaining
+            # arguments into one string.
+            args[:] = [' '.join(args)]
         log.debug('args before %r: %r', self, args)
         self.converter(irc, msg, args, state, *self.args)
         log.debug('args after %r: %r', self, args)
@@ -571,21 +572,21 @@ class optional(additional):
 
 class any(context):
     def __call__(self, irc, msg, args, state):
-        originalStateArgs = state.args
-        state.args = []
+        st = state.essence()
+        st.types = ["something so context.__call__ won't combineRest."]
         try:
-            try:
-                while args:
-                    super(any, self).__call__(irc, msg, args, state)
-            except IndexError:
-                originalStateArgs.append(state.args)
-        finally:
-            state.args = originalStateArgs
+            while args:
+                super(any, self).__call__(irc, msg, args, st)
+        except IndexError:
+            pass
+        state.args.append(st.args)
 
 class many(any):
     def __call__(self, irc, msg, args, state):
-        context.__call__(self, irc, msg, args, state)
         super(many, self).__call__(irc, msg, args, state)
+        if not state.args[-1]:
+            state.args.pop()
+            raise callbacks.ArgumentError
 
 class getopts(context):
     """The empty string indicates that no argument is taken; None indicates
@@ -622,55 +623,68 @@ class getopts(context):
         state.args.append(getopts)
         args[:] = rest
         log.debug('args after %r: %r', self, args)
+                
+# XXX Not ready.
+class compose(context):
+    def __init__(self, *specs):
+        self.spec = specs
+        self.specs = list(specs)
+        utils.mapinto(contextify, self.specs)
 
-
+    def __call__(self, irc, msg, args, state):
+        st = state.essence()
+        for context in self.specs:
+            context(irc, msg, args, st)
+            args = st.args
+        state.args.extend(st.args)
 
 ###
 # This is our state object, passed to converters along with irc, msg, and args.
 ###
+
 class State(object):
     log = log
-    def __init__(self):
+    def __init__(self, types):
         self.args = []
         self.kwargs = {}
+        self.types = types
         self.channel = None
 
     def essence(self):
-        st = State()
+        st = State(self.types)
         for (attr, value) in self.__dict__.iteritems():
             if attr not in ('args', 'kwargs', 'channel'):
                 setattr(st, attr, value)
         return st
 
+    def __repr__(self):
+        return '%s(args=%r, kwargs=%r, channel=%r)' % (self.__class__.__name__,
+                                                       self.args, self.kwargs,
+                                                       self.channel)
+            
+
 ###
 # This is a compiled Spec object.
 ###
 class Spec(object):
-    def _state(self, attrs={}):
-        st = State()
+    def _state(self, types, attrs={}):
+        st = State(types)
         st.__dict__.update(attrs)
         return st
 
-    def __init__(self, types, allowExtra=False, combineRest=True):
+    def __init__(self, types, allowExtra=False):
         self.types = types
         self.allowExtra = allowExtra
-        self.combineRest = combineRest
         utils.mapinto(contextify, self.types)
 
     def __call__(self, irc, msg, args, stateAttrs={}):
-        state = self._state(stateAttrs)
         if self.types:
-            types = self.types[:]
-            while types:
-                if len(types) == 1 and self.combineRest and args:
-                    break
-                context = types.pop(0)
+            state = self._state(self.types[:], stateAttrs)
+            while state.types:
+                context = state.types.pop(0)
                 context(irc, msg, args, state)
-            if types and args:
-                assert self.combineRest
-                args[:] = [' '.join(args)]
-                types[0](irc, msg, args, state)
         if args and not self.allowExtra:
+            log.debug('args and not self.allowExtra: %r', args)
             raise callbacks.ArgumentError
         return state
 
@@ -690,7 +704,7 @@ def wrap(f, specList=[], decorators=None, **kw):
     return newf
 
 
-__all__ = ['wrap', 'context', 'additional', 'optional', 'any',
+__all__ = ['wrap', 'context', 'additional', 'optional', 'any', 'compose','Spec',
            'many', 'getopts', 'getConverter', 'addConverter', 'callConverter']
 
 if world.testing:
