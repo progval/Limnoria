@@ -56,7 +56,7 @@ import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
-from supybot.utils.iter import any, imap, ifilter
+from supybot.utils.iter import any
 
 def _addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,
