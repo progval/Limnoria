@@ -50,7 +50,6 @@ import os.path
 import unittest
 
 import debug
-debug.stderr = False
 
 import world
 world.startedAt = started
@@ -362,20 +361,32 @@ if __name__ == '__main__':
     parser.add_option('-v', '--verbose', action='store_true', default=False,
                       help='Sets the verbose flag, printing extra information '
                            'about each test that runs.')
+    parser.add_option('-s', '--stderr', action='store_true', default=False,
+                      help='Sets debug.stderr to True, printing standard log '
+                           'messages to stderr.')
     (options, args) = parser.parse_args()
     if not args:
         args = map(path, glob.glob(os.path.join('test', 'test_*.py')))
+
     if options.exclusions:
         for name in map(path, options.exclusions):
             args = [s for s in args if s != name]
+
     if options.timeout:
         PluginTestCase.timeout = options.timeout
+
     if options.plugindirs:
         conf.pluginDirs.extend(options.plugindirs)
+
     if options.verbose:
         world.myVerbose = True
     else:
         world.myVerbose = False
+
+    if options.stderr:
+        debug.stderr = True
+    else:
+        debug.stderr = False
     
     world.testing = True
     names = [os.path.splitext(os.path.basename(name))[0] for name in args]
