@@ -86,8 +86,8 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                 else:
                     lines.insert(0, '\n')
                 if hasattr(value, 'value'):
-                    lines.append('#\n')
                     if value.showDefault:
+                        lines.append('#\n')
                         try:
                             original = value.value
                             value.value = value.default
