@@ -56,15 +56,13 @@ import supybot
 __revision__ = '$Id$'
 __author__ = supybot.authors.baggins
 
-import supybot.plugins as plugins
-
 import re
 import math
 import string
 
 import supybot.conf as conf
 import supybot.utils as utils
-import supybot.privmsgs as privmsgs
+from supybot.commands import *
 import supybot.callbacks as callbacks
 
 
@@ -96,21 +94,17 @@ def configure(advanced):
 
 
 class Nickometer(callbacks.Privmsg):
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-
     def punish(self, damage, reason):
         self.log.debug('%s lameness points awarded: %s' % (damage, reason))
         return damage
 
-    def nickometer(self, irc, msg, args):
+    def nickometer(self, irc, msg, args, nick):
         """[<nick>]
 
         Tells you how lame said nick is.  If <nick> is not given, uses the
         nick of the person giving the command.
         """
         score = 0L
-        nick = privmsgs.getArgs(args, required=0, optional=1)
         if not nick:
             nick = msg.nick
         originalNick = nick
@@ -253,6 +247,7 @@ class Nickometer(callbacks.Privmsg):
         self.log.debug('Calculated lameness score for %s as %s '
                        '(raw score was %s)' %
                        (originalNick, score_string, score))
+    nickometer = wrap(nickometer, [additional('text')])
 
 
 
