@@ -63,14 +63,14 @@ class SupyIrcProtocol(LineReceiver):
         msg = ircmsgs.IrcMsg(line)
         log.debug('Time to parse IrcMsg: %s', time.time()-start)
         try:
-            self.factory.irc.feedMsg(msg)
+            self.irc.feedMsg(msg)
         except:
             log.exception('Uncaught exception outside Irc object:')
 
     def checkIrcForMsgs(self):
         if self.connected:
             try:
-                msg = self.factory.irc.takeMsg()
+                msg = self.irc.takeMsg()
             except Exception, e:
                 log.exception('Uncaught exception in irclib.Irc.takeMsg:')
                 return
@@ -80,15 +80,15 @@ class SupyIrcProtocol(LineReceiver):
 
     def connectionLost(self, failure):
         self.mostRecentCall.cancel()
-        self.factory.irc.reset()
+        self.irc.reset()
         log.warning(failure.getErrorMessage())
 
     def connectionMade(self):
-        self.factory.irc.reset()
-        self.factory.irc.driver = self
+        self.irc.reset()
+        self.irc.driver = self
 
     def die(self):
-        log.info('Driver for %s dying.', self.factory.irc)
+        log.info('Driver for %s dying.', self.irc)
         self.factory.continueTrying = False
         self.transport.loseConnection()
 
@@ -104,6 +104,11 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
         self.server = (server, port)
         reactor.connectTCP(server, port, self)
 
+    def buildProtocol(self, addr):
+        protocol = ReconnectingClientFactory.buildProtocol(self, addr)
+        protocol.irc = self.irc
+        return protocol
+    
     def die(self):
         pass
 

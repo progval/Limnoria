@@ -138,6 +138,9 @@ def run():
             _deadDrivers.append(name)
     for name in _deadDrivers:
         try:
+            driver = _drivers[name]
+            driver.irc.driver = None
+            driver.irc = None
             del _drivers[name]
         except KeyError:
             pass
