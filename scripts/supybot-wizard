@@ -285,7 +285,7 @@ def main():
             pick a simpler name, one more likely to be valid.""")
             network = None
 
-    conf.supybot.networks.default.set(network)
+    conf.supybot.networks.setValue([network])
     network = conf.registerNetwork(network)
 
     defaultServer = None
