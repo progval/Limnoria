@@ -116,8 +116,10 @@ class ChannelDBHandler(object):
 
     def getDb(self, channel):
         """Use this to get a database for a specific channel."""
-        if channel not in self.dbCache or \
-           threading.currentThread() is not world.mainThread:
+        currentThread = threading.currentThread()
+        if channel not in self.dbCache and currentThread == world.mainThread:
+            self.dbCache[channel] = self.makeDb(self.makeFilename(channel))
+        if currentThread != world.mainThread:
             db = self.makeDb(self.makeFilename(channel))
         else:
             db = self.dbCache[channel]
