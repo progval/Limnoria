@@ -91,7 +91,7 @@ class RSS(callbacks.Privmsg):
             args.insert(0, url)
             self.rss(irc, msg, args)
         f = types.FunctionType(f.func_code, f.func_globals,
-                               f.func_name, closure=f.func_closure)
+                               name, closure=f.func_closure)
         f.__doc__ = docstring
         self.feedNames.add(name)
         setattr(self.__class__, name, f)
