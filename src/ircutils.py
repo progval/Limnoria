@@ -112,9 +112,10 @@ def isChannel(s):
     return (s and s[0] in '#&+!' and len(s) <= 50 and \
             '\x07' not in s and ',' not in s and ' ' not in s)
 
+_match = fnmatch.fnmatchcase
 def hostmaskPatternEqual(pattern, hostmask):
     """Returns True if hostmask matches the hostmask pattern pattern."""
-    return fnmatch.fnmatch(toLower(hostmask), toLower(pattern))
+    return _match(toLower(hostmask), toLower(pattern))
 
 _ipchars = string.digits + '.'
 def isIP(s):
