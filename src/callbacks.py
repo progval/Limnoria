@@ -296,7 +296,7 @@ class IrcObjectProxy:
         log.debug('IrcObjectProxy.__init__: %s' % args)
         self.irc = irc
         self.msg = msg
-        self.args = args
+        self.args = args[:]
         self.counter = 0
         self.to = None
         self.action = False

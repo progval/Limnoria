@@ -127,10 +127,12 @@ class Scheduler(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, 'Invalid event id: %r' % id)
-            return
-        schedule.removeEvent(id)
-        irc.reply(msg, conf.replySuccess)
+            pass
+        try:
+            schedule.removeEvent(id)
+            irc.reply(msg, conf.replySuccess)
+        except KeyError:
+            irc.error(msg, 'Invalid event id.')
 
     def repeat(self, irc, msg, args):
         """<name> <seconds> <command>
