@@ -168,8 +168,8 @@ class IrcMsg(object):
     def __hash__(self):
         if self._hash is not None:
             return self._hash
-        self._hash = hash(self.command) & \
-                     hash(self.prefix) & \
+        self._hash = hash(self.command) ^ \
+                     hash(self.prefix) ^ \
                      hash(self.args)
         return self._hash
 

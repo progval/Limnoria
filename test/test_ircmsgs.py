@@ -97,6 +97,13 @@ class IrcMsgTestCase(unittest.TestCase):
             self.assertEqual(msg, pickle.loads(pickle.dumps(msg)))
             self.assertEqual(msg, copy.copy(msg))
 
+    def testHashNotZero(self):
+        zeroes = 0
+        for msg in msgs:
+            if hash(msg) == 0:
+                zeroes += 1
+        self.failIf(zeroes > (len(msgs)/10), 'Too many zero hashes.')
+
 class FunctionsTestCase(unittest.TestCase):
     def testIsAction(self):
         L = [':jemfinch!~jfincher@ts26-2.homenet.ohio-state.edu PRIVMSG'
