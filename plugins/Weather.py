@@ -87,7 +87,7 @@ class Weather(callbacks.Privmsg):
         channel = None
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
-        realCommandName = self.registryValue('weatherCommand', channel)
+        realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)
         realCommand(irc, msg, args)
         
@@ -314,7 +314,7 @@ conf.registerPlugin('Weather')
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'temperatureUnit',
     WeatherUnit('Fahrenheit', """Sets the default temperature unit to use when
     reporting the weather."""))
-conf.registerChannelValue(conf.supybot.plugins.Weather, 'weatherCommand',
+conf.registerChannelValue(conf.supybot.plugins.Weather, 'command',
     WeatherCommand('cnn', """Sets the default command to use when retrieving 
     the weather."""))
 
