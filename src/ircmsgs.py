@@ -159,15 +159,11 @@ class IrcMsg(object):
         return self._str
 
     def __len__(self):
-        # This might not take into account the length of the prefix, but leaves
-        # some room for variation.
         if self._len is not None:
             return self._len
         self._len = 0
         if self.prefix:
             self._len += len(self.prefix)
-##         else:
-##             self._len += 42
         self._len += len(self.command)
         if self.args:
             for arg in self.args:
