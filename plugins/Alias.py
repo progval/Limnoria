@@ -30,7 +30,7 @@
 ###
 
 """
-Allows 'aliases' for other commands.
+Allows aliases for other commands.
 """
 
 __revision__ = "$Id$"
@@ -44,6 +44,7 @@ import sets
 import conf
 import utils
 import privmsgs
+import registry
 import callbacks
 import structures
 import unpreserve
@@ -145,60 +146,29 @@ def makeNewAlias(name, alias):
     f = utils.changeFunctionName(f, name, doc)
     return f
 
-def preserveAlias(fd, alias, command, locked):
-    def write(s):
-        fd.write(s)
-        fd.write(os.linesep)
-    write('alias %s' % alias)
-    write('  command %s' % command)
-    write('  locked %s' % locked)
-    write('')
-    
-        
+conf.registerPlugin('Alias')
+conf.registerGroup(conf.supybot.plugins.Alias, 'aliases')
 filename = os.path.join(conf.supybot.directories.conf(), 'aliases.conf')
 class Alias(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         # Schema: {alias: [command, locked]}
-        aliases = {}
-        class AliasCreator(object):
-            aliasName = None
-            def __init__(self):
-                self.aliasCommand = None
-                self.aliasLocked = None
-                self.setAliasName = False
-
-            def badCommand(self, command, rest, lineno):
-                raise ValueError, \
-                      'Invalid command on line %s: %s' % (lineno, command)
-
-            def alias(self, rest, lineno):
-                if self.aliasName is not None:
-                    raise ValueError, \
-                          'Unexpected alias command at line %s' % lineno
-                self.setAliasName = True
-                AliasCreator.aliasName = rest
-                
-            def command(self, rest, lineno):
-                if self.aliasName is None:
-                    raise ValueError, \
-                          'Unexpected alias configuration at line %s' % lineno
-                self.aliasCommand = rest
-
-            def locked(self, rest, lineno):
-                if self.aliasName is None:
-                    raise ValueError, \
-                          'Unexpected alias configuration at line %s' % lineno
-                self.aliasLocked = bool(eval(rest))
-
-            def finish(self):
-                if self.setAliasName:
-                    return
-                aliases[self.aliasName] = (self.aliasCommand, self.aliasLocked)
-                AliasCreator.aliasName = None
-        reader = unpreserve.Reader(AliasCreator)
-        reader.readFile(filename)
-        self.aliases = aliases
+        self.aliases = {}
+        group = conf.supybot.plugins.Alias.aliases
+        for (name, alias) in registry._cache.iteritems():
+            name = name.lower()
+            if name.startswith('supybot.plugins.alias.aliases.'):
+                name = name[len('supybot.plugins.alias.aliases.'):]
+                if '.' in name:
+                    continue
+                conf.registerGlobalValue(group, name, registry.String('', ''))
+                conf.registerGlobalValue(group.get(name), 'locked',
+                                         registry.Boolean(False, ''))
+        for (name, value) in group.getValues(fullNames=False):
+            name = name.lower() # Just in case.
+            command = value()
+            locked = value.locked()
+            self.aliases[name] = [command, locked]
 
     def __call__(self, irc, msg):
         # Adding the aliases requires an Irc.  So the first time we get called
@@ -213,12 +183,6 @@ class Alias(callbacks.Privmsg):
         del self.__class__.__call__
         callbacks.Privmsg.__call__(self, irc, msg)
         
-    def die(self):
-        fd = file(filename, 'w')
-        for (alias, (command, locked)) in self.aliases.iteritems():
-            preserveAlias(fd, alias, command, locked)
-        fd.close()
-
     def lock(self, irc, msg, args):
         """<alias>
 
@@ -228,6 +192,7 @@ class Alias(callbacks.Privmsg):
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
             self.aliases[name][1] = True
+            conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(True)
             irc.replySuccess()
         else:
             irc.error('There is no such alias.')
@@ -242,6 +207,7 @@ class Alias(callbacks.Privmsg):
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
             self.aliases[name][1] = False
+            conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(False)
             irc.replySuccess()
         else:
             irc.error('There is no such alias.')
@@ -273,6 +239,10 @@ class Alias(callbacks.Privmsg):
             f = makeNewAlias(name, alias)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
+        conf.supybot.plugins.Alias.aliases.register(name,
+                                                    registry.String(alias, ''))
+        conf.supybot.plugins.Alias.aliases.get(name).register('locked',
+                                                    registry.Boolean(lock, ''))
         setattr(self.__class__, name, f)
         self.aliases[name] = [alias, lock]
 
@@ -282,6 +252,7 @@ class Alias(callbacks.Privmsg):
             if evenIfLocked or not self.aliases[name][1]:
                 delattr(self.__class__, name)
                 del self.aliases[name]
+                conf.supybot.plugins.Alias.aliases.unregister(name)
             else:
                 raise AliasError, 'That alias is locked.'
         else:
