@@ -65,7 +65,7 @@ class SOAPConfig:
             # Setting debug also sets returnFaultInfo, 
             # dumpHeadersIn, dumpHeadersOut, dumpSOAPIn, and dumpSOAPOut
             self.debug = 0
-            self.dumpFaultInfo = 1
+            self.dumpFaultInfo = 0
             # Setting namespaceStyle sets typesNamespace, typesNamespaceURI,
             # schemaNamespace, and schemaNamespaceURI
             self.namespaceStyle = '1999'
