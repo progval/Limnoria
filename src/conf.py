@@ -391,7 +391,7 @@ registerChannelValue(supybot.reply.whenAddressedBy, 'chars',
     reply to.  A prefix character is a single character that the bot will use
     to determine what messages are addressed to it; when there are no prefix
     characters set, it just uses its nick.  Each character in this string is
-    interpreted individually; you can have multiple prefixChars simultaneously,
+    interpreted individually; you can have multiple prefix chars simultaneously,
     and if any one of them is used as a prefix the bot will assume it is being
     addressed."""))
 
