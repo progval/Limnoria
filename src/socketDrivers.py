@@ -83,7 +83,7 @@ class SocketDriver(drivers.IrcDriver):
             lines = self.inbuffer.split('\n')
             self.inbuffer = lines.pop()
             for line in lines:
-                started = time.time()
+                start = time.time()
                 msg = ircmsgs.IrcMsg(line)
                 debug.msg('Time to parse IrcMsg: %s' % (time.time()-start),
                           'verbose')
