@@ -39,6 +39,8 @@ import fix
 
 import os
 import re
+import md5
+import sha
 import string
 import sgmllib
 import textwrap
@@ -402,6 +404,15 @@ def flatten(seq, strings=False):
                     yield x
             except TypeError:
                 yield elt
+
+def saltHash(password, salt=None, hash='sha'):
+    if salt is None:
+        salt = mktemp()[:8]
+    if hash == 'md5':
+        hasher = md5.md5
+    elif hash == 'sha':
+        hasher = sha.sha
+    return salt + hasher(salt + password).hexdigest()
 
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.

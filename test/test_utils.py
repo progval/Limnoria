@@ -275,6 +275,10 @@ class UtilsTest(unittest.TestCase):
         self.failUnless(len(f('x'*35, 30)) <= 30)
         self.failUnless(f(' '.join(['xxxx']*10), 30)[:-3].endswith('xxxx'))
 
+    def testSaltHash(self):
+        s = utils.saltHash('jemfinch')
+        self.assertEqual(utils.saltHash('jemfinch', salt=s[:8]), s)
+
 
 
 
