@@ -123,6 +123,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         data kept on <channel> (which is only necessary if not sent in the
         channel itself).
         """
+        argsCopy = args[:]
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -154,7 +155,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
                 break
             words.append(word)
         if len(words) < self._minMarkovLength:
-            self.markov(irc, msg, args)
+            self.markov(irc, msg, argsCopy)
         else:
             irc.reply(' '.join(words))
 
