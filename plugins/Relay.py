@@ -95,10 +95,10 @@ def configure(onStart, afterConnect, advanced):
 
 
 ircs = ircutils.IrcDict()
-lastmsg = {} # Not IrcDict.
+lastmsg = {} # Not IrcDict.  Doesn't map strings.
 channels = ircutils.IrcSet()
-ircstates = {} # Not IrcDict.
-abbreviations = {} # Not IrcDict.
+ircstates = {} # Not IrcDict.  Doesn't map strings.
+abbreviations = {} # Not IrcDict.  Doesn't map strings.
 originalIrc = None
 
 def reload(x=None):
@@ -414,10 +414,11 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
 
     def do318(self, irc, msg):
         irc = self._getRealIrc(irc)
-        nick = ircutils.toLower(msg.args[1])
-        if (irc, nick) not in self._whois:
+        nick = msg.args[1]
+        loweredNick = ircutils.toLower(nick)
+        if (irc, loweredNick) not in self._whois:
             return
-        (replyIrc, replyMsg, d) = self._whois[(irc, nick)]
+        (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
         hostmask = '@'.join(d['311'].args[2:4])
         user = d['311'].args[-1]
         if '319' in d:
@@ -475,14 +476,16 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
             '%s.%s' % (user, hostmask, identify, server, signon, idle,
                        channels, away)
         replyIrc.reply(replyMsg, s)
-        del self._whois[(irc, nick)]
+        del self._whois[(irc, loweredNick)]
 
     def do402(self, irc, msg):
         irc = self._getRealIrc(irc)
-        nick = ircutils.toLower(msg.args[1])
-        if (irc, nick) not in self._whois:
+        nick = msg.args[1]
+        loweredNick = ircutils.toLower(nick)
+        if (irc, loweredNick) not in self._whois:
             return
-        (replyIrc, replyMsg, d) = self._whois[(irc, nick)]
+        (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
+        del self._whois[(irc, loweredNick)]
         s = 'There is no %s on %s.' % (nick, self.abbreviations[irc])
         replyIrc.reply(replyMsg, s)
 
