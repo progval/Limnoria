@@ -87,14 +87,12 @@ class AsyncoreDriver(asynchat.async_chat, object):
 
     def writable(self):
         #debug.methodNamePrintf(self, 'writable')
-        while self.connected and self.irc:
+        while self.connected:
             m = self.irc.takeMsg()
             if m:
                 self.push(str(m))
             else:
                 break
-        #ret = asynchat.async_chat.writable(self)
-        #debug.printf(str(ret))
         return asynchat.async_chat.writable(self)
 
     def handle_error(self):
@@ -120,10 +118,6 @@ class AsyncoreDriver(asynchat.async_chat, object):
             self.irc.queueMsg(ircmsgs.privmsg(recipient,
                'Uncaught Irc object exception: %s' % debug.exnToString(e)))
         self.buffer = ''
-
-    def handle_connect(self):
-        #debug.methodNamePrintf(self, 'handle_connect')
-        pass
 
     def handle_close(self):
         #debug.methodNamePrintf(self, 'handle_close')
