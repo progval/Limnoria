@@ -65,14 +65,14 @@ def configure(advanced):
                   function of this module will not work.  You may choose to
                   install it later.  To re-enable this command then, remove
                   the "disable spell" line from your configuration file.""")
-        onStart.append('disable spell')
+        conf.supybot.defaultCapabilities().add('Unix.spell')
     fortuneCmd = utils.findBinaryInPath('fortune')
     if not fortuneCmd:
         output("""NOTE: I couldn't find fortune in your path, so that function
                   of this module will not work.  You may choose to install it
                   later.  To re-enable this command then, remove the
                   '"disable fortune" command from your configuration file.""")
-        onStart.append('disable fortune')
+        conf.supybot.defaultCapabilities().add('Unix.fortune')
     wtfCmd = utils.findBinaryInPath('wtf')
     if not wtfCmd:
         output("""NOTE: I couldn't find wtf in your path, so that function of
@@ -80,14 +80,14 @@ def configure(advanced):
                   to re-enable this command then, remove the "disable wtf"
                   command from your configuration file or simply tell the bot
                   "enable wtf" instead.""")
-        onStart.append('disable wtf')
+        conf.supybot.defaultCapabilities().add('Unix.wtf')
     output("""The "progstats" command can reveal potentially sensitive
               information about your machine. Here's an example of its output:
 
               %s\n""" % progstats())
     if yn('Would you like to disable this command for non-owner users?',
           default=True):
-        onStart.append('disable progstats')
+        conf.supybot.defaultCapabilities().add('Unix.progstats')
 
 def progstats():
     pw = pwd.getpwuid(os.getuid())

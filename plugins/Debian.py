@@ -66,7 +66,7 @@ def configure(advanced):
                       to run the file command.  I'll disable this command
                       now.  When you get zegrep in your path, use the command
                       "enable file" to re-enable the command.""")
-            onStart.append('disable file')
+            conf.supybot.defaultCapabilities().add('Debian.file')
         else:
             output("""I can't find zegrep in your path.  If you want to run
                       the file command with any sort of expediency, you'll
@@ -77,7 +77,7 @@ def configure(advanced):
                 conf.supybot.plugins.Debian.pythonZegrep.setValue(True)
             else:
                 output('I\'ll disable file now.')
-                onStart.append('disable file')
+                conf.supybot.defaultCapabilities().add('Debian.file')
 
 conf.registerPlugin('Debian')
 conf.registerGlobalValue(conf.supybot.plugins.Debian, 'pythonZegrep',

@@ -88,7 +88,6 @@ def configure(advanced):
             continue
         command = something('What would you like the command to be?')
         conf.registerGlobalValue(lookups,command, registry.String(filename,''))
-        onStart.append('lookup add %s %s' % (command, filename))
     
 
 conf.registerPlugin('Lookup')

@@ -48,6 +48,7 @@ __revision__ = "$Id$"
 import plugins
 import ircutils
 import privmsgs
+import registry
 import webutils
 import callbacks
 
@@ -90,7 +91,8 @@ def configure(advanced):
             else:
                 output('Then I can\'t add such an alias.')
                 return
-        onStart.append('alias add sf sourceforge $*')
+        conf.supybot.plugins.Alias.aliases.register('sf',
+            registry.String('sourceforge $*', ''))
 
 class TrackerError(Exception):
     pass

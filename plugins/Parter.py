@@ -52,48 +52,31 @@ import callbacks
 def configure(advanced):
     from questions import something, yn
     conf.registerPlugin('Parter', True)
-    s = ' '
-    while s:
+    channel = ' '
+    while channel:
+        L = []
         if yn('Would you like to automatically part a channel?'):
-            s = something('What channel?')
+            channel = something('What channel?')
             while not ircutils.isChannel(s):
                 output('That\'s not a valid channel.')
-                s = something('What channel?')
-            onStart.append('autopartchannel %s' % s)
+                channel = something('What channel?')
+            L.append(channel)
         else:
-            s = ''
+            channel = ''
+    conf.supybot.plugins.Parter.channels.setValue(L)
+
+conf.registerPlugin('Parter')
+conf.registerGlobalValue(conf.supybot.plugins.Parter, 'channels',
+    conf.SpaceSeparatedListOfChannels([], """Determines what channels the bot
+    will automatically part whenever it joins them."""))
 
 class Parter(callbacks.Privmsg):
-    def __init__(self):
-        super(self.__class__, self).__init__()
-        self.channels = sets.Set([])
-
-    def autopart(self, irc, msg, args):
-        """<channel>
-
-
-        Makes the bot part <channel> automatically, as soon as he joins it.
-        """
-        channel = privmsgs.getArgs(args)
-        self.channels.add(channel)
-        irc.replySuccess()
-    autopart = privmsgs.checkCapability(autopart, 'admin')
-
-    def removeautopart(self, irc, msg, args):
-        """<channel>
-
-        Removes the channel from the auto-part list.
-        """
-        channel = privmsgs.getArgs(args)
-        self.channels.discard(channel)
-        irc.replySuccess()
-    removeautopart = privmsgs.checkCapability(removeautopart, 'admin')
-
     def doJoin(self, irc, msg):
         if irc.nick == msg.nick:
             channels = msg.args[0].split(',')
+            autoParts = self.registryValue('channels')
             for channel in channels:
-                if channel in self.channels:
+                if channel in autoParts:
                     irc.sendMsg(ircmsgs.part(channel))
 
 

@@ -95,9 +95,6 @@ def configure(advanced):
                 output('You can still use the Google module, but you won\'t '
                        'have these extra commands enabled.')
                 return
-        onStart.append('alias add googlelinux "google --restrict=linux $1"')
-        onStart.append('alias add googlebsd "google --restrict=bsd $1"')
-        onStart.append('alias add googlemac "google --restrict=mac $1"')
     else:
         output("""You'll need to get a key before you can use this plugin.
                   You can apply for a key at http://www.google.com/apis/""")
