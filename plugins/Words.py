@@ -143,6 +143,7 @@ class Words(callbacks.Privmsg):
                       'sorted order) to be at %s.  Contact the owner of this '
                       'bot to remedy this situation.' %
                       self.registryValue('file'))
+
     def crossword(self, irc, msg, args, word):
         """<word>
 
@@ -177,6 +178,7 @@ class Words(callbacks.Privmsg):
             irc.reply(utils.commaAndify(words))
         else:
             irc.reply('No matching words were found.')
+    crossword = wrap(crossword, ['something'])
 
     ###
     # HANGMAN
@@ -243,8 +245,9 @@ class Words(callbacks.Privmsg):
                                 game.hidden)
             self._hangmanReply(irc, channel,
                                'Okay ladies and gentlemen, you have '
-                               'a %s-letter word to find, you have %s!' %
-                               (game.guess.count('_'), game.triesLeft()))
+                               'a %s-letter word (%s) to find, you have %s!' %
+                               (game.guess.count('_'), game.guess,
+                                game.triesLeft()))
         # So, a game is going on, but let's see if it's timed out.  If it is
         # we create a new one, otherwise we inform the user
         else:
