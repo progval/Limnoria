@@ -34,7 +34,9 @@ users that can be retrieved later.
 
 __revision__ = "$Id$"
 
+import re
 import time
+import fnmatch
 import operator
 
 import supybot.dbi as dbi
@@ -310,6 +312,46 @@ class Note(callbacks.Privmsg):
         else:
             return '#%s (private)' % note.id
 
+    def search(self, irc, msg, args, user, optlist, glob):
+        """[--{regexp} <value>] [--sent] [<glob>]
+
+        Searches your received notes for ones matching <glob>.  If --regexp is
+        given, its associated value is taken as a regexp and matched against
+        the notes.  If --sent is specified, only search sent notes.
+        """
+        criteria = []
+        def to(note):
+            return note.to == user.id
+        def frm(note):
+            return note.frm == user.id
+        own = to
+        for (option, arg) in optlist:
+            if option == 'regexp':
+                criteria.append(arg.search)
+            elif option == 'sent':
+                own = frm
+        if glob:
+            glob = fnmatch.translate(glob)
+            # ignore the trailing $ fnmatch.translate adds to the regexp
+            criteria.append(re.compile(glob[:-1]).search)
+        def match(note):
+            for p in criteria:
+                if not p(note.text):
+                    return False
+            return True
+        notes = list(self.db.select(lambda n: match(n) and own(n)))
+        if not notes:
+            irc.reply('No matching notes were found.')
+        else:
+            utils.sortBy(operator.attrgetter('id'), notes)
+            ids = [self._formatNoteId(msg, note) for note in notes]
+            ids = self._condense(ids)
+            irc.reply(utils.commaAndify(ids))
+    search = wrap(search,
+                  ['user', getopts({'regexp': ('regexpMatcher', True),
+                                    'sent': ''}),
+                   additional('glob')])
+
     def list(self, irc, msg, args, user, optlist):
         """[--{old,sent}] [--{from,to} <user>]
 
@@ -361,6 +403,8 @@ class Note(callbacks.Privmsg):
                 temp[note[1]] = [note[0]]
         notes = []
         for (k,v) in temp.iteritems():
+            if '(private)' in k:
+                k = k.replace('(private)', '%s private' % utils.be(len(v)))
             notes.append('%s %s' % (utils.commaAndify(v), k))
         return notes
 

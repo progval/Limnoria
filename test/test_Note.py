@@ -76,6 +76,14 @@ class NoteTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('note list --old', '#1 from inkedmn')
         self.assertResponse('note list --old --from inkedmn','#1 from inkedmn')
 
+    def testSearch(self):
+        self.assertNotError('note send inkedmn testing')
+        _ = self.getMsg(' ')
+        self.assertNotError('note send inkedmn 1,2,3')
+        _ = self.getMsg(' ')
+        self.assertRegexp('note search test', r'#1')
+        self.assertRegexp('note search --regexp m/1,2/', r'#2')
+        self.assertRegexp('note search --sent test', r'#1')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
