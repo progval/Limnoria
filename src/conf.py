@@ -114,11 +114,11 @@ def registerPlugin(name, currentValue=None, public=True):
     return group
 
 def get(group, channel=None):
-    if channel is None or not group.channelValue:
-        return group()
-    else:
-        assert ircutils.isChannel(channel)
+    if group.channelValue and \
+       channel is not None and ircutils.isChannel(channel):
         return group.get(channel)()
+    else:
+        return group()
 
 ###
 # The user info registry.
@@ -190,9 +190,17 @@ registerGlobalValue(supybot, 'ident',
     ValidNick('supybot', """Determines the bot's ident string, if the server
     doesn't provide one by default."""))
 
+class VersionIfEmpty(registry.String):
+    def __call__(self):
+        ret = registry.String.__call__(self)
+        if not ret:
+            ret = 'Supybot %s' % version
+        return ret
+
 registerGlobalValue(supybot, 'user',
-    registry.String('Supybot %s' % version, """Determines the user the bot
-    sends to the server."""))
+    VersionIfEmpty('', """Determines the user the bot sends to the server.
+    A standard user using the current version of the bot will be generated if
+    this is left empty."""))
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
     List = ircutils.IrcSet
@@ -769,10 +777,6 @@ registerGlobalValue(supybot.databases.users, 'allowUnregistration',
     (Do also note that this does not prevent the owner of the bot from using
     the unregister command.)
     """))
-registerGlobalValue(supybot.databases.users, 'hash',
-    registry.Boolean(True, """Determines whether the passwords in the user
-    database will be hashed by default.  This only affects new users; users
-    already registered will maintain their current hashedness."""))
 
 registerGroup(supybot.databases, 'ignores')
 registerGlobalValue(supybot.databases.ignores, 'filename',
