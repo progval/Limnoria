@@ -279,17 +279,18 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         name = getArgs(args)
         callbacks = irc.removeCallback(name)
         if callbacks:
-            for callback in callbacks:
-                callback.die()
             try:
                 moduleInfo = imp.find_module(name)
+                module = imp.load_module(name, *moduleInfo)
+                callback = module.Class()
+                irc.addCallback(callback)
+                for callback in callbacks:
+                    callback.die()
+                irc.reply(msg, conf.replySuccess)
             except ImportError:
+                for callback in callbacks:
+                    irc.addCallback(callback)
                 irc.error(msg, 'No plugin %s exists.' % name)
-                return
-            module = imp.load_module(name, *moduleInfo)
-            callback = module.Class()
-            irc.addCallback(callback)
-            irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'There was no callback %s.' % name)
         
