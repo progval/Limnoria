@@ -379,7 +379,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
         Runs the standard upkeep stuff (flushes and gc.collects()).
         """
-        collected = world.upkeep()
+        collected = world.upkeep(scheduleNext=False)
         if gc.garbage:
             irc.reply('Garbage!  %r' % gc.garbage)
         else:

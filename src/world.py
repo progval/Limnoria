@@ -77,7 +77,7 @@ def flush():
         except Exception, e:
             log.exception('Uncaught exception in flusher:')
 
-def upkeep():
+def upkeep(scheduleNext=True):
     """Does upkeep (like flushing, garbage collection, etc.)"""
     sys.exc_clear() # Just in case, let's clear the exception info.
     collected = gc.collect()
@@ -107,7 +107,8 @@ def upkeep():
             log.info('%s Flushers flushed and garbage collected.', timestamp)
         else:
             log.info('%s Garbage collected.', timestamp)
-    schedule.addEvent(upkeep, time.time() + conf.supybot.upkeepInterval())
+    if scheduleNext:
+        schedule.addEvent(upkeep, time.time() + conf.supybot.upkeepInterval())
     return collected
 
 def makeDriversDie():
