@@ -70,6 +70,7 @@ class Internet(callbacks.Privmsg):
                 irc.reply('Host not found.')
 
     _tlds = sets.Set(['com', 'net', 'edu'])
+    _domain = ['Domain Name', 'Server Name']
     _registrar = ['Sponsoring Registrar', 'Registrar', 'source']
     _updated = ['Last Updated On', 'Domain Last Updated Date', 'Updated Date',
                 'Last Modified', 'changed']
@@ -81,7 +82,7 @@ class Internet(callbacks.Privmsg):
 
         Returns WHOIS information on the registration of <domain>.
         """
-        domain = privmsgs.getArgs(args)
+        domain = privmsgs.getArgs(args).lower()
         usertld = domain.split('.')[-1]
         if '.' not in domain:
             irc.error('<domain> must be in .com, .net, .edu, or .org.')
@@ -103,10 +104,20 @@ class Internet(callbacks.Privmsg):
         t.write(search)
         t.write('\n')
         s = t.read_all()
-        (registrar, updated, created, expires, status) = ('', '', '', '', '')
+        server = registrar = updated = created = expires = status = ''
         for line in s.splitlines():
             line = line.strip()
             if not line or ':' not in line:
+                continue
+            if not server and any(line.startswith, self._domain):
+                server = ':'.join(line.split(':')[1:]).strip().lower()
+                # Let's add this check so that we don't respond with info for
+                # a different domain. E.g., doing a whois for microsoft.com
+                # and replying with the info for microsoft.com.wanadoodoo.com
+                if server != domain:
+                    server = ''
+                    continue
+            if not server:
                 continue
             if not registrar and any(line.startswith, self._registrar):
                 registrar = ':'.join(line.split(':')[1:]).strip()
@@ -128,23 +139,26 @@ class Internet(callbacks.Privmsg):
         except socket.error, e:
             irc.error(str(e))
             return
-        t.write('registrar id ')
-        t.write(registrar)
+        t.write('registrar ')
+        t.write(registrar.split('(')[0].strip())
         t.write('\n')
         s = t.read_all()
+        url = ''
         for line in s.splitlines():
             line = line.strip()
             if not line:
                 continue
             if line.startswith('Email'):
                 url = ' <registered at %s>' % line.split('@')[-1]
-            if line == 'Not a valid ID pattern':
+            elif line.startswith('Registrar Organization:'):
+                url = ' <registered by %s>' % line.split(':')[1].strip()
+            elif line == 'Not a valid ID pattern':
                 url = ''
-        try:
-            s = '%s%s is %s; %s.' % (domain, url, status,
-                 ', '.join(filter(None, [created, updated, expires])))
+        if server and status:
+            info = filter(None, [status, created, updated, expires])
+            s = '%s%s is %s.' % (server, url, utils.commaAndify(info))
             irc.reply(s)
-        except NameError, e:
+        else:
             irc.error('I couldn\'t find such a domain.')
 
 
