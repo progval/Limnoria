@@ -531,9 +531,6 @@ class Irc(IrcCommandDispatcher):
         else:
             return None
 
-    def do001(self, msg):
-        pass
-    
     def doPing(self, msg):
         """Handles PING messages."""
         self.sendMsg(ircmsgs.pong(msg.args[0]))
