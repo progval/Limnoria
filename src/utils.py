@@ -753,7 +753,6 @@ class AtomicFile(file):
                 if originalExists:
                     oldSize = os.path.getsize(self.filename)
                     if self.makeBackupIfSmaller and newSize < oldSize:
-                        print '*** newSize:', newSize, 'oldSize:', oldSize
                         now = int(time.time())
                         backupFilename = '%s.backup.%s' % (self.filename, now)
                         if self.backupDir is not None:
