@@ -161,17 +161,15 @@ class IrcMsgQueue(object):
         self.highpriority = smallqueue()
         self.normal = smallqueue()
         self.lowpriority = smallqueue()
-        self.msgs = set()
 
     def enqueue(self, msg):
         """Enqueues a given message."""
-        if msg in self.msgs and \
+        if msg in self and \
            conf.supybot.protocols.irc.refuseToQueueDuplicateMessages():
             s = str(msg).strip()
             log.info('Not adding message %q to queue, already added.', s)
             return False
         else:
-            self.msgs.add(msg)
             if msg.command in _high:
                 self.highpriority.enqueue(msg)
             elif msg.command in _low:
@@ -189,19 +187,18 @@ class IrcMsgQueue(object):
             msg = self.normal.dequeue()
         elif self.lowpriority:
             msg = self.lowpriority.dequeue()
-        if msg:
-            try:
-                self.msgs.remove(msg)
-            except KeyError:
-                s = 'Odd, dequeuing a message that\'s not in self.msgs.'
-                log.warning(s)
         return msg
+
+    def __contains__(self, msg):
+        return msg in self.normal or \
+               msg in self.lowpriority or \
+               msg in self.highpriority
 
     def __nonzero__(self):
         return bool(self.highpriority or self.normal or self.lowpriority)
 
     def __len__(self):
-        return sum(imap(len,[self.highpriority,self.lowpriority,self.normal]))
+        return len(self.highpriority)+len(self.lowpriority)+len(self.normal)
 
     def __repr__(self):
         name = self.__class__.__name__

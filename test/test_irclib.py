@@ -76,6 +76,19 @@ class IrcMsgQueueTestCase(SupyTestCase):
         q.dequeue()
         self.assertEqual(len(q), 0)
 
+    def testContains(self):
+        q = irclib.IrcMsgQueue()
+        q.enqueue(self.msg)
+        q.enqueue(self.msg)
+        q.enqueue(self.msg)
+        self.failUnless(self.msg in q)
+        q.dequeue()
+        self.failUnless(self.msg in q)
+        q.dequeue()
+        self.failUnless(self.msg in q)
+        q.dequeue()
+        self.failIf(self.msg in q)
+
     def testRepr(self):
         q = irclib.IrcMsgQueue()
         self.assertEqual(repr(q), 'IrcMsgQueue([])')
