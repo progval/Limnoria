@@ -105,6 +105,10 @@ if sqlite is not None:
             self.assertNotRegexp('info foo', '#0')
             self.assertNotRegexp('whatis foo', '#0')
 
+        def testInfoReturnsRightNumber(self):
+            self.assertNotError('learn foo as bar')
+            self.assertNotRegexp('info foo', '2 factoids')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -339,12 +339,12 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                           ORDER BY id""", id)
         factoids = cursor.fetchall()
         L = []
-        counter = 1
+        counter = 0
         for (added_by, added_at) in factoids:
+            counter += 1
             added_at = time.strftime(conf.humanTimestampFormat,
                                      time.localtime(int(added_at)))
             L.append('#%s was added by %s at %s' % (counter,added_by,added_at))
-            counter += 1
         factoids = '; '.join(L)
         s = 'Key %r is %s and has %s factoids associated with it: %s' % \
             (key, locked and 'locked' or 'not locked', counter, factoids)
