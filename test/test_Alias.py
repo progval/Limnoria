@@ -95,10 +95,10 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
     def testNonCanonicalName(self):
         self.assertError('alias FOO foo')
 
-##     def testNotCannotNestRaised(self):
-##         self.assertNotError('alias punish "lart $channel $1"')
-##         self.assertNotError('punish #foo bugs')
-##         self.assertNoResponse('blah blah blah', 2)
+    def testNotCannotNestRaised(self):
+        self.assertNotError('alias mytell "tell $channel $1"')
+        self.assertNotError('mytell #foo bugs')
+        self.assertNoResponse('blah blah blah', 2)
         
 
 
