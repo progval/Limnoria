@@ -346,8 +346,9 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                                      time.localtime(int(added_at)))
             L.append('#%s was added by %s at %s' % (counter,added_by,added_at))
         factoids = '; '.join(L)
-        s = 'Key %r is %s and has %s factoids associated with it: %s' % \
-            (key, locked and 'locked' or 'not locked', counter, factoids)
+        s = 'Key %r is %s and has %s associated with it: %s' % \
+            (key, locked and 'locked' or 'not locked',
+             utils.nItems(counter, 'factoid'), factoids)
         irc.reply(msg, s)
 
     _sqlTrans = string.maketrans('*?', '%_')
