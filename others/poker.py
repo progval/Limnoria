@@ -27,6 +27,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import supybot.fix
+
 # Constants.
 S = 's'
 C = 'c'
@@ -63,67 +65,119 @@ class Card(object):
     __repr__ = __str__
 
     def __cmp__(self, other):
-        cmp(self.rank, other.rank)
+        return cmp(self.rank, other.rank)
 
-class Hand(object):
-    def __init__(self, cards):
-        self.cards = cards
-
-    def cmpVal(self):
-        self.cards.sort()
-        self.cards.reverse() # High before low.
-        first = 0
-        if self.isFlush() and self.isStraight():
-            first = 8
-        elif self.isFourOfAKind():
-            first = 7
-        elif self.isFullHouse():
-            first = 6
-        elif self.isFlush():
-            first = 5
-        elif self.isStraight():
-            first = 4
-        elif self.isThreeOfAKind():
-            first = 3
-        elif self.isTwoPair():
-            first = 2
-        elif self.isPair():
-            first = 1
-        return (first, self.cards)
-
-    # These assume self.cards is sorted.
-    def isFlush(self):
-        return all(lambda s: s == self.cards[0].suit, self.cards)
-
-    def isStraight(self):
-        diffs = [x-y for (x, y) in window(self.cards, 2)]
-        return all(lambda x: x == 1, diffs)
-
-    def _isSomeOfAKind(self, i):
-        def eq(x, y):
-            return x == y
-        for cards in window(self.cards, i):
-            if all(None, map(eq, window(cards, 2))):
-                return True
-        return False
-
-    def isFourOfAKind(self):
-        return _isSomeOfAKind(4)
-
-    def isThreeOfAKind(self):
-        return _isSomeOfAKind(3)
-
-    def isPair(self):
-        return _isSomeOfAKind(2)
-
-    def isFullHouse(self):
-        pass
-
-    def __cmp__(self, other):
-        cmp(self.cmpVal(), other.cmpVal())
+def combinations(L, n):
+    if len(L) >= n:
+        if n == 0:
+            yield []
+        else:
+            (first, rest) = (L[:1], L[1:])
+            for miniL in combinations(rest, n-1):
+                yield first + miniL
+            for miniL in combinations(rest, n):
+                yield miniL
         
+def sort(hand):
+    hand.sort()
+    hand.reverse()
+    return hand
+
+def getFlush(hand):
+    if all(lambda c: c.suit == hand[0].suit, hand):
+        return sort(hand)
+    return []
+
+def getStraight(hand):
+    sort(hand)
+    if all(lambda i: i==1, [x.rank-y.rank for (x,y) in window(hand,2)]):
+        return hand
+    elif hand[0].rank == A:
+        (hand[0], hand[-1]) = (hand[-1], hand[0])
+        if all(lambda i: i == 1, [x.rank-y.rank for (x,y) in window(hand,2)]):
+            return hand
+    sort(hand)
+    return []
+
+def getPair(hand):
+    sort(hand)
+    for (x, y) in window(hand, 2):
+        if x.rank == y.rank:
+            return ([x,y], [c for c in hand if c.rank != x.rank])
+    return ([], hand)
+
+def getTrips(hand):
+    sort(hand)
+    for (x, y, z) in window(hand, 3):
+        if x.rank == y.rank == z.rank:
+            return ([x,y,z], [c for c in hand if c.rank != x.rank])
+    return ([], hand)
+
+def getFours(hand):
+    sort(hand)
+    for (x, y, z, w) in window(hand, 4):
+        if x.rank == y.rank == z.rank == w.rank:
+            return ([x,y,z,w], [c for c in hand if c.rank != x.rank])
+    return ([], hand)
+
+def score(cards):
+    """Returns a comparable value for a list of cards."""
+    def getRank(hand):
+        assert len(hand) == 5
+        (pair, pairRest) = getPair(hand)
+        if pair:
+            # Can't be flushes or straights.
+            (trips, tripRest) = getTrips(hand)
+            if trips:
+                (fours, fourRest) = getFours(hand)
+                if fours:
+                    return (7, fours + fourRest)
+                (pair, _) = getPair(tripRest)
+                if pair:
+                    # Full house.
+                    return (6, trips + pair)
+                sort(tripRest)
+                return (3, trips + tripRest)
+            (otherPair, twoPairRest) = getPair(pairRest)
+            if otherPair:
+                if otherPair[0] > pair[0]:
+                    return (2, otherPair + pair + twoPairRest)
+                else:
+                    return (2, pair + otherPair + twoPairRest)
+            sort(pairRest)
+            return (1, pair + pairRest)
+        else:
+            flush = getFlush(hand)
+            if flush:
+                straight = getStraight(hand)
+                if straight:
+                    return (8, straight)
+                return (5, flush)
+            straight = getStraight(hand)
+            if straight:
+                return (4, straight)
+            hand.sort()
+            return (0, hand)
+    first = 0
+    second = None
+    for hand in combinations(cards, 5):
+        (maybeFirst, maybeSecond) = getRank(hand)
+        if maybeFirst > first:
+            first = maybeFirst
+            second = maybeSecond
+        elif maybeFirst == first:
+            second = max(second, maybeSecond)
+    assert len(second) == 5, 'invalid second len'
+    return (first, second)
+    
 deck = []
 for suit in [S, H, C, D]:
-    for rank in [A, K, Q, J] + range(2, 11):
+    for rank in [A, K, Q, J] + range(10, 1, -1):
         deck.append(Card(rank, suit))
 
+
+if __name__ == '__main__':
+    import random
+    random.shuffle(deck)
+    for hand in window(deck, 7):
+        print '%s: %s' % (hand, score(hand))
