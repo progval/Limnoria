@@ -76,6 +76,8 @@ class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('searchfactoids /^.+i/', 'jemfinch.*strike')
         self.assertNotRegexp('searchfactoids /^.+i/', 'inkedmn')
         self.assertRegexp('searchfactoids /^j/', 'jemfinch.*jamessan')
+        self.assertRegexp('searchfactoids ke',
+                          'inkedmn.*strike|strike.*inkedmn')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

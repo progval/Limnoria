@@ -327,9 +327,11 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def searchfactoids(self, irc, msg, args):
-        """[<channel>] <regexp>
+        """[<channel>] <regexp|string>
 
-        Searches the keyspace for keys matching <regexp>.
+        Searches the keyspace for keys matching <regexp>.  If <regexp|string>
+        isn't a regexp (i.e, it's not of the form m/foo/ or /bar/) then the
+        literal string is searched for.
         """
         channel = privmsgs.getChannel(msg, args)
         regexp = privmsgs.getArgs(args)
@@ -338,8 +340,12 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             def p(s):
                 return int(bool(r.search(s)))
         except ValueError, e:
-            irc.error(msg, 'Invalid regular expression.')
-            return
+            if not regexp.startswith('m/') or regexp[0] == '/' == regexp[-1]:
+                def p(s):
+                    return int(regexp in s)
+            else:
+                irc.error(msg, 'Invalid regular expression.')
+                return
         db = self.getDb(channel)
         db.create_function('p', 1, p)
         cursor = db.cursor()
