@@ -724,6 +724,10 @@ class CanonicalNameSet(utils.NormalizingSet):
     def normalize(self, s):
         return canonicalName(s)
         
+class CanonicalNameDict(utils.InsensitivePreservingDict):
+    def key(self, s):
+        return canonicalName(s)
+
 class Disabled(registry.SpaceSeparatedListOf):
     Value = CanonicalString
     List = CanonicalNameSet
@@ -734,12 +738,8 @@ conf.registerGlobalValue(conf.supybot.commands, 'disabled',
     to exist."""))
     
 class DisabledCommands(object):
-    class CanonicalNameDict(utils.InsensitivePreservingDict):
-        def key(self, s):
-            return canonicalName(s)
-
     def __init__(self):
-        self.d = self.CanonicalNameDict()
+        self.d = CanonicalNameDict()
         for name in conf.supybot.commands.disabled():
             if '.' in name:
                 (plugin, command) = name.split('.', 1)
