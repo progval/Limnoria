@@ -73,7 +73,7 @@ def describePlugin(module, showUsage):
                 pydoc.pager(module.example)
         else:
             output("""This plugin has no usage example.""")
-    
+
 def clearLoadedPlugins(plugins, pluginRegistry):
     for plugin in plugins:
         try:
@@ -84,11 +84,11 @@ def clearLoadedPlugins(plugins, pluginRegistry):
             continue
 
 _windowsVarRe = re.compile(r'%(\w+)%')
-def getDirectoryName(default):
+def getDirectoryName(default, basedir=os.curdir):
     done = False
     while not done:
         dir = something('What directory do you want to use?',
-                       default=os.path.join(os.curdir, default))
+                       default=os.path.join(basedir, default))
         dir = os.path.expanduser(dir)
         dir = _windowsVarRe.sub(r'$\1', dir)
         dir = os.path.expandvars(dir)
@@ -183,7 +183,7 @@ def main():
     users.  Others might not make sense unless you've used Supybot for some
     time.""")
     advanced = yn('Are you an advanced Supybot user?', default=False)
-    
+
     ### Directories.
     # We set these variables in cache because otherwise conf and log will
     # create directories for the default values, which might not be what the
@@ -206,6 +206,7 @@ def main():
     except KeyError:
         logDir = getDirectoryName('logs')
     conf.supybot.directories.log.setValue(logDir)
+    basedir = os.path.dirname(logDir)
 
     # conf.supybot.directories.data
     output("""Your bot will need to put various data somewhere.  Things like
@@ -215,9 +216,9 @@ def main():
     try:
         dataDir = registry._cache['supybot.directories.data']
         dataDir = utils.safeEval(dataDir)
-        dataDir = getDirectoryName(dataDir)
+        dataDir = getDirectoryName(dataDir, basedir=basedir)
     except KeyError:
-        dataDir = getDirectoryName('data')
+        dataDir = getDirectoryName('data', basedir=basedir)
     conf.supybot.directories.data.setValue(dataDir)
 
     # conf.supybot.directories.conf
@@ -228,11 +229,11 @@ def main():
     try:
         confDir = registry._cache['supybot.directories.conf']
         confDir = utils.safeEval(confDir)
-        confDir = getDirectoryName(confDir)
+        confDir = getDirectoryName(confDir, basedir=basedir)
     except KeyError:
-        confDir = getDirectoryName('conf')
+        confDir = getDirectoryName('conf', basedir=basedir)
     conf.supybot.directories.conf.setValue(confDir)
-    
+
     # pluginDirs
     output("""Your bot will also need to know where to find his plugins at.
     Of course, he already knows where the plugins that he came with are, but
@@ -243,7 +244,7 @@ def main():
     output(utils.commaAndify(pluginDirs))
     while yn('Would you like to add another plugin directory?',
              default=False):
-        pluginDir = getDirectoryName('plugins')
+        pluginDir = getDirectoryName('plugins', basedir=basedir)
         if pluginDir not in pluginDirs:
             pluginDirs.append(pluginDir)
     conf.supybot.directories.plugins.setValue(pluginDirs)
@@ -444,14 +445,13 @@ def main():
             if not yn('Would you like add another plugin?'):
                 break
             name = expect('What plugin would you like to look at?', plugins)
-    
+
     ###
     # Sundry
     ###
     output("""Although supybot offers a supybot-adduser.py script, with which
     you can add users to your bot's user database, it's *very* important that
     you have an owner user for you bot.""")
-    print '***', conf.supybot.directories.conf()
     if yn('Would you like to add an owner user for your bot?', default=True):
         import ircdb
         name = something('What should the owner\'s username be?')
@@ -633,7 +633,7 @@ def main():
                 except InvalidRegistryValue:
                     output("""That's not a valid time.  You'll need to give
                     a floating-point number.""")
-        
+
     ###
     # This is close to the end.
     ###
@@ -645,7 +645,7 @@ def main():
         what you'd like to change, then come back and run this script again
         and tell us you're an advanced user.  Some of those questions might be
         boring, but they'll really help you customize your bot :)""")
-    
+
     ###
     # Write the registry
     ###
@@ -654,7 +654,7 @@ def main():
     if not filename:
         filename = '%s.conf' % nick
     registry.close(conf.supybot, filename)
-    
+
     # Done!
     output("""All done!  Your new bot configuration is %s.  If you're running 
     a *nix based OS, you can probably start your bot with the command line

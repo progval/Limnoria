@@ -44,7 +44,7 @@ useBold = False
 
 def output(s, unformatted=True):
     if unformatted:
-        s = textwrap.fill(utils.normalizeWhitespace(s))
+        s = textwrap.fill(utils.normalizeWhitespace(s), width=65)
     print s
     print
 
