@@ -33,9 +33,21 @@ from test import *
 
 class UserCommandsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('UserCommands',)
-##     def testRegister(self):
-##         self.assertNotError('register foo bar')
-##         self.assertError('register foo baz')
+    prefix1 = 'somethingElse!user@host.tld'
+    prefix2 = 'EvensomethingElse!user@host.tld'
+    def testRegister(self):
+        self.prefix = self.prefix1
+        self.assertNotError('register foo bar')
+        self.assertError('register foo baz')
+
+    def testChangeUsername(self):
+        self.prefix = self.prefix1
+        self.assertNotError('register foo bar')
+        self.prefix = self.prefix2
+        self.assertNotError('register bar baz')
+        self.prefix = self.prefix1
+        self.assertError('changeusername foo bar')
+        self.assertNotError('changeusername foo baz')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

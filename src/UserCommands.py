@@ -61,7 +61,7 @@ class UserCommands(callbacks.Privmsg):
             return
         try:
             ircdb.users.getUserId(name)
-            irc.error(msg, 'That name is alrady assigned to someone.')
+            irc.error(msg, 'That name is already assigned to someone.')
             return
         except KeyError:
             pass
@@ -95,11 +95,35 @@ class UserCommands(callbacks.Privmsg):
         else:
             irc.error(msg, conf.replyIncorrectAuth)
 
+    def changeusername(self, irc, msg, args):
+        """<name> <new name> [<password>]
+
+        Changes your current user database name to the new name given.
+        <password> is only necessary if the user isn't recognized by hostmask.
+        """
+        (name, newname, password) = privmsgs.getArgs(args, needed=2,optional=1)
+        try:
+            id = ircdb.users.getUserId(name)
+            user = ircdb.users.getUser(id)
+        except KeyError:
+            irc.error(msg, 'That username isn\'t registered.')
+            return
+        try:
+            id = ircdb.users.getUserId(newname)
+            irc.error(msg, '%r is already registered.' % newname)
+            return
+        except KeyError:
+            pass
+        if user.checkHostmask(msg.prefix) or user.checkPassword(password):
+            user.name = newname
+            ircdb.users.setUser(id, user)
+            irc.reply(msg, conf.replySuccess)
+            
     def addhostmask(self, irc, msg, args):
         """<name> <hostmask> [<password>]
 
         Adds the hostmask <hostmask> to the user specified by <name>.  The
-        <password> may only be required if the user is not recognized by his
+        <password> may only be required if the user is not recognized by
         hostmask.
         """
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)

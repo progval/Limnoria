@@ -37,6 +37,8 @@ if 'test' not in sys.path:
 
 import conf
 conf.dataDir = 'test-data'
+conf.confDir = 'test-conf'
+conf.logDir = 'test-log'
 conf.replyWhenNotCommand = False
 
 from fix import *
@@ -52,14 +54,21 @@ import unittest
 if not os.path.exists(conf.dataDir):
     os.mkdir(conf.dataDir)
 
-for filename in os.listdir(conf.dataDir):
-    os.remove(os.path.join(conf.dataDir, filename))
+if not os.path.exists(conf.confDir):
+    os.mkdir(conf.confDir)
+
+if not os.path.exists(conf.logDir):
+    os.mkdir(conf.logDir)
+
+for filename in os.listdir(conf.logDir):
+    os.remove(os.path.join(conf.logDir, filename))
 
 import debug
 
 debug.minimumDebugPriority = 'high'
 
 import world
+import ircdb
 import irclib
 import drivers
 import ircmsgs
@@ -106,8 +115,12 @@ class PluginTestCase(unittest.TestCase):
     timeout = 10
     plugins = ()
     def setUp(self, nick='test'):
+        for filename in os.listdir(conf.confDir):
+            os.remove(os.path.join(conf.confDir, filename))
         for filename in os.listdir(conf.dataDir):
             os.remove(os.path.join(conf.dataDir, filename))
+        ircdb.users.reload()
+        ircdb.channels.reload()
         if not self.plugins:
             raise ValueError, 'PluginTestCase must have a "plugins" attribute.'
         self.nick = nick
