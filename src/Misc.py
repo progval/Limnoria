@@ -531,7 +531,7 @@ class Misc(callbacks.Privmsg):
                                 'with': 'something',
                                 'from': 'something',
                                 'without': 'something',
-                                'in': 'callerInChannel',
+                                'in': 'callerInGivenChannel',
                                 'regexp': 'regexpMatcher',})])
 
 

@@ -341,7 +341,7 @@ def onlyInChannel(irc, msg, args, state):
         state.channel = msg.args[0]
         state.args.append(state.channel)
 
-def callerInChannel(irc, msg, args, state):
+def callerInGivenChannel(irc, msg, args, state):
     channel = args[0]
     if irc.isChannel(channel):
         if channel in irc.state.channels:
@@ -353,6 +353,12 @@ def callerInChannel(irc, msg, args, state):
             irc.error('I\'m not in %s.' % channel, Raise=True)
     else:
         irc.errorInvalid('channel', args[0])
+
+def nickInChannel(irc, msg, args, state):
+    inChannel(irc, msg, args, state)
+    if args[0] not in irc.state.channels[state.channel].users:
+        irc.error('%s is not in %s.' % (args[0], state.channel), Raise=True)
+    state.args.append(args.pop(0))
 
 def getChannelOrNone(irc, msg, args, state):
     try:
@@ -477,7 +483,8 @@ wrappers = ircutils.IrcDict({
     'channel': getChannel,
     'inChannel': inChannel,
     'onlyInChannel': onlyInChannel,
-    'callerInChannel': callerInChannel,
+    'nickInChannel': nickInChannel,
+    'callerInGivenChannel': callerInGivenChannel,
     'plugin': getPlugin,
     'boolean': getBoolean,
     'lowered': getLowered,
@@ -492,6 +499,7 @@ wrappers = ircutils.IrcDict({
     'hostmask': getHostmask,
     'banmask': getBanmask,
     'user': getUser,
+    'matches': getMatch,
     'public': public,
     'private': private,
     'otherUser': getOtherUser,
@@ -505,8 +513,14 @@ wrappers = ircutils.IrcDict({
 def addConverter(name, wrapper):
     wrappers[name] = wrapper
 
+class UnknownConverter(KeyError):
+    pass
+
 def getConverter(name):
-    return wrappers[name]
+    try:
+        return wrappers[name]
+    except KeyError, e:
+        raise UnknownConverter, str(e)
 
 def callConverter(name, irc, msg, args, state, *L):
     getConverter(name)(irc, msg, args, state, *L)
@@ -557,6 +571,7 @@ class context(object):
 # additional means:  Look for this (and make sure it's of this type).  If
 # there are no arguments for us to check, then use our default.
 class additional(context):
+    # XXX We should allow contexts as well as specs.
     def __init__(self, spec, default=None):
         self.__parent = super(additional, self)
         self.__parent.__init__(spec)
