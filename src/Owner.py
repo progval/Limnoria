@@ -120,11 +120,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def do001(self, irc, msg):
         self.log.info('Loading other src/ plugins.')
         for s in ('Admin', 'Channel', 'Config', 'Misc', 'User'):
-            self.log.info('Loading %s.' % s)
-            m = loadPluginModule(s)
-            loadPluginClass(irc, m)
+            if irc.getCallback(s) is None:
+                self.log.info('Loading %s.' % s)
+                m = loadPluginModule(s)
+                loadPluginClass(irc, m)
+        self.log.info('Loading plugins/ plugins.')
         for (name, value) in conf.supybot.plugins.getValues():
-            if value():
+            if value() and irc.getCallback(name) is None:
                 s = rsplit(name, '.', 1)[-1]
                 if not irc.getCallback(s):
                     self.log.info('Loading %s.' % s)
