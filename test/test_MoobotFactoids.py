@@ -73,6 +73,7 @@ if sqlite is not None:
             self.prefix = 'foo!bar@baz'
             self.irc.feedMsg(ircmsgs.privmsg(self.nick, 'register tester moo',
                                              prefix=self.prefix))
+            m = self.irc.takeMsg() # Response to register.
 
         def testAddFactoid(self):
             self.assertNotError('moo is foo')
