@@ -11,6 +11,6 @@ Announce the release on Freshmeat.net.
 Announce the release on PyPI via "python setup.py register".
 Add a topic to #supybot announcing the release.
 Make a release-MAJOR_MINOR_PATCHLEVEL tag.  (cvs tag ...)
-Make a release-MAJOR_MINOR_PATCHLEVEL branch tag.  (cvs tag -b ...)
+Make a release-MAJOR_MINOR_PATCHLEVEL-branch branch tag.  (cvs tag -b ...)
 
 

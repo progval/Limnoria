@@ -1,10 +1,16 @@
+	* Fixed a bug in Http.weather that would cause an ugly error
+	message for a command like "weather hell".
+	
+	* Added the number of strings to the Fun.object output.
+	
 	* Fixed bug in RSS.configure; no aliases could be added.
 	
 	* Changed Alias.freeze to Alias.lock.
 	
 	* Fixed sorting in Status' uptime database.
 	
-	* Updated the Gameknot tests for expired games.
+	* Updated the Gameknot tests for expired games, and updated the
+	Gameknot plugin to handle such links in its snarfer.
 	
 	* Added a 'server' attribute to Irc objects to unify the way to
 	access such information.
