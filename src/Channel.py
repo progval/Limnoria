@@ -51,9 +51,9 @@ class Channel(callbacks.Privmsg):
     def op(self, irc, msg, args, channel):
         """[<channel>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will give you ops.
+        If you have the #channel.op capability, this will give you ops.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.op(channel, msg.nick))
@@ -64,9 +64,9 @@ class Channel(callbacks.Privmsg):
     def halfop(self, irc, msg, args, channel):
         """[<channel>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.halfop
-        capability, this will give you halfops.
+        If you have the #channel.halfop capability, this will give you halfops.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
@@ -77,9 +77,9 @@ class Channel(callbacks.Privmsg):
     def voice(self, irc, msg, args, channel):
         """[<channel>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.voice capability,
-        this will give you voice.
+        If you have the #channel.voice capability, this will give you voice.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.voice(channel, msg.nick))
@@ -90,10 +90,10 @@ class Channel(callbacks.Privmsg):
     def cycle(self, irc, msg, args, channel):
         """[<channel>] [<key>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will cause the bot to "cycle", or PART and then JOIN the channel.
-        If <key> is given, join the channel using that key.
+        If you have the #channel.op capability, this will cause the bot to
+        "cycle", or PART and then JOIN the channel. If <key> is given, join
+        the channel using that key. <channel> is only necessary if the message
+        isn't sent in the channel itself.
         """
         key = privmsgs.getArgs(args, required=0, optional=1)
         if not key:
@@ -105,11 +105,11 @@ class Channel(callbacks.Privmsg):
     def kban(self, irc, msg, args):
         """[<channel>] <nick> [<number of seconds to ban>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will kickban <nick> for as many seconds as you specify, or else
-        (if you specify 0 seconds or don't specify a number of seconds) it
-        will ban the person indefinitely.
+        If you have the #channel.op capability, this will kickban <nick> for
+        as many seconds as you specify, or else (if you specify 0 seconds or
+        don't specify a number of seconds) it will ban the person indefinitely.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         channel = privmsgs.getChannel(msg, args)
         (bannedNick, length) = privmsgs.getArgs(args, optional=1)
@@ -160,10 +160,10 @@ class Channel(callbacks.Privmsg):
     def lobotomize(self, irc, msg, args, channel):
         """[<channel>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will "lobotomize" the bot, making it silent and unanswering to
-        all requests made in the channel.
+        If you have the #channel.op capability, this will "lobotomize" the
+        bot, making it silent and unanswering to all requests made in the
+        channel. <channel> is only necessary if the message isn't sent in the
+        channel itself.
         """
         ircdb.channels.getChannel(channel).lobotomized = True
         irc.reply(msg, conf.replySuccess)
@@ -172,10 +172,10 @@ class Channel(callbacks.Privmsg):
     def unlobotomize(self, irc, msg, args, channel):
         """[<channel>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will unlobotomize the bot, making it respond to requests made in
-        the channel again.
+        If you have the #channel.op capability, this will unlobotomize the bot,
+        making it respond to requests made in the channel again.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         ircdb.channels.getChannel(channel).lobotomized = False
         irc.reply(msg, conf.replySuccess)
@@ -184,10 +184,10 @@ class Channel(callbacks.Privmsg):
     def permban(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will effect a permanent (persistent) ban on the given <hostmask>
-        (or the current hostmask associated with <nick>.
+        If you have the #channel.op capability, this will effect a permanent
+        (persistent) ban on the given <hostmask> (or the current hostmask
+        associated with <nick>.  <channel> is only necessary if the message
+        isn't sent in the channel itself.
         """
         arg = privmsgs.getArgs(args)
         if ircutils.isNick(arg):
@@ -206,9 +206,9 @@ class Channel(callbacks.Privmsg):
     def unpermban(self, irc, msg, args, channel):
         """[<channel>] <hostmask>
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will remove the permanent ban on <hostmask>.
+        If you have the #channel.op capability, this will remove the permanent
+        ban on <hostmask>.  <channel> is only necessary if the message isn't
+        sent in the channel itself.
         """
         banmask = privmsgs.getArgs(args)
         c = ircdb.channels.getChannel(channel)
@@ -220,10 +220,10 @@ class Channel(callbacks.Privmsg):
     def ignore(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will set a permanent (persistent) ignore on <hostmask> or the
-        hostmask currently associated with <nick>.
+        If you have the #channel.op capability, this will set a permanent
+        (persistent) ignore on <hostmask> or the hostmask currently associated
+        with <nick>. <channel> is only necessary if the message isn't sent in
+        the channel itself.
         """
         arg = privmsgs.getArgs(args)
         if ircutils.isNick(arg):
@@ -242,9 +242,9 @@ class Channel(callbacks.Privmsg):
     def unignore(self, irc, msg, args, channel):
         """[<channel>] <hostmask>
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will remove the permanent ignore on <hostmask> in the channel.
+        If you have the #channel.op capability, this will remove the permanent
+        ignore on <hostmask> in the channel. <channel> is only necessary if the
+        message isn't sent in the channel itself.
         """
         banmask = privmsgs.getArgs(args)
         c = ircdb.channels.getChannel(channel)
@@ -257,8 +257,8 @@ class Channel(callbacks.Privmsg):
         """[<channel>]
 
         Lists the hostmasks that the bot is ignoring on the given channel.
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         channelarg = privmsgs.getArgs(args, required=0, optional=1)
         channel = channelarg or channel
@@ -274,10 +274,10 @@ class Channel(callbacks.Privmsg):
     def addcapability(self, irc, msg, args, channel):
         """[<channel>] <name|hostmask> <capability>
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will give the user currently identified as <name> (or the user
-        to whom <hostmask> maps) the capability <capability> in the channel.
+        If you have the #channel.op capability, this will give the user
+        currently identified as <name> (or the user to whom <hostmask> maps)
+        the capability <capability> in the channel. <channel> is only necessary
+        if the message isn't sent in the channel itself.
         """
         (name, capability) = privmsgs.getArgs(args, 2)
         capability = ircdb.makeChannelCapability(channel, capability)
@@ -294,11 +294,10 @@ class Channel(callbacks.Privmsg):
     def removecapability(self, irc, msg, args, channel):
         """[<channel>] <name|hostmask> <capability>
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will take from the user currently identified as <name> (or the
-        user to whom <hostmask> maps) the capability <capability> in the
-        channel.
+        If you have the #channel.op capability, this will take from the user
+        currently identified as <name> (or the user to whom <hostmask> maps)
+        the capability <capability> in the channel. <channel> is only necessary
+        if the message isn't sent in the channel itself.
         """
         (name, capability) = privmsgs.getArgs(args, 2)
         capability = ircdb.makeChannelCapability(channel, capability)
@@ -315,10 +314,10 @@ class Channel(callbacks.Privmsg):
     def setdefaultcapability(self, irc, msg, args, channel):
         """[<channel>] <default response to unknown capabilities> <True|False>
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will set the default response to non-power-related (that is,
-        not {op, halfop, voice} capabilities to be the value you give.
+        If you have the #channel.op capability, this will set the default
+        response to non-power-related (that is, not {op, halfop, voice}
+        capabilities to be the value you give. <channel> is only necessary if
+        the message isn't sent in the channel itself.
         """
         v = privmsgs.getArgs(args)
         v = v.capitalize()
@@ -339,10 +338,9 @@ class Channel(callbacks.Privmsg):
     def setcapability(self, irc, msg, args, channel):
         """[<channel>] <capability>
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will add the channel capability <capability> for all users in the
-        channel.
+        If you have the #channel.op capability, this will add the channel
+        capability <capability> for all users in the channel. <channel> is
+        only necessary if the message isn't sent in the channel itself.
         """
         capability = privmsgs.getArgs(args)
         c = ircdb.channels.getChannel(channel)
@@ -354,11 +352,10 @@ class Channel(callbacks.Privmsg):
     def unsetcapability(self, irc, msg, args, channel):
         """[<chanel>] <capability>
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  If you have the #channel.op capability,
-        this will unset the channel capability <capability> so each user's
-        specific capability or the channel default capability will take
-        precedence.
+        If you have the #channel.op capability, this will unset the channel
+        capability <capability> so each user's specific capability or the
+        channel default capability will take precedence. <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
         capability = privmsgs.getArgs(args)
         c = ircdb.channels.getChannel(channel)
@@ -370,9 +367,8 @@ class Channel(callbacks.Privmsg):
     def capabilities(self, irc, msg, args):
         """[<channel>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  Returns the capabilities present on the
-        <channel>.
+        Returns the capabilities present on the <channel>. <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         c = ircdb.channels.getChannel(channel)
