@@ -29,9 +29,33 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+from __future__ import generators
+
 from test import *
 
 class QueueTest(unittest.TestCase):
+    def testGetitem(self):
+        q = queue()
+        n = 10
+        for i in xrange(n):
+            q.enqueue(i)
+        for i in xrange(n):
+            self.assertEqual(q[i], i)
+        for i in xrange(n, 0, -1):
+            self.assertEqual(q[-i], n-i)
+        self.assertRaises(IndexError, q.__getitem__, -(n+1))
+        self.assertRaises(IndexError, q.__getitem__, n)
+        
+            
+    def testSetitem(self):
+        q1 = queue()
+        for i in xrange(10):
+            q1.enqueue(i)
+        q2 = eval(repr(q1))
+        for (i, elt) in enumerate(q2):
+            q2[i] = elt*2
+        self.assertEqual([x*2 for x in q1], list(q2))
+        
     def testNonzero(self):
         q = queue()
         self.failIf(q, 'queue not zero after initialization')
@@ -80,8 +104,8 @@ class QueueTest(unittest.TestCase):
         q.enqueue(1)
         q.enqueue(2)
         q.enqueue(3)
-        self.assertEqual(queue(1, 2, 3), q, 'init not equivalent to enqueues')
-        q = queue(1, 2, 3)
+        self.assertEqual(queue((1, 2, 3)),q, 'init not equivalent to enqueues')
+        q = queue((1, 2, 3))
         self.assertEqual(q.dequeue(), 1, 'values not returned in proper order')
         self.assertEqual(q.dequeue(), 2, 'values not returned in proper order')
         self.assertEqual(q.dequeue(), 3, 'values not returned in proper order')
@@ -145,7 +169,7 @@ class QueueTest(unittest.TestCase):
         self.failIf(2 in q, 'dequeued element in q')
 
     def testIter(self):
-        q1 = queue(1, 2, 3)
+        q1 = queue((1, 2, 3))
         q2 = queue()
         for i in q1:
             q2.enqueue(i)
@@ -190,3 +214,28 @@ class FunctionsTest(unittest.TestCase):
         self.assertEqual(list(itersplit([], lambda x: x)), [])
         self.assertEqual(list(itersplit(s, lambda c: c.isspace())),
                          map(list, s.split()))
+
+    def testIterableMap(self):
+        class alist(IterableMap):
+            def __init__(self):
+                self.L = []
+
+            def __setitem__(self, key, value):
+                self.L.append((key, value))
+
+            def iteritems(self):
+                for (k, v) in self.L:
+                    yield (k, v)
+        AL = alist()
+        self.failIf(AL)
+        AL[1] = 2
+        AL[2] = 3
+        AL[3] = 4
+        self.failUnless(AL)
+        self.assertEqual(AL.items(), [(1, 2), (2, 3), (3, 4)])
+        self.assertEqual(list(AL.iteritems()), [(1, 2), (2, 3), (3, 4)])
+        self.assertEqual(AL.keys(), [1, 2, 3])
+        self.assertEqual(list(AL.iterkeys()), [1, 2, 3])
+        self.assertEqual(AL.values(), [2, 3, 4])
+        self.assertEqual(list(AL.itervalues()), [2, 3, 4])
+        self.assertEqual(len(AL), 3)
