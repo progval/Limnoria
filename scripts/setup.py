@@ -127,18 +127,18 @@ if __name__ == '__main__':
                       'when the bot is finished connecting to the server?'
         configfd.write(anything('What command?'))
         configfd.write('\n')
-    configfd.write('\n')
     configfd.close()
 
     ###
     # Set owner user.
     ###
-    owner = anything('What should the owner\'s username be?')
-    password = anything('What should the owner\'s password be?')
-    user = ircdb.IrcUser()
-    user.setPassword(password)
-    user.addCapability('owner')
-    ircdb.users.setUser(owner, user)
+    if yn('Would you like to add an owner user?') == 'y':
+        owner = anything('What should the owner\'s username be?')
+        password = anything('What should the owner\'s password be?')
+        user = ircdb.IrcUser()
+        user.setPassword(password)
+        user.addCapability('owner')
+        ircdb.users.setUser(owner, user)
 
     ###
     # Finito!
