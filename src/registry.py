@@ -299,18 +299,19 @@ class Integer(Value):
         except ValueError:
             self.error()
 
-class PositiveInteger(Value):
+class PositiveInteger(Integer):
     """Value must be positive (non-zero) integer."""
-    def set(self, s):
-        try:
-            self.setValue(int(s))
-        except ValueError:
-            self.error()
-
     def setValue(self, v):
         if v <= 0:
             self.error()
-        Value.setValue(self, v)
+        Integer.setValue(self, v)
+
+class NonNegativeInteger(Integer):
+    """Value must not be negative."""
+    def setValue(self, v):
+        if v < 0:
+            self.error()
+        Integer.setValue(self, v)
 
 class Float(Value):
     """Value must be a floating-point number."""
