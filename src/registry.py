@@ -30,6 +30,7 @@
 __revision__ = "$Id$"
 
 import re
+import os
 import sets
 import time
 import string
@@ -62,15 +63,20 @@ def open(filename, clear=False):
         _cache.clear()
     _fd = file(filename)
     fd = utils.nonCommentNonEmptyLines(_fd)
-    for (i, line) in enumerate(fd):
+    acc = ''
+    for line in fd:
         line = line.rstrip('\r\n')
+        if line.endswith('\\'):
+            acc += line[:-1]
+            continue
+        else:
+            acc = line
         try:
-            #print '***', repr(line)
-            (key, value) = re.split(r'(?<!\\):', line, 1)
+            (key, value) = re.split(r'(?<!\\):', acc, 1)
             key = key.strip()
             value = value.strip()
         except ValueError:
-            raise InvalidRegistryFile, 'Error unpacking line %r' % line
+            raise InvalidRegistryFile, 'Error unpacking line %r' % acc
         _cache[key] = value
     _lastModified = time.time()
     _fd.close()
@@ -447,6 +453,7 @@ class NormalizedString(String):
         default = self.normalize(default)
         self.__parent = super(NormalizedString, self)
         self.__parent.__init__(default, *args, **kwargs)
+        self.showDefault = False
 
     def normalize(self, s):
         return utils.normalizeWhitespace(s.strip())
@@ -458,6 +465,18 @@ class NormalizedString(String):
     def setValue(self, s):
         s = self.normalize(s)
         self.__parent.setValue(s)
+
+    def serialize(self):
+        s = str(self)
+        prefixLen = len(self._name) + 2
+        lines = textwrap.wrap(s, width=76-prefixLen)
+        first = True
+        for (i, line) in enumerate(lines):
+            if not first:
+                line = ' '*prefixLen + line
+            lines[i] = line + '\\'
+            first = False
+        return os.linesep.join(lines)
 
 class StringSurroundedBySpaces(String):
     def setValue(self, v):
