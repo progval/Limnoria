@@ -34,6 +34,9 @@ import os
 import supybot
 import logging
 
+if not os.path.exists('test-conf'):
+    os.mkdir('test-conf')
+    
 registryFilename = os.path.join('test-conf', 'test.conf')
 fd = file(registryFilename, 'w')
 fd.write("""
