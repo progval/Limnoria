@@ -196,7 +196,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                 irc.reply(msg,'%r could be %s' % (key, ', or '.join(factoids)))
             else:
                 try:
-                    irc.reply(msg, cursor.fetchall()[number-1])
+                    irc.reply(msg, cursor.fetchall()[number-1][0])
                 except IndexError:
                     irc.error(msg, 'That\'s not a valid number for this key.')
                     return
