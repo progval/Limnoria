@@ -136,6 +136,7 @@ class RSS(callbacks.Privmsg):
                     world.threadsSpawned += 1
                     t.setDaemon(True)
                     t.start()
+                    time.sleep(0.1) # So other threads can run.
                 finally:
                     self.locks[url].release()
 
