@@ -29,6 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Add the module docstring here.  This will be used by the setup.py script.
+"""
+
 from baseplugin import *
+
+import privmsgs
+import callbacks
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
