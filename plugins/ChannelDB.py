@@ -214,6 +214,9 @@ class ChannelDB(plugins.ChannelDBHandler,
         except KeyError:
             return
         (channel, s) = msg.args
+        s = s.strip()
+        if not s:
+            return
         db = self.getDb(channel)
         cursor = db.cursor()
         words = s.lower().split()
