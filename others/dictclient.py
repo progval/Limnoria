@@ -16,6 +16,8 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+# Retrieved from: http://gopher.quux.org:80/devel
+
 import socket, re
 
 version = '1.0'
@@ -23,13 +25,18 @@ version = '1.0'
 def dequote(s):
     """Will remove single or double quotes from the start and end of a string
     and return the result."""
-    return s.strip('\'"')
+    quotechars = "'\""
+    while len(s) and s[0] in quotechars:
+        s = s[1:]
+    while len(s) and s[-1] in quotechars:
+        s = s[0:-1]
+    return s
 
 def enquote(s):
     """This function will put a string in double quotes, properly
     escaping any existing double quotes with a backslash.  It will
     return the result."""
-    return '"' + s.replace('"', "\\\"") + '"'
+    return '"%s"' % s.replace('"', "\\\"")
 
 class Connection:
     """This class is used to establish a connection to a database server.
@@ -37,9 +44,8 @@ class Connection:
     Instantiating it takes two optional arguments: a hostname (a string)
     and a port (an int).  The hostname defaults to localhost
     and the port to 2628, the port specified in RFC."""
-    def __init__(self, hostname='localhost', port=2628, timeout=10):
+    def __init__(self, hostname='localhost', port=2628):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(timeout)
         self.sock.connect((hostname, port))
         self.rfile = self.sock.makefile("rt")
         self.wfile = self.sock.makefile("wt", 0)
@@ -102,7 +108,9 @@ class Connection:
         save off the capabilities and messageid."""
         code, string = self.get200result()
         assert code == 220
-        capstr, msgid = re.search('<(.*)> (<.*>)$', string).groups()
+        m = re.search('<(.*)> (<.*>)$', string)
+        assert m is not None
+        capstr, msgid = m.groups()
         self.capabilities = capstr.split('.')
         self.messageid = msgid
 
@@ -193,7 +201,9 @@ class Connection:
             if code != 151:
                 break
 
-            resultword, resultdb = re.search('^"(.*)" (\S+)', text).groups()
+            m = re.search('^"(.+)" (\S+)', text)
+            assert m is not None
+            resultword, resultdb = m.groups()
             defstr = self.get100block()
             retval.append(Definition(self, self.getdbobj(resultdb),
                                      resultword, defstr))
