@@ -46,3 +46,4 @@ class Utils(callbacks.Privmsg):
         irc.reply(msg, first+second)
 
 Class = Utils
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

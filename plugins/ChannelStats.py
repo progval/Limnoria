@@ -77,4 +77,4 @@ class ChannelStats(callbacks.Privmsg, DBHandler):
 
 
 Class = ChannelStats
-
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

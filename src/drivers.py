@@ -139,3 +139,4 @@ def run():
            _drivers[name].die()
            del _drivers[name]
        _drivers[name] = driver
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

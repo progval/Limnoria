@@ -72,3 +72,4 @@ class Ctcp(callbacks.PrivmsgRegexp):
         irc.queueMsg(notice(msg.nick, s))
 
 Class = Ctcp
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -430,3 +430,4 @@ def main(argv):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -28,4 +28,4 @@ if __name__ == '__main__':
             print 'Invalid Syntax, line %s' % lineno
     maker.finish()
 
-
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

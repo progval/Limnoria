@@ -58,4 +58,4 @@ if __name__ == '__main__':
     if os.fork() != 0:
         sys.exit(0)
     asyncore.loop()
-
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

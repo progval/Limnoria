@@ -124,3 +124,4 @@ if __name__ == '__main__':
     for line in sys.stdin:
         db.add(line.translate(trans, '\n'))
     db.flush()
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

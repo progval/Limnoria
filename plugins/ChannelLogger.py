@@ -151,3 +151,4 @@ class ChannelLogger(irclib.IrcCallback):
 
 
 Class = ChannelLogger
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

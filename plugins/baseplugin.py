@@ -43,3 +43,4 @@ class DBHandler(object):
     def die(self):
         for db in self.dbCache.itervalues():
             db.close()
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

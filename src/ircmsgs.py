@@ -326,3 +326,4 @@ def whois(nick):
 
 def invite(channel, user):
     return IrcMsg(command='INVITE', args=(channel, user))
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -58,3 +58,4 @@ for line in sys.stdin:
     print """INSERT INTO words VALUES (NULL, '%s', (SELECT id FROM sorted_words WHERE word='%s'));""" % (word, sorted)
 
 print """END TRANSACTION;"""
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

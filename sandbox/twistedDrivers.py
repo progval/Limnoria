@@ -15,4 +15,4 @@ class TwistedDriver(drivers.IrcDriver, twisted.protocols.basic.LineReceiver):
         self.irc = irc
         irc.driver = irc
         self.delimiter = '\n'
-
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -115,3 +115,4 @@ Class = Debian
 
 if __name__ == '__main__':
     makeDb(dbFile, getIndex(), replace=True)
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

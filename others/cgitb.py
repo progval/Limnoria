@@ -280,3 +280,4 @@ def enable(display=1, logdir=None, context=5, format="html"):
     tracebacks to be written to files there."""
     sys.excepthook = Hook(display=display, logdir=logdir,
                           context=context, format=format)
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

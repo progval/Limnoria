@@ -194,3 +194,4 @@ def superReload(module):
                                   ('func_code', 'func_defaults', 'func_doc'))
     return module
 '''
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -53,3 +53,4 @@ class FixRelayBot(irclib.IrcCallback):
 
 
 Class = FixRelayBot
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

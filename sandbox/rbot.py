@@ -46,4 +46,4 @@ def Rbot(callbacks.Privmsg):
         if target in ('me', 'yourself', 'himself', irc.nick):
             target = msg.nick
         #'%s %s %s'
-
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

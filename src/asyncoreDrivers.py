@@ -235,3 +235,4 @@ if conf.telnetEnable and __name__ != '__main__':
 if __name__ == '__main__':
     ReplListener()
     asyncore.loop()
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -447,4 +447,4 @@ if __name__ == '__main__':
             make(sys.argv[1])
         else:
             make(sys.argv[1], sys.argv[2])
-
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -387,3 +387,4 @@ class Irc(object):
         for callback in self.callbacks:
             callback.die()
         world.ircs.remove(self)
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

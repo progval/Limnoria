@@ -32,3 +32,4 @@ class UsersHandler(xml.sax.handler.ContentHandler):
             self.name = ''
             self.u = None
         self.chars = ''
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

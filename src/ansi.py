@@ -110,3 +110,4 @@ WHITEBG = '\033[47m'
 #def clrtoeol():
 #  'Clears screen to end of line'
 #  print '\033[K'
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

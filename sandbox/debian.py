@@ -58,3 +58,4 @@ if __name__ == '__main__':
     start = time.time()
     makeContentsDb(sys.argv[1])
     print 'Took %s seconds.' % time.time() - start
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -720,3 +720,4 @@ main = TestProgram
 
 if __name__ == "__main__":
     main(module=None)
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

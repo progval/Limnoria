@@ -189,4 +189,4 @@ class nick(str):
 if __name__ == '__main__':
     import sys, doctest
     doctest.testmod(sys.modules['__main__'])
-
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

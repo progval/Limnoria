@@ -482,3 +482,4 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
 #################################################
 #################################################
 startup = False
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

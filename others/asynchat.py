@@ -291,3 +291,4 @@ def find_prefix_at_end (haystack, needle):
             result = nl-i
             break
     return result
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

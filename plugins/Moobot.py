@@ -208,3 +208,4 @@ class Moobot(callbacks.Privmsg):
 
 
 Class = Moobot
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -272,3 +272,4 @@ def searchByListMania(listManiaID, type="heavy", page=1, license_key=None, http_
 
 def searchSimilar(ASIN, type="heavy", page=1, license_key=None, http_proxy=None):
     return search("SimilaritySearch", ASIN, None, type, page, license_key, http_proxy)
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -549,3 +549,4 @@ if os.name == 'posix':
             self._fileno = fd
             self.socket = file_wrapper (fd)
             self.add_channel()
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

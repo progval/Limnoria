@@ -87,3 +87,4 @@ class Unix(callbacks.Privmsg):
 
 
 Class = Unix
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

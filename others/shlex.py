@@ -210,3 +210,4 @@ if __name__ == '__main__':
             print "Token: " + repr(tt)
         else:
             break
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -185,3 +185,4 @@ def tracer(frame, event, _):
         s = '%s: %s\n' % (frame.f_code.co_filename, frame.f_code.co_name)
         _tracefd.write(s)
         _tracefd.flush()
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

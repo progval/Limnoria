@@ -39,3 +39,4 @@ class Relay(callbacks.Privmsg):
     def relayconnect(self, irc, msg, args):
         "<domain:port> (port defaults to 6667)"
         pass
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

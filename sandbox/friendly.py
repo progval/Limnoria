@@ -45,3 +45,4 @@ class Friendly(callbacks.PrivmsgRegexp):
         "(?:good)?bye|adios|vale|ciao|au revoir|seeya|night"
         if re.search(irc.nick, msg.args[1]):
             self.reply('vale, amic(e|a)!')
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -15,3 +15,4 @@ if __name__ == '__main__':
     for name in os.listdir('conf'):
         os.remove(os.path.join('conf', name))
     os.path.walk(os.curdir, removeFiles, None)
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -367,3 +367,4 @@ class FunCommands(callbacks.Privmsg):
             
 
 Class = FunCommands
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -16,3 +16,4 @@ if __name__ == '__main__':
             total += len(msg.prefix)
             lines += 1
     print total / lines
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

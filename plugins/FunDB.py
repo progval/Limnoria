@@ -297,4 +297,4 @@ if __name__ == '__main__':
     db.commit()
     db.close()
             
-            
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78: 

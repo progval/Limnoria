@@ -201,4 +201,4 @@ def enumerate(L):
 def window(L, size):
     for i in xrange(len(L) - (size-1)):
         yield L[i:i+size]
-
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

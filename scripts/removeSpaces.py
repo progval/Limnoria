@@ -32,4 +32,4 @@ if __name__ == '__main__':
     x.x = 0
     os.path.walk(dir, visit, x)
     print '%s bytes removed.' % x.x
-
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

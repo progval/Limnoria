@@ -21,3 +21,4 @@ if __name__ == '__main__':
             print 'Invalid line: %s' % line.strip()
     db.close()
     fd.close()
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
