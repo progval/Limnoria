@@ -93,6 +93,20 @@ def configure(onStart, afterConnect, advanced):
         afterConnect.append('relay color 2')
 
 
+ircs = {}
+ircstates = {}
+lastmsg = {}
+channels = ircutils.IrcSet()
+abbreviations = {}
+originalIrc = None
+
+def reload(x=None):
+    global ircs, ircstates, lastmsg, channels, abbreviations, originalIrc
+    if x is None:
+        return (ircs, ircstates, lastmsg, channels, abbreviations, originalIrc)
+    else:
+        (ircs, ircstates, lastmsg, channels, abbreviations, originalIrc) = x
+
 class Relay(callbacks.Privmsg, plugins.Configurable):
     noIgnore = True
     priority = sys.maxint
@@ -104,15 +118,14 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         plugins.Configurable.__init__(self)
-        self.ircs = {}
+        self.ircs = ircs
         self._color = 0
         self._whois = {}
         self.started = False
-        self.ircstates = {}
-        self.lastmsg = {}
-        self.channels = ircutils.IrcSet()
+        self.ircstates = ircstates
+        self.lastmsg = lastmsg
+        self.channels = channels
         self.abbreviations = {}
-        self.originalIrc = None
 
     def __call__(self, irc, msg):
         if self.started:
@@ -128,7 +141,7 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
         callbacks.Privmsg.die(self)
         plugins.Configurable.die(self)
         for irc in self.abbreviations:
-            if irc != self.originalIrc:
+            if irc != originalIrc:
                 irc.callbacks[:] = []
                 irc.die()
 
@@ -148,11 +161,12 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
         relaying messages from that network to other networks, the users
         will show up as 'user@oftc'.
         """
+        global originalIrc
         if isinstance(irc, irclib.Irc):
             realIrc = irc
         else:
             realIrc = irc.getRealIrc()
-        self.originalIrc = realIrc
+        originalIrc = realIrc
         abbreviation = privmsgs.getArgs(args)
         self.ircs[abbreviation] = realIrc
         self.abbreviations[realIrc] = abbreviation
