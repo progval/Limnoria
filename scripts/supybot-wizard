@@ -133,7 +133,7 @@ def getDirectoryName(default, basedir=os.curdir):
                 have to pick someplace else.""" % e)
             else:
                 done = True
-    return (dir, orig_dir)
+    return (dir, os.path.dirname(orig_dir))
 
 def getRegistryValue(setting, prompt='', showHelp=True, showType=True):
     if not prompt:
@@ -236,7 +236,6 @@ def main():
     except KeyError:
         (logDir, basedir) = getDirectoryName('logs')
     conf.supybot.directories.log.setValue(logDir)
-    basedir = os.path.dirname(basedir)
 
     # conf.supybot.directories.data
     output("""Your bot will need to put various data somewhere.  Things like
