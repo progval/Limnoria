@@ -320,14 +320,14 @@ def unColor(s):
     return _unColorRe.sub('', s)
 
 def isValidArgument(s):
-    """Returns if s is strictly a valid argument for an IRC message."""
+    """Returns whether s is strictly a valid argument for an IRC message."""
     return '\r' not in s and '\n' not in s and '\x00' not in s
 
-notFunky = string.ascii[32:]+'\x02\x03\x0F\x16\x1F'
 def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
-    assert not isinstance(s, unicode),'Unicode strings are not allowed in IRC.'
-    if isValidArgument(s) and s.translate(string.ascii, notFunky) == '':
+    if isinstance(s, unicode):
+        s = s.encode('utf-8')
+    if isValidArgument(s):
         return s
     else:
         return repr(s)
