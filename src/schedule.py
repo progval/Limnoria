@@ -36,6 +36,18 @@ import bisect
 
 import drivers
 
+class RTuple(tuple):
+    def __lt__(self, other):
+        return not tuple.__lt__(self, other)
+    def __gt__(self, other):
+        return not tuple.__gt__(self, other)
+    def __ge__(self, other):
+        return not tuple.__ge__(self, other)
+    def __le__(self, other):
+        return not tuple.__le__(self, other)
+    def __cmp__(self, other):
+        return -1*tuple.__cmp__(self, other)
+    
 class Schedule(drivers.IrcDriver):
     def __init__(self):
         drivers.IrcDriver.__init__(self)
@@ -52,7 +64,7 @@ class Schedule(drivers.IrcDriver):
         #debug.printf('Added event to schedule: %s' % name)
         assert name not in self.events
         self.events[name] = f
-        bisect.insort(self.schedule, (t, name))
+        bisect.insort(self.schedule, RTuple((t, name)))
 
     def removeEvent(self, name):
         del self.events[name]
@@ -70,8 +82,8 @@ class Schedule(drivers.IrcDriver):
 
     def run(self):
         #debug.printf(`(time.time(), self.schedule)`)
-        while self.schedule and self.schedule[0][0] < time.time():
-            (t, name) = self.schedule.pop(0)
+        while self.schedule and self.schedule[-1][0] < time.time():
+            (t, name) = self.schedule.pop()
             self.events[name]()
             del self.events[name]
 
