@@ -334,6 +334,7 @@ class IrcString(str):
 
 class IrcDict(dict):
     """Subclass of dict to make key comparison IRC-case insensitive."""
+    __slots__ = ()
     def __contains__(self, s):
         return dict.__contains__(self, IrcString(s))
     has_key = __contains__
@@ -348,6 +349,7 @@ class IrcDict(dict):
         dict.__delitem__(self, IrcString(s))
 
 class IrcSet(sets.Set):
+    __slots__ = ()
     def add(self, s):
         return sets.Set.add(self, IrcString(s))
 
