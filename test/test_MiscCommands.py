@@ -31,7 +31,7 @@
 
 from test import *
 
-class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
+class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('MiscCommands', 'Utilities', 'ChannelDB')
     def testReplyWhenNotCommand(self):
         conf.replyWhenNotCommand = True
@@ -95,9 +95,9 @@ class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
     def testLast(self):
         self.feedMsg('foo bar baz')
         self.assertResponse('last', 'foo bar baz')
-        self.assertResponse('last', 'last')
+        self.assertRegexp('last', 'last')
         self.assertResponse('last --with foo', 'foo bar baz')
-        self.assertResponse('last --regexp m/\s+/', 'last --with foo')
+        self.assertRegexp('last --regexp m/\s+/', 'last --with foo')
         self.assertResponse('last --regexp m/bar/', 'foo bar baz')
 
     def testMore(self):

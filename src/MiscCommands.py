@@ -41,6 +41,7 @@ import getopt
 import pprint
 import smtplib
 import textwrap
+from itertools import ifilter
 
 import conf
 import debug
@@ -311,6 +312,11 @@ class MiscCommands(callbacks.Privmsg):
         except IndexError:
             irc.error(msg, 'That\'s all, there is no more.')
 
+    def _validLastMsg(self, msg):
+        return msg.prefix and \
+               msg.command == 'PRIVMSG' and \
+               ircutils.isChannel(msg.args[0])
+
     def last(self, irc, msg, args):
         """[--{from,in,to,with,regexp,fancy}] <args>
 
@@ -346,11 +352,9 @@ class MiscCommands(callbacks.Privmsg):
                     return
                 predicates.append(lambda m: r.search(m.args[1]))
         first = True
-        for m in reviter(irc.state.history):
+        for m in ifilter(self._validLastMsg, reviter(irc.state.history)):
             if first:
                 first = False
-                continue
-            if not m.prefix or m.command != 'PRIVMSG':
                 continue
             for predicate in predicates:
                 if not predicate(m):
