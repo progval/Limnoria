@@ -111,7 +111,7 @@ which (due to the regular expression implementation in Python (and any
 other language that uses NFA regular expressions, like Perl or Ruby or
 Lua or ...) which can allow a regular expression to take exponential
 time to process).  Consider what would happen if the someone gave the
-bot the command 're [strjoin "" s/./ [dict go] /] [dict go]'
+bot the command 're [format join "" s/./ [dict go] /] [dict go]'
 
 Other plugins may require different capabilities; the Factoids plugin
 requires #channel,factoids, the Topic plugin requires #channel,topic,
