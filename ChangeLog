@@ -1,3 +1,18 @@
+2005-01-16 James Vega <jamessan@supybot.com>
+
+	* Version 0.80.0!
+
+	* Updated Babelfish to include Dutch, Greek, Russian, and traditional
+	Chinese as supported languages.
+
+	* Updated RSS.rss to obey supybot.reply.oneToOne.
+
+	* Updated registry.py to specify which registry value has an improper
+	docstring.
+
+	* Fixed a bug in Ebay.auction, the "Current bid" regexp needed to be
+	updated.
+
 2005-01-12 James Vega <jamessan@supybot.com>
 
 	* Version 0.80.0rc3!

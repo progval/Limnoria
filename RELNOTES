@@ -1,3 +1,17 @@
+Version 0.80.0
+
+We *finally* hit 0.80.0!  This release is completely compatible with
+the last release candidate.
+
+An update to Babelfish may cause an error message to be displayed in
+the console when the bot is first run.  The error message should be
+gone when the bot is restarted.
+
+We also have a new community website at http://www.supybot.com/ where
+our users can submit their own plugins, view/download other people's
+plugins and discuss all things Supybot-related.
+
+
 Version 0.80.0rc3
 
 Another bugfix release.  This one was pretty important as it actually
