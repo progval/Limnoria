@@ -91,26 +91,31 @@ if sqlite is not None:
             self.assertNotError('moo is <reply>foo')
             self.assertRegexp('factinfo moo', '^moo: Created by tester on.*$')
             self.assertNotError('moo')
-            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+            self.assertRegexp('factinfo moo',
+                              '^moo: Created by tester on'
                               '.*?\. Last requested by foo!bar@baz on .*?, '
                               'requested 1 time.$')
             self.assertNotError('moo')
-            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+            self.assertRegexp('factinfo moo',
+                              '^moo: Created by tester on'
                               '.*?\. Last requested by foo!bar@baz on .*?, '
                               'requested 2 times.$')
             self.assertNotError('moo =~ s/foo/bar/')
-            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+            self.assertRegexp('factinfo moo',
+                              '^moo: Created by tester on'
                               '.*?\. Last modified by tester on .*?\. '
                               'Last requested by foo!bar@baz on .*?, '
                               'requested 2 times.$')
             self.assertNotError('lock moo')
-            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+            self.assertRegexp('factinfo moo',
+                              '^moo: Created by tester on'
                               '.*?\. Last modified by tester on .*?\. '
                               'Last requested by foo!bar@baz on .*?, '
                               'requested 2 times. '
                               'Locked by tester on .*\.$')
             self.assertNotError('unlock moo')
-            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+            self.assertRegexp('factinfo moo',
+                              '^moo: Created by tester on'
                               '.*?\. Last modified by tester on .*?\. '
                               'Last requested by foo!bar@baz on .*?, '
                               'requested 2 times.$')
@@ -120,26 +125,29 @@ if sqlite is not None:
             self.assertNotError('foo =~ s/bar/blah/')
             self.assertNotError('foo')
             self.assertNotError('no foo is baz')
-            self.assertRegexp('factinfo foo', '^foo: Created by tester on'
+            self.assertRegexp('factinfo foo',
+                              '^foo: Created by tester on'
                               '(?!(request|modif)).*?\.$')
 
         def testLockUnlock(self):
             self.assertNotError('moo is <reply>moo')
             self.assertNotError('lock moo')
-            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+            self.assertRegexp('factinfo moo',
+                              '^moo: Created by tester on'
                               '.*?\. Locked by tester on .*?\.')
             # switch user
             self.prefix = 'moo!moo@moo'
             self.assertNotError('register nottester moo')
             self.assertError('unlock moo')
-            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+            self.assertRegexp('factinfo moo',
+                              '^moo: Created by tester on'
                               '.*?\. Locked by tester on .*?\.')
             # switch back
             self.prefix = 'foo!bar@baz'
             self.assertNotError('identify tester moo')
             self.assertNotError('unlock moo')
-            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
-                              '.*?\.')
+            self.assertRegexp('factinfo moo',
+                              '^moo: Created by tester on.*?\.')
                               
         def testChangeFactoid(self):
             self.assertNotError('moo is <reply>moo')
@@ -171,51 +179,54 @@ if sqlite is not None:
             self.assertNotError('moogle is <reply>moo')
             self.assertError('most popular')
             self.assertResponse('most authored', 'Top 1 author: moo (1)') 
-            self.assertResponse('most recent', '1 latest factoid: moogle') 
+            self.assertResponse('most recent', "1 latest factoid: 'moogle'") 
             self.assertResponse('moogle', 'moo')
-            self.assertResponse('most popular', 'Top 1 factoid: moogle (1)')
+            self.assertResponse('most popular', "Top 1 factoid: 'moogle' (1)")
             # Check plural response
             self.prefix = userPrefix2
             self.assertNotError('mogle is <reply>mo')
-            self.assertResponse('most authored', 'Top 2 authors: moo (1) and '\
-                'boo (1)') 
-            self.assertResponse('most recent', '2 latest factoids: mogle and '\
-                'moogle') 
+            self.assertResponse('most authored',
+                                'Top 2 authors: moo (1) and boo (1)') 
+            self.assertResponse('most recent',
+                                "2 latest factoids: 'mogle' and 'moogle'") 
             self.assertResponse('moogle', 'moo')
-            self.assertResponse('most popular', 'Top 1 factoid: moogle (2)')
+            self.assertResponse('most popular', "Top 1 factoid: 'moogle' (2)")
             self.assertResponse('mogle', 'mo')
-            self.assertResponse('most popular', 'Top 2 factoids: moogle (2) '\
-                'and mogle (1)')
+            self.assertResponse('most popular',
+                                "Top 2 factoids: 'moogle' (2) and 'mogle' (1)")
             # Check most author ordering
             self.assertNotError('moo is <reply>oom')
-            self.assertResponse('most authored', 'Top 2 authors: boo (2) and '\
-                'moo (1)')
+            self.assertResponse('most authored',
+                                'Top 2 authors: boo (2) and moo (1)')
 
         def testListkeys(self):
             self.assertResponse('listkeys %', 'No keys matching \'%\' found.')
             self.assertNotError('moo is <reply>moo')
-            self.assertResponse('listkeys moo', 'Key search for \'moo\' '
-                              '(1 found): \'moo\'')
+            self.assertResponse('listkeys moo',
+                                'Key search for \'moo\' (1 found): \'moo\'')
             self.assertResponse('listkeys foo', 'No keys matching \'foo\' '
                                 'found.')
             # Throw in a bunch more
             for i in range(10):
                 self.assertNotError('moo%s is <reply>moo' % i)
-            self.assertRegexp('listkeys moo', '^Key search for \'moo\' '
+            self.assertRegexp('listkeys moo',
+                              '^Key search for \'moo\' '
                               '\(11 found\): (\'moo\d*\', )+and \'moo9\'$')
             self.assertNotError('foo is bar')
-            self.assertRegexp('listkeys %', '^Key search for \'\%\' '
+            self.assertRegexp('listkeys %',
+                              '^Key search for \'\%\' '
                               '\(12 found\): \'foo\', (\'moo\d*\', )+and '
                               '\'moo9\'$')
             # Check quoting
             self.assertNotError('foo\' is bar')
-            self.assertResponse('listkeys foo', 'Key search for \'foo\' '
+            self.assertResponse('listkeys foo',
+                                'Key search for \'foo\' '
                                 '(2 found): \'foo\' and "foo\'"')
 
         def testListvalues(self):
             self.assertNotError('moo is moo')
-            self.assertResponse('listvalues moo', 'Value search for \'moo\' '
-                                '(1 found): \'moo\'')
+            self.assertResponse('listvalues moo',
+                                'Value search for \'moo\' (1 found): \'moo\'')
 
         def testListauth(self):
             self.assertNotError('moo is <reply>moo')

@@ -471,67 +471,56 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         self._lock(irc, msg, args, False)
 
     _mostCount = 10
-    # _mostDict is maps the requested statsitic to the set of commands that
-    # need to be done to generate the response. Each tuple consists of 5
-    # items. These are:
-    #   1) the SQL used to retrieve the information,
-    #   2) the format string for the list of 'most' items
-    #   3) a lambda expression which returns a tuple of the items from
-    #      cursor.fetchall(). This tuple contains the items that will be used
-    #      in the string supplied in 2).
-    #   4) the format string that will be at the head of the irc.reply message
-    #   5) the word which describes what we are generating statistics about.
-    #      This will be used in the string from 4)
-    _mostDict = {'popular':
-                    {'sql':"""SELECT key,requested_count FROM factoids WHERE
-                           requested_count > 0 ORDER by requested_count DESC
-                           LIMIT %s""",
-                     'format':'%s (%s)',
-                     'genlist':lambda c: [(t[0], t[1]) for t in c],
-                     'head':'Top %s %s: %s',
-                     'desc':'factoid'
-                    },
-                 'authored':
-                    {'sql':"""SELECT count(key),created_by FROM factoids GROUP
-                           BY created_by ORDER BY count(key) DESC LIMIT %s""",
-                     'format':'%s (%s)',
-                     'genlist':lambda c: [(ircdb.users.getUser(t[1]).name,
-                        t[0]) for t in c],
-                     'head':'Top %s %s: %s',
-                     'desc':'author'
-                    },
-                'recent':
-                    {'sql':"""SELECT key FROM factoids ORDER by created_at DESC
-                           LIMIT %s""",
-                     'format':'%s',
-                     'genlist':lambda c: [t[0] for t in c],
-                     'head':'%s latest %s: %s',
-                     'desc':'factoid'
-                    }
-               }
+    class MostException(Exception):
+        pass
     def most(self, irc, msg, args):
         """<popular|authored|recent>
 
-        Lists the most <popular|authored|recent> factoids.  <popular> list the
+        Lists the most <popular|authored|recent> factoids.  <popular> lists the
         most frequently requested factoids.  <authored> lists the author with
         the most factoids.  <recent> lists the most recently created factoids.
         """
-        arg = privmsgs.getArgs(args,needed=1)
-        arg = arg.lower()
-        if arg in self._mostDict:
-            args = self._mostDict[arg]
-            cursor = self.db.cursor()
-            cursor.execute(args['sql'] % self._mostCount)
-            if cursor.rowcount == 0:
-                irc.reply(msg, 'I can\'t find any factoids.')
-            else:
-                resp = [args['format'] % t for t in args['genlist'](
-                    cursor.fetchall())]
-                l = len(resp)
-                irc.reply(msg, args['head'] % (l, utils.pluralize(l,
-                    args['desc']), utils.commaAndify(resp)))
-        else:
+        arg = privmsgs.getArgs(args)
+        arg = arg.capitalize()
+        method = getattr(self, '_most%s' % arg, None)
+        if method is None:
             raise callbacks.ArgumentError
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM factoids""")
+        if int(cursor.fetchone()[0]) == 0:
+            irc.error(msg, 'I don\'t have any factoids in my database!')
+        else:
+            try:
+                irc.reply(msg, method(cursor, self._mostCount))
+            except self.MostException, e:
+                irc.error(msg, str(e))
+
+    def _mostAuthored(self, cursor, limit):
+        cursor.execute("""SELECT created_by, count(key) FROM factoids
+                          GROUP BY created_by
+                          ORDER BY count(key) DESC LIMIT %s""", limit)
+        L = ['%s (%s)' % (ircdb.users.getUser(t[0]).name, t[1])
+             for t in cursor.fetchall()]
+        return 'Top %s: %s' % \
+               (utils.nItems(len(L), 'author'), utils.commaAndify(L))
+
+    def _mostRecent(self, cursor, limit):
+        cursor.execute("""SELECT key FROM factoids
+                          ORDER by created_at DESC LIMIT %s""", limit)
+        L = [repr(t[0]) for t in cursor.fetchall()]
+        return '%s: %s' % \
+               (utils.nItems(len(L), 'factoid', between='latest'),
+                utils.commaAndify(L))
+
+    def _mostPopular(self, cursor, limit):
+        cursor.execute("""SELECT key, requested_count FROM factoids
+                          WHERE requested_count > 0
+                          ORDER BY requested_count DESC LIMIT %s""", limit)
+        if cursor.rowcount == 0:
+            raise self.MostException, 'No factoids have been requested.'
+        L = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
+        return 'Top %s: %s' % \
+               (utils.nItems(len(L), 'factoid'), utils.commaAndify(L))
 
     def listauth(self, irc, msg, args):
         """<author name>
