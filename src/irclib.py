@@ -357,6 +357,7 @@ class Irc(object):
                 msg = self.queue.dequeue()
         elif len(self.outstandingPongs) > 2:
             # Our pings hasn't be responded to.
+            debug.msg('Reconnecting, 3 pings not replied to.', 'normal')
             if hasattr(self.driver, 'scheduleReconnect'):
                 self.driver.scheduleReconnect()
             self.driver.die()
