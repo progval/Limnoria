@@ -39,12 +39,14 @@ import plugins
 
 import sets
 import time
+import threading
 from itertools import imap
 
 import rssparser
 
 import conf
 import utils
+import world
 import ircmsgs
 import ircutils
 import privmsgs
@@ -81,6 +83,8 @@ conf.registerGlobalValue(conf.supybot.plugins.RSS, 'waitPeriod',
     wait between retrieving RSS feeds; requests made within this period will
     return cached results."""))
 conf.registerGroup(conf.supybot.plugins.RSS, 'feeds')
+conf.supybot.plugins.RSS.feeds.help = utils.normalizeWhitespace("""These are
+the registered feeds for the RSS plugin.""")
 
 def registerFeed(name, url):
     conf.supybot.plugins.RSS.feeds.register(name, registry.String(url, ''))
@@ -92,7 +96,6 @@ class RSS(callbacks.Privmsg):
         self.feedNames = sets.Set()
         self.lastRequest = {}
         self.cachedFeeds = {}
-        L = conf.supybot.plugins.RSS.feeds.getValues(fullNames=False)
         for (name, url) in registry._cache.iteritems():
             name = name.lower()
             if name.startswith('supybot.plugins.rss.feeds.'):
@@ -108,46 +111,60 @@ class RSS(callbacks.Privmsg):
         L = conf.supybot.plugins.RSS.announce.getValues(fullNames=False)
         for (channel, v) in L:
             feeds = v() 
-            bold = self.registryValue('bold', channel)
-            sep = self.registryValue('headlineSeparator', channel)
-            prefix = self.registryValue('announcementPrefix', channel)
             for name in feeds:
                 if self.isCommand(callbacks.canonicalName(name)):
                     url = self.getCommand(name).url
                 else:
                     url = name
-                try:
-                    oldresults = self.cachedFeeds[url]
-                    oldheadlines = self.getHeadlines(oldresults)
-                except KeyError:
-                    oldheadlines = []
-                # TODO: This should be threaded.
-                newresults = self.getFeed(url)
-                newheadlines = self.getHeadlines(newresults)
-                for headline in oldheadlines:
-                    try:
-                        newheadlines.remove(headline)
-                    except ValueError:
-                        pass
-                if newheadlines:
-                    pre = '%s%s: ' % (prefix, name)
-                    if bold:
-                        pre = ircutils.bold(pre)
-                    irc.replies(newheadlines, prefixer=pre, joiner=sep,
-                                to=channel, prefixName=False)
+                if self.willGetNewFeed(url):
+                    t = threading.Thread(target=self._newHeadlines,
+                                         name='Fetching <%s>' % url,
+                                         args=(irc, channel, name, url))
+                    self.log.info('Spawning thread to fetch <%s>', url)
+                    world.threadsSpawned += 1
+                    t.start()
+
+
+    def _newHeadlines(self, irc, channel, name, url):
+        try:
+            oldresults = self.cachedFeeds[url]
+            oldheadlines = self.getHeadlines(oldresults)
+        except KeyError:
+            oldheadlines = []
+        newresults = self.getFeed(url)
+        newheadlines = self.getHeadlines(newresults)
+        for headline in oldheadlines:
+            try:
+                newheadlines.remove(headline)
+            except ValueError:
+                pass
+        bold = self.registryValue('bold', channel)
+        sep = self.registryValue('headlineSeparator', channel)
+        prefix = self.registryValue('announcementPrefix', channel)
+        if newheadlines:
+            pre = '%s%s: ' % (prefix, name)
+            if bold:
+                pre = ircutils.bold(pre)
+            irc.replies(newheadlines, prefixer=pre, joiner=sep,
+                        to=channel, prefixName=False)
                 
-    def getFeed(self, url):
+    def willGetNewFeed(self, url):
         now = time.time()
         wait = self.registryValue('waitPeriod')
         if url not in self.lastRequest or now - self.lastRequest[url] > wait:
+            return True
+        else:
+            return False
+    def getFeed(self, url):
+        if self.willGetNewFeed(url):
             try:
-                self.log.info('Downloading new feed from %s', url)
+                self.log.info('Downloading new feed from <%s>', url)
                 results = rssparser.parse(url)
             except sgmllib.SGMLParseError:
                 self.log.exception('Uncaught exception from rssparser:')
                 raise callbacks.Error, 'Invalid (unparseable) RSS feed.'
             self.cachedFeeds[url] = results
-            self.lastRequest[url] = now
+            self.lastRequest[url] = time.time()
         return self.cachedFeeds[url]
 
     def getHeadlines(self, feed):
@@ -198,7 +215,7 @@ class RSS(callbacks.Privmsg):
         irc.replySuccess()
 
     def announce(self, irc, msg, args):
-        """[<channel>] <name|url> [<name|url> ...]
+        """[<channel>] [<name|url> ...]
 
         Sets the current list of announced feeds in the channel to the feeds
         given.  Valid feeds include the names of registered feeds as well as
@@ -207,8 +224,11 @@ class RSS(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         conf.supybot.plugins.RSS.announce.get(channel).setValue(args)
-        irc.replySuccess()
-        
+        if not args:
+            irc.replySuccess('All previous announced feeds removed.')
+        else:
+            irc.replySuccess()
+            
     def rss(self, irc, msg, args):
         """<url>
 

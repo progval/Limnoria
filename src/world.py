@@ -50,6 +50,7 @@ import log
 import conf
 import drivers
 import ircutils
+import registry
 import schedule
 
 startedAt = time.time() # Just in case it doesn't get set later.
@@ -88,6 +89,9 @@ def upkeep():
     flushed = conf.supybot.flush()
     if flushed:
         flush()
+        # This is so registry._cache gets filled.
+        if registryFilename is not None:
+            registry.open(registryFilename)
     if not dying:
         log.debug('Regexp cache size: %s', len(sre._cache))
         log.debug('Pattern cache size: %s'%len(ircutils._patternCache))
