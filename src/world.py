@@ -66,7 +66,9 @@ commandsProcessed = 0
 ircs = [] # A list of all the IRCs.
 
 def _flushUserData():
-    registry.close(conf.users, conf.userdataFilename, annotated=False)
+    userdataFilename = os.path.join(conf.supybot.directories.conf(),
+                                    'userdata.conf')
+    registry.close(conf.users, userdataFilename, annotated=False)
 
 flushers = [_flushUserData] # A periodic function will flush all these.
 
@@ -174,6 +176,7 @@ atexit.register(startDying)
 ##################################################
 testing = False
 dying = False
+documenting = False
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

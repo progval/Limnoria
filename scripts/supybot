@@ -238,7 +238,8 @@ if __name__ == '__main__':
     if not os.path.exists(conf.supybot.directories.data()):
         os.mkdir(conf.supybot.directories.data())
 
-    userdataFilename = os.path.join(supybot.directories.conf(),'userdata.conf')
+    userdataFilename = os.path.join(conf.supybot.directories.conf(),
+                                    'userdata.conf')
     # Let's open this now since we've got our directories setup.
     if not os.path.exists(userdataFilename):
         fd = file(userdataFilename, 'w')

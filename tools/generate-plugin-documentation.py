@@ -38,10 +38,13 @@ import textwrap
 import traceback
 
 import supybot
+import supybot.src.world
+
+supybot.src.world.documenting = True
 
 if not os.path.exists('test-conf'):
     os.mkdir('test-conf')
-    
+
 registryFilename = os.path.join('test-conf', 'test.conf')
 fd = file(registryFilename, 'w')
 fd.write("""
@@ -329,6 +332,6 @@ if __name__ == '__main__':
         makePluginDocumentation(pluginWindow)
     finishIndex()
     makeCommandsIndex()
-            
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

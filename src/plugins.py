@@ -293,6 +293,8 @@ class PeriodicFileDownloader(object):
             self.getFile(filename)
 
     def _downloadFile(self, filename, url, f):
+        if world.documenting:
+            return
         self.currentlyDownloading.add(filename)
         try:
             try:
