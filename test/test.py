@@ -117,6 +117,7 @@ class PluginTestCase(unittest.TestCase):
             os.remove(os.path.join(conf.confDir, filename))
         for filename in os.listdir(conf.dataDir):
             os.remove(os.path.join(conf.dataDir, filename))
+        debug.reset()
         ircdb.users.reload()
         ircdb.channels.reload()
         if not self.plugins:

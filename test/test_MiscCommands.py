@@ -32,7 +32,8 @@
 from test import *
 
 class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('MiscCommands', 'Utilities', 'ChannelDB', 'Ctcp')
+    plugins = ('MiscCommands', 'OwnerCommands',
+               'Utilities', 'ChannelDB', 'Ctcp')
     def testReplyWhenNotCommand(self):
         try:
             conf.replyWhenNotCommand = True
@@ -92,6 +93,9 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('source')
 
     def testLogfilesize(self):
+        self.feedMsg('foo bar baz')
+        self.feedMsg('bar baz quux')
+        self.assertNotError('upkeep')
         self.assertNotError('logfilesize')
 
     def testGetprefixchar(self):
