@@ -106,6 +106,8 @@ if sqlite is not None:
                               'inkedmn.*strike|strike.*inkedmn')
             self.assertRegexp('factoids search jemfinch',
                               'my primary author')
+            self.assertRegexp('factoids search --values primary author',
+                              'my primary author')
 
         def testWhatisOnNumbers(self):
             self.assertNotError('learn 911 as emergency number')

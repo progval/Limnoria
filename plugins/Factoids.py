@@ -162,7 +162,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                           LIMIT 20""", key)
         return [t[0] for t in cursor.fetchall()]
 
-    def _replyFactoids(self, irc, key, factoids, number=0, error=False):
+    def _replyFactoids(self, irc, key, factoids, number=0, error=True):
         if factoids:
             if number:
                 try:
@@ -431,7 +431,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
             formats.append(glob.translate(self._sqlTrans))
         cursor = db.cursor()
         sql = """SELECT keys.key FROM %s WHERE %s""" % \
-              (tables, ' AND '.join(criteria))
+              (', '.join(tables), ' AND '.join(criteria))
         sql = sql.replace('TARGET', target)
         cursor.execute(sql, formats)
         if cursor.rowcount == 0:
@@ -447,7 +447,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
             s = utils.commaAndify(keys)
             irc.reply(s)
 
-        
+
 Class = Factoids
 
 
