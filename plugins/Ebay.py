@@ -72,8 +72,10 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = ['ebaySnarfer']
     configurables = plugins.ConfigurableDictionary(
-        [('snarfer', utils.safeEval, True, 'Controls the auction snarfer.')]
-        )
+        [('snarfer', utils.safeEval, True,
+          """Determines whether the bot will automatically 'snarf' Ebay auction
+          URLs and print information about them.""")]
+    )
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
@@ -124,6 +126,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         url = match.group(0)
         #debug.printf(url)
         self._getResponse(irc, msg, url, snarf = True)
+    ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)
 
     _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
     def _getResponse(self, irc, msg, url, snarf = False):
@@ -134,8 +137,9 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         m = self._info.search(s)
         if m:
             (num, desc) = m.groups()
-            resp.append('%s%s: %s' % (ircutils.bold('Item #'), ircutils.bold(num),
-                utils.htmlToText(desc)))
+            resp.append('%s%s: %s' % (ircutils.bold('Item #'),
+                                      ircutils.bold(num),
+                                      utils.htmlToText(desc)))
         for r in self._searches:
             m = r.search(s)
             if m:
