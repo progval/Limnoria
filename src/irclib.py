@@ -713,7 +713,7 @@ class Irc(IrcCommandDispatcher):
             # On second thought, we need this for testing.
             if world.testing:
                 self.state.addMsg(self, msg)
-            log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
+            log.debug('Outgoing message: %s', str(msg).rstrip('\r\n'))
             if msg.command == 'JOIN':
                 channels = msg.args[0].split(',')
                 for channel in channels:
@@ -736,7 +736,7 @@ class Irc(IrcCommandDispatcher):
             channel = msg.args[0]
         else:
             channel = None
-        log.debug('Incoming message: ' + str(msg).rstrip('\r\n'))
+        log.debug('Incoming message: %s', str(msg).rstrip('\r\n'))
 
         # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
         # messages with our nick instead of our prefix.  We'll fix that here.
