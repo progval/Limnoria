@@ -260,7 +260,7 @@ class Channel(callbacks.Privmsg):
         """
         self._sendMsg(irc, ircmsgs.part(channel, msg.nick))
         networkGroup = conf.supybot.networks.get(irc.network)
-        self._sendMsg(networkGroup.channels.join(channel))
+        self._sendMsg(irc, networkGroup.channels.join(channel))
     cycle = wrap(cycle, [('checkChannelCapability','op')])
 
     def kick(self, irc, msg, args, channel, nick, reason):
