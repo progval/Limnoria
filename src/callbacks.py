@@ -571,6 +571,8 @@ class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     threaded = False
     public = True
+    handled = False
+    alwaysCall = ()
     commandArgs = ['self', 'irc', 'msg', 'args']
     _mores = {} # This must be class-scope, so all subclasses use the same one.
     def __init__(self):
@@ -656,6 +658,7 @@ class Privmsg(irclib.IrcCallback):
     def callCommand(self, f, irc, msg, *L):
         # Exceptions aren't caught here because IrcObjectProxy.finalEval
         # catches them and does The Right Thing.
+        Privmsg.handled = True
         start = time.time()
         f(irc, msg, *L)
         elapsed = time.time() - start
@@ -678,6 +681,8 @@ class Privmsg(irclib.IrcCallback):
             if args and isinstance(args[0], str):
                 args[0] = canonicalName(args[0])
                 if self.isCommand(args[0]):
+                    if self.handled and args[0] not in self.alwaysCall:
+                        return
                     if rateLimit:
                         self.rateLimiter.put(msg)
                         msg = self.rateLimiter.get()
@@ -732,7 +737,6 @@ class PrivmsgRegexp(Privmsg):
     """
     threaded = False # Again, like Privmsg...
     flags = re.I
-    onlyFirstMatch = False
     commandArgs = ['self', 'irc', 'msg', 'match']
     def __init__(self):
         Privmsg.__init__(self)
@@ -778,8 +782,6 @@ class PrivmsgRegexp(Privmsg):
                     msg = self.rateLimiter.get()
                 if msg:
                     self.callCommand(method, irc, msg, m)
-                if self.onlyFirstMatch:
-                    return
 
 
 class PrivmsgCommandAndRegexp(Privmsg):
@@ -821,7 +823,11 @@ class PrivmsgCommandAndRegexp(Privmsg):
             return
         fed = False
         for (r, method) in self.res:
+            originalHandled = self.handled
+            name = method.__name__
             for m in r.finditer(msg.args[1]):
+                if originalHandled and name not in self.alwaysCall:
+                    continue
                 if not fed:
                     fed = True
                     self.rateLimiter.put(msg)
@@ -832,7 +838,11 @@ class PrivmsgCommandAndRegexp(Privmsg):
         s = addressed(irc.nick, msg)
         if s:
             for (r, method) in self.addressedRes:
+                originalHandled = self.handled
+                name = method.__name__
                 for m in r.finditer(s):
+                    if originalHandled and name not in self.alwaysCall:
+                        continue
                     if not fed:
                         fed = True
                         self.rateLimiter.put(msg)

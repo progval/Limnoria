@@ -77,12 +77,18 @@ def loadPluginClass(irc, module):
         callback.configure(irc)
 
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
-    priority = ~sys.maxint # This must be first!
+    # This plugin must be first; its priority must be lowest; otherwise odd
+    # things will happen when adding callbacks.
+    priority = ~sys.maxint-1 # This must be first!
     capability = 'owner'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         setattr(self.__class__, 'exec', self.__class__._exec)
 
+    def doPrivmsg(self, irc, msg):
+        callbacks.Privmsg.handled = False
+        super(self.__class__, self).doPrivmsg(irc, msg)
+        
     def eval(self, irc, msg, args):
         """<expression>
 
