@@ -58,7 +58,7 @@ def configure(advanced):
     output("""The Ebay plugin has the functionality to watch for URLs
               that match a specific pattern (we call this a snarfer). When
               supybot sees such a URL, he will parse the web page for
-              information and reply with the results."""
+              information and reply with the results.""")
     if yn('Do you want the Ebay snarfer enabled by default?'):
         conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
 

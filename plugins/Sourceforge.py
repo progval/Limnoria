@@ -79,7 +79,7 @@ def configure(advanced):
               command is in this plugin and the Bugzilla plugin; if both are
               loaded, you\'ll have you type "sourceforge bug ..." to get this
               bug command).  You may save some time by making an alias for
-              "sourceforge".  We like to make it "sf"."""
+              "sourceforge".  We like to make it "sf".""")
     if yn('Would you like to add sf as an alias for Sourceforge?',
           default=True):
         if not conf.supybot.plugins.Alias():
