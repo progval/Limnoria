@@ -271,7 +271,7 @@ class MiscCommands(callbacks.Privmsg):
 
         If the last command was truncated due to IRC message length
         limitations, returns the next chunk of the result of the last command.
-        If <nick> is given, return the continuation of the last command from
+        If <nick> is given, it takes the continuation of the last command from
         <nick> instead of the person sending this message.
         """
         nick = privmsgs.getArgs(args, needed=0, optional=1)
