@@ -81,7 +81,8 @@ G<supybot> jemfinch: Error: No factoid matches that key.
 <supybot> jemfinch: "sf.net-website": https://sourceforge.net/docman/display_doc.php?docid=4297&group_id=1; "private-attributes": http://groups.google.com/groups?q=jp+calderone+private+attributes&hl=en&lr=&ie=UTF-8&oe=UTF-8&selm=mailman.1050275130.5456.python-list%40python.org&rnum=1; "CFnews": http://inkedmn.homelinux.org/~inkedmn/vbcustom1.html; "CFnews": something else
 <jemfinch> @whatis cfnews
 <supybot> jemfinch: cfnews could be (#0) http://inkedmn.homelinux.org/~inkedmn/vbcustom1.html, or (#1) something else.
-<jemfinch> @unlearn cfnews 1
+<jemfinch> @searchfactoids /^.f/i
+<supybot> jemfinch: 'CFnews' and 'sf.net-website'
 """)
 
 class Factoids(ChannelDBHandler, callbacks.Privmsg):
