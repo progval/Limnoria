@@ -249,9 +249,10 @@ def findCallbackForCommand(irc, commandName):
     """Given a command name and an Irc object, returns the callback that
     command is in.  Returns None if there is no callback with that command."""
     for callback in irc.callbacks:
-        if hasattr(callback, 'isCommand'):
-            if callback.isCommand(commandName):
-                return callback
+        if not isinstance(callback, PrivmsgRegexp):
+            if hasattr(callback, 'isCommand'):
+                if callback.isCommand(commandName):
+                    return callback
     return None
 
 class IrcObjectProxy:
