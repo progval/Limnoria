@@ -55,6 +55,10 @@ import world
 ###
 
 # Names of logfiles.
+
+if not os.path.exists(conf.logDir):
+    os.mkdir(conf.logDir)
+
 errorfile = os.path.join(conf.logDir, 'error.log')
 debugfile = os.path.join(conf.logDir, 'debug.log')
 tracefile = os.path.join(conf.logDir, 'trace.log')
