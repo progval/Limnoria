@@ -38,6 +38,7 @@ from baseplugin import *
 import string
 import getopt
 import os.path
+import operator
 
 import sqlite
 
@@ -77,11 +78,13 @@ def makeDb(dbfilename, indexfd, replace=False):
                       )""")
     cursor.execute("""CREATE TABLE in_category (
                       port_id INTEGER,
-                      category_id INTEGER
+                      category_id INTEGER,
+                      UNIQUE (port_id, category_id) ON CONFLICT IGNORE
                       )""")
     cursor.execute("""CREATE TABLE depends (
                       port_id INTEGER,
-                      depends_id INTEGER
+                      depends_id INTEGER,
+                      UNIQUE (port_id, depends_id) ON CONFLICT IGNORE
                       )""")
     lines = map(lambda s: s.rstrip().split('|'), indexfd)
     for fields in lines:
@@ -114,13 +117,13 @@ def makeDb(dbfilename, indexfd, replace=False):
             depends_id = cursor.fetchone()[0]
             cursor.execute("INSERT INTO depends VALUES (%s, %s)",
                            port_id, depends_id)
-        for dep in r_deps.split():
-            cursor.execute("""SELECT id FROM ports WHERE name=%s""", name)
-            port_id = cursor.fetchone()[0]
-            cursor.execute("""SELECT id FROM ports WHERE name=%s""", dep)
-            depends_id = cursor.fetchone()[0]
-            cursor.execute("INSERT INTO depends VALUES (%s, %s)",
-                           port_id, depends_id)
+##         for dep in r_deps.split():
+##             cursor.execute("""SELECT id FROM ports WHERE name=%s""", name)
+##             port_id = cursor.fetchone()[0]
+##             cursor.execute("""SELECT id FROM ports WHERE name=%s""", dep)
+##             depends_id = cursor.fetchone()[0]
+##             cursor.execute("INSERT INTO depends VALUES (%s, %s)",
+##                            port_id, depends_id)
     indexfd.close()
     cursor.execute("CREATE INDEX in_category_port_id ON in_category (port_id)")
     cursor.execute("CREATE INDEX depends_port_id ON depends (port_id)")
@@ -139,8 +142,6 @@ class FreeBSD(callbacks.Privmsg):
         self.db = makeDb(dbFile, getIndex())
 
     _globtrans = string.maketrans('?*', '_%')
-    abbrev = utils.abbrev(['name', 'category', 'depends',
-                           'info', 'maintainer', 'website'])
     def searchports(self, irc, msg, args):
         """[--name=<glob>] [--category=<glob>] [--depends=<glob>] """ \
         """[--info=<glob>] [--maintainer=<glob>] [--website=<glob>]
@@ -159,8 +160,12 @@ class FreeBSD(callbacks.Privmsg):
         tables = ['ports']
         constraints = []
         arguments = []
+        dependsConstraints = []
+        dependsArguments = []
         for (option, argument) in optlist:
-            option = self.abbrev[option[2:].lower()]
+            if len(argument.translate(string.ascii, '*%_?')) < 2:
+                irc.error(msg, 'You must provide 2 non-wildcard characters.')
+            option = option[2:]
             argument = argument.translate(self._globtrans)
             if option in ('name', 'info', 'maintainer', 'website'):
                 constraints.append('ports.%s LIKE %%s' % option)
@@ -176,20 +181,29 @@ class FreeBSD(callbacks.Privmsg):
             elif option == 'depends':
                 if 'depends' not in tables:
                     tables.append('depends')
-                constraints.append('ports.id=depends.port_id')
-                constraints.append("""depends.depends_id IN
-                                      (SELECT ports.id FROM ports
-                                       WHERE ports.name LIKE %s)""")
-                arguments.append(argument)
-        sql = """SELECT ports.name FROM %s WHERE %s """ % \
-              (', '.join(tables), ' AND '.join(constraints))
+                    dependsConstraints.append('ports.id=depends.port_id')
+                    dependsConstraints.append("""depends.depends_id IN
+                                                 (SELECT ports.id FROM ports
+                                                 WHERE ports.name LIKE %s)""")
+                else:
+                    for (i, s) in enumerate(dependsConstraints):
+                        if s.startswith('depends.depends_id IN'):
+                            s = s.replace('%s)', '%s OR ports.name LIKE %s)')
+                            dependsConstraints[i] = s
+                dependsArguments.append(argument)
+        sql = """SELECT ports.name FROM %s WHERE %s""" % \
+              (', '.join(tables), ' AND '.join(constraints+dependsConstraints))
         debug.printf(sql)
-        cursor.execute(sql, *arguments)
+        cursor.execute(sql, *(arguments+dependsArguments))
         if cursor.rowcount == 0:
             irc.reply(msg, 'No ports matched those constraints.')
             return
         names = [t[0] for t in cursor.fetchall()]
-        irc.reply(msg, ', '.join(names))
+        if reduce(operator.add, map((2).__add__, map(len, names))) > 450:
+            irc.reply(msg, '%s ports matched those constraints.  ' \
+                           'Please narrow your search.' % cursor.rowcount)
+        else:
+            irc.reply(msg, ', '.join(names))
                 
                 
     def numports(self, irc, msg, args):
