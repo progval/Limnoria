@@ -51,7 +51,15 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.webutils as webutils
+import supybot.registry as registry
 import supybot.callbacks as callbacks
+
+conf.registerPlugin('Misc')
+conf.registerGlobalValue(conf.supybot.plugins.Misc, 'listPrivatePlugins',
+    registry.Boolean(True, """Determines whether the bot will list private
+    plugins with the list command if given the --private switch.  If this is
+    disabled, non-owner users should be unable to see what private plugins
+    are loaded."""))
 
 class Misc(callbacks.Privmsg):
     priority = sys.maxint
@@ -81,6 +89,10 @@ class Misc(callbacks.Privmsg):
         for (option, argument) in optlist:
             if option == '--private':
                 private = True
+                if not self.registryValue('listPrivatePlugins') and \
+                   not ircdb.checkCapability(msg.prefix, 'owner'):
+                    irc.errorNoCapability('owner')
+                    return
         name = privmsgs.getArgs(rest, required=0, optional=1)
         name = callbacks.canonicalName(name)
         if not name:
