@@ -109,6 +109,9 @@ class DBHandler(object):
             del self.cachedDb
         
         
+# XXX: This shouldn't be a mixin.  This should be contained by classes that
+#      want such behavior.  But at this point, it wouldn't gain much for us
+#      to refactor it.
 class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.
     """
