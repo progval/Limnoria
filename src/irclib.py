@@ -241,9 +241,11 @@ class ChannelState(object):
         self.voices.discard(user)
 
     def setMode(self, mode, value=None):
+        assert mode not in 'ovh'
         self.modes[mode] = value
 
     def unsetMode(self, mode):
+        assert mode not in 'ovh'
         if mode in self.modes:
             del self.modes[mode]
 
@@ -369,10 +371,9 @@ class IrcState(IrcCommandDispatcher):
         chan = self.channels[channel]
         for (mode, value) in ircutils.separateModes(msg.args[2:]):
             modeChar = mode[1]
-            if mode[0] == '+':
+            if mode[0] == '+' and mode[1] not in 'ovh':
                 chan.setMode(modeChar, value)
-            else:
-                assert mode[0] == '-'
+            elif mode[0] == '-' and mode[1] not in 'ovh':
                 chan.unsetMode(modeChar)
 
     def do353(self, irc, msg):
