@@ -39,6 +39,7 @@ as he joins.
 from baseplugin import *
 
 import conf
+import utils
 import ircdb
 import irclib
 import ircmsgs
