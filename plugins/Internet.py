@@ -40,19 +40,17 @@ import socket
 import telnetlib
 
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
-
 
 class Internet(callbacks.Privmsg):
     threaded = True
-    def dns(self, irc, msg, args):
+    def dns(self, irc, msg, args, host):
         """<host|ip>
 
         Returns the ip of <host> or the reverse DNS hostname of <ip>.
         """
-        host = privmsgs.getArgs(args)
         if utils.isIP(host):
             hostname = socket.getfqdn(host)
             if hostname == host:
@@ -68,6 +66,7 @@ class Internet(callbacks.Privmsg):
                     irc.reply(ip)
             except socket.error:
                 irc.reply('Host not found.')
+    dns = wrap(dns, ['something'])
 
     _tlds = sets.Set(['com', 'net', 'edu'])
     _domain = ['Domain Name', 'Server Name']
@@ -77,12 +76,11 @@ class Internet(callbacks.Privmsg):
     _created = ['Created On', 'Domain Registration Date', 'Creation Date']
     _expires = ['Expiration Date', 'Domain Expiration Date']
     _status = ['Status', 'Domain Status', 'status']
-    def whois(self, irc, msg, args):
+    def whois(self, irc, msg, args, domain):
         """<domain>
 
         Returns WHOIS information on the registration of <domain>.
         """
-        domain = privmsgs.getArgs(args).lower()
         usertld = domain.split('.')[-1]
         if '.' not in domain:
             irc.error('<domain> must be in .com, .net, .edu, or .org.')
@@ -160,6 +158,7 @@ class Internet(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.error('I couldn\'t find such a domain.')
+    whois = wrap(whois, ['lowered'])
 
 
 Class = Internet
