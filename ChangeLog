@@ -52,8 +52,6 @@
 	* Switched ChannelDB databases to use integer user ids instead of text
 	nicks.
 
-	* Added QUIT monitoring to ChannelDB stats.
-
 	* Added monitoring of occurrences of certain words on a per-user basis,
 	adding 2 new databases and several new commands ("wordstats", in
 	ChannelDB).
@@ -132,8 +130,6 @@
 	* Removed the OwnerCommands.say command; it wasn't useful enough,
 	and is so easily written that anyone can have it back if they want
 	it.
-	
-	* Moved bestuptime command from FunDB to Status.
 	
 	* Changed OwnerCommands.load (and loadPluginModule) to be
 	case-insensitive, so "load funcommands" works just as well as
