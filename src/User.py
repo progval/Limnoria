@@ -76,8 +76,8 @@ class User(callbacks.Privmsg):
             if '*' not in glob and '?' not in glob:
                 glob = '*%s*' % glob
             r = re.compile(fnmatch.translate(glob), re.I)
-            def p(s):
-                return r.match(s) is not None
+            def p(u):
+                return r.match(u.name) is not None
             predicates.append(p)
         users = []
         for u in ircdb.users.itervalues():
