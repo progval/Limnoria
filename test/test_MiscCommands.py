@@ -33,7 +33,7 @@ from test import *
 
 class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('MiscCommands', 'OwnerCommands',
-               'Utilities', 'ChannelDB', 'Ctcp')
+               'Utilities', 'Gameknot', 'Ctcp')
     def testReplyWhenNotCommand(self):
         try:
             conf.replyWhenNotCommand = True
@@ -48,7 +48,7 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         try:
             conf.replyWhenNotCommand = True
             self.prefix = 'somethingElse!user@host.domain.tld'
-            self.assertNoResponse('@coffee++', 2)
+            self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
         finally:
             conf.replyWhenNotCommand = False
 
