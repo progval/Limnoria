@@ -112,7 +112,7 @@ if __name__ == '__main__':
     parser.add_option('-p', '--password', action='store',
                       dest='password', default='',
                       help='server password the bot should use')
-    parser.add_option('', '--enable-eval', action='store_true',
+    parser.add_option('', '--allow-eval', action='store_true',
                       dest='allowEval',
                       help='Determines whether the bot will '
                            'allow the evaluation of arbitrary Python code.')
