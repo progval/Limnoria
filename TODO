@@ -1,9 +1,15 @@
-To do before next major release (0.8.0):
+Roughly in order of precedence (the closer to the front of the file,
+the more likely it'll be done before next release):
 
-Fix website.  It needs more and better documentation.
-Write some more tests (but those are always useful :))
-Do some actual testing with Real Users.
+Change logging infrastructure to use the new logging module in 2.3.
 
-To do later:
+Update the database infrastructure to allow other RDBMSes.
 
-Fix Infobot plugin.
+Improved (and perhaps integrated Services and Enforcer plugins.
+
+
+
+To be done as soon as someone with the necessary expertise is found to
+help us:
+
+Finish the Infobot plugin.
