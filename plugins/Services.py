@@ -41,6 +41,7 @@ import re
 import time
 
 import supybot.conf as conf
+import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
 import supybot.privmsgs as privmsgs
 import supybot.ircutils as ircutils
@@ -70,13 +71,17 @@ class ValidNickOrEmptyString(registry.String):
 conf.registerPlugin('Services')
 # Not really ChannelValues: but we can have values for each network.  We
 # should probably document that this is possible.
-conf.registerGlobalValue(conf.supybot.plugins.Services, 'nick',
-    ValidNickOrEmptyString('', """Determines what nick the bot will use with
+
+class ValidNickSet(conf.ValidNicks):
+    List = ircutils.IrcSet
+    
+conf.registerGlobalValue(conf.supybot.plugins.Services, 'nicks',
+    ValidNickSet([], """Determines what nicks the bot will use with
     services."""))
 conf.registerGlobalValue(conf.supybot.plugins.Services, 'NickServ',
     ValidNickOrEmptyString('', """Determines what nick the 'NickServ' service
     has."""))
-conf.registerGlobalValue(conf.supybot.plugins.Services.NickServ, 'password',
+conf.registerGroup(conf.supybot.plugins.Services.NickServ, 'password',
     registry.String('', """Determines what password the bot will use with
     NickServ.""", private=True))
 conf.registerGlobalValue(conf.supybot.plugins.Services, 'ChanServ',
@@ -100,6 +105,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        for nick in self.registryValue('nicks'):
+            self._registerNick(nick)
         self.reset()
 
     def reset(self):
@@ -107,15 +114,38 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self.sentGhost = False
         self.identified = False
 
-    def _doIdentify(self, irc):
+    def _registerNick(self, nick, password=''):
+        p = self.registryValue('NickServ.password', value=False)
+        p.register(nick, registry.String(password, '', private=True))
+
+    def _getNick(self):
+        return conf.supybot.nick()
+
+##     def _getNickServ(self, network):
+##         return self.registryValue('NickServ', network)
+
+    def _getNickServPassword(self, nick):
+        # This should later be nick-specific.
+        assert nick in self.registryValue('nicks')
+        return self.registryValue('NickServ.password.%s' % nick)
+
+    def _setNickServPassword(self, nick, password):
+        # This also should be nick-specific.
+        assert nick in self.registryValue('nicks')
+        self.setRegistryValue('NickServ.password.%s' % nick, password)
+
+    def _doIdentify(self, irc, nick=None):
+        if nick is None:
+            nick = self._getNick()
+        if nick not in self.registryValue('nicks'):
+            return
         nickserv = self.registryValue('NickServ')
-        password = self.registryValue('NickServ.password')
+        password = self._getNickServPassword(nick)
         if not nickserv or not password:
             s = 'Tried to identify without a NickServ or password set.'
             self.log.warning(s)
             return
-        assert irc.nick == self.registryValue('nick'), \
-               'Identifying with not normal nick.'
+        assert irc.nick == nick, 'Identifying with not normal nick.'
         self.log.info('Sending identify (current nick: %s)' % irc.nick)
         identify = 'IDENTIFY %s' % password
         # It's important that this next statement is irc.sendMsg, not
@@ -123,21 +153,23 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         # JOIN messages also being sent on 376.
         irc.sendMsg(ircmsgs.privmsg(nickserv, identify))
 
-    def _doGhost(self, irc):
+    def _doGhost(self, irc, nick=None):
+        if nick is None:
+            nick = self._getNick()
+        if nick not in self.registryValue('nicks'):
+            return
         nickserv = self.registryValue('NickServ')
-        password = self.registryValue('NickServ.password')
+        password = self._getNickServPassword(nick)
         if not nickserv or not password:
             s = 'Tried to ghost without a NickServ or password set.'
             self.log.warning(s)
             return
         if self.sentGhost:
             self.log.warning('Refusing to send GHOST twice.')
+        elif not password:
+            self.log.warning('Not ghosting: no password set.')
+            return
         else:
-            nick = self.registryValue('nick')
-            password = self.registryValue('NickServ.password')
-            if not password:
-                self.log.warning('Not ghosting: no password set.')
-                return
             self.log.info('Sending ghost (current nick: %s; ghosting: %s)',
                           irc.nick, nick)
             ghost = 'GHOST %s %s' % (nick, password)
@@ -147,9 +179,11 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def __call__(self, irc, msg):
         callbacks.Privmsg.__call__(self, irc, msg)
-        nick = self.registryValue('nick')
+        nick = self._getNick()
+        if nick not in self.registryValue('nicks'):
+            return
         nickserv = self.registryValue('NickServ')
-        password = self.registryValue('NickServ.password')
+        password = self._getNickServPassword(nick)
         if nick and irc.nick != nick and nickserv and password:
             if irc.afterConnect and not self.sentGhost:
                 if nick in irc.state.nicksToHostmasks:
@@ -162,13 +196,15 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self.sentGhost = False
 
     def do376(self, irc, msg):
+        nick = self._getNick()
+        if nick not in self.registryValue('nicks'):
+            return
         nickserv = self.registryValue('NickServ')
-        password = self.registryValue('NickServ.password')
+        password = self._getNickServPassword(nick)
         if not nickserv or not password:
             s = 'NickServ or password is unset; cannot identify.'
             self.log.warning(s)
             return
-        nick = self.registryValue('nick')
         if not nick:
             self.log.warning('Cannot identify without a nick being set.  '
                              'Set supybot.plugins.Services.nick.')
@@ -180,45 +216,28 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     do422 = do377 = do376
 
     def do433(self, irc, msg):
-        if irc.afterConnect:
-            password = self.registryValue('NickServ.password')
+        nick = self._getNick()
+        if nick not in self.registryValue('nicks'):
+            return
+        if nick and irc.afterConnect:
+            password = self._getNickServPassword(nick)
             if not password:
                 return
             self._doGhost(irc)
-
-##     def do474(self, irc, msg):
-##         # Can't join this channel, it's banned us.
-##         channel = msg.args[1]
-##         chanserv = self.registryValue('ChanServ')
-##         if chanserv:
-##             # This artificially conflates OP and UNBAN, but we'll assume until
-##             # we get a complaint from someone.
-##             if self.registryValue('ChanServ.op', channel):
-##                 if self.identified:
-##                     irc.sendMsg(ircmsgs.privmsg(chanserv,'UNBAN %s' % channel))
-##                     irc.sendMsg(ircmsgs.join(channel))
-##                 else:
-##                     self._doIdentify(irc)
-##         pass
 
     def do515(self, irc, msg):
         # Can't join this channel, it's +r (we must be identified).
         self.channels.append(msg.args[1])
 
     def doNick(self, irc, msg):
-        nick = self.registryValue('nick')
+        nick = self._getNick()
         if msg.args[0] == irc.nick and irc.nick == nick:
             self._doIdentify(irc)
         elif ircutils.strEqual(msg.nick, nick):
             irc.sendMsg(ircmsgs.nick(nick))
 
-    def doQuit(self, irc, msg):
-        nick = self.registryValue('nick')
-        if ircutils.strEqual(msg.nick, nick):
-            irc.sendMsg(ircmsgs.nick(nick))
-
     def _ghosted(self, s):
-        nick = self.registryValue('nick')
+        nick = self._getNick()
         lowered = s.lower()
         return bool('killed' in lowered and (nick in s or 'ghost' in lowered))
 
@@ -227,7 +246,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             nickserv = self.registryValue('NickServ')
             if not nickserv or msg.nick != nickserv:
                 return
-            nick = self.registryValue('nick')
+            nick = self._getNick()
             self.log.debug('Notice received from NickServ: %r.', msg)
             s = msg.args[1].lower()
             if 'incorrect' in s or 'denied' in s:
@@ -235,7 +254,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                       'Resetting password to empty.'
                 self.log.warning(log)
                 self.sentGhost = False
-                self.setRegistryValue('NickServ.password', '')
+                self._setNickServPassword(nick, '')
             elif self._ghosted(s):
                 self.log.info('Received "GHOST succeeded" from NickServ.')
                 self.sentGhost = False
@@ -326,38 +345,64 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         Identifies with NickServ.
         """
         if self.registryValue('NickServ'):
-            nick = self.registryValue('nick')
-            if nick != irc.nick:
-                irc.error('I can\'t identify without having my normal nick!')
-            elif not nick:
-                irc.error('You must set supybot.plugins.Services.nick before '
-                          'I\'m able to identify.')
-            else:
-                self._doIdentify(irc)
+            if irc.nick in self.registryValue('nicks'):
+                self._doIdentify(irc, irc.nick)
                 irc.replySuccess()
         else:
             irc.error('You must set supybot.plugins.Services.NickServ before '
                       'I\'m able to do identify.')
 
     def ghost(self, irc, msg, args):
-        """takes no arguments
+        """[<nick>]
 
-        Ghosts the bot's configured nick and retakes it.
+        Ghosts the bot's given nick and takes it.  If no nick is given,
+        ghosts the bot's configured nick and takes it.
         """
         if self.registryValue('NickServ'):
-            nick = self.registryValue('nick')
+            nick = privmsgs.getArgs(args, required=0, optional=1)
+            if not nick:
+                nick = self._getNick()
             if nick == irc.nick:
                 irc.error('I cowardly refuse to ghost myself.')
-            elif not nick:
-                irc.error('You must set supybot.plugins.Services.nick before '
-                          'I\'m able to ghost a nick.')
             else:
-                self._doGhost(irc)
+                self._doGhost(irc, nick=nick)
                 irc.replySuccess()
         else:
             irc.error('You must set supybot.plugins.Services.NickServ before '
                       'I\'m able to ghost a nick.')
 
+    def password(self, irc, msg, args):
+        """<nick> [<password>]
+
+        Sets the NickServ password for <nick> to <password>.  If <password> is
+        not given, removes <nick> from the configured nicks.
+        """
+        if ircutils.isChannel(msg.args[0]):
+            irc.errorRequiresPrivacy(Raise=True)
+        (nick, password) = privmsgs.getArgs(args, optional=1)
+        if not password:
+            try:
+                self.registryValue('nicks').remove(nick)
+                irc.replySuccess()
+            except KeyError:
+                irc.error('That nick was not configured with a password.')
+                return
+        else:
+            self.registryValue('nicks').add(nick)
+            self._registerNick(nick, password)
+            irc.replySuccess()
+
+    def nicks(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the nicks that this plugin is configured to identify and ghost
+        with."""
+        L = list(self.registryValue('nicks'))
+        if L:
+            utils.sortBy(ircutils.toLower, L)
+            irc.reply(utils.commaAndify(L))
+        else:
+            irc.reply('I\'m not currently configured for any nicks.')
 
 
 Class = Services
