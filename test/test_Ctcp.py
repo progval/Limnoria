@@ -34,6 +34,7 @@ from test import *
 class CtcpTestCase(PluginTestCase):
     plugins = ('Ctcp',)
     def testVersion(self):
+        self.assertNotError('unload Misc')
         self.assertNoResponse('version', 1)
 
 
