@@ -35,15 +35,6 @@ from testsupport import *
 
 class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Sourceforge',)
-    def testBug(self):
-        self.assertHelp('bug')
-        m = self.getMsg('bugs gaim')
-        self.failUnless(m, 'No response from Sourceforge.')
-        n = re.search('#(\d+)', m.args[1]).group(1)
-        self.assertNotError('bug gaim %s' % n)
-        self.assertError('bug gaim')
-        self.assertRegexp('bug lkadf 9', 'find the Bugs')
-
     def testBugs(self):
         self.assertHelp('bugs')
         self.assertNotError('config defaultproject supybot')
@@ -53,13 +44,12 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('config defaultproject')
         self.assertRegexp('bugs 83423', 'Use the bug command')
 
-    def testRfe(self):
+    def testTracker(self):
+        self.assertError('tracker foo')
         m = self.getMsg('rfes gaim')
         self.failUnless(m, 'No response from Sourceforge.')
         n = re.search('#(\d+)', m.args[1]).group(1)
-        self.assertNotError('rfe gaim %s' % n)
-        self.assertError('rfe gaim')
-        self.assertRegexp('rfe lakdf 9', 'find the RFEs')
+        self.assertNotError('tracker %s' % n)
 
     def testRfes(self):
         self.assertHelp('rfes')
@@ -74,11 +64,6 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertHelp('bugs')
         self.assertNotError('config defaultproject supybot')
         self.assertNotError('bugs')
-        m = self.getMsg('bugs')
-        n = re.search('#(\d+)', m.args[1]).group(1)
-        self.assertNotError('bug supybot %s' % n)
-        # This should have the same effect as calling 'bug supybot %s'
-        self.assertNotError('bug %s' % n)
         self.assertNotError('config defaultproject ""')
 
     def testSnarfer(self):
