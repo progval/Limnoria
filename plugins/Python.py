@@ -30,7 +30,7 @@
 ###
 
 """
-Various commands relating to Python (the programming language supybot is
+Various commands relating to Python (the programming language Supybot is
 written in) somehow.
 """
 
