@@ -117,6 +117,7 @@ def get(group, channel=None):
     if channel is None or not group.channelValue:
         return group()
     else:
+        assert ircutils.isChannel(channel)
         return group.get(channel)()
 
 ###
