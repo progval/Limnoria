@@ -705,7 +705,7 @@ class IgnoresDB(object):
     def open(self, filename):
         self.filename = filename
         fd = file(self.filename)
-        for line in nonEmptyNonCommentLines(fd):
+        for line in utils.nonCommentNonEmptyLines(fd):
             self.hostmasks.add(line.rstrip('\r\n'))
         fd.close()
 
