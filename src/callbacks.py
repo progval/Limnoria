@@ -203,7 +203,11 @@ class Tokenizer:
         while True:
             token = lexer.get_token()
             if not token:
-                raise SyntaxError, 'Missing "%s".' % self.right
+                raise SyntaxError, 'Missing "%s".  You may want to ' \
+                                   'quote your arguments with double ' \
+                                   'quotes in order to prevent extra ' \
+                                   'brackets from being evaluated ' \
+                                   'as nested commands.' % self.right
             elif token == self.right:
                 return ret
             elif token == self.left:
@@ -226,47 +230,47 @@ class Tokenizer:
                 break
             elif token == '|' and conf.supybot.pipeSyntax():
                 if not args:
-                    raise SyntaxError, '"|" with nothing preceding.'
+                    raise SyntaxError, '"|" with nothing preceding.  I ' \
+                                       'obviously can\'t do a pipe with ' \
+                                       'nothing before the |.'
                 ends.append(args)
                 args = []
             elif conf.supybot.bracketSyntax():
                 if token == self.left:
                     args.append(self._insideBrackets(lexer))
                 elif token == self.right:
-                    raise SyntaxError, 'Spurious "%s".' % self.right
+                    raise SyntaxError, 'Spurious "%s".  You may want to ' \
+                                       'quote your arguments with double ' \
+                                       'quotes in order to prevent extra ' \
+                                       'brackets from being evaluated ' \
+                                       'as nested commands.' % self.right
                 else:
                     args.append(self._handleToken(token))
             else:
                 args.append(self._handleToken(token))
         if ends:
             if not args:
-                raise SyntaxError, '"|" with nothing following.'
+                raise SyntaxError, '"|" with nothing following.  I ' \
+                                   'obviously can\'t do a pipe with ' \
+                                   'nothing before the |.'
             args.append(ends.pop())
             while ends:
                 args[-1].append(ends.pop())
         return args
 
-_lastTokenized = None
-_lastTokenizeResult = None
 def tokenize(s):
     """A utility function to create a Tokenizer and tokenize a string."""
-    global _lastTokenized, _lastTokenizeResult
     start = time.time()
     try:
-        if s != _lastTokenized:
-            _lastTokenized = s
-            tokens = ''
-            if conf.supybot.bracketSyntax():
-                tokens = conf.supybot.brackets()
-            if conf.supybot.pipeSyntax():
-                tokens = '%s|' % tokens
-            _lastTokenizeResult = Tokenizer(tokens).tokenize(s)
+        tokens = ''
+        if conf.supybot.bracketSyntax():
+            tokens = conf.supybot.brackets()
+        if conf.supybot.pipeSyntax():
+            tokens = '%s|' % tokens
+        return Tokenizer(tokens).tokenize(s)
     except ValueError, e:
-        _lastTokenized = None
-        _lastTokenizedResult = None
         raise SyntaxError, str(e)
     #log.debug('tokenize took %s seconds.' % (time.time() - start))
-    return copy.deepcopy(_lastTokenizeResult)
 
 def getCommands(tokens):
     """Given tokens as output by tokenize, returns the command names."""
