@@ -144,105 +144,116 @@ if __name__ == '__main__':
     if len(args) > 1:
         parser.error()
     elif not args:
-        import socket
-        import ircutils
-        import questions
-        questions.output("""It seems like you're running supybot for the first
-        time.  Or, perhaps, you just forgot to give this program an argument
-        for your registry file.  If the latter is the case, simply press Ctrl-C
-        and this script will exit and you can run it again as indicated.  If
-        the former is the case, however, we'll have a few questions for you
-        to write your initial registry file.""")
-        ###
-        # Nick.
-        ###
-        nick = questions.something("""What nick would you like your bot to
-        use?""")
-        while not ircutils.isNick(nick):
-            questions.output("""That's not a valid IRC nick.  Please choose a
-            different nick.""")
-            nick = questions.something("""What nick would you like your bot
-            to use?""")
-
-        ###
-        # Server.
-        ###
-        def checkServer(server):
-            try:
-                ip = socket.gethostbyname(server)
-                questions.output("""%s resolved to %s.""" % (server, ip))
-                return True
-            except socket.error:
-                questions.output("""That's not a valid hostname.  Please enter
-                a hostname that resolves.""")
-                return False
-        server = questions.something("""What server would you like your bot
-        to connect to?""")
-        while not checkServer(server):
-            server = questions.something("""What server would you like your bot
-            to connect to?""")
-
-        ###
-        # Channels.
-        ###
-        def checkChannels(s):
-            for channel in s.split():
-                if ',' in channel:
-                    (channel, _) = channel.split(',', 1)
-                if not ircutils.isChannel(channel):
-                    questions.output("""%s is not a valid IRC channel.  Please
-                    choose a different channel.""" % channel)
+        try:
+            import socket
+            import ircutils
+            import questions
+            questions.output("""It seems like you're running supybot for the
+            first time.  Or, perhaps, you just forgot to give this program an
+            argument for your registry file.  If the latter is the case,
+            simply press Ctrl-C and this script will exit and you can run it
+            again as indicated.  If the former is the case, however, we'll
+            have a few questions for you to write your initial registry
+            file.""")
+            ###
+            # Nick.
+            ###
+            nick = questions.something("""What nick would you like your bot to
+                   use?""")
+            while not ircutils.isNick(nick):
+                questions.output("""That's not a valid IRC nick.  Please
+                choose a different nick.""")
+                nick = questions.something("""What nick would you like your
+                       bot to use?""")
+    
+            ###
+            # Server.
+            ###
+            def checkServer(server):
+                try:
+                    ip = socket.gethostbyname(server)
+                    questions.output("""%s resolved to %s.""" % (server, ip))
+                    return True
+                except socket.error:
+                    questions.output("""That's not a valid hostname.  Please
+                    enter a hostname that resolves.""")
                     return False
-            return True
-        channels = questions.something("""What channels would you like your bot
-        to join when it connects to %s?  Separate your channels by spaces; if
-        any channels require a keyword to join, separate the keyword from the
-        channel by a comma.  For instance, if you want to join #supybot with
-        no keyword and #secret with a keyword of 'foo', you would type
-        '#supybot #secret,foo' without the quotes.""" % server)
-        while not checkChannels(channels):
-            channels = questions.something("""What channels would you like your
-            bot to join when it connects to %s?  Separate your channels by
-            spaces; if any channels require a keyword to join, separate the
+            server = questions.something("""What server would you like your
+                     bot to connect to?""")
+            while not checkServer(server):
+                server = questions.something("""What server would you like
+                         your bot to connect to?""")
+    
+            ###
+            # Channels.
+            ###
+            def checkChannels(s):
+                for channel in s.split():
+                    if ',' in channel:
+                        (channel, _) = channel.split(',', 1)
+                    if not ircutils.isChannel(channel):
+                        questions.output("""%s is not a valid IRC channel.
+                        Please choose a different channel.""" % channel)
+                        return False
+                return True
+            channels = questions.something("""What channels would you like
+            your bot to join when it connects to %s?  Separate your channels
+            by spaces; if any channels require a keyword to join, separate the
             keyword from the channel by a comma.  For instance, if you want to
             join #supybot with no keyword and #secret with a keyword of 'foo',
-            you would type '#supybot #secret,foo' without the quotes.
-            """ % server)
-
-        ###
-        # Filename.
-        ###
-        def checkFilename(s):
-            if os.path.exists(s):
-                questions.output("""That file already exists.  Please choose a
-                file that doesn't exist yet.  You can always copy it over
-                later, of course, but we'd rather play it safe ourselves and
-                not risk overwriting an important file.""")
-                return False
-            try:
-                fd = file(s, 'w')
-                fd.write('supybot.nick: %s\n' % nick)
-                fd.write('supybot.server: %s\n' % server)
-                fd.write('supybot.channels: %s\n' % channels)
-                fd.close()
-                questions.output("""File %s written.  Now, to run your bot,
-                run this script with just that filename as an option.  Once you
-                do so, your configuration file will become much fuller and more
-                complete, with help descriptions describing all the options and
-                a significant number more options than you see now.  Have fun!
-                """ % s)
-                return True
-            except EnvironmentError, e:
-                questions.output("""Python told me that it couldn't create your
-                file, giving me this specific error: %s.""" % e)
-                return False
-        filename = questions.something("""What filename would you like to write
-        this configuration to?""")
-        while not checkFilename(filename):
+            you would type '#supybot #secret,foo' without the quotes.""" %
+            server)
+            while not checkChannels(channels):
+                channels = questions.something("""What channels would you like
+                your bot to join when it connects to %s?  Separate your
+                channels by spaces; if any channels require a keyword to join,
+                separate the keyword from the channel by a comma.  For
+                instance, if you want to join #supybot with no keyword and
+                #secret with a keyword of 'foo', you would type '#supybot
+                #secret,foo' without the quotes.  """ % server)
+    
+            ###
+            # Filename.
+            ###
+            def checkFilename(s):
+                if os.path.exists(s):
+                    questions.output("""That file already exists.  Please
+                    choose a file that doesn't exist yet.  You can always copy
+                    it over later, of course, but we'd rather play it safe
+                    ourselves and not risk overwriting an important file.""")
+                    return False
+                try:
+                    fd = file(s, 'w')
+                    fd.write('supybot.nick: %s\n' % nick)
+                    fd.write('supybot.server: %s\n' % server)
+                    fd.write('supybot.channels: %s\n' % channels)
+                    fd.close()
+                    questions.output("""File %s written.  Now, to run your
+                    bot, run this script with just that filename as an option.
+                    Once you do so, your configuration file will become much
+                    fuller and more complete, with help descriptions
+                    describing all the options and a significant number more
+                    options than you see now.  Have fun!  """ % s)
+                    return True
+                except EnvironmentError, e:
+                    questions.output("""Python told me that it couldn't create
+                    your file, giving me this specific error: %s.""" % e)
+                    return False
             filename = questions.something("""What filename would you like to
-            write this configuration to?""")
-        questions.output("""Great!  Seeya on the flipside!""")
-        sys.exit(0)
+                       write this configuration to?""")
+            while not checkFilename(filename):
+                filename = questions.something("""What filename would you like
+                           to write this configuration to?""")
+            questions.output("""Great!  Seeya on the flipside!""")
+            sys.exit(0)
+        except KeyboardInterrupt:
+            print
+            print
+            questions.output("""Well, it looks like you cancelled out of the
+            bot before it was done. Unfortunately, I didn't get to write
+            anything to file.  Please run the bot/wizard again to
+            completion.""")
+            sys.exit(0)
     else:
         registryFilename = args.pop()
         try:

@@ -48,19 +48,14 @@ def output(s, unformatted=True):
     print s
     print
 
-# doindent is used in yn().
-def expect(prompt, possibilities, recursed=False,
-           doindent=True, default=None, acceptEmpty=False):
+def expect(prompt, possibilities, recursed=False, default=None,
+           acceptEmpty=False):
     """Prompt the user with prompt, allow them to choose from possibilities.
 
     If possibilities is empty, allow anything.
     """
     prompt = utils.normalizeWhitespace(prompt)
     originalPrompt = prompt
-    if doindent:
-        indent = ' ' * ((len(originalPrompt)%68) + 2)
-    else:
-        indent = ''
     if recursed:
         output('Sorry, that response was not an option.')
     if possibilities:
@@ -69,7 +64,7 @@ def expect(prompt, possibilities, recursed=False,
             prompt = '%s [%s]' % (originalPrompt, '/ '.join(possibilities))
     if default is not None:
         prompt = '%s (default: %s)' % (prompt, default)
-    prompt = textwrap.fill(prompt, subsequent_indent=indent)
+    prompt = textwrap.fill(prompt)
     prompt = prompt.replace('/ ', '/')
     prompt = prompt.strip() + ' '
     if useBold:
@@ -78,6 +73,7 @@ def expect(prompt, possibilities, recursed=False,
     if useBold:
         print ansi.RESET
     s = s.strip()
+    print
     if possibilities:
         if s in possibilities:
             return s
@@ -87,7 +83,7 @@ def expect(prompt, possibilities, recursed=False,
             return s
         else:
             return expect(originalPrompt, possibilities, recursed=True,
-                          doindent=doindent, default=default)
+                          default=default)
     else:
         if not s and default is not None:
             return default
@@ -112,7 +108,7 @@ def yn(prompt, default=None):
             default = 'y'
         else:
             default = 'n'
-    s = expect(prompt, ['y', 'n'], doindent=False, default=default)
+    s = expect(prompt, ['y', 'n'], default=default)
     if s is 'y':
         return True
     else:
