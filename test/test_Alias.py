@@ -64,7 +64,7 @@ class FunctionsTest(unittest.TestCase):
         self.assertEqual(Alias.findBiggestDollar('$10 bar $1'), 10)
 
 
-class AliasTestCase(PluginTestCase):
+class AliasTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Alias', 'FunCommands', 'Utilities')
     def testSimpleAlias(self):
         pi = '3.1456926535897932384626433832795028841971693'
@@ -89,6 +89,11 @@ class AliasTestCase(PluginTestCase):
 
     def testNonCanonicalName(self):
         self.assertError('alias FOO foo')
+
+##     def testNotCannotNestRaised(self):
+##         self.assertNotError('alias punish "lart $channel $1"')
+##         self.assertNotError('punish #foo bugs')
+##         self.assertNoResponse('blah blah blah', 2)
         
 
 

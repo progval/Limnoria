@@ -249,7 +249,10 @@ buildings = {
 class OSU(callbacks.Privmsg):
     threaded = True
     def osuemail(self, irc, msg, args):
-        """<first name> <middle initial> <last name>"""
+        """<first name> <middle initial> <last name>
+
+        Returns possible email address matches for the given name.
+        """
         s = '.'.join(args)
         url = 'http://www.ohio-state.edu/cgi-bin/inquiry2.cgi?keyword=%s' % s
         try:
@@ -270,7 +273,11 @@ class OSU(callbacks.Privmsg):
             irc.error(msg, debug.exnToString(e))
 
     def osubuilding(self, irc, msg, args):
-        """<building abbreviation>"""
+        """<building abbreviation>
+
+        Returns the address and full name of an OSU building based on its
+        standard two-letter abbreviation.
+        """
         building = privmsgs.getArgs(args)
         try:
             irc.reply(msg, buildings[building.upper()])

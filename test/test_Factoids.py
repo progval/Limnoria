@@ -31,7 +31,7 @@
 
 from test import *
 
-class FactoidsTestCase(ChannelPluginTestCase):
+class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Factoids',)
     def testRandomfactoid(self):
         self.assertError('randomfactoid')

@@ -31,7 +31,7 @@
 
 from test import *
 
-class UnixTestCase(PluginTestCase):
+class UnixTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Unix',)
     def testSpell(self):
         self.assertRegexp('spell Strike', 'correctly')

@@ -31,7 +31,7 @@
 
 from test import *
 
-class RSSTestCase(PluginTestCase):
+class RSSTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('RSS',)
     def testRssinfo(self):
         self.assertNotError('rssinfo http://slashdot.org/slashdot.rss')

@@ -67,7 +67,7 @@ http://lambda.weblogs.com/xml/rss.xml
 """.strip().splitlines()
     
 
-class URLSnarferTestCase(ChannelPluginTestCase):
+class URLSnarferTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('URLSnarfer',)
     def test(self):
         counter = 0

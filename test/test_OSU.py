@@ -31,7 +31,7 @@
 
 from test import *
 
-class OSUTestCase(PluginTestCase):
+class OSUTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('OSU',)
     def testOsuemail(self):
         self.assertResponse('osuemail jeremiah fincher', 'fincher.8@osu.edu')

@@ -31,7 +31,7 @@
 
 from test import *
 
-class ChannelDBTestCase(ChannelPluginTestCase):
+class ChannelDBTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('ChannelDB',)
     def test(self):
         self.assertNotError('channelstats')

@@ -31,30 +31,18 @@
 
 from test import *
 
-import utils
-
-class GameknotTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Gameknot',)
-    def testGkstats(self):
-        self.assertNotError('gkstats jemfinch')
-        self.assertError('gkstats %s' % utils.mktemp())
-
-    def testUrlSnarfer(self):
-        self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
-
-    def testStatsUrlSnarfer(self):
-        self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
-        self.assertRegexp('http://gameknot.com/stats.pl?ddipaolo&1',
-                          r'^[^&]+$')
-
-    def testSnarfer(self):
-        self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-                          '\x02ddipaolo\x0f won')
-        self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-                          '\x02chroniqueur\x0f resigned')
-        self.assertRegexp('http://gameknot.com/chess.pl?bd=955432',
-                          '\x02ddipaolo\x0f lost')
-
+class TopicTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('Topic', 'AdminCommands')
+    def testAddtopic(self):
+        _ = self.getMsg('join #foo')
+        _ = self.getMsg(' ') # Get the WHO.
+        m = self.getMsg('addtopic #foo foo')
+        self.assertEqual(m.command, 'TOPIC')
+        self.assertEqual(m.args[0], '#foo')
+        self.assertEqual(m.args[1], 'foo (test)')
+        m = self.getMsg('addtopic #foo bar')
+        self.assertEqual(m.command, 'TOPIC')
+        self.assertEqual(m.args[0], '#foo')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

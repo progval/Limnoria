@@ -31,7 +31,7 @@
 
 from test import *
 
-class DictTestCase(PluginTestCase):
+class DictTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Dict', 'MiscCommands')
     def testHelps(self):
         self.assertNotError('list Dict')

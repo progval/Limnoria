@@ -31,7 +31,7 @@
 
 from test import *
 
-class MiscCommandsTestCase(PluginTestCase):
+class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('MiscCommands',)
     def testHelp(self):
         self.assertNotError('help list')

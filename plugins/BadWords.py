@@ -97,7 +97,10 @@ class BadWords(callbacks.Privmsg):
         self.regexp = re.compile(r'\b('+'|'.join(self.badwords)+r')\b', re.I)
 
     def addbadword(self, irc, msg, args):
-        "<word>"
+        """<word>
+
+        Adds <word> to the list of words the bot isn't to say.
+        """
         if ircdb.checkCapability(msg.prefix, 'admin'):
             word = privmsgs.getArgs(args)
             self.badwords.add(word)
@@ -109,7 +112,10 @@ class BadWords(callbacks.Privmsg):
             return
 
     def addbadwords(self, irc, msg, args):
-        "<word> [<word> ...]"
+        """<word> [<word> ...]
+
+        Adds all <word>s to the list of words the bot isn't to say.
+        """
         if ircdb.checkCapability(msg.prefix, 'admin'):
             words = privmsgs.getArgs(args).split()
             for word in words:
@@ -122,7 +128,10 @@ class BadWords(callbacks.Privmsg):
             return
 
     def removebadword(self, irc, msg, args):
-        "<word>"
+        """<word>
+
+        Removes <word> from the list of words the bot isn't to say.
+        """
         if ircdb.checkCapability(msg.prefix, 'admin'):
             word = privmsgs.getArgs(args)
             self.badwords.remove(word)
@@ -134,7 +143,10 @@ class BadWords(callbacks.Privmsg):
             return
 
     def removebadwords(self, irc, msg, args):
-        "<word> [<word> ...]"
+        """<word> [<word> ...]
+
+        Removes all <word>s from the list of words the bot isn't to say.
+        """
         if ircdb.checkCapability(msg.prefix, 'admin'):
             words = privmsgs.getArgs(args).split()
             for word in words:

@@ -33,7 +33,7 @@ from test import *
 
 import conf
 
-class OwnerCommandsTestCase(PluginTestCase):
+class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('OwnerCommands',)
     def testEval(self):
         conf.allowEval = True

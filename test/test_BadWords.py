@@ -31,7 +31,7 @@
 
 from test import *
 
-class BadWordsTestCase(PluginTestCase):
+class BadWordsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('BadWords', 'Utilities')
     badwords = ('shit', 'ass')
     def _test(self):

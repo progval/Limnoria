@@ -31,7 +31,7 @@
 
 from test import *
 
-class IMDBTestCase(PluginTestCase):
+class IMDBTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('IMDB',)
     def testImdb(self):
         self.assertNotError('imdb die hard')

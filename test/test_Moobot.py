@@ -33,7 +33,7 @@ from test import *
 
 import base64
 
-class MoobotTestCase(PluginTestCase):
+class MoobotTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Moobot',)
     def testMorse(self):
         self.assertResponse('unmorse [morse jemfinch]', 'JEMFINCH')

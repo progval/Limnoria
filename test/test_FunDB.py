@@ -31,7 +31,7 @@
 
 from test import *
 
-class TestFunDB(PluginTestCase):
+class TestFunDB(PluginTestCase, PluginDocumentation):
     plugins = ('FunDB',)
 
     def testDbAdd(self):

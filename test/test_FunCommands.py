@@ -35,7 +35,7 @@ import re
 
 import utils
 
-class FunCommandsTest(PluginTestCase):
+class FunCommandsTest(PluginTestCase, PluginDocumentation):
     plugins = ('FunCommands',)
     def testNoErrors(self):
         self.assertNotError('netstats')

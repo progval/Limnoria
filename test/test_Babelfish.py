@@ -31,7 +31,7 @@
 
 from test import *
 
-class BabelFishTestCase(PluginTestCase):
+class BabelFishTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Babelfish',)
     def testTranslate(self):
         self.assertResponse('translate en sp food',

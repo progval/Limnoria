@@ -31,7 +31,7 @@
 
 from test import *
 
-class QuotesTestCase(PluginTestCase):
+class QuotesTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Quotes',)
     def test(self):
         self.assertRegexp('numquotes #foo', '0')

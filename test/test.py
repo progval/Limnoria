@@ -102,6 +102,7 @@ nicks += [msg.nick for msg in msgs if msg.nick]
 def getMsgs(command):
     return [msg for msg in msgs if msg.command == command]
 
+
 class PluginTestCase(unittest.TestCase):
     """Subclass this to write a test case for a plugin.  See test_FunCommands
     for an example.
@@ -239,6 +240,26 @@ class ChannelPluginTestCase(PluginTestCase):
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, query,
                                          prefix=self.prefix))
 
+
+class PluginDocumentation:
+    def testAllCommandsHaveHelp(self):
+        for cb in self.irc.callbacks:
+            if hasattr(cb, 'isCommand'):
+                for attr in cb.__class__.__dict__:
+                    if cb.isCommand(attr):
+                        self.failUnless(getattr(cb, attr).__doc__,
+                                        '%s has no help' % attr)
+    def testAllCommandsHaveMorehelp(self):
+        for cb in self.irc.callbacks:
+            if hasattr(cb, 'isCommand'):
+                for attr in cb.__class__.__dict__:
+                    if cb.isCommand(attr):
+                        command = getattr(cb, attr)
+                        helps = command.__doc__
+                        self.failUnless(helps and len(helps.splitlines()) >= 3,
+                                        '%s has no morehelp' % attr)
+
+    
 
 if __name__ == '__main__':
     world.testing = True

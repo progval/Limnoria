@@ -31,7 +31,7 @@
 
 from test import *
 
-class HttpTest(PluginTestCase):
+class HttpTest(PluginTestCase, PluginDocumentation):
     plugins = ('Http',)
     def testDeepthought(self):
         self.assertNotError('deepthought')
