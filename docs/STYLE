@@ -29,7 +29,9 @@ definitions in a file.  Comments are even better than blank lines for
 separating classes.
 
 Code should pass PyChecker with no warnings.  The PyChecker config file is
-included in the tools/ subdirectory.
+included in the tools/ subdirectory.  (Note: It's becoming harder and
+harder to do this in today's Python.  Just try to have as few warnings
+as possible.)
 
 Database filenames should generally begin with the name of the plugin and the
 extension should be 'db'.  baseplugin.DBHandler does this already.
@@ -43,13 +45,12 @@ Instead, do this:
   fd.close()
 This is to be sure the bot doesn't leak file descriptors.
 
-All plugins should include a docstring decsribing what the plugin does.  After
-the decsription, the plugin should have a blank line followed by the line
-'Commands include:' followed by a list of commands, one per line, indented two
-spaces.  The setup script will depend on this format.
+All plugins should include a docstring decsribing what the plugin
+does.  This docstring will be returned when the user wants help on a
+plugin.
 
 Method docstrings in classes deriving from callbacks.Privmsg should include an
-argument list as their first line, and (if necessary) a blank line followed by
+argument list as their first line, and after that a blank line followed by
 a longer description of what the command does.  The argument list is used by
 the 'help' command, and the longer description is used by the 'morehelp'
 command.
@@ -72,3 +73,9 @@ words.  This is because SQL itself is case-insensitive.
 
 SQL statements in code should put SQL words in ALL CAPS:
   SELECT quote FROM quotes ORDER BY random() LIMIT 1
+
+All plugins should have test cases written for them.  Even if it
+doesn't actually test anything but just subclasses
+test.PluginDocumentation, it's good to have the test there so there's
+a place to add more tests later (and so we can be sure that all
+plugins are adequately documented).
