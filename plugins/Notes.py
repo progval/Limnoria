@@ -37,26 +37,26 @@ import os.path
 import sqlite
 
 import conf
+import debug
 import ircdb
 import privmsgs
-import callbacks
 import ircutils
-import debug
+import callbacks
 
 class Notes(callbacks.Privmsg):
-    
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.filename = os.path.join(conf.dataDir, 'Notes.db')
+        self.converters = {'bool': bool}
         if os.path.exists(self.filename):
-            self.db = sqlite.connect(self.filename)
+            self.db = sqlite.connect(self.filename, converters=self.converters)
             self.cursor = self.db.cursor()
         else:
             self.makeDB()
 
     def makeDB(self):
         "create Notes database and tables"
-        self.db = sqlite.connect(self.filename, converters={'bool': bool})
+        self.db = sqlite.connect(self.filename, converters=self.converters)
         self.cursor = self.db.cursor()
         self.cursor.execute("""CREATE TABLE users (
                                id INTEGER PRIMARY KEY,
@@ -76,7 +76,7 @@ class Notes(callbacks.Privmsg):
    
     def _addUser(self, username):
         "not callable from channel, used to add users to database"
-        self.cursor.execute('INSERT INTO users VALUES (NULL,%s)', username)
+        self.cursor.execute('INSERT INTO users VALUES (NULL, %s)', username)
         self.db.commit()
         
     def getUserID(self, username):
@@ -90,10 +90,9 @@ class Notes(callbacks.Privmsg):
     def getUserName(self, userid):
         self.cursor.execute('SELECT name FROM users WHERE id=%s', userid)
         if self.cursor.rowcount != 0:
-            results = self.cursor.fetchall()
-            return results[0]
+            return self.cursor.fetchone()[0]
         else:
-            raise KeyError
+            raise KeyError, userid
 
 #    def setNoteUnread(self, irc, msg, args):
 #        "set a note as unread"
@@ -103,8 +102,10 @@ class Notes(callbacks.Privmsg):
 #        irc.reply(msg, conf.replySuccess)    
     
     def sendnote(self, irc, msg, args):
-        "sends a new note to an IRC user"
-        # sendnote <user> <text>
+        """<user> <text>
+
+        Sends a note to an IRC user.
+        """
         (name, note) = privmsgs.getArgs(args, needed=2)
         sender = ircutils.nickFromHostmask(msg.prefix)
         if ircdb.users.hasUser(name):
@@ -120,10 +121,6 @@ class Notes(callbacks.Privmsg):
             public = 1
         else: 
             public = 0
-        debug.printf(senderID)
-        debug.printf(recipID)
-        debug.printf(public)
-        debug.printf(note)
         self.cursor.execute("""INSERT INTO notes VALUES 
                                (NULL, %s, %s, %s, %s, %s, %s)""", 
                                senderID, recipID, int(time.time()),
@@ -132,7 +129,10 @@ class Notes(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
 
     def getnote(self, irc, msg, args):
-        "retrieves a single note by unique note id"
+        """<id>
+
+        Retrieves a single note by unique number id
+        """
         #  BLOODY HELL, THIS ACTUALLY WORKS!!! 
         noteid = privmsgs.getArgs(args)
         sender = ircdb.users.getUserName(msg.prefix)
@@ -183,7 +183,9 @@ class Notes(callbacks.Privmsg):
 #            irc.error(msg, 'Unable to delete note')
             
     def getnotes(self, irc, msg, args):
-        "takes no arguments gets all notes for sender"
+        """takes no arguments
+
+        Gets all notes for sender."""
         sender = ircdb.users.getUserName(msg.prefix)
         senderID = self.getUserID(sender)
         self.cursor.execute("""SELECT id, from_id FROM notes
