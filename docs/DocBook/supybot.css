@@ -1,0 +1,41 @@
+.channel {
+    font-weight: bold;
+}
+
+.botcommand {
+    font-family: monospace;
+}
+
+.flag {
+    font-family: monospace;
+}
+
+.nick {
+    font-style: italic;
+}
+
+.plugin {
+    font-family: monospace;
+}
+
+.capability {
+    font-family: monospace;
+}
+
+.registrygroup {
+    font-family: monospace;
+}
+
+.ircsession {
+    font-family: monospace;
+    display: block;
+    background-color: #666666;
+}
+
+.script {
+    font-family: monospace;
+}
+
+.channel {
+    font-weight: bold;
+}
