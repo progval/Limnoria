@@ -182,6 +182,14 @@ conf.registerGlobalValue(conf.supybot.plugins.Google, 'licenseKey',
     Services API.  This is necessary before you can do any searching with this
     module.""", private=True))
 
+conf.registerGroup(conf.supybot.plugins.Google, 'state')
+conf.registerGlobalValue(conf.supybot.plugins.Google.state, 'searches',
+    registry.Float(0.0, """Used to keep the total number of searches Google has
+    done for this bot.  You shouldn't modify this."""))
+conf.registerGlobalValue(conf.supybot.plugins.Google.state, 'time',
+    registry.Float(0.0, """Used to keep the total amount of time Google has
+    spent searching for this bot.  You shouldn't modify this."""))
+
 class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
@@ -250,6 +258,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                 kwargs['filter'] = False
             else:
                 kwargs[option[2:]] = argument
+        if not rest:
+            raise callbacks.ArgumentError
         try:
             data = search(self.log, rest, **kwargs)
         except google.NoLicenseKey, e:
