@@ -40,18 +40,21 @@ import conf
 import ircdb
 import privmsgs
 import callbacks
+import ircutils
 
 class Notes(DBHandler, callbacks.Privmsg):
     
     def __init__(self):
         DBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
-        self.filname = os.path.join(conf.dataDir, 'Notes.db')
+        self.filename = os.path.join(conf.dataDir, 'Notes.db')
         if os.path.exists(self.filename):
             self.db = sqlite.connect(self.filename)
             self.cursor = self.db.cursor()
+            print "makeDB not called"
         else:
             self.makeDB()
+            print "makeDB called"
 
 
     def makeDB(self):
@@ -72,13 +75,13 @@ class Notes(DBHandler, callbacks.Privmsg):
                                note TEXT
                                )""")
         self.cursor.execute("""CREATE INDEX users_username 
-                               ON users (username)""")
+                               ON users (name)""")
         self.db.commit()
    
     def _addUser(self, username):
         "not callable from channel, used to add users to database"
         self.cursor.execute("""INSERT INTO users
-                               VALUES ('%s')""" % username)
+                               VALUES (NULL,'%s')""" % username)
         self.db.commit()
         
     def getUserID(self, username):
@@ -101,35 +104,36 @@ class Notes(DBHandler, callbacks.Privmsg):
 
     def setNoteUnread(self, irc, msg, args):
         "set a note as unread"
-        
+        noteid = privmsgs.getArgs(args) 
         self.cursor.execute("""UPDATE notes
                                SET read="False"
-                               where id = %d""" % int(noteNum))
+                               where id = %d""" % int(noteid))
         self.db.commit()
         
-    def sendNote(self, irc, msg, args):
+    def sendnote(self, irc, msg, args):
         "sends a new note to an IRC user"
         # sendnote <user> <text>
         (name, note) = privmsgs.getArgs(args, needed=2)
         sender = ircdb.users.getUserName(msg.prefix)
         if ircdb.users.hasUser(name):
-            recipient = ircdb.users.getUserName(name)
+            recipient = name
         else:
             n = irc.state.nickToHostmask(name)
             recipient = ircdb.users.getUserName(n)
-        _addUser(sender)
-        _addUser(recipient)
+        self._addUser(sender)
+        self._addUser(recipient)
         senderID = self.getUserID(sender)
         recipID = self.getUserID(recipient)
         if ircutils.isChannel(msg.args[0]): public = "True"
         else: public = "False"
         self.cursor.execute("""INSERT INTO notes
-                               VALUES (%d,%d,%d,%s,'False',%s)""" %\
+                               VALUES (%d,%d,%d,'False',%s,%s)""" %\
                                (int(senderID), int(recipID), int(time.time()),
                                public, note))
         self.db.commit()
+        irc.reply(msg, conf.replySuccess)
 
-    def getNote(self, irc, msg, args):
+    def getnote(self, irc, msg, args):
         "retrieves a single note by unique note id"
         # getnote 136  
         noteid = privmsgs.getArgs(args)
@@ -140,17 +144,17 @@ class Notes(DBHandler, callbacks.Privmsg):
         note, to_id, public = self.cursor.fetchall()
         if senderID == to_id:
             if public == 'True':
-                self.reply(msg, note)
+                irc.reply(msg, note)
             else:
                 msg.args[0] = msg.nick
-                self.reply(msg, note)
+                irc.reply(msg, note)
             self.cursor.execute("""UPDATE notes SET read='True' 
                                    WHERE id=%d""" % noteid)
             self.db.commit()
         else:
-            self.error(msg, 'Error getting note')
+            irc.error(msg, 'Error getting note')
 
-    def newNotes(self, irc, msg, args):
+    def newnotes(self, irc, msg, args):
         "takes no arguments, retrieves all unread notes for the requesting user"
         sender = ircdb.users.getUserName(msg.prefix)
         senderID = self.getUserID(sender)
@@ -163,7 +167,7 @@ class Notes(DBHandler, callbacks.Privmsg):
             sender = self.getUserName(from_id)
             L.append(r'#%d from %s;;' % (id, sender))
 
-    def deleteNote(self, irc, msg, args):
+    def deletenote(self, irc, msg, args):
         "removes single note using note id"
         noteid = privmsgs.getArgs(args)
         sender = ircdb.users.getUserName(msg.prefix)
@@ -175,11 +179,11 @@ class Notes(DBHandler, callbacks.Privmsg):
             self.cursor.execute("""DELETE FROM notes
                                    WHERE id=%d""" % noteid)
             self.db.commit()
-            self.reply(msg, conf.replySuccess)
+            irc.reply(msg, conf.replySuccess)
         else:
-            self.error(msg, 'Unable to delete note')
+            irc.error(msg, 'Unable to delete note')
             
-    def getNotes(self, irc, msg, args):
+    def getnotes(self, irc, msg, args):
         "takes no arguments gets all notes for sender"
         sender = ircdb.users.getUserName(msg.prefix)
         senderID = self.getUserID(sender)
@@ -189,6 +193,6 @@ class Notes(DBHandler, callbacks.Privmsg):
         L = []
         for (id, from_id) in notes:
             sender = self.getUserName(from_id)
-            L.append(r'#%d from %s;;' % (id, sender)
+            L.append(r'#%d from %s;;' % (id, sender))
 
 Class = Notes
