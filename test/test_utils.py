@@ -98,6 +98,9 @@ class UtilsTest(unittest.TestCase):
             soundex = utils.soundex(name)
             self.assertEqual(soundex, key,
                              '%s was %s, not %s' % (name, soundex, key))
+        self.assertRaises(ValueError, utils.soundex, '3')
+        self.assertRaises(ValueError, utils.soundex, "'")
+        
 
     def testDQRepr(self):
         L = ['foo', 'foo\'bar', 'foo"bar', '"', '\\', '', '\x00']

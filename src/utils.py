@@ -175,10 +175,11 @@ _soundextrans = string.maketrans(string.ascii_uppercase,
 _notUpper = string.ascii.translate(string.ascii, string.ascii_uppercase)
 def soundex(s, length=4):
     """Returns the soundex hash of a given string."""
-    assert s
     s = s.upper() # Make everything uppercase.
-    firstChar = s[0] # Save the first character.
     s = s.translate(string.ascii, _notUpper) # Delete non-letters.
+    if not s:
+        raise ValueError, 'Invalid string for soundex: %s'
+    firstChar = s[0] # Save the first character.
     s = s.translate(_soundextrans) # Convert to soundex numbers.
     s = s.lstrip(s[0]) # Remove all repeated first characters.
     L = [firstChar]
