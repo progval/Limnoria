@@ -181,7 +181,7 @@ class FunDB(callbacks.Privmsg):
         self.db = FunDBDB()
 
     def die(self):
-        self.db.die()
+        self.db.close()
 
     def _validType(self, irc, type, error=True):
         if type not in self._types:
