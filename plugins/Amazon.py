@@ -77,13 +77,18 @@ conf.registerGlobalValue(conf.supybot.plugins.Amazon, 'licenseKey',
     LicenseKey('', """Sets the license key for using Amazon Web Services.
     Must be set before any other commands in the plugin are used.""",
     private=True))
+conf.registerChannelValue(conf.supybot.plugins.Amazon, 'linkSnarfer',
+    registry.Boolean(False, """Determines whether the bot will reply to
+    Amazon.com URLs in the channel with a description of the item at the
+    URL."""))
 
-class Amazon(callbacks.Privmsg):
+class Amazon(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
+    regexps = ['amzSnarfer']
 
-    def callCommand(self, method, irc, msg, *L):
+    def callCommand(self, method, irc, msg, *L, **kwargs):
         try:
-            callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
+            callbacks.PrivmsgCommandAndRegexp.callCommand(self, method, irc, msg, *L, **kwargs)
         except amazon.NoLicenseKey, e:
             irc.error('You must have a free Amazon web services license key '
                       'in order to use this command.  You can get one at '
@@ -138,10 +143,11 @@ class Amazon(callbacks.Privmsg):
         attribs = {'ProductName' : 'title',
                    'Manufacturer' : 'publisher',
                    'Authors' : 'author',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
         s = '"%(title)s", written by %(author)s; published by ' \
-            '%(publisher)s%(url)s'
+            '%(publisher)s; price: %(price)s%(url)s'
         try:
             book = amazon.searchByKeyword(isbn)
             bold = self.registryValue('bold', msg.args[0])
@@ -171,10 +177,11 @@ class Amazon(callbacks.Privmsg):
         attribs = {'ProductName' : 'title',
                    'Manufacturer' : 'publisher',
                    'Authors' : 'author',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
         s = '"%(title)s", written by %(author)s; published by ' \
-            '%(publisher)s%(url)s'
+            '%(publisher)s; price: %(price)s%(url)s'
         try:
             books = amazon.searchByKeyword(keyword)
             bold = self.registryValue('bold', msg.args[0])
@@ -210,10 +217,11 @@ class Amazon(callbacks.Privmsg):
                    'MpaaRating' : 'mpaa',
                    'Media' : 'media',
                    'ReleaseDate' : 'date',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
         s = '"%(title)s" (%(media)s), rated %(mpaa)s; released ' \
-            '%(date)s; published by %(publisher)s%(url)s'
+            '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
         try:
             videos = amazon.searchByKeyword(keyword, product_line=product)
             bold = self.registryValue('bold', msg.args[0])
@@ -242,9 +250,10 @@ class Amazon(callbacks.Privmsg):
         asin = privmsgs.getArgs(rest)
         asin = asin.replace('-', '').replace(' ', '')
         attribs = {'ProductName' : 'title',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s"%(url)s'
+        s = '"%(title)s"; price: %(price)s%(url)s'
         try:
             item = amazon.searchByASIN(asin)
             bold = self.registryValue('bold', msg.args[0])
@@ -276,9 +285,10 @@ class Amazon(callbacks.Privmsg):
         upc = upc.replace('-', '').replace(' ', '')
         attribs = {'ProductName' : 'title',
                    'Manufacturer' : 'manufacturer',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" %(manufacturer)s%(url)s'
+        s = '"%(title)s" %(manufacturer)s; price: %(price)s%(url)s'
         try:
             item = amazon.searchByUPC(upc)
             bold = self.registryValue('bold', msg.args[0])
@@ -308,10 +318,11 @@ class Amazon(callbacks.Privmsg):
         attribs = {'ProductName' : 'title',
                    'Manufacturer' : 'publisher',
                    'Authors' : 'author',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
         s = '"%(title)s", written by %(author)s; published by ' \
-            '%(publisher)s%(url)s'
+            '%(publisher)s; price: %(price)s%(url)s'
         try:
             books = amazon.searchByAuthor(author)
             bold = self.registryValue('bold', msg.args[0])
@@ -406,10 +417,11 @@ class Amazon(callbacks.Privmsg):
                    'Manufacturer' : 'publisher',
                    'Artists' : 'artist',
                    'Media' : 'media',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
         s = '"%(title)s" (%(media)s), by %(artist)s; published by ' \
-            '%(publisher)s%(url)s'
+            '%(publisher)s; price: %(price)s%(url)s'
         try:
             items = amazon.searchByArtist(artist, product_line=product)
             bold = self.registryValue('bold', msg.args[0])
@@ -446,10 +458,11 @@ class Amazon(callbacks.Privmsg):
                    'MpaaRating' : 'mpaa',
                    'Media' : 'media',
                    'ReleaseDate' : 'date',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
         s = '"%(title)s" (%(media)s), rated %(mpaa)s; released ' \
-            '%(date)s; published by %(publisher)s%(url)s'
+            '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
         try:
             items = amazon.searchByActor(actor, product_line=product)
             bold = self.registryValue('bold', msg.args[0])
@@ -486,10 +499,11 @@ class Amazon(callbacks.Privmsg):
                    'MpaaRating' : 'mpaa',
                    'Media' : 'media',
                    'ReleaseDate' : 'date',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
         s = '"%(title)s" (%(media)s), rated %(mpaa)s; released ' \
-            '%(date)s; published by %(publisher)s%(url)s'
+            '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
         try:
             items = amazon.searchByDirector(director, product_line=product)
             bold = self.registryValue('bold', msg.args[0])
@@ -525,9 +539,10 @@ class Amazon(callbacks.Privmsg):
         product = product or 'pc-hardware'
         manufacturer = privmsgs.getArgs(rest)
         attribs = {'ProductName' : 'title',
+                   'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s"%(url)s'
+        s = '"%(title)s"; price: %(price)s%(url)s'
         try:
             items = amazon.searchByManufacturer(manufacturer,
                                                 product_line=product)
@@ -539,6 +554,39 @@ class Amazon(callbacks.Privmsg):
         except amazon.AmazonError, e:
             pass
         irc.error('No items were found by that manufacturer.')
+
+    def amzSnarfer(self, irc, msg, match):
+        r"http://www.amazon.com/exec/obidos/(?:tg/detail/-/|ASIN/)([^/]+)"
+        if not self.registryValue('linkSnarfer', msg.args[0]):
+            return
+        match = match.group(1)
+        # attribs is limited to ProductName since the URL can link to
+        # *any* type of product.  The only attribute we know it will have
+        # is ProductName
+        attribs = {'ProductName' : 'title',
+                   'Manufacturer' : 'publisher',
+                   'Authors' : 'author',
+                   'MpaaRating' : 'mpaa',
+                   'Media' : 'media',
+                   'ReleaseDate' : 'date',
+                   'OurPrice' : 'price',
+                   'Artists' : 'artist',
+                  }
+        s = '"%(title)s"; %(artist)s; %(author)s; %(mpaa)s; %(media)s; '\
+            '%(date)s; %(publisher)s; price: %(price)s'
+        try:
+            item = amazon.searchByASIN(match)
+            bold = self.registryValue('bold', msg.args[0])
+            res = self._genResults(s, attribs, item, False, bold, 'title')
+            if res:
+                res = utils.commaAndify(res)
+                res = res.replace('; unknown', '')
+                res = res.replace('; price: unknown', '')
+                irc.reply(res, prefixName=False)
+                return
+        except amazon.AmazonError, e:
+            pass
+        self.log.warning('No item was found with that ASIN.')
 
 Class = Amazon
 

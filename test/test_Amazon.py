@@ -109,5 +109,21 @@ if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY' and network:
             self.assertRegexp('videos zim', r'Demystifying the Devil.*DVD')
             self.assertRegexp('videos --vhs samuel jackson', r'VHS Tape')
 
+        def testSnarfer(self):
+            try:
+                orig = conf.supybot.plugins.Amazon.linkSnarfer()
+                conf.supybot.plugins.Amazon.linkSnarfer.setValue(True)
+                self.assertRegexp('http://www.amazon.com/exec/obidos/tg/'
+                                  'detail/-/B0001CSI3S/sr=1-2/qid=1076951698'
+                                  '/ref=sr_1_2/002-0542016-6528044?v=glance&'
+                                  'n=1044448&s=apparel',
+                                  r'.*Spring Parka.*')
+            finally:
+                conf.supybot.plugins.Amazon.linkSnarfer.setValue(orig)
+            self.assertNoResponse('http://www.amazon.com/exec/obidos/tg/detail'
+                                  '/-/B0001CSI3S/sr=1-2/qid=1076951698/ref='
+                                  'sr_1_2/002-0542016-6528044?v=glance&n='
+                                  '1044448&s=apparel')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
