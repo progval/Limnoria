@@ -67,38 +67,6 @@ if __name__ == '__main__':
     print 'Tagging release.'
     system('cvs tag -F release-%s' % v.replace('.', '_'))
 
-    print 'Generating documentation.'
-    # docFiles is in the format {directory: files}
-    docFiles = {'.': ('README', 'INSTALL', 'ChangeLog'),
-                'docs': ('config.html', 'CAPABILITIES', 'commands.html',
-                         'CONFIGURATION', 'FAQ', 'GETTING_STARTED',
-                         'INTERFACES', 'OVERVIEW', 'PLUGIN-EXAMPLE',
-                         'plugins', 'plugins.html', 'STYLE'),
-               }
-    system('python tools/generate-plugin-documentation.py')
-    pwd = os.getcwd()
-    os.chmod('docs/plugins', 0775)
-    sh = 'tar rf %s/docs.tar %%s' % pwd
-    for (dir, L) in docFiles.iteritems():
-        os.chdir(os.path.join(pwd, dir))
-        system(sh % ' '.join(L))
-    os.chdir(pwd)
-    system('bzip2 docs.tar')
-
-    print 'Uploading documentation to webspace.'
-    system('scp docs.tar.bz2 %s@supybot.sf.net:/home/groups/s/su/supybot'
-           '/htdocs/docs/.' % u)
-    system('ssh %s@supybot.sf.net "cd /home/groups/s/su/supybot/htdocs/docs; '
-           'tar jxf docs.tar.bz2"' % u)
-
-    print 'Cleaning up generated documentation.'
-    shutil.rmtree('docs/plugins')
-    configFiles = ('docs/config.html', 'docs/plugins.html',
-                   'docs/commands.html', 'docs.tar.bz2', 'test-conf',
-                   'test-data', 'test-logs', 'tmp')
-    for fn in configFiles:
-        os.remove(fn)
-
     print 'Removing test, sandbox, CVS, and .cvsignore.'
     shutil.rmtree('test')
     shutil.rmtree('sandbox')
@@ -131,16 +99,48 @@ if __name__ == '__main__':
         ftp.storbinary('STOR %s' % filename, file(filename))
     ftp.close()
 
-    print 'Copying new version.txt over to project webserver.'
-    system('echo %s > version.txt' % v)
-    system('scp version.txt %s@shell.sf.net:/home/groups/s/su/supybot/htdocs'%u)
-
     print 'Committing %s+cvs to version files.' % v
     for fn in versionFiles:
         sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'/" %s' % \
              (v + '+cvs', fn)
         system(sh, 'Error changing version in %s' % fn)
     system('cvs commit -m "Updated to %s." %s' % (v, ' '.join(versionFiles)))
+
+    print 'Copying new version.txt over to project webserver.'
+    system('echo %s > version.txt' % v)
+    system('scp version.txt %s@shell.sf.net:/home/groups/s/su/supybot/htdocs'%u)
+
+    print 'Generating documentation.'
+    # docFiles is in the format {directory: files}
+    docFiles = {'.': ('README', 'INSTALL', 'ChangeLog'),
+                'docs': ('config.html', 'CAPABILITIES', 'commands.html',
+                         'CONFIGURATION', 'FAQ', 'GETTING_STARTED',
+                         'INTERFACES', 'OVERVIEW', 'PLUGIN-EXAMPLE',
+                         'plugins', 'plugins.html', 'STYLE'),
+               }
+    system('python tools/generate-plugin-documentation.py')
+    pwd = os.getcwd()
+    os.chmod('docs/plugins', 0775)
+    sh = 'tar rf %s/docs.tar %%s' % pwd
+    for (dir, L) in docFiles.iteritems():
+        os.chdir(os.path.join(pwd, dir))
+        system(sh % ' '.join(L))
+    os.chdir(pwd)
+    system('bzip2 docs.tar')
+
+    print 'Uploading documentation to webspace.'
+    system('scp docs.tar.bz2 %s@supybot.sf.net:/home/groups/s/su/supybot'
+           '/htdocs/docs/.' % u)
+    system('ssh %s@supybot.sf.net "cd /home/groups/s/su/supybot/htdocs/docs; '
+           'tar jxf docs.tar.bz2"' % u)
+
+    print 'Cleaning up generated documentation.'
+    shutil.rmtree('docs/plugins')
+    configFiles = ('docs/config.html', 'docs/plugins.html',
+                   'docs/commands.html', 'docs.tar.bz2', 'test-conf',
+                   'test-data', 'test-logs', 'tmp')
+    for fn in configFiles:
+        os.remove(fn)
 
 # This is the part where we do our release on Freshmeat using XMLRPC and
 # <gasp> ESR's software to do it: http://freshmeat.net/p/freshmeat-submit/
