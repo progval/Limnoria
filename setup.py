@@ -49,6 +49,7 @@ plugins = [
     'Karma',
     'Lart',
     'Later',
+    'Limiter',
     'Math',
     'Misc',
     'Network',
