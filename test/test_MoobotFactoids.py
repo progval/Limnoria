@@ -61,6 +61,8 @@ if sqlite is not None:
                              [['foo','bar','baz']])
             self.assertEqual(MF.tokenize('(foo|(bar|baz))'),
                              [['foo', ['bar', 'baz']]])
+            self.assertEqual(MF.tokenize('(a|b (c|d))'),
+                             [['a', ['b', ['c', 'd']]]])
 
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('MoobotFactoids', 'User', 'Utilities')
