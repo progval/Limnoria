@@ -85,7 +85,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         separator = self.configurables.get('separator', channel)
         if separator in topic:
             s = 'You can\'t have %s in your topic' % separator
-            irc.error(msg, s)
+            irc.error(s)
             return
         currentTopic = irc.state.getTopic(channel)
         try:
@@ -109,7 +109,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         newtopic = irc.state.getTopic(channel)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if len(topics) == 0 or len(topics) == 1:
-            irc.error(msg, 'I can\'t shuffle 1 or fewer topics.')
+            irc.error('I can\'t shuffle 1 or fewer topics.')
             return
         elif len(topics) == 2:
             topics.reverse()
@@ -134,10 +134,10 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         num = len(topics)
         if num == 0 or num == 1:
-            irc.error(msg, 'I cannot reorder 1 or fewer topics.')
+            irc.error('I cannot reorder 1 or fewer topics.')
             return
         if len(args) != num:
-            irc.error(msg, 'All topic numbers must be specified.')
+            irc.error('All topic numbers must be specified.')
             return
         order = privmsgs.getArgs(args, required=num)
         if topics:
@@ -147,24 +147,24 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
                     if p > 0:
                         order[i] = p - 1
                     elif p == 0:
-                        irc.error(msg, '0 is not a valid topic number.')
+                        irc.error('0 is not a valid topic number.')
                         return
                     else:
                         order[i] = num + p
                 except ValueError:
-                    irc.error(msg, 'The positions must be valid integers.')
+                    irc.error('The positions must be valid integers.')
                     return
             if utils.sorted(order) != range(num):
-                irc.error(msg, 'Duplicate topic numbers cannot be specified.')
+                irc.error('Duplicate topic numbers cannot be specified.')
                 return
             try:
                 newtopics = [topics[i] for i in order]
                 newtopic = self._joinTopic(newtopics, channel)
                 irc.queueMsg(ircmsgs.topic(channel, newtopic))
             except IndexError:
-                irc.error(msg, 'An invalid topic number was specified.')
+                irc.error('An invalid topic number was specified.')
         else:
-            irc.error(msg, 'There are no topics to reorder.')
+            irc.error('There are no topics to reorder.')
     reorder = privmsgs.checkChannelCapability(reorder, 'topic')
 
     def list(self, irc, msg, args, channel):
@@ -180,7 +180,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
             (t, _) = self._unformatTopic(t, channel)
             L.append('%s: %s' % (i+1, utils.ellipsisify(t, 30)))
         s = utils.commaAndify(L)
-        irc.reply(msg, s)
+        irc.reply(s)
     list = privmsgs.channel(list)
 
     def get(self, irc, msg, args, channel):
@@ -196,19 +196,19 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
             if number > 0:
                 number -= 1
             elif number == 0:
-                irc.error(msg, 'That\'s not a valid topic number.')
+                irc.error('That\'s not a valid topic number.')
                 return
         except ValueError:
-            irc.error(msg, 'The argument must be a valid integer.')
+            irc.error('The argument must be a valid integer.')
             return
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if topics:
             try:
-                irc.reply(msg, self._unformatTopic(topics[number], channel)[0])
+                irc.reply(self._unformatTopic(topics[number], channel)[0])
             except IndexError:
-                irc.error(msg, 'That\'s not a valid topic.')
+                irc.error('That\'s not a valid topic.')
         else:
-            irc.error(msg, 'There are no topics to get.')
+            irc.error('There are no topics to get.')
     get = privmsgs.channel(get)
 
     def change(self, irc, msg, args, channel):
@@ -226,33 +226,33 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
             if number > 0:
                 number -= 1
             elif number == 0:
-                irc.error(msg, 'That\'s not a valid topic number.')
+                irc.error('That\'s not a valid topic number.')
                 return
         except ValueError:
-            irc.error(msg, 'The <number> argument must be a number.')
+            irc.error('The <number> argument must be a number.')
             return
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.error(msg, 'The regexp wasn\'t valid: %s' % e.args[0])
+            irc.error('The regexp wasn\'t valid: %s' % e.args[0])
             return
         except re.error, e:
-            irc.error(msg, utils.exnToString(e))
+            irc.error(utils.exnToString(e))
             return
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if not topics:
-            irc.error(msg, 'There are no topics to change.')
+            irc.error('There are no topics to change.')
             return
         topic = topics.pop(number)
         (topic, name) = self._unformatTopic(topic, channel)
         try:
             senderName = ircdb.users.getUser(msg.prefix).name
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
             return
         if name and name != senderName and \
            not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
-            irc.error(msg, 'You can only modify your own topics.')
+            irc.error('You can only modify your own topics.')
             return
         newTopic = self.topicFormatter % (replacer(topic), name)
         if number < 0:
@@ -275,16 +275,16 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
             if number > 0:
                 number -= 1
             elif number == 0:
-                irc.error(msg, 'That\'s not a valid topic number.')
+                irc.error('That\'s not a valid topic number.')
                 return
         except ValueError:
-            irc.error(msg, 'The argument must be a number.')
+            irc.error('The argument must be a number.')
             return
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         try:
             topic = topics.pop(number)
         except IndexError:
-            irc.error(msg, 'That\'s not a valid topic number.')
+            irc.error('That\'s not a valid topic number.')
             return
         (topic, name) = self._unformatTopic(topic, channel)
         try:
@@ -293,7 +293,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
             username = msg.nick
         if name and name != username and \
            not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
-            irc.error(msg, 'You can only remove your own topics.')
+            irc.error('You can only remove your own topics.')
             return
         newTopic = self._joinTopic(topics, channel)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))

@@ -127,7 +127,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                               FROM karma
                               WHERE normalized=%s""", normalized)
             if cursor.rowcount == 0:
-                irc.reply(msg, '%s has no karma.' % name)
+                irc.reply('%s has no karma.' % name)
             else:
                 (added, subtracted) = imap(int, cursor.fetchone())
                 total = added - subtracted
@@ -138,7 +138,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                         'and decreased %s for a total karma of %s.' % \
                         (name, utils.nItems('time', added),
                          utils.nItems('time', subtracted), total)
-                irc.reply(msg, s)
+                irc.reply(s)
         elif len(args) > 1:
             normalizedArgs = sets.Set(imap(str.lower, args))
             criteria = ' OR '.join(['normalized=%s'] * len(normalizedArgs))
@@ -161,9 +161,9 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                     s = '%s.  %s.' % (utils.commaAndify(L), ss)
                 else:
                     s = utils.commaAndify(L) + '.'
-                irc.reply(msg, s)
+                irc.reply(s)
             else:
-                irc.reply(msg, 'I didn\'t know the karma for any '
+                irc.reply('I didn\'t know the karma for any '
                                'of those things.')
         else: # No name was given.  Return the top/bottom N karmas.
             limit = self.configurables.get('karma-ranking-display', channel)
@@ -178,11 +178,11 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                               LIMIT %s""", limit)
             lowest=['%r (%s)' % (t[0], int(t[1])) for t in cursor.fetchall()]
             if not (highest and lowest):
-                irc.error(msg, 'I have no karma for this channel.')
+                irc.error('I have no karma for this channel.')
             else:
                 s = 'Highest karma: %s.  Lowest karma: %s.' % \
                     (utils.commaAndify(highest), utils.commaAndify(lowest))
-                irc.reply(msg, s)
+                irc.reply(s)
 
     _mostAbbrev = utils.abbrev(['increased', 'decreased', 'active'])
     def most(self, irc, msg, args):
@@ -204,7 +204,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                 orderby = 'added+subtracted'
             else:
                 self.log.error('Impossible condition in most: kind=%s' % kind)
-                irc.error(msg, conf.replyPossibleBug)
+                irc.error(conf.replyPossibleBug)
                 return
             sql = "SELECT name, %s FROM karma ORDER BY %s DESC LIMIT %s" % \
                   (orderby, orderby,
@@ -214,9 +214,9 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
             cursor.execute(sql)
             L = ['%s: %s' % (name, int(i)) for (name, i) in cursor.fetchall()]
             if L:
-                irc.reply(msg, utils.commaAndify(L))
+                irc.reply(utils.commaAndify(L))
             else:
-                irc.error(msg, 'I have no karma for this channel.')
+                irc.error('I have no karma for this channel.')
         except KeyError:
             raise callbacks.ArgumentError
         
@@ -232,7 +232,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                           SET added=added+1
                           WHERE normalized=%s""", normalized)
         if self.configurables.get('karma-response', msg.args[0]):
-            irc.replySuccess(msg)
+            irc.replySuccess()
 
     def decreaseKarma(self, irc, msg, match):
         r"^(\S+)--(|\s+)$"
@@ -246,7 +246,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                           SET subtracted=subtracted+1
                           WHERE normalized=%s""", normalized)
         if self.configurables.get('karma-response', msg.args[0]):
-            irc.replySuccess(msg)
+            irc.replySuccess()
 
 
 Class = Karma

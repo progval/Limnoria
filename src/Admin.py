@@ -64,7 +64,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             channel = msg.args[1]
             (irc, msg) = self.joins[channel]
             del self.joins[channel]
-            irc.error(msg, 'Cannot join %s, it\'s full.' % channel)
+            irc.error('Cannot join %s, it\'s full.' % channel)
         except KeyError:
             self.log.debug('Got 471 without Admin.join being called.')
 
@@ -73,7 +73,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             channel = msg.args[1]
             (irc, msg) = self.joins[channel]
             del self.joins[channel]
-            irc.error(msg, 'Cannot join %s, I was not invited.' % channel)
+            irc.error('Cannot join %s, I was not invited.' % channel)
         except KeyError:
             self.log.debug('Got 473 without Admin.join being called.')
 
@@ -82,7 +82,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             channel = msg.args[1]
             (irc, msg) = self.joins[channel]
             del self.joins[channel]
-            irc.error(msg, 'Cannot join %s, it\'s banned me.' % channel)
+            irc.error('Cannot join %s, it\'s banned me.' % channel)
         except KeyError:
             self.log.debug('Got 474 without Admin.join being called.')
             
@@ -91,7 +91,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             channel = msg.args[1]
             (irc, msg) = self.joins[channel]
             del self.joins[channel]
-            irc.error(msg, 'Cannot join %s, my keyword was wrong.' % channel)
+            irc.error('Cannot join %s, my keyword was wrong.' % channel)
         except KeyError:
             self.log.debug('Got 475 without Admin.join being called.')
 
@@ -141,14 +141,14 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         to protect the secrecy of secret channels.
         """
         if ircutils.isChannel(msg.args[0]):
-            irc.error(msg, conf.replyRequiresPrivacy)
+            irc.error(conf.replyRequiresPrivacy)
             return
         L = irc.state.channels.keys()
         if L:
             utils.sortBy(ircutils.toLower, L)
-            irc.reply(msg, utils.commaAndify(L))
+            irc.reply(utils.commaAndify(L))
         else:
-            irc.reply(msg, 'I\'m not currently in any channels.')
+            irc.reply('I\'m not currently in any channels.')
 
     def nick(self, irc, msg, args):
         """<nick>
@@ -167,7 +167,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             args.append(msg.args[0])
         for arg in args:
             if arg not in irc.state.channels:
-                irc.error(msg, 'I\'m not currently in %s' % arg)
+                irc.error('I\'m not currently in %s' % arg)
                 return
         irc.queueMsg(ircmsgs.parts(args, msg.nick))
 
@@ -178,19 +178,19 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         """
         command = privmsgs.getArgs(args)
         if command in ('enable', 'identify'):
-            irc.error(msg, 'You can\'t disable %s!' % command)
+            irc.error('You can\'t disable %s!' % command)
         else:
             # This has to know that defaultCapabilties gets turned into a
             # dictionary.
             try:
                 capability = ircdb.makeAntiCapability(command)
             except ValueError:
-                irc.error(msg, '%r is not a valid command.' % command)
+                irc.error('%r is not a valid command.' % command)
                 return
             if command in conf.defaultCapabilities:
                 conf.defaultCapabilities.remove(command)
             conf.defaultCapabilities.add(capability)
-            irc.replySuccess(msg)
+            irc.replySuccess()
 
     def enable(self, irc, msg, args):
         """<command>
@@ -201,13 +201,13 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         try:
             anticapability = ircdb.makeAntiCapability(command)
         except ValueError:
-            irc.error(msg, '%r is not a valid command.' % command)
+            irc.error('%r is not a valid command.' % command)
             return
         if anticapability in conf.defaultCapabilities:
             conf.defaultCapabilities.remove(anticapability)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         else:
-            irc.error(msg, 'That command wasn\'t disabled.')
+            irc.error('That command wasn\'t disabled.')
 
     def addcapability(self, irc, msg, args):
         """<name|hostmask> <capability>
@@ -230,7 +230,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         # generally means they can't mess with channel capabilities.
         (name, capability) = privmsgs.getArgs(args, required=2)
         if capability == 'owner':
-            irc.error(msg, 'The "owner" capability can\'t be added in the bot.'
+            irc.error('The "owner" capability can\'t be added in the bot.'
                            '  Use the supybot-adduser program (or edit the '
                            'users.conf file yourself) to add an owner '
                            'capability.')
@@ -242,12 +242,12 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 user = ircdb.users.getUser(id)
                 user.addCapability(capability)
                 ircdb.users.setUser(id, user)
-                irc.replySuccess(msg)
+                irc.replySuccess()
             except KeyError:
-                irc.error(msg, conf.replyNoUser)
+                irc.error(conf.replyNoUser)
         else:
             s = 'You can\'t add capabilities you don\'t have.'
-            irc.error(msg, s)
+            irc.error(s)
 
     def removecapability(self, irc, msg, args):
         """<name|hostmask> <capability>
@@ -262,18 +262,18 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 id = ircdb.users.getUserId(name)
                 user = ircdb.users.getUser(id)
             except KeyError:
-                irc.error(msg, conf.replyNoUser)
+                irc.error(conf.replyNoUser)
                 return
             try:
                 user.removeCapability(capability)
                 ircdb.users.setUser(id, user)
-                irc.replySuccess(msg)
+                irc.replySuccess()
             except KeyError:
-                irc.error(msg, 'That user doesn\'t have that capability.')
+                irc.error('That user doesn\'t have that capability.')
                 return
         else:
             s = 'You can\'t remove capabilities you don\'t have.'
-            irc.error(msg, s)
+            irc.error(s)
 
     def ignore(self, irc, msg, args):
         """<hostmask|nick>
@@ -288,10 +288,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             try:
                 hostmask = irc.state.nickToHostmask(arg)
             except KeyError:
-                irc.error(msg, 'I can\'t find a hostmask for %s' % arg)
+                irc.error('I can\'t find a hostmask for %s' % arg)
                 return
         conf.ignores.append(hostmask)
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def unignore(self, irc, msg, args):
         """<hostmask|nick>
@@ -306,15 +306,15 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             try:
                 hostmask = irc.state.nickToHostmask(arg)
             except KeyError:
-                irc.error(msg, 'I can\'t find a hostmask for %s' % arg)
+                irc.error('I can\'t find a hostmask for %s' % arg)
                 return
         try:
             conf.ignores.remove(hostmask)
             while hostmask in conf.ignores:
                 conf.ignores.remove(hostmask)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         except ValueError:
-            irc.error(msg, '%s wasn\'t in conf.ignores.' % hostmask)
+            irc.error('%s wasn\'t in conf.ignores.' % hostmask)
             
     def ignores(self, irc, msg, args):
         """takes no arguments
@@ -322,9 +322,9 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         Returns the hostmasks currently being globally ignored.
         """
         if conf.ignores:
-            irc.reply(msg, utils.commaAndify(imap(repr, conf.ignores)))
+            irc.reply(utils.commaAndify(imap(repr, conf.ignores)))
         else:
-            irc.reply(msg, 'I\'m not currently globally ignoring anyone.')
+            irc.reply('I\'m not currently globally ignoring anyone.')
 
     def setprefixchar(self, irc, msg, args):
         """<prefixchars>
@@ -335,11 +335,11 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         for c in s:
             if c not in conf.validPrefixChars:
                 s = 'PrefixChars must be something in %r'%conf.validPrefixChars
-                irc.error(msg, s)
+                irc.error(s)
                 return
         else:
             conf.prefixChars = s
-            irc.replySuccess(msg)
+            irc.replySuccess()
 
     def reportbug(self, irc, msg, args):
         """<description>
@@ -366,7 +366,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                       ['supybot-bugs@lists.sourceforge.net'],
                       email)
         smtp.quit()
-        irc.replySuccess(msg)
+        irc.replySuccess()
     reportbug = privmsgs.thread(reportbug)
 
 

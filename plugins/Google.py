@@ -189,10 +189,10 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         """
         key = privmsgs.getArgs(args)
         if len(key) != 32:
-            irc.error(msg, 'That doesn\'t seem to be a valid license key.')
+            irc.error('That doesn\'t seem to be a valid license key.')
             return
         google.setLicense(key)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     licensekey = privmsgs.checkCapability(licensekey, 'admin')
 
     def google(self, irc, msg, args):
@@ -218,7 +218,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         data = search(self.log, searchString, **kwargs)
         bold = self.configurables.get('bold', msg.args[0])
         max = self.configurables.get('maximum-results', msg.args[0])
-        irc.reply(msg, self.formatData(data, bold=bold, max=max))
+        irc.reply(self.formatData(data, bold=bold, max=max))
 
     def metagoogle(self, irc, msg, args):
         """<search> [--(language,restrict)=<value>] [--{similar,notsafe}]
@@ -252,7 +252,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
              meta.estimatedTotalResultsCount,
              meta.searchTime,
              categories and '  Categories include %s.' % categories)
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def fight(self, irc, msg, args):
         """<search string> <search string> [<search string> ...]
@@ -268,7 +268,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         results.sort()
         results.reverse()
         s = ', '.join(['%r: %s' % (s, i) for (i, s) in results])
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def spell(self, irc, msg, args):
         """<word>
@@ -278,9 +278,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         word = privmsgs.getArgs(args)
         result = google.doSpellingSuggestion(word)
         if result:
-            irc.reply(msg, result)
+            irc.reply(result)
         else:
-            irc.reply(msg, 'No spelling suggestion made.')
+            irc.reply('No spelling suggestion made.')
 
     def info(self, irc, msg, args):
         """takes no arguments
@@ -289,7 +289,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         useful for making sure you don't go over your 1000 requests/day limit.
         """
         recent = len(last24hours)
-        irc.reply(msg, 'This google module has been called %s time%stotal; '\
+        irc.reply('This google module has been called %s time%stotal; '\
                        '%s time%sin the past 24 hours.  ' \
                        'Google has spent %s seconds searching for me.' % \
                   (totalSearches, totalSearches != 1 and 's ' or ' ',
@@ -307,9 +307,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             return
         if data.results:
             url = data.results[0].URL
-            irc.reply(msg, url)
+            irc.reply(url)
         else:
-            irc.reply(msg, 'No results for "%s"' % searchString)
+            irc.reply('No results for "%s"' % searchString)
     googleSnarfer = privmsgs.urlSnarfer(googleSnarfer)
 
     _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
@@ -347,10 +347,10 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             mThread = self._ggThread.search(text)
             mGroup = self._ggGroup.search(text)
         if mThread and mGroup:
-            irc.reply(msg, 'Google Groups: %s, %s' % (mGroup.group(1),
+            irc.reply('Google Groups: %s, %s' % (mGroup.group(1),
                 mThread.group(1)), prefixName = False)
         else:
-            irc.error(msg, 'That doesn\'t appear to be a proper '\
+            irc.error('That doesn\'t appear to be a proper '\
                 'Google Groups page. (%s)' % conf.replyPossibleBug)
     googleGroups = privmsgs.urlSnarfer(googleGroups)
 

@@ -165,7 +165,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         name = callbacks.canonicalName(name)
         if hasattr(self, name):
             s = 'I already have a command in this plugin named %s' % name
-            irc.error(msg, s)
+            irc.error(s)
             return
         def f(self, irc, msg, args):
             args.insert(0, url)
@@ -176,7 +176,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         f.url = url # Used by __call__.
         self.feedNames.add(name)
         setattr(self.__class__, name, f)
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def remove(self, irc, msg, args):
         """<name>
@@ -187,10 +187,10 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         name = privmsgs.getArgs(args)
         name = callbacks.canonicalName(name)
         if name not in self.feedNames:
-            irc.error(msg, 'That\'s not a valid RSS feed command name.')
+            irc.error('That\'s not a valid RSS feed command name.')
             return
         delattr(self.__class__, name)
-        irc.replySuccess(msg)
+        irc.replySuccess()
         
     def rss(self, irc, msg, args):
         """<url>
@@ -205,11 +205,11 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
             channel = None
         headlines = self.getHeadlines(feed)
         if not headlines:
-            irc.error(msg, 'Couldn\'t get RSS feed')
+            irc.error('Couldn\'t get RSS feed')
             return
         headlines = imap(utils.htmlToText, headlines)
         sep = self.configurables.get('headline-separator', channel)
-        irc.reply(msg, sep.join(headlines))
+        irc.reply(sep.join(headlines))
 
     def info(self, irc, msg, args):
         """<url>
@@ -221,7 +221,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         feed = self.getFeed(url)
         info = feed['channel']
         if not info:
-            irc.error(msg, 'I couldn\'t retrieve that RSS feed.')
+            irc.error('I couldn\'t retrieve that RSS feed.')
             return
         # check the 'modified' key, if it's there, convert it here first
         if 'modified' in feed:
@@ -237,7 +237,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
                        info.get('link', 'unavailable').strip(),
                        info.get('description', 'unavailable').strip(),
                        when)
-        irc.reply(msg, ' '.join(response.split()))
+        irc.reply(' '.join(response.split()))
 
 
 Class = RSS

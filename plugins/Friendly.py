@@ -46,7 +46,7 @@ class Friendly(callbacks.PrivmsgRegexp):
         r"^(?:heya?|(?:w(?:hat'?s\b|as)s?up)|howdy|hi|hello)$"
         if irc.nick in msg.args[1]:
             s = 'howdy, %s :)' % msg.nick
-            irc.reply(msg, s, prefixName=False)
+            irc.reply(s, prefixName=False)
 
     def greet2(self, irc, msg, match):
         r"^(?:heya?|(?:w(?:hat'?s\b|as)s*up)|howdy|hi|hello)" \
@@ -54,25 +54,25 @@ class Friendly(callbacks.PrivmsgRegexp):
         r"([0-9A-Za-z_\[\]\`^{}\|-]+)[^A-Za-z_\[\]\`^{}\|-]*$"
         if ircutils.nickEqual(match.group(1), irc.nick):
             s = 'howdy, %s :)' % msg.nick
-            irc.reply(msg, s, prefixName=False)
+            irc.reply(s, prefixName=False)
 
     def goodbye(self, irc, msg, match):
         r"(?:good)?bye|adios|vale|ciao|au revoir|seeya|night$"
         if irc.nick in msg.args[1]:
             s = 'seeya, %s!' % msg.nick
-            irc.reply(msg, s, prefixName=False)
+            irc.reply(s, prefixName=False)
 
     def exclaim(self, irc, msg, match):
         r"^([^\s]+)!$"
         if match.group(1) == irc.nick:
             s = msg.nick + '!'
-            irc.reply(msg, s, prefixName=False)
+            irc.reply(s, prefixName=False)
 
     def beGracious(self, irc, msg, match):
         r"\b(?:thank'?s?|thx|tnks?)\b"
         if irc.nick in msg.args[1]:
             s = 'you\'re welcome, %s' % msg.nick
-            irc.reply(msg, s, prefixName=False)
+            irc.reply(s, prefixName=False)
 
 
 Class = Friendly

@@ -133,7 +133,7 @@ class Status(callbacks.Privmsg):
         """
         L = self.uptimes.top()
         if not L:
-            irc.error(msg, 'I don\'t have enough data to answer that.')
+            irc.error('I don\'t have enough data to answer that.')
             return
         def format((started, ended)):
             return '%s until %s; up for %s' % \
@@ -142,18 +142,17 @@ class Status(callbacks.Privmsg):
                     time.strftime(conf.humanTimestampFormat,
                                   time.localtime(ended)),
                     utils.timeElapsed(ended-started))
-        irc.reply(msg, utils.commaAndify(imap(format, L)))
+        irc.reply(utils.commaAndify(imap(format, L)))
 
     def net(self, irc, msg, args):
         """takes no arguments
 
         Returns some interesting network-related statistics.
         """
-        irc.reply(msg,
-                   'I have received %s messages for a total of %s bytes.  '\
-                   'I have sent %s messages for a total of %s bytes.' %\
-                   (self.recvdMsgs, self.recvdBytes,
-                    self.sentMsgs, self.sentBytes))
+        irc.reply('I have received %s messages for a total of %s bytes.  '
+                  'I have sent %s messages for a total of %s bytes.' %
+                  (self.recvdMsgs, self.recvdBytes,
+                   self.sentMsgs, self.sentBytes))
 
     def cpu(self, irc, msg, args):
         """takes no arguments
@@ -195,7 +194,7 @@ class Status(callbacks.Privmsg):
             response += '  I\'m taking up %s kB of memory.' % mem
         except Exception:
             self.log.exception('Uncaught exception in cpu:')
-        irc.reply(msg, response)
+        irc.reply(response)
 
     def cmd(self, irc, msg, args):
         """takes no arguments
@@ -216,7 +215,7 @@ class Status(callbacks.Privmsg):
             (utils.nItems('command', commands),
              utils.nItems('plugin', callbacksPrivmsg, 'command-based'),
              utils.nItems('command', world.commandsProcessed))
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def commands(self, irc, msg, args):
         """takes no arguments
@@ -233,7 +232,7 @@ class Status(callbacks.Privmsg):
                         commands.add(attr)
         commands = list(commands)
         commands.sort()
-        irc.reply(msg, utils.commaAndify(commands))
+        irc.reply(utils.commaAndify(commands))
 
     def uptime(self, irc, msg, args):
         """takes no arguments
@@ -242,14 +241,14 @@ class Status(callbacks.Privmsg):
         """
         response = 'I have been running for %s.' % \
                    utils.timeElapsed(time.time() - world.startedAt)
-        irc.reply(msg, response)
+        irc.reply(response)
 
     def server(self, irc, msg, args):
         """takes no arguments
 
         Returns the server the bot is on.
         """
-        irc.reply(msg, irc.server)
+        irc.reply(irc.server)
 
 
 Class = Status

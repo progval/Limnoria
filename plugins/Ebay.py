@@ -118,13 +118,13 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         """
         item = privmsgs.getArgs(args)
         if not item.isdigit():
-            irc.error(msg, '<item> must be an integer value.')
+            irc.error('<item> must be an integer value.')
             return
         url = 'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=%s' % item
         try:
-            irc.reply(msg, self._getResponse(url))
+            irc.reply(self._getResponse(url))
         except EbayError, e:
-            irc.reply(msg, str(e))
+            irc.reply(str(e))
 
     def ebaySnarfer(self, irc, msg, match):
         r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?" \
@@ -133,7 +133,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             return
         url = match.group(0)
         try:
-            irc.reply(msg, self._getResponse(url), prefixName=False)
+            irc.reply(self._getResponse(url), prefixName=False)
         except EbayError, e:
             self.log.exception('ebaySnarfer exception at %s:', url)
     ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)

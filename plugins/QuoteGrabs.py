@@ -156,14 +156,14 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
         if nick == msg.nick:
-            irc.error(msg, 'You can\'t quote grab yourself.')
+            irc.error('You can\'t quote grab yourself.')
             return
         for m in reviter(irc.state.history):
             if m.command == 'PRIVMSG' and ircutils.nickEqual(m.nick, nick):
                 self._grab(irc, m, msg.prefix)
-                irc.replySuccess(msg)
+                irc.replySuccess()
                 return
-        irc.error(msg, 'I couldn\'t find a proper message to grab.')
+        irc.error('I couldn\'t find a proper message to grab.')
 
     def quote(self, irc, msg, args):
         """[<channel>] <nick>
@@ -179,10 +179,10 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                           WHERE nickeq(nick, %s)
                           ORDER BY id DESC LIMIT 1""", nick)
         if cursor.rowcount == 0:
-            irc.error(msg,'I couldn\'t find a matching quotegrab for %s'%nick)
+            irc.error('I couldn\'t find a matching quotegrab for %s'%nick)
         else:
             text = cursor.fetchone()[0]
-            irc.reply(msg, text)
+            irc.reply(text)
 
     def list(self, irc, msg, args):
         """<nick>
@@ -199,7 +199,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                           WHERE nick=%s
                           ORDER BY id ASC""", nick)
         if cursor.rowcount == 0:
-            irc.error(msg, 'I couldn\'t find any quotegrabs for %s' % nick)
+            irc.error('I couldn\'t find any quotegrabs for %s' % nick)
         else:
             l = []
             for (id, quote) in cursor.fetchall():
@@ -207,7 +207,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                 quote = quote.replace('<%s> ' % nick, '', 1)
                 item_str = utils.ellipsisify('#%s: %s' % (id, quote), 50)
                 l.append(item_str)
-            irc.reply(msg, utils.commaAndify(l))
+            irc.reply(utils.commaAndify(l))
 
     def randomquote(self, irc, msg, args):
         """[<nick>]
@@ -228,13 +228,13 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                               ORDER BY random() LIMIT 1""")
         if cursor.rowcount == 0:
             if nick:
-                irc.error(msg, 'Couldn\'t get a random quote for that nick.')
+                irc.error('Couldn\'t get a random quote for that nick.')
             else:
-                irc.error(msg, 'Couldn\'t get a random quote.  Are there any'
+                irc.error('Couldn\'t get a random quote.  Are there any'
                                'grabbed quotes in the database?')
             return
         quote = cursor.fetchone()[0]
-        irc.reply(msg, quote)
+        irc.reply(quote)
 
     def get(self, irc, msg, args):
         """<id>
@@ -245,7 +245,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, '%r does not appear to be a valid quotegrab id'%id)
+            irc.error('%r does not appear to be a valid quotegrab id'%id)
             return
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
@@ -253,12 +253,12 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         cursor.execute("""SELECT quote, hostmask, added_at
                           FROM quotegrabs WHERE id = %s""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No quotegrab for id %r' % id)
+            irc.error('No quotegrab for id %r' % id)
             return
         quote, hostmask, timestamp = cursor.fetchone()
         time_str = time.strftime(conf.humanTimestampFormat,
                                  time.localtime(float(timestamp)))
-        irc.reply(msg, '%s (Said by: %s on %s)' % (quote, hostmask, time_str))
+        irc.reply('%s (Said by: %s on %s)' % (quote, hostmask, time_str))
 
 
 Class = QuoteGrabs

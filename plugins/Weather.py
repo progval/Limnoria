@@ -59,7 +59,7 @@ class Weather(callbacks.Privmsg):
         try:
             callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
         except webutils.WebError, e:
-            irc.error(msg, str(e))
+            irc.error(str(e))
             
     _cityregex = re.compile(
         r'<td><font size="4" face="arial"><b>'\
@@ -136,7 +136,7 @@ class Weather(callbacks.Privmsg):
 		      (city, state)
 		html = webutils.getUrl(url)
 		if 'was not found' in html:
-		    irc.error(msg, 'No such location could be found.')
+		    irc.error('No such location could be found.')
 		    return
 
         #We received a single argument.  Zipcode or station id.
@@ -148,7 +148,7 @@ class Weather(callbacks.Privmsg):
                   'config=&forecast=zandh&pands=%s&Submit=GO' % args[0]
             html = webutils.getUrl(url)
 	    if 'was not found' in html:
-	        irc.error(msg, 'No such location could be found.')
+	        irc.error('No such location could be found.')
 		return
 		
         headData = self._cityregex.search(html)
@@ -159,7 +159,7 @@ class Weather(callbacks.Privmsg):
 	    if headData:
 	        (city, state) = headData.groups()
 	    else:
-	        irc.error(msg, 'No such location could be found.')
+	        irc.error('No such location could be found.')
 		return
 
         city = city.strip()
@@ -188,9 +188,9 @@ class Weather(callbacks.Privmsg):
             conds = conds.replace('Tsra', 'Thunder Storms')
             s = 'The current temperature in %s, %s is %s%s. Conditions: %s' % \
                 (city, state, temp, index, conds)
-            irc.reply(msg, s)
+            irc.reply(s)
         else:
-            irc.error(msg, 'The format of the page was odd.')
+            irc.error('The format of the page was odd.')
 
 
 Class = Weather

@@ -153,7 +153,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             url = url[:-1]
         self.db[name] = [url, description]
         self.shorthand = utils.abbrev(self.db.keys())
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def remove(self, irc, msg, args):
         """<abbreviation>
@@ -166,9 +166,9 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             name = self.shorthand[name]
             del self.db[name]
             self.shorthand = utils.abbrev(self.db.keys())
-            irc.replySuccess(msg)
+            irc.replySuccess()
         except KeyError:
-            irc.error(msg, replyNoBugzilla % name)
+            irc.error(replyNoBugzilla % name)
 
     def list(self, irc,  msg, args):
         """[<abbreviation>]
@@ -181,16 +181,16 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             try:
                 name = self.shorthand[name]
                 (url, description) = self.db[name]
-                irc.reply(msg, '%s: %s, %s' % (name, description, url))
+                irc.reply('%s: %s, %s' % (name, description, url))
             except KeyError:
-                irc.error(msg, replyNoBugzilla % name)
+                irc.error(replyNoBugzilla % name)
         else:
             if self.db:
                 L = self.db.keys()
                 L.sort()
-                irc.reply(msg, utils.commaAndify(L))
+                irc.reply(utils.commaAndify(L))
             else:
-                irc.reply(msg, 'I have no defined bugzillae.')
+                irc.reply('I have no defined bugzillae.')
 
     def bzSnarfer(self, irc, msg, match):
         r"(http://\S+)/show_bug.cgi\?id=([0-9]+)"
@@ -201,11 +201,11 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             summary = self._get_short_bug_summary(queryurl, 'Snarfed '\
                 'Bugzilla URL', match.group(2))
         except BugzillaError, e:
-            irc.reply(msg, str(e))
+            irc.reply(str(e))
             return
         except IOError, e:
             msgtouser = '%s. Try yourself: %s' % (e, queryurl)
-            irc.reply(msg, msgtouser)
+            irc.reply(msgtouser)
             return
         report = {}
         report['id'] = match.group(2)
@@ -215,7 +215,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         report['summary'] = str(self._mk_summary_string(summary))
         report['product'] = str(summary['product'])
         s = '%(product)s bug #%(id)s: %(title)s %(summary)s' % report
-        irc.reply(msg, s, prefixName=False)
+        irc.reply(s, prefixName=False)
     bzSnarfer = privmsgs.urlSnarfer(bzSnarfer)
 
     def urlquery2bugslist(self, url, query):
@@ -264,7 +264,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             name = self.shorthand[name]
             (url, description) = self.db[name]
         except KeyError:
-            irc.error(msg, replyNoBugzilla % name)
+            irc.error(replyNoBugzilla % name)
             return
         bugs = self.urlquery2bugslist(url, query)
         bugids = bugs.keys()
@@ -272,7 +272,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         s = '%s match %r (%s): %s.' % \
             (utils.nItems('bug', len(bugs)), searchstr,
              ' AND '.join(keywords), utils.commaAndify(map(str, bugids)))
-        irc.reply(msg, s)
+        irc.reply(s)
         
     def bug(self, irc, msg, args):
         """<abbreviation> <number>
@@ -284,17 +284,17 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             name = self.shorthand[name]
             (url, description) = self.db[name]
         except KeyError:
-            irc.error(msg, replyNoBugzilla % name)
+            irc.error(replyNoBugzilla % name)
             return
         queryurl = '%s/xml.cgi?id=%s' % (url, number)
         try:
             summary = self._get_short_bug_summary(queryurl,description,number)
         except BugzillaError, e:
-            irc.error(msg, str(e))
+            irc.error(str(e))
             return
         except IOError, e:
             s = '%s.  Try yourself: %s' % (e, queryurl)
-            irc.error(msg, s)
+            irc.error(s)
         report = {}
         report['zilla'] = description
         report['id'] = number
@@ -302,7 +302,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         report['title'] = str(summary['title'])
         report['summary'] = self._mk_summary_string(summary)
         s = '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def _mk_summary_string(self, summary):
         L = []

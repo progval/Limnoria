@@ -91,7 +91,7 @@ class Dunno(callbacks.Privmsg):
         if cursor.rowcount != 0:
             dunno = cursor.fetchone()[0]
             dunno = plugins.standardSubstitute(irc, msg, dunno)
-            irc.reply(msg, dunno, prefixName=False)
+            irc.reply(dunno, prefixName=False)
 
     def add(self, irc, msg, args):
         """<text>
@@ -104,7 +104,7 @@ class Dunno(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         text = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
@@ -112,7 +112,7 @@ class Dunno(callbacks.Privmsg):
                           VALUES(NULL, %s, %s, %s)""",
                           id, int(time.time()), text)
         self.db.commit()
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def remove(self, irc, msg, args):
         """<id>
@@ -123,7 +123,7 @@ class Dunno(callbacks.Privmsg):
         try:
             user_id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         dunno_id = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
@@ -131,17 +131,17 @@ class Dunno(callbacks.Privmsg):
                           FROM dunnos
                           WHERE id = %s""" % dunno_id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No dunno with id: %s' % dunno_id)
+            irc.error('No dunno with id: %s' % dunno_id)
             return
         (added_by, dunno) = cursor.fetchone()
         if not (ircdb.checkCapability(user_id, 'admin') or \
                 added_by == user_id):
-            irc.error(msg, 'Only admins and the dunno creator may delete a '
+            irc.error('Only admins and the dunno creator may delete a '
                            'dunno.')
             return
         cursor.execute("""DELETE FROM dunnos WHERE id = %s""" % dunno_id)
         self.db.commit()
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def search(self, irc, msg, args):
         """<text>
@@ -155,12 +155,12 @@ class Dunno(callbacks.Privmsg):
         cursor.execute("""SELECT id FROM dunnos
                           WHERE dunno LIKE %s""", glob)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No dunnos with %r found.' % text)
+            irc.error('No dunnos with %r found.' % text)
             return
         ids = [str(t[0]) for t in cursor.fetchall()]
         s = 'Dunno search for %r (%s found): %s' % \
             (text, len(ids), utils.commaAndify(ids))
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def get(self, irc, msg, args):
         """<id>
@@ -171,15 +171,15 @@ class Dunno(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, '%r is not a valid dunno id' % id)
+            irc.error('%r is not a valid dunno id' % id)
             return
         cursor = self.db.cursor()
         cursor.execute("""SELECT dunno FROM dunnos WHERE id = %s""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No dunno found with id #%s' % id)
+            irc.error('No dunno found with id #%s' % id)
             return
         dunno = cursor.fetchone()[0]
-        irc.reply(msg, "Dunno #%s: %r" % (id, dunno))
+        irc.reply("Dunno #%s: %r" % (id, dunno))
 
 Class = Dunno
 

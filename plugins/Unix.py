@@ -134,18 +134,18 @@ class Unix(callbacks.Privmsg):
             try:
                 i = getattr(errno, name)
             except AttributeError:
-                irc.reply(msg, 'I can\'t find the errno number for that code.')
+                irc.reply('I can\'t find the errno number for that code.')
                 return
         except KeyError:
             name = '(unknown)'
-        irc.reply(msg, '%s (#%s): %s' % (name, i, os.strerror(i)))
+        irc.reply('%s (#%s): %s' % (name, i, os.strerror(i)))
 
     def progstats(self, irc, msg, args):
         """takes no arguments
 
         Returns various unix-y information on the running supybot process.
         """
-        irc.reply(msg, progstats())
+        irc.reply(progstats())
 
     _cryptre = re.compile(r'[./0-9A-Za-z]')
     def crypt(self, irc, msg, args):
@@ -164,7 +164,7 @@ class Unix(callbacks.Privmsg):
         (password, salt) = privmsgs.getArgs(args, optional=1)
         if salt == '':
             salt = makeSalt()
-        irc.reply(msg, crypt.crypt(password, salt))
+        irc.reply(crypt.crypt(password, salt))
 
     def spell(self, irc, msg, args):
         """<word>
@@ -175,21 +175,21 @@ class Unix(callbacks.Privmsg):
         """
         # We are only checking the first word
         if not self.spellCmd:
-           irc.error(msg, 'A spell checking command doesn\'t seem to be '
+           irc.error('A spell checking command doesn\'t seem to be '
                           'installed on this computer.')
            return
         word = privmsgs.getArgs(args)
         if word and not word[0].isalpha():
-            irc.error(msg, '<word> must begin with an alphabet character.')
+            irc.error('<word> must begin with an alphabet character.')
             return
         if ' ' in word:
-            irc.error(msg, 'Spaces aren\'t allowed in the word.')
+            irc.error('Spaces aren\'t allowed in the word.')
             return
         try:
             (r, w) = popen2.popen4([self.spellCmd, '-a'])
             s = r.readline() # Banner, hopefully.
             if 'sorry' in s.lower():
-                irc.error(msg, s)
+                irc.error(s)
                 return
             w.write(word)
             w.write('\n')
@@ -200,7 +200,7 @@ class Unix(callbacks.Privmsg):
                 while not line.strip('\r\n'):
                     line = pipeReadline(r)
             except TimeoutError:
-                irc.error(msg, 'The spell command timed out.')
+                irc.error('The spell command timed out.')
                 return
         finally:
             r.close()
@@ -216,7 +216,7 @@ class Unix(callbacks.Privmsg):
                    (word, utils.commaAndify(matches.split(', ')))
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
-        irc.reply(msg, resp)
+        irc.reply(resp)
 
     def fortune(self, irc, msg, args):
         """takes no arguments
@@ -228,9 +228,9 @@ class Unix(callbacks.Privmsg):
             s = r.read()
             w.close()
             r.close()
-            irc.reply(msg, ' '.join(s.split()))
+            irc.reply(' '.join(s.split()))
         else:
-            irc.error(msg, 'I couldn\'t find the fortune command.')
+            irc.error('I couldn\'t find the fortune command.')
 
     def wtf(self, irc, msg, args):
         """[is] <something>
@@ -246,11 +246,11 @@ class Unix(callbacks.Privmsg):
             something = something.rstrip('?')
             (r, w) = popen2.popen4([self.wtfCmd, something])
             response = utils.normalizeWhitespace(r.readline().strip())
-            irc.reply(msg, response)
+            irc.reply(response)
             r.close()
             w.close()
         else:
-            irc.error(msg, 'I couldn\'t find the wtf command.')
+            irc.error('I couldn\'t find the wtf command.')
 
 
 Class = Unix

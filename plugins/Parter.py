@@ -76,7 +76,7 @@ class Parter(callbacks.Privmsg):
         """
         channel = privmsgs.getArgs(args)
         self.channels.add(channel)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     autopart = privmsgs.checkCapability(autopart, 'admin')
 
     def removeautopart(self, irc, msg, args):
@@ -86,7 +86,7 @@ class Parter(callbacks.Privmsg):
         """
         channel = privmsgs.getArgs(args)
         self.channels.discard(channel)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     removeautopart = privmsgs.checkCapability(removeautopart, 'admin')
 
     def doJoin(self, irc, msg):

@@ -112,7 +112,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
         """
         key = privmsgs.getArgs(args)
         amazon.setLicense(key)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     licensekey = privmsgs.checkCapability(licensekey, 'admin')
 
     def isbn(self, irc, msg, args):
@@ -143,11 +143,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, book, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No book was found with that ISBN.')
+        irc.error('No book was found with that ISBN.')
 
     def books(self, irc, msg, args):
         """[--url] <keywords>
@@ -176,11 +176,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No books were found with that keyword search.')
+        irc.error('No books were found with that keyword search.')
 
     def videos(self, irc, msg, args):
         """[--url] [--{dvd,vhs}] <keywords>
@@ -215,11 +215,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, videos, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No videos were found with that keyword search.')
+        irc.error('No videos were found with that keyword search.')
 
     def asin(self, irc, msg, args):
         """[--url] <asin>
@@ -246,11 +246,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No item was found with that ASIN.')
+        irc.error('No item was found with that ASIN.')
 
     def upc(self, irc, msg, args):
         """[--url] <upc>
@@ -280,11 +280,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No item was found with that UPC.')
+        irc.error('No item was found with that UPC.')
 
     def author(self, irc, msg, args):
         """[--url] <author>
@@ -313,11 +313,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No books were found by that author.')
+        irc.error('No books were found by that author.')
 
 # FIXME: Until I get a *good* list of categories (ones that actually work),
 #        these commands will remain unavailable
@@ -336,7 +336,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
         """
         cats = self._textToNode.keys()
         cats.sort()
-        irc.reply(msg, utils.commaAndify(cats))
+        irc.reply(utils.commaAndify(cats))
 
     def bestsellers(self, irc, msg, args):
         """[--url] <category>
@@ -355,7 +355,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
                 url = True
         category = privmsgs.getArgs(rest).lower()
         if category not in self._textToNode:
-            irc.error(msg, 'An invalid category was specified. The categories'
+            irc.error('An invalid category was specified. The categories'
                            ' command will return a list of valid categories')
             return
         category = self._textToNode[category]
@@ -370,11 +370,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             #self.log.warning(items)
             res = self._genResults(s, attribs, items, url)
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No items were found on that best seller list.')
+        irc.error('No items were found on that best seller list.')
     '''
 
 
@@ -411,11 +411,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No items were found by that artist.')
+        irc.error('No items were found by that artist.')
 
     def actor(self, irc, msg, args):
         """[--url] [--{dvd,vhs,video}] <actor>
@@ -451,11 +451,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No items were found starring that actor.')
+        irc.error('No items were found starring that actor.')
 
     def director(self, irc, msg, args):
         """[--url] [--{dvd,vhs,video}] <director>
@@ -491,11 +491,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No items were found by that director.')
+        irc.error('No items were found by that director.')
 
     def manufacturer(self, irc, msg, args):
         """ [--url] \
@@ -530,11 +530,11 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
             bold = self.configurables.get('bold', msg.args[0])
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
-                irc.reply(msg, utils.commaAndify(res))
+                irc.reply(utils.commaAndify(res))
                 return
         except amazon.AmazonError, e:
             pass
-        irc.error(msg, 'No items were found by that manufacturer.')
+        irc.error('No items were found by that manufacturer.')
 
 Class = Amazon
 

@@ -134,12 +134,12 @@ class Note(callbacks.Privmsg):
                 hostmask = irc.state.nickToHostmask(name)
                 toId = ircdb.users.getUserId(hostmask)
             except KeyError:
-                irc.error(msg, conf.replyNoUser)
+                irc.error(conf.replyNoUser)
                 return
         try:
             fromId = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         if ircutils.isChannel(msg.args[0]):
             public = 1
@@ -156,7 +156,7 @@ class Note(callbacks.Privmsg):
                           from_id=%s AND to_id=%s AND added_at=%s""",
                        fromId, toId, now)
         id = cursor.fetchone()[0]
-        irc.reply(msg, 'Note #%s sent to %s.' % (id, name))
+        irc.reply('Note #%s sent to %s.' % (id, name))
 
     def unsend(self, irc, msg, args):
         """<id>
@@ -168,24 +168,24 @@ class Note(callbacks.Privmsg):
         try:
             userid = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT from_id, read FROM notes WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'That\'s not a valid note id.')
+            irc.error('That\'s not a valid note id.')
             return
         (from_id, read) = map(int, cursor.fetchone())
         if from_id == userid:
             if not read:
                 cursor.execute("""DELETE FROM notes WHERE id=%s""", id)
                 db.commit()
-                irc.replySuccess(msg)
+                irc.replySuccess()
             else:
-                irc.error(msg, 'That note has been read already.')
+                irc.error('That note has been read already.')
         else:
-            irc.error(msg, 'That note wasn\'t sent by you.')
+            irc.error('That note wasn\'t sent by you.')
             
 
     def note(self, irc, msg, args):
@@ -197,12 +197,12 @@ class Note(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         try:
             noteid = int(noteid)
         except ValueError:
-            irc.error(msg, '%r is not a valid note id.' % noteid)
+            irc.error('%r is not a valid note id.' % noteid)
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -212,7 +212,7 @@ class Note(callbacks.Privmsg):
                        id, id, noteid)
         if cursor.rowcount == 0:
             s = 'You may only retrieve notes you\'ve sent or received.'
-            irc.error(msg, s)
+            irc.error(s)
             return
         (note, toId, fromId, addedAt, public) = cursor.fetchone()
         (toId,fromId,addedAt,public) = imap(int, (toId,fromId,addedAt,public))
@@ -223,7 +223,7 @@ class Note(callbacks.Privmsg):
         elif fromId == id:
             recipient = ircdb.users.getUser(toId).name
             newnote = '%s (Sent to %s %s ago)' % (note, recipient, elapsed)
-        irc.reply(msg, newnote, private=(not public))
+        irc.reply(newnote, private=(not public))
         self.setAsRead(noteid)
 
     def _formatNoteData(self, msg, id, fromId, public):
@@ -247,7 +247,7 @@ class Note(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -257,10 +257,10 @@ class Note(callbacks.Privmsg):
         count = cursor.rowcount
         L = []
         if count == 0:
-            irc.reply(msg, 'You have no unread notes.')
+            irc.reply('You have no unread notes.')
         else:
             L = [self._formatNoteData(msg, *t) for t in cursor.fetchall()]
-            irc.reply(msg, utils.commaAndify(L))
+            irc.reply(utils.commaAndify(L))
 
     def _oldnotes(self, irc, msg, args):
         """takes no arguments
@@ -270,7 +270,7 @@ class Note(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -278,11 +278,11 @@ class Note(callbacks.Privmsg):
                           FROM notes
                           WHERE notes.to_id=%s AND notes.read=1""", id)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'I couldn\'t find any read notes for your user.')
+            irc.reply('I couldn\'t find any read notes for your user.')
         else:
             ids = [self._formatNoteData(msg, *t) for t in cursor.fetchall()]
             ids.reverse()
-            irc.reply(msg, utils.commaAndify(ids))
+            irc.reply(utils.commaAndify(ids))
 
 
 Class = Note

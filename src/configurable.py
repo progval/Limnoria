@@ -272,7 +272,7 @@ class Mixin(object):
             if hasattr(self, 'globalConfigurables'):
                 names.extend(self.globalConfigurables.names())
                 names.sort()
-            irc.reply(msg, utils.commaAndify(names))
+            irc.reply(utils.commaAndify(names))
         else:
             try:
                 channel = privmsgs.getChannel(msg, args)
@@ -285,17 +285,17 @@ class Mixin(object):
                 s = configurables.help(name)
                 value = configurables.get(name, channel)
                 s = '%s  (Current value: %r)' % (s, value)
-                irc.reply(msg, s)
+                irc.reply(s)
             if name in self.configurables:
                 if value:
                     if ircdb.checkCapability(msg.prefix, capability):
                         try:
                             self.configurables.set(name, value, channel)
-                            irc.replySuccess(msg)
+                            irc.replySuccess()
                         except Error, e:
-                            irc.error(msg, str(e))
+                            irc.error(str(e))
                     else:
-                        irc.error(msg, conf.replyNoCapability % capability)
+                        irc.error(conf.replyNoCapability % capability)
                 else:
                     help(self.configurables)
             elif hasattr(self, 'globalConfigurables') and \
@@ -304,17 +304,17 @@ class Mixin(object):
                     if ircdb.checkCapability(msg.prefix, 'admin'):
                         try:
                             self.globalConfigurables.set(name, value, channel)
-                            irc.replySuccess(msg)
+                            irc.replySuccess()
                         except Error, e:
-                            irc.error(msg, str(e))
+                            irc.error(str(e))
                     else:
                         s = '%s is a global capability, and requires ' \
                             'the "admin" capability.'
-                        irc.error(msg, s)
+                        irc.error(s)
                 else:
                     help(self.globalConfigurables)
             else:
-                irc.error(msg, 'There is no config variable %r' % name)
+                irc.error('There is no config variable %r' % name)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

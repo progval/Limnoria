@@ -212,17 +212,17 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertResponse('echo []', '[]')
 
     def testSimpleReply(self):
-        self.assertResponse("eval irc.reply(msg, 'foo')", 'foo')
+        self.assertResponse("eval irc.reply('foo')", 'foo')
 
     def testSimpleReplyAction(self):
-        self.assertResponse("eval irc.reply(msg, 'foo', action=True)",
+        self.assertResponse("eval irc.reply('foo', action=True)",
                             '\x01ACTION foo\x01')
 
     def testErrorPrivateKwarg(self):
         try:
             originalConfErrorReplyPrivate = conf.errorReplyPrivate
             conf.errorReplyPrivate = False
-            m = self.getMsg("eval irc.error(msg, 'foo', private=True)")
+            m = self.getMsg("eval irc.error('foo', private=True)")
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:
             conf.errorReplyPrivate = originalConfErrorReplyPrivate
@@ -249,22 +249,22 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     class First(callbacks.Privmsg):
         def firstcmd(self, irc, msg, args):
             """First"""
-            irc.reply(msg, 'foo')
+            irc.reply('foo')
 
     class Second(callbacks.Privmsg):
         def secondcmd(self, irc, msg, args):
             """Second"""
-            irc.reply(msg, 'bar')
+            irc.reply('bar')
 
     class FirstRepeat(callbacks.Privmsg):
         def firstcmd(self, irc, msg, args):
             """FirstRepeat"""
-            irc.reply(msg, 'baz')
+            irc.reply('baz')
 
     class Third(callbacks.Privmsg):
         def third(self, irc, msg, args):
             """Third"""
-            irc.reply(msg, ' '.join(args))
+            irc.reply(' '.join(args))
 
     def testDispatching(self):
         self.irc.addCallback(self.First())
@@ -338,7 +338,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
 
     class InvalidCommand(callbacks.Privmsg):
         def invalidCommand(self, irc, msg, tokens):
-            irc.reply(msg, 'foo')
+            irc.reply('foo')
 
     def testInvalidCommandOneReplyOnly(self):
         try:

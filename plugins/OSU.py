@@ -254,13 +254,13 @@ class OSU(callbacks.Privmsg):
                 if 'Published address' in line:
                     emails.append(line.split()[-1])
             if len(emails) == 0:
-                irc.reply(msg, 'There seem to be no matches to that name.')
+                irc.reply('There seem to be no matches to that name.')
             elif len(emails) == 1:
-                irc.reply(msg, emails[0])
+                irc.reply(emails[0])
             else:
-                irc.reply(msg, 'Possible matches: %s' % ', '.join(emails))
+                irc.reply('Possible matches: %s' % ', '.join(emails))
         except Exception, e:
-            irc.error(msg, utils.exnToString(e))
+            irc.error(utils.exnToString(e))
 
     def building(self, irc, msg, args):
         """<building abbreviation>
@@ -270,9 +270,9 @@ class OSU(callbacks.Privmsg):
         """
         building = privmsgs.getArgs(args)
         try:
-            irc.reply(msg, buildings[building.upper()])
+            irc.reply(buildings[building.upper()])
         except KeyError:
-            irc.reply(msg, 'I don\'t know of any such OSU building.')
+            irc.reply('I don\'t know of any such OSU building.')
 
 
 Class = OSU

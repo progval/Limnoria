@@ -89,9 +89,9 @@ class Dict(callbacks.Privmsg, configurable.Mixin):
             conn = dictclient.Connection(self.configurables.get('server'))
             dbs = conn.getdbdescs().keys()
             dbs.sort()
-            irc.reply(msg, utils.commaAndify(dbs))
+            irc.reply(utils.commaAndify(dbs))
         except socket.timeout:
-            irc.error(msg, replyTimeout)
+            irc.error(replyTimeout)
 
     def random(self, irc, msg, args):
         """takes no arguments.
@@ -101,9 +101,9 @@ class Dict(callbacks.Privmsg, configurable.Mixin):
         try:
             conn = dictclient.Connection(self.configurables.get('server'))
             dbs = conn.getdbdescs().keys()
-            irc.reply(msg, random.choice(dbs))
+            irc.reply(random.choice(dbs))
         except socket.timeout:
-            irc.error(msg, replyTimeout)
+            irc.error(replyTimeout)
 
     def dict(self, irc, msg, args):
         """[<dictionary>] <word>
@@ -115,7 +115,7 @@ class Dict(callbacks.Privmsg, configurable.Mixin):
         try:
             conn = dictclient.Connection(self.configurables.get('server'))
         except socket.timeout:
-            irc.error(msg, 'Timeout on the dict server.')
+            irc.error('Timeout on the dict server.')
             return
         dbs = sets.Set(conn.getdbdescs())
         if args[0] in dbs:
@@ -127,9 +127,9 @@ class Dict(callbacks.Privmsg, configurable.Mixin):
         dbs = sets.Set()
         if not definitions:
             if dictionary == '*':
-                irc.reply(msg, 'No definition for %r could be found.' % word)
+                irc.reply('No definition for %r could be found.' % word)
             else:
-                irc.reply(msg, 'No definition for %r could be found in %s' % \
+                irc.reply('No definition for %r could be found in %s' % \
                           (word, ircutils.bold(dictionary)))
             return
         L = []
@@ -144,7 +144,7 @@ class Dict(callbacks.Privmsg, configurable.Mixin):
             s = '%s responded: %s' % (utils.commaAndify(dbs), '; '.join(L)) 
         else:
             s = '; '.join(L)
-        irc.reply(msg, s)
+        irc.reply(s)
 
 
 Class = Dict

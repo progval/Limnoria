@@ -74,12 +74,12 @@ class User(callbacks.Privmsg):
         users = [u.name for u in ircdb.users if p(u.name)]
         if users:
             utils.sortBy(str.lower, users)
-            irc.reply(msg, utils.commaAndify(users))
+            irc.reply(utils.commaAndify(users))
         else:
             if glob:
-                irc.reply(msg, 'There are no matching registered users.')
+                irc.reply('There are no matching registered users.')
             else:
-                irc.reply(msg, 'There are no registered users.')
+                irc.reply('There are no registered users.')
 
     def register(self, irc, msg, args):
         """[--hashed] <name> <password>
@@ -99,16 +99,16 @@ class User(callbacks.Privmsg):
         self._checkNotChannel(irc, msg, password)
         try:
             ircdb.users.getUserId(name)
-            irc.error(msg, 'That name is already assigned to someone.')
+            irc.error('That name is already assigned to someone.')
             return
         except KeyError:
             pass
         if ircutils.isUserHostmask(name):
-            irc.error(msg, 'Hostmasks aren\'t valid usernames.')
+            irc.error('Hostmasks aren\'t valid usernames.')
             return
         try:
             u = ircdb.users.getUser(msg.prefix)
-            irc.error(msg,'Your hostmask is already registered to %s' % u.name)
+            irc.error('Your hostmask is already registered to %s' % u.name)
             return
         except KeyError:
             pass
@@ -117,7 +117,7 @@ class User(callbacks.Privmsg):
         user.setPassword(password, hashed=hashed)
         user.addHostmask(msg.prefix)
         ircdb.users.setUser(id, user)
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def unregister(self, irc, msg, args):
         """<name> <password>
@@ -130,13 +130,13 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(msg, 'That username isn\'t registered.')
+            irc.error('That username isn\'t registered.')
             return
         if user.checkPassword(password):
             ircdb.users.delUser(id)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         else:
-            irc.error(msg, conf.replyIncorrectAuth)
+            irc.error(conf.replyIncorrectAuth)
 
     def changename(self, irc, msg, args):
         """<name> <new name> [<password>]
@@ -152,18 +152,18 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(msg, 'That username isn\'t registered.')
+            irc.error('That username isn\'t registered.')
             return
         try:
             id = ircdb.users.getUserId(newname)
-            irc.error(msg, '%r is already registered.' % newname)
+            irc.error('%r is already registered.' % newname)
             return
         except KeyError:
             pass
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             user.name = newname
             ircdb.users.setUser(id, user)
-            irc.replySuccess(msg)
+            irc.replySuccess()
             
     def addhostmask(self, irc, msg, args):
         """<name> <hostmask> [<password>]
@@ -176,32 +176,32 @@ class User(callbacks.Privmsg):
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
         self._checkNotChannel(irc, msg, password)
         if not ircutils.isUserHostmask(hostmask):
-            irc.error(msg, 'That\'s not a valid hostmask.')
+            irc.error('That\'s not a valid hostmask.')
             return
         s = hostmask.translate(string.ascii, '!@*?')
         if len(s) < 10:
             s = 'Hostmask must contain more than 10 non-wildcard characters.'
-            irc.error(msg, s)
+            irc.error(s)
             return
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
             return
         try:
             otherId = ircdb.users.getUserId(hostmask)
             if otherId != id:
-                irc.error(msg, 'That hostmask is already registered.')
+                irc.error('That hostmask is already registered.')
                 return
         except KeyError:
             pass
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             user.addHostmask(hostmask)
             ircdb.users.setUser(id, user)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         else:
-            irc.error(msg, conf.replyIncorrectAuth)
+            irc.error(conf.replyIncorrectAuth)
             return
 
     def removehostmask(self, irc, msg, args):
@@ -218,18 +218,18 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
             return
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             try:
                 user.removeHostmask(hostmask)
             except ValueError:
-                irc.error(msg, 'There was no such hostmask.')
+                irc.error('There was no such hostmask.')
                 return
             ircdb.users.setUser(id, user)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         else:
-            irc.error(msg, conf.replyIncorrectAuth)
+            irc.error(conf.replyIncorrectAuth)
             return
 
     def setpassword(self, irc, msg, args):
@@ -251,14 +251,14 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
             return
         if user.checkPassword(oldpassword):
             user.setPassword(newpassword, hashed=hashed)
             ircdb.users.setUser(id, user)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         else:
-            irc.error(msg, conf.replyIncorrectAuth)
+            irc.error(conf.replyIncorrectAuth)
 
     def username(self, irc, msg, args):
         """<hostmask|nick>
@@ -271,13 +271,13 @@ class User(callbacks.Privmsg):
             try:
                 hostmask = irc.state.nickToHostmask(hostmask)
             except KeyError:
-                irc.error(msg, conf.replyNoUser)
+                irc.error(conf.replyNoUser)
                 return
         try:
             user = ircdb.users.getUser(hostmask)
-            irc.reply(msg, user.name)
+            irc.reply(user.name)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
 
     def hostmasks(self, irc, msg, args):
         """[<name>]
@@ -286,24 +286,24 @@ class User(callbacks.Privmsg):
         specified, returns the hostmasks of the user calling the command.
         """
         if ircutils.isChannel(msg.args[0]):
-            irc.error(msg, conf.replyRequiresPrivacy)
+            irc.error(conf.replyRequiresPrivacy)
             return
         name = privmsgs.getArgs(args, required=0, optional=1)
         try:
             user = ircdb.users.getUser(msg.prefix)
             if name:
                 if name != user.name and not user.checkCapability('owner'):
-                    irc.error(msg, 'You may only retrieve your own hostmasks.')
+                    irc.error('You may only retrieve your own hostmasks.')
                 else:
                     try:
                         user = ircdb.users.getUser(name)
-                        irc.reply(msg, repr(user.hostmasks))
+                        irc.reply(repr(user.hostmasks))
                     except KeyError:
-                        irc.error(msg, conf.replyNoUser)
+                        irc.error(conf.replyNoUser)
             else:
-                irc.reply(msg, repr(user.hostmasks))
+                irc.reply(repr(user.hostmasks))
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
 
     def capabilities(self, irc, msg, args):
         """[<name>]
@@ -317,9 +317,9 @@ class User(callbacks.Privmsg):
             name = privmsgs.getArgs(args)
         try:
             user = ircdb.users.getUser(name)
-            irc.reply(msg, '[%s]' % ', '.join(user.capabilities))
+            irc.reply('[%s]' % ', '.join(user.capabilities))
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
 
     def identify(self, irc, msg, args):
         """<name> <password>
@@ -334,18 +334,18 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
             return
         if user.checkPassword(password):
             try:
                 user.setAuth(msg.prefix)
                 ircdb.users.setUser(id, user)
-                irc.replySuccess(msg)
+                irc.replySuccess()
             except ValueError:
-                irc.error(msg, 'Your secure flag is true and your hostmask '
+                irc.error('Your secure flag is true and your hostmask '
                                'doesn\'t match any of your known hostmasks.')
         else:
-            irc.error(msg, conf.replyIncorrectAuth)
+            irc.error(conf.replyIncorrectAuth)
 
     def unidentify(self, irc, msg, args):
         """takes no arguments
@@ -356,11 +356,11 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(msg.prefix)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
             return
         user.unsetAuth()
         ircdb.users.setUser(id, user)
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def whoami(self, irc, msg, args):
         """takes no arguments
@@ -369,9 +369,9 @@ class User(callbacks.Privmsg):
         """
         try:
             user = ircdb.users.getUser(msg.prefix)
-            irc.reply(msg, user.name)
+            irc.reply(user.name)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
 
     def setsecure(self, irc, msg, args):
         """<password> [<True|False>]
@@ -389,21 +389,21 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(msg.prefix)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
         if value == '':
             value = not user.secure
         elif value.lower() in ('true', 'false'):
             value = eval(value.capitalize())
         else:
-            irc.error(msg, '%s is not a valid boolean value.' % value)
+            irc.error('%s is not a valid boolean value.' % value)
             return
         if user.checkPassword(password) and \
            user.checkHostmask(msg.prefix, useAuth=False):
             user.secure = value
             ircdb.users.setUser(id, user)
-            irc.reply(msg, 'Secure flag set to %s' % value)
+            irc.reply('Secure flag set to %s' % value)
         else:
-            irc.error(msg, conf.replyIncorrectAuth)
+            irc.error(conf.replyIncorrectAuth)
 
 
 Class = User

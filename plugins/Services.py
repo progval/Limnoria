@@ -82,12 +82,12 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         ChanServ, respectively,  They default to NickServ and ChanServ.
         """
         if ircutils.isChannel(msg.args[0]):
-            irc.error(msg, conf.replyRequiresPrivacy)
+            irc.error(conf.replyRequiresPrivacy)
             return
         (self.nick, self.password, nickserv, chanserv) = \
                     privmsgs.getArgs(args, required=2, optional=2)
         if not self.nick:
-            irc.error(msg, 'The registered nick cannot be blank.')
+            irc.error('The registered nick cannot be blank.')
             return
         self.nick = ircutils.IrcString(self.nick)
         self.nickserv = ircutils.IrcString(nickserv or 'NickServ')
@@ -95,7 +95,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self._ghosted = re.compile('(Ghost|%s).*killed' % self.nick, re.I)
         self.sentGhost = False
         self.log.info('Services started.')
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def _doIdentify(self, irc):
         assert self.nickserv, 'Nickserv must not be empty.'
@@ -173,11 +173,11 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         channel = privmsgs.getChannel(msg, args)
         try:
             if irc.nick in irc.state.channels[channel].ops:
-                irc.error(msg, 'I\'ve already got ops in %sx' % channel)
+                irc.error('I\'ve already got ops in %sx' % channel)
             else:
                 irc.sendMsg(ircmsgs.privmsg(self.chanserv, 'op %s' % channel))
         except KeyError:
-            irc.error(msg, 'I\'m not in %s.' % channel)
+            irc.error('I\'m not in %s.' % channel)
 
     def identify(self, irc, msg, args):
         """takes no arguments
@@ -186,10 +186,10 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         """
         if self.nickserv:
             self._doIdentify(irc)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         else:
             s = 'This plugin must first be started via the start command.'
-            irc.error(msg, s)
+            irc.error(s)
 
 
 

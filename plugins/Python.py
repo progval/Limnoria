@@ -121,7 +121,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 return newmodule
         name = privmsgs.getArgs(args)
         if name.translate(string.ascii, self.modulechars) != '':
-            irc.error(msg, 'That\'s not a valid module or function name.')
+            irc.error('That\'s not a valid module or function name.')
             return
         if '.' in name:
             (moduleName, funcName) = rsplit(name, '.', 1)
@@ -130,42 +130,42 @@ class Python(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 if hasattr(obj, funcName):
                     obj = getattr(obj, funcName)
                     if hasattr(obj, '__doc__'):
-                        irc.reply(msg, normalize(obj.__doc__))
+                        irc.reply(normalize(obj.__doc__))
                     else:
-                        irc.reply(msg, '%s has no documentation' % name)
+                        irc.reply('%s has no documentation' % name)
                 else:
                     s = '%s has no method %s' % (moduleName, funcName)
-                    irc.reply(msg, s)
+                    irc.reply(s)
             elif moduleName:
                 newmodule = getModule(moduleName)
                 if newmodule is None:
-                    irc.error(msg, 'No module %s exists.' % moduleName)
+                    irc.error('No module %s exists.' % moduleName)
                 else: 
                     if hasattr(newmodule, funcName):
                         f = getattr(newmodule, funcName)
                         if hasattr(f, '__doc__') and f.__doc__:
                             s = normalize(f.__doc__)
-                            irc.reply(msg, s)
+                            irc.reply(s)
                         else:
-                            irc.error(msg, '%s has no documentation.' % name)
+                            irc.error('%s has no documentation.' % name)
                     else:
                         s = '%s has no function %s' % (moduleName, funcName)
-                        irc.error(msg, s)
+                        irc.error(s)
         else:
             if name in sys.modules:
                 newmodule = sys.modules[name]
                 if hasattr(newmodule, '__doc__') and newmodule.__doc__:
-                    irc.reply(msg, normalize(newmodule.__doc__))
+                    irc.reply(normalize(newmodule.__doc__))
                 else:
-                    irc.reply(msg, 'Module %s has no documentation.' % name)
+                    irc.reply('Module %s has no documentation.' % name)
             elif name in __builtins__:
                 f = __builtins__[name]
                 if hasattr(f, '__doc__') and f.__doc__:
-                    irc.reply(msg, normalize(f.__doc__))
+                    irc.reply(normalize(f.__doc__))
                 else:
-                    irc.error(msg, 'That function has no documentation.')
+                    irc.error('That function has no documentation.')
             else:
-                irc.error(msg, 'No function or module %s exists.' % name)
+                irc.error('No function or module %s exists.' % name)
 
     _these = [str(s) for s in this.s.decode('rot13').splitlines() if s]
     _these.pop(0) # Initial line (The Zen of Python...)
@@ -174,7 +174,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
 
         Returns one of the zen of Python statements.
         """
-        irc.reply(msg, random.choice(self._these))
+        irc.reply(random.choice(self._these))
 
     _title = re.compile(r'<b>(Title):</b>&nbsp;(.*)', re.I)
     _submit = re.compile(r'<b>(Submitter):</b>&nbsp;(.*)', re.I)
@@ -198,7 +198,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             if m:
                 resp.append('%s: %s' % self._bold(m.groups()))
         if resp:
-            irc.reply(msg, '; '.join(resp), prefixName = False)
+            irc.reply('; '.join(resp), prefixName = False)
     aspnRecipes = privmsgs.urlSnarfer(aspnRecipes)
             
 

@@ -30,7 +30,8 @@
 ###
 
 """
-Provides a multitude of fun, useless commands.
+Provides numerous filters, and a command (outfilter) to set them as filters on
+the output of the bot.
 """
 
 __revision__ = "$Id$"
@@ -49,7 +50,7 @@ import privmsgs
 import callbacks
 
 class MyFilterProxy(object):
-    def reply(self, msg, s):
+    def reply(self, s):
         self.s = s
         
 class Filter(callbacks.Privmsg):
@@ -90,12 +91,12 @@ class Filter(callbacks.Privmsg):
             if command in self._filterCommands:
                 method = getattr(self, command)
                 self.outFilters.setdefault(channel, []).append(method)
-                irc.replySuccess(msg)
+                irc.replySuccess()
             else:
-                irc.error(msg, 'That\'s not a valid filter command.')
+                irc.error('That\'s not a valid filter command.')
         else:
             self.outFilters[channel] = []
-            irc.replySuccess(msg)
+            irc.replySuccess()
     outfilter = privmsgs.checkChannelCapability(outfilter, 'op')
     
     def squish(self, irc, msg, args):
@@ -105,7 +106,7 @@ class Filter(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         text = ''.join(text.split())
-        irc.reply(msg, text)
+        irc.reply(text)
 
     def binary(self, irc, msg, args):
         """<text>
@@ -129,7 +130,7 @@ class Filter(callbacks.Privmsg):
                 counter -= 1
             LL.reverse()
             L.extend(LL)
-        irc.reply(msg, ''.join(L))
+        irc.reply(''.join(L))
 
     def hexlify(self, irc, msg, args):
         """<text>
@@ -138,7 +139,7 @@ class Filter(callbacks.Privmsg):
         composed of the hexadecimal value of each character in the string
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, text.encode('hex_codec'))
+        irc.reply(text.encode('hex_codec'))
 
     def unhexlify(self, irc, msg, args):
         """<hexstring>
@@ -148,9 +149,9 @@ class Filter(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         try:
-            irc.reply(msg, text.decode('hex_codec'))
+            irc.reply(text.decode('hex_codec'))
         except TypeError:
-            irc.error(msg, 'Invalid input.')
+            irc.error('Invalid input.')
 
     def rot13(self, irc, msg, args):
         """<text>
@@ -160,7 +161,7 @@ class Filter(callbacks.Privmsg):
         reading by roaming eyes, since it's easily reversible.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, text.encode('rot13'))
+        irc.reply(text.encode('rot13'))
 
     def lithp(self, irc, msg, args):
         """<text>
@@ -182,7 +183,7 @@ class Filter(callbacks.Privmsg):
         text = text.replace('CCE', 'KTH')
         text = text.replace('tion', 'thion')
         text = text.replace('TION', 'THION')
-        irc.reply(msg, text)
+        irc.reply(text)
 
     _leettrans = string.maketrans('oOaAeElBTiIts', '004433187!1+5')
     _leetres = ((re.compile(r'\b(?:(?:[yY][o0O][oO0uU])|u)\b'), 'j00'),
@@ -200,7 +201,7 @@ class Filter(callbacks.Privmsg):
         for (r, sub) in self._leetres:
             s = re.sub(r, sub, s)
         s = s.translate(self._leettrans)
-        irc.reply(msg, s)
+        irc.reply(s)
 
     _scrambleRe = re.compile(r'(?:\b|(?![a-zA-Z]))([a-zA-Z])([a-zA-Z]*)'\
                              r'([a-zA-Z])(?:\b|(?![a-zA-Z]))')
@@ -216,7 +217,7 @@ class Filter(callbacks.Privmsg):
             return '%s%s%s' % (m.group(1), ''.join(L), m.group(3))
         text = privmsgs.getArgs(args)
         s = self._scrambleRe.sub(_subber, text)
-        irc.reply(msg, s)
+        irc.reply(s)
 
     _code = {
         "A" : ".-",
@@ -272,7 +273,7 @@ class Filter(callbacks.Privmsg):
         text = text.replace('  ', '\x00')
         text = text.replace(' ', '')
         text = text.replace('\x00', ' ')
-        irc.reply(msg, text)
+        irc.reply(text)
 
     def morse(self, irc, msg, args):
         """<text>
@@ -286,7 +287,7 @@ class Filter(callbacks.Privmsg):
                 L.append(self._code[c])
             else:
                 L.append(c)
-        irc.reply(msg, ' '.join(L))
+        irc.reply(' '.join(L))
 
     def reverse(self, irc, msg, args):
         """<text>
@@ -294,7 +295,7 @@ class Filter(callbacks.Privmsg):
         Reverses <text>.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, text[::-1])
+        irc.reply(text[::-1])
 
     def _color(self, c):
         if c == ' ':
@@ -309,7 +310,7 @@ class Filter(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         L = [self._color(c) for c in text]
-        irc.reply(msg, ''.join(L))
+        irc.reply(''.join(L))
 
     def jeffk(self, irc, msg, args):
         """<text>
@@ -365,7 +366,7 @@ class Filter(callbacks.Privmsg):
             return text
         text = privmsgs.getArgs(args)
         if random.random() < .03:
-            irc.reply(msg, randomlyLaugh('NO YUO', probability=1))
+            irc.reply(randomlyLaugh('NO YUO', probability=1))
             return
         alwaysInsertions = {
             r'er\b': 'ar',
@@ -403,7 +404,7 @@ class Filter(callbacks.Privmsg):
         text = randomlyLaugh(text)
         if random.random() < .4:
             text = text.upper()
-        irc.reply(msg, text)
+        irc.reply(text)
 
 
 Class = Filter

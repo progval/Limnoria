@@ -77,15 +77,15 @@ class Babelfish(callbacks.Privmsg):
             fromLang = self._abbrevs[fromLang.lower()]
             toLang = self._abbrevs[toLang.lower()]
             translation = babelfish.translate(text, fromLang, toLang)
-            irc.reply(msg, translation)
+            irc.reply(translation)
         except (KeyError, babelfish.LanguageNotAvailableError), e:
-            irc.error(msg, '%s is not a valid language.  Valid languages ' \
+            irc.error('%s is not a valid language.  Valid languages ' \
                       'include %s' % \
                       (e, utils.commaAndify(babelfish.available_languages)))
         except babelfish.BabelizerIOError, e:
-            irc.error(msg, e)
+            irc.error(e)
         except babelfish.BabelfishChangedError, e:
-            irc.error(msg, 'Babelfish has foiled our plans by changing its ' \
+            irc.error('Babelfish has foiled our plans by changing its ' \
                            'webpage format')
 
     def babelize(self, irc, msg, args):
@@ -100,18 +100,18 @@ class Babelfish(callbacks.Privmsg):
             fromLang = self._abbrevs[fromLang.lower()]
             toLang = self._abbrevs[toLang.lower()]
             if fromLang != 'english' and toLang != 'english':
-                irc.error(msg, 'One language must be English.')
+                irc.error('One language must be English.')
                 return
             translations = babelfish.babelize(text, fromLang, toLang)
-            irc.reply(msg, translations[-1])
+            irc.reply(translations[-1])
         except (KeyError, babelfish.LanguageNotAvailableError), e:
-            irc.reply(msg, '%s is not a valid language.  Valid languages ' \
+            irc.reply('%s is not a valid language.  Valid languages ' \
                       'include %s' % \
                       (e, utils.commaAndify(babelfish.available_languages)))
         except babelfish.BabelizerIOError, e:
-            irc.reply(msg, e)
+            irc.reply(e)
         except babelfish.BabelfishChangedError, e:
-            irc.reply(msg, 'Babelfish has foiled our plans by changing its ' \
+            irc.reply('Babelfish has foiled our plans by changing its ' \
                            'webpage format')
 
     def randomlanguage(self, irc, msg, args):
@@ -124,7 +124,7 @@ class Babelfish(callbacks.Privmsg):
         language = random.choice(babelfish.available_languages)
         while not allowEnglish and language == 'English':
             language = random.choice(babelfish.available_languages)
-        irc.reply(msg, language)
+        irc.reply(language)
 
     
 

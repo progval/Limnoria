@@ -98,7 +98,7 @@ def checkCapability(f, capability):
         else:
             self.log.warning('%r attempted %s without %s.',
                              msg.prefix, f.func_name, capability)
-            irc.error(msg, conf.replyNoCapability % capability)
+            irc.error(conf.replyNoCapability % capability)
     newf = types.FunctionType(newf.func_code, newf.func_globals,
                               f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
@@ -119,7 +119,7 @@ def checkChannelCapability(f, capability):
         else:
             self.log.warning('%r attempted %s without %s.',
                              msg.prefix, f.func_name, capability)
-            irc.error(msg, conf.replyNoCapability % chancap)
+            irc.error(conf.replyNoCapability % chancap)
     newf = types.FunctionType(newf.func_code, newf.func_globals,
                               f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
@@ -143,7 +143,7 @@ def name(f):
             name = ircdb.users.getUser(msg.prefix).name
         except KeyError:
             if conf.requireRegistration:
-                irc.error(msg, conf.replyNotRegistered)
+                irc.error(conf.replyNotRegistered)
                 return
             else:
                 name = msg.prefix
@@ -209,7 +209,7 @@ class CapabilityCheckingPrivmsg(callbacks.Privmsg):
         else:
             self.log.warning('%r tried to call %s without %s.',
                              msg.prefix, f.im_func.func_name, self.capability)
-            irc.error(msg, conf.replyNoCapability % self.capability)
+            irc.error(conf.replyNoCapability % self.capability)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -62,7 +62,7 @@ class Channel(callbacks.Privmsg):
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.op(channel, msg.nick))
         else:
-            irc.error(msg, 'How can I op you?  I\'m not opped!')
+            irc.error('How can I op you?  I\'m not opped!')
     op = privmsgs.checkChannelCapability(op, 'op')
 
     def halfop(self, irc, msg, args, channel):
@@ -75,7 +75,7 @@ class Channel(callbacks.Privmsg):
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
         else:
-            irc.error(msg, 'How can I halfop you?  I\'m not opped!')
+            irc.error('How can I halfop you?  I\'m not opped!')
     halfop = privmsgs.checkChannelCapability(halfop, 'halfop')
 
     def voice(self, irc, msg, args, channel):
@@ -88,7 +88,7 @@ class Channel(callbacks.Privmsg):
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.voice(channel, msg.nick))
         else:
-            irc.error(msg, 'How can I voice you?  I\'m not opped!')
+            irc.error('How can I voice you?  I\'m not opped!')
     voice = privmsgs.checkChannelCapability(voice, 'voice')
 
     def deop(self, irc, msg, args, channel):
@@ -103,7 +103,7 @@ class Channel(callbacks.Privmsg):
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.deops(channel, args))
         else:
-            irc.error(msg, 'How can I deop someone?  I\'m not opped!')
+            irc.error('How can I deop someone?  I\'m not opped!')
     deop = privmsgs.checkChannelCapability(deop, 'op')
     
     def dehalfop(self, irc, msg, args, channel):
@@ -118,7 +118,7 @@ class Channel(callbacks.Privmsg):
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.dehalfops(channel, args))
         else:
-            irc.error(msg, 'How can I dehalfop someone?  I\'m not opped!')
+            irc.error('How can I dehalfop someone?  I\'m not opped!')
     dehalfop = privmsgs.checkChannelCapability(dehalfop, 'op')
     
     def devoice(self, irc, msg, args, channel):
@@ -133,7 +133,7 @@ class Channel(callbacks.Privmsg):
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.devoices(channel, args))
         else:
-            irc.error(msg, 'How can I devoice someone?  I\'m not opped!')
+            irc.error('How can I devoice someone?  I\'m not opped!')
     devoice = privmsgs.checkChannelCapability(devoice, 'op')
     
     def cycle(self, irc, msg, args, channel):
@@ -165,7 +165,7 @@ class Channel(callbacks.Privmsg):
                 reason = msg.nick
             irc.queueMsg(ircmsgs.kick(channel, nick, reason))
         else:
-            irc.error(msg, 'How can I kick someone?  I\'m not opped!')
+            irc.error('How can I kick someone?  I\'m not opped!')
     kick = privmsgs.checkChannelCapability(kick, 'op')
 
     def kban(self, irc, msg, args):
@@ -191,17 +191,17 @@ class Channel(callbacks.Privmsg):
             raise callbacks.ArgumentError
         elif bannedNick == irc.nick:
             self.log.warning('%r tried to make me kban myself.', msg.prefix)
-            irc.error(msg, 'I cowardly refuse to kickban myself.')
+            irc.error('I cowardly refuse to kickban myself.')
             return
         try:
             length = int(length or 0)
         except ValueError:
-            irc.error(msg, 'Ban length must be a valid integer.')
+            irc.error('Ban length must be a valid integer.')
             return
         try:
             bannedHostmask = irc.state.nickToHostmask(bannedNick)
         except KeyError:
-            irc.error(msg, 'I haven\'t seen %s.' % bannedNick)
+            irc.error('I haven\'t seen %s.' % bannedNick)
             return
         capability = ircdb.makeChannelCapability(channel, 'op')
         if optlist:
@@ -226,13 +226,13 @@ class Channel(callbacks.Privmsg):
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
             if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
                 self.log.warning('%r tried to make me kban myself.',msg.prefix)
-                irc.error(msg, 'I cowardly refuse to ban myself.')
+                irc.error('I cowardly refuse to ban myself.')
                 return
             else:
                 banmask = bannedHostmask
         # Check that we have ops.
         if irc.nick not in irc.state.channels[channel].ops:
-            irc.error(msg, 'How can I kick or ban someone?  I\'m not opped.')
+            irc.error('How can I kick or ban someone?  I\'m not opped.')
             return
         # Now, let's actually get to it.  Check to make sure they have
         # #channel.op and the bannee doesn't have #channel.op; or that the
@@ -250,14 +250,14 @@ class Channel(callbacks.Privmsg):
             if ircdb.checkCapability(bannedHostmask, capability):
                 self.log.warning('%r tried to ban %r, but both have %s',
                                  msg.prefix, bannedHostmask, capability)
-                irc.error(msg, '%s has %s too, you can\'t ban him/her/it.' %
+                irc.error('%s has %s too, you can\'t ban him/her/it.' %
                                bannedNick, capability)
             else:
                 doBan()
         else:
             self.log.warning('%r attempted kban without %s',
                              msg.prefix, capability)
-            irc.error(msg, conf.replyNoCapability % capability)
+            irc.error(conf.replyNoCapability % capability)
 
     def unban(self, irc, msg, args, channel):
         """[<channel>] <hostmask>
@@ -271,7 +271,7 @@ class Channel(callbacks.Privmsg):
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.unban(channel, hostmask))
         else:
-            irc.error(msg, 'How can I unban someone?  I\'m not opped.')
+            irc.error('How can I unban someone?  I\'m not opped.')
     unban = privmsgs.checkChannelCapability(unban, 'op')
 
     def lobotomize(self, irc, msg, args, channel):
@@ -285,7 +285,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.lobotomized = True
         ircdb.channels.setChannel(channel, c)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     lobotomize = privmsgs.checkChannelCapability(lobotomize, 'op')
 
     def unlobotomize(self, irc, msg, args, channel):
@@ -299,7 +299,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.lobotomized = False
         ircdb.channels.setChannel(channel, c)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     unlobotomize = privmsgs.checkChannelCapability(unlobotomize, 'op')
 
     def permban(self, irc, msg, args, channel):
@@ -316,12 +316,12 @@ class Channel(callbacks.Privmsg):
         elif ircutils.isUserHostmask(arg):
             banmask = arg
         else:
-            irc.error(msg, 'That\'s not a valid nick or hostmask.')
+            irc.error('That\'s not a valid nick or hostmask.')
             return
         c = ircdb.channels.getChannel(channel)
         c.addBan(banmask)
         ircdb.channels.setChannel(channel, c)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     permban = privmsgs.checkChannelCapability(permban, 'op')
 
     def unpermban(self, irc, msg, args, channel):
@@ -335,7 +335,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.removeBan(banmask)
         ircdb.channels.setChannel(channel, c)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     unpermban = privmsgs.checkChannelCapability(unpermban, 'op')
 
     def ignore(self, irc, msg, args, channel):
@@ -352,12 +352,12 @@ class Channel(callbacks.Privmsg):
         elif ircutils.isUserHostmask(arg):
             banmask = arg
         else:
-            irc.error(msg, 'That\'s not a valid nick or hostmask.')
+            irc.error('That\'s not a valid nick or hostmask.')
             return
         c = ircdb.channels.getChannel(channel)
         c.addIgnore(banmask)
         ircdb.channels.setChannel(channel, c)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     ignore = privmsgs.checkChannelCapability(ignore, 'op')
 
     def unignore(self, irc, msg, args, channel):
@@ -371,7 +371,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.removeIgnore(banmask)
         ircdb.channels.setChannel(channel, c)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     unignore = privmsgs.checkChannelCapability(unignore, 'op')
 
     def ignores(self, irc, msg, args, channel):
@@ -386,11 +386,11 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         if len(c.ignores) == 0:
             s = 'I\'m not currently ignoring any hostmasks in %r' % channel
-            irc.reply(msg, s)
+            irc.reply(s)
         else:
             L = c.ignores[:]
             L.sort()
-            irc.reply(msg, utils.commaAndify(imap(repr, L)))
+            irc.reply(utils.commaAndify(imap(repr, L)))
     ignores = privmsgs.checkChannelCapability(ignores, 'op')
 
 
@@ -409,9 +409,9 @@ class Channel(callbacks.Privmsg):
             user = ircdb.users.getUser(id)
             user.addCapability(capability)
             ircdb.users.setUser(id, user)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
     addcapability = privmsgs.checkChannelCapability(addcapability,'op')
 
     def removecapability(self, irc, msg, args, channel):
@@ -429,9 +429,9 @@ class Channel(callbacks.Privmsg):
             user = ircdb.users.getUser(id)
             user.removeCapability(capability)
             ircdb.users.setUser(id, user)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
     removecapability = privmsgs.checkChannelCapability(removecapability, 'op')
 
     def setdefaultcapability(self, irc, msg, args, channel):
@@ -451,10 +451,10 @@ class Channel(callbacks.Privmsg):
             c.setDefaultCapability(False)
         else:
             s = 'The default value must be either True or False.'
-            irc.error(msg, s)
+            irc.error(s)
             return
         ircdb.channels.setChannel(channel, c)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     setdefaultcapability = \
         privmsgs.checkChannelCapability(setdefaultcapability, 'op')
 
@@ -469,7 +469,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.addCapability(capability)
         ircdb.channels.setChannel(channel, c)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     setcapability = privmsgs.checkChannelCapability(setcapability, 'op')
 
     def unsetcapability(self, irc, msg, args, channel):
@@ -484,7 +484,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.removeCapability(capability)
         ircdb.channels.setChannel(channel, c)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     unsetcapability = privmsgs.checkChannelCapability(unsetcapability, 'op')
 
     def capabilities(self, irc, msg, args):
@@ -497,7 +497,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         L = list(c.capabilities)
         L.sort()
-        irc.reply(msg, '[%s]' % ', '.join(L))
+        irc.reply('[%s]' % ', '.join(L))
 
     def lobotomies(self, irc, msg, args):
         """takes no arguments
@@ -511,9 +511,9 @@ class Channel(callbacks.Privmsg):
         if L:
             L.sort()
             s = 'I\'m currently lobotomized in %s.' % utils.commaAndify(L)
-            irc.reply(msg, s)
+            irc.reply(s)
         else:
-            irc.reply(msg, 'I\'m not currently lobotomized in any channels.')
+            irc.reply('I\'m not currently lobotomized in any channels.')
                         
 
 Class = Channel

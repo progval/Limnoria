@@ -99,7 +99,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
         self.started = True
         for channel in irc.state.channels:
             irc.queueMsg(ircmsgs.topic(channel))
-        irc.replySuccess(msg)
+        irc.replySuccess()
     start = privmsgs.checkCapability(start, 'admin')
 
     def doJoin(self, irc, msg):

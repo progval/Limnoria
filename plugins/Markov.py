@@ -140,7 +140,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
                           ORDER BY random()
                           LIMIT 1""")
         if cursor.rowcount == 0:
-            irc.error(msg, 'I have no records for that channel.')
+            irc.error('I have no records for that channel.')
             return
         (id, first, second) = cursor.fetchone()
         id = int(id)
@@ -164,7 +164,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         if len(words) < self._minMarkovLength:
             self.markov(irc, msg, args)
         else:
-            irc.reply(msg, ' '.join(words))
+            irc.reply(' '.join(words))
 
     def pairs(self, irc, msg, args):
         """[<channel>]
@@ -178,7 +178,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("""SELECT COUNT(*) FROM pairs""")
         n = int(cursor.fetchone()[0])
         s = 'There are %s pairs in my Markov database for %s' % (n, channel)
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def firsts(self, irc, msg, args):
         """[<channel>]
@@ -192,7 +192,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("""SELECT COUNT(*) FROM pairs WHERE is_first=1""")
         n = int(cursor.fetchone()[0])
         s = 'There are %s first pairs in my Markov database for %s'%(n,channel)
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def follows(self, irc, msg, args):
         """[<channel>]
@@ -206,7 +206,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("""SELECT COUNT(*) FROM follows""")
         n = int(cursor.fetchone()[0])
         s = 'There are %s follows in my Markov database for %s' % (n, channel)
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def lasts(self, irc, msg, args):
         """[<channel>]
@@ -220,7 +220,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("""SELECT COUNT(*) FROM follows WHERE word ISNULL""")
         n = int(cursor.fetchone()[0])
         s = 'There are %s lasts in my Markov database for %s' % (n, channel)
-        irc.reply(msg, s)
+        irc.reply(s)
 
 
 Class = Markov

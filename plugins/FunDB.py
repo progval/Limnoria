@@ -138,15 +138,15 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             name = ircdb.users.getUser(msg.prefix).name
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         if table == "lart" or table == "praise":
             if '$who' not in s:
-                irc.error(msg, 'There must be a $who in the lart/praise '\
+                irc.error('There must be a $who in the lart/praise '\
                                'somewhere.')
                 return
         elif table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
+            irc.error('"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         db = self.getDb(channel)
@@ -158,7 +158,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         cursor.execute(sql, s)
         id = cursor.fetchone()[0]
         response = '%s (%s #%s)' % (conf.replySuccess, table, id)
-        irc.reply(msg, response)
+        irc.reply(response)
 
     def remove(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise> <id>
@@ -173,15 +173,15 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             ircdb.users.getUser(msg.prefix).name
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, 'The <id> argument must be an integer.')
+            irc.error('The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
+            irc.error('"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         db = self.getDb(channel)
@@ -189,7 +189,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         sql = """DELETE FROM %ss WHERE id=%%s""" % table
         cursor.execute(sql, id)
         db.commit()
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def change(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise> <id> <regexp>
@@ -206,30 +206,30 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             name = ircdb.users.getUser(msg.prefix).name
         except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
+            irc.error(conf.replyNotRegistered)
             return
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, 'The <id> argument must be an integer.')
+            irc.error('The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
+            irc.error('"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.error(msg, 'The regexp wasn\'t valid: %s.' % e.args[0])
+            irc.error('The regexp wasn\'t valid: %s.' % e.args[0])
         except re.error, e:
-            irc.error(msg, utils.exnToString(e))
+            irc.error(utils.exnToString(e))
             return
         db = self.getDb(channel)
         cursor = db.cursor()
         sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
         cursor.execute(sql, id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'There is no such %s.' % table)
+            irc.error('There is no such %s.' % table)
         else:
             old_entry = cursor.fetchone()[0]
             new_entry = replacer(old_entry)
@@ -237,7 +237,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
                   (table, table)
             cursor.execute(sql, new_entry, name, id)
             db.commit()
-            irc.replySuccess(msg)
+            irc.replySuccess()
 
     def num(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise>
@@ -250,7 +250,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         table = privmsgs.getArgs(args)
         table = table.lower()
         if table not in self._tables:
-            irc.error(msg, '%r is not valid. Valid values include %s.' %
+            irc.error('%r is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         db = self.getDb(channel)
@@ -258,7 +258,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         sql = """SELECT count(*) FROM %ss""" % table
         cursor.execute(sql)
         total = int(cursor.fetchone()[0])
-        irc.reply(msg, 'There %s currently %s in my database.' %
+        irc.reply('There %s currently %s in my database.' %
                   (utils.be(total), utils.nItems(table, total)))
 
     def get(self, irc, msg, args):
@@ -273,10 +273,10 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, 'The <id> argument must be an integer.')
+            irc.error('The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
+            irc.error('"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         db = self.getDb(channel)
@@ -284,10 +284,10 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
         cursor.execute(sql, id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'There is no such %s.' % table)
+            irc.error('There is no such %s.' % table)
         else:
             reply = cursor.fetchone()[0]
-            irc.reply(msg, reply)
+            irc.reply(reply)
 
     def info(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise> <id>
@@ -302,10 +302,10 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, 'The <id> argument must be an integer.')
+            irc.error('The <id> argument must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is not valid. Valid values include %s.' %
+            irc.error('"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
         db = self.getDb(channel)
@@ -313,11 +313,11 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         sql = """SELECT added_by FROM %ss WHERE id=%%s""" % table
         cursor.execute(sql, id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'There is no such %s.' % table)
+            irc.error('There is no such %s.' % table)
         else:
             add = cursor.fetchone()[0]
             reply = '%s #%s: Created by %s.' % (table, id, add)
-            irc.reply(msg, reply)
+            irc.reply(reply)
 
     def _formatResponse(self, s, id, showids):
         if showids:
@@ -342,14 +342,14 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
                           ORDER BY random()
                           LIMIT 1""")
         if cursor.rowcount == 0:
-            irc.error(msg, 'There are currently no available insults.')
+            irc.error('There are currently no available insults.')
         else:
             (id, insult) = cursor.fetchone()
             nick = re.sub(r'\bme\b', msg.nick, nick)
             nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
             insult = insult.replace('$who', nick)
             showid = self.configurables.get('show-ids', channel)
-            irc.reply(msg, self._formatResponse(insult, id, showid), to=nick)
+            irc.reply(self._formatResponse(insult, id, showid), to=nick)
 
     def excuse(self, irc, msg, args):
         """[<channel>] [<id>]
@@ -366,12 +366,12 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
             try:
                 id = int(id)
             except ValueError:
-                irc.error(msg, 'The <id> argument must be an integer.')
+                irc.error('The <id> argument must be an integer.')
                 return
             cursor.execute("""SELECT id, excuse FROM excuses WHERE id=%s""",
                            id)
             if cursor.rowcount == 0:
-                irc.error(msg, 'There is no such excuse.')
+                irc.error('There is no such excuse.')
                 return
         else:
             cursor.execute("""SELECT id, excuse FROM excuses
@@ -379,11 +379,11 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
                               ORDER BY random()
                               LIMIT 1""")
         if cursor.rowcount == 0:
-            irc.error(msg, 'There are currently no available excuses.')
+            irc.error('There are currently no available excuses.')
         else:
             (id, excuse) = cursor.fetchone()
             showid = self.configurables.get('show-ids', channel)
-            irc.reply(msg, self._formatResponse(excuse, id, showid))
+            irc.reply(self._formatResponse(excuse, id, showid))
 
     def lart(self, irc, msg, args):
         """[<channel>] [<id>] <text> [for <reason>]
@@ -397,7 +397,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             id = int(id)
             if id < 1:
-                irc.error(msg, 'There is no such lart.')
+                irc.error('There is no such lart.')
                 return
         except ValueError:
             nick = ' '.join([id, nick]).strip()
@@ -417,7 +417,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         if id:
             cursor.execute("""SELECT id, lart FROM larts WHERE id=%s""", id)
             if cursor.rowcount == 0:
-                irc.error(msg, 'There is no such lart.')
+                irc.error('There is no such lart.')
                 return
         else:
             cursor.execute("""SELECT id, lart FROM larts
@@ -425,7 +425,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
                               ORDER BY random()
                               LIMIT 1""")
         if cursor.rowcount == 0:
-            irc.error(msg, 'There are currently no available larts.')
+            irc.error('There are currently no available larts.')
         else:
             (id, lart) = cursor.fetchone()
             nick = re.sub(r'\bme\b', msg.nick, nick)
@@ -438,7 +438,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
             showid = self.configurables.get('show-ids', channel)
-            irc.reply(msg, self._formatResponse(s, id, showid), action=True)
+            irc.reply(self._formatResponse(s, id, showid), action=True)
 
     def praise(self, irc, msg, args):
         """[<channel>] [<id>] <text> [for <reason>]
@@ -453,7 +453,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         try:
             id = int(id)
             if id < 1:
-                irc.error(msg, 'There is no such praise.')
+                irc.error('There is no such praise.')
                 return
         except ValueError:
             nick = ' '.join([id, nick]).strip()
@@ -471,7 +471,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         if id:
             cursor.execute("""SELECT id, praise FROM praises WHERE id=%s""",id)
             if cursor.rowcount == 0:
-                irc.error(msg, 'There is no such praise.')
+                irc.error('There is no such praise.')
                 return
         else:
             cursor.execute("""SELECT id, praise FROM praises
@@ -479,7 +479,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
                               ORDER BY random()
                               LIMIT 1""")
         if cursor.rowcount == 0:
-            irc.error(msg, 'There are currently no available praises.')
+            irc.error('There are currently no available praises.')
         else:
             (id, praise) = cursor.fetchone()
             nick = re.sub(r'\bme\b', msg.nick, nick)
@@ -492,7 +492,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
             showid = self.configurables.get('show-ids', channel)
-            irc.reply(msg, self._formatResponse(s, id, showid), action=True)
+            irc.reply(self._formatResponse(s, id, showid), action=True)
 
 Class = FunDB
 

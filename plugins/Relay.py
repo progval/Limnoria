@@ -174,7 +174,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         self.ircstates[realIrc] = irclib.IrcState()
         self.lastmsg[realIrc] = ircmsgs.ping('this is just a fake message')
         self.started = True
-        irc.replySuccess(msg)
+        irc.replySuccess()
     start = privmsgs.checkCapability(start, 'owner')
 
     def connect(self, irc, msg, args):
@@ -185,7 +185,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         that network to other networks.
         """
         if not self.started:
-            irc.error(msg, 'You must use the start command first.')
+            irc.error('You must use the start command first.')
             return
         abbreviation, server = privmsgs.getArgs(args, required=2)
         realIrc = self._getRealIrc(irc)
@@ -202,7 +202,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         self.abbreviations[newIrc] = abbreviation
         self.ircstates[newIrc] = irclib.IrcState()
         self.lastmsg[newIrc] = ircmsgs.ping('this is just a fake message')
-        irc.replySuccess(msg)
+        irc.replySuccess()
     connect = privmsgs.checkCapability(connect, 'owner')
 
     def disconnect(self, irc, msg, args):
@@ -212,7 +212,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         the network abbreviation <network>.
         """
         if not self.started:
-            irc.error(msg, 'You must use the start command first.')
+            irc.error('You must use the start command first.')
             return
         network = privmsgs.getArgs(args)
         otherIrc = self.ircs[network]
@@ -220,7 +220,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         world.ircs.remove(otherIrc)
         del self.ircs[network]
         del self.abbreviations[otherIrc]
-        irc.replySuccess(msg)
+        irc.replySuccess()
     disconnect = privmsgs.checkCapability(disconnect, 'owner')
 
     def join(self, irc, msg, args):
@@ -233,17 +233,17 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         channels.
         """
         if not self.started:
-            irc.error(msg, 'You must use the start command first.')
+            irc.error('You must use the start command first.')
             return
         channel = privmsgs.getArgs(args)
         if not ircutils.isChannel(channel):
-            irc.error(msg, '%r is not a valid channel.' % channel)
+            irc.error('%r is not a valid channel.' % channel)
             return
         self.channels.add(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
-        irc.replySuccess(msg)
+        irc.replySuccess()
     join = privmsgs.checkCapability(join, 'owner')
 
     def part(self, irc, msg, args):
@@ -254,17 +254,17 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         channel.
         """
         if not self.started:
-            irc.error(msg, 'You must use the start command first.')
+            irc.error('You must use the start command first.')
             return
         channel = privmsgs.getArgs(args)
         if not ircutils.isChannel(channel):
-            irc.error(msg, '%r is not a valid channel.' % channel)
+            irc.error('%r is not a valid channel.' % channel)
             return
         self.channels.remove(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
-        irc.replySuccess(msg)
+        irc.replySuccess()
     part = privmsgs.checkCapability(part, 'owner')
 
     def command(self, irc, msg, args):
@@ -273,7 +273,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         Gives the bot <command> (with its associated <arg>s) on <network>.
         """
         if not self.started:
-            irc.error(msg, 'You must use the start command first.')
+            irc.error('You must use the start command first.')
             return
         if len(args) < 2:
             raise callbacks.ArgumentError
@@ -281,12 +281,12 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         try:
             otherIrc = self.ircs[network]
         except KeyError:
-            irc.error(msg, 'I\'m not currently on %s.' % network)
+            irc.error('I\'m not currently on %s.' % network)
             return
         Owner = irc.getCallback('Owner')
         Owner.disambiguate(irc, args)
         self.Proxy(otherIrc, msg, args)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     command = privmsgs.checkCapability(command, 'admin')
         
     def say(self, irc, msg, args):
@@ -296,7 +296,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         on <network>.
         """
         if not self.started:
-            irc.error(msg, 'You must use the start command first.')
+            irc.error('You must use the start command first.')
             return
         if not args:
             raise callbacks.ArgumentError
@@ -304,10 +304,10 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         channel = privmsgs.getChannel(msg, args)
         text = privmsgs.getArgs(args)
         if network not in self.ircs:
-            irc.error(msg, 'I\'m not currently on %s.' % network)
+            irc.error('I\'m not currently on %s.' % network)
             return
         if channel not in self.channels:
-            irc.error(msg, 'I\'m not currently relaying to %s.' % channel)
+            irc.error('I\'m not currently relaying to %s.' % channel)
             return
         self.ircs[network].queueMsg(ircmsgs.privmsg(channel, text))
     say = privmsgs.checkCapability(say, 'admin')
@@ -320,12 +320,12 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         the various networks the bot is connected to.
         """
         if not self.started:
-            irc.error(msg, 'You must use the start command first.')
+            irc.error('You must use the start command first.')
             return
         realIrc = self._getRealIrc(irc)
         channel = privmsgs.getChannel(msg, args)
         if channel not in self.channels:
-            irc.error(msg, 'I\'m not relaying %s.' % channel)
+            irc.error('I\'m not relaying %s.' % channel)
             return
         users = []
         for (abbreviation, otherIrc) in self.ircs.iteritems():
@@ -338,7 +338,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
                     Channel = otherIrc.state.channels[channel]
                 except KeyError:
                     s = 'Somehow I\'m not in %s on %s.'% (channel,abbreviation)
-                    irc.error(msg, s)
+                    irc.error(s)
                     return
                 numUsers = 0
                 for s in Channel.users:
@@ -363,7 +363,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
                 users.append('%s (%s): %s' % 
                              (ircutils.bold(abbreviation), numUsers, usersS))
         users.sort()
-        irc.reply(msg, '; '.join(users))
+        irc.reply('; '.join(users))
 
     def whois(self, irc, msg, args):
         """<nick>@<network>
@@ -371,14 +371,14 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         Returns the WHOIS response <network> gives for <nick>.
         """
         if not self.started:
-            irc.error(msg, 'You must use the start command first.')
+            irc.error('You must use the start command first.')
             return
         nickAtNetwork = privmsgs.getArgs(args)
         realIrc = self._getRealIrc(irc)
         try:
             (nick, network) = nickAtNetwork.split('@', 1)
             if not ircutils.isNick(nick):
-                irc.error(msg, '%s is not an IRC nick.' % nick)
+                irc.error('%s is not an IRC nick.' % nick)
                 return
             nick = ircutils.toLower(nick)
         except ValueError:
@@ -392,7 +392,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
             else:
                 raise callbacks.ArgumentError
         if network not in self.ircs:
-            irc.error(msg, 'I\'m not on that network.')
+            irc.error('I\'m not on that network.')
             return
         otherIrc = self.ircs[network]
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))

@@ -170,10 +170,10 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
         try:
             id = self._getId(userNickHostmask)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
             return
         self.db.setHerald(id, channel, herald)
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def remove(self, irc, msg, args):
         """[<channel>] <user|nick|hostmask>
@@ -188,10 +188,10 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
         try:
             id = self._getId(userNickHostmask)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(conf.replyNoUser)
             return
         self.db.delHerald(id, channel)
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
 
 Class = Herald

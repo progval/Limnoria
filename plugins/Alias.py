@@ -186,9 +186,9 @@ class Alias(callbacks.Privmsg):
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
             self.aliases[name][1] = True
-            irc.replySuccess(msg)
+            irc.replySuccess()
         else:
-            irc.error(msg, 'There is no such alias.')
+            irc.error('There is no such alias.')
     lock = privmsgs.checkCapability(lock, 'admin')
 
     def unlock(self, irc, msg, args):
@@ -200,9 +200,9 @@ class Alias(callbacks.Privmsg):
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
             self.aliases[name][1] = False
-            irc.replySuccess(msg)
+            irc.replySuccess()
         else:
-            irc.error(msg, 'There is no such alias.')
+            irc.error('There is no such alias.')
     unlock = privmsgs.checkCapability(unlock, 'admin')
 
     _invalidCharsRe = re.compile(r'[\[\]\s]')
@@ -259,9 +259,9 @@ class Alias(callbacks.Privmsg):
             self.addAlias(irc, name, alias)
             self.log.info('Adding alias %r for %r (from %s)' %
                           (name, alias, msg.prefix))
-            irc.replySuccess(msg)
+            irc.replySuccess()
         except AliasError, e:
-            irc.error(msg, str(e))
+            irc.error(str(e))
 
     def remove(self, irc, msg, args):
         """<name>
@@ -272,9 +272,9 @@ class Alias(callbacks.Privmsg):
         try:
             self.removeAlias(name)
             self.log.info('Removing alias %r (from %s)' % (name, msg.prefix))
-            irc.replySuccess(msg)
+            irc.replySuccess()
         except AliasError, e:
-            irc.error(msg, str(e))
+            irc.error(str(e))
 
 
 Class = Alias

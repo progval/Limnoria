@@ -66,18 +66,18 @@ class Network(callbacks.Privmsg):
         if ircutils.isIP(host):
             hostname = socket.getfqdn(host)
             if hostname == host:
-                irc.reply(msg, 'Host not found.')
+                irc.reply('Host not found.')
             else:
-                irc.reply(msg, hostname)
+                irc.reply(hostname)
         else:
             try:
                 ip = socket.gethostbyname(host)
                 if ip == '64.94.110.11': # Verisign sucks!
-                    irc.reply(msg, 'Host not found.')
+                    irc.reply('Host not found.')
                 else:
-                    irc.reply(msg, ip)
+                    irc.reply(ip)
             except socket.error:
-                irc.reply(msg, 'Host not found.')
+                irc.reply('Host not found.')
 
     _tlds = sets.Set(['com', 'net', 'edu'])
     def whois(self, irc, msg, args):
@@ -88,10 +88,10 @@ class Network(callbacks.Privmsg):
         """
         domain = privmsgs.getArgs(args)
         if '.' not in domain or domain.split('.')[-1] not in self._tlds:
-            irc.error(msg, '<domain> must be in .com, .net, or .edu.')
+            irc.error('<domain> must be in .com, .net, or .edu.')
             return
         elif len(domain.split('.')) != 2:
-            irc.error(msg, '<domain> must be a domain, not a hostname.')
+            irc.error('<domain> must be a domain, not a hostname.')
             return
         t = telnetlib.Telnet('rs.internic.net', 43)
         t.write(domain)
@@ -116,9 +116,9 @@ class Network(callbacks.Privmsg):
         try:
             s = '%s <%s> is %s; registered %s, updated %s, expires %s.' % \
                 (domain, url, status, created, updated, expires)
-            irc.reply(msg, s)
+            irc.reply(s)
         except NameError, e:
-            irc.error(msg, 'I couldn\'t find such a domain.')
+            irc.error('I couldn\'t find such a domain.')
         
 
 Class = Network

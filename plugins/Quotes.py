@@ -94,7 +94,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
                  WHERE added_by=%s AND added_at=%s AND quote=%s"""
         cursor.execute(sql, msg.nick, quotetime, quote)
         quoteid = cursor.fetchone()[0]
-        irc.reply(msg, '%s (Quote #%s added)' % (conf.replySuccess, quoteid))
+        irc.reply('%s (Quote #%s added)' % (conf.replySuccess, quoteid))
 
     def num(self, irc, msg, args):
         """[<channel>]
@@ -112,7 +112,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
             maxid = 0
         s = 'There %s %s in my database.' % \
             (utils.be(maxid), utils.nItems('quote', maxid))
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def get(self, irc, msg, args):
         """[<channel>] --{id,regexp,from,with}=<value> ]
@@ -137,7 +137,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
                     argument = int(argument)
                     criteria.append('id=%s' % argument)
                 except ValueError:
-                    irc.error(msg, '--id value must be an integer.')
+                    irc.error('--id value must be an integer.')
                     return
             elif option == 'with':
                 criteria.append('quote LIKE %s')
@@ -152,7 +152,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
                     try:
                         r = re.compile(argument, re.I)
                     except re.error, e:
-                        irc.error(msg, str(e))
+                        irc.error(str(e))
                         return
                 def p(s):
                     return int(bool(r.search(s)))
@@ -172,12 +172,12 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor = db.cursor()
         cursor.execute(sql, *formats)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'No quotes matched that criteria.')
+            irc.reply('No quotes matched that criteria.')
         elif cursor.rowcount == 1:
             (id, quote) = cursor.fetchone()
-            irc.reply(msg, '#%s: %s' % (id, quote))
+            irc.reply('#%s: %s' % (id, quote))
         elif cursor.rowcount > 10:
-            irc.reply(msg, 'More than 10 quotes matched your criteria.  '
+            irc.reply('More than 10 quotes matched your criteria.  '
                            'Please narrow your query.')
         else:
             results = cursor.fetchall()
@@ -185,7 +185,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
             for (id, quote) in results:
                 s = '#%s: "%s..."' % (id, quote[:30])
                 idsWithSnippets.append(s)
-            irc.reply(msg, utils.commaAndify(idsWithSnippets))
+            irc.reply(utils.commaAndify(idsWithSnippets))
         ### FIXME: we need to remove those predicates from the database.
 
     def random(self, irc, msg, args):
@@ -201,7 +201,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
                           ORDER BY random()
                           LIMIT 1""")
         if cursor.rowcount != 1:
-            irc.error(msg, 'It seems that quote database is empty.')
+            irc.error('It seems that quote database is empty.')
             return
         (id,) = cursor.fetchone()
         self.get(irc, msg, [channel, '--id', str(id)])
@@ -222,10 +222,10 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
             (id, added_by, added_at, quote) = cursor.fetchone()
             timestamp = time.strftime(conf.humanTimestampFormat,
                                       time.localtime(int(added_at)))
-            irc.reply(msg, 'Quote %r added by %s at %s.' % \
+            irc.reply('Quote %r added by %s at %s.' % \
                            (quote, added_by, timestamp))
         else:
-            irc.error(msg, 'There isn\'t a quote with that id.')
+            irc.error('There isn\'t a quote with that id.')
 
     def remove(self, irc, msg, args):
         """[<channel>] <id>
@@ -241,11 +241,11 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         if ircdb.checkCapability(msg.prefix, capability):
             cursor.execute("""DELETE FROM quotes WHERE id=%s""", id)
             if cursor.rowcount == 0:
-                irc.error(msg, 'There was no such quote.')
+                irc.error('There was no such quote.')
             else:
-                irc.replySuccess(msg)
+                irc.replySuccess()
         else:
-            irc.error(msg, conf.replyNoCapability % capability)
+            irc.error(conf.replyNoCapability % capability)
 
 
 Class = Quotes

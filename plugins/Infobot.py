@@ -130,7 +130,7 @@ class Infobot(callbacks.PrivmsgRegexp):
         cursor = self.db.cursor()
         cursor.execute('DELETE FROM is_factoids WHERE key=%s', key)
         cursor.execute('DELETE FROM are_factoids WHERE key=%s', key)
-        irc.reply(msg, self.getRandomSaying('confirms'))
+        irc.reply(self.getRandomSaying('confirms'))
 
     def tell(self, irc, msg, match):
         r"^tell\s+(.+?)\s+about\s+(.+?)(?!\?+)[.! ]*$"
@@ -139,7 +139,7 @@ class Infobot(callbacks.PrivmsgRegexp):
             s = '%s wants you to know that %s' %(msg.nick,self.getFactoid(key))
             irc.reply(nick, s)
         except KeyError:
-            irc.reply(msg, 'I don\'t know anything about %s' % key)
+            irc.reply('I don\'t know anything about %s' % key)
 
     def factoid(self, irc, msg, match):
         r"^(no[ :,-]+)?(.+?)\s+(was|is|am|were|are)\s+(also\s+)?(.+?)(?!\?+)$"
@@ -147,27 +147,27 @@ class Infobot(callbacks.PrivmsgRegexp):
         if self.hasFactoid(key, isAre):
             if not correction:
                 factoid = self.getFactoid(key)
-                irc.reply(msg, 'No, %s %s %s' % (key, isAre, factoid))
+                irc.reply('No, %s %s %s' % (key, isAre, factoid))
             elif addition:
                 factoid = self.getFactoid(key)
                 newFactoid = '%s, or %s' % (factoid, value)
                 self.insertFactoid(key, isAre, newFactoid)
-                irc.reply(msg, self.getRandomSaying('confirms'))
+                irc.reply(self.getRandomSaying('confirms'))
             else:
                 self.insertFactoid(key, isAre, value)
-                irc.reply(msg, self.getRandomSaying('confirms'))
+                irc.reply(self.getRandomSaying('confirms'))
             return
         else:
             self.insertFactoid(key, isAre, value)
-            irc.reply(msg, self.getRandomSaying('confirms'))
+            irc.reply(self.getRandomSaying('confirms'))
 
     def unknown(self, irc, msg, match):
         r"^(.+?)\?[?.! ]*$"
         key = match.group(1)
         try:
-            irc.reply(msg, self.getFactoid(key))
+            irc.reply(self.getFactoid(key))
         except KeyError:
-            irc.reply(msg, self.getRandomSaying('dont_knows'))
+            irc.reply(self.getRandomSaying('dont_knows'))
 
     def info(self, irc, msg, match):
         r"^info$"
@@ -177,7 +177,7 @@ class Infobot(callbacks.PrivmsgRegexp):
         cursor.execute("SELECT COUNT(*) FROM are_factoids")
         numAre = cursor.fetchone()[0]
         s = 'I have %s is factoids and %s are factoids' % (numIs, numAre)
-        irc.reply(msg, s)
+        irc.reply(s)
 
 
 

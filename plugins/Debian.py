@@ -126,7 +126,7 @@ class Debian(callbacks.Privmsg,
         if not optlist and not rest:
             raise callbacks.ArgumentError
         if len(optlist) + len(rest) > 1:
-            irc.error(msg, 'Only one search option is allowed.')
+            irc.error('Only one search option is allowed.')
             return
         for (option, arg) in optlist:
             if option == '--exact':
@@ -139,7 +139,7 @@ class Debian(callbacks.Privmsg,
         try:
             re_obj = re.compile(regexp, re.I)
         except re.error, e:
-            irc.error(msg, "Error in regexp: %s" % e)
+            irc.error("Error in regexp: %s" % e)
             return
         if self.configurables.get('python-zegrep', None):
             fd = gzip.open(self.contents)
@@ -152,7 +152,7 @@ class Debian(callbacks.Privmsg,
                 w.close()
             except TypeError:
                 # We're on Windows.
-                irc.error(msg, 'This command won\'t work on this platform.  '
+                irc.error('This command won\'t work on this platform.  '
                                'If you think it should (i.e., you know that '
                                'you have a zegrep binary somewhere) then file '
                                'a bug about it at http://supybot.sf.net/ .')
@@ -161,7 +161,7 @@ class Debian(callbacks.Privmsg,
         try:
             for line in r:
                 if len(packages) > 100:
-                    irc.error(msg, 'More than 100 packages matched, '
+                    irc.error('More than 100 packages matched, '
                                    'please narrow your search.')
                     return
                 try:
@@ -176,9 +176,9 @@ class Debian(callbacks.Privmsg,
             if hasattr(r, 'close'):
                 r.close()
         if len(packages) == 0:
-            irc.reply(msg, 'I found no packages with that file.')
+            irc.reply('I found no packages with that file.')
         else:
-            irc.reply(msg, utils.commaAndify(packages))
+            irc.reply(utils.commaAndify(packages))
                 
     _debreflags = re.DOTALL | re.IGNORECASE
     _debpkgre = re.compile(r'<a[^>]+>(.*?)</a>', _debreflags)
@@ -199,7 +199,7 @@ class Debian(callbacks.Privmsg,
         else:
             branch = 'all'
         if not args:
-            irc.error(msg, 'You must give a package name.')
+            irc.error('You must give a package name.')
             return
         responses = []
         numberOfPackages = 0
@@ -212,17 +212,17 @@ class Debian(callbacks.Privmsg,
             html = fd.read()
             fd.close()
         except urllib2.HTTPError, e:
-            irc.error(msg, 'I couldn\'t reach the search page (%s).' % e)
+            irc.error('I couldn\'t reach the search page (%s).' % e)
             return
         except socket.error, e:
             if e.args[0] == 110 or e.args[0] == 10060:
-                irc.error(msg, 'Connection timed out to packages.debian.org.')
+                irc.error('Connection timed out to packages.debian.org.')
                 return
             else:
                 raise
 
         if 'is down at the moment' in html:
-            irc.error(msg, 'Packages.debian.org is down at the moment.  '
+            irc.error('Packages.debian.org is down at the moment.  '
                            'Please try again later.')
             return
         m = self._debnumpkgsre.search(html)
@@ -230,7 +230,7 @@ class Debian(callbacks.Privmsg,
             numberOfPackages = m.group(1)
         m = self._debtablere.search(html)
         if m is None:
-            irc.reply(msg, 'No package found for %s (%s)' % \
+            irc.reply('No package found for %s (%s)' % \
                              (urllib.unquote(package), branch))
         else:
             tableData = m.group(1)
@@ -243,7 +243,7 @@ class Debian(callbacks.Privmsg,
                     responses.append(s)
             resp = 'Total matches: %s, shown: %s.  %s' % \
                 (numberOfPackages, len(responses), ', '.join(responses))
-            irc.reply(msg, resp)
+            irc.reply(resp)
 
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
     def incoming(self, irc, msg, args):
@@ -284,9 +284,9 @@ class Debian(callbacks.Privmsg,
                     realname = rsplit(name, '_', 1)[0]
                     packages.append(realname)
         if len(packages) == 0:
-            irc.error(msg, 'No packages matched that search.')
+            irc.error('No packages matched that search.')
         else:
-            irc.reply(msg, utils.commaAndify(packages))
+            irc.reply(utils.commaAndify(packages))
     incoming = privmsgs.thread(incoming)
         
 Class = Debian

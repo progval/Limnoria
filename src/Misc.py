@@ -56,10 +56,10 @@ class Misc(callbacks.Privmsg):
         self.log.debug('Misc.invalidCommand called (tokens %s)', tokens)
         if conf.replyWhenNotCommand:
             command = tokens and tokens[0] or ''
-            irc.error(msg, '%r is not a valid command.' % command)
+            irc.error('%r is not a valid command.' % command)
         else:
             if not isinstance(irc.irc, irclib.Irc):
-                irc.reply(msg, '[%s]' % ' '.join(tokens))
+                irc.reply('[%s]' % ' '.join(tokens))
         
     def list(self, irc, msg, args):
         """[--private] [<module name>]
@@ -79,14 +79,14 @@ class Misc(callbacks.Privmsg):
             names = [cb.name() for cb in irc.callbacks
                      if evenPrivate or (hasattr(cb, 'public') and cb.public)]
             names.sort()
-            irc.reply(msg, ', '.join(names))
+            irc.reply(', '.join(names))
         else:
             cb = irc.getCallback(name)
             if cb is None:
-                irc.error(msg, 'No such plugin %r exists.' % name)
+                irc.error('No such plugin %r exists.' % name)
             elif isinstance(cb, callbacks.PrivmsgRegexp) or \
                  not isinstance(cb, callbacks.Privmsg):
-                irc.error(msg, 'That plugin exists, but it has no commands.')
+                irc.error('That plugin exists, but it has no commands.')
             else:
                 commands = []
                 for s in dir(cb):
@@ -98,9 +98,9 @@ class Misc(callbacks.Privmsg):
                             commands.append(s)
                 if commands:
                     commands.sort()
-                    irc.reply(msg, ', '.join(commands))
+                    irc.reply(', '.join(commands))
                 else:
-                    irc.error(msg, 'That plugin exists, but it has no '
+                    irc.error('That plugin exists, but it has no '
                                    'commands with help.')
                 
     def apropos(self, irc, msg, args):
@@ -127,9 +127,9 @@ class Misc(callbacks.Privmsg):
                     L.append('%s %s' % (name, key))
         if L:
             L.sort()
-            irc.reply(msg, utils.commaAndify(L))
+            irc.reply(utils.commaAndify(L))
         else:
-            irc.error(msg, 'No appropriate commands were found.')
+            irc.error('No appropriate commands were found.')
 
     def help(self, irc, msg, args):
         """[<plugin>] <command>
@@ -139,9 +139,9 @@ class Misc(callbacks.Privmsg):
         """
         def getHelp(method, name=None):
             if hasattr(method, '__doc__') and method.__doc__:
-                irc.reply(msg, callbacks.getHelp(method, name=name))
+                irc.reply(callbacks.getHelp(method, name=name))
             else:
-                irc.error(msg, '%s has no help.' % name)
+                irc.error('%s has no help.' % name)
         if len(args) > 1:
             cb = irc.getCallback(args[0])
             if cb is not None:
@@ -152,9 +152,9 @@ class Misc(callbacks.Privmsg):
                     method = getattr(cb, command)
                     getHelp(method, name)
                 else:
-                    irc.error(msg, 'There is no such command %s.' % name)
+                    irc.error('There is no such command %s.' % name)
             else:
-                irc.error(msg, 'There is no such plugin %s' % args[0])
+                irc.error('There is no such plugin %s' % args[0])
             return
         command = callbacks.canonicalName(privmsgs.getArgs(args))
         # Users might expect "@help @list" to work.
@@ -168,7 +168,7 @@ class Misc(callbacks.Privmsg):
             if ambiguous:
                 names = [cb.name() for cb in cbs]
                 names.sort()
-                irc.error(msg, 'That command exists in the %s plugins.  '
+                irc.error('That command exists in the %s plugins.  '
                                'Please specify exactly which plugin command '
                                'you want help with.'% utils.commaAndify(names))
                 return
@@ -178,7 +178,7 @@ class Misc(callbacks.Privmsg):
                 method = getattr(cb, tokens[1])
                 getHelp(method)
         elif not cbs:
-            irc.error(msg, 'There is no such command %s.' % command)
+            irc.error('There is no such command %s.' % command)
         else:
             cb = cbs[0]
             method = getattr(cb, command)
@@ -193,18 +193,18 @@ class Misc(callbacks.Privmsg):
         nick = privmsgs.getArgs(args, required=0, optional=1)
         if nick:
             try:
-                irc.reply(msg, irc.state.nickToHostmask(nick))
+                irc.reply(irc.state.nickToHostmask(nick))
             except KeyError:
-                irc.error(msg, 'I haven\'t seen anyone named %r' % nick)
+                irc.error('I haven\'t seen anyone named %r' % nick)
         else:
-            irc.reply(msg, msg.prefix)
+            irc.reply(msg.prefix)
 
     def version(self, irc, msg, args):
         """takes no arguments
 
         Returns the version of the current bot.
         """
-        irc.reply(msg, conf.version)
+        irc.reply(conf.version)
 
     def revision(self, irc, msg, args):
         """[<module>]
@@ -220,12 +220,12 @@ class Misc(callbacks.Privmsg):
                     modules[moduleName.lower()] = moduleName
                 module = sys.modules[modules[name.lower()]]
             except KeyError:
-                irc.error(msg, 'I couldn\'t find a module named %s' % name)
+                irc.error('I couldn\'t find a module named %s' % name)
                 return
             if hasattr(module, '__revision__'):
-                irc.reply(msg, module.__revision__)
+                irc.reply(module.__revision__)
             else:
-                irc.error(msg, 'Module %s has no __revision__.' % name)
+                irc.error('Module %s has no __revision__.' % name)
         else:
             def getVersion(s):
                 try:
@@ -244,14 +244,14 @@ class Misc(callbacks.Privmsg):
                                 names[name] = getVersion(module.__revision__)
                                 break
             L = ['%s: %s' % (k, v) for (k, v) in names.items()]
-            irc.reply(msg, utils.commaAndify(L))
+            irc.reply(utils.commaAndify(L))
                         
     def source(self, irc, msg, args):
         """takes no arguments
 
         Returns a URL saying where to get SupyBot.
         """
-        irc.reply(msg, 'My source is at http://supybot.sf.net/')
+        irc.reply('My source is at http://supybot.sf.net/')
 
     def logfilesize(self, irc, msg, args):
         """[<logfile>]
@@ -262,7 +262,7 @@ class Misc(callbacks.Privmsg):
         filenameArg = privmsgs.getArgs(args, required=0, optional=1)
         if filenameArg:
             if not filenameArg.endswith('.log'):
-                irc.error(msg, 'That filename doesn\'t appear to be a log.')
+                irc.error('That filename doesn\'t appear to be a log.')
                 return
             filenameArg = os.path.basename(filenameArg)
         ret = []
@@ -278,16 +278,16 @@ class Misc(callbacks.Privmsg):
                     ret.append('%s: %s' % (filename, stats.st_size))
         if ret:
             ret.sort()
-            irc.reply(msg, utils.commaAndify(ret))
+            irc.reply(utils.commaAndify(ret))
         else:
-            irc.error(msg, 'I couldn\'t find any logfiles.')
+            irc.error('I couldn\'t find any logfiles.')
 
     def getprefixchar(self, irc, msg, args):
         """takes no arguments
 
         Returns the prefix character(s) the bot is currently using.
         """
-        irc.reply(msg, repr(conf.prefixChars))
+        irc.reply(repr(conf.prefixChars))
 
     def plugin(self, irc, msg, args):
         """<command>
@@ -297,9 +297,9 @@ class Misc(callbacks.Privmsg):
         command = callbacks.canonicalName(privmsgs.getArgs(args))
         cbs = callbacks.findCallbackForCommand(irc, command)
         if cbs:
-            irc.reply(msg, utils.commaAndify([cb.name() for cb in cbs]))
+            irc.reply(utils.commaAndify([cb.name() for cb in cbs]))
         else:
-            irc.error(msg, 'There is no such command %s' % command)
+            irc.error('There is no such command %s' % command)
 
     def more(self, irc, msg, args):
         """[<nick>]
@@ -317,10 +317,10 @@ class Misc(callbacks.Privmsg):
                 if not private:
                     self._mores[userHostmask] = L[:]
                 else:
-                    irc.error(msg, '%s has no public mores.' % nick)
+                    irc.error('%s has no public mores.' % nick)
                     return
             except KeyError:
-                irc.error(msg, 'Sorry, I can\'t find a hostmask for %s' % nick)
+                irc.error('Sorry, I can\'t find a hostmask for %s' % nick)
                 return
         try:
             L = self._mores[userHostmask]
@@ -328,11 +328,11 @@ class Misc(callbacks.Privmsg):
             if L:
                 chunk += ' \x02(%s)\x0F' % \
                          utils.nItems('message', len(L), 'more')
-            irc.reply(msg, chunk, True)
+            irc.reply(chunk, True)
         except KeyError:
-            irc.error(msg, 'You haven\'t asked me a command!')
+            irc.error('You haven\'t asked me a command!')
         except IndexError:
-            irc.error(msg, 'That\'s all, there is no more.')
+            irc.error('That\'s all, there is no more.')
 
     def _validLastMsg(self, msg):
         return msg.prefix and \
@@ -374,7 +374,7 @@ class Misc(callbacks.Privmsg):
                         return r.search(m.args[1])
                     predicates.setdefault('regexp', []).append(f)
                 except ValueError, e:
-                    irc.error(msg, str(e))
+                    irc.error(str(e))
                     return
         iterable = ifilter(self._validLastMsg, reviter(irc.state.history))
         iterable.next() # Drop the first message.
@@ -384,9 +384,9 @@ class Misc(callbacks.Privmsg):
                 if not predicate(m):
                     break
             else:
-                irc.reply(msg, ircmsgs.prettyPrint(m))
+                irc.reply(ircmsgs.prettyPrint(m))
                 return
-        irc.error(msg, 'I couldn\'t find a message matching that criteria in '
+        irc.error('I couldn\'t find a message matching that criteria in '
                        'my history of %s messages.' % len(irc.state.history))
 
     def seconds(self, irc, msg, args):
@@ -408,7 +408,7 @@ class Misc(callbacks.Privmsg):
             try:
                 i = int(s)
             except ValueError:
-                irc.error(msg, 'Invalid argument: %s' % arg)
+                irc.error('Invalid argument: %s' % arg)
                 return
             if kind == 'd':
                 seconds += i*86400
@@ -418,7 +418,7 @@ class Misc(callbacks.Privmsg):
                 seconds += i*60
             elif kind == 's':
                 seconds += i
-        irc.reply(msg, str(seconds))
+        irc.reply(str(seconds))
 
     def tell(self, irc, msg, args):
         """<nick|channel> <text>
@@ -428,10 +428,10 @@ class Misc(callbacks.Privmsg):
         """
         (target, text) = privmsgs.getArgs(args, required=2)
         if not ircutils.isNick(target) and not ircutils.isChannel(target):
-            irc.error(msg, '%s is not a valid nick or channel.' % target)
+            irc.error('%s is not a valid nick or channel.' % target)
             return
         s = '%s wants me to tell you: %s' % (msg.nick, text)
-        irc.reply(msg, s, to=target, private=True)
+        irc.reply(s, to=target, private=True)
 
     def private(self, irc, msg, args):
         """<text>
@@ -440,7 +440,7 @@ class Misc(callbacks.Privmsg):
         here.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, text, private=True)
+        irc.reply(text, private=True)
 
     def action(self, irc, msg, args):
         """<text>
@@ -460,7 +460,7 @@ class Misc(callbacks.Privmsg):
         benefit here.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, text, notice=True)
+        irc.reply(text, notice=True)
 
 
 Class = Misc

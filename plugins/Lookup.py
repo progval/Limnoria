@@ -114,7 +114,7 @@ class Lookup(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         name = callbacks.canonicalName(name)
         if name not in self.lookupDomains:
-            irc.error(msg, 'That\'s not a valid lookup to remove.')
+            irc.error('That\'s not a valid lookup to remove.')
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -122,9 +122,9 @@ class Lookup(callbacks.Privmsg):
             cursor.execute("""DROP TABLE %s""" % name)
             db.commit()
             delattr(self.__class__, name)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         except sqlite.DatabaseError:
-            irc.error(msg, 'No such lookup exists.')
+            irc.error('No such lookup exists.')
     remove = privmsgs.checkCapability(remove, 'admin')
 
     _splitRe = re.compile(r'(?<!\\):')
@@ -141,21 +141,21 @@ class Lookup(callbacks.Privmsg):
         name = callbacks.canonicalName(name)
         if hasattr(self, name):
             s = 'I already have a command in this plugin named %s' % name
-            irc.error(msg, s)
+            irc.error(s)
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         try:
             cursor.execute("""SELECT * FROM %s LIMIT 1""" % name)
             self.addCommand(name)
-            irc.replySuccess(msg)
+            irc.replySuccess()
         except sqlite.DatabaseError:
             # Good, there's no such database.
             try:
                 filename = os.path.join(conf.dataDir, filename)
                 fd = file(filename)
             except EnvironmentError, e:
-                irc.error(msg, 'Could not open %s: %s' % (filename, e.args[1]))
+                irc.error('Could not open %s: %s' % (filename, e.args[1]))
                 return
             try:
                 cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
@@ -172,13 +172,13 @@ class Lookup(callbacks.Privmsg):
                     except ValueError:
                         cursor.execute("""DROP TABLE %s""" % name)
                         s = 'Invalid line in %s: %r' % (filename, line)
-                        irc.error(msg, s)
+                        irc.error(s)
                         return
                     cursor.execute(sql, key, value)
                 cursor.execute("CREATE INDEX %s_keys ON %s (key)" %(name,name))
                 db.commit()
             self.addCommand(name)
-            irc.reply(msg, '%s (lookup %s added)' % (conf.replySuccess, name))
+            irc.reply('%s (lookup %s added)' % (conf.replySuccess, name))
     add = privmsgs.checkCapability(add, 'admin')
 
     def addCommand(self, name):
@@ -228,7 +228,7 @@ class Lookup(callbacks.Privmsg):
                 try:
                     r = utils.perlReToPythonRe(arg)
                 except ValueError, e:
-                    irc.error(msg, '%r is not a valid regular expression' %
+                    irc.error('%r is not a valid regular expression' %
                               arg)
                     return
                 def p(s, r=r):
@@ -250,11 +250,11 @@ class Lookup(callbacks.Privmsg):
         #print 'sql: %s' % sql
         cursor.execute(sql, formats)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'No %s matched that query.' % utils.pluralize(name))
+            irc.reply('No %s matched that query.' % utils.pluralize(name))
         else:
             lookups = ['%s: %s' % (item[0], self._shrink(item[1]))
                        for item in cursor.fetchall()]
-            irc.reply(msg, utils.commaAndify(lookups))
+            irc.reply(utils.commaAndify(lookups))
 
     def _lookup(self, irc, msg, args):
         """<name> <key>
@@ -270,17 +270,17 @@ class Lookup(callbacks.Privmsg):
                 cursor.execute(sql, key)
             except sqlite.DatabaseError, e:
                 if 'no such table' in str(e):
-                    irc.error(msg, 'I don\'t have a domain %s' % name)
+                    irc.error('I don\'t have a domain %s' % name)
                 else:
-                    irc.error(msg, str(e))
+                    irc.error(str(e))
                 return
             if cursor.rowcount == 0:
-                irc.error(msg, 'I couldn\'t find %s in %s' % (key, name))
+                irc.error('I couldn\'t find %s in %s' % (key, name))
             elif cursor.rowcount == 1:
-                irc.reply(msg, cursor.fetchone()[0])
+                irc.reply(cursor.fetchone()[0])
             else:
                 values = [t[0] for t in cursor.fetchall()]
-                irc.reply(msg, '%s could be %s' % (key, ', or '.join(values)))
+                irc.reply('%s could be %s' % (key, ', or '.join(values)))
         else:
             sql = """SELECT key, value FROM %s
                      ORDER BY random() LIMIT 1""" % name
@@ -288,12 +288,12 @@ class Lookup(callbacks.Privmsg):
                 cursor.execute(sql)
             except sqlite.DatabaseError, e:
                 if 'no such table' in str(e):
-                    irc.error(msg, 'I don\'t have a domain %r' % name)
+                    irc.error('I don\'t have a domain %r' % name)
                 else:
-                    irc.error(msg, str(e))
+                    irc.error(str(e))
                 return
             (key, value) = cursor.fetchone()
-            irc.reply(msg, '%s: %s' % (key, value))
+            irc.reply('%s: %s' % (key, value))
             
             
 Class = Lookup

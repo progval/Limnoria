@@ -400,7 +400,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                     hostmask = irc.state.nickToHostmask(name)
                     name = ircdb.users.getUserId(hostmask)
                 except KeyError:
-                    irc.error(msg, conf.replyNoUser)
+                    irc.error(conf.replyNoUser)
         else:
             table = 'nick_seen'
             criterion = 'normalized=%s'
@@ -408,7 +408,7 @@ class ChannelDB(plugins.ChannelDBHandler,
         sql = "SELECT last_seen,last_msg FROM %s WHERE %s" % (table,criterion)
         cursor.execute(sql, name)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'I have not seen %s.' % name)
+            irc.reply('I have not seen %s.' % name)
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
@@ -416,7 +416,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                 name = ircdb.users.getUser(int(name)).name
             s = '%s was last seen here %s ago saying: %s' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
-            irc.reply(msg, s)
+            irc.reply(s)
 
     def stats(self, irc, msg, args):
         """[<channel>] [<name>]
@@ -432,14 +432,14 @@ class ChannelDB(plugins.ChannelDBHandler,
                 id = ircdb.users.getUserId(msg.prefix)
                 name = ircdb.users.getUser(id).name
             except KeyError:
-                irc.error(msg, 'I couldn\'t find you in my user database.')
+                irc.error('I couldn\'t find you in my user database.')
                 return
         elif not ircdb.users.hasUser(name):
             try:
                 hostmask = irc.state.nickToHostmask(name)
                 id = ircdb.users.getUserId(hostmask)
             except KeyError:
-                irc.error(msg, conf.replyNoUser)
+                irc.error(conf.replyNoUser)
                 return
         else:
             id = ircdb.users.getUserId(name)
@@ -447,7 +447,7 @@ class ChannelDB(plugins.ChannelDBHandler,
         cursor = db.cursor()
         cursor.execute("""SELECT * FROM user_stats WHERE user_id=%s""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'I have no stats for that user.')
+            irc.error('I have no stats for that user.')
             return
         values = cursor.fetchone()
         s = '%s has sent %s; a total of %s, %s, ' \
@@ -470,7 +470,7 @@ class ChannelDB(plugins.ChannelDBHandler,
              utils.nItems('time', values.kicked),
              utils.nItems('time', values.topics),
              utils.nItems('time', values.modes))
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def channelstats(self, irc, msg, args):
         """[<channel>]
@@ -491,7 +491,7 @@ class ChannelDB(plugins.ChannelDBHandler,
              values.words, values.smileys, values.frowns, values.actions,
              values.joins, values.parts, values.quits,
              values.kicks, values.modes, values.topics)
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def addword(self, irc, msg, args):
         """[<channel>] <word>
@@ -503,14 +503,14 @@ class ChannelDB(plugins.ChannelDBHandler,
         word = privmsgs.getArgs(args)
         word = word.strip()
         if word.strip(self._nonAlphanumeric) != word:
-            irc.error(msg, '<word> must not contain non-alphanumeric chars.')
+            irc.error('<word> must not contain non-alphanumeric chars.')
             return
         word = word.lower()
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""INSERT INTO words VALUES (NULL, %s)""", word)
         db.commit()
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def wordstats(self, irc, msg, args):
         """[<channel>] [<user>] [<word>]
@@ -530,11 +530,11 @@ class ChannelDB(plugins.ChannelDBHandler,
         if not arg1 and not arg2:
             cursor.execute("""SELECT word FROM words""")
             if cursor.rowcount == 0:
-                irc.reply(msg, 'I am not currently keeping any word stats.')
+                irc.reply('I am not currently keeping any word stats.')
                 return
             l = [repr(tup[0]) for tup in cursor.fetchall()]
             s = 'Currently keeping stats for: %s' % utils.commaAndify(l)
-            irc.reply(msg, s)
+            irc.reply(s)
         elif arg1 and arg2:
             user, word = (arg1, arg2)
             try:
@@ -544,7 +544,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                     hostmask = irc.state.nickToHostmask(user)
                     id = ircdb.users.getUserId(hostmask)
                 except KeyError:
-                    irc.error(msg, conf.replyNoUser)
+                    irc.error(conf.replyNoUser)
                     return
             db = self.getDb(channel)
             cursor = db.cursor()
@@ -556,13 +556,13 @@ class ChannelDB(plugins.ChannelDBHandler,
             if cursor.rowcount == 0:
                 cursor.execute("""SELECT id FROM words WHERE word=%s""", word)
                 if cursor.rowcount == 0:
-                    irc.error(msg, 'I\'m not keeping stats on %r.' % word)
+                    irc.error('I\'m not keeping stats on %r.' % word)
                 else:
-                    irc.error(msg, '%s has never said %r.' % (user, word))
+                    irc.error('%s has never said %r.' % (user, word))
                 return
             count = int(cursor.fetchone()[0])
             s = '%s has said %r %s.' % (user,word,utils.nItems('time', count))
-            irc.reply(msg, s)
+            irc.reply(s)
         else:
             # Figure out if we got a user or a word
             cursor.execute("""SELECT word FROM words
@@ -576,7 +576,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                         hostmask = irc.state.nickToHostmask(arg1)
                         id = ircdb.users.getUserId(hostmask)
                     except KeyError:
-                        irc.error(msg, '%r doesn\'t look like a user I know '
+                        irc.error('%r doesn\'t look like a user I know '
                                            'or a word that I\'m keeping stats '
                                            'on' % arg1)
                         return
@@ -587,11 +587,11 @@ class ChannelDB(plugins.ChannelDBHandler,
                                   ORDER BY words.word""", id)
                 if cursor.rowcount == 0:
                     username = ircdb.users.getUser(id).name
-                    irc.error(msg, '%r has no wordstats' % username)
+                    irc.error('%r has no wordstats' % username)
                     return
                 L = [('%r: %s' % (word, count)) for \
                      (word, count) in cursor.fetchall()]
-                irc.reply(msg, utils.commaAndify(L))
+                irc.reply(utils.commaAndify(L))
                 return
             else:
                 # It's a word, not a user
@@ -606,7 +606,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                                   ORDER BY word_stats.count DESC""",
                                   word)
                 if cursor.rowcount == 0:
-                    irc.error(msg, 'No one has said %r' % word)
+                    irc.error('No one has said %r' % word)
                     return
                 results = cursor.fetchall()
                 numResultsShown = min(cursor.rowcount, numUsers)
@@ -646,7 +646,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                     ret = '%s %s.  %s' % (ret, utils.commaAndify(L), s)
                 except KeyError:
                     ret = '%s %s.' % (ret, utils.commaAndify(L))
-                irc.reply(msg, ret)
+                irc.reply(ret)
                            
 Class = ChannelDB
 

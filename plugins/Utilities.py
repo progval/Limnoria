@@ -64,7 +64,7 @@ class Utilities(callbacks.Privmsg):
         Joins all the arguments together with <separator>.
         """
         sep = args.pop(0)
-        irc.reply(msg, sep.join(args))
+        irc.reply(sep.join(args))
 
     def strtranslate(self, irc, msg, args):
         """<chars to translate> <chars to replace those with> <text>
@@ -74,21 +74,21 @@ class Utilities(callbacks.Privmsg):
         length.
         """
         (bad, good, text) = privmsgs.getArgs(args, required=3)
-        irc.reply(msg, text.translate(string.maketrans(bad, good)))
+        irc.reply(text.translate(string.maketrans(bad, good)))
 
     def strupper(self, irc, msg, args):
         """<text>
 
         Returns <text> uppercased.
         """
-        irc.reply(msg, privmsgs.getArgs(args).upper())
+        irc.reply(privmsgs.getArgs(args).upper())
 
     def strlower(self, irc, msg, args):
         """<text>
 
         Returns <text> lowercased.
         """
-        irc.reply(msg, privmsgs.getArgs(args).lower())
+        irc.reply(privmsgs.getArgs(args).lower())
 
     def strlen(self, irc, msg, args):
         """<text>
@@ -99,7 +99,7 @@ class Utilities(callbacks.Privmsg):
         for arg in args:
             total += len(arg)
         total += len(args)-1 # spaces between the arguments.
-        irc.reply(msg, str(total))
+        irc.reply(str(total))
 
     def repr(self, irc, msg, args):
         """<text>
@@ -107,7 +107,7 @@ class Utilities(callbacks.Privmsg):
         Returns the text surrounded by double quotes.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, utils.dqrepr(text))
+        irc.reply(utils.dqrepr(text))
 
     def strconcat(self, irc, msg, args):
         """<string 1> <string 2>
@@ -117,7 +117,7 @@ class Utilities(callbacks.Privmsg):
         removed by strconcat.
         """
         (first, second) = privmsgs.getArgs(args, required=2)
-        irc.reply(msg, first+second)
+        irc.reply(first+second)
 
     def echo(self, irc, msg, args):
         """takes any number of arguments
@@ -126,7 +126,7 @@ class Utilities(callbacks.Privmsg):
         """
         if not args:
             raise callbacks.ArgumentError
-        irc.reply(msg, ' '.join(args), prefixName=False)
+        irc.reply(' '.join(args), prefixName=False)
 
     def re(self, irc, msg, args):
         """<regexp> <text>
@@ -140,7 +140,7 @@ class Utilities(callbacks.Privmsg):
         self.log.info('re command called with regexp %r from %s' %
                       (regexp, msg.prefix))
         if len(regexp) > 512:
-            irc.error(msg, 'Your regexp is just plain too long.')
+            irc.error('Your regexp is just plain too long.')
             return
         f = None
         try:
@@ -150,16 +150,16 @@ class Utilities(callbacks.Privmsg):
             try:
                 f = utils.perlReToReplacer(regexp)
             except ValueError, e:
-                irc.error(msg, 'Invalid regexp: %s' % e.args[0])
+                irc.error('Invalid regexp: %s' % e.args[0])
                 return
             if f is None:
-                irc.error(msg, 'Invalid regexp: %s' % e.args[0])
+                irc.error('Invalid regexp: %s' % e.args[0])
                 return
         if f('') and len(f(' ')) > len(f(''))+1: # Matches the empty string.
             s = 'You probably don\'t want to match the empty string.'
-            irc.error(msg, s)
+            irc.error(s)
         else:
-            irc.reply(msg, f(text))
+            irc.reply(f(text))
     re = privmsgs.checkCapability(re, 'trusted')
 
 

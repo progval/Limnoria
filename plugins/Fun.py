@@ -69,7 +69,7 @@ class Fun(callbacks.Privmsg):
 
         Checks to see if the bot is alive.
         """
-        irc.reply(msg, 'pong', prefixName=False)
+        irc.reply('pong', prefixName=False)
 
     def hexip(self, irc, msg, args):
         """<ip>
@@ -78,14 +78,14 @@ class Fun(callbacks.Privmsg):
         """
         ip = privmsgs.getArgs(args)
         if not ircutils.isIP(ip):
-            irc.error(msg, '%r is not a valid IP.' % ip)
+            irc.error('%r is not a valid IP.' % ip)
             return
         quads = ip.split('.')
         ret = ""
         for quad in quads:
             i = int(quad)
             ret += '%02x' % i
-        irc.reply(msg, ret.upper())
+        irc.reply(ret.upper())
             
     def ord(self, irc, msg, args):
         """<letter>
@@ -94,9 +94,9 @@ class Fun(callbacks.Privmsg):
         """
         letter = privmsgs.getArgs(args)
         if len(letter) != 1:
-            irc.error(msg, 'Letter must be of length 1 (for obvious reasons)')
+            irc.error('Letter must be of length 1 (for obvious reasons)')
         else:
-            irc.reply(msg, str(ord(letter)))
+            irc.reply(str(ord(letter)))
 
     def chr(self, irc, msg, args):
         """<number>
@@ -115,9 +115,9 @@ class Fun(callbacks.Privmsg):
             else:
                 base = 10
             i = int(i, base)
-            irc.reply(msg, chr(i))
+            irc.reply(chr(i))
         except ValueError:
-            irc.error(msg, 'That number doesn\'t map to an 8-bit character.')
+            irc.error('That number doesn\'t map to an 8-bit character.')
 
     def base(self, irc, msg, args):
         """<base> <number>
@@ -125,7 +125,7 @@ class Fun(callbacks.Privmsg):
         Converts from base <base> the number <number>
         """
         (base, number) = privmsgs.getArgs(args, required=2)
-        irc.reply(msg, str(long(number, int(base))))
+        irc.reply(str(long(number, int(base))))
 
     def encode(self, irc, msg, args):
         """<encoding> <text>
@@ -136,9 +136,9 @@ class Fun(callbacks.Privmsg):
         """
         encoding, text = privmsgs.getArgs(args, required=2)
         try:
-            irc.reply(msg, text.encode(encoding))
+            irc.reply(text.encode(encoding))
         except LookupError:
-            irc.error(msg, 'There is no such encoding %r' % encoding)
+            irc.error('There is no such encoding %r' % encoding)
 
     def decode(self, irc, msg, args):
         """<encoding> <text>
@@ -149,9 +149,9 @@ class Fun(callbacks.Privmsg):
         """
         encoding, text = privmsgs.getArgs(args, required=2)
         try:
-            irc.reply(msg, text.decode(encoding).encode('utf-8'))
+            irc.reply(text.decode(encoding).encode('utf-8'))
         except LookupError:
-            irc.error(msg, 'There is no such encoding %r' % encoding)
+            irc.error('There is no such encoding %r' % encoding)
 
     def xor(self, irc, msg, args):
         """<password> <text>
@@ -167,7 +167,7 @@ class Fun(callbacks.Privmsg):
         for c in text:
             ret.append(chr(ord(c) ^ ord(password[i])))
             i = (i + 1) % passwordlen
-        irc.reply(msg, ''.join(ret))
+        irc.reply(''.join(ret))
 
     def mimetype(self, irc, msg, args):
         """<filename>
@@ -177,10 +177,10 @@ class Fun(callbacks.Privmsg):
         filename = privmsgs.getArgs(args)
         (type, encoding) = mimetypes.guess_type(filename)
         if type is not None:
-            irc.reply(msg, type)
+            irc.reply(type)
         else:
             s = 'I couldn\'t figure out that filename.'
-            irc.reply(msg, s)
+            irc.reply(s)
 
     def md5(self, irc, msg, args):
         """<text>
@@ -190,7 +190,7 @@ class Fun(callbacks.Privmsg):
         about md5.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, md5.md5(text).hexdigest())
+        irc.reply(md5.md5(text).hexdigest())
 
     def sha(self, irc, msg, args):
         """<text>
@@ -200,7 +200,7 @@ class Fun(callbacks.Privmsg):
         about SHA.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, sha.sha(text).hexdigest())
+        irc.reply(sha.sha(text).hexdigest())
 
     def urlquote(self, irc, msg, args):
         """<text>
@@ -208,7 +208,7 @@ class Fun(callbacks.Privmsg):
         Returns the URL quoted form of the text.
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, urllib.quote(text))
+        irc.reply(urllib.quote(text))
 
     def urlunquote(self, irc, msg, args):
         """<text>
@@ -217,7 +217,7 @@ class Fun(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         s = urllib.unquote(text)
-        irc.reply(msg, s)
+        irc.reply(s)
 
     def coin(self, irc, msg, args):
         """takes no arguments
@@ -225,9 +225,9 @@ class Fun(callbacks.Privmsg):
         Flips a coin and returns the result.
         """
         if random.randrange(0, 2):
-            irc.reply(msg, 'heads')
+            irc.reply('heads')
         else:
-            irc.reply(msg, 'tails')
+            irc.reply('tails')
 
     _dicere = re.compile(r'(\d+)d(\d+)')
     def dice(self, irc, msg, args):
@@ -242,16 +242,16 @@ class Fun(callbacks.Privmsg):
         if m:
             (dice, sides) = imap(int, m.groups())
             if dice > 6:
-                irc.error(msg, 'You can\'t roll more than 6 dice.')
+                irc.error('You can\'t roll more than 6 dice.')
             elif sides > 100:
-                irc.error(msg, 'Dice can\'t have more than 100 sides.')
+                irc.error('Dice can\'t have more than 100 sides.')
             else:
                 L = [0] * dice
                 for i in xrange(dice):
                     L[i] = random.randrange(1, sides+1)
-                irc.reply(msg, utils.commaAndify([str(x) for x in L]))
+                irc.reply(utils.commaAndify([str(x) for x in L]))
         else:
-            irc.error(msg, 'Dice must be of the form <dice>d<sides>')
+            irc.error('Dice must be of the form <dice>d<sides>')
 
     def objects(self, irc, msg, args):
         """takes no arguments.
@@ -289,7 +289,7 @@ class Fun(callbacks.Privmsg):
                    'I have a total of %s references.' %\
                    (len(objs), modules, classes, functions,
                     dicts, lists, tuples, strings, refcounts)
-        irc.reply(msg, response)
+        irc.reply(response)
 
     def levenshtein(self, irc, msg, args):
         """<string1> <string2>
@@ -298,7 +298,7 @@ class Fun(callbacks.Privmsg):
         between <string1> and <string2>
         """
         (s1, s2) = privmsgs.getArgs(args, required=2)
-        irc.reply(msg, str(utils.distance(s1, s2)))
+        irc.reply(str(utils.distance(s1, s2)))
 
     def soundex(self, irc, msg, args):
         """<string> [<length>]
@@ -312,11 +312,11 @@ class Fun(callbacks.Privmsg):
             try:
                 length = int(length)
             except ValueError:
-                irc.error(msg, '%r isn\'t a valid length.' % length)
+                irc.error('%r isn\'t a valid length.' % length)
                 return
         else:
             length = 4
-        irc.reply(msg, utils.soundex(s, length))
+        irc.reply(utils.soundex(s, length))
 
     _eightballs = (
         'outlook not so good.',
@@ -344,7 +344,7 @@ class Fun(callbacks.Privmsg):
 
         Asks the magic eightball a question.
         """
-        irc.reply(msg, random.choice(self._eightballs))
+        irc.reply(random.choice(self._eightballs))
 
     def roulette(self, irc, msg, args):
         """takes no arguments.
@@ -355,11 +355,11 @@ class Fun(callbacks.Privmsg):
         nick = msg.nick
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
-            irc.error(msg, 'This message must be sent in a channel.')
+            irc.error('This message must be sent in a channel.')
         if random.randint(1, 6) == 1:
             irc.queueMsg(ircmsgs.kick(channel, nick, 'BANG!'))
         else:
-            irc.reply(msg, '*click*')
+            irc.reply('*click*')
 
 
 Class = Fun

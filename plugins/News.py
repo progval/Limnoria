@@ -115,7 +115,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("INSERT INTO news VALUES (NULL, %s, %s, %s, %s, %s)",
                        subject[:-1], text, added_at, expires, name)
         db.commit()
-        irc.replySuccess(msg)
+        irc.replySuccess()
     add = privmsgs.checkChannelCapability(add, 'news')
 
     def _readnews(self, irc, msg, args):
@@ -133,7 +133,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
                           news.expires_at, news.added_by FROM news
                           WHERE news.id=%s""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No news item matches that id.')
+            irc.error('No news item matches that id.')
         else:
             item, subject, added_at, expires_at, added_by = cursor.fetchone()
             if int(expires_at) == 0:
@@ -148,7 +148,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
                                    time.localtime(int(added_at))),
                      time.strftime(conf.humanTimestampFormat,
                                    time.localtime(int(expires_at))))
-            irc.reply(msg, s)
+            irc.reply(s)
 
     def news(self, irc, msg, args):
         """[<channel>] [<number>]
@@ -169,11 +169,11 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
                           WHERE news.expires_at > %s
                           OR news.expires_at=0""", int(time.time()))
         if cursor.rowcount == 0:
-            irc.reply(msg, 'No news for %s' % channel)
+            irc.reply('No news for %s' % channel)
         else:
             items = ['(#%s) %s' % (id, s) for (id, s) in cursor.fetchall()]
             s = 'News for %s: %s' % (channel, '; '.join(items))
-            irc.reply(msg, s)
+            irc.reply(s)
 
     def remove(self, irc, msg, args, channel):
         """[<channel>] <number>
@@ -186,11 +186,11 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor = db.cursor()
         cursor.execute("""SELECT * FROM news WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No news item matches that id.')
+            irc.error('No news item matches that id.')
         else:
             cursor.execute("""DELETE FROM news WHERE news.id = %s""", id)
             db.commit()
-            irc.replySuccess(msg)
+            irc.replySuccess()
     remove = privmsgs.checkChannelCapability(remove, 'news')
             
     def change(self, irc, msg, args, channel):
@@ -205,13 +205,13 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.error(msg, str(e))
+            irc.error(str(e))
             return
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT subject, item FROM news WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'No news item matches that id.')
+            irc.error('No news item matches that id.')
             return
         (subject, item) = cursor.fetchone()
         s = '%s: %s' % (subject, item)
@@ -219,7 +219,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         (newSubject, newItem) = s.split(': ')
         cursor.execute("""UPDATE news SET subject=%s, item=%s WHERE id=%s""",
                        newSubject, newItem, id)
-        irc.replySuccess(msg)
+        irc.replySuccess()
     change = privmsgs.checkChannelCapability(change, 'news')
 
     def old(self, irc, msg, args):
@@ -237,23 +237,23 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
             try:
                 id = int(id)
             except ValueError:
-                irc.error(msg, '%r isn\'t a valid id.' % id)
+                irc.error('%r isn\'t a valid id.' % id)
                 return
             cursor.execute("""SELECT subject, item FROM news WHERE id=%s""",id)
             if cursor.rowcount == 0:
-                irc.error(msg, 'No news item matches that id.')
+                irc.error('No news item matches that id.')
             else:
                 (subject, item) = cursor.fetchone()
-                irc.reply(msg, '%s: %s' % (cursor, item))
+                irc.reply('%s: %s' % (cursor, item))
         else:
             cursor.execute("""SELECT id, subject FROM news
                               WHERE expires_at <> 0 AND expires_at < %s
                               ORDER BY id DESC""", int(time.time()))
             if cursor.rowcount == 0:
-                irc.error(msg, 'I have no news for that channel.')
+                irc.error('I have no news for that channel.')
                 return
             subjects = ['#%s: %s' % (id, s) for (id, s) in cursor.fetchall()]
-            irc.reply(msg, utils.commaAndify(subjects))
+            irc.reply(utils.commaAndify(subjects))
             
 
 

@@ -172,7 +172,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         somewhat faster) against players from all over the world.
         """
         name = privmsgs.getArgs(args)
-        irc.reply(msg, self.getStats(name))
+        irc.reply(self.getStats(name))
 
     _gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
     _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
@@ -190,7 +190,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         try:
             if 'no longer available' in s:
                 s = 'That game is no longer available.'
-                irc.reply(msg, s, prefixName=True)
+                irc.reply(s, prefixName=True)
                 return
             m = self._gkGameTitle.search(s)
             if m is None:
@@ -234,12 +234,12 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             bStats = '%s; W-%s, L-%s, D-%s' % (bRating, bWins, bLosses, bDraws)
             s = '%s: %s (%s) vs. %s (%s);  %s' % \
                 (gameTitle, wName, wStats, bName, bStats, toMove)
-            irc.reply(msg, s, prefixName=False)
+            irc.reply(s, prefixName=False)
         except ValueError:
-            irc.error(msg,'That doesn\'t appear to be a proper Gameknot game.'\
+            irc.error('That doesn\'t appear to be a proper Gameknot game.'\
                 ' (%s)' % conf.replyPossibleBug)
         except Exception, e:
-            irc.error(msg, utils.exnToString(e))
+            irc.error(utils.exnToString(e))
     gameknotSnarfer = privmsgs.urlSnarfer(gameknotSnarfer)
 
     def gameknotStatsSnarfer(self, irc, msg, match):
@@ -248,7 +248,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             return
         name = match.group(1)
         s = self.getStats(name)
-        irc.reply(msg, s, prefixName=False)
+        irc.reply(s, prefixName=False)
     gameknotStatsSnarfer = privmsgs.urlSnarfer(gameknotStatsSnarfer)
 
 Class = Gameknot

@@ -63,7 +63,7 @@ class Http(callbacks.Privmsg):
         try:
             callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
         except webutils.WebError, e:
-            irc.error(msg, str(e))
+            irc.error(str(e))
             
     def headers(self, irc, msg, args):
         """<url>
@@ -73,11 +73,11 @@ class Http(callbacks.Privmsg):
         """
         url = privmsgs.getArgs(args)
         if not url.startswith('http://'):
-            irc.error(msg, 'Only HTTP urls are valid.')
+            irc.error('Only HTTP urls are valid.')
             return
         fd = webutils.getUrlFd(url)
         s = ', '.join(['%s: %s' % (k, v) for (k, v) in fd.headers.items()])
-        irc.reply(msg, s)
+        irc.reply(s)
             
     _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
     def doctype(self, irc, msg, args):
@@ -88,15 +88,15 @@ class Http(callbacks.Privmsg):
         """
         url = privmsgs.getArgs(args)
         if not url.startswith('http://'):
-            irc.error(msg, 'Only HTTP urls are valid.')
+            irc.error('Only HTTP urls are valid.')
             return
         s = webutils.getUrl(url, size=self.maxSize)
         m = self._doctypeRe.search(s)
         if m:
             s = utils.normalizeWhitespace(m.group(0))
-            irc.reply(msg, '%s has the following doctype: %s' % (url, s))
+            irc.reply('%s has the following doctype: %s' % (url, s))
         else:
-            irc.reply(msg, '%s has no specified doctype.' % url)
+            irc.reply('%s has no specified doctype.' % url)
             
     def size(self, irc, msg, args):
         """<url>
@@ -106,18 +106,18 @@ class Http(callbacks.Privmsg):
         """
         url = privmsgs.getArgs(args)
         if not url.startswith('http://'):
-            irc.error(msg, 'Only HTTP urls are valid.')
+            irc.error('Only HTTP urls are valid.')
             return
         fd = webutils.getUrlFd(url)
         try:
             size = fd.headers['Content-Length']
-            irc.reply(msg, '%s is %s bytes long.' % (url, size))
+            irc.reply('%s is %s bytes long.' % (url, size))
         except KeyError:
             s = fd.read(self.maxSize)
             if len(s) != self.maxSize:
-                irc.reply(msg, '%s is %s bytes long.' % (url, len(s)))
+                irc.reply('%s is %s bytes long.' % (url, len(s)))
             else:
-                irc.reply(msg, 'The server didn\'t tell me how long %s is '
+                irc.reply('The server didn\'t tell me how long %s is '
                                'but it\'s longer than %s bytes.' %
                                (url,self.maxSize))
 
@@ -132,9 +132,9 @@ class Http(callbacks.Privmsg):
         text = webutils.getUrl(url, size=self.maxSize)
         m = self._titleRe.search(text)
         if m is not None:
-            irc.reply(msg, utils.htmlToText(m.group(1).strip()))
+            irc.reply(utils.htmlToText(m.group(1).strip()))
         else:
-            irc.reply(msg, 'That URL appears to have no HTML title '
+            irc.reply('That URL appears to have no HTML title '
                            'within the first %s bytes.' % self.maxSize)
 
     def freshmeat(self, irc, msg, args):
@@ -159,12 +159,11 @@ class Http(callbacks.Privmsg):
             vitality = getNode('vitality_percent')
             popularity = getNode('popularity_percent')
             lastupdated = getNode('date_updated')
-            irc.reply(msg,
-                      '%s, last updated %s, with a vitality percent of %s '\
-                      'and a popularity of %s, is in version %s.' % \
+            irc.reply('%s, last updated %s, with a vitality percent of %s '
+                      'and a popularity of %s, is in version %s.' %
                       (project, lastupdated, vitality, popularity, version))
         except FreshmeatException, e:
-            irc.error(msg, str(e))
+            irc.error(str(e))
 
     def stockquote(self, irc, msg, args):
         """<company symbol>
@@ -178,13 +177,12 @@ class Http(callbacks.Privmsg):
         quote = webutils.getUrl(url)
         data = quote.split(',')
         if data[1] != '0.00':
-            irc.reply(msg,
-                       'The current price of %s is %s, as of %s EST.  '\
-                       'A change of %s from the last business day.' %\
-                       (data[0][1:-1], data[1], data[3][1:-1], data[4]))
+            irc.reply('The current price of %s is %s, as of %s EST.  '
+                      'A change of %s from the last business day.' %
+                      (data[0][1:-1], data[1], data[3][1:-1], data[4]))
         else:
             m = 'I couldn\'t find a listing for %s' % symbol
-            irc.error(msg, m)
+            irc.error(m)
 
     _mlgeekquotere = re.compile('<p class="qt">(.*?)</p>', re.M | re.DOTALL)
     def geekquote(self, irc, msg, args):
@@ -198,11 +196,11 @@ class Http(callbacks.Privmsg):
         html = webutils.getUrl('http://bash.org/?%s' % id)
         m = self._mlgeekquotere.search(html)
         if m is None:
-            irc.error(msg, 'No quote found.')
+            irc.error('No quote found.')
             return
         quote = utils.htmlToText(m.group(1))
         quote = ' // '.join(quote.splitlines())
-        irc.reply(msg, quote)
+        irc.reply(quote)
 
     _acronymre = re.compile(r'valign="middle" width="7\d%" bgcolor="[^"]+">'
                             r'(?:<b>)?([^<]+)')
@@ -219,7 +217,7 @@ class Http(callbacks.Privmsg):
         html = webutils.getUrl(request)
         if 'daily limit' in html:
             s = 'Acronymfinder.com says I\'ve reached my daily limit.  Sorry.'
-            irc.error(msg, s)
+            irc.error(s)
             return
         # The following definitions are stripped and empties are removed.
         defs = filter(None, imap(str.strip, self._acronymre.findall(html)))
@@ -228,10 +226,10 @@ class Http(callbacks.Privmsg):
             if s.startswith('[not an acronym]'):
                 defs[i] = s.split('is ', 1)[1]
         if len(defs) == 0:
-            irc.reply(msg,'No definitions found.  (%s)'%conf.replyPossibleBug)
+            irc.reply('No definitions found.  (%s)' % conf.replyPossibleBug)
         else:
             s = ', or '.join(defs)
-            irc.reply(msg, '%s could be %s' % (acronym, s))
+            irc.reply('%s could be %s' % (acronym, s))
 
     _netcraftre = re.compile(r'whatos text -->(.*?)<a href="/up/acc', re.S)
     def netcraft(self, irc, msg, args):
@@ -247,11 +245,11 @@ class Http(callbacks.Privmsg):
         if m:
             html = m.group(1)
             s = utils.htmlToText(html, tagReplace='').strip('\xa0 ')
-            irc.reply(msg, s[9:]) # Snip off "the site"
+            irc.reply(s[9:]) # Snip off "the site"
         elif 'We could not get any results' in html:
-            irc.reply(msg, 'No results found for %s.' % hostname)
+            irc.reply('No results found for %s.' % hostname)
         else:
-            irc.error(msg, 'The format of page the was odd.')
+            irc.error('The format of page the was odd.')
 
     def kernel(self, irc, msg, args):
         """takes no arguments
@@ -270,7 +268,7 @@ class Http(callbacks.Privmsg):
                     beta = version.strip()
         finally:
             fd.close()
-        irc.reply(msg, 'The latest stable kernel is %s; ' \
+        irc.reply('The latest stable kernel is %s; ' \
                        'the latest beta kernel is %s.' % (stable, beta))
 
     _pgpkeyre = re.compile(r'pub\s+\d{4}\w/<a '\
@@ -293,10 +291,10 @@ class Http(callbacks.Privmsg):
                 if info:
                     L.append('%s <%s%s>' % (info.group(3),host,info.group(1)))
             if len(L) == 0:
-                irc.reply(msg, 'No results found for %s.' % search)
+                irc.reply('No results found for %s.' % search)
             else:
                 s = 'Matches found for %s: %s' % (search, ' :: '.join(L))
-                irc.reply(msg, s)
+                irc.reply(s)
         finally:
             fd.close()
 
@@ -315,7 +313,7 @@ class Http(callbacks.Privmsg):
         invalid = '|<>\^=?/[]";,*'
         for c in invalid:
             if c in ext:
-                irc.error(msg, '\'%s\' is an invalid extension character' % c)
+                irc.error('\'%s\' is an invalid extension character' % c)
                 return
         s = 'http://www.filext.com/detaillist.php?extdetail=%s&goButton=Go'
         text = webutils.getUrl(s % ext)
@@ -337,9 +335,9 @@ class Http(callbacks.Privmsg):
             else:
                 res.append(filetype)
         if res:
-            irc.reply(msg, utils.commaAndify(res))
+            irc.reply(utils.commaAndify(res))
         else:
-            irc.error(msg, 'No matching file extenstions were found.')
+            irc.error('No matching file extenstions were found.')
 
 Class = Http
 

@@ -118,7 +118,7 @@ class Math(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         if text != text.translate(string.ascii, '_[]'):
-            irc.error(msg, 'There\'s really no reason why you should have '
+            irc.error('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
                            'expression.  Please remove them.')
             return
@@ -126,7 +126,7 @@ class Math(callbacks.Privmsg):
         # safety's sake.
         text = text.translate(string.ascii, '_[] \t')
         if 'lambda' in text:
-            irc.error(msg, 'You can\'t use lambda in this command.')
+            irc.error('You can\'t use lambda in this command.')
             return
         text = text.replace('lambda', '') # Let's leave it in for safety.
         def handleMatch(m):
@@ -148,16 +148,16 @@ class Math(callbacks.Privmsg):
         try:
             self.log.info('evaluating %r from %s' % (text, msg.prefix))
             x = complex(eval(text, self._mathEnv, self._mathEnv))
-            irc.reply(msg, self._complexToString(x))
+            irc.reply(self._complexToString(x))
         except OverflowError:
             maxFloat = math.ldexp(0.9999999999999999, 1024)
-            irc.error(msg, 'The answer exceeded %s or so.' % maxFloat)
+            irc.error('The answer exceeded %s or so.' % maxFloat)
         except TypeError:
-            irc.error(msg, 'Something in there wasn\'t a valid number.')
+            irc.error('Something in there wasn\'t a valid number.')
         except NameError, e:
-            irc.error(msg, '%s is not a defined function.' % str(e).split()[1])
+            irc.error('%s is not a defined function.' % str(e).split()[1])
         except Exception, e:
-            irc.error(msg, utils.exnToString(e))
+            irc.error(utils.exnToString(e))
 
     def icalc(self, irc, msg, args):
         """<math expression>
@@ -168,7 +168,7 @@ class Math(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         if text != text.translate(string.ascii, '_[]'):
-            irc.error(msg, 'There\'s really no reason why you should have '
+            irc.error('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
                            'expression.  Please remove them.')
             return
@@ -176,21 +176,21 @@ class Math(callbacks.Privmsg):
         # safety's sake.
         text = text.translate(string.ascii, '_[] \t')
         if 'lambda' in text:
-            irc.error(msg, 'You can\'t use lambda in this command.')
+            irc.error('You can\'t use lambda in this command.')
             return
         text = text.replace('lambda', '')
         try:
             self.log.info('evaluating %r from %s' % (text, msg.prefix))
-            irc.reply(msg, str(eval(text, self._mathEnv, self._mathEnv)))
+            irc.reply(str(eval(text, self._mathEnv, self._mathEnv)))
         except OverflowError:
             maxFloat = math.ldexp(0.9999999999999999, 1024)
-            irc.error(msg, 'The answer exceeded %s or so.' % maxFloat)
+            irc.error('The answer exceeded %s or so.' % maxFloat)
         except TypeError:
-            irc.error(msg, 'Something in there wasn\'t a valid number.')
+            irc.error('Something in there wasn\'t a valid number.')
         except NameError, e:
-            irc.error(msg, '%s is not a defined function.' % str(e).split()[1])
+            irc.error('%s is not a defined function.' % str(e).split()[1])
         except Exception, e:
-            irc.error(msg, utils.exnToString(e))
+            irc.error(utils.exnToString(e))
     icalc = privmsgs.checkCapability(icalc, 'trusted')
             
     _rpnEnv = {
@@ -223,7 +223,7 @@ class Math(callbacks.Privmsg):
                             except TypeError:
                                 pass
                         if not called:
-                            irc.error(msg, 'Not enough arguments for %s' % arg)
+                            irc.error('Not enough arguments for %s' % arg)
                             return
                     else:
                         stack.append(f)
@@ -236,13 +236,13 @@ class Math(callbacks.Privmsg):
                     try:
                         stack.append(eval(s, self._mathEnv, self._mathEnv))
                     except SyntaxError:
-                        irc.error(msg, '%r is not a defined function.' % arg)
+                        irc.error('%r is not a defined function.' % arg)
                         return
         if len(stack) == 1:
-            irc.reply(msg, str(self._complexToString(complex(stack[0]))))
+            irc.reply(str(self._complexToString(complex(stack[0]))))
         else:
             s = ', '.join(imap(self._complexToString, imap(complex, stack)))
-            irc.reply(msg, 'Stack: [%s]' % s)
+            irc.reply('Stack: [%s]' % s)
 
     _convertEnv = {'__builtins__': types.ModuleType('__builtins__')}
     for (k, v) in unum.units.__dict__.iteritems():
@@ -265,26 +265,26 @@ class Math(callbacks.Privmsg):
         try:
             n = float(n)
         except ValueError:
-            irc.error(msg, '%s is not a valid number.' % n)
+            irc.error('%s is not a valid number.' % n)
             return
         try:
             unit1 = unit1.lower()
             self.log.info('evaluating %r from %s' % (unit1, msg.prefix))
             u1 = eval(unit1, self._convertEnv, self._convertEnv)
         except:
-            irc.error(msg, '%s is not a valid units expression.' % unit1)
+            irc.error('%s is not a valid units expression.' % unit1)
             return
         try:
             unit2 = unit2.lower()
             self.log.info('evaluating %r from %s' % (unit2, msg.prefix))
             u2 = eval(unit2, self._convertEnv, self._convertEnv)
         except:
-            irc.error(msg, '%s is not a valid units expression.' % unit2)
+            irc.error('%s is not a valid units expression.' % unit2)
             return
         try:
-            irc.reply(msg, str((n*u1).as(u2)))
+            irc.reply(str((n*u1).as(u2)))
         except Exception, e:
-            irc.error(msg, str(e))
+            irc.error(str(e))
 
     def units(self, irc, msg, args):
         """takes no arguments
@@ -294,7 +294,7 @@ class Math(callbacks.Privmsg):
         L = self._convertEnv.keys()
         L.remove('__builtins__')
         L.sort()
-        irc.reply(msg, utils.commaAndify(L))
+        irc.reply(utils.commaAndify(L))
         
         
 Class = Math

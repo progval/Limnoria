@@ -200,7 +200,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                 elif updateDb:
                     self._updateTinyDb(url, tinyurl, channel)
                 s = '%s (was <%s>)' % (ircutils.bold(tinyurl), url)
-                irc.reply(msg, s, prefixName=False)
+                irc.reply(s, prefixName=False)
     tinyurlSnarfer = privmsgs.urlSnarfer(tinyurlSnarfer)
 
     def titleSnarfer(self, irc, msg, match):
@@ -216,7 +216,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                 s = 'Title: %s' % utils.htmlToText(m.group(1).strip())
                 if self.configurables.get('titlesnarferincludesurl', channel):
                     s += ' (<%s>)' % url
-                irc.reply(msg, s, prefixName=False)
+                irc.reply(s, prefixName=False)
     titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
                 
     def _updateTinyDb(self, url, tinyurl, channel):
@@ -278,9 +278,9 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                           ORDER BY random()
                           LIMIT 1""")
         if cursor.rowcount == 0:
-            irc.reply(msg, 'I have no URLs in my database for %s' % channel)
+            irc.reply('I have no URLs in my database for %s' % channel)
         else:
-            irc.reply(msg, self._formatUrl(*cursor.fetchone()))
+            irc.reply(self._formatUrl(*cursor.fetchone()))
 
     def tiny(self, irc, msg, args):
         """<url>
@@ -289,7 +289,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         """
         url = privmsgs.getArgs(args)
         if len(url) < 23:
-            irc.error(msg,
+            irc.error(
                       'Stop being a lazy-biotch and type the URL yourself.')
             return
         channel = msg.args[0]
@@ -302,11 +302,11 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         if tinyurl:
             if updateDb:
                 self._updateTinyDb(url, tinyurl, channel)
-            irc.reply(msg, tinyurl)
+            irc.reply(tinyurl)
         else:
             s = 'Could not parse the TinyURL.com results page.  (%s)' % \
                 conf.replyPossibleBug
-            irc.error(msg, s)
+            irc.error(s)
     tiny = privmsgs.thread(tiny)
 
     def num(self, irc, msg, args):
@@ -320,7 +320,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM urls""")
         (count,) = cursor.fetchone()
-        irc.reply(msg, 'I have %s %s in my database.' % \
+        irc.reply('I have %s %s in my database.' % \
                   (count, int(count) == 1 and 'URL' or 'URLs'))
 
     def last(self, irc, msg, args):
@@ -382,7 +382,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                  LIMIT 100""" % criterion
         cursor.execute(sql, *formats)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'No URLs matched that criteria.')
+            irc.reply('No URLs matched that criteria.')
         else:
             if nolimit:
                 urls = ['<%s>' % t[1] for t in cursor.fetchall()]
@@ -395,7 +395,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                                           time.localtime(int(added)))
                 s = '#%s: <%s>, added by %s at %s.' % \
                     (id, url, added_by, timestamp)
-            irc.reply(msg, s)
+            irc.reply(s)
 
 
 Class = URL

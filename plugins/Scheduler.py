@@ -84,12 +84,12 @@ class Scheduler(callbacks.Privmsg):
         try:
             seconds = int(seconds)
         except ValueError:
-            irc.error(msg, 'Invalid seconds value: %r' % seconds)
+            irc.error('Invalid seconds value: %r' % seconds)
             return
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addEvent(f, time.time() + seconds)
         self.events[str(id)] = command
-        irc.reply(msg, '%s  Event #%s added.' % (conf.replySuccess, id))
+        irc.reply('%s  Event #%s added.' % (conf.replySuccess, id))
 
     def remove(self, irc, msg, args):
         """<id>
@@ -106,11 +106,11 @@ class Scheduler(callbacks.Privmsg):
                 pass
             try:
                 schedule.removeEvent(id)
-                irc.reply(msg, conf.replySuccess)
+                irc.reply(conf.replySuccess)
             except KeyError:
-                irc.error(msg, 'Invalid event id.')
+                irc.error('Invalid event id.')
         else:
-            irc.error(msg, 'Invalid event id.')
+            irc.error('Invalid event id.')
 
     def repeat(self, irc, msg, args):
         """<name> <seconds> <command>
@@ -125,14 +125,14 @@ class Scheduler(callbacks.Privmsg):
         try:
             seconds = int(seconds)
         except ValueError:
-            irc.error(msg, 'Invalid seconds: %r' % seconds)
+            irc.error('Invalid seconds: %r' % seconds)
             return
         self.events[name] = command 
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addPeriodicEvent(f, seconds, name)
         assert id == name
         # We don't reply because the command runs immediately.
-        # irc.replySuccess(msg)
+        # irc.replySuccess()
 
     def list(self, irc, msg, args):
         """takes no arguments.
@@ -144,9 +144,9 @@ class Scheduler(callbacks.Privmsg):
             L.sort()
             for (i, (name, command)) in enumerate(L):
                 L[i] = '%s: %s' % (name, utils.dqrepr(command))
-            irc.reply(msg, utils.commaAndify(L))
+            irc.reply(utils.commaAndify(L))
         else:
-            irc.reply(msg, 'There are currently no scheduled commands.')
+            irc.reply('There are currently no scheduled commands.')
 
 
 Class = Scheduler

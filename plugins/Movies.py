@@ -77,29 +77,29 @@ class Movies(callbacks.Privmsg):
         db = IMDb.IMDb()
         movies = db.search(movieTitle)
         if len(movies) == 0:
-            irc.reply(msg, 'No movies matched that title.')
+            irc.reply('No movies matched that title.')
         elif len(movies) == 1:
             movie = movies[0]
             if 'Name?' in movie.url:
                 s = '"%s" is apparently a person.  ' \
                     'More information is available at <%s>' % \
                     (movie.title(), movie.url)
-                irc.reply(msg, s)
+                irc.reply(s)
             else:
-                irc.reply(msg, self._formatMovie(movie))
+                irc.reply(self._formatMovie(movie))
         elif len(movies) > 20:
             s = 'More than 20 movies matched, please narrow your search.'
-            irc.reply(msg, s)
+            irc.reply(s)
         else:
             for movie in movies:
                 title = movie.title().lower()
                 if utils.unCommaThe(title) == movieTitle.lower():
-                    irc.reply(msg, self._formatMovie(movie))
+                    irc.reply(self._formatMovie(movie))
                     return
             titles = ['%s (%s)' % \
                       (utils.unCommaThe(movie.title()), movie.year())
                       for movie in movies]
-            irc.reply(msg, 'Matches: ' + utils.commaAndify(titles))
+            irc.reply('Matches: ' + utils.commaAndify(titles))
 
 
 Class = Movies

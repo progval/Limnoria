@@ -296,28 +296,28 @@ class RichReplyMethods(object):
             s = prefix
         return s
 
-    def replySuccess(self, msg, s='', **kwargs):
-        self.reply(msg, self._makeReply(conf.replySuccess, s), **kwargs)
+    def replySuccess(self, s='', **kwargs):
+        self.reply(self._makeReply(conf.replySuccess, s), **kwargs)
 
-    def replyNoCapability(self, msg, capability, s='', **kwargs):
+    def replyNoCapability(self, capability, s='', **kwargs):
         s = self._makeReply(conf.replyNoCapability % s, s)
-        self.reply(msg, s, **kwargs)
+        self.reply(s, **kwargs)
 
-    def replyNotRegistered(self, msg, s='', **kwargs):
-        self.reply(msg, self._makeReply(conf.replyNotRegistered, s), **kwargs)
+    def replyNotRegistered(self, s='', **kwargs):
+        self.reply(self._makeReply(conf.replyNotRegistered, s), **kwargs)
 
-    def replyPossibleBug(self, msg, s='', **kwargs):
-        self.reply(msg, self._makeReply(conf.replyPossibleBug, s), **kwargs)
+    def replyPossibleBug(self, s='', **kwargs):
+        self.reply(self._makeReply(conf.replyPossibleBug, s), **kwargs)
 
-    def replyNoUser(self, msg, s='', **kwargs):
-        self.reply(msg, self._makeReply(conf.replyNoUser, s), **kwargs)
+    def replyNoUser(self, s='', **kwargs):
+        self.reply(self._makeReply(conf.replyNoUser, s), **kwargs)
 
-    def replyRequiresPrivacy(self, msg, s='', **kwargs):
+    def replyRequiresPrivacy(self, s='', **kwargs):
         s = self._makeReply(conf.replyRequiresPrivacy, s)
-        self.reply(msg, s, **kwargs)
+        self.reply(s, **kwargs)
 
-    def replyError(self, msg, s='', **kwargs):
-        self.reply(msg, self._makeReply(conf.replyError, s), **kwargs)
+    def replyError(self, s='', **kwargs):
+        self.reply(self._makeReply(conf.replyError, s), **kwargs)
 
             
 class IrcObjectProxy(RichReplyMethods):
@@ -412,7 +412,7 @@ class IrcObjectProxy(RichReplyMethods):
                     del self.args[0]
                     cb = cbs[0]
                 if not checkCommandCapability(self.msg, name):
-                    self.error(self.msg, conf.replyNoCapability % name)
+                    self.error(conf.replyNoCapability % name)
                     return
                 command = getattr(cb, name)
                 Privmsg.handled = True
@@ -423,14 +423,14 @@ class IrcObjectProxy(RichReplyMethods):
                 else:
                     cb.callCommand(command, self, self.msg, self.args)
             except (getopt.GetoptError, ArgumentError):
-                self.reply(self.msg, formatArgumentError(command, name=name))
+                self.reply(formatArgumentError(command, name=name))
             except CannotNest, e:
                 if not isinstance(self.irc, irclib.Irc):
-                    self.error(self.msg, 'Command %r cannot be nested.' % name)
+                    self.error('Command %r cannot be nested.' % name)
 
-    def reply(self, msg, s, noLengthCheck=False, prefixName=True,
+    def reply(self, s, noLengthCheck=False, prefixName=True,
               action=False, private=False, notice=False, to=None):
-        """reply(msg, s) -> replies to msg with s
+        """reply(s) -> replies to msg with s
 
         Keyword arguments:
           noLengthCheck=False: True if the length shouldn't be checked
@@ -447,6 +447,7 @@ class IrcObjectProxy(RichReplyMethods):
         # These use |= or &= based on whether or not they default to True or
         # False.  Those that default to True use &=; those that default to
         # False use |=.
+        msg = self.msg
         self.action |= action
         self.notice |= notice
         self.private |= private
@@ -455,7 +456,7 @@ class IrcObjectProxy(RichReplyMethods):
         self.noLengthCheck |= noLengthCheck
         if self.finalEvaled:
             if isinstance(self.irc, self.__class__):
-                self.irc.reply(msg, s, self.noLengthCheck, self.prefixName,
+                self.irc.reply(s, self.noLengthCheck, self.prefixName,
                                self.action, self.private, self.notice, self.to)
             elif self.noLengthCheck:
                 self.irc.queueMsg(reply(msg, s, self.prefixName,
@@ -501,20 +502,20 @@ class IrcObjectProxy(RichReplyMethods):
             self.args[self.counter] = s
             self.evalArgs()
 
-    def error(self, msg, s, private=False):
-        """error(msg, text) -> replies to msg with an error message of text.
+    def error(self, s, private=False):
+        """error(text) -> replies to msg with an error message of text.
 
         Keyword arguments:
           private=False: True if the error should be given in private.
         """
         if isinstance(self.irc, self.__class__):
-            self.irc.error(msg, s, private)
+            self.irc.error(s, private)
         else:
             s = 'Error: ' + s
             if private or conf.errorReplyPrivate:
-                self.irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
+                self.irc.queueMsg(ircmsgs.privmsg(self.msg.nick, s))
             else:
-                self.irc.queueMsg(reply(msg, s))
+                self.irc.queueMsg(reply(self.msg, s))
         self.finished = True
 
     def killProxy(self):
@@ -567,11 +568,11 @@ class CommandThread(threading.Thread):
                 self.command.im_class.threaded = original
         except (getopt.GetoptError, ArgumentError):
             name = self.commandName
-            self.irc.reply(self.msg, formatArgumentError(self.command, name))
+            self.irc.reply(formatArgumentError(self.command, name))
         except CannotNest:
             if not isinstance(self.irc.irc, irclib.Irc):
                 s = 'Command %r cannot be nested.' % self.commandName
-                self.irc.error(self.msg, s)
+                self.irc.error(s)
 
 
 class ConfigIrcProxy(RichReplyMethods):
@@ -579,10 +580,10 @@ class ConfigIrcProxy(RichReplyMethods):
     def __init__(self, irc):
         self.__dict__['irc'] = irc
         
-    def reply(self, msg, s, *args):
+    def reply(self, s, *args, **kwargs):
         return None
 
-    def error(self, msg, s, *args):
+    def error(self, s, *args, **kwargs):
         log.warning('ConfigIrcProxy saw an error: %s' % s)
 
     def getRealIrc(self):
@@ -607,12 +608,12 @@ class Privmsg(irclib.IrcCallback):
     noIgnore = False
     handled = False
     errored = False
+    Proxy = IrcObjectProxy
     commandArgs = ['self', 'irc', 'msg', 'args']
     # This must be class-scope, so all subclasses use the same one.
     _mores = ircutils.IrcDict()
     def __init__(self):
         self.__parent = super(Privmsg, self)
-        self.Proxy = IrcObjectProxy
         myName = self.name()
         self.log = log.getPluginLogger(myName)
         ### Setup the dispatcher command.
@@ -638,14 +639,14 @@ class Privmsg(irclib.IrcCallback):
                     handleBadArgs()
                 elif self.isCommand(name):
                     if not checkCommandCapability(msg, name):
-                        irc.error(msg, conf.replyNoCapability % name)
+                        irc.error(conf.replyNoCapability % name)
                         return
                     del args[0]
                     method = getattr(self, name)
                     try:
                         method(irc, msg, args)
                     except (getopt.GetoptError, ArgumentError):
-                        irc.reply(msg, formatArgumentError(method, name))
+                        irc.reply(formatArgumentError(method, name))
                 else:
                     handleBadArgs()
             else:
@@ -718,10 +719,10 @@ class Privmsg(irclib.IrcCallback):
             raise
         except (SyntaxError, Error), e:
             self.log.info('Error return: %s', e)
-            irc.error(msg, str(e))
+            irc.error(str(e))
         except Exception, e:
             self.log.exception('Uncaught exception:')
-            irc.error(msg, utils.exnToString(e))
+            irc.error(utils.exnToString(e))
         # Not catching getopt.GetoptError, ArgumentError, CannotNest -- those
         # are handled by IrcObjectProxy.
         elapsed = time.time() - start
@@ -729,20 +730,18 @@ class Privmsg(irclib.IrcCallback):
 
 
 class IrcObjectProxyRegexp(RichReplyMethods):
-    def __init__(self, irc, *args):
+    def __init__(self, irc, msg):
         self.irc = irc
+        self.msg = msg
 
-    def error(self, msg, s, private=False):
-        private = private or conf.errorReplyPrivate
-        self.reply(msg, 'Error: ' + s, private=private)
+    def error(self, s, **kwargs):
+        self.reply('Error: ' + s, **kwargs)
 
-    def reply(self, msg, s, prefixName=True, action=False, private=False,
-              notice=False):
+    def reply(self, s, action=False, **kwargs): 
         if action:
-            self.irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), s))
+            self.irc.queueMsg(ircmsgs.action(ircutils.replyTo(self.msg), s))
         else:
-            self.irc.queueMsg(reply(msg, s, private=private, notice=notice,
-                                    prefixName=prefixName))
+            self.irc.queueMsg(reply(self.msg, s, **kwargs))
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
@@ -769,11 +768,11 @@ class PrivmsgRegexp(Privmsg):
     because it's much more easily coded and maintained.
     """
     flags = re.I
+    Proxy = IrcObjectProxyRegexp
     commandArgs = ['self', 'irc', 'msg', 'match']
     def __init__(self):
         self.__parent = super(PrivmsgRegexp, self)
         self.__parent.__init__()
-        self.Proxy = IrcObjectProxyRegexp
         self.res = []
         #for name, value in self.__class__.__dict__.iteritems():
         for name, value in self.__class__.__dict__.items():
@@ -791,7 +790,7 @@ class PrivmsgRegexp(Privmsg):
             self.__parent.callCommand(method, irc, msg, *L)
         except Exception, e:
             self.log.exception('Uncaught exception from callCommand:')
-            irc.error(msg, utils.exnToString(e))
+            irc.error(utils.exnToString(e))
 
     def doPrivmsg(self, irc, msg):
         if Privmsg.errored:
@@ -806,7 +805,7 @@ class PrivmsgRegexp(Privmsg):
                     break
                 else:
                     spans.add(m.span())
-                proxy = IrcObjectProxyRegexp(irc)
+                proxy = self.Proxy(irc, msg)
                 self.callCommand(method, proxy, msg, m)
 
 
@@ -818,6 +817,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
     flags = re.I
     regexps = ()
     addressedRegexps = ()
+    Proxy = IrcObjectProxyRegexp
     def __init__(self):
         self.__parent = super(PrivmsgCommandAndRegexp, self)
         self.__parent.__init__()
@@ -838,7 +838,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
         except Exception, e:
             if 'catchErrors' in kwargs and kwargs['catchErrors']:
                 self.log.exception('Uncaught exception in callCommand:')
-                irc.error(msg, utils.exnToString(e))
+                irc.error(utils.exnToString(e))
             else:
                 raise
 
@@ -850,7 +850,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
         for (r, method) in self.res:
             name = method.__name__
             for m in r.finditer(msg.args[1]):
-                proxy = IrcObjectProxyRegexp(irc)
+                proxy = self.Proxy(irc, msg)
                 self.callCommand(method, proxy, msg, m, catchErrors=True)
         if not Privmsg.handled:
             s = addressed(irc.nick, msg)
@@ -860,7 +860,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
                     if Privmsg.handled and name not in self.alwaysCall:
                         continue
                     for m in r.finditer(s):
-                        proxy = IrcObjectProxyRegexp(irc)
+                        proxy = self.Proxy(irc, msg)
                         self.callCommand(method,proxy,msg,m,catchErrors=True)
                         Privmsg.handled = True
             

@@ -121,11 +121,11 @@ class Words(callbacks.Privmsg, configurable.Mixin):
             raise callbacks.ArgumentError
         for word in args:
             if word.translate(string.ascii, string.ascii_letters):
-                irc.error(msg, 'Word must contain only letters.')
+                irc.error('Word must contain only letters.')
                 return
             else:
                 addWord(self.dbHandler.getDb(), word, commit=True)
-        irc.replySuccess(msg)
+        irc.replySuccess()
 
     def crossword(self, irc, msg, args):
         """<word>
@@ -137,16 +137,16 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         if '%' in word:
-            irc.error(msg, '"%" isn\'t allowed in the word.')
+            irc.error('"%" isn\'t allowed in the word.')
             return
         cursor.execute("""SELECT word FROM words
                           WHERE word LIKE %s
                           ORDER BY word""", word)
         words = [t[0] for t in cursor.fetchall()]
         if words:
-            irc.reply(msg, utils.commaAndify(words))
+            irc.reply(utils.commaAndify(words))
         else:
-            irc.reply(msg, 'No matching words were found.')
+            irc.reply('No matching words were found.')
 
     def anagram(self, irc, msg, args):
         """<word>
@@ -161,16 +161,16 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         sorted = ''.join(L)
         cursor.execute("""SELECT id FROM sorted_words WHERE word=%s""", sorted)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'That word has no anagrams I could find.')
+            irc.reply('That word has no anagrams I could find.')
         else:
             id = cursor.fetchone()[0]
             cursor.execute("""SELECT words.word FROM words
                               WHERE sorted_word_id=%s""", id)
             if cursor.rowcount > 1:
                 words = [t[0] for t in cursor.fetchall()]
-                irc.reply(msg, utils.commaAndify(words))
+                irc.reply(utils.commaAndify(words))
             else:
-                irc.reply(msg, 'That word has no anagrams I could find.')
+                irc.reply('That word has no anagrams I could find.')
              
     ###
     # HANGMAN
@@ -234,7 +234,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         """
         channel = msg.args[0]
         game = self.games[channel]
-        irc.reply(msg, '%s %s' % (game['prefix'], ' '.join(game['unused'])))
+        irc.reply('%s %s' % (game['prefix'], ' '.join(game['unused'])))
 
     def newhangman(self, irc, msg, args):
         """takes no arguments
@@ -242,7 +242,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         Creates a new game of hangman
         """
         if not self.gotDictFile:
-            irc.error(msg, 'You do not currently have a dict file, you can get'
+            irc.error('You do not currently have a dict file, you can get'
                 ' one at: %s' % self.dicturl)
             return
         channel = msg.args[0]
@@ -261,7 +261,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
             game['unused'] = copy.copy(self.validLetters)
             game['hidden'] = random.choice(self.wordList).lower().strip()
             game['guess'] = '_' * len(game['hidden'])
-            irc.reply(msg, '%sOkay ladies and gentlemen, you have '
+            irc.reply('%sOkay ladies and gentlemen, you have '
                       'a %s-letter word to find, you have %s!' %
                       (game['prefix'], len(game['hidden']),
                       self.triesLeft(game['tries'])), prefixName=False)
@@ -273,7 +273,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
                 self.endGame(channel)
                 self.newhangman(irc, msg, args)
             else:
-                irc.error(msg, 'Sorry, there is already a game going on.  '
+                irc.error('Sorry, there is already a game going on.  '
                         '%s left before timeout.' % utils.nItems('seconds',
                             int(game['timeout'] - secondsEllapsed)))
 
@@ -286,7 +286,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         channel = msg.args[0]
         game = self.games[channel]
         if not game['gameon']:
-            irc.error(msg, 'There is no hangman game going on right now.')
+            irc.error('There is no hangman game going on right now.')
             return
         letter = privmsgs.getArgs(args)
         game['timeguess'] = time.time()
@@ -294,46 +294,48 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         if letter in game['unused']:
             del game['unused'][game['unused'].index(letter)]
             if letter in game['hidden']:
-                irc.reply(msg, '%sYes, there is %s %s' % (game['prefix'],
+                irc.reply('%sYes, there is %s %s' % (game['prefix'],
                     self.letterArticle(letter), `letter`), prefixName=False)
                 game['guess'] = self.addLetter(letter, game['guess'],
                         self.letterPositions(letter, game['hidden']))
                 if game['guess'] == game['hidden']:
                     game['guessed'] = True
             else:
-                irc.reply(msg,'%sNo, there is no %s' % (game['prefix'],`letter`),
+                irc.reply('%sNo, there is no %s' % (game['prefix'],`letter`),
                         prefixName=False)
                 game['tries'] -= 1
-            irc.reply(msg, '%s%s (%s left)' % (game['prefix'], game['guess'],
+            irc.reply('%s%s (%s left)' % (game['prefix'], game['guess'],
                 self.triesLeft(game['tries'])), prefixName=False)
         # User input a valid character that has already been tried
         elif letter in self.validLetters:
-            irc.error(msg, 'That letter has already been tried.')
+            irc.error('That letter has already been tried.')
         # User tries to guess the whole word or entered an invalid input
         else:
             # The length of the word tried by the user and that of the hidden
-            # word are same, so we assume the user wants to guess the whole word
+            # word are same, so we assume the user wants to guess the whole
+            # word
             if len(letter) == len(game['hidden']):
                 if letter == game['hidden']:
                     game['guessed'] = True
                 else:
-                    irc.reply(msg, '%syou did not guess the correct word '
-                        'and you lose a try' % game['prefix'], prefixName=False)
+                    irc.reply('%syou did not guess the correct word '
+                              'and you lose a try' % game['prefix'],
+                              prefixName=False)
                     game['tries'] -= 1
             else:
                 # User input an invalid character
                 if len(letter) == 1:
-                    irc.error(msg, 'That is not a valid character.')
+                    irc.error('That is not a valid character.')
                 # User input an invalid word (different length from hidden word)
                 else:
-                    irc.error(msg, 'That is not a valid word guess.')
+                    irc.error('That is not a valid word guess.')
         # Verify if the user won or lost
         if game['guessed'] and game['tries'] > 0:
-            irc.reply(msg, '%sYou win! The word was indeed %s' %
+            irc.reply('%sYou win! The word was indeed %s' %
                     (game['prefix'], game['hidden']), prefixName=False)
             self.endGame(channel)
         elif not game['guessed'] and game['tries'] == 0:
-            irc.reply(msg, '%sYou lose! The word was %s' %
+            irc.reply('%sYou lose! The word was %s' %
                     (game['prefix'], game['hidden']), prefixName=False)
             self.endGame(channel)
     ###
