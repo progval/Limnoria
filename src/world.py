@@ -56,6 +56,7 @@ socket.setdefaulttimeout(10)
 startedAt = time.time() # Just in case it doesn't get set later.
 
 mainThread = threading.currentThread()
+assert 'MainThread' in repr(mainThread)
 
 threadsSpawned = 1 # Starts at one for the initial "thread."
 commandsProcessed = 0
@@ -69,11 +70,7 @@ def flush():
     for f in flushers:
         f()
 
-tempvars = {} # A storage place for temporary variables that need to be
-              # globally accessible.
-
-
-def upkeep(): # Function to be run on occasion to do upkeep stuff.
+def upkeep():
     """Does upkeep (like flushing, garbage collection, etc.)"""
     sys.exc_clear() # Just in case, let's clear the exception info.
     collected = gc.collect()
@@ -87,7 +84,7 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
             pass
     if gc.garbage:
         log.warning('Uncollectable garbage: %s', gc.garbage)
-    if 'noflush' not in tempvars:
+    if True: # XXX: Replace this with the registry variable.
         flush()
     if not dying:
         log.debug('Regexp cache size: %s', len(sre._cache))
