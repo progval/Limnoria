@@ -589,7 +589,7 @@ class PluginDirectories(registry.CommaSeparatedListOfStrings):
         return v
 
 registerGlobalValue(supybot.directories, 'plugins',
-    PluginDirectories(['plugins'], """Determines what directories the bot will
+    PluginDirectories([], """Determines what directories the bot will
     look for plugins in.  Accepts a comma-separated list of strings.  This
     means that to add another directory, you can nest the former value and add
     a new one.  E.g. you can say: bot: 'config supybot.directories.plugins
