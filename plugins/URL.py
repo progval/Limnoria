@@ -37,13 +37,7 @@ __revision__ = "$Id$"
 
 import supybot.plugins as plugins
 
-import os
 import re
-import sets
-import time
-import getopt
-import urlparse
-import itertools
 
 import supybot.dbi as dbi
 import supybot.conf as conf
@@ -52,7 +46,6 @@ from supybot.commands import wrap
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.webutils as webutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -148,19 +141,19 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(s, prefixName=False)
     titleSnarfer = wrap(titleSnarfer, decorators=['urlSnarfer'])
 
-    def stats(self, irc, msg, args):
+    def stats(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the number of URLs in the URL database.  <channel> is only
         required if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         self.db.vacuum(channel)
         count = self.db.size(channel)
         irc.reply('I have %s in my database.' % utils.nItems('URL', count))
+    stats = wrap(stats, ['channeldb'])
 
-    def last(self, irc, msg, args):
-        """[<channel>] [--{from,with,near,proto}=<value>] --{nolimit}
+    def last(self, irc, msg, args, optlist, channel):
+        """[<channel>] [--{from,with,near,proto}=<value>] --nolimit
 
         Gives the last URL matching the given criteria.  --from is from whom
         the URL came; --proto is the protocol the URL used; --with is something
@@ -169,25 +162,22 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
         URL.  <channel> is only necessary if the message isn't sent in the
         channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        (optlist, rest) = getopt.getopt(args, '', ['from=', 'with=', 'near=',
-                                                   'proto=', 'nolimit',])
         predicates = []
         f = None
         nolimit = False
         for (option, arg) in optlist:
-            if option == '--nolimit':
+            if option == 'nolimit':
                 nolimit = True
-            elif option == '--from':
+            elif option == 'from':
                 def f(record, arg=arg):
                     return ircutils.strEqual(record.by, arg)
-            elif option == '--with':
+            elif option == 'with':
                 def f(record, arg=arg):
                     return arg in record.url
-            elif option == '--proto':
+            elif option == 'proto':
                 def f(record, arg=arg):
                     return record.url.startswith(arg)
-            elif option == '--near':
+            elif option == 'near':
                 def f(record, arg=arg):
                     return arg in record.near
             if f is not None:
@@ -208,6 +198,11 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                 # We should optimize this with another URLDB method eventually.
                 s = urls[0]
             irc.reply(s)
+    last = wrap(last, ['channeldb'], getopts={'from': 'text',
+                                              'with': 'text',
+                                              'near': 'text',
+                                              'proto': 'text',
+                                              'nolimit': '',})
 
 
 Class = URL
