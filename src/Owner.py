@@ -502,7 +502,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                   len(ircutils._patternCache)))
             ircutils._patternCache.clear()
             L.append('hostmaskPatternEqual cache flushed: %s cleared.' %
-                     utils.nItems('hostmaskPatternEqual result',
+                     utils.nItems('result',
                                   len(ircutils._hostmaskPatternEqualCache)))
             ircutils._hostmaskPatternEqualCache.clear()
             L.append('ircdb username cache flushed: %s cleared.' %
