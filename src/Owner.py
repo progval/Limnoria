@@ -202,7 +202,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
     def inFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and msg.nick == irc.nick:
-            self.log.warning('Somehow sent a message to myself, ignoring.')
+            self.log.warning('Somehow sent a message to myself: %r.', msg)
             return None
         return msg
     
