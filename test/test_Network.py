@@ -38,9 +38,9 @@ class NetworkTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('dns alsdkjfaslkdfjaslkdfj.com', 'Host not found.')
 
     def testWhois(self):
-        self.assertNotError('whois ohio-state.edu')
-        self.assertError('whois www.ohio-state.edu')
-        self.assertError('whois slashdot.org')
+        self.assertNotError('internic ohio-state.edu')
+        self.assertError('internic www.ohio-state.edu')
+        self.assertError('internic slashdot.org')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

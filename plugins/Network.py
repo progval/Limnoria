@@ -59,7 +59,7 @@ example = utils.wrapLines("""
 <supybot> jemfinch: 66.35.250.150
 <jemfinch> @dns 66.35.250.150
 <supybot> jemfinch: slashdot.org
-<jemfinch> @whois ohio-state.edu
+<jemfinch> @internic ohio-state.edu
 <supybot> jemfinch: ohio-state.edu <http://www.educause.edu/edudomain> is active; registered 18-aug-1987, updated 19-aug-2003, expires 18-aug-2004.
 """)
 
@@ -88,7 +88,7 @@ class Network(callbacks.Privmsg):
                 irc.reply(msg, 'Host not found.')
 
     _tlds = sets.Set(['com', 'net', 'edu'])
-    def whois(self, irc, msg, args):
+    def internic(self, irc, msg, args):
         """<domain>
 
         Returns WHOIS information on the registration of <domain>.  <domain>
