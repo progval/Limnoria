@@ -114,7 +114,7 @@ if __name__ == '__main__':
     else:
         threaded = 'pass'
 
-    fd = file(os.path.join('plugins', name + '.py'), 'w')
+    fd = file(name + '.py', 'w')
     fd.write(template % (name, name, className, threaded, name))
     fd.close()
     print 'Your new plugin template is in plugins/%s.py' % name
