@@ -402,6 +402,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                     name = ircdb.users.getUserId(hostmask)
                 except KeyError:
                     irc.errorNoUser()
+                    return
         else:
             table = 'nick_seen'
             criterion = 'normalized=%s'
