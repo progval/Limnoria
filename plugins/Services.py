@@ -314,15 +314,23 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             # The nick isn't online, let's change our nick to it.
             self.sentGhost = False
             irc.queueMsg(ircmsgs.nick(nick))
-        elif ('registered' in s or 'protected' in s) and \
-           ('not' not in s and 'isn\'t' not in s):
-            self.log.info('Received "Registered Nick" from NickServ.')
-            if nick == irc.nick:
-                self._doIdentify(irc)
-        elif '/msg' in s and 'identify' in s and 'password' in s:
+        elif ('owned by someone else' in s) or \
+             ('nickname is registered and protected' in s) or \
+             ('nick belongs to another user' in s):
+            # freenode, arstechnica
+            # oftc, zirc.org
+            # sorcery
+            self.log.info('Received "Registered nick" from NickServ.')
+        elif '/msg' in s and 'id' in s and 'password' in s:
             # Usage info for identify command; ignore.
             self.log.debug('Got usage info for identify command.')
-        elif 'now recognized' in s:
+        elif ('please choose a different nick' in s): # oftc, part 3
+            # This is a catch-all for redundant messages from nickserv.
+            pass
+        elif ('now recognized' in s) or \
+             ('now identified' in s):
+            # freenode, oftc, arstechnica, zirc, ....
+            # sorcery
             self.log.info('Received "Password accepted" from NickServ.')
             self.identified = True
             for channel in irc.state.channels.keys():
@@ -333,6 +341,12 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 for m in self.waitingJoins:
                     irc.sendMsg(m)
                 self.waitingJoins = []
+        elif 'not yet authenticated' in s:
+            # zirc.org has this, it requires an auth code.
+            email = s.split()[-1]
+            self.log.warning('Received "Nick not yet authenticated" from '
+                             'NickServ.  Check email at %s and send the auth '
+                             'command to NickServ.', email)
         else:
             self.log.debug('Unexpected notice from NickServ: %r.', s)
 
