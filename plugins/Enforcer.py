@@ -41,6 +41,9 @@ __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import supybot.plugins as plugins
 
+import time
+
+import supybot.log as log
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
@@ -48,6 +51,7 @@ import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
+import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
 def configure(advanced):
@@ -68,6 +72,8 @@ class ValidNickOrEmptyString(registry.String):
         self.value = v
 
 conf.registerPlugin('Enforcer')
+# XXX We should look into making *all* plugin values ChannelValues and allowing
+#     all channels to disable any plugin in their channel.
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'enforce',
     registry.Boolean(True, """Determines whether the bot will enforce
     capabilities on this channel.  Basically, if False, it 'turns off' the
@@ -83,11 +89,17 @@ conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoVoice',
     registry.Boolean(False, """Determines whether the bot will automatically
     voice people with the <channel>,voice capability when they join the
     channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoBan',
+    registry.Boolean(True, """Determines whether the bot will automatically ban
+    people who join the channel and are on the banlist."""))
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'banPeriod',
+    registry.PositiveInteger(86400, """Determines how many seconds the bot will
+    automatically ban a person for when banning."""))
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'takeRevenge',
-    registry.Boolean(False, """Determines whether the bot will take revenge on
+    registry.Boolean(True, """Determines whether the bot will take revenge on
     people who do things it doesn't like (somewhat like 'bitch mode' in other
     IRC bots)."""))
-conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'takeRevengeOnOps',
+conf.registerChannelValue(conf.supybot.plugins.Enforcer.takeRevenge, 'onOps',
     registry.Boolean(False, """Determines whether the bot will even take
     revenge on ops (people with the #channel,op capability) who violate the
     channel configuration."""))
@@ -102,8 +114,7 @@ conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'ChanServ',
     messages from it."""))
 
 # Limit stuff
-conf.registerGroup(conf.supybot.plugins.Enforcer, 'limit')
-conf.registerChannelValue(conf.supybot.plugins.Enforcer.limit, 'enforce',
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'limit',
     registry.Boolean(False, """Determines whether the bot will maintain the
     channel limit to be slightly above the current number of people in the
     channel, in order to make clone/drone attacks harder."""))
@@ -119,7 +130,7 @@ conf.registerChannelValue(conf.supybot.plugins.Enforcer.limit, 'maximumExcess',
 _chanCap = ircdb.makeChannelCapability
 class Enforcer(callbacks.Privmsg):
     """Manages various things concerning channel security.  Check out the
-    supybot.plugins.Enforcer.autoOp, supybot.plugins.Enforcer.autoHalfop,
+    Enforcer.autoOp, supybot.plugins.Enforcer.autoHalfop,
     supybot.plugins.Enforcer.autoVoice, supybot.plugins.Enforcer.takeRevenge,
     supybot.plugins.Enforcer.cycleToGetOps, and
     supybot.plugins.Enforcer.ChanServ to configure the behavior of this plugin.
@@ -127,9 +138,10 @@ class Enforcer(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.topics = ircutils.IrcDict()
+        self.unbans = {}
 
     def _enforceLimit(self, irc, channel):
-        if self.registryValue('limit.enforce', channel):
+        if self.registryValue('limit', channel):
             maximum = self.registryValue('limit.maximumExcess', channel)
             minimum = self.registryValue('limit.minimumExcess', channel)
             assert maximum > minimum
@@ -139,15 +151,32 @@ class Enforcer(callbacks.Privmsg):
                 irc.queueMsg(ircmsgs.limit(channel, currentUsers + maximum))
             elif currentLimit - currentUsers > maximum:
                 irc.queueMsg(ircmsgs.limit(channel, currentUsers + minimum))
+
+    def _doBan(self, irc, channel, hostmask):
+        nick = ircutils.nickFromHostmask(hostmask)
+        banmask = ircutils.banmask(hostmask)
+        irc.sendMsg(ircmsgs.ban(channel, banmask))
+        irc.sendMsg(ircmsgs.kick(channel, nick))
+        period = self.registryValue('banPeriod', channel)
+        when = time.time() + period
+        if banmask in self.unbans:
+            self.log.info('Rescheduling unban of %s for %s.',
+                          banmask, log.timestamp(when))
+            schedule.rescheduleEvent(self.unbans[banmask], when)
+        else:
+            def unban():
+                irc.queueMsg(ircmsgs.unban(channel, banmask))
+                del self.unbans[banmask]
+            eventId = schedule.addEvent(unban, when)
+            self.unbans[banmask] = eventId
                 
     def doJoin(self, irc, msg):
         if msg.nick == irc.nick:
             return
         channel = msg.args[0]
         c = ircdb.channels.getChannel(channel)
-        if c.checkBan(msg.prefix):
-            irc.queueMsg(ircmsgs.ban(channel, ircutils.banmask(msg.prefix)))
-            irc.queueMsg(ircmsgs.kick(channel, msg.nick))
+        if c.checkBan(msg.prefix) and self.registryValue('autoBan', channel):
+            self._doBan(irc, channel, msg.prefix)
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
             if self.registryValue('autoOp', channel):
                 irc.queueMsg(ircmsgs.op(channel, msg.nick))
@@ -183,58 +212,58 @@ class Enforcer(callbacks.Privmsg):
         capabilities = [_chanCap(channel, 'op'),_chanCap(channel, 'protected')]
         return ircdb.checkCapabilities(hostmask, capabilities)
 
-    def _isPowerful(self, irc, msg):
-        if msg.nick == irc.nick:
-            return True # It's me.
-        if not ircutils.isUserHostmask(msg.prefix):
+    def _isPowerful(self, irc, channel, hostmask):
+        if not ircutils.isUserHostmask(hostmask):
             return True # It's a server.
+        nick = ircutils.nickFromHostmask(hostmask)
+        if nick == irc.nick:
+            return True # It's me.
         chanserv = self.registryValue('ChanServ')
-        if ircutils.nickEqual(msg.nick, chanserv):
+        if ircutils.strEqual(nick, chanserv):
             return True # It's ChanServ.
-        capability = _chanCap(msg.args[0], 'op')
-        if ircdb.checkCapability(msg.prefix, capability):
+        capability = _chanCap(channel, 'op')
+        if ircdb.checkCapability(hostmask, capability):
             return True # It's a chanop.
         return False    # Default.
 
     def _revenge(self, irc, channel, hostmask):
         nick = ircutils.nickFromHostmask(hostmask)
-        if irc.nick != nick:
-            irc.queueMsg(ircmsgs.ban(channel, ircutils.banmask(hostmask)))
-            irc.queueMsg(ircmsgs.kick(channel, nick))
-        else:
-            # This can happen if takeRevengeOnOps is True.
-            self.log.info('Tried to take revenge on myself.  '
-                          'Are you sure you want takeRevengeOnOps to be True?')
+        if self.registryValue('takeRevenge', channel):
+            if self._isPowerful(irc, channel, hostmask) and \
+               not self.registryValue('takeRevenge.onOps', channel):
+                return
+            if irc.nick != nick:
+                self._doBan(irc, channel, hostmask)
+            else:
+                # This can happen if takeRevenge.onOps is True.
+                self.log.warning('Tried to take revenge on myself.  '
+                                 'Are you sure you want takeRevenge.onOps '
+                                 'to be True?')
+        elif nick in irc.state.channels[channel].ops:
+            irc.sendMsg(ircmsgs.deop(channel, nick))
 
     def doKick(self, irc, msg):
         channel = msg.args[0]
         kicked = msg.args[1].split(',')
         deop = False
-        if not self._isPowerful(irc, msg) or \
-           self.registryValue('takeRevengeOnOps', channel):
-            for nick in kicked:
-                hostmask = irc.state.nickToHostmask(nick)
-                if nick == irc.nick:
-                    # Must be a sendMsg so he joins the channel before MODEing.
-                    irc.sendMsg(ircmsgs.join(channel))
-                    deop = True
-                if self._isProtected(channel, hostmask):
-                    deop = True
-                    irc.queueMsg(ircmsgs.invite(msg.args[1], channel))
-            if deop:
-                deop = False
-                if self.registryValue('takeRevenge', channel):
-                    self._revenge(irc, channel, msg.prefix)
-                else:
-                    irc.queueMsg(ircmsgs.deop(channel, msg.nick))
+        for nick in kicked:
+            hostmask = irc.state.nickToHostmask(nick)
+            if nick == irc.nick:
+                # Must be a sendMsg so he joins the channel before MODEing.
+                irc.sendMsg(ircmsgs.join(channel))
+            if self._isProtected(channel, hostmask):
+                irc.queueMsg(ircmsgs.invite(nick, channel))
+        self._revenge(irc, channel, msg.prefix)
+        self._enforceLimit(irc, channel)
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
         chanserv = self.registryValue('ChanServ', channel)
-        if not ircutils.isChannel(channel) or \
-           (self._isPowerful(irc, msg) and
-            not self.registryValue('takeRevengeOnOps', channel)):
+        if not ircutils.isChannel(channel):
             return
+        if self._isPowerful(irc, channel, msg.prefix):
+            if not self.registryValue('takeRevenge.onOps', channel):
+                return
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
             if value == msg.nick:
                 continue
@@ -242,12 +271,12 @@ class Enforcer(callbacks.Privmsg):
                 hostmask = irc.state.nickToHostmask(value)
                 if ircdb.checkCapability(channel,
                                        ircdb.makeAntiCapability('op')):
-                    irc.queueMsg(ircmsgs.deop(channel, value))
+                    irc.sendMsg(ircmsgs.deop(channel, value))
             elif mode == '+h' and value != irc.nick:
                 hostmask = irc.state.nickToHostmask(value)
                 if ircdb.checkCapability(channel,
                                        ircdb.makeAntiCapability('halfop')):
-                    irc.queueMsg(ircmsgs.dehalfop(channel, value))
+                    irc.sendMsg(ircmsgs.dehalfop(channel, value))
             elif mode == '+v' and value != irc.nick:
                 hostmask = irc.state.nickToHostmask(value)
                 if ircdb.checkCapability(channel,
@@ -256,43 +285,32 @@ class Enforcer(callbacks.Privmsg):
             elif mode == '-o':
                 hostmask = irc.state.nickToHostmask(value)
                 if self._isProtected(channel, hostmask):
-                    irc.queueMsg(ircmsgs.op(channel, value))
-                    if self.registryValue('takeRevenge', channel):
-                        self._revenge(irc, channel, msg.prefix)
-                    else:
-                        irc.queueMsg(ircmsgs.deop(channel, msg.nick))
+                    self._revenge(irc, channel, msg.prefix)
+                    irc.sendMsg(ircmsgs.op(channel, value))
             elif mode == '-h':
                 hostmask = irc.state.nickToHostmask(value)
                 if self._isProtected(channel, hostmask):
+                    self._revenge(irc, channel, msg.prefix)
                     irc.queueMsg(ircmsgs.halfop(channel, value))
-                    if self.registryValue('takeRevenge', channel):
-                        self._revenge(irc, channel, msg.prefix)
-                    else:
-                        irc.queueMsg(ircmsgs.deop(channel, msg.nick))
             elif mode == '-v':
                 hostmask = irc.state.nickToHostmask(value)
                 if self._isProtected(channel, hostmask):
-                    irc.queueMsg(ircmsgs.voice(channel, value))
-                    if self.registryValue('takeRevenge', channel):
-                        self._revenge(irc, channel, msg.prefix)
-                    else:
-                        irc.queueMsg(ircmsgs.deop(channel, msg.nick))
-            elif mode == '+b':
-                irc.queueMsg(ircmsgs.unban(channel, value))
-                if self.registryValue('takeRevenge', channel):
                     self._revenge(irc, channel, msg.prefix)
-                else:
-                    irc.queueMsg(ircmsgs.deop(channel, msg.nick))
+                    irc.queueMsg(ircmsgs.voice(channel, value))
+            elif mode == '+b':
+                self._revenge(irc, channel, msg.prefix)
+                irc.sendMsg(ircmsgs.unban(channel, value))
 
     def _cycle(self, irc, channel):
         if self.registryValue('cycleToGetOps', channel):
-            if 'i' not in irc.state.channels[channel].modes:
-                # XXX: What about keywords?
+            if 'i' not in irc.state.channels[channel].modes and \
+               'k' not in irc.state.channels[channel].modes:
+                # XXX We should pull these keywords from the registry.
                 self.log.info('Cycling %s: I\'m the only one left.', channel)
                 irc.queueMsg(ircmsgs.part(channel))
                 irc.queueMsg(ircmsgs.join(channel))
             else:
-                self.log.info('Not cycling %s: it\'s +i', channel)
+                self.log.info('Not cycling %s: it\'s +i or +k.', channel)
 
     def doPart(self, irc, msg):
         if msg.prefix != irc.prefix:
