@@ -376,15 +376,16 @@ class UsersDB(object):
                 else:
                     raise ValueError, 'Ids %r matched.' % ids
         else: # Not a hostmask, must be a name.
+            s = s.lower()
             try:
                 return self._nameCache[s]
             except KeyError:
                 for (id, user) in enumerate(self.users):
                     if user is None:
                         continue
-                    if s == user.name:
+                    if s == user.name.lower():
                         self._nameCache[s] = id
-                        self._nameCache.setdefault(id, sets.Set()).add(s)
+                        self._nameCache[id] = s
                         return id
                 else:
                     raise KeyError, s
@@ -429,8 +430,7 @@ class UsersDB(object):
             except KeyError:
                 continue
         if id in self._nameCache:
-            for name in self._nameCache[id]:
-                del self._nameCache[name]
+            del self._nameCache[self._nameCache[id]]
             del self._nameCache[id]
         if id in self._hostmaskCache:
             for hostmask in self._hostmaskCache[id]:
@@ -444,8 +444,9 @@ class UsersDB(object):
         if not 0 <= id < len(self.users) or self.users[id] is None:
             raise KeyError, id
         self.users[id] = None
-        for name in self._nameCache.get(id, []):
-            del self._nameCache[name]
+        if id in self._nameCache:
+            del self._nameCache[self._nameCache[id]]
+            del self._nameCache[id]
         for hostmask in self._hostmaskCache.get(id, []):
             del self._hostmaskCache[hostmask]
 

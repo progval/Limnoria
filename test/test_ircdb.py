@@ -275,6 +275,7 @@ class UsersDBTestCase(unittest.TestCase):
         u.name = 'foo'
         self.users.setUser(id, u)
         self.assertEqual(self.users.getUser('foo'), u)
+        self.assertEqual(self.users.getUser('FOO'), u)
         self.assertEqual(self.users.getUser(hostmask), u)
         self.assertEqual(self.users.getUser(banmask), u)
         # The UsersDB shouldn't allow users to be added whose hostmasks
