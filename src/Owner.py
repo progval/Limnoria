@@ -219,7 +219,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     try:
                         _ = loadPluginModule(name)
                     except Exception, e:
-                        log.exception('Failed to load %s:', name)
+                        log.info('Attempted to load %s to preserve its '
+                                 'configuration, but load failed: %s',
+                                 name, e)
         world.starting = False
 
     def disambiguate(self, irc, tokens, ambiguousCommands=None):
@@ -380,7 +382,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         else:
             irc.reply(conf.supybot.commands.defaultPlugins.get(command)())
-            
+
     def ircquote(self, irc, msg, args):
         """<string to be sent to the server>
 
