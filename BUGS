@@ -6,4 +6,5 @@ Incidentally, the way to "send the bugs to us" is via SourceForge:
 
 Known bugs that probably won't get fixed:
 
-None currently.
+BadWords' outFilter filters colors.  It's not a high priority to get
+that fixed.
