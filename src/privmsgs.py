@@ -135,15 +135,6 @@ def checkChannelCapability(f, capability):
             irc.errorNoCapability(chancap)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
-def channel(f):
-    """Gives the command an extra channel arg as if it had called getChannel"""
-    def newf(self, irc, msg, args, *L, **kwargs):
-        channel = getChannel(msg, args)
-        L = (channel,) + L
-        ff = types.MethodType(f, self, self.__class__)
-        ff(irc, msg, args, *L, **kwargs)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
-
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
     """A small subclass of callbacks.Privmsg that checks self.capability
     before allowing any command to be called.
