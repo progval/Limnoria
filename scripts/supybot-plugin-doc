@@ -1,0 +1,72 @@
+
+
+
+
+
+
+
+import os
+import sys
+import imp
+import supybot.log as log
+import cgi
+log.setLevel(10)
+
+def genModules(*dirs):
+    log.info('Generating Documentation')
+    for plugindir in dirs:
+        path, plugin = os.path.split(plugindir.rstrip(os.sep))
+        if len(plugin) and plugin[0].isupper():
+            try:
+                fm = imp.find_module(plugin, [path])
+            except ImportError:
+                continue
+            if fm[0]:
+                continue
+            try:
+                yield imp.load_module(plugin, *fm)
+            except ImportError:
+                continue
+        else:
+            continue
+       
+class PluginDoc(object):
+    
+    def __init__(self, mod):
+        self.mod = mod
+        self.lines = []
+        
+    def appendLine(self, line, indent=0):
+        self.lines.append('%s%s' % (' ' * indent * 2, cgi.escape(line)))
+        
+    def renderSTX(self):
+        lines = []
+        inst = self.mod.Class(None)
+        self.appendLine('Documentation for the %s plugin for supybot' % self.mod.Class.__name__)
+        self.appendLine('')
+        self.appendLine('Commands', 1)
+        self.appendLine('')
+        for command in inst.listCommands():
+            self.appendLine(command, 2)
+            self.appendLine('')
+            help =  inst.getCommandHelp([command])
+            doc = getattr(self.mod.Class, command).__doc__.splitlines()
+            if doc:
+                args = doc.pop(0)
+                doc = [l.strip() for l in doc]
+                self.appendLine('Arguments: **%s**' % args, 3)
+                self.appendLine('')
+                self.appendLine('Description: %s' % ''.join(doc), 3)
+                self.appendLine('')
+            else:
+                self.appendLine('No help Associated with this command', 3)
+        return '\n'.join(self.lines)
+
+f = open('f.stx', 'w')
+
+def main(*args):
+    for m in genModules(*args):
+        f.write(PluginDoc(m).renderSTX())
+
+if __name__ == '__main__':
+    main(*sys.argv[1:])
