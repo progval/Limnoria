@@ -46,6 +46,9 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Utilities')
 
 class Utilities(callbacks.Privmsg):
+    def ignore(self, irc, msg, args):
+        pass
+    
     def shrink(self, irc, msg, args):
         text = privmsgs.getArgs(args)
         irc.reply(msg, text[:400])
