@@ -34,6 +34,7 @@ __revision__ = "$Id$"
 import re
 import copy
 import sets
+import time
 import types
 import textwrap
 
@@ -53,8 +54,10 @@ class NonExistentRegistryEntry(RegistryException):
     pass
 
 _cache = {}
+_lastModified = 0
 def open(filename):
     """Initializes the module by loading the registry file into memory."""
+    global _lastModified
     _cache.clear()
     fd = utils.nonCommentNonEmptyLines(file(filename))
     for (i, line) in enumerate(fd):
@@ -64,6 +67,7 @@ def open(filename):
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line #%s' % (i+1)
         _cache[key.lower()] = value
+    _lastModified = time.time()
 
 def close(registry, filename, annotated=True):
     first = True
@@ -105,14 +109,18 @@ class Value(object):
         """Check conditions on the actual value type here.  I.e., if you're a
         IntegerLessThanOneHundred (all your values must be integers less than
         100) convert to an integer in set() and check that the integer is less
-        than 100 in this method."""
+        than 100 in this method.  You *must* call this parent method in your
+        own setValue."""
+        self._lastModified = time.time()
         self.value = v
     
     def __str__(self):
-        return repr(self.value)
+        return repr(self())
 
     # This is simply prettier than naming this function get(self)
     def __call__(self):
+        # TODO: Check _lastModified to see if stuff needs to be reloaded from
+        # the _cache.
         return self.value
 
 
@@ -130,7 +138,7 @@ class Boolean(Value):
         self.setValue(value)
 
     def setValue(self, v):
-        self.value = bool(v)
+        Value.setValue(self, bool(v))
 
 class Integer(Value):
     def set(self, s):
@@ -149,7 +157,7 @@ class PositiveInteger(Value):
     def setValue(self, v):
         if v <= 0:
             raise InvalidRegistryValue, 'Value must be a positive integer.'
-        self.value = v
+        Value.setValue(self, v)
 
 class Float(Value):
     def set(self, s):
@@ -160,7 +168,7 @@ class Float(Value):
 
     def setValue(self, v):
         try:
-            self.value = float(v)
+            Value.setValue(self, float(v))
         except ValueError:
             raise InvalidRegistryValue, 'Value must be a float.'
 
@@ -197,7 +205,7 @@ class StringSurroundedBySpaces(String):
             v= ' ' + v
         if v.rstrip() == v:
             v += ' '
-        self.value = v
+        String.setValue(self, v)
             
 class SeparatedListOf(Value):
     Value = Value
@@ -234,7 +242,7 @@ class CommaSeparatedListOfStrings(SeparatedListOf):
     
 class CommaSeparatedSetOfStrings(CommaSeparatedListOfStrings):
     def setValue(self, v):
-        self.value = sets.Set(v)
+        CommaSeparatedListOfStrings.setValue(self, sets.Set(v))
 
 class Group(object):
     def __init__(self):
@@ -300,9 +308,12 @@ class Group(object):
             if hasattr(child, 'value'):
                 items.append((name, child))
         utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
-        if fullNames:
-            for (name, value) in items:
-                L.append(('%s.%s'%(self.getName(),self.originals[name]),value))
+        for (name, value) in items:
+            if fullNames:
+                name = '%s.%s' % (self.getName(), self.originals[name])
+            else:
+                name = self.originals[name]
+            L.append((name, value))
         if getChildren:
             items = self.children.items()
             utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
@@ -333,6 +344,8 @@ class GroupWithValue(Group):
 class GroupWithDefault(GroupWithValue):
     def __init__(self, value):
         class X(value.__class__):
+            """This class exists to differentiate those values that have been
+            changed from their default to those that haven't."""
             def set(self, *args):
                 self.__class__ = value.__class__
                 self.set(*args)
@@ -384,7 +397,7 @@ if __name__ == '__main__':
     supybot.plugins.topic.registerGroup('separator',
       GroupWithDefault(StringSurroundedBySpaces(' || ',
       'Determines what separator the bot uses to separate topic entries.')))
-    supybot.plugins.topic.separator.setChild('#supybot', ' |||| ')
+    supybot.plugins.topic.separator.get('#supybot').set(' |||| ')
     supybot.plugins.topic.separator.set(' <> ')
 
     supybot.throttleTime.set(10)
