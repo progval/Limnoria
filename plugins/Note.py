@@ -257,6 +257,7 @@ class Note(callbacks.Privmsg):
         if noteid.startswith('get'):
             irc.error('The Note.get command has changed to be simply "note".')
             return
+        noteid = noteid.lstrip('#') # Some people are just dumb.
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
@@ -321,7 +322,7 @@ class Note(callbacks.Privmsg):
                     return
             else:
                 L.add(user)
-            self.setUserValue('ignores', msg.prefix, L, setValue=True)
+            self.setUserValue('ignores', msg.prefix, L)
             irc.replySuccess()
         except KeyError:
             irc.errorNoUser()

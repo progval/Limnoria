@@ -856,7 +856,7 @@ class Privmsg(irclib.IrcCallback):
         return group.get(id)()
 
     def setUserValue(self, name, prefixOrName, value,
-                     ignoreNoUser=True, setValue=False):
+                     ignoreNoUser=True, setValue=True):
         try:
             id = str(ircdb.users.getUserId(prefixOrName))
         except KeyError:
