@@ -256,7 +256,7 @@ class Misc(callbacks.Privmsg):
                         if not startsWithPluginsDir(module.__file__):
                             raise KeyError
             except KeyError:
-                irc.error('I couldn\'t find a Supybot module named %s' % name)
+                irc.error('I couldn\'t find a Supybot module named %s.' % name)
                 return
             if hasattr(module, '__revision__'):
                 irc.reply(module.__revision__)
