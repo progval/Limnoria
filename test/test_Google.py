@@ -66,6 +66,12 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
                             'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
                             '0310132012.738e22fc%40posting.google.com')
 
+    def testInvalidKeyCaught(self):
+        self.assertNotError(
+            'google licensekey abcdefghijklmnopqrstuvwxyz123456')
+        self.assertNotRegexp('google foobar', 'faultType')
+        self.assertNotRegexp('google foobar', 'SOAP')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

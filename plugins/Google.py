@@ -42,6 +42,7 @@ import getopt
 import socket
 import urllib2
 
+import SOAP
 import google
 
 import conf
@@ -119,6 +120,9 @@ def search(*args, **kwargs):
             return 'Connection timed out to Google.com.'
         else:
             raise
+    except SOAP.faultType, e:
+        debug.msg(debug.exnToString(e))
+        raise callbacks.Error, 'Invalid Google license key.'
 
 class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
@@ -168,6 +172,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         is necessary before you can do any searching with this module.
         """
         key = privmsgs.getArgs(args)
+        if len(key) != 32:
+            irc.error(msg, 'That doesn\'t seem to be a valid license key.')
+            return
         google.setLicense(key)
         irc.reply(msg, conf.replySuccess)
     licensekey = privmsgs.checkCapability(licensekey, 'admin')
