@@ -536,7 +536,9 @@ class IrcObjectProxy(RichReplyMethods):
         self.msg = msg
         self.nested = nested
         if not self.nested and isinstance(irc, self.__class__):
-            # This is for plugins that indirectly spawn a Proxy, like Alias.
+            # This means we were given an IrcObjectProxy isntead of an
+            # irclib.Irc, and so we're obviously nested.  But nested wasn't
+            # set!  So we take our given Irc's nested value.
             self.nested += irc.nested
         maxNesting = conf.supybot.commands.nested.maximum()
         if maxNesting and self.nested > maxNesting:
@@ -545,7 +547,8 @@ class IrcObjectProxy(RichReplyMethods):
             return self.error('You\'ve attempted more nesting than is '
                               'currently allowed on this bot.')
         # The deepcopy here is necessary for Scheduler; it re-runs already
-        # tokenized commands.
+        # tokenized commands.  There's a possibility a simple copy[:] would
+        # work, but we're being careful.
         self.args = copy.deepcopy(args)
         self.counter = 0
         self._resetReplyAttributes()
@@ -578,11 +581,29 @@ class IrcObjectProxy(RichReplyMethods):
     def evalArgs(self):
         while self.counter < len(self.args):
             if isinstance(self.args[self.counter], basestring):
+                # If it's a string, just go to the next arg.  There is no
+                # evaluation to be done for strings.  If, at some point,
+                # we decided to, say, convert every string using
+                # ircutils.standardSubstitute, this would be where we would
+                # probably put it.
                 self.counter += 1
             else:
+                assert isinstance(self.args[self.counter], list)
+                # It's a list.  So we spawn another IrcObjectProxy
+                # to evaluate its args.  When that class has finished
+                # evaluating its args, it will call our reply method, which
+                # will subsequently call this function again, and we'll
+                # pick up where we left off via self.counter.
                 self.__class__(self, self.msg,
                                self.args[self.counter], nested=self.nested+1)
+                # We have to return here becuase the new IrcObjectProxy
+                # might not have called our reply method instantly, since
+                # its command might be threaded.  So (obviously) we can't
+                # just fall through to self.finalEval.
                 return
+        # Once all the list args are evaluated, we then evaluate our own
+        # list of args, since we're assured that they're all strings now.
+        assert all(lambda x: isinstance(x, basestring), self.args)
         self.finalEval()
 
     def _callTokenizedCommands(self):
