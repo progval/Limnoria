@@ -161,17 +161,18 @@ def distance(s, t):
         return m
     elif m == 0:
         return n
-    d = range(n+1)
-    for i in range(len(d)):
-        d[i] = range(m+1)
+    d = []
+    for i in range(n+1):
+        d.append([])
+        for j in range(m+1):
+            d[i].append(0)
+            d[0][j] = j
+        d[i][0] = i
     for i in range(1, n+1):
         cs = s[i-1]
         for j in range(1, m+1):
             ct = t[j-1]
-            if cs == ct:
-                cost = 0
-            else:
-                cost = 1
+            cost = int(cs != ct)
             d[i][j] = min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost)
     return d[n][m]
 

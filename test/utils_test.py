@@ -62,6 +62,8 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(utils.distance('a', 'ab'), 1)
         self.assertEqual(utils.distance('foo', ''), 3)
         self.assertEqual(utils.distance('', 'foo'), 3)
+        self.assertEqual(utils.distance('appel', 'nappe'), 2)
+        self.assertEqual(utils.distance('nappe', 'appel'), 2)
 
     def testAbbrev(self):
         L = ['abc', 'bcd', 'bbe', 'foo', 'fool']
