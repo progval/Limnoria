@@ -333,10 +333,8 @@ class Fun(callbacks.Privmsg):
 
 
 
-    #
     # The list of words and algorithm are pulled straight the mozbot
     # MagicEightBall.bm module.
-    #
     _responses = {'positive': ['It is possible.', 'Yes!', 'Of course.', 
                                'Naturally.', 'Obviously.', 'It shall be.',
                                'The outlook is good.', 'It is so.',
@@ -361,18 +359,18 @@ class Fun(callbacks.Privmsg):
             category = 'negative'
         else:
             category = 'unknown'
-        response = self._responses[category][ int(time.time()) % len(self._responses[category]) ]
-        return response
+        return random.choice(self._responses[category])
 
     def eightball(self, irc, msg, args):
         """[<question>]
 
         Ask a question and the answer shall be provided.
         """
-        if len(args) == 0:
-            irc.reply(self._checkTheBall(2) )
+        text = privmsgs.getArgs(args, required=0, optional=1)
+        if text:
+            irc.reply(self._checkTheBall(len(text)))
         else:
-            irc.reply(self._checkTheBall(len(string.join(args,' '))) )
+            irc.reply(self._checkTheBall(random.randrange(0, 3)))
 
     _rouletteChamber = random.randrange(0, 6)
     _rouletteBullet = random.randrange(0, 6)
