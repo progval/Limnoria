@@ -366,7 +366,7 @@ class Project(callbacks.Privmsg):
         L.append('%s has been active for %s' % (project, elapsed))
         L.append('has had %s and %s' % (utils.nItems('fix', fixes),
                                         utils.nItems('feature', features)))
-        irc.reply(utils.commaAndify(L))
+        irc.reply(utils.commaAndify(L) + '.')
 
     def projects(self, irc, msg, args):
         """[<channel>]
