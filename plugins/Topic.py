@@ -55,8 +55,17 @@ conf.registerPlugin('Topic')
 conf.registerChannelValue(conf.supybot.plugins.Topic, 'separator',
     registry.StringSurroundedBySpaces(' || ', """Determines what separator is
     used between individually added topics in the channel topic."""))
+
+class TopicFormat(registry.String):
+    "Value must include $topic, otherwise the actual topic would be left out."
+    def setValue(self, v):
+        if '$topic' in v or '${topic}' in v:
+            registry.String.setValue(self, v)
+        else:
+            self.error()
+            
 conf.registerChannelValue(conf.supybot.plugins.Topic, 'format',
-    registry.String('$topic ($nick)', """Determines what format is used to add
+    TopicFormat('$topic ($nick)', """Determines what format is used to add
     topics in the topic.  All the standard substitutes apply, in addiction to
     "$topic" for the topic itself."""))
 
