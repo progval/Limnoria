@@ -91,7 +91,8 @@ if sqlite is not None:
             self.assertRegexp('factinfo moo', '^moo: Created by tester on'
                               '.*?\. Last modified by tester on .*?\. '
                               'Last requested by foo!bar@baz on .*?, '
-                              'requested 2 times. Locked on .*\.$')
+                              'requested 2 times. '
+                              'Locked by tester on .*\.$')
             self.assertNotError('unlock moo')
             self.assertRegexp('factinfo moo', '^moo: Created by tester on'
                               '.*?\. Last modified by tester on .*?\. '
@@ -110,13 +111,13 @@ if sqlite is not None:
             self.assertNotError('moo is <reply>moo')
             self.assertNotError('lock moo')
             self.assertRegexp('factinfo moo', '^moo: Created by tester on'
-                              '.*?\. Locked on .*?\.')
+                              '.*?\. Locked by tester on .*?\.')
             # switch user
             self.prefix = 'moo!moo@moo'
             self.assertNotError('register nottester moo')
             self.assertError('unlock moo')
             self.assertRegexp('factinfo moo', '^moo: Created by tester on'
-                              '.*?\. Locked on .*?\.')
+                              '.*?\. Locked by tester on .*?\.')
             # switch back
             self.prefix = 'foo!bar@baz'
             self.assertNotError('identify tester moo')
@@ -162,8 +163,7 @@ if sqlite is not None:
 
         def testListauth(self):
             self.assertNotError('moo is <reply>moo')
-            self.assertResponse('listauth tester', 'Author search for tester '
-                                '(1 found): \'moo\'')
+            self.assertRegexp('listauth tester', 'tester.*\(1 found\):.*moo')
             self.assertError('listauth moo')
 
         def testDelete(self):
