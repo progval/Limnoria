@@ -58,6 +58,7 @@ class Status(callbacks.Privmsg):
         self.recvdMsgs = 0
         self.sentBytes = 0
         self.recvdBytes = 0
+        self.connected = {}
 
     def __call__(self, irc, msg):
         self.recvdMsgs += 1
@@ -69,15 +70,21 @@ class Status(callbacks.Privmsg):
         self.sentBytes += len(msg)
         return msg
 
+    def do001(self, irc, msg):
+        self.connected[irc] = time.time()
+        
     def net(self, irc, msg, args):
         """takes no arguments
 
         Returns some interesting network-related statistics.
         """
+        elapsed = time.time() - self.connected[irc.getRealIrc()]
         irc.reply('I have received %s messages for a total of %s bytes.  '
-                  'I have sent %s messages for a total of %s bytes.' %
+                  'I have sent %s messages for a total of %s bytes.  '
+                  'I have been connected to this network for %s.' %
                   (self.recvdMsgs, self.recvdBytes,
-                   self.sentMsgs, self.sentBytes))
+                   self.sentMsgs, self.sentBytes,
+                   utils.timeElapsed(elapsed)))
 
     def cpu(self, irc, msg, args):
         """takes no arguments
