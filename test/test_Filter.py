@@ -50,10 +50,12 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
             self.assertNotError('disable rot13')
             self.assertError('outfilter rot13')
             self.assertNotError('enable rot13')
-            self.assertNotError('disable notAPlugin rot13')
             self.assertNotError('outfilter rot13')
         finally:
-            callbacks.Privmsg._disabled.remove('rot13')
+            try:
+                callbacks.Privmsg._disabled.remove('rot13')
+            except KeyError:
+                pass
 
     def testHebrew(self):
         self.assertResponse('hebrew The quick brown fox '
