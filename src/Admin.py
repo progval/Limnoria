@@ -44,7 +44,9 @@ import textwrap
 
 import conf
 import ircdb
+import utils
 import ircmsgs
+import ircutils
 import privmsgs
 import callbacks
 
@@ -178,6 +180,57 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         else:
             s = 'You can\'t remove capabilities you don\'t have.'
             irc.error(msg, s)
+
+    def ignore(self, irc, msg, args):
+        """<hostmask|nick>
+
+        Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
+        that nick is currently using.
+        """
+        arg = privmsgs.getArgs(args)
+        if ircutils.isUserHostmask(arg):
+            hostmask = arg
+        else:
+            try:
+                hostmask = irc.state.nickToHostmask(arg)
+            except KeyError:
+                irc.error(msg, 'I can\'t find a hostmask for %s' % arg)
+                return
+        conf.ignores.append(hostmask)
+        irc.reply(msg, conf.replySuccess)
+
+    def unignore(self, irc, msg, args):
+        """<hostmask|nick>
+
+        Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
+        that nick is currently using.
+        """
+        arg = privmsgs.getArgs(args)
+        if ircutils.isUserHostmask(arg):
+            hostmask = arg
+        else:
+            try:
+                hostmask = irc.state.nickToHostmask(arg)
+            except KeyError:
+                irc.error(msg, 'I can\'t find a hostmask for %s' % arg)
+                return
+        try:
+            conf.ignores.remove(hostmask)
+            while hostmask in conf.ignores:
+                conf.ignores.remove(hostmask)
+            irc.reply(msg, conf.replySuccess)
+        except ValueError:
+            irc.error(msg, '%s wasn\'t in conf.ignores.' % hostmask)
+            
+    def ignores(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the hostmasks currently being globally ignored.
+        """
+        if conf.ignores:
+            irc.reply(msg, utils.commaAndify(map(repr, conf.ignores)))
+        else:
+            irc.reply(msg, 'I\'m not currently globally ignoring anyone.')
 
     def setprefixchar(self, irc, msg, args):
         """<prefixchars>

@@ -31,8 +31,29 @@
 
 from test import *
 
+import conf
+
 class AdminTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Admin', 'Misc')
+    plugins = ('Admin',)
+    def testIgnoreUnignore(self):
+        try:
+            self.assertNotError('admin ignore foo!bar@baz')
+            self.assertError('admin ignore alsdkfjlasd')
+            self.assertNotError('admin unignore foo!bar@baz')
+            self.assertError('admin unignore foo!bar@baz')
+        finally:
+            conf.ignores = []
+
+    def testIgnores(self):
+        try:
+            self.assertNotError('admin ignores')
+            self.assertNotError('admin ignore foo!bar@baz')
+            self.assertNotError('admin ignores')
+            self.assertNotError('admin ignore foo!bar@baz')
+            self.assertNotError('admin ignores')
+        finally:
+            conf.ignores = []
+
     def testSetprefixchar(self):
         self.assertNotError('setprefixchar $')
         self.assertResponse('getprefixchar', "'$'")
