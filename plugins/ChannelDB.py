@@ -370,14 +370,14 @@ class ChannelDB(plugins.ChannelDBHandler,
         if ('--user', '') in optlist:
             table = 'user_stats'
             criterion = 'user_id=%s'
-            name = ircdb.users.getUserId(name)
-            if not ircdb.users.hasUser(name):
+            try:
+                name = ircdb.users.getUserId(name)
+            except KeyError:
                 try:
                     hostmask = irc.state.nickToHostmask(name)
-                    name = ircdb.users.getUser(hostmask).name
+                    name = ircdb.users.getUserId(hostmask)
                 except KeyError:
                     irc.error(msg, conf.replyNoUser)
-                    return
         else:
             table = 'nick_seen'
             criterion = 'normalized=%s'

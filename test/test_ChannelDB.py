@@ -90,6 +90,9 @@ if sqlite is not None:
             self.assertRegexp('seen --user %s' % self.nick,
                               '^%s was last seen' % self.nick)
 
+        def testSeenNoUser(self):
+            self.assertNotRegexp('seen --user alsdkfjalsdfkj', 'KeyError')
+
         def testWordStatsNoArgs(self):
             self.assertResponse('wordstats', 'I am not currently keeping any '
                                              'word stats.')
