@@ -90,6 +90,10 @@ class HangmanGame:
         finally:
             fd.close()
 
+    def timedout(self):
+        elapsed = time.time() - self.timeGuess
+        return elapsed > self.timeout
+
     def letterPositions(self, letter, word):
         """Returns a list containing the positions of letter in word."""
         lst = []
@@ -154,6 +158,12 @@ class Words(callbacks.Privmsg):
                         return
         finally:
             fd.close()
+        hiddens = [game.hidden for game in self.games.itervalues()
+                   if not game.timedout()]
+        if hiddens and any(hiddens.__contains__, words):
+            irc.error('Sorry, one of the responses would\'ve been an answer '
+                      'in a currently active hangman game.')
+            return
         if words:
             words.sort()
             irc.reply(utils.commaAndify(words))
@@ -218,13 +228,13 @@ class Words(callbacks.Privmsg):
         # we create a new one, otherwise we inform the user
         else:
             game = self.games[channel]
-            secondsElapsed = time.time() - game.timeGuess
-            if secondsElapsed > game.timeout:
+            if game.timedout():
                 self.endGame(channel)
                 self.hangman(irc, msg, args)
             else:
+                secondsElapsed = time.time() - game.timeGuess
                 irc.reply('Sorry, there is already a game going on.  '
-                          '%s left before the game times out.' % \
+                          '%s left before the game times out.' %
                           utils.timeElapsed(game.timeout - secondsElapsed))
 
     def guess(self, irc, msg, args):
