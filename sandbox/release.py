@@ -27,12 +27,12 @@ def system(sh, errmsg=None):
     ret = os.system(sh)
     if ret:
         error(errmsg + '  (error code: %s)' % ret)
-    
+
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         error('Usage: %s <sf username> <version>\n' % sys.argv[0])
 
-    print 'Check version string for validity.' 
+    print 'Check version string for validity.'
     (u, v) = sys.argv[1:]
     if not re.match(r'^\d+\.\d+\.\d+\w*$', v):
         error('Invalid version string: '
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     print 'Checking out fresh tree from CVS.'
     system('cvs -d:ext:%s@cvs.sf.net:/cvsroot/supybot co supybot' % u)
     os.chdir('supybot')
-        
+
     print 'Checking RELNOTES version line.'
     if firstLine('RELNOTES') != 'Version %s' % v:
         error('Invalid first line in RELNOTES.')
@@ -56,7 +56,7 @@ if __name__ == '__main__':
         error('Invalid first line in ChangeLog.')
     if not re.match(r'^\t\* Version %s!$' % v, third):
         error('Invalid third line in ChangeLog.')
-    
+
     print 'Updating version in version files.'
     versionFiles = ('src/conf.py', 'scripts/supybot', 'setup.py')
     for fn in versionFiles:
@@ -66,6 +66,36 @@ if __name__ == '__main__':
 
     print 'Tagging release.'
     system('cvs tag -F release-%s' % v.replace('.', '_'))
+
+    print 'Generating documentation.'
+    # docFiles is in the format {directory: files}
+    docFiles = {'.': ('README', 'INSTALL', 'ChangeLog'),
+                'docs': ('config.html', 'CAPABILITIES', 'commands.html',
+                         'CONFIGURATION', 'FAQ', 'GETTING_STARTED',
+                         'INTERFACES', 'OVERVIEW', 'PLUGIN-EXAMPLE',
+                         'plugins', 'plugins.html', 'STYLE'),
+               }
+    system('python sandbox/generate-plugin-documentation.py')
+    pwd = os.getcwd()
+    sh = 'tar rf %s/docs.tar %%s' % pwd
+    for (dir, L) in docFiles.iteritems():
+        os.chdir(os.path.join(pwd, dir))
+        system(sh % ' '.join(L))
+    os.chdir(pwd)
+    system('bzip2 docs.tar')
+
+    print 'Uploading documentation to webspace.'
+    system('scp docs.tar.bz2 %s@supybot.sf.net:/home/groups/s/su/supybot'
+           '/htdocs/docs/.' % u)
+    system('ssh %s@supybot.sf.net "cd /home/groups/s/su/supybot/htdocs/docs; '
+           'tar jxf docs.tar.bz2"')
+
+    print 'Cleaning up generated documentation.'
+    shutil.rmtree('docs/plugins')
+    configFiles = ('docs/config.html', 'docs/plugins.html',
+                   'docs/commands.html', 'docs.tar.bz2')
+    for fn in configFiles:
+        os.remove(fn)
 
     print 'Removing test, sandbox, CVS, and .cvsignore.'
     shutil.rmtree('test')
