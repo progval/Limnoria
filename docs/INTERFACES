@@ -257,3 +257,15 @@ callbacks.IrcObjectProxy:
 
             getRealIrc: Returns the actual Irc object being
             proxied for.
+	    
+	    replies: Sends a collection of messages to a given
+	    target, much like reply; except in this case, the user
+	    can configure whether the messages will be sent
+	    one-by-one or combined into a single message.  Thus, the
+	    method accepts a "prefixer" argument, which prefixes the
+	    messages with a given string (or according to a given
+	    function), a "joiner" string (or function) used to join
+	    the messages into a single message if necessary, and an
+	    onlyPrefixFirst argument which determines whether only
+	    the first message will be prefixed when the messages are
+	    sent separately (it defaults to False).
