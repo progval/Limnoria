@@ -162,6 +162,7 @@ class Tokenizer:
     def handleToken(self, token):
         while token and token[0] == '"' and token[-1] == token[0]:
             if len(token) > 1:
+                # token = token[1:-1].decode('string-escape') # 2.3+
                 token = eval('"%s"' % token[1:-1], self._env, self._env)
             else:
                 break
@@ -433,9 +434,6 @@ class PrivmsgRegexp(Privmsg):
         #for name, value in self.__class__.__dict__.iteritems():
         for name, value in self.__class__.__dict__.items():
             value = getattr(self, name)
-##             if name[0] != '_' and inspect.ismethod(value) and \
-##                inspect.getargs(value.im_func.func_code) == \
-##                (['self', 'irc', 'msg', 'match'], None, None):
             if self.isCommand(name):
                 try:
                     r = re.compile(value.__doc__, self.flags)
