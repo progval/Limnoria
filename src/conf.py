@@ -131,7 +131,7 @@ poll = 1
 ###
 # maxHistory: Maximum number of messages kept in an Irc object's state.
 ###
-maxHistory = 300
+maxHistory = 1000
 
 ###
 # pingInterval: Number of seconds between PINGs to the server.
