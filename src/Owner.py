@@ -254,6 +254,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                         try:
                             m = loadPluginModule(name)
                             loadPluginClass(irc, m)
+                        except callbacks.Error, e:
+                            # This is just an error message.
+                            log.warning(str(e))
                         except ImportError, e:
                             log.warning('Failed to load %s: %s', name, e)
                             if name in self._srcPlugins:
