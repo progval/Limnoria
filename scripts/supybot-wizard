@@ -479,11 +479,11 @@ def main():
                     ircdb.users.setUser(id, u)
         except KeyError:
             password = getpass('What should the owner\'s password be?')
-            (id, u) = ircdb.users.newUser()
+            u = ircdb.users.newUser()
             u.name = name
             u.setPassword(password)
             u.addCapability('owner')
-            ircdb.users.setUser(id, u)
+            ircdb.users.setUser(u)
 
     output("""Of course, when you're in an IRC channel you can address the bot
     by its nick and it will respond, if you give it a valid command (it may or
