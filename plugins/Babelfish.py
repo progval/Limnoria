@@ -111,13 +111,14 @@ class Babelfish(callbacks.Privmsg):
             irc.reply(translation)
         except (KeyError, babelfish.LanguageNotAvailableError), e:
             irc.error('%s is not a valid language.  Valid languages '
-                      'include %s' %
+                      'include %s.' %
+                      # FIXME: Subtract disabledLanguages from these.
                       (e, utils.commaAndify(babelfish.available_languages)))
         except babelfish.BabelizerIOError, e:
             irc.error(str(e))
         except babelfish.BabelfishChangedError, e:
             irc.error('Babelfish has foiled our plans by changing its '
-                      'webpage format')
+                      'webpage format.')
 
     def babelize(self, irc, msg, args):
         """<from-language> <to-language> <text>
@@ -130,7 +131,7 @@ class Babelfish(callbacks.Privmsg):
         try:
             (fromLang, toLang) = self._getLang(fromLang, toLang, msg.args[0])
             if fromLang != 'english' and toLang != 'english':
-                irc.error('One language must be English.')
+                irc.error('One language in babelize must be English.')
                 return
             if not fromLang or not toLang:
                 langs = self.registryValue('disabledLanguages', msg.args[0])
@@ -141,13 +142,13 @@ class Babelfish(callbacks.Privmsg):
             irc.reply(translations[-1])
         except (KeyError, babelfish.LanguageNotAvailableError), e:
             irc.reply('%s is not a valid language.  Valid languages '
-                      'include %s' %
+                      'include %s.' %
                       (e, utils.commaAndify(babelfish.available_languages)))
         except babelfish.BabelizerIOError, e:
             irc.reply(e)
         except babelfish.BabelfishChangedError, e:
             irc.reply('Babelfish has foiled our plans by changing its '
-                           'webpage format')
+                      'webpage format.')
 
     def randomlanguage(self, irc, msg, args):
         """[<allow-english>]
@@ -158,8 +159,9 @@ class Babelfish(callbacks.Privmsg):
         allowEnglish = privmsgs.getArgs(args, required=0, optional=1)
         language = random.choice(babelfish.available_languages)
         disabled = self.registryValue('disabledLanguages', msg.args[0])
+        # XXX: Can this loop forever if disabled == available_languages?
         while not allowEnglish and language == 'English' and\
-                language not in disabled:
+                  language not in disabled:
             language = random.choice(babelfish.available_languages)
         irc.reply(language)
 
