@@ -256,6 +256,8 @@ class Alias(callbacks.Privmsg):
         (name, alias) = privmsgs.getArgs(args, required=2)
         try:
             self.addAlias(irc, name, alias)
+            self.log.info('Adding alias %r for %r (from %s)' %
+                          (name, alias, msg.prefix))
             irc.reply(msg, conf.replySuccess)
         except AliasError, e:
             irc.error(msg, str(e))
@@ -268,6 +270,7 @@ class Alias(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         try:
             self.removeAlias(name)
+            self.log.info('Removing alias %r (from %s)' % (name, msg.prefix))
             irc.reply(msg, conf.replySuccess)
         except AliasError, e:
             irc.error(msg, str(e))
