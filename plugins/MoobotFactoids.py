@@ -173,11 +173,6 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         elif newfact.startswith("<action>"):
             newfact = newfact[8:]
             type = "action"
-        elif newfact.startswith("see "):
-            newfact = newfact[4:]
-            type = "refer"
-            # shortcut the substitutions here
-            return (type, newfact)
         newfact = newfact.strip()
         newfact = plugins.standardSubstitute(irc, msg, newfact)
         return (type, newfact)
@@ -234,11 +229,6 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(text, prefixName=False)
             elif type == "define":
                 irc.reply("%s is %s" % (key, text), prefixName=False)
-            elif type == "refer":
-                # text here is the new key to refer to 
-                msg.args = [s.replace(key, text) for s in msg.args]
-                newtokens = [s.replace(key, text) for s in tokens]
-                self.invalidCommand(irc, msg, newtokens) 
             else:
                 irc.error("Spurious type from _parseFactoid.")
             return True

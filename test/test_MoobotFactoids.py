@@ -115,11 +115,6 @@ if sqlite is not None:
             self.assertResponse('moo', 'foo')
             self.assertNotError('foo is bar _is_ baz')
             self.assertResponse('foo is bar', 'foo is bar is baz')
-            # Check the "see ..." referencing
-            self.assertNotError('bar is see moo')
-            self.assertResponse('bar', 'foo')
-            self.assertNotError('bar2 _is_ see foo is bar')
-            self.assertResponse('bar2', 'foo is bar is baz')
 
         def testFactinfo(self):
             self.assertNotError('moo is <reply>foo')
