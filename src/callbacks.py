@@ -305,7 +305,7 @@ class RichReplyMethods(object):
     def errorNoCapability(self, capability, s='', **kwargs):
         log.warning('Denying %s for lacking %r capability',
                     self.msg.prefix, capability)
-        s = self._makeReply(conf.replyNoCapability % capability, s)
+        s = self.__makeReply(conf.replyNoCapability % capability, s)
         self.error(s, **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
