@@ -39,6 +39,7 @@ __revision__ = "$Id$"
 import plugins
 
 import re
+import math
 import sets
 import time
 
@@ -57,10 +58,6 @@ def configure(advanced):
         words = anything('What words? (separate individual words by spaces)')
         conf.supybot.plugins.BadWords.words.set(words)
 
-nastyChars = '!@#$' * 256
-def subber(m):
-    return nastyChars[:len(m.group(1))]
-
 class LastModifiedSetOfStrings(registry.SpaceSeparatedListOfStrings):
     List = sets.Set
     lastModified = 0
@@ -72,6 +69,37 @@ conf.registerPlugin('BadWords')
 conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'words',
     LastModifiedSetOfStrings([], """Determines what words are
     considered to be 'bad' so the bot won't say them."""))
+conf.registerGlobalValue(conf.supybot.plugins.BadWords,'requireWordBoundaries',
+    registry.Boolean(False, """Determines whether the bot will require bad
+    words to be independent words, or whether it will censor them within other
+    words.  For instance, if 'darn' is a bad word, then if this is true, 'darn'
+    will be censored, but 'darnit' will not.  You probably want this to be
+    false."""))
+
+class String256(registry.String):
+    def setValue(self, s):
+        multiplier = int(math.ceil(1024/len(s)))
+        registry.String.setValue(self, s*multiplier)
+                               
+conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'nastyChars',
+    String256('!@#&', """Determines what characters will replace bad words; a
+    chunk of these characters matching the size of the replaced bad word will
+    be used to replace the bad words you've configured."""))
+
+class ReplacementMethods(registry.OnlySomeStrings):
+    validStrings = ('simple', 'nastyCharacters')
+    
+conf.registerGlobalValue(conf.supybot.plugins.BadWords, 'replaceMethod',
+    ReplacementMethods('nastyCharacters', """Determines the manner in which
+    bad words will be replaced.  'nastyCharacters' (the default) will replace a
+    bad word with the same number of 'nasty characters' (like those used in
+    comic books; configurable by supybot.plugins.BadWords.nastyChars).
+    'simple' will replace a bad word with a simple strings (regardless of the
+    length of the bad word); this string is configurable via
+    supybot.plugins.BadWords.simpleReplacement."""))
+conf.registerGlobalValue(conf.supybot.plugins.BadWords,'simpleReplacement',
+    registry.String('[CENSORED]', """Determines what word will replace bad
+    words if the replacement method is 'simple'."""))
 
 class BadWords(privmsgs.CapabilityCheckingPrivmsg):
     priority = 1
@@ -81,19 +109,29 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
         self.lastModified = 0
         self.words = conf.supybot.plugins.BadWords.words
 
+    def sub(self, m):
+        replaceMethod = self.registryValue('replaceMethod')
+        if replaceMethod == 'simple':
+            return self.registryValue('simpleReplacement')
+        elif replaceMethod == 'nastyCharacters':
+            return self.registryValue('nastyChars')[:len(m.group(1))]
+
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
             if self.lastModified < self.words.lastModified:
                 self.makeRegexp(self.words())
                 self.lastModified = time.time()
             s = msg.args[1]
-            s = self.regexp.sub(subber, s)
+            s = self.regexp.sub(self.sub, s)
             return ircmsgs.privmsg(msg.args[0], s)
         else:
             return msg
 
     def makeRegexp(self, iterable):
-        self.regexp = re.compile(r'\b('+'|'.join(iterable)+r')\b', re.I)
+        s = '(%s)' % '|'.join(map(re.escape, iterable))
+        if self.registryValue('requireWordBoundaries'):
+            s = r'\b%s\b' % s
+        self.regexp = re.compile(s, re.I)
 
     def add(self, irc, msg, args):
         """<word> [<word> ...]

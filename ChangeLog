@@ -1,3 +1,7 @@
+	* Added supybot.plugins.BadWords.{replaceMethod, nastyChars,
+	simpleReplacement, requireWordBoundaries}; see the associated
+	help strings to find out what they do.
+	
 	* Added supybot.plugins.Babelfish.disabledLanguages, to disable
 	certain languages from being translated/spoken.
 
