@@ -399,6 +399,8 @@ class UtilsTest(SupyTestCase):
         d = ipd(dict(Foo=10))
         self.failUnless(d['foo'] == 10)
         self.assertEqual(d.keys(), ['Foo'])
+        self.assertEqual(d.get('foo'), 10)
+        self.assertEqual(d.get('Foo'), 10)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
