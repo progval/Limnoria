@@ -323,8 +323,8 @@ def main():
         public servers don't.  If you try to connect to a server and for some
         reason it just won't work, it might be that you need to set a
         password.""")
-        serverpassword = getpass('What password?  If you decided not to use '
-                                 'a password, just press enter. ')
+        if yn('Do you want to set such a password?') == 'y':
+            serverpassword = getpass()
 
     myPrint("""Of course, having an IRC bot isn't the most useful thing in the
     world unless you can make that bot join some channels.""")
