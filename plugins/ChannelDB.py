@@ -63,13 +63,14 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-
-smileys = (':)', ';)', ':]', ':-)', ':-D', ':D', ':P', ':p', '(=', '=)')
-frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
-
-smileyre = re.compile('|'.join(imap(re.escape, smileys)))
-frownre = re.compile('|'.join(imap(re.escape, frowns)))
-
+def SmileyType(s):
+    try:
+        L = configurable.SpaceSeparatedStrListType(s)
+        return re.compile('|'.join(imap(re.escape, L)))
+    except configurable.Error:
+        raise configurable.Error, 'Value must be a space-separated list of ' \
+                                  'smileys or frowns.'
+    
 class ChannelDB(plugins.ChannelDBHandler,
                 configurable.Mixin,
                 callbacks.Privmsg):
@@ -80,8 +81,16 @@ class ChannelDB(plugins.ChannelDBHandler,
           possibly skewing the channel stats (especially in cases where he's
           relaying between channels on a network."""),
          ('wordstats-top-n', configurable.IntType, 3,
-         """Determines the maximum number of top users to show for a given
-         wordstat when you request the wordstats for a particular word.""")]
+          """Determines the maximum number of top users to show for a given
+          wordstat when you request the wordstats for a particular word."""),
+         ('smileys', SmileyType, SmileyType(':) ;) ;] :-) :-D :D :P :p (= =)'),
+          """Determines what words count as smileys for the purpose of keeping
+          statistics on the number of smileys each user has sent to the
+          channel."""),
+         ('frowns', SmileyType, SmileyType(':| :-/ :-\\ :\\ :/ :( :-( :\'('),
+          """Determines what words count as frowns for the purpose of keeping
+          statistics on the number of frowns each user has sent ot the
+          channel."""),]
         )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -213,8 +222,8 @@ class ChannelDB(plugins.ChannelDBHandler,
         chars = len(s)
         words = len(s.split())
         isAction = ircmsgs.isAction(msg)
-        frowns = len(frownre.findall(s))
-        smileys = len(smileyre.findall(s))
+        frowns = len(self.configurables.get('frowns', channel).findall(s))
+        smileys = len(self.configurables.get('smileys', channel).findall(s))
         s = ircmsgs.prettyPrint(msg)
         cursor.execute("""UPDATE channel_stats
                           SET smileys=smileys+%s,
