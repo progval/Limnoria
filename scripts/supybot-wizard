@@ -439,7 +439,12 @@ def main():
         import callbacks
         conf.prefixChars = anything('What would you like your bot\'s '
                                     'prefix character(s) to be?')
-        while callbacks.canonicalName(conf.prefixChars) != conf.prefixChars:
+        invalidPrefixChar = True
+        while invalidPrefixChar:
+            for c in conf.prefixChars:
+                if c not in conf.validPrefixChars:
+                    invalidPrefixChar = True
+                    myPrint('%r is not a valid prefixChar.' % c)
             conf.prefixChars = anything('That includes one or more invalid '
                                         'prefix characters.  What would you'
                                         'like your bot\'s prefix character(s)'

@@ -244,8 +244,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         Sets the prefix chars by which the bot can be addressed.
         """
         s = privmsgs.getArgs(args)
-        if s.translate(string.ascii, string.ascii_letters) == '':
-            irc.error(msg, 'Prefixes cannot contain letters.')
+        for c in s:
+            if c not in conf.validPrefixChars:
+                s = 'PrefixChars must be something in %r'%conf.validPrefixChars
+                irc.error(msg, s)
         else:
             conf.prefixChars = s
             irc.reply(msg, conf.replySuccess)

@@ -223,6 +223,12 @@ ignores = []
 prefixChars = '@'
 
 ###
+# validPrefixChars: A string of chars that are allowed to be used as
+#                   prefixChars.
+###
+validPrefixChars = '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'
+
+###
 # detailedTracebacks: A boolean describing whether or not the bot will give
 #                     *extremely* detailed tracebacks.  Be cautioned, this eats
 #                     a lot of log file space.
