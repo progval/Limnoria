@@ -74,6 +74,10 @@ def open(filename, clear=False):
     acc = ''
     for line in fd:
         line = line.rstrip('\r\n')
+        # XXX There should be some way to determine whether or not we're
+        #     starting a new variable or not.  As it is, if there's a backslash
+        #     at the end of every line in a variable, it won't be read, and
+        #     worse, the error will pass silently.
         if line.endswith('\\'):
             acc += line[:-1]
             continue
