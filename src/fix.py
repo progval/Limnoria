@@ -39,7 +39,7 @@ __revision__ = "$Id$"
 
 __all__ = []
 
-exported = ['ignore', 'reversed', 'window', 'group', 'sorted',
+exported = ['ignore', 'reversed', 'window', 'group',
            'partition', 'any', 'all', 'rsplit']
 
 import new
