@@ -52,6 +52,9 @@ class TokenizerTestCase(unittest.TestCase):
     def testDQsWithBackslash(self):
         self.assertEqual(tokenize('"\\\\"'), ["\\"])
 
+    def testDoubleQuotes(self):
+        self.assertEqual(tokenize('"\\"foo\\""'), ['"foo"'])
+
     def testSingleWord(self):
         self.assertEqual(tokenize('foo'), ['foo'])
 

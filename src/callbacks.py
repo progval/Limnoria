@@ -155,16 +155,15 @@ class Tokenizer:
     # These are the characters valid in a token.  Everything printable except
     # double-quote, left-bracket, and right-bracket.
     validChars = string.ascii.translate(string.ascii, '\x00\r\n \t"[]')
+    quotes = '"'
     def __init__(self, tokens=''):
         # Add a '|' to tokens to have the pipe syntax.
         self.validChars = self.validChars.translate(string.ascii, tokens)
 
     def _handleToken(self, token):
-        while token and token[0] == '"' and token[-1] == token[0]:
-            if len(token) > 1:
-                token = token[1:-1].decode('string_escape') # 2.3+
-            else:
-                break
+        if token[0] == token[-1] and token[0] in self.quotes:
+            token = token[1:-1]
+            token = token.decode('string-escape')
         return token
 
     def _insideBrackets(self, lexer):
@@ -185,7 +184,7 @@ class Tokenizer:
         """Tokenizes a string according to supybot's nested argument format."""
         lexer = shlex.shlex(StringIO(s))
         lexer.commenters = ''
-        lexer.quotes = '"'
+        lexer.quotes = self.quotes
         lexer.wordchars = self.validChars
         args = []
         ends = []
