@@ -250,7 +250,12 @@ class WordStats(callbacks.Privmsg):
             for (userid, count) in self.db.getTopUsers(channel, word, n):
                 if userid == id:
                     rank = None
-                username = ircdb.users.getUser(userid).name
+                try:
+                    username = ircdb.users.getUser(userid).name
+                except KeyError:
+                    irc.error('Odd, I have a user in my WordStats database '
+                              'that doesn\'t exist in the user database.')
+                    return
                 L.append('%s: %s' % (username, count))
             ret = 'Top %s (out of a total of %s seen):' % \
                   (utils.nItems(ers, len(L)), utils.nItems(repr(word), total))
