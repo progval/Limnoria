@@ -120,7 +120,7 @@ class Http(callbacks.Privmsg):
             except KeyError:
                 s = fd.read(self.maxSize)
                 if len(s) != self.maxSize:
-                    irc.reply(msg, '%s is %s bytes long.' % (url, size))
+                    irc.reply(msg, '%s is %s bytes long.' % (url, len(s)))
                 else:
                     irc.reply(msg, 'The server didn\'t tell me how long %s is '
                                    'but it\'s longer than %s bytes.' %
