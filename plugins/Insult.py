@@ -36,6 +36,7 @@ available for customizing.
 
 __author__       = "Mike Taylor <bear@code-bear.com>"
 __revision__     = "$Id$"
+#__contributors  = ['Grant Bowman <grantbow@grantbow.com>', supybot.authors.jemfinch]
 
 # The list of words came from the mozbot Insult.bm module
 # The header of that module has the following credit:
@@ -165,17 +166,20 @@ class Insult(callbacks.Privmsg):
             an, adj1, amount, adj2, noun)
 
     def insult(self, irc, msg, args):
-        """ [<target>]
+        """[<channel>] [<target>]
 
         Reply optionally directed at a random string, person,
-        object, etc.
+        object, etc.  <channel> is only necessary if the message isn't sent
+        in the channel itself.
         """
         tempinsult = self._buildInsult()
+        channel = privmsgs.getChannel(msg, args)
         victim = privmsgs.getArgs(args, required=0, optional=1)
         if not victim:
-            irc.reply(tempinsult)
+            irc.reply(tempinsult, to=channel, prefixName=False)
         else:
-            irc.reply(victim + ' - ' + tempinsult)
+            irc.reply('%s - %s ' % (victim, tempinsult),
+                to=channel, prefixName=False)
 
 Class = Insult
 
