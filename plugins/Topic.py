@@ -192,6 +192,15 @@ class Topic(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
         irc.noReply()
 
+    def doJoin(self, irc, msg):
+        if ircutils.strEqual(msg.nick, irc.nick):
+            # We're joining a channel, let's watch for the topic.
+            self.watchingFor332.add(msg.args[0])
+
+    def do332(self, irc, msg):
+        if msg.args[1] in self.watchingFor332:
+            self.watchingFor332.remove(msg.args[1])
+            
     def topic(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -212,6 +221,16 @@ class Topic(callbacks.Privmsg):
         topics.append(topic)
         self._sendTopics(irc, channel, topics)
     add = wrap(add, ['canChangeTopic', rest('topic')])
+
+    def replace(self, irc, msg, args, channel, i, topic):
+        """[<channel>] <number> <topic>
+
+        Replaces topic <number> with <topic>.
+        """
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics[i] = topic
+        self._sendTopics(irc, channel, topics)
+    replace = wrap(replace, ['canChangeTopic', 'topicNumber', rest('topic')])
 
     def insert(self, irc, msg, args, channel, topic):
         """[<channel>] <topic>

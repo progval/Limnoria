@@ -42,6 +42,16 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('topic remove 1')
         self.assertError('topic remove 1')
 
+    def testReplace(self):
+        _ = self.getMsg('topic add foo')
+        _ = self.getMsg('topic add bar')
+        _ = self.getMsg('topic add baz')
+        self.assertRegexp('topic replace 1 oof', 'oof.*bar.*baz')
+        self.assertRegexp('topic replace -1 zab', 'oof.*bar.*zab')
+        self.assertRegexp('topic replace 2 lorem ipsum',
+                          'oof.*lorem ipsum.*zab')
+        self.assertRegexp('topic replace 2 rab', 'oof.*rab.*zab')
+        
     def testGet(self):
         self.assertError('topic get 1')
         _ = self.getMsg('topic add foo')
