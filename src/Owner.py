@@ -115,6 +115,7 @@ def registerDefaultPlugin(command, plugin):
                              command, registry.String(plugin, ''))
 
 registerDefaultPlugin('ignore', 'Admin')
+registerDefaultPlugin('unignore', 'Admin')
 registerDefaultPlugin('addcapability', 'Admin')
 registerDefaultPlugin('removecapability', 'Admin')
 registerDefaultPlugin('list', 'Misc')
