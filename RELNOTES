@@ -1,8 +1,7 @@
 Version 0.77.0
 
-Since some old plugins have been removed, you'll do best to remove
-your previous installation (whether global or local) of Supybot
-before running the wizard.
+Setup.py will automatically remove your old installations for you, no
+need to worry about that yourself.
 
 Configuration has been *entirely* redone.  Read the new
 GETTING_STARTED document to see how to work with configuration
