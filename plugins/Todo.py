@@ -152,8 +152,7 @@ class Todo(callbacks.Privmsg):
                 return
             else:
                 cursor.execute("""SELECT userid, priority, added_at, task
-                                  FROM todo WHERE id = %s
-                                  AND active = 1""", taskid)
+                                  FROM todo WHERE id = %s""", taskid)
                 if cursor.rowcount == 0:
                     irc.error(msg, '%r is not a valid task id' % taskid)
                     return

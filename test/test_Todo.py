@@ -79,6 +79,7 @@ if sqlite is not None:
         def testRemovetodo(self):
             self.assertNotError('todo add do something else')
             self.assertNotError('todo remove 1')
+            self.assertNotError('todo 1')
 
         def testSearchtodo(self):
             self.assertNotError('todo add task number one')
