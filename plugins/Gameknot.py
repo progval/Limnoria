@@ -52,7 +52,7 @@ import callbacks
 
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     conf.registerPlugin('Gameknot', True)
     if advanced:
         output("""The Gameknot plugin has the functionality to watch for URLs

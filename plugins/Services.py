@@ -49,7 +49,7 @@ import schedule
 import callbacks
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     conf.registerPlugin('Services', True)
     nick = something('What is your registered nick?')
     password = something('What is your password for that nick?')

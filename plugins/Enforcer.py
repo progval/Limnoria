@@ -50,7 +50,7 @@ import registry
 import callbacks
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     conf.registerPlugin('Enforcer', True)
     chanserv = anything("""What\'s the name of ChanServ on your network?  If
                            there is no ChanServ on your network, just press

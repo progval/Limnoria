@@ -53,7 +53,7 @@ import callbacks
 
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     output('The default dictd server is dict.org.')
     if yn('Would you like to specify a different dictd server?'):
         server = something('What server?')

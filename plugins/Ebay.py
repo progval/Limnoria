@@ -53,7 +53,7 @@ import callbacks
 
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     conf.registerPlugin('Ebay', True)
     output("""The Ebay plugin has the functionality to watch for URLs
               that match a specific pattern (we call this a snarfer). When

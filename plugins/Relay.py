@@ -56,7 +56,7 @@ import callbacks
 
 def configure(advanced):
     import socket
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     conf.registerPlugin('Relay', True)
     startNetwork = anything('What is the name of the network you\'re '
                             'connecting to first?')
@@ -116,6 +116,9 @@ conf.registerChannelValue(conf.supybot.plugins.Relay, 'color',
 conf.registerChannelValue(conf.supybot.plugins.Relay, 'topicSync',
     registry.Boolean(True, """Determines whether the bot will synchronize
     topics between networks in the channels it relays."""))
+
+conf.registerGroup(conf.supybot.plugins.Relay, 'networks')
+
 class Relay(callbacks.Privmsg):
     noIgnore = True
     priority = sys.maxint
@@ -139,6 +142,9 @@ class Relay(callbacks.Privmsg):
         callbacks.Privmsg.__call__(self, irc, msg)
 
     def do376(self, irc, msg):
+#        channels = []
+#        networks = conf.supybot.plugins.Relay.networks
+#        networked = [irc.network for irc in world.ircs]
         if self.channels:
             irc.queueMsg(ircmsgs.joins(self.channels))
     do377 = do422 = do376

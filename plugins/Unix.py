@@ -55,7 +55,7 @@ import callbacks
 import utils
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     conf.registerPlugin('Unix', True)
     spellCmd = utils.findBinaryInPath('aspell')
     if not spellCmd:

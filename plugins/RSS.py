@@ -52,7 +52,7 @@ import registry
 import callbacks
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     conf.registerPlugin('RSS', True)
     prompt = 'Would you like to add an RSS feed?'
     while yn(prompt):

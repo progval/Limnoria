@@ -50,7 +50,7 @@ import privmsgs
 import callbacks
 
 def configure(advanced):
-    from questions import something, yn
+    from questions import output, something, yn
     conf.registerPlugin('Parter', True)
     channel = ' '
     while channel:

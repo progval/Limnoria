@@ -51,7 +51,7 @@ import registry
 import callbacks
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     conf.registerPlugin('BadWords', True)
     if yn('Would you like to add some bad words?'):
         words = anything('What words? (separate individual words by spaces)')

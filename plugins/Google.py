@@ -60,7 +60,7 @@ import callbacks
 import structures
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     output('To use Google\'t Web Services, you must have a license key.')
     if yn('Do you have a license key?'):
         key = something('What is it?')
