@@ -61,7 +61,7 @@ import supybot.structures as structures
 def thread(f):
     """Makes sure a command spawns a thread when called."""
     def newf(self, irc, msg, args, *L, **kwargs):
-        if threading.currentThread() is world.mainThread:
+        if world.isMainThread():
             t = callbacks.CommandThread(target=irc._callCommand,
                                         args=(f.func_name, self),
                                         kwargs=kwargs)
@@ -70,13 +70,12 @@ def thread(f):
             f(self, irc, msg, args, *L, **kwargs)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
-class UrlSnarfThread(threading.Thread):
+class UrlSnarfThread(world.SupyThread):
     def __init__(self, *args, **kwargs):
         assert 'url' in kwargs
         kwargs['name'] = 'Thread #%s (for snarfing %s)' % \
                          (world.threadsSpawned, kwargs.pop('url'))
-        world.threadsSpawned += 1
-        threading.Thread.__init__(self, *args, **kwargs)
+        super(UrlSnarfThread, self).__init__(*args, **kwargs)
         self.setDaemon(True)
 
 class SnarfQueue(ircutils.FloodQueue):
@@ -152,7 +151,7 @@ decorators = ircutils.IrcDict({
 def _int(s):
     return int(float(s))
 
-def getInt(irc, msg, args, state, default=None, type='integer', p=None):
+def getInt(irc, msg, args, state, type='integer', p=None):
     try:
         i = _int(args[0])
         if p is not None:
@@ -161,10 +160,7 @@ def getInt(irc, msg, args, state, default=None, type='integer', p=None):
         state.args.append(_int(args[0]))
         del args[0]
     except ValueError:
-        if default is not None:
-            state.args.append(default)
-        else:
-            irc.errorInvalid(type, args[0])
+        irc.errorInvalid(type, args[0])
 
 def getPositiveInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
@@ -177,7 +173,7 @@ def getNonNegativeInt(irc, msg, args, state, *L):
 def getId(irc, msg, args, state):
     getInt(irc, msg, args, state, type='id')
 
-def getExpiry(irc, msg, args, state, default=None):
+def getExpiry(irc, msg, args, state):
     now = int(time.time())
     try:
         expires = _int(args[0])
@@ -186,31 +182,14 @@ def getExpiry(irc, msg, args, state, default=None):
         state.args.append(expires)
         del args[0]
     except ValueError:
-        if default is not None:
-            if default:
-                default += now
-            state.args.append(default)
-        else:
-            irc.errorInvalid('number of seconds', args[0])
-    # XXX This should be handled elsewhere; perhaps all optional args should
-    # consider their first extra arg to be a default.
-    except IndexError:
-        if default is not None:
-            if default:
-                default += now
-            state.args.append(default)
-        else:
-            raise
+        irc.errorInvalid('number of seconds', args[0])
 
-def getBoolean(irc, msg, args, state, default=None):
+def getBoolean(irc, msg, args, state):
     try:
         state.args.append(utils.toBool(args[0]))
         del args[0]
     except ValueError:
-        if default is not None:
-            state.args.append(default)
-        else:
-            irc.errorInvalid('boolean', args[0])
+        irc.errorInvalid('boolean', args[0])
 
 def getChannelDb(irc, msg, args, state, **kwargs):
     if not conf.supybot.databases.plugins.channelSpecific():
@@ -430,6 +409,12 @@ def args(irc,msg,args, types=[], state=None,
             enforce = False
             name = name[:-1]
         wrapper = wrappers[name]
+        if optional and specArgs:
+            # First arg is default.
+            default = specArgs[0]
+            specArgs = specArgs[1:]
+            if callable(default):
+                default = default()
         try:
             wrapper(irc, msg, args, state, *specArgs)
         except (callbacks.Error, ValueError, callbacks.ArgumentError), e:
@@ -498,12 +483,13 @@ def wrap(f, *argsArgs, **argsKwargs):
         else:
             f(self, irc, msg, args, *state.args, **state.kwargs)
 
+    newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
     decorators = argsKwargs.pop('decorators', None)
     if decorators is not None:
         decorators = map(_decorators.__getitem__, decorators)
         for decorator in decorators:
             newf = decorator(newf)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
+    return newf
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
