@@ -195,7 +195,7 @@ class Notes(callbacks.Privmsg):
         if toId == id:
             author = ircdb.users.getUser(fromId).name
             newnote = '%s (Sent by %s %s ago)' % (note, author, elapsed)
-        elif fromid == id:
+        elif fromId == id:
             recipient = ircdb.users.getUser(toId).name
             newnote = '%s (Sent to %s %s ago)' % (note, recipient, elapsed)
         irc.reply(msg, newnote, private=(not public))
