@@ -51,7 +51,7 @@ import getopt
 import socket
 import urllib
 import xml.dom.minidom
-from itertools import imap, ifilter
+from itertools import imap
 
 import supybot.conf as conf
 import supybot.utils as utils
