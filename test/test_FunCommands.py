@@ -56,6 +56,7 @@ class FunCommandsTest(PluginTestCase):
 
     def testCalc(self):
         self.assertResponse('calc 5*0.06', str(5*0.06))
+        self.assertResponse('calc 2.0-7.0', str(2-7))
 
     def testChr(self):
         for i in range(256):
@@ -103,6 +104,11 @@ class FunCommandsTest(PluginTestCase):
         self.assertNotError('whois ohio-state.edu')
         self.assertError('whois slashdot.org')
 
+    def testRpn(self):
+        self.assertResponse('rpn 5 2 +', '7')
+        self.assertResponse('rpn 1 2 3 +', 'Stack: [1, 5]')
+        self.assertResponse('rpn 1 dup', 'Stack: [1, 1]')
+        self.assertResponse('rpn 2 3 4 + -', str(2-7))
 
     
 
