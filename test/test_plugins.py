@@ -39,7 +39,7 @@ import plugins
 class holder:
     users = sets.Set(map(str, range(1000)))
 
-class FunctionsTestCase(unittest.TestCase):
+class FunctionsTestCase(SupyTestCase):
     class irc:
         class state:
             channels = {'#foo': holder()}

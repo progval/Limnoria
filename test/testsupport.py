@@ -39,6 +39,7 @@ import time
 started = time.time()
 import unittest
 
+import log
 import conf
 import utils
 import ircdb
@@ -99,7 +100,13 @@ class TimeoutError(AssertionError):
     def __str__(self):
         return '%r timed out' % self.args[0]
 
-class PluginTestCase(unittest.TestCase):
+
+class SupyTestCase(unittest.TestCase):
+    def setUp(self):
+        log.critical('Beginning test case %s', self.id())
+        unittest.TestCase.setUp(self)
+
+class PluginTestCase(SupyTestCase):
     """Subclass this to write a test case for a plugin.  See test/test_Fun.py
     for an example.
     """
@@ -108,10 +115,11 @@ class PluginTestCase(unittest.TestCase):
     cleanConfDir = True
     cleanDataDir = True
     def setUp(self, nick='test'):
-        # Set conf variables appropriately.
         if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
             # Necessary because there's a test in here that shouldn\'t run.
             return
+        SupyTestCase.setUp(self)
+        # Set conf variables appropriately.
         conf.supybot.prefixChars.set('@')
         conf.supybot.reply.whenNotCommand.setValue(False)
         self.myVerbose = world.myVerbose

@@ -39,14 +39,14 @@ import world
 import ircdb
 import ircutils
 
-class IrcdbTestCase(unittest.TestCase):
+class IrcdbTestCase(SupyTestCase):
     def setUp(self):
         world.testing = False
-        unittest.TestCase.setUp(self)
+        SupyTestCase.setUp(self)
 
     def tearDown(self):
         world.testing = True
-        unittest.TestCase.tearDown(self)
+        SupyTestCase.tearDown(self)
 
 class FunctionsTestCase(IrcdbTestCase):
     def testIsAntiCapability(self):
@@ -91,7 +91,7 @@ class FunctionsTestCase(IrcdbTestCase):
         self.assertEqual(ircdb.invertCapability('#foo,-bar'), '#foo,bar')
 
 
-class CapabilitySetTestCase(unittest.TestCase):
+class CapabilitySetTestCase(SupyTestCase):
     def testGeneral(self):
         d = ircdb.CapabilitySet()
         self.assertRaises(KeyError, d.check, 'foo')
@@ -161,7 +161,7 @@ class CapabilitySetTestCase(unittest.TestCase):
         self.failIf(s.check('-foo'))
 
 
-class UserCapabilitySetTestCase(unittest.TestCase):
+class UserCapabilitySetTestCase(SupyTestCase):
     def testOwnerHasAll(self):
         d = ircdb.UserCapabilitySet(('owner',))
         self.failIf(d.check('-foo'))

@@ -94,7 +94,7 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('unload ALIAS')
 
 
-class FunctionsTestCase(unittest.TestCase):
+class FunctionsTestCase(SupyTestCase):
     def testLoadPluginModule(self):
         self.assertRaises(ImportError, Owner.loadPluginModule, 'asldj')
         self.failUnless(Owner.loadPluginModule('Owner'))

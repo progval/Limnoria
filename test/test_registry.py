@@ -36,7 +36,7 @@ import re
 import conf
 import registry
 
-class ValuesTestCase(unittest.TestCase):
+class ValuesTestCase(SupyTestCase):
     def testBoolean(self):
         v = registry.Boolean(True, """Help""")
         self.failUnless(v())

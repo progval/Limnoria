@@ -38,7 +38,7 @@ import ircmsgs
 import ircutils
 
 
-class IrcMsgTestCase(unittest.TestCase):
+class IrcMsgTestCase(SupyTestCase):
     def testLen(self):
         for msg in msgs:
             if msg.prefix:
@@ -115,7 +115,7 @@ class IrcMsgTestCase(unittest.TestCase):
         self.assertRaises(ircmsgs.MalformedIrcMsg, ircmsgs.IrcMsg,
                           args=('biff',), prefix='foo!bar@baz')
 
-class FunctionsTestCase(unittest.TestCase):
+class FunctionsTestCase(SupyTestCase):
     def testIsAction(self):
         L = [':jemfinch!~jfincher@ts26-2.homenet.ohio-state.edu PRIVMSG'
              ' #sourcereview :ACTION does something',

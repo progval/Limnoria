@@ -34,7 +34,7 @@ import sets
 
 import utils
 
-class UtilsTest(unittest.TestCase):
+class UtilsTest(SupyTestCase):
     def testMatchCase(self):
         f = utils.matchCase
         self.assertEqual('bar', f('foo', 'bar'))

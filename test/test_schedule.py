@@ -35,7 +35,7 @@ import time
 
 import schedule
 
-class TestSchedule(unittest.TestCase):
+class TestSchedule(SupyTestCase):
     def testSchedule(self):
         sched = schedule.Schedule()
         i = [0]

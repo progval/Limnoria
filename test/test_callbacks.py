@@ -39,7 +39,7 @@ import callbacks
 tokenize = callbacks.tokenize
 
 
-class TokenizerTestCase(unittest.TestCase):
+class TokenizerTestCase(SupyTestCase):
     def testEmpty(self):
         self.assertEqual(tokenize(''), [])
 
@@ -115,7 +115,7 @@ class TokenizerTestCase(unittest.TestCase):
         self.assertEqual(tokenize(s), [s])
         
 
-class FunctionsTestCase(unittest.TestCase):
+class FunctionsTestCase(SupyTestCase):
     def testCanonicalName(self):
         self.assertEqual('foo', callbacks.canonicalName('foo'))
         self.assertEqual('foobar', callbacks.canonicalName('foo-bar'))

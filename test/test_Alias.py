@@ -33,7 +33,7 @@ from testsupport import *
 
 Alias = Owner.loadPluginModule('Alias')
 
-class FunctionsTest(unittest.TestCase):
+class FunctionsTest(SupyTestCase):
     def testFindAliasCommand(self):
         s = 'command'
         self.failIf(Alias.findAliasCommand(s, ''))

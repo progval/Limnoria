@@ -35,7 +35,7 @@ import pickle
 
 from structures import *
 
-class RingBufferTestCase(unittest.TestCase):
+class RingBufferTestCase(SupyTestCase):
     def testInit(self):
         self.assertRaises(ValueError, RingBuffer, -1)
         self.assertRaises(ValueError, RingBuffer, 0)
@@ -198,7 +198,7 @@ class RingBufferTestCase(unittest.TestCase):
         self.assertEqual(L, range(3))
 
 
-class QueueTest(unittest.TestCase):
+class QueueTest(SupyTestCase):
     def testReset(self):
         q = queue()
         q.enqueue(1)
@@ -363,7 +363,7 @@ class QueueTest(unittest.TestCase):
 
 queue = smallqueue
 
-class SmallQueueTest(unittest.TestCase):
+class SmallQueueTest(SupyTestCase):
     def testReset(self):
         q = queue()
         q.enqueue(1)
@@ -527,7 +527,7 @@ class SmallQueueTest(unittest.TestCase):
         self.assertEqual(q, pickle.loads(pickle.dumps(q)))
 
 
-class MaxLengthQueueTestCase(unittest.TestCase):
+class MaxLengthQueueTestCase(SupyTestCase):
     def testInit(self):
         q = MaxLengthQueue(3, (1, 2, 3))
         self.assertEqual(list(q), [1, 2, 3])
@@ -549,7 +549,7 @@ class MaxLengthQueueTestCase(unittest.TestCase):
         self.assertEqual(q[0], 3)
 
 
-class TwoWayDictionaryTestCase(unittest.TestCase):
+class TwoWayDictionaryTestCase(SupyTestCase):
     def testInit(self):
         d = TwoWayDictionary(foo='bar')
         self.failUnless('foo' in d)
@@ -576,7 +576,7 @@ class TwoWayDictionaryTestCase(unittest.TestCase):
         self.failIf('foo' in d)
 
 
-class PersistentDictionaryTestCase(unittest.TestCase):
+class PersistentDictionaryTestCase(SupyTestCase):
     def test(self):
         d = PersistentDictionary('test.dict')
         d['foo'] = 'bar'

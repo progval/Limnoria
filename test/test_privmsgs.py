@@ -35,7 +35,7 @@ import ircmsgs
 import privmsgs
 import callbacks
 
-class FunctionsTest(unittest.TestCase):
+class FunctionsTest(SupyTestCase):
     def testGetChannel(self):
         channel = '#foo'
         msg = ircmsgs.privmsg(channel, 'foo bar baz')

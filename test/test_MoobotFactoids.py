@@ -40,7 +40,7 @@ except ImportError:
 if sqlite is not None:
     MoobotFactoids = Owner.loadPluginModule('MoobotFactoids')
     MF = MoobotFactoids
-    class OptionListTestCase(unittest.TestCase):
+    class OptionListTestCase(SupyTestCase):
         def testPickOptions(self):
             for i in xrange(10):
                 self.failUnless(MF.pickOptions('(a|b)') in ['a', 'b'])

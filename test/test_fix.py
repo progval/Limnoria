@@ -35,7 +35,7 @@ from testsupport import *
 
 import itertools
 
-class FunctionsTest(unittest.TestCase):
+class FunctionsTest(SupyTestCase):
     def testCatch(self):
         def f():
             raise Exception

@@ -34,7 +34,7 @@ from testsupport import *
 import webutils
 
 
-class WebutilsTestCase(unittest.TestCase):
+class WebutilsTestCase(SupyTestCase):
     def testGetDomain(self):
         self.assertEqual(webutils.getDomain('http://slashdot.org/foo/bar.exe'),
                          'slashdot.org')
