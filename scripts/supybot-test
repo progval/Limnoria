@@ -31,6 +31,7 @@
 
 import os
 import time
+import shutil
 started = time.time()
 
 import supybot
@@ -117,6 +118,9 @@ if __name__ == '__main__':
 
     parser = optparse.OptionParser(usage='Usage: %prog [options] [plugins]',
                                    version='Supybot %s' % conf.version)
+    parser.add_option('-c', '--clean', action='store_true', default=False,
+                      dest='clean', help='Cleans the various data/conf/logs'
+                      'directories before running tests.')
     parser.add_option('-t', '--timeout', action='store', type='int',
                       dest='timeout',
                       help='Sets the timeout for tests to return responses.')
@@ -189,6 +193,10 @@ if __name__ == '__main__':
     suite = unittest.TestSuite(test.suites)
     runner = unittest.TextTestRunner(verbosity=2)
     print 'Testing began at %s (pid %s)' % (time.ctime(), os.getpid())
+    if options.clean:
+        shutil.rmtree(conf.supybot.directories.log())
+        shutil.rmtree(conf.supybot.directories.conf())
+        shutil.rmtree(conf.supybot.directories.data())
     runner.run(suite)
 
     if hasattr(unittest, 'asserts'):
