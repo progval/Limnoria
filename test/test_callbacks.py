@@ -108,7 +108,6 @@ class TokenizerTestCase(unittest.TestCase):
         s = s[:-1] + '\x0f'
         self.assertEqual(tokenize(s), [s])
         
-
     def testColor(self):
         s = '\x032,3foo\x03'
         self.assertEqual(tokenize(s), [s])
