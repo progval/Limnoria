@@ -144,7 +144,7 @@ class Status(callbacks.Privmsg):
                     utils.timeElapsed(ended-started))
         irc.reply(msg, utils.commaAndify(imap(format, L)))
 
-    def netstats(self, irc, msg, args):
+    def net(self, irc, msg, args):
         """takes no arguments
 
         Returns some interesting network-related statistics.
@@ -155,7 +155,7 @@ class Status(callbacks.Privmsg):
                    (self.recvdMsgs, self.recvdBytes,
                     self.sentMsgs, self.sentBytes))
 
-    def cpustats(self, irc, msg, args):
+    def cpu(self, irc, msg, args):
         """takes no arguments
 
         Returns some interesting CPU-related statistics on the bot.
@@ -192,10 +192,10 @@ class Status(callbacks.Privmsg):
                 mem = os.stat('/proc/%s/mem')[7]
             response += '  I\'m taking up %s kB of memory.' % mem
         except Exception:
-            self.log.exception('Uncaught exception in cpustats:')
+            self.log.exception('Uncaught exception in cpu:')
         irc.reply(msg, response)
 
-    def cmdstats(self, irc, msg, args):
+    def cmd(self, irc, msg, args):
         """takes no arguments
 
         Returns some interesting command-related statistics.

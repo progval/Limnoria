@@ -44,25 +44,25 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('bestuptime')
 
     def testNetstats(self):
-        self.assertNotError('netstats')
+        self.assertNotError('net')
 
     def testCpustats(self):
         try:
             original = world.startedAt
             world.startedAt = time.time()
-            self.assertError('cpustats')
+            self.assertError('cpu')
             world.startedAt = 0
-            self.assertNotError('cpustats')
+            self.assertNotError('cpu')
             for s in ['linux', 'freebsd', 'openbsd', 'netbsd']:
                 if sys.platform.startswith(s):
-                    self.assertRegexp('cpustats', 'kB')
+                    self.assertRegexp('cpu', 'kB')
         finally:
             world.startedAt = original
     def testUptime(self):
         self.assertNotError('uptime')
 
     def testCmdstats(self):
-        self.assertNotError('cmdstats')
+        self.assertNotError('cmd')
 
     def testCommands(self):
         self.assertNotError('commands')

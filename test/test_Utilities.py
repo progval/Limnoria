@@ -63,11 +63,11 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
     def testEcho(self):
         self.assertHelp('echo')
         self.assertResponse('echo foo', 'foo')
-        m = self.getMsg('cpustats')
+        m = self.getMsg('status cpu')
         self.assertResponse('echo "%s"' % m.args[1], m.args[1])
 
     def testRe(self):
-        self.assertResponse('re "m/My children/" [cpustats]', 'My children')
+        self.assertResponse('re "m/My children/" [status cpu]', 'My children')
         self.assertResponse('re s/user/luser/g user user', 'luser luser')
         self.assertResponse('re s/user/luser/ user user', 'luser user')
         self.assertNotRegexp('re m/foo/ bar', 'has no attribute')
