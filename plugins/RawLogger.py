@@ -50,9 +50,10 @@ class RawLogger(irclib.IrcCallback):
         world.flushers.append(self._flush)
 
     def die(self):
-        world.flushers.remove(self._flush)
+        if self._flush in world.flushers:
+            world.flushers.remove(self._flush)
         self.fd.close()
-        
+
     def inFilter(self, irc, msg):
         self.fd.write(str(msg))
         return msg
