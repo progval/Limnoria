@@ -59,9 +59,9 @@ frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
-class ChannelDB(callbacks.Privmsg,
+class ChannelDB(plugins.ChannelDBHandler, # Must be first (die).
                 plugins.Configurable,
-                plugins.ChannelDBHandler):
+                callbacks.Privmsg):
     noIgnore = True
     configurables = plugins.ConfigurableDictionary(
         [('self-stats', plugins.ConfigurableTypes.bool, True,
