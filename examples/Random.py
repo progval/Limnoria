@@ -59,33 +59,6 @@ def configure(onStart, afterConnect, advanced):
             seed = something('What seed?')
         onStart.append('seed %s' % seed)
 
-example = utils.wrapLines("""
-<jemfinch> $list Random
-<angryman> diceroll, random, range, sample, seed
-<jemfinch> $random
-<angryman> 0.478084042957
-<jemfinch> $random
-<angryman> 0.960634332773
-<jemfinch> $seed 50
-<angryman> The operation succeeded.
-<jemfinch> $random
-<angryman> 0.497536568759
-<jemfinch> $seed 50
-<angryman> The operation succeeded.
-<jemfinch> $random
-<angryman> 0.497536568759
-<jemfinch> $range 1 10
-<angryman> 3
-<jemfinch> $range 1 10000000000000
-<angryman> 6374111614437
-<jemfinch> $diceroll
-* angryman rolls a 2
-<jemfinch> $diceroll
-* angryman rolls a 3
-<jemfinch> $diceroll 100
-* angryman rolls a 97
-""")
-
 class Random(callbacks.Privmsg):
     rng = random.Random()
     def random(self, irc, msg, args):
@@ -118,7 +91,7 @@ class Random(callbacks.Privmsg):
         Returns a number between <start> and <end>, inclusive (i.e., the number
         can be either of the endpoints.
         """
-        (start, end) = privmsgs.getArgs(args, needed=2)
+        (start, end) = privmsgs.getArgs(args, required=2)
         try:
             end = int(end)
             start = int(start)
@@ -156,7 +129,7 @@ class Random(callbacks.Privmsg):
         sides is 6.
         """
         try:
-            n = privmsgs.getArgs(args, needed=0, optional=1)
+            n = privmsgs.getArgs(args, required=0, optional=1)
             if not n:
                 n = 6
             n = int(n)

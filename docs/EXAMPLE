@@ -95,10 +95,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Random')
 
-example = utils.wrapLines("""
-Add an example IRC session using this module here.
-""")
-
 class Random(callbacks.Privmsg):
     pass
 
@@ -119,8 +115,7 @@ of the module.  It's also returned when someone asks the bot for help
 for a given module (instead of help for a certain command).  We'll
 change this one to "Lots of stuff relating to random numbers."
 
-Then there are the imports.  The utils module is used (in example,
-which we'll see later).  The callbacks module is used (the class
+Then there are the imports. The callbacks module is used (the class
 you're given subclasses callbacks.Privmsg) but the privmsgs module
 isn't used.  That's alright; we can almost guarantee you'll use it, so
 we go ahead and add the import to the template.
@@ -131,13 +126,6 @@ that by default it simply adds "load Example" (where 'Example' is the name you
 provided as the name of your plugin, so in our case it is "load Random") at
 the bottom.  For many plugins this is all you need; for more complex plugins,
 you might need to ask questions and add commands based on the answers.
-
-Then there's an example string.  It's simply an example of usage of
-the plugin in practice.  scripts/setup.py offers to show the user an
-example of the module usage; this is what it shows them.  You'll note
-that it's wrapped for you in utils.wrapLines so you don't have to
-bother with it; just paste a session directly out of your IRC client
-and you'll be set.
 
 Now comes the meat of the plugin: the plugin class.
 
@@ -342,7 +330,7 @@ function:
         Returns a number between <start> and <end>, inclusive (i.e., the number
         can be either of the endpoints.
         """
-        (start, end) = privmsgs.getArgs(args, needed=2)
+        (start, end) = privmsgs.getArgs(args, required=2)
         try:
             end = int(end)
             start = int(start)
@@ -421,7 +409,7 @@ __" where __ is the number the bot rolled.  So here's the code:
         of sides is 6.
         """
         try:
-            n = privmsgs.getArgs(args, needed=0, optional=1)
+            n = privmsgs.getArgs(args, required=0, optional=1)
             if not n:
                 n = 6
             n = int(n)
@@ -437,7 +425,7 @@ important, though, is the first thing you'll notice that's different:
 the privmsg.getArgs call.  Here we're offering a default argument in
 case the user is too lazy to supply one (or just wants a nice,
 standard six-sided die :))  privmsgs.getArgs supports that; we'll just
-tell it that we don't *need* any arguments (via needed=0) and that we
+tell it that we don't *need* any arguments (via required=0) and that we
 *might like* one argument (optional=1).  If the user provides an
 argument, we'll get it -- if they don't, we'll just get an empty
 string.  Hence the "if not n: n = 6", where we provide the default.
@@ -509,36 +497,6 @@ the commands to run when the bot starts; we're just throwing our
 little piece into it.  These commands will then be written into the
 template scripts/setup.py creates for the bot.
 
-Now the only thing missing from our plugin is an example.  Here, I'll
-make one really quickly:
-
-    <jemfinch> $list Random
-    <angryman> diceroll, random, range, sample, seed
-    <jemfinch> $random
-    <angryman> 0.478084042957
-    <jemfinch> $random
-    <angryman> 0.960634332773
-    <jemfinch> $seed 50
-    <angryman> The operation succeeded.
-    <jemfinch> $random
-    <angryman> 0.497536568759
-    <jemfinch> $seed 50
-    <angryman> The operation succeeded.
-    <jemfinch> $random
-    <angryman> 0.497536568759
-    <jemfinch> $range 1 10
-    <angryman> 3
-    <jemfinch> $range 1 10000000000000
-    <angryman> 6374111614437
-    <jemfinch> $diceroll
-    * angryman rolls a 2
-    <jemfinch> $diceroll
-    * angryman rolls a 3
-    <jemfinch> $diceroll 100
-    * angryman rolls a 97
- 
-So we'll throw this into our example string (where the template says
-to put it) and then we're done!  We've written our own plugin from
-scratch (well, from the boilerplate that we got from
-scripts/newplugin.py :)) and survived!  Now go write more plugins for
-supybot, and send them to me so I can use them too :)
+We've written our own plugin from scratch (well, from the boilerplate
+that we got from scripts/newplugin.py :)) and survived!  Now go write
+more plugins for supybot, and send them to me so I can use them too :)
