@@ -99,6 +99,10 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
         finally:
             conf.supybot.databases.users.hash.setValue(orig)
 
+    def testStats(self):
+        self.assertNotError('user stats')
+        self.assertNotError('load FunDB')
+        self.assertNotError('user stats')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
