@@ -38,7 +38,7 @@ import random
 import ircmsgs
 import ircutils
 
-class FunctionsTestCase(unittest.TestCase):
+class FunctionsTestCase(SupyTestCase):
     hostmask = 'foo!bar@baz'
     def testHostmaskPatternEqual(self):
         for msg in msgs:
@@ -193,7 +193,7 @@ class FunctionsTestCase(unittest.TestCase):
             self.assertEqual(ip, ircutils.unDccIP(ircutils.dccIP(ip)))
         
 
-class IrcDictTestCase(unittest.TestCase):
+class IrcDictTestCase(SupyTestCase):
     def test(self):
         d = ircutils.IrcDict()
         d['#FOO'] = 'bar'
@@ -243,7 +243,7 @@ class IrcDictTestCase(unittest.TestCase):
         self.failUnless(d == copy.copy(d))
         self.failUnless(d == copy.deepcopy(d))
 
-class IrcSetTestCase(unittest.TestCase):
+class IrcSetTestCase(SupyTestCase):
     def test(self):
         s = ircutils.IrcSet()
         s.add('foo')
@@ -275,7 +275,7 @@ class IrcSetTestCase(unittest.TestCase):
 
         
 
-class IrcStringTestCase(unittest.TestCase):
+class IrcStringTestCase(SupyTestCase):
     def testEquality(self):
         self.assertEqual('#foo', ircutils.IrcString('#foo'))
         self.assertEqual('#foo', ircutils.IrcString('#FOO'))

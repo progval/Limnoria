@@ -38,7 +38,7 @@ import conf
 import irclib
 import ircmsgs
 
-class IrcMsgQueueTestCase(unittest.TestCase):
+class IrcMsgQueueTestCase(SupyTestCase):
     mode = ircmsgs.op('#foo', 'jemfinch')
     msg = ircmsgs.privmsg('#foo', 'hey, you')
     msgs = [ircmsgs.privmsg('#foo', str(i)) for i in range(10)]
@@ -159,7 +159,7 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         self.assertEqual(self.msg, q.dequeue())
 
 
-class ChannelStateTestCase(unittest.TestCase):
+class ChannelStateTestCase(SupyTestCase):
     def testPickleCopy(self):
         c = irclib.ChannelState()
         self.assertEqual(pickle.loads(pickle.dumps(c)), c)
@@ -202,7 +202,7 @@ class ChannelStateTestCase(unittest.TestCase):
         self.failIf('quuz' in c.voices)
 
 
-class IrcStateTestCase(unittest.TestCase):
+class IrcStateTestCase(SupyTestCase):
     class FakeIrc:
         nick = 'nick'
         prefix = 'nick!user@host'
@@ -299,14 +299,8 @@ class IrcStateTestCase(unittest.TestCase):
         st = irclib.IrcState()
         self.assert_(st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i')) or 1)
 
-    """
-    def testChannels(self):
-        channel =
-        state = irclib.IrcState()
-        state.addMsg(self.irc, ircmsgs.join('#foo'))
-    """
 
-class IrcTestCase(unittest.TestCase):
+class IrcTestCase(SupyTestCase):
     def setUp(self):
         self.irc = irclib.Irc('nick')
         _ = self.irc.takeMsg() # NICK
@@ -317,6 +311,8 @@ class IrcTestCase(unittest.TestCase):
         self.assertEqual(ircmsgs.pong('123'), self.irc.takeMsg())
 
     def test433Response(self):
+        # This is necessary; it won't change nick if irc.originalName==irc.nick
+        self.irc.nick = 'somethingElse' 
         self.irc.feedMsg(ircmsgs.IrcMsg('433 * %s :Nickname already in use.' %\
                                         self.irc.nick))
         msg = self.irc.takeMsg()
@@ -361,7 +357,7 @@ class IrcTestCase(unittest.TestCase):
         self.assertEqual(list(self.irc.state.history), [msg1, msg2])
 
 
-class IrcCallbackTestCase(unittest.TestCase):
+class IrcCallbackTestCase(SupyTestCase):
     class FakeIrc:
         pass
     irc = FakeIrc()
