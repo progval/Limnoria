@@ -1,3 +1,7 @@
+2004-12-22 Jeremy Fincher <jemfinch@supybot.com>
+	
+	* Version 0.80.0pre6!
+	
 	* Added a Topic.separator command, which replaces the current
 	separator with a new separator, changing the topic to reflect the
 	change.
@@ -6,6 +10,9 @@
 	isn't configured, the user will stay up-to-date with the current
 	version of the bot.  To take advantage of this, set your
 	supybot.user configuration variable to ""
+	
+	* Removed the supybot.databases.users.hash configuration
+	variable, so all bots hash by default.
 	
 	* Fixed a bug with AutoMode's auto-banning feature; a variable
 	was misspelled.

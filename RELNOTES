@@ -1,3 +1,10 @@
+Version 0.80.0pre6
+
+Another bugfix release.  No incompatibilities known.  The only
+registry change is that supybot.databases.users.hash has been
+removed.
+
+
 Version 0.80.0pre5
 
 Completely bugfix release.  No incompatibilies known.
