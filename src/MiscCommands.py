@@ -117,7 +117,7 @@ class MiscCommands(callbacks.Privmsg):
         cb = irc.findCallback(command)
         if cb:
             method = getattr(cb, command)
-            if hasattr(method, '__doc__'):
+            if hasattr(method, '__doc__') and method.__doc__ is not None:
                 doclines = method.__doc__.splitlines()
                 simplehelp = doclines.pop(0)
                 if doclines:
