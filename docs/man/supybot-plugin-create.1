@@ -1,15 +1,15 @@
 .\" Process this file with
-.\" groff -man -Tascii supybot-newplugin.1
+.\" groff -man -Tascii supybot-plugin-create.1
 .\"
-.TH SUPYBOT\-NEWPLUGIN 1 "SEPTEMBER 2004"
+.TH SUPYBOT\-PLUGIN\-CREATE 1 "APRIL 2005"
 .SH NAME
-supybot\-newplugin \- A wizard for creating Supybot plugins
+supybot\-plugin\-create \- A wizard for creating Supybot plugins
 .SH SYNOPSIS
-.B supybot\-newplugin
+.B supybot\-plugin\-create
 .RI [ options ]
 .SH DESCRIPTION
 .B
-supybot\-newplugin
+supybot\-plugin\-create
 is a wizard that creates a template python source file for a new
 .IR supybot (1)
 plugin.
@@ -21,19 +21,22 @@ Show version of program.
 .BR \-h ", " \-\^\-help
 Show summary of options.
 .TP
-.BR \-r ", " \-\^\-regexp
-Uses a regexp\-based callback.
-.TP
 .BI \-n " NAME" "\fR,\fP \-\^\-name=" NAME
 Sets the name for the plugin.
 .TP
 .BR \-t ", " \-\^\-thread
 Makes the plugin threaded.
+.TP
+.BI \-\^\-real-name=" REALNAME
+Specify what real name the copyright is assigned to.
 .SH "SEE ALSO"
 .IR python (1),
 .IR supybot (1),
+.IR supybot\-test (1),
+.IR supybot\-botchk (1),
 .IR supybot\-wizard (1),
 .IR supybot\-adduser (1),
+.IR supybot\-plugin\-doc (1)
 .SH AUTHOR
 This manual page was originally written by James Vega
 <vega dot james at gmail dot com>.  Permission is granted to copy,
