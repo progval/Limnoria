@@ -89,7 +89,8 @@ def _hupHandler(sig, frame):
     log.info('Received SIGHUP, reloading configuration.')
     _reload()
 
-signal.signal(signal.SIGHUP, _hupHandler)
+if os.name == 'posix':
+    signal.signal(signal.SIGHUP, _hupHandler)
 
 
 class Config(callbacks.Privmsg):
