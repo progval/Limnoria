@@ -74,20 +74,22 @@ class Misc(callbacks.Privmsg):
 
         Lists the commands available in the given plugin.  If no plugin is
         given, lists the public plugins available.  If --private is given,
-        lists all commands, not just the public ones.
+        lists the private plugins.
         """
         (optlist, rest) = getopt.getopt(args, '', ['private'])
-        evenPrivate = False
+        private = False
         for (option, argument) in optlist:
             if option == '--private':
-                evenPrivate = True
+                private = True
         name = privmsgs.getArgs(rest, required=0, optional=1)
         name = callbacks.canonicalName(name)
         if not name:
             def isPublic(cb):
                 name = cb.name()
-                return conf.supybot.plugins.get(name).public() or evenPrivate
-            names = [cb.name() for cb in irc.callbacks if isPublic(cb)]
+                return conf.supybot.plugins.get(name).public()
+            names = [cb.name() for cb in irc.callbacks
+                     if (private and not isPublic(cb)) or
+                        (not private and isPublic(cb))]
             names.sort()
             irc.reply(utils.commaAndify(names))
         else:
