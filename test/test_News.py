@@ -31,6 +31,8 @@
 
 from test import *
 
+import time
+
 import utils
 
 try:
@@ -42,11 +44,20 @@ except ImportError:
 if sqlite is not None:
     class NewsTestCase(ChannelPluginTestCase):
         plugins = ('News',)
-        def testAddNews(self):
-            self.assertNotError('addnews #somechannel 0 subject: foo')
+        def testAddnews(self):
+            self.assertNotError('addnews 0 subject: foo')
+            self.assertRegexp('news', 'subject')
             self.assertNotError('addnews 0 subject2: foo2')
+            self.assertRegexp('news', 'subject.*subject2')
+            self.assertNotError('addnews 5 subject3: foo3')
+            self.assertRegexp('news', 'subject3')
+            print
+            print 'Sleeping to expire the news item (testAddnews)'
+            time.sleep(6)
+            print 'Done sleeping.'
+            self.assertNotRegexp('news', 'subject3')
 
-        def testListNews(self):
+        def testNews(self):
             # These should both fail first, as they will have nothing in the DB
             self.assertRegexp('news', 'no news')
             self.assertRegexp('news #channel', 'no news')
@@ -54,7 +65,25 @@ if sqlite is not None:
             self.assertNotError('addnews #channel 0 subject: foo')
             self.assertNotError('news #channel')
             self.assertNotError('addnews 0 subject: foo')
-            self.assertNotError('news')
+            self.assertRegexp('news', '#1')
+            self.assertNotError('news 1')
+
+        def testChangenews(self):
+            self.assertNotError('addnews 0 Foo: bar')
+            self.assertNotError('changenews 1 s/bar/baz/')
+            self.assertNotRegexp('news 1', 'bar')
+            self.assertRegexp('news 1', 'baz')
+
+        def testOldnews(self):
+            self.assertError('oldnews')
+            self.assertNotError('addnews 5 foo: bar')
+            self.assertError('oldnews')
+            print
+            print 'Sleeping to expire the news item (testOldnews)'
+            time.sleep(6)
+            print 'Done sleeping.'
+            self.assertNotError('oldnews')
+            
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
