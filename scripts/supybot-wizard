@@ -510,6 +510,26 @@ def main():
         myPrint("""Here's some stuff you only get to choose if you're an
         advanced user :)""")
 
+        # replyWithNickPrefix
+        myPrint("""By defualt, the bot will respond to all commands with a
+        Nick: <response> response.  That is, the user making the command will
+        have their nick prefixed to the command.  If conf.replyWithNickPrefix
+        is set to False, replies from the bot will not include this nick
+        prefix.""")
+        if yn('Would you like to turn off this nick prefix?') == 'y':
+            configVariables['replyWithNickPrefix'] = False
+
+        # replyWhenAddressedByNick
+        myPrint("""By default, the bot will respond when addressed by its nick.
+        That is, if the bot's nick is 'botnick', then 'botnick: foo' will call
+        the foo command.  If replyWhenAddressedByNick is False, the bot will
+        not respond to such messages.  Make sure you have a prefixChar set if
+        you set this, otherwise people will only be able to communicate with
+        the bot through private messages.""")
+        if yn('Would you like to turn off the bot\'s replies to messages '
+              'prefixed with its nick?') == 'y':
+            configVariables['replyWhenAddressedByNick'] = False
+
         # showOnlySyntax
         myPrint("""By default, when the bot receives a message with invalid
         arguments, the bot returns the full help (syntax and description) of
