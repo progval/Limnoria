@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-__revision__ = "$Id"
+__revision__ = "$Id$"
 
 import fix
 
