@@ -480,15 +480,26 @@ class FunCommands(callbacks.Privmsg):
         """takes no arguments.
 
         Returns the number and types of Python objects in memory."""
-        def istype(t):
-            return lambda x: isinstance(x, t)
+        classes = 0
+        functions = 0
+        modules = 0
+        dicts = 0
+        lists = 0
+        tuples = 0
         objs = gc.get_objects()
-        classes = ilen(itertools.ifilter(inspect.isclass, objs))
-        functions = ilen(itertools.ifilter(inspect.isroutine, objs))
-        modules = ilen(itertools.ifilter(inspect.ismodule, objs))
-        dicts = ilen(itertools.ifilter(istype(dict), objs))
-        lists = ilen(itertools.ifilter(istype(list), objs))
-        tuples = ilen(itertools.ifilter(istype(tuple), objs))
+        for obj in objs:
+            if isinstance(obj, tuple):
+                tuples += 1
+            elif inspect.isroutine(obj):
+                functions += 1
+            elif isinstance(obj, dict):
+                dicts += 1
+            elif isinstance(obj, list):
+                lists += 1
+            elif inspect.isclass(obj):
+                classes += 1
+            elif inspect.ismodule(obj):
+                modules += 1
         response = 'I have %s objects: %s modules, %s classes, %s functions, '\
                    '%s dictionaries, %s lists, and %s tuples (and a few other'\
                    ' different types).' %\
