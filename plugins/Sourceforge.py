@@ -34,6 +34,7 @@ Accesses Sourceforge.net for various things
 """
 
 import re
+import sets
 import urllib2
 
 from itertools import ifilter
@@ -67,13 +68,13 @@ in 0.71, Bug #820961: dock icon doesn't show up with..., Bug #820879: Cannot con
 < supybot> jamessan|work: Improve CLI interface <http://sourceforge.net/tracker/index.php?func=detail&aid=720757&group_id=75946&atid=545548>
 """)
 
-class Sourceforge(callbacks.Privmsg):
+class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     """
     Module for Sourceforge stuff. Currently contains commands to query a
     project's most recent bugs and rfes.
     """
-
     threaded = True
+    regexps = sets.Set(['sourceforgeSnarfer'])
 
     _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href="([^"]+)">'\
         '([^<]+)</a>', re.I)
@@ -209,6 +210,24 @@ class Sourceforge(callbacks.Privmsg):
             irc.reply(msg, 'No rfes were found.')
         except ValueError, e:
             irc.error(msg, str(e))
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
+
+    _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
+    _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
+    def sourceforgeSnarfer(self, irc, msg, match):
+        r"http://(?:www\.)?sourceforge.net/tracker/index.php\?func=detail&aid=\d+&group_id=\d+&atid=\d+"
+        url = match.group(0)
+        fd = urllib2.urlopen(url)
+        s = fd.read()
+        fd.close()
+        try:
+            (num, desc) = self._sfTitle.search(s).groups()
+            linktype = self._linkType.search(s).group(1)[:-1]
+            irc.reply(msg, '%s #%s: %s' % (linktype, num, desc))
+        except AttributeError, e:
+            irc.queueMsg(callbacks.reply(msg,
+            'That doesn\'t appear to be a proper Sourceforge bug/rfe.'))
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 

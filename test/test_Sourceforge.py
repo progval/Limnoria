@@ -51,5 +51,13 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
         n = re.search('#(\d+)', m.args[1]).group(1)
         self.assertNotError('rfes gaim %s' % n)
 
+    def testSnarfer(self):
+        self.assertResponse('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=589953&group_id=58965&atid=489447',
+            'Bug #589953: Logger doesn\'t log QUITs.')
+        self.assertResponse('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=712761&group_id=58965&atid=489450',
+            'Feature Request #712761: PyPI searching and announcements')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
