@@ -270,7 +270,7 @@ class Channel(callbacks.Privmsg):
             irc.reply(msg, 'I\'m not currently ignoring any hostmasks '
                            'in %r' % channel)
             return
-        irc.reply(msg, utils.commaAndify(imap(repr,c.ignores)))
+        irc.reply(msg, utils.commaAndify(imap(repr, c.ignores)))
     ignores = privmsgs.checkChannelCapability(ignores, 'op')
 
 

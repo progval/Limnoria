@@ -331,7 +331,7 @@ class Configurable(object):
     """
     def __init__(self):
         className = self.__class__.__name__
-        self.filename = os.path.join(conf.confDir,'%s-configurable'%className)
+        self.filename = os.path.join(conf.confDir, '%s-configurable'%className)
         if os.path.exists(self.filename):
             fd = file(self.filename)
             for line in fd:
