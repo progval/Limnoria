@@ -217,15 +217,16 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         s/text/replacement/flags.  <channel> is only necessary if the message
         isn't sent on the channel itself.
         """
-        pass
+        raise NotImplementedError
 
     def oldnews(self, irc, msg, args):
-        """[<channel>] <number>
+        """[<channel>] [<number>]
 
-        Returns the old news item for <channel> with id <number>.  <channel>
+        Returns the old news item for <channel> with id <number>.  If no number
+        is given, returns all the old news items in reverse order.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
-        pass
+        raise NotImplementedError
 
 
                     
