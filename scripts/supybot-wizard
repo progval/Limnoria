@@ -118,6 +118,7 @@ def getDirectoryName(default, basedir=os.curdir):
     while not done:
         dir = something('What directory do you want to use?',
                        default=os.path.join(basedir, default))
+        orig_dir = dir
         dir = os.path.expanduser(dir)
         dir = _windowsVarRe.sub(r'$\1', dir)
         dir = os.path.expandvars(dir)
@@ -132,7 +133,7 @@ def getDirectoryName(default, basedir=os.curdir):
                 have to pick someplace else.""" % e)
             else:
                 done = True
-    return os.path.expandvars(os.path.expanduser(dir))
+    return (dir, orig_dir)
 
 def getRegistryValue(setting, prompt='', showHelp=True, showType=True):
     if not prompt:
@@ -231,11 +232,11 @@ def main():
     try:
         logDir = registry._cache['supybot.directories.log']
         logDir = utils.safeEval(logDir)
-        logDir = getDirectoryName(logDir)
+        (logDir, baseDir) = getDirectoryName(logDir)
     except KeyError:
-        logDir = getDirectoryName('logs')
+        (logDir, basedir) = getDirectoryName('logs')
     conf.supybot.directories.log.setValue(logDir)
-    basedir = os.path.dirname(logDir)
+    basedir = os.path.dirname(basedir)
 
     # conf.supybot.directories.data
     output("""Your bot will need to put various data somewhere.  Things like
@@ -245,9 +246,9 @@ def main():
     try:
         dataDir = registry._cache['supybot.directories.data']
         dataDir = utils.safeEval(dataDir)
-        dataDir = getDirectoryName(dataDir, basedir=basedir)
+        (dataDir, basedir) = getDirectoryName(dataDir, basedir=basedir)
     except KeyError:
-        dataDir = getDirectoryName('data', basedir=basedir)
+        (dataDir, basedir) = getDirectoryName('data', basedir=basedir)
     conf.supybot.directories.data.setValue(dataDir)
 
     # conf.supybot.directories.conf
@@ -258,9 +259,9 @@ def main():
     try:
         confDir = registry._cache['supybot.directories.conf']
         confDir = utils.safeEval(confDir)
-        confDir = getDirectoryName(confDir, basedir=basedir)
+        (confDir, _) = getDirectoryName(confDir, basedir=basedir)
     except KeyError:
-        confDir = getDirectoryName('conf', basedir=basedir)
+        (confDir, _) = getDirectoryName('conf', basedir=basedir)
     conf.supybot.directories.conf.setValue(confDir)
 
     # pluginDirs
