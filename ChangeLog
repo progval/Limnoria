@@ -1,8 +1,42 @@
+	* Added a vast array of new configurables -- check out the various
+	config commands in Configurable plugins to see.
+	
+	* Updated almost every document we have, and added a
+	GETTING_STARTED document.  Yay!
+	
+	* Added several new options for Channel.kban: --exact, --nick,
+	--user, --host, for more flexibility in determining what the
+	banmask is.
+	
+	* Added better error reporting for Admin.join, explaining to the
+	user if the bot can't join the channel.
+	
+	* Added a title-snarfer to the URL plugin.
+	
+	* Changed Note.get to simply be "note".  Instead of "note get
+	145", you should use "note 145".
+	
+	* Added a Scheduler plugin for scheduling events to occur at
+	specific times.
+
+	* Added a Herald plugin for announcing to the channel the arrival
+	of certain users.
+	
+	* Added conf.requireChannelCommandsToBeSentInChannel for requiring
+	all channel-related commands to be sent in the channel.
+	
 	* Added conf.followIdentificationThroughNickChanges for having the
 	bot update user's identified hostmask when they change nicks.
 	
 	* Added conf.replyWhenNotAddressed, a configuration variable for
 	having the bot always attempt to parse a message as a command.
+
+	* Added conf.replyWhenAddressedByNick, a configuration variable
+	for having the bot *not* respond when addressed by his nick.
+
+	* Added conf.replyWithNickPrefix, a configuration variable for
+	having the bot not prefix the nick of the person giving a command
+	to the reply.
 	
 	* Added Relay.command, a command for sending commands to the bot
 	on a different network.
