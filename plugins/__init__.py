@@ -243,8 +243,8 @@ class ChannelUserDB(ChannelUserDictionary):
         writer = csv.writer(fd)
         items = self.items()
         if not items:
-            log.warning('%s: Refusing to write blank file.',
-                        self.__class__.__name__)
+            log.debug('%s: Refusing to write blank file.',
+                      self.__class__.__name__)
             fd.rollback()
             return
         items.sort()
