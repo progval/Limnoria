@@ -47,27 +47,16 @@ class BadWordsTestCase(PluginTestCase, PluginDocumentation):
             self.assertRegexp('echo foo%sbar' % word, word)
             self.assertRegexp('echo [strjoin "" %s]' % ' '.join(word), word)
         
-    def testAddbadword(self):
-        for word in self.badwords:
-            self.assertNotError('addbadword %s' % word)
-        self._test()
-
     def testAddbadwords(self):
-        self.assertNotError('addbadwords %s' % ' '.join(self.badwords))
+        self.assertNotError('badwords add %s' % ' '.join(self.badwords))
         self._test()
 
     def testDefault(self):
         self._NegTest()
 
-    def testRemovebadword(self):
-        self.assertNotError('addbadwords %s' % ' '.join(self.badwords))
-        for word in self.badwords:
-            self.assertNotError('removebadword %s' % word)
-        self._NegTest()
-
     def testRemovebadwords(self):
-        self.assertNotError('addbadwords %s' % ' '.join(self.badwords))
-        self.assertNotError('removebadwords %s' % ' '.join(self.badwords))
+        self.assertNotError('badwords add %s' % ' '.join(self.badwords))
+        self.assertNotError('badwords remove %s' % ' '.join(self.badwords))
         self._NegTest()
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

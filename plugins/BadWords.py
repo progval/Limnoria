@@ -51,7 +51,7 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load BadWords')
     while yn('Would you like to add some bad words?') == 'y':
         words = anything('What words? (separate individual words by spaces)')
-        onStart.append('addbadwords %s' % words)
+        onStart.append('badwords add %s' % words)
 
 nastyChars = '!@#$' * 256
 def subber(m):
@@ -61,8 +61,8 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
     priority = 1
     capability = 'admin'
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        self.badwords = sets.Set()
+        privmsgs.CapabilityCheckingPrivmsg.__init__(self)
+        self._badwords = sets.Set()
 
     def outFilter(self, irc, msg):
         if hasattr(self, 'regexp') and msg.command == 'PRIVMSG':
@@ -73,47 +73,27 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
             return msg
 
     def makeRegexp(self):
-        self.regexp = re.compile(r'\b('+'|'.join(self.badwords)+r')\b', re.I)
+        self.regexp = re.compile(r'\b('+'|'.join(self._badwords)+r')\b', re.I)
 
-    def addbadword(self, irc, msg, args):
-        """<word>
-
-        Adds <word> to the list of words the bot isn't to say.
-        """
-        word = privmsgs.getArgs(args)
-        self.badwords.add(word)
-        self.makeRegexp()
-        irc.reply(msg, conf.replySuccess)
-    
-    def addbadwords(self, irc, msg, args):
+    def add(self, irc, msg, args):
         """<word> [<word> ...]
 
         Adds all <word>s to the list of words the bot isn't to say.
         """
         words = privmsgs.getArgs(args).split()
         for word in words:
-            self.badwords.add(word)
+            self._badwords.add(word)
         self.makeRegexp()
         irc.reply(msg, conf.replySuccess)
 
-    def removebadword(self, irc, msg, args):
-        """<word>
-
-        Removes <word> from the list of words the bot isn't to say.
-        """
-        word = privmsgs.getArgs(args)
-        self.badwords.remove(word)
-        self.makeRegexp()
-        irc.reply(msg, conf.replySuccess)
-
-    def removebadwords(self, irc, msg, args):
+    def remove(self, irc, msg, args):
         """<word> [<word> ...]
 
         Removes all <word>s from the list of words the bot isn't to say.
         """
         words = privmsgs.getArgs(args).split()
         for word in words:
-            self.badwords.remove(word)
+            self._badwords.discard(word)
         self.makeRegexp()
         irc.reply(msg, conf.replySuccess)
 
