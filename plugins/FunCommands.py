@@ -342,7 +342,7 @@ class FunCommands(callbacks.Privmsg):
     def uptime(self, irc, msg, args):
         "takes no arguments"
         response = 'I have been running for %s.' % \
-                   utils.timeElapsed(time.time(), world.startedAt)
+                   utils.timeElapsed(time.time() - world.startedAt)
         irc.reply(msg, response)
 
 

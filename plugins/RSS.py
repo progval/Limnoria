@@ -141,7 +141,7 @@ class RSS(callbacks.Privmsg):
         # check the 'modified' key, if it's there, convert it here first
         if 'modified' in feed:
             seconds = time.mktime(feed['modified'])
-            when = utils.timeElapsed(time.time(), seconds) + ' ago'
+            when = utils.timeElapsed(time.time() - seconds) + ' ago'
         else:
             when = "time unavailable"
         # The rest of the entries are all available in the channel key

@@ -89,10 +89,10 @@ def abbrev(strings):
         del d[key]
     return d
 
-def timeElapsed(now, then, leadingZeroes=False, years=True, weeks=True,
+def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
                 days=True, hours=True, minutes=True, seconds=True):
-    assert days or hours or minutes or seconds, 'One flag must be True'
-    elapsed = int(now - then)
+    assert years or weeks or days or \
+           hours or minutes or seconds, 'One flag must be True'
     ret = []
     if years:
         yrs, elapsed = elapsed // 31536000, elapsed % 31536000

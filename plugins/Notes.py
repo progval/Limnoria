@@ -197,7 +197,7 @@ class Notes(callbacks.Privmsg):
             irc.error(msg, 'You are not the recipient of note %s.' % noteid)
             return
         public = int(public)
-        elapsed = utils.timeElapsed(time.time(), int(added_at))
+        elapsed = utils.timeElapsed(time.time() - int(added_at))
         newnote = "%s (Sent by %s %s ago)" % (note, author, elapsed)
         if public:
             irc.reply(msg, newnote)
