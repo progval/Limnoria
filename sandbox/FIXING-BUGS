@@ -1,0 +1,71 @@
+These are a list of recurrent bugs in Supybot, and ways to notice
+them.  It just might come in useful for people maintaining code.
+
+1. Using == or != when you mean ircutils.strEqual.  Nicks, prefixes,
+   and channels should be compared for equality not by == or !=, but
+   by ircutils.strEqual.  This does a case-normalized check.  Don't
+   just use lower() because that doesn't use the rfc1459 casemapping.
+
+   To find:
+      grep == plugins/*.py | egrep "nick|channel"
+      grep "!=" plugins/*.py | egrep "nick|channel"
+
+2. Using a warning log when it really should be an info log.  Users
+   don't like to see warnings.  If we have warning logs, they'll
+   complain.  So let's try to make them complain as little as
+   possible, and only use warnings when you've encountered a *very*
+   odd situation, or when you need more information before
+   determining if something is correct.
+
+   An example: The Services plugin has two methods, doNickservNotice
+   and doChanservNotice, which doNotice dispatches to appropriately.
+   Now, we can't possibly predict all the possible messages that
+   ChanServ or NickServ might send to us.  So I put a default clause
+   in there that just says, "Hey, this is an unexpected message from
+   ChanServ/NickServ: ..."  I log this at warning level because I
+   want to know when there's a NickServ/ChanServ message I haven't
+   seen before.  This works: the warning makes users report it.
+
+   Another example: We used to log failures in snarfers at the
+   warning level.  But do the users really want to be warned when a
+   given "url" isn't valid?  No!  So now we just make it an info log,
+   so that users who care can still see why a snarfer didn't snarf,
+   but no one complains to us about it.
+
+   To find:
+      grep log.warning plugins/*.py
+
+3. Spelling errors.  They plague almost every large piece of
+   software.  Supybot is no different, but we have a weapon against
+   them: find-strings.py.  Give find-strings.py a set of files, and
+   it'll extract all the non-raw literal strings from the source code
+   and output them to a file, with the originating file, line number,
+   and string.  Spell-checking Supybot is just a matter of taking
+   this 10,000 line file and an hour and running aspell over it,
+   correcting the errors in the original file as you find them.
+
+   To find:
+      find-strings.py src/*.py plugins/*.py scripts/supybot*
+
+4. Pegging the CPU.  It has happened in the past that bugs in Supybot
+   have caused 100% CPU usage.  These are insidious, and generally
+   hard to track down.  Here are our tools against them; we assuming
+   that the bug is reproducible.
+
+   First, I load the Debug plugin and settrace to a file, then I
+   quickly reproduce the bug, and let the CPU spin for awhile.  Then
+   I kill the bot and check the trace file (which should be large).
+   I look for patterns that would indicate an infinite loop of some
+   sort.
+
+   Second, I strace the bot when it's looping.  If I see output, it's
+   making syscalls; if I don't see any output, it's not.  If it's
+   making syscalls, that might mean it's looping in the network
+   drivers somehow; if not, it's somewhere else.
+
+   Third, I check that no regexps could be causing it.  They're
+   notorious for appearing safe, but actually hiding exponential
+   complexity code (the kind of code that strong cryptography is
+   based on).
+
+   After that, I pray harder :)
