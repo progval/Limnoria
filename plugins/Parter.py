@@ -29,6 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Some networks find out who's a bot by forcing clients to join a certain
+channel when they connect, and the clients that don't leave are considered
+bots.  This module makes supybot automatically part certain channels as soon
+as he joins.
+"""
+
 from baseplugin import *
 
 import conf
@@ -38,9 +45,44 @@ import ircmsgs
 import privmsgs
 import callbacks
 
+def configure(onStart, afterConnect, advanced):
+    from questions import something, yn
+    onStart.append('load Parter')
+    s = ' '
+    while s:
+        if yn('Would you like to automatically part a channel?') == 'y':
+            s = something('What channel?')
+            while not ircutils.isChannel(s):
+                print 'That\'s not a valid channel.'
+                s = something('What channel?')
+            onStart.append('autopartchannel %s' % s)
+        else:
+            s = ''
+
+example = utils.wrapLines("""
+<jemfinch> @list Parter
+<supybot> jemfinch: autopartchannel, removeautopartchannel
+<jemfinch> @autopartchannel #supybot
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @join #supybot
+
+--> supybot (~supybot@dhcp065-024-059-168.columbus.rr.com) has joined #supybot
+<-- supybot (~supybot@dhcp065-024-059-168.columbus.rr.com) has left #supybot
+
+<jemfinch> @removeautopartchannel #supybot
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @join #supybot
+
+--> supybot (~supybot@dhcp065-024-059-168.columbus.rr.com) has joined #supybot
+""")
+
 class Parter(callbacks.Privmsg):
     def autopartchannel(self, irc, msg, args):
-        "<channel to part automatically>"
+        """<channel>
+
+
+        Makes the bot part <channel> automatically, as soon as he joins it.
+        """
         channel = privmsgs.getArgs(args)
         if ircdb.checkCapability(msg.prefix, 'admin'):
             if not hasattr(self, 'channels'):
@@ -52,7 +94,10 @@ class Parter(callbacks.Privmsg):
             irc.error(msg, conf.replyNoCapability % 'admin')
 
     def removeautopartchannel(self, irc, msg, args):
-        "<channel to stop parting automatically>"
+        """<channel>
+
+        Removes the channel from the auto-part list.
+        """
         channel = privmsgs.getArgs(args)
         if ircdb.checkCapability(msg.prefix, 'admin'):
             if hasattr(self, 'channels'):
