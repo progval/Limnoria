@@ -262,7 +262,7 @@ class Topic(callbacks.Privmsg):
             return
         newtopics = [topics[i] for i in numbers]
         self._sendTopics(irc, channel, newtopics)
-    reorder = wrap(reorder, ['canChangeTopic', 'topicNumber+'])
+    reorder = wrap(reorder, ['canChangeTopic', many('topicNumber')])
 
     def list(self, irc, msg, args, channel):
         """[<channel>]
@@ -317,7 +317,9 @@ class Topic(callbacks.Privmsg):
         else:
             topics = [topic]
         self._sendTopics(irc, channel, topics)
-    set = wrap(set, ['canChangeTopic', ('topicNumber?', 0), ('topic', False)])
+    set = wrap(set, ['canChangeTopic',
+                     optional('topicNumber', 0),
+                     ('topic', False)])
 
     def remove(self, irc, msg, args, channel, number):
         """[<channel>] <number>
