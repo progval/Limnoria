@@ -32,6 +32,16 @@ from testsupport import *
 class ObserverTestCase(ChannelPluginTestCase):
     plugins = ('Observer', 'Utilities')
     config = {'reply.whenNotCommand': False}
+    def tearDown(self):
+        g = conf.supybot.plugins.Observer.observers
+        L = g()
+        for observer in L.copy():
+            g.unregister(observer)
+            g().remove(observer)
+            if observer in g.active():
+                g.active().remove(observer)
+        super(ObserverTestCase, self).tearDown()
+
     def testAdd(self):
         self.assertNotError('add foo m/foo/i echo I saw foo.')
         self.assertNoResponse('blah blah blah', 1)
@@ -59,6 +69,11 @@ class ObserverTestCase(ChannelPluginTestCase):
         self.assertNotError('add foo m/foo/i echo I saw foo.')
         self.assertNotRegexp('observer info foo', 'sre')
 
+    def testRemove(self):
+        self.assertNotError('add foo m/foo/i echo I saw foo.')
+        self.assertRegexp('observer list', 'foo')
+        self.assertNotError('remove foo')
+        self.assertRegexp('observer list', 'no relevant')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
