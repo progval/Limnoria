@@ -214,16 +214,21 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 self.log.debug('Got NICK without Admin.nick being called.')
 
     def nick(self, irc, msg, args):
-        """<nick>
+        """[<nick>]
 
-        Changes the bot's nick to <nick>."""
-        nick = privmsgs.getArgs(args)
-        if ircutils.isNick(nick):
-            conf.supybot.nick.setValue(nick)
-            irc.queueMsg(ircmsgs.nick(nick))
-            self.pendingNickChanges[irc.getRealIrc()] = irc
+        Changes the bot's nick to <nick>.  If no nick is given, returns the
+        bot's current nick.
+        """
+        nick = privmsgs.getArgs(args, required=0, optional=1)
+        if nick:
+            if ircutils.isNick(nick):
+                conf.supybot.nick.setValue(nick)
+                irc.queueMsg(ircmsgs.nick(nick))
+                self.pendingNickChanges[irc.getRealIrc()] = irc
+            else:
+                irc.error('That\'s not a valid nick.')
         else:
-            irc.error('That\'s not a valid nick.')
+            irc.reply(irc.nick)
 
     def part(self, irc, msg, args):
         """<channel> [<channel> ...] [<reason>]
