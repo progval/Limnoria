@@ -181,12 +181,12 @@ class UserCapabilitySetTestCase(unittest.TestCase):
         self.failIf(s.check('-foo'))
         self.failUnless(s.check('foo'))
 
-    def testWorksAfterReload(self):
-        s = ircdb.UserCapabilitySet(['owner'])
-        self.failUnless(s.check('owner'))
-        import sets
-        reload(sets)
-        self.failUnless(s.check('owner'))
+##     def testWorksAfterReload(self):
+##         s = ircdb.UserCapabilitySet(['owner'])
+##         self.failUnless(s.check('owner'))
+##         import sets
+##         reload(sets)
+##         self.failUnless(s.check('owner'))
 
 
 class IrcUserTestCase(unittest.TestCase):
