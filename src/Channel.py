@@ -464,7 +464,7 @@ class Channel(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         c = ircdb.channels.getChannel(channel)
-        L = c.capabilities[:]
+        L = list(c.capabilities)
         L.sort()
         irc.reply(msg, '[%s]' % ', '.join(L))
 

@@ -54,13 +54,16 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
 ##         self.assertNotError('channel removecapability foo op')
 ##         self.assertResponse('user capabilities foo', '[]')
 
+    def testCapabilities(self):
+        self.assertNotError('channel capabilities')
+
     def testUnban(self):
         self.assertError('unban foo!bar@baz')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         m = self.getMsg('unban foo!bar@baz')
         self.assertEqual(m.command, 'MODE')
         self.assertEqual(m.args, (self.channel, '-b', 'foo!bar@baz'))
-        self.assertNotError(' ')
+        self.assertNoResponse(' ', 2)
         
     def testErrorsWithoutOps(self):
         for s in 'op deop halfop dehalfop voice devoice kick'.split():
