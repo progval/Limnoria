@@ -120,6 +120,8 @@ class Schedule(drivers.IrcDriver):
 
     def run(self):
         if len(drivers._drivers) == 1:
+            log.error('Schedule is the only remaining driver, '
+                      'why do we continue to live?')
             time.sleep(1) # We're the only driver; let's pause to think.
         while self.schedule and self.schedule[0][0] < time.time():
             (t, name) = heapq.heappop(self.schedule)
