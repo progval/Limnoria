@@ -62,7 +62,8 @@ def normalizeWhitespace(s):
 
 class HtmlToText(sgmllib.SGMLParser):
     """Taken from some eff-bot code on c.l.p."""
-    entitydefs = htmlentitydefs.entitydefs
+    entitydefs = htmlentitydefs.entitydefs.copy()
+    entitydefs['nbsp'] = ' '
     def __init__(self, tagReplace=' '):
         self.data = []
         self.tagReplace = tagReplace
