@@ -231,6 +231,18 @@ class ConfigurableDictionary(object):
 
     # XXX: Make persistent.
 
+class ConfigurableTypes(object):
+    def bool(self, s):
+        s = s.lower()
+        if s in ('true', 'enable', 'on'):
+            return True
+        elif s in ('false', 'disable', 'off'):
+            return False
+        else:
+            s = 'Value must be one of on/off/true/false/enable/disable.'
+            raise ValueError, s
+        
+
 class Configurable(object):
     """A mixin class to provide a "config" command that can be consistent
     across all plugins, in order to unify the configuration for each plugin.
