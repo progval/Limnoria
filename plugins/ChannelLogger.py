@@ -55,6 +55,11 @@ class ChannelLogger(irclib.IrcCallback):
         self.lastMsg = None
         world.flushers.append(self.flush)
 
+    def die(self):
+        for log in self.logs.itervalues():
+            log.close()
+        world.flushers.remove(self.flush)
+
     def __call__(self, irc, msg):
         super(self.__class__, self).__call__(irc, msg)
         #self.__class__.__bases__[0].__call__(self, irc, msg)
@@ -68,8 +73,12 @@ class ChannelLogger(irclib.IrcCallback):
         self.logs = ircutils.IrcDict()
 
     def flush(self):
-        for log in self.logs.itervalues():
-            log.flush()
+        try:
+            for log in self.logs.itervalues():
+                log.flush()
+        except ValueError, e:
+            if e.args[0] != 'I/O operation on a closed file':
+                debug.recoverableException()
 
     def getLog(self, channel):
         if channel in self.logs:
