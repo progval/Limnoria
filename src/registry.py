@@ -235,6 +235,7 @@ class Regexp(Value):
         return self.sr
         
 class SeparatedListOf(Value):
+    List = list
     Value = Value
     def splitter(self, s):
         """Override this with a function that takes a string and returns a list
@@ -253,7 +254,7 @@ class SeparatedListOf(Value):
         self.setValue(L)
 
     def setValue(self, v):
-        Value.setValue(self, list(v))
+        Value.setValue(self, self.List(v))
 
     def __str__(self):
         return self.joiner(self.value)
@@ -271,8 +272,7 @@ class CommaSeparatedListOfStrings(SeparatedListOf):
     joiner = ', '.join
     
 class CommaSeparatedSetOfStrings(CommaSeparatedListOfStrings):
-    def setValue(self, v):
-        CommaSeparatedListOfStrings.setValue(self, sets.Set(v))
+    List = sets.Set
 
 class Group(object):
     def __init__(self):
