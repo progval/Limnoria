@@ -31,30 +31,32 @@
 
 from testsupport import *
 
+url = 'http://advogato.org/rss/articles.xml'
 class RSSTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('RSS',)
     def testRssinfo(self):
-        self.assertNotError('rss info http://slashdot.org/slashdot.rss')
+        self.assertNotError('rss info %s' % url)
+
+    def testRssinfoDoesTimeProperly(self):
         self.assertNotRegexp('rss info http://slashdot.org/slashdot.rss',
                              '-1 years')
 
     def testRss(self):
-        self.assertNotError('rss http://slashdot.org/slashdot.rss')
+        self.assertNotError('rss %s' % url)
 
     def testRssAdd(self):
-        self.assertNotError('rss add slashdot '
-                            'http://slashdot.org/slashdot.rss')
-        self.assertNotError('slashdot')
-        self.assertNotError('rss slashdot')
-        self.assertNotError('rss remove slashdot')
-        self.assertError('slashdot')
-        self.assertError('rss slashdot')
+        self.assertNotError('rss add advogato %s' % url)
+        self.assertNotError('advogato')
+        self.assertNotError('rss advogato')
+        self.assertNotError('rss remove advogato')
+        self.assertError('advogato')
+        self.assertError('rss advogato')
 
     def testCantAddFeedNamedRss(self):
-        self.assertError('rss add rss http://slashdot.org/slashdot.rss')
+        self.assertError('rss add rss %s' % url)
 
     def testCantRemoveMethodThatIsntFeed(self):
-        self.assertError('rss remvoe rss')
+        self.assertError('rss remove rss')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
