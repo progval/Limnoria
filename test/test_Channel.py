@@ -36,9 +36,23 @@ import ircdb
 import ircmsgs
 
 class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Channel',)
+    plugins = ('Channel', 'User')
     def testLobotomies(self):
         self.assertRegexp('lobotomies', 'not.*any')
+
+##     def testCapabilities(self):
+##         self.prefix = 'foo!bar@baz'
+##         self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, 'register foo bar',
+##                                          prefix=self.prefix))
+##         u = ircdb.users.getUser(0)
+##         u.addCapability('%s.op' % self.channel)
+##         ircdb.users.setUser(0, u)
+##         self.assertNotError(' ')
+##         self.assertResponse('user capabilities foo', '[]')
+##         self.assertNotError('channel addcapability foo op')
+##         self.assertRegexp('channel capabilities foo', 'op')
+##         self.assertNotError('channel removecapability foo op')
+##         self.assertResponse('user capabilities foo', '[]')
 
     def testUnban(self):
         self.assertError('unban foo!bar@baz')
