@@ -29,7 +29,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-"""NickServ: Handles management of nicks with NickServ."""
+"""
+NickServ: Handles management of nicks with NickServ.
+
+Commands include:
+  startnickserv (bot's nick, password, NickServ's nick [defaults to NickServ])
+"""
 
 from baseplugin import *
 
@@ -47,11 +52,14 @@ class NickServ(callbacks.Privmsg):
         self.started = False
         
     def startnickserv(self, irc, msg, args):
-        "<bot's nick> <name of the NICKSERV> <password>"
+        "<bot's nick> <password> <NickServ's nick (defaults to NickServ)>"
         if ircutils.isChannel(msg.args[0]):
             irc.error(msg, 'Command must not be done in a channel.')
         if ircdb.checkCapability(msg.prefix, 'owner'):
-            (self.nick, self.nickserv, self.password)=privmsgs.getArgs(args, 3)
+            (self.nick, self.password, nickserv) = privmsgs.getArgs(args, 
+                                                                    needed=2, 
+                                                                    optional=1)
+            self.nickserv = nickserv or 'NickServ'
             self.sentGhost = 0
             self._ghosted = re.compile('%s.*killed' % self.nick)
             irc.reply(msg, conf.replySuccess)
