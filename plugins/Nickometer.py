@@ -103,9 +103,10 @@ class Nickometer(callbacks.Privmsg):
         return damage
 
     def nickometer(self, irc, msg, args):
-        """<nick>
+        """[<nick>]
 
-        Tells you how lame said nick is.
+        Tells you how lame said nick is.  If <nick> is not given, uses the
+        nick of the person giving the command.
         """
         score = 0L
         nick = privmsgs.getArgs(args, required=0, optional=1)
