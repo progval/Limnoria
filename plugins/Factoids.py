@@ -76,7 +76,7 @@ example = utils.wrapLines("""
 <jemfinch> @unlearn jemfinch 0
 <supybot> jemfinch: The operation succeeded.
 <jemfinch> @whatis jemfinch
-<supybot> jemfinch: Error: No factoid matches that key.
+G<supybot> jemfinch: Error: No factoid matches that key.
 <jemfinch> @randomfactoid
 <supybot> jemfinch: "sf.net-website": https://sourceforge.net/docman/display_doc.php?docid=4297&group_id=1; "private-attributes": http://groups.google.com/groups?q=jp+calderone+private+attributes&hl=en&lr=&ie=UTF-8&oe=UTF-8&selm=mailman.1050275130.5456.python-list%40python.org&rnum=1; "CFnews": http://inkedmn.homelinux.org/~inkedmn/vbcustom1.html; "CFnews": something else
 <jemfinch> @whatis cfnews
@@ -331,7 +331,36 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             (key, locked and 'locked' or 'not locked', counter, factoids)
         irc.reply(msg, s)
 
+    _sqlTrans = string.maketrans('*?', '%_')
+    def searchfactoids(self, irc, msg, args):
+        """[<channel>] <text>
 
-
+        Searches the keyspace for keys containing <text> in them.  Can use
+        arbitrary SQL LIKE wildcards or shell glob wildcards.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        keySearch = privmsgs.getArgs(args)
+        keySearch = keySearch.translate(self._sqlTrans)
+        if keySearch.translate(string.ascii, '%_*?') == '':
+            irc.error(msg, 'You can\'t search for just wildcards.')
+            return
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT key FROM keys WHERE key LIKE %s""", keySearch)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'No keys matched that query.')
+        elif cursor.rowcount > 100:
+            irc.reply(msg, 'More than 100 keys matched that query; '
+                           'please narrow your query.')
+        else:
+            keys = [repr(t[0]) for t in cursor.fetchall()]
+            s = utils.commaAndify(keys)
+            if len(s) > 450-len(irc.prefix):
+                irc.reply(msg, '%s matched that query; '
+                               'please narrow your query.' % \
+                               utils.nItems(cursor.rowcount, 'key'))
+            else:
+                irc.reply(msg, s)
+        
 Class = Factoids
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
