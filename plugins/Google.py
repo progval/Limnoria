@@ -69,7 +69,7 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('alias googlemac "google --restrict=mac $1"')
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
-        print 'You can apply for a key from http://www.google.com/apis/'
+        print 'You can apply for a key at http://www.google.com/apis/'
 
 totalSearches = 0
 totalTime = 0
@@ -85,7 +85,7 @@ def search(*args, **kwargs):
     while last24hours and now - last24hours.peek() > 86400:
         last24hours.dequeue()
     return data
-            
+
 class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
@@ -122,7 +122,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(msg, conf.replySuccess)
 
     googlelicensekey = privmsgs.checkCapability(googlelicensekey, 'admin')
-        
+
     def google(self, irc, msg, args):
         """<search string> [--{language,restrict,safe,filter}=<value>]
 
@@ -245,7 +245,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                 return
             url = 'http://groups.google.com'
             request = urllib2.Request('%s%s' % (url,path.group(1)),
-              headers={'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5;' 
+              headers={'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5;'
               'Windows NT 4.0)'})
             fd = urllib2.urlopen(request)
             text = fd.read()
