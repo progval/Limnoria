@@ -38,14 +38,12 @@ except ImportError:
 
 if sqlite is not None:
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Misc', 'MoobotFactoids', 'User', 'Utilities')
+        plugins = ('MoobotFactoids', 'User', 'Utilities')
         def setUp(self):
             PluginTestCase.setUp(self)
             # Create a valid user to use
             self.prefix = 'foo!bar@baz'
             self.assertNotError('register tester moo')
-            self.assertNotError('dunnoadd not moo')  # don't change to "moo"
-                                                     # or testDelete will fail
 
         def testLiteral(self):
             self.assertError('literal moo') # no factoids yet
@@ -201,19 +199,5 @@ if sqlite is not None:
             self.failIf(m)
                 
 
-    class DunnoTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Misc', 'MoobotFactoids', 'User')
-        def setUp(self):
-            PluginTestCase.setUp(self)
-            self.prefix = 'foo!bar@baz'
-            self.assertNotError('register tester moo')
-
-        def testDunnoAdd(self):
-            self.assertNotError('dunnoadd moo')
-            self.assertResponse('asdfagagfosdfk', 'moo')
-
-        def testDunnoRemove(self):
-            self.assertNotError('dunnoadd moo')
-            self.assertNotError('dunnoremove 1')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -33,6 +33,9 @@
 Add the module docstring here.  This will be used by the setup.py script.
 """
 
+import os
+import conf
+import time
 import ircdb
 import sqlite
 import plugins
@@ -56,7 +59,7 @@ Add an example IRC session using this module here.
 """)
 
 class Dunno(callbacks.Privmsg):
-    priority = 1000
+    priority = 100
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.makeDb(dbfilename)
@@ -153,12 +156,12 @@ class Dunno(callbacks.Privmsg):
         if cursor.rowcount == 0:
             irc.error(msg, 'No dunnos with %r found.' % text)
             return
-        ids = cursor.fetchall()
+        ids = [str(tup[0]) for tup in cursor.fetchall()]
         s = "Dunno search for %r (%d found): %s" % \
             (text, len(ids), utils.commaAndify(ids))
         irc.reply(msg, s)
 
-    def dunno(self, irc, msg, args):
+    def get(self, irc, msg, args):
         """<id>
 
         Display the text of the dunno with the given id.

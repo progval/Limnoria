@@ -124,7 +124,7 @@ def pick(L, recursed=False):
         return L
 
 class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
-    priority = 999
+    priority = 98
     addressedRegexps = ['changeFactoid', 'augmentFactoid',
                         'replaceFactoid', 'addFactoid']
     def __init__(self):
@@ -158,10 +158,6 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         self.db.commit()
         self.db.close()
         del self.db
-        # Recover from clobbering this command earlier
-        Misc = Owner.loadPluginModule('Misc')
-        Misc.replyWhenNotCommand = self.originalReplyWhenNotCommand
-        conf.replyWhenNotCommand = self.originalConfReplyWhenNotCommand
 
     def parseFactoid(self, fact):
         type = "define"  # Default is to just spit the factoid back as a
