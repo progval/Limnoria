@@ -32,8 +32,7 @@
 from test import *
 
 class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Misc', 'Owner',
-               'Utilities', 'Gameknot', 'Ctcp')
+    plugins = ('Misc', 'Utilities', 'Gameknot', 'Ctcp')
     def testReplyWhenNotCommand(self):
         try:
             conf.replyWhenNotCommand = True

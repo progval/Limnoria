@@ -111,7 +111,7 @@ class PluginTestCase(unittest.TestCase):
     for an example.
     """
     timeout = 10
-    plugins = ()
+    plugins = None
     cleanConfDir = True
     cleanDataDir = True
     def setUp(self, nick='test'):
@@ -125,20 +125,23 @@ class PluginTestCase(unittest.TestCase):
         debug.reset()
         ircdb.users.reload()
         ircdb.channels.reload()
-        if not self.plugins:
+        if self.plugins is None:
             raise ValueError, 'PluginTestCase must have a "plugins" attribute.'
         self.nick = nick
         self.prefix = ircutils.joinHostmask(nick, 'user', 'host.domain.tld')
         self.irc = irclib.Irc(nick)
         while self.irc.takeMsg():
             pass
+        _ = Owner.loadPluginClass(self.irc, Owner)
         if isinstance(self.plugins, str):
-            module = Owner.loadPluginModule(self.plugins)
-            cb = Owner.loadPluginClass(self.irc, module)
+            if self.plugins != 'Owner':
+                module = Owner.loadPluginModule(self.plugins)
+                cb = Owner.loadPluginClass(self.irc, module)
         else:
             for name in self.plugins:
-                module = Owner.loadPluginModule(name)
-                cb = Owner.loadPluginClass(self.irc, module)
+                if name != 'Owner':
+                    module = Owner.loadPluginModule(name)
+                    cb = Owner.loadPluginClass(self.irc, module)
 
     def tearDown(self):
         self.irc.die()
@@ -259,7 +262,6 @@ class PluginTestCase(unittest.TestCase):
 
 class ChannelPluginTestCase(PluginTestCase):
     channel = '#test'
-
     def setUp(self):
         PluginTestCase.setUp(self)
         self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))

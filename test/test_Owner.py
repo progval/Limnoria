@@ -35,7 +35,7 @@ import conf
 import Owner
 
 class OwnerTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Owner',)
+    plugins = ()
     def testEval(self):
         try:
             originalConfAllowEval = conf.allowEval

@@ -38,7 +38,7 @@ except ImportError:
 
 if sqlite is not None:
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Misc', 'MoobotFactoids', 'User')
+        plugins = ('Misc', 'MoobotFactoids', 'User', 'Utilities')
         def setUp(self):
             PluginTestCase.setUp(self)
             # Create a valid user to use
@@ -184,6 +184,10 @@ if sqlite is not None:
             self.assertResponse('moo', 'moo is baz')
             self.assertNotError('lock moo')
             self.assertError('no moo is qux')
+
+        def testRegexpNotCalledIfAlreadyHandled(self):
+            self.assertResponse('echo foo is bar', 'foo is bar')
+            self.assertNoResponse(' ', 3)
 
     class DunnoTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('Misc', 'MoobotFactoids', 'User')
