@@ -142,6 +142,19 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         Gives the user specified by <name> (or the user to whom <hostmask>
         currently maps) the specified capability <capability>
         """
+        # Ok, the concepts that are important with capabilities:
+        #
+        ### 1) No user should be able to elevate his privilege to owner.
+        ### 2) Admin users are *not* superior to #channel.ops, and don't
+        ###    have God-like powers over channels.
+        ### 3) We assume that Admin users are two things: non-malicious and
+        ###    and greedy for power.  So they'll try to elevate their privilege
+        ###    to owner, but they won't try to crash the bot for no reason.
+
+        # Thus, the owner capability can't be given in the bot.  Admin users
+        # can only give out capabilities they have themselves (which will
+        # depend on both conf.defaultAllow and conf.defaultCapabilities), but
+        # generally means they can't mess with channel capabilities.
         (name, capability) = privmsgs.getArgs(args, required=2)
         if capability == 'owner':
             irc.error(msg, 'The "owner" capability can\'t be added in the bot.'
@@ -150,7 +163,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                            'capability.')
             return
         if ircdb.checkCapability(msg.prefix, capability) or \
-           '!' in capability:
+           '-' in capability:
             try:
                 id = ircdb.users.getUserId(name)
                 user = ircdb.users.getUser(id)
