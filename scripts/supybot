@@ -281,6 +281,7 @@ if __name__ == '__main__':
         sys.stdin.close()
         # Closing these two might cause problems; we log writes to them as
         # level WARNING on upkeep.
+        sys.stdin.close()
         sys.stdout.close()
         sys.stderr.close()
         sys.stdout = StringIO.StringIO()
