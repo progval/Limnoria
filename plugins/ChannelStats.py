@@ -152,60 +152,21 @@ class UserStat(ChannelStat):
         self.doPayload(msg.args[0], msg.args[2])
         self.kicks += 1
 
-class StatsDB(object):
-    def __init__(self, filename):
-        self.filename = filename
-        self.channels = ircutils.IrcDict()
+class StatsDB(plugins.ChannelUserDB):
+    def __init__(self, *args, **kwargs):
         self.channelStats = ircutils.IrcDict()
-        try:
-            fd = file(filename)
-        except EnvironmentError, e:
-            log.info('Couldn\'t open %s: %s', filename, e)
-            return
-        lineno = 0
-        for line in fd:
-            lineno += 1
-            line = line.rstrip('\r\n')
-            try:
-                (channelOrId, rest) = line.split(':', 1)
-                if ircutils.isChannel(channelOrId):
-                    channel = channelOrId
-                    values = map(int, rest.split(','))
-                    self.channelStats[channel] = ChannelStat(*values)
-                else:
-                    id = int(channelOrId)
-                    (channel, rest) = rest.split(':', 1)
-                    d = self.channels.setdefault(channel, {})
-                    values = map(int, rest.split(','))
-                    d[id] = UserStat(id, *values)
-            except ValueError:
-                log.warning('Invalid line (#%s): %r', lineno, line)
-                continue
-        fd.close()
+        plugins.ChannelUserDB.__init__(self, *args, **kwargs)
+    
+    def serialize(self, v):
+        return v.values()
 
-    def flush(self):
-        fd = file(self.filename, 'w')
-        L = self.channelStats.items()
-        L.sort()
-        for (channel, stat) in L:
-            fd.write('%s:%s' % (channel, ','.join(map(str, stat.values()))))
-            fd.write(os.linesep)
-            if channel not in self.channels:
-                continue
-            d = self.channels[channel]
-            LL = d.items()
-            LL.sort()
-            for (id, stat) in LL:
-                fd.write('%s:%s:%s' % (id, channel,
-                                       ','.join(map(str, stat.values()))))
-                fd.write(os.linesep)
-        fd.close()
+    def deserialize(self, channel, id, L):
+        L = map(int, L)
+        if id == 'channelStats':
+            return ChannelStat(L)
+        else:
+            return UserStat(L)
 
-    def close(self):
-        self.flush()
-        self.channels.clear()
-        self.channelStats.clear()
-                
     def addMsg(self, msg, id=None):
         channel = msg.args[0]
         if ircutils.isChannel(channel):
@@ -223,13 +184,12 @@ class StatsDB(object):
                 self.channels[channel][id] = UserStat(id)
             self.channels[channel][id].addMsg(msg)
 
-    def get(self, channel, id=None):
-        if id is None:
-            return self.channelStats[channel]
-        else:
-            return self.channels[channel][id]
-            
+    def getChannelStats(self, channel):
+        return self[channel, -1]
         
+    def getUserStats(self, channel, id):
+        return self[channel, id]
+
 class ChannelStats(callbacks.Privmsg):
     noIgnore = True
     def __init__(self):
@@ -329,7 +289,7 @@ class ChannelStats(callbacks.Privmsg):
         else:
             id = ircdb.users.getUserId(name)
         try:
-            stats = self.db.get(channel, id)
+            stats = self.db.getUserStats(channel, id)
             s = '%s has sent %s; a total of %s, %s, ' \
                 '%s, and %s; %s of those messages %s' \
                 '%s has joined %s, parted %s, quit %s, kicked someone %s, ' \
@@ -362,7 +322,7 @@ class ChannelStats(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         try:
-            stats = self.db.get(channel)
+            stats = self.db.getChannelStats(channel)
             s = 'On %s there have been %s messages, containing %s ' \
                 'characters, %s, %s, and %s; ' \
                 '%s of those messages %s.  There have been ' \
