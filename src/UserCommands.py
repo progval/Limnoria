@@ -45,6 +45,9 @@ class UserCommands(callbacks.Privmsg):
     def _checkNotChannel(self, irc, msg, password=' '):
         if password and ircutils.isChannel(msg.args[0]):
             irc.error(msg, conf.replyRequiresPrivacy)
+            return False
+        else:
+            return True
 
     def register(self, irc, msg, args):
         """<name> <password>
@@ -53,7 +56,8 @@ class UserCommands(callbacks.Privmsg):
         hostmask of the person registering.
         """
         (name, password) = privmsgs.getArgs(args, optional=1)
-        self._checkNotChannel(irc, msg, password)
+        if not self._checkNotChannel(irc, msg, password):
+            return
         if ircutils.isChannel(msg.args[0]):
             irc.error(msg, conf.replyRequiresPrivacy)
             return
@@ -77,7 +81,8 @@ class UserCommands(callbacks.Privmsg):
         hostmask.
         """
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
-        self._checkNotChannel(irc, msg, password)
+        if not self._checkNotChannel(irc, msg, password):
+            return
         s = hostmask.translate(string.ascii, '!@*?')
         if len(s) < 10:
             s = 'Hostmask must be more than 10 non-wildcard characters.'
@@ -111,7 +116,8 @@ class UserCommands(callbacks.Privmsg):
         recognized by his hostmask.
         """
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
-        self._checkNotChannel(irc, msg, password)
+        if not self._checkNotChannel(irc, msg, password):
+            return
         try:
             user = ircdb.users.getUser(name)
         except KeyError:
@@ -132,7 +138,8 @@ class UserCommands(callbacks.Privmsg):
         <new password>.
         """
         (name, oldpassword, newpassword) = privmsgs.getArgs(args, 3)
-        self._checkNotChannel(irc, msg, oldpassword+newpassword)
+        if not self._checkNotChannel(irc, msg, oldpassword+newpassword):
+            return
         try:
             user = ircdb.users.getUser(name)
         except KeyError:
@@ -206,7 +213,8 @@ class UserCommands(callbacks.Privmsg):
         Identifies the user as <name>.
         """
         (name, password) = privmsgs.getArgs(args, 2)
-        self._checkNotChannel(irc, msg)
+        if not self._checkNotChannel(irc, msg):
+            return
         try:
             u = ircdb.users.getUser(name)
         except KeyError:
