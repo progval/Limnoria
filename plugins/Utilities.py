@@ -66,6 +66,10 @@ class Utilities(callbacks.Privmsg):
         Returns the arguments given it.
         """
         irc.reply(msg, ' '.join(args))
+
+    def arg(self, irc, msg, args):
+        i = int(args.pop(0))
+        irc.reply(msg, args[i])
         
         
 Class = Utilities
