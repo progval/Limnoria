@@ -22,21 +22,4 @@ Use PyChecker.  Believe me, it makes things better.
 
 USERS:
 ------
-Read conf.py to see what kind of configuration options you have available.  In
-order to actually connect to a server on the internet, you'll want to modify
-the "drivers" option, changing the server "localhost" to the appropriate value.
-You'll probably also want to change the channels that are joined by modifying
-the configuration for the "callbacks.ChannelJoiner" callback.  This should all
-be done in a separate file, as per the example in sample.conf.
-
-To run the bot, do it from this directory, like this:
-
-src/bot.py
-
-If you have your own configuration file (the bot will still use conf.py as its
-set of defaults, but will override it with whatever it finds in your file) use:
-
-src/bot.py -c yourconfig.py
-
-I've included slightly patched versions of asyncore and asynchat so they don't
-make PyChecker complain, and use some newer features (mostly {}.iter*) of 2.2.
+<to be inserted later, when scripts/setup.py is done>
