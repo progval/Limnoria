@@ -202,7 +202,7 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
             irc.error(msg, 'I couldn\'t reach the search page (%s).' % e)
             return
         except socket.error, e:
-            if e.args[0] == 110:
+            if e.args[0] == 110 or e.args[0] == 10060:
                 irc.error(msg, 'Connection timed out to packages.debian.org.')
                 return
             else:
