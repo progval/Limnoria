@@ -172,6 +172,7 @@ class Filter(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         text = text.replace('sh', 'th')
         text = text.replace('SH', 'TH')
+        text = text.replace('Sh', 'Th')
         text = text.replace('ss', 'th')
         text = text.replace('SS', 'TH')
         text = text.replace('s', 'th')

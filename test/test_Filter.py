@@ -52,6 +52,7 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
 
     def testLithp(self):
         self.assertResponse('lithp jamessan', 'jamethan')
+        self.assertResponse('lithp Shame', 'Thame')
 
     def testMorse(self):
         self.assertResponse('unmorse [morse jemfinch]', 'JEMFINCH')
