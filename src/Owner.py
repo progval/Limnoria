@@ -80,7 +80,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
         if ignoreDeprecation:
             log.warning('Deprecated plugin loaded: %s', name)
         else:
-            raise Deprecated, 'Attempted to load deprecated plugin %s' % name
+            raise Deprecated, 'Attempted to load deprecated plugin %r' % name
     if module.__name__ in sys.modules:
         sys.modules[module.__name__] = module
     linecache.checkcache()
