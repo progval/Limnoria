@@ -69,12 +69,16 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load Python')
+    if yn("""This plugin provides a snarfer for ASPN Python Recipe URLs;
+             it will output the name of the Recipe when it sees such a URL.
+             Would you like to enable this snarfer?""") == 'y':
+        onStart.append('python config aspn-snarfer on')
 
 class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
     regexps = ['aspnRecipes']
     configurables = plugins.ConfigurableDictionary(
-        [('aspn-snarfer', plugins.ConfigurableBoolType, True,
+        [('aspn-snarfer', plugins.ConfigurableBoolType, False,
           """Determines whether the ASPN Python recipe snarfer is enabled.  If
           so, it will message the channel with the name of the recipe when it
           sees an ASPN Python recipe link on the channel.""")]

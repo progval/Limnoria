@@ -61,13 +61,31 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load URL')
+    if yn("""This plugin offers a snarfer that will go to tinyurl.com and get
+             a shorter version of long URLs that are sent to the channel.
+             Would you like this snarfer to be enabled?""") == 'y':
+        onStart.append('url config tinyurl-snarfer on')
+        if advanced:
+            x = anything("""What would you like to be the minimum URL length
+                            that will trigger this snarfer?""")
+            if not x:
+                x = '46'
+            while True:
+                try:
+                    i = int(x)
+                    onStart.append('url config tinyurl-minimum-length %s' % i)
+                    return
+                except ValueError:
+                    print 'That\'s not a valid integer.'
+                    x = anything("""What would you like to be the minimum URL
+                                    length that will trigger this snarfer?""")
 
 class URL(callbacks.PrivmsgCommandAndRegexp,
           plugins.Configurable,
           plugins.ChannelDBHandler):
     regexps = ['tinyurlSnarfer']
     configurables = plugins.ConfigurableDictionary(
-        [('tinyurl-snarfer', plugins.ConfigurableBoolType, True,
+        [('tinyurl-snarfer', plugins.ConfigurableBoolType, False,
           """Determines whether the bot will output shorter versions of URLs
           longer than the tinyurl-minimum-length config variable."""),
          ('tinyurl-minimum-length', plugins.ConfigurableIntType, 46,

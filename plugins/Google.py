@@ -72,12 +72,14 @@ def configure(onStart, afterConnect, advanced):
         print 'The Google plugin has the functionality to watch for URLs'
         print 'that match a specific pattern (we call this a snarfer).'
         print 'When supybot sees such a URL, he will parse the web page'
-        print 'for information and reply with the results.\n'
+        print 'for information and reply with the results.'
+        print
         print 'Google has two available snarfers: Google Groups link'
-        print 'snarfing and a google search snarfer.\n'
+        print 'snarfing and a google search snarfer.'
+        print
         if yn('Do you want the Google Groups link snarfer enabled by '
-            'default?') == 'n':
-            onStart.append('Google config groups-snarfer off')
+            'default?') == 'y':
+            onStart.append('Google config groups-snarfer on')
         if yn('Do you want the Google search snarfer enabled by default?')\
             == 'y':
             onStart.append('Google config search-snarfer on')
@@ -122,7 +124,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
     configurables = plugins.ConfigurableDictionary(
-        [('groups-snarfer', plugins.ConfigurableBoolType, True,
+        [('groups-snarfer', plugins.ConfigurableBoolType, False,
           """Determines whether the groups snarfer is enabled.  If so, URLs at
           groups.google.com will be snarfed and their group/title messaged to
           the channel."""),

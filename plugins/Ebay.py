@@ -61,8 +61,8 @@ def configure(onStart, afterConnect, advanced):
         print 'that match a specific pattern (we call this a snarfer). When'
         print 'supybot sees such a URL, he will parse the web page for'
         print 'information and reply with the results.\n'
-        if yn('Do you want the Ebay snarfer enabled by default?') == 'n':
-            onStart.append('Ebay config auction-snarfer off')
+        if yn('Do you want the Ebay snarfer enabled by default?') == 'y':
+            onStart.append('Ebay config auction-snarfer on')
 
 class EbayError(callbacks.Error):
     pass
@@ -75,7 +75,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = ['ebaySnarfer']
     configurables = plugins.ConfigurableDictionary(
-        [('auction-snarfer', plugins.ConfigurableBoolType, True,
+        [('auction-snarfer', plugins.ConfigurableBoolType, False,
           """Determines whether the bot will automatically 'snarf' Ebay auction
           URLs and print information about them.""")]
     )

@@ -72,13 +72,12 @@ class BugzillaError(Exception):
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, yn
     onStart.append('load Bugzilla')
-    if advanced:
-        print 'The Bugzilla plugin has the functionality to watch for URLs'
-        print 'that match a specific pattern (we call this a snarfer). When'
-        print 'supybot sees such a URL, he will parse the web page for'
-        print 'information and reply with the results.\n'
-        if yn('Do you want the Bugzilla snarfer enabled by default?') == 'n':
-            onStart.append('Bugzilla config bug-snarfer off')
+    print 'The Bugzilla plugin has the functionality to watch for URLs'
+    print 'that match a specific pattern (we call this a snarfer). When'
+    print 'supybot sees such a URL, he will parse the web page for'
+    print 'information and reply with the results.\n'
+    if yn('Do you want this bug snarfer enabled by default?') == 'y':
+        onStart.append('Bugzilla config bug-snarfer on')
 
 replyNoBugzilla = 'I don\'t have a bugzilla %r'
 
@@ -87,7 +86,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = ['bzSnarfer']
     configurables = plugins.ConfigurableDictionary(
-        [('bug-snarfer', plugins.ConfigurableBoolType, True,
+        [('bug-snarfer', plugins.ConfigurableBoolType, False,
          """Determines whether the bug snarfer will be enabled, such that any
          Bugzilla URLs seen in the channel will have their information reported
          into the channel.""")]
