@@ -251,6 +251,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
            ambiguous commands, mapping the command to the plugins it's
            available in."""
         if ambiguousCommands is None:
+            print '***', tokens
             ambiguousCommands = {}
         if tokens:
             command = callbacks.canonicalName(tokens[0])
@@ -267,7 +268,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     srcs = [name for name in names if name in self._srcPlugins]
                     if len(srcs) == 1:
                         tokens.insert(0, srcs[0])
-                    else:
+                    elif command not in map(callbacks.canonicalName, names):
                         ambiguousCommands[command] = names
             for elt in tokens:
                 if isinstance(elt, list):

@@ -539,6 +539,7 @@ class IrcObjectProxy(RichReplyMethods):
             if len(cbs) > 1:
                 for cb in cbs:
                     if canonicalName(cb.name()) == name:
+                        del self.args[0]
                         break
                 else:
                     # This should've been caught earlier, that's why we
