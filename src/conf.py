@@ -410,11 +410,13 @@ registerChannelValue(supybot.reply.whenAddressedBy, 'strings',
     them), this variable is a space-separated list of strings, so you can
     set something like '@@ ??' and the bot will reply when a message is
     prefixed by either @@ or ??."""))
-
 registerChannelValue(supybot.reply.whenAddressedBy, 'nick',
     registry.Boolean(True, """Determines whether the bot will reply when people
     address it by its nick, rather than with a prefix character."""))
-
+registerChannelValue(supybot.reply.whenAddressedBy.nick, 'atEnd',
+    registry.Boolean(False, """Determines whether the bot will reply when people
+    address it by its nick at the end of the message, rather than at the
+    beginning."""))
 registerChannelValue(supybot.reply.whenAddressedBy, 'nicks',
     registry.SpaceSeparatedSetOfStrings([], """Determines what extra nicks the
     bot will always respond to when addressed by, even if its current nick is

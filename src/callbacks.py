@@ -66,7 +66,8 @@ import supybot.ircutils as ircutils
 import supybot.registry as registry
 
 def addressed(nick, msg, prefixChars=None, nicks=None,
-              prefixStrings=None, whenAddressedByNick=None):
+              prefixStrings=None, whenAddressedByNick=None,
+              whenAddressedByNickAtEnd=None):
     """If msg is addressed to 'name', returns the portion after the address.
     Otherwise returns the empty string.
     """
@@ -86,6 +87,9 @@ def addressed(nick, msg, prefixChars=None, nicks=None,
         prefixChars = get(conf.supybot.reply.whenAddressedBy.chars)
     if whenAddressedByNick is None:
         whenAddressedByNick = get(conf.supybot.reply.whenAddressedBy.nick)
+    if whenAddressedByNickAtEnd is None:
+        r = conf.supybot.reply.whenAddressedBy.nick.atEnd
+        whenAddressedByNickAtEnd = get(r)
     if prefixStrings is None:
         prefixStrings = get(conf.supybot.reply.whenAddressedBy.strings)
     if nicks is None:
@@ -103,7 +107,8 @@ def addressed(nick, msg, prefixChars=None, nicks=None,
     # Ok, not private.  Does it start with our nick?
     elif whenAddressedByNick:
         for nick in nicks:
-            if ircutils.toLower(payload).startswith(nick):
+            lowered = ircutils.toLower(payload)
+            if lowered.startswith(nick):
                 try:
                     (maybeNick, rest) = payload.split(None, 1)
                     while not ircutils.isNick(maybeNick, strictRfc=True):
@@ -116,6 +121,13 @@ def addressed(nick, msg, prefixChars=None, nicks=None,
                         continue
                 except ValueError: # split didn't work.
                     continue
+            elif whenAddressedByNickAtEnd and lowered.endswith(nick):
+                rest = payload[:-len(nick)]
+                possiblePayload = rest.rstrip(' \t,;')
+                if possiblePayload != rest:
+                    # There should be some separator between the nick and the
+                    # previous alphanumeric character.
+                    return possiblePayload
     if payload and any(payload.startswith, prefixStrings):
         return stripPrefixStrings(payload)
     elif payload and payload[0] in prefixChars:

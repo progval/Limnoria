@@ -203,8 +203,16 @@ class FunctionsTestCase(SupyTestCase):
 
     def testAddressedWithMultipleNicks(self):
         msg = ircmsgs.privmsg('#foo', 'bar: baz')
-        self.failUnless(callbacks.addressed('bar', msg))
-        self.failUnless(callbacks.addressed('biff', msg, nicks=['bar']))
+        self.assertEqual(callbacks.addressed('bar', msg), 'baz')
+        self.assertEqual(callbacks.addressed('biff', msg, nicks=['bar']),
+                         'baz')
+
+    def testAddressedWithNickAtEnd(self):
+        msg = ircmsgs.privmsg('#foo', 'baz, bar')
+        self.assertEqual(callbacks.addressed('bar', msg,
+                                             whenAddressedByNickAtEnd=True),
+                         'baz')
+            
 
     def testReply(self):
         prefix = 'foo!bar@baz'
