@@ -77,13 +77,13 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testConfig(self):
         try:
+            original = conf.supybot.plugins.Topic.separator()
             conf.supybot.plugins.Topic.separator.setValue(' <==> ')
             _ = self.getMsg('topic add foo')
             m = self.getMsg('topic add bar')
             self.failUnless('<==>' in m.args[1])
         finally:
-            default = conf.supybot.plugins.Topic.separator.default()
-            conf.supybot.plugins.Topic.separator.setValue(default)
+            conf.supybot.plugins.Topic.separator.setValue(original)
 
     def testReorder(self):
         _ = self.getMsg('topic add foo')
@@ -116,6 +116,24 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('topic set -1 bar', 'bar')
         self.assertNotRegexp('topic set -1 baz', 'bar')
 
+    def testTopic(self):
+        self.assertResponse('topic foo bar baz', 'foo bar baz')
+
+    def testUndo(self):
+        try:
+            original = conf.supybot.plugins.Topic.format()
+            conf.supybot.plugins.Topic.format.setValue('$topic')
+            self.assertResponse('topic ""', '')
+            self.assertResponse('topic add foo', 'foo')
+            self.assertResponse('topic add bar', 'foo || bar')
+            self.assertResponse('topic add baz', 'foo || bar || baz')
+            self.assertResponse('topic undo', 'foo || bar')
+            self.assertResponse('topic undo', 'foo')
+            self.assertResponse('topic undo', '')
+        finally:
+            conf.supybot.plugins.Topic.format.setValue(original)
+            
+        
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

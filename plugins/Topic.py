@@ -73,10 +73,15 @@ conf.registerChannelValue(conf.supybot.plugins.Topic, 'recognizeTopiclen',
     TOPICLEN value sent to it by the server and thus refuse to send TOPICs
     longer than the TOPICLEN.  These topics are likely to be truncated by the
     server anyway, so this defaults to True."""))
+conf.registerGroup(conf.supybot.plugins.Topic, 'undo')
+conf.registerChannelValue(conf.supybot.plugins.Topic.undo, 'max',
+    registry.NonNegativeInteger(10, """Determines the number of previous
+    topics to keep around in case the undo command is called."""))
 
 class Topic(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        self.undos = ircutils.IrcDict()
         self.lastTopics = ircutils.IrcDict()
 
     def _splitTopic(self, topic, channel):
@@ -92,6 +97,23 @@ class Topic(callbacks.Privmsg):
         env = {'topic': topic}
         return plugins.standardSubstitute(irc, msg, formatter, env)
 
+    def _addUndo(self, channel, topics):
+        try:
+            stack = self.undos[channel]
+        except KeyError:
+            stack = []
+            self.undos[channel] = stack
+        stack.append(topics)
+        maxLen = self.registryValue('undo.max', channel)
+        while len(stack) > maxLen:
+            del stack[0]
+
+    def _getUndo(self, channel):
+        try:
+            return self.undos[channel].pop()
+        except (KeyError, IndexError):
+            return None
+        
     def _sendTopics(self, irc, channel, topics):
         topics = [s for s in topics if s and not s.isspace()]
         self.lastTopics[channel] = topics
@@ -104,6 +126,7 @@ class Topic(callbacks.Privmsg):
                               '(maximum length: %s).' % maxLen, Raise=True)
         except KeyError:
             pass
+        self._addUndo(channel, topics)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
 
     def _canChangeTopic(self, irc, channel):
@@ -342,6 +365,20 @@ class Topic(callbacks.Privmsg):
             return
         self._sendTopics(irc, channel, topics)
     restore = privmsgs.channel(restore)
+
+    def undo(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Restores the topic to the one previous to the last topic command that
+        set it.
+        """
+        topics = self._getUndo(channel) # This is the last topic sent.
+        topics = self._getUndo(channel) # This is the topic list we want.
+        if topics is not None:
+            self._sendTopics(irc, channel, topics)
+        else:
+            irc.error('There are no more undos for %s.' % channel)
+    undo = privmsgs.channel(undo)
 
 Class = Topic
 
