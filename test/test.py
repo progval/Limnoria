@@ -65,7 +65,7 @@ for filename in os.listdir(conf.logDir):
 
 import debug
 
-debug.minimumDebugPriority = 'high'
+debug.stderr = False
 
 import world
 import ircdb
@@ -239,7 +239,8 @@ class ChannelPluginTestCase(PluginTestCase):
         if response is not None:
             args = list(response.args)
             # Strip off nick: at beginning of response.
-            if not ircmsgs.isAction(response):
+            if args[1].startswith(self.nick) or \
+               args[1].startswith(ircutils.nickFromHostmask(self.prefix)):
                 args[1] = args[1].split(None, 1)[1]
             return ircmsgs.privmsg(*args)
         else:
