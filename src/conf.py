@@ -277,12 +277,11 @@ registerGlobalValue(supybot.reply, 'maximumLength',
     bot's reply -- no reply will be passed through the bot with a length
     greater than this."""))
 
-registerChannelValue(supybot.reply, 'truncate',
-    registry.Boolean(False, """Determines whether the bot will simply truncate
-    messages instead of breaking up long messages and using the 'more' command
-    to get the remaining chunks."""))
+registerChannelValue(supybot.reply, 'mores',
+    registry.Boolean(True, """Determines whether the bot will break up long
+    messages into chunks and allow users to use  the 'more' command to get the
+    remaining chunks."""))
 
-registerGroup(supybot.reply, 'mores')
 registerChannelValue(supybot.reply.mores, 'maximum',
     registry.PositiveInteger(50, """Determines what the maximum number of
     chunks (for use with the 'more' command) will be."""))

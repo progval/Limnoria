@@ -160,6 +160,7 @@ def reply(msg, s, prefixName=None, private=None,
           notice=None, to=None, action=None, error=False):
     msg.tag('repliedTo')
     # Ok, let's make the target:
+    # XXX This isn't entirely right.  Consider to=#foo, private=True.
     target = ircutils.replyTo(msg)
     if ircutils.isChannel(target):
         channel = target
@@ -781,13 +782,12 @@ class IrcObjectProxy(RichReplyMethods):
             self.to = self.to or to
         # action=True implies noLengthCheck=True and prefixName=False
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
+        target = self.private and self.to or self.msg.args[0]
         s = ircutils.safeArgument(s)
         if self.finalEvaled:
             try:
                 if not isinstance(self.irc, irclib.Irc):
                     s = s[:conf.supybot.reply.maximumLength()]
-                    if conf.get(conf.supybot.reply.truncate, self.msg.args[0]):
-                        s = s[:512]
                     return self.irc.reply(s, to=self.to,
                                           notice=self.notice,
                                           action=self.action,
@@ -806,13 +806,15 @@ class IrcObjectProxy(RichReplyMethods):
                     return m
                 else:
                     allowedLength = 450 - len(self.irc.prefix)
-                    maximumMores = conf.supybot.reply.mores.maximum()
+                    maximumMores = conf.get(conf.supybot.reply.mores.maximum,
+                                            target)
                     maximumLength = allowedLength * maximumMores
                     if len(s) > maximumLength:
                         log.warning('Truncating to %s bytes from %s bytes.',
                                     maximumLength, len(s))
                         s = s[:maximumLength]
-                    if len(s) < allowedLength or conf.supybot.reply.truncate():
+                    if len(s) < allowedLength or \
+                       not conf.get(conf.supybot.reply.mores, target):
                         # In case we're truncating, we add 20 to allowedLength,
                         # because our allowedLength is shortened for the
                         # "(XX more messages)" trailer.
@@ -829,7 +831,7 @@ class IrcObjectProxy(RichReplyMethods):
                         return m
                     msgs = ircutils.wrap(s, allowedLength-30) # -30 is for nick:
                     msgs.reverse()
-                    instant = conf.supybot.reply.mores.instant()
+                    instant = conf.get(conf.supybot.reply.mores.instant,target)
                     while instant > 1 and msgs:
                         instant -= 1
                         response = msgs.pop()
@@ -838,7 +840,11 @@ class IrcObjectProxy(RichReplyMethods):
                                   private=self.private,
                                   prefixName=self.prefixName)
                         self.irc.queueMsg(m)
-                        return m
+                        # XXX We should somehow allow these to be returned, but
+                        #     until someone complains, we'll be fine :)  We
+                        #     can't return from here, though, for obvious
+                        #     reasons.
+                        # return m
                     if not msgs:
                         return
                     response = msgs.pop()
