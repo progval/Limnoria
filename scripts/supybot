@@ -45,11 +45,6 @@ if sys.version_info < (2, 3, 0):
     sys.stderr.write('This program requires Python >= 2.3.0\n')
     sys.exit(-1)
 
-if os.name == 'posix':
-    if os.getuid() == 0 or os.geteuid() == 0:
-        sys.stderr.write('Dude, don\'t even try to run this as root.\n')
-        sys.exit(-1)
-
 import time
 import optparse
 
@@ -138,8 +133,20 @@ if __name__ == '__main__':
                       dest='strictRfc',
                       help='Determines whether the bot will strictly follow '
                            'RFC guidelines defining nicks and channels.')
+    parser.add_option('', '--allow-root', action='store_true',
+                      dest='allowRoot',
+                      help='Determines whether the bot will be allowed to run'
+                           'as root.  You don\'t want this.  Don\'t do it.'
+                           'Even if you think you want it, you don\'t.  '
+                           'You\'re probably dumb if you do this.')
+                      
 
     (options, args) = parser.parse_args()
+
+    if os.name == 'posix':
+        if os.getuid() == 0 or os.geteuid() == 0 and not options.allowRoot:
+            sys.stderr.write('Dude, don\'t even try to run this as root.\n')
+            sys.exit(-1)
 
     if len(args) > 1:
         parser.error()
