@@ -1,3 +1,13 @@
+	* Added Topic.lock and Topic.unlock, for locking and unlocking
+	the topic.
+
+	* Added Topic.restore, for restoring the topic to the last-sent
+	topic.  Useful for when people change your carefully crafted
+	topic through means other than the bot.
+	
+	* Changed supybot.brackets so you can now provide the empty
+	string, which means you cannot do nesting with brackets.
+	
 	* Added Anonymous, a plugin for anonymously saying things to a
 	channel.
 	

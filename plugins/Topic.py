@@ -45,6 +45,7 @@ import utils
 import ircdb
 import ircmsgs
 import plugins
+import ircutils
 import privmsgs
 import registry
 import callbacks
@@ -57,20 +58,37 @@ conf.registerChannelValue(conf.supybot.plugins.Topic, 'separator',
 class Topic(callbacks.Privmsg):
     topicFormatter = '%s (%s)'
     topicUnformatter = re.compile('(.*) \((\S+)\)')
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        self.lastTopics = ircutils.IrcDict()
+        
     def _splitTopic(self, topic, channel):
         separator = self.registryValue('separator', channel)
         return filter(None, topic.split(separator))
 
-    def _joinTopic(self, topics, channel):
+    def _joinTopic(self, channel, topics):
         separator = self.registryValue('separator', channel)
         return separator.join(topics)
 
-    def _unformatTopic(self, topic, channel):
+    def _unformatTopic(self, channel, topic):
         m = self.topicUnformatter.match(topic)
         if m:
             return (m.group(1), m.group(2))
         else:
             return (topic, '')
+
+    def _formatTopic(self, channel, msg, topic):
+        try:
+            name = ircdb.users.getUser(msg.prefix).name
+        except KeyError:
+            name = msg.nick
+        return self.topicFormatter % (topic, name)
+    
+    def _sendTopic(self, irc, channel, topics):
+        topics = [s for s in topics if s and not s.isspace()]
+        self.lastTopics[channel] = topics
+        newTopic = self._joinTopic(channel, topics)
+        irc.queueMsg(ircmsgs.topic(channel, newTopic))
 
     def add(self, irc, msg, args, channel):
         """[<channel>] <topic>
@@ -85,17 +103,10 @@ class Topic(callbacks.Privmsg):
             irc.error(s)
             return
         currentTopic = irc.state.getTopic(channel)
-        try:
-            name = ircdb.users.getUser(msg.prefix).name
-        except KeyError:
-            name = msg.nick
-        formattedTopic = self.topicFormatter % (topic, name)
-        if currentTopic:
-            newTopic = self._joinTopic([currentTopic, formattedTopic], channel)
-        else:
-            newTopic = formattedTopic
-        irc.queueMsg(ircmsgs.topic(channel, newTopic))
-    add = privmsgs.checkChannelCapability(add, 'topic')
+        formattedTopic = self._formatTopic(channel, msg, topic)
+        # Empties are removed by _sendTopic.
+        self._sendTopic(irc, channel, [currentTopic, formattedTopic])
+    add = privmsgs.channel(add)
 
     def shuffle(self, irc, msg, args, channel):
         """[<channel>]
@@ -110,15 +121,12 @@ class Topic(callbacks.Privmsg):
             return
         elif len(topics) == 2:
             topics.reverse()
-            newtopic = self._joinTopic(topics, channel)
         else:
-            random.shuffle(topics)
-            newtopic = self._joinTopic(topics, channel)
-            while newtopic == irc.state.getTopic(channel):
+            original = topics[:]
+            while topics == original:
                 random.shuffle(topics)
-                newtopic = self._joinTopic(topics, channel)
-        irc.queueMsg(ircmsgs.topic(channel, newtopic))
-    shuffle = privmsgs.checkChannelCapability(shuffle, 'topic')
+        self._sendTopic(irc, channel, topics)
+    shuffle = privmsgs.channel(shuffle)
 
     def reorder(self, irc, msg, args, channel):
         """[<channel>] <number> [<number> ...]
@@ -156,13 +164,12 @@ class Topic(callbacks.Privmsg):
                 return
             try:
                 newtopics = [topics[i] for i in order]
-                newtopic = self._joinTopic(newtopics, channel)
-                irc.queueMsg(ircmsgs.topic(channel, newtopic))
+                self._sendTopic(irc, channel, newtopics)
             except IndexError:
                 irc.error('An invalid topic number was specified.')
         else:
             irc.error('There are no topics to reorder.')
-    reorder = privmsgs.checkChannelCapability(reorder, 'topic')
+    reorder = privmsgs.channel(reorder)
 
     def list(self, irc, msg, args, channel):
         """[<channel>] <number>
@@ -174,7 +181,7 @@ class Topic(callbacks.Privmsg):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         L = []
         for (i, t) in enumerate(topics):
-            (t, _) = self._unformatTopic(t, channel)
+            (t, _) = self._unformatTopic(channel, t)
             L.append('%s: %s' % (i+1, utils.ellipsisify(t, 30)))
         s = utils.commaAndify(L)
         irc.reply(s)
@@ -201,7 +208,7 @@ class Topic(callbacks.Privmsg):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if topics:
             try:
-                irc.reply(self._unformatTopic(topics[number], channel)[0])
+                irc.reply(self._unformatTopic(channel, topics[number])[0])
             except IndexError:
                 irc.error('That\'s not a valid topic.')
         else:
@@ -241,13 +248,11 @@ class Topic(callbacks.Privmsg):
             irc.error('There are no topics to change.')
             return
         topic = topics.pop(number)
-        (topic, name) = self._unformatTopic(topic, channel)
+        (topic, name) = self._unformatTopic(channel, topic)
         try:
             senderName = ircdb.users.getUser(msg.prefix).name
         except KeyError:
             senderName = msg.nick
-#            irc.errorNoUser()
-#            return
         if name and name != senderName and \
            not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
             irc.error('You can only modify your own topics.')
@@ -256,9 +261,8 @@ class Topic(callbacks.Privmsg):
         if number < 0:
             number = len(topics)+1+number
         topics.insert(number, newTopic)
-        newTopic = self._joinTopic(topics, channel)
-        irc.queueMsg(ircmsgs.topic(channel, newTopic))
-    change = privmsgs.checkChannelCapability(change, 'topic')
+        self._sendTopic(irc, channel, topics)
+    change = privmsgs.channel(change)
 
     def remove(self, irc, msg, args, channel):
         """[<channel>] <number>
@@ -284,7 +288,7 @@ class Topic(callbacks.Privmsg):
         except IndexError:
             irc.error('That\'s not a valid topic number.')
             return
-        (topic, name) = self._unformatTopic(topic, channel)
+        (topic, name) = self._unformatTopic(channel, topic)
         try:
             username = ircdb.users.getUser(msg.prefix).name
         except KeyError:
@@ -293,10 +297,46 @@ class Topic(callbacks.Privmsg):
            not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
             irc.error('You can only remove your own topics.')
             return
-        newTopic = self._joinTopic(topics, channel)
-        irc.queueMsg(ircmsgs.topic(channel, newTopic))
-    remove = privmsgs.checkChannelCapability(remove, 'topic')
+        self._sendTopic(irc, channel, topics)
+    remove = privmsgs.channel(remove)
 
+    def lock(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Locks the topic (sets the mode +t) in <channel>.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
+        """
+        if irc.nick in irc.state.channels[channel].ops:
+            irc.queueMsg(ircmsgs.mode(channel, '+t'))
+        else:
+            irc.error('How can I unlock the topic, I\'m not opped!')
+    lock = privmsgs.channel(lock)
+
+    def unlock(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Locks the topic (sets the mode +t) in <channel>.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
+        """
+        if irc.nick in irc.state.channels[channel].ops:
+            irc.queueMsg(ircmsgs.mode(channel, '-t'))
+        else:
+            irc.error('How can I unlock the topic, I\'m not opped!')
+    unlock = privmsgs.channel(unlock)
+
+    def restore(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Restores the topic to the last topic set by the bot.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
+        """
+        try:
+            topics = self.lastTopics[channel]
+        except KeyError:
+            irc.error('I haven\'t yet set the topic in %s.' % channel)
+            return
+        self._sendTopic(irc, channel, topics)
+    restore = privmsgs.channel(restore)
 
 Class = Topic
 
