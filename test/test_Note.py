@@ -36,6 +36,7 @@ import supybot.ircdb as ircdb
 
 class NoteTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Note', 'Misc', 'User')
+    config = {'supybot.reply.whenNotCommand': False}
     def setUp(self):
         PluginTestCase.setUp(self)
         # setup a user

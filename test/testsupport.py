@@ -51,6 +51,7 @@ world.startedAt = started
 import supybot.irclib as irclib
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
+import supybot.registry as registry
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
@@ -122,6 +123,11 @@ class PluginTestCase(SupyTestCase):
     plugins = None
     cleanConfDir = True
     cleanDataDir = True
+    config = {}
+    def __init__(self, *args, **kwargs):
+        SupyTestCase.__init__(self, *args, **kwargs)
+        self.originals = {}
+
     def setUp(self, nick='test'):
         if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
             # Necessary because there's a test in here that shouldn\'t run.
@@ -173,11 +179,22 @@ class PluginTestCase(SupyTestCase):
                     except Owner.Deprecated, e:
                         return utils.exnToString(e)
                     cb = Owner.loadPluginClass(self.irc, module)
+        for (name, value) in self.config.iteritems():
+            group = conf.supybot
+            parts = registry.split(name)
+            if parts[0] == 'supybot':
+                parts.pop(0)
+            for part in parts:
+                group = group.get(part)
+            self.originals[group] = group()
+            group.setValue(value)
 
     def tearDown(self):
         if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
             # Necessary because there's a test in here that shouldn\'t run.
             return
+        for (group, original) in self.originals.iteritems():
+            group.setValue(original)
         ircdb.users.close()
         ircdb.ignores.close()
         ircdb.channels.close()
