@@ -834,6 +834,7 @@ class Irc(IrcCommandDispatcher):
             L = list(nick)
             while len(L) <= 3:
                 L.append('`')
+            # XXX Should this check ircutils.isNick as well?
             while ret == nick:
                 L[random.randrange(len(L))] = random.choice('0123456789')
                 ret = ''.join(L)
