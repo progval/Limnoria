@@ -413,7 +413,10 @@ class UsersDB(object):
                 if len(ids) == 1:
                     id = ids[0]
                     self._hostmaskCache[s] = id
-                    self._hostmaskCache.setdefault(id, sets.Set()).add(s)
+                    try:
+                        self._hostmaskCache[id].add(s)
+                    except KeyError:
+                        self._hostmaskCache[id] = sets.Set([s])
                     return id
                 elif len(ids) == 0:
                     raise KeyError, s
@@ -458,19 +461,19 @@ class UsersDB(object):
     def setUser(self, id, user):
         """Sets a user (given its id) to the IrcUser given it."""
         assert isinstance(id, int), 'setUser takes an integer userId.'
-        if not 0 <= id < len(self.users) or self.users[id] is None:
+        if (not 0 <= id < len(self.users)) or self.users[id] is None:
             raise KeyError, id
         try:
             if self.getUserId(user.name) != id:
-                raise ValueError, \
-                      '%s is already registered to someone else.' % user.name
+                s = '%s is already registered to someone else.' % user.name
+                raise ValueError, s
         except KeyError:
             pass
         for hostmask in user.hostmasks:
             try:
                 if self.getUserId(hostmask) != id:
-                    raise ValueError, \
-                          '%s is already registered to someone else.'% hostmask
+                    s = '%s is already registered to someone else.'% hostmask
+                    raise ValueError, s
             except KeyError:
                 continue
         if id in self._nameCache:
@@ -480,7 +483,6 @@ class UsersDB(object):
             for hostmask in self._hostmaskCache[id]:
                 del self._hostmaskCache[hostmask]
             del self._hostmaskCache[id]
-        ### FIXME: what if the new hostmasks overlap with another hostmask?
         self.users[id] = user
         self.flush()
 
