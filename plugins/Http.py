@@ -78,13 +78,15 @@ class Http(callbacks.Privmsg):
         self.deepthoughts.add(thought)
         irc.reply(msg, thought)
 
-    _titleRe = re.compile(r'<title>(.*)</title>')
+    _titleRe = re.compile(r'<title>(.*)</title>', re.I)
     def title(self, irc, msg, args):
         """<url>
 
         Returns the HTML <title>...</title> of a URL.
         """
         url = privmsgs.getArgs(args)
+        if '://' not in url:
+            url = 'http://%s' % url
         try:
             fd = urllib2.urlopen(url)
             text = fd.read()
