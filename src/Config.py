@@ -57,10 +57,9 @@ class InvalidRegistryName(callbacks.Error):
 
 def getWrapper(name):
     parts = name.split('.')
-    if not parts or parts[0] != 'supybot':
+    if not parts or parts[0] not in ('supybot', 'users'):
         raise InvalidRegistryName, name
-    group = conf.supybot
-    parts.pop(0)
+    group = getattr(conf, parts.pop(0))
     while parts:
         try:
             group = group.get(parts.pop(0))
@@ -91,10 +90,28 @@ class Config(callbacks.Privmsg):
             irc.error(str(e))
 
     def _canonicalizeName(self, name):
-        if not name.startswith('supybot'):
+        if not name.startswith('supybot') and not name.startswith('users'):
             name = 'supybot.' + name
         return name
 
+    def _list(self, name, groups=False):
+        name = self._canonicalizeName(name)
+        group = getWrapper(name)
+        if groups:
+            L = []
+            for (vname, v) in group.children.iteritems():
+                if v.added:
+                    L.append(vname)
+            utils.sortBy(str.lower, L)
+            return L
+        else:
+            try:
+                L = zip(*group.getValues(fullNames=False))[0]
+                utils.sortBy(str.lower, L)
+                return L
+            except TypeError:
+                return []
+        
     def list(self, irc, msg, args):
         """[--groups] <group>
 
@@ -108,24 +125,13 @@ class Config(callbacks.Privmsg):
             if name == '--groups':
                 groups = True
         name = privmsgs.getArgs(rest)
-        name = self._canonicalizeName(name)
-        group = getWrapper(name)
-        if groups:
-            L = []
-            for (vname, v) in group.children.iteritems():
-                if v.added:
-                    L.append(vname)
-            if L:
-                utils.sortBy(str.lower, L)
-                irc.reply(utils.commaAndify(L))
-            else:
-                irc.reply('%s has no subgroups.' % name)
+        L = self._list(name, groups)
+        if L:
+            irc.reply(utils.commaAndify(L))
+        elif groups:
+            irc.reply('%s has no subgroups.' % name)
         else:
-            try:
-                L = zip(*group.getValues(fullNames=False))[0]
-                irc.reply(utils.commaAndify(L))
-            except TypeError:
-                irc.error('There don\'t seem to be any values in %s'%name)
+            irc.error('There don\'t seem to be any values in %s' % name)
 
     def search(self, irc, msg, args):
         """<word>
@@ -227,7 +233,7 @@ class Config(callbacks.Privmsg):
         registry.open(world.registryFilename)
         irc.replySuccess()
     reload = privmsgs.checkCapability(reload, 'owner')
-
+        
 
 
 Class = Config
