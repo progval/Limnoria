@@ -676,17 +676,21 @@ class AtomicFile(file):
     failure, the original file remains, unmodified.
 
     Opens the file in 'w' mode."""
-    def __init__(self, filename, allowEmptyOverwrite=False):
+    def __init__(self, filename, allowEmptyOverwrite=False, tmpDir=None):
         self.filename = filename
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
         self.tempFilename = '%s.%s' % (filename, mktemp())
-        super(AtomicFile, self).__init__(self.tempFilename, 'w')
+        if tmpDir is not None:
+            dir = os.path.dirname(self.tempFilename)
+            dir = os.path.join(dir, tmpDir)
+            self.tempFilename = os.path.join(dir, self.tempFilename)
+        super(self.__class__, self).__init__(self.tempFilename, 'w')
 
     def rollback(self):
         #print 'AtomicFile.rollback'
         if not self.closed:
-            super(AtomicFile, self).close()
+            super(self.__class__, self).close()
             if os.path.exists(self.tempFilename):
                 #print 'AtomicFile: Removing %s.' % self.tempFilename
                 os.remove(self.tempFilename)
@@ -696,10 +700,14 @@ class AtomicFile(file):
         #print 'AtomicFile.close'
         if not self.rolledback:
             #print 'AtomicFile.close: actually closing.'
-            super(AtomicFile, self).close()
+            super(self.__class__, self).close()
             size = os.stat(self.tempFilename).st_size
             if size or self.allowEmptyOverwrite:
                 if os.path.exists(self.tempFilename):
+                    # We use shutil.move here instead of os.rename because
+                    # the latter doesn't work on Windows when self.filename
+                    # (the target) already exists.  shutil.move handles those
+                    # intricacies for us.
                     shutil.move(self.tempFilename, self.filename)
 
     def __del__(self):

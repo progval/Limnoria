@@ -523,29 +523,59 @@ registerGlobalValue(supybot.drivers, 'module',
 ###
 # supybot.directories, for stuff relating to directories.
 ###
-registerGroup(supybot, 'directories')
-registerGlobalValue(supybot.directories, 'conf',
-    registry.String('conf', """Determines what directory configuration data is
-    put into."""))
-registerGlobalValue(supybot.directories, 'data',
-    registry.String('data', """Determines what directory data is put into."""))
-registerGlobalValue(supybot.directories, 'plugins',
-    registry.CommaSeparatedListOfStrings([_srcDir, _pluginsDir], """Determines
-    what directories the bot will look for plugins in.  Accepts a
-    comma-separated list of strings.  This means that to add another directory,
-    you can nest the former value and add a new one.  E.g. you can say: bot:
-    'config supybot.directories.plugins [config supybot.directories.plugins],
-    newPluginDirectory'."""))
+
+class Directory(registry.String):
+    def __call__(self):
+        v = super(Directory, self).__call__()
+        if not os.path.exists(v):
+            os.mkdir(v)
+        return v
 
 class DataFilename(registry.String):
     def __call__(self):
-        v = registry.String.__call__(self)
+        v = super(DataFilename, self).__call__()
         dataDir = supybot.directories.data()
         if not v.startswith(dataDir):
             v = os.path.basename(v)
             v = os.path.join(dataDir, v)
+        self.setValue(v)
         return v
-    
+
+class DataFilenameDirectory(DataFilename, Directory):
+    def __call__(self):
+        v = DataFilename.__call__(self)
+        v = Directory.__call__(self)
+        return v  
+
+registerGroup(supybot, 'directories')
+registerGlobalValue(supybot.directories, 'conf',
+    Directory('conf', """Determines what directory configuration data is
+    put into."""))
+registerGlobalValue(supybot.directories, 'data',
+    Directory('data', """Determines what directory data is put into."""))
+registerGlobalValue(supybot.directories.data, 'tmp',
+    DataFilenameDirectory('tmp', """Determines what directory temporary files
+    are put into."""))
+
+# This is a hack, but it should work.
+utils._AtomicFile = utils.AtomicFile
+def AtomicFile(*args, **kwargs):
+    kwargs['tmpDir'] = supybot.directories.data.tmp()
+    return utils._AtomicFile(*args, **kwargs)
+utils.AtomicFile = AtomicFile
+
+class PluginDirectories(registry.CommaSeparatedListOfStrings):
+    def __call__(self):
+        v = registry.CommaSeparatedListOfStrings.__call__(self)
+        return v + [_srcDir, _pluginsDir]
+
+registerGlobalValue(supybot.directories, 'plugins',
+    PluginDirectories(['plugins'], """Determines what directories the bot will
+    look for plugins in.  Accepts a comma-separated list of strings.  This
+    means that to add another directory, you can nest the former value and add
+    a new one.  E.g. you can say: bot: 'config supybot.directories.plugins
+    [config supybot.directories.plugins], newPluginDirectory'."""))
+
 registerGroup(supybot, 'plugins') # This will be used by plugins, but not here.
 
 ###
