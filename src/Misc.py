@@ -74,6 +74,7 @@ def reload(x=None):
         replyWhenNotCommand = x
 
 class Misc(callbacks.Privmsg):
+    priority = sys.maxint
     def invalidCommand(self, irc, msg, tokens):
         if conf.replyWhenNotCommand:
             irc.error(msg, '%r is not a valid command.' % tokens[0])
