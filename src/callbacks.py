@@ -1012,6 +1012,7 @@ class Commands(object):
     
     def getCommandMethod(self, command):
         """Gets the given command from this plugin."""
+        assert not isinstance(command, basestring)
         command = map(canonicalName, command)
         assert self.getCommand(command) == command
         if len(command) == 2:
@@ -1024,12 +1025,8 @@ class Commands(object):
         commands = []
         name = canonicalName(self.name())
         for s in dir(self):
-            if self.isCommandMethod(s) and \
-               (s != name or self._original) and \
-               s == canonicalName(s):
-                method = getattr(self, s)
-                if hasattr(method, '__doc__') and method.__doc__:
-                    commands.append(s)
+            if self.isCommand(s):
+                commands.append(s)
         commands.sort()
         return commands
     
