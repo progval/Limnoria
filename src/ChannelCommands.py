@@ -271,8 +271,8 @@ class ChannelCommands(callbacks.Privmsg):
         not {op, halfop, voice} capabilities to be the value you give.
         """
         v = privmsgs.getArgs(args)
-        c = ircdb.channels.getChannel(channel)
         v = v.capitalize()
+        c = ircdb.channels.getChannel(channel)
         if v == 'True':
             c.setDefaultCapability(True)
         elif v == 'False':
