@@ -40,11 +40,6 @@ Read OVERVIEW to see what the modules are used for.  Read EXAMPLE to see some
 examples of callbacks and command written for the bot.  Read STYLE if you ever
 wish to contribute.
 
-Use PyChecker.  Believe me, it makes things better.  A sample
-.pycheckrc file is included as tools/pycheckrc.  Copy this to your
-~/.pycheckrc and you'll be able to check your code with the same
-stringent guidelines I've found useful to check my code.
-
 Use PyLint.  It's even better than PyChecker.  A sample .pylintrc file
 is included as tools/pylintrc.  Copy this to ~/.pylintrc and you'll be
 able to check your code with the same stringent guidelines I've found
