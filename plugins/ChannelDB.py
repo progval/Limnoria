@@ -56,7 +56,7 @@ frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
-class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
+class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
     def __init__(self):
         ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
@@ -100,6 +100,13 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
         cursor.execute("""INSERT INTO channel_stats
                           VALUES (0, 0, 0, 0, 0,
                                   0, 0, 0, 0, 0, 0)""")
+
+        cursor.execute("""CREATE TABLE karma (
+                          id INTEGER PRIMARY KEY,
+                          name TEXT UNIQUE ON CONFLICT IGNORE,
+                          added INTEGER,
+                          subtracted INTEGER
+                          )""")
         db.commit()
         return db
     
@@ -270,6 +277,44 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                 (name, utils.timeElapsed(time.time(), seen), m)
             irc.reply(msg, s)
 
+    def karma(self, irc, msg, args):
+        """[<channel>] <text>
+
+        Returns the karma of <text>.  <channel> is only necessary if the
+        message isn't sent on the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        text = privmsgs.getArgs(args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT karma FROM karma WHERE name=%s""", text)
+        if cursor.rowcount == 0:
+            irc.reply(msg, '%s has no karma.')
+        else:
+            (id, added, subtracted) = cursor.fetchone()
+            total = added - subtracted
+            irc.reply(msg, '%s\'s karma has been increased %s times ' \
+                           'and decreased %s times for a total karma of %s' % \
+                      (text, added, subtracted, total))
+
+    def increaseKarma(self, irc, msg, match):
+        r"^(.*?)\+\+"
+        name = match.group(1)
+        db = self.getDb(msg.args[0])
+        cursor = db.cursor()
+        cursor.execute("""INSERT INTO karma VALUES (0, 1, 0)""")
+        cursor.execute("""UPDATE karma SET added=added+1 WHERE name=%s""",name)
+
+    def decreaseKarma(self, irc, msg, match):
+        r"^(.*?)--"
+        name = match.group(1)
+        db = self.getDb(msg.args[0])
+        cursor = db.cursor()
+        cursor.execute("""INSERT INTO karma VALUES (0, 0, 1)""")
+        cursor.execute("""UPDATE karma
+                          SET subtracted=subtracted+1
+                          WHERE name=%s""", name)
+
     def stats(self, irc, msg, args):
         """[<channel>] <nick>
 
@@ -328,6 +373,6 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
         irc.reply(msg, s)
 
 
-Class = ChannelStats
+Class = ChannelDB
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
