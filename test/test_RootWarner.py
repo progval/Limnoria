@@ -33,7 +33,6 @@ from testsupport import *
 
 class RootWarnerTestCase(PluginTestCase):
     plugins = ('RootWarner',)
-
     def test(self):
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
         self.assertNotError(' ')
@@ -41,6 +40,26 @@ class RootWarnerTestCase(PluginTestCase):
         self.assertNotError(' ')
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!~foo@host'))
         self.assertNoResponse(' ', 1)
+
+    def testConfigWarn(self):
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
+        self.assertNotError(' ')
+        self.assertNotError('config #foo warn off')
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
+        self.assertNoResponse(' ', 1)
+
+    def testConfigKick(self):
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
+        self.assertNotError(' ')
+        self.assertNotError('config #foo warn off')
+        self.assertNotError('config #foo kick on')
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
+        m = self.getMsg(' ')
+        self.assertEqual(m.command, 'KICK')
+        
+        
+        
+        
         
 
 
