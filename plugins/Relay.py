@@ -450,7 +450,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         else:
             server = '<unknown>'
         if '301' in d:
-            away = '  %s is away: %s.' % (user, d['301'].args[2])
+            away = '  %s is away: %s.' % (nick, d['301'].args[2])
         else:
             away = ''
         if '320' in d:
