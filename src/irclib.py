@@ -548,14 +548,14 @@ class Irc(IrcCommandDispatcher):
         if not self.zombie:
             self.queue.enqueue(msg)
         else:
-            self.log.warning('Refusing to queue %r; I\'m a zombie.', msg)
+            log.warning('Refusing to queue %r; I\'m a zombie.', msg)
 
     def sendMsg(self, msg):
         """Queues a message to be sent to the server *immediately*"""
         if not self.zombie:
             self.fastqueue.enqueue(msg)
         else:
-            self.log.warning('Refusing to send %r; I\'m a zombie.', msg)
+            log.warning('Refusing to send %r; I\'m a zombie.', msg)
 
     def takeMsg(self):
         """Called by the IrcDriver; takes a message to be sent."""
