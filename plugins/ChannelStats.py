@@ -271,7 +271,7 @@ class ChannelStats(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         name = privmsgs.getArgs(args, required=0, optional=1)
-        if name == irc.nick:
+        if ircutils.strEqual(name, irc.nick):
             id = 0
         elif not name:
             try:

@@ -346,7 +346,7 @@ class FunDB(callbacks.Privmsg):
         nick = nick.rstrip('.')
         if not nick:
             raise callbacks.ArgumentError
-        if nick == irc.nick:
+        if ircutils.strEqual(nick, irc.nick):
             nick = msg.nick
         try:
             (nick, reason) = itertools.imap(' '.join,

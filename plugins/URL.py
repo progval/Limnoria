@@ -314,7 +314,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                 nolimit = True
             elif option == '--from':
                 def from_(url, nick, arg=arg):
-                    return nick.lower() == arg.lower()
+                    return ircutils.strEqual(nick, arg)
                 predicates.append(from_)
             elif option == '--with':
                 def with(url, nick, arg=arg):

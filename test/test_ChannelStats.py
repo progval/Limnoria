@@ -33,55 +33,50 @@ from testsupport import *
 
 import supybot.ircdb as ircdb
 
-try:
-    import sqlite
-except ImportError:
-    sqlite = None
+class ChannelStatsTestCase(ChannelPluginTestCase):
+    plugins = ('ChannelStats', 'User')
+    def setUp(self):
+        ChannelPluginTestCase.setUp(self)
+        self.prefix = 'foo!bar@baz'
+        self.nick = 'foo'
+        self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
+                                         'register foo bar',
+                                         prefix=self.prefix))
+        _ = self.irc.takeMsg()
+        chanop = ircdb.makeChannelCapability(self.channel, 'op')
+        ircdb.users.getUser(self.nick).addCapability(chanop)
 
-if sqlite is not None:
-    class ChannelStatsTestCase(ChannelPluginTestCase):
-        plugins = ('ChannelStats', 'User')
-        def setUp(self):
-            ChannelPluginTestCase.setUp(self)
-            self.prefix = 'foo!bar@baz'
-            self.nick = 'foo'
-            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
-                                             'register foo bar',
-                                             prefix=self.prefix))
-            _ = self.irc.takeMsg()
-            chanop = ircdb.makeChannelCapability(self.channel, 'op')
-            ircdb.users.getUser(self.nick).addCapability(chanop)
+    def test(self):
+        self.assertNotError('channelstats')
+        self.assertNotError('channelstats')
+        self.assertNotError('channelstats')
 
-        def test(self):
-            self.assertNotError('channelstats')
-            self.assertNotError('channelstats')
-            self.assertNotError('channelstats')
+    def testStats(self):
+        self.assertError('channelstats stats %s' % self.nick)
+        self.assertNotError('channelstats stats %s' % self.nick)
+        self.assertNotError('channelstats stats %s' % self.nick.upper())
+        self.assertNotError('channelstats stats')
+        self.assertRegexp('channelstats stats', self.nick)
 
-        def testStats(self):
-            self.assertError('channelstats stats %s' % self.nick)
-            self.assertNotError('channelstats stats %s' % self.nick)
-            self.assertNotError('channelstats stats %s' % self.nick.upper())
-            self.assertNotError('channelstats stats')
-            self.assertRegexp('channelstats stats', self.nick)
+    def testSelfStats(self):
+        self.assertError('channelstats stats %s' % self.irc.nick)
+        self.assertNotError('channelstats stats %s' % self.irc.nick)
+        self.assertNotError('channelstats stats %s' % self.irc.nick)
+        self.assertNotError('channelstats stats %s' % self.irc.nick.upper())
+        id = ircdb.users.getUserId(self.prefix)
+        u = ircdb.users.getUser(id)
+        u.addCapability(ircdb.makeChannelCapability(self.channel, 'op'))
+        ircdb.users.setUser(id, u)
+        try:
+            conf.supybot.plugins.ChannelStats.selfStats.setValue(False)
+            m1 = self.getMsg('channelstats stats %s' % self.irc.nick)
+            m2 = self.getMsg('channelstats stats %s' % self.irc.nick)
+            self.assertEqual(m1.args[1], m2.args[1])
+        finally:
+            conf.supybot.plugins.ChannelStats.selfStats.setValue(True)
 
-        def testSelfStats(self):
-            self.assertError('channelstats stats %s' % self.irc.nick)
-            self.assertNotError('channelstats stats %s' % self.irc.nick)
-            self.assertNotError('channelstats stats %s' % self.irc.nick)
-            id = ircdb.users.getUserId(self.prefix)
-            u = ircdb.users.getUser(id)
-            u.addCapability(ircdb.makeChannelCapability(self.channel, 'op'))
-            ircdb.users.setUser(id, u)
-            try:
-                conf.supybot.plugins.ChannelStats.selfStats.setValue(False)
-                m1 = self.getMsg('channelstats stats %s' % self.irc.nick)
-                m2 = self.getMsg('channelstats stats %s' % self.irc.nick)
-                self.assertEqual(m1.args[1], m2.args[1])
-            finally:
-                conf.supybot.plugins.ChannelStats.selfStats.setValue(True)
-
-        def testNoKeyErrorStats(self):
-            self.assertNotRegexp('stats sweede', 'KeyError')
+    def testNoKeyErrorStats(self):
+        self.assertNotRegexp('stats sweede', 'KeyError')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

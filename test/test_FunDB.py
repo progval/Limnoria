@@ -68,6 +68,8 @@ class TestFunDB(ChannelPluginTestCase, PluginDocumentation):
         self.assertAction('lart 2 jemfinch for being dumb',
                           'shoots jemfinch for being dumb (#2)')
         self.assertNotRegexp('lart %s' % self.irc.nick, self.irc.nick)
+        self.assertNotRegexp('lart %s' % self.irc.nick.upper(),
+                             self.irc.nick.upper())
         self.assertNotError('remove lart 1')
         self.assertRegexp('fundb stats lart', 'currently 1 lart')
         self.assertAction('lart jemfinch', 'shoots jemfinch (#2)')

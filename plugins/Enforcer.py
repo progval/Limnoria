@@ -171,7 +171,7 @@ class Enforcer(callbacks.Privmsg):
             self.unbans[banmask] = eventId
                 
     def doJoin(self, irc, msg):
-        if msg.nick == irc.nick:
+        if ircutils.strEqual(msg.nick, irc.nick):
             return
         channel = msg.args[0]
         c = ircdb.channels.getChannel(channel)
@@ -216,7 +216,7 @@ class Enforcer(callbacks.Privmsg):
         if not ircutils.isUserHostmask(hostmask):
             return True # It's a server.
         nick = ircutils.nickFromHostmask(hostmask)
-        if nick == irc.nick:
+        if ircutils.strEqual(nick, irc.nick):
             return True # It's me.
         chanserv = self.registryValue('ChanServ')
         if ircutils.strEqual(nick, chanserv):
@@ -248,7 +248,7 @@ class Enforcer(callbacks.Privmsg):
         deop = False
         for nick in kicked:
             hostmask = irc.state.nickToHostmask(nick)
-            if nick == irc.nick:
+            if ircutils.strEqual(nick, irc.nick):
                 # Must be a sendMsg so he joins the channel before MODEing.
                 irc.sendMsg(ircmsgs.join(channel))
             if self._isProtected(channel, hostmask):
@@ -265,19 +265,19 @@ class Enforcer(callbacks.Privmsg):
             if not self.registryValue('takeRevenge.onOps', channel):
                 return
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
-            if value == msg.nick:
+            if ircutils.strEqual(value, msg.nick):
                 continue
-            elif mode == '+o' and value != irc.nick:
+            elif mode == '+o':
                 hostmask = irc.state.nickToHostmask(value)
                 if ircdb.checkCapability(channel,
                                        ircdb.makeAntiCapability('op')):
                     irc.sendMsg(ircmsgs.deop(channel, value))
-            elif mode == '+h' and value != irc.nick:
+            elif mode == '+h':
                 hostmask = irc.state.nickToHostmask(value)
                 if ircdb.checkCapability(channel,
                                        ircdb.makeAntiCapability('halfop')):
                     irc.sendMsg(ircmsgs.dehalfop(channel, value))
-            elif mode == '+v' and value != irc.nick:
+            elif mode == '+v':
                 hostmask = irc.state.nickToHostmask(value)
                 if ircdb.checkCapability(channel,
                                        ircdb.makeAntiCapability('voice')):

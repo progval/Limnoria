@@ -565,7 +565,7 @@ class Relay(callbacks.Privmsg):
 
     def doTopic(self, irc, msg):
         irc = self._getRealIrc(irc)
-        if msg.nick == irc.nick:
+        if ircutils.strEqual(msg.nick, irc.nick):
             return
         (channel, newTopic) = msg.args
         if channel not in self.registryValue('channels'):

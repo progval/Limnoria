@@ -172,7 +172,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             s = 'Tried to identify without a NickServ or password set.'
             self.log.warning(s)
             return
-        assert irc.nick == nick, 'Identifying with not normal nick.'
+        assert ircutils.strEqual(irc.nick, nick), \
+               'Identifying with not normal nick.'
         self.log.info('Sending identify (current nick: %s)' % irc.nick)
         identify = 'IDENTIFY %s' % password
         # It's important that this next statement is irc.sendMsg, not
@@ -238,7 +239,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             self.log.warning('Cannot identify without a nick being set.  '
                              'Set supybot.plugins.Services.nick.')
             return
-        if irc.nick == nick:
+        if ircutils.strEqual(irc.nick, nick):
             self._doIdentify(irc)
         else:
             self._doGhost(irc)
@@ -260,7 +261,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def doNick(self, irc, msg):
         nick = self._getNick()
-        if msg.args[0] == irc.nick and irc.nick == nick:
+        if ircutils.strEqual(msg.args[0], irc.nick) and \
+           ircutils.strEqual(irc.nick, nick):
             self._doIdentify(irc)
         elif ircutils.strEqual(msg.nick, nick):
             irc.sendMsg(ircmsgs.nick(nick))
@@ -303,6 +305,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         elif 'access level' in s and 'is required' in s:
             # XXX We should notify the user that this happened.
             self.log.debug('Got "Access level required" from ChanServ.')
+        elif 'inviting' in s:
+            self.log.debug('Got "Inviting to channel" from ChanServ.')
         else:
             self.log.warning('Got unexpected notice from ChanServ: %r.', msg)
 
@@ -379,10 +383,10 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def doMode(self, irc, msg):
         chanserv = self.registryValue('ChanServ')
-        if msg.nick == chanserv:
+        if ircutils.strEqual(msg.nick, chanserv):
             channel = msg.args[0]
             if len(msg.args) == 3:
-                if msg.args[2] == irc.nick:
+                if ircutils.strEqual(msg.args[2], irc.nick):
                     mode = msg.args[1]
                     info = self.log.info
                     if mode == '+o':
@@ -400,7 +404,9 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     def _chanservCommand(self, irc, channel, command):
         chanserv = self.registryValue('ChanServ')
         if chanserv:
-            irc.sendMsg(ircmsgs.privmsg(chanserv, '%s %s' % (command, channel)))
+            msg = ircmsgs.privmsg(chanserv,
+                                  ' '.join([command, channel, irc.nick]))
+            irc.sendMsg(msg)
             return True
         else:
             return False
@@ -490,7 +496,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             irc.error('I\'m not in %s.' % channel)
 
     def doInvite(self, irc, msg):
-        if msg.nick == self.registryValue('ChanServ'):
+        if ircutils.strEqual(msg.nick, self.registryValue('ChanServ')):
             channel = msg.args[1]
             self.log.info('Joining %s, invited by ChanServ.' % channel)
             irc.queueMsg(ircmsgs.join(channel))
@@ -521,7 +527,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             nick = privmsgs.getArgs(args, required=0, optional=1)
             if not nick:
                 nick = self._getNick()
-            if nick == irc.nick:
+            if ircutils.strEqual(nick, irc.nick):
                 irc.error('I cowardly refuse to ghost myself.')
             else:
                 self._doGhost(irc, nick=nick)

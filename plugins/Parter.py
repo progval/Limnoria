@@ -72,7 +72,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Parter, 'channels',
 
 class Parter(callbacks.Privmsg):
     def doJoin(self, irc, msg):
-        if irc.nick == msg.nick:
+        if ircutils.strEqual(irc.nick, msg.nick):
             channels = msg.args[0].split(',')
             autoParts = self.registryValue('channels')
             for channel in channels:
