@@ -83,15 +83,17 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('lookup add %s %s' % (command, filename))
     
 
-def getDb():
-    return sqlite.connect(os.path.join(conf.dataDir, 'Lookup.db'))
+class LookupDB(plugins.DBHandler):
+    def makeDb(self, filename):
+        return sqlite.connect(filename)
 
 class Lookup(callbacks.Privmsg):
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        self.dbHandler = LookupDB(name=os.path.join(conf.dataDir, 'Lookup'))
+        
     def die(self):
-        db = getDb()
-        db.commit()
-        db.close()
-        del db
+        self.dbHandler.die()
 
     def remove(self, irc, msg, args):
         """<name>
@@ -99,7 +101,7 @@ class Lookup(callbacks.Privmsg):
         Removes the lookup for <name>.
         """
         name = privmsgs.getArgs(args)
-        db = getDb()
+        db = self.dbHandler.getDb()
         cursor = db.cursor()
         try:
             cursor.execute("""DROP TABLE %s""" % name)
@@ -120,7 +122,7 @@ class Lookup(callbacks.Privmsg):
         """
         (name, filename) = privmsgs.getArgs(args, required=2)
         name = utils.depluralize(name)
-        db = getDb()
+        db = self.dbHandler.getDb()
         cursor = db.cursor()
         try:
             cursor.execute("""SELECT * FROM %s LIMIT 1""" % name)
@@ -134,21 +136,26 @@ class Lookup(callbacks.Privmsg):
             except EnvironmentError, e:
                 irc.error(msg, 'Could not open %s: %s' % (filename, e.args[1]))
                 return
-            cursor.execute("""CREATE TABLE %s (key TEXT, value TEXT)""" % name)
-            sql = """INSERT INTO %s VALUES (%%s, %%s)""" % name
-            for line in fd:
-                line = line.rstrip('\r\n')
-                if not line or line.startswith('#'):
-                    continue
-                try:
-                    (key, value) = self._splitRe.split(line, 1)
-                    key = key.replace('\\:', ':')
-                except ValueError:
-                    irc.error(msg, 'Invalid line in %s: %r' % (filename, line))
-                    return
-                cursor.execute(sql, key, value)
-            cursor.execute("CREATE INDEX %s_keys ON %s (key)" % (name, name))
-            db.commit()
+            try:
+                cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
+            except sqlite.DatabaseError:
+                cursor.execute("CREATE TABLE %s (key TEXT, value TEXT)" % name)
+                sql = "INSERT INTO %s VALUES (%%s, %%s)" % name
+                for line in fd:
+                    line = line.rstrip('\r\n')
+                    if not line or line.startswith('#'):
+                        continue
+                    try:
+                        (key, value) = self._splitRe.split(line, 1)
+                        key = key.replace('\\:', ':')
+                    except ValueError:
+                        cursor.execute("""DROP TABLE %s""" % name)
+                        s = 'Invalid line in %s: %r' % (filename, line)
+                        irc.error(msg, s)
+                        return
+                    cursor.execute(sql, key, value)
+                cursor.execute("CREATE INDEX %s_keys ON %s (key)" %(name,name))
+                db.commit()
             self.addCommand(name)
             cb = irc.getCallback('Alias')
             irc.reply(msg, '%s (lookup %s added)' % (conf.replySuccess, name))
@@ -157,7 +164,7 @@ class Lookup(callbacks.Privmsg):
         def f(self, irc, msg, args):
             args.insert(0, name)
             self._lookup(irc, msg, args)
-        db = getDb()
+        db = self.dbHandler.getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
         rows = int(cursor.fetchone()[0])
@@ -178,7 +185,7 @@ class Lookup(callbacks.Privmsg):
         Looks up the value of <key> in the domain <name>.
         """
         (name, key) = privmsgs.getArgs(args, optional=1)
-        db = getDb()
+        db = self.dbHandler.getDb()
         cursor = db.cursor()
         if key:
             sql = """SELECT value FROM %s WHERE key LIKE %%s""" % name
