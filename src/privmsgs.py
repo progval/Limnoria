@@ -106,6 +106,7 @@ def getKeywordArgs(irc, msg, d=None):
             
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
+    self.capability = '' # To satisfy PyChecker
     def callCommand(self, f, irc, msg, args):
         if ircdb.checkCapability(msg.prefix, self.capability):
             callbacks.Privmsg.callCommand(self, f, irc, msg, args)
