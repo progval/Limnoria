@@ -43,6 +43,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
+import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -57,16 +58,13 @@ def configure(advanced):
     conf.registerPlugin('Quakenet', True)
 
 
-try:
-    Password
-except NameError:
-    class Password(registry.String):
-        """Value must be a string of 10 or fewer characters."""
-        def setValue(self, s):
-            if len(s) > 10:
-                self.error()
-            else:
-                super(Password, self).setValue(s)
+class Password(registry.String):
+    """Value must be a string of 10 or fewer characters."""
+    def setValue(self, s):
+        if len(s) > 10:
+            self.error()
+        else:
+            registry.String.setValue(self, s)
 
 Quakenet = conf.registerPlugin('Quakenet')
 conf.registerGroup(Quakenet, 'Q')
