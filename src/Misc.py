@@ -305,7 +305,9 @@ class Misc(callbacks.Privmsg):
         command = callbacks.canonicalName(privmsgs.getArgs(args))
         cbs = callbacks.findCallbackForCommand(irc, command)
         if cbs:
-            irc.reply(utils.commaAndify([cb.name() for cb in cbs]))
+            names = [cb.name() for cb in cbs]
+            names.sort()
+            irc.reply(utils.commaAndify(names))
         else:
             irc.error('There is no such command %s' % command)
 
