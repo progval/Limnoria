@@ -256,7 +256,7 @@ class Channel(callbacks.Privmsg):
             irc.error('How can I kick or ban someone?  I\'m not opped.')
             return
         # Now, let's actually get to it.  Check to make sure they have
-        # #channel.op and the bannee doesn't have #channel.op; or that the
+        # #channel,op and the bannee doesn't have #channel,op; or that the
         # bannee and the banner are both the same person.
         def doBan():
             irc.queueMsg(ircmsgs.ban(channel, banmask))
