@@ -41,6 +41,7 @@ class NoteTestCase(PluginTestCase, PluginDocumentation):
         # setup a user
         self.prefix = 'foo!bar@baz'
         self.assertNotError('register inkedmn bar')
+        self.assertNotError('addhostmask inkedmn test2!bar@baz')
 
     def testSendnote(self):
         #print repr(ircdb.users.getUser(self.prefix))
@@ -50,6 +51,11 @@ class NoteTestCase(PluginTestCase, PluginDocumentation):
         _ = self.getMsg(' ')
         self.assertError('note send alsdkjfasldk foo')
         self.assertNotError('note send inkedmn test2')
+        _ = self.getMsg(' ')
+        # verify that sending a note to a user via their nick instead of their
+        # ircdb user name works
+        self.prefix = 'test2!bar@baz'
+        self.assertNotError('note send test2 foo')
         _ = self.getMsg(' ')
 
     def testNote(self):

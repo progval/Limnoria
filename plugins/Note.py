@@ -219,7 +219,8 @@ class Note(callbacks.Privmsg):
         # Make sure the sender isn't being ignored.
         senderName = ircdb.users.getUser(fromId).name
         for name in names:
-            if senderName in self.userValue('ignores', name):
+            ignores = self.userValue('ignores', name)
+            if ignores and senderName in ignores:
                 badnames.append(name)
         if badnames:
             irc.error('%s %s ignoring notes from you.' % \
