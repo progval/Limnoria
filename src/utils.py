@@ -37,6 +37,7 @@ Simple utility functions.
 
 from fix import *
 
+import os
 import re
 import string
 import sgmllib
@@ -247,5 +248,15 @@ def perlReToReplacer(s):
         return lambda s: r.sub(replace, s)
     else:
         return lambda s: r.sub(replace, s, 1)
+
+def findBinaryInPath(s):
+    """Returns full path of a binary if it's in PATH, otherwise returns None."""
+    cmdLine = None
+    for dir in os.getenv('PATH').split(':'):
+        filename = os.path.join(dir, s)
+        if os.path.exists(filename):
+            cmdLine = filename
+            break
+    return cmdLine
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

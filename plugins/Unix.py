@@ -52,10 +52,13 @@ import popen2
 
 import privmsgs
 import callbacks
+import utils
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
-    cmdLine = getSpellBinary()
+    cmdLine = utils.findBinaryInPath('aspell')
+    if not cmdLine:
+        cmdLine = utils.findBinaryInPath('ispell')
     if not cmdLine:
         print 'NOTE: I couldn\'t find aspell or ispell in your path,'
         print 'so that function of this module will not work.  You may'
@@ -72,18 +75,6 @@ def configure(onStart, afterConnect, advanced):
     if yn('Would you like to disable this command?') == 'y':
         onStart.append('disable progstats')
 
-def getSpellBinary():
-    cmdLine = None
-    for dir in os.getenv('PATH').split(':'):
-        for command in ('aspell', 'ispell'):
-            filename = os.path.join(dir, command)
-            if os.path.exists(filename):
-                cmdLine = filename
-                break
-        if cmdLine:
-            break
-    return cmdLine
-    
 def progstats():
     pw = pwd.getpwuid(os.getuid())
     response = 'Process ID %i running as user "%s" and as group "%s" '\
@@ -99,7 +90,9 @@ class Unix(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         # Initialize a file descriptor for the spell module.
-        cmdLine = getSpellBinary()
+        cmdLine = utils.findBinaryInPath('aspell')
+        if not cmdLine:
+            cmdLine = utils.findBinaryInPath('ispell')
         (self._spellRead, self._spellWrite) = popen2.popen4(cmdLine + ' -a', 0)
         # Ignore the banner
         self._spellRead.readline()
@@ -166,7 +159,8 @@ class Unix(callbacks.Privmsg):
             irc.error(msg, 'Aspell/ispell can\'t handle spaces in words.')
             return
         self._spellWrite.write(word)
-        self._spellWrite.write('\n') line = self._spellRead.readline() 
+        self._spellWrite.write('\n')
+        line = self._spellRead.readline() 
         # aspell puts extra whitespace, ignore it
         while line == '\n':
             line = self._spellRead.readline()
