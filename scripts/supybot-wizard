@@ -499,32 +499,17 @@ def main():
         partial to @, but that's because I've been using it since my ocamlbot
         days.""")
         import callbacks
-        while True:
+        c = ''
+        while not c:
             try:
-                conf.supybot.prefixChars.set(
-                                    something('What would you like your '
-                                    'bot\'s prefix character(s) to be?',
-                                    default='@'))
-                break
-            except registry.InvalidRegistryValue, reason:
-                output(str(reason))
+                c = anything('What would you like your bot\'s prefix '
+                             'character(s) to be?')
+                conf.supybot.prefixChars.set(c)
+            except registry.InvalidRegistryValue, e:
+                output(str(e))
+                c = ''
     else:
         conf.supybot.prefixChars.set('')
-
-    # enablePipeSyntax
-    output("""Supybot allows nested commands.  You've probably
-    read about them in our website or documentation, and almost certainly have
-    seen them in the plugin examples (if you chose to read them),  By default,
-    they work with a syntax that looks something like Lisp with square
-    brackets.  I.e., to call the command foo on the output of bar, you would
-    use "foo [bar]".  Supybot is also capable of providing a pipe syntax
-    similar to *nix pipes.  In addition to "foo [bar]", you could achieve the
-    same effect with "bar | foo", which some people find more natural.  This
-    syntax is disabled by default because so many people have pipes in their
-    nicks, and we've found it to be somewhat frustrating to have to quote such
-    nicks in commands.""")
-    conf.supybot.pipeSyntax.setValue(yn('Would you like to enable the pipe '
-                                 'syntax for nesting?  ', default=False))
 
     ###
     # logging variables.
@@ -534,8 +519,8 @@ def main():
     output("""By default, your bot will log not only to files in the logs
     directory you gave it, but also to stdout.  We find this useful for
     debugging, and also just for the pretty output (it's colored!)""")
-    conf.supybot.log.stdout.setValue(not yn('Would you like to turn off '
-                                     'this logging to stdout?', default=False))
+    stdout = not yn('Would you like to turn off this logging to stdout?')
+    conf.supybot.log.stdout.setValue(stdout)
     if conf.supybot.log.stdout():
         # conf.something
         output("""Some terminals may not be able to display the pretty colors
@@ -552,19 +537,33 @@ def main():
     By default, your bot will log all of these priorities except DEBUG.  You
     can, however, specify that it only log messages above a certain priority
     level.""")
-    newLogLevel = something('What would you like the minimum priority to be?  '
+    logLevel = something('What would you like the minimum priority to be?  '
                          'Just press enter to accept the default.',
                          default=priority).lower()
-    while newLogLevel not in ['debug', 'info', 'warning', 'error', 'critical']:
+    while logLevel not in ['debug', 'info', 'warning', 'error', 'critical']:
         output("""That's not a valid priority.  Valid priorities include
         'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL'""")
-        newLogLevel = something('What would you like the minimum priority to '
+        logLevel = something('What would you like the minimum priority to '
                              'be?  Just press enter to accept the default.',
                              default=priority).lower()
+    conf.supybot.log.level.set(logLevel)
 
     if advanced:
         output("""Here's some stuff you only get to choose if you're an
         advanced user :)""")
+
+        # enablePipeSyntax
+        output("""Supybot allows nested commands.  You've probably read about
+        them in our website or documentation.  By default, they work with a
+        syntax that looks something like Lisp with square brackets.  I.e., to
+        call the command foo on the output of bar, you would use "foo [bar]".
+        Supybot is also capable of providing a pipe syntax similar to *nix
+        pipes.  In addition to "foo [bar]", you could achieve the same effect
+        with "bar | foo", which some people find more natural.  This syntax
+        is disabled by default because so many people have pipes in their
+        nicks, and we've found it to be somewhat frustrating to have to quote
+        such nicks in commands.""")
+        response = yn('Would you like to enable this pipe syntax?', default=0)
 
         # conf.supybot.reply.withNickPrefix
         output("""By defualt, the bot will respond to all commands with a
@@ -651,8 +650,6 @@ def main():
     ###
     # Write the registry
     ###
-    # Replace the temporary value in supybot.log.level
-    conf.supybot.log.level.set(newLogLevel)
 
     # Save the registry
     if not filename:
