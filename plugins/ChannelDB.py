@@ -359,7 +359,7 @@ class ChannelDB(callbacks.Privmsg,
         else:
             table = 'nick_seen'
             criterion = 'nickeq(name,%s)'
-        sql = "SELECT last_seen, last_msg FROM %s WHERE %s" % (table,criterion)
+        sql = "SELECT last_seen,last_msg FROM %s WHERE %s" % (table,criterion)
         #debug.printf(sql)
         cursor.execute(sql, name)
         if cursor.rowcount == 0:
@@ -368,7 +368,7 @@ class ChannelDB(callbacks.Privmsg,
             (seen, m) = cursor.fetchone()
             seen = int(seen)
             if isinstance(name, int):
-                name = ircdb.getUser(int(name)).name
+                name = ircdb.users.getUser(int(name)).name
             s = '%s was last seen here %s ago saying %r' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
             irc.reply(msg, s)
