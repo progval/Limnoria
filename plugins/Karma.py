@@ -148,7 +148,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                     else:
                         LL = list(normalizedArgs)
                         LL.sort()
-                        ss = '%s have no karma' % utils.commaAndify(LL)
+                        ss = '%s have neutral karma' % utils.commaAndify(LL)
                     s = '%s.  %s.' % (utils.commaAndify(L), ss)
                 else:
                     s = utils.commaAndify(L) + '.'
