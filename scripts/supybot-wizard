@@ -154,6 +154,10 @@ def main():
                            'run as root.  You don\'t want this.  Don\'t do it.'
                            '  Even if you think you want it, you don\'t.  '
                            'You\'re probably dumb if you do this.')
+    parser.add_option('', '--no-network', action='store_false',
+                      dest='network',
+                      help='Determines whether the wizard will be allowed to '
+                           'run without a network connection.')
     (options, args) = parser.parse_args()
     if os.name == 'posix':
         if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
@@ -278,13 +282,16 @@ def main():
     while not ip:
         serverString = something('What server would you like to connect to?',
                                  default=defaultServer)
-        try:
-            output("""Looking up %s...""" % serverString)
-            ip = socket.gethostbyname(serverString)
-        except:
-            output("""Sorry, I couldn't find that server.  Perhaps you
-            misspelled it?  Also, be sure not to put the port in the server's
-            name -- we'll ask you about that later.""")
+        if options.network:
+            try:
+                output("""Looking up %s...""" % serverString)
+                ip = socket.gethostbyname(serverString)
+            except:
+                output("""Sorry, I couldn't find that server.  Perhaps you
+                misspelled it?  Also, be sure not to put the port in the
+                server's name -- we'll ask you about that later.""")
+        else:
+            ip = 'no network available'
 
     output("""Found %s (%s).""" % (serverString, ip))
     output("""IRC Servers almost always accept connections on port
