@@ -34,46 +34,40 @@ from testsupport import *
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 
-try:
-    import sqlite
-except ImportError:
-    sqlite = None
+class NoteTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('Note', 'Misc', 'User')
+    def setUp(self):
+        PluginTestCase.setUp(self)
+        # setup a user
+        self.prefix = 'foo!bar@baz'
+        self.assertNotError('register inkedmn bar')
 
-if sqlite is not None:
-    class NoteTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Note', 'Misc', 'User')
-        def setUp(self):
-            PluginTestCase.setUp(self)
-            # setup a user
-            self.prefix = 'foo!bar@baz'
-            self.assertNotError('register inkedmn bar')
+    def testSendnote(self):
+        #print repr(ircdb.users.getUser(self.prefix))
+        self.assertRegexp('note send inkedmn test', '#1')
+        # have to getMsg(' ') after each Note.send to absorb supybot's
+        # automatic "You have an unread note" message
+        _ = self.getMsg(' ')
+        self.assertError('note send alsdkjfasldk foo')
+        self.assertNotError('note send inkedmn test2')
+        _ = self.getMsg(' ')
 
-        def testSendnote(self):
-            #print repr(ircdb.users.getUser(self.prefix))
-            self.assertRegexp('note send inkedmn test', '#1')
-            # have to getMsg(' ') after each Note.send to absorb supybot's
-            # automatic "You have an unread note" message
-            _ = self.getMsg(' ')
-            self.assertError('note send alsdkjfasldk foo')
-            self.assertNotError('note send inkedmn test2')
-            _ = self.getMsg(' ')
+    def testNote(self):
+        self.assertNotError('note send inkedmn test')
+        _ = self.getMsg(' ')
+        self.assertRegexp('note 1', 'test')
+        self.assertError('note blah')
 
-        def testNote(self):
-            self.assertNotError('note send inkedmn test')
-            _ = self.getMsg(' ')
-            self.assertRegexp('note 1', 'test')
-            self.assertError('note blah')
-
-        def testList(self):
-            self.assertResponse('note list', 'You have no unread notes.')
-            self.assertNotError('note send inkedmn testing')
-            _ = self.getMsg(' ')
-            self.assertNotError('note send inkedmn 1,2,3')
-            _ = self.getMsg(' ')
-            self.assertRegexp('note list --sent', r'#2.*#1')
-            self.assertRegexp('note list', r'#1.*#2')
-            self.assertRegexp('note 1', 'testing')
-            self.assertResponse('note list --old', '#1 from inkedmn')
+    def testList(self):
+        self.assertResponse('note list', 'You have no unread notes.')
+        self.assertNotError('note send inkedmn testing')
+        _ = self.getMsg(' ')
+        self.assertNotError('note send inkedmn 1,2,3')
+        _ = self.getMsg(' ')
+        self.assertRegexp('note list --sent', r'#2.*#1')
+        self.assertRegexp('note list', r'#1.*#2')
+        self.assertRegexp('note 1', 'testing')
+        self.assertResponse('note list --old', '#1 from inkedmn')
 
 
 

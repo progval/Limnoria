@@ -394,6 +394,7 @@ class Note(callbacks.Privmsg):
                 return
         notesAndIds = self.db.notes(p)
         notesAndIds.sort()
+        #notesAndIds.reverse() # Newer notes, higher ids.
         if not notesAndIds:
             irc.reply('You have no unread notes.')
         else:
@@ -434,6 +435,7 @@ class Note(callbacks.Privmsg):
                 return originalP(note) and note.to == receiver
         notesAndIds = self.db.notes(p)
         notesAndIds.sort()
+        notesAndIds.reverse()
         if not notesAndIds:
             irc.error('I couldn\'t find any sent notes for your user.')
         else:
@@ -461,6 +463,7 @@ class Note(callbacks.Privmsg):
                 return originalP(note) and note.frm == sender
         notesAndIds = self.db.notes(p)
         notesAndIds.sort()
+        notesAndIds.reverse()
         if not notesAndIds:
             irc.reply('I couldn\'t find any matching read notes for your user.')
         else:
