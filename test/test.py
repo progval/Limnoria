@@ -32,6 +32,7 @@
 import sys
 sys.path.insert(0, 'src')
 sys.path.insert(0, 'test')
+sys.path.insert(0, 'plugins')
 
 from fix import *
 
@@ -40,6 +41,7 @@ import glob
 import os.path
 import unittest
 
+import world
 import ircmsgs
 
 fd = file(os.path.join('test', 'rfc2812.msgs'), 'r')
@@ -53,6 +55,7 @@ def getMsgs(command):
     
 
 if __name__ == '__main__':
+    world.testing = True
     if len(sys.argv) > 1:
         files = sys.argv[1:]
     else:
@@ -61,3 +64,4 @@ if __name__ == '__main__':
     suite = unittest.defaultTestLoader.loadTestsFromNames(names)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
+    world.testing = False
