@@ -1,0 +1,48 @@
+So, you want to hack on Supybot?  Cool!  I'm glad -- more developers
+means more users, and more users means better software (although I
+suppose more developers means better software even without the
+addition of more users :))
+
+Anyway, there are a few things you should know before you submit your
+code to be accepted into Supybot.  The first, and most important
+thing is that we really do value your contribution.  We may say that
+it's not appropriate for the core distribution and any number of
+varying reasons, but regardless, we're happy that you're hacking on
+Supybot and bending it to your will, and we'll be happy to post your
+patch as long as it applies cleanly.
+
+The second thing you should know is that, despite the fact that we're
+happy you want to contribute to Supybot, we're not afraid to piss you
+off by turning down your code.  We won't hesitate to reject code
+because it's "bad" or because it doesn't fit our style guidelines
+(read docs/STYLE).  We don't really care if it makes you angry or
+makes you use another IRC bot; we're in the practice of writing good
+software, not placating whiners.  Despite this, we're not entirely
+heartless, and if you've done something we're interested in, we're
+willing to work with you and your code until such a time as it's
+ready to be accepted into the core.  But if, at some point, we say,
+"This needs fixed" and you say, "I refuse to fix it," you can go put
+your code on the patch tracker; our time together is done.  Supybot
+is #1 here -- we don't care about your feelings, we don't care about
+jamessan's feelings, we don't care about jemfinch's feelings if it
+means that the code quality and user experience of Supybot is to
+suffer.
+
+Anyway, the normal process is that you'll submit a few patches,
+jemfinch will review them and tell you what needs to happen for them
+to be accepted into the core, you'll fix those problems, jemfinch
+will review them again, that cycle will repeat a few times.  When
+your code is to jemfinch's satisfaction, it'll be integrated into the
+core.  For many people, this is the end of the line.  For some
+others (perhaps you!), you'll continue to write patches for Supybot,
+and your coding ability and commitment will be obvious through
+those.  If your code quality is consistently high enough that
+jemfinch (or other Supybot developers) don't have to spend a
+significant amount of time reviewing your code, you'll be added as a
+developer on the SF.net project and given commit access to our CVS
+repository.  From then on, you can do what you want, but be aware
+that the other developers are watching what you do -- if you have a
+big architecture change, you should probably talk to them before you
+commit.
+
+So welcome aboard, and have fun hacking on Supybot!
