@@ -132,7 +132,8 @@ class RSS(callbacks.Privmsg):
                     pre = '%s%s ' % (prefix, name)
                     if bold:
                         pre = ircutils.bold(pre)
-                    irc.replies(newheadlines, prefixer=pre, joiner=sep)
+                    irc.replies(newheadlines, prefixer=pre, joiner=sep,
+                                to=channel, prefixName=False)
                 
     def getFeed(self, url):
         now = time.time()
