@@ -35,26 +35,31 @@ class EbayTest(PluginTestCase, PluginDocumentation):
     plugins = ('Ebay',)
     def testEbay(self):
         self.assertResponse('ebay --link 3053641570',
-            'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=3053641570')
+                            'http://cgi.ebay.com/ws/eBayISAPI.dll?'
+                            'ViewItem&item=3053641570')
         # test 'Invalid Item' checking
         self.assertRegexp('ebay 2357056673', 'That auction is invalid')
 
     def testSnarfer(self):
         self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'
-            '&category=176&item=3053767552', '.*Cisco NP-4T.*Serial Module'
-            '.*US \$74\.95.*')
+                          '&category=176&item=3053767552',
+                         r'.*Cisco NP-4T.*Serial Module.*US \$74\.95.*')
         self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&'
-            'category=28033&item=3053353651', '.*Cisco 2524 Router - NO '
-            'RESERVE.*izontech \(.*')
+                          'category=28033&item=3053353651',
+                         r'.*Cisco 2524 Router - NO RESERVE.*izontech \(.*')
         # test snarfing other countries
         self.assertRegexp('http://cgi.ebay.ca/ws/eBayISAPI.dll?ViewItem&'
-            'item=3636820075', 'NEW 34" Itech 8.8 Profile')
+                          'item=3636820075',
+                         r'NEW 34" Itech 8.8 Profile')
         self.assertRegexp('http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&'
-            'item=2355464443', 'Any Clear Crazy')
+                          'item=2355464443',
+                         r'Any Clear Crazy')
         self.assertRegexp('http://cgi.ebay.com.au/ws/eBayISAPI.dll?ViewItem&'
-            'item=2762983161&category=4607', 'Apple Mac G4')
+                          'item=2762983161&category=4607',
+                         r'Apple Mac G4')
         # test .com/.*/ws/eBat compatibility
         self.assertRegexp('http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'
-            'ViewItem&item=2439393310&category=33708', '88-89 CRX amber')
+                          'ViewItem&item=2439393310&category=33708',
+                         r'88-89 CRX amber')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

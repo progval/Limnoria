@@ -62,10 +62,10 @@ if sqlite is not None:
                               '.*FOO.*foobar.*BAR.*', flags=0)
             # Test case-insensitive
             self.assertNoResponse('MOO++', 2)
-            self.assertRegexp('karma moo', 'Karma for \'moo\'.*increased 1'
-                              '.*total.*1')
-            self.assertRegexp('karma MoO', 'Karma for \'MoO\'.*increased 1'
-                              '.*total.*1')
+            self.assertRegexp('karma moo',
+                              'Karma for \'moo\'.*increased 1.*total.*1')
+            self.assertRegexp('karma MoO',
+                              'Karma for \'MoO\'.*increased 1.*total.*1')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

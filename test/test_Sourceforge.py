@@ -81,34 +81,36 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
 
     def testSnarfer(self):
         s = r'.*Status.*: \w+'
-        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=589953&group_id=58965&atid=489447', s)
-        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=712761&group_id=58965&atid=489450', s)
-        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235', s)
-        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=561547&group_id=235&atid=200235', s)
-        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=400942&group_id=235&atid=390395', s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'
+                          'func=detail&aid=589953&group_id=58965&atid=489447',
+                          s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'
+                          'func=detail&aid=712761&group_id=58965&atid=489450',
+                          s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'
+                          'func=detail&aid=540223&group_id=235&atid=300235', s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'
+                          'func=detail&aid=561547&group_id=235&atid=200235', s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'
+                          'func=detail&aid=400942&group_id=235&atid=390395', s)
 
         # test that it works without index.php
-        self.assertNotError('http://sourceforge.net/tracker/?'\
-            'func=detail&aid=540223&group_id=235&atid=300235')
+        self.assertNotError('http://sourceforge.net/tracker/?'
+                            'func=detail&aid=540223&group_id=235&atid=300235')
         # test that it works with www
-        self.assertNotError('http://www.sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235')
+        self.assertNotError('http://www.sourceforge.net/tracker/index.php?'
+                            'func=detail&aid=540223&group_id=235&atid=300235')
         # test that it works with www and without index.php
-        self.assertNotError('http://www.sourceforge.net/tracker/?'\
-            'func=detail&aid=540223&group_id=235&atid=300235')
+        self.assertNotError('http://www.sourceforge.net/tracker/?'
+                            'func=detail&aid=540223&group_id=235&atid=300235')
         # test that it works with sf.net
-        self.assertNotError('http://sf.net/tracker/?'\
-            'func=detail&aid=540223&group_id=235&atid=300235')
+        self.assertNotError('http://sf.net/tracker/?'
+                            'func=detail&aid=540223&group_id=235&atid=300235')
         # test that it works
         self.assertNotError('https://sourceforge.net/tracker/?'
                             'func=detail&atid=105470&aid=827260&group_id=5470')
-        self.assertNoResponse('https://sourceforge.net/tracker/?'\
-            'group_id=58965&atid=489447')
+        self.assertNoResponse('https://sourceforge.net/tracker/?'
+                              'group_id=58965&atid=489447')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -57,20 +57,22 @@ if sqlite is not None:
             self.assertNotError('add lart jabs $who')
             self.assertHelp('lart')
             self.assertResponse('lart jemfinch for being dumb',
-                '\x01ACTION jabs jemfinch for being dumb (#1)\x01')
+                                '\x01ACTION jabs jemfinch for being dumb '
+                                '(#1)\x01')
             self.assertResponse('lart jemfinch',
-                '\x01ACTION jabs jemfinch (#1)\x01')
+                                '\x01ACTION jabs jemfinch (#1)\x01')
             self.assertRegexp('num lart', 'currently 1 lart')
             self.assertNotError('add lart shoots $who')
             self.assertHelp('lart 1')
             self.assertResponse('lart 1 jemfinch',
-                '\x01ACTION jabs jemfinch (#1)\x01')
+                                '\x01ACTION jabs jemfinch (#1)\x01')
             self.assertResponse('lart 2 jemfinch for being dumb',
-                '\x01ACTION shoots jemfinch for being dumb (#2)\x01')
+                                '\x01ACTION shoots jemfinch for being dumb '
+                                '(#2)\x01')
             self.assertNotError('remove lart 1')
             self.assertRegexp('num lart', 'currently 1 lart')
             self.assertResponse('lart jemfinch',
-                '\x01ACTION shoots jemfinch (#2)\x01')
+                                '\x01ACTION shoots jemfinch (#2)\x01')
             self.assertNotError('remove lart 2')
             self.assertRegexp('num lart', 'currently 0')
             self.assertError('lart jemfinch')
@@ -79,28 +81,29 @@ if sqlite is not None:
             self.assertNotError('add lart jabs $who')
             self.assertNotError('add praise pets $who')
             self.assertNotError('add insult foo')
-            self.assertRegexp('lart me', 'jabs t3st \(#1\)')
-            self.assertRegexp('praise me', 'pets t3st \(#1\)')
+            self.assertRegexp('lart me', r'jabs t3st \(#1\)')
+            self.assertRegexp('praise me', r'pets t3st \(#1\)')
             self.assertResponse('insult me', 't3st: foo (#1)')
-            self.assertRegexp('lart whamme', 'jabs whamme \(#1\)')
-            self.assertRegexp('praise whamme', 'pets whamme \(#1\)')
+            self.assertRegexp('lart whamme', r'jabs whamme \(#1\)')
+            self.assertRegexp('praise whamme', r'pets whamme \(#1\)')
             self.assertResponse('insult whamme', 'whamme: foo (#1)')
-            self.assertRegexp('lart my knee', 'jabs t3st\'s knee \(#1\)')
-            self.assertRegexp('praise my knee', 'pets t3st\'s knee \(#1\)')
+            self.assertRegexp('lart my knee', r'jabs t3st\'s knee \(#1\)')
+            self.assertRegexp('praise my knee', r'pets t3st\'s knee \(#1\)')
             self.assertResponse('insult my knee', 't3st\'s knee: foo (#1)')
-            self.assertRegexp('lart sammy the snake', 'jabs sammy the snake'\
-                ' \(#1\)')
-            self.assertRegexp('praise sammy the snake', 'pets sammy the snake'\
-                ' \(#1\)')
-            self.assertResponse('insult sammy the snake', 'sammy the snake: '\
-                'foo (#1)')
-            self.assertRegexp('lart me for my', 'jabs t3st for t3st\'s \(#1\)')
-            self.assertRegexp('praise me for my', 'pets t3st for t3st\'s '\
-                '\(#1\)')
-            self.assertRegexp('lart me and %s' % self.irc.nick, 'jabs t3st '\
-                'and %s \(#1\)' % self.irc.nick)
-            self.assertRegexp('praise me and %s' % self.irc.nick, 'pets t3st '\
-                'and %s \(#1\)' % self.irc.nick)
+            self.assertRegexp('lart sammy the snake',
+                             r'jabs sammy the snake \(#1\)')
+            self.assertRegexp('praise sammy the snake',
+                             r'pets sammy the snake \(#1\)')
+            self.assertResponse('insult sammy the snake',
+                               'sammy the snake: foo (#1)')
+            self.assertRegexp('lart me for my',
+                             r'jabs t3st for t3st\'s \(#1\)')
+            self.assertRegexp('praise me for my',
+                             r'pets t3st for t3st\'s \(#1\)')
+            self.assertRegexp('lart me and %s' % self.irc.nick,
+                             r'jabs t3st and %s \(#1\)' % self.irc.nick)
+            self.assertRegexp('praise me and %s' % self.irc.nick,
+                             r'pets t3st and %s \(#1\)' % self.irc.nick)
             self.assertNotError('remove lart 1')
             self.assertNotError('remove praise 1')
             self.assertNotError('remove insult 1')
@@ -109,21 +112,21 @@ if sqlite is not None:
             self.assertNotError('add excuse Power failure')
             self.assertResponse('excuse', 'Power failure (#1)')
             self.assertError('excuse a few random words')
-            self.assertRegexp('num excuse', 'currently 1 excuse')
+            self.assertRegexp('num excuse', r'currently 1 excuse')
             self.assertNotError('add excuse /pub/lunch')
             self.assertResponse('excuse 1', 'Power failure (#1)')
             self.assertNotError('remove excuse 1')
-            self.assertRegexp('num excuse', 'currently 1 excuse')
+            self.assertRegexp('num excuse', r'currently 1 excuse')
             self.assertResponse('excuse', '/pub/lunch (#2)')
             self.assertNotError('remove excuse 2')
-            self.assertRegexp('num excuse', 'currently 0')
+            self.assertRegexp('num excuse', r'currently 0')
             self.assertError('excuse')
 
         def testInsult(self):
             self.assertNotError('add insult Fatty McFatty')
-            self.assertResponse('insult jemfinch', 'jemfinch: Fatty McFatty '\
-                '(#1)')
-            self.assertRegexp('num insult', 'currently 1')
+            self.assertResponse('insult jemfinch',
+                                'jemfinch: Fatty McFatty (#1)')
+            self.assertRegexp('num insult', r'currently 1')
             self.assertNotError('remove insult 1')
             self.assertRegexp('num insult', 'currently 0')
             self.assertError('insult jemfinch')
@@ -132,27 +135,29 @@ if sqlite is not None:
             self.assertNotError('add praise pets $who')
             self.assertHelp('praise')
             self.assertResponse('praise jemfinch for being him',
-                '\x01ACTION pets jemfinch for being him (#1)\x01')
+                                '\x01ACTION pets jemfinch for being him '
+                                '(#1)\x01')
             self.assertResponse('praise jemfinch',
-                '\x01ACTION pets jemfinch (#1)\x01')
-            self.assertRegexp('num praise', 'currently 1')
+                                '\x01ACTION pets jemfinch (#1)\x01')
+            self.assertRegexp('num praise', r'currently 1')
             self.assertNotError('add praise gives $who a cookie')
             self.assertHelp('praise 1')
             self.assertResponse('praise 1 jemfinch',
-                '\x01ACTION pets jemfinch (#1)\x01')
+                                '\x01ACTION pets jemfinch (#1)\x01')
             self.assertResponse('praise 2 jemfinch for being him',
-                '\x01ACTION gives jemfinch a cookie for being him (#2)\x01')
+                                '\x01ACTION gives jemfinch a cookie for being '
+                                'him (#2)\x01')
             self.assertNotError('remove praise 1')
-            self.assertRegexp('num praise', 'currently 1')
+            self.assertRegexp('num praise', r'currently 1')
             self.assertResponse('praise jemfinch',
-                '\x01ACTION gives jemfinch a cookie (#2)\x01')
+                                '\x01ACTION gives jemfinch a cookie (#2)\x01')
             self.assertNotError('remove praise 2')
-            self.assertRegexp('num praise', 'currently 0')
+            self.assertRegexp('num praise', r'currently 0')
             self.assertError('praise jemfinch')
 
         def testInfo(self):
             self.assertNotError('add praise $who')
-            self.assertRegexp('info praise 1', 'Created by')
+            self.assertRegexp('info praise 1', r'Created by')
             self.assertNotError('remove praise 1')
             self.assertError('info fake 1')
 
@@ -167,16 +172,16 @@ if sqlite is not None:
         def testNum(self):
             self.assertError('num fake')
             self.assertError('num 1')
-            self.assertRegexp('num praise', 'currently 0')
-            self.assertRegexp('num lart', 'currently 0')
-            self.assertRegexp('num excuse', 'currently 0')
-            self.assertRegexp('num insult', 'currently 0')
+            self.assertRegexp('num praise', r'currently 0')
+            self.assertRegexp('num lart',   r'currently 0')
+            self.assertRegexp('num excuse', r'currently 0')
+            self.assertRegexp('num insult', r'currently 0')
 
         def testChange(self):
             self.assertNotError('add praise teaches $who perl')
             self.assertNotError('change praise 1 s/perl/python/')
-            self.assertResponse('praise jemfinch', '\x01ACTION teaches'\
-                ' jemfinch python (#1)\x01')
+            self.assertResponse('praise jemfinch',
+                                '\x01ACTION teaches jemfinch python (#1)\x01')
             self.assertNotError('remove praise 1')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
