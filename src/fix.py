@@ -37,7 +37,7 @@ __revision__ = "$Id$"
 
 __all__ = []
 
-exported = ['ignore', 'window', 'group', 'partition',
+exported = ['ignore', 'window', 'group', 'partition', 'set', 'frozenset',
             'any', 'all', 'rsplit', 'dynamic']
 
 import sys
@@ -78,7 +78,10 @@ class DynamicScope(object):
         raise NameError, name
     
     def __getattr__(self, name):
-        return self._getLocals(name)[name]
+        try:
+            return self._getLocals(name)[name]
+        except (NameError, KeyError):
+            return None
 
     def __setattr__(self, name, value):
         self._getLocals(name)[name] = value
@@ -218,6 +221,10 @@ def split(s):
     return reader.next()
 csv.join = join
 csv.split = split
+
+import sets
+set = sets.Set
+frozenset = sets.ImmutableSet
 
 import socket
 # Some socket modules don't have sslerror, so we'll just make it an error.
