@@ -66,6 +66,12 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.reconnectWaits = reconnectWaits
         self.connect()
 
+    def _getNextServer(self):
+        oldServer = self.currentServer
+        super(SocketDriver, self)._getNextServer()
+        if self.currentServer != oldServer:
+            self.reconnectWaitsIndex = 0
+            
     def _handleSocketError(self, e):
         # (11, 'Resource temporarily unavailable') raised if connect
         # hasn't finished yet.  We'll keep track of how many we get.
@@ -149,6 +155,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         # We allow more time for the connect here, since it might take longer.
         # At least 10 seconds.
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
+        if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
+            self.reconnectWaitsIndex += 1
         try:
             self.conn.connect(server)
             self.conn.settimeout(conf.supybot.drivers.poll())
