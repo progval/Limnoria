@@ -38,6 +38,7 @@ from fix import *
 import sys
 import email
 import getopt
+#import pprint
 
 import conf
 
@@ -123,6 +124,7 @@ def processConfigFile(filename):
             else:
                 text = newtext
         lines = text.splitlines()
+        #debug.printf(pprint.pformat(lines))
         (startup, after376) = tuple(itersplit(lines,lambda s: not s, True))
         #debug.printf('startup: %r' % startup)
         #debug.printf('after376: %r' % after376)
