@@ -46,13 +46,11 @@ import registry
 import callbacks
 
 conf.registerPlugin('UserInfo')
-conf.registerUserValue(conf.users.plugins.UserInfo, 'name',
+conf.registerUserValue(conf.users, 'name',
     registry.String('', ''))
-conf.registerUserValue(conf.users.plugins.UserInfo, 'email',
+conf.registerUserValue(conf.users, 'email',
     registry.String('', ''))
-conf.registerUserValue(conf.users.plugins.UserInfo, 'pgpkey',
-    registry.String('', ''))
-conf.registerUserValue(conf.users.plugins.UserInfo, 'gpgkey',
+conf.registerUserValue(conf.users, 'pgpkey',
     registry.String('', ''))
 
 def configure(advanced):
@@ -76,28 +74,35 @@ class UserInfo(callbacks.Privmsg):
         if not name:
             name = msg.prefix
         try:
-            ircdb.users.getUser(name)
+            id = ircdb.users.getUserId(name)
         except KeyError:
             irc.errorNoUser()
             return
         L = []
-        for s in ('name', 'email', 'pgpkey', 'gpgkey'):
-            v = self.userValue(s, name)
-            if v:
-                L.append('%s: %s' % (s.capitalize(), v))
+        end = '.%s' % id
+        for name, wrapper in conf.users.getValues(getChildren=True):
+            if name.endswith(end):
+                L.append('%s: %s' % ('.'.join(name.split('.')[1:-1]), wrapper))
         if L:
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('I don\'t have any info on that user.')
 
     def set(self, irc, msg, args):
-        """<name|email|pgpkey> <value>
+        """<name> <value>
 
-        Sets the name, email, or pgpkey of <name> to <value>.
+        Sets some arbitrary data for the user giving the command.  Some good
+        things to set are 'name', 'email', and 'pgpkey'.  Other names will
+        depend on the plugins to which they belong.
         """
         (name, value) = privmsgs.getArgs(args, required=2)
         try:
-            self.setUserValue(msg.prefix, name, value)
+            id = str(ircdb.users.getUserId(msg.prefix))
+            group = conf.users
+            for name in name.split('.'):
+                group = group.get(name)
+            group = group.get(id)
+            group.set(value)
             irc.replySuccess()
         except KeyError:
             irc.errorNoUser()
@@ -106,6 +111,7 @@ class UserInfo(callbacks.Privmsg):
                       'or "pgpkey".')
         except registry.InvalidRegistryValue, e:
             irc.error(str(e))
+
 
 Class = UserInfo
 
