@@ -150,22 +150,21 @@ class Notes(callbacks.Privmsg):
                                 notes.to_id=users.id AND
                                 notified=0""", name)
         unnotified = int(cursor.fetchone()[0])
-        if unnotified == 0:
-            return
-        cursor.execute("""SELECT COUNT(*) FROM notes, users
-                          WHERE users.name=%s AND
-                                notes.to_id=users.id AND
-                                read=0""", name)
-        unread = int(cursor.fetchone()[0])
-        s = 'You have %s; ' \
-            '%s that I haven\'t told you about before now..' % \
-            (utils.nItems(unread, 'note', 'unread'), unnotified)
-        irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
-        cursor.execute("""UPDATE notes
-                          SET notified=1
-                          WHERE notes.to_id=(SELECT id
-                                             FROM users
-                                             WHERE name=%s)""", name)
+        if unnotified != 0:
+            cursor.execute("""SELECT COUNT(*) FROM notes, users
+                              WHERE users.name=%s AND
+                                    notes.to_id=users.id AND
+                                    read=0""", name)
+            unread = int(cursor.fetchone()[0])
+            s = 'You have %s; ' \
+                '%s that I haven\'t told you about before now..' % \
+                (utils.nItems(unread, 'note', 'unread'), unnotified)
+            irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
+            cursor.execute("""UPDATE notes
+                              SET notified=1
+                              WHERE notes.to_id=(SELECT id
+                                                 FROM users
+                                                 WHERE name=%s)""", name)
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
 
     def sendnote(self, irc, msg, args):
