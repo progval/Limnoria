@@ -128,7 +128,7 @@ class Infobot(callbacks.PrivmsgRegexp):
         irc.reply(msg, self.getRandomSaying('confirms'))
 
     def tell(self, irc, msg, match):
-        r"^tell\s+(.+?)\s+about\s+(.+?)(?!\?+)[.! ]*)$"
+        r"^tell\s+(.+?)\s+about\s+(.+?)(?!\?+)[.! ]*$"
         (nick, key) = match.groups()
         try:
             s = '%s wants you to know that %s' %(msg.nick,self.getFactoid(key))
