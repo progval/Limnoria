@@ -224,27 +224,24 @@ def separateModes(args):
     assert modes[0] in '+-', 'Invalid args: %r' % args
     args = list(args[1:])
     ret = []
-    index = 0
     length = len(modes)
-    while index < length:
-        if modes[index] in '+-':
-            last = modes[index]
-            index += 1
+    for c in modes:
+        if c in '+-':
+            last = c
         else:
             if last == '+':
                 requireArguments = _plusRequireArguments
             else:
                 requireArguments = _minusRequireArguments
-            if modes[index] in requireArguments:
+            if c in requireArguments:
                 arg = args.pop(0)
                 try:
                     arg = int(arg)
                 except ValueError:
                     pass
-                ret.append((last + modes[index], arg))
+                ret.append((last + c, arg))
             else:
-                ret.append((last + modes[index], None))
-            index += 1
+                ret.append((last + c, None))
     return ret
 
 def joinModes(modes):
