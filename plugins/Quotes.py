@@ -141,7 +141,7 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT (id, quote) FROM quotes
+        cursor.execute("""SELECT id, quote FROM quotes
                           ORDER BY random()
                           LIMIT 1""")
 	if cursor.rowcount != 1:
