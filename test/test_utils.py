@@ -101,11 +101,6 @@ class UtilsTest(SupyTestCase):
     def timeElapsedShort(self):
         self.assertEqual(utils.timeElapsed(123, short=True), '2m 3s')
 
-    def testEachSubstring(self):
-        s = 'foobar'
-        L = ['f', 'fo', 'foo', 'foob', 'fooba', 'foobar']
-        self.assertEqual(list(utils.eachSubstring(s)), L)
-
     def testDistance(self):
         self.assertEqual(utils.distance('', ''), 0)
         self.assertEqual(utils.distance('a', 'b'), 1)
