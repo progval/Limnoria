@@ -68,13 +68,13 @@ def getArgs(args, needed=1, optional=0):
     If there aren't enough args even to satisfy needed, raise an error and
     let the caller handle sending the help message.
     """
+    if len(args) < needed:
+        raise callbacks.Error
     if len(args) < needed + optional:
         ret = list(args) + ([''] * (needed + optional - len(args)))
     elif len(args) >= needed + optional:
         ret = list(args[:needed + optional - 1])
         ret.append(' '.join(args[needed + optional - 1:]))
-    else:
-        raise callbacks.Error
     if len(ret) == 1:
         return ret[0]
     else:
@@ -100,6 +100,14 @@ def getKeywordArgs(irc, msg, d=None):
     del args[0] # The command name itself.
     return (args, d)
             
+def checkCapability(f, capability):
+    def newf(self, irc, msg, args):
+        if ircdb.checkCapability(msg.prefix, capability):
+            f(self, irc, msg, args)
+        else:
+            irc.error(msg, conf.replyNoCapability % capability)
+    newf.__doc__ = f.__doc__
+    return newf
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
     capability = '' # To satisfy PyChecker
