@@ -40,7 +40,6 @@ import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
-import supybot.privmsgs as privmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
@@ -123,9 +122,7 @@ class DbiNoteDB(dbi.DB):
                 while id in ids:
                     ids.remove(id)
         
-
 NoteDB = plugins.DB('Note', {'flat': DbiNoteDB})
-
 
 class Note(callbacks.Privmsg):
     def __init__(self, irc):
