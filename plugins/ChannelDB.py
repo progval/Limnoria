@@ -81,6 +81,8 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        self.lastmsg = None
+        self.laststate = None
 
     def makeDb(self, filename):
         if os.path.exists(filename):
@@ -104,7 +106,8 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                               kicks INTEGER,
                               kicked INTEGER,
                               modes INTEGER,
-                              topics INTEGER
+                              topics INTEGER,
+                              quits INTEGER
                               )""")
             cursor.execute("""CREATE TABLE channel_stats (
                               smileys INTEGER,
@@ -117,7 +120,8 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                               parts INTEGER,
                               kicks INTEGER,
                               modes INTEGER,
-                              topics INTEGER
+                              topics INTEGER,
+                              quits INTEGER
                               )""")
             cursor.execute("""CREATE TABLE nick_seen (
                               name TEXT UNIQUE ON CONFLICT REPLACE,
@@ -125,7 +129,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                               last_msg TEXT
                               )""")
             cursor.execute("""INSERT INTO channel_stats
-                              VALUES (0, 0, 0, 0, 0,
+                              VALUES (0, 0, 0, 0, 0, 0,
                                       0, 0, 0, 0, 0, 0)""")
 
             cursor.execute("""CREATE TABLE karma (
@@ -140,6 +144,16 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         db.create_function('nickeq', 2, p)
         return db
 
+    def __call__(self, irc, msg):
+        try:
+            if self.lastmsg:
+                self.laststate.addMsg(irc, self.lastmsg)
+            else:
+                self.laststate = irc.state.copy()
+        finally:
+            self.lastmsg = msg
+        callbacks.PrivmsgCommandAndRegexp.__call__(self, irc, msg)
+        
     def doPrivmsg(self, irc, msg):
         callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
         if ircutils.isChannel(msg.args[0]):
@@ -174,7 +188,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                 cursor.execute("""INSERT INTO user_stats VALUES (
                                   NULL, %s, %s, %s, %s, %s,
                                   %s, %s, 1, %s,
-                                  0, 0, 0, 0, 0, 0 )""",
+                                  0, 0, 0, 0, 0, 0, 0)""",
                                name, int(time.time()), s,
                                smileys, frowns, chars, words, int(isAction))
             else:
@@ -188,23 +202,6 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                                chars, words, int(isAction),
                                smileys, frowns, name)
             db.commit()
-
-    def doJoin(self, irc, msg):
-        channel = msg.args[0]
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""UPDATE channel_stats SET joins=joins+1""")
-        try:
-            if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUser(msg.prefix).name
-            else:
-                name = msg.prefix
-            cursor.execute("""UPDATE user_stats
-                              SET joins=joins+1
-                              WHERE nickeq(name,%s)""", name)
-        except KeyError:
-            pass
-        db.commit()
 
     def doPart(self, irc, msg):
         channel = msg.args[0]
@@ -280,6 +277,37 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         except KeyError:
             pass
         db.commit()
+
+    def doJoin(self, irc, msg):
+        channel = msg.args[0]
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""UPDATE channel_stats SET joins=joins+1""")
+        try:
+            if ircutils.isUserHostmask(msg.prefix):
+                name = ircdb.users.getUser(msg.prefix).name
+            else:
+                name = msg.prefix
+            cursor.execute("""UPDATE user_stats
+                              SET joins=joins+1
+                              WHERE nickeq(name,%s)""", name)
+        except KeyError:
+            pass
+        db.commit()
+
+    def doQuit(self, irc, msg):
+        for (channel, c) in self.laststate.channels.iteritems():
+            if msg.nick in c.users:
+                db = self.getDb(channel)
+                cursor = db.cursor()
+                cursor.execute("""UPDATE channel_stats SET quits=quits+1""")
+                try:
+                    name = ircdb.users.getUser(msg.prefix).name
+                    cursor.execute("""UPDATE user_stats SET quits=quits+1
+                                      WHERE nickeq(name,%s)""", name)
+                except KeyError:
+                    pass
+                db.commit()
 
     def seen(self, irc, msg, args):
         """[<channel>] [--user] <name>
@@ -403,8 +431,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
                 return
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT smileys, frowns, chars, words, msgs, actions,
-                                 joins, parts, kicks, kicked, modes, topics
+        cursor.execute("""SELECT *
                           FROM user_stats WHERE nickeq(name,%s)""", name)
         if cursor.rowcount == 0:
             irc.error(msg, 'I have no stats for that user.')
@@ -412,7 +439,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         values = cursor.fetchone()
         s = '%s has sent %s; a total of %s, %s, ' \
             '%s, and %s; %s of those messages %s' \
-            '%s has joined %s, parted %s, kicked someone %s, '\
+            '%s has joined %s, parted %s, quit %s, kicked someone %s, '\
             'been kicked %s, changed the topic %s, ' \
             'and changed the mode %s.' % \
             (name, utils.nItems(values.msgs, 'message'),
@@ -425,6 +452,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
              name,
              utils.nItems(values.joins, 'time'),
              utils.nItems(values.parts, 'time'),
+             utils.nItems(values.quits, 'time'),
              utils.nItems(values.kicks, 'time'),
              utils.nItems(values.kicked, 'time'),
              utils.nItems(values.topics, 'time'),
@@ -444,12 +472,12 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         values = cursor.fetchone()
         s = 'On %s there have been %s messages, containing %s characters, ' \
             '%s words, %s smileys, and %s frowns; %s of those messages were ' \
-            'ACTIONs.  There have been %s joins, %s parts, %s kicks, ' \
-            '%s mode changes, and %s topic changes.' % \
+            'ACTIONs.  There have been %s joins, %s parts, %s quits, ' \
+            '%s kicks, %s mode changes, and %s topic changes.' % \
             (channel, values.msgs, values.chars,
              values.words, values.smileys, values.frowns, values.actions,
-             values.joins, values.parts, values.kicks,
-             values.modes, values.topics)
+             values.joins, values.parts, values.quits,
+             values.kicks, values.modes, values.topics)
         irc.reply(msg, s)
 
 
