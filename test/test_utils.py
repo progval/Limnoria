@@ -55,6 +55,10 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual('matches', f('match', 2))
         self.assertEqual('Patch', f('Patch', 1))
         self.assertEqual('Patches', f('Patch', 2))
+        self.assertEqual('fish', f('fish', 1))
+        self.assertEqual('fishes', f('fish', 2))
+        self.assertEqual('try', f('try', 1))
+        self.assertEqual('tries', f('try', 2))
 
     def testDepluralize(self):
         f = utils.depluralize
@@ -63,6 +67,8 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual('BIKE', f('BIKES'))
         self.assertEqual('match', f('matches'))
         self.assertEqual('Match', f('Matches'))
+        self.assertEqual('fish', f('fishes'))
+        self.assertEqual('try', f('tries'))
         
     def testTimeElapsed(self):
         self.assertRaises(ValueError, utils.timeElapsed, 0, 0, seconds=False)
