@@ -55,7 +55,7 @@ def configure(advanced):
 
 def tracer(frame, event, _):
     if event == 'call':
-        print '%s: %s\n' % (frame.f_code.co_filename, frame.f_code.co_name)
+        print '%s: %s' % (frame.f_code.co_filename, frame.f_code.co_name)
 
 
 class Debug(privmsgs.CapabilityCheckingPrivmsg):
