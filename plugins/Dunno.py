@@ -87,7 +87,7 @@ class Dunno(callbacks.Privmsg):
                           LIMIT 1""")
         if cursor.rowcount != 0:
             dunno = cursor.fetchone()[0]
-            dunno = dunno.replace('$who', msg.nick)
+            dunno = plugins.standardSubstitute(irc, msg, dunno)
             irc.reply(msg, dunno, prefixName=False)
 
     def add(self, irc, msg, args):
