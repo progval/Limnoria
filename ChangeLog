@@ -1,3 +1,18 @@
+2005-01-12 James Vega <jamessan@supybot.com>
+
+	* Version 0.80.0rc3!
+
+	* Updated the Geekquote snarfer to snarf qdb.us' links.
+
+	* Fixed a bug in Infobot, mis-typed registry value.
+
+	* Fixed Network.connect to actually use the supplied password.
+
+	* Fixed supybot.databases.plugins.channelSpecific.getChannelLink()
+	to return the proper channel link instead of returning the given
+	channel.
+
+
 2005-01-11 James Vega <jamessan@supybot.com>
 
 	* Version 0.80.0rc2!
@@ -71,7 +86,6 @@
 
 	* Fixed a bug in RSS where announcing the same feed in multiple
 	channels would cause improper displaying of the new feeds.
-
 
 
 2004-12-22 Jeremy Fincher <jemfinch@supybot.com>

@@ -1,3 +1,9 @@
+Version 0.80.0rc3
+
+Another bugfix release.  This one was pretty important as it actually
+makes supybot.database.plugins.channelSpecific work properly.
+
+
 Version 0.80.0rc2
 
 supybot.databases.plugins.channelSpecific.channel was renamed to
