@@ -107,18 +107,14 @@ class AsyncoreDriver(asynchat.async_chat, object):
 
     def found_terminator(self):
         #debug.methodNamePrintf(self, 'found_terminator')
+        start = time.time()
         msg = ircmsgs.IrcMsg(self.buffer)
+        debug.msg('Time to parse IrcMsg: %s' % (time.time()-start), 'verbose')
+        self.buffer = ''
         try:
             self.irc.feedMsg(msg)
-        except Exception, e:
+        except:
             debug.recoverableException()
-            if ircutils.isChannel(msg.args[0]):
-                recipient = msg.args[0]
-            else:
-                recipient = msg.nick
-            self.irc.queueMsg(ircmsgs.privmsg(recipient,
-               'Uncaught Irc object exception: %s' % debug.exnToString(e)))
-        self.buffer = ''
 
     def handle_close(self):
         #debug.methodNamePrintf(self, 'handle_close')
