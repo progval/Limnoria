@@ -42,7 +42,7 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.irc.state.channels[self.channel].addUser('bar')
 
     def testLobotomies(self):
-        self.assertRegexp('lobotomies', 'not.*any')
+        self.assertRegexp('lobotomy list', 'not.*any')
 
 ##     def testCapabilities(self):
 ##         self.prefix = 'foo!bar@baz'
@@ -59,29 +59,29 @@ class ChannelTestCase(ChannelPluginTestCase):
 ##         self.assertResponse('user capabilities foo', '[]')
 
     def testCapabilities(self):
-        self.assertNotError('channel capabilities')
-        self.assertNotError('channel setcapability -foo')
-        self.assertNotError('channel unsetcapability -foo')
-        self.assertError('channel unsetcapability -foo')
-        self.assertNotError('channel setcapability -foo bar baz')
-        self.assertRegexp('channel capabilities', 'baz')
-        self.assertNotError('channel unsetcapability -foo baz')
-        self.assertError('channel unsetcapability baz')
+        self.assertNotError('channel capability list')
+        self.assertNotError('channel capability set -foo')
+        self.assertNotError('channel capability unset -foo')
+        self.assertError('channel capability unset -foo')
+        self.assertNotError('channel capability set -foo bar baz')
+        self.assertRegexp('channel capability list', 'baz')
+        self.assertNotError('channel capability unset -foo baz')
+        self.assertError('channel capability unset baz')
         
     def testEnableDisable(self):
-        self.assertNotRegexp('channel capabilities', '-Channel')
+        self.assertNotRegexp('channel capability list', '-Channel')
         self.assertError('channel enable channel')
         self.assertNotError('channel disable channel')
-        self.assertRegexp('channel capabilities', '-Channel')
+        self.assertRegexp('channel capability list', '-Channel')
         self.assertNotError('channel enable channel')
-        self.assertNotRegexp('channel capabilities', '-Channel')
+        self.assertNotRegexp('channel capability list', '-Channel')
         self.assertNotError('channel disable channel nicks')
-        self.assertRegexp('channel capabilities', '-Channel.nicks')
+        self.assertRegexp('channel capability list', '-Channel.nicks')
         self.assertNotError('channel enable channel nicks')
-        self.assertNotRegexp('channel capabilities', '-Channel.nicks')
-        self.assertNotRegexp('channel capabilities', 'nicks')
+        self.assertNotRegexp('channel capability list', '-Channel.nicks')
+        self.assertNotRegexp('channel capability list', 'nicks')
         self.assertNotError('channel disable nicks')
-        self.assertRegexp('channel capabilities', 'nicks')
+        self.assertRegexp('channel capability list', 'nicks')
         self.assertNotError('channel enable nicks')
         self.assertError('channel disable invalidPlugin')
         self.assertError('channel disable channel invalidCommand')
@@ -167,24 +167,24 @@ class ChannelTestCase(ChannelPluginTestCase):
 ##        self.assertNotRegexp('kban foobar time', 'ValueError')
 ##        self.assertError('kban %s' % self.irc.nick)
 
-    def testPermban(self):
-        self.assertNotError('permban foo!bar@baz')
-        self.assertNotError('unpermban foo!bar@baz')
+    def testBan(self):
+        self.assertNotError('ban add foo!bar@baz')
+        self.assertNotError('ban remove foo!bar@baz')
         orig = conf.supybot.protocols.irc.strictRfc()
         try:
             conf.supybot.protocols.irc.strictRfc.setValue(True)
             # something wonky is going on here. irc.error (src/Channel.py|449)
             # is being called but the assert is failing
-            self.assertError('permban not!a.hostmask')
-            self.assertNotRegexp('permban not!a.hostmask', 'KeyError')
+            self.assertError('ban add not!a.hostmask')
+            self.assertNotRegexp('ban add not!a.hostmask', 'KeyError')
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(orig)
 
     def testIgnore(self):
-        self.assertNotError('Channel ignore foo!bar@baz')
-        self.assertResponse('Channel ignores', "'foo!bar@baz'")
-        self.assertNotError('Channel unignore foo!bar@baz')
-        self.assertError('permban not!a.hostmask')
+        self.assertNotError('channel ignore add foo!bar@baz')
+        self.assertResponse('channel ignore list', "'foo!bar@baz'")
+        self.assertNotError('channel ignore remove foo!bar@baz')
+        self.assertError('ban add not!a.hostmask')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

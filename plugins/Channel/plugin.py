@@ -63,8 +63,7 @@ class Channel(callbacks.Plugin):
         itself.
         """
         self._sendMsg(irc, ircmsgs.mode(channel, modes))
-    mode = wrap(mode,
-                ['op', ('haveOp', 'change the mode'), many('something')])
+    mode = wrap(mode, ['op', ('haveOp', 'change the mode'), many('something')])
 
     def limit(self, irc, msg, args, channel, limit):
         """[<channel>] [<limit>]
@@ -425,234 +424,264 @@ class Channel(callbacks.Plugin):
         if replyirc is not None:
             replyIrc.error(format('There is no %s on this server.', nick))
 
-    def lobotomize(self, irc, msg, args, channel):
-        """[<channel>]
+    class lobotomy(callbacks.Commands):
+        def add(self, irc, msg, args, channel):
+            """[<channel>]
 
-        If you have the #channel,op capability, this will "lobotomize" the
-        bot, making it silent and unanswering to all requests made in the
-        channel. <channel> is only necessary if the message isn't sent in the
-        channel itself.
-        """
-        c = ircdb.channels.getChannel(channel)
-        c.lobotomized = True
-        ircdb.channels.setChannel(channel, c)
-        irc.replySuccess()
-    lobotomize = wrap(lobotomize, ['op'])
+            If you have the #channel,op capability, this will "lobotomize" the
+            bot, making it silent and unanswering to all requests made in the
+            channel. <channel> is only necessary if the message isn't sent in
+            the channel itself.
+            """
+            c = ircdb.channels.getChannel(channel)
+            c.lobotomized = True
+            ircdb.channels.setChannel(channel, c)
+            irc.replySuccess()
+        add = wrap(add, ['op'])
 
-    def unlobotomize(self, irc, msg, args, channel):
-        """[<channel>]
+        def remove(self, irc, msg, args, channel):
+            """[<channel>]
 
-        If you have the #channel,op capability, this will unlobotomize the bot,
-        making it respond to requests made in the channel again.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
-        """
-        c = ircdb.channels.getChannel(channel)
-        c.lobotomized = False
-        ircdb.channels.setChannel(channel, c)
-        irc.replySuccess()
-    unlobotomize = wrap(unlobotomize, ['op'])
+            If you have the #channel,op capability, this will unlobotomize the
+            bot, making it respond to requests made in the channel again.
+            <channel> is only necessary if the message isn't sent in the channel
+            itself.
+            """
+            c = ircdb.channels.getChannel(channel)
+            c.lobotomized = False
+            ircdb.channels.setChannel(channel, c)
+            irc.replySuccess()
+        remove = wrap(remove, ['op'])
 
-    def permban(self, irc, msg, args, channel, banmask, expires):
-        """[<channel>] <nick|hostmask> [<expires>]
+        def list(self, irc, msg, args):
+            """takes no arguments
 
-        If you have the #channel,op capability, this will effect a permanent
-        (persistent) ban from interacting with the bot on the given <hostmask>
-        (or the current hostmask associated with <nick>.  Other plugins may
-        enforce this ban by actually banning users with matching hostmasks when
-        they join.  <expires> is an optional argument specifying when (in
-        "seconds from now") the ban should expire; if none is given, the ban
-        will never automatically expire. <channel> is only necessary if the
-        message isn't sent in the channel itself.
-        """
-        c = ircdb.channels.getChannel(channel)
-        c.addBan(banmask, expires)
-        ircdb.channels.setChannel(channel, c)
-        irc.replySuccess()
-    permban = wrap(permban, ['op', 'hostmask', additional('expiry', 0)])
+            Returns the channels in which this bot is lobotomized.
+            """
+            L = []
+            for (channel, c) in ircdb.channels.iteritems():
+                if c.lobotomized:
+                    chancap = ircdb.makeChannelCapability(channel, 'op')
+                    if ircdb.checkCapability(msg.prefix, 'admin') or \
+                       ircdb.checkCapability(msg.prefix, chancap) or \
+                       (channel in irc.state.channels and \
+                        msg.nick in irc.state.channels[channel].users):
+                        L.append(channel)
+            if L:
+                L.sort()
+                s = format('I\'m currently lobotomized in %L.', L)
+                irc.reply(s)
+            else:
+                irc.reply('I\'m not currently lobotomized in any channels '
+                          'that you\'re in.')
+        list = wrap(list)
 
-    def unpermban(self, irc, msg, args, channel, banmask):
-        """[<channel>] <hostmask>
+    class ban(callbacks.Commands):
+        def add(self, irc, msg, args, channel, banmask, expires):
+            """[<channel>] <nick|hostmask> [<expires>]
 
-        If you have the #channel,op capability, this will remove the permanent
-        ban on <hostmask>.  <channel> is only necessary if the message isn't
-        sent in the channel itself.
-        """
-        c = ircdb.channels.getChannel(channel)
-        c.removeBan(banmask)
-        ircdb.channels.setChannel(channel, c)
-        irc.replySuccess()
-    unpermban = wrap(unpermban, ['op', 'hostmask'])
+            If you have the #channel,op capability, this will effect a
+            persistent ban from interacting with the bot on the given
+            <hostmask> (or the current hostmask associated with <nick>.  Other
+            plugins may enforce this ban by actually banning users with
+            matching hostmasks when they join.  <expires> is an optional
+            argument specifying when (in "seconds from now") the ban should
+            expire; if none is given, the ban will never automatically expire.
+            <channel> is only necessary if the message isn't sent in the
+            channel itself.
+            """
+            c = ircdb.channels.getChannel(channel)
+            c.addBan(banmask, expires)
+            ircdb.channels.setChannel(channel, c)
+            irc.replySuccess()
+        add = wrap(add, ['op', 'hostmask', additional('expiry', 0)])
 
-    def permbans(self, irc, msg, args, channel):
-        """[<channel>]
+        def remove(self, irc, msg, args, channel, banmask):
+            """[<channel>] <hostmask>
 
-        If you have the #channel,op capability, this will show you the
-        current bans on #channel.
-        """
-        # XXX Add the expirations.
-        c = ircdb.channels.getChannel(channel)
-        if c.bans:
-            irc.reply(format('%L', map(utils.str.dqrepr, c.bans)))
-        else:
-            irc.reply('There are currently no permanent bans on %s' % channel)
-    permbans = wrap(permbans, ['op'])
+            If you have the #channel,op capability, this will remove the
+            persistent ban on <hostmask>.  <channel> is only necessary if the
+            message isn't sent in the channel itself.
+            """
+            c = ircdb.channels.getChannel(channel)
+            c.removeBan(banmask)
+            ircdb.channels.setChannel(channel, c)
+            irc.replySuccess()
+        remove = wrap(remove, ['op', 'hostmask'])
 
-    def ignore(self, irc, msg, args, channel, banmask, expires):
-        """[<channel>] <nick|hostmask> [<expires>]
+        def list(self, irc, msg, args, channel):
+            """[<channel>]
 
-        If you have the #channel,op capability, this will set a permanent
-        (persistent) ignore on <hostmask> or the hostmask currently associated
-        with <nick>.  <expires> is an optional argument specifying when (in
-        "seconds from now") the ignore will expire; if it isn't given, the
-        ignore will never automatically expire.  <channel> is only necessary
-        if the message isn't sent in the channel itself.
-        """
-        c = ircdb.channels.getChannel(channel)
-        c.addIgnore(banmask, expires)
-        ircdb.channels.setChannel(channel, c)
-        irc.replySuccess()
-    ignore = wrap(ignore, ['op', 'hostmask', additional('expiry', 0)])
+            If you have the #channel,op capability, this will show you the
+            current bans on #channel.
+            """
+            # XXX Add the expirations.
+            c = ircdb.channels.getChannel(channel)
+            if c.bans:
+                irc.reply(format('%L', map(utils.str.dqrepr, c.bans)))
+            else:
+                irc.reply(format('There are no persistent bans on %s.',
+                                 channel))
+        list = wrap(list, ['op'])
 
-    def unignore(self, irc, msg, args, channel, banmask):
-        """[<channel>] <hostmask>
+    class ignore(callbacks.Commands):
+        def add(self, irc, msg, args, channel, banmask, expires):
+            """[<channel>] <nick|hostmask> [<expires>]
 
-        If you have the #channel,op capability, this will remove the permanent
-        ignore on <hostmask> in the channel. <channel> is only necessary if the
-        message isn't sent in the channel itself.
-        """
-        c = ircdb.channels.getChannel(channel)
-        c.removeIgnore(banmask)
-        ircdb.channels.setChannel(channel, c)
-        irc.replySuccess()
-    unignore = wrap(unignore, ['op', 'hostmask'])
+            If you have the #channel,op capability, this will set a persistent
+            ignore on <hostmask> or the hostmask currently
+            associated with <nick>. <expires> is an optional argument
+            specifying when (in "seconds from now") the ignore will expire; if
+            it isn't given, the ignore will never automatically expire.
+            <channel> is only necessary if the message isn't sent in the
+            channel itself.
+            """
+            c = ircdb.channels.getChannel(channel)
+            c.addIgnore(banmask, expires)
+            ircdb.channels.setChannel(channel, c)
+            irc.replySuccess()
+        add = wrap(add, ['op', 'hostmask', additional('expiry', 0)])
 
-    def ignores(self, irc, msg, args, channel):
-        """[<channel>]
+        def remove(self, irc, msg, args, channel, banmask):
+            """[<channel>] <hostmask>
 
-        Lists the hostmasks that the bot is ignoring on the given channel.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
-        """
-        # XXX Add the expirations.
-        c = ircdb.channels.getChannel(channel)
-        if len(c.ignores) == 0:
-            s = format('I\'m not currently ignoring any hostmasks in %q',
-                       channel)
-            irc.reply(s)
-        else:
-            L = sorted(c.ignores)
-            irc.reply(utils.str.commaAndify(map(repr, L)))
-    ignores = wrap(ignores, ['op'])
+            If you have the #channel,op capability, this will remove the
+            persistent ignore on <hostmask> in the channel. <channel> is only
+            necessary if the message isn't sent in the channel itself.
+            """
+            c = ircdb.channels.getChannel(channel)
+            c.removeIgnore(banmask)
+            ircdb.channels.setChannel(channel, c)
+            irc.replySuccess()
+        remove = wrap(remove, ['op', 'hostmask'])
 
-    def addcapability(self, irc, msg, args, channel, user, capabilities):
-        """[<channel>] <nick|username> <capability> [<capability> ...]
+        def list(self, irc, msg, args, channel):
+            """[<channel>]
 
-        If you have the #channel,op capability, this will give the user
-        <name> (or the user to whom <nick> maps)
-        the capability <capability> in the channel. <channel> is only necessary
-        if the message isn't sent in the channel itself.
-        """
-        for c in capabilities.split():
-            c = ircdb.makeChannelCapability(channel, c)
-            user.addCapability(c)
-        ircdb.users.setUser(user)
-        irc.replySuccess()
-    addcapability = wrap(addcapability, ['op', 'otherUser', 'capability'])
+            Lists the hostmasks that the bot is ignoring on the given channel.
+            <channel> is only necessary if the message isn't sent in the
+            channel itself.
+            """
+            # XXX Add the expirations.
+            c = ircdb.channels.getChannel(channel)
+            if len(c.ignores) == 0:
+                s = format('I\'m not currently ignoring any hostmasks in %q',
+                           channel)
+                irc.reply(s)
+            else:
+                L = sorted(c.ignores)
+                irc.reply(utils.str.commaAndify(map(repr, L)))
+        list = wrap(list, ['op'])
 
-    def removecapability(self, irc, msg, args, channel, user, capabilities):
-        """[<channel>] <name|hostmask> <capability> [<capability> ...]
+    class capability(callbacks.Commands):
+        def add(self, irc, msg, args, channel, user, capabilities):
+            """[<channel>] <nick|username> <capability> [<capability> ...]
 
-        If you have the #channel,op capability, this will take from the user
-        currently identified as <name> (or the user to whom <hostmask> maps)
-        the capability <capability> in the channel. <channel> is only necessary
-        if the message isn't sent in the channel itself.
-        """
-        fail = []
-        for c in capabilities.split():
-            cap = ircdb.makeChannelCapability(channel, c)
-            try:
-                user.removeCapability(cap)
-            except KeyError:
-                fail.append(c)
-        ircdb.users.setUser(user)
-        if fail:
-            s = 'capability'
-            if len(fail) > 1:
-                s = utils.str.pluralize(s)
-            irc.error(format('That user didn\'t have the %L %s.', fail, s),
-                      Raise=True)
-        irc.replySuccess()
-    removecapability = wrap(removecapability,['op', 'otherUser', 'capability'])
+            If you have the #channel,op capability, this will give the user
+            <name> (or the user to whom <nick> maps)
+            the capability <capability> in the channel. <channel> is only
+            necessary if the message isn't sent in the channel itself.
+            """
+            for c in capabilities.split():
+                c = ircdb.makeChannelCapability(channel, c)
+                user.addCapability(c)
+            ircdb.users.setUser(user)
+            irc.replySuccess()
+        add = wrap(add, ['op', 'otherUser', 'capability'])
 
-    # XXX This needs to be fix0red to be like Owner.defaultcapability.  Or
-    # something else.  This is a horrible interface.
-    def setdefaultcapability(self, irc, msg, args, channel, v):
-        """[<channel>] {True|False}
+        def remove(self, irc, msg, args, channel, user, capabilities):
+            """[<channel>] <name|hostmask> <capability> [<capability> ...]
 
-        If you have the #channel,op capability, this will set the default
-        response to non-power-related (that is, not {op, halfop, voice}
-        capabilities to be the value you give. <channel> is only necessary if
-        the message isn't sent in the channel itself.
-        """
-        c = ircdb.channels.getChannel(channel)
-        if v:
-            c.setDefaultCapability(True)
-        else:
-            c.setDefaultCapability(False)
-        ircdb.channels.setChannel(channel, c)
-        irc.replySuccess()
-    setdefaultcapability = wrap(setdefaultcapability, ['op', 'boolean'])
+            If you have the #channel,op capability, this will take from the
+            user currently identified as <name> (or the user to whom <hostmask>
+            maps) the capability <capability> in the channel. <channel> is only
+            necessary if the message isn't sent in the channel itself.
+            """
+            fail = []
+            for c in capabilities.split():
+                cap = ircdb.makeChannelCapability(channel, c)
+                try:
+                    user.removeCapability(cap)
+                except KeyError:
+                    fail.append(c)
+            ircdb.users.setUser(user)
+            if fail:
+                s = 'capability'
+                if len(fail) > 1:
+                    s = utils.str.pluralize(s)
+                irc.error(format('That user didn\'t have the %L %s.', fail, s),
+                          Raise=True)
+            irc.replySuccess()
+        remove = wrap(remove, ['op', 'otherUser', 'capability'])
 
-    def setcapability(self, irc, msg, args, channel, capabilities):
-        """[<channel>] <capability> [<capability> ...]
+        # XXX This needs to be fix0red to be like Owner.defaultcapability.  Or
+        # something else.  This is a horrible interface.
+        def setdefault(self, irc, msg, args, channel, v):
+            """[<channel>] {True|False}
 
-        If you have the #channel,op capability, this will add the channel
-        capability <capability> for all users in the channel. <channel> is
-        only necessary if the message isn't sent in the channel itself.
-        """
-        chan = ircdb.channels.getChannel(channel)
-        for c in capabilities:
-            chan.addCapability(c)
-        ircdb.channels.setChannel(channel, chan)
-        irc.replySuccess()
-    setcapability = wrap(setcapability, ['op', many('capability')])
+            If you have the #channel,op capability, this will set the default
+            response to non-power-related (that is, not {op, halfop, voice}
+            capabilities to be the value you give. <channel> is only necessary
+            if the message isn't sent in the channel itself.
+            """
+            c = ircdb.channels.getChannel(channel)
+            if v:
+                c.setDefaultCapability(True)
+            else:
+                c.setDefaultCapability(False)
+            ircdb.channels.setChannel(channel, c)
+            irc.replySuccess()
+        setdefault = wrap(setdefault, ['op', 'boolean'])
 
-    def unsetcapability(self, irc, msg, args, channel, capabilities):
-        """[<channel>] <capability> [<capability> ...]
+        def set(self, irc, msg, args, channel, capabilities):
+            """[<channel>] <capability> [<capability> ...]
 
-        If you have the #channel,op capability, this will unset the channel
-        capability <capability> so each user's specific capability or the
-        channel default capability will take precedence. <channel> is only
-        necessary if the message isn't sent in the channel itself.
-        """
-        chan = ircdb.channels.getChannel(channel)
-        fail = []
-        for c in capabilities:
-            try:
-                chan.removeCapability(c)
-            except KeyError:
-                fail.append(c)
-        ircdb.channels.setChannel(channel, chan)
-        if fail:
-            s = 'capability'
-            if len(fail) > 1:
-                s = utils.str.pluralize(s)
-            irc.error(format('I do not know about the %L %s.', fail, s),
-                      Raise=True)
-        irc.replySuccess()
-    unsetcapability = wrap(unsetcapability, ['op', many('capability')])
+            If you have the #channel,op capability, this will add the channel
+            capability <capability> for all users in the channel. <channel> is
+            only necessary if the message isn't sent in the channel itself.
+            """
+            chan = ircdb.channels.getChannel(channel)
+            for c in capabilities:
+                chan.addCapability(c)
+            ircdb.channels.setChannel(channel, chan)
+            irc.replySuccess()
+        set = wrap(set, ['op', many('capability')])
 
-    def capabilities(self, irc, msg, args, channel):
-        """[<channel>]
+        def unset(self, irc, msg, args, channel, capabilities):
+            """[<channel>] <capability> [<capability> ...]
 
-        Returns the capabilities present on the <channel>. <channel> is only
-        necessary if the message isn't sent in the channel itself.
-        """
-        c = ircdb.channels.getChannel(channel)
-        L = sorted(c.capabilities)
-        irc.reply(' '.join(L))
-    capabilities = wrap(capabilities, ['channel'])
+            If you have the #channel,op capability, this will unset the channel
+            capability <capability> so each user's specific capability or the
+            channel default capability will take precedence. <channel> is only
+            necessary if the message isn't sent in the channel itself.
+            """
+            chan = ircdb.channels.getChannel(channel)
+            fail = []
+            for c in capabilities:
+                try:
+                    chan.removeCapability(c)
+                except KeyError:
+                    fail.append(c)
+            ircdb.channels.setChannel(channel, chan)
+            if fail:
+                s = 'capability'
+                if len(fail) > 1:
+                    s = utils.str.pluralize(s)
+                irc.error(format('I do not know about the %L %s.', fail, s),
+                          Raise=True)
+            irc.replySuccess()
+        unset = wrap(unset, ['op', many('capability')])
+
+        def list(self, irc, msg, args, channel):
+            """[<channel>]
+
+            Returns the capabilities present on the <channel>. <channel> is
+            only necessary if the message isn't sent in the channel itself.
+            """
+            c = ircdb.channels.getChannel(channel)
+            L = sorted(c.capabilities)
+            irc.reply(' '.join(L))
+        list = wrap(list, ['channel'])
 
     def disable(self, irc, msg, args, channel, plugin, command):
         """[<channel>] [<plugin>] [<command>]
@@ -736,22 +765,6 @@ class Channel(callbacks.Plugin):
     enable = wrap(enable, ['op',
                            optional(('plugin', False)),
                            additional('commandName')])
-
-    def lobotomies(self, irc, msg, args):
-        """takes no arguments
-
-        Returns the channels in which this bot is lobotomized.
-        """
-        L = []
-        for (channel, c) in ircdb.channels.iteritems():
-            if c.lobotomized:
-                L.append(channel)
-        if L:
-            L.sort()
-            s = format('I\'m currently lobotomized in %L.', L)
-            irc.reply(s)
-        else:
-            irc.reply('I\'m not currently lobotomized in any channels.')
 
     def nicks(self, irc, msg, args, channel):
         """[<channel>]
