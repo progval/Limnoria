@@ -62,7 +62,10 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load URL')
 
-class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
+class URL(callbacks.PrivmsgCommandAndRegexp,
+          plugins.Configurable,
+          plugins.ChannelDBHandler):
+    regexps = ['tinyurlSnarfer']
     configurables = plugins.ConfigurableDictionary(
         [('tinyurl-snarfer', plugins.ConfigurableBoolType, True,
           """Determines whether the bot will output shorter versions of URLs
@@ -73,12 +76,12 @@ class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
     )
     def __init__(self):
         self.nextMsgs = {}
-        callbacks.Privmsg.__init__(self)
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
         plugins.Configurable.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
 
     def die(self):
-        callbacks.Privmsg.die(self)
+        callbacks.PrivmsgCommandAndRegexp.die(self)
         plugins.Configurable.die(self)
         plugins.ChannelDBHandler.die(self)
 
@@ -135,26 +138,44 @@ class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
                               (NULL, %s, %s, %s, %s, %s, '', %s, %s, %s)""",
                            url, added, addedBy, msg.args[1], previousMsg,
                            protocol, site, filename)
-            channel = msg.args[0]
-            snarf = self.configurables.get('tinyurl-snarfer', channel)
-            minlen = self.configurables.get('tinyurl-minimum-length', channel)
-            if snarf and len(url) > minlen:
-                cursor.execute("""SELECT id FROM urls WHERE url=%s AND
-                                  added=%s AND added_by=%s""",
-                               url, added, addedBy)
-                if cursor.rowcount != 0:
-                    #debug.printf(url)
-                    tinyurl = self._getTinyUrl(url)
-                    if tinyurl:
-                        id = int(cursor.fetchone()[0])
-                        cursor.execute("""INSERT INTO tinyurls
-                                          VALUES (NULL, %s, %s)""",id, tinyurl)
-                        tinyurl = ircutils.bold(tinyurl)
-                        s = '%s (was <%s>)' % (tinyurl, url)
-                        irc.queueMsg(callbacks.reply(msg, s, prefixName=False))
             key = (msg.nick, channel)
             self.nextMsgs.setdefault(key, []).append((url, added))
         db.commit()
+        super(URL, self).doPrivmsg(irc, msg)
+
+    def tinyurlSnarfer(self, irc, msg, match):
+        r"https?://[^\])>\s]{17,}"
+        if not ircutils.isChannel(msg.args[0]):
+            return
+        channel = msg.args[0]
+        url = match.group(0)
+        if self.configurables.get('tinyurl-snarfer', channel):
+            minlen = self.configurables.get('tinyurl-minimum-length', channel)
+            if len(url) > minlen:
+                db = self.getDb(channel)
+                cursor = db.cursor()
+                cursor.execute("""SELECT tinyurls.tinyurl FROM urls, tinyurls
+                                  WHERE urls.url=%s AND
+                                  urls.id=tinyurls.url_id""", url)
+                if cursor.rowcount == 0:
+                    #debug.printf(url)
+                    tinyurl = self._getTinyUrl(url)
+                    cursor.execute("""INSERT INTO tinyurls
+                                      VALUES (NULL, 0, %s)""", tinyurl)
+                    cursor.execute("""SELECT id FROM urls WHERE url=%s""", url)
+                    id = cursor.fetchone()[0]
+                    cursor.execute("""UPDATE tinyurls SET url_id=%s
+                                      WHERE tinyurl=%s""", id,tinyurl)
+                    db.commit()
+                else:
+                    tinyurl = cursor.fetchone()[0]
+                if tinyurl is not None:
+                    s = '%s (was <%s>)' % (ircutils.bold(tinyurl), url)
+                    irc.reply(msg, s, prefixName=False)
+                else:
+                    debug.msg('tinyurl was none for url %r' % url)
+    tinyurlSnarfer = privmsgs.urlSnarfer(tinyurlSnarfer)
+                
 
     _tinyRe = re.compile(r'(http://tinyurl\.com/\w+)</blockquote>')
     def _getTinyUrl(self, url, cmd=False):
@@ -179,10 +200,6 @@ class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
                              time.localtime(int(added)))
         return '<%s> (added by %s at %s)' % (url, addedBy, when)
 
-    def _formatUrlWithId(self, id, url, added, addedBy):
-        #debug.printf((id, url, added, addedBy))
-        return '#%s: %s' % (id, self._formatUrl(url, added, addedBy))
-
     def random(self, irc, msg, args):
         """[<channel>]
 
@@ -192,14 +209,14 @@ class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT id, url, added, added_by
+        cursor.execute("""SELECT url, added, added_by
                           FROM urls
                           ORDER BY random()
                           LIMIT 1""")
         if cursor.rowcount == 0:
             irc.reply(msg, 'I have no URLs in my database for %s' % channel)
         else:
-            irc.reply(msg, self._formatUrlWithId(*cursor.fetchone()))
+            irc.reply(msg, self._formatUrl(*cursor.fetchone()))
 
     def tiny(self, irc, msg, args):
         """<url>
@@ -210,12 +227,13 @@ class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
         if self.configurables.get('tinyurl-snarfer', channel=msg.args[0]):
             return
         url = self._getTinyUrl(url, cmd=True)
-        if not url:
+        if url:
+            irc.reply(msg, url)
+        else:
             s = 'Could not parse the TinyURL.com results page.  (%s)' % \
                 conf.replyPossibleBug
             irc.error(msg, s)
-        else:
-            irc.reply(msg, url)
+    tiny = privmsgs.thread(tiny)
 
     def num(self, irc, msg, args):
         """[<channel>]

@@ -112,12 +112,12 @@ if sqlite is not None:
 
         def testTinysnarf(self):
             self.assertNotError('url config tinyurlsnarfer on')
-            self.assertRegexp('http://www.urbandictionary.com/define.php?'
-                              'term=all+your+base+are+belong+to+us',
-                              r'http://tinyurl.com/u479.* \(was')
             self.assertRegexp('http://sourceforge.net/tracker/?'
                               'func=add&group_id=58965&atid=489447',
                               r'http://tinyurl.com/rqac.* \(was')
+            self.assertRegexp('http://www.urbandictionary.com/define.php?'
+                              'term=all+your+base+are+belong+to+us',
+                              r'http://tinyurl.com/u479.* \(was')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
