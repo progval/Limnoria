@@ -119,6 +119,10 @@ if __name__ == '__main__':
     parser.add_option('-O', action='count', dest='optimize',
                       help='-O optimizes asserts out of the code; ' \
                            '-OO optimizes asserts and uses psyco.')
+    parser.add_option('', '--network', action='store',
+                      dest='network', default='',
+                      help='network the bot should connect to (instead of '
+                           'using the configured default network')
     parser.add_option('-n', '--nick', action='store',
                       dest='nick', default='',
                       help='nick the bot should use')
@@ -203,8 +207,9 @@ if __name__ == '__main__':
     user = options.user or conf.supybot.user()
     ident = options.ident or conf.supybot.ident()
     
-    # We could add an option for this, but we'll wait until it's requested.
     defaultNetwork = conf.supybot.networks.default()
+    if options.network:
+        defaultNetwork = options.network
     try:
         network = conf.supybot.networks.get(defaultNetwork)
     except registry.NonExistentRegistryEntry:
