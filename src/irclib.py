@@ -70,7 +70,14 @@ class IrcCallback(object):
     def __call__(self, irc, msg):
         commandName = 'do' + msg.command.capitalize()
         if hasattr(self, commandName):
-            getattr(self, commandName)(irc, msg)
+            method = getattr(self, commandName)
+            try:
+                method(irc, msg)
+            except Exception, e:
+                debug.recoverableException()
+                s = 'Exception raised by %s.%s' % \
+                    (self.__class__.__name__, method.im_func.func_name)
+                debug.debugMsg(s)
 
     def reset(self):
         pass
