@@ -32,29 +32,29 @@ import time
 
 from testsupport import *
 
-if network:
-    class DebianTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Debian',)
-        timeout = 100
-        cleanDataDir = False
-        fileDownloaded = False
+class DebianTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('Debian',)
+    timeout = 100
+    cleanDataDir = False
+    fileDownloaded = False
 
-        def setUp(self, nick='test'):
-            PluginTestCase.setUp(self)
+    if network:
+        def setup(self, nick='test'):
+            plugintestcase.setup(self)
             try:
-                dataDir = conf.supybot.directories.data()
-                if os.path.exists(os.path.join(dataDir,
-                                  'Contents-i386.gz')):
+                datadir = conf.supybot.directories.data()
+                if os.path.exists(os.path.join(datadir,
+                                  'contents-i386.gz')):
                     pass
                 else:
                     print
-                    print "Downloading files, this may take awhile"
-                    filename = os.path.join(dataDir, 'Contents-i386.gz')
+                    print "downloading files, this may take awhile"
+                    filename = os.path.join(datadir, 'contents-i386.gz')
                     while not os.path.exists(filename):
                         time.sleep(1)
-                    print "Download complete"
-                    print "Starting test ..."
-                    self.fileDownloaded = True
+                    print "download complete"
+                    print "starting test ..."
+                    self.filedownloaded = true
             except KeyboardInterrupt:
                 pass
 
@@ -79,7 +79,7 @@ if network:
             self.assertRegexp('file --exact bin/gaim', r'net/gaim')
 
         def testDebincoming(self):
-            self.assertHelp('incoming')
+            self.assertNotError('incoming')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

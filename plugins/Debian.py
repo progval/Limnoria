@@ -52,6 +52,7 @@ from itertools import imap, ifilter
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -109,7 +110,7 @@ class Debian(callbacks.Privmsg,
     def die(self):
         callbacks.Privmsg.die(self)
 
-    def file(self, irc, msg, args):
+    def file(self, irc, msg, args, optlist, glob):
         """[--{regexp,exact}=<value>] [<glob>]
 
         Returns packages in Debian that includes files matching <glob>. If
@@ -121,19 +122,17 @@ class Debian(callbacks.Privmsg,
         # Make sure it's anchored, make sure it doesn't have a leading slash
         # (the filenames don't have leading slashes, and people may not know
         # that).
-        (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
-        if not optlist and not rest:
+        if not optlist and not glob:
             raise callbacks.ArgumentError
-        if len(optlist) + len(rest) > 1:
-            irc.error('Only one search option is allowed.')
-            return
+        if optlist and glob > 1:
+            irc.error('You must specify either a glob or a regexp/exact '
+                      'search, but not both.')
         for (option, arg) in optlist:
-            if option == '--exact':
+            if option == 'exact':
                 regexp = arg.lstrip('/')
-            elif option == '--regexp':
+            elif option == 'regexp':
                 regexp = arg
-        if rest:
-            glob = rest.pop()
+        if glob:
             regexp = fnmatch.translate(glob.lstrip('/'))
             regexp = regexp.rstrip('$')
             regexp = ".*%s.* " % regexp
@@ -182,12 +181,13 @@ class Debian(callbacks.Privmsg,
             irc.reply('I found no packages with that file.')
         else:
             irc.reply(utils.commaAndify(packages))
+    file = wrap(file, [getopts({'regexp':'regexpMatcher', 'exact':'text'}),
+                       additional('text')])
 
     _debreflags = re.DOTALL | re.IGNORECASE
     _deblistre = re.compile(r'<h3>Package ([^<]+)</h3>(.*?)</ul>', _debreflags)
-    _debBranches = ('stable', 'testing', 'unstable', 'experimental')
-    def version(self, irc, msg, args):
-        """[--exact] [stable|testing|unstable|experimental] <package name>
+    def version(self, irc, msg, args, optlist, branch, package):
+        """[--exact] [{stable,testing,unstable,experimental}] <package name>
 
         Returns the current version(s) of a Debian package in the given branch
         (if any, otherwise all available ones are displayed).  If --exact is
@@ -196,24 +196,12 @@ class Debian(callbacks.Privmsg,
         """
         url = 'http://packages.debian.org/cgi-bin/search_packages.pl?keywords'\
               '=%s&searchon=names&version=%s&release=all&subword=1'
-        if not args:
-            raise callbacks.ArgumentError
-        (optlist, rest) = getopt.getopt(args, '', ['exact'])
         for (option, _) in optlist:
-            if option == '--exact':
+            if option == 'exact':
                 url = url.replace('&subword=1','')
-        if rest and rest[0] in self._debBranches:
-            branch = rest.pop(0)
-        else:
-            branch = 'all'
-        if not rest:
-            irc.error('You must give a package name.')
-            return
         responses = []
-        package = privmsgs.getArgs(rest)
         if '*' in package:
-            irc.error('Wildcard characters can not be specified.')
-            return
+            irc.error('Wildcard characters can not be specified.', Raise=True)
         package = urllib.quote(package)
         url = url % (package, branch)
         try:
@@ -224,10 +212,8 @@ class Debian(callbacks.Privmsg,
 
         if 'is down at the moment' in html:
             irc.error('Packages.debian.org is down at the moment.  '
-                           'Please try again later.')
-            return
+                           'Please try again later.', Raise=True)
         pkgs = self._deblistre.findall(html)
-        #self.log.warning(pkgs)
         if not pkgs:
             irc.reply('No package found for %s (%s)' %
                       (urllib.unquote(package), branch))
@@ -254,32 +240,29 @@ class Debian(callbacks.Privmsg,
             resp = '%s matches found: %s' % \
                    (len(responses), '; '.join(responses))
             irc.reply(resp)
+    version = wrap(version, [getopts({'exact':''}),
+                             optional(('literal', ('stable', 'testing',
+                                       'unstable', 'experimental')), 'all'),
+                             'text'])
 
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
-    def incoming(self, irc, msg, args):
-        """[--{regexp,arch}=<value>] <glob>
+    def incoming(self, irc, msg, args, optlist, globs):
+        """[--{regexp,arch}=<value>] [<glob> ...]
 
         Checks debian incoming for a matching package name.  The arch
         parameter defaults to i386; --regexp returns only those package names
         that match a given regexp, and normal matches use standard *nix
         globbing.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'arch='])
         predicates = []
         archPredicate = lambda s: ('_i386.' in s)
         for (option, arg) in optlist:
-            if option == '--regexp':
-                try:
-                    r = utils.perlReToPythonRe(arg)
-                    predicates.append(r.search)
-                except ValueError:
-                    irc.error('%r is not a valid regexp.' % arg)
-                    return
-            elif option == '--arch':
+            if option == 'regexp':
+                predicates.append(r.search)
+            elif option == 'arch':
                 arg = '_%s.' % arg
                 archPredicate = lambda s, arg=arg: (arg in s)
         predicates.append(archPredicate)
-        globs = privmsgs.getArgs(rest).split()
         for glob in globs:
             glob = glob.replace('*', '.*').replace('?', '.?')
             predicates.append(re.compile(r'.*%s.*' % glob).search)
@@ -300,26 +283,18 @@ class Debian(callbacks.Privmsg,
             irc.error('No packages matched that search.')
         else:
             irc.reply(utils.commaAndify(packages))
-    incoming = privmsgs.thread(incoming)
+    incoming = thread(wrap(incoming,
+                           [getopts({'regexp':'regexpMatcher', 'arch':'text'}),
+                            any('text')]))
 
     _newpkgre = re.compile(r'<li><a href[^>]+>([^<]+)</a>')
-    def new(self, irc, msg, args):
-        """[--{main,contrib,non-free}] [<glob>]
+    def new(self, irc, msg, args, optlist, glob):
+        """[{main,contrib,non-free}] [<glob>]
 
         Checks for packages that have been added to Debian's unstable branch
         in the past week.  If no glob is specified, returns a list of all
         packages.  If no section is specified, defaults to main.
         """
-        options = ['main', 'contrib', 'non-free']
-        (optlist, rest) = getopt.getopt(args, '', options)
-        section = 'main'
-        for (option, _) in optlist:
-            option = option.lstrip('-')
-            if option in options:
-                section = option
-        glob = privmsgs.getArgs(rest, required=0, optional=1)
-        if not glob:
-            glob = '*'
         if '?' not in glob and '*' not in glob:
             glob = '*%s*' % glob
         try:
@@ -328,8 +303,6 @@ class Debian(callbacks.Privmsg,
         except webutils.WebError, e:
             irc.error(str(e))
         packages = []
-        #self.log.warning(section)
-        #self.log.warning(glob)
         for line in fd:
             m = self._newpkgre.search(line)
             if m:
@@ -341,6 +314,9 @@ class Debian(callbacks.Privmsg,
             irc.reply(utils.commaAndify(packages))
         else:
             irc.error('No packages matched that search.')
+    new = wrap(new, [optional(('literal', ('main', 'contrib', 'non-free')),
+                              'main'),
+                     additional('text', '*')])
 
     _severity = re.compile(r'.*(?:severity set to `([^\']+)\'|'
                            r'severity:\s+([^\s]+))', re.I)
@@ -349,20 +325,11 @@ class Debian(callbacks.Privmsg,
     _subject = re.compile(r'<br>([^<]+)</h1>', re.I | re.S)
     _date = re.compile(r'Date: ([^;]+);', re.I | re.S)
     _searches = (_package, _subject, _reporter, _date)
-    def bug(self, irc, msg, args):
+    def bug(self, irc, msg, args, bug):
         """<num>
 
         Returns a description of the bug with bug id <num>.
         """
-        bug = privmsgs.getArgs(args)
-        if ' ' in bug:
-            irc.error('Only one bug can be looked up at a time.')
-            return
-        try:
-            int(bug)
-        except ValueError:
-            irc.error('<num> must be an integer.')
-            return
         url = 'http://bugs.debian.org/%s' % bug
         text = webutils.getUrl(url)
         if "There is no record of Bug" in text:
@@ -383,6 +350,7 @@ class Debian(callbacks.Privmsg,
             irc.reply(resp)
         else:
             irc.reply('I was unable to properly parse the BTS page.')
+    bug = wrap(bug, [('id', 'bug')])
 
 Class = Debian
 
