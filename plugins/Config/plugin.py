@@ -36,6 +36,7 @@ import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
 from supybot.commands import *
+from supybot.utils.iter import all
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks

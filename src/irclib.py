@@ -856,7 +856,7 @@ class Irc(IrcCommandDispatcher):
             while len(L) <= 3:
                 L.append('`')
             while ircutils.strEqual(ret, nick):
-                L[random.randrange(len(L))] = random.choice('0123456789')
+                L[random.randrange(len(L))] = utils.iter.choice('0123456789')
                 ret = ''.join(L)
             return ret
 

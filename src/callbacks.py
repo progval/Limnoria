@@ -48,7 +48,6 @@ import string
 import inspect
 import operator
 from cStringIO import StringIO
-from itertools import imap, ifilter
 
 import supybot.log as log
 import supybot.conf as conf
@@ -59,6 +58,7 @@ import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
+from supybot.utils.iter import any, imap, ifilter
 
 def _addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,

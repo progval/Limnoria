@@ -314,7 +314,7 @@ class TimeoutQueue(object):
             return self.timeout()
         else:
             return self.timeout
-    
+
     def _clearOldElements(self):
         now = time.time()
         while now - self.queue.peek()[0] > self._getTimeout():
@@ -341,7 +341,7 @@ class TimeoutQueue(object):
                 yield elt
 
     def __len__(self):
-        # No dependency on utils.
+        # No dependency on utils.iter
         # return ilen(self)
         i = 0
         for _ in self:
@@ -413,7 +413,7 @@ class MultiSet(object):
 
     def __contains__(self, elt):
         return elt in self.d
-            
+
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

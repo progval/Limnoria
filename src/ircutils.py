@@ -625,7 +625,7 @@ def standardSubstitute(irc, msg, text, env=None):
             if len(L) > 1:
                 n = msg.nick
                 while n == msg.nick:
-                    n = random.choice(L)
+                    n = utils.iter.choice(L)
                 return n
             else:
                 return msg.nick

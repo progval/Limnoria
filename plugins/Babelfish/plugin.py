@@ -27,8 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import random
-
 import babelfish
 
 import supybot.conf as conf
@@ -152,9 +150,9 @@ class Babelfish(callbacks.Privmsg):
         languages = self.registryValue('languages', msg.args[0])
         if not languages:
             irc.error('I can\'t speak any other languages.', Raise=True)
-        language = random.choice(languages)
+        language = utils.iter.choice(languages)
         while not allowEnglish and language == 'English':
-            language = random.choice(languages)
+            language = utils.iter.choice(languages)
         irc.reply(language)
     randomlanguage = wrap(randomlanguage, [getopts({'allow-english': ''})])
 

@@ -407,7 +407,7 @@ class Filter(callbacks.Privmsg):
         text = text.replace(',', ' ')
         text = text.replace("'", '')
         text = text.replace('one', '1')
-        smiley = random.choice(['<3', ':)', ':-)', ':D', ':-D'])
+        smiley = utils.iter.choice(['<3', ':)', ':-)', ':D', ':-D'])
         text += smiley*3
         irc.reply(text)
     aol = wrap(aol, ['text'])
@@ -418,7 +418,7 @@ class Filter(callbacks.Privmsg):
         Returns <text> as if JeffK had said it himself.
         """
         def randomlyPick(L):
-            return random.choice(L)
+            return utils.iter.choice(L)
         def quoteOrNothing(m):
             return randomlyPick(['"', '']).join(m.groups())
         def randomlyReplace(s, probability=0.5):
@@ -445,23 +445,22 @@ class Filter(callbacks.Privmsg):
         def randomlyLaugh(text, probability=.3):
             if random.random() < probability:
                 if random.random() < .5:
-                    insult = random.choice([' fagot1', ' fagorts', ' jerks',
-                                            'fagot' ' jerk', ' dumbshoes',
-                                            ' dumbshoe'])
+                    insult = utils.iter.choice([' fagot1', ' fagorts',
+                                                ' jerks', 'fagot' ' jerk',
+                                                'dumbshoes', ' dumbshoe'])
                 else:
                     insult = ''
-                laugh1 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
-                laugh2 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
+                laugh1 = utils.iter.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
+                laugh2 = utils.iter.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
                 laugh1 = laugh1 * random.randrange(1, 5)
                 laugh2 = laugh2 * random.randrange(1, 5)
-                exclaim = random.choice(['!', '~', '!~', '~!!~~',
-                                         '!!~', '~~~!'])
-                exclaim += random.choice(['!', '~', '!~', '~!!~~',
-                                          '!!~', '~~~!'])
-                if random.random() < 0.5:
-                    exclaim += random.choice(['!', '~', '!~', '~!!~~',
-
+                exclaim = utils.iter.choice(['!', '~', '!~', '~!!~~',
+                                             '!!~', '~~~!'])
+                exclaim += utils.iter.choice(['!', '~', '!~', '~!!~~',
                                               '!!~', '~~~!'])
+                if random.random() < 0.5:
+                    exclaim += utils.iter.choice(['!', '~', '!~', '~!!~~',
+                                                  '!!~', '~~~!'])
                 laugh = ''.join([' ', laugh1, laugh2, insult, exclaim])
                 text += laugh
             return text

@@ -364,7 +364,7 @@ class DB(object):
 
     def random(self):
         try:
-            return self._newRecord(*random.choice(self.map))
+            return self._newRecord(*utils.iter.choice(self.map))
         except IndexError:
             return None
 

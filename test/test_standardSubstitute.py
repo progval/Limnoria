@@ -32,6 +32,7 @@ from supybot.test import *
 import sets
 
 import supybot.irclib as irclib
+from supybot.utils.iter import all
 import supybot.ircutils as ircutils
 
 class holder:

@@ -51,9 +51,9 @@ import pprint
 import socket
 import logging
 import optparse
-from itertools import imap
 
 import supybot.ansi as ansi
+from utils.iter import imap
 import supybot.utils as utils
 import supybot.ircutils as ircutils
 import supybot.registry as registry

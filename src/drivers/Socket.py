@@ -38,7 +38,6 @@ from __future__ import division
 import time
 import select
 import socket
-from itertools import imap
 
 import supybot.log as log
 import supybot.conf as conf
@@ -46,6 +45,7 @@ import supybot.utils as utils
 import supybot.world as world
 import supybot.drivers as drivers
 import supybot.schedule as schedule
+from supybot.utils.iter import imap
 
 # XXX Shouldn't the reconnect wait (at least the last one) be configurable?
 reconnectWaits = [0, 60, 300]

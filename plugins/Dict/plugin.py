@@ -27,7 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import random
 import socket
 
 import dictclient
@@ -64,7 +63,7 @@ class Dict(callbacks.Privmsg):
             server = conf.supybot.plugins.Dict.server()
             conn = dictclient.Connection(server)
             dbs = conn.getdbdescs().keys()
-            irc.reply(random.choice(dbs))
+            irc.reply(utils.iter.choice(dbs))
         except socket.error, e:
             irc.error(utils.web.strError(e))
     random = wrap(random)

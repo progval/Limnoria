@@ -72,9 +72,9 @@ class ServersMixin(object):
         self.networkGroup = conf.supybot.networks.get(irc.network)
         self.servers = servers
         super(ServersMixin, self).__init__(irc)
-        
+
     def _getServers(self):
-        # We do this, rather than itertools.cycle the servers in __init__,
+        # We do this, rather than utils.iter.cycle the servers in __init__,
         # because otherwise registry updates given as setValues or sets
         # wouldn't be visible until a restart.
         return self.networkGroup.servers()[:] # Be sure to copy!
@@ -87,7 +87,7 @@ class ServersMixin(object):
         server = self.servers.pop(0)
         self.currentServer = '%s:%s' % server
         return server
-        
+
 
 def empty():
     """Returns whether or not the driver loop is empty."""
@@ -178,7 +178,7 @@ class Log(object):
     stat = staticmethod(supylog.stat)
 
 log = Log()
-        
+
 def newDriver(irc, moduleName=None):
     """Returns a new driver for the given server using the irc given and using
     conf.supybot.driverModule to determine what driver to pick."""
