@@ -1,3 +1,6 @@
+	* Changed ChannelLogger to log channels to logs/ChannelLogger,
+	rather than simply logs.
+	
 	* Added the ChannelRelay plugin, to relay messages between two
 	channels.  This might be useful for people who want to forward
 	CVS update messages from one channel (such as #commits) to
