@@ -33,44 +33,46 @@ from testsupport import *
 
 class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Google',)
-    def testNoNoLicenseKeyError(self):
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))
-        self.assertNoResponse(' ')
+    if network:
+        def testNoNoLicenseKeyError(self):
+            self.assertNotError('google config groups-snarfer on')
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))
+            self.assertNoResponse(' ')
         
-    def testGroupsSnarfer(self):
-        self.assertNotError('google config groups-snarfer on')
-        self.assertRegexp('http://groups.google.com/groups?dq=&hl=en&'
-                          'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
-                          '0310132012.738e22fc%40posting.google.com',
-                          r'comp\.lang\.python.*question: usage of __slots__')
-        self.assertRegexp('http://groups.google.com/groups?selm=ExDm.'
-                          '8bj.23%40gated-at.bofh.it&oe=UTF-8&output=gplain',
-                          r'linux\.kernel.*NFS client freezes')
-        self.assertRegexp('http://groups.google.com/groups?'
-                          'q=kernel+hot-pants&hl=en&lr=&ie=UTF-8&oe=UTF-8&'
-                          'selm=1.5.4.32.19970313170853.00674d60%40'
-                          'adan.kingston.net&rnum=1',
-                          r'Madrid Bluegrass Ramble')
-        self.assertRegexp('http://groups.google.com/groups?'
-                          'selm=1.5.4.32.19970313170853.00674d60%40adan.'
-                          'kingston.net&oe=UTF-8&output=gplain',
-                          r'Madrid Bluegrass Ramble')
-        self.assertRegexp('http://groups.google.com/groups?'
-                          'dq=&hl=en&lr=&ie=UTF-8&threadm=mailman.1010.'
-                          '1069645289.702.python-list%40python.org'
-                          '&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8'
-                          '%26group%3Dcomp.lang.python',
-                          r'comp\.lang\.python.*What exactly are bound')
-
-    def testConfig(self):
-        self.assertNotError('google config groups-snarfer off')
-        self.assertNoResponse('http://groups.google.com/groups?dq=&hl=en&'
+        def testGroupsSnarfer(self):
+            self.assertNotError('google config groups-snarfer on')
+            self.assertRegexp('http://groups.google.com/groups?dq=&hl=en&'
                               'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
-                              '0310132012.738e22fc%40posting.google.com')
-        self.assertNotError('google config groups-snarfer on')
-        self.assertNotError('http://groups.google.com/groups?dq=&hl=en&'
-                            'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
-                            '0310132012.738e22fc%40posting.google.com')
+                              '0310132012.738e22fc%40posting.google.com',
+                              r'comp\.lang\.python.*question: usage of __slots__')
+            self.assertRegexp('http://groups.google.com/groups?selm=ExDm.'
+                              '8bj.23%40gated-at.bofh.it&oe=UTF-8&output=gplain',
+                              r'linux\.kernel.*NFS client freezes')
+            self.assertRegexp('http://groups.google.com/groups?'
+                              'q=kernel+hot-pants&hl=en&lr=&ie=UTF-8&oe=UTF-8&'
+                              'selm=1.5.4.32.19970313170853.00674d60%40'
+                              'adan.kingston.net&rnum=1',
+                              r'Madrid Bluegrass Ramble')
+            self.assertRegexp('http://groups.google.com/groups?'
+                              'selm=1.5.4.32.19970313170853.00674d60%40adan.'
+                              'kingston.net&oe=UTF-8&output=gplain',
+                              r'Madrid Bluegrass Ramble')
+            self.assertRegexp('http://groups.google.com/groups?'
+                              'dq=&hl=en&lr=&ie=UTF-8&threadm=mailman.1010.'
+                              '1069645289.702.python-list%40python.org'
+                              '&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8'
+                              '%26group%3Dcomp.lang.python',
+                              r'comp\.lang\.python.*What exactly are bound')
+
+        def testConfig(self):
+            self.assertNotError('google config groups-snarfer off')
+            self.assertNoResponse('http://groups.google.com/groups?dq=&hl=en&'
+                                  'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
+                                  '0310132012.738e22fc%40posting.google.com')
+            self.assertNotError('google config groups-snarfer on')
+            self.assertNotError('http://groups.google.com/groups?dq=&hl=en&'
+                                'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
+                                '0310132012.738e22fc%40posting.google.com')
 
     def testInvalidKeyCaught(self):
         self.assertNotError(

@@ -1,4 +1,4 @@
-#re!/usr/bin/env python
+#!/usr/bin/env python
 
 ###
 # Copyright (c) 2002, Jeremiah Fincher
@@ -142,7 +142,12 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
          ('search-snarfer', configurable.BoolType, False,
           """Determines whether the search snarfer is enabled.  If so, messages
           (even unaddressed ones) beginning with the word 'google' will result
-          in the first URL Google returns being sent to the channel.""")]
+          in the first URL Google returns being sent to the channel."""),
+         ('bold', configurable.BoolType, True,
+          """Determines whether results are bolded."""),
+         ('maximum-results', configurable.PositiveIntType, 10,
+          """Determines the maximum number of results returned from the
+          google command."""),]
     )
     def __init__(self):
         configurable.Mixin.__init__(self)
@@ -155,16 +160,20 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         configurable.Mixin.die(self)
         callbacks.PrivmsgCommandAndRegexp.die(self)
 
-    def formatData(self, data):
+    def formatData(self, data, bold=True, max=0):
         if isinstance(data, basestring):
             return data
         time = 'Search took %s seconds' % data.meta.searchTime
         results = []
+        if max:
+            data.results = data.results[:max]
         for result in data.results:
             title = utils.htmlToText(result.title.encode('utf-8'))
             url = result.URL
             if title:
-                results.append('%s: <%s>' % (ircutils.bold(title), url))
+                if bold:
+                    title = ircutils.bold(title)
+                results.append('%s: <%s>' % (title, url))
             else:
                 results.append(url)
         if not results:
@@ -207,7 +216,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 kwargs[option[2:]] = argument
         searchString = privmsgs.getArgs(rest)
         data = search(self.log, searchString, **kwargs)
-        irc.reply(msg, self.formatData(data))
+        bold = self.configurables.get('bold', msg.args[0])
+        max = self.configurables.get('maximum-results', msg.args[0])
+        irc.reply(msg, self.formatData(data, bold=bold, max=max))
 
     def metagoogle(self, irc, msg, args):
         """<search> [--(language,restrict)=<value>] [--{similar,notsafe}]
