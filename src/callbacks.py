@@ -108,11 +108,11 @@ class RateLimiter:
             return None
 
     def put(self, msg):
-        if not self.limit(msg):
-            self.unlimited.append(msg)
-        else:
+        if self.limit(msg) and not world.testing:
             debug.printf('Limiting message from %s' % msg.prefix)
             self.limited.append(msg)
+        else:
+            self.unlimited.append(msg)
 
     def limit(self, msg, penalize=True):
         if msg.prefix and ircutils.isUserHostmask(msg.prefix):
