@@ -120,13 +120,15 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                     normalizedArgs.remove(n.lower())
                 if normalizedArgs:
                     if len(normalizedArgs) == 1:
-                        L.append('%s has no karma' % normalizedArgs.pop())
+                        ss = '%s has no karma' % normalizedArgs.pop()
                     else:
                         LL = list(normalizedArgs)
                         LL.sort()
-                        L.append('%s have no karma' % utils.commaAndify(LL))
-                s = utils.commaAndify(L)
-                irc.reply(msg, s + '.')
+                        ss = '%s have no karma' % utils.commaAndify(LL)
+                    s = '%s.  %s.' % (utils.commaAndify(L), ss)
+                else:
+                    s = utils.commaAndify(L) + '.'
+                irc.reply(msg, s)
             else:
                 irc.reply(msg, 'I didn\'t know the karma for any '
                                'of those things.')
