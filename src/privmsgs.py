@@ -209,7 +209,7 @@ def urlSnarfer(f):
             self.log.info('Refusing to snarf %s, already snarfed.', url)
             return
         irc = SnarfIrc(irc, channel, url)
-        if self.threaded:
+        if threading.currentThread() is not world.mainThread:
             f(self, irc, msg, match, *L, **kwargs)
         else:
             L = list(L)
