@@ -33,13 +33,18 @@ from testsupport import *
 
 class BugzillaTest(PluginTestCase, PluginDocumentation):
     plugins = ('Bugzilla',)
-    def test(self):
+    def testBug(self):
         self.assertNotError('bug gcc 5')
-        self.assertNotError('search --keywords=fixed gcc alpha')
-        self.assertNotError('search gcc alpha')
+
+    def testAddRemove(self):
         self.assertNotError('add xiph http://bugs.xiph.org/ Xiph')
         self.assertNotError('bug xiph 413')
         self.assertNotError('remove xiph')
+        self.assertError('bug xiph 413')
+
+    def testSearch(self):
+        self.assertNotError('search gcc alpha')
+        self.assertNotError('search --keywords=fixed gcc alpha')
 
     def testConfigBugzillaSnarfer(self):
         self.assertNotError('bugzilla config bug-snarfer off')

@@ -215,7 +215,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
 
     def urlquery2bugslist(self, url, query):
         """Given a URL and query list for a CSV bug list, it'll return
-        all the bugs in a dict """
+        all the bugs in a dict
+        """
         u = urllib2.urlopen(url + '/buglist.cgi', string.join(query, '&'))
         # actually read in the file
         csvreader = csv.reader(u)
@@ -233,7 +234,6 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             for f in fields[1:]:
                 bugs[bugid][f] = bug[i]
                 i += 1
-            
         u.close()
         return bugs
         
@@ -264,15 +264,10 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         bugs = self.urlquery2bugslist(url, query)
         bugids = bugs.keys()
         bugids.sort()
-        
-        outputstr = '%d %s match \'%s\' (%s):' % (len(bugs), \
-        utils.pluralize(len(bugs), 'bug'), 
-        searchstr, utils.commaAndify(keywords, And='AND'))
-        
-        for b in bugids:
-            outputstr += ' %s' % (str(b))
-			
-        irc.reply(msg, outputstr)
+        s = '%s match %r (%s): %s.' % \
+            (utils.nItems('bug', len(bugs)), searchstr,
+             ' AND '.join(keywords), utils.commaAndify(map(str, bugids)))
+        irc.reply(msg, s)
         
     def bug(self, irc, msg, args):
         """<abbreviation> <number>
