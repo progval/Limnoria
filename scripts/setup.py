@@ -32,15 +32,26 @@
 def expect(prompt, possibilities, recursed=False):
     if recursed:
         print 'Sorry, that response was not an option.'
-    newprompt = '%s [%s]' % (prompt, '/'.join(possibilities))
-    s = raw_input(newprompt)
+    if possibilities:
+        prompt = '%s [%s]' % (prompt, '/'.join(possibilities))
+    prompt = prompt.strip() + ' '
+    s = raw_input(prompt)
     if possibilities:
         if s in possibilities:
-            return s
+            return s.strip()
         else:
-            expect(prompt, possibilities, recursed=True)
+            return expect(prompt, possibilities, recursed=True)
     else:
-        return s
+        return s.strip()
+
+def anything(prompt):
+    return expect(prompt, [])
+
+def yn(prompt):
+    return expect(prompt, ['y', 'n'])
+
+def ny(prompt):
+    return expect(prompt, ['n', 'y'])
 
 # So we gotta:
 #   Check to see if the user has sqlite installed.
@@ -48,5 +59,52 @@ def expect(prompt, possibilities, recursed=False):
 #   Provide a list of modules to load by default.
 #   See what other commands the user would like to run by default.
 #   Go through conf.py options and see which ones the user would like.
-
+import sys
+sys.path.insert(0, 'src')
+from fix import *
+import os
+import imp
+import conf
+sys.path.insert(0, conf.pluginDir)
+if __name__ == '__main__':
+    name = anything('What would you like to name your config file?') + '.conf'
+    configfd = file(os.path.join(conf.confDir, name), 'w')
+    server = anything('What server would you like to connect to?')
+    if ny('Does that server require connection on a non-standard port?')=='y':
+        server = ':'.join(server, anything('What port is that?'))
+    configfd.write('Server: %s\n' % server)
+    nick = anything('What nick would you like the bot to use?')
+    configfd.write('Nick: %s\n' % nick)
+    configfd.write('\n')
+    # Now's where we load the modules.
+    if yn('Would you like to see a list of the available modules?') == 'y':
+        filenames = os.listdir(conf.pluginDir)
+        plugins = []
+        for filename in filenames:
+            if filename.endswith('.py') and \
+               filename.lower() != filename:
+                plugins.append(os.path.splitext(filename)[0])
+        print 'The available plugins are:\n  %s' % '\n  '.join(plugins)
+        while yn('Would you like to add a plugin?') == 'y':
+            plugin = expect('What plugin?', plugins)
+            moduleInfo = imp.find_module(plugin)
+            module = imp.load_module(plugin, *moduleInfo)
+            print module.__doc__
+            if yn('Would you like to add this plugin?') == 'y':
+                configfd.write('load %s\n' % plugin)
+    while yn('Would you like any other commands ' \
+             'to run before the bot connects to the server?') == 'y':
+        configfd.write(anything('What command?'))
+        configfd.write('\n')
+    configfd.write('\n')
+    while yn('Would you like any other commands to run ' \
+             'when the bot is finished connecting to the server?') == 'y':
+        configfd.write(anything('What command?'))
+        configfd.write('\n')
+    configfd.close()
+    print
+    print 'You\'re done!  Now run the bot with the command line:'
+    print 'src/bot.py conf/%s.conf' % name
+    print
+        
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
