@@ -327,15 +327,8 @@ class Irc(object):
         self.callbacks.append(callback)
 
     def removeCallback(self, name):
-        ret = []
-        toRemove = []
-        for (i, cb) in enumerate(self.callbacks):
-            if cb.name() == name:
-                toRemove.append(i)
-        for i in reviter(range(len(self.callbacks))):
-            if toRemove and toRemove[-1] == i:
-                toRemove.pop()
-                ret.append(self.callbacks.pop(i))
+        ret = filter(name.__eq__, self.callbacks)
+        self.callbacks[:] = [cb for cb in self.callbacks if name != cb.name()]
         return ret
 
     def queueMsg(self, msg):
