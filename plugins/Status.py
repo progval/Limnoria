@@ -163,33 +163,35 @@ class Status(callbacks.Privmsg):
         (user, system, childUser, childSystem, elapsed) = os.times()
         now = time.time()
         timeRunning = now - world.startedAt
-        if user+system > timeRunning:
-            irc.error(msg, 'I seem to be running on a platform without an '
-                           'accurate way of determining how long I\'ve been '
-                           'running.')
-            return
+        if user+system < timeRunning+1: # Fudge for FPU inaccuracies.
+            children = 'My children have taken %.2f seconds of user time ' \
+                       'and %.2f seconds of system time ' \
+                       'for a total of %.2f seconds of CPU time.  ' % \
+                       (childUser, childSystem, childUser+childSystem)
+        else:
+            children = ''
         activeThreads = threading.activeCount()
         response = ('I have taken %.2f seconds of user time and %.2f seconds '
                     'of system time, for a total of %.2f seconds of CPU '
-                    'time.  My children have taken %.2f seconds of user time '
-                    'and %.2f seconds of system time for a total of %.2f '
-                    'seconds of CPU time.  Out of %s I have %s active.' % 
-                    (user, system, user + system,
-                     childUser, childSystem, childUser + childSystem,
+                    'time.  %sOut of %s I have %s active.' % 
+                    (user, system, user + system, children,
                      utils.nItems('thread', world.threadsSpawned, 'spawned'),
                      activeThreads))
-        mem = None
+        mem = 'an unknown amount'
         pid = os.getpid()
         plat = sys.platform
         try:
             if plat.startswith('linux') or plat.startswith('sunos') or \
-               plat.startswith('freebsd') or plat.startswith('openbsd'):
-                r = os.popen('ps -o vsz -p %s' % pid)
-                r.readline() # VSZ Header.
-                mem = int(r.readline().strip())
-                r.close()
+               plat.startswith('freebsd') or plat.startswith('openbsd') or \
+               plat.startswith('darwin'):
+                try:
+                    r = os.popen('ps -o rss -p %s' % pid)
+                    r.readline() # VSZ Header.
+                    mem = r.readline().strip() + ' kB'
+                finally:
+                    r.close()
             elif sys.platform.startswith('netbsd'):
-                mem = os.stat('/proc/%s/mem')[7]
+                mem = '%s kB' % os.stat('/proc/%s/mem')[7]
             response += '  I\'m taking up %s kB of memory.' % mem
         except Exception:
             self.log.exception('Uncaught exception in cpu:')

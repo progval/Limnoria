@@ -47,17 +47,13 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('net')
 
     def testCpustats(self):
-        try:
-            original = world.startedAt
-            world.startedAt = time.time()
-            self.assertError('cpu')
-            world.startedAt = 0
-            self.assertNotError('cpu')
-            for s in ['linux', 'freebsd', 'openbsd', 'netbsd']:
-                if sys.platform.startswith(s):
-                    self.assertRegexp('cpu', 'kB')
-        finally:
-            world.startedAt = original
+        m = self.assertNotError('status cpu')
+        self.failIf('None' in m.args[1], 'None in cpu output: %r.' % m)
+        for s in ['linux', 'freebsd', 'openbsd', 'netbsd', 'darwin']:
+            if sys.platform.startswith(s):
+                self.failUnless('kB' in m.args[1],
+                                'No memory string on supported platform.')
+
     def testUptime(self):
         self.assertNotError('uptime')
 
