@@ -111,7 +111,16 @@ class CommandsTestCase(SupyTestCase):
         self.assertState(spec, ['12,11,10,', '9'], [[12, 11, 10, 9]])
         spec.append('int')
         self.assertState(spec, ['12,11,10', '9'], [[12, 11, 10], 9])
-        
+
+    def testLiteral(self):
+        spec = [('literal', ['foo', 'bar', 'baz'])]
+        self.assertState(spec, ['foo'], ['foo'])
+        self.assertState(spec, ['fo'], ['foo'])
+        self.assertState(spec, ['f'], ['foo'])
+        self.assertState(spec, ['bar'], ['bar'])
+        self.assertState(spec, ['baz'], ['baz'])
+        self.assertRaises(callbacks.ArgumentError,
+                          self.assertState, spec, ['ba'], ['baz'])
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

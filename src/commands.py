@@ -475,10 +475,12 @@ def getMatch(irc, msg, args, state, regexp, errmsg):
         irc.error(errmsg, Raise=True)
 
 def getLiteral(irc, msg, args, state, literals, errmsg=None):
+    # ??? Should we allow abbreviations?
     if isinstance(literals, basestring):
         literals = (literals,)
-    if args[0] in literals:
-        state.args.append(args.pop(0))
+    abbrevs = utils.abbrev(literals)
+    if args[0] in abbrevs:
+        state.args.append(abbrevs[args.pop(0)])
     elif errmsg is not None:
         irc.error(errmsg, Raise=True)
     else:
@@ -710,7 +712,6 @@ class commalist(context):
             args[:] = original
             raise
                     
-
 class getopts(context):
     """The empty string indicates that no argument is taken; None indicates
     that there is no converter for the argument."""
