@@ -60,7 +60,7 @@ def configure(onStart, afterConnect, advanced):
     print 'The default dictd server is dict.org.'
     if yn('Would you like to specify a dictd server?') == 'y':
         server = something('What server?')
-        onStart.append('dictserver %s' % server)
+        onStart.append('dict config server %s' % server)
 
 replyTimeout = 'Timeout on the dictd server.'
 class Dict(callbacks.Privmsg, plugins.Configurable):
