@@ -28,6 +28,11 @@ def main():
         s = getText(filename)
         node = parser.ast2list(parser.suite(s), True)
         for (lineno, string) in strings(node):
+            if string.startswith("r'") or string.startswith('r"'):
+                continue
+            string = eval(string)
+            if len(string) <= 3:
+                continue
             out.write('%s: %s: %s\n' % (filename, lineno, string))
     out.close()
 
