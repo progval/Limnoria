@@ -470,6 +470,7 @@ class Regexp(Value):
     def __init__(self, *args, **kwargs):
         kwargs['setDefault'] = False
         super(Regexp, self).__init__(*args, **kwargs)
+        self.value = None
         
     def error(self, e):
         raise InvalidRegistryValue, 'Value must be a regexp of the form %s' % e
