@@ -119,10 +119,11 @@ class set(object):
             return False
 
     def __getstate__(self):
-        return self.d.keys()
+        return (self.d.keys(),)
 
-    def __setstate__(self, t):
-        for x in t:
+    def __setstate__(self, (L,)):
+        self.d = {}
+        for x in L:
             self.d[x] = None
 
     def __len__(self):
@@ -139,6 +140,12 @@ class set(object):
             del self.d[x]
         except KeyError:
             pass
+
+    def __eq__(self, other):
+        return self.d == other.d
+
+    def __ne__(self, other):
+        return not self.d == other.d
 
 ##     def __getstate__(self):
 ##         return self.d
