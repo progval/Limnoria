@@ -44,6 +44,7 @@ import conf
 import debug
 import utils
 import world
+import ircdb
 import ircutils
 import privmsgs
 import callbacks
@@ -259,8 +260,13 @@ class Toggleable(object):
     def toggle(self, irc, msg, args):
         try:
             channel = privmsgs.getChannel(msg, args)
+            capability = ircdb.makeChannelCapability(channel, 'op')
         except callbacks.Error:
             channel = None
+            capability = 'admin'
+        if not ircdb.checkCapability(msg.prefix, capability):
+            irc.error(msg, conf.replyNoCapability % capability)
+            return
         (name, value) = privmsgs.getArgs(args, optional=1)
         if not value:
             value = None
