@@ -193,9 +193,13 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
         package = urllib.quote(package)
         url = 'http://packages.debian.org/cgi-bin/search_packages.pl?keywords'\
               '=%s&searchon=names&version=%s&release=all' % (package, branch)
-        fd = urllib2.urlopen(url)
-        html = fd.read()
-        fd.close()
+        try:
+            fd = urllib2.urlopen(url)
+            html = fd.read()
+            fd.close()
+        except urllib2.HTTPError, e:
+            irc.error(msg, 'I couldn\'t reach the search page (%s).' % e)
+            return
         m = self._debnumpkgsre.search(html)
         if m:
             numberOfPackages = m.group(1)
