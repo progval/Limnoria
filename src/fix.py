@@ -220,7 +220,7 @@ class queue(dict):
             
 class MaxLengthQueue(queue):
     __slots__ = ('length',)
-    def __init__(length, *args):
+    def __init__(self, length, *args):
         self.length = length
         queue.__init__(self, *args)
         
