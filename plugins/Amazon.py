@@ -38,9 +38,9 @@ from baseplugin import *
 import amazon
 
 import conf
+import utils
 import privmsgs
 import callbacks
-import utils
 
 
 def configure(onStart, afterConnect, advanced):
