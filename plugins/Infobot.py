@@ -33,8 +33,6 @@ Infobot compatibility, for the parts that we don't support already.
 
 import supybot
 
-#deprecated = True
-
 __revision__ = "$Id$"
 __author__ = supybot.authors.jemfinch
 
@@ -756,7 +754,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         if isAre == 'is':
             if self.db.hasIs(dynamic.channel, key):
                 oldValue = self.db.getIs(dynamic.channel, key)
-                if oldValue.lower() == value.lower():
+                if oldValue.lower() == value.lower() and \
+                   self.registryValue('unaddress.replyExistingValue',
+                                      dynamic.channel):
                     self.reply('I already had it that way, %s.' % msg.nick)
                     return
                 if also:
@@ -777,7 +777,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         else:
             if self.db.hasAre(dynamic.channel, key):
                 oldValue = self.db.getAre(dynamic.channel, key)
-                if oldValue.lower() == value.lower():
+                if oldValue.lower() == value.lower() and \
+                   self.registryValue('unaddressed.replyExistingValue',
+                                      dynamic.channel):
                     self.reply('I already had it that way, %s.' % msg.nick)
                     return
                 if also:
