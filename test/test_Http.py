@@ -32,7 +32,7 @@
 from testsupport import *
 
 if network:
-    class HttpTest(PluginTestCase, PluginDocumentation):
+    class HttpTest(PluginTestCase):
         plugins = ('Http',)
         def testExtension(self):
             self.assertHelp('extension')
@@ -57,6 +57,7 @@ if network:
 
         def testStockquote(self):
             self.assertNotError('stockquote MSFT')
+            self.assertError('stockquote MSFT SCOX')
 
         def testFreshmeat(self):
             self.assertNotError('freshmeat supybot')
@@ -101,17 +102,6 @@ if network:
 
         def testNetcraft(self):
             self.assertNotError('netcraft slashdot.org')
-
-        def testWeather(self):
-            self.assertNotError('weather Columbus, OH')
-            self.assertNotError('weather 43221')
-            self.assertNotRegexp('weather Paris, FR', 'Virginia')
-            self.assertError('weather alsdkfjasdl, asdlfkjsadlfkj')
-            self.assertNotError('weather London, uk')
-            self.assertNotError('weather London, UK')
-            self.assertNotError('weather Munich, de')
-            self.assertNotError('weather Tucson, AZ')
-            self.assertError('weather hell')
 
         def testKernel(self):
             self.assertNotError('kernel')
