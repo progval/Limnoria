@@ -245,40 +245,41 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
 
     _forceRe = re.compile(r'^no[,: -]+', re.I)
     def doPrivmsg(self, irc, msg):
-        if ircmsgs.isCtcp(msg):
-            return
-        maybeAddressed = callbacks.addressed(irc.nick, msg,
-                                             whenAddressedByNick=True)
-        if maybeAddressed:
-            self.addressed = True
-            payload = maybeAddressed
-        else:
-            payload = msg.args[1]
-        payload = self.normalize(payload)
-        maybeForced = self._forceRe.sub('', payload)
-        if maybeForced != payload:
-            self.force = True
-            payload = maybeForced
-        # Let's make sure we dump out of Infobot if the privmsg is an actual
-        # command otherwise we could get multiple responses.
-        if self.addressed:
-            try:
-                tokens = callbacks.tokenize(payload)
-                getCallback = callbacks.findCallbackForCommand
-                commands = filter(None, map(lambda c, i=irc: getCallback(i, c),
-                                            tokens))
-                if commands:
-                    return
-                else:
-                    payload += '?'
-            except SyntaxError:
-                pass
-        if payload.endswith(irc.nick):
-            self.addressed = True
-            payload = payload[:-len(irc.nick)]
-            payload = payload.strip(', ') # Strip punctuation separating nick.
-            payload += '?' # So doUnknown gets called.
         try:
+            if ircmsgs.isCtcp(msg):
+                return
+            maybeAddressed = callbacks.addressed(irc.nick, msg,
+                                                 whenAddressedByNick=True)
+            if maybeAddressed:
+                self.addressed = True
+                payload = maybeAddressed
+            else:
+                payload = msg.args[1]
+            payload = self.normalize(payload)
+            maybeForced = self._forceRe.sub('', payload)
+            if maybeForced != payload:
+                self.force = True
+                payload = maybeForced
+            # Let's make sure we dump out of Infobot if the privmsg is an
+            # actual command otherwise we could get multiple responses.
+            if self.addressed:
+                try:
+                    tokens = callbacks.tokenize(payload)
+                    getCallback = callbacks.findCallbackForCommand
+                    commands = filter(None,
+                                      map(lambda c, i=irc: getCallback(i, c),
+                                          tokens))
+                    if commands:
+                        return
+                    else:
+                        payload += '?'
+                except SyntaxError:
+                    pass
+            if payload.endswith(irc.nick):
+                self.addressed = True
+                payload = payload[:-len(irc.nick)]
+                payload = payload.strip(', ') # Strip punctuation separating nick.
+                payload += '?' # So doUnknown gets called.
             msg = ircmsgs.privmsg(msg.args[0], payload, prefix=msg.prefix)
             callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
         finally:
