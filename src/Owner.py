@@ -305,8 +305,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             return
         s = callbacks.addressed(irc.nick, msg)
         if s:
+            brackets = conf.supybot.reply.brackets.get(msg.args[0])()
             try:
-                tokens = callbacks.tokenize(s)
+                tokens = callbacks.tokenize(s, brackets=brackets)
                 if tokens and isinstance(tokens[0], list):
                     s = 'The command called may not be the result ' \
                         'of a nested command.'

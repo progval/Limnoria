@@ -242,24 +242,21 @@ class Tokenizer:
             token = lexer.get_token()
             if not token:
                 break
-            elif token == '|' and conf.supybot.pipeSyntax():
+            elif token == '|' and conf.supybot.reply.pipeSyntax():
                 if not args:
                     raise SyntaxError, '"|" with nothing preceding.  I ' \
                                        'obviously can\'t do a pipe with ' \
                                        'nothing before the |.'
                 ends.append(args)
                 args = []
-            elif conf.supybot.bracketSyntax():
-                if token == self.left:
-                    args.append(self._insideBrackets(lexer))
-                elif token == self.right:
-                    raise SyntaxError, 'Spurious "%s".  You may want to ' \
-                                       'quote your arguments with double ' \
-                                       'quotes in order to prevent extra ' \
-                                       'brackets from being evaluated ' \
-                                       'as nested commands.' % self.right
-                else:
-                    args.append(self._handleToken(token))
+            elif token == self.left:
+                args.append(self._insideBrackets(lexer))
+            elif token == self.right:
+                raise SyntaxError, 'Spurious "%s".  You may want to ' \
+                                   'quote your arguments with double ' \
+                                   'quotes in order to prevent extra ' \
+                                   'brackets from being evaluated ' \
+                                   'as nested commands.' % self.right
             else:
                 args.append(self._handleToken(token))
         if ends:
@@ -272,14 +269,14 @@ class Tokenizer:
                 args[-1].append(ends.pop())
         return args
 
-def tokenize(s):
+def tokenize(s, brackets=None):
     """A utility function to create a Tokenizer and tokenize a string."""
     start = time.time()
     try:
-        tokens = ''
-        if conf.supybot.bracketSyntax():
-            tokens = conf.supybot.brackets()
-        if conf.supybot.pipeSyntax():
+        tokens = brackets
+        if brackets is None:
+            tokens = conf.supybot.reply.brackets()
+        if conf.supybot.reply.pipeSyntax():
             tokens = '%s|' % tokens
         return Tokenizer(tokens).tokenize(s)
     except ValueError, e:

@@ -109,7 +109,6 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
 def isValidRegistryName(name):
     return '.' not in name and ':' not in name and len(name.split()) == 1
 
-
 class Group(object):
     def __init__(self, supplyDefault=False):
         self.name = 'unset'

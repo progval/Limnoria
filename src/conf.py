@@ -133,11 +133,13 @@ class ValidChannel(registry.String):
 supybot.register('nick', ValidNick('supybot',
 """Determines the bot's nick."""))
 
-supybot.register('ident', ValidNick('supybot',
-"""Determines the bot's ident."""))
+registerGlobalValue(supybot, 'ident',
+    ValidNick('supybot', """Determines the bot's ident string, if the server
+    doesn't provide one by default."""))
 
-supybot.register('user', registry.String('supybot', """Determines the user
-the bot sends to the server."""))
+registerGlobalValue(supybot, 'user',
+    registry.String('Supybot %s' % version, """Determines the user the bot
+    sends to the server."""))
 
 # TODO: Make this check for validity.
 supybot.register('server', registry.String('irc.freenode.net', """Determines
@@ -239,35 +241,44 @@ registerGlobalValue(supybot, 'externalIP',
 ###
 # Reply/error tweaking.
 ###
-supybot.register('reply')
-supybot.reply.register('truncate', registry.Boolean(False, """Determines
-whether the bot will simply truncate messages instead of breaking up long
-messages and using the 'more' command to get the remaining chunks."""))
-supybot.reply.register('maximumMores', registry.PositiveInteger(50, """
-Determines what the maximum number of chunks (for use with the 'more' command)
-will be."""))
+registerGroup(supybot, 'reply')
 
-supybot.reply.register('oneToOne', registry.Boolean(True, """Determines whether
-the bot will send multi-message replies in a single messsage or in multiple
-messages.  For safety purposes (so the bot can't possibly flood) it will
-normally send everything in a single message."""))
+registerChannelValue(supybot.reply, 'truncate',
+    registry.Boolean(False, """Determines whether the bot will simply truncate
+    messages instead of breaking up long messages and using the 'more' command
+    to get the remaining chunks."""))
 
-supybot.register('bracketSyntax', registry.Boolean(True, """Supybot allows
-nested commands. If this option is enabled users can nest commands using a
-bracket syntax, for example: 'bot: bar [foo]'."""))
+registerChannelValue(supybot.reply, 'maximumMores',
+    registry.PositiveInteger(50, """Determines what the maximum number of
+    chunks (for use with the 'more' command) will be."""))
+
+registerGlobalValue(supybot.reply, 'oneToOne',
+    registry.Boolean(True, """Determines whether the bot will send
+    multi-message replies in a single messsage or in multiple messages.  For
+    safety purposes (so the bot can't possibly flood) it will normally send
+    everything in a single message."""))
+
+registerChannelValue(supybot.reply, 'bracketSyntax',
+    registry.Boolean(True, """Supybot allows nested commands. If this option is
+    enabled, users can nest commands using a bracket syntax, for example: 'bot:
+    bar [foo]'.  The matching left/right characters used for nesting commands
+    can be set via the supybot.reply.brackets"""))
 
 class ValidBrackets(registry.OnlySomeStrings):
     validStrings = ('', '[]', '<>', '{}', '()')
     
-supybot.register('brackets', ValidBrackets('[]', """Supybot allows you to
-specify what brackets are used for your nested commands.  Valid sets of
-brackets include [], <>, and {} ().  [] has strong historical motivation, as
-well as being the brackets that don't require shift.  <> or () might be
-slightly superior because they cannot occur in a nick."""))
+registerChannelValue(supybot.reply, 'brackets',
+    ValidBrackets('[]', """Supybot allows you to specify what brackets are used
+    for your nested commands.  Valid sets of brackets include [], <>, and {}
+    ().  [] has strong historical motivation, as well as being the brackets
+    that don't require shift.  <> or () might be slightly superior because they
+    cannot occur in a nick.  If this value is set to the empty string, no
+    nesting will be allowed."""))
 
-supybot.register('pipeSyntax', registry.Boolean(False, """Supybot allows
-nested commands. Enabling this option will allow nested commands with a syntax
-similar to UNIX pipes, for example: 'bot: foo | bar'."""))
+registerChannelValue(supybot.reply, 'pipeSyntax',
+    registry.Boolean(False, """Supybot allows nested commands. Enabling this
+    option will allow nested commands with a syntax similar to UNIX pipes, for
+    example: 'bot: foo | bar'."""))
 
 supybot.reply.register('whenNotCommand', registry.Boolean(True, """
 Determines whether the bot will reply with an error message when it is
@@ -434,21 +445,6 @@ over your modifications.  Do note that if you change this to False inside the
 bot, your changes won't be flushed.  To make this change permanent, you must
 edit the registry yourself."""))
 
-class SocketTimeout(registry.PositiveInteger):
-    def setValue(self, v):
-        registry.PositiveInteger.setValue(self, v)
-        socket.setdefaulttimeout(self.value)
-        
-supybot.register('defaultSocketTimeout', SocketTimeout(10, """Determines what
-the default timeout for socket objects will be.  This means that *all* sockets
-will timeout when this many seconds has gone by (unless otherwise modified by
-the author of the code that uses the sockets)."""))
-
-supybot.register('pidFile', registry.String('', """Determines what file the bot
-should write its PID (Process ID) to, so you can kill it more easily.  If it's
-left unset (as is the default) then no PID file will be written.  A restart is
-required for changes to this variable to take effect."""))
-
 ###
 # supybot.drivers.  For stuff relating to Supybot's drivers (duh!)
 ###
@@ -486,7 +482,7 @@ registerGlobalValue(supybot.directories, 'plugins',
     'config supybot.directories.plugins [config supybot.directories.plugins],
     newPluginDirectory'."""))
 
-supybot.register('plugins') # This will be used by plugins, but not here.
+registerGroup(supybot, 'plugins') # This will be used by plugins, but not here.
 
 ###
 # supybot.databases.  For stuff relating to Supybot's databases (duh!)
@@ -563,6 +559,30 @@ registerGlobalValue(supybot.protocols.http, 'peekSize',
     similar.  It'll give up after it reads this many bytes, even if it hasn't
     found what it was looking for."""))
 
+
+###
+# Especially boring stuff.
+###
+class SocketTimeout(registry.PositiveInteger):
+    """Value must be an integer greater than supybot.drivers.poll and must be
+    greater than or equal to 1."""
+    def setValue(self, v):
+        if v < supybot.drivers.poll() or v < 1:
+            self.error()
+        registry.PositiveInteger.setValue(self, v)
+        socket.setdefaulttimeout(self.value)
+        
+registerGlobalValue(supybot, 'defaultSocketTimeout',
+    SocketTimeout(10, """Determines what the default timeout for socket objects
+    will be.  This means that *all* sockets will timeout when this many seconds
+    has gone by (unless otherwise modified by the author of the code that uses
+    the sockets)."""))
+
+registerGlobalValue(supybot, 'pidFile',
+    registry.String('', """Determines what file the bot should write its PID
+    (Process ID) to, so you can kill it more easily.  If it's left unset (as is
+    the default) then no PID file will be written.  A restart is required for
+    changes to this variable to take effect."""))
 
 ###
 # Debugging options.
