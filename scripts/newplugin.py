@@ -101,7 +101,7 @@ if __name__ == '__main__':
         className = 'callbacks.Privmsg'
     else:
         className = 'callbacks.PrivmsgRegexp'
-    print 'Sometimes you\'t want a callback to be threaded.  If its methods'
+    print 'Sometimes you\'ll want a callback to be threaded.  If its methods'
     print '(command or regexp-based, either one) will take a signficant amount'
     print 'of time to run, you\'ll want to thread them so they don\'t block'
     print 'the entire bot.'

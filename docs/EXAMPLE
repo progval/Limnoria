@@ -30,7 +30,7 @@ based.  But you'll have to do that yourself after this wizard is
 finished :)
 Do you want a command-based plugin or a regexp-based plugin? [command/
                                                               regexp] command
-Sometimes you't want a callback to be threaded.  If its methods
+Sometimes you'll want a callback to be threaded.  If its methods
 (command or regexp-based, either one) will take a signficant amount
 of time to run, you'll want to thread them so they don't block
 the entire bot.
@@ -127,9 +127,10 @@ we go ahead and add the import to the template.
 
 Then you see a "configure" function.  This the function that's called
 when users decide to add your module in scripts/setup.py.  You'll note
-that by default it simply adds "load Example" at the bottom.  For many
-plugins this is all you need; for more complex plugins, you might need
-to ask questions and add commands based on the answers.
+that by default it simply adds "load Example" (where 'Example' is the name you
+provided as the name of your plugin, so in our case it is "load Random") at
+the bottom.  For many plugins this is all you need; for more complex plugins,
+you might need to ask questions and add commands based on the answers.
 
 Then there's an example string.  It's simply an example of usage of
 the plugin in practice.  scripts/setup.py offers to show the user an
@@ -186,7 +187,7 @@ And we save two lines of code and make our code a little more clear :)
 Now that we have an RNG, we need some way to get random numbers.  So
 first, we'll add a command that simply gets the next random number and
 gives it back to the user.  It takes no arguments, of course (what
-would you give it?)  Here's the command, and I'll follow that with the
+would you give it?).  Here's the command, and I'll follow that with the
 explanation of what each part means.
 
     def random(self, irc, msg, args):
@@ -205,7 +206,7 @@ what all that *means*.  We'll start with the def statement:
 What that does is define a command "random".  You can call it by
 saying "@random" (or whatever prefix character your specific bot
 uses).  The arguments are a bit less obvious.  Self is self-evident
-(hah!).  Irc is the Irc object passed to the command; Msg is the
+(hah!).  irc is the Irc object passed to the command; msg is the
 original IrcMsg object.  But you're really not going to have to deal
 with either of these too much (with the exception of calling irc.reply
 or irc.error).  What you're *really* interested in is the args arg.
@@ -215,7 +216,7 @@ commands, or handling double quoted strings, or splitting on
 whitespace -- the work has already been done for you).  You can read
 about the Irc object in irclib.py (you won't find .reply or .error
 there, though, because you're actually getting an IrcObjectProxy, but
-that's beyond the level we wanna describe here :)).  You can read
+that's beyond the level we want to describe here :)).  You can read
 about the msg object in ircmsgs.py.  But again, aside from calling
 irc.reply or irc.error, you'll very rarely be using these objects.
 
@@ -234,7 +235,7 @@ underscore or an uppercase letter in it :))
 You'll also note that the docstring is odd.  The wonderful thing about
 the supybot framework is that it's easy to write complete commands
 with help and everything: the docstring *IS* the help!  Given the
-docstring, this is what a supybot does:
+above docstring, this is what a supybot does:
 
     <angryman> jemfinch: random takes no arguments (for more help 
                use the morehelp command)
@@ -242,14 +243,14 @@ docstring, this is what a supybot does:
     <angryman> jemfinch: Returns the next random number from the 
                current random number generator. 
 
-Help <command> replies with the first line of the command's docstring;
-there should be a blank line following, and then morehelp <command>
-will reply with the remainder of the docstring.  So that explains the
-docstring.  Now on to the actual body of the function:
+'help <command>' replies with the command name followed by the first line of
+the command's docstring; there should be a blank line following, and then
+'morehelp <command>' will reply with the remainder of the docstring.  So that
+explains the docstring.  Now on to the actual body of the function:
 
     irc.reply(msg, str(self.rng.random()))
 
-Irc.reply takes two arguments, an IrcMsg (like the one passed into
+irc.reply takes two arguments, an IrcMsg (like the one passed into
 your function) and a string.  The IrcMsg is used to determine who the
 reply should go to and whether or not it should be sent in private
 message (commands sent in private are replied to in private).  The
@@ -300,7 +301,7 @@ single value; more arguments are returned in a tuple/list).  Yes, we
 could've just said "seed = args[0]" and gotten the first argument, but
 what if the user didn't pass us an argument at all?  Then we've got to
 catch the IndexError from args[0] and complain to the user about it.
-Privmsgs.getArgs, on the other hand, handles all that for us.  If the
+privmsgs.getArgs, on the other hand, handles all that for us.  If the
 user didn't give us enough arguments, it'll reply with the help string
 for the command, thus saving us the effort.
 
@@ -435,7 +436,7 @@ There's a lot of stuff you haven't seen before in there.  The most
 important, though, is the first thing you'll notice that's different:
 the privmsg.getArgs call.  Here we're offering a default argument in
 case the user is too lazy to supply one (or just wants a nice,
-standard six-sided die :))  Privmsgs.getArgs supports that; we'll just
+standard six-sided die :))  privmsgs.getArgs supports that; we'll just
 tell it that we don't *need* any arguments (via needed=0) and that we
 *might like* one argument (optional=1).  If the user provides an
 argument, we'll get it -- if they don't, we'll just get an empty
@@ -454,11 +455,11 @@ should reply to; if the message was originally sent to a channel,
 we'll reply to there, if it was originally sent to us privately, we'll
 reply in private.
 
-At the end, you might be surprised by the "raise
-callbacks.CannotNest".  That's used simply because at the moment you
-can't nest actions (just like  you can't nest anything that doesn't go
-through irc.reply).  That raise just makes sure the user finds this
-out if he tries to nest this like "@rot13 [diceroll]".
+At the end, you might be surprised by the "raise callbacks.CannotNest".
+That's used simply because at the moment you can't nest actions (just like
+you can't nest anything that doesn't go through irc.reply).  That raise just
+makes sure the user finds this out if he tries to nest this like "@rot13
+[diceroll]".
 
 So that's our plugin.  5 commands, each building in complexity.  You
 should now be able to write most anything you want to do in Supybot.
@@ -500,7 +501,7 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('seed %s' % seed)
 
 As you can see, what the questions module does is fairly self-evident:
-yn returns either 'y' or 'n'; something returns *something* (but
+yn returns either 'y' or 'n'; something returns *something* (but not
 nothing; for nothing, you'd want anything).  So basically we ask some
 questions until we get a good seed.  Then we do this
 "onStart.append('seed %s' % seed)" doohickey.  onStart is a list of
