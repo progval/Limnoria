@@ -502,6 +502,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         text = privmsgs.getArgs(args, required=0, optional=1)
         if not text:
             text = msg.nick
+        irc.noReply()
         m = ircmsgs.quit(text)
         world.upkeep()
         for irc in world.ircs[:]:
