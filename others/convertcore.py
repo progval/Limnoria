@@ -465,6 +465,7 @@ ozf            = ounce force     # ounce force
 # area units
 #
 [area]
+square meter  = m^2
 are           = 100 m^2
 hectare       = 100 are
 acre          = 10 chain^2
@@ -491,6 +492,7 @@ dekaliter        = 10 liter
 hectoliter       = 100 liter
 kiloliter        = 1000 liter
 kl               = kiloliter    # kiloliter
+cubic meter      = kiloleter
 megaliter        = 1000 kiloliter
 gallon           = 231 in^3
 gal              = gallon       # gallon
