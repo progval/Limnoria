@@ -216,6 +216,11 @@ class Group(object):
             names.append(name)
             fullname = join(names)
             node.setName(fullname)
+        else:
+            # We do this so the return value from here is at least useful;
+            # otherwise, we're just returning a useless, unattached node
+            # that's simply a waste of space.
+            node = self._children[name]
         return node
 
     def unregister(self, name):
