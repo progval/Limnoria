@@ -124,7 +124,6 @@ def isNick(s, strictRfc=True, nicklen=None):
             ret = len(s) <= nicklen
         return ret
     else:
-        # XXX special values to isChannel?
         return not isChannel(s) and \
                not isUserHostmask(s) and \
                not ' ' in s and not '!' in s
