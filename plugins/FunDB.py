@@ -173,7 +173,7 @@ conf.registerChannelValue(conf.supybot.plugins.FunDB, 'showIds',
 class FunDB(callbacks.Privmsg):
     """
     Contains the 'fun' commands that require a database.  Currently includes
-    commands for larting, praising, excusing, and insulting.
+    commands for larting, praising, and insulting.
     """
     _types = ('insult', 'lart', 'praise')
     def __init__(self):
