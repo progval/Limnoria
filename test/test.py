@@ -124,8 +124,10 @@ if __name__ == '__main__':
                       help='Sets the verbose flag, printing extra information '
                            'about each test that runs.')
     parser.add_option('', '--no-network', action='store_true', default=False,
-                      help='Causes the network-based tests not to run.')
+                      dest='nonetwork', help='Causes the network-based tests '
+                                             'not to run.')
     parser.add_option('', '--no-plugins', action='store_true', default=False,
+                      dest='noplugins',
                       help='Causes the plugin tests not to run.')
     parser.add_option('', '--trace', action='store_true', default=False,
                       help='Traces all calls made.')
