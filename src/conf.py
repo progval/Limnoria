@@ -185,8 +185,8 @@ detailedTracebacks = True
 # driverModule: A string that is the module where the default driver for the
 #               bot will be found.
 ###
-driverModule = 'asyncoreDrivers'
-#driverModule = 'socketDrivers'
+driverModule = 'socketDrivers'
+#driverModule = 'asyncoreDrivers'
 #driverModule = 'twistedDrivers'
 
 ###############################
