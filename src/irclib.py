@@ -604,14 +604,14 @@ class Irc(IrcCommandDispatcher):
         if not self.zombie:
             self.queue.enqueue(msg)
         else:
-            log.warning('Refusing to queue %r; I\'m a zombie.', msg)
+            log.warning('Refusing to queue %r; %s is a zombie.', self, msg)
 
     def sendMsg(self, msg):
         """Queues a message to be sent to the server *immediately*"""
         if not self.zombie:
             self.fastqueue.enqueue(msg)
         else:
-            log.warning('Refusing to send %r; I\'m a zombie.', msg)
+            log.warning('Refusing to send %r; %s is a zombie.', self, msg)
 
     def takeMsg(self):
         """Called by the IrcDriver; takes a message to be sent."""
@@ -810,6 +810,8 @@ class Irc(IrcCommandDispatcher):
             world.debugFlush()
 
     def die(self):
+        """Makes the Irc object *promise* to die -- but it won't die (of its
+        own volition) until all its queues are clear.  Isn't that cool?"""
         self.zombie = True
 
     # This is useless because it's in world.ircs, so it won't be deleted until
@@ -819,7 +821,7 @@ class Irc(IrcCommandDispatcher):
 
     def _reallyDie(self):
         """Makes the Irc object die.  Dead."""
-        log.info('Irc object for %s dying.' % self.server)
+        log.info('Irc object for %s dying.' % self.network)
         if self in world.ircs:
             world.ircs.remove(self)
             # Only kill the callbacks if we're the last Irc.
