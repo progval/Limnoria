@@ -192,6 +192,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
 
     def _getLnUrl(self, url):
+        url = webutils.urlquote(url)
         try:
             return (self.db.getLn(url), '200')
         except KeyError:
@@ -209,7 +210,6 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
 
         Returns an ln-s.net version of <url>.
         """
-        url = webutils.urlquote(url)
         if len(url) < 17:
             irc.error('Stop being a lazy-biotch and type the URL yourself.')
             return
@@ -241,7 +241,6 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
 
         Returns a TinyURL.com version of <url>
         """
-        url = webutils.urlquote(url)
         if len(url) < 20:
             irc.error('Stop being a lazy-biotch and type the URL yourself.')
             return
