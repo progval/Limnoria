@@ -33,7 +33,7 @@
 Provides commands available only on Unix.
 """
 
-from baseplugin import *
+import plugins
 
 import os
 import re

@@ -34,7 +34,7 @@ Handles standard CTCP responses to PING, TIME, SOURCE, VERSION, USERINFO,
 and FINGER.
 """
 
-from baseplugin import *
+import plugins
 
 import os
 import sys

@@ -33,7 +33,7 @@
 Babelfish-related commands.
 """
 
-from baseplugin import *
+import plugins
 
 import random
 

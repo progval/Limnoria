@@ -34,7 +34,7 @@ Enforcer: Enforces capabilities on a channel, watching MODEs, KICKs,
                  JOINs, etc. to make sure they match the channel's config.
 """
 
-from baseplugin import *
+import plugins
 
 import conf
 import ircdb

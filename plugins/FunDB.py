@@ -33,7 +33,7 @@
 Provides fun commands that require a database to operate.
 """
 
-from baseplugin import *
+import plugins
 
 import sets
 import time

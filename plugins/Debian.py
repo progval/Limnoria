@@ -33,7 +33,7 @@
 This is a module to contain Debian-specific commands.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import gzip
@@ -88,7 +88,7 @@ example = utils.wrapLines("""
 """)
 
 
-class Debian(callbacks.Privmsg, PeriodicFileDownloader):
+class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
     threaded = True
     periodicFiles = {
         # This file is only updated once a week, so there's no sense in
@@ -100,7 +100,7 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
     contents = os.path.join(conf.dataDir, 'Contents-i386.gz')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        PeriodicFileDownloader.__init__(self)
+        plugins.PeriodicFileDownloader.__init__(self)
         self.usePythonZegrep = False
 
     def usepythonzegrep(self, irc, msg, args):

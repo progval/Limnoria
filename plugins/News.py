@@ -34,7 +34,7 @@ A module to allow each channel to have "news" which people will be notified of
 when they join the channel.  News items may have expiration dates.
 """
 
-from baseplugin import *
+import plugins
 
 import os
 import time
@@ -77,9 +77,9 @@ be a lot more detailed. (Subject: "Another test news item", added by Strike on
 07:12 PM, September 12, 2003, expires at 08:36 PM, September 12, 2003)
 """)
 
-class News(ChannelDBHandler, callbacks.Privmsg):
+class News(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
-        ChannelDBHandler.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
         self.removeOld = False
 

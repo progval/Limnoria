@@ -34,7 +34,7 @@ Handles "factoids," little tidbits of information held in a database and
 available on demand via several commands.
 """
 
-from baseplugin import *
+import plugins
 
 import time
 import getopt
@@ -87,9 +87,9 @@ G<supybot> jemfinch: Error: No factoid matches that key.
 <supybot> jemfinch: 'CFnews' and 'sf.net-website'
 """)
 
-class Factoids(ChannelDBHandler, callbacks.Privmsg):
+class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
-        ChannelDBHandler.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
 
     def makeDb(self, filename):

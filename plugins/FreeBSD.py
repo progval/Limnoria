@@ -33,7 +33,7 @@
 Provides FreeBSD ports searching and other FreeBSD-specific services.
 """
 
-from baseplugin import *
+import plugins
 
 import string
 import getopt
@@ -47,12 +47,15 @@ import privmsgs
 import callbacks
 
 indexFile = 'INDEX'
+indexUrl = 'ftp://ftp.freebsd.org/pub/FreeBSD/ports/i386/packages-stable/INDEX'
 dbFile = os.path.join(conf.dataDir, 'FreeBSD.db')
 
 def getIndex():
     """Returns a file-like object that is the Ports index."""
-    # ftp://ftp.freebsd.org/pub/FreeBSD/ports/i386/packages-stable/INDEX
-    return file(indexFile, 'r')
+    if os.path.exists(indexFile):
+        return file(indexFile, 'r')
+    else:
+        return urllib2.urlopen(indexUrl)
 
 def makeDb(dbfilename, indexfd, replace=False):
     if os.path.exists(dbfilename):

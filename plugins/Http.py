@@ -33,7 +33,7 @@
 Provides several commands that go out to websites and get things.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import sets

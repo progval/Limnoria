@@ -33,7 +33,7 @@
 Acceses Google for various things.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import sets

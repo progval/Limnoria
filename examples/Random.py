@@ -33,7 +33,7 @@
 Lots of stuff relating to random numbers.
 """
 
-from baseplugin import *
+import plugins
 
 import random
 

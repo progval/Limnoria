@@ -33,7 +33,7 @@
 Allows 'aliases' for other commands.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import new

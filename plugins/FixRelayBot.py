@@ -34,7 +34,7 @@ Allows people behind a relaybot (which uses <nick@network> to relay messages)
 to access the bot.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import random

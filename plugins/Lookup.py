@@ -33,7 +33,7 @@
 The Lookup plugin handles looking up various values by their key.
 """
 
-from baseplugin import *
+import plugins
 
 import os
 import sys

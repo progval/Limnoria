@@ -35,7 +35,7 @@ searching for URLs and returning random URLs.  Also provides statistics on the
 URLs in the database.
 """
 
-from baseplugin import *
+import plugins
 
 import os
 import re
@@ -80,11 +80,11 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load URLSnarfer')
 
-class URLSnarfer(ChannelDBHandler, callbacks.Privmsg):
+class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         self.nextMsgs = {}
         callbacks.Privmsg.__init__(self)
-        ChannelDBHandler.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):

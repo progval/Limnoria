@@ -33,7 +33,7 @@
 Removes all bold output by the bot.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 

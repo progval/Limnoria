@@ -33,7 +33,7 @@
 Services: Handles management of nicks with NickServ, and ops with ChanServ.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import time

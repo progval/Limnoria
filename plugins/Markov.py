@@ -36,7 +36,7 @@ later hijinks.  To read more about Markov Chains, check out
 large enough, you can have it make fun little random messages from it.
 """
 
-from baseplugin import *
+import plugins
 
 import os.path
 
@@ -57,10 +57,10 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Markov')
 
-class Markov(ChannelDBHandler, callbacks.Privmsg):
+class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
     threaded = True
     def __init__(self):
-        ChannelDBHandler.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
 
     def makeDb(self, filename):

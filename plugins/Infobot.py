@@ -33,7 +33,7 @@
 A plugin that tries to emulate Infobot somewhat faithfully.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import os.path

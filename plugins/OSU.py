@@ -34,7 +34,7 @@ Commands specific to OSU;
 (The Ohio State University, <http://www.ohio-state.edu/>)
 """
 
-from baseplugin import *
+import plugins
 
 import urllib2
 

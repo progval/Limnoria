@@ -33,7 +33,7 @@
 Various math-related commands.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import new

@@ -33,7 +33,7 @@
 Logs each channel to its own individual logfile.
 """
 
-from baseplugin import *
+import plugins
 
 import time
 from cStringIO import StringIO

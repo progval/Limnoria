@@ -35,7 +35,7 @@ concerning joins, parts, and various other commands in addition to tracking
 statistics about smileys, actions, characters, and words.
 """
 
-from baseplugin import *
+import plugins
 
 import os
 import re
@@ -75,10 +75,10 @@ frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
-class ChannelDB(ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
+class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
     regexps = sets.Set(['increaseKarma', 'decreaseKarma'])
     def __init__(self):
-        ChannelDBHandler.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def makeDb(self, filename):

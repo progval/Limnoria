@@ -33,7 +33,7 @@
 Logs raw IRC messages to a file, conf.dataDir/raw.log
 """
 
-from baseplugin import *
+import plugins
 
 import os
 import conf

@@ -33,7 +33,7 @@
 Various utility commands, mostly useful for manipulating nested commands.
 """
 
-from baseplugin import *
+import plugins
 
 import string
 

@@ -33,7 +33,7 @@
 Provides a multitude of fun, useless commands.
 """
 
-from baseplugin import *
+import plugins
 from itertools import imap, ifilter
 
 import os

@@ -33,7 +33,7 @@
 Maintains a Quotes database for each channel.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import time
@@ -48,9 +48,9 @@ import ircdb
 import privmsgs
 import callbacks
 
-class Quotes(ChannelDBHandler, callbacks.Privmsg):
+class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
-        ChannelDBHandler.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
 
     def makeDb(self, filename):

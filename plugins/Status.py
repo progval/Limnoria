@@ -33,7 +33,7 @@
 A simple module to handle various informational commands querying the bot's
 current status and statistics.
 """
-from baseplugin import *
+import plugins
 
 import os
 import sets

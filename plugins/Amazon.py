@@ -33,7 +33,7 @@
 Amazon module, to use Amazon's Web Services.  Currently only does ISBN lookups.
 """
 
-from baseplugin import *
+import plugins
 
 import amazon
 

@@ -34,7 +34,7 @@ Does various (well, only one at the moment :)) things with the Internet Movie
 Database.
 """
 
-from baseplugin import *
+import plugins
 
 import IMDb
 

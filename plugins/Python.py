@@ -34,7 +34,7 @@ Various commands relating to Python (the programming language supybot is
 written in) somehow.
 """
 
-from baseplugin import *
+import plugins
 
 import os
 import imp

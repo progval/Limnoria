@@ -36,7 +36,7 @@ bots.  This module makes supybot automatically part certain channels as soon
 as he joins.
 """
 
-from baseplugin import *
+import plugins
 
 import conf
 import utils

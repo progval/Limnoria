@@ -33,7 +33,7 @@
 Handles relaying between networks.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import sets

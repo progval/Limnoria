@@ -33,7 +33,7 @@
 Various network-related commands.
 """
 
-from baseplugin import *
+import plugins
 
 import sets
 import socket

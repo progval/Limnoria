@@ -33,7 +33,7 @@
 Just a regexp module to make the bot a wee bit friendlier.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 

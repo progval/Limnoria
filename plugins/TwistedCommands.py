@@ -33,7 +33,7 @@
 Various commands that depend on Twisted <http://www.twistedmatrix.com/>.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 

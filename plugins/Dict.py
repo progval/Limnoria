@@ -33,7 +33,7 @@
 Commands that use the dictd protocol to snag stuff off a server.
 """
 
-from baseplugin import *
+import plugins
 
 import sets
 import random

@@ -33,7 +33,7 @@
 Supports various DCC things.
 """
 
-from baseplugin import *
+import plugins
 
 import socket
 import textwrap

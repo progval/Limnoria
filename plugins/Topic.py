@@ -33,7 +33,7 @@
 Provides commands for manipulating channel topics.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import random

@@ -34,7 +34,7 @@ Filters bad words on outgoing messages from the bot, so the bot can't be made
 to say bad words.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import sets

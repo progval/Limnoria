@@ -37,7 +37,7 @@ Provides several commands that shamelessly imitate Moobot, if only to show
 developers coming from Moobot how to code to Supybot.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import base64

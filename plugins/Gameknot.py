@@ -32,7 +32,7 @@
 Handles URL snarfing for Gameknot.com and the gkstats command.
 """
 
-from baseplugin import *
+import plugins
 
 import re
 import sets
