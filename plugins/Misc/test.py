@@ -236,19 +236,5 @@ class MiscTestCase(ChannelPluginTestCase):
     def testAproposDoesntReturnNonCanonicalNames(self):
         self.assertNotRegexp('apropos exec', '_exec')
 
-    def testRevision(self):
-        self.assertNotError('revision Misc')
-        self.assertNotError('revision Misc.py')
-        self.assertNotError('revision')
-
-    def testRevisionDoesNotLowerUnnecessarily(self):
-        self.assertNotError('load Math')
-        m1 = self.assertNotError('revision Math')
-        m2 = self.assertNotError('revision math')
-        self.assertEqual(m1, m2)
-
-    def testRevisionIsCaseInsensitive(self):
-        self.assertNotError('revision misc')
-
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
