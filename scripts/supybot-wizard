@@ -53,7 +53,6 @@ import logging
 import optparse
 
 import supybot.ansi as ansi
-from utils.iter import imap
 import supybot.utils as utils
 import supybot.ircutils as ircutils
 import supybot.registry as registry
