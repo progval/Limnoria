@@ -61,7 +61,7 @@ class Formatter(logging.Formatter):
             try:
                 # Cgitb has bugs, and they break the bot.
                 #return cgitb.text((E, e, tb)).rstrip('\r\n')
-                logging.Formatter.formatException(self, (E, e, tb))
+                return logging.Formatter.formatException(self, (E, e, tb))
             except:
                 error('Cgitb.text raised an exception.')
                 return logging.Formatter.formatException(self, (E, e, tb))
