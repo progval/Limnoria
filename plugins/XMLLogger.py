@@ -78,8 +78,9 @@ class XMLLogger(callbacks.Privmsg):
         if self.boundFlushMethod in world.flushers:
             world.flushers.remove(self.boundFlushMethod)
         else:
-            self.log.warning('My flusher wasn\'t in world.flushers: %r',
-                             world.flushers)
+            if not world.dying:
+                self.log.warning('My flusher wasn\'t in world.flushers: %r',
+                                 world.flushers)
         self.fd.close()
         
     def writeMsg(self, msg):
