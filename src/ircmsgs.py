@@ -29,6 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+This module provides the basic IrcMsg object used throughout the bot to
+represent the actual messages.  It also provides several helper functions to
+construct such messages in an easier way than the constructor for the IrcMsg
+object (which, as you'll read later, is quite...full-featured :))
+"""
+
 from fix import *
 
 import re
@@ -42,6 +49,30 @@ import ircutils
 
 class IrcMsg(object):
     """Class to represent an IRC message.
+
+    As usual, ignore attributes that begin with an underscore.  They simply
+    don't exist.  Instances of this class are *not* to be modified, since they
+    are hashable.  Public attributes of this class are .prefix, .command,
+    .args, .nick, .user, and .host.
+
+    The constructor for this class is pretty intricate.  It's designed to take
+    any of three major (sets of) arguments.
+
+    Called with no keyword arguments, it takes a single string that is a raw
+    IRC message (such as one taken straight from the network.
+
+    Called with keyword arguments, it *requires* a command parameter.  Args is
+    optional, but with most commands will be necessary.  Prefix is obviously
+    optional, since clients aren't allowed (well, technically, they are, but
+    only in a completely useless way) to send prefixes to the server.
+
+    Since this class isn't to be modified, the constructor also accepts a 'msg'
+    keyword argument representing a message from which to take all the
+    attributes not provided otherwise as keyword arguments.  So, for instance,
+    if a programmer wanted to take a PRIVMSG he'd gotten and simply redirect it
+    to a different source, he could do this:
+
+    IrcMsg(prefix='', args=(newSource, otherMsg.args[1]), msg=otherMsg)
     """
     __slots__ = ('_args', '_command', '_host', '_nick',
                  '_prefix', '_user',
@@ -133,7 +164,6 @@ class IrcMsg(object):
         self._len = ret
         return ret
     
-
     def __eq__(self, other):
         return hash(self) == hash(other) and \
                self.command == other.command and \
@@ -166,15 +196,21 @@ class IrcMsg(object):
 
 
 def isAction(msg):
+    """A predicate returning true if the PRIVMSG in question is an ACTION"""
     return msg.command == 'PRIVMSG' and \
            msg.args[1].startswith('\x01ACTION') and \
            msg.args[1].endswith('\x01')
 
 _unactionre = re.compile(r'^\x01ACTION (.*)\x01$')
 def unAction(msg):
+    """Returns the payload (i.e., non-ACTION text) of an ACTION msg."""
     return _unactionre.match(msg.args[1]).group(1)
 
 def prettyPrint(msg, addRecipients=False):
+    """Provides a client-friendly string form for messages.
+
+    IIRC, I copied BitchX's (or was it xchat's?) format for messages.
+    """
     def nickorprefix():
         return msg.nick or msg.prefix
     def nick():
@@ -487,6 +523,7 @@ def invite(channel, nick, prefix=''):
     return IrcMsg(prefix=prefix, command='INVITE', args=(channel, nick))
 
 def password(password, prefix=''):
+    """Returns a PASS command for accessing a server."""
     assert password, 'password must not be empty.'
     return IrcMsg(prefix=prefix, command='PASS', args=(password,))
 
