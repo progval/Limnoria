@@ -73,6 +73,9 @@ conf.registerChannelValue(conf.supybot.plugins.RSS, 'announce',
     AnnouncedFeeds([], """Determines which RSS feeds should be announced in the
     channel; valid input is a list of strings (either registered RSS feeds or
     RSS feed URLs) separated by spaces."""))
+conf.registerGlobalValue(conf.supybot.plugins.RSS, 'showLinks',
+    registry.Boolean(False, """Determines whether the bot will list the link
+    along with the title of the feed."""))
 conf.registerGlobalValue(conf.supybot.plugins.RSS, 'waitPeriod',
     registry.PositiveInteger(1800, """Indicates how many seconds the bot will
     wait between retrieving RSS feeds; requests made within this period will
@@ -226,8 +229,16 @@ class RSS(callbacks.Privmsg):
             self.releaseLock(url)
 
     def getHeadlines(self, feed):
-        return [utils.htmlToText(d['title'].strip()) for d in feed['items'] if
-                'title' in d]
+        headlines = []
+        showLinks = self.registryValue('showLinks')
+        for d in feed['items']:
+            if 'title' in d:
+                title = utils.htmlToText(d['title']).strip()
+                if showLinks:
+                    headlines.append('%s <%s>' % (title, d['link']))
+                else:
+                    headlines.append('%s' % title)
+        return headlines
 
     def _validFeedName(self, name):
         if not registry.isValidRegistryName(name):
@@ -350,7 +361,6 @@ class RSS(callbacks.Privmsg):
             except ValueError:
                 raise callbacks.ArgumentError
             headlines = headlines[:n]
-        headlines = imap(utils.htmlToText, headlines)
         sep = self.registryValue('headlineSeparator', channel)
         irc.reply(sep.join(headlines))
 
