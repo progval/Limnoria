@@ -61,6 +61,7 @@ class Plugin(callbacks.Plugin):
         L = [cb.name() for cb in irc.callbacks]
         L.sort()
         irc.reply(format('%L', L))
+    list = wrap(list)
 
     def plugin(self, irc, msg, args, command):
         """<command>
