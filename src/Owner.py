@@ -103,8 +103,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     _srcPlugins = ('Admin', 'Channel', 'Config', 'Misc', 'Owner', 'User')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        if hasattr(self.__class__, '_exec'):
-            setattr(self.__class__, 'exec', self.__class__._exec)
+        setattr(self.__class__, 'exec', self.__class__._exec)
         self.defaultPlugins = {'list': 'Misc',
                                'capabilities': 'User',
                                'addcapability': 'Admin',
@@ -251,6 +250,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 except Exception, e:
                     irc.reply(utils.exnToString(e))
             else:
+                # This should never happen, so I haven't bothered updating
+                # this error string to say --enable-eval.
                 irc.error('You must enable conf.allowEval for that to work.')
 
         def _exec(self, irc, msg, args):
@@ -266,7 +267,16 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 except Exception, e:
                     irc.reply(utils.exnToString(e))
             else:
+                # This should never happen, so I haven't bothered updating
+                # this error string to say --enable-eval.
                 irc.error('You must enable conf.allowEval for that to work.')
+    else:
+        def eval(self, irc, msg, args):
+            """Run your bot with --enable-eval if you want this to work."""
+            irc.error('You must give your bot the --enable-eval switch for '
+                      'this command to be enabled.')
+        _exec = eval
+            
 
     def ircquote(self, irc, msg, args):
         """<string to be sent to the server>
