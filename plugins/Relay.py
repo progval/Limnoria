@@ -366,17 +366,18 @@ class Relay(callbacks.Privmsg):
         def punish():
             punished = False
             for irc in world.ircs:
-                if irc.nick in irc.state.channels[channel].ops:
-                    self.log.info('Punishing %s in %s on %s for relaying.',
-                                  msg.prefix, channel, irc.network)
-                    irc.sendMsg(ircmsgs.ban(channel, msg.prefix))
-                    kmsg = 'You seem to be relaying, punk.'
-                    irc.sendMsg(ircmsgs.kick(channel, msg.nick, kmsg))
-                    punished = True
-                else:
-                    self.log.warning('Can\'t punish %s in %s on %s; '
-                                     'I\'m not opped.',
-                                     msg.prefix, channel, irc.network)
+                if channel in irc.state.channels:
+                    if irc.nick in irc.state.channels[channel].ops:
+                        self.log.info('Punishing %s in %s on %s for relaying.',
+                                      msg.prefix, channel, irc.network)
+                        irc.sendMsg(ircmsgs.ban(channel, msg.prefix))
+                        kmsg = 'You seem to be relaying, punk.'
+                        irc.sendMsg(ircmsgs.kick(channel, msg.nick, kmsg))
+                        punished = True
+                    else:
+                        self.log.warning('Can\'t punish %s in %s on %s; '
+                                         'I\'m not opped.',
+                                         msg.prefix, channel, irc.network)
             return punished
         if channel not in self.last20Privmsgs:
             self.last20Privmsgs[channel] = RingBuffer(20)
@@ -481,9 +482,10 @@ class Relay(callbacks.Privmsg):
         network = self._getIrcName(irc)
         s = 'nick change by %s to %s on %s' % (msg.nick, newNick, network)
         for channel in self.registryValue('channels'):
-            if newNick in irc.state.channels[channel].users:
-                m = ircmsgs.privmsg(channel, s)
-                self._sendToOthers(irc, m)
+            if channel in irc.state.channels:
+                if newNick in irc.state.channels[channel].users:
+                    m = ircmsgs.privmsg(channel, s)
+                    self._sendToOthers(irc, m)
 
     def doTopic(self, irc, msg):
         irc = self._getRealIrc(irc)
