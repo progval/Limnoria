@@ -31,13 +31,14 @@
 
 from test import *
 
-import twistedDrivers
-
-class TwistedCommandsTestCase(PluginTestCase):
-    plugins = ('TwistedCommands',)
-    def testDict(self):
-        self.assertNotError('dict strike')
-
+try:
+    import twistedDrivers
+    class TwistedCommandsTestCase(PluginTestCase):
+        plugins = ('TwistedCommands',)
+        def testDict(self):
+            self.assertNotError('dict strike')
+except ImportError:
+    pass
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
