@@ -300,7 +300,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             elif option == 'similar':
                 kwargs['filter'] = False
             else:
-                kwargs[option[2:]] = argument
+                kwargs[option] = argument
         try:
             data = search(self.log, text, **kwargs)
         except google.NoLicenseKey, e:
