@@ -81,23 +81,6 @@ def configure(advanced):
               loaded, you\'ll have you type "sourceforge bug ..." to get this
               bug command).  You may save some time by making an alias for
               "sourceforge".  We like to make it "sf".""")
-    if yn('Would you like to add sf as an alias for Sourceforge?',
-          default=True):
-        hasAlias = False
-        for (name, _) in conf.supybot.plugins.getValues(fullNames=False):
-            if name == 'Alias':
-                hasAlias = True
-        if not hasAlias:
-            output('This depends on the Alias module.')
-            if yn('Would you like to load the Alias plugin now?',
-                  default=True):
-                conf.registerPlugin('Alias', True)
-                conf.registerGroup(conf.supybot.plugins.Alias, 'aliases')
-            else:
-                output('Then I can\'t add such an alias.')
-                return
-        conf.supybot.plugins.Alias.aliases.register('sf',
-            registry.String('sourceforge $*', ''))
 
 class TrackerError(Exception):
     pass
@@ -132,7 +115,10 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _statusOpt = {'any':100, 'open':1, 'closed':2, 'deleted':3, 'pending':4}
 
     _projectURL = 'http://sourceforge.net/projects/'
-
+    def __init__(self):
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        self.__class__.sf = self.__class__.sourceforge
+        
     def _formatResp(self, text, num=''):
         """
         Parses the Sourceforge query to return a list of tuples that
