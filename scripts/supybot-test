@@ -109,6 +109,7 @@ class path(str):
         return self._r.split(self) == self._r.split(other)
 
 if __name__ == '__main__':
+    import glob
     import os.path
     import optparse
     import supybot.test as test
@@ -129,7 +130,19 @@ if __name__ == '__main__':
                       help='Traces all calls made.  Unless you\'re really in '
                       'a pinch, you probably shouldn\'t do this; it results '
                       'in copious amounts of output.')
+    parser.add_option('', '--plugins-dir',
+                      action='append', dest='pluginsDirs', default=[],
+                      help='Looks in in the given directory for plugins and '
+                      'loads the tests from all of them.')
     (options, args) = parser.parse_args()
+
+    # This must go before checking for args, of course.
+    for pluginDir in options.pluginsDirs:
+        for name in glob.glob(os.path.join(pluginDir, '*')):
+            #print '***', name
+            if os.path.isdir(name):
+                args.append(name)
+
     if not args:
         parser.print_help()
         sys.exit(-1)
