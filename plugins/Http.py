@@ -43,6 +43,7 @@ import urllib2
 import xml.dom.minidom
 from itertools import imap, ifilter
 
+import conf
 import utils
 import debug
 import privmsgs
@@ -264,7 +265,7 @@ class Http(callbacks.Privmsg):
         quote = ' // '.join(quote.splitlines())
         irc.reply(msg, quote)
 
-    _acronymre = re.compile(r'width="71%" bgcolor="[^"]+">(?:<b>)?([^<]+)')
+    _acronymre = re.compile(r'width="7\d%" bgcolor="[^"]+">(?:<b>)?([^<]+)')
     def acronym(self, irc, msg, args):
         """<acronym>
 
