@@ -96,7 +96,9 @@ def run():
     for name in _deadDrivers:
         try:
             driver = _drivers[name]
-            driver.irc.driver = None
+            if hasattr(driver, 'irc') and driver.irc is not None:
+                # The Schedule driver has no irc object, or it's None.
+                driver.irc.driver = None
             driver.irc = None
             del _drivers[name]
         except KeyError:
