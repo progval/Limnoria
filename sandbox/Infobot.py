@@ -58,17 +58,17 @@ conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'infobotStyleStatus',
     original Infobot style message or with a short message."""))
 # FIXME: rename; description
 conf.registerChannelValue(conf.supybot.plugins.Infobot,
-    'catchWhenNotAddressed', registry.Boolean(True,
-        """Whether to catch non-addressed stuff at all."""))
+    'catchWhenNotAddressed', registry.Boolean(True, """Whether to catch
+    non-addressed stuff at all."""))
 conf.registerChannelValue(conf.supybot.plugins.Infobot,
-    'replyQuestionWhenNotAddressed', registry.Boolean(True,
-        """Whether to answer to non-addressed stuff we know about."""))
+    'replyQuestionWhenNotAddressed', registry.Boolean(True, """Whether to
+    answer to non-addressed stuff we know about."""))
 conf.registerChannelValue(conf.supybot.plugins.Infobot,
-    'replyDontKnowWhenNotAddressed', registry.Boolean(False,
-        """Whether to answer to non-addressed stuff we don't know about."""))
+    'replyDontKnowWhenNotAddressed', registry.Boolean(False, """Whether to
+    answer to non-addressed stuff we don't know about."""))
 conf.registerChannelValue(conf.supybot.plugins.Infobot,
-    'replyWhenNotAddressed', registry.Boolean(False,
-        """Whether to answer to non-addressed, non-question stuff."""))
+    'replyWhenNotAddressed', registry.Boolean(False, """Whether to answer to
+    non-addressed, non-question stuff."""))
 
 # Replies
 # XXX: Move this to a plaintext db of some sort?

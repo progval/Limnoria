@@ -58,11 +58,13 @@ class NonExistentRegistryEntry(RegistryException):
 
 _cache = utils.InsensitivePreservingDict()
 _lastModified = 0
-def open(filename):
+def open(filename, clear=False):
     """Initializes the module by loading the registry file into memory."""
     global _lastModified
-    _cache.clear()
-    fd = utils.nonCommentNonEmptyLines(file(filename))
+    if clear:
+        _cache.clear()
+    _fd = file(filename)
+    fd = utils.nonCommentNonEmptyLines(_fd)
     for (i, line) in enumerate(fd):
         line = line.rstrip('\r\n')
         try:
@@ -71,6 +73,7 @@ def open(filename):
             raise InvalidRegistryFile, 'Error unpacking line #%s' % (i+1)
         _cache[key] = value
     _lastModified = time.time()
+    _fd.close()
 
 def close(registry, filename, annotated=True, helpOnceOnly=False):
     first = True
@@ -206,7 +209,7 @@ class Group(object):
 
 class Value(Group):
     """Invalid registry value.  If you're getting this message, report it,
-    because someone forgot to put a proper help string here."""
+    because we forgot to put a proper help string here."""
     def __init__(self, default, help,
                  private=False, showDefault=True, **kwargs):
         Group.__init__(self, **kwargs)
@@ -217,7 +220,12 @@ class Value(Group):
         self.setValue(default)
 
     def error(self):
-        raise InvalidRegistryValue, utils.normalizeWhitespace(self.__doc__)
+        if self.__doc__:
+            s = self.__doc__
+        else:
+            s = """Invalid registry value.  If you're getting this message,
+            report it, because we forgot to put a proper help string here."""
+        raise InvalidRegistryValue, utils.normalizeWhitespace(s)
 
     def setName(self, *args):
         if self.name == 'unset':
@@ -396,7 +404,7 @@ class Regexp(Value):
             Value.setValue(self, None)
         else:
             raise InvalidRegistryValue, \
-                  'Can\'t set to a regexp, there would be an inconsistency ' \
+                  'Can\'t setValue a regexp, there would be an inconsistency '\
                   'between the regexp and the recorded string value.'
 
     def __str__(self):

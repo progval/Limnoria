@@ -65,7 +65,10 @@ commandsProcessed = 0
 
 ircs = [] # A list of all the IRCs.
 
-flushers = [] # A periodic function will flush all these.
+def _flushUserData():
+    registry.close(conf.users, conf.userdataFilename, annotated=False)
+
+flushers = [_flushUserData] # A periodic function will flush all these.
 
 registryFilename = None
 

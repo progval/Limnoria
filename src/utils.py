@@ -628,6 +628,12 @@ class InsensitivePreservingDict(UserDict.DictMixin, object):
     def __reduce__(self):
         return (self.__class__, (dict(self.data.values()),))
 
+def mungeEmailForWeb(s):
+    s = s.replace('@', ' AT ')
+    s = s.replace('.', ' DOT ')
+    return s
+    
+
 if __name__ == '__main__':
     import sys, doctest
     doctest.testmod(sys.modules['__main__'])

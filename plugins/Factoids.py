@@ -391,22 +391,30 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args):
-        """[<channel>] [--{regexp}=<value>] [<glob>]
+        """[<channel>] [--values] [--{regexp}=<value>] [<glob>]
 
         Searches the keyspace for keys matching <glob>.  If --regexp is given,
         it associated value is taken as a regexp and matched against the keys.
+        If --values is given, search the value space instead of the keyspace.
         """
         channel = privmsgs.getChannel(msg, args)
-        (optlist, rest) = getopt.getopt(args, '', ['regexp='])
+        (optlist, rest) = getopt.getopt(args, '', ['values', 'regexp='])
         if not optlist and not rest:
             raise callbacks.ArgumentError
-        criteria = []
+        tables = ['keys']
         formats = []
+        criteria = []
+        target = 'keys.key'
         predicateName = 'p'
         db = self.getDb(channel)
         for (option, arg) in optlist:
-            if option == '--regexp':
-                criteria.append('%s(key)' % predicateName)
+            if option == '--values':
+                target = 'factoids.fact'
+                if 'factoids' not in tables:
+                    tables.append('factoids')
+                criteria.append('factoids.key_id=keys.id')
+            elif option == '--regexp':
+                criteria.append('%s(TARGET)' % predicateName)
                 try:
                     r = utils.perlReToPythonRe(arg)
                 except ValueError, e:
@@ -419,10 +427,12 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         for glob in rest:
             if '*' not in glob and '?' not in glob:
                 glob = '*%s*' % glob
-            criteria.append('key LIKE %s')
+            criteria.append('TARGET LIKE %s')
             formats.append(glob.translate(self._sqlTrans))
         cursor = db.cursor()
-        sql = """SELECT key FROM keys WHERE %s""" % ' AND '.join(criteria)
+        sql = """SELECT keys.key FROM %s WHERE %s""" % \
+              (tables, ' AND '.join(criteria))
+        sql = sql.replace('TARGET', target)
         cursor.execute(sql, formats)
         if cursor.rowcount == 0:
             irc.reply('No keys matched that query.')

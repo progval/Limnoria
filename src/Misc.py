@@ -353,9 +353,7 @@ class Misc(callbacks.Privmsg):
             return
         module = sys.modules[cb.__class__.__module__]
         if hasattr(module, '__author__') and module.__author__:
-            s = module.__author__.replace('@', ' AT ')
-            s = s.replace('.', ' DOT ')
-            irc.reply(s)
+            irc.reply(utils.mungeEmailForWeb(module.__author__))
         else:
             irc.reply('That plugin doesn\'t have an author that claims it.')
 
@@ -448,7 +446,7 @@ class Misc(callbacks.Privmsg):
                 irc.reply(ircmsgs.prettyPrint(m))
                 return
         irc.error('I couldn\'t find a message matching that criteria in '
-                       'my history of %s messages.' % len(irc.state.history))
+                  'my history of %s messages.' % len(irc.state.history))
 
     def seconds(self, irc, msg, args):
         """[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]

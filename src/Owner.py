@@ -103,7 +103,6 @@ def loadPluginClass(irc, module, register=None):
     """Loads the plugin Class from the given module into the given irc."""
     cb = module.Class()
     name = cb.name()
-    conf.registerPlugin(name)
     public = True
     if hasattr(cb, 'public'):
         public = cb.public
@@ -194,6 +193,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     (_, _, name) = name.split('.')
                 except ValueError: # unpack list of wrong size.
                     continue
+                if name == name.lower(): # This can't be right.
+                    name = name.capitalize() # Let's at least capitalize it.
                 conf.registerPlugin(name)
             if name.startswith('supybot.commands.defaultPlugins'):
                 try:
@@ -478,7 +479,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             else:
                 irc.error(str(e))
             return
-        loadPluginClass(irc, module)
+        cb = loadPluginClass(irc, module)
+        name = cb.name() # Let's normalize this.
         conf.registerPlugin(name, True)
         irc.replySuccess()
 

@@ -65,24 +65,42 @@ daemonized = False
 ###
 allowEval = False
 
+###
+# The standard registry.
+###
 supybot = registry.Group()
 supybot.setName('supybot')
 
-def registerPlugin(name, currentValue=None):
-    supybot.plugins.register(name, registry.Boolean(False, """Determines
-    whether this plugin is loaded by default.""", showDefault=False))
-    if currentValue is not None:
-        supybot.plugins.get(name).setValue(currentValue)
+def registerGroup(Group, name, group=None):
+    Group.register(name, group)
+
+def registerGlobalValue(group, name, value):
+    group.register(name, value)
 
 def registerChannelValue(group, name, value):
     value.supplyDefault = True
     group.register(name, value)
 
-def registerGlobalValue(group, name, value):
+def registerPlugin(name, currentValue=None):
+    registerGlobalValue(supybot.plugins, name,
+        registry.Boolean(False, """Determines whether this plugin is loaded by
+        default.""", showDefault=False))
+    if currentValue is not None:
+        supybot.plugins.get(name).setValue(currentValue)
+    registerGroup(users.plugins, name)
+
+###
+# The user info registry.
+###
+users = registry.Group()
+users.setName('users')
+registerGroup(users, 'plugins')
+
+def registerUserValue(group, name, value):
+    assert group.name.startswith('users.')
+    value.supplyDefault = True
     group.register(name, value)
 
-def registerGroup(Group, name, group=None):
-    Group.register(name, group)
 
 class ValidNick(registry.String):
     """Value must be a valid IRC nick."""
@@ -410,37 +428,37 @@ required for changes to this variable to take effect."""))
 ###
 registerGroup(supybot, 'drivers')
 registerGlobalValue(supybot.drivers, 'poll',
-   registry.Float(1.0, """Determines the default length of time a driver should
-   block waiting for input."""))
+    registry.Float(1.0, """Determines the default length of time a driver
+    should block waiting for input."""))
 
 class ValidDriverModule(registry.OnlySomeStrings):
     validStrings = ('default', 'socketDrivers',
                     'twistedDrivers', 'asyncoreDrivers')
 
 registerGlobalValue(supybot.drivers, 'module',
-   ValidDriverModule('default', """Determines what driver module the bot will
-   use.  socketDrivers, a simple driver based on timeout sockets, is used by
-   default because it's simple and stable.  asyncoreDrivers is a bit older (and
-   less well-maintained) but allows you to integrate with asyncore-based
-   applications.  twistedDrivers is very stable and simple, and if you've got
-   Twisted installed, is probably your best bet."""))
+    ValidDriverModule('default', """Determines what driver module the bot will
+    use.  socketDrivers, a simple driver based on timeout sockets, is used by
+    default because it's simple and stable.  asyncoreDrivers is a bit older
+    (and less well-maintained) but allows you to integrate with asyncore-based
+    applications.  twistedDrivers is very stable and simple, and if you've got
+    Twisted installed, is probably your best bet."""))
 
 ###
 # supybot.directories, for stuff relating to directories.
 ###
 registerGroup(supybot, 'directories')
 registerGlobalValue(supybot.directories, 'conf',
-   registry.String('conf', """Determines what directory configuration data is
-   put into."""))
+    registry.String('conf', """Determines what directory configuration data is
+    put into."""))
 registerGlobalValue(supybot.directories, 'data',
-   registry.String('data', """Determines what directory data is put into."""))
+    registry.String('data', """Determines what directory data is put into."""))
 registerGlobalValue(supybot.directories, 'plugins',
-   registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir], """Determines
-   what directories the bot will look for plugins in.  Accepts a
-   comma-separated list of strings.  This means that to add another directory,
-   you can nest the former value and add a new one.  E.g. you can say: bot:
-   'config supybot.directories.plugins [config supybot.directories.plugins],
-   newPluginDirectory'."""))
+    registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir], """Determines
+    what directories the bot will look for plugins in.  Accepts a
+    comma-separated list of strings.  This means that to add another directory,
+    you can nest the former value and add a new one.  E.g. you can say: bot:
+    'config supybot.directories.plugins [config supybot.directories.plugins],
+    newPluginDirectory'."""))
 
 supybot.register('plugins') # This will be used by plugins, but not here.
 
@@ -450,28 +468,28 @@ supybot.register('plugins') # This will be used by plugins, but not here.
 registerGroup(supybot, 'databases')
 registerGroup(supybot.databases, 'users')
 registerGlobalValue(supybot.databases.users, 'filename',
-   registry.String('users.conf', """Determines what filename will be used for
-   the users database.  This file will go into the directory specified by the
-   supybot.directories.conf variable."""))
+    registry.String('users.conf', """Determines what filename will be used for
+    the users database.  This file will go into the directory specified by the
+    supybot.directories.conf variable."""))
 registerGlobalValue(supybot.databases.users, 'timeoutIdentification',
-   registry.Integer(0, """Determines how long it takes identification to time
-   out.  If the value is less than or equal to zero, identification never times
-   out."""))
+    registry.Integer(0, """Determines how long it takes identification to time
+    out.  If the value is less than or equal to zero, identification never
+    times out."""))
 registerGlobalValue(supybot.databases.users, 'hash',
-   registry.Boolean(True, """Determines whether the passwords in the user
-   database will be hashed by default."""))
+    registry.Boolean(True, """Determines whether the passwords in the user
+    database will be hashed by default."""))
 
 registerGroup(supybot.databases, 'ignores')
 registerGlobalValue(supybot.databases.ignores, 'filename',
-   registry.String('ignores.conf', """Determines what filename will be used for
-   the ignores database.  This file will go into the directory specified by the
-   supybot.directories.conf variable."""))
+    registry.String('ignores.conf', """Determines what filename will be used
+    for the ignores database.  This file will go into the directory specified
+    by the supybot.directories.conf variable."""))
 
 registerGroup(supybot.databases, 'channels')
 registerGlobalValue(supybot.databases.channels, 'filename',
-   registry.String('channels.conf', """Determines what filename will be used
-   for the channels database.  This file will go into the directory specified
-   by the supybot.directories.conf variable."""))
+    registry.String('channels.conf', """Determines what filename will be used
+    for the channels database.  This file will go into the directory specified
+    by the supybot.directories.conf variable."""))
 
 ###
 # Protocol information.
@@ -494,37 +512,38 @@ class StrictRfc(registry.Boolean):
 registerGroup(supybot, 'protocols')
 registerGroup(supybot.protocols, 'irc')
 registerGlobalValue(supybot.protocols.irc, 'strictRfc',
-   StrictRfc(False, """Determines whether the bot will strictly follow the RFC;
-   currently this only affects what strings are considered to be nicks.  If
-   you're using a server or a network that requires you to message a nick such
-   as services@this.network.server then you you should set this to False."""))
+    StrictRfc(False, """Determines whether the bot will strictly follow the
+    RFC; currently this only affects what strings are considered to be nicks.
+    If you're using a server or a network that requires you to message a nick
+    such as services@this.network.server then you you should set this to
+    False."""))
 
 registerGlobalValue(supybot.protocols.irc, 'maxHistoryLength',
-   registry.Integer(1000, """Determines how many old messages the bot will keep
-   around in its history.  Changing this variable will not take effect until
-   the bot is restarted."""))
+    registry.Integer(1000, """Determines how many old messages the bot will
+    keep around in its history.  Changing this variable will not take effect
+    until the bot is restarted."""))
 
 registerGlobalValue(supybot.protocols.irc, 'throttleTime',
-   registry.Float(1.0, """A floating point number of seconds to throttle queued
-   messages -- that is, messages will not be sent faster than once per
-   throttleTime seconds."""))
+    registry.Float(1.0, """A floating point number of seconds to throttle
+    queued messages -- that is, messages will not be sent faster than once per
+    throttleTime seconds."""))
 
 registerGlobalValue(supybot.protocols.irc, 'ping',
-   registry.Boolean(True, """Determines whether the bot will send PINGs to the
-   server it's connected to in order to keep the connection alive and discover
-   earlier when it breaks.  Really, this option only exists for debugging
-   purposes: you always should make it True unless you're testing some strange
-   server issues."""))
+    registry.Boolean(True, """Determines whether the bot will send PINGs to the
+    server it's connected to in order to keep the connection alive and discover
+    earlier when it breaks.  Really, this option only exists for debugging
+    purposes: you always should make it True unless you're testing some strange
+    server issues."""))
 registerGlobalValue(supybot.protocols.irc.ping, 'interval',
-   registry.Integer(120, """Determines the number of seconds between sending
-   pings to the server, if pings are being sent to the server."""))
+    registry.Integer(120, """Determines the number of seconds between sending
+    pings to the server, if pings are being sent to the server."""))
 
 registerGroup(supybot.protocols, 'http')
 registerGlobalValue(supybot.protocols.http, 'peekSize',
-   registry.PositiveInteger(4096, """Determines how many bytes the bot will
-   'peek' at when looking through a URL for a doctype or title or something
-   similar.  It'll give up after it reads this many bytes, even if it hasn't
-   found what it was looking for."""))
+    registry.PositiveInteger(4096, """Determines how many bytes the bot will
+    'peek' at when looking through a URL for a doctype or title or something
+    similar.  It'll give up after it reads this many bytes, even if it hasn't
+    found what it was looking for."""))
 
 
 ###
@@ -532,12 +551,20 @@ registerGlobalValue(supybot.protocols.http, 'peekSize',
 ###
 registerGroup(supybot, 'debug')
 registerGlobalValue(supybot.debug, 'threadAllCommands',
-   registry.Boolean(False, """Determines whether the bot will automatically
-   thread all commands."""))
+    registry.Boolean(False, """Determines whether the bot will automatically
+    thread all commands."""))
 registerGlobalValue(supybot.debug, 'flushVeryOften',
-   registry.Boolean(False, """Determines whether the bot will automatically
-   flush all flushers *very* often.  Useful for debugging when you don't know
-   what's breaking or when, but think that it might be logged."""))
+    registry.Boolean(False, """Determines whether the bot will automatically
+    flush all flushers *very* often.  Useful for debugging when you don't know
+    what's breaking or when, but think that it might be logged."""))
+
+# Let's open this now since we've got our directories setup.
+userdataFilename = os.path.join(supybot.directories.conf(), 'userdata.conf')
+if not os.path.exists(userdataFilename):
+    fd = file(userdataFilename, 'w')
+    fd.write('\n')
+    fd.close()
+registry.open(userdataFilename)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

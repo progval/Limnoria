@@ -130,15 +130,6 @@ class Infobot(callbacks.PrivmsgRegexp):
         cursor.execute('DELETE FROM are_factoids WHERE key=%s', key)
         irc.reply(self.getRandomSaying('confirms'))
 
-    def tell(self, irc, msg, match):
-        r"^tell\s+(.+?)\s+about\s+(.+?)(?!\?+)[.! ]*$"
-        (nick, key) = match.groups()
-        try:
-            s = '%s wants you to know that %s' %(msg.nick,self.getFactoid(key))
-            irc.reply(nick, s)
-        except KeyError:
-            irc.reply('I don\'t know anything about %s' % key)
-
     def factoid(self, irc, msg, match):
         r"^(no[ :,-]+)?(.+?)\s+(was|is|am|were|are)\s+(also\s+)?(.+?)(?!\?+)$"
         (correction, key, isAre, addition, value) = match.groups()
