@@ -91,7 +91,7 @@ class IrcHandler(logging.Handler):
                         if not ircdb.checkCapability(hostmask, capability):
                             msgOk = False
                 if msgOk:
-                    irc.queueMsg(msg)
+                    irc.sendMsg(msg)
                 else:
                     print '*** Not sending to %r' % target
                         
