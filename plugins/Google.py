@@ -89,10 +89,10 @@ def configure(onStart, afterConnect, advanced):
             print 'snarfing and a google search snarfer.\n'
             if yn('Do you want the Google Groups link snarfer enabled by '\
                 'default?') == 'n':
-                onStart.append('Google toggle groups off')
+                onStart.append('Google config groups-snarfer off')
             if yn('Do you want the Google search snarfer enabled by default?')\
                 == 'y':
-                onStart.append('Google toggle search on')
+                onStart.append('Google config search-snarfer on')
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
         print 'You can apply for a key at http://www.google.com/apis/'
@@ -119,14 +119,21 @@ def search(*args, **kwargs):
         else:
             raise
 
-class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
+class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
-    toggles = plugins.ToggleDictionary({'groups' : True,
-                                        'search' : False})
+    configurables = plugins.ConfigurableDictionary(
+        [('groups-snarfer', plugins.ConfigurableTypes.bool, True,
+          """Determines whether the groups snarfer is enabled.  If so, URLs at
+          groups.google.com will be snarfed and their group/title messaged to
+          the channel."""),
+         ('search-snarfer', plugins.ConfigurableTypes.bool, False,
+          """Determines whether the search snarfer is enabled.  If so, messages
+          (even unaddressed ones) beginning with the word 'google' will result
+          in the first URL Google returns being sent to the channel.""")]
+    )
     def __init__(self):
-        super(self.__class__, self).__init__()
-        plugins.Toggleable.__init__(self)
+        super(Google, self).__init__()
         self.total = 0
         self.totalTime = 0
         self.last24hours = structures.queue()
@@ -260,7 +267,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
-        if not self.toggles.get('search', channel=msg.args[0]):
+        if not self.configurables.get('search-snarfer', channel=msg.args[0]):
             return
         searchString = match.group(1)
         try:
@@ -272,12 +279,13 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
             irc.reply(msg, url)
         else:
             irc.reply(msg, 'No results for "%s"' % searchString)
+    googleSnarfer = privmsgs.urlSnarfer(googleSnarfer)
 
     _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
     _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
-        if not self.toggles.get('groups', channel=msg.args[0]):
+        if not self.configurables.get('groups-snarfer', channel=msg.args[0]):
             return
         request = urllib2.Request(match.group(0), headers=\
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
@@ -303,6 +311,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         else:
             irc.error(msg, 'That doesn\'t appear to be a proper '\
                 'Google Groups page. (%s)' % conf.replyPossibleBug)
+    googleGroups = privmsgs.urlSnarfer(googleGroups)
 
 
 Class = Google
