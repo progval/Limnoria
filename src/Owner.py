@@ -63,6 +63,7 @@ import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+import supybot.structures as structures
 
 class Deprecated(ImportError):
     pass
@@ -131,7 +132,8 @@ conf.supybot.plugins.Owner.register('public', registry.Boolean(True,
 # supybot.commands.
 ###
 
-conf.registerGroup(conf.supybot.commands, 'defaultPlugins')
+conf.registerGroup(conf.supybot.commands, 'defaultPlugins',
+                   orderAlphabetically=True)
 conf.supybot.commands.defaultPlugins.help = utils.normalizeWhitespace("""
 Determines what commands have default plugins set, and which plugins are set to
 be the default for each of those commands.""".strip())
@@ -185,10 +187,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
     _srcPlugins = ircutils.IrcSet(('Admin', 'Channel', 'Config',
                                    'Misc', 'Owner', 'User'))
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
+    def __init__(self, *args, **kwargs):
+        self.__parent = super(Owner, self)
+        self.__parent.__init__()
         # Setup log object/command.
         self.log = LogProxy(self.log)
+        # Setup command flood detection.
+        self.commands = ircutils.FloodQueue(60)
         # Setup exec command.
         setattr(self.__class__, 'exec', self.__class__._exec)
         # Setup Irc objects, connected to networks.  If world.ircs is already
@@ -236,14 +241,14 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 return None
         return msg
     
-    def isCommand(self, methodName):
-        return methodName == 'log' or \
-               privmsgs.CapabilityCheckingPrivmsg.isCommand(self, methodName)
+    def isCommand(self, name):
+        return name == 'log' or \
+               self.__parent.isCommand(name)
 
     def reset(self):
         # This has to be done somewhere, I figure here is as good place as any.
         callbacks.Privmsg._mores.clear()
-        privmsgs.CapabilityCheckingPrivmsg.reset(self)
+        self.__parent.reset()
 
     def do001(self, irc, msg):
         self.log.info('Loading plugins.')
@@ -416,8 +421,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 except Exception, e:
                     irc.reply(utils.exnToString(e))
             else:
-                # This should never happen, so I haven't bothered updating
-                # this error string to say --allow-eval.
+                # There's a potential that allowEval got changed after we were
+                # loaded.  Let's be extra-special-safe.
                 irc.error('You must run Supybot with the --allow-eval '
                           'option for this command to be enabled.')
 
@@ -434,7 +439,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 except Exception, e:
                     irc.reply(utils.exnToString(e))
             else:
-                # This should never happen.
+                # There's a potential that allowEval got changed after we were
+                # loaded.  Let's be extra-special-safe.
                 irc.error('You must run Supybot with the --allow-eval '
                           'option for this command to be enabled.')
     else:
@@ -481,13 +487,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 s = 'I don\'t have a default plugin set for that command.'
                 irc.error(s)
         elif not cbs:
-            irc.error('That\'s not a valid command.')
-            return
+            irc.errorInvalid('command', command, Raise=True)
         elif plugin:
             cb = irc.getCallback(plugin)
             if cb is None:
-                irc.error('That\'s not a valid plugin.')
-                return
+                irc.errorInvalid('plugin', plugin, Raise=True)
             registerDefaultPlugin(command, plugin)
             irc.replySuccess()
         else:
@@ -568,7 +572,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                      utils.nItems('line', len(linecache.cache)))
             linecache.clearcache()
             sys.exc_clear()
-        collected = world.upkeep(scheduleNext=False)
+        collected = world.upkeep()
         if gc.garbage:
             L.append('Garbage!  %r.' % gc.garbage)
         L.append('%s collected.' % utils.nItems('object', collected))
@@ -686,7 +690,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.error('I couldn\'t reconnect.  You should restart me instead.')
 
     def defaultcapability(self, irc, msg, args):
-        """<add|remove> <capability>
+        """{add|remove} <capability>
 
         Adds or removes (according to the first argument) <capability> from the
         default capabilities given to users (the configuration variable
@@ -709,8 +713,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     conf.supybot.capabilities().add(anticap)
                     irc.replySuccess()
         else:
-            irc.error('That\'s not a valid action to take.  Valid actions '
-                      'are "add" and "remove"')
+            irc.errorInvalid('action to take', action,
+                             'Valid actions include "add" and "remove".')
             
     def disable(self, irc, msg, args):
         """[<plugin>] <command>
@@ -751,7 +755,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             self._disabled.remove(command, plugin)
             irc.replySuccess()
         except KeyError:
-            raise
             irc.error('That command wasn\'t disabled.')
 
     def rename(self, irc, msg, args):
@@ -762,17 +765,14 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         (plugin, command, newName) = privmsgs.getArgs(args, required=3)
         name = callbacks.canonicalName(newName)
         if name != newName:
-            irc.error('%s is a not a valid new command name.  '
-                      'Try making it lowercase and removing - and _.' %newName)
-            return
+            irc.errorInvalid('command name', name,
+                             'Try making it lowercase and removing dashes '
+                             'and underscores.', Raise=True)
         cb = irc.getCallback(plugin)
         if cb is None:
-            irc.error('%s is not a valid plugin.' % plugin)
-            return
+            irc.errorInvalid('plugin', plugin, Raise=True)
         if not cb.isCommand(command):
-            s = '%s is not a valid command in the %s plugin.' % (name, plugin)
-            irc.error(s)
-            return
+            irc.errorInvalid('command in the %s plugin'%plugin,name,Raise=True)
         if hasattr(cb, name):
             irc.error('The %s plugin already has an attribute named %s.' %
                       (plugin, name))

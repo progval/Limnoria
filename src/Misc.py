@@ -66,19 +66,50 @@ conf.registerGlobalValue(conf.supybot.plugins.Misc, 'listPrivatePlugins',
 
 class Misc(callbacks.Privmsg):
     priority = sys.maxint
+    def __init__(self):
+        super(Misc, self).__init__()
+        timeout = conf.supybot.abuse.flood.command.invalid
+        self.invalidCommands = ircutils.FloodQueue(timeout)
+
     def invalidCommand(self, irc, msg, tokens):
         self.log.debug('Misc.invalidCommand called (tokens %s)', tokens)
-        if conf.supybot.reply.whenNotCommand():
+        # First, we check for invalidCommand floods.  This is rightfully done
+        # here since this will be the last invalidCommand called, and thus it
+        # will only be called if this is *truly* an invalid command.
+        maximum = conf.supybot.abuse.flood.command.invalid.maximum()
+        self.invalidCommands.enqueue(msg)
+        if self.invalidCommands.len(msg) > maximum and \
+           not ircdb.checkCapability(msg.prefix, 'owner'):
+            punishment = conf.supybot.abuse.flood.command.invalid.punishment()
+            banmask = '*!%s@%s' % (msg.user, msg.host)
+            self.log.info('Ignoring %s for %s seconds due to an apparent '
+                          'invalid command flood.', banmask, punishment)
+            if tokens and tokens[0] == 'Error:':
+                self.log.warning('Apparent error loop with another Supybot '
+                                 'observed at %s.  Consider ignoring this bot '
+                                 'permanently.', log.timestamp())
+            ircdb.ignores.add(banmask, time.time() + punishment)
+            irc.reply('You\'ve given me %s invalid commands within the last '
+                      'minute; I\'m now ignoring you for %s.' %
+                      (maximum, utils.timeElapsed(punishment)))
+            return
+        # Now, for normal handling.
+        channel = msg.args[0]
+        if conf.get(conf.supybot.reply.whenNotCommand, channel):
             command = tokens and tokens[0] or ''
-            irc.error('%r is not a valid command.' % command)
+            irc.errorInvalid('command', command)
         else:
             if tokens:
                 # echo [] will get us an empty token set, but there's no need
                 # to log this in that case anyway, it being a nested command.
                 self.log.info('Not replying to %s, not a command.' % tokens[0])
             if not isinstance(irc.irc, irclib.Irc):
-                brackets = conf.supybot.reply.brackets.get(msg.args[0])()
-                irc.reply(''.join([brackets[0],' '.join(tokens), brackets[1]]))
+                brackets = conf.get(conf.supybot.reply.brackets, channel)
+                if brackets:
+                    (left, right) = brackets
+                    irc.reply(left + ' '.join(tokens) + right)
+                else:
+                    pass # Let's just do nothing, I can't think of better.
 
     def list(self, irc, msg, args):
         """[--private] [<module name>]
@@ -505,8 +536,7 @@ class Misc(callbacks.Privmsg):
             try:
                 i = int(s)
             except ValueError:
-                irc.error('Invalid argument: %s' % arg)
-                return
+                irc.errorInvalid('argument', arg, Raise=True)
             if kind == 'y':
                 seconds += i*31536000
             elif kind == 'w':
@@ -522,10 +552,10 @@ class Misc(callbacks.Privmsg):
         irc.reply(str(seconds))
 
     def tell(self, irc, msg, args):
-        """<nick|channel> <text>
+        """<nick> <text>
 
-        Tells the <nick|channel> whatever <text> is.  Use nested commands to
-        your benefit here.
+        Tells the <nick> whatever <text> is.  Use nested commands to your
+        benefit here.
         """
         (target, text) = privmsgs.getArgs(args, required=2)
         if target.lower() == 'me':
@@ -534,11 +564,9 @@ class Misc(callbacks.Privmsg):
             irc.error('Dude, just give the command.  No need for the tell.')
             return
         elif not ircutils.isNick(target):
-            irc.error('%s is not a valid nick.' % target)
-            return
+            irc.errorInvalid('nick', target, Raise=True)
         elif ircutils.nickEqual(target, irc.nick):
-            irc.error('You just told me, why should I tell myself?')
-            return
+            irc.error('You just told me, why should I tell myself?',Raise=True)
         elif target not in irc.state.nicksToHostmasks and \
              not ircdb.checkCapability(msg.prefix, 'owner'):
             # We'll let owners do this.

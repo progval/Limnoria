@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+__revision__ = "$Id$"
+
 import sys
 import os.path
 
@@ -40,13 +42,27 @@ othersDir = os.path.join(installDir, 'others')
 sys.path.insert(0, srcDir)
 sys.path.insert(0, othersDir)
 
-class authors: # This is basically a bag.
-    jemfinch = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
-    jamessan = 'James Vega (jamessan) <jamessan@users.sf.net>'
-    strike = 'Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>'
-    baggins = 'William Robinson (baggins) <airbaggins@users.sf.net>'
-    skorobeus = 'Kevin Murphy (Skorobeus) <skoro@skoroworld.com>'
-    inkedmn = 'Brett Kelly (inkedmn) <inkedmn@users.sf.net>'
+class Author(object):
+    def __init__(self, name=None, nick=None, email=None, **kwargs):
+        self.__dict__.update(kwargs)
+        self.name = name
+        self.nick = nick
+        self.email = email
+
+    def __str__(self):
+        return '%s (%s) <%s>' % (self.name, self.nick, self.email)
     
+class authors(object): # This is basically a bag.
+    jemfinch = Author('Jeremy Fincher', 'jemfinch', 'jemfinch@users.sf.net')
+    jamessan = Author('James Vega', 'jamessan', 'jamessan@users.sf.net')
+    strike = Author('Daniel DiPaolo', 'Strike', 'ddipaolo@users.sf.net')
+    baggins = Author('William Robinson', 'baggins', 'airbaggins@users.sf.net')
+    skorobeus = Author('Kevin Murphy', 'Skorobeus', 'skoro@skoroworld.com')
+    inkedmn = Author('Brett Kelly', 'inkedmn', 'inkedmn@users.sf.net')
+    bwp = Author('Brett Phipps', 'bwp', 'phippsb@gmail.com')
+
+    # Let's be somewhat safe about this.
+    def __getattr__(self, attr):
+        return Author('Unknown author', 'unknown', 'unknown@supybot.org')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

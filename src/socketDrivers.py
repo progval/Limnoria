@@ -55,8 +55,7 @@ reconnectWaits = (0, 60, 300)
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
         self.irc = irc
-        drivers.ServersMixin.__init__(self, irc)
-        drivers.IrcDriver.__init__(self) # Must come after setting irc.
+        super(SocketDriver, self).__init__(irc)
         self.conn = None
         self.servers = ()
         self.eagains = 0

@@ -441,23 +441,34 @@ class Channel(callbacks.Privmsg):
     unlobotomize = privmsgs.checkChannelCapability(unlobotomize, 'op')
 
     def permban(self, irc, msg, args, channel):
-        """[<channel>] <nick|hostmask>
+        """[<channel>] <nick|hostmask> [<expires>]
 
         If you have the #channel,op capability, this will effect a permanent
         (persistent) ban from interacting with the bot on the given <hostmask>
-        (or the current hostmask associated with <nick>.  <channel> is only
-         necessary if the message isn't sent in the channel itself.
+        (or the current hostmask associated with <nick>.  Other plugins may
+        enforce this ban by actually banning users with matching hostmasks when
+        they join.  <expires> is an optional argument specifying when (in
+        "seconds from now") the ban should expire; if none is given, the ban
+        will never automatically expire. <channel> is only necessary if the
+        message isn't sent in the channel itself.
         """
-        arg = privmsgs.getArgs(args)
-        if ircutils.isNick(arg):
-            banmask = ircutils.banmask(irc.state.nickToHostmask(arg))
-        elif ircutils.isUserHostmask(arg):
-            banmask = arg
+        (nickOrHostmask, expires) = privmsgs.getArgs(args, optional=1)
+        if ircutils.isNick(nickOrHostmask):
+            banmask = ircutils.banmask(irc.state.nickToHostmask(nickOrHostmask))
+        elif ircutils.isUserHostmask(nickOrHostmask):
+            banmask = nickOrHostmask
         else:
-            irc.error('That\'s not a valid nick or hostmask.')
-            return
+            irc.errorInvalid('nick or hostmask', nickOrHostmask, Raise=True)
+        if expires:
+            try:
+                expires = int(float(expires))
+                expires += int(time.time())
+            except ValueError:
+                irc.errorInvalid('number of seconds',nickOrHostmask,Raise=True)
+        else:
+            expires = 0
         c = ircdb.channels.getChannel(channel)
-        c.addBan(banmask)
+        c.addBan(banmask, expires)
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
     permban = privmsgs.checkChannelCapability(permban, 'op')
@@ -483,6 +494,7 @@ class Channel(callbacks.Privmsg):
         If you have the #channel,op capability, this will show you the
         current bans on #channel.
         """
+        # XXX Add the expirations.
         c = ircdb.channels.getChannel(channel)
         if c.bans:
             irc.reply(utils.commaAndify(map(utils.dqrepr, c.bans)))
@@ -491,23 +503,32 @@ class Channel(callbacks.Privmsg):
     permbans = privmsgs.checkChannelCapability(permbans, 'op')
 
     def ignore(self, irc, msg, args, channel):
-        """[<channel>] <nick|hostmask>
+        """[<channel>] <nick|hostmask> [<expires>]
 
         If you have the #channel,op capability, this will set a permanent
         (persistent) ignore on <hostmask> or the hostmask currently associated
-        with <nick>. <channel> is only necessary if the message isn't sent in
-        the channel itself.
+        with <nick>.  <expires> is an optional argument specifying when (in
+        "seconds from now") the ignore will expire; if it isn't given, the
+        ignore will never automatically expire.  <channel> is only necessary
+        if the message isn't sent in the channel itself.
         """
-        arg = privmsgs.getArgs(args)
-        if ircutils.isNick(arg):
-            banmask = ircutils.banmask(irc.state.nickToHostmask(arg))
-        elif ircutils.isUserHostmask(arg):
-            banmask = arg
+        (nickOrHostmask, expires) = privmsgs.getArgs(args, optional=1)
+        if ircutils.isNick(nickOrHostmask):
+            banmask = ircutils.banmask(irc.state.nickToHostmask(nickOrHostmask))
+        elif ircutils.isUserHostmask(nickOrHostmask):
+            banmask = nickOrHostmask
         else:
-            irc.error('That\'s not a valid nick or hostmask.')
-            return
+            irc.errorInvalid('nick or hostmask', nickOrHostmask, Raise=True)
+        if expires:
+            try:
+                expires = int(float(expires))
+                expires += int(time.time())
+            except ValueError:
+                irc.errorInvalid('number of seconds',nickOrHostmask,Raise=True)
+        else:
+            expires = 0
         c = ircdb.channels.getChannel(channel)
-        c.addIgnore(banmask)
+        c.addIgnore(banmask, expires)
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
     ignore = privmsgs.checkChannelCapability(ignore, 'op')
@@ -533,6 +554,7 @@ class Channel(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        # XXX Add the expirations.
         channelarg = privmsgs.getArgs(args, required=0, optional=1)
         channel = channelarg or channel
         c = ircdb.channels.getChannel(channel)

@@ -182,6 +182,11 @@ class FunctionsTestCase(SupyTestCase):
         finally:
             conf.supybot.reply.whenNotAddressed.setValue(original)
 
+    def testAddressedWithMultipleNicks(self):
+        msg = ircmsgs.privmsg('#foo', 'bar: baz')
+        self.failUnless(callbacks.addressed('bar', msg))
+        self.failUnless(callbacks.addressed('biff', msg, nicks=['bar']))
+
     def testReply(self):
         prefix = 'foo!bar@baz'
         channelMsg = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)
@@ -259,6 +264,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             original = conf.supybot.reply.errorInPrivate()
             conf.supybot.reply.errorInPrivate.setValue(False)
             m = self.getMsg("eval irc.error('foo', private=True)")
+            self.failUnless(m, 'No message returned.')
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:
             conf.supybot.reply.errorInPrivate.setValue(original)
@@ -271,6 +277,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             original = conf.supybot.reply.errorWithNotice()
             conf.supybot.reply.errorWithNotice.setValue(True)
             m = self.getMsg("eval irc.error('foo')")
+            self.failUnless(m, 'No message returned.')
             self.failUnless(m.command == 'NOTICE')
         finally:
             conf.supybot.reply.errorWithNotice.setValue(original)

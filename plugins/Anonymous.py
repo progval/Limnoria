@@ -65,6 +65,11 @@ conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireRegistration',
 conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireCapability',
     registry.String('', """Determines what capability (if any) the bot should
     require people trying to use this plugin to have."""))
+conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'allowPrivateTarget',
+    registry.Boolean(False, """Determines whether the bot will require targets
+    of the "say" command to be public (i.e., channels).  If this is True, the
+    bot will allow people to use the "say" command to send private messages to
+    other users."""))
 
 
 class Anonymous(callbacks.Privmsg):
@@ -89,7 +94,7 @@ class Anonymous(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         if c.lobotomized:
             irc.error('I\'m lobotomized in %s.' % channel, Raise=True)
-        if not c.checkCapability(self.__class__.__name__):
+        if not c.checkCapability(self.name()):
             irc.error('That channel has set its capabilities so as to '
                       'disallow the use of this plugin.', Raise=True)
 

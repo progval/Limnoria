@@ -60,7 +60,8 @@ import supybot.callbacks as callbacks
 class Admin(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def __init__(self):
-        privmsgs.CapabilityCheckingPrivmsg.__init__(self)
+        self.__parent = super(Admin, self)
+        self.__parent.__init__()
         self.joins = {}
         self.pendingNickChanges = {}
 
@@ -157,7 +158,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             else:
                 channels.append(channel)
             if not ircutils.isChannel(channel):
-                irc.error('%r is not a valid channel.' % channel)
+                irc.errorInvalid('channel', channel)
                 return
             conf.supybot.channels().add(original)
         maxchannels = irc.state.supported.get('maxchannels', sys.maxint)
@@ -237,7 +238,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 irc.queueMsg(ircmsgs.nick(nick))
                 self.pendingNickChanges[irc.getRealIrc()] = irc
             else:
-                irc.error('That\'s not a valid nick.')
+                irc.errorInvalid('nick', nick)
         else:
             irc.reply(irc.nick)
 
@@ -351,21 +352,33 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.error(s)
 
     def ignore(self, irc, msg, args):
-        """<hostmask|nick>
+        """<hostmask|nick> [<expires>]
 
         Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
-        that nick is currently using.
+        that nick is currently using.  <expires> is a "seconds from now" value
+        that determines when the ignore will expire; if, for instance, you wish
+        for the ignore to expire in an hour, you could give an <expires> of
+        3600.  If no <expires> is given, the ignore will never automatically
+        expire.
         """
-        arg = privmsgs.getArgs(args)
-        if ircutils.isUserHostmask(arg):
-            hostmask = arg
+        (nickOrHostmask, expires) = privmsgs.getArgs(args, optional=1)
+        if ircutils.isUserHostmask(nickOrHostmask):
+            hostmask = nickOrHostmask
         else:
             try:
-                hostmask = irc.state.nickToHostmask(arg)
+                hostmask = irc.state.nickToHostmask(nickOrHostmask)
             except KeyError:
-                irc.error('I can\'t find a hostmask for %s' % arg)
+                irc.error('I can\'t find a hostmask for %s.' % nickOrHostmask)
                 return
-        ircdb.ignores.addHostmask(hostmask)
+        if expires:
+            try:
+                expires = int(float(expires))
+                expires += int(time.time())
+            except ValueError:
+                irc.errorInvalid('number of seconds', expires, Raise=True)
+        else:
+            expires = 0
+        ircdb.ignores.add(hostmask, expires)
         irc.replySuccess()
 
     def unignore(self, irc, msg, args):
@@ -384,7 +397,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error('I can\'t find a hostmask for %s' % arg)
                 return
         try:
-            ircdb.ignores.removeHostmask(hostmask)
+            ircdb.ignores.remove(hostmask)
             irc.replySuccess()
         except KeyError:
             irc.error('%s wasn\'t in the ignores database.' % hostmask)
@@ -394,6 +407,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
 
         Returns the hostmasks currently being globally ignored.
         """
+        # XXX Add the expirations.
         if ircdb.ignores.hostmasks:
             irc.reply(utils.commaAndify(imap(repr, ircdb.ignores.hostmasks)))
         else:

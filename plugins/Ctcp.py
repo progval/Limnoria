@@ -46,44 +46,85 @@ sys.path.append(os.pardir)
 
 import supybot.conf as conf
 import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-notice = ircmsgs.notice
+conf.registerPlugin('Ctcp')
+conf.registerGlobalValue(conf.supybot.abuse.flood, 'ctcp',
+    registry.Boolean(True, """Determines whether the bot will defend itself
+    against CTCP flooding."""))
+conf.registerGlobalValue(conf.supybot.abuse.flood.ctcp, 'maximum',
+    registry.PositiveInteger(5, """Determines how many CTCP messages (not
+    including actions) the bot will reply to from a given user in a minute.
+    If a user sends more than this many CTCP messages in a 60 second period,
+    the bot will ignore CTCP messages from this user for
+    supybot.abuse.flood.ctcp.punishment seconds."""))
+conf.registerGlobalValue(conf.supybot.abuse.flood.ctcp, 'punishment',
+    registry.PositiveInteger(300, """Determines how many seconds the bot will
+    ignore CTCP messages from users who flood it with CTCP messages."""))
 
 class Ctcp(callbacks.PrivmsgRegexp):
     public = False
+    def __init__(self):
+        self.__parent = super(Ctcp, self)
+        self.__parent.__init__()
+        self.ignores = ircutils.IrcDict()
+        self.floods = ircutils.FloodQueue(60)
+
+    def callCommand(self, name, irc, msg, *L, **kwargs):
+        if conf.supybot.abuse.flood.ctcp():
+            now = time.time()
+            for (ignore, expiration) in self.ignores.items():
+                if expiration < now:
+                    del self.ignores[ignore]
+                elif ircutils.hostmaskPatternEqual(ignore, msg.prefix):
+                        return
+            self.floods.enqueue(msg)
+            max = conf.supybot.abuse.flood.ctcp.maximum()
+            if self.floods.len(msg) > max:
+                expires = conf.supybot.abuse.flood.ctcp.punishment()
+                self.log.warning('Apparent CTCP flood from %s, '
+                                 'ignoring CTCP messages for %s seconds.',
+                                 msg.prefix, expires)
+                ignoreMask = '*!%s@%s' % (msg.user, msg.host)
+                self.ignores[ignoreMask] = now + expires
+                return
+        self.__parent.callCommand(name, irc, msg, *L, **kwargs)
+        
+    def _reply(self, irc, msg, s):
+        s = '\x01%s\x01' % s
+        irc.reply(s, notice=True, private=True, to=msg.nick)
+
     def ping(self, irc, msg, match):
         "\x01PING (.*)\x01"
         self.log.info('Received CTCP PING from %s', msg.prefix)
-        irc.queueMsg(notice(msg.nick, '\x01PING %s\x01' % match.group(1)))
+        self._reply(irc, msg, 'PING %s' % match.group(1))
 
     def version(self, irc, msg, match):
         "\x01VERSION\x01"
         self.log.info('Received CTCP VERSION from %s', msg.prefix)
-        s = '\x01VERSION Supybot %s\x01' % conf.version
-        irc.queueMsg(notice(msg.nick, s))
+        self._reply(irc, msg, 'VERSION Supybot %s' % conf.version)
 
     def userinfo(self, irc, msg, match):
         "\x01USERINFO\x01"
         self.log.info('Received CTCP USERINFO from %s', msg.prefix)
-        irc.queueMsg(notice(msg.nick, '\x01USERINFO\x01'))
+        self._reply(irc, msg, 'USERINFO')
 
     def time(self, irc, msg, match):
         "\x01TIME\x01"
         self.log.info('Received CTCP TIME from %s' % msg.prefix)
-        irc.queueMsg(notice(msg.nick, '\x01%s\x01' % time.ctime()))
+        self._reply(irc, msg, time.ctime())
 
     def finger(self, irc, msg, match):
         "\x01FINGER\x01"
         self.log.info('Received CTCP FINGER from %s' % msg.prefix)
-        s = '\x01Supybot, the best Python bot in existence!\x01'
-        irc.queueMsg(notice(msg.nick, s))
+        irc._reply(irc, msg, 'Supybot, the best Python IRC bot in existence!')
 
     def source(self, irc, msg, match):
         "\x01SOURCE\x01"
         self.log.info('Received CTCP SOURCE from %s' % msg.prefix)
-        s = 'http://www.sourceforge.net/projects/supybot/'
-        irc.queueMsg(notice(msg.nick, s))
+        self._reply(irc, msg, 'http://www.sourceforge.net/projects/supybot/')
 
 Class = Ctcp
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

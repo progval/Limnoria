@@ -39,6 +39,7 @@ import os
 import sets
 import time
 import string
+import operator
 from itertools import imap, ilen, ifilter
 
 import supybot.log as log
@@ -310,32 +311,17 @@ class IrcUser(object):
 
 
 class IrcChannel(object):
-    """This class holds the capabilities, bans, and ignores of a channel.
-    """
+    """This class holds the capabilities, bans, and ignores of a channel."""
     defaultOff = ('op', 'halfop', 'voice', 'protected')
     def __init__(self, bans=None, silences=None, exceptions=None, ignores=None,
                  capabilities=None, lobotomized=False, defaultAllow=True):
         self.defaultAllow = defaultAllow
-        if bans is None:
-            self.bans = []
-        else:
-            self.bans = bans
-        if exceptions is None:
-            self.exceptions = []
-        else:
-            self.exceptions = exceptions
-        if silences is None:
-            self.silences = []
-        else:
-            self.silences = silences
-        if ignores is None:
-            self.ignores = []
-        else:
-            self.ignores = ignores
-        if capabilities is None:
-            self.capabilities = CapabilitySet()
-        else:
-            self.capabilities = capabilities
+        self.expiredBans = []
+        self.bans = bans or {}
+        self.ignores = ignores or {}
+        self.silences = silences or []
+        self.exceptions = exceptions or []
+        self.capabilities = capabilities or CapabilitySet()
         for capability in self.defaultOff:
             if capability not in self.capabilities:
                 self.capabilities.add(makeAntiCapability(capability))
@@ -349,28 +335,33 @@ class IrcChannel(object):
                 self.capabilities, self.lobotomized,
                 self.defaultAllow, self.silences, self.exceptions)
 
-    def addBan(self, hostmask):
+    def addBan(self, hostmask, expiration=0):
         """Adds a ban to the channel banlist."""
-        self.bans.append(hostmask)
+        self.bans[hostmask] = int(expiration)
 
     def removeBan(self, hostmask):
         """Removes a ban from the channel banlist."""
-        self.bans = [s for s in self.bans if s != hostmask]
+        return self.bans.pop(hostmask)
 
     def checkBan(self, hostmask):
         """Checks whether a given hostmask is banned by the channel banlist."""
-        for pat in self.bans:
-            if ircutils.hostmaskPatternEqual(pat, hostmask):
-                return True
+        now = time.time()
+        for (pattern, expiration) in self.bans.items():
+            if now < expiration or not expiration:
+                if ircutils.hostmaskPatternEqual(pattern, hostmask):
+                    return True
+            else:
+                self.expiredBans.append((pattern, expiration))
+                del self.bans[pattern]
         return False
 
-    def addIgnore(self, hostmask):
+    def addIgnore(self, hostmask, expiration=0):
         """Adds an ignore to the channel ignore list."""
-        self.ignores.append(hostmask)
+        self.ignores[hostmask] = int(expiration)
 
     def removeIgnore(self, hostmask):
         """Removes an ignore from the channel ignore list."""
-        self.ignores = [s for s in self.ignores if s != hostmask]
+        return self.ignores.pop(hostmask)
 
     def addCapability(self, capability):
         """Adds a capability to the channel's default capabilities."""
@@ -398,12 +389,16 @@ class IrcChannel(object):
         """Checks whether a given hostmask is to be ignored by the channel."""
         if self.lobotomized:
             return True
-        for mask in self.bans:
-            if ircutils.hostmaskPatternEqual(mask, hostmask):
-                return True
-        for mask in self.ignores:
-            if ircutils.hostmaskPatternEqual(mask, hostmask):
-                return True
+        if self.checkBan(hostmask):
+            return True
+        now = time.time()
+        for (pattern, expiration) in self.ignores.items():
+            if now < expiration or not expiration:
+                if ircutils.hostmaskPatternEqual(pattern, hostmask):
+                    return True
+            else:
+                del self.ignores[pattern]
+                # Later we may wish to keep expiredIgnores, but not now.
         return False
 
     def preserve(self, fd, indent=''):
@@ -415,14 +410,14 @@ class IrcChannel(object):
         write('defaultAllow %s' % self.defaultAllow)
         for capability in self.capabilities:
             write('capability ' + capability)
-        for ban in self.bans:
-            write('ban ' + ban)
-        for silence in self.silences:
-            write('silence ' + silence)
-        for exception in self.exceptions:
-            write('exception ' + exception)
-        for ignore in self.ignores:
-            write('ignore ' + ignore)
+        bans = self.bans.items()
+        utils.sortBy(operator.itemgetter(1), bans)
+        for (ban, expiration) in bans:
+            write('ban %s %d' % (ban, expiration))
+        ignores = self.ignores.items()
+        utils.sortBy(operator.itemgetter(1), ignores)
+        for (ignore, expiration) in ignores:
+            write('ignore %s %d' % (ignore, expiration))
         fd.write(os.linesep)
 
 
@@ -511,22 +506,14 @@ class IrcChannelCreator(Creator):
     def ban(self, rest, lineno):
         if self.name is None:
             raise ValueError, 'Unexpected channel description without channel.'
-        self.c.bans.append(rest)
+        (pattern, expiration) = rest
+        self.c.bans[pattern] = int(float(expiration))
 
     def ignore(self, rest, lineno):
         if self.name is None:
             raise ValueError, 'Unexpected channel description without channel.'
-        self.c.ignores.append(rest)
-
-    def silence(self, rest, lineno):
-        if self.name is None:
-            raise ValueError, 'Unexpected channel description without channel.'
-        self.c.silences.append(rest)
-
-    def exception(self, rest, lineno):
-        if self.name is None:
-            raise ValueError, 'Unexpected channel description without channel.'
-        self.c.exceptions.append(rest)
+        (pattern, expiration) = rest
+        self.c.ignores[pattern] = int(float(expiration))
 
     def finish(self):
         if self.hadChannel:
@@ -782,21 +769,33 @@ class ChannelsDictionary(utils.IterableMap):
 class IgnoresDB(object):
     def __init__(self):
         self.filename = None
-        self.hostmasks = sets.Set()
+        self.hostmasks = {}
 
     def open(self, filename):
         self.filename = filename
         fd = file(self.filename)
         for line in utils.nonCommentNonEmptyLines(fd):
-            self.hostmasks.add(line.rstrip('\r\n'))
+            try:
+                line = line.rstrip('\r\n')
+                L = line.split()
+                hostmask = L.pop(0)
+                if L:
+                    expiration = int(float(L.pop(0)))
+                else:
+                    expiration = 0
+                self.add(hostmask, expiration)
+            except Exception, e:
+                log.error('Invalid line in ignores database: %r', line)
         fd.close()
 
     def flush(self):
         if self.filename is not None:
             fd = utils.transactionalFile(self.filename)
-            for hostmask in self.hostmasks:
-                fd.write(hostmask)
-                fd.write(os.linesep)
+            now = time.time()
+            for (hostmask, expiration) in self.hostmasks.items():
+                if now < expiration or not expiration:
+                    fd.write('%s %s' % (hostmask, expiration))
+                    fd.write(os.linesep)
             fd.close()
         else:
             log.warning('IgnoresDB.flush called without self.filename.')
@@ -809,26 +808,33 @@ class IgnoresDB(object):
 
     def reload(self):
         if self.filename is not None:
+            oldhostmasks = self.hostmasks.copy()
             self.hostmasks.clear()
             try:
                 self.open(self.filename)
             except EnvironmentError, e:
                 log.warning('IgnoresDB.reload failed: %s', e)
+                # Let's be somewhat transactional.
+                self.hostmasks.update(oldhostmasks)
         else:
             log.warning('IgnoresDB.reload called without self.filename.')
 
     def checkIgnored(self, prefix):
-        for hostmask in self.hostmasks:
-            if ircutils.hostmaskPatternEqual(hostmask, prefix):
-                return True
+        now = time.time()
+        for (hostmask, expiration) in self.hostmasks.items():
+            if expiration and now > expiration:
+                del self.hostmasks[hostmask]
+            else:
+                if ircutils.hostmaskPatternEqual(hostmask, prefix):
+                    return True
         return False
 
-    def addHostmask(self, hostmask):
+    def add(self, hostmask, expiration=0):
         assert ircutils.isUserHostmask(hostmask)
-        self.hostmasks.add(hostmask)
+        self.hostmasks[hostmask] = expiration
 
-    def removeHostmask(self, hostmask):
-        self.hostmasks.remove(hostmask)
+    def remove(self, hostmask):
+        del self.hostmasks[hostmask]
 
 
 confDir = conf.supybot.directories.conf()

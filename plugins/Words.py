@@ -133,10 +133,10 @@ class HangmanGame:
 
 
 class Words(callbacks.Privmsg):
-    def callCommand(self, command, irc, msg, args, *L, **kw):
+    def callCommand(self, name, irc, msg, args, *L, **kw):
         # We'll catch the IOError here.
         try:
-            super(Words, self).callCommand(command, irc, msg, args, *L, **kw)
+            super(Words, self).callCommand(name, irc, msg, args, *L, **kw)
         except EnvironmentError, e:
             irc.error('I couldn\'t open the words file.  This plugin expects '
                       'a words file (i.e., a file with one word per line, in '

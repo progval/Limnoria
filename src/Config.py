@@ -101,7 +101,7 @@ class Config(callbacks.Privmsg):
         try:
             super(Config, self).callCommand(name, irc, msg, *L, **kwargs)
         except InvalidRegistryName, e:
-            irc.error('%r is not a valid configuration variable.' % e.args[0])
+            irc.errorInvalid('configuration variable', e.args[0])
         except registry.InvalidRegistryValue, e:
             irc.error(str(e))
 

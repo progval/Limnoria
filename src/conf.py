@@ -86,7 +86,9 @@ allowDefaultOwner = False
 supybot = registry.Group()
 supybot.setName('supybot')
 
-def registerGroup(Group, name, group=None):
+def registerGroup(Group, name, group=None, **kwargs):
+    if kwargs:
+        group = registry.Group(**kwargs)
     return Group.register(name, group)
 
 def registerGlobalValue(group, name, value):
@@ -109,8 +111,8 @@ def registerPlugin(name, currentValue=None, public=True):
         supybot.plugins.get(name).setValue(currentValue)
     return registerGroup(users.plugins, name)
 
-def channelValue(group, channel=None):
-    if channel is None:
+def get(group, channel=None):
+    if channel is None or not group.channelValue:
         return group()
     else:
         return group.get(channel)()
@@ -120,7 +122,7 @@ def channelValue(group, channel=None):
 ###
 users = registry.Group()
 users.setName('users')
-registerGroup(users, 'plugins')
+registerGroup(users, 'plugins', orderAlphabetically=True)
 
 def registerUserValue(group, name, value):
     assert group._name.startswith('users')
@@ -188,7 +190,8 @@ class Networks(registry.SpaceSeparatedSetOfStrings):
     List = ircutils.IrcSet
     
 registerGlobalValue(supybot, 'networks',
-    Networks([], """Determines what networks the bot will connect to."""))
+    Networks([], """Determines what networks the bot will connect to.""",
+             orderAlphabetically=True))
 
 class Servers(registry.SpaceSeparatedListOfStrings):
     def normalize(self, s):
@@ -278,8 +281,8 @@ registerChannelValue(supybot.reply.mores, 'instant',
 registerGlobalValue(supybot.reply, 'oneToOne',
     registry.Boolean(True, """Determines whether the bot will send
     multi-message replies in a single message or in multiple messages.  For
-    safety purposes (so the bot can't possibly flood) it will normally send
-    everything in a single message."""))
+    safety purposes (so the bot is less likely to flood) it will normally send
+    everything in a single message, using mores if necessary."""))
 
 class ValidBrackets(registry.OnlySomeStrings):
     validStrings = ('', '[]', '<>', '{}', '()')
@@ -409,6 +412,11 @@ registerChannelValue(supybot.reply.whenAddressedBy, 'nick',
     registry.Boolean(True, """Determines whether the bot will reply when people
     address it by its nick, rather than with a prefix character."""))
 
+registerChannelValue(supybot.reply.whenAddressedBy, 'nicks',
+    registry.SpaceSeparatedSetOfStrings([], """Determines what extra nicks the
+    bot will always respond to when addressed by, even if its current nick is
+    something else."""))
+
 ###
 # Replies
 ###
@@ -501,11 +509,48 @@ registerGlobalValue(supybot, 'flush',
     inside the bot, your changes won't be flushed.  To make this change
     permanent, you must edit the registry yourself."""))
 
+
 ###
 # supybot.commands.  For stuff relating to commands.
 ###
 registerGroup(supybot, 'commands')
 # supybot.commands.disabled moved to callbacks for canonicalName.
+
+
+###
+# supybot.abuse.  For stuff relating to abuse of the bot.
+###
+registerGroup(supybot, 'abuse')
+registerGroup(supybot.abuse, 'flood')
+registerGlobalValue(supybot.abuse.flood, 'command',
+    registry.Boolean(True, """Determines whether the bot will defend itself
+    against command-flooding."""))
+registerGlobalValue(supybot.abuse.flood.command, 'maximum',
+    registry.PositiveInteger(12, """Determines how many commands users are
+    allowed per minute.  If a user sends more than this many commands in any
+    60 second period, he or she will be ignored for
+    supybot.abuse.flood.command.punishment seconds."""))
+registerGlobalValue(supybot.abuse.flood.command, 'punishment',
+    registry.PositiveInteger(300, """Determines how many seconds the bot
+    will ignore users who flood it with commands."""))
+
+registerGlobalValue(supybot.abuse.flood.command, 'invalid',
+    registry.Boolean(True, """Determines whether the bot will defend itself
+    against invalid command-flooding."""))
+registerGlobalValue(supybot.abuse.flood.command.invalid, 'maximum',
+    registry.PositiveInteger(5, """Determines how many invalid commands users
+    are allowed per minute.  If a user sends more than this many invalid
+    commands in any 60 second period, he or she will be ignored for
+    supybot.abuse.flood.command.invalid.punishment seconds.  Typically, this
+    value is lower than supybot.abuse.flood.command.maximum, since it's far
+    less likely (and far more annoying) for users to flood with invalid
+    commands than for them to flood with valid commands."""))
+registerGlobalValue(supybot.abuse.flood.command.invalid, 'punishment',
+    registry.PositiveInteger(600, """Determines how many seconds the bot
+    will ignore users who flood it with invalid commands.  Typically, this
+    value is higher than supybot.abuse.flood.command.punishment, since it's far
+    less likely (and far more annoying) for users to flood witih invalid
+    commands than for them to flood with valid commands."""))
 
 
 ###
@@ -601,7 +646,7 @@ registerGlobalValue(supybot.directories, 'plugins',
     a new one.  E.g. you can say: bot: 'config supybot.directories.plugins
     [config supybot.directories.plugins], newPluginDirectory'."""))
 
-registerGroup(supybot, 'plugins') # This will be used by plugins, but not here.
+registerGroup(supybot, 'plugins', orderAlphabetically=True)
 registerGlobalValue(supybot.plugins, 'alwaysLoadDefault',
     registry.Boolean(True, """Determines whether the bot will always load
     the default plugins (Admin, Channel, Config, Misc, Owner, and User)

@@ -65,7 +65,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 
-def addressed(nick, msg, prefixChars=None,
+def addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None):
     """If msg is addressed to 'name', returns the portion after the address.
     Otherwise returns the empty string.
@@ -88,7 +88,12 @@ def addressed(nick, msg, prefixChars=None,
         whenAddressedByNick = get(conf.supybot.reply.whenAddressedBy.nick)
     if prefixStrings is None:
         prefixStrings = get(conf.supybot.reply.whenAddressedBy.strings)
-    nick = ircutils.toLower(nick)
+    if nicks is None:
+        nicks = get(conf.supybot.reply.whenAddressedBy.nicks)
+        nicks = map(ircutils.toLower, nicks)
+    else:
+        nicks = list(nicks) # Just in case.
+    nicks.insert(0, ircutils.toLower(nick))
     # Ok, let's see if it's a private message.
     if ircutils.nickEqual(target, nick):
         payload = stripPrefixStrings(payload)
@@ -96,21 +101,22 @@ def addressed(nick, msg, prefixChars=None,
             payload = payload[1:].lstrip()
         return payload
     # Ok, not private.  Does it start with our nick?
-    elif whenAddressedByNick and \
-         ircutils.toLower(payload).startswith(nick):
-        try:
-            (maybeNick, rest) = payload.split(None, 1)
-            while not ircutils.isNick(maybeNick, strictRfc=True):
-                if maybeNick[-1].isalnum():
-                    return ''
-                maybeNick = maybeNick[:-1]
-            if ircutils.nickEqual(maybeNick, nick):
-                return rest
-            else:
-                return ''
-        except ValueError: # split didn't work.
-            return ''
-    elif payload and any(payload.startswith, prefixStrings):
+    elif whenAddressedByNick:
+        for nick in nicks:
+            if ircutils.toLower(payload).startswith(nick):
+                try:
+                    (maybeNick, rest) = payload.split(None, 1)
+                    while not ircutils.isNick(maybeNick, strictRfc=True):
+                        if maybeNick[-1].isalnum():
+                            continue
+                        maybeNick = maybeNick[:-1]
+                    if ircutils.nickEqual(maybeNick, nick):
+                        return rest
+                    else:
+                        continue
+                except ValueError: # split didn't work.
+                    continue
+    if payload and any(payload.startswith, prefixStrings):
         return stripPrefixStrings(payload)
     elif payload and payload[0] in prefixChars:
         return payload[1:].strip()
@@ -213,10 +219,6 @@ class ArgumentError(Error):
     """The bot replies with a help message when this is raised."""
     pass
 
-class CannotNest(Error):
-    """Exception to be raised by commands that cannot be nested."""
-    pass
-
 class Tokenizer:
     # This will be used as a global environment to evaluate strings in.
     # Evaluation is, of course, necessary in order to allowed escaped
@@ -310,10 +312,10 @@ def tokenize(s, brackets=None, channel=None):
     start = time.time()
     try:
         if brackets is None:
-            tokens = conf.channelValue(conf.supybot.reply.brackets, channel)
+            tokens = conf.get(conf.supybot.reply.brackets, channel)
         else:
             tokens = brackets
-        if conf.channelValue(conf.supybot.reply.pipeSyntax, channel):
+        if conf.get(conf.supybot.reply.pipeSyntax, channel):
             tokens = '%s|' % tokens
         log.stat('tokenize took %s seconds.' % (time.time() - start))
         return Tokenizer(tokens).tokenize(s)
@@ -329,14 +331,15 @@ def getCommands(tokens):
             L.extend(getCommands(elt))
     return L
 
-def findCallbackForCommand(irc, commandName):
+def findCallbackForCommand(irc, name):
     """Given a command name and an Irc object, returns a list of callbacks that
     commandName is in."""
     L = []
+    name = canonicalName(name)
     for callback in irc.callbacks:
         if not isinstance(callback, PrivmsgRegexp):
             if hasattr(callback, 'isCommand'):
-                if callback.isCommand(commandName):
+                if callback.isCommand(name):
                     L.append(callback)
     return L
 
@@ -344,16 +347,17 @@ def formatArgumentError(method, name=None, channel=None):
     if name is None:
         name = method.__name__
     if hasattr(method, '__doc__') and method.__doc__:
-        if conf.channelValue(conf.supybot.reply.showSimpleSyntax, channel):
+        if conf.get(conf.supybot.reply.showSimpleSyntax, channel):
             return getSyntax(method, name=name)
         else:
             return getHelp(method, name=name)
     else:
         return 'Invalid arguments for %s.' % method.__name__
 
-def checkCommandCapability(msg, cb, command):
+def checkCommandCapability(msg, cb, commandName):
+    assert isinstance(commandName, basestring), commandName
     plugin = cb.name().lower()
-    pluginCommand = '%s.%s' % (plugin, command)
+    pluginCommand = '%s.%s' % (plugin, commandName)
     def checkCapability(capability):
         assert ircdb.isAntiCapability(capability)
         if ircdb.checkCapability(msg.prefix, capability):
@@ -362,12 +366,12 @@ def checkCommandCapability(msg, cb, command):
             raise RuntimeError, capability
     try:
         antiPlugin = ircdb.makeAntiCapability(plugin)
-        antiCommand = ircdb.makeAntiCapability(command)
+        antiCommand = ircdb.makeAntiCapability(commandName)
         antiPluginCommand = ircdb.makeAntiCapability(pluginCommand)
         checkCapability(antiPlugin)
         checkCapability(antiCommand)
         checkCapability(antiPluginCommand)
-        checkAtEnd = [command, pluginCommand]
+        checkAtEnd = [commandName, pluginCommand]
         default = conf.supybot.capabilities.default()
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
@@ -376,7 +380,7 @@ def checkCommandCapability(msg, cb, command):
             checkCapability(ircdb.makeChannelCapability(channel,
                                                         antiPluginCommand))
             chanPlugin = ircdb.makeChannelCapability(channel, plugin)
-            chanCommand = ircdb.makeChannelCapability(channel, command)
+            chanCommand = ircdb.makeChannelCapability(channel, commandName)
             chanPluginCommand = ircdb.makeChannelCapability(channel,
                                                             pluginCommand)
             checkAtEnd += [chanCommand, chanPlugin, chanPluginCommand]
@@ -437,49 +441,56 @@ class RichReplyMethods(object):
                 else:
                     self.reply(prefixer(s), **kwargs)
 
-    def _error(self, s, Raise, **kwargs):
+    def _error(self, s, Raise=False, **kwargs):
         if Raise:
             raise Error, s
         else:
             self.error(s, **kwargs)
 
-    def errorNoCapability(self, capability, s='', Raise=False, **kwargs):
+    def errorNoCapability(self, capability, s='', **kwargs):
         if isinstance(capability, basestring): # checkCommandCapability!
             log.warning('Denying %s for lacking %r capability.',
                         self.msg.prefix, capability)
             if not self._getConfig(conf.supybot.reply.noCapabilityError):
                 v = self._getConfig(conf.supybot.replies.noCapability)
                 s = self.__makeReply(v % capability, s)
-                self._error(s, Raise, **kwargs)
+                self._error(s, **kwargs)
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)
             v = self._getConfig(conf.supybot.replies.genericNoCapability)
-            self._error(self.__makeReply(v, s), Raise, **kwargs)
+            self._error(self.__makeReply(v, s), **kwargs)
 
-    def errorPossibleBug(self, s='', Raise=False, **kwargs):
+    def errorPossibleBug(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.possibleBug)
         if s:
             s += '  (%s)' % v
         else:
             s = v
-        self._error(s, Raise, **kwargs)
+        self._error(s, **kwargs)
 
-    def errorNotRegistered(self, s='', Raise=False, **kwargs):
+    def errorNotRegistered(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.notRegistered)
-        self._error(self.__makeReply(v, s), Raise, **kwargs)
+        self._error(self.__makeReply(v, s), **kwargs)
 
-    def errorNoUser(self, s='', name='that user', Raise=False, **kwargs):
+    def errorNoUser(self, s='', name='that user', **kwargs):
         v = self._getConfig(conf.supybot.replies.noUser)
         try:
             v = v % name
         except TypeError:
             log.warning('supybot.replies.noUser should have one "%s" in it.')
-        self._error(self.__makeReply(v, s), Raise, **kwargs)
+        self._error(self.__makeReply(v, s), **kwargs)
 
-    def errorRequiresPrivacy(self, s='', Raise=False, **kwargs):
+    def errorRequiresPrivacy(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.requiresPrivacy)
-        self._error(self.__makeReply(v, s), Raise, **kwargs)
+        self._error(self.__makeReply(v, s), **kwargs)
+
+    def errorInvalid(self, what, given=None, s='', **kwargs):
+        if given is not None:
+            v = '%r is not a valid %s.' % (given, what)
+        else:
+            v = 'That\'s not a valid %s.' % what
+        self._error(self.__makeReply(v, s), **kwargs)
 
 
 class IrcObjectProxy(RichReplyMethods):
@@ -542,21 +553,14 @@ class IrcObjectProxy(RichReplyMethods):
                     log.exception('Uncaught exception in %s.invalidCommand',
                                   cb.name())
 
-    def _callCommand(self, name, command, cb):
+    def _callCommand(self, name, cb):
         try:
-            self.commandMethod = command
+            self.commandMethod = cb.getCommand(name)
             try:
-                cb.callCommand(command, self, self.msg, self.args)
-            except (getopt.GetoptError, ArgumentError):
-                self.reply(formatArgumentError(command, name=name))
-            except CannotNest, e:
-                if not isinstance(self.irc, irclib.Irc):
-                    self.error('Command %r cannot be nested.' % name)
-            except (SyntaxError, Error), e:
-                cb.log.info('Error return: %s', e)
-                self.error(str(e))
+                cb.callCommand(name, self, self.msg, self.args)
             except Exception, e:
-                cb.log.exception('Uncaught exception:')
+                cb.log.exception('Uncaught exception in %s.%s:',
+                                 cb.name(), name)
                 if conf.supybot.reply.detailedErrors():
                     self.error(utils.exnToString(e))
                 else:
@@ -567,27 +571,27 @@ class IrcObjectProxy(RichReplyMethods):
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
-        name = canonicalName(self.args[0])
+        name = self.args[0]
         cbs = findCallbackForCommand(self, name)
         if len(cbs) == 0:
             for cb in self.irc.callbacks:
                 if isinstance(cb, PrivmsgRegexp):
-                    for (r, m) in cb.res:
+                    for (r, name) in cb.res:
                         if r.search(self.msg.args[1]):
                             log.debug('Skipping invalidCommand: %s.%s',
-                                      m.im_class.__name__,m.im_func.func_name)
+                                      cb.name(), name)
                             return
                 elif isinstance(cb, PrivmsgCommandAndRegexp):
-                    for (r, m) in cb.res:
+                    for (r, name) in cb.res:
                         if r.search(self.msg.args[1]):
                             log.debug('Skipping invalidCommand: %s.%s',
-                                      m.im_class.__name__,m.im_func.func_name)
+                                      cb.name(), name)
                             return
                     payload = addressed(self.irc.nick, self.msg)
-                    for (r, m) in cb.addressedRes:
+                    for (r, name) in cb.addressedRes:
                         if r.search(payload):
                             log.debug('Skipping invalidCommand: %s.%s',
-                                      m.im_class.__name__,m.im_func.func_name)
+                                      cb.name(), name)
                             return
             # Ok, no regexp-based things matched.
             self._callInvalidCommands()
@@ -604,18 +608,13 @@ class IrcObjectProxy(RichReplyMethods):
             else:
                 del self.args[0]
                 cb = cbs[0]
-            cap = checkCommandCapability(self.msg, cb, name)
-            if cap:
-                self.errorNoCapability(cap)
-                return
-            command = getattr(cb, name)
             Privmsg.handled = True
             if cb.threaded or conf.supybot.debug.threadAllCommands():
                 t = CommandThread(target=self._callCommand,
-                                  args=(name, command, cb))
+                                  args=(name, cb))
                 t.start()
             else:
-                self._callCommand(name, command, cb)
+                self._callCommand(name, cb)
 
     def reply(self, s, noLengthCheck=False, prefixName=True,
               action=None, private=None, notice=None, to=None, msg=None):
@@ -768,7 +767,8 @@ class CommandThread(threading.Thread):
     to run in threads.
     """
     def __init__(self, target=None, args=(), kwargs={}):
-        (self.name, self.command, self.cb) = args
+        (self.name, self.cb) = args
+        self.command = self.cb.getCommand(self.name)
         world.threadsSpawned += 1
         threadName = 'Thread #%s (for %s.%s)' % (world.threadsSpawned,
                                                  self.cb.name(), self.name)
@@ -925,17 +925,17 @@ class Privmsg(irclib.IrcCallback):
         else:
             self.__parent.__call__(irc, msg)
 
-    def isCommand(self, methodName):
+    def isCommand(self, name):
         """Returns whether a given method name is a command in this plugin."""
         # This function is ugly, but I don't want users to call methods like
         # doPrivmsg or __init__ or whatever, and this is good to stop them.
 
         # Don't canonicalize this name: consider outFilter(self, irc, msg).
-        # methodName = canonicalName(methodName)
-        if self._disabled.disabled(methodName, plugin=self.name()):
+        # name = canonicalName(name)
+        if self._disabled.disabled(name, plugin=self.name()):
             return False
-        if hasattr(self, methodName):
-            method = getattr(self, methodName)
+        if hasattr(self, name):
+            method = getattr(self, name)
             if inspect.ismethod(method):
                 code = method.im_func.func_code
                 return inspect.getargs(code)[0] == self.commandArgs
@@ -944,19 +944,32 @@ class Privmsg(irclib.IrcCallback):
         else:
             return False
 
-    def getCommand(self, methodName):
+    def getCommand(self, name):
         """Gets the given command from this plugin."""
-        assert self.isCommand(methodName)
-        methodName = canonicalName(methodName)
-        return getattr(self, methodName)
+        name = canonicalName(name)
+        assert self.isCommand(name), '%r is not a command.' % name
+        return getattr(self, name)
 
-    def callCommand(self, method, irc, msg, *L):
-        name = method.im_func.func_name
+    def callCommand(self, name, irc, msg, *L, **kwargs):
+        #print '*', name, utils.stackTrace()
+        checkCapabilities = kwargs.pop('checkCapabilities', True)
+        if checkCapabilities:
+            cap = checkCommandCapability(msg, self, name)
+            if cap:
+                irc.errorNoCapability(cap)
+                return
+        method = self.getCommand(name)
         assert L, 'Odd, nothing in L.  This can\'t happen.'
-        self.log.info('%r called by %s', name, msg.prefix)
+        self.log.info('%s.%s called by %s.', self.name(), name, msg.prefix)
         self.log.debug('args: %s', L[0])
         start = time.time()
-        method(irc, msg, *L)
+        try:
+            method(irc, msg, *L)
+        except (getopt.GetoptError, ArgumentError):
+            irc.reply(formatArgumentError(method, name=name))
+        except (SyntaxError, Error), e:
+            self.log.debug('Error return: %s', utils.exnToString(e))
+            irc.error(str(e))
         elapsed = time.time() - start
         log.stat('%s took %s seconds', name, elapsed)
 
@@ -1080,13 +1093,14 @@ class PrivmsgRegexp(Privmsg):
                     self.log.warning('Invalid regexp: %r (%s)',value.__doc__,e)
         self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
 
-    def callCommand(self, method, irc, msg, *L):
+    def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
-            self.__parent.callCommand(method, irc, msg, *L)
+            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
         except Exception, e:
             # We catch exceptions here because IrcObjectProxy isn't doing our
             # dirty work for us anymore.
-            self.log.exception('Uncaught exception from callCommand:')
+            self.log.exception('Uncaught exception in %s.%s:',
+                               self.name(), name)
             if conf.supybot.reply.detailedErrors():
                 irc.error(utils.exnToString(e))
             else:
@@ -1126,17 +1140,31 @@ class PrivmsgCommandAndRegexp(Privmsg):
         for name in self.regexps:
             method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
-            self.res.append((r, method))
+            self.res.append((r, name))
         for name in self.addressedRegexps:
             method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
-            self.addressedRes.append((r, method))
+            self.addressedRes.append((r, name))
 
-    def callCommand(self, f, irc, msg, *L, **kwargs):
+    def isCommand(self, name):
+        return self.__parent.isCommand(name) or \
+               name in self.regexps or \
+               name in self.addressedRegexps
+
+    def getCommand(self, name):
         try:
-            self.__parent.callCommand(f, irc, msg, *L)
+            return getattr(self, name) # Regexp stuff.
+        except AttributeError:
+            return self.__parent.getCommand(name)
+
+    def callCommand(self, name, irc, msg, *L, **kwargs):
+        try:
+            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
         except Exception, e:
-            if 'catchErrors' in kwargs and kwargs['catchErrors']:
+            # As annoying as it is, Python doesn't allow *L in addition to
+            # well-defined keyword arguments.  So we have to do this trick.
+            catchErrors = kwargs.pop('catchErrors', False)
+            if catchErrors:
                 self.log.exception('Uncaught exception in callCommand:')
                 if conf.supybot.reply.detailedErrors():
                     irc.error(utils.exnToString(e))
@@ -1147,24 +1175,22 @@ class PrivmsgCommandAndRegexp(Privmsg):
 
     def doPrivmsg(self, irc, msg):
         if Privmsg.errored:
-            self.log.info('%s not running due to Privmsg.errored.',
-                          self.name())
+            self.log.debug('%s not running due to Privmsg.errored.',
+                           self.name())
             return
-        for (r, method) in self.res:
-            name = method.__name__
+        for (r, name) in self.res:
             for m in r.finditer(msg.args[1]):
                 proxy = self.Proxy(irc, msg)
-                self.callCommand(method, proxy, msg, m, catchErrors=True)
+                self.callCommand(name, proxy, msg, m, catchErrors=True)
         if not Privmsg.handled:
             s = addressed(irc.nick, msg)
             if s:
-                for (r, method) in self.addressedRes:
-                    name = method.__name__
+                for (r, name) in self.addressedRes:
                     if Privmsg.handled and name not in self.alwaysCall:
                         continue
                     for m in r.finditer(s):
                         proxy = self.Proxy(irc, msg)
-                        self.callCommand(method,proxy,msg,m,catchErrors=True)
+                        self.callCommand(name, proxy, msg, m, catchErrors=True)
                         Privmsg.handled = True
 
 

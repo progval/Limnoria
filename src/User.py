@@ -116,13 +116,12 @@ class User(callbacks.Privmsg):
         self._checkNotChannel(irc, msg, password)
         try:
             ircdb.users.getUserId(name)
-            irc.error('That name is already assigned to someone.')
-            return
+            irc.error('That name is already assigned to someone.', Raise=True)
         except KeyError:
             pass
         if ircutils.isUserHostmask(name):
-            irc.error('Hostmasks aren\'t valid usernames.')
-            return
+            irc.errorInvalid('username', name,
+                             'Hostmasks are not valid usernames.', Raise=True)
         try:
             u = ircdb.users.getUser(msg.prefix)
             if u.checkCapability('owner'):
@@ -208,7 +207,7 @@ class User(callbacks.Privmsg):
         if not name:
             name = msg.prefix
         if not ircutils.isUserHostmask(hostmask):
-            irc.error('That\'s not a valid hostmask. Make sure your hostmask '
+            irc.errorInvalid('hostmask', hostmask, 'Make sure your hostmask '
                       'includes a nick, then an exclamation point (!), then '
                       'a user, then an at symbol (@), then a host.  Feel '
                       'free to use wildcards (* and ?, which work just like '
@@ -404,7 +403,10 @@ class User(callbacks.Privmsg):
     def unidentify(self, irc, msg, args):
         """takes no arguments
 
-        Un-identifies the user.
+        Un-identifies you.  Note that this may not result in the desired
+        effect of causing the bot not to recognize you anymore, since you may
+        have added hostmasks to your user that can cause the bot to continue to
+        recognize you.
         """
         try:
             id = ircdb.users.getUserId(msg.prefix)
@@ -450,11 +452,12 @@ class User(callbacks.Privmsg):
             irc.errorNotRegistered()
         if value == '':
             value = not user.secure
-        elif value.lower() in ('true', 'false'):
-            value = eval(value.capitalize())
+        elif value.lower() in ('true', 'on', 'enable'):
+            value = True
+        elif value.lower() in ('false', 'off', 'disable'):
+            value = False
         else:
-            irc.error('%s is not a valid boolean value.' % value)
-            return
+            irc.errorInvalid('boolean value', value, Raise=True)
         if user.checkPassword(password) and \
            user.checkHostmask(msg.prefix, useAuth=False):
             user.secure = value
@@ -518,8 +521,7 @@ class User(callbacks.Privmsg):
 ##                 wrapper = Config.getWrapper(name)
 ##                 wrapper = wrapper.get(str(id))
 ##             except InvalidRegistryValue, e:
-##                 irc.error('%r is not a valid configuration variable.' % name)
-##                 return
+##                 irc.errorInvalid('configuration variable', name, Raise=True)
 ##             if list:
 ##                 pass
 ##             else:
