@@ -106,6 +106,7 @@ class Herald(callbacks.Privmsg):
             except KeyError:
                 default = self.registryValue('default', channel)
                 if default:
+                    default = plugins.standardSubstitute(irc, msg, default)
                     target = msg.nick
                     if self.registryValue('default.public', channel):
                         target = channel
