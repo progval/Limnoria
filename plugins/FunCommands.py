@@ -502,15 +502,15 @@ class FunCommands(callbacks.Privmsg):
     def _complexToString(self, x):
         real = x.real
         imag = x.imag
-        if real < 1e-12 and imag < 1e-12:
+        if -1e-12 < real < 1e-12 and -1e-12 < imag < 1e-12:
             return '0'
         if int(real) == real:
             real = int(real)
         if int(imag) == imag:
             imag = int(imag)
-        if real < 1e-12:
+        if -1e-12 < real < 1e-12:
             real = 0
-        if imag < 1e-12:
+        if -1e-12 < imag < 1e-12:
             imag = 0
         if imag == 0:
             return str(real)
@@ -550,6 +550,9 @@ class FunCommands(callbacks.Privmsg):
         except Exception, e:
             irc.reply(msg, debug.exnToString(e))
 
+    _rpnEnv = {
+        'dup': lambda s: s.extend([s.pop()]*2),
+        }
     def rpn(self, irc, msg, args):
         """<rpn math expression>
 
@@ -577,11 +580,13 @@ class FunCommands(callbacks.Privmsg):
                             return
                     else:
                         stack.append(f)
+                elif arg in self._rpnEnv:
+                    self._rpnEnv[arg](stack)
                 else:
                     arg2 = stack.pop()
                     arg1 = stack.pop()
-                    stack.append(eval('%s%s%s' % (arg1, arg, arg2),
-                                      self._mathEnv, self._mathEnv))
+                    s = '%s%s%s' % (arg1, arg, arg2)
+                    stack.append(eval(s, self._mathEnv, self._mathEnv))
         if len(stack) == 1:
             irc.reply(msg, str(self._complexToString(complex(stack[0]))))
         else:
