@@ -41,6 +41,11 @@ if __name__ == '__main__':
         write(fd, '  hashed %s' % u.hashed)
         write(fd, '  password %s' % u.password)
         for capability in u.capabilities:
+            try:
+                (channel, capability) = rsplit(capability, '.', 1)
+                capability = ','.join(channel, capability)
+            except ValueError:
+                pass
             write(fd, '  capability %s' % capability)
         for hostmask in u.hostmasks:
             write(fd, '  hostmask %s' % hostmask)
