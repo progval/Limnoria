@@ -297,10 +297,7 @@ class Network(callbacks.Privmsg):
         otherIrc = self._getIrc(network)
         otherIrc.queueMsg(ircmsgs.ping('Latency check (from %s).' % msg.nick))
         self._latency[otherIrc] = (irc, time.time())
-        
-    # XXX join
-    # XXX part
-        
+        irc.noReply()
 
 
 Class = Network
