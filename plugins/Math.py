@@ -56,8 +56,8 @@ class Math(callbacks.Privmsg):
     def base(self, irc, msg, args, frm, to, number):
         """<fromBase> [<toBase>] <number>
 
-        Converts from base <fromBase> to base <toBase>. If <toBase> is left
-        out, it converts to decimal.
+        Converts <number> from base <fromBase> to base <toBase>.
+        If <toBase> is left out, it converts to decimal.
         """
         if not number:
             number = str(to)
@@ -68,12 +68,10 @@ class Math(callbacks.Privmsg):
             irc.error('Invalid <number> for base %s: %s' % (frm, number))
     base = wrap(base, [('int', 'base', lambda i: 2 <= i <= 36),
                        optional(('int', 'base', lambda i: 2 <= i <= 36), 10),
-                       optional('something')])
+                       additional('something')])
 
     def _convertDecimalToBase(self, number, base):
-        """
-            Convert a decimal number to another base; returns a string.
-        """
+        """Convert a decimal number to another base; returns a string."""
         if number == 0:
             return '0'
         elif number < 0:
@@ -94,10 +92,8 @@ class Math(callbacks.Privmsg):
         return '-'*negative + ''.join(digits)
 
     def _convertBaseToBase(self, number, toBase, fromBase):
-        """
-            Convert a number from any base, 2 through 36, to any other
-            base, 2 through 36. Returns a string.
-        """
+        """Convert a number from any base, 2 through 36, to any other
+        base, 2 through 36. Returns a string."""
         number = long(str(number), fromBase)
         if toBase == 10:
             return str(number)
@@ -319,7 +315,7 @@ class Math(callbacks.Privmsg):
         """
 
         irc.reply(convertcore.units(type))
-    units = wrap(units, [optional('something')])
+    units = wrap(units, [additional('something')])
 
 Class = Math
 
