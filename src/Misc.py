@@ -91,7 +91,13 @@ class Misc(callbacks.Privmsg):
                      if (private and not isPublic(cb)) or
                         (not private and isPublic(cb))]
             names.sort()
-            irc.reply(utils.commaAndify(names))
+            if names:
+                irc.reply(utils.commaAndify(names))
+            else:
+                if private:
+                    irc.reply('There are no private plugins.')
+                else:
+                    irc.reply('There are no public plugins.')
         else:
             cb = irc.getCallback(name)
             if cb is None:
@@ -116,7 +122,7 @@ class Misc(callbacks.Privmsg):
                     irc.reply(utils.commaAndify(commands))
                 else:
                     irc.error('That plugin exists, but it has no '
-                                   'commands with help.')
+                              'commands with help.')
 
     def apropos(self, irc, msg, args):
         """<string>
