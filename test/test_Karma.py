@@ -70,6 +70,7 @@ if sqlite is not None:
             try:
                 orig = conf.supybot.plugins.Karma.response()
                 conf.supybot.plugins.Karma.response.setValue(True)
+                original = conf.supybot.plugins.Karma.rankingDisplay()
                 self.assertNotError('foo++')
                 self.assertNotError('foo++')
                 self.assertNotError('foo++')
@@ -91,7 +92,6 @@ if sqlite is not None:
                 self.assertNotError('oof--')
                 self.assertNotError('oof--')
                 self.assertRegexp('karma', 'foo.*bar.*baz.*oof.*rab.*zab')
-                original = conf.supybot.plugins.Karma.rankingDisplay()
                 conf.supybot.plugins.Karma.rankingDisplay.setValue(4)
                 self.assertRegexp('karma', 'foo.*bar.*baz.*quux')
             finally:
