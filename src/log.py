@@ -63,7 +63,10 @@ class Formatter(logging.Formatter):
         for exn in deadlyExceptions:
             if issubclass(e.__class__, exn):
                 raise
-        return cgitb.text((E, e, tb)).rstrip('\r\n')
+        if conf.detailedTracebacks:
+            return cgitb.text((E, e, tb)).rstrip('\r\n')
+        else:
+            return logging.Formatter.formatException(self, (E, e, tb))
 
 
 class BetterStreamHandler(logging.StreamHandler):
