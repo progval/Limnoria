@@ -433,7 +433,7 @@ class IrcObjectProxy(RichReplyMethods):
                 command = getattr(cb, name)
                 Privmsg.handled = True
                 if cb.threaded:
-                    t = CommandThread(cb.callCommand, command,
+                    t = CommandThread(target=self._callCommand, command,
                                       self, self.msg, self.args)
                     t.start()
                 else:
