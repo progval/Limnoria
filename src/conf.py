@@ -577,7 +577,6 @@ registerGlobalValue(supybot.commands.defaultPlugins, 'importantPlugins',
 
 # supybot.commands.disabled moved to callbacks for canonicalName.
 
-
 ###
 # supybot.abuse.  For stuff relating to abuse of the bot.
 ###
@@ -637,6 +636,9 @@ registerGlobalValue(supybot.drivers, 'module',
 ###
 # supybot.directories, for stuff relating to directories.
 ###
+
+# XXX This shouldn't make directories willy-nilly.  As it is now, if it's
+#     configured, it'll still make the default directories, I think.
 class Directory(registry.String):
     def __call__(self):
         # ??? Should we perhaps always return an absolute path here?
@@ -794,10 +796,10 @@ registerGlobalValue(supybot.databases.types.cdb, 'maximumModifications',
 # Protocol information.
 ###
 originalIsNick = ircutils.isNick
-def isNick(s, strictRfc=None):
+def isNick(s, strictRfc=None, **kw):
     if strictRfc is None:
         strictRfc = supybot.protocols.irc.strictRfc()
-    return originalIsNick(s, strictRfc=strictRfc)
+    return originalIsNick(s, strictRfc=strictRfc, **kw)
 ircutils.isNick = isNick
 
 ###
