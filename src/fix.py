@@ -120,6 +120,9 @@ class set(object):
         for x in t:
             self.d[x] = None
 
+    def __len__(self):
+        return len(self.d)
+
     def add(self, x):
         self.d[x] = None
 
