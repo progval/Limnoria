@@ -62,3 +62,18 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(utils.distance('a', 'ab'), 1)
         self.assertEqual(utils.distance('foo', ''), 3)
         self.assertEqual(utils.distance('', 'foo'), 3)
+
+    def testAbbrev(self):
+        L = ['abc', 'bcd', 'bbe', 'foo', 'fool']
+        d = utils.abbrev(L)
+        def getItem(s):
+            return d[s]
+        self.assertRaises(KeyError, getItem, 'f')
+        self.assertRaises(KeyError, getItem, 'fo')
+        self.assertRaises(KeyError, getItem, 'b')
+        self.assertEqual(d['bb'], 'bbe')
+        self.assertEqual(d['bc'], 'bcd')
+        self.assertEqual(d['a'], 'abc')
+        self.assertEqual(d['ab'], 'abc')
+        self.assertEqual(d['fool'], 'fool')
+        self.assertEqual(d['foo'], 'foo')

@@ -77,7 +77,8 @@ def abbrev(strings):
             if abbreviation not in d:
                 d[abbreviation] = s
             else:
-                d[abbreviation] = None
+                if abbreviation not in strings:
+                    d[abbreviation] = None
     removals = []
     for key in d:
         if d[key] is None:
