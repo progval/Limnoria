@@ -97,31 +97,62 @@ class DbiNoteDB(dbi.DB):
             'text',
             ]
 
+    def __init__(self, *args, **kwargs):
+        dbi.DB.__init__(self, *args, **kwargs)
+        self.unRead = {}
+        self.unNotified = {}
+        for record in self:
+            self._addCache(record)
+
+    def _addCache(self, record):
+        if not record.read:
+            self.unRead.setdefault(record.to, []).append(record.id)
+        if not record.notified:
+            self.unNotified.setdefault(record.to, []).append(record.id)
+
+    def _removeCache(self, record):
+        if record.notified:
+            try:
+                self.unNotified[record.to].remove(record.id)
+            except (KeyError, ValueError):
+                pass
+        if record.read:
+            try:
+                self.unRead[record.to].remove(record.id)
+            except (KeyError, ValueError):
+                pass
+            
     def setRead(self, id):
         n = self.get(id)
         n.read = True
         n.notified = True
+        self._removeCache(n)
         self.set(id, n)
 
     def setNotified(self, id):
         n = self.get(id)
         n.notified = True
+        self._removeCache(n)
         self.set(id, n)
 
     def getUnnotifiedIds(self, to):
-        def p(note):
-            return not note.notified and note.to == to
-        return [note.id for note in self.select(p)]
+##         def p(note):
+##             return not note.notified and note.to == to
+##         return [note.id for note in self.select(p)]
+        return self.unNotified.get(to, [])
 
     def getUnreadIds(self, to):
-        def p(note):
-            return not note.read and note.to == to
-        return [note.id for note in self.select(p)]
+##         def p(note):
+##             return not note.read and note.to == to
+##         return [note.id for note in self.select(p)]
+        return self.unRead.get(to, [])
 
     def send(self, frm, to, public, text):
         n = self.Record(frm=frm, to=to, text=text,
                         at=time.time(), public=public)
-        return self.add(n)
+        id = self.add(n)
+        self._addCache(n)
+        return id
         
     
 def NoteDB():
