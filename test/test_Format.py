@@ -70,4 +70,13 @@ class UtilitiesTestCase(PluginTestCase):
     def testConcat(self):
         self.assertResponse('concat foo bar baz', 'foobar baz')
 
+    def testCut(self):
+        self.assertResponse('cut 5 abcdefgh', 'abcde')
+        self.assertResponse('cut 5 abcd', 'abcd')
+        self.assertResponse('cut -1 abcde', 'abcd')
+
+    def testField(self):
+        self.assertResponse('field 2 foo bar baz', 'bar')
+        self.assertResponse('field -1 foo bar baz', 'baz')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

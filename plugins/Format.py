@@ -159,6 +159,38 @@ class Format(callbacks.Privmsg):
         (first, second) = privmsgs.getArgs(args, required=2)
         irc.reply(first+second)
 
+    def cut(self, irc, msg, args):
+        """<size> <text>
+
+        Cuts <text> down to <size> by chopping off the rightmost characters in
+        excess of <size>.  If <size> is a negative number, it chops that many
+        characters off the end of <text>.
+        """
+        (size, text) = privmsgs.getArgs(args, required=2)
+        try:
+            size = int(size)
+        except ValueError:
+            irc.error('%r is not a valid integer.' % size)
+        irc.reply(text[:size])
+
+    def field(self, irc, msg, args):
+        """<number> <text>
+
+        Returns the <number>th space-separated field of <text>.  I.e., if text
+        is "foo bar baz" and <number> is 2, "bar" is returned.
+        """
+        (number, text) = privmsgs.getArgs(args, required=2)
+        try:
+            index = int(number)
+            if index > 0:
+                index -= 1
+        except ValueError:
+            irc.error('%r is not a valid integer.' % number)
+        try:
+            irc.reply(text.split()[index])
+        except IndexError:
+            irc.error('That\'s not a valid field.')
+                     
     def format(self, irc, msg, args):
         """<format string> [<arg> ...]
 
