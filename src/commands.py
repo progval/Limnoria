@@ -368,6 +368,7 @@ def getChannelDb(irc, msg, args, state, **kwargs):
             raise
         else:
             state.channel = channelSpecific.channel()
+            state.args.append(state.channel)
 
 def inChannel(irc, msg, args, state):
     if not state.channel:
