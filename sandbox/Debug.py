@@ -65,7 +65,45 @@ def getTracer(fd):
 
 class Debug(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
-    def eval(self, irc, msg, args, text):
+    def __init__(self):
+        # Setup exec command.
+        setattr(self.__class__, 'exec', self.__class__._exec)
+        privmsgs.CapabilityCheckingPrivmsg.__init__(self)
+
+    _evalEnv = {'_': None,
+                '__': None,
+                '___': None,
+                }
+    _evalEnv.update(globals())
+    def eval(self, irc, msg, args, s):
+        """<expression>
+        
+        Evaluates <expression> (which should be a Python expression) and
+        returns its value.  If an exception is raised, reports the
+        exception (and logs the traceback to the bot's logfile).
+        """
+        try:
+            self._evalEnv.update(locals())
+            x = eval(s, self._evalEnv, self._evalEnv)
+            self._evalEnv['___'] = self._evalEnv['__']
+            self._evalEnv['__'] = self._evalEnv['_']
+            self._evalEnv['_'] = x
+            irc.reply(repr(x))
+        except SyntaxError, e:
+            irc.reply('%s: %s' % (utils.exnToString(e),
+                                  utils.quoted(s)))
+    eval = wrap(eval, ['text'])
+
+    def _exec(self, irc, msg, args, s):
+        """<statement>
+        
+        Execs <code>.  Returns success if it didn't raise any exceptions.
+        """
+        exec s
+        irc.replySuccess()
+    _exec = wrap(_exec, ['text'])
+
+    def simpleeval(self, irc, msg, args, text):
         """<expression>
 
         Evaluates the given expression.
@@ -74,7 +112,7 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(repr(eval(text)))
         except Exception, e:
             irc.reply(utils.exnToString(e))
-    eval = wrap(eval, ['text'])
+    simpleeval = wrap(simpleeval, ['text'])
 
     def exn(self, irc, msg, args, name):
         """<exception name>

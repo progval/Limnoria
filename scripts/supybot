@@ -152,10 +152,6 @@ if __name__ == '__main__':
                       dest='daemon',
                       help='Determines whether the bot will daemonize.  '
                            'This is a no-op on non-POSIX systems.')
-    parser.add_option('', '--allow-eval', action='store_true',
-                      dest='allowEval',
-                      help='Determines whether the bot will '
-                           'allow the evaluation of arbitrary Python code.')
     parser.add_option('', '--allow-default-owner', action='store_true',
                       dest='allowDefaultOwner',
                       help='Determines whether the bot will allow its '
@@ -314,7 +310,6 @@ if __name__ == '__main__':
         except EnvironmentError, e:
             log.error('Error opening pid file %s: %s', pidFile, e)
 
-    conf.allowEval = options.allowEval
     conf.allowDefaultOwner = options.allowDefaultOwner
 
     if not os.path.exists(conf.supybot.directories.log()):

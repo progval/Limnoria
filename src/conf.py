@@ -65,13 +65,6 @@ version = '0.80.0pre3'
 daemonized = False
 
 ###
-# allowEval: True if the owner (and only the owner) should be able to eval
-#            arbitrary Python code.  This is specifically *not* a registry
-#            variable because it shouldn't be modifiable in the bot.
-###
-allowEval = False
-
-###
 # allowDefaultOwner: True if supybot.capabilities is allowed not to include
 #                    '-owner' -- that is, if all users should be automatically
 #                    recognized as owners.  That would suck, hence we require a

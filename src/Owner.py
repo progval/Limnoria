@@ -236,8 +236,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         self.log = LogProxy(self.log)
         # Setup command flood detection.
         self.commands = ircutils.FloodQueue(60)
-        # Setup exec command.
-        setattr(self.__class__, 'exec', self.__class__._exec)
         # Setup Irc objects, connected to networks.  If world.ircs is already
         # populated, chances are that we're being reloaded, so don't do this.
         if not world.ircs:
@@ -376,66 +374,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 self.Proxy(irc, msg, tokens)
             except SyntaxError, e:
                 irc.queueMsg(callbacks.error(msg, str(e)))
-
-    if conf.allowEval:
-        _evalEnv = {'_': None,
-                    '__': None,
-                    '___': None,
-                    }
-        _evalEnv.update(globals())
-        def eval(self, irc, msg, args, s):
-            """<expression>
-
-            Evaluates <expression> (which should be a Python expression) and
-            returns its value.  If an exception is raised, reports the
-            exception (and logs the traceback to the bot's logfile).
-            """
-            if conf.allowEval:
-                try:
-                    self._evalEnv.update(locals())
-                    x = eval(s, self._evalEnv, self._evalEnv)
-                    self._evalEnv['___'] = self._evalEnv['__']
-                    self._evalEnv['__'] = self._evalEnv['_']
-                    self._evalEnv['_'] = x
-                    irc.reply(repr(x))
-                except SyntaxError, e:
-                    irc.reply('%s: %s' % (utils.exnToString(e),
-                                          utils.quoted(s)))
-                except Exception, e:
-                    self.log.exception('Uncaught exception in Owner.eval.\n'
-                                       'This is not a bug.  Please do not '
-                                       'report it.')
-                    irc.reply(utils.exnToString(e))
-            else:
-                # There's a potential that allowEval got changed after we were
-                # loaded.  Let's be extra-special-safe.
-                irc.error('You must run Supybot with the --allow-eval '
-                          'option for this command to be enabled.')
-        eval = wrap(eval, ['text'])
-
-        def _exec(self, irc, msg, args, s):
-            """<statement>
-
-            Execs <code>.  Returns success if it didn't raise any exceptions.
-            """
-            if conf.allowEval:
-                try:
-                    exec s
-                    irc.replySuccess()
-                except Exception, e:
-                    irc.reply(utils.exnToString(e))
-            else:
-                # There's a potential that allowEval got changed after we were
-                # loaded.  Let's be extra-special-safe.
-                irc.error('You must run Supybot with the --allow-eval '
-                          'option for this command to be enabled.')
-        _exec = wrap(_exec, ['text'])
-    else:
-        def eval(self, irc, msg, args):
-            """Run your bot with --allow-eval if you want this to work."""
-            irc.error('You must give your bot the --allow-eval option for '
-                      'this command to be enabled.')
-        _exec = eval
 
     def announce(self, irc, msg, args, text):
         """<text>

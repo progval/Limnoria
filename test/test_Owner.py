@@ -37,33 +37,8 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
     def testHelpLog(self):
         self.assertHelp('help log')
 
-    def testEval(self):
-        try:
-            originalConfAllowEval = conf.allowEval
-            conf.allowEval = True
-            self.assertNotError('eval 100')
-            s = "[irc.__class__ for irc in " \
-                "irc.getCallback('Relay').ircstates.keys()]"
-            self.assertNotRegexp('eval ' + s, '^SyntaxError')
-            conf.allowEval = False
-            self.assertError('eval 100')
-        finally:
-            conf.allowEval = originalConfAllowEval
-
     def testSrcAmbiguity(self):
         self.assertError('addcapability foo bar')
-
-    def testExec(self):
-        try:
-            originalConfAllowEval = conf.allowEval
-            conf.allowEval = True
-            self.assertNotError('exec conf.foo = True')
-            self.failUnless(conf.foo)
-            del conf.foo
-            conf.allowEval = False
-            self.assertError('exec conf.foo = True')
-        finally:
-            conf.allowEval = originalConfAllowEval
 
     def testIrcquote(self):
         self.assertResponse('ircquote PRIVMSG %s :foo' % self.irc.nick, 'foo')
