@@ -310,6 +310,11 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         """takes no arguments"""
         irc.reply(msg, str(os.system('cvs up')))
 
+    def say(self, irc, msg, args):
+        """<channel> <text>"""
+        (channel, text) = getArgs(args, needed=2)
+        irc.queueMsg(ircmsgs.privmsg(channel, text))
+
 
 standardPrivmsgModules = [OwnerCommands]
 
