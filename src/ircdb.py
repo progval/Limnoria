@@ -480,6 +480,7 @@ class UsersDB(object):
             del self._hostmaskCache[id]
         ### FIXME: what if the new hostmasks overlap with another hostmask?
         self.users[id] = user
+        self.flush()
 
     def delUser(self, id):
         """Removes a user from the database."""
@@ -493,6 +494,7 @@ class UsersDB(object):
             for hostmask in self._hostmaskCache[id]:
                 del self._hostmaskCache[hostmask]
             del self._hostmaskCache[id]
+        self.flush()
 
     def newUser(self):
         """Allocates a new user in the database and returns it and its id."""
@@ -500,7 +502,9 @@ class UsersDB(object):
         id = self.nextId
         self.nextId += 1
         self.users.append(user)
+        self.flush()
         return (id, user)
+    
 
 
 class ChannelsDictionary(object):
@@ -523,6 +527,7 @@ class ChannelsDictionary(object):
         """Sets a given channel to the IrcChannel object given."""
         channel = channel.lower()
         self.dict[channel] = ircChannel
+        self.flush()
 
     def flush(self):
         """Flushes the channel database to its file."""
@@ -538,9 +543,6 @@ class ChannelsDictionary(object):
 ###
 users = UsersDB(os.path.join(conf.confDir, conf.userfile))
 channels = ChannelsDictionary(os.path.join(conf.confDir, conf.channelfile))
-
-world.flushers.append(users.flush)
-world.flushers.append(channels.flush)
 
 ###
 # Useful functions for checking credentials.
