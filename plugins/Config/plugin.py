@@ -27,10 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-"""
-Handles configuration of the bot while it is running.
-"""
-
 import os
 import getopt
 import signal

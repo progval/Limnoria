@@ -27,10 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-"""
-Miscellaneous commands.
-"""
-
 import supybot
 
 import supybot.fix as fix

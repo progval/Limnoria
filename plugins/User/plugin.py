@@ -27,10 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-"""
-Provides commands useful to users in general. This plugin is loaded by default.
-"""
-
 import supybot.fix as fix
 
 import re
