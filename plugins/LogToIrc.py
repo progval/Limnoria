@@ -103,9 +103,10 @@ class IrcHandler(logging.Handler):
 class IrcFormatter(log.Formatter):
     def formatException(self, (E, e, tb)):
         L = [utils.exnToString(e), '::']
-        frames = utils.stackTrace(frame=tb.tb_frame, compact=True).split()
+        frames = utils.stackTrace(frame=tb.tb_frame).split()
         frames.reverse()
         L.extend(frames)
+        frames.reverse() # Back to front, please.
         del tb
         while sum(imap(len, L)) > 350:
             L.pop()
