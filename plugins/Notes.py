@@ -106,10 +106,11 @@ class Notes(DBHandler, callbacks.Privmsg):
         "set a note as unread"
         noteid = privmsgs.getArgs(args) 
         self.cursor.execute("""UPDATE notes
-                               SET read="False"
+                               SET read='False'
                                where id = %d""" % int(noteid))
         self.db.commit()
-        
+        irc.reply(msg, conf.replySuccess)    
+    
     def sendnote(self, irc, msg, args):
         "sends a new note to an IRC user"
         # sendnote <user> <text>
@@ -126,10 +127,10 @@ class Notes(DBHandler, callbacks.Privmsg):
         recipID = self.getUserID(recipient)
         if ircutils.isChannel(msg.args[0]): public = "True"
         else: public = "False"
-        self.cursor.execute("""INSERT INTO notes
-                               VALUES (%d,%d,%d,'False',%s,%s)""" %\
-                               (int(senderID), int(recipID), int(time.time()),
-                               public, note))
+        self.cursor.execute("""INSERT INTO notes VALUES 
+                               (NULL, %d, %d, %d, %s, %s, %s)""", 
+                               int(senderID), int(recipID), time.time(),
+                               'False', public, note)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
