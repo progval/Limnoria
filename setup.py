@@ -40,6 +40,7 @@ plugins = [
     'Format',
     'Google',
     'Herald',
+    'Later',
     'Math',
     'Network',
     'Misc',
