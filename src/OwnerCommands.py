@@ -319,16 +319,6 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         ircdb.channels.reload()
         irc.reply(msg, conf.replySuccess)
 
-    def cvsup(self, irc, msg, args):
-        """takes no arguments
-
-        Returns the return code of 'cvs up'.  Do note that this command blocks
-        the entire bot until the cvs up finishes.  If you're using ext
-        authentication, you'll want to type the password in on the terminal
-        the bot is running on, or he'll just freeze.
-        """
-        irc.reply(msg, str(os.system('cvs up')))
-
     def say(self, irc, msg, args):
         """<channel> <text>
 
