@@ -108,21 +108,21 @@ class Config(callbacks.Privmsg):
         name = self._canonicalizeName(name)
         group = getWrapper(name)
         if groups:
-            L = group.children.keys()
+            L = []
+            for (vname, v) in group.children.iteritems():
+                if v.added:
+                    L.append(vname)
             if L:
                 utils.sortBy(str.lower, L)
                 irc.reply(utils.commaAndify(L))
             else:
                 irc.reply('%s has no subgroups.' % name)
         else:
-            if hasattr(group, 'getValues'):
-                try:
-                    L = zip(*group.getValues(fullNames=False))[0]
-                    irc.reply(utils.commaAndify(L))
-                except TypeError:
-                    irc.error('There don\'t seem to be any values in %s'%name)
-            else:
-                irc.error('%r is not a valid configuration group.' % name)
+            try:
+                L = zip(*group.getValues(fullNames=False))[0]
+                irc.reply(utils.commaAndify(L))
+            except TypeError:
+                irc.error('There don\'t seem to be any values in %s'%name)
 
     def search(self, irc, msg, args):
         """<word>
