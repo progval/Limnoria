@@ -472,6 +472,7 @@ class Irc(IrcCommandDispatcher):
             if self.outstandingPing:
                 debug.msg('Reconnecting, ping not replied to.', 'normal')
                 self.driver.reconnect()
+                self.reset()
             else:
                 self.lastping = now
                 now = str(int(now))
