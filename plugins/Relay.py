@@ -213,7 +213,7 @@ class Relay(callbacks.Privmsg):
             if abbreviation != self.abbreviations[realIrc]:
                 Channel = otherIrc.state.channels[channel]
                 usersS = ', '.join([s for s in Channel.users if s.strip()!=''])
-                users.append('\x02%s\x02: %s' % (abbreviation, usersS))
+                users.append('%s: %s' % (ircutils.bold(abbreviation), usersS))
         irc.reply(msg, '; '.join(users))
 
     def relaywhois(self, irc, msg, args):
@@ -260,11 +260,17 @@ class Relay(callbacks.Privmsg):
         replyIrc.reply(replyMsg, s)
             
     def _formatPrivmsg(self, nick, abbreviation, msg):
+        # colorize nicks
+        color_index = (hash(nick) % 14) + 2
+        color = ircutils._colors.keys()[color_index]
         if ircmsgs.isAction(msg):
-            return '* \x02%s\x02@%s %s' % \
-                   (nick, abbreviation, ircmsgs.unAction(msg))
+            return '* %s@%s %s' % \
+                   (ircutils.mircColor(nick, color), abbreviation,
+                    ircmsgs.unAction(msg))
         else:
-            return '<\x02%s\x02@%s> %s' % (nick, abbreviation, msg.args[1])
+            return '<%s@%s> %s' % \
+				   (ircutils.mircColor(nick, color), abbreviation,
+                    msg.args[1])
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)

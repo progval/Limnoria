@@ -70,6 +70,23 @@ class FunctionsTestCase(unittest.TestCase):
         s = ircutils.bold('foo')
         self.assertEqual(s[0], '\x02')
         self.assertEqual(s[-1], '\x02')
+
+    def testMircColor(self):
+        # No colors provided should return the same string
+        s = 'foo'
+        self.assertEqual(s, ircutils.mircColor(s))
+        # Test positional args
+        self.assertEqual('\x030foo\x03',
+                         ircutils.mircColor(s, 'white'))
+        self.assertEqual('\x031,2foo\x03',
+                         ircutils.mircColor(s, 'black', 'blue'))
+        self.assertEqual('\x03,3foo\x03',
+                         ircutils.mircColor(s, None, 'green'))
+        # Test keyword args
+        self.assertEqual('\x034foo\x03', ircutils.mircColor(s, fg='red'))
+        self.assertEqual('\x03,5foo\x03', ircutils.mircColor(s, bg='brown'))
+        self.assertEqual('\x036,7foo\x03',
+                         ircutils.mircColor(s, bg='orange', fg='purple'))
         
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'

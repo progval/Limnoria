@@ -197,6 +197,35 @@ def bold(s):
     """Returns the string s, bolded."""
     return "\x02%s\x02" % s
 
+mircColors = {None: '',
+              'white': '0',
+              'black': '1',
+              'blue': '2',
+              'green': '3',
+              'red': '4',
+              'brown': '5',
+              'purple': '6',
+              'orange': '7',
+              'yellow': '8',
+              'light green': '9',
+              'teal': '10',
+              'light blue': '11',
+              'dark blue': '12',
+              'pink': '13',
+              'dark grey': '14',
+              'light grey': '15'}
+
+def mircColor(s, fg=None, bg=None):
+	"""Returns the string s, with the appropriate mIRC color codes applied."""
+	if fg is None and bg is None:
+		return s
+	else:
+		if bg is None:
+			return "\x03%s%s\x03" % (mircColors[fg], s)
+		else:
+			return "\x03%s,%s%s\x03" % (mircColors[fg], mircColors[bg], s)
+			  
+
 def isValidArgument(s):
     """Returns if s is strictly a valid argument for an IRC message."""
     return '\r' not in s and '\n' not in s and '\x00' not in s
