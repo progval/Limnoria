@@ -503,16 +503,16 @@ class MoobotFactoids(callbacks.Privmsg):
          last_requested_at, requested_count, locked_by, locked_at) = info
         # First, creation info.
         # Map the integer created_by to the username
-        creat_by = ircdb.users.getUser(created_by).name
-        creat_at = time.strftime(conf.supybot.reply.format.time(),
+        created_by = plugins.getUserName(created_by)
+        created_at = time.strftime(conf.supybot.reply.format.time(),
                                  time.localtime(int(created_at)))
-        s += "Created by %s on %s." % (creat_by, creat_at)
+        s += "Created by %s on %s." % (created_by, created_at)
         # Next, modification info, if any.
         if modified_by is not None:
-            mod_by = ircdb.users.getUser(modified_by).name
-            mod_at = time.strftime(conf.supybot.reply.format.time(),
+            modified_by = plugins.getUserName(modified_by)
+            modified_at = time.strftime(conf.supybot.reply.format.time(),
                                    time.localtime(int(modified_at)))
-            s += " Last modified by %s on %s." % (mod_by, mod_at)
+            s += " Last modified by %s on %s." % (modified_by, modified_at)
         # Next, last requested info, if any
         if last_requested_by is not None:
             last_by = last_requested_by  # not an int user id
@@ -526,7 +526,7 @@ class MoobotFactoids(callbacks.Privmsg):
         if locked_at is not None:
             lock_at = time.strftime(conf.supybot.reply.format.time(),
                                      time.localtime(int(locked_at)))
-            lock_by = ircdb.users.getUser(locked_by).name
+            lock_by = plugins.getUserName(locked_by)
             s += " Locked by %s on %s." % (lock_by, lock_at)
         irc.reply(s)
     factinfo = wrap(factinfo, ['channeldb', 'text'])
@@ -605,7 +605,7 @@ class MoobotFactoids(callbacks.Privmsg):
 
     def _mostAuthored(self, irc, channel, limit):
         results = self.db.mostAuthored(channel, limit)
-        L = ['%s (%s)' % (ircdb.users.getUser(t[0]).name, int(t[1]))
+        L = ['%s (%s)' % (plugins.getUserName(t[0]), int(t[1]))
              for t in results]
         if L:
             irc.reply('Most prolific %s: %s' %
@@ -693,18 +693,17 @@ class MoobotFactoids(callbacks.Privmsg):
         irc.reply(s)
     listvalues = wrap(listvalues, ['channeldb', 'text'])
 
-    def remove(self, irc, msg, args, channel, key):
+    def remove(self, irc, msg, args, channel, _, key):
         """[<channel>] <factoid key>
 
         Deletes the factoid with the given key.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        _ = self._getUserId(irc, msg.prefix)
         _ = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         self.db.removeFactoid(channel, key)
         irc.replySuccess()
-    remove = wrap(remove, ['channeldb', 'text'])
+    remove = wrap(remove, ['channeldb', 'user', 'text'])
 
     def random(self, irc, msg, args, channel):
         """[<channel>]
