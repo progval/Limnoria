@@ -48,13 +48,13 @@ if sqlite is not None:
 
         def testListNews(self):
             # These should both fail first, as they will have nothing in the DB
-            self.assertError('listnews')
-            self.assertError('listnews #channel')
+            self.assertRegexp('news', 'no news')
+            self.assertRegexp('news #channel', 'no news')
             # Now we'll add news and make sure listnews doesn't fail
             self.assertNotError('addnews #channel 0 subject: foo')
-            self.assertNotError('listnews #channel')
+            self.assertNotError('news #channel')
             self.assertNotError('addnews 0 subject: foo')
-            self.assertNotError('listnews')
+            self.assertNotError('news')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -134,7 +134,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
     addnews = privmsgs.checkChannelCapability(addnews, 'news')
 
-    def readnews(self, irc, msg, args):
+    def _readnews(self, irc, msg, args):
         """[<channel>] <number>
 
         Display the text for news item with id <number> from <channel>.
@@ -147,52 +147,49 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor = db.cursor()
         cursor.execute("""SELECT news.item, news.subject, news.added_at,
                           news.expires_at, news.added_by FROM news
-                          WHERE news.id = %s""", id)
+                          WHERE news.id=%s""", id)
         if cursor.rowcount == 0:
             irc.error(msg, 'No news item matches that id.')
         else:
             item, subject, added_at, expires_at, added_by = cursor.fetchone()
-            s = '%s (Subject: "%s", added by %s on %s' % \
-                (item, subject, added_by,
-                 time.strftime(conf.humanTimestampFormat,
-                               time.localtime(int(added_at))))
-            if int(expires_at) > 0:
-                s += ', expires at %s)' % \
+            if int(expires_at) == 0:
+                s = '%s (Subject: "%s", added by %s on %s)' % \
+                    (item, subject, added_by,
                      time.strftime(conf.humanTimestampFormat,
-                                   time.localtime(int(expires_at)))
+                                   time.localtime(int(added_at))))
             else:
-                s += ')'
+                s = '%s (Subject: "%s", added by %s on %s, expires at %s)' % \
+                    (item, subject, added_by,
+                     time.strftime(conf.humanTimestampFormat,
+                                   time.localtime(int(added_at))),
+                     time.strftime(conf.humanTimestampFormat,
+                                   time.localtime(int(expires_at))))
             irc.reply(msg, s)
 
-    def listnews(self, irc, msg, args):
-        """[<channel>]
+    def news(self, irc, msg, args):
+        """[<channel>] [<number>]
 
-        Display the news items for <channel> in the format of "id) subject".
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
+        Display the news items for <channel> in the format of '(#id) subject'.
+        If <number> is given, retrieve only that news item; otherwise retrieve
+        all news items.  <channel> is only necessary if the message isn't sent
+        in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
+        number = privmsgs.getArgs(args, needed=0, optional=1)
+        if number:
+            self._readnews(irc, msg, [channel, number])
+            return
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT news.id, news.subject FROM news
-                          WHERE (news.expires_at > %s)
-                          OR (news.expires_at = 0)""",
-                       int(time.time()))
+                          WHERE news.expires_at > %s
+                          OR news.expires_at=0""", int(time.time()))
         if cursor.rowcount == 0:
-            irc.error(msg, 'No news items for channel: %s' % channel)
+            irc.reply(msg, 'No news for %s' % channel)
         else:
-            items = []
-            for (id, subject) in cursor.fetchall():
-                items.append('(#%s) %s' % (id, subject))
-            totalResults = len(items)
-            if ircutils.shrinkList(items, '; ', 400):
-                s = 'News for %s (%s of %s shown): %s' % \
-                    (channel, len(items), totalResults, '; '.join(items))
-            else:
-                s = 'News for %s: %s' % (channel, '; '.join(items))
+            items = ['(#%s) %s' % (id, s) for (id, s) in cursor.fetchall()]
+            s = 'News for %s: %s' % (channel, '; '.join(items))
             irc.reply(msg, s)
-                
-        
 
     def removenews(self, irc, msg, args):
         """[<channel>] <number>
