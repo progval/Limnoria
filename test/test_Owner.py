@@ -117,6 +117,9 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('unrename admin')
         self.assertRegexp('list admin', 'removecapability')
         self.assertNotRegexp('list admin', 'rmcap')
+
+    def testDefaultPluginErrorsWhenCommandNotInPlugin(self):
+        self.assertError('defaultplugin foobar owner')
         
 
 

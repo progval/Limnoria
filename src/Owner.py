@@ -54,6 +54,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.irclib as irclib
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
@@ -200,10 +201,10 @@ class LogProxy(object):
         self.im_func = holder()
         self.im_func.func_name = 'log'
 
-    def __call__(self, irc, msg, args):
-        text = privmsgs.getArgs(args)
+    def __call__(self, irc, msg, args, text):
         log.critical(text)
         irc.replySuccess()
+    __call__ = wrap(__call__, ['text'])
 
     def __getattr__(self, attr):
         return getattr(self.log, attr)
@@ -379,7 +380,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     '___': None,
                     }
         _evalEnv.update(globals())
-        def eval(self, irc, msg, args):
+        def eval(self, irc, msg, args, s):
             """<expression>
 
             Evaluates <expression> (which should be a Python expression) and
@@ -387,7 +388,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             exception (and logs the traceback to the bot's logfile).
             """
             if conf.allowEval:
-                s = privmsgs.getArgs(args)
                 try:
                     self._evalEnv.update(locals())
                     x = eval(s, self._evalEnv, self._evalEnv)
@@ -407,14 +407,14 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 # loaded.  Let's be extra-special-safe.
                 irc.error('You must run Supybot with the --allow-eval '
                           'option for this command to be enabled.')
+        eval = wrap(eval, ['text'])
 
-        def _exec(self, irc, msg, args):
+        def _exec(self, irc, msg, args, s):
             """<statement>
 
             Execs <code>.  Returns success if it didn't raise any exceptions.
             """
             if conf.allowEval:
-                s = privmsgs.getArgs(args)
                 try:
                     exec s
                     irc.replySuccess()
@@ -425,6 +425,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 # loaded.  Let's be extra-special-safe.
                 irc.error('You must run Supybot with the --allow-eval '
                           'option for this command to be enabled.')
+        _exec = wrap(_exec, ['text'])
     else:
         def eval(self, irc, msg, args):
             """Run your bot with --allow-eval if you want this to work."""
@@ -432,19 +433,19 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                       'this command to be enabled.')
         _exec = eval
 
-    def announce(self, irc, msg, args):
+    def announce(self, irc, msg, args, text):
         """<text>
 
         Sends <text> to all channels the bot is currently on and not
         lobotomized in.
         """
-        text = privmsgs.getArgs(args)
         u = ircdb.users.getUser(msg.prefix)
         text = 'Announcement from my owner (%s): %s' % (u.name, text)
         for channel in irc.state.channels:
             c = ircdb.channels.getChannel(channel)
             if not c.lobotomized:
                 irc.queueMsg(ircmsgs.privmsg(channel, text))
+    announce = wrap(announce, ['text'])
 
     def defaultplugin(self, irc, msg, args):
         """[--remove] <command> [<plugin>]
@@ -469,11 +470,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 s = 'I don\'t have a default plugin set for that command.'
                 irc.error(s)
         elif not cbs:
-            irc.errorInvalid('command', command, Raise=True)
+            irc.errorInvalid('command', command)
         elif plugin:
             cb = irc.getCallback(plugin)
             if cb is None:
-                irc.errorInvalid('plugin', plugin, Raise=True)
+                irc.errorInvalid('plugin', plugin)
+            if not cb.isCommand(command):
+                irc.errorInvalid('command in the %s plugin' % plugin, command)
             registerDefaultPlugin(command, plugin)
             irc.replySuccess()
         else:
@@ -483,7 +486,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 s = 'I don\'t have a default plugin set for that command.'
                 irc.error(s)
 
-    def ircquote(self, irc, msg, args):
+    def ircquote(self, irc, msg, args, s):
         """<string to be sent to the server>
 
         Sends the raw string given to the server.
@@ -495,14 +498,14 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.error(utils.exnToString(e))
         else:
             irc.queueMsg(m)
+    ircquote = wrap(ircquote, ['text'])
 
-    def quit(self, irc, msg, args):
+    def quit(self, irc, msg, args, text):
         """[<text>]
 
         Exits the bot with the QUIT message <text>.  If <text> is not given,
         your nick will be substituted.
         """
-        text = privmsgs.getArgs(args, required=0, optional=1)
         if not text:
             text = msg.nick
         irc.noReply()
@@ -511,6 +514,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         for irc in world.ircs[:]:
             irc.queueMsg(m)
             irc.die()
+    quit = wrap(quit, [additional('text')])
 
     def flush(self, irc, msg, args):
         """takes no arguments
@@ -520,8 +524,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         """
         world.flush()
         irc.replySuccess()
+    flush = wrap(flush)
 
-    def upkeep(self, irc, msg, args):
+    def upkeep(self, irc, msg, args, level):
         """[<level>]
 
         Runs the standard upkeep stuff (flushes and gc.collects()).  If given
@@ -529,7 +534,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         level is "high", which causes the bot to flush a lot of caches as well
         as do normal upkeep stuff.
         """
-        level = privmsgs.getArgs(args, required=0, optional=1)
         L = []
         if level == 'high':
             L.append('Regexp cache flushed: %s cleared.' %
@@ -560,8 +564,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             L.append('Garbage!  %r.' % gc.garbage)
         L.append('%s collected.' % utils.nItems('object', collected))
         irc.reply('  '.join(L))
+    upkeep = wrap(upkeep, [additional(('literal', ['high']))])
 
-    def load(self, irc, msg, args):
+    def load(self, irc, msg, args, optlist, name):
         """[--deprecated] <plugin>
 
         Loads the plugin <plugin> from any of the directories in
@@ -569,12 +574,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         installed directory and 'plugins' in the current directory.
         --deprecated is necessary if you wish to load deprecated plugins.
         """
-        (optlist, args) = getopt.getopt(args, '', ['deprecated'])
         ignoreDeprecation = False
         for (option, argument) in optlist:
-            if option == '--deprecated':
+            if option == 'deprecated':
                 ignoreDeprecation = True
-        name = privmsgs.getArgs(args)
         if name.endswith('.py'):
             name = name[:-3]
         if irc.getCallback(name):
@@ -596,14 +599,14 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         name = cb.name() # Let's normalize this.
         conf.registerPlugin(name, True)
         irc.replySuccess()
+    load = wrap(load, [getopts({'deprecated': ''}), 'something'])
 
-    def reload(self, irc, msg, args):
+    def reload(self, irc, msg, args, name):
         """<plugin>
 
         Unloads and subsequently reloads the plugin by name; use the 'list'
         command to see a list of the currently loaded plugins.
         """
-        name = privmsgs.getArgs(args)
         callbacks = irc.removeCallback(name)
         if callbacks:
             module = sys.modules[callbacks[0].__module__]
@@ -625,15 +628,15 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error('No plugin %s exists.' % name)
         else:
             irc.error('There was no plugin %s.' % name)
+    reload = wrap(reload, ['something'])
 
-    def unload(self, irc, msg, args):
+    def unload(self, irc, msg, args, name):
         """<plugin>
 
         Unloads the callback by name; use the 'list' command to see a list
         of the currently loaded callbacks.  Obviously, the Owner plugin can't
         be unloaded.
         """
-        name = privmsgs.getArgs(args)
         if ircutils.strEqual(name, self.name()):
             irc.error('You can\'t unload the %s plugin.' % name)
             return
@@ -649,15 +652,15 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         else:
             irc.error('There was no plugin %s.' % name)
+    unload = wrap(unload, ['something'])
 
-    def defaultcapability(self, irc, msg, args):
+    def defaultcapability(self, irc, msg, args, action, capability):
         """{add|remove} <capability>
 
         Adds or removes (according to the first argument) <capability> from the
         default capabilities given to users (the configuration variable
         supybot.capabilities stores these).
         """
-        (action, capability) = privmsgs.getArgs(args, required=2)
         if action == 'add':
             conf.supybot.capabilities().add(capability)
             irc.replySuccess()
@@ -673,9 +676,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     anticap = ircdb.makeAntiCapability(capability)
                     conf.supybot.capabilities().add(anticap)
                     irc.replySuccess()
-        else:
-            irc.errorInvalid('action to take', action,
-                             'Valid actions include "add" and "remove".')
+    defaultcapability = wrap(defaultcapability,
+                             [('literal', ['add','remove']), 'capability'])
             
     def disable(self, irc, msg, args):
         """[<plugin>] <command>
