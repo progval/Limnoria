@@ -59,7 +59,13 @@ _chanCap = ircdb.makeChannelCapability
 class Enforcer(callbacks.Privmsg):
     started = False
     def startenforcer(self, irc, msg, args):
-        """[<CHANSERV> <revenge>]"""
+        """[<CHANSERV> <revenge>]
+
+        Starts the Enforcer plugin.  <chanserv> is the nick for the chanserv
+        aspect of Services (it defaults to ChanServ).  <revenge> is whether to
+        be *really* nasty to people who break the rules (it's often referred
+        to in other bots as 'bitch mode.')  It defaults to True.
+        """
         self.topics = {}
         (chanserv, revenge) = privmsgs.getArgs(args, needed=0, optional=2)
         self.chanserv = chanserv or 'ChanServ'

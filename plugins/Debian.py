@@ -99,11 +99,21 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         self.usePythonZegrep = False
 
     def usepythonzegrep(self, irc, msg, args):
-        """takes no arguments"""
+        """takes no arguments
+
+        Mostly a debuggin tool; tells the module to use its own hand-rolled
+        zegrep in Python rather than an actual zegrep command.  The Python
+        zegrep is about 50x slower than a real zegrep, so you probably don't
+        want to do this.
+        """
         self.usePythonZegrep = not self.usePythonZegrep
         irc.reply(msg, conf.replySuccess)
 
     def debfile(self, irc, msg, args):
+        """<file>
+
+        Returns the packages in the Debian distribution that include <file>.
+        """
         self.getFile('Contents-i386.gz')
         # Make sure it's anchored, make sure it doesn't have a leading slash
         # (the filenames don't have leading slashes, and people may not know

@@ -223,7 +223,10 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(msg, self.formatData(data))
 
     def googlespell(self, irc, msg, args):
-        "<word>"
+        """<word>
+
+        Returns Google's spelling recommendation for <word>.
+        """
         word = privmsgs.getArgs(args)
         result = google.doSpellingSuggestion(word)
         if result:
