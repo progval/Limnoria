@@ -232,7 +232,7 @@ class IP(registry.String):
             self.error()
         else:
             registry.String.setValue(self, v)
-        
+
 registerGlobalValue(supybot, 'externalIP',
    IP('', """A string that is the external IP of the bot.  If this is the empty
    string, the bot will attempt to find out its IP dynamically (though
@@ -266,7 +266,7 @@ registerChannelValue(supybot.reply, 'bracketSyntax',
 
 class ValidBrackets(registry.OnlySomeStrings):
     validStrings = ('', '[]', '<>', '{}', '()')
-    
+
 registerChannelValue(supybot.reply, 'brackets',
     ValidBrackets('[]', """Supybot allows you to specify what brackets are used
     for your nested commands.  Valid sets of brackets include [], <>, and {}
@@ -571,7 +571,7 @@ class SocketTimeout(registry.PositiveInteger):
             self.error()
         registry.PositiveInteger.setValue(self, v)
         socket.setdefaulttimeout(self.value)
-        
+
 registerGlobalValue(supybot, 'defaultSocketTimeout',
     SocketTimeout(10, """Determines what the default timeout for socket objects
     will be.  This means that *all* sockets will timeout when this many seconds
@@ -595,14 +595,5 @@ registerGlobalValue(supybot.debug, 'flushVeryOften',
     registry.Boolean(False, """Determines whether the bot will automatically
     flush all flushers *very* often.  Useful for debugging when you don't know
     what's breaking or when, but think that it might be logged."""))
-
-# Let's open this now since we've got our directories setup.
-userdataFilename = os.path.join(supybot.directories.conf(), 'userdata.conf')
-if not os.path.exists(userdataFilename):
-    fd = file(userdataFilename, 'w')
-    fd.write('\n')
-    fd.close()
-registry.open(userdataFilename)
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

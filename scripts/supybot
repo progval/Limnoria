@@ -159,7 +159,7 @@ if __name__ == '__main__':
     parser.add_option('', '--debug', action='store_true', dest='debug',
                       help='Determines whether some extra debugging stuff will'
                            'be logged in this script.')
-                      
+
     (options, args) = parser.parse_args()
 
     if os.name == 'posix':
@@ -191,7 +191,7 @@ if __name__ == '__main__':
                 choose a different nick.""")
                 nick = questions.something("""What nick would you like your
                        bot to use?""")
-    
+
             ###
             # Server.
             ###
@@ -209,7 +209,7 @@ if __name__ == '__main__':
             while not checkServer(server):
                 server = questions.something("""What server would you like
                          your bot to connect to?""")
-    
+
             ###
             # Channels.
             ###
@@ -237,7 +237,7 @@ if __name__ == '__main__':
                 instance, if you want to join #supybot with no keyword and
                 #secret with a keyword of 'foo', you would type '#supybot
                 #secret,foo' without the quotes.  """ % server)
-    
+
             ###
             # Filename.
             ###
@@ -343,6 +343,14 @@ if __name__ == '__main__':
     if not os.path.exists(conf.supybot.directories.data()):
         os.mkdir(conf.supybot.directories.data())
 
+    userdataFilename = os.path.join(supybot.directories.conf(),'userdata.conf')
+    # Let's open this now since we've got our directories setup.
+    if not os.path.exists(userdataFilename):
+        fd = file(userdataFilename, 'w')
+        fd.write('\n')
+        fd.close()
+    registry.open(userdataFilename)
+
     import irclib
     import ircmsgs
     import drivers
@@ -353,7 +361,7 @@ if __name__ == '__main__':
     callback = Owner.Class()
     irc.addCallback(callback)
     driver = drivers.newDriver(server, irc)
-    
+
     if options.debug:
         for (name, module) in sys.modules.iteritems():
             if hasattr(module, '__file__') and hasattr(module, '__revision__'):
@@ -406,7 +414,7 @@ if __name__ == '__main__':
             atexit.register(removePidFile)
         except EnvironmentError, e:
             log.error('Error opening pid file %s: %s', pidFile, e)
-            
+
     if options.profile:
         import hotshot
         profiler = hotshot.Profile('%s-%i.prof' % (nick, time.time()))
@@ -415,5 +423,4 @@ if __name__ == '__main__':
         main()
 
 
-    
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
