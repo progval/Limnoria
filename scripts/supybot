@@ -66,19 +66,31 @@ def main():
     import schedule
     schedule.addPeriodicEvent(world.upkeep, 300)
     world.startedAt = started
-    try:
-        while world.ircs:
+    while world.ircs:
+        try:
             drivers.run()
-        log.info('No more Irc objects, exiting.')
-    except KeyboardInterrupt:
-        log.info('Exiting due to Ctrl-C.')
-        now = time.time()
-        log.info('Total uptime: %s.', utils.timeElapsed(now - world.startedAt))
-        (user, system, _, _, _) = os.times()
-        log.info('Total CPU time taken: %s seconds.', user+system)
-        raise SystemExit
-    except:
-        log.exception('Exception raised out of drivers.run:')
+        except KeyboardInterrupt:
+            log.info('Exiting due to Ctrl-C.')
+            now = time.time()
+            seconds = now - world.startedAt
+            log.info('Total uptime: %s.', utils.timeElapsed(seconds))
+            (user, system, _, _, _) = os.times()
+            log.info('Total CPU time taken: %s seconds.', user+system)
+            raise SystemExit
+        except:
+            try: # Ok, now we're *REALLY* paranoid!
+                log.exception('Exception raised out of drivers.run:')
+            except Exception, e:
+                print 'Exception raised in log.exception.  This is *really*'
+                print 'bad.  Hopefully it won\'t happen again, but tell us'
+                print 'about it anyway, this is a significant problem.'
+                print 'Anyway, here\'s the exception: %s'% utils.exnToString(e)
+            except:
+                print 'Man, this really sucks.  Not only did log.exception'
+                print 'raise an exception, but freaking-a, it was a string'
+                print 'exception.  People who raise string exceptions should'
+                print 'die a slow, painful death.'
+    log.info('No more Irc objects, exiting.')
 
 if __name__ == '__main__':
     ###

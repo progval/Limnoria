@@ -74,6 +74,10 @@ def loadPluginModule(name, ignoreDeprecation=False):
     try:
         index = loweredFiles.index(name.lower()+'.py')
         name = os.path.splitext(files[index])[0]
+        if name in sys.modules:
+            m = sys.modules[name]
+            if not hasattr(m, 'Class'):
+                raise ImportError, 'Module is not a plugin.'
     except ValueError: # We'd rather raise the ImportError, so we'll let go...
         pass
     moduleInfo = imp.find_module(name, pluginDirs)
@@ -335,7 +339,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             if name in str(e):
                 irc.error('No plugin %s exists.' % name)
             else:
-                irc.error(utils.exnToString(e))
+                irc.error(str(e))
             return
         loadPluginClass(irc, module)
         conf.registerPlugin(name, True)
