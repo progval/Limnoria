@@ -205,7 +205,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         channel = privmsgs.getChannel(msg, args)
         try:
             if irc.nick in irc.state.channels[channel].ops:
-                irc.error('I\'ve already got ops in %sx' % channel)
+                irc.error('I\'ve already got ops in %s' % channel)
             else:
                 chanserv = self.registryValue('ChanServ', irc.network)
                 if chanserv:
