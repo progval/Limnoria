@@ -46,6 +46,7 @@ import random
 import os.path
 import threading
 
+import supybot.world as world
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -54,14 +55,14 @@ import supybot.callbacks as callbacks
 class MarkovDBInterface(object):
     def close(self):
         pass
-    
+
     def addPair(self, channel, first, second, follower,
                 isFirst=False, isLast=False):
         pass
 
     def getFirstPair(self, channel):
         pass
-    
+
     def getPair(self, channel, first, second):
         # Returns (follower, last) tuple.
         pass
@@ -73,16 +74,16 @@ class SqliteMarkovDB(object):
 
     def getFirstPair(self, channel):
         pass
-    
+
     def getFollower(self, channel, first, second):
         # Returns (follower, last) tuple.
         pass
 
-    
+
 class DbmMarkovDB(object):
     def __init__(self):
         self.dbs = ircutils.IrcDict()
-        
+
     def close(self):
         for db in self.dbs.values():
             db.close()
@@ -92,39 +93,30 @@ class DbmMarkovDB(object):
             # Stupid anydbm seems to append .db to the end of this.
             filename = plugins.makeChannelFilename(channel, 'DbmMarkovDB')
             self.dbs[channel] = anydbm.open(filename, 'c')
-            self.dbs[channel]['lasts'] = ''
-            self.dbs[channel]['firsts'] = ''
         return self.dbs[channel]
-
-    def _addFirst(self, db, combined):
-        db['firsts'] = db['firsts'] + (combined + '\n')
-
-    def _addLast(self, db, second, follower):
-        combined = self._combine(second, follower)
-        db['lasts'] = db['lasts'] + (combined + '\n')
 
     def addPair(self, channel, first, second, follower,
                 isFirst=False, isLast=False):
         db = self._getDb(channel)
         combined = self._combine(first, second)
-        if isFirst:
-            self._addFirst(db, combined)
-        elif isLast:
-            self._addLast(db, second, follower)
+        if combined in db: # EW!
+            db[combined] = ' '.join([db[combined], follower])
         else:
-            if db.has_key(combined): # EW!
-                db[combined] = db[combined] + (' ' + follower)
+            db[combined] = follower
+        if follower == '\n':
+            if '\n' in db:
+                db['\n'] = ' '.join([db['\n'], second])
             else:
-                db[combined] = follower
-        #db.flush()
+                db['\n'] = second
+        db.sync()
 
     def getFirstPair(self, channel):
         db = self._getDb(channel)
-        firsts = db['firsts'].splitlines()
+        firsts = db['\r \r'].split()
         if firsts:
             firsts.pop() # Empty line.
             if firsts:
-                return random.choice(firsts).split()
+                return ('\r', random.choice(firsts))
             else:
                 raise KeyError, 'No firsts for %s.' % channel
         else:
@@ -137,11 +129,31 @@ class DbmMarkovDB(object):
         db = self._getDb(channel)
         followers = db[self._combine(first, second)]
         follower = random.choice(followers.split())
-        if self._combine(second, follower) in db['lasts']:
-            last = True
+        return (follower, follower == '\n')
+
+    def firsts(self, channel):
+        db = self._getDb(channel)
+        if '\r \r' in db:
+            return len(db['\r \r'].split())
         else:
-            last = False
-        return (follower, last)
+            return 0
+
+    def lasts(self, channel):
+        db = self._getDb(channel)
+        if '\n' in db:
+            return len(db['\n'].split())
+        else:
+            return 0
+
+    def pairs(self, channel):
+        db = self._getDb(channel)
+        pairs = [k for k in db.keys() if '\n' not in k]
+        return len(pairs)
+
+    def follows(self, channel):
+        db = self._getDb(channel)
+        follows = [len(v.split()) for (k,v) in db.iteritems() if '\n' not in k]
+        return sum(follows)
 
 def MarkovDB():
     return DbmMarkovDB()
@@ -170,15 +182,15 @@ class MarkovWorkQueue(threading.Thread):
             if f is not None:
                 f(self.db)
         self.db.close()
-        
+
 class Markov(callbacks.Privmsg):
     def __init__(self):
         self.q = MarkovWorkQueue()
         callbacks.Privmsg.__init__(self)
-        
+
     def die(self):
         self.q.die()
-        
+
     def tokenize(self, s):
         # XXX: Should this be smarter?
         return s.split()
@@ -187,18 +199,14 @@ class Markov(callbacks.Privmsg):
         channel = msg.args[0]
         if ircutils.isChannel(channel):
             words = self.tokenize(msg.args[1])
-            if len(words) >= 3:
-                def doPrivmsg(db):
-                    db.addPair(channel, words[0], words[1], words[2],
-                                    isFirst=True)
-                    db.addPair(channel, words[-3], words[-2], words[-1],
-                                    isLast=True)
-                    del words[0] # Remove first.
-                    del words[-1] # Remove last.
-                    for (first, second, follower) in window(words, 3):
-                        db.addPair(channel, first, second, follower)
-                self.q.enqueue(doPrivmsg)
-        
+            words.insert(0, '\r')
+            words.insert(0, '\r')
+            words.insert(-1, '\n')
+            def doPrivmsg(db):
+                for (first, second, follower) in window(words, 3):
+                    db.addPair(channel, first, second, follower)
+            self.q.enqueue(doPrivmsg)
+
     def markov(self, irc, msg, args):
         """[<channel>]
 
@@ -213,12 +221,64 @@ class Markov(callbacks.Privmsg):
             except KeyError:
                 irc.error('I don\'t have any first pairs for %s.' % channel)
                 return
+            # words[-2:] is of the form ('\r', word)
+            follower = words[-1]
             last = False
+            resp = []
             while not last:
+                resp.append(follower)
                 (follower,last) = db.getFollower(channel, words[-2], words[-1])
                 words.append(follower)
-            irc.reply(' '.join(words))
+            irc.reply(' '.join(resp))
         self.q.enqueue(markov)
+
+    def firsts(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the number of Markov's first links in the database for
+        <channel>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        def firsts(db):
+            s = 'There are %s firsts in my Markov database for %s.'
+            irc.reply(s % (db.firsts(channel), channel))
+        self.q.enqueue(firsts)
+
+    def lasts(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the number of Markov's last links in the database for
+        <channel>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        def lasts(db):
+            s = 'There are %s lasts in my Markov database for %s.'
+            irc.reply(s % (db.lasts(channel), channel))
+        self.q.enqueue(lasts)
+
+    def pairs(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the number of Markov's chain links in the database for
+        <channel>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        def pairs(db):
+            s = 'There are %s pairs in my Markov database for %s.'
+            irc.reply(s % (db.pairs(channel), channel))
+        self.q.enqueue(pairs)
+
+    def follows(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the number of Markov's third links in the database for
+        <channel>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        def follows(db):
+            s = 'There are %s follows in my Markov database for %s.'
+            irc.reply(s % (db.follows(channel), channel))
+        self.q.enqueue(follows)
 
 
 Class = Markov
