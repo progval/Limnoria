@@ -194,13 +194,14 @@ class IrcMsgQueue(object):
 # status of various modes (especially ops/halfops/voices) in channels, etc.
 ###
 class ChannelState(object):
-    __slots__ = ('users', 'ops', 'halfops', 'voices', 'topic')
+    __slots__ = ('users', 'ops', 'halfops', 'voices', 'topic', 'modes')
     def __init__(self):
         self.topic = ''
         self.users = ircutils.IrcSet()
         self.ops = ircutils.IrcSet()
         self.halfops = ircutils.IrcSet()
         self.voices = ircutils.IrcSet()
+        self.modes = ircutils.IrcDict()
 
     def addUser(self, user):
         "Adds a given user to the ChannelState.  Power prefixes are handled."
@@ -233,6 +234,13 @@ class ChannelState(object):
         self.ops.discard(user)
         self.halfops.discard(user)
         self.voices.discard(user)
+
+    def setMode(self, mode, value=None):
+        self.modes[mode] = value
+
+    def unsetMode(self, mode):
+        if mode in self.modes:
+            del self.modes[mode]
 
     def __getstate__(self):
         return [getattr(self, name) for name in self.__slots__]
@@ -323,19 +331,23 @@ class IrcState(IrcCommandDispatcher):
         channel = msg.args[0]
         if ircutils.isChannel(channel):
             chan = self.channels[channel]
-            for (mode, nick) in ircutils.separateModes(msg.args[1:]):
+            for (mode, value) in ircutils.separateModes(msg.args[1:]):
                 if mode == '-o':
-                    chan.ops.discard(nick)
+                    chan.ops.discard(value)
                 elif mode == '+o':
-                    chan.ops.add(nick)
+                    chan.ops.add(value)
                 if mode == '-h':
-                    chan.halfops.discard(nick)
+                    chan.halfops.discard(value)
                 elif mode == '+h':
-                    chan.halfops.add(nick)
+                    chan.halfops.add(value)
                 if mode == '-v':
-                    chan.voices.discard(nick)
+                    chan.voices.discard(value)
                 elif mode == '+v':
-                    chan.voices.add(nick)
+                    chan.voices.add(value)
+                elif mode == '+i':
+                    chan.setMode('i')
+                elif mode == '-i':
+                    chan.unsetMode('i')
 
     def do353(self, irc, msg):
         (_, _, channel, users) = msg.args
