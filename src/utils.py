@@ -256,9 +256,10 @@ def commaAndify(seq, And='and'):
     if len(L) == 0:
         return ''
     elif len(L) == 1:
-        return L[0]
+        return ''.join(L) # We need this because it raises TypeError.
     elif len(L) == 2:
-        return '%s %s %s' % (L[0], And, L[1])
+        L.insert(1, And)
+        return ' '.join(L)
     else:
         L[-1] = '%s %s' % (And, L[-1])
         return ', '.join(L)

@@ -180,6 +180,12 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(L, original)
         self.failUnless(utils.commaAndify(sets.Set(L)))
 
+    def testCommaAndifyRaisesTypeError(self):
+        L = [(2,)]
+        self.assertRaises(TypeError, utils.commaAndify, L)
+        L.append((3,))
+        self.assertRaises(TypeError, utils.commaAndify, L)
+
     def testUnCommaThe(self):
         self.assertEqual(utils.unCommaThe('foo bar'), 'foo bar')
         self.assertEqual(utils.unCommaThe('foo bar, the'), 'the foo bar')
