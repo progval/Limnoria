@@ -111,8 +111,10 @@ class ChannelLogger(callbacks.Privmsg):
                 return StringIO()
 
     def timestamp(self, log):
-        log.write(time.strftime(conf.supybot.log.timestampFormat()))
-        log.write('  ')
+        format = conf.supybot.log.timestampFormat()
+        if format:
+            log.write(time.strftime(format))
+            log.write('  ')
 
     def doLog(self, channel, s):
         log = self.getLog(channel)
