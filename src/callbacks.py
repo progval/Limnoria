@@ -263,6 +263,27 @@ class Tokenizer:
                 args[-1].append(ends.pop())
         return args
 
+_lastTokenized = None
+_lastTokenizeResult = None
+def tokenize(s):
+    """A utility function to create a Tokenizer and tokenize a string."""
+    global _lastTokenized, _lastTokenizeResult
+    start = time.time()
+    try:
+        if s != _lastTokenized:
+            _lastTokenized = s
+            if conf.enablePipeSyntax:
+                tokens = '|'
+            else:
+                tokens = ''
+            _lastTokenizeResult = Tokenizer(tokens).tokenize(s)
+    except ValueError, e:
+        _lastTokenized = None
+        _lastTokenizedResult = None
+        raise SyntaxError, str(e)
+    debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
+    return _lastTokenizeResult
+
 def tokenize(s):
     """A utility function to create a Tokenizer and tokenize a string."""
     start = time.time()
