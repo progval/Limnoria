@@ -41,6 +41,7 @@ how to use them.
 import fix
 
 import re
+import copy
 import sets
 import time
 import shlex
@@ -281,22 +282,8 @@ def tokenize(s):
         _lastTokenized = None
         _lastTokenizedResult = None
         raise SyntaxError, str(e)
-    debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
-    return _lastTokenizeResult
-
-## def tokenize(s):
-##     """A utility function to create a Tokenizer and tokenize a string."""
-##     start = time.time()
-##     try:
-##         if conf.enablePipeSyntax:
-##             tokens = '|'
-##         else:
-##             tokens = ''
-##         args = Tokenizer(tokens).tokenize(s)
-##     except ValueError, e:
-##         raise SyntaxError, str(e)
-##     #debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
-##     return args
+    #debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
+    return copy.deepcopy(_lastTokenizeResult)
 
 def getCommands(tokens):
     """Given tokens as output by tokenize, returns the command names."""
