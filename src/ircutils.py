@@ -338,34 +338,40 @@ class IrcString(str):
 
 class IrcDict(dict):
     """Subclass of dict to make key comparison IRC-case insensitive."""
-    __slots__ = ()
+    def __init__(self, *args, **kwargs):
+        self.__parent = super(IrcDict, self)
+        self.__parent.__init__(*args, **kwargs)
+        
     def __contains__(self, s):
-        return dict.__contains__(self, IrcString(s))
+        return self.__parent.__contains__(IrcString(s))
     has_key = __contains__
 
     def __setitem__(self, s, v):
-        dict.__setitem__(self, IrcString(s), v)
+        self.__parent.__setitem__(IrcString(s), v)
 
     def __getitem__(self, s):
-        return dict.__getitem__(self, IrcString(s))
+        return self.__parent.__getitem__(IrcString(s))
 
     def __delitem__(self, s):
-        dict.__delitem__(self, IrcString(s))
+        self.__parent.__delitem__(IrcString(s))
 
 class IrcSet(sets.Set):
     """A sets.Set using IrcStrings instead of regular strings."""
-    __slots__ = ()
+    def __init__(self):
+        self.__parent = super(IrcSet, self)
+        self.__parent.__init__()
+        
     def add(self, s):
-        return sets.Set.add(self, IrcString(s))
+        return self.__parent.add(IrcString(s))
 
     def remove(self, s):
-        return sets.Set.remove(self, IrcString(s))
+        return self.__parent.remove(IrcString(s))
 
     def discard(self, s):
-        return sets.Set.discard(self, IrcString(s))
+        return self.__parent.discard(IrcString(s))
 
     def __contains__(self, s):
-        return sets.Set.__contains__(self, IrcString(s))
+        return self.__parent.__contains__(IrcString(s))
 
     has_key = __contains__
 
