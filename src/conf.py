@@ -227,8 +227,8 @@ for (name, s) in registry._cache.iteritems():
 
 
 registerGlobalValue(supybot, 'channels',
-    SpaceSeparatedSetOfChannels(['#supybot'], """Determines what channels the
-    bot will join when it connects to the server."""))
+    SpaceSeparatedSetOfChannels([], """Determines what channels the bot will
+    join when it connects to the server."""))
 
 class ValidPrefixChars(registry.String):
     """Value must contain only ~!@#$%^&*()_-+=[{}]\\|'\";:,<.>/?"""
