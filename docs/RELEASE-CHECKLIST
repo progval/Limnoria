@@ -15,5 +15,4 @@ Announce the release on the forums.
 Announce the release on comp.lang.python and comp.lang.python.announce.
 Add a topic to #supybot announcing the release.
 Send a GPG-signed tar.gz to vomjom for packing in Debian.
-
-
+Update the version in version.txt and upload to the website.
