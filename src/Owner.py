@@ -121,6 +121,13 @@ def loadPluginClass(irc, module, register=None):
         public = cb.public
     conf.registerPlugin(name, register, public)
     assert not irc.getCallback(name)
+    try:
+        renames = conf.supybot.commands.renames.get(name)
+        for (name, v) in renames.getValues(fullNames=False):
+            newName = v()
+            renameCommand(cb, name, newName)
+    except registry.NonExistentRegistryEntry, e:
+        pass # The plugin isn't there.
     irc.addCallback(cb)
     return cb
 
@@ -133,10 +140,10 @@ conf.supybot.plugins.Owner.register('public', registry.Boolean(True,
 ###
 
 conf.registerGroup(conf.supybot.commands, 'defaultPlugins',
-                   orderAlphabetically=True)
-conf.supybot.commands.defaultPlugins.help = utils.normalizeWhitespace("""
-Determines what commands have default plugins set, and which plugins are set to
-be the default for each of those commands.""".strip())
+    orderAlphabetically=True, help=utils.normalizeWhitespace("""Determines
+    what commands have default plugins set, and which plugins are set to
+    be the default for each of those commands."""))
+conf.registerGroup(conf.supybot.commands, 'renames', orderAlphabetically=True)
 
 def registerDefaultPlugin(command, plugin):
     command = callbacks.canonicalName(command)
@@ -145,14 +152,30 @@ def registerDefaultPlugin(command, plugin):
     # This must be set, or the quotes won't be removed.
     conf.supybot.commands.defaultPlugins.get(command).set(plugin)
 
-registerDefaultPlugin('ignore', 'Admin')
-registerDefaultPlugin('unignore', 'Admin')
-registerDefaultPlugin('addcapability', 'Admin')
-registerDefaultPlugin('removecapability', 'Admin')
+def registerRename(plugin, command, newName):
+    g = conf.registerGroup(conf.supybot.commands.renames, plugin)
+    v = conf.registerGlobalValue(g, command, registry.String(newName, ''))
+    v.setValue(newName) # In case it was already registered.
+    return v
+
+def renameCommand(cb, name, newName):
+    assert not hasattr(cb, newName), 'Cannot rename over existing attributes.'
+    assert newName == callbacks.canonicalName(newName), \
+           'newName must already be canonicalized.'
+    if name != newName:
+        method = getattr(cb.__class__, name)
+        setattr(cb.__class__, newName, method)
+        delattr(cb.__class__, name)
+    
+        
 registerDefaultPlugin('list', 'Misc')
 registerDefaultPlugin('help', 'Misc')
+registerDefaultPlugin('ignore', 'Admin')
 registerDefaultPlugin('reload', 'Owner')
+registerDefaultPlugin('unignore', 'Admin')
 registerDefaultPlugin('capabilities', 'User')
+registerDefaultPlugin('addcapability', 'Admin')
+registerDefaultPlugin('removecapability', 'Admin')
 
 class holder(object):
     pass
@@ -778,15 +801,28 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         if cb is None:
             irc.errorInvalid('plugin', plugin, Raise=True)
         if not cb.isCommand(command):
-            irc.errorInvalid('command in the %s plugin'%plugin,name,Raise=True)
+            what = 'command in the %s plugin' % plugin
+            irc.errorInvalid(what, name, Raise=True)
         if hasattr(cb, name):
             irc.error('The %s plugin already has an attribute named %s.' %
                       (plugin, name))
             return
-        method = getattr(cb.__class__, command)
-        setattr(cb.__class__, name, method)
-        delattr(cb.__class__, command)
+        registerRename(cb.name(), command, name)
+        renameCommand(cb, command, newName)
         irc.replySuccess()
+
+    def unrename(self, irc, msg, args):
+        """<plugin>
+
+        Removes all renames in <plugin>.  The plugin will be reloaded after
+        this command is run.
+        """
+        plugin = privmsgs.getArgs(args)
+        try:
+            conf.supybot.commands.renames.unregister(plugin)
+        except registry.NonExistentRegistryEntry:
+            irc.errorInvalid('plugin', plugin, Raise=True)
+        self.reload(irc, msg, args) # This makes the replySuccess.
 
     def _connect(self, network, serverPort=None):
         try:

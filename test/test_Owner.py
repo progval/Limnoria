@@ -107,6 +107,20 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('disable Foo')
         self.assertNotError('enable foo')
 
+    def testRename(self):
+        self.assertError('rename admin ignore IGNORE')
+        self.assertError('rename admin ignore ig-nore')
+        self.assertNotError('rename admin removecapability rmcap')
+        self.assertNotRegexp('list admin', 'removecapability')
+        self.assertRegexp('list admin', 'rmcap')
+        self.assertNotError('reload admin')
+        self.assertNotRegexp('list admin', 'removecapability')
+        self.assertRegexp('list admin', 'rmcap')
+        self.assertNotError('unrename admin')
+        self.assertRegexp('list admin', 'removecapability')
+        self.assertNotRegexp('list admin', 'rmcap')
+        
+
 
 class FunctionsTestCase(SupyTestCase):
     def testLoadPluginModule(self):
