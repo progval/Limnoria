@@ -107,8 +107,8 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
                            second, follower)
             cursor.execute("""SELECT id FROM pairs
                               WHERE first=%s AND second=%s""", second,follower)
-        id = int(cursor.fetchone()[0])
-        cursor.execute("""INSERT INTO follows VALUES (NULL, %s, NULL)""", id)
+            id = int(cursor.fetchone()[0])
+            cursor.execute("INSERT INTO follows VALUES (NULL, %s, NULL)", id)
         db.commit()
         return callbacks.Privmsg.doPrivmsg(self, irc, msg)
 
