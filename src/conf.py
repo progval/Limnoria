@@ -80,6 +80,12 @@ humanTimestampFormat = '%I:%M %p, %B %d, %Y'
 throttleTime = 1.0
 
 ###
+# snarfThrottle: A floating point number of seconds to throttle snarfed URLs,
+#                in order to prevent loops between two bots.
+###
+snarfThrottle = 10.0
+
+###
 # allowEval: True if the owner (and only the owner) should be able to eval
 #            arbitrary Python code.
 ###
@@ -269,6 +275,7 @@ types = {
     'logTimestampFormat': mystr,
     'humanTimestampFormat': mystr,
     'throttleTime': float,
+    'snarfThrottle': float,
     #'allowEval': mybool,
     'replyWhenNotCommand': mybool,
     'replyWithPrivateNotice': mybool,
