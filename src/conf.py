@@ -627,6 +627,7 @@ registerGlobalValue(supybot.directories.data, 'tmp',
 # Remember, we're *meant* to replace this nice little wrapper.
 def transactionalFile(*args, **kwargs):
     kwargs['tmpDir'] = supybot.directories.data.tmp()
+    # ??? Should we offer an option not to makeBackupIfSmaller?
     return utils.AtomicFile(*args, **kwargs)
 utils.transactionalFile = transactionalFile
 
@@ -658,7 +659,20 @@ registerGlobalValue(supybot.plugins, 'alwaysLoadDefault',
 ###
 # supybot.databases.  For stuff relating to Supybot's databases (duh!)
 ###
-registerGroup(supybot, 'databases')
+class Databases(registry.SpaceSeparatedListOfStrings):
+    def __call__(self):
+        v = super(Databases, self).__call__()
+        if not v:
+            v = ['flat', 'cdb', 'pickle']
+            if 'sqlite' in sys.modules:
+                v.insert(0, 'sqlite')
+        return v
+
+registerGlobalValue(supybot, 'databases',
+    Databases([], """Determines what databases are available for use. If this
+    value is not configured (that is, if its value is empty) then sane defaults
+    will be provided."""))
+
 registerGroup(supybot.databases, 'users')
 registerGlobalValue(supybot.databases.users, 'filename',
     registry.String('users.conf', """Determines what filename will be used for
@@ -690,6 +704,8 @@ registerChannelValue(supybot.databases.plugins, 'channelSpecific',
     registry.Boolean(True, """Determines whether database-based plugins that
     can be channel-specific will be so.  This can be overridden by individual
     channels."""))
+
+# XXX Configuration variables for dbi, sqlite, flat, mysql, etc.
 
 ###
 # Protocol information.

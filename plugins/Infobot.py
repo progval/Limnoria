@@ -82,8 +82,6 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Infobot', True)
 
-filename = conf.supybot.directories.data.dirize('Infobot.db')
-
 ends = ['!',
         '.',
         ', $who.',]
@@ -123,11 +121,12 @@ initialAre = {'who': '<reply>',
              }
 
 class PickleInfobotDB(object):
-    def __init__(self):
+    def __init__(self, filename):
         self._changes = 0
         self._responses = 0
+        self.filename = filename
         try:
-            fd = file(filename)
+            fd = file(self.filename)
         except EnvironmentError:
             self._is = utils.InsensitivePreservingDict()
             self._are = utils.InsensitivePreservingDict()
@@ -143,7 +142,7 @@ class PickleInfobotDB(object):
                 raise dbi.InvalidDBError, str(e)
 
     def flush(self):
-        fd = utils.transactionalFile(filename, 'wb')
+        fd = utils.transactionalFile(self.filename, 'wb')
         pickle.dump((self._is, self._are), fd)
         fd.close()
 
@@ -228,7 +227,7 @@ class PickleInfobotDB(object):
         return len(self._are.keys()) + len(self._is.keys())
 
 class SqliteInfobotDB(object):
-    def __init__(self):
+    def __init__(self, filename):
         try:
             import sqlite
         except ImportError:
@@ -237,23 +236,13 @@ class SqliteInfobotDB(object):
                                    '<http://pysqlite.sf.net/>'
         self._changes = 0
         self._responses = 0
-        self.db = None
-
-    def _getDb(self):
+        self.filename = filename
         try:
-            import sqlite
-        except ImportError:
-            raise callbacks.Error, 'You need to have PySQLite installed to '\
-                                   'use this plugin.  Download it at '\
-                                   '<http://pysqlite.sf.net/>'
-        if self.db is not None:
-            return self.db
-        try:
-            if os.path.exists(filename):
-                self.db = sqlite.connect(filename)
+            if os.path.exists(self.filename):
+                self.db = sqlite.connect(self.filename)
                 return self.db
             #else:
-            self.db = sqlite.connect(filename)
+            self.db = sqlite.connect(self.filename)
             cursor = self.db.cursor()
             cursor.execute("""CREATE TABLE isFacts (
                               key TEXT UNIQUE ON CONFLICT REPLACE,
@@ -269,17 +258,14 @@ class SqliteInfobotDB(object):
             for (k, v) in initialAre.iteritems():
                 self.setAre(k, v)
             self._changes = 0
-            return self.db
         except sqlite.DatabaseError, e:
             raise dbi.InvalidDBError, str(e)
 
     def close(self):
-        if self.db is not None:
-            self.db.close()
+        self.db.close()
 
     def changeIs(self, factoid, replacer):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""SELECT value FROM isFacts WHERE key=%s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
@@ -287,42 +273,37 @@ class SqliteInfobotDB(object):
         if replacer is not None:
             cursor.execute("""UPDATE isFacts SET value=%s WHERE key=%s""",
                            replacer(old), factoid)
-            db.commit()
+            self.db.commit()
             self._changes += 1
 
     def getIs(self, factoid):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""SELECT value FROM isFacts WHERE key=%s""", factoid)
         ret = cursor.fetchone()[0]
         self._responses += 1
         return ret
 
     def setIs(self, fact, oid):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""INSERT INTO isFacts VALUES (%s, %s)""", fact, oid)
-        db.commit()
+        self.db.commit()
         self._changes += 1
 
     def delIs(self, factoid):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""DELETE FROM isFacts WHERE key=%s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
-        db.commit()
+        self.db.commit()
         self._changes += 1
 
     def hasIs(self, factoid):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""SELECT * FROM isFacts WHERE key=%s""", factoid)
         return cursor.rowcount == 1
 
     def changeAre(self, factoid, replacer):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""SELECT value FROM areFacts WHERE key=%s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
@@ -330,36 +311,32 @@ class SqliteInfobotDB(object):
         if replacer is not None:
             cursor.execute("""UPDATE areFacts SET value=%s WHERE key=%s""",
                            replacer(old), factoid)
-            db.commit()
+            self.db.commit()
             self._changes += 1
 
     def getAre(self, factoid):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""SELECT value FROM areFacts WHERE key=%s""", factoid)
         ret = cursor.fetchone()[0]
         self._responses += 1
         return ret
 
     def setAre(self, fact, oid):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""INSERT INTO areFacts VALUES (%s, %s)""", fact, oid)
-        db.commit()
+        self.db.commit()
         self._changes += 1
 
     def delAre(self, factoid):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""DELETE FROM areFacts WHERE key=%s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
-        db.commit()
+        self.db.commit()
         self._changes += 1
 
     def hasAre(self, factoid):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""SELECT * FROM areFacts WHERE key=%s""", factoid)
         return cursor.rowcount == 1
 
@@ -376,16 +353,17 @@ class SqliteInfobotDB(object):
         return self._responses
 
     def getNumFacts(self):
-        db = self._getDb()
-        cursor = db.cursor()
+        cursor = self.db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM areFacts""")
         areFacts = int(cursor.fetchone()[0])
         cursor.execute("""SELECT COUNT(*) FROM isFacts""")
         isFacts = int(cursor.fetchone()[0])
         return areFacts + isFacts
 
-def InfobotDB():
-    return SqliteInfobotDB()
+
+InfobotDB = plugins.DB('Infobot',
+                       {'sqlite': SqliteInfobotDB,
+                        'pickle': PickleInfobotDB})
 
 class Dunno(Exception):
     pass
@@ -397,7 +375,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         try:
             self.db = InfobotDB()
         except Exception:
-            self.log.exception('Error loading %s:', filename)
+            self.log.exception('Error loading %s:', self.filename)
             raise # So it doesn't get loaded without its database.
         self.irc = None
         self.msg = None

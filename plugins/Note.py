@@ -155,9 +155,10 @@ class DbiNoteDB(dbi.DB):
         return id
         
     
-def NoteDB():
-    # XXX This should eventually be smarter.
-    return DbiNoteDB(conf.supybot.directories.data.dirize('Note.db'))
+NoteDB = plugins.DB('Note', {'flat': DbiNoteDB})
+## def NoteDB():
+##     # XXX This should eventually be smarter.
+##     return DbiNoteDB(conf.supybot.directories.data.dirize('Note.db'))
 
 
 class Note(callbacks.Privmsg):

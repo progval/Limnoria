@@ -55,14 +55,22 @@ import supybot.ircutils as ircutils
 import supybot.webutils as webutils
 
 try:
+    # We need to sweep away all that mx.* crap because our code doesn't account
+    # for PySQLite's arbitrary use of it.  Whoever decided to change sqlite's
+    # behavior based on whether or not that module is installed was a *CRACK*
+    # **FIEND**, plain and simple.
     mxCrap = {}
     for (name, module) in sys.modules.items():
         if name.startswith('mx'):
             mxCrap[name] = module
             sys.modules[name] = None
+    # Now that the mx crap is gone, we can import sqlite.
     import sqlite
+    # And now we'll put it back, even though it sucks.
     for (name, module) in mxCrap.items():
         sys.modules[name] = module
+    # Just in case, we'll do this as well.  It doesn't seem to work fine by
+    # itself, though, or else we'd just do this in the first place.
     sqlite.have_datetime = False
     Connection = sqlite.Connection
     class MyConnection(sqlite.Connection):
@@ -74,6 +82,30 @@ try:
     sqlite.Connection = MyConnection
 except ImportError:
     pass
+
+
+class NoSuitableDatabase(Exception):
+    def __init__(self, suitable):
+        self.suitable = suitable
+        self.suitable.sort()
+        
+    def __str__(self):
+        return 'No suitable databases were found.  Suitable databases ' \
+               'include %s.' % utils.commaAndify(self.suitable)
+
+def DB(filename, types):
+    filename = conf.supybot.directories.data.dirize(filename)
+    def MakeDB(*args, **kwargs):
+        for type in conf.supybot.databases():
+            # Can't do this because Python sucks.  Go ahead, try it!
+            # filename = '.'.join([filename, type, 'db'])
+            fn = '.'.join([filename, type, 'db'])
+            try:
+                return types[type](fn, *args, **kwargs)
+            except KeyError:
+                continue
+        raise NoSuitableDatabase, types.keys()
+    return MakeDB
 
 class DBHandler(object):
     def __init__(self, name=None, suffix='.db'):
