@@ -135,8 +135,8 @@ class Http(callbacks.Privmsg):
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
     _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
         '"#FFFF00">(\d+)')
-    _gkteam = re.compile('Team:([^\s]+)')
-    _gkseen = re.compile('seen on GK:\s+([^\n]+)')
+    _gkteam = re.compile('Team:\s+(.*?)\s+Last time')
+    _gkseen = re.compile('seen on GK:\s+([^[]+)')
     def gkstats(self, irc, msg, args):
         """<name>"""
         name = privmsgs.getArgs(args)
@@ -152,7 +152,8 @@ class Http(callbacks.Privmsg):
             seen = self._gkseen.search(profile).group(1)
             if profile.find('Team:') >= 0:
                 team = self._gkteam.search(profile).group(1)
-                irc.reply(msg, '%s (team %s) is rated %s and has %s active ' \
+                print team
+                irc.reply(msg, '%s (team: %s) is rated %s and has %s active ' \
                           'games and a record of W-%s, L-%s, D-%s.  ' \
                           '%s was last seen on Gameknot %s' % \
                           (name, team, rating, games, w, l, d, name, seen))
