@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 
+import os
+import sys
+
+if os.name == 'posix':
+    if os.getuid() == 0 or os.geteuid() == 0:
+        sys.stderr.write('Please, don\'t run this as root.\n')
+
 import supybot
 
 import fix
 
-import os
 import re
-import sys
 import sets
 import pydoc
 import pprint
