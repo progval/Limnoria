@@ -53,7 +53,8 @@ def configure(onStart, afterConnect, advanced):
         revenge = True
     else:
         revenge = False
-    onStart.append('enforcer start %s %s' % (chanserv, revenge))
+    onStart.append('enforcer start %s' % chanserv)
+    onStart.append('enforcer config revenge %s' % revenge)
 
 ###
 # Enforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
