@@ -106,6 +106,7 @@ class SupyTestCase(unittest.TestCase):
         log.critical('Beginning test case %s', self.id())
         unittest.TestCase.setUp(self)
 
+
 class PluginTestCase(SupyTestCase):
     """Subclass this to write a test case for a plugin.  See test/test_Fun.py
     for an example.
@@ -120,7 +121,8 @@ class PluginTestCase(SupyTestCase):
             return
         SupyTestCase.setUp(self)
         # Set conf variables appropriately.
-        conf.supybot.prefixChars.set('@')
+        conf.supybot.prefixChars.setValue('@')
+        conf.supybot.reply.detailedErrors.setValue(True)
         conf.supybot.reply.whenNotCommand.setValue(False)
         self.myVerbose = world.myVerbose
         if self.cleanConfDir:
