@@ -165,6 +165,15 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                     irc.error(msg, 'That function has no documentation.')
             else:
                 irc.error(msg, 'No function or module %s exists.' % name)
+
+    def pydoclink(self, irc, msg, args):
+        """<python module>
+
+        Returns a link to the current documentation for <python module>
+        """
+        module = privmsgs.getArgs(args)
+        url = 'http://python.org/doc/current/lib/module-%s.html' % module
+        irc.reply(msg, '%s' % url)
                 
     _these = [str(s) for s in this.s.decode('rot13').splitlines() if s]
     _these.pop(0) # Initial line (The Zen of Python...)
