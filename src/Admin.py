@@ -162,8 +162,6 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         irc.queueMsg(ircmsgs.joins(channels, keys))
         for channel in channels:
             self.joins[channel] = (irc, msg)
-            if channel not in irc.state.channels:
-                irc.queueMsg(ircmsgs.who(channel))
 
     def channels(self, irc, msg, args):
         """takes no arguments

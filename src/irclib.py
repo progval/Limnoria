@@ -349,10 +349,26 @@ class IrcState(IrcCommandDispatcher):
                     chan.voices.discard(value)
                 elif mode == '+v':
                     chan.voices.add(value)
-                elif mode == '+i':
-                    chan.setMode('i')
-                elif mode == '-i':
-                    chan.unsetMode('i')
+                elif mode[-1] in 'beq':
+                    pass # We don't need this right now.
+                else:
+                    modeChar = mode[1]
+                    if mode[0] == '+':
+                        chan.setMode(modeChar, value)
+                    else:
+                        assert mode[0] == '-'
+                        chan.unsetMode(modeChar)
+
+    def do324(self, irc, msg):
+        channel = msg.args[1]
+        chan = self.channels[channel]
+        for (mode, value) in ircutils.separateModes(msg.args[2:]):
+            modeChar = mode[1]
+            if mode[0] == '+':
+                chan.setMode(modeChar, value)
+            else:
+                assert mode[0] == '-'
+                chan.unsetMode(modeChar)
 
     def do353(self, irc, msg):
         (_, _, channel, users) = msg.args
@@ -577,6 +593,12 @@ class Irc(IrcCommandDispatcher):
             self.sendMsg(ircmsgs.nick(newNick))
     do432 = do433
 
+    def doJoin(self, msg):
+        if msg.nick == self.nick:
+            channel = msg.args[0]
+            self.queueMsg(ircmsgs.who(channel))
+            self.queueMsg(ircmsgs.mode(channel))
+
     def doError(self, msg):
         """Handles ERROR messages."""
         log.info('Error message from %s: %s', self.server, msg.args[0])
@@ -676,6 +698,9 @@ class Irc(IrcCommandDispatcher):
 
     def __eq__(self, other):
         return id(self) == id(other)
+
+    def __ne__(self, other):
+        return not (self == other)
 
     def __str__(self):
         return 'Irc object for server %s' % self.server
