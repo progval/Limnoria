@@ -1,0 +1,284 @@
+<!DOCTYPE article SYSTEM "supybot.dtd">
+<article class="faq">
+    <articleinfo>
+        <authorgroup>
+            <author>
+                <firstname>Jeremiah</firstname>
+                <surname>Fincher</surname>
+            </author>
+            <editor>
+                <firstname>Daniel</firstname>
+                <surname>DiPaolo</surname>
+                <contrib>DocBook translator</contrib>
+            </editor>
+        </authorgroup>
+        <title>Supybot Frequently Asked Questions</title>
+        <revhistory>
+            <revision>
+                <revnumber>0.1</revnumber>
+                <date>18 Feb 2004</date>
+                <revremark>Initial Docbook translation</revremark>
+            </revision>
+            <revision>
+                <revnumber>0.2</revnumber>
+                <date>26 Feb 2004</date>
+                <revremark>Changed to Supybot DTD</revremark>
+            </revision>
+        </revhistory>
+    </articleinfo>
+    <qandaset defaultlabel="qanda">
+	    <qandaentry>
+			<question>
+				<para>
+					Why does my bot not recognize me or tell me that I don't
+					have the <capability>owner</capability> capability?
+				</para>
+			</question>
+			<answer>
+				<para>
+                    Because you're not given it anything to recognize you
+                    from!  You'll need to identify with the bot
+                    (<botcommand>help identify</botcommand> to see how that
+                    works) or add your hostmask to your user record
+                    (<botcommand>help addhostmask</botcommand> to see how that
+                    works) for it to know that you're you.  You may wish to
+                    note that <botcommand>addhostmask</botcommand> can accept
+                    a password; rather than identify, you can send the command
+                    <botcommand>addhostmask myOwnerUser [hostmask]
+                    myOwnerUserPassword</botcommand> and the bot will add your
+                    current hostmask to your owner user (of course, you should
+                    change <literal>myOwnerUser</literal> and
+                    <literal>myOwnerUserPassword</literal> appropriately for
+                    your bot).
+				</para>
+			</answer>
+	    </qandaentry>
+		<qandaentry>
+			<question>
+				<para>
+					How do I make Supybot op my users?
+				</para>
+			</question>
+			<answer>
+				<para>
+                    First, you'll have to make sure that your users register
+                    with the bot.  They can do this with the
+                    <botcommand>register</botcommand> command.  After they do
+                    so, you'll want to add the
+                    <capability>#channel,op</capability> capability to their
+                    user.  Use the <botcommand>channel
+                    addcapability</botcommand> command to do this.  After
+                    that, your users should be able to use the
+                    <botcommand>op</botcommand> command to get ops.
+				</para>
+				<para>
+                    If you want your users to be auto-opped when they join the
+                    channel, you'll need to load the <plugin>Enforcer</plugin>
+                    plugin and turn its <registrygroup>autoOp</registrygroup>
+                    configuration variable on.  Use the
+                    <botcommand>config</botcommand> command to do so.  Here's
+                    an example of how to do these steps:
+				</para>
+				<ircsession>
+   &lt;jemfinch|lambda&gt; I'm going to make an example session for giving
+	   you auto-ops, for our FAQ.
+   &lt;dunk1&gt; ah ok ;]
+   &lt;jemfinch|lambda&gt; First, I need you to register with supybot, using
+	   the "register" command (remember to send it in private).
+   &lt;dunk1&gt; done
+   &lt;jemfinch|lambda&gt; what name are you registered under?
+   &lt;dunk1&gt; dunk1
+   &lt;jemfinch|lambda&gt; ok, cool.
+   &lt;jemfinch|lambda&gt; @channel addcapability dunk1 op
+   &lt;supybot&gt; jemfinch|lambda: The operation succeeded.
+   &lt;jemfinch|lambda&gt; now use the "op" command to get ops.
+   &lt;dunk1&gt; @op
+   &mdash; supybot gives channel operator status to dunk1
+   &lt;dunk1&gt; works!
+   &lt;dunk1&gt; ;]
+   &lt;jemfinch|lambda&gt; @load Enforcer
+   &lt;supybot&gt; jemfinch|lambda: The operation succeeded.
+   &lt;jemfinch|lambda&gt; @config supybot.plugins.Enforcer.autoOp.#supybot On
+   &lt;supybot&gt; jemfinch|lambda: The operation succeeded.
+   &lt;jemfinch|lambda&gt; ok, now cycle the channel (part and then rejoin)
+   &lt;&ndash; dunk1 (dunker@freebsd.nl) has left #supybot
+   &ndash;&gt; dunk1 (dunker@freebsd.nl) has joined #supybot
+   &mdash; supybot gives channel operator status to dunk1
+   &lt;jemfinch|lambda&gt; cool, thanks :)
+				</ircsession>
+			</answer>
+		</qandaentry>
+		<qandaentry>
+			<question>
+			   <para>
+                   Can users with the <capability>admin</capability>
+                   capability change configuration variables?
+			   </para>
+			</question>
+			<answer>
+				<para>
+					Currently, no.  Since this is the first release of Supybot
+                    that uses the registry, we wanted to stay on the
+                    conservative side and require the
+                    <capability>owner</capability> capability for changing all
+                    non-channel-related configuration variables.  Feel free to
+                    make your case to us as to why a certain configuration
+                    variable should only require the
+                    <capability>admin</capability> capability instead of the
+                    <capability>owner</capability> capability, and if we agree
+                    with you, we'll change it for the next release.
+				</para>
+			</answer>
+		</qandaentry>
+		<qandaentry>
+			<question>
+				<para>
+					How do I make my Supybot connect to multiple servers?
+				</para>
+			</question>
+			<answer>
+				<para>
+                    You'll need to use the <plugin>Relay</plugin> plugin.  As
+                    long as you don't call the <botcommand>relay
+                    join</botcommand> command, it won't actually do any
+                    relaying between channels (even if the bot is on the same
+                    channel on different networks).  In order to use the Relay
+                    plugin, you'll want to first call the <botcommand>relay
+                    start</botcommand> command, followed by the
+                    <botcommand>relay connect</botcommand> command.  These
+                    commands are (unfortunately) not persistent at this time,
+                    so you'll need to give them to the bot anytime you start
+                    it up.  We'll probably have this lack of persistence
+                    rectified before the next release.
+				</para>
+			</answer>
+		</qandaentry>
+		<qandaentry>
+			<question>
+				<para>
+					Can Supybot do factoids?
+				</para>
+			</question>
+			<answer>
+				<para>
+					Supybot most certainly can!  In fact, we offer two
+					full-fledged factoids-related plugins!
+				</para>
+				<para>
+                    <plugin>Factoids</plugin> (written by
+                    <nick>jemfinch</nick>) is Supybot's original
+                    factoids-related plugin.  It offers full integration with
+                    Supybot's nested commands as well as a complete 1:n key to
+                    factoid ratio, with lookup by individual number.
+                    <plugin>Factoids</plugin> also uses a channel-specific
+                    database instead of a global database, although in the
+                    future it will likely be a configuration option whether to
+                    use channel-specific or global databases for such plugins.
+				</para>
+				<para>
+                    <plugin>MoobotFactoids</plugin> (written by
+                    <nick>Strike</nick>) is much more full-featured, offering
+                    users the ability to define factoids in a slightly more
+                    user-friendly way, as well as parsing factoids to handle
+                    &lt;reply&gt;, &lt;action&gt;, "see", and alternations
+                    (defining a factoid "test" as "&lt;reply&gt;(foo|bar|baz)"
+                    will make the bot send "foo" or "bar" or "baz" to the
+                    channel (without the normal "test is " at the beginning)).
+                    If you're accustomed to Moobot's factoids or Blootbot's
+                    factoids, then this is the Factoids plugin for you.
+                    Unfortunately, due to the more natural definition syntax
+                    (required to be compatible with Moobot) you can't define
+                    Factoids with nested commands; you'll have to evaluate the
+                    command first and then copy the result into your factoid
+                    definition.  <plugin>MoobotFactoids</plugin> uses a global
+                    database, so the factoids are the same for all channels.
+				</para>
+				<para>
+					In the future, we plan to have a compatibility plugin for
+					Infobot, but as of present we've not yet written one.
+				</para>
+			</answer>
+		</qandaentry>
+		<qandaentry>
+			<question>
+				<para>
+					Can I import my Infobot/Blootbot/Moobot factoids into
+					Supybot?
+				</para>
+			</question>
+			<answer>
+				<para>
+                    As of present, we have no automated way to do so.
+                    <nick>Strike</nick> has written a few scripts for
+                    importing a Moobot database into
+                    <plugin>MoobotFactoids</plugin>, however, so you'll want
+                    to talk to him about helping you with that.  We're
+                    certainly happy to help you convert such databases; if you
+                    can provide us with such a database exported to a flat
+                    file, we can probably do the rest of the work to write a
+                    script that imports it into a database for one of our
+                    factoids-related plugins.
+				</para>
+			</answer>
+		</qandaentry>
+		<qandaentry>
+			<question>
+				<para>
+					I found a bug, what do I do?
+				</para>
+			</question>
+			<answer>
+				<para>
+					Submit it on Sourceforge through our Sourceforge project
+					page:
+					<ulink
+					url="http://sourceforge.net/tracker/?group_id=58965&amp;atid=489447">
+					http://sourceforge.net/tracker/?group_id=58965&amp;atid=489447
+					</ulink>.  If Sourceforge happens to be down when you try
+					to submit your bug, then post it in the "Supybot Developer
+					Discussion" forum at our forums at
+					<ulink url="http://forums.supybot.org">
+						http://forums.supybot.org/
+					</ulink>.  If that doesn't work, email
+					<email>supybot-bugs@lists.sourceforge.net</email>.  If
+					that doesn't work, email
+					<email>jemfinch@supybot.org</email>.  If that doesn't
+					work, find yourself some carrier pigeons and &hellip; hah!
+					You thought I was serious!
+				</para>
+				<para>
+					Anyway, when you submit your bug, we'll need several
+					things.  If the bug involved an uncaught exception, we
+					need the traceback (basically the stuff from
+					&ldquo;Uncaught exception in &hellip;&rdquo; to the next
+					log entry).  We'd also like to see the commands that
+					caused the bug, or happened around the time you saw the
+					bug.  If the bug involved a database, we'd love to see the
+					database.  Remember, it's always worse to send us too much
+					information in a bug report than too little.
+				</para>
+			</answer>
+		</qandaentry>
+		<qandaentry>
+			<question>
+				<para>
+					Karma doesn't seem to work for me.
+				</para>
+			</question>
+			<answer>
+				<para>
+                    <plugin>Karma</plugin> by default doesn't acknowledge
+                    karma updates.  If you check the karma of whatever you
+                    increased/decreased, you'll note that your increment or
+                    decrement still took place.  If you'd rather
+                    <plugin>Karma</plugin> acknowledge karma updates, change
+                    the
+                    <registrygroup>supybot.plugins.Karma.response</registrygroup>
+                    configuration variable to <literal>On</literal>.
+				</para>
+			</answer>
+		</qandaentry>
+    </qandaset>
+</article>
+            
+

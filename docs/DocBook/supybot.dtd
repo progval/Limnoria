@@ -1,0 +1,137 @@
+<!-- Segregate all of our stuff into its own class for possible extension
+     later and just because I wanted to write my own class :) -->
+<!ENTITY % local.supybot.class "">
+<!ENTITY % supybot.class "BotCommand|Plugin|Flag|Nick|Capability
+                          |RegistryGroup|Registry|Script
+                          |Channel %local.supybot.class;">
+
+<!-- Stuff that isn't supybot-specific, but it's python-related and no
+     suitable element exists in the DocBook DTD -->
+<!ENTITY % local.python.class "">
+<!ENTITY % python.class "Module|Keyword %local.python.class;">
+
+<!-- Pretty much all of our stuff fits where stuff in the tech.char class
+     goes, so we simply add our stuff using the local extension -->
+<!ENTITY % local.tech.char.class "|%supybot.class;|%python.class;">
+
+<!-- linespecific is the same class as things like screen and programlisting,
+     so it's added here to fit with the DocBook stuff (i.e., so putting an
+     ircsession in where one of those previous two elements would be is a
+     valid operation -->
+<!ENTITY % local.linespecific.class "|IrcSession">
+
+<!-- Source the original DocBook DTD -->
+<!ENTITY % DocBookDTD PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+%DocBookDTD;
+
+<!ELEMENT BotCommand - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.botcommand.attrib  "">
+<!ENTITY % botcommand.role.attrib "%role.attrib;">
+<!ATTLIST BotCommand
+	%common.attrib;
+    %local.botcommand.attrib;
+	%botcommand.role.attrib;
+>
+
+<!ELEMENT Plugin - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.plugin.attrib "">
+<!ENTITY % plugin.role.attrib "%role.attrib;">
+<!ATTLIST Plugin
+	%common.attrib;
+	%local.plugin.attrib;
+    %plugin.role.attrib;
+>
+
+<!ELEMENT Flag - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.flag.attrib "">
+<!ENTITY % flag.role.attrib
+    "
+    flagtype    (arg|noarg)     #IMPLIED
+    %role.attrib;"
+>
+<!ATTLIST Flag
+    %common.attrib;
+    %local.flag.attrib;
+    %flag.role.attrib;
+>
+
+<!ELEMENT Nick - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.nick.attrib "">
+<!ENTITY % nick.role.attrib "%role.attrib;">
+<!ATTLIST Nick
+    %common.attrib;
+    %local.nick.attrib;
+    %nick.role.attrib;
+>
+
+<!ELEMENT Capability - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.capability.attrib "">
+<!ENTITY % capability.role.attrib "%role.attrib;">
+<!ATTLIST Capability
+    %common.attrib;
+    %local.capability.attrib;
+    %capability.role.attrib;
+>
+
+<!ELEMENT Comment - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.comment.attrib "">
+<!ENTITY % comment.role.attrib "%role.attrib;">
+<!ATTLIST Comment
+    %common.attrib;
+    %local.comment.attrib;
+    %comment.role.attrib;
+>
+
+<!ELEMENT RegistryGroup - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.registrygroup.attrib "">
+<!ENTITY % registrygroup.role.attrib "%role.attrib;">
+<!ATTLIST RegistryGroup
+    %common.attrib;
+    %local.registrygroup.attrib;
+    %registrygroup.role.attrib;
+>
+
+<!ELEMENT Registry - - ((RegistryGroup|Comment)+)>
+<!ENTITY % local.registry.attrib "">
+<!ENTITY % registry.role.attrib "%role.attrib;">
+<!ATTLIST Registry
+    %common.attrib;
+    %local.registry.attrib;
+    %registry.role.attrib;
+>
+
+<!ELEMENT IrcSession - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.ircsession.attrib "">
+<!ENTITY % ircsession.role.attrib "%role.attrib;">
+<!ATTLIST IrcSession
+    %common.attrib;
+    %local.ircsession.attrib;
+    %ircsession.role.attrib;
+>
+
+<!ELEMENT Script - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.script.attrib "">
+<!ENTITY % script.role.attrib "%role.attrib;">
+<!ATTLIST Script
+    %common.attrib;
+    %local.script.attrib;
+    %script.role.attrib;
+>
+
+<!ELEMENT Channel - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.channel.attrib "">
+<!ENTITY % channel.role.attrib "%role.attrib;">
+<!ATTLIST Channel
+    %common.attrib;
+    %local.channel.attrib;
+    %channel.role.attrib;
+>
+
+<!ELEMENT Module - - ((%smallcptr.char.mix)+)>
+<!ENTITY % local.module.attrib "">
+<!ENTITY % module.role.attrib "%role.attrib;">
+<!ATTLIST Module
+    %common.attrib;
+    %local.module.attrib;
+    %module.role.attrib;
+>

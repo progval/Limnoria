@@ -1,0 +1,585 @@
+<!DOCTYPE article SYSTEM "supybot.dtd">
+
+<article>
+    <articleinfo>
+	    <authorgroup>
+		    <author>
+			    <firstname>Jeremiah</firstname>
+				<surname>Fincher</surname>
+	        </author>
+			<editor>
+				<firstname>Daniel</firstname>
+				<surname>DiPaolo</surname>
+				<contrib>DocBook translator</contrib>
+			</editor>
+		</authorgroup>
+		<title>Supybot developer interfaces</title>
+		<revhistory>
+			<revision>
+				<revnumber>0.1</revnumber>
+				<date>19 Feb 2004</date>
+				<revremark>Initial Docbook translation</revremark>
+			</revision>
+            <revision>
+                <revnumber>0.2</revnumber>
+                <date>26 Feb 2004</date>
+                <revremark>Converted to Supybot DTD</revremark>
+            </revision>
+		</revhistory>
+	</articleinfo>
+	<sect1>
+		<title>Available interfaces</title>
+		<para>
+			These are the interfaces for some of the objects you'll deal with
+			if you code for Supybot.
+		</para>
+		<sect2>
+			<title><classname>ircmsgs.IrcMsg</classname>
+			<para>
+				This is the object that represents an IRC message.  It has
+				several methods and attributes.  The most important thing
+				about this class, however, is that it <emphasis>is</emphasis>
+				hashable, and thus <emphasis>cannot</emphasis> be modified.
+				Do not change any attributes; any code that modifies an IRC
+				message is <emphasis>broken</emphasis> and should not exist.  
+			</para>
+			<variablelist>
+				<title>Interesting methods</title>
+				<varlistentry>
+					<term>__init__</term>
+					<listitem>
+						<para>
+							One of the more complex initializers in a class.
+							It can be used in three different ways:
+						</para>
+						<orderedlist numeration="arabic" spacing="normal">
+							<listitem>
+								<para>
+									It can be given a string, as one received
+									from the server, which it will then parse
+									into its separate components and
+									instantiate the class with those
+									components as attributes.  
+								</para>
+							</listitem>
+							<listitem>
+								<para>
+									It can be given a command, some (optional)
+									arguments, and a (optional) prefix, and
+									will instantiate the class with those
+									components as attributes.
+								</para>
+							</listitem>
+							<listitem>
+								<para>
+									It can be given, in addition to any of the
+									above arguments, a <varname>msg</varname>
+									keyword argument that will use the
+									attributes of msg as defaults.  This
+									exists to make it easier to copy messages,
+									since the class is immutable.
+								</para>
+							</listitem>
+						</orderedlist>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>__str__</term>
+					<listitem>
+						<para>
+							This returns the message in a string form suitable
+							for sending to a server.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>__repr__</term>
+					<listitem>
+						<para>
+							This returns the message in a form suitable for
+							<function>eval()</function>, assuming the name
+							<varname>IrcMsg</varname> is in your namespace and
+							is bound to this class.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			<para>
+				The following attributes are the meat of this class.  These
+				are generally what you'll be looking at with
+				<varname>IrcMsg</varname>s.
+			</para>
+			<variablelist>
+				<title>Interesting attributes</title>
+				<varlistentry>
+					<term>command</term>
+					<listitem>
+						<para>
+							This is the command of the
+							<varname>IrcMsg</varname> &ndash;
+							<literal>PRIVMSG</literal>,
+							<literal>NOTICE</literal>,
+							<literal>WHOIS</literal>,
+							etc.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>args</term>
+					<listitem>
+						<para>
+							This is a tuple of the arguments to the
+							<varname>IrcMsg</varname>.  Some messages have
+							arguments, some don't, depending on what command
+							they are.  You are, of course, always assured that
+							<varname>args</varname> exists and is a tuple,
+							though it might be empty.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>prefix</term>
+					<listitem>
+						<para>
+							This is the hostmask of the person/server the
+							message is from.  In general, you won't be setting
+							this on your outgoing messages, but incoming
+							messages will always have one.  This is the whole
+							hostmask; if the message was received from a
+							server, it'll be the server's hostmask; if the
+							message was received from a user, it'll be the
+							whole user hostmask.  In that case, however, it's
+							also parsed out into the
+							<varname>nick</varname>/<varname>user</varname>/<varname>host</varname>
+							attributes, which are probably more useful to
+							check for many purposes.  
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>nick</term>
+					<listitem>
+						<para>
+							If the message was sent by a user, this will be
+							the nick of the user.  If it was sent by a server,
+							this will be the server's name (something like
+							<literal>calvino.freenode.net</literal> or
+							similar).  
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>user</term>
+					<listitem>
+						<para>
+							If the message was sent by a user, this will be
+							the user string of the user &ndash; what they put
+							into their IRC client for their "full name."  If
+							it was sent by a server, it'll be the server's
+							name, again.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>host</term>
+					<listitem>
+						<para>
+							If the message was sent by a user, this will be
+							the host portion of their hostmask.  If it was
+							sent by a server, it'll be the server's name (yet
+							again :))
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect2>
+		<sect2>
+			<title><classname>irclib.Irc</classname>
+			<para>
+				This is the object to handle everything about IRC except the
+				actual connection to the server itself.
+				(<emphasis>NOTE</emphasis> that the object actually received
+				by commands in subclasses of
+				<classname>callbacks.Privmsg</classname> is an
+                <classname>IrcObjectProxy</classname>, which is described
+                later.  It augments the following interface with several
+                methods of its own to help plugin authors.)
+			</para>
+			<variablelist>
+				<title>Interesting methods</title>
+				<varlistentry>
+					<term>queueMsg</term>
+					<listitem>
+						<para>
+							Queues a message for sending to the server.  The
+							queue is generally FIFO, but it does prioritize
+							messages based on their command.  
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>sendMsg</term>
+					<listitem>
+						<para>
+							Queues a message for sending to the server prior
+							to any messages in the normal queue.  This is
+							exactly a FIFO queue, no reordering is done at
+							all.
+						</para>
+					</listitem>
+				</varlistentry>
+				<!--<note>
+					<para>
+						The following two methods are the most important for
+						people writing new <varname>IrcDriver</varname>s.
+						Otherwise, you really don't need to pay attention to
+						them.
+					</para>
+				</note>-->
+				<varlistentry>
+					<term>feedMsg</term>
+					<listitem>
+						<para>
+							Feeds the <varname>Irc</varname> object a message
+							for it handle appropriately, as well as passing it
+							on to callbacks.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>takeMsg</term>
+					<listitem>
+						<para>
+							If the <varname>Irc</varname> object has a message
+							it's ready to send to the server, this will return
+							it.  Otherwise, it will return
+							<literal>None</literal>.  
+						</para>
+					</listitem>
+				</varlistentry>
+				<!--<note>
+					<para>
+						The next several methods are of far more marginal
+						utility.  But someone may need them, so they're
+						documented here.
+					</para>
+				</note>-->
+				<varlistentry>
+					<term>addCallback</term>
+					<listitem>
+						<para>
+							Takes a callback to add to the list of callbacks
+							in the <varname>Irc</varname> object.  See the
+							interface for <varname>IrcCallback</varname> for
+							more information.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>getCallback</term>
+					<listitem>
+						<para>
+							Gets a callback by name, if it is in the
+							<varname>Irc</varname> object's list of callbacks.
+							If it it isn't, returns <literal>None</literal>.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>removeCallback</term>
+					<listitem>
+						<para>
+							Removes a callback by name.  Returns a list of the
+							callbacks removed (since it is technically
+							possible to have multiple callbacks with the same
+							name.  This list may be empty.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>__init__</term>
+					<listitem>
+						<para>
+							Requires a <varname>nick</varname>.  Optional
+							arguments include <varname>user</varname> and
+							<varname>ident</varname>, which default to the
+							nick given, <varname>password</varname>, which
+							defaults to the empty password, and
+							<varname>callbacks</varname>, a list of callbacks
+							(which defaults to nothing, an empty list).
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>reset</term>
+					<listitem>
+						<para>
+							Resets the <varname>Irc</varname> object to its
+							original state, as well as sends a
+							<function>reset()</function> to every callbacks.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>die</term>
+					<listitem>
+						<para>
+							Kills the IRC object and all its callbacks.  
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			<variablelist>
+				<title>Interesting attributes</title>
+				<varlistentry>
+					<term>nick</term>
+					<listitem>
+						<para>
+							The current nick of the bot.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>prefix</term>
+					<listitem>
+						<para>
+							The current prefix of the bot.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>server</term>
+					<listitem>
+						<para>
+							The current server the bot is connected to.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>network</term>
+					<listitem>
+						<para>
+							The current network name the bot is connected to.
+						</para>
+					</listitem>
+				</varlistentry>
+            	<varlistentry>
+					<term>afterConnect</term>
+					<listitem>
+						<para>
+							<literal>False</literal> until the bot has
+							received a command sent after the connection is
+							finished &ndash; 376, 377, or 422.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>state</term>
+					<listitem>
+						<para>
+							An <varname>IrcState</varname> object for this
+							particular connection.  See the interface for the
+							<varname>IrcState</varname> object for more
+							information.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect2>
+		<sect2>
+			<title><classname>irclib.IrcCallback</classname></title>
+			<variablelist>
+				<title>Interesting Methods</title>
+				<varlistentry>
+					<term>name</term>
+					<listitem>
+						<para>
+							Returns the name of the callback.  The default
+							implementation simply returns the name of the
+							class.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>__call__</term>
+					<listitem>
+						<para>
+							Called by the <varname>Irc</varname> object with
+							itself and the message whenever a message is fed
+							to the <varname>Irc</varname> object.  Nothing is
+							done with the return value.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>inFilter</term>
+					<listitem>
+						<para>
+							Called by the <varname>Irc</varname> object with
+							itself and the message whenever a message is fed
+							to the <varname>Irc</varname> object.  The return
+							value should be an <varname>IrcMsg</varname>
+							object to be passed to the next callback in the
+							<varname>Irc</varname>'s list of callbacks.  If
+							<literal>None</literal> is returned, all
+							processing stops.  This gives callbacks an
+							oppurtunity to "filter" incoming messages before
+							general callbacks are given them.  
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>outFilter</term>
+					<listitem>
+						<para>
+							Basically equivalent to
+							<varname>inFilter</varname>, except instead of
+							being called on messages as they enter the
+							<varname>Irc</varname> object, it's called on
+							messages as they leave the <varname>Irc</varname>
+							object.  
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>die</term>
+					<listitem>
+						<para>
+							Called when the parent <varname>Irc</varname> is
+							told to die.  This gives callbacks an oppurtunity
+							to close open files, network connections, or
+							databases before they're deleted.  
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>reset</term>
+					<listitem>
+						<para>
+							Called when the parent <varname>Irc</varname> is
+							told to reset (which is generally when
+							reconnecting to the server).  Most callbacks don't
+							need to define this.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			<variablelist>
+				<title>Interesting attributes</title>
+				<varlistentry>
+					<term>priority</term>
+					<listitem>
+						<para>
+							Determines the priority of the callback in the
+							<varname>Irc</varname> object's list of callbacks.
+							Defaults to <literal>99</literal>; the valid range
+							includes <literal>0</literal> through
+							<literal>sys.maxint-1</literal> (don't use
+							<literal>sys.maxint</literal> itself, that's
+							reserved for the <varname>Misc</varname> plugin).
+							The lower the number, the higher the priority.
+							High priority callbacks are called earlier in the
+							<varname>inFilter</varname> cycle, earlier in the
+							<varname>__call__</varname> cycle, and later in
+							the <varname>outFilter</varname> cycle &ndash;
+							basically, they're given the first chances on the
+							way in and the last chances on the way out.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect2>
+		<sect2>
+			<title><classname>callbacks.IrcObjectProxy</classname></title>
+			<para>
+                <classname>IrcObjectProxy</classname> is a proxy for an
+                <classname>irclib.Irc</classname> instance that serves to
+                provide a much fuller interface for handling replies and
+                errors as well as to handle the nesting of commands.  This is
+                what you'll be dealing with almost all the time when writing
+                commands; when writing <function>doCommand</function> methods
+                (the kind you read about in the interface description of
+                <classname>irclib.IrcCallback</classname>) you'll be dealing
+                with plain old <classname>irclib.Irc</classname> objects.
+			</para>
+			<variablelist>
+				<title>Interesting methods</title>
+				<varlistentry>
+					<term>reply</term>
+					<listitem>
+						<para>
+							Called to reply to the current message with a
+							string that is to be the reply.  Uses the
+							<function>queueMsg</function> command discussed in
+							the <classname>irclib.Irc</classname> section.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>replySuccess</term>
+					<term>replyError</term>
+					<listitem>
+						<para>
+							These reply with the configured responses for
+							success and generic error, respectively.  If an
+							additional argument is given, it's (intelligently)
+							appended to the generic message to be more
+							specific.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+            		<term>error</term>
+					<listitem>
+						<para>
+							Called to send an error reply to the current
+							message; not only does the response indicate an
+							error, but commands that error out break the
+							nested-command chain, which is generally useful
+							for not confusing the user :)
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>errorNoCapability</term>
+					<listitem>
+						<para>
+                            Like <function>error</function>, except it accepts
+							the capability that's missing and integrates it
+							into the configured error message for such things.
+							Also accepts an additional string for a more
+							descriptive message, if that's what you want.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>errorPossibleBug</term>
+					<term>errorNotRegistered</term>
+					<term>errorNoUser</term>
+					<term>errorRequiresPrivacy</term>
+					<listitem>
+						<para>
+							These methods reply with the appropriate
+							configured error message for the conditions in
+							their names; they all take an additional arguments
+							to be more specific about the conditions they
+							indicate, but this argument is very rarely
+							necessary.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>getRealIrc</term>
+					<listitem>
+						<para>
+                            Returns the actual <classname>Irc</classname>
+                            object being proxied for.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+		</sect2>
+	</sect1>
+</article>
+			
+

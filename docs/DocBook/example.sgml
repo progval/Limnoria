@@ -1,4 +1,4 @@
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+<!DOCTYPE article SYSTEM "supybot.dtd">
 
 <article>
 	<articleinfo>
@@ -32,6 +32,11 @@
 					Updated to match EXAMPLE included with 0.75.0
 				</revremark>
 			</revision>
+            <revision>
+                <revnumber>0.4</revnumber>
+                <date>26 Feb 2004</date>
+                <revremark>Converted to use Supybot DTD</revremark>
+            </revision>
 		</revhistory>
 	</articleinfo>
 	<sect1>
@@ -56,13 +61,12 @@
 		<title>Creating your own plugin</title>
 		<sect2>
 			<title>
-				Using <application>scripts/newplugin.py</application>
+				Using <script>scripts/newplugin.py</script>
 			</title>
 			<para>
-				First, the easiest way to start writing a module is to use the
-				wizard provided,
-				<application>scripts/newplugin.py</application>.  Here's an
-				example session:
+                First, the easiest way to start writing a module is to use the
+                wizard provided, <script>scripts/newplugin.py</script>.
+                Here's an example session:
 			</para>
 			<screen>
 functor% scripts/newplugin.py
@@ -169,7 +173,7 @@ Class = Random
 			</para>
 			<para>
 				Describe what you want the plugin to do in the docstring.
-				This is used in <application>scripts/setup.py</application> in
+				This is used in <script>scripts/setup.py</script> in
 				order to explain to the user the purpose of the module.  It's
 				also returned when someone asks the bot for help for a given
 				module (instead of help for a certain command).  We'll change
@@ -177,17 +181,18 @@ Class = Random
 				numbers."</literal>
 			</para>
 			<para>
-				Then there are the imports.  The <varname>callbacks</varname>
+				Then there are the imports.  The
+                <module>callbacks</module>
 				module is used (the class you're given subclasses
-				<varname>callbacks.Privmsg</varname>) but the
-				<varname>privmsgs</varname> module isn't used.  That's
+				<classname>callbacks.Privmsg</classname>) but the
+				<module>privmsgs</module> module isn't used.  That's
 				alright; we can almost guarantee you'll use it, so we go ahead
 				and add the import to the template.
 			</para>
 			<para>
 				Then you see a <function>configure</function> function.  This
 				the function that's called when users decide to add your
-				module in <application>scripts/setup.py</application>.  You'll
+				module in <script>scripts/setup.py</script>.  You'll
 				note that by default it simply adds <literal>"load
 				Example"</literal> (where 'Example' is the name you provided
 				as the name of your plugin, so in our case it is
@@ -204,8 +209,8 @@ Class = Random
 			</para>
 			<para>
 				What you're given is a skeleton: a simple subclass of
-				<varname>callbacks.Privmsg</varname> for you to start with.
-				Now let's add a command.
+                <classname>callbacks.Privmsg</classname> for you to start
+                with.  Now let's add a command.
 			</para>
 			<para>
 				I don't know what you know about random number generators, but
@@ -213,7 +218,7 @@ Class = Random
 				seed) and they continue (via some somewhat
 				complicated/unpredictable algorithm) from there.  This seed
 				(and the rest of the sequence, really) is all nice and
-				packaged up in Python's <varname>random</varname> module, the
+				packaged up in Python's <module>random</module> module, the
 				<varname>Random</varname> object.  So the first thing we're
 				going to have to do is give our plugin a
 				<varname>Random</varname> object.
@@ -225,8 +230,8 @@ Class = Random
 				be careful of is that you call the superclass
 				<function>__init__</function> method at the end of your own
 				<function>__init__</function>.  So to add this
-				<varname>random.Random</varname> object to our plugin, we can
-				replace the <function>pass</function> statement with
+                <classname>random.Random</classname> object to our plugin, we
+                can replace the <keyword>pass</keyword> statement with
 				this:
 			</para>
 			<programlisting>
@@ -285,40 +290,40 @@ def __init__(self):
 			<para>
 				And that's it!  Pretty simple, huh?  Anyway, you're probably
 				wondering what all that <emphasis>means</emphasis>.  We'll
-				start with the <function>def</function> statement:
+				start with the <keyword>def</keyword> statement:
 			</para>
 			<programlisting>
     def random(self, irc, msg, args):
 			</programlisting>
 			<para>
-				What that does is define a command
-				<function>random</function>.  You can call it by saying
-				"@random" (or whatever prefix character your specific bot
-				uses).  The arguments are a bit less obvious.
-				<varname>self</varname> is self-evident (hah!).
-				<varname>irc</varname> is the <varname>Irc</varname> object
-				passed to the command; <varname>msg</varname> is the original
-				<varname>IrcMsg</varname> object.  But you're really not going
-				to have to deal with either of these too much (with the
-				exception of calling <function>irc.reply</function> or
-				<function>irc.error</function>).  What you're
-				<emphasis>really</emphasis> interested in is the
-				<varname>args</varname> arg.  That if a list of all the
-				arguments passed to your command, pre-parsed and already
-				evaluated (i.e., you never have to worry about nested
-				commands, or handling double quoted strings, or splitting on
-				whitespace -- the work has already been done for you).  You
-				can read about the <varname>Irc</varname> object in
-				<filename>irclib.py</filename> (you won't find
-				<function>.reply</function> or <function>.error</function>
-				there, though, because you're actually getting an
-				<varname>IrcObjectProxy</varname>, but that's beyond the level
-				we want to describe here :)).  You can read about the
-				<varname>msg</varname> object in
-				<filename>ircmsgs.py</filename>.  But again, aside from
-				calling <function>irc.reply</function> or
-				<function>irc.error</function>, you'll very rarely be using
-				these objects.
+                What that does is define a command
+                <function>random</function>.  You can call it by saying
+                "@random" (or whatever prefix character your specific bot
+                uses).  The arguments are a bit less obvious.
+                <varname>self</varname> is self-evident (hah!).
+                <varname>irc</varname> is the <classname>Irc</classname>
+                object passed to the command; <varname>msg</varname> is the
+                original <classname>IrcMsg</classname> object.  But you're
+                really not going to have to deal with either of these too much
+                (with the exception of calling <function>irc.reply</function>
+                or <function>irc.error</function>).  What you're
+                <emphasis>really</emphasis> interested in is the
+                <varname>args</varname> arg.  That if a list of all the
+                arguments passed to your command, pre-parsed and already
+                evaluated (i.e., you never have to worry about nested
+                commands, or handling double quoted strings, or splitting on
+                whitespace -- the work has already been done for you).  You
+                can read about the <classname>Irc</classname> object in
+                <filename>irclib.py</filename> (you won't find
+                <function>.reply</function> or <function>.error</function>
+                there, though, because you're actually getting an
+                <classname>IrcObjectProxy</classname>, but that's beyond the
+                level we want to describe here :)).  You can read about the
+                <varname>msg</varname> object in
+                <filename>ircmsgs.py</filename>.  But again, aside from
+                calling <function>irc.reply</function> or
+                <function>irc.error</function>, you'll very rarely be using
+                these objects.
 			</para>
 			<para>
 				(In case you're curious, the answer is yes, you
@@ -342,13 +347,13 @@ def __init__(self):
 				<emphasis>is</emphasis> the help!  Given the above docstring,
 				this is what a supybot does:
 			</para>
-			<screen>
+			<ircsession>
     &lt;angryman&gt; jemfinch: random takes no arguments (for more help 
                use the morehelp command)
     &lt;jemfinch&gt; $morehelp random
     &lt;angryman&gt; jemfinch: Returns the next random number from the 
                current random number generator. 
-			</screen>
+			</ircsession>
 			<para>
 				'help &lt;command&gt;' replies with the command name followed
 				by the first line of the command's docstring; there should be
@@ -361,21 +366,22 @@ def __init__(self):
     irc.reply(msg, str(self.rng.random()))
 			</programlisting>
 			<para>
-				<function>irc.reply</function> takes two arguments, an
-				<varname>IrcMsg</varname> (like the one passed into your
-				function) and a string.  The <varname>IrcMsg</varname> is used
-				to determine who the reply should go to and whether or not it
-				should be sent in private message (commands sent in private
-				are replied to in private).  The string is the reply to be
-				sent.  Don't worry about length restrictions or anything -- if
-				the string you want to send is too big for an IRC message (and
-				oftentimes that turns out to be the case :)) the supybot
-				framework handles that entirely transparently to you.  Do make
-				sure, however, that you give <function>irc.reply</function> a
-				string.  It doesn't take anything else (sometimes even unicode
-				fails!).  That's why we have "str(self.rng.random())" instead
-				of simply "self.rng.random()" -- we had to give
-				<function>irc.reply</function> a string.
+                <function>irc.reply</function> takes two arguments, an
+                <classname>IrcMsg</classname> (like the one passed into your
+                function) and a string.  The <classname>IrcMsg</classname> is
+                used to determine who the reply should go to and whether or
+                not it should be sent in private message (commands sent in
+                private are replied to in private).  The string is the reply
+                to be sent.  Don't worry about length restrictions or anything
+                -- if the string you want to send is too big for an IRC
+                message (and oftentimes that turns out to be the case :)) the
+                supybot framework handles that entirely transparently to you.
+                Do make sure, however, that you give
+                <function>irc.reply</function> a string.  It doesn't take
+                anything else (sometimes even unicode fails!).  That's why we
+                have "str(self.rng.random())" instead of simply
+                "self.rng.random()" -- we had to give
+                <function>irc.reply</function> a string.
 			</para>
 			<para>
 				Anyway, now that we have an RNG, we have a need for seed!  Of
@@ -422,7 +428,7 @@ def __init__(self):
 				arguments are returned in a tuple/list).  Yes, we could've
 				just said "seed = args[0]" and gotten the first argument, but
 				what if the user didn't pass us an argument at all?  Then
-				we've got to catch the <varname>IndexError</varname> from
+				we've got to catch the <classname>IndexError</classname> from
 				<varname>args[0]</varname> and complain to the user about it.
 				<function>privmsgs.getArgs</function>, on the other hand,
 				handles all that for us.  If the user didn't give us enough
@@ -440,7 +446,7 @@ def __init__(self):
 				sure to remind the user that an error has been encountered
 				(currently, that means it puts "Error: " at the beginning of
 				the message).  After erroring, we return.  It's important to
-				remember this <function>return</function> here; otherwise,
+				remember this <keyword>return</keyword> here; otherwise,
 				we'll just keep going down through the function and try to use
 				this "seed" variable that never got assigned.  A good general
 				rule of thumb is that any time you use
@@ -500,9 +506,9 @@ def __init__(self):
 				to.
 			</para>
 			<para>
-				The <varname>Random</varname> object we're using offers us a
-				"sample" method that takes a sequence and a number (we'll call
-				it <varname>N</varname>) and returns a list of
+                The <classname>Random</classname> object we're using offers us
+                a "sample" method that takes a sequence and a number (we'll
+                call it <varname>N</varname>) and returns a list of
 				<varname>N</varname> items taken randomly from the sequence.
 				So I'll show you an example that takes advantage of multiple
 				arguments but doesn't use
@@ -542,13 +548,13 @@ def __init__(self):
 				into a big long string that we'll just have to re-split.  But
 				we still want the nice error handling of
 				<function>privmsgs.getArgs</function>.  So what do we do?  We
-				raise <varname>callbacks.ArgumentError</varname>!  That's the
-				secret juju that <function>privmsgs.getArgs</function> is
-				doing; now we're just doing it ourself.  Someone up our
-				callchain knows how to handle it so a neat error message is
-				returned.  So in this function, if
-				<function>.pop(0)</function> fails, we weren't given enough
-				arguments and thus need to tell the user how to call us.  
+                raise <classname>callbacks.ArgumentError</classname>!  That's
+                the secret juju that <function>privmsgs.getArgs</function> is
+                doing; now we're just doing it ourself.  Someone up our
+                callchain knows how to handle it so a neat error message is
+                returned.  So in this function, if
+                <function>.pop(0)</function> fails, we weren't given enough
+                arguments and thus need to tell the user how to call us.  
 			</para>
 			<para>
 				So we have the args, we have the number, we do a simple call
@@ -607,22 +613,22 @@ def __init__(self):
 			<para>
 				Later, though, you'll see something other than
 				<function>irc.reply</function>.  This is
-				<function>irc.queueMsg</function>, the general interface for
-				sending messages to the server.  It's what
-				<function>irc.reply</function> is using under the covers.  It
-				takes an <varname>IrcMsg</varname> object.  Fortunately,
-				that's exactly what's returned by
-				<function>ircmsgs.action</function>.  An action message, just
-				in case you don't know, is a /me kind of message.
-				<function>ircmsgs.action</function> is a helper function that
-				takes a target (a place to send the message, either a channel
-				or a person) and a payload (the thing to /me) and returns the
-				appropriate <varname>IrcMsg</varname> object.
-				<function>ircutils.replyTo</function> simply takes an
-				<varname>IrcMsg</varname> and returns where we should reply
-				to; if the message was originally sent to a channel, we'll
-				reply to there, if it was originally sent to us privately,
-				we'll reply in private.
+                <function>irc.queueMsg</function>, the general interface for
+                sending messages to the server.  It's what
+                <function>irc.reply</function> is using under the covers.  It
+                takes an <classname>IrcMsg</classname> object.  Fortunately,
+                that's exactly what's returned by
+                <function>ircmsgs.action</function>.  An action message, just
+                in case you don't know, is a /me kind of message.
+                <function>ircmsgs.action</function> is a helper function that
+                takes a target (a place to send the message, either a channel
+                or a person) and a payload (the thing to /me) and returns the
+                appropriate <classname>IrcMsg</classname> object.
+                <function>ircutils.replyTo</function> simply takes an
+                <classname>IrcMsg</classname> and returns where we should
+                reply to; if the message was originally sent to a channel,
+                we'll reply to there, if it was originally sent to us
+                privately, we'll reply in private.
 			</para>
 			<para>
 				At the end, you might be surprised by the "raise
@@ -646,7 +652,7 @@ def __init__(self):
 			<title>Finishing touches</title>
 			<para>
 				Let's take a look at that <function>configure</function>
-				function <application>scripts/newplugin.py</application> made
+				function <script>scripts/newplugin.py</script> made
 				for us.  Here it is, in case you've forgotten:
 			</para>
 			<programlisting>
@@ -660,10 +666,10 @@ def configure(onStart, afterConnect, advanced):
 			</programlisting>
 			<para>
 				You remember when you first started running supybot and ran
-				<application>scripts/setup.py</application> and it asked you
+				<script>scripts/setup.py</script> and it asked you
 				all those questions?  Well, now's your chance to ask other
 				users some questions of your own.  In our case, with our
-				<varname>Random</varname> plugin, it might be nice to offer
+				<plugin>Random</plugin> plugin, it might be nice to offer
 				the user the ability to specify a seed to use whenever the
 				plugin is loaded.  So let's ask him if he wants to do that,
 				and if so, let's ask him what the seed should be.
@@ -684,7 +690,7 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('seed %s' % seed)
 			</programlisting>
 			<para>
-				As you can see, what the <varname>questions</varname> module
+				As you can see, what the <module>questions</module> module
 				does is fairly self-evident: <function>yn</function> returns
 				either 'y' or 'n'; <function>something</function> returns
 				<emphasis>something</emphasis> (but not nothing; for nothing,
@@ -694,12 +700,12 @@ def configure(onStart, afterConnect, advanced):
 				<varname>onStart</varname> is a list of the commands to run
 				when the bot starts; we're just throwing our little piece into
 				it.  These commands will then be written into the template
-				<application>scripts/setup.py</application> creates for the bot.
+				<script>scripts/setup.py</script> creates for the bot.
 			</para>
 			<para>
 				We've written our own plugin from scratch (well, from the
 				boilerplate that we got from
-				<application>scripts/newplugin.py</application> :)) and
+				<script>scripts/newplugin.py</script> :)) and
 				survived!  Now go write more plugins for supybot, and send
 				them to me so I can use them too :)
 			</para>
