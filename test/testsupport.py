@@ -51,6 +51,8 @@ import callbacks
 
 import Owner
 
+network = True
+
 nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
          'alb','d0rt','jemfinch','StyxAlso','fors','deltab','gd',
          'hellz_hunter','are_j|pub_comp','jason_','dreid','sayke_','winjer',
@@ -169,8 +171,8 @@ class PluginTestCase(unittest.TestCase):
             print 'Response: %r' % response
         return response
 
-    def getMsg(self, query, timeout=None):
-        return self._feedMsg(query, timeout=timeout)
+    def getMsg(self, query, **kwargs):
+        return self._feedMsg(query, **kwargs)
 
     def feedMsg(self, query, to=None, frm=None):
         """Just feeds it a message, that's all."""
