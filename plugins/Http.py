@@ -150,17 +150,19 @@ class Http(callbacks.Privmsg):
             (w, l, d) = self._gkrecord.search(profile).groups()
             profile = utils.htmlToText(profile)
             seen = self._gkseen.search(profile).group(1)
+            if seen.startswith('0'):
+                seen = '%s is on gameknot right now.' % name
+            else:
+                seen = '%s was last seen on Gameknot %s.' % (name, seen)
             if profile.find('Team:') >= 0:
                 team = self._gkteam.search(profile).group(1)
                 irc.reply(msg, '%s (team: %s) is rated %s and has %s active ' \
-                          'games and a record of W-%s, L-%s, D-%s.  ' \
-                          '%s was last seen on Gameknot %s' % \
-                          (name, team, rating, games, w, l, d, name, seen))
+                          'games and a record of W-%s, L-%s, D-%s.  %s' % \
+                          (name, team, rating, games, w, l, d, seen))
             else:
                 irc.reply(msg, '%s is rated %s and has %s active games ' \
-                          'and a record of W-%s, L-%s, D-%s.  ' \
-                          '%s was last seen on Gameknot %s' % \
-                          (name, rating, games, w, l, d, name, seen))
+                          'and a record of W-%s, L-%s, D-%s.  %s' % \
+                          (name, rating, games, w, l, d, seen))
         except AttributeError:
             if profile.find('User %s not found!' % name) != -1:
                 irc.error(msg, 'No user %s exists.')
@@ -284,7 +286,7 @@ class Http(callbacks.Privmsg):
             s = utils.htmlToText(html, tagReplace='').strip('\xa0 ')
             irc.reply(msg, s[9:]) # Snip off "the site"
         elif html.find('We could not get any results') != -1:
-            irc.reply(msg, 'No results found for %s' % hostname)
+            irc.reply(msg, 'No results found for %s.' % hostname)
         else:
             irc.error(msg, 'The format of the was odd.')
 
