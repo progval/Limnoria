@@ -365,7 +365,9 @@ def main():
         output("""IRC servers also allow you to set your ident, which they
         might need if they can't find your identd server.  What would you
         like your ident to be?  If you don't care, press enter and we'll
-        use the same string as your bot's nick.""")
+        use the same string as your bot's nick.  In fact, we prefer that you
+        do this, because it provides free advertising for Supybot when users
+        /whois your bot.  But, of course, it's your call.""")
         while True:
             ident = something('What would you like your bot\'s ident to be?',
                               default=defaultIdent)
