@@ -159,7 +159,7 @@ class Lookup(callbacks.Privmsg):
         db = getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
-        rows = cursor.fetchone()[0]
+        rows = int(cursor.fetchone()[0])
         docstring = """[<key>]
 
         If <key> is given, looks up <key> in the %s database.  Otherwise,
