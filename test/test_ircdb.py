@@ -101,7 +101,9 @@ class CapabilitySetTestCase(unittest.TestCase):
 
     def testReprEval(self):
         s = ircdb.UserCapabilitySet()
+        self.assertEqual(s, eval(repr(s), ircdb.__dict__, ircdb.__dict__))
         s.add('foo')
+        self.assertEqual(s, eval(repr(s), ircdb.__dict__, ircdb.__dict__))
         s.add('bar')
         self.assertEqual(s, eval(repr(s), ircdb.__dict__, ircdb.__dict__))
 
@@ -163,7 +165,9 @@ class UserCapabilitySetTestCase(unittest.TestCase):
 
     def testReprEval(self):
         s = ircdb.UserCapabilitySet()
+        self.assertEqual(s, eval(repr(s), ircdb.__dict__, ircdb.__dict__))
         s.add('foo')
+        self.assertEqual(s, eval(repr(s), ircdb.__dict__, ircdb.__dict__))
         s.add('bar')
         self.assertEqual(s, eval(repr(s), ircdb.__dict__, ircdb.__dict__))
 
