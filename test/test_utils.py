@@ -59,6 +59,8 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual('fishes', f('fish', 2))
         self.assertEqual('try', f('try', 1))
         self.assertEqual('tries', f('try', 2))
+        self.assertEqual('day', f('day', 1))
+        self.assertEqual('days', f('day', 2))
 
     def testDepluralize(self):
         f = utils.depluralize
@@ -81,10 +83,13 @@ class UtilsTest(unittest.TestCase):
                               (62, '1 minute and 2 seconds'),
                               (122, '2 minutes and 2 seconds'),
                               (3722, '1 hour, 2 minutes, and 2 seconds'),
-                              (7322, '2 hours, 2 minutes, and 2 seconds')]:
+                              (7322, '2 hours, 2 minutes, and 2 seconds'),
+                              (90061,'1 day, 1 hour, 1 minute, and 1 second'),
+                              (180122, '2 days, 2 hours, 2 minutes, '
+                                       'and 2 seconds')]:
             self.assertEqual(utils.timeElapsed(now - then), expected)
 
-    def testEachSubstring(self):
+    def testEachSubstring(self): 
         s = 'foobar'
         L = ['f', 'fo', 'foo', 'foob', 'fooba', 'foobar']
         self.assertEqual(list(utils.eachSubstring(s)), L)
