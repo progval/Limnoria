@@ -45,7 +45,6 @@ import plugins
 import privmsgs
 import ircutils
 import callbacks
-import configurable
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
@@ -58,35 +57,25 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('enforcer start %s' % chanserv)
     onStart.append('enforcer config revenge %s' % revenge)
 
-###
-# Enforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
-###
+conf.registerPlugin('Enforcer')
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoOp',
+    registry.Boolean(False, """Determines whether the bot will automatically op
+    people with the <channel>.op capability when they join the channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoHalfop',
+    registry.Boolean(False, """Determines whether the bot will automatically
+    halfop people with the <channel>.halfop capability when they join the
+    channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoVoice',
+    registry.Boolean(False, """Determines whether the bot will automatically
+    voice people with the <channel>.voice capability when they join the
+    channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'takeRevenge',
+    registry.Boolean(False, """Determines whether the bot will take revenge on
+    people who do things it doesn't like (somewhat like 'bitch mode' in other
+    IRC bots)."""))
 _chanCap = ircdb.makeChannelCapability
-class Enforcer(callbacks.Privmsg, configurable.Mixin):
-    configurables = configurable.Dictionary(
-        [('auto-op', configurable.BoolType, False,
-          """Determines whether the bot will automatically op people with
-          the <channel>.op capability when they join the channel."""),
-         ('auto-voice', configurable.BoolType, False,
-          """Determines whether the bot will automatically voice people with
-          the <channel>.voice capability when they join the channel."""),
-         ('auto-halfop', configurable.BoolType, False,
-          """Determines whether the bot will automatically halfop people with
-          the <channel>.halfop capability when they join the channel."""),
-         ('revenge', configurable.BoolType, False,
-          """Determines whether the bot will take revenge on people who do
-          things it doesn't like (somewhat like 'bitch mode' in other IRC
-          bots)."""),]
-    )
+class Enforcer(callbacks.Privmsg):
     started = False
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
-
-    def die(self):
-        callbacks.Privmsg.die(self)
-        configurable.Mixin.die(self)
-
     def start(self, irc, msg, args):
         """[<CHANSERV>]
 
@@ -112,13 +101,13 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
             irc.queueMsg(ircmsgs.ban(channel, ircutils.banmask(msg.prefix)))
             irc.queueMsg(ircmsgs.kick(channel, msg.nick))
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
-            if self.configurables.get('auto-op', channel):
+            if self.registryValue('autoOp', channel):
                 irc.queueMsg(ircmsgs.op(channel, msg.nick))
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'halfop')):
-            if self.configurables.get('auto-halfop', channel):
+            if self.registryValue('autoHalfop', channel):
                 irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'voice')):
-            if self.configurables.get('auto-voice', channel):
+            if self.registryValue('autoVoice', channel):
                 irc.queueMsg(ircmsgs.voice(channel, msg.nick))
 
     def doTopic(self, irc, msg):
@@ -132,7 +121,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
                                        (_chanCap(channel, 'op'),
                                         _chanCap(channel, 'topic'))):
             irc.queueMsg(ircmsgs.topic(channel, self.topics[channel]))
-            if self.configurables.get('revenge', channel):
+            if self.registryValue('takeRevenge', channel):
                 irc.queueMsg(ircmsgs.kick(channel, msg.nick,
                                           conf.supybot.replies.noCapability() %
                                           _chanCap(channel, 'topic')))
@@ -175,7 +164,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
                     irc.queueMsg(ircmsgs.invite(channel, msg.args[1]))
             if deop:
                 deop = False
-                if self.configurables.get('revenge', channel):
+                if self.registryValue('takeRevenge', channel):
                     self._revenge(irc, channel, msg.prefix)
                 else:
                     irc.queueMsg(ircmsgs.deop(channel, msg.nick))
@@ -211,7 +200,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
                     hostmask = irc.state.nickToHostmask(value)
                     if self._isProtected(channel, hostmask):
                         irc.queueMsg(ircmsgs.op(channel, value))
-                        if self.configurables.get('revenge', channel):
+                        if self.registryValue('takeRevenge', channel):
                             self._revenge(irc, channel, msg.prefix)
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
@@ -219,7 +208,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
                     hostmask = irc.state.nickToHostmask(value)
                     if self._isProtected(channel, hostmask):
                         irc.queueMsg(ircmsgs.halfop(channel, value))
-                        if self.configurables.get('revenge', channel):
+                        if self.registryValue('takeRevenge', channel):
                             self._revenge(irc, channel, msg.prefix)
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
@@ -227,7 +216,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
                     hostmask = irc.state.nickToHostmask(value)
                     if self._isProtected(channel, hostmask):
                         irc.queueMsg(ircmsgs.voice(channel, value))
-                        if self.configurables.get('revenge', channel):
+                        if self.registryValue('takeRevenge', channel):
                             self._revenge(irc, channel, msg.prefix)
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
@@ -236,7 +225,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
                     if not ircdb.checkCapability(msg.prefix,
                                                  _chanCap(channel, 'op')):
                         irc.queueMsg(ircmsgs.unban(channel, value))
-                        if self.configurables.get('revenge', channel):
+                        if self.registryValue('takeRevenge', channel):
                             self._revenge(irc, channel, msg.prefix)
                         else:
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
