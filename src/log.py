@@ -59,7 +59,9 @@ class Formatter(logging.Formatter):
                 raise
         if conf.supybot.log.detailedTracebacks():
             try:
-                return cgitb.text((E, e, tb)).rstrip('\r\n')
+                # Cgitb has bugs, and they break the bot.
+                #return cgitb.text((E, e, tb)).rstrip('\r\n')
+                logging.Formatter.formatException(self, (E, e, tb))
             except:
                 error('Cgitb.text raised an exception.')
                 return logging.Formatter.formatException(self, (E, e, tb))
