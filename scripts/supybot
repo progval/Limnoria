@@ -249,6 +249,7 @@ if __name__ == '__main__':
         if world.dying:
             log.info('Finished writing registry file.')
     world.flushers.append(closeRegistry)
+    world.registryFilename = registryFilename
 
     nick = options.nick or conf.supybot.nick()
     user = options.user or conf.supybot.user()

@@ -66,6 +66,8 @@ ircs = [] # A list of all the IRCs.
 
 flushers = [] # A periodic function will flush all these.
 
+registryFilename = None
+
 def flush():
     """Flushes all the registered flushers."""
     for f in flushers:
@@ -85,14 +87,19 @@ def upkeep():
             pass
     if gc.garbage:
         log.warning('Uncollectable garbage: %s', gc.garbage)
-    if True: # XXX: Replace this with the registry variable.
+    flushed = conf.supybot.flush()
+    if flushed:
         flush()
     if not dying:
         log.debug('Regexp cache size: %s', len(sre._cache))
         log.debug('Pattern cache size: %s'%len(ircutils._patternCache))
         log.debug('HostmaskPatternEqual cache size: %s' %
                   len(ircutils._hostmaskPatternEqualCache))
-        log.info('%s Flushers flushed and garbage collected.', log.timestamp())
+        timestamp = log.timestamp()
+        if flushed:
+            log.info('%s Flushers flushed and garbage collected.', timestamp)
+        else:
+            log.info('%s Garbage collected.', timestamp)
     return collected
 
 def makeDriversDie():

@@ -352,6 +352,12 @@ supybot.register('pingInterval', registry.Integer(120, """Determines the
 number of seconds between sending pings to the server, if pings are being sent
 to the server."""))
 
+supybot.register('flush', registry.Boolean(True, """Determines whether the bot
+will periodically flush data and configuration files to disk.  Generally, the
+only time you'll want to set this to False is when you want to modify those
+configuration files by hand and don't want the bot to flush its current version
+over your modifications."""))
+
 ###
 # Driver stuff.
 ###

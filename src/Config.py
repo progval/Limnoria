@@ -37,6 +37,7 @@ import getopt
 
 import conf
 import utils
+import world
 import ircdb
 import plugins
 import ircutils
@@ -47,7 +48,6 @@ import callbacks
 ###
 # Now, to setup the registry.
 ###
-import registry
 
 class InvalidRegistryName(callbacks.Error):
     pass
@@ -210,9 +210,9 @@ class Config(callbacks.Privmsg):
         Reloads the various configuration files (user database, channel
         database, registry, etc.).
         """
-        # TODO: Reload registry.
         ircdb.users.reload()
         ircdb.channels.reload()
+        registry.open(world.registryFilename)
         irc.replySuccess()
     reload = privmsgs.checkCapability(reload, 'owner')
         
