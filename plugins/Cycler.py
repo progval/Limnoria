@@ -65,6 +65,9 @@ class Cycler(callbacks.Privmsg):
     def _cycle(self, irc, channel):
         if self.registryValue('enable', channel) and \
            len(irc.state.channels[channel].users) == 1:
+            if irc.state.channels[channel].isOp(irc.nick):
+                self.log.info('Not cycling %s: Already opped.', channel)
+                return
             if 'i' not in irc.state.channels[channel].modes and \
                'k' not in irc.state.channels[channel].modes:
                 self.log.info('Cycling %s: I\'m the only one left.', channel)
