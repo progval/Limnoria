@@ -39,6 +39,7 @@ __revision__ = "$Id$"
 __author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
 
 import os
+import csv
 import time
 import random
 import itertools
@@ -101,7 +102,7 @@ class FlatfileDunnoDB(DunnoDBInterface):
             return csv.join(map(str, record))
 
         def deserialize(self, s):
-            L = csv.split(None, 2)
+            L = csv.split(s)
             L[0] = float(L[0])
             L[1] = int(L[1])
             return L
@@ -262,8 +263,12 @@ class Dunno(callbacks.Privmsg):
             irc.error('%r is not a valid dunno id.' % id)
             return
         try:
+            name = ircdb.users.getUser(id).name
             (dunno, by, at) = self.db.get(channel, id)
-            irc.reply("Dunno #%s: %r" % (id, dunno))
+            at = time.localtime(at)
+            timeStr = time.strftime(conf.supybot.humanTimestampFormat(), at)
+            irc.reply("Dunno #%s: %r (added by %s at %s)" % \
+                      (id, dunno, name, timeStr))
         except KeyError:
             irc.error('No dunno found with that id.')
 
