@@ -293,8 +293,11 @@ def privmsgPayload(L, sep, limit=425):
 def shrinkList(L, sep='', limit=425):
     """Shrinks a list of strings to a given combined length of limit."""
     length = len(sep)
+    count = 0
     while reduce(operator.add, map(length.__add__, map(len, L)), 0)> limit:
           L.pop()
+          count += 1
+    return count
 
 
 class IrcString(str):
