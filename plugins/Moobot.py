@@ -52,6 +52,7 @@ Commands include:
 
 from baseplugin import *
 
+import re
 import base64
 
 import ircmsgs
@@ -69,46 +70,47 @@ class Moobot(callbacks.Privmsg):
         irc.reply(msg, ':cool: %s :cool:' % something)
 
     _code = {
-        "A" : ".- ",
-        "B" : "-... ",
-        "C" : "-.-. ",
-        "D" : "-.. ",
-        "E" : ". ",
-        "F" : "..-. ",
-        "G" : "--. ",
-        "H" : ".... ",
-        "I" : ".. ",
-        "J" : ".--- ",
-        "K" : "-.- ",
-        "L" : ".-.. ",
-        "M" : "-- ",
-        "N" : "-. ",
-        "O" : "--- ",
-        "P" : ".--. ",
-        "Q" : "--.- ",
-        "R" : ".-. ",
-        "S" : "... ",
-        "T" : "- ",
-        "U" : "..- ",
-        "V" : "...- ",
-        "W" : ".-- ",
-        "X" : "-..- ",
-        "Y" : "-.-- ",
-        "Z" : "--.. ",
-        "0" : "----- ",
-        "1" : ".---- ",
-        "2" : "..--- ",
-        "3" : "...-- ",
-        "4" : "....- ",
-        "5" : "..... ",
-        "6" : "-.... ",
-        "7" : "--... ",
-        "8" : "---.. ",
-        "9" : "----. ",
+        "A" : ".-",
+        "B" : "-...",
+        "C" : "-.-.",
+        "D" : "-..",
+        "E" : ".",
+        "F" : "..-.",
+        "G" : "--.",
+        "H" : "....",
+        "I" : "..",
+        "J" : ".---",
+        "K" : "-.-",
+        "L" : ".-..",
+        "M" : "--",
+        "N" : "-.",
+        "O" : "---",
+        "P" : ".--.",
+        "Q" : "--.-",
+        "R" : ".-.",
+        "S" : "...",
+        "T" : "-",
+        "U" : "..-",
+        "V" : "...-",
+        "W" : ".--",
+        "X" : "-..-",
+        "Y" : "-.--",
+        "Z" : "--..",
+        "0" : "-----",
+        "1" : ".----",
+        "2" : "..---",
+        "3" : "...--",
+        "4" : "....-",
+        "5" : ".....",
+        "6" : "-....",
+        "7" : "--...",
+        "8" : "---..",
+        "9" : "----.",
     }
 
-    _revcode = dict([(y.strip(), x) for (x, y) in _code.items()])
+    _revcode = dict([(y, x) for (x, y) in _code.items()])
 
+    _unmorsere = re.compile('([.-]+)')
     def unmorse(self, irc, msg, args):
         """<morse code text>
 
@@ -116,15 +118,14 @@ class Moobot(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         L = []
-        for (first, second, third) in window(text.split(' ')+[''], 3):
-            if first == '' and second == '' and third == '':
-                L.append(' ')
-            else:
-                try:
-                    L.append(self._revcode[first])
-                except KeyError:
-                    L.append(first)
-        irc.reply(msg, ''.join(L))
+        def morseToLetter(m):
+            s = m.group(1)
+            return self._revcode.get(s, s)
+        text = self._unmorsere.sub(morseToLetter, text)
+        text = text.replace('  ', '\x00')
+        text = text.replace(' ', '')
+        text = text.replace('\x00', ' ')
+        irc.reply(msg, text)
 
     def morse(self, irc, msg, args):
         """<text>
