@@ -42,10 +42,14 @@ def mktemp(suffix=''):
     m = md5.md5(suffix)
     r.seed(time.time())
     s = str(r.getstate())
-    for x in xrange(0, random.randrange(400), random.randrange(1, 5)):
-        m.update(str(x))
+    period = random.random()
+    now = start = time.time()
+    while start + period < now:
+        time.sleep() # Induce a context switch, if possible.
+        now = time.time()
+        m.update(str(random.random()))
         m.update(s)
-        m.update(str(time.time()))
+        m.update(str(now))
         s = m.hexdigest()
     return sha.sha(s + str(time.time())).hexdigest() + suffix
 

@@ -458,6 +458,12 @@ class FileTest(SupyTestCase):
         self.assertEqual(list(utils.file.nonCommentNonEmptyLines(L)),
                          ['foo', 'bar', 'biff'])
 
+    def testMktemp(self):
+        # This is mostly to test that it actually halts.
+        self.failUnless(utils.file.mktemp())
+        self.failUnless(utils.file.mktemp())
+        self.failUnless(utils.file.mktemp())
+
 
 class NetTest(SupyTestCase):
     def testEmailRe(self):
