@@ -96,7 +96,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         Sets the default capability to be allowed for any command.
         """
         capability = privmsgs.getArgs(args)
-        conf.defaultCapabilities[capability] = True
+        conf.defaultCapabilities.add(capability)
         irc.reply(msg, conf.replySuccess)
 
     def unsetdefaultcapability(self, irc, msg, args):
@@ -105,7 +105,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         Unsets the default capability for any command.
         """
         capability = privmsgs.getArgs(args)
-        del conf.defaultCapabilities[capability]
+        conf.defaultCapabilities.remove(capability)
         irc.reply(msg, conf.replySuccess)
 
     def settrace(self, irc, msg, args):
