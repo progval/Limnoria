@@ -214,16 +214,17 @@ class FunCommands(callbacks.Privmsg):
         "takes no arguments"
         (user, system, childUser, childSystem, elapsed) = os.times()
         timeRunning = time.time() - self._startTime
+        threads = threading.activeCount()
         response ='I have taken %s seconds of user time and %s seconds of '\
                   'system time, for a total of %s seconds of CPU time.  My '\
                   'children have taken %s seconds of user time and %s seconds'\
                   ' of system time for a total of %s seconds of CPU time.  ' \
                   'I\'ve taken a total of %s%% of this computer\'s time.  ' \
-                  'I currently have %s active threads.' %\
+                  'I currently have %s active %s.' %\
                     (user, system, user + system,
                      childUser, childSystem, childUser + childSystem,
                      (user+system+childUser+childSystem)/timeRunning,
-                     threading.activeCount())
+                     threads, threads == 1 and 'thread' or 'threads')
         irc.reply(msg, response)
 
     def uptime(self, irc, msg, args):
