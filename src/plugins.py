@@ -329,7 +329,7 @@ def standardSubstitute(irc, msg, text):
                 text)
     t = pow(2,30)*random.random()+time.time()/4.0 
     text = randomdatere.sub(time.ctime(t), text)
-    text = randomintre.sub(random.random(), text)
+    text = randomintre.sub(str(random.randint(-1000, 1000)), text)
     text = whore.sub(msg.nick, text)
     text = botnickre.sub(irc.nick, text)
     text = todayre.sub(time.ctime(), text)
