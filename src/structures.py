@@ -33,7 +33,7 @@
 Data structures for Python.
 """
 
-from __future__ import generators
+## from __future__ import generators
 
 from fix import *
 

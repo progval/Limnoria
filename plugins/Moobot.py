@@ -152,9 +152,7 @@ class Moobot(callbacks.Privmsg):
     def reverse(self, irc, msg, args):
         "<text>"
         text = privmsgs.getArgs(args)
-        L = list(text)
-        L.reverse()
-        irc.reply(msg, ''.join(L))
+        irc.reply(msg, text[::-1])
 
     def mime(self, irc, msg, args):
         """<text>

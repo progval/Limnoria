@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from __future__ import generators
+## from __future__ import generators
 
 from fix import *
 
