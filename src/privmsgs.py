@@ -170,14 +170,14 @@ class UrlSnarfThread(threading.Thread):
         world.threadsSpawned += 1
         threading.Thread.__init__(self, *args, **kwargs)
         self.setDaemon(True)
-        
+
 class SnarfQueue(ircutils.FloodQueue):
     def key(self, channel):
         return channel
 
     def getTimeout(self):
         return conf.supybot.snarfThrottle()
-            
+
 _snarfed = SnarfQueue()
 
 class SnarfIrc(object):
@@ -189,6 +189,9 @@ class SnarfIrc(object):
     def reply(self, *args, **kwargs):
         _snarfed.enqueue(self.channel, self.url)
         self.irc.reply(*args, **kwargs)
+
+    def __getattr__(self, attr):
+        return getattr(self.irc, attr)
 
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
