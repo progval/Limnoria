@@ -225,11 +225,11 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         ret = self._colorGoogles.get(s)
         if not ret:
             L = list(s)
-            L[0] = ircutils.mircColor(L[0], 'blue')
-            L[1] = ircutils.mircColor(L[1], 'red')
-            L[2] = ircutils.mircColor(L[2], 'yellow')
-            L[3] = ircutils.mircColor(L[3], 'blue')
-            L[4] = ircutils.mircColor(L[4], 'green')
+            L[0] = ircutils.mircColor(L[0], 'blue')[:-1]
+            L[1] = ircutils.mircColor(L[1], 'red')[:-1]
+            L[2] = ircutils.mircColor(L[2], 'yellow')[:-1]
+            L[3] = ircutils.mircColor(L[3], 'blue')[:-1]
+            L[4] = ircutils.mircColor(L[4], 'green')[:-1]
             L[5] = ircutils.mircColor(L[5], 'red')
             ret = ''.join(L)
             self._colorGoogles[s] = ret
