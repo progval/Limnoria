@@ -568,7 +568,7 @@ class Channel(callbacks.Privmsg):
         ircdb.users.setUser(user)
         irc.replySuccess()
     addcapability = wrap(addcapability, [('checkChannelCapability', 'op'),
-                                         'hostmask', 'capability'])
+                                         'otherUser', 'capability'])
 
     def removecapability(self, irc, msg, args, channel, hostmask, capabilities):
         """[<channel>] <name|hostmask> <capability> [<capability> ...]
@@ -598,7 +598,7 @@ class Channel(callbacks.Privmsg):
         irc.replySuccess()
     removecapability = wrap(removecapability,
                             [('checkChannelCapability', 'op'),
-                             'hostmask', 'capability'])
+                             'otherUser', 'capability'])
 
     # XXX This needs to be fix0red to be like Owner.defaultcapability.  Or
     # something else.  This is a horrible interface.
