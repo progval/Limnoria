@@ -93,11 +93,11 @@ conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'command',
 conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'short',
     registry.Boolean(True, """Determines whether only short fortunes will be
     used if possible."""))
-conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'file',
-    registry.String('', """Determines what specific file (if any) will be used
-    with the fortune command; if none is given, the system-wide default will
-    be used.  Do note that this fortune file must be placed with the rest of
-    your system's fortune files."""))
+conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'files',
+    registry.SpaceSeparatedListOfStrings([], """Determines what specific file
+    (if any) will be used with the fortune command; if none is given, the
+    system-wide default will be used.  Do note that this fortune file must be
+    placed with the rest of your system's fortune files."""))
 
 conf.registerGroup(conf.supybot.plugins.Unix, 'spell')
 conf.registerGlobalValue(conf.supybot.plugins.Unix.spell, 'command',
@@ -222,8 +222,7 @@ class Unix(callbacks.Privmsg):
             args = [fortuneCmd]
             if self.registryValue('fortune.short'):
                 args.append('-s')
-            if self.registryValue('fortune.file'):
-                args.append(self.registryValue('fortune.file'))
+            args.extend(self.registryValue('fortune.files')))
             (r, w) = popen2.popen4(args)
             try:
                 lines = r.readlines()
