@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding:iso-8859-1 -*-
 
 ###
 # Copyright (c) 2003, Stéphan Kochen
@@ -74,8 +75,8 @@ if sqlite is not None:
             self.assertError('poll delete blah')
 
         def testVote(self):
+            self.assertHelp('poll vote 1 blah')
             self.assertError('poll vote blah Yes')
-            self.assertRegexp('poll vote 1 blah', '^vote <id>')
 
         def testResults(self):
             self.assertError('poll results blah')

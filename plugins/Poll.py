@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding:iso-8859-1 -*-
 
 ###
 # Copyright (c) 2002, Stéphan Kochen
