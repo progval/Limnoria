@@ -351,7 +351,11 @@ class Privmsg(irclib.IrcCallback):
             thread.start()
             debug.printf('Spawned new thread: %s' % thread)
         else:
-            f(irc, msg, args)
+            try:
+                f(irc, msg, args)
+            except Exception, e:
+                debug.recoverableException()
+                irc.error(msg, debug.exnToString(e))
 
     _r = re.compile(r'^(\S+)')
     def doPrivmsg(self, irc, msg):
@@ -401,11 +405,16 @@ class PrivmsgRegexp(Privmsg):
     expression matches.  Callbacks must have the signature (self, irc, msg,
     match) to be counted as such.
 
+    A class-level flags attribute is used to determine what regexp flags to
+    compile the regular expressions with.  By default, it's re.I, which means
+    regular expressions are by default case-insensitive.
+
     If you have a standard command-type callback, though, Privmsg is a much
     better class to use, at the very least for consistency's sake, but also
     because it's much more easily coded and maintained.
     """
     threaded = False # Again, like Privmsg...
+    flags = re.I
     def __init__(self):
         Privmsg.__init__(self)
         if self.threaded:
@@ -420,7 +429,7 @@ class PrivmsgRegexp(Privmsg):
                inspect.getargs(value.im_func.func_code) == \
                (['self', 'irc', 'msg', 'match'], None, None):
                 try:
-                    r = re.compile(value.__doc__)
+                    r = re.compile(value.__doc__, self.flags)
                     self.res.append((r, value))
                 except sre_constants.error, e:
                     s = '%s.%s has an invalid regexp %s: %s' % \
