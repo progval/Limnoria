@@ -43,8 +43,8 @@ import time
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
-import supybot.privmsgs as privmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.schedule as schedule
@@ -123,7 +123,7 @@ conf.registerChannelValue(conf.supybot.plugins.Services.ChanServ, 'voice',
     voiced by the ChanServ when it joins the channel."""))
 
 
-class Services(privmsgs.CapabilityCheckingPrivmsg):
+class Services(callbacks.Privmsg):
     """This plugin handles dealing with Services on networks that provide them.
     Basically, you should use the "password" command to tell the bot a nick to
     identify with and what password to use to identify with that nick.  You can
@@ -132,7 +132,6 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     configuration variables to match the NickServ and ChanServ nicks on your
     network.  Other commands such as identify, getops, etc. should not be
     necessary if the bot is properly configured."""
-    capability = 'admin'
     def __init__(self):
         self.__parent = super(Services, self)
         self.__parent.__init__()
@@ -436,35 +435,29 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error('You must set supybot.plugins.Services.ChanServ '
                           'before I\'m able to do get voiced.', Raise=True)
 
-    def op(self, irc, msg, args):
+    def op(self, irc, msg, args, channel):
         """[<channel>]
 
         Attempts to get opped by ChanServ in <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        try:
-            if irc.nick in irc.state.channels[channel].ops:
-                irc.error('I\'m already opped in %s.' % channel)
-            else:
-                self._chanservCommand(irc, channel, 'op')
-        except KeyError:
-            irc.error('I\'m not in %s.' % channel)
+        if irc.nick in irc.state.channels[channel].ops:
+            irc.error('I\'m already opped in %s.' % channel)
+        else:
+            self._chanservCommand(irc, channel, 'op')
+    op = wrap(op, [('checkChannelCapability', 'op'), 'inChannel'])
 
-    def voice(self, irc, msg, args):
+    def voice(self, irc, msg, args, channel):
         """[<channel>]
 
         Attempts to get voiced by ChanServ in <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        try:
-            if irc.nick in irc.state.channels[channel].voices:
-                irc.error('I\'m already voiced in %s.' % channel)
-            else:
-                self._chanservCommand(irc, channel, 'voice')
-        except KeyError:
-            irc.error('I\'m not in %s.' % channel)
+        if irc.nick in irc.state.channels[channel].voices:
+            irc.error('I\'m already voiced in %s.' % channel)
+        else:
+            self._chanservCommand(irc, channel, 'voice')
+    voice = wrap(voice, [('checkChannelCapability', 'op'), 'inChannel'])
 
     def do474(self, irc, msg):
         channel = msg.args[1]
@@ -472,7 +465,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self._chanservCommand(irc, channel, 'unban', log=True)
         # Success log in doChanservNotice.
 
-    def unban(self, irc, msg, args):
+    def unban(self, irc, msg, args, channel):
         """[<channel>]
 
         Attempts to get unbanned by ChanServ in <channel>.  <channel> is only
@@ -480,19 +473,16 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         are, if you need this command, you're not sending it in the channel
         itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        try:
-            self._chanservCommand(irc, channel, 'unban')
-            irc.replySuccess()
-        except KeyError:
-            irc.error('I\'m not in %s.' % channel)
+        self._chanservCommand(irc, channel, 'unban')
+        irc.replySuccess()
+    unban = wrap(unban, [('checkChannelCapability', 'op')])
 
     def do473(self, irc, msg):
         channel = msg.args[1]
         self.log.info('%s is +i, attempting ChanServ invite.', channel)
         self._chanservCommand(irc, channel, 'invite', log=True)
 
-    def invite(self, irc, msg, args):
+    def invite(self, irc, msg, args, channel):
         """[<channel>]
 
         Attempts to get invited by ChanServ to <channel>.  <channel> is only
@@ -500,12 +490,9 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         are, if you need this command, you're not sending it in the channel
         itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        try:
-            self._chanservCommand(irc, channel, 'invite')
-            irc.replySuccess()
-        except KeyError:
-            irc.error('I\'m not in %s.' % channel)
+        self._chanservCommand(irc, channel, 'invite')
+        irc.replySuccess()
+    invite = wrap(invite, [('checkChannelCapability', 'op'), 'inChannel'])
 
     def doInvite(self, irc, msg):
         if ircutils.strEqual(msg.nick, self.registryValue('ChanServ')):
@@ -516,7 +503,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     def identify(self, irc, msg, args):
         """takes no arguments
 
-        Identifies with NickServ.
+        Identifies with NickServ using the current nick.
         """
         if self.registryValue('NickServ'):
             if irc.nick in self.registryValue('nicks'):
@@ -528,15 +515,15 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         else:
             irc.error('You must set supybot.plugins.Services.NickServ before '
                       'I\'m able to do identify.')
+    identify = wrap(identify, ['checkCapability', 'admin'])
 
-    def ghost(self, irc, msg, args):
+    def ghost(self, irc, msg, args, nick):
         """[<nick>]
 
         Ghosts the bot's given nick and takes it.  If no nick is given,
         ghosts the bot's configured nick and takes it.
         """
         if self.registryValue('NickServ'):
-            nick = privmsgs.getArgs(args, required=0, optional=1)
             if not nick:
                 nick = self._getNick()
             if ircutils.strEqual(nick, irc.nick):
@@ -547,16 +534,14 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         else:
             irc.error('You must set supybot.plugins.Services.NickServ before '
                       'I\'m able to ghost a nick.')
+    ghost = wrap(ghost, [('checkCapability', 'admin'), additional('nick')])
 
-    def password(self, irc, msg, args):
+    def password(self, irc, msg, args, nick, password):
         """<nick> [<password>]
 
         Sets the NickServ password for <nick> to <password>.  If <password> is
         not given, removes <nick> from the configured nicks.
         """
-        if ircutils.isChannel(msg.args[0]):
-            irc.errorRequiresPrivacy(Raise=True)
-        (nick, password) = privmsgs.getArgs(args, optional=1)
         if not password:
             try:
                 self.registryValue('nicks').remove(nick)
@@ -568,18 +553,22 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             self.registryValue('nicks').add(nick)
             registerNick(nick, password)
             irc.replySuccess()
+    password = wrap(password, [('checkCapability', 'admin'),
+                                'private', 'nick', 'text'])
 
     def nicks(self, irc, msg, args):
         """takes no arguments
 
         Returns the nicks that this plugin is configured to identify and ghost
-        with."""
+        with.
+        """
         L = list(self.registryValue('nicks'))
         if L:
             utils.sortBy(ircutils.toLower, L)
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('I\'m not currently configured for any nicks.')
+    nicks = wrap(nicks, [('checkCapability', 'admin')])
 
 
 Class = Services

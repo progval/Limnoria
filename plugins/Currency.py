@@ -41,8 +41,8 @@ import re
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.webutils as webutils
 import supybot.callbacks as callbacks
@@ -76,24 +76,12 @@ class Currency(callbacks.Privmsg):
                               r'(.*)</body>', re.I | re.S)
     _xeConvert = re.compile(r'<TD[^>]+><FONT[^>]+>\s+([\d.]+\s+\w{3}\s+='
                             r'\s+[\d.]+\s+\w{3})', re.I | re.S)
-    def xe(self, irc, msg, args):
-        """[<number>] <currency1> to <currency2>
+    def xe(self, irc, msg, args, number, curr1, to, curr2):
+        """[<number>] <currency1> [to] <currency2>
 
         Converts from <currency1> to <currency2>.  If number isn't given, it
         defaults to 1.
         """
-        (number, curr1, curr2) = privmsgs.getArgs(args, required=2,
-                                                  optional=1)
-        try:
-            number = float(number)
-        except ValueError:
-            curr2 = curr1
-            curr1 = number
-            number = 1
-        curr1 = curr1.lower()
-        curr2 = curr2.lower()
-        if curr2.startswith('to '):
-            curr2 = curr2[3:]
         if len(curr1) != 3 and len(curr2) != 3:
             irc.error(self._symbolError)
             return
@@ -119,25 +107,15 @@ class Currency(callbacks.Privmsg):
         else:
             irc.error('XE must\'ve changed the format of their site.')
             return
+    xe = wrap(xe, [optional('float', 1.0), 'lowered', 
+                   optional(literal('to')), 'lowered'])
 
-    def yahoo(self, irc, msg, args):
+    def yahoo(self, irc, msg, args, number, curr1, to, curr2):
         """[<number>] <currency1> to <currency2>
 
         Converts from <currency1> to <currency2>.  If number isn't given, it
         defaults to 1.
         """
-        (number, curr1, curr2) = privmsgs.getArgs(args, required=2,
-                                                  optional=1)
-        try:
-            number = float(number)
-        except ValueError:
-            curr2 = curr1
-            curr1 = number
-            number = 1
-        curr1 = curr1.upper()
-        curr2 = curr2.upper()
-        if curr2.startswith('TO '):
-            curr2 = curr2[3:]
         if len(curr1) != 3 and len(curr2) != 3:
             irc.error(self._symbolError)
             return
@@ -157,6 +135,8 @@ class Currency(callbacks.Privmsg):
         if '.' not in resp[0] and 'e' not in resp[0]:
             resp[0] = '%s.00' % resp[0]
         irc.reply(' '.join(resp))
+    yahoo = wrap(yahoo, [optional(float, 1.0), 'lowered',
+                         optional(literal('to')), 'lowered'])
 
 conf.registerPlugin('Currency')
 conf.registerChannelValue(conf.supybot.plugins.Currency, 'command',
