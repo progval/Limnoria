@@ -46,6 +46,8 @@ class IrcMsgQueueTestCase(unittest.TestCase):
     pong = ircmsgs.pong('123')
     ping = ircmsgs.ping('123')
     notice = ircmsgs.notice('jemfinch', 'supybot here')
+    join = ircmsgs.join('#foo')
+    who = ircmsgs.who('#foo')
 
     def testEmpty(self):
         q = irclib.IrcMsgQueue()
@@ -96,6 +98,17 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         q.enqueue(self.msg)
         self.assertEqual(self.msg, q.dequeue())
         self.failIf(q)
+
+    def testJoinBeforeWho(self):
+        q = irclib.IrcMsgQueue()
+        q.enqueue(self.join)
+        q.enqueue(self.who)
+        self.assertEqual(self.join, q.dequeue())
+        self.assertEqual(self.who, q.dequeue())
+        q.enqueue(self.who)
+        q.enqueue(self.join)
+        self.assertEqual(self.join, q.dequeue())
+        self.assertEqual(self.who, q.dequeue())
 
 
 class ChannelTestCase(unittest.TestCase):

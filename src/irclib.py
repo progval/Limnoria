@@ -122,7 +122,7 @@ class IrcMsgQueue(object):
             self.msgs.add(msg)
             if msg.command in ('MODE', 'KICK', 'PONG'):
                 self.highpriority.enqueue(msg)
-            elif msg.command in ('PING',):
+            elif msg.command in ('PING', 'WHO'):
                 self.lowpriority.enqueue(msg)
             else:
                 self.normal.enqueue(msg)
