@@ -101,6 +101,21 @@ conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'ChanServ',
     obviously beyond our abilities to enforce, and so we would ignore all
     messages from it."""))
 
+# Limit stuff
+conf.registerGroup(conf.supybot.plugins.Enforcer, 'limit')
+conf.registerChannelValue(conf.supybot.plugins.Enforcer.limit, 'enforce',
+    registry.Boolean(False, """Determines whether the bot will maintain the
+    channel limit to be slightly above the current number of people in the
+    channel, in order to make clone/drone attacks harder."""))
+conf.registerChannelValue(conf.supybot.plugins.Enforcer.limit, 'minimumExcess',
+    registry.PositiveInteger(5, """Determines the minimum number of free
+    spots that will be saved when limits are being enforced.  This should
+    always be smaller than supybot.plugins.Enforcer.limit.maximumExcess."""))
+conf.registerChannelValue(conf.supybot.plugins.Enforcer.limit, 'maximumExcess',
+    registry.PositiveInteger(10, """Determines the maximum number of free spots
+    that will be saved when limits are being enforced.  This should always be
+    larger than supybot.plugins.Enforcer.limit.minimumExcess."""))
+
 _chanCap = ircdb.makeChannelCapability
 class Enforcer(callbacks.Privmsg):
     """Manages various things concerning channel security.  Check out the
@@ -113,7 +128,21 @@ class Enforcer(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         self.topics = ircutils.IrcDict()
 
+    def _enforceLimit(self, irc, channel):
+        if self.registryValue('limit.enforce', channel):
+            maximum = self.registryValue('limit.maximumExcess', channel)
+            minimum = self.registryValue('limit.minimumExcess', channel)
+            assert maximum > minimum
+            currentUsers = len(irc.state.channels[channel].users)
+            currentLimit = irc.state.channels[channel].modes.get('l', 0)
+            if currentLimit - currentUsers < minimum:
+                irc.queueMsg(ircmsgs.limit(channel, currentUsers + maximum))
+            elif currentLimit - currentUsers > maximum:
+                irc.queueMsg(ircmsgs.limit(channel, currentUsers + minimum))
+                
     def doJoin(self, irc, msg):
+        if msg.nick == irc.nick:
+            return
         channel = msg.args[0]
         c = ircdb.channels.getChannel(channel)
         if c.checkBan(msg.prefix):
@@ -128,6 +157,7 @@ class Enforcer(callbacks.Privmsg):
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'voice')):
             if self.registryValue('autoVoice', channel):
                 irc.queueMsg(ircmsgs.voice(channel, msg.nick))
+        self._enforceLimit(irc, channel)
 
     def doTopic(self, irc, msg):
         channel = msg.args[0]
@@ -271,12 +301,16 @@ class Enforcer(callbacks.Privmsg):
             if len(c.users) == 1:
                 if irc.nick not in c.ops:
                     self._cycle(irc, channel)
+                    return
+            self._enforceLimit(irc, channel)
 
     def doQuit(self, irc, msg):
         for (channel, c) in irc.state.channels.iteritems():
             if len(c.users) == 1:
                 if irc.nick not in c.ops:
                     self._cycle(irc, channel)
+                    continue
+            self._enforceLimit(irc, channel)
 
     def __call__(self, irc, msg):
         channel = msg.args[0]
