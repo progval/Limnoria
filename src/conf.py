@@ -39,7 +39,6 @@ import supybot.registry as registry
 import supybot.ircutils as ircutils
 
 installDir = os.path.dirname(sys.modules[__name__].__file__)
-_srcDir = installDir
 _pluginsDir = os.path.join(installDir, 'plugins')
 
 ###
