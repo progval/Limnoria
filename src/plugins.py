@@ -219,7 +219,10 @@ class ConfigurableDictionary(object):
     def get(self, name, channel=None):
         name = callbacks.canonicalName(name)
         if channel is not None:
-            return self.channels[channel][name]
+            try:
+                return self.channels[channel][name]
+            except KeyError:
+                return self.defaults[name]
         else:
             return self.defaults[name]
 

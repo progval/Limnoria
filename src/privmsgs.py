@@ -35,12 +35,14 @@ Includes various accessories for callbacks.Privmsg based callbacks.
 
 import fix
 
+import time
 import types
 
 import conf
 import ircdb
 import ircutils
 import callbacks
+import structures
 
 def getChannel(msg, args):
     """Returns the channel the msg came over or the channel given in args.
@@ -157,11 +159,12 @@ def urlSnarfer(f):
         cutoff = now - conf.snarfThrottle
         q = getattr(self, '_snarfedUrls', None)
         if q is None:
-            q = structures.fastqueue()
+            q = structures.smallqueue()
         while q and q[0][2] < cutoff:
             q.dequeue()
         url = match.group(0)
-        if any(lambda t: t[0] == url and t[1] == msg.args[0], q):
+        if any(lambda t: t[0] == url and t[1] == msg.args[0], q) and \
+               not world.testing:
             debug.msg('Refusing to snarf %s.')
         else:
             q.enqueue((url, msg.args[0], now))
