@@ -56,6 +56,17 @@ import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
 conf.registerPlugin('Markov')
+conf.registerChannelValue(conf.supybot.plugins.Markov, 'ignoreBotCommands',
+    registry.Boolean(False, """Determines whether messages addressed to the
+    bot are ignored."""))
+conf.registerChannelValue(conf.supybot.plugins.Markov, 'minChainLength',
+    registry.PositiveInteger(1, """Determines the length of the smallest chain
+    which the markov command will generate."""))
+conf.registerChannelValue(conf.supybot.plugins.Markov, 'maxAttempts',
+    registry.PositiveInteger(1, """Determines the maximum number of times the
+    bot will attempt to generate a chain that meets or exceeds the size set in
+    minChainLength."""))
+
 conf.registerGroup(conf.supybot.plugins.Markov, 'randomSpeaking')
 conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,
     'probability', registry.Probability(0, """Determines the probability that
@@ -70,13 +81,6 @@ conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,
 conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,
     'throttleTime', registry.PositiveInteger(300, """Determines the minimum
     number of seconds between the bot randomly speaking."""))
-conf.registerChannelValue(conf.supybot.plugins.Markov, 'minChainLength',
-    registry.PositiveInteger(1, """Determines the length of the smallest chain
-    which the markov command will generate."""))
-conf.registerChannelValue(conf.supybot.plugins.Markov, 'maxAttempts',
-    registry.PositiveInteger(1, """Determines the maximum number of times the
-    bot will attempt to generate a chain that meets or exceeds the size set in
-    minChainLength."""))
 
 class DbmMarkovDB(object):
     def __init__(self, filename):
@@ -214,10 +218,7 @@ class Markov(callbacks.Privmsg):
             return m.args[1].split()
 
     def doPrivmsg(self, irc, msg):
-        if not conf.supybot.databases.plugins.channelSpecific():
-            channel = conf.supybot.databases.plugins.channelSpecific.channel()
-        else:
-            channel = msg.args[0]
+        channel = plugins.getChannel(msg.args[0])
         if irc.isChannel(channel):
             canSpeak = False
             now = time.time()
@@ -238,6 +239,9 @@ class Markov(callbacks.Privmsg):
             words.append('\n')
             # This shouldn't happen often (CTCP messages being the possible exception)
             if not words or len(words) == 3:
+                return
+            if self.registryValue('ignoreBotCommands', channel) and \
+                    callbacks.addressed(irc.nick, msg):
                 return
             def doPrivmsg(db):
                 for (first, second, follower) in window(words, 3):
