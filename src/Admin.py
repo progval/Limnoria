@@ -217,7 +217,13 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
             channel = msg.args[-1].strip().split()[-1][1:-1]
-            irc.error('I can\'t change nicks, %s is +m and I\'m -v.' % channel)
+            assert hasattr(irc, 'msg')
+            if ircutils.strEqual(irc.msg.args[0], channel):
+                irc.error('I can\'t change nicks, '
+                          '%s is +m and I\'m -v.' % channel)
+            else:
+                irc.error('I can\'t change nicks, '
+                          'a channel is +m and I\'m -v in it.')
         else:
             self.log.debug('Got 438 without Admin.nick being called.')
             
