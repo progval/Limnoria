@@ -52,8 +52,11 @@ import supybot.callbacks as callbacks
 try:
     import sqlite
 except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+    raise callbacks.Error, 'You need to have PySQLite installed to use this '\
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
+
+class QuotesError(Exception):
+    pass
 
 class QuoteRecord(object):
     __metaclass__ = dbi.Record
@@ -65,7 +68,7 @@ class QuoteRecord(object):
     def __str__(self):
         format = conf.supybot.humanTimestampFormat()
         return 'Quote %r added by %s at %s.' % \
-               (self.text, ircdb.users.getUser(self.by).name,
+               (self.text, self.by,
                 time.strftime(format, time.localtime(float(self.at))))
 
 class SqliteQuotesDB(object):
@@ -125,9 +128,7 @@ class SqliteQuotesDB(object):
         for v in kwargs['by']:
             criteria.append('added_by=%s')
             formats.append(arg)
-        for v in kwargs['predicate']:
-            def p(s):
-                return int(bool(v.search(s)))
+        for p in kwargs['predicate']:
             predicateName += 'p'
             db.create_function(predicateName, 1, p)
             criteria.append('%s(quote)' % predicateName)
@@ -160,7 +161,7 @@ class SqliteQuotesDB(object):
         cursor.execute("""SELECT added_by, added_at, quote FROM quotes
                           WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            raise KeyError, id
+            raise QuotesDBError, id
         (by, at, text) = cursor.fetchone()
         return QuoteRecord(id, by=by, at=int(at), text=text)
 
@@ -169,12 +170,12 @@ class SqliteQuotesDB(object):
         cursor = db.cursor()
         cursor.execute("""DELETE FROM quotes WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            raise KeyError, id
+            raise QuotesDBError, id
         db.commit()
 
 def QuotesDB():
     return SqliteQuotesDB()
-        
+
 class Quotes(callbacks.Privmsg):
     def __init__(self):
         self.db = QuotesDB()
@@ -250,7 +251,9 @@ class Quotes(callbacks.Privmsg):
                     except re.error, e:
                         irc.error(str(e))
                         return
-                kwargs['predicate'].append(r)
+                def p(s):
+                    return int(bool(r.search(s)))
+                kwargs['predicate'].append(p)
         quote = self.db.search(channel, **kwargs)
         if quote is None:
             irc.reply('No quotes matched that criteria.')
@@ -288,7 +291,7 @@ class Quotes(callbacks.Privmsg):
         try:
             quote = self.db.get(channel, id)
             irc.reply(str(quote))
-        except KeyError:
+        except QuotesDBError, e:
             irc.error('There isn\'t a quote with that id.')
 
     def remove(self, irc, msg, args):
