@@ -146,24 +146,6 @@ class FunDB(callbacks.Privmsg):
             s = insult
         irc.queueMsg(ircmsgs.privmsg(means, s))
 
-    def getinsult(self, irc, msg, args):
-        """<id>
-
-        Returns insult #<id>
-        """
-        id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error(msg, 'The id must be an integer.')
-            return
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT insult FROM insults WHERE id=%s""", id)
-        if cursor.rowcount == 0:
-            irc.error(msg, 'There is no such insult.')
-        else:
-            irc.reply(msg, cursor.fetchone()[0])
-
     def crossword(self, irc, msg, args):
         """<word>
 
@@ -194,24 +176,6 @@ class FunDB(callbacks.Privmsg):
         (id, excuse) = cursor.fetchone()
         irc.reply(msg, '%s (#%s)' % (excuse, id))
 
-    def getexcuse(self, irc, msg, args):
-        """<id>
-
-        Gets the excuse with the id number <id>.
-        """
-        id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error(msg, 'The id must be an integer.')
-            return
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT excuse FROM excuses WHERE id=%s""", id)
-        if cursor.rowcount == 0:
-            irc.error(msg, 'There is no such excuse.')
-        else:
-            irc.reply(msg, cursor.fetchone()[0])
-
     def adddb(self, irc, msg, args):
         """<lart|excuse|insult|praise> <text>
 
@@ -225,11 +189,12 @@ class FunDB(callbacks.Privmsg):
                     'somewhere.')
                 return
         elif table not in self._tables:
-            irc.error(msg, '"%s" is an invalid choice. Must be one of: '\
-                'lart, excuse, insult, praise.' % table)
+            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+                           (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
-        cursor.execute("""INSERT INTO %s VALUES (NULL, %s)""", table+'s', s)
+        sql = """INSERT INTO %ss VALUES (NULL, %%s)""" % table
+        cursor.execute(sql, s)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
@@ -247,11 +212,12 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'You must give a numeric id.')
             return
         if table not in self._tables:
-            irc.error(msg, '"%s" is an invalid choice. Must be one of: '\
-                'lart, excuse, insult, praise.' % table)
+            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+                           (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
-        cursor.execute("""DELETE FROM %s WHERE id=%s""", table+'s', id)
+        sql = """DELETE FROM %ss WHERE id=%%s""" % table
+        cursor.execute(sql, id)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
@@ -264,11 +230,12 @@ class FunDB(callbacks.Privmsg):
         table = privmsgs.getArgs(args)
         table = str.lower(table)
         if table not in self._tables:
-            irc.error(msg, '"%s" is an invalid choice. Must be one of: '\
-                'lart, excuse, insult, praise.' % table)
+            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+                           (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
-        cursor.execute('SELECT count(*) FROM %s', table+'s')
+        sql = """SELECT count(*) FROM %ss""" % table
+        cursor.execute(sql)
         total = cursor.fetchone()[0]
         irc.reply(msg, 'There are currently %s %s in my database' %\
             (total,table+'s'))
@@ -293,7 +260,7 @@ class FunDB(callbacks.Privmsg):
         sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
         cursor.execute(sql, id)
         if cursor.rowcount == 0:
-            irc.error(msg, 'There is no such %s.' % column)
+            irc.error(msg, 'There is no such %s.' % table)
         else:
             irc.reply(msg, cursor.fetchone()[0])
 
