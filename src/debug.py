@@ -106,6 +106,7 @@ priorityColors.setdefault('')
 lastTimes = [time.time()-1] * 10
 
 def reset():
+    """Resets the various file descriptors kept open by this module."""
     global _errorfd, _debugfd, _tracefd
     _errorfd.flush()
     _errorfd.close()
@@ -118,6 +119,7 @@ def reset():
     _tracefd = file(_errorfd.name, 'w')
 
 def exit(i=-1):
+    """Makes sure to actually exit."""
     class E(Exception):
         pass
     if deadlyExceptions:
@@ -136,8 +138,7 @@ def _writeNewline(fd, s):
         fd.write(os.linesep)
 
 def recoverableError(msg):
-    """Called with errors that are not critical.
-    """
+    """Called with errors that are not critical."""
     if stderr:
         if colorterm:
             sys.stderr.write(ansi.BOLD + ansi.RED)
@@ -193,10 +194,12 @@ def recoverableException(type='detailed'):
     _errorfd.flush()
 
 def unrecoverableException():
+    """Logs the most recent exception and then exits."""
     recoverableException()
     exit(-1)
 
 def msg(s, priority='low'):
+    """Logs a message s with the appropriate priority."""
     if priorities[priority] >= priorities[minimumPriority]:
         if stderr:
             if colorterm:
@@ -209,13 +212,16 @@ def msg(s, priority='low'):
         _debugfd.flush()
 
 def printf(msg):
+    """Used for simple printf debugging.  Can be turned off via PRINTF."""
     if PRINTF:
         print '*** ' + str(msg)
 
 def methodNamePrintf(obj, methodName):
+    """Does a debug.printf with the appropriate method name."""
     printf('%s: %s' % (obj.__class__.__name__, methodName))
 
 def exnToString(e):
+    """Turns a simple exception instance into a string (better than str(e))"""
     return '%s: %s' % (e.__class__.__name__, e)
 
 def tracer(frame, event, _):
