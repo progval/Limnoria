@@ -23,6 +23,7 @@ class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.
     """
     suffix = '.db'
+    threaded = False
     def __init__(self, suffix='.db'):
         self.dbCache = ircutils.IrcDict()
         suffix = self.suffix
@@ -40,10 +41,14 @@ class ChannelDBHandler(object):
 
     def getDb(self, channel):
         try:
-            return self.dbCache[channel]
+            if self.threaded:
+                return self.makeDb(self.makeFilename(channel))
+            else:
+                return self.dbCache[channel]
         except KeyError:
             db = self.makeDb(self.makeFilename(channel))
-            self.dbCache[channel] = db
+            if not self.threaded:
+                self.dbCache[channel] = db
             return db
 
     def die(self):
