@@ -45,23 +45,17 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
         self.assertRegexp('channels', '#bar, #Baz, and #foo')
 
     def testIgnoreUnignore(self):
-        try:
-            self.assertNotError('admin ignore foo!bar@baz')
-            self.assertError('admin ignore alsdkfjlasd')
-            self.assertNotError('admin unignore foo!bar@baz')
-            self.assertError('admin unignore foo!bar@baz')
-        finally:
-            conf.supybot.ignores.set('')
+        self.assertNotError('admin ignore foo!bar@baz')
+        self.assertError('admin ignore alsdkfjlasd')
+        self.assertNotError('admin unignore foo!bar@baz')
+        self.assertError('admin unignore foo!bar@baz')
 
     def testIgnores(self):
-        try:
-            self.assertNotError('admin ignores')
-            self.assertNotError('admin ignore foo!bar@baz')
-            self.assertNotError('admin ignores')
-            self.assertNotError('admin ignore foo!bar@baz')
-            self.assertNotError('admin ignores')
-        finally:
-            conf.supybot.ignores.set('')
+        self.assertNotError('admin ignores')
+        self.assertNotError('admin ignore foo!bar@baz')
+        self.assertNotError('admin ignores')
+        self.assertNotError('admin ignore foo!bar@baz')
+        self.assertNotError('admin ignores')
 
     def testAddcapability(self):
         self.assertError('addcapability sdlkfj foo')
