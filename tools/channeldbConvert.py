@@ -57,7 +57,7 @@ if __name__ == '__main__':
                                  msgs, parts, quits, smileys, topics, words
                           FROM channel_stats""")
         fd.write('%s,channelStats,%s' % \
-                 (channel, ','join(map(str, cursor.fetchone()))))
+                 (channel, ','.join(map(str, cursor.fetchone()))))
         fd.write(os.linesep)
         cursor.execute("""SELECT user_id, kicked, actions, chars, frowns,
                                  joins, kicks, modes, msgs, parts, quits,
