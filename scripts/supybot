@@ -323,10 +323,9 @@ if __name__ == '__main__':
             log.error('Error opening pid file %s: %s', pidFile, e)
 
     if options.profile:
-        import hotshot
-        profiler = hotshot.Profile('%s-%i.prof' % (nick, time.time()))
+        import profile
         world.profiling = True
-        profiler.run('main()')
+        profile.run('main()', '%s-%i.prof' % (nick, time.time()))
     else:
         main()
 
