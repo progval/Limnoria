@@ -176,6 +176,18 @@ class MiscCommands(callbacks.Privmsg):
         """
         irc.reply(msg, repr(conf.prefixChars))
 
+    def moduleof(self, irc, msg, args):
+        """<command>
+
+        Returns the module <command> is in.
+        """
+        command = privmsgs.getArgs(args)
+        method = irc.findCallback(command)
+        if method is not None:
+            irc.reply(msg, method.im_class.__name__)
+        else:
+            irc.error(msg, 'There is no such command %s' % command)
+
 
 Class = MiscCommands
 
