@@ -163,7 +163,7 @@ class FunDB(callbacks.Privmsg):
         """
         cursor = self.db.cursor()
         cursor.execute("""SELECT started, ended FROM uptime
-                          WHERE ended NOTNULL
+                          WHERE started <> 0 AND ended NOTNULL 
                           ORDER BY ended-started DESC""")
         L = []
         lenSoFar = 0
