@@ -55,7 +55,8 @@ reconnectWaits = [0, 60, 300]
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
         self.irc = irc
-        super(SocketDriver, self).__init__(irc)
+        self.__parent = super(SocketDriver, self)
+        self.__parent.__init__(irc)
         self.conn = None
         self.servers = ()
         self.eagains = 0
@@ -69,11 +70,12 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.connect()
 
     def _getNextServer(self):
-        oldServer = self.currentServer
-        super(SocketDriver, self)._getNextServer()
+        oldServer = getattr(self, 'currentServer', None)
+        server = self.__parent._getNextServer()
         if self.currentServer != oldServer:
             self.reconnectWaitsIndex = 0
-            
+        return server
+
     def _handleSocketError(self, e):
         # (11, 'Resource temporarily unavailable') raised if connect
         # hasn't finished yet.  We'll keep track of how many we get.
