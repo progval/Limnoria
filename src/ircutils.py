@@ -158,7 +158,7 @@ def validArgument(s):
 
 notFunky = string.printable+'\x02'
 def funkyArgument(s):
-    return validArgument(s) and s.translate(string.ascii, nonFunky) != ''
+    return validArgument(s) and s.translate(string.ascii, notFunky) != ''
 
 def reply(msg):
     if isChannel(msg.args[0]):
