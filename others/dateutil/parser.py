@@ -1,4 +1,6 @@
 # -*- coding:iso-8859-1 -*-
+# Gotten from: http://moin.conectiva.com.br/DateUtil
+
 """
 Copyright (c) 2003  Gustavo Niemeyer <niemeyer@conectiva.com>
 
@@ -7,8 +9,6 @@ datetime module.
 """
 __author__ = "Gustavo Niemeyer <niemeyer@conectiva.com>"
 __license__ = "PSF License"
-
-# Gotten from: http://moin.conectiva.com.br/DateUtil
 
 import os.path
 import string
