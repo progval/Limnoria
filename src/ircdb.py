@@ -37,6 +37,7 @@ import atexit
 import string
 
 import conf
+import debug
 import world
 import ircutils
 
@@ -425,7 +426,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
             try:
                 (channel, capability) = fromChannelCapability(capability)
             except ValueError: # unpack list of wrong size
-                debug.printf('Invalid channel capability in checkCapability')
+                debug.debugMsg('Invalid channel capability in checkCapability')
                 return False   # stupid, invalid capability.
             # Now, go fetch the channel and check to see what it thinks about
             # said capability.
@@ -456,7 +457,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
             try:
                 (channel, capability) = fromChannelCapability(capability)
             except ValueError:
-                debug.printf('Invalid channel capability in checkCapability')
+                debug.debugMsg('Invalid channel capability in checkCapability')
                 return False # stupid, invalid capability.
             c = channels.getChannel(channel)
             # And return the channel's opinion.
