@@ -59,20 +59,24 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 conf.registerPlugin('Note')
-conf.registerGlobalValue(conf.supybot.plugins.Note, 'notifyOnJoin',
+conf.registerGroup(conf.supybot.plugins.Note, 'notify')
+conf.registerGlobalValue(conf.supybot.plugins.Note.notify, 'onJoin',
     registry.Boolean(False, """Determines whether the bot will notify people of
     their new messages when they join the channel.  Normally it will notify
     them when they send a message to the channel, since oftentimes joins are
     the result of netsplits and not the actual presence of the user."""))
-conf.registerGlobalValue(conf.supybot.plugins.Note, 'notifyOnJoinRepeatedly',
+conf.registerGlobalValue(conf.supybot.plugins.Note.notify.onJoin, 'repeatedly',
     registry.Boolean(False, """Determines whether the bot will repeatedly
     notify people of their new messages when they join the channel.  That means
     when they join the channel, the bot will tell them they have unread
     messages, even if it's told them before."""))
-conf.registerUserValue(conf.users.plugins.Note, 'notifyWithNotice',
-    registry.Boolean(False, """Determines whether the bot will notify users of
-    new messages with a NOTICE, rather than a PRIVMSG, so their clients won't
-    open a new query window."""))
+conf.registerGlobalValue(conf.supybot.plugins.Note.notify, 'autoSend',
+    registry.NonNegativeInteger(0, """Determines the upper limit for
+    automatically sending messages instead of notifications.  I.e., if this
+    value is 2 and there are 2 new messages to notify a user about, instead of
+    sending a notification message, the bot will simply send those new messages.
+    If there are 3 new messages, however, the bot will send a notification
+    message."""))
 
 class Ignores(registry.SpaceSeparatedListOfStrings):
     List = ircutils.IrcSet
@@ -137,8 +141,8 @@ class Note(callbacks.Privmsg):
         self._notify(irc, msg)
 
     def doJoin(self, irc, msg):
-        if self.registryValue('notifyOnJoin'):
-            repeatedly = self.registryValue('notifyOnJoinRepeatedly')
+        if self.registryValue('notify.onJoin'):
+            repeatedly = self.registryValue('notify.onJoin.repeatedly')
             self._notify(irc, msg, repeatedly)
 
     def _notify(self, irc, msg, repeatedly=False):
@@ -146,7 +150,14 @@ class Note(callbacks.Privmsg):
             to = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             return
-        unnotifiedIds = ['#%s' % nid for nid in self.db.getUnnotifiedIds(to)]
+        ids = self.db.getUnnotifiedIds(to)
+        if len(ids) <= self.registryValue('notify.autoSend'):
+            for id in ids:
+                s = '#%s: %s' % (id, self._formatNote(self.db.get(id), to))
+                irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
+                self.db.setRead(id)
+            return
+        unnotifiedIds = ['#%s' % nid for nid in ids]
         unnotified = len(unnotifiedIds)
         if unnotified or repeatedly:
             unreadIds = ['#%s' % nid for nid in self.db.getUnreadIds(to)]
@@ -155,9 +166,8 @@ class Note(callbacks.Privmsg):
                 '%s %s still unread.' % \
                 (utils.nItems('note', unread, 'unread'), unnotified,
                  utils.commaAndify(unreadIds), utils.be(unread))
+            # Later we'll have a user value for allowing this to be a NOTICE.
             msgmaker = ircmsgs.privmsg
-            if self.userValue('notifyWithNotice', msg.prefix):
-                msgmaker = ircmsgs.notice
             irc.queueMsg(msgmaker(msg.nick, s))
             for nid in unnotifiedIds:
                 id = int(nid[1:])
@@ -271,6 +281,16 @@ class Note(callbacks.Privmsg):
         else:
             irc.error('That note wasn\'t sent by you.')
 
+    def _formatNote(self, note, to):
+        elapsed = utils.timeElapsed(time.time() - note.at)
+        if note.to == to:
+            author = ircdb.users.getUser(note.frm).name
+            return '%s (Sent by %s %s ago)' % (note.text, author, elapsed)
+        else:
+            assert note.frm == to, 'Odd, userid isn\'t frm either.'
+            recipient = ircdb.users.getUser(note.to).name
+            return '%s (Sent to %s %s ago)' % (note.text, recipient, elapsed)
+        
     def note(self, irc, msg, args):
         """<note id>
 
@@ -295,13 +315,7 @@ class Note(callbacks.Privmsg):
             s = 'You may only retrieve notes you\'ve sent or received.'
             irc.error(s)
             return
-        elapsed = utils.timeElapsed(time.time() - note.at)
-        if note.to == userid:
-            author = ircdb.users.getUser(note.frm).name
-            newnote = '%s (Sent by %s %s ago)' % (note.text, author, elapsed)
-        elif note.frm == userid:
-            recipient = ircdb.users.getUser(note.to).name
-            newnote = '%s (Sent to %s %s ago)' % (note.text, recipient,elapsed)
+        newnote = self._formatNote(note, userid)
         irc.reply(newnote, private=(not note.public))
         self.db.setRead(id)
 
