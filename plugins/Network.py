@@ -44,14 +44,12 @@ import time
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
-
-class NetworkError(callbacks.Error):
-    pass
 
 class Network(callbacks.Privmsg):
     _whois = {}
@@ -61,27 +59,19 @@ class Network(callbacks.Privmsg):
         for irc in world.ircs:
             if irc.network.lower() == network:
                 return irc
-        raise NetworkError, 'I\'m not currently connected to %s.' % network
+        raise callbacks.Error, 'I\'m not currently connected to %s.' % network
 
-    def _getNetwork(self, irc, args):
-        try:
-            self._getIrc(args[0])
-            return args.pop(0)
-        except (NetworkError, IndexError):
-            return irc.network
-
-    def connect(self, irc, msg, args):
+    def connect(self, irc, msg, args, network, server):
         """<network> [<host[:port]>]
 
         Connects to another network (which will be represented by the name
         provided in <network>) at <host:port>.  If port is not provided, it
         defaults to 6667, the default port for IRC.
         """
-        (network, server) = privmsgs.getArgs(args, optional=1)
         try:
             otherIrc = self._getIrc(network)
             irc.error('I\'m already connected to %s.' % network, Raise=True)
-        except NetworkError:
+        except callbacks.Error:
             pass
         if server:
             if ':' in server:
@@ -102,9 +92,9 @@ class Network(callbacks.Privmsg):
         conf.supybot.networks().add(network)
         assert newIrc.callbacks is irc.callbacks, 'callbacks list is different'
         irc.replySuccess('Connection to %s initiated.' % network)
-    connect = privmsgs.checkCapability(connect, 'owner')
+    connect = wrap(connect, ['owner', 'something', additional('something')])
 
-    def disconnect(self, irc, msg, args):
+    def disconnect(self, irc, msg, args, otherIrc, quitMsg):
         """[<network>] [<quit message>]
 
         Disconnects from the network represented by the network <network>.
@@ -112,52 +102,36 @@ class Network(callbacks.Privmsg):
         message.  <network> is only necessary if the network is different
         from the network the command is sent on.
         """
-        network = self._getNetwork(irc, args)
-        quitMsg = privmsgs.getArgs(args, required=0, optional=1)
-        if not quitMsg:
-            quitMsg = msg.nick
-        otherIrc = self._getIrc(network)
-        # replySuccess here, rather than lower, in case we're being
-        # told to disconnect from the network we received the command on.
-        irc.replySuccess()
+        quitMsg = quitMsg or conf.supybot.plugins.Owner.quitMsg or msg.nick
         otherIrc.queueMsg(ircmsgs.quit(quitMsg))
         otherIrc.die()
         conf.supybot.networks().discard(network)
-    disconnect = privmsgs.checkCapability(disconnect, 'owner')
+    disconnect = wrap(disconnect, ['owner', 'networkIrc', additional('text')])
 
-    def reconnect(self, irc, msg, args):
-        """[<network>]
+    def reconnect(self, irc, msg, args, otherIrc, quitMsg):
+        """[<network>] [<quit message>]
 
         Disconnects and then reconnects to <network>.  If no network is given,
         disconnects and then reconnects to the network the command was given
-        on.
+        on.  If no quit message is given, uses the configured one
+        (supybot.plugins.Owner.quitMsg) or the nick of the person giving the
+        command.
         """
-        # XXX Should send a QUIT message.
-        network = self._getNetwork(irc, args)
-        if args:
-            irc.error('I\'m not connected to %s.' % privmsgs.getArgs(args))
-            return
-        badIrc = self._getIrc(network)
-        try:
-            badIrc.driver.reconnect()
-            if badIrc != irc:
-                # No need to reply if we're reconnecting ourselves.
-                irc.replySuccess()
-        except AttributeError: # There's a cleaner way to do this, but I'm lazy.
-            irc.error('I couldn\'t reconnect.  You should restart me instead.')
-    reconnect = privmsgs.checkCapability(reconnect, 'owner')
+        quitMsg = quitMsg or conf.supybot.plugins.Owner.quitMsg() or msg.nick
+        otherIrc.queueMsg(ircmsgs.quit(quitMsg))
+        if otherIrc != irc:
+            # No need to reply if we're reconnecting ourselves.
+            irc.replySuccess()
+    reconnect = wrap(reconnect, ['owner', 'networkIrc', additional('text')])
 
-    def command(self, irc, msg, args):
+    def command(self, irc, msg, args, otherIrc, command, commandArgs):
         """<network> <command> [<arg> ...]
 
         Gives the bot <command> (with its associated <arg>s) on <network>.
         """
-        if len(args) < 2:
-            raise callbacks.ArgumentError
-        network = args.pop(0)
-        otherIrc = self._getIrc(network)
-        self.Proxy(otherIrc, msg, args)
-    command = privmsgs.checkCapability(command, 'admin')
+        self.Proxy(otherIrc, msg, commandArgs)
+    command = wrap(command, ['admin', ('networkIrc', True),
+                             'commandName', any('something')])
 
     ###
     # whois command-related stuff.
@@ -253,24 +227,20 @@ class Network(callbacks.Privmsg):
         replyIrc.reply(s)
     do401 = do402
 
-    def whois(self, irc, msg, args):
+    def whois(self, irc, msg, args, otherIrc, nick):
         """[<network>] <nick>
 
         Returns the WHOIS response <network> gives for <nick>.  <network> is
         only necessary if the network is different than the network the command
         is sent on.
         """
-        network = self._getNetwork(irc, args)
-        nick = privmsgs.getArgs(args)
-        if not ircutils.isNick(nick):
-            irc.errorInvalid('nick', nick, Raise=True)
-        nick = ircutils.toLower(nick)
         otherIrc = self._getIrc(network)
         # The double nick here is necessary because single-nick WHOIS only works
         # if the nick is on the same server (*not* the same network) as the user
         # giving the command.  Yeah, it made me say wtf too.
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))
         self._whois[(otherIrc, nick)] = (irc, msg, {})
+    whois = wrap(whois, ['networkIrc', 'nick'])
 
     def networks(self, irc, msg, args):
         """takes no arguments
@@ -280,6 +250,7 @@ class Network(callbacks.Privmsg):
         L = ['%s: %s' % (ircd.network, ircd.server) for ircd in world.ircs]
         utils.sortBy(str.lower, L)
         irc.reply(utils.commaAndify(L))
+    networks = wrap(networks)
 
     def doPong(self, irc, msg):
         now = time.time()
@@ -287,21 +258,17 @@ class Network(callbacks.Privmsg):
             (replyIrc, when) = self._latency.pop(irc)
             replyIrc.reply('%.2f seconds.' % (now-when))
 
-    def latency(self, irc, msg, args):
+    def latency(self, irc, msg, args, otherIrc):
         """[<network>]
 
         Returns the current latency to <network>.  <network> is only necessary
         if the message isn't sent on the network to which this command is to
         apply.
         """
-        network = self._getNetwork(irc, args)
-        if args:
-            irc.error('I\'m not connected to %s.' % privmsgs.getArgs(args))
-            return
-        otherIrc = self._getIrc(network)
         otherIrc.queueMsg(ircmsgs.ping('Latency check (from %s).' % msg.nick))
         self._latency[otherIrc] = (irc, time.time())
         irc.noReply()
+    latency = wrap(latency, ['networkIrc'])
 
 
 Class = Network
