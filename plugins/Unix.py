@@ -92,14 +92,16 @@ conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'command',
     command will be called for the fortune command."""))
 conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'short',
     registry.Boolean(True, """Determines whether only short fortunes will be
-    used if possible."""))
-conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'equalWeight',
+    used if possible.  This sends the -s option to the fortune program."""))
+conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'equal',
     registry.Boolean(True, """Determines whether fortune will give equal
     weight to the different fortune databases.  If false, then larger
-    databases will be given more weight."""))
+    databases will be given more weight.  This sends the -e option to the
+    fortune program."""))
 conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'offensive',
     registry.Boolean(False, """Determines whether fortune will retrieve
-    offensive fortunes along with the normal fortunes."""))
+    offensive fortunes along with the normal fortunes.  This sends the -o
+    option to the fortune program."""))
 conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'files',
     registry.SpaceSeparatedListOfStrings([], """Determines what specific file
     (if any) will be used with the fortune command; if none is given, the
@@ -229,7 +231,7 @@ class Unix(callbacks.Privmsg):
             args = [fortuneCmd]
             if self.registryValue('fortune.short'):
                 args.append('-s')
-            if self.registryValue('fortune.equalWeight'):
+            if self.registryValue('fortune.equal'):
                 args.append('-e')
             if self.registryValue('fortune.offensive'):
                 args.append('-a')
