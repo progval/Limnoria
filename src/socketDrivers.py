@@ -119,7 +119,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
     def connect(self, **kwargs):
         self.reconnect(reset=False, **kwargs)
-        
+
     def reconnect(self, wait=False, reset=True):
         self.scheduled = False
         if self.connected:
@@ -142,13 +142,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.conn.bind((vhost, 0))
         except socket.error, e:
             drivers.log.connectError(self.currentServer, e)
+            if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
+                self.reconnectWaitsIndex += 1
             self.reconnect(wait=True)
             return
         # We allow more time for the connect here, since it might take longer.
         # At least 10 seconds.
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
-        if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
-            self.reconnectWaitsIndex += 1
         try:
             self.conn.connect(server)
             self.conn.settimeout(conf.supybot.drivers.poll())
@@ -189,7 +189,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         if self.scheduled:
             schedule.removeEvent(self.scheduled)
         drivers.log.die(self.irc)
-        
+
     def _reallyDie(self):
         if self.conn is not None:
             self.conn.close()
