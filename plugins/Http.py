@@ -216,7 +216,7 @@ class Http(callbacks.Privmsg):
 
         if temp and conds and city and state:
             s = 'The current temperature in %s, %s is %s.  ' \
-                'Conditions are %s.' % \
+                'Conditions: %s.' % \
                 (city.strip(), state.strip(), temp, conds)
             irc.reply(msg, s)
         else:
