@@ -182,6 +182,9 @@ class Relay(callbacks.Privmsg):
         abbreviation <network abbreviation> is used when relaying messages from
         that network to other networks.
         """
+        if not self.started:
+            irc.error(msg, 'You must use the startrelay command first.')
+            return
         abbreviation, server = privmsgs.getArgs(args, needed=2)
         if isinstance(irc, irclib.Irc):
             realIrc = irc
@@ -209,6 +212,9 @@ class Relay(callbacks.Privmsg):
         Disconnects and ceases to relay to and from the network represented by
         the network abbreviation <network>.
         """
+        if not self.started:
+            irc.error(msg, 'You must use the startrelay command first.')
+            return
         network = privmsgs.getArgs(args)
         otherIrc = self.ircs[network]
         otherIrc.die()
@@ -227,6 +233,9 @@ class Relay(callbacks.Privmsg):
         relay between those channels unless he's told to relayjoin both
         channels.
         """
+        if not self.started:
+            irc.error(msg, 'You must use the startrelay command first.')
+            return
         channel = privmsgs.getArgs(args)
         self.channels.add(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
@@ -242,6 +251,9 @@ class Relay(callbacks.Privmsg):
         will part from the channel on all networks in which it is on the
         channel.
         """
+        if not self.started:
+            irc.error(msg, 'You must use the startrelay command first.')
+            return
         channel = privmsgs.getArgs(args)
         self.channels.remove(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
@@ -256,6 +268,9 @@ class Relay(callbacks.Privmsg):
         Says <text> on <channel> (using the current channel if unspecified)
         on <network>.
         """
+        if not self.started:
+            irc.error(msg, 'You must use the startrelay command first.')
+            return
         if not args:
             raise callbacks.ArgumentError, 'relaysay'
         network = args.pop(0)
@@ -277,6 +292,9 @@ class Relay(callbacks.Privmsg):
         the channel itself.  Returns the nicks of the people in the channel on
         the various networks the bot is connected to.
         """
+        if not self.started:
+            irc.error(msg, 'You must use the startrelay command first.')
+            return
         if isinstance(irc, irclib.Irc):
             realIrc = irc
         else:
@@ -298,6 +316,9 @@ class Relay(callbacks.Privmsg):
 
         Returns the WHOIS response <network> gives for <nick>.
         """
+        if not self.started:
+            irc.error(msg, 'You must use the startrelay command first.')
+            return
         nickAtNetwork = privmsgs.getArgs(args)
         if isinstance(irc, irclib.Irc):
             realIrc = irc
@@ -329,6 +350,9 @@ class Relay(callbacks.Privmsg):
         0 turns coloring of nicks/angle brackets off entirely.  1 colors the
         nicks, but not the angle brackets.  2 colors both.
         """
+        if not self.started:
+            irc.error(msg, 'You must use the startrelay command first.')
+            return
         try:
             color = int(privmsgs.getArgs(args))
             if color != 0 and color != 1 and color != 2:
