@@ -134,7 +134,7 @@ class IrcMsg(object):
                 assert all(ircutils.isValidArgument, args)
                 self.args = args
         self.args = tuple(self.args)
-        if ircutils.isUserHostmask(self.prefix):
+        if isUserHostmask(self.prefix):
             (self.nick,self.user,self.host)=ircutils.splitHostmask(self.prefix)
         else:
             (self.nick, self.user, self.host) = (self.prefix,)*3
@@ -561,7 +561,7 @@ def privmsg(recipient, s, prefix='', msg=None):
 def dcc(recipient, kind, *args, **kwargs):
     # Stupid Python won't allow (recipient, kind, *args, prefix=''), so we have
     # to use the **kwargs form.  Blech.
-    assert ircutils.isNick(recipient), 'Can\'t DCC a channel.'
+    assert isNick(recipient), 'Can\'t DCC a channel.'
     kind = kind.upper()
     assert kind in ('SEND', 'CHAT', 'RESUME', 'ACCEPT'), 'Invalid DCC command.'
     args = (kind,) + args
