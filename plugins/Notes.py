@@ -131,7 +131,7 @@ class Notes(callbacks.Privmsg):
                                 notes.to_id=users.id AND
                                 notified=0""", name)
         unnotified = int(cursor.fetchone()[0])
-        if unread + unnotified == 0:
+        if unnotified != 0:
             return
         s = 'You have %s unread note%s ' \
             '%s that I haven\'t told you about before now..' % \
