@@ -175,7 +175,7 @@ class Unix(callbacks.Privmsg):
         """
         # We are only checking the first word
         if not self.spellCmd:
-           irc.error(msg, 'A spell checking command doesn't seem to be '
+           irc.error(msg, 'A spell checking command doesn\'t seem to be '
                           'installed on this computer.')
            return
         word = privmsgs.getArgs(args)
