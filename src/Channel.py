@@ -453,7 +453,8 @@ class Channel(callbacks.Privmsg):
         message isn't sent in the channel itself.
         """
         (nickOrHostmask, expires) = privmsgs.getArgs(args, optional=1)
-        if ircutils.isNick(nickOrHostmask):
+        if ircutils.isNick(nickOrHostmask) and \
+           nickOrHostmask in irc.state.nicksToHostmasks:
             banmask = ircutils.banmask(irc.state.nickToHostmask(nickOrHostmask))
         elif ircutils.isUserHostmask(nickOrHostmask):
             banmask = nickOrHostmask
