@@ -427,8 +427,10 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available larts.')
         else:
             (id, lart) = cursor.fetchone()
-            if nick == irc.nick or nick == 'me':
+            if nick in (irc.nick, 'me'):
                 lartee = msg.nick
+            elif 'my' in nick:
+                lartee = nick.replace('my', '%s\'s' % msg.nick)
             else:
                 lartee = nick
             lart = lart.replace("$who", lartee)
@@ -478,8 +480,10 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available praises.')
         else:
             (id, praise) = cursor.fetchone()
-            if nick == msg.nick or nick == 'me':
+            if nick in (msg.nick, 'me'):
                 praisee = msg.nick
+            elif 'my' in nick:
+                praisee = nick.replace('my', '%s\'s' % msg.nick)
             else:
                 praisee = nick
             praise = praise.replace("$who", praisee)
