@@ -111,13 +111,12 @@ class Weather(callbacks.Privmsg):
             s = self.userValue('lastLocation', msg.prefix)
             if s:
                 args = [s]
-        else:
-            location = privmsgs.getArgs(args)
-            self.setUserValue('lastLocation', msg.prefix,
-                              location, ignoreNoUser=True)
+        location = privmsgs.getArgs(args)
+        self.setUserValue('lastLocation', msg.prefix,
+                          location, ignoreNoUser=True)
         realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)
-        ret = realCommand(irc, msg, args, location)
+        ret = realCommand(irc, msg, args)
 
     def _toCelsius(self, temp, unit):
         if unit == 'K':
