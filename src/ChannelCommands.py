@@ -301,44 +301,36 @@ class ChannelCommands(callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'op')
         if ircdb.checkCapability(msg.prefix, capability):
             c = ircdb.channels.getChannel(channel)
-            if v == 'True' or v == 'False':
-                if v == 'True':
-                    c.setDefaultCapability(True)
-                elif v == 'False':
-                    c.setDefaultCapability(False)
-                ircdb.channels.setChannel(channel, c)
-                irc.reply(msg, conf.replySuccess)
+            v = v.capitalize()
+            if v == 'True':
+                c.setDefaultCapability(True)
+            elif v == 'False':
+                c.setDefaultCapability(False)
             else:
                 s = 'The default value must be either True or False.'
                 irc.error(msg, s)
+                return
+            ircdb.channels.setChannel(channel, c)
+            irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
     def setchancapability(self, irc, msg, args):
-        """[<channel>] <capability> <True|False>
+        """[<channel>] <capability>
 
         The <channel> argument is only necessary if the message isn't being
         sent in the channel itself.  If you have the #channel.op capability,
-        this will set the channel capability <capability> for all users in the
+        this will add the channel capability <capability> for all users in the
         channel.
         """
         channel = privmsgs.getChannel(msg, args)
         neededcapability = ircdb.makeChannelCapability(channel, 'op')
         if ircdb.checkCapability(msg.prefix, neededcapability):
-            (capability, value) = privmsgs.getArgs(args, 2)
-            value = value.capitalize()
-            if value == 'True' or value == 'False':
-                if value == 'True':
-                    value = True
-                elif value == 'False':
-                    value = False
-                c = ircdb.channels.getChannel(channel)
-                c.addCapability(capability, value)
-                ircdb.channels.setChannel(channel, c)
-                irc.reply(msg, conf.replySuccess)
-            else:
-                s = 'Value of the capability must be True or False'
-                irc.error(msg, s)
+            capability = privmsgs.getArgs(args)
+            c = ircdb.channels.getChannel(channel)
+            c.addCapability(capability)
+            ircdb.channels.setChannel(channel, c)
+            irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % neededcapability)
 
@@ -361,6 +353,17 @@ class ChannelCommands(callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % neededcapability)
+
+    def chancapabilities(self, irc, msg, args):
+        """[<channel>]
+
+        The <channel> argument is only necessary if the message isn't being
+        sent in the channel itself.  Returns the capabilities present on the
+        <channel>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        c = ircdb.channels.getChannel(channel)
+        irc.reply(msg, ', '.join(c.capabilities))
 
 
 Class = ChannelCommands

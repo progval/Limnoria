@@ -158,7 +158,7 @@ class IrcUser(object):
 class IrcChannel(object):
     """This class holds the capabilities, bans, and ignores of a channel.
     """
-    defaultOff = ['op', 'halfop', 'voice', 'protected']
+    defaultOff = ('op', 'halfop', 'voice', 'protected')
     def __init__(self, bans=None, ignores=None, capabilities=None,
                  lobotomized=False, defaultAllow=True):
         self.defaultAllow = defaultAllow
@@ -171,13 +171,13 @@ class IrcChannel(object):
         else:
             self.ignores = ignores
         if capabilities is None:
-            self.capabilities = {}
+            self.capabilities = set()
         else:
             self.capabilities = capabilities
 
         for capability in self.defaultOff:
             if capability not in self.capabilities:
-                self.capabilities[capability] = False
+                self.capabilities.add(makeAntiCapability(capability))
         self.lobotomized = lobotomized
 
     def __repr__(self):
@@ -205,22 +205,23 @@ class IrcChannel(object):
     def removeIgnore(self, hostmask):
         self.ignores = [s for s in self.ignores if s != hostmask]
 
-    def addCapability(self, capability, value):
-        self.capabilities[capability] = value
+    def addCapability(self, capability):
+        self.capabilities.add(capability)
 
     def removeCapability(self, capability):
-        del self.capabilities[capability]
+        self.capabilities.remove(capability)
 
-    def setDefaultCapability(self, v):
-        self.defaultAllow = v
+    def setDefaultCapability(self, b):
+        self.defaultAllow = b
 
     def checkCapability(self, capability):
         if capability in self.capabilities:
-            return self.capabilities[capability]
-        elif isAntiCapability(capability):
-            return not self.defaultAllow
+            return True
         else:
-            return self.defaultAllow
+            if isAntiCapability(capability):
+                return not self.defaultAllow
+            else:
+                return self.defaultAllow
 
     def checkIgnored(self, hostmask):
         if self.lobotomized:
@@ -424,6 +425,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
             try:
                 (channel, capability) = fromChannelCapability(capability)
             except ValueError: # unpack list of wrong size
+                debug.printf('Invalid channel capability in checkCapability')
                 return False   # stupid, invalid capability.
             # Now, go fetch the channel and check to see what it thinks about
             # said capability.
@@ -447,13 +449,14 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
     if isChannelCapability(capability):
         # First check to see if the user has the capability already; if so,
         # it can be returned without checking the channel.
-        try:
-            return u.checkCapability(capability)
-        except KeyError:
+        if u.checkCapability(capability):
+            return True
+        else:
             # User doesn't have the capability.  Check the channel.
             try:
                 (channel, capability) = fromChannelCapability(capability)
             except ValueError:
+                debug.printf('Invalid channel capability in checkCapability')
                 return False # stupid, invalid capability.
             c = channels.getChannel(channel)
             # And return the channel's opinion.

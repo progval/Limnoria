@@ -64,7 +64,10 @@ class Topic(callbacks.Privmsg):
                 irc.error(msg, s)
                 return
             currentTopic = irc.state.getTopic(channel)
-            name = ircdb.users.getUserName(msg.prefix)
+            try:
+                name = ircdb.users.getUserName(msg.prefix)
+            except KeyError:
+                name = msg.nick
             formattedTopic = self.topicFormatter % (topic, name)
             if currentTopic:
                 newTopic = self.topicSeparator.join((currentTopic,
@@ -126,7 +129,11 @@ class Topic(callbacks.Privmsg):
             topic = topics.pop(number)
             debug.printf(topic)
             (topic, name) = self.topicUnformatter.match(topic).groups()
-            if name != ircdb.users.getUserName(msg.prefix) and \
+            try:
+                username = ircdb.users.getUserName(msg.prefix)
+            except KeyError:
+                username = msg.nick
+            if name != username and \
                not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
                 irc.error('You can only remove your own topics.')
                 return
