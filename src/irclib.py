@@ -354,7 +354,7 @@ class Irc(object):
         self.state.reset()
         self.queue.reset()
         self.lastping = time.time()
-        self.outstandingPongs = False
+        self.outstandingPing = False
         self.fastqueue = queue()
         if self.password:
             self.queue.enqueue(ircmsgs.password(self.password))
@@ -365,6 +365,13 @@ class Irc(object):
 
     def addCallback(self, callback):
         self.callbacks.append(callback)
+
+    def getCallback(self, name):
+        for callback in self.callbacks:
+            if callback.name() == name:
+                return callback
+        else:
+            return None
 
     def removeCallback(self, name):
         (bad, good) = partition(lambda cb: cb.name() == name, self.callbacks)
