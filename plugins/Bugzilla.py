@@ -109,18 +109,15 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         self.db.close()
         del self.db
     
-    def addzilla(self, irc, msg, args):
-        """shorthand url description
-        Add a bugzilla to the list of defined bugzillae.
-        E.g.: addzilla rh http://bugzilla.redhat.com/bugzilla Red Hat Zilla"""
-        try:
-            words = args
-            shorthand = words.pop(0)
-            url = words.pop(0)
-            description = ' '.join(words)
-        except:
-            irc.reply(msg, 'Invalid format, please see help addzilla')
-            return
+    def add(self, irc, msg, args):
+        """<abbreviation> <url> <description>
+
+        Add a bugzilla <url> to the list of defined bugzillae. <abbreviation>
+        is the name that will be used to reference the zilla in all other
+        commands. <description> is the common name for the bugzilla and will
+        be listed with the bugzilla query.
+        E.g.: add rh http://bugzilla.redhat.com/bugzilla Red Hat Zilla"""
+        (shorthand, url, description) = privmsgs.getArgs(args, needed=3)
         cursor = self.db.cursor()
         cursor.execute("""INSERT INTO bugzillas VALUES (%s, %s, %s)""",
                     shorthand, url, description)
@@ -129,29 +126,37 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
             description, shorthand))
         return
 
-    def delzilla(self, irc, msg, args):
-        """shorthand
-        Delete a bugzilla from the list of define bugzillae.
-        E.g.: delzilla rh"""
-        shorthand = ' '.join(args)
+    def remove(self, irc, msg, args):
+        """<abbreviation>
+
+        Remove the bugzilla associated with <abbreviation> from the list of
+        defined bugzillae.
+        E.g.: remove rh"""
+        shorthand = privmsgs.getArgs(args)
         cursor = self.db.cursor()
-        cursor.execute("""SELECT * from bugzillas where shorthand = %s""", shorthand)
+        cursor.execute("""SELECT * from bugzillas where shorthand = %s""",
+            shorthand)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'Bugzilla "%s" not defined. Try zillalist.' % shorthand)
+            irc.reply(msg, 'Bugzilla "%s" not defined. Try list.' %
+                shorthand)
             return
-        cursor.execute("""DELETE FROM bugzillas where shorthand = %s""", shorthand)
+        cursor.execute("""DELETE FROM bugzillas where shorthand = %s""",
+            shorthand)
         self.db.commit()
         irc.reply(msg, 'Deleted bugzilla "%s"' % shorthand)
         return
 
-    def listzilla(self, irc,  msg, args):
-        """[shorthand]
-        List defined bugzillae
-        E.g.: listzilla rh; or just listzilla"""
-        shorthand = ' '.join(args)
+    def list(self, irc,  msg, args):
+        """[<abbreviation>]
+
+        List defined bugzillae. If <abbreviation> is specified, list the
+        information for that bugzilla.
+        E.g.: list rh; or just list"""
+        shorthand = privmsgs.getArgs(args, needed=0, optional=1)
         if shorthand:
             cursor = self.db.cursor()
-            cursor.execute("""SELECT url,description from bugzillas where shorthand = %s""", shorthand)
+            cursor.execute("""SELECT url,description from bugzillas where
+                              shorthand = %s""", shorthand)
             if cursor.rowcount == 0:
                 irc.reply(msg, 'No such bugzilla defined: "%s".' % shorthand)
                 return
@@ -162,18 +167,20 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
             cursor = self.db.cursor()
             cursor.execute("""SELECT shorthand from bugzillas""")
             if cursor.rowcount == 0:
-                irc.reply(msg, 'No bugzillae defined. Add some with "addzilla"!')
+                irc.reply(msg, 'No bugzillae defined. Add some with "add"!')
                 return
             results = ['%s' % (item[0]) for item in cursor.fetchall()]
             irc.reply(msg, 'Defined bugzillae: %s' % ' '.join(results))
             return    
+
     def bzSnarfer(self, irc, msg, match):
         r"(http://\S+)/show_bug.cgi\?id=([0-9]+)"
         if not self.toggles.get('bug', channel=msg.args[0]):
             return
         queryurl = '%s/xml.cgi?id=%s' % (match.group(1), match.group(2))
         try:
-            summary = self._get_short_bug_summary(queryurl, "Snarfed Bugzilla URL", match.group(2))
+            summary = self._get_short_bug_summary(queryurl, 'Snarfed '\
+                'Bugzilla URL', match.group(2))
         except BugError, e:
             irc.reply(msg, str(e))
             return
@@ -182,23 +189,24 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
             irc.reply(msg, msgtouser)
             return
         report = {}
-        report['zilla'] = "Snarfed Bugzilla URL"
         report['id'] = match.group(2)
-        report['url'] = str('%s/show_bug.cgi?id=%s' % (match.group(1), match.group(2)))
+        report['url'] = str('%s/show_bug.cgi?id=%s' % (match.group(1),
+            match.group(2)))
         report['title'] = str(summary['title'])
         report['summary'] = str(self._mk_summary_string(summary))
-        irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report)
+        report['product'] = str(summary['product'])
+        irc.reply(msg, '%(product)s bug #%(id)s: %(title)s %(summary)s'
+            % report, prefixName = False)
         
     def bug(self, irc, msg, args):
-        """bug shorthand number
-        Look up a bug number in a bugzilla.
+        """<abbreviation> <number>
+
+        Look up bug <number> in the bugzilla associated with <abbreviation>.
         E.g.: bug rh 10301"""
-        try: shorthand, num = args
-        except:
-            irc.reply(msg, 'Invalid format. Try help bug')
-            return
+        (shorthand, num) = privmsgs.getArgs(args, needed=2)
         cursor = self.db.cursor()
-        cursor.execute("""SELECT url,description from bugzillas where shorthand = %s""", shorthand)
+        cursor.execute("""SELECT url,description from bugzillas where
+                          shorthand = %s""", shorthand)
         if cursor.rowcount == 0:
             irc.reply(msg, 'Bugzilla "%s" is not defined.' % shorthand)
             return
@@ -223,23 +231,24 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         report['url'] = str('%s/show_bug.cgi?id=%s' % (url, num))
         report['title'] = str(summary['title'])
         report['summary'] = str(self._mk_summary_string(summary))
-        irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report)
+        irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s'
+            % report)
         return
 
     def _mk_summary_string(self, summary):
         ary = []
-        if summary.has_key('component'):
+        if 'product' in summary:
+            ary.append(ircutils.bold('Product: ') + summary['product'])
+        if 'component' in summary:
             ary.append(ircutils.bold('Component: ') + summary['component'])
-        if summary.has_key('severity'):
+        if 'severity' in summary:
             ary.append(ircutils.bold('Severity: ') + summary['severity'])
-        if summary.has_key('assigned to'):
+        if 'assigned to' in summary:
             ary.append(ircutils.bold('Assigned to: ') + summary['assigned to'])
-        if summary.has_key('status'):
-            if summary.has_key('resolution'):
-                ary.append(ircutils.bold('Status: ') + '%s/%s' %
-                           (summary['status'], summary['resolution']))
-            else:
-                ary.append(ircutils.bold('Status: ') + summary['status'])
+        if 'status' in summary:
+            ary.append(ircutils.bold('Status: ') + summary['status'])
+        if 'resolution' in summary:
+            ary.append(ircutils.bold('Resolution: ') + summary['resolution'])
         out = string.join(ary, ', ')
         return out
 
@@ -273,6 +282,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                 pass
             node = bug_n.getElementsByTagName('assigned_to')[0]
             summary['assigned to'] = self._getnodetxt(node)
+            node = bug_n.getElementsByTagName('product')[0]
+            summary['product'] = self._getnodetxt(node)
             node = bug_n.getElementsByTagName('component')[0]
             summary['component'] = self._getnodetxt(node)
             node = bug_n.getElementsByTagName('bug_severity')[0]
@@ -319,4 +330,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
             else:
                 val = re.sub(entre, '_', val)
         return val
+
 Class = Bugzilla
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
