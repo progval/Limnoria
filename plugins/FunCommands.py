@@ -54,12 +54,6 @@ import telnetlib
 import threading
 import mimetypes
 
-# Stupid printing on import...
-from cStringIO import StringIO
-sys.stdout = StringIO()
-import this
-sys.stdout = sys.__stdout__
-
 #import conf
 import debug
 import utils
@@ -466,54 +460,6 @@ class FunCommands(callbacks.Privmsg):
             length = 4
         irc.reply(msg, utils.soundex(s, length))
 
-    modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
-    def pydoc(self, irc, msg, args):
-        """<python function>
-
-        Returns the __doc__ string for a given Python function.
-        """
-        funcname = privmsgs.getArgs(args)
-        if funcname.translate(string.ascii, self.modulechars) != '':
-            irc.error('That\'s not a valid module or function name.')
-            return
-        if '.' in funcname:
-            parts = funcname.split('.')
-            functionName = parts.pop()
-            path = os.path.dirname(os.__file__)
-            for name in parts:
-                try:
-                    info = imp.find_module(name, [path])
-                    newmodule = imp.load_module(name, *info)
-                    path = os.path.dirname(newmodule.__file__)
-                    info[0].close()
-                except ImportError:
-                    irc.error(msg, 'No such module %s exists.' % module)
-                    return
-            if hasattr(newmodule, functionName):
-                f = getattr(newmodule, functionName)
-                if hasattr(f, '__doc__'):
-                    s = f.__doc__.replace('\n\n', '. ')
-                    s = utils.normalizeWhitespace(s)
-                    irc.reply(msg, s)
-                else:
-                    irc.error(msg, 'That function has no documentation.')
-            else:
-                irc.error(msg, 'That function doesn\'t exist.')
-        else:
-            try:
-                f = __builtins__[funcname]
-                if hasattr(f, '__doc__'):
-                    s = f.__doc__.replace('\n\n', '. ')
-                    s = utils.normalizeWhitespace(s)
-                    irc.reply(msg, s)
-                else:
-                    irc.error(msg, 'That function has no documentation.')
-            except SyntaxError:
-                irc.error(msg, 'That\'s not a function!')
-            except KeyError:
-                irc.error(msg, 'That function doesn\'t exist.')
-                
-
     _eightballs = (
         'outlook not so good.',
         'my reply is no.',
@@ -542,79 +488,6 @@ class FunCommands(callbacks.Privmsg):
         """
         irc.reply(msg, random.choice(self._eightballs))
 
-
-    _these = [str(s) for s in this.s.decode('rot13').splitlines() if s]
-    _these.pop(0)
-    def zen(self, irc, msg, args):
-        """takes no arguments
-
-        Returns one of the zen of Python statements.
-        """
-        irc.reply(msg, random.choice(self._these))
-
-    def dns(self, irc, msg, args):
-        """<host|ip>
-
-        Returns the ip of <host> or the reverse DNS hostname of <ip>.
-        """
-        host = privmsgs.getArgs(args)
-        if ircutils.isIP(host):
-            hostname = socket.getfqdn(host)
-            if hostname == host:
-                irc.error(msg, 'Host not found.')
-            else:
-                irc.reply(msg, hostname)
-        else:
-            try:
-                ip = socket.gethostbyname(host)
-                if ip == '64.94.110.11':
-                    irc.reply(msg, 'Host not found.')
-                else:
-                    irc.reply(msg, ip)
-            except socket.error:
-                irc.error(msg, 'Host not found.')
-    dns = privmsgs.thread(dns)
-
-    _domains = sets.Set(['com', 'net', 'edu'])
-    def whois(self, irc, msg, args):
-        """<domain>
-
-        Returns WHOIS information on the registration of <domain>.  <domain>
-        must be in tlds .com, .net, or .edu.
-        """
-        domain = privmsgs.getArgs(args)
-        if '.' not in domain or domain.split('.')[-1] not in self._domains:
-            irc.error(msg, '<domain> must be in .com, .net, or .edu.')
-            return
-        t = telnetlib.Telnet('rs.internic.net', 43)
-        t.write(domain)
-        t.write('\n')
-        s = t.read_all()
-        for line in s.splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            if line.startswith('Registrar'):
-                registrar = line.split()[-1].capitalize()
-            elif line.startswith('Referral'):
-                url = line.split()[-1]
-            elif line.startswith('Updated'):
-                updated = line.split()[-1]
-            elif line.startswith('Creation'):
-                created = line.split()[-1]
-            elif line.startswith('Expiration'):
-                expires = line.split()[-1]
-            elif line.startswith('Status'):
-                status = line.split()[-1].lower()
-        try:
-            s = '%s <%s> is %s; registered %s, updated %s, expires %s.' % \
-                (domain, url, status, created, updated, expires)
-            irc.reply(msg, s)
-        except NameError, e:
-            debug.printf(e)
-            irc.error(msg, 'I couldn\'t find such a domain.')
-    whois = privmsgs.thread(whois)
-        
 
 
 Class = FunCommands
