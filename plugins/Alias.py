@@ -239,6 +239,9 @@ class Alias(callbacks.Privmsg):
             f = makeNewAlias(name, alias)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
+        if name in self.aliases:
+            # We gotta remove it so its value gets updated.
+            conf.supybot.plugins.Alias.aliases.unregister(name)
         conf.supybot.plugins.Alias.aliases.register(name,
                                                     registry.String(alias, ''))
         conf.supybot.plugins.Alias.aliases.get(name).register('locked',
