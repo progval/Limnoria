@@ -66,7 +66,7 @@ class RSS(callbacks.Plugin):
         for name in self.registryValue('feeds'):
             self._registerFeed(name)
             try:
-                url = self.registryValue('feeds.%s' % name)
+                url = self.registryValue(registry.join(['feeds', name]))
             except registry.NonExistentRegistryEntry:
                 self.log.warning('%s is not a registered feed, removing.',name)
                 continue
