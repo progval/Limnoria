@@ -48,7 +48,7 @@ def configure(onStart, afterConnect, advanced):
 class Utilities(callbacks.Privmsg):
     def shrink(self, irc, msg, args):
         text = privmsgs.getArgs(args)
-        irc.reply(msg, text[:450])
+        irc.reply(msg, text[:400])
         
     def strjoin(self, irc, msg, args):
         "<separator> <strings to join>"
