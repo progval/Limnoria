@@ -97,9 +97,9 @@ if os.name == 'posix':
 
 
 class Config(callbacks.Privmsg):
-    def callCommand(self, method, irc, msg, *L):
+    def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
-            callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
+            super(Config, self).callCommand(name, irc, msg, *L, **kwargs)
         except InvalidRegistryName, e:
             irc.error('%r is not a valid configuration variable.' % e.args[0])
         except registry.InvalidRegistryValue, e:
