@@ -93,12 +93,21 @@ class Topic(callbacks.Privmsg):
         newTopic = self._joinTopic(channel, topics)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
 
+    def _canChangeTopic(self, irc, channel):
+        c = irc.state.channels[channel]
+        if irc.nick not in c.ops and 't' in c.modes:
+            irc.error('I can\'t change the topic, I\'m not opped and %s '
+                      'is +t.' % channel, Raise=True)
+        else:
+            return True
+            
     def add(self, irc, msg, args, channel):
         """[<channel>] <topic>
 
         Adds <topic> to the topics for <channel>.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
+        self._canChangeTopic(irc, channel)
         topic = privmsgs.getArgs(args)
         separator = self.registryValue('separator', channel)
         if separator in topic:
@@ -117,6 +126,7 @@ class Topic(callbacks.Privmsg):
         Shuffles the topics in <channel>.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
+        self._canChangeTopic(irc, channel)
         newtopic = irc.state.getTopic(channel)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if len(topics) == 0 or len(topics) == 1:
@@ -139,6 +149,7 @@ class Topic(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        self._canChangeTopic(irc, channel)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         num = len(topics)
         if num == 0 or num == 1:
@@ -226,6 +237,7 @@ class Topic(callbacks.Privmsg):
         s/regexp/replacement/flags.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
+        self._canChangeTopic(irc, channel)
         (number, regexp) = privmsgs.getArgs(args, required=2)
         try:
             number = int(number)
@@ -265,6 +277,7 @@ class Topic(callbacks.Privmsg):
         to topics starting the from the end of the topic.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
+        self._canChangeTopic(irc, channel)
         try:
             number = int(privmsgs.getArgs(args))
             if number > 0:
@@ -314,6 +327,7 @@ class Topic(callbacks.Privmsg):
         Restores the topic to the last topic set by the bot.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
+        self._canChangeTopic(irc, channel)
         try:
             topics = self.lastTopics[channel]
         except KeyError:
