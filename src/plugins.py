@@ -311,6 +311,7 @@ class Toggleable(object):
 
 randomnickre = re.compile ("\$randomnick", re.I)
 randomdatere = re.compile ("\$randomdate", re.I)
+randomintre = re.compile ("\$randomint", re.I)
 whore = re.compile ("\$who", re.I)
 botnickre = re.compile("\$botnick", re.I)
 todayre = re.compile("\$today", re.I)
@@ -328,6 +329,7 @@ def standardSubstitute(irc, msg, text):
                 text)
     t = pow(2,30)*random.random()+time.time()/4.0 
     text = randomdatere.sub(time.ctime(t), text)
+    text = randomintre.sub(random.random(), text)
     text = whore.sub(msg.nick, text)
     text = botnickre.sub(irc.nick, text)
     text = todayre.sub(time.ctime(), text)
