@@ -48,25 +48,29 @@ if network:
 
         def testRandomlanguage(self):
             self.assertNotError('randomlanguage')
+            try:
+                orig = conf.supybot.plugins.Babelfish.languages()
+                conf.supybot.plugins.Babelfish.languages.setValue([])
+                self.assertError('randomlanguage')
+            finally:
+                conf.supybot.plugins.Babelfish.languages.setValue(orig)
 
         def testDisabledLanguages(self):
-            dl = conf.supybot.plugins.Babelfish.disabledLanguages
+            langs = conf.supybot.plugins.Babelfish.languages
             try:
-                orig = dl()
-                dl.set("")
+                orig = langs()
+                langs.setValue(['Spanish', 'English'])
                 self.assertResponse('translate sp en hola', 'hello')
-                dl.set("Spanish")
+                langs.setValue([])
                 self.assertRegexp('translate sp en hola', 'do not speak')
                 self.assertRegexp('translate en sp hola', 'do not speak')
-                dl.set("Spanish Italian")
-                self.assertRegexp('translate sp en hola', 'do not speak')
-                self.assertRegexp('translate en it hello', 'do not speak')
-                self.assertRegexp('translate en it [translate sp en hola]',
-                    'do not speak')
-                dl.set("")
+                langs.setValue(['Spanish', 'Italian'])
+                self.assertRegexp('translate sp en hola', 'only speak')
+                self.assertRegexp('translate en it hello', 'only speak')
+                langs.setValue(['English', 'Italian'])
                 self.assertResponse('translate en it hello', 'ciao')
             finally:
-                dl.set(' '.join(orig))
+                langs.setValue(orig)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

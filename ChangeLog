@@ -28,6 +28,11 @@
 	determine what the bot should request of ChanServ when it
 	identifies or joins a channel.  These latter variables are, of
 	course, channel variables.
+
+	* Added configuration variable
+	supybot.plugins.Babelfish.languages (which replaces the old
+	supybot.plugins.Babelfish.disabledLanguages) for specifying
+	which languages will be translated/spoken.
 	
 	* Fixed bug #863601, plugin BadWords fails on color codes.
 
