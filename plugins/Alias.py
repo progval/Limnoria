@@ -160,23 +160,23 @@ class Alias(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         filename = os.path.join(conf.dataDir, 'Aliases.db')
-        # Schema: {name: [alias, frozen]}
+        # Schema: {name: [alias, locked]}
         self.aliases = structures.PersistentDictionary(filename)
 
     def __call__(self, irc, msg):
         # Adding the aliases requires an Irc.  So the first time we get called
         # with an Irc, we add our aliases and then delete ourselves :)
-        for (name, (alias, frozen)) in self.aliases.iteritems():
-            self.addAlias(irc, name, alias, frozen)
+        for (name, (alias, locked)) in self.aliases.iteritems():
+            self.addAlias(irc, name, alias, locked)
         del self.__class__.__call__
         
     def die(self):
         self.aliases.close()
 
-    def freeze(self, irc, msg, args):
+    def lock(self, irc, msg, args):
         """<alias>
 
-        'Freezes' an alias so that no one else can change it.
+        Locks an alias so that no one else can change it.
         """
         name = privmsgs.getArgs(args)
         name = callbacks.canonicalName(name)
@@ -185,12 +185,12 @@ class Alias(callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'There is no such alias.')
-    freeze = privmsgs.checkCapability(freeze, 'admin')
+    lock = privmsgs.checkCapability(lock, 'admin')
 
-    def unfreeze(self, irc, msg, args):
+    def unlock(self, irc, msg, args):
         """<alias>
 
-        'Unfreezes' an alias so that people can define new aliases over it.
+        Unlocks an alias so that people can define new aliases over it.
         """
         name = privmsgs.getArgs(args)
         name = callbacks.canonicalName(name)
@@ -199,10 +199,10 @@ class Alias(callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'There is no such alias.')
-    unfreeze = privmsgs.checkCapability(unfreeze, 'admin')
+    unlock = privmsgs.checkCapability(unlock, 'admin')
 
     _invalidCharsRe = re.compile(r'[\[\]\s]')
-    def addAlias(self, irc, name, alias, freeze=False):
+    def addAlias(self, irc, name, alias, lock=False):
         if self._invalidCharsRe.search(name):
             raise AliasError, 'Names cannot contain spaces or square brackets.'
         if conf.enablePipeSyntax and '|' in name:
@@ -217,24 +217,24 @@ class Alias(callbacks.Privmsg):
             s = 'A command with the name %r already exists.' % name
             raise AliasError, s
         if name in self.aliases:
-            (currentAlias, frozen) = self.aliases[name]
-            if frozen and currentAlias != alias:
-                raise AliasError, 'Alias %r is frozen.' % name
+            (currentAlias, locked) = self.aliases[name]
+            if locked and currentAlias != alias:
+                raise AliasError, 'Alias %r is locked.' % name
         try:
             f = makeNewAlias(name, alias)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
         setattr(self.__class__, name, f)
-        self.aliases[name] = [alias, freeze]
+        self.aliases[name] = [alias, lock]
 
-    def removeAlias(self, name, evenIfFrozen=False):
+    def removeAlias(self, name, evenIfLocked=False):
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
-            if evenIfFrozen or not self.aliases[name][1]:
+            if evenIfLocked or not self.aliases[name][1]:
                 delattr(self.__class__, name)
                 del self.aliases[name]
             else:
-                raise AliasError, 'That alias is frozen.'
+                raise AliasError, 'That alias is locked.'
         else:
             raise AliasError, 'There is no such alias.'
 
@@ -259,7 +259,7 @@ class Alias(callbacks.Privmsg):
     def remove(self, irc, msg, args):
         """<name>
 
-        Removes the given alias, if unfrozen.
+        Removes the given alias, if unlocked.
         """
         name = privmsgs.getArgs(args)
         try:

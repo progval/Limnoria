@@ -106,7 +106,7 @@ class Lookup(callbacks.Privmsg):
             db.commit()
             cb = irc.getCallback('Alias')
             if cb is not None:
-                cb.removeAlias(name, evenIfFrozen=True)
+                cb.removeAlias(name, evenIfLocked=True)
             irc.reply(msg, conf.replySuccess)
         except sqlite.DatabaseError:
             irc.error(msg, 'No such lookup exists.')
@@ -128,7 +128,7 @@ class Lookup(callbacks.Privmsg):
             cb = irc.getCallback('Alias')
             if cb is not None:
                 try:
-                    cb.addAlias(irc, name, 'lookup %s @1' % name, freeze=True)
+                    cb.addAlias(irc, name, 'lookup %s @1' % name, lock=True)
                 except sys.modules[cb.__module__].AliasError, e:
                     pass
             irc.reply(msg, conf.replySuccess)
@@ -158,7 +158,7 @@ class Lookup(callbacks.Privmsg):
             cb = irc.getCallback('Alias')
             if cb is not None:
                 try:
-                    cb.addAlias(irc, name, 'lookup %s @1' % name, freeze=True)
+                    cb.addAlias(irc, name, 'lookup %s @1' % name, lock=True)
                 except sys.modules[cb.__module__].AliasError, e:
                     irc.error(msg, str(e))
                     return

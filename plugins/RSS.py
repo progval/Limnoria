@@ -64,8 +64,8 @@ def configure(onStart, afterConnect, advanced):
         prompt = 'Would you like to add another RSS feed?'
         name = something('What\'s the name of the website?')
         url = something('What\'s the URL of the RSS feed?')
-        onStart.append('alias %s "rss %s"' % (name, url))
-        onStart.append('freeze %s' % name)
+        onStart.append('alias add %s "rss %s"' % (name, url))
+        onStart.append('alias lock %s' % name)
 
 class RSS(callbacks.Privmsg):
     threaded = True

@@ -122,10 +122,10 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testAddRemoveAlias(self):
         cb = self.irc.getCallback('Alias')
-        cb.addAlias(self.irc, 'foobar', 'echo sbbone', freeze=True)
+        cb.addAlias(self.irc, 'foobar', 'echo sbbone', lock=True)
         self.assertResponse('foobar', 'sbbone')
         self.assertRaises(Alias.AliasError, cb.removeAlias, 'foobar')
-        cb.removeAlias('foobar', evenIfFrozen=True)
+        cb.removeAlias('foobar', evenIfLocked=True)
         self.failIf('foobar' in cb.aliases)
         self.assertNoResponse('foobar', 2)
 
