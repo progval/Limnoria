@@ -1,26 +1,26 @@
-So here's a general *programming* introduction to what the different modules do
-and what services they provide.  It is, however, only an introduction.  Read
-the modules themselves for a much more detailed explanation :)
+So here's a general *programming* introduction to what the different
+modules do and what services they provide.  It is, however, only an
+introduction.  Read the modules themselves for a much more detailed
+explanation :)
 
 fix.py: Stuff that Python should (but doesn't) include by default.
 
-cdb.py: A constant database library, translated from C (and my O'Caml version)
-        More information available at http://cr.yp.to/cdb.html.  Not
-        currently used since we switched to PySQLite.
+cdb.py: A constant database library, translated from C (and my O'Caml
+        version) More information available at
+        http://cr.yp.to/cdb.html.  Not currently used since we
+        switched to PySQLite.
 
 ansi.py: Contains different ANSI color sequences.
          Mostly used by the debug module.
 
-debug.py: Functions for handling bugs and errors in a consistent manner
-          throughout the bot.
+conf.py: The configuration file for the bot -- it sets a lot of
+         variables that other modules check for when they have
+         questions about what they need to do.
 
-conf.py: The configuration file for the bot -- it sets a lot of variables that
-         other modules check for when they have questions about what they need
-         to do.
-
-world.py: Just a dropping off place for some globals that need to be shared
-          among all the modules.  It's obviously not used *a lot*, but some
-          things seem to fit better here than anywhere else.
+world.py: Just a dropping off place for some globals that need to be
+          shared among all the modules.  It's obviously not used *a
+          lot*, but some things seem to fit better here than anywhere
+          else.
 
 template.py: A template used by setup.py to create customized runnable
              Python scripts for individual bots.
@@ -28,21 +28,22 @@ template.py: A template used by setup.py to create customized runnable
 privmsgs.py: Basic stuff relating to callbacks.Privmsg, the base class
              for most plugins.
 
-callbacks.py: A few basic callbacks providing significant functionality.  
-              You'll likely be inheriting from Privmsg quite a bit.
+callbacks.py: A few basic callbacks providing significant
+              functionality.  You'll likely be inheriting from Privmsg
+              quite a bit.
 
 ircdb.py: The users and channels databases are here, as well as the
           IrcUser and IrcChannel classes.  Look here when you want to
           restrict a command to only certain users.
 
-irclib.py: Provides the most important class in the irclib, Irc.  It represents
-           a connection to an IRC server, but it's entirely separate from the
-           network implementation.  It's connected to the network (or whatever
-           else drives it) by a "driver" module which uses its feedMsg/takeMsg
-           functions.
+irclib.py: Provides the most important class in the irclib, Irc.  It
+           represents a connection to an IRC server, but it's entirely
+           separate from the network implementation.  It's connected
+           to the network (or whatever else drives it) by a "driver"
+           module which uses its feedMsg/takeMsg functions.
 
-drivers.py: The baseclass (IrcDriver) for various drivers to drive irclib.Irc
-            classes.  Also, the driving mechanism.
+drivers.py: The baseclass (IrcDriver) for various drivers to drive
+            irclib.Irc classes.  Also, the driving mechanism.
 
 asyncoreDrivers.py: The asyncore-based drivers for use with the bot.
 
@@ -52,12 +53,12 @@ socketDrivers.py: The plain old socket-based drivers for use with the
 twistedDrivers.py: The Twisted <http://www.twistedmatrix.com/> drivers
                    for use with the bot.
 
-ircmsgs.py: The IrcMsg class (get to know it :)) and various functions for
-            making the creation of IrcMsgs easier.
+ircmsgs.py: The IrcMsg class (get to know it :)) and various functions
+            for making the creation of IrcMsgs easier.
 
-ircutils.py: Various utility functions for Irc -- read the module to see what
-             goodies are there :)
+ircutils.py: Various utility functions for Irc -- read the module to
+             see what goodies are there :)
 
-schedule.py: A schedule driver (which is automatically registered with the
-             drivers module) to run things at a particular time, or at
-             specified periods of time.
+schedule.py: A schedule driver (which is automatically registered with
+             the drivers module) to run things at a particular time,
+             or at specified periods of time.

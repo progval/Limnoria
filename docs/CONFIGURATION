@@ -40,8 +40,8 @@ our example.
 Using the Config plugin, you can list the values in a subgroup and get
 or set any of the values anywhere in the configuration hierarchy.  For
 example, let's say you wanted to see what configuration values were
-under the "supybot" (the base group) hierarchy.  You would simply issue
-this command:
+under the "supybot" (the base group) hierarchy.  You would simply
+issue this command:
 
 <jemfinch|lambda> @config list supybot
 <supybot> jemfinch|lambda: nick, ident, user, server,
@@ -80,25 +80,25 @@ modifying the configuration values.  It's important to know that when
 you provide the group argument to config list that you must always
 provide the full name of the group.  For example, "config list
 commands" would be incorrect, even though we see "commands" in the
-listing above.  Remember, we just shorten the names by the group
-we're listing so we can fit more such names in a single message. In
-this case, that would be "supybot", so to list everything in
-the commands subgroup of supybot, we do:
+listing above.  Remember, we just shorten the names by the group we're
+listing so we can fit more such names in a single message. In this
+case, that would be "supybot", so to list everything in the commands
+subgroup of supybot, we do:
 
 <jemfinch|lambda> @config list supybot.commands
 <supybot> jemfinch|lambda: defaultPlugins
 
 Okay, now that you've used the Config plugin to list configuration
-variables, it's time that we start looking at individual variables
-and their values.
+variables, it's time that we start looking at individual variables and
+their values.
 
 The first (and perhaps most important) thing you should know about
 each configuration variable is that they all have an associated help
 string to tell you what they represent.  So the first command we'll
 cover is "config help".  To see the help string for any value or
-group, simply use the "config help" command.  For example, to see
-what this "supybot.prefixChars" configuration variable is all about,
-we'd do this:
+group, simply use the "config help" command.  For example, to see what
+this "supybot.prefixChars" configuration variable is all about, we'd
+do this:
 
 <jemfinch|lambda> @config help supybot.prefixChars
 <supybot> jemfinch|lambda: Determines what prefix
@@ -126,12 +126,11 @@ Now, check this out:
 <jemfinch|lambda> $config supybot.prefixChars
 <supybot> jemfinch|lambda: '@$'
 
-Note that we used $ as our prefix character, and that the value of
-the configuration variable changed.  If I were to use the "flush"
-command now, this change would be flushed to the registry file on
-disk (this would also happen if I made the bot quit, or pressed
-Ctrl-C in the terminal the bot was running in).  Instead, I'll
-revert the change:
+Note that we used $ as our prefix character, and that the value of the
+configuration variable changed.  If I were to use the "flush" command
+now, this change would be flushed to the registry file on disk (this
+would also happen if I made the bot quit, or pressed Ctrl-C in the
+terminal the bot was running in).  Instead, I'll revert the change:
 
 <jemfinch|lambda> $config supybot.prefixChars @
 <supybot> jemfinch|lambda: The operation succeeded.
@@ -153,9 +152,9 @@ simply say:
 
 Simple, eh?
 
-Now, let's say you want to find all configuration variables that
-might be even remotely related to opping.  For that, you'll want the
-"config search" command.  Check this out:
+Now, let's say you want to find all configuration variables that might
+be even remotely related to opping.  For that, you'll want the "config
+search" command.  Check this out:
 
 <jemfinch|lambda> @config search op
 <supybot> jemfinch|lambda:
@@ -174,16 +173,16 @@ there's no way for the bot to know what configuration variables it
 registers.
 
 Some people might like editing their registry file directly rather
-than manipulating all these things through the bot.  For those
-people, we offer the "config reload" command, which reloads both
-registry configuration and user/channel/ignore database
-configuration.  Just edit the interesting files and then give the bot
-the "config reload" command and it'll work as expected.  Do note,
-however, that Supybot flushes his configuration files and databases
-to disk every hour or so, and if this happens after you've edited
-your configuration files but before you reload your changes, you
-could lose the changes you made.  To prevent this, set the
-supybot.flush value to Off, and no automatic flushing will occur.
+than manipulating all these things through the bot.  For those people,
+we offer the "config reload" command, which reloads both registry
+configuration and user/channel/ignore database configuration.  Just
+edit the interesting files and then give the bot the "config reload"
+command and it'll work as expected.  Do note, however, that Supybot
+flushes his configuration files and databases to disk every hour or
+so, and if this happens after you've edited your configuration files
+but before you reload your changes, you could lose the changes you
+made.  To prevent this, set the supybot.flush value to Off, and no
+automatic flushing will occur.
 
 Anyway, that's about it for configuration.  Have fun, and enjoy your
 configurable bot!

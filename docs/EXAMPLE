@@ -111,10 +111,10 @@ You'll probably want to change the copyright notice to be your name.
 It wouldn't stick even if you kept my name, so you might as well :)
 
 Describe what you want the plugin to do in the docstring.  This is
-used in supybot-wizard in order to explain to the user the purpose
-of the module.  It's also returned when someone asks the bot for help
-for a given module (instead of help for a certain command).  We'll
-change this one to "Lots of stuff relating to random numbers."
+used in supybot-wizard in order to explain to the user the purpose of
+the module.  It's also returned when someone asks the bot for help for
+a given module (instead of help for a certain command).  We'll change
+this one to "Lots of stuff relating to random numbers."
 
 Then there are the imports. The callbacks module is used (the class
 you're given subclasses callbacks.Privmsg) but the privmsgs module
@@ -176,8 +176,8 @@ And we save two lines of code and make our code a little more clear :)
 Now that we have an RNG, we need some way to get random numbers.  So
 first, we'll add a command that simply gets the next random number and
 gives it back to the user.  It takes no arguments, of course (what
-would you give it?).  Here's the command, and I'll follow that with the
-explanation of what each part means.
+would you give it?).  Here's the command, and I'll follow that with
+the explanation of what each part means.
 
     def random(self, irc, msg, args):
         """takes no arguments
@@ -342,9 +342,9 @@ checking for missing arguments and whatnot so we don't have to.
 The Random object we're using offers us a "sample" method that takes a
 sequence and a number (we'll call it N) and returns a list of N items
 taken randomly from the sequence.  So I'll show you an example that
-takes advantage of multiple arguments but doesn't use
-privmsgs.getArgs (and thus has to handle its own errors if the number
-of arguments isn't right).  Here's the code:
+takes advantage of multiple arguments but doesn't use privmsgs.getArgs
+(and thus has to handle its own errors if the number of arguments
+isn't right).  Here's the code:
 
     def sample(self, irc, msg, args):
         """<number of items> [<text> ...]
@@ -373,12 +373,11 @@ than through getArgs.  Since we already have the arguments in a list,
 it doesn't make any sense to have privmsgs.getArgs smush them all
 together into a big long string that we'll just have to re-split.  But
 we still want the nice error handling of privmsgs.getArgs.  So what do
-we do?  We raise callbacks.ArgumentError!  That's the secret juju
-that privmsgs.getArgs is doing; now we're just doing it ourself.
-Someone up our callchain knows how to handle it so a neat error
-message is returned.  So in this function, if .pop(0) fails, we
-weren't given enough arguments and thus need to tell the user how to
-call us.
+we do?  We raise callbacks.ArgumentError!  That's the secret juju that
+privmsgs.getArgs is doing; now we're just doing it ourself.  Someone
+up our callchain knows how to handle it so a neat error message is
+returned.  So in this function, if .pop(0) fails, we weren't given
+enough arguments and thus need to tell the user how to call us.
 
 So we have the args, we have the number, we do a simple call to
 random.sample and then we do this funky utils.commaAndify to it.
@@ -417,8 +416,8 @@ important, though, is the first thing you'll notice that's different:
 the privmsg.getArgs call.  Here we're offering a default argument in
 case the user is too lazy to supply one (or just wants a nice,
 standard six-sided die :))  privmsgs.getArgs supports that; we'll just
-tell it that we don't *need* any arguments (via required=0) and that we
-*might like* one argument (optional=1).  If the user provides an
+tell it that we don't *need* any arguments (via required=0) and that
+we *might like* one argument (optional=1).  If the user provides an
 argument, we'll get it -- if they don't, we'll just get an empty
 string.  Hence the "if not n: n = 6", where we provide the default.
 

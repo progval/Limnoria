@@ -28,15 +28,15 @@ like being asked many questions, just run supybot with no arguments
 and it'll ask you only the questions necessary to run a bot.
 
 So after running either of those two programs, you've got a nice
-registry file handy.  If you're not satisfied with your answers to
-any of the questions you were asked, feel free to run the program
-again until you're satisfied with all your answers.  Once you're
-satisfied, though, run the "supybot" program with the registry file
-you created as an argument.  This will start the bot; unless you
-turned off logging to stdout, you'll see some nice log messages
-describing what the bot is doing at any particular moment; it may
-pause for a significant amount of time after saying "Connecting 
-to ..." while the server tries to check its ident.
+registry file handy.  If you're not satisfied with your answers to any
+of the questions you were asked, feel free to run the program again
+until you're satisfied with all your answers.  Once you're satisfied,
+though, run the "supybot" program with the registry file you created
+as an argument.  This will start the bot; unless you turned off
+logging to stdout, you'll see some nice log messages describing what
+the bot is doing at any particular moment; it may pause for a
+significant amount of time after saying "Connecting to ..." while the
+server tries to check its ident.
 
 Ok, so let's assume your bot connected to the server fine and joined
 the channels you told it to join.  For now we'll assume you named your
@@ -60,16 +60,14 @@ supybot: list Misc
 Will list all the commands in the Misc plugin.  If you want to see the
 help for any command, just use the help command:
 
-supybot: help help
-supybot: help list
-supybot: help load
+supybot: help help supybot: help list supybot: help load
 
 Sometimes more than one plugin will have a given command; for
 instance, the "list" command exists in both the Misc and Config
-plugins (both loaded by default).  List, in this case, defaults to
-the Misc plugin, but you may want to get the help for the list
-command in the Config plugin.  In that case, you'll want to give your
-command like this:
+plugins (both loaded by default).  List, in this case, defaults to the
+Misc plugin, but you may want to get the help for the list command in
+the Config plugin.  In that case, you'll want to give your command
+like this:
 
 supybot: help config list
 
@@ -149,12 +147,12 @@ try is to look at the listing of configuration groups for the bot
 chunk.  When you invoke this command, you should see output like:
 
 <supybot> nick, ident, user, server, password, channels, prefixChars,
-	defaultCapabilities, defaultAllow, defaultIgnore,
-	humanTimestampFormat, externalIP, bracketSyntax, pipeSyntax,
-	followIdentificationThroughNickChanges, alwaysJoinOnInvite,
-	showSimpleSyntax, maxHistoryLength, nickmods, throttleTime,
-	snarfThrottle, threadAllCommands, pingServer, pingInterval,
-	upkeepInterval, flush, (1 more message)
+          defaultCapabilities, defaultAllow, defaultIgnore,
+          humanTimestampFormat, externalIP, bracketSyntax, pipeSyntax,
+          followIdentificationThroughNickChanges, alwaysJoinOnInvite,
+          showSimpleSyntax, maxHistoryLength, nickmods, throttleTime,
+          snarfThrottle, threadAllCommands, pingServer, pingInterval,
+          upkeepInterval, flush, (1 more message)
 
 Now, to see the rest of the output, simply give the command "more",
 and it will show you the rest:

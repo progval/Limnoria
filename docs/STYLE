@@ -1,5 +1,5 @@
-Read PEP 8 (Guido's Style Guide) and know that we use almost all the same style
-guidelines.
+Read PEP 8 (Guido's Style Guide) and know that we use almost all the
+same style guidelines.
 
 Maximum line length is 79 characters.  78 is a safer bet, though.
 
@@ -10,29 +10,31 @@ They're just easier to type.
 
 Triple double quotes (""") are always used for docstrings.
 
-Spaces go around all operators (except around '=' in default arguments to
-functions) and after all commas (unless doing so keeps a line within the 79
-character limit).
+Spaces go around all operators (except around '=' in default arguments
+to functions) and after all commas (unless doing so keeps a line
+within the 79 character limit).
 
 Class names are StudlyCaps.  Method and function names are camelCaps
-(StudlyCaps with an initial lowercase letter).  If variable and attribute
-names can maintain readability without being camelCaps, then they should be
-entirely in lowercase, otherwise they should also use camelCaps.  Plugin names
-are StudlyCaps.
+(StudlyCaps with an initial lowercase letter).  If variable and
+attribute names can maintain readability without being camelCaps, then
+they should be entirely in lowercase, otherwise they should also use
+camelCaps.  Plugin names are StudlyCaps.
 
-Imports should always happen at the top of the module, one import per line
-(so if imports need to be added or removed later, it can be done easily).
+Imports should always happen at the top of the module, one import per
+line (so if imports need to be added or removed later, it can be done
+easily).
 
-A blank line should be between all consecutive method declarations in a
-class definition.  Two blank lines should be between all consecutive class
-definitions in a file.  Comments are even better than blank lines for
-separating classes.
+A blank line should be between all consecutive method declarations in
+a class definition.  Two blank lines should be between all consecutive
+class definitions in a file.  Comments are even better than blank
+lines for separating classes.
 
-Database filenames should generally begin with the name of the plugin and the
-extension should be 'db'.  baseplugin.DBHandler does this already.
+Database filenames should generally begin with the name of the plugin
+and the extension should be 'db'.  baseplugin.DBHandler does this
+already.
 
-Whenever creating a file descriptor or socket, keep a reference around and be
-sure to close it.  There should be no code like this:
+Whenever creating a file descriptor or socket, keep a reference around
+and be sure to close it.  There should be no code like this:
   s = urllib2.urlopen('url').read()
 Instead, do this:
   fd = urllib2.urlopen('url')
@@ -44,31 +46,33 @@ All plugins should include a docstring decsribing what the plugin
 does.  This docstring will be returned when the user wants help on a
 plugin.
 
-Method docstrings in classes deriving from callbacks.Privmsg should include an
-argument list as their first line, and after that a blank line followed by
-a longer description of what the command does.  The argument list is used by
-the 'syntax' command, and the longer description is used by the 'help' command.
+Method docstrings in classes deriving from callbacks.Privmsg should
+include an argument list as their first line, and after that a blank
+line followed by a longer description of what the command does.  The
+argument list is used by the 'syntax' command, and the longer
+description is used by the 'help' command.
 
-Whenever joining more than two strings, use string interpolation, not addition:
+Whenever joining more than two strings, use string interpolation, not
+addition:
   s = x + y + z # Bad.
   s = '%s%s%s' % (x, y, z) # Good.
   s = ''.join([x, y, z]) # Best, but not as general.
-This has to do with efficiency; the intermediate string x+y is made (and thus
-copied) before x+y+z is made, so it's less efficient.
+This has to do with efficiency; the intermediate string x+y is made
+(and thus copied) before x+y+z is made, so it's less efficient.
 
 When writing strings that have formatting characters in them, don't
 use anything but %s unless you absolutely must.  In particular, %d
 should never be used, it's less general than %s and serves no useful
 purpose.
 
-Use the debug module to its fullest; when you need to print some values to
-debug, use debug.printf to do so, and leave those print statements in the code
-(commented out) so they can later be re-enabled.  Remember that once
-code is buggy, it tends to have more bugs, and you'll probably need those print
-statements again.
+Use the log module to its fullest; when you need to print some values
+to debug, use self.log.debug to do so, and leave those print
+statements in the code (commented out) so they can later be
+re-enabled.  Remember that once code is buggy, it tends to have more
+bugs, and you'll probably need those print statements again.
 
-SQL table names should be all-lowercase and include underscores to separate
-words.  This is because SQL itself is case-insensitive.
+SQL table names should be all-lowercase and include underscores to
+separate words.  This is because SQL itself is case-insensitive.
 
 SQL statements in code should put SQL words in ALL CAPS:
   SELECT quote FROM quotes ORDER BY random() LIMIT 1
