@@ -137,6 +137,8 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         channel name via a comma.  I.e., if you need to join both #a and #b,
         and #a requires a key of 'aRocks', then you'd call 'join #a,aRocks #b'
         """
+        if not args:
+            raise callbacks.ArgumentError
         keys = []
         channels = []
         for channel in args:
@@ -191,7 +193,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         you give it.
         """
         if not args:
-            args.append(msg.args[0])
+            args = [msg.args[0]]
         for arg in args:
             if arg not in irc.state.channels:
                 irc.error('I\'m not currently in %s' % arg)
