@@ -41,7 +41,7 @@ except ImportError:
 
 if sqlite is not None:
     class NotesTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Notes', 'MiscCommands', 'UserCommands')
+        plugins = ('Notes', 'Misc', 'User')
         def testHelps(self):
             self.assertNotError('help sendnote')
             self.assertNotError('list Notes')

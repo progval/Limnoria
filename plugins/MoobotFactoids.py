@@ -56,7 +56,7 @@ import ircutils
 import privmsgs
 import callbacks
 
-import OwnerCommands
+import Owner
 
 dbfilename = os.path.join(conf.dataDir, 'MoobotFactoids.db')
 
@@ -131,12 +131,12 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.makeDB(dbfilename)
         # Set up the "reply when not command" behavior
-        MiscCommands = OwnerCommands.loadPluginModule('MiscCommands')
+        Misc = Owner.loadPluginModule('Misc')
         # Gotta make sure we restore this when we unload
-        self.originalReplyWhenNotCommand = MiscCommands.replyWhenNotCommand
+        self.originalReplyWhenNotCommand = Misc.replyWhenNotCommand
         self.originalConfReplyWhenNotCommand = conf.replyWhenNotCommand
         conf.replyWhenNotCommand = True
-        MiscCommands.replyWhenNotCommand = self._checkFactoids
+        Misc.replyWhenNotCommand = self._checkFactoids
 
     def makeDB(self, filename):
         """create MoobotFactoids database and tables"""
@@ -171,8 +171,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         self.db.close()
         del self.db
         # Recover from clobbering this command earlier
-        MiscCommands = OwnerCommands.loadPluginModule('MiscCommands')
-        MiscCommands.replyWhenNotCommand = self.originalReplyWhenNotCommand
+        Misc = Owner.loadPluginModule('Misc')
+        Misc.replyWhenNotCommand = self.originalReplyWhenNotCommand
         conf.replyWhenNotCommand = self.originalConfReplyWhenNotCommand
 
     def parseFactoid(self, fact):

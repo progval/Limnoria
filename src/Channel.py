@@ -45,7 +45,7 @@ import ircutils
 import privmsgs
 import callbacks
 
-class ChannelCommands(callbacks.Privmsg):
+class Channel(callbacks.Privmsg):
     def op(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -352,6 +352,6 @@ class ChannelCommands(callbacks.Privmsg):
         irc.reply(msg, ', '.join(c.capabilities))
 
 
-Class = ChannelCommands
+Class = Channel
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -31,28 +31,55 @@
 
 from test import *
 
+import conf
 import ircdb
+import ircmsgs
 
-class UserCommandsTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('UserCommands',)
-    prefix1 = 'somethingElse!user@host.tld'
-    prefix2 = 'EvensomethingElse!user@host.tld'
-    def testRegisterUnregister(self):
-        self.prefix = self.prefix1
-        self.assertNotError('register foo bar')
-        self.assertError('register foo baz')
-        self.failUnless(ircdb.users.getUserId('foo'))
-        self.assertNotError('unregister foo bar')
-        self.assertRaises(KeyError, ircdb.users.getUserId, 'foo')
+class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
+    plugins = ('Channel',)
+    def testUnban(self):
+        self.assertError('unban foo!bar@baz')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        m = self.getMsg('unban foo!bar@baz')
+        self.assertEqual(m.command, 'MODE')
+        self.assertEqual(m.args, (self.channel, '-b', 'foo!bar@baz'))
+        self.assertNotError(' ')
         
-    def testChangeUsername(self):
-        self.prefix = self.prefix1
-        self.assertNotError('register foo bar')
-        self.prefix = self.prefix2
-        self.assertNotError('register bar baz')
-        self.prefix = self.prefix1
-        self.assertError('changeusername foo bar')
-        self.assertNotError('changeusername foo baz')
+    def testOp(self):
+        self.assertError('op')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('op')
+        
+    def testHalfOp(self):
+        self.assertError('halfop')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('halfop')
+
+    def testVoice(self):
+        self.assertError('voice')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('voice')
+        
+    def testKban(self):
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix='foobar!user@host'))
+        self.assertError('kban foobar')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('kban foobar')
+
+    def testLobotomizers(self):
+        self.assertNotError('lobotomize')
+        self.assertNotError('unlobotomize')
+
+    def testPermban(self):
+        self.assertNotError('permban foo!bar@baz')
+        self.assertNotError('unpermban foo!bar@baz')
+        self.assertError('permban not!a.hostmask')
+
+    def testChanignore(self):
+        self.assertNotError('chanignore foo!bar@baz')
+        self.assertNotError('unchanignore foo!bar@baz')
+        self.assertError('permban not!a.hostmask')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

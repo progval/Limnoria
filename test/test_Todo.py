@@ -38,7 +38,7 @@ except ImportError:
 
 if sqlite is not None:
     class TodoTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Todo', 'UserCommands')
+        plugins = ('Todo', 'User')
         def setUp(self):
             PluginTestCase.setUp(self)
             # Create a valid user to use

@@ -32,10 +32,10 @@
 from test import *
 
 import conf
-import OwnerCommands
+import Owner
 
-class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('OwnerCommands',)
+class OwnerTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('Owner',)
     def testEval(self):
         try:
             originalConfAllowEval = conf.allowEval
@@ -82,20 +82,20 @@ class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
         self.assertError('unset foo')
 
     def testLoad(self):
-        self.assertError('load OwnerCommands')
-        self.assertNotError('load MiscCommands')
-        self.assertNotError('list OwnerCommands')
+        self.assertError('load Owner')
+        self.assertNotError('load Misc')
+        self.assertNotError('list Owner')
 
     def testReload(self):
-        self.assertError('reload MiscCommands')
-        self.assertNotError('load MiscCommands')
-        self.assertNotError('reload MiscCommands')
+        self.assertError('reload Misc')
+        self.assertNotError('load Misc')
+        self.assertNotError('reload Misc')
 
     def testUnload(self):
-        self.assertError('unload MiscCommands')
-        self.assertNotError('load MiscCommands')
-        self.assertNotError('unload MiscCommands')
-        self.assertError('unload MiscCommands')
+        self.assertError('unload Misc')
+        self.assertNotError('load Misc')
+        self.assertNotError('unload Misc')
+        self.assertError('unload Misc')
 
     def testSetconf(self):
         self.assertRegexp('setconf', 'confDir')
@@ -137,9 +137,9 @@ class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
 
 class FunctionsTestCase(unittest.TestCase):
     def testLoadPluginModule(self):
-        self.assertRaises(ImportError, OwnerCommands.loadPluginModule, 'asldj')
-        self.failUnless(OwnerCommands.loadPluginModule('OwnerCommands'))
-        self.failUnless(OwnerCommands.loadPluginModule('ownercommands'))
+        self.assertRaises(ImportError, Owner.loadPluginModule, 'asldj')
+        self.failUnless(Owner.loadPluginModule('Owner'))
+        self.failUnless(Owner.loadPluginModule('ownercommands'))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -232,7 +232,7 @@ version ='0.73.1'
 commandsOnStart = []
 
 # This is a dictionary mapping names to converter functions for use in the
-# OwnerCommands.setconf command.
+# Owner.setconf command.
 def mybool(s):
     """Converts a string read from the user into a bool, fuzzily."""
     if s.capitalize() == 'False' or s == '0':

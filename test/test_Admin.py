@@ -31,8 +31,8 @@
 
 from test import *
 
-class AdminCommandsTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('AdminCommands', 'MiscCommands')
+class AdminTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('Admin', 'Misc')
     def testSetprefixchar(self):
         self.assertNotError('setprefixchar $')
         self.assertResponse('getprefixchar', "'$'")

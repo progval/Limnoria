@@ -65,7 +65,7 @@ def replyWhenNotCommand(irc, msg, notCommands):
         irc.reply(msg, s)
     
 
-class MiscCommands(callbacks.Privmsg):
+class Misc(callbacks.Privmsg):
     def doPrivmsg(self, irc, msg):
         # This exists to be able to respond to attempts to command the bot
         # with a "That's not a command!" if the proper conf.variable is set.
@@ -380,6 +380,6 @@ class MiscCommands(callbacks.Privmsg):
         irc.reply(msg, text, notice=True)
 
 
-Class = MiscCommands
+Class = Misc
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

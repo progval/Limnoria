@@ -59,7 +59,7 @@ import drivers
 import ircmsgs
 import ircutils
 import callbacks
-import OwnerCommands
+import Owner
 
 nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
          'alb','d0rt','jemfinch','StyxAlso','fors','deltab','gd',
@@ -133,12 +133,12 @@ class PluginTestCase(unittest.TestCase):
         while self.irc.takeMsg():
             pass
         if isinstance(self.plugins, str):
-            module = OwnerCommands.loadPluginModule(self.plugins)
-            cb = OwnerCommands.loadPluginClass(self.irc, module)
+            module = Owner.loadPluginModule(self.plugins)
+            cb = Owner.loadPluginClass(self.irc, module)
         else:
             for name in self.plugins:
-                module = OwnerCommands.loadPluginModule(name)
-                cb = OwnerCommands.loadPluginClass(self.irc, module)
+                module = Owner.loadPluginModule(name)
+                cb = Owner.loadPluginClass(self.irc, module)
 
     def tearDown(self):
         self.irc.die()

@@ -31,8 +31,7 @@
 
 from test import *
 
-Alias = OwnerCommands.loadPluginModule('Alias')
-
+Alias = Owner.loadPluginModule('Alias')
 
 class FunctionsTest(unittest.TestCase):
     def testFindAliasCommand(self):
@@ -67,7 +66,7 @@ class FunctionsTest(unittest.TestCase):
 
 
 class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Alias', 'Fun', 'Utilities', 'MiscCommands')
+    plugins = ('Alias', 'Fun', 'Utilities', 'Misc')
     def testAliasHelp(self):
         self.assertNotError('alias slashdot foo')
         self.assertRegexp('help slashdot', "Alias for 'foo'")

@@ -76,7 +76,7 @@ def loadPluginClass(irc, module):
     if hasattr(callback, 'configure'):
         callback.configure(irc)
 
-class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
+class Owner(privmsgs.CapabilityCheckingPrivmsg):
     priority = ~sys.maxint # This must be first!
     capability = 'owner'
     def __init__(self):
@@ -388,7 +388,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
             except ValueError:
                 irc.error(msg, '<port> must be an integer.')
                 return
-        cbs = map(irc.getCallback, ['OwnerCommands', 'ConfigAfter376'])
+        cbs = map(irc.getCallback, ['Owner', 'ConfigAfter376'])
         newIrc = irclib.Irc(irc.nick, irc.user, irc.ident,
                             irc.password, callbacks=cbs)
         driver = drivers.newDriver((server, port), newIrc)
@@ -415,7 +415,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
                 
 
 
-Class = OwnerCommands
+Class = Owner
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

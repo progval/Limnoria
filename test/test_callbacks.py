@@ -163,7 +163,7 @@ class FunctionsTestCase(unittest.TestCase):
         
 
 class PrivmsgTestCase(ChannelPluginTestCase):
-    plugins = ('Utilities', 'OwnerCommands', 'MiscCommands')
+    plugins = ('Utilities', 'Owner', 'Misc')
     conf.allowEval = True
     timeout = 2
     def testEmptySquareBrackets(self):

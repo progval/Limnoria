@@ -38,7 +38,7 @@ except ImportError:
 
 if sqlite is not None:
     class ChannelDBTestCase(ChannelPluginTestCase, PluginDocumentation):
-        plugins = ('ChannelDB', 'MiscCommands', 'UserCommands')
+        plugins = ('ChannelDB', 'Misc', 'User')
         def setUp(self):
             ChannelPluginTestCase.setUp(self)
             self.prefix = 'foo!bar@baz'

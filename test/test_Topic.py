@@ -32,7 +32,7 @@
 from test import *
 
 class TopicTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Topic', 'AdminCommands')
+    plugins = ('Topic', 'Admin')
     def testAddtopic(self):
         _ = self.getMsg('join #foo')
         _ = self.getMsg(' ') # Get the WHO.

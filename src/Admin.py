@@ -48,7 +48,7 @@ import ircmsgs
 import privmsgs
 import callbacks
 
-class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
+class Admin(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def join(self, irc, msg, args):
         """<channel>[,<key>] [<channel>[,<key>] ...]
@@ -220,6 +220,6 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
     reportbug = privmsgs.thread(reportbug)
 
 
-Class = AdminCommands
+Class = Admin
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

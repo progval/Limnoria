@@ -41,7 +41,7 @@ import ircutils
 import privmsgs
 import callbacks
 
-class UserCommands(callbacks.Privmsg):
+class User(callbacks.Privmsg):
     def _checkNotChannel(self, irc, msg, password=' '):
         if password and ircutils.isChannel(msg.args[0]):
             irc.error(msg, conf.replyRequiresPrivacy)
@@ -358,7 +358,7 @@ class UserCommands(callbacks.Privmsg):
             irc.error(msg, conf.replyIncorrectAuth)
 
 
-Class = UserCommands
+Class = User
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

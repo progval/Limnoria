@@ -191,7 +191,7 @@ if __name__ == '__main__':
     import ircmsgs
     import drivers
     import callbacks
-    import OwnerCommands
+    import Owner
 
     class ConfigAfterConnect(irclib.IrcCallback):
         public = False
@@ -208,7 +208,7 @@ if __name__ == '__main__':
     conf.commandsOnStart = map(callbacks.tokenize, conf.commandsOnStart)
 
     irc = irclib.Irc(nick, user, ident, password)
-    callback = OwnerCommands.Class()
+    callback = Owner.Class()
     callback.configure(irc)
     irc.addCallback(callback)
     irc.addCallback(ConfigAfterConnect(afterConnect))

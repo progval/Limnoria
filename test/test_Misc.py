@@ -31,8 +31,8 @@
 
 from test import *
 
-class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('MiscCommands', 'OwnerCommands',
+class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
+    plugins = ('Misc', 'Owner',
                'Utilities', 'Gameknot', 'Ctcp')
     def testReplyWhenNotCommand(self):
         try:
@@ -74,8 +74,8 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('help morehelp')
 
     def testList(self):
-        self.assertNotError('list MiscCommands')
-        self.assertNotError('list misccommands')
+        self.assertNotError('list Misc')
+        self.assertNotError('list misc')
         self.assertNotError('list')
         # If Ctcp changes to public, these tests will break.  So if
         # the next assert fails, change the plugin we test for public/private
@@ -84,7 +84,7 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.failIf(self.irc.getCallback(name).public)
         self.assertNotRegexp('list', name)
         self.assertRegexp('list --private', name)
-        self.assertNotRegexp('list OwnerCommands', '_exec')
+        self.assertNotRegexp('list Owner', '_exec')
 
     def testVersion(self):
         self.assertNotError('version')
@@ -102,15 +102,15 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('getprefixchar')
 
     def testPlugin(self):
-        self.assertResponse('plugin plugin', 'MiscCommands')
+        self.assertResponse('plugin plugin', 'Misc')
 
     def testTell(self):
         m = self.getMsg('tell foo [plugin tell]')
         self.failUnless(m.args[0] == 'foo')
-        self.failUnless('MiscCommands' in m.args[1])
+        self.failUnless('Misc' in m.args[1])
         m = self.getMsg('tell #foo [plugin tell]')
         self.failUnless(m.args[0] == '#foo')
-        self.failUnless('MiscCommands' in m.args[1])
+        self.failUnless('Misc' in m.args[1])
 
     def testLast(self):
         self.feedMsg('foo bar baz')
