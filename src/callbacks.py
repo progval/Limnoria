@@ -403,7 +403,7 @@ class IrcObjectProxy(RichReplyMethods):
                 return
             for cb in self.irc.callbacks:
                 if isinstance(cb, PrivmsgRegexp):
-                    for (r, _) in cb.res:
+                    for (r, m) in cb.res:
                         if r.search(self.msg.args[1]):
                             log.debug('Skipping invalidCommand: %s.%s',
                                       m.im_class.__name__,m.im_func.func_name)
