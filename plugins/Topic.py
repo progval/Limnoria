@@ -139,7 +139,7 @@ class Topic(callbacks.Privmsg):
         else:
             return True
             
-    def _topicNumber(self, irc, n, topics=None):
+    def _topicNumber(self, irc, n, topics=None, normalize=False):
         try:
             n = int(n)
             if not n:
@@ -148,6 +148,10 @@ class Topic(callbacks.Privmsg):
                 n -= 1
             if topics is not None:
                 topics[n]
+            if normalize:
+                assert topics, 'Can\'t normalize without topics.'
+                if n < 0:
+                    n += len(topics)
             return n
         except (ValueError, IndexError):
             irc.error('That\'s not a valid topic number.', Raise=True)
@@ -380,6 +384,27 @@ class Topic(callbacks.Privmsg):
             irc.error('There are no more undos for %s.' % channel)
     undo = privmsgs.channel(undo)
 
+    def swap(self, irc, msg, args, channel):
+        """[<channel>] <first topic number> <second topic number>
+
+        Swaps the order of the first topic number and the second topic number.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        self._canChangeTopic(irc, channel)
+        (first, second) = privmsgs.getArgs(args, required=2)
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        first = self._topicNumber(irc, first, topics, normalize=True)
+        second = self._topicNumber(irc, second, topics, normalize=True)
+        if first == second:
+            irc.error('I refuse to swap the same topic with itself.')
+            return
+        t = topics[first]
+        topics[first] = topics[second]
+        topics[second] = t
+        self._sendTopics(irc, channel, topics)
+    swap = privmsgs.channel(swap)
+        
     def default(self, irc, msg, args, channel):
         """[<channel>]
 
