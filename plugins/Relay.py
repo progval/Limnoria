@@ -91,13 +91,16 @@ def configure(onStart, afterConnect, advanced):
         afterConnect.append('relay color 2')
 
 
-class Relay(callbacks.Privmsg, plugins.Toggleable):
+class Relay(callbacks.Privmsg, plugins.Configurable):
     noIgnore = True
     priority = sys.maxint
-    toggles = plugins.ToggleDictionary({'color': True})
+    configurables = plugins.ConfigurableDictionary(
+        [('color', plugins.ConfigurableTypes.bool, True,
+          """Determines whether the bot will color relayed PRIVMSGs so as to
+          make the messages easier to read."""),]
+    )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Toggleable.__init__(self)
         self.ircs = {}
         self._color = 0
         self._whois = {}
@@ -431,7 +434,7 @@ class Relay(callbacks.Privmsg, plugins.Toggleable):
 
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
-        color = self.toggles.get('color', msg.args[0])
+        color = self.configurables.get('color', msg.args[0])
         if color:
             nick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
             colors = ircutils.canonicalColor(nick, shift=4)
