@@ -159,14 +159,6 @@ class UrlSnarfThread(threading.Thread):
         threading.Thread.__init__(self, *args, **kwargs)
         self.setDaemon(True)
 
-    def run(self):
-        try:
-            super(UrlSnarfThread, self).run()
-        finally:
-            # This was acquired in newf in urlSnarfer.
-            _snarfLock.release()
-            
-
 class SnarfQueue(ircutils.FloodQueue):
     timeout = conf.supybot.snarfThrottle
     def key(self, channel):
@@ -174,13 +166,25 @@ class SnarfQueue(ircutils.FloodQueue):
 
 _snarfed = SnarfQueue()
 
+class SnarfIrc(object):
+    def __init__(self, irc, channel, url):
+        self.irc = irc
+        self.url = url
+        self.channel = channel
+
+    def __getattr__(self, attr):
+        return getattr(self.irc, attr)
+
+    def reply(self, *args, **kwargs):
+        _snarfed.enqueue(self.channel, self.url)
+        self.irc.reply(*args, **kwargs)
+        
 # This lock is used to serialize the calls to snarfers, so earlier snarfers are
 # guaranteed to beat out later snarfers.
 _snarfLock = threading.Lock()
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
     def newf(self, irc, msg, match, *L, **kwargs):
-        _snarfLock.acquire()
         url = match.group(0)
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
@@ -191,8 +195,9 @@ def urlSnarfer(f):
         if _snarfed.has(channel, url):
             self.log.info('Throttling snarf of %s in %s.', url, channel)
             return
-        _snarfed.enqueue(channel, url)
+        irc = SnarfIrc(irc, channel, url)
         def doSnarf():
+            _snarfLock.acquire()
             try:
                 if msg.repliedTo:
                     self.log.debug('Not snarfing, msg is already repliedTo.')
