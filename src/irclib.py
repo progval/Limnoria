@@ -57,6 +57,7 @@ import ircutils
 class IrcCommandDispatcher(object):
     """Base class for classes that must dispatch on a command."""
     def dispatchCommand(self, command):
+        """Given a string 'command', dispatches to doCommand."""
         return getattr(self, 'do' + command.capitalize(), None)
 
 
@@ -67,17 +68,33 @@ class IrcCallback(IrcCommandDispatcher):
     "doCommand" -- doPrivmsg, doNick, do433, etc.  These will be called
     on matching messages.
     """
+    # priority determines the order in which callbacks are called.  Lower
+    # numbers mean *higher* priority (like nice values in *nix).  Higher
+    # priority means the callback is called *earlier* on the inFilter chain,
+    # *earlier* on the __call__ chain, and *later* on the outFilter chain.
     priority = 99
     def name(self):
+        """Returns the name of the callback."""
         return self.__class__.__name__
 
     def inFilter(self, irc, msg):
+        """Used for filtering/modifying messages as they're entering.
+
+        ircmsgs.IrcMsg objects are immutable, so this method is expected to
+        return another ircmsgs.IrcMsg object.  Obviously the same IrcMsg
+        can be returned.
+        """
         return msg
 
     def outFilter(self, irc, msg):
+        """Used for filtering/modifying messages as they're leaving.
+
+        As with inFilter, an IrcMsg is returned.
+        """
         return msg
 
     def __call__(self, irc, msg):
+        """Used for handling each message."""
         method = self.dispatchCommand(msg.command)
         if method is not None:
             try:
@@ -89,9 +106,11 @@ class IrcCallback(IrcCommandDispatcher):
                 debug.msg(s)
 
     def reset(self):
+        """Resets the callback.  Called when reconnected to the server."""
         pass
 
     def die(self):
+        """Makes the callback die.  Called when the parent Irc object dies."""
         pass
 
 ###
@@ -107,18 +126,25 @@ class IrcMsgQueue(object):
     than it originally was.  A method to "score" methods, and a heapq to
     maintain a priority queue of the messages would be the ideal way to do
     intelligent queueing.
+
+    As it stands, however, we simple keep track of 'high priority' messages,
+    'low priority' messages, and normal messages, and just make sure to return
+    the 'high priority' ones before the normal ones before the 'low priority'
+    ones.
     """
     __slots__ = ('msgs', 'highpriority', 'normal', 'lowpriority')
     def __init__(self):
         self.reset()
 
     def reset(self):
+        """Clears the queue."""
         self.highpriority = queue()
         self.normal = queue()
         self.lowpriority = queue()
         self.msgs = sets.Set()
 
     def enqueue(self, msg):
+        """Enqueues a given message."""
         if msg in self.msgs:
             if not world.startup:
                 debug.msg('Not adding msg %s to queue' % msg, 'normal')
@@ -132,6 +158,7 @@ class IrcMsgQueue(object):
                 self.normal.enqueue(msg)
 
     def dequeue(self):
+        """Dequeues a given message."""
         if self.highpriority:
             msg = self.highpriority.dequeue()
         elif self.normal:
@@ -162,6 +189,7 @@ class ChannelState(object):
         self.voices = ircutils.IrcSet() # sets.Set()
 
     def addUser(self, user):
+        "Adds a given user to the ChannelState.  Power prefixes are handled."
         nick = user.lstrip('@%+')
         while user and user[0] in '@%+':
             (marker, user) = (user[0], user[1:])
@@ -174,6 +202,7 @@ class ChannelState(object):
         self.users.add(nick)
 
     def replaceUser(self, oldNick, newNick):
+        """Changes the user oldNick to newNick; used for NICK changes."""
         # Note that this doesn't have to have the sigil (@%+) that users
         # have to have for addUser; it just changes the name of the user
         # without changing any of his categories.
@@ -183,6 +212,7 @@ class ChannelState(object):
                 s.add(newNick)
 
     def removeUser(self, user):
+        """Removes a given user from the channel."""
         self.users.discard(user)
         self.ops.discard(user)
         self.halfops.discard(user)
@@ -214,6 +244,7 @@ class IrcState(IrcCommandDispatcher):
         self.reset()
 
     def reset(self):
+        """Resets the state to normal, unconnected state."""
         self.history.reset()
         self.channels = ircutils.IrcDict()
         self.nicksToHostmasks = ircutils.IrcDict()
@@ -242,6 +273,7 @@ class IrcState(IrcCommandDispatcher):
         return ret
 
     def addMsg(self, irc, msg):
+        """Updates the state based on the irc object and the message."""
         self.history.append(msg)
         if ircutils.isUserHostmask(msg.prefix) and not msg.command == 'NICK':
             self.nicksToHostmasks[msg.nick] = msg.prefix
@@ -250,9 +282,11 @@ class IrcState(IrcCommandDispatcher):
             method(irc, msg)
 
     def getTopic(self, channel):
+        """Returns the topic for a given channel."""
         return self.channels[channel].topic
 
     def nickToHostmask(self, nick):
+        """Returns the hostmask for a given nick."""
         return self.nicksToHostmasks[nick]
 
     def do352(self, irc, msg):
@@ -377,6 +411,7 @@ class Irc(object):
         self.queue.enqueue(ircmsgs.user(self.ident, self.user))
 
     def reset(self):
+        """Resets the Irc object.  Useful for handling reconnects."""
         self._nickmods = copy.copy(conf.nickmods)
         self.state.reset()
         self.queue.reset()
@@ -391,10 +426,12 @@ class Irc(object):
             callback.reset()
 
     def addCallback(self, callback):
+        """Adds a callback to the callbacks list."""
         self.callbacks.append(callback)
         utils.sortBy(lambda cb: cb.priority, self.callbacks)
 
     def getCallback(self, name):
+        """Gets a given callback by name."""
         name = name.lower()
         for callback in self.callbacks:
             if callback.name().lower() == name:
@@ -403,17 +440,21 @@ class Irc(object):
             return None
 
     def removeCallback(self, name):
+        """Removes a callback from the callback list."""
         (bad, good) = partition(lambda cb: cb.name() == name, self.callbacks)
         self.callbacks[:] = good
         return bad
 
     def queueMsg(self, msg):
+        """Queues a message to be sent to the server."""
         self.queue.enqueue(msg)
 
     def sendMsg(self, msg):
+        """Queues a message to be sent to the server *immediately*"""
         self.fastqueue.enqueue(msg)
 
     def takeMsg(self):
+        """Called by the IrcDriver; takes a message to be sent."""
         now = time.time()
         msg = None
         if self.fastqueue:
@@ -467,6 +508,7 @@ class Irc(object):
             return None
 
     def feedMsg(self, msg):
+        """Called by the IrcDriver; feeds a message received."""
         debug.msg('%s  %s'%(time.strftime(conf.logTimestampFormat), msg),'low')
         # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
         # messages with our nick instead of our prefix.  We'll fix that here.
@@ -536,6 +578,7 @@ class Irc(object):
                 debug.recoverableException()
 
     def die(self):
+        """Makes the Irc object die.  Dead."""
         for callback in self.callbacks:
             callback.die()
         if self.driver is not None:
