@@ -58,7 +58,7 @@ class Observers(registry.SpaceSeparatedListOfStrings):
     List = callbacks.CanonicalNameSet
 
 class ActiveObservers(registry.SpaceSeparatedListOfStrings):
-    String = callbacks.canonicalName
+    List = callbacks.CanonicalNameSet
 
 conf.registerPlugin('Observer')
 conf.registerGlobalValue(conf.supybot.plugins.Observer, 'observers',
@@ -93,7 +93,10 @@ def unregisterObserver(name):
     g.unregister(name)
     g().remove(name)
     if name in g.active():
-        g.active().remove(name)
+        g = g.active().remove(name)
+    for (_, ga) in g.active.getValues(getChildren=True):
+        if name in ga():
+            ga().remove(name)
 
 def getObserver(irc, msg, args, state):
     if args[0] != 'active' and registry.isValidRegistryName(args[0]):
@@ -174,7 +177,7 @@ class Observer(callbacks.Privmsg):
         """
         if name not in self.registryValue('observers'):
             irc.error('There is no observer %s.' % name, Raise=True)
-        self.registryValue('observers.active', channel).append(name)
+        self.registryValue('observers.active', channel).add(name)
         irc.replySuccess()
     enable = wrap(enable, [('checkChannelCapability', 'op'), 'observer'])
 
@@ -225,7 +228,7 @@ class Observer(callbacks.Privmsg):
         """
         registerObserver(name, regexp, command, probability)
         irc.replySuccess()
-    add = wrap(add, ['observer',
+    add = wrap(add, ['admin', 'observer',
                      optional('float', 1.0),
                      ('regexpMatcher', False),
                      'text'])
@@ -240,7 +243,7 @@ class Observer(callbacks.Privmsg):
             irc.replySuccess()
         except KeyError:
             irc.error('That observer does not exist.')
-    remove = wrap(remove, ['observer'])
+    remove = wrap(remove, ['admin', 'observer'])
 
 
 Class = Observer

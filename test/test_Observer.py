@@ -72,8 +72,12 @@ class ObserverTestCase(ChannelPluginTestCase):
     def testRemove(self):
         self.assertNotError('add foo m/foo/i echo I saw foo.')
         self.assertRegexp('observer list', 'foo')
+        self.assertNotError('observer enable foo')
         self.assertNotError('remove foo')
         self.assertRegexp('observer list', 'no relevant')
+        g = conf.supybot.plugins.Observer.observers
+        # This works in IRC.  Not sure why it's failing in the test suite
+        self.failIf('foo' in conf.get(g.active, self.channel))
 
     def testObserverWithEmptyGroup(self):
         self.assertNotError('add foo m/foo(bar)?/i echo I saw foo.')
