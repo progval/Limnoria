@@ -155,25 +155,25 @@ class FunDB(callbacks.Privmsg):
                           WHERE insult NOT NULL
                           ORDER BY random()
                           LIMIT 1""")
-        try:
-            (id, insult) = cursor.fetchone()
-        except TypeError:
+        if cursor.rowcount == 0:
             irc.error(msg, 'There are currently no available insults.')
             return
-        sql = """UPDATE insults SET use_count=use_count+1, requested_by=%s
-                 WHERE id=%s"""
-        cursor.execute(sql, msg.prefix, id)
-        if nick.strip() in (irc.nick, 'himself', 'me'):
-            insultee = msg.nick
         else:
-            insultee = nick
-        if ircutils.isChannel(msg.args[0]):
-            means = msg.args[0]
-            s = '%s: %s (#%s)' % (insultee, insult, id)
-        else:
-            means = insultee
-            s = insult
-        irc.queueMsg(ircmsgs.privmsg(means, s))
+            (id, insult) = cursor.fetchone()
+            sql = """UPDATE insults SET use_count=use_count+1, requested_by=%s
+                     WHERE id=%s"""
+            cursor.execute(sql, msg.prefix, id)
+            if nick.strip() in (irc.nick, 'himself', 'me'):
+                insultee = msg.nick
+            else:
+                insultee = nick
+            if ircutils.isChannel(msg.args[0]):
+                means = msg.args[0]
+                s = '%s: %s (#%s)' % (insultee, insult, id)
+            else:
+                means = insultee
+                s = insult
+            irc.queueMsg(ircmsgs.privmsg(means, s))
 
     def crossword(self, irc, msg, args):
         """<word>
@@ -202,15 +202,14 @@ class FunDB(callbacks.Privmsg):
                           WHERE excuse NOTNULL
                           ORDER BY random()
                           LIMIT 1""")
-        try:
-            (id, excuse) = cursor.fetchone()
-        except TypeError:
+        if cursor.rowcount == 0:
             irc.error(msg, 'There are currently no available excuses.')
-            return
-        sql = """UPDATE excuses SET use_count=use_count+1, requested_by=%s
-                 WHERE id=%s"""
-        cursor.execute(sql, msg.prefix, id)
-        irc.reply(msg, '%s (#%s)' % (excuse, id))
+        else:
+            (id, excuse) = cursor.fetchone()
+            sql = """UPDATE excuses SET use_count=use_count+1, requested_by=%s
+                     WHERE id=%s"""
+            cursor.execute(sql, msg.prefix, id)
+            irc.reply(msg, '%s (#%s)' % (excuse, id))
 
     def dbadd(self, irc, msg, args):
         """<lart|excuse|insult|praise> <text>
@@ -362,20 +361,19 @@ class FunDB(callbacks.Privmsg):
                           WHERE lart NOTNULL
                           ORDER BY random()
                           LIMIT 1""")
-        try:
-            (id, lart) = cursor.fetchone()
-        except TypeError:
+        if cursor.rowcount == 0:
             irc.error(msg, 'There are currently no available larts.')
-            return
-        sql = """UPDATE larts SET use_count=use_count+1, requested_by=%s
-                 WHERE id=%s"""
-        cursor.execute(sql, msg.prefix, id)
-        if nick == irc.nick or nick == 'me':
-            lartee = msg.nick
         else:
-            lartee = nick
-        lart = lart.replace("$who", lartee)
-        irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
+            (id, lart) = cursor.fetchone()
+            sql = """UPDATE larts SET use_count=use_count+1, requested_by=%s
+                     WHERE id=%s"""
+            cursor.execute(sql, msg.prefix, id)
+            if nick == irc.nick or nick == 'me':
+                lartee = msg.nick
+            else:
+                lartee = nick
+            lart = lart.replace("$who", lartee)
+            irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
 
     def praise(self, irc, msg, args):
         """[<channel>] <nick>
@@ -390,21 +388,20 @@ class FunDB(callbacks.Privmsg):
                           WHERE praise NOTNULL
                           ORDER BY random()
                           LIMIT 1""")
-        try:
-            (id, praise) = cursor.fetchone()
-        except TypeError:
+        if cursor.rowcount == 0:
             irc.error(msg, 'There are currently no available praises.')
-            return
-        sql = """UPDATE praises SET use_count=use_count+1, requested_by=%s
-                 WHERE id=%s"""
-        cursor.execute(sql, msg.prefix, id)
-        self.db.commit()
-        if nick == irc.nick or nick == 'me':
-            praisee = msg.nick
         else:
-            praisee = nick
-        praise = praise.replace("$who", praisee)
-        irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (praise, id)))
+            (id, praise) = cursor.fetchone()
+            sql = """UPDATE praises SET use_count=use_count+1, requested_by=%s
+                     WHERE id=%s"""
+            cursor.execute(sql, msg.prefix, id)
+            self.db.commit()
+            if nick == irc.nick or nick == 'me':
+                praisee = msg.nick
+            else:
+                praisee = nick
+            praise = praise.replace("$who", praisee)
+            irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (praise, id)))
 
     def addword(self, irc, msg, args):
         """<word>
