@@ -52,7 +52,7 @@ if __name__ == '__main__':
         system(sh, 'Error changing version in %s' % fn)
     system('cvs commit -m "Updated to %s." %s' % (v, ' '.join(versionFiles)))
 
-    system('cvs tag release-%s' % v.replace('.', '_'))
+    system('cvs tag -F release-%s' % v.replace('.', '_'))
 
     shutil.rmtree('test')
     shutil.rmtree('sandbox')
