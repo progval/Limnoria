@@ -57,6 +57,7 @@ plugins = [
     'Note',
     'Misc',
     'Owner',
+    'Plugin',
     'Praise',
     'Protector',
     'Quote',
