@@ -44,6 +44,8 @@ if sqlite is not None:
             # Create a valid user to use
             self.prefix = 'foo!bar@baz'
             self.assertNotError('register tester moo')
+            self.assertNotError('dunnoadd not moo')  # don't change to "moo"
+                                                     # or testDelete will fail
 
         def testLiteral(self):
             self.assertError('literal moo') # no factoids yet
@@ -183,9 +185,19 @@ if sqlite is not None:
             self.assertNotError('lock moo')
             self.assertError('no moo is qux')
 
-#    class DunnoTestCase(PluginTestCase, PluginDocumentation):
-#        plugins = ('Misc', 'MoobotFactoids', 'User')
-#        def testDunno(self):
-#            self.assertNotError('apfasdfjoia') # Should say a dunno, no error
+    class DunnoTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('MiscCommands', 'MoobotFactoids', 'UserCommands')
+        def setUp(self):
+            PluginTestCase.setUp(self)
+            self.prefix = 'foo!bar@baz'
+            self.assertNotError('register tester moo')
+
+        def testDunnoAdd(self):
+            self.assertNotError('dunnoadd moo')
+            self.assertResponse('asdfagagfosdfk', 'moo (#1)')
+
+        def testDunnoRemove(self):
+            self.assertNotError('dunnoadd moo')
+            self.assertNotError('dunnoremove 1')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

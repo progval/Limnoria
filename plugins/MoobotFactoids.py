@@ -205,7 +205,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor = self.db.cursor()
         cursor.execute("""SELECT fact FROM factoids WHERE key = %s""", key)
         if cursor.rowcount == 0:
-            irc.reply(msg, "Would reply with a dunno here")
+            text = self._getDunno(msg.nick)
+            irc.reply(msg, text)
         else:
             fact = cursor.fetchone()[0]
             # Update the requested count/requested by for this key
@@ -221,6 +222,20 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(msg, "%s is %s" % (key, text))
             else:
                 irc.error(msg, "Spurious type from parseFactoid.")
+
+    def _getDunno(self, nick):
+        """Retrieves a "dunno" from the database."""
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT id, dunno
+                          FROM dunnos
+                          ORDER BY random()
+                          LIMIT 1""")
+        if cursor.rowcount == 0:
+            return "No dunno's available, add some with dunnoadd."
+        (id, dunno) = cursor.fetchone()
+        dunno = dunno.replace('$who', nick)
+        dunno += " (#%d)" % id
+        return dunno
 
     def addFactoid(self, irc, msg, match):
         r"^(?!no\s+)(.+)\s+is\s+(?!also)(.+)"
@@ -550,6 +565,55 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, "Factoid is locked, cannot remove.")
             return
         cursor.execute("""DELETE FROM factoids WHERE key = %s""", key)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
+
+    def dunnoadd(self, irc, msg, args):
+        """<text>
+
+        Adds <text> as a "dunno" to be used as a random response when no
+        command or factoid key matches.
+        """
+        # Must be registered to use this
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        text = privmsgs.getArgs(args, needed=1)
+        cursor = self.db.cursor()
+        cursor.execute("""INSERT INTO dunnos
+                          VALUES(NULL, %s, %s, %s)""",
+                          id, int(time.time()), text)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
+
+    def dunnoremove(self, irc, msg, args):
+        """<id>
+
+        Removes dunno with the given <id>.
+        """
+        # Must be registered to use this
+        try:
+            user_id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        dunno_id = privmsgs.getArgs(args, needed=1)
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT added_by, dunno
+                          FROM dunnos
+                          WHERE id = %s""" % dunno_id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'No dunno with id: %d' % dunno_id)
+            return
+        (added_by, dunno) = cursor.fetchone()
+        if not (ircdb.checkCapability(user_id, 'admin') or \
+                added_by == user_id):
+            irc.error(msg, 'Only admins and the dunno creator may delete a '
+                           'dunno.')
+            return
+        cursor.execute("""DELETE FROM dunnos WHERE id = %s""" % dunno_id)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
