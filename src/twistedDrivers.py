@@ -74,7 +74,7 @@ class SupyIrcProtocol(LineReceiver):
     def connectionLost(self, failure):
         self.mostRecentCall.cancel()
         self.irc.reset()
-        drivers.log.disconnect(self.currentServer, errorMsg(failure))
+        drivers.log.disconnect(self.factory.currentServer, errorMsg(failure))
 
     def connectionMade(self):
         self.irc.reset()
