@@ -51,7 +51,7 @@ import debug
 
 startedAt = 0.0
 
-threadsSpawned = 0
+threadsSpawned = 1 # Starts at one for the initial "thread."
 commandsProcessed = 0
 ###
 # End Global Values.
