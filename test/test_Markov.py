@@ -29,21 +29,15 @@
 
 from testsupport import *
 
-try:
-    import sqlite
-except ImportError:
-    sqlite = None
-
-if sqlite is not None:
-    class MarkovTestCase(ChannelPluginTestCase, PluginDocumentation):
-        plugins = ('Markov',)
-        def testMarkov(self):
-            self.assertSnarfNoResponse('Feed the db some text')
-            self.assertNotError('markov')
-            self.assertNotError('markov Feed the')
-            self.assertNotError('markov Feed')
-            self.assertError('markov foo bar')
-
+class MarkovTestCase(ChannelPluginTestCase):
+    plugins = ('Markov',)
+    def testMarkov(self):
+        self.assertSnarfNoResponse('Feed the db some text')
+        self.assertNotError('markov')
+        self.assertNotError('markov Feed the')
+        self.assertHelp('markov Feed')
+        self.assertError('markov foo bar')
+        self.assertRegexp('markov stats', r'Firsts: \d+;')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -78,89 +78,9 @@ conf.registerChannelValue(conf.supybot.plugins.Markov, 'maxAttempts',
     bot will attempt to generate a chain that meets or exceeds the size set in
     minChainLength."""))
 
-class MarkovDBInterface(object):
-    def close(self):
-        pass
-
-    def addPair(self, channel, first, second, follower,
-                isFirst=False, isLast=False):
-        pass
-
-    def getFirstPair(self, channel):
-        pass
-
-    def getPair(self, channel, first, second):
-        # Returns (follower, last) tuple.
-        pass
-
-    def firsts(self, channel):
-        pass
-
-    def lasts(self, channel):
-        pass
-
-    def pairs(self, channel):
-        pass
-
-    def follows(self, channel):
-        pass
-
-class SqliteMarkovDB(object):
-    def __init__(self, filename):
-        self.dbs = ircutils.IrcDict()
-        self.filename = filename
-
-    def close(self):
-        for db in self.dbs.values():
-            db.close()
-
-    def _getDb(self, channel):
-        try:
-            import sqlite
-        except ImportError:
-            raise callbacks.Error, 'You need to have PySQLite installed to '\
-                                   'use this plugin.  Download it at '\
-                                   '<http://pysqlite.sf.net/>'
-        if channel not in self.dbs:
-            filename = plugins.makeChannelFilename(self.filename, channel)
-            if os.path.exists(filename):
-                self.dbs[channel] = sqlite.connect(filename)
-                return self.dbs[channel]
-            #else:
-            self.dbs[channel] = sqlite.connect(filename)
-            cursor = self.dbs[channel].cursor()
-            # TODO Finish the rest of the implementation
-        return self.dbs[channel]
-
-    def addPair(self, channel, first, second, follower,
-                isFirst=False, isLast=False):
-        pass
-
-    def getFirstPair(self, channel):
-        pass
-
-    def getFollower(self, channel, first, second):
-        # Returns (follower, last) tuple.
-        pass
-
-    def firsts(self, channel):
-        pass
-
-    def lasts(self, channel):
-        pass
-
-    def pairs(self, channel):
-        pass
-
-    def follows(self, channel):
-        pass
-
-
 class DbmMarkovDB(object):
     def __init__(self, filename):
         self.dbs = ircutils.IrcDict()
-        ## Stupid anydbm seems to append .db to the end of this.
-        #self.filename = filename.replace('.db', '')
         self.filename = filename
 
     def close(self):
@@ -245,8 +165,7 @@ class DbmMarkovDB(object):
         follows = [len(v.split()) for (k,v) in db.iteritems() if '\n' not in k]
         return sum(follows)
 
-MarkovDB = plugins.DB('Markov',
-                      {'anydbm': DbmMarkovDB})
+MarkovDB = plugins.DB('Markov', {'anydbm': DbmMarkovDB})
 
 class MarkovWorkQueue(threading.Thread):
     def __init__(self, *args, **kwargs):
@@ -329,6 +248,12 @@ class Markov(callbacks.Privmsg):
                 if word1 and word2:
                     givenArgs = True
                     words = [word1, word2]
+                elif word1 or word2:
+                    # Can't just "raise callbacks.ArgumentError" because
+                    # exception is thrown in MarkovQueue, where it isn't
+                    # caught and no message is sent to the server
+                    irc.reply(self.getCommandHelp('markov'))
+                    return
                 else:
                     givenArgs = False
                     try:
@@ -337,7 +262,9 @@ class Markov(callbacks.Privmsg):
                     except KeyError:
                         irc.error('I don\'t have any first pairs for %s.' %
                                   channel)
-                        return
+                        return # We can't use raise here because the exception
+                               # isn't caught and therefore isn't sent to the
+                               # server
                 follower = words[-1]
                 last = False
                 resp = []
@@ -350,7 +277,7 @@ class Markov(callbacks.Privmsg):
                         irc.error('I found a broken link in the Markov chain. '
                                   ' Maybe I received two bad links to start '
                                   'the chain.')
-                        return
+                        return # ditto here re: Raise
                     words.append(follower)
                 if givenArgs:
                     if len(words[:-1]) >= minLength:
@@ -378,7 +305,7 @@ class Markov(callbacks.Privmsg):
         """
         f = self._markov(channel, irc, word1, word2)
         self.q.enqueue(f)
-    markov = wrap(markov, ['channel', optional('something'),
+    markov = wrap(markov, ['channeldb', optional('something'),
                            additional('something')])
 
     def firsts(self, irc, msg, args, channel):
@@ -391,7 +318,7 @@ class Markov(callbacks.Privmsg):
             s = 'There are %s firsts in my Markov database for %s.'
             irc.reply(s % (db.firsts(channel), channel))
         self.q.enqueue(firsts)
-    firsts = wrap(firsts, ['channel'])
+    firsts = wrap(firsts, ['channeldb'])
 
     def lasts(self, irc, msg, args, channel):
         """[<channel>]
@@ -403,7 +330,7 @@ class Markov(callbacks.Privmsg):
             s = 'There are %s lasts in my Markov database for %s.'
             irc.reply(s % (db.lasts(channel), channel))
         self.q.enqueue(lasts)
-    lasts = wrap(lasts, ['channel'])
+    lasts = wrap(lasts, ['channeldb'])
 
     def pairs(self, irc, msg, args, channel):
         """[<channel>]
@@ -415,7 +342,7 @@ class Markov(callbacks.Privmsg):
             s = 'There are %s pairs in my Markov database for %s.'
             irc.reply(s % (db.pairs(channel), channel))
         self.q.enqueue(pairs)
-    pairs = wrap(pairs, ['channel'])
+    pairs = wrap(pairs, ['channeldb'])
 
     def follows(self, irc, msg, args, channel):
         """[<channel>]
@@ -427,8 +354,21 @@ class Markov(callbacks.Privmsg):
             s = 'There are %s follows in my Markov database for %s.'
             irc.reply(s % (db.follows(channel), channel))
         self.q.enqueue(follows)
-    follows = wrap(follows, ['channel'])
+    follows = wrap(follows, ['channeldb'])
 
+    def stats(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Returns all stats (firsts, lasts, pairs, follows) for <channel>'s
+        Markov database.
+        """
+        def stats(db):
+            s = '; '.join(['Firsts: %s', 'Lasts: %s', 'Pairs: %s',
+                           'Follows: %s'])
+            irc.reply(s % (db.firsts(channel), db.lasts(channel),
+                           db.pairs(channel), db.follows(channel)))
+        self.q.enqueue(stats)
+    stats = wrap(stats, ['channeldb'])
 
 Class = Markov
 
