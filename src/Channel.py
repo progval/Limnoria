@@ -61,6 +61,9 @@ conf.registerChannelValue(conf.supybot.plugins.Channel, 'alwaysRejoin',
     registry.Boolean(True, """Determines whether the bot will always try to
     rejoin a channel whenever it's kicked from the channel."""))
 
+# XXX We need a lot of noReply calls in here; otherwise, we should add a
+#     wrapper of some sort to handle that for us.  Perhaps we can abstract out
+#     the very repetitive commands.wrap calls in here while we're at it.
 class Channel(callbacks.Privmsg):
     def doKick(self, irc, msg):
         channel = msg.args[0]
@@ -253,9 +256,10 @@ class Channel(callbacks.Privmsg):
             key = None
         irc.queueMsg(ircmsgs.part(channel))
         irc.queueMsg(ircmsgs.join(channel, key))
+        irc.noReply()
     cycle = commands.wrap(cycle, ['channel',
                                   ('checkChannelCapability', 'op'),
-                                  'anything'])
+                                  '?anything'])
 
     def kick(self, irc, msg, args, channel, nick, reason):
         """[<channel>] <nick> [<reason>]
@@ -276,6 +280,7 @@ class Channel(callbacks.Privmsg):
                       'length for a KICK reason on this server.')
             return
         irc.queueMsg(ircmsgs.kick(channel, nick, reason))
+        irc.noReply()
     kick = commands.wrap(kick, ['channel',
                                 ('checkChannelCapability', 'op'),
                                 ('haveOp', 'kick someone'),
