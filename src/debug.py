@@ -74,7 +74,7 @@ else:
 
 # minimumPriority: Lowest priority logged;
 #                  One of {'verbose', 'low', 'normal', 'high'}.
-minimumPriority = 'verbose'
+minimumPriority = 'low'
 
 # deadlyExceptions: Exceptions that should cause immediate failure.
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
