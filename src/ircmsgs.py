@@ -122,6 +122,9 @@ class IrcMsg(object):
                self.prefix == other.prefix and \
                self.args == other.args
 
+    def __ne__(self, other):
+        return not (self == other)
+
     def __hash__(self):
         return hash(self.command) & hash(self.prefix) & hash(self.args)
 
