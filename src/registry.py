@@ -489,6 +489,9 @@ class SpaceSeparatedListOf(SeparatedListOf):
 class SpaceSeparatedListOfStrings(SpaceSeparatedListOf):
     Value = String
 
+class SpaceSeparatedSetOfStrings(SpaceSeparatedListOfStrings):
+    List = sets.Set
+
 class CommaSeparatedListOfStrings(SeparatedListOf):
     Value = String
     def splitter(self, s):
