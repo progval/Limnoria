@@ -174,7 +174,7 @@ class Notes(callbacks.Privmsg):
         author = self.getUserName(from_id)
         public = int(public)
         added_at = int(added_at)
-        elapsed = utils.timeElapsed(time.time() - added_at)
+        elapsed = utils.timeElapsed(time.time(), added_at)
         newnote = "%s (Sent by %s %s ago)" % (note, author, elapsed)
         if senderID == to_id:
             if public:
@@ -206,15 +206,15 @@ class Notes(callbacks.Privmsg):
                                WHERE to_id=%s
                                AND read=0""", senderID)
         count = int(self.cursor.fetchone()[0])
-        #debug.printf("count: %d" % count)
+        #debug.printf("count: %s" % count)
         L = []
         for (id, from_id, public, read) in notes:
             if not int(read):
                 sender = self.getUserName(from_id)
                 if int(public):
-                    L.append(r'#%d from %s' % (id, sender))
+                    L.append(r'#%s from %s' % (id, sender))
                 else:
-                    L.append(r'#%d (private)' % id)
+                    L.append(r'#%s (private)' % id)
         if count > 5:
             L = string.join(L[:5], ', ')
             reply = "you have %s unread notes, 5 shown: %s" % (count, L)
