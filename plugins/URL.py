@@ -156,7 +156,7 @@ class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
             self.nextMsgs.setdefault(key, []).append((url, added))
         db.commit()
 
-    _tinyRe = re.compile(r'(http://tinyurl.com/\w+)</blockquote>')
+    _tinyRe = re.compile(r'(http://tinyurl\.com/\w+)</blockquote>')
     def _getTinyUrl(self, url, cmd=False):
         try:
             #debug.printf('Trying to get tinyurl for %r' % url)
