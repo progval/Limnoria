@@ -121,21 +121,28 @@ if sqlite is not None:
             self.assertNotError('learn foo as bar')
             self.assertNotRegexp('info foo', '2 factoids')
 
-        def testConfigurable(self):
+        def testLearnSeparator(self):
             self.assertError('learn foo is bar')
             self.assertNotError('learn foo as bar')
             self.assertRegexp('whatis foo', 'bar')
-            self.assertNotError('factoids config learn-separator is')
-            self.assertError('learn bar as baz')
-            self.assertNotError('learn bar is baz')
-            self.assertRegexp('whatis bar', 'baz')
+            try:
+                conf.supybot.plugins.Factoids.learnSeparator.setValue('is')
+                self.assertError('learn bar as baz')
+                self.assertNotError('learn bar is baz')
+                self.assertRegexp('whatis bar', 'baz')
+            finally:
+                conf.supybot.plugins.Factoids.learnSeparator.setValue('as')
 
-            # show-factoid-if-only-one-match
+        def testShowFactoidIfOnlyOneMatch(self):
             m1 = self.assertNotError('factoids search m/foo|bar/')
-            q = 'factoids config show-factoid-if-only-one-match Off'
-            self.assertNotError(q)
-            m2 = self.assertNotError('factoids search m/foo/')
-            self.failUnless(m1.args[1].startswith(m2.args[1]))
+            try:
+                conf.supybot.plugins.Factoids. \
+                    showFactoidIfOnlyOneMatch.setValue(False)
+                m2 = self.assertNotError('factoids search m/foo/')
+                self.failUnless(m1.args[1].startswith(m2.args[1]))
+            finally:
+                conf.supybot.plugins.Factoids. \
+                    showFactoidIfOnlyOneMatch.setValue(True)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

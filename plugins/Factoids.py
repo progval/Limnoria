@@ -49,8 +49,10 @@ import utils
 import ircdb
 import ircutils
 import privmsgs
+import registry
 import callbacks
-import configurable
+
+import Owner
 
 try:
     import sqlite
@@ -58,27 +60,26 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-class Factoids(plugins.ChannelDBHandler,
-               callbacks.Privmsg,
-               configurable.Mixin):
-    configurables = configurable.Dictionary(
-        [('learn-separator', configurable.NoSpacesStrType, 'as',
-          """Determines what separator must be used in the learn command.
-          Defaults to 'as' -- learn <key> as <value>.  Users might feel more
-          comfortable with 'is' or something else, so it's configurable."""),
-         ('show-factoid-if-only-one-match', configurable.BoolType, True,
-          """Determines whether the bot will reply with the single matching
-          factoid if only one factoid matches when using the search command.
-          """),]
-    )
+
+conf.registerPlugin('Factoids')
+
+conf.registerChannelValue(conf.supybot.plugins.Factoids, 'learnSeparator',
+    registry.String('as', """Determines what separator must be used in the
+    learn command.  Defaults to 'as' -- learn <key> as <value>.  Users might
+    feel more comfortable with 'is' or something else, so it's
+    configurable."""))
+conf.registerChannelValue(conf.supybot.plugins.Factoids,
+    'showFactoidIfOnlyOneMatch', registry.Boolean(True, """Determines whether
+    the bot will reply with the single matching factoid if only one factoid
+    matches when using the search command."""))
+
+class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
 
     def die(self):
         callbacks.Privmsg.die(self)
-        configurable.Mixin.die(self)
         plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, filename):
@@ -117,7 +118,8 @@ class Factoids(plugins.ChannelDBHandler,
         """
         channel = privmsgs.getChannel(msg, args)
         try:
-            separator = self.configurables.get('learn-separator', channel)
+            separator = conf.supybot.plugins.Factoids. \
+                            learnSeparator.get(channel)()
             i = args.index(separator)
         except ValueError:
             raise callbacks.ArgumentError
@@ -405,7 +407,7 @@ class Factoids(plugins.ChannelDBHandler,
         if cursor.rowcount == 0:
             irc.reply('No keys matched that query.')
         elif cursor.rowcount == 1 and \
-             self.configurables.get('show-factoid-if-only-one-match',channel):
+        conf.supybot.plugins.Factoids.showFactoidIfOnlyOneMatch.get(channel)():
             self.whatis(irc, msg, [cursor.fetchone()[0]])
         elif cursor.rowcount > 100:
             irc.reply('More than 100 keys matched that query; '
