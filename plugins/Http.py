@@ -246,14 +246,18 @@ class Http(callbacks.Privmsg):
         quote = ' // '.join(quote.splitlines())
         irc.reply(msg, quote)
         
-    _acronymre = re.compile('<td[^>]*><b>[^<]+</b></td>[^<]+<td[^>]*>(\w+)')
+    _acronymre = re.compile('<td[^w]+width="70[^>]+>(<b>|)([^<]+)(</b>|)')
     def acronym(self, irc, msg, args):
-        """<acronym>"""
+        """<acronym>
+
+        displays the first 5 acronym matches"""
         acronym = privmsgs.getArgs(args)
         try:
             url = 'http://www.acronymfinder.com/' \
                   'af-query.asp?String=exact&Acronym=%s' % acronym
-            fd = urllib2.urlopen(url)
+            request = urllib2.Request(url, headers={'User-agent':
+              'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
+            fd = urllib2.urlopen(request)
         except urllib2.URLError:
             irc.error(msg, 'Couldn\'t connect to acronymfinder.com')
             return
@@ -263,6 +267,7 @@ class Http(callbacks.Privmsg):
         if len(defs) == 0:
             irc.reply(msg, 'No definitions found.')
         else:
+            defs=[x[1].strip() for x in defs[1:-1]][:5]
             irc.reply(msg, '%s could be %s' % (acronym, ', or '.join(defs)))
 
 Class = Http
