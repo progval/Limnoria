@@ -31,38 +31,44 @@
 
 from test import *
 
-class QuotesTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Quotes',)
-    def test(self):
-        self.assertRegexp('numquotes #foo', '0')
-        self.assertRegexp('addquote #foo foo', 'Quote #1 added')
-        self.assertRegexp('numquotes #foo', '1')
-        self.assertResponse('quote #foo --id 1', '#1: foo')
-        self.assertResponse('quote #foo 1', '#1: foo')
-        self.assertRegexp('addquote #foo bar','Quote #2 added')
-        self.assertResponse('quote #foo 2', '#2: bar')
-        self.assertResponse('quote #foo --id 2', '#2: bar')
-        self.assertRegexp('addquote #foo baz','Quote #3 added')
-        self.assertRegexp('numquotes #foo', '3')
-        self.assertResponse('quote #foo 3', '#3: baz')
-        self.assertRegexp('quote #foo --regexp m/ba/', 'bar.*baz')
-        self.assertRegexp('quote #foo --regexp ba', 'bar.*baz')
-        self.assertRegexp('quote #foo --with bar', '#2: bar')
-        self.assertRegexp('quote #foo bar', '#2: bar')
-        self.assertNotError('quoteinfo #foo 1')
-        self.assertNotError('randomquote #foo')
-        self.assertError('removequote #foo 4')
-        self.assertError('quoteinfo #foo 4')
-        self.assertNotError('removequote #foo 3')
-        self.assertRegexp('numquotes #foo', '2')
-        self.assertNotError('removequote #foo 1')
-        self.assertError('quoteinfo #foo 3')
-        self.assertError('quoteinfo #foo 1')
-        self.assertRegexp('randomquote #foo', '#2')
-        self.assertError('removequote #foo 3')
-        self.assertNotError('removequote #foo 2')
-        self.assertRegexp('numquotes #foo', '0')
-        self.assertError('randomquote #foo')
+try:
+    import sqlite
+except ImportError:
+    sqlite = None
+
+if sqlite is not None:
+    class QuotesTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Quotes',)
+        def test(self):
+            self.assertRegexp('numquotes #foo', '0')
+            self.assertRegexp('addquote #foo foo', 'Quote #1 added')
+            self.assertRegexp('numquotes #foo', '1')
+            self.assertResponse('quote #foo --id 1', '#1: foo')
+            self.assertResponse('quote #foo 1', '#1: foo')
+            self.assertRegexp('addquote #foo bar','Quote #2 added')
+            self.assertResponse('quote #foo 2', '#2: bar')
+            self.assertResponse('quote #foo --id 2', '#2: bar')
+            self.assertRegexp('addquote #foo baz','Quote #3 added')
+            self.assertRegexp('numquotes #foo', '3')
+            self.assertResponse('quote #foo 3', '#3: baz')
+            self.assertRegexp('quote #foo --regexp m/ba/', 'bar.*baz')
+            self.assertRegexp('quote #foo --regexp ba', 'bar.*baz')
+            self.assertRegexp('quote #foo --with bar', '#2: bar')
+            self.assertRegexp('quote #foo bar', '#2: bar')
+            self.assertNotError('quoteinfo #foo 1')
+            self.assertNotError('randomquote #foo')
+            self.assertError('removequote #foo 4')
+            self.assertError('quoteinfo #foo 4')
+            self.assertNotError('removequote #foo 3')
+            self.assertRegexp('numquotes #foo', '2')
+            self.assertNotError('removequote #foo 1')
+            self.assertError('quoteinfo #foo 3')
+            self.assertError('quoteinfo #foo 1')
+            self.assertRegexp('randomquote #foo', '#2')
+            self.assertError('removequote #foo 3')
+            self.assertNotError('removequote #foo 2')
+            self.assertRegexp('numquotes #foo', '0')
+            self.assertError('randomquote #foo')
 
     
 

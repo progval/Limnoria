@@ -66,33 +66,38 @@ http://gameknot.com/tsignup.pl
 http://lambda.weblogs.com/xml/rss.xml
 """.strip().splitlines()
     
+try:
+    import sqlite
+except ImportError:
+    sqlite = None
 
-class URLSnarferTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('URLSnarfer',)
-    def test(self):
-        counter = 0
-        self.assertNotError('randomurl')
-        for url in urls:
+if sqlite is not None:
+    class URLSnarferTestCase(ChannelPluginTestCase, PluginDocumentation):
+        plugins = ('URLSnarfer',)
+        def test(self):
+            counter = 0
+            self.assertNotError('randomurl')
+            for url in urls:
+                self.assertRegexp('numurls', str(counter))
+                self.feedMsg(url)
+                counter += 1
+                self.assertNotError('geturl %s' % counter)
+
             self.assertRegexp('numurls', str(counter))
-            self.feedMsg(url)
-            counter += 1
-            self.assertNotError('geturl %s' % counter)
+            self.assertRegexp('lasturl', re.escape(urls[-1]))
+            self.assertRegexp('lasturl --proto https', re.escape(urls[-3]))
+            self.assertRegexp('lasturl --at gameknot.com', re.escape(urls[-2]))
+            self.assertRegexp('lasturl --with dhcp', re.escape(urls[-4]))
+            self.assertRegexp('lasturl --from alsdkjf', '^No')
+            self.assertNotError('randomurl')
 
-        self.assertRegexp('numurls', str(counter))
-        self.assertRegexp('lasturl', re.escape(urls[-1]))
-        self.assertRegexp('lasturl --proto https', re.escape(urls[-3]))
-        self.assertRegexp('lasturl --at gameknot.com', re.escape(urls[-2]))
-        self.assertRegexp('lasturl --with dhcp', re.escape(urls[-4]))
-        self.assertRegexp('lasturl --from alsdkjf', '^No')
-        self.assertNotError('randomurl')
+        def testDefaultNotFancy(self):
+            self.feedMsg(urls[0])
+            self.assertResponse('lasturl', urls[0])
 
-    def testDefaultNotFancy(self):
-        self.feedMsg(urls[0])
-        self.assertResponse('lasturl', urls[0])
-
-    def testAction(self):
-        self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
-        self.assertNotRegexp('lasturl', '\\x01')
+        def testAction(self):
+            self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
+            self.assertNotRegexp('lasturl', '\\x01')
             
 
 

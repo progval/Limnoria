@@ -34,31 +34,37 @@ from test import *
 import utils
 import ircdb
 
-class NotesTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Notes', 'MiscCommands', 'UserCommands')
-    def testHelps(self):
-        self.assertNotError('help sendnote')
-        self.assertNotError('list Notes')
-        
-    def testSendnote(self):
-        #print repr(ircdb.users.getUser(self.prefix))
-        self.prefix = 'foo!bar@baz'
-        self.assertNotError('register foo bar')
-        (id, u) = ircdb.users.newUser()
-        u.name = 'inkedmn'
-        ircdb.users.setUser(id, u)
-        self.assertNotError('sendnote inkedmn test')
-        self.assertError('sendnote alsdkjfasldk foo')
-    
-    def testNote(self):
-        # self.assertNotError('note 1')
-        self.assertError('note blah')
+try:
+    import sqlite
+except ImportError:
+    sqlite = None
 
-    def testNotes(self):
-        self.assertNotError('notes')
+if sqlite is not None:
+    class NotesTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Notes', 'MiscCommands', 'UserCommands')
+        def testHelps(self):
+            self.assertNotError('help sendnote')
+            self.assertNotError('list Notes')
 
-    def testOldNotes(self):
-        self.assertNotError('oldnotes')
+        def testSendnote(self):
+            #print repr(ircdb.users.getUser(self.prefix))
+            self.prefix = 'foo!bar@baz'
+            self.assertNotError('register foo bar')
+            (id, u) = ircdb.users.newUser()
+            u.name = 'inkedmn'
+            ircdb.users.setUser(id, u)
+            self.assertNotError('sendnote inkedmn test')
+            self.assertError('sendnote alsdkjfasldk foo')
+
+        def testNote(self):
+            # self.assertNotError('note 1')
+            self.assertError('note blah')
+
+        def testNotes(self):
+            self.assertNotError('notes')
+
+        def testOldNotes(self):
+            self.assertNotError('oldnotes')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

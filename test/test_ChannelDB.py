@@ -31,19 +31,25 @@
 
 from test import *
 
-class ChannelDBTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('ChannelDB',)
-    def test(self):
-        self.assertNotError('channelstats')
-        self.assertNotError('channelstats')
-        self.assertNotError('channelstats')
+try:
+    import sqlite
+except ImportError:
+    sqlite = None
 
-    def testNoKeyErrorEscapeFromSeen(self):
-        self.assertRegexp('seen asldfkjasdlfkj', 'I have not seen')
-        self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
+if sqlite is not None:
+    class ChannelDBTestCase(ChannelPluginTestCase, PluginDocumentation):
+        plugins = ('ChannelDB',)
+        def test(self):
+            self.assertNotError('channelstats')
+            self.assertNotError('channelstats')
+            self.assertNotError('channelstats')
 
-    def testNoKeyErrorStats(self):
-        self.assertNotRegexp('stats sweede', 'KeyError')
+        def testNoKeyErrorEscapeFromSeen(self):
+            self.assertRegexp('seen asldfkjasdlfkj', 'I have not seen')
+            self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
+
+        def testNoKeyErrorStats(self):
+            self.assertNotRegexp('stats sweede', 'KeyError')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

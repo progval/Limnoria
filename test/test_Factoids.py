@@ -31,66 +31,74 @@
 
 from test import *
 
-class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Factoids',)
-    def testRandomfactoid(self):
-        self.assertError('randomfactoid')
-        self.assertNotError('learn jemfinch as my primary author')
-        self.assertRegexp('randomfactoid', 'primary author')
+try:
+    import sqlite
+except ImportError:
+    sqlite = None
 
-    def testLearn(self):
-        self.assertNotError('learn jemfinch as my primary author')
-        self.assertNotError('factoidinfo jemfinch')
-        self.assertRegexp('whatis jemfinch', 'my primary author')
-        self.assertRegexp('whatis JEMFINCH', 'my primary author')
-        self.assertNotError('learn jemfinch as a crappy assembly programmer')
-        self.assertRegexp('whatis jemfinch', r'.*primary author.*assembly')
-        self.assertError('forget jemfinch')
-        self.assertError('forget jemfinch 3')
-        self.assertError('forget jemfinch 0')
-        self.assertNotError('forget jemfinch 2')
-        self.assertNotError('forget jemfinch 1')
-        self.assertError('whatis jemfinch')
-        self.assertError('factoidinfo jemfinch')
+if sqlite is not None:
+    class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
+        plugins = ('Factoids',)
+        def testRandomfactoid(self):
+            self.assertError('randomfactoid')
+            self.assertNotError('learn jemfinch as my primary author')
+            self.assertRegexp('randomfactoid', 'primary author')
 
-        self.assertNotError('learn foo bar as baz')
-        self.assertNotError('factoidinfo foo bar')
-        self.assertRegexp('whatis foo bar', 'baz')
-        self.assertNotError('learn foo bar as quux')
-        self.assertRegexp('whatis foo bar', '.*baz.*quux')
-        self.assertError('forget foo bar')
-        self.assertNotError('forget foo bar 2')
-        self.assertNotError('forget foo bar 1')
-        self.assertError('whatis foo bar')
-        self.assertError('factoidinfo foo bar')
-        
-        self.assertRegexp('learn foo bar baz', '^learn') # No 'as'
-        self.assertRegexp('learn foo bar', '^learn') # No 'as'
+        def testLearn(self):
+            self.assertNotError('learn jemfinch as my primary author')
+            self.assertNotError('factoidinfo jemfinch')
+            self.assertRegexp('whatis jemfinch', 'my primary author')
+            self.assertRegexp('whatis JEMFINCH', 'my primary author')
+            self.assertNotError('learn jemfinch as a bad assembly programmer')
+            self.assertRegexp('whatis jemfinch', r'.*primary author.*assembly')
+            self.assertError('forget jemfinch')
+            self.assertError('forget jemfinch 3')
+            self.assertError('forget jemfinch 0')
+            self.assertNotError('forget jemfinch 2')
+            self.assertNotError('forget jemfinch 1')
+            self.assertError('whatis jemfinch')
+            self.assertError('factoidinfo jemfinch')
 
-    def testSearchFactoids(self):
-        self.assertNotError('learn jemfinch as my primary author')
-        self.assertNotError('learn strike as another cool guy working on me')
-        self.assertNotError('learn inkedmn as another of my developers')
-        self.assertNotError('learn jamessan as a developer of much python')
-        self.assertNotError('learn bwp as the author of my weather command')
-        self.assertRegexp('searchfactoids --regexp /.w./', 'bwp')
-        self.assertRegexp('searchfactoids --regexp /^.+i/', 'jemfinch.*strike')
-        self.assertNotRegexp('searchfactoids --regexp /^.+i/', 'inkedmn')
-        self.assertRegexp('searchfactoids --regexp /^j/', 'jemfinch.*jamessan')
-        self.assertRegexp('searchfactoids j*', 'jemfinch.*jamessan')
-        self.assertRegexp('searchfactoids --exact ke',
-                          'inkedmn.*strike|strike.*inkedmn')
-        self.assertRegexp('searchfactoids *ke*',
-                          'inkedmn.*strike|strike.*inkedmn')
-                          
+            self.assertNotError('learn foo bar as baz')
+            self.assertNotError('factoidinfo foo bar')
+            self.assertRegexp('whatis foo bar', 'baz')
+            self.assertNotError('learn foo bar as quux')
+            self.assertRegexp('whatis foo bar', '.*baz.*quux')
+            self.assertError('forget foo bar')
+            self.assertNotError('forget foo bar 2')
+            self.assertNotError('forget foo bar 1')
+            self.assertError('whatis foo bar')
+            self.assertError('factoidinfo foo bar')
 
-    def testNotZeroIndexed(self):
-        self.assertNotError('learn foo as bar')
-        self.assertNotRegexp('factoidinfo foo', '#0')
-        self.assertNotRegexp('whatis foo', '#0')
-        self.assertNotError('learn foo as baz')
-        self.assertNotRegexp('factoidinfo foo', '#0')
-        self.assertNotRegexp('whatis foo', '#0')
+            self.assertRegexp('learn foo bar baz', '^learn') # No 'as'
+            self.assertRegexp('learn foo bar', '^learn') # No 'as'
+
+        def testSearchFactoids(self):
+            self.assertNotError('learn jemfinch as my primary author')
+            self.assertNotError('learn strike as a cool guy working on me')
+            self.assertNotError('learn inkedmn as another of my developers')
+            self.assertNotError('learn jamessan as a developer of much python')
+            self.assertNotError('learn bwp as author of my weather command')
+            self.assertRegexp('searchfactoids --regexp /.w./', 'bwp')
+            self.assertRegexp('searchfactoids --regexp /^.+i/',
+                              'jemfinch.*strike')
+            self.assertNotRegexp('searchfactoids --regexp /^.+i/', 'inkedmn')
+            self.assertRegexp('searchfactoids --regexp /^j/',
+                              'jemfinch.*jamessan')
+            self.assertRegexp('searchfactoids j*', 'jemfinch.*jamessan')
+            self.assertRegexp('searchfactoids --exact ke',
+                              'inkedmn.*strike|strike.*inkedmn')
+            self.assertRegexp('searchfactoids *ke*',
+                              'inkedmn.*strike|strike.*inkedmn')
+
+
+        def testNotZeroIndexed(self):
+            self.assertNotError('learn foo as bar')
+            self.assertNotRegexp('factoidinfo foo', '#0')
+            self.assertNotRegexp('whatis foo', '#0')
+            self.assertNotError('learn foo as baz')
+            self.assertNotRegexp('factoidinfo foo', '#0')
+            self.assertNotRegexp('whatis foo', '#0')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
