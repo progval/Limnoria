@@ -248,7 +248,7 @@ def toXml(msg, pretty=True, includeTime=True):
         L.append('<arg>%s</arg>' % _escape(arg))
         if pretty:
             L.append('\n')
-    L.append('</msg>')
+    L.append('</msg>\n')
     return ''.join(L)
 
 def prettyPrint(msg, addRecipients=False):
