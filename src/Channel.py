@@ -84,7 +84,7 @@ class Channel(callbacks.Privmsg):
     mode = wrap(mode,
                 [('checkChannelCapability', 'op'),
                  ('haveOp', 'change the mode'),
-                 many('text')])
+                 many('something')])
 
     def limit(self, irc, msg, args, channel, limit):
         """[<channel>] [<limit>]
@@ -393,17 +393,31 @@ class Channel(callbacks.Privmsg):
                  additional('text')])
 
     def unban(self, irc, msg, args, channel, hostmask):
-        """[<channel>] <hostmask>
+        """[<channel>] [<hostmask>]
 
-        Unbans <hostmask> on <channel>.  Especially useful for unbanning
-        yourself when you get unexpectedly (or accidentally) banned from
-        the channel.  <channel> is only necessary if the message isn't sent
-        in the channel itself.
+        Unbans <hostmask> on <channel>.  If <hostmask> is not given, unbans
+        any hostmask currently banned on <channel> that matches your current
+        hostmask.  Especially useful for unbanning yourself when you get 
+        unexpectedly (or accidentally) banned from the channel.  <channel> is
+        only necessary if the message isn't sent in the channel itself.
         """
-        irc.queueMsg(ircmsgs.unban(channel, hostmask))
+        if hostmask:
+            irc.queueMsg(ircmsgs.unban(channel, hostmask))
+        else:
+            bans = []
+            for banmask in irc.state.channels[channel].bans:
+                if ircutils.hostmaskPatternEqual(banmask, msg.prefix):
+                    bans.append(banmask)
+            if bans:
+                irc.queueMsg(ircmsgs.unbans(channel, bans))
+                irc.replySuccess('All bans on %s matching %s '
+                                 'have been removed.' % (channel, msg.prefix))
+            else:
+                irc.error('No bans matching %s were found on %s.' %
+                          (msg.prefix, channel))
     unban = wrap(unban, [('checkChannelCapability', 'op'),
                          ('haveOp', 'unban someone'),
-                         'hostmask'])
+                         additional('hostmask')])
 
     def invite(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
