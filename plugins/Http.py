@@ -270,5 +270,26 @@ class Http(callbacks.Privmsg):
             defs=[repr(x.strip()) for x in defs[1:-1]][:5]
             irc.reply(msg, '%s could be %s' % (acronym, ', or '.join(defs)))
 
+    _netcraftre = re.compile(r'whatos text -->(.*?)<a href="/up/acc', re.S)
+    def netcraft(self, irc, msg, args):
+        """<hostname>"""
+        hostname = privmsgs.getArgs(args)
+        url = 'http://uptime.netcraft.com/up/graph/?host=%s' % hostname
+        fd = urllib2.urlopen(url)
+        html = fd.read()
+        fd.close()
+        fd = file('%s.netcraft' % hostname, 'w')
+        fd.write(html)
+        fd.close()
+        m = self._netcraftre.search(html)
+        if m:
+            html = m.group(1)
+            s = utils.htmlToText(html, tagReplace='').strip('\xa0 ')
+            irc.reply(msg, s[9:]) # Snip off "the site"
+        else:
+            irc.error(msg, 'The format of the was odd.')
+
+
 Class = Http
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
