@@ -330,13 +330,14 @@ def main():
     if yn('Do you want your bot to join some channels when he connects?  '
           'Use spaces to separate the channels.')=='y':
         channels = something('What channels?')
-        while not all(ircutils.isChannel, channels.split()):
+        channels = channels.split()
+        while not all(ircutils.isChannel, channels):
             # FIXME: say which ones weren't channels.
             myPrint("""Not all of those are valid IRC channels.  Be sure to
             prefix the channel with # (or +, or !, or &, but no one uses those
             channels, really).""")
             channels = something('What channels?')
-        afterConnect.append('admin join %s' % utils.dqrepr(channels))
+        afterConnect.append('admin join %s' % map(utils.dqrepr, channels))
 
     ###
     # Plugins
@@ -547,7 +548,8 @@ def main():
             while throttleTime is None:
                 throttleTime = something('How long do you want your bot to '
                                          'wait between sending messages to '
-                                         'the server?')
+                                         'the server?  Floating point values '
+                                         'are accepted.')
                 try:
                     throttleTime = float(throttleTime)
                 except ValueError:
