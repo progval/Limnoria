@@ -53,11 +53,14 @@ def choice(iterable):
         return _choice(iterable)
     else:
         n = 1
-        ret = None
+        m = new.module('') # Guaranteed unique value.
+        ret = m
         for x in iterable:
             if random.random() < 1/n:
                 ret = x
             n += 1
+        if ret is m:
+            raise IndexError
         return ret
 random.choice = choice
 
