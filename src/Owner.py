@@ -42,6 +42,7 @@ import gc
 import os
 import imp
 import sys
+import sets
 import linecache
 
 import log
@@ -322,16 +323,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
         Exits the bot.
         """
-        world.dying = True
-        for driver in drivers._drivers.itervalues():
-            driver.die()
-        killed = sets.Set()
-        for irc in world.ircs[:]:
-            # The following is so callbacks don't get killed multiple times
-            # when the Relay plugin is loaded:
-            if id(irc.callbacks) not in killed:
-                killed.add(id(irc.callbacks))
-                irc.die()
         raise SystemExit, 'Quitting because I was told by %s' % msg.prefix
 
     def flush(self, irc, msg, args):
