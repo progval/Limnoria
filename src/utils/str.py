@@ -336,7 +336,7 @@ def toBool(s):
 def timestamp(t):
     return time.ctime(t)
 
-_formatRe = re.compile('%([bfhiLnpqst%])')
+_formatRe = re.compile('%([bfhiLnpqstu%])')
 def format(s, *args, **kwargs):
     """w00t.
 
