@@ -129,6 +129,12 @@ class FunctionsTestCase(SupyTestCase):
         for msg in msgs:
             self.failUnless(ircmsgs.isAction(msg))
 
+    def testIsActionIsntStupid(self):
+        m = ircmsgs.privmsg('#x', '\x01NOTANACTION foo\x01')
+        self.failIf(ircmsgs.isAction(m))
+        m = ircmsgs.privmsg('#x', '\x01ACTION foo bar\x01')
+        self.failUnless(ircmsgs.isAction(m))
+
     def testIsCtcp(self):
         self.failUnless(ircmsgs.isCtcp(ircmsgs.privmsg('foo',
                                                        '\x01VERSION\x01')))

@@ -220,7 +220,10 @@ def isCtcp(msg):
 def isAction(msg):
     """A predicate returning true if the PRIVMSG in question is an ACTION"""
     if isCtcp(msg):
-        return len(msg.args[1].split(None, 1)) == 2
+        s = msg.args[1]
+        payload = s[1:-1] # Chop off \x01.
+        command = payload.split(None, 1)[0]
+        return command == 'ACTION'
     else:
         return False
 
