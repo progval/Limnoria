@@ -33,6 +33,8 @@
 Handles configuration of the bot while it's running.
 """
 
+__revision__ = "$Id$"
+
 import getopt
 
 import conf
