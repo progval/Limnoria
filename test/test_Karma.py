@@ -137,7 +137,7 @@ if sqlite is not None:
             try:
                 orig = conf.supybot.plugins.Karma.allowSelfRating()
                 conf.supybot.plugins.Karma.allowSelfRating.setValue(False)
-                self.assertNoResponse('%s++' % nick, 2)
+                self.assertError('%s++' % nick)
                 self.assertResponse('karma %s' % nick,
                                     '%s has neutral karma.' % nick)
                 conf.supybot.plugins.Karma.allowSelfRating.setValue(True)
@@ -204,8 +204,8 @@ if sqlite is not None:
                 for m in ('++', '--'):
                     self.assertRegexp('foo%s' % m, 'operation')
                     self.assertSnarfRegexp('foo%s' % m, 'operation')
-                    self.assertNoResponse('foo bar%s' % m)
-                    self.assertSnarfNoResponse('foo bar%s' % m)
+                    #self.assertNoResponse('foo bar%s' % m)
+                    #self.assertSnarfNoResponse('foo bar%s' % m)
                     self.assertRegexp('(foo bar)%s' % m, 'operation')
                     self.assertSnarfRegexp('(foo bar)%s' % m, 'operation')
             finally:

@@ -208,12 +208,61 @@ class SqliteKarmaDB(object):
 def KarmaDB():
     return SqliteKarmaDB()
 
-class Karma(callbacks.PrivmsgCommandAndRegexp):
-    regexps = ['increaseKarma', 'decreaseKarma']
+class Karma(callbacks.Privmsg):
     def __init__(self):
         self.db = KarmaDB()
         super(Karma, self).__init__()
 
+    def _normalizeThing(self, thing):
+        assert thing
+        if thing[0] == '(' and thing[-1] == ')':
+            thing = thing[1:-1]
+        return thing
+        
+    def _respond(self, irc, channel):
+        if self.registryValue('response', channel):
+            irc.replySuccess()
+        else:
+            irc.noReply()
+        assert irc.msg.repliedTo == True
+        
+    def _doKarma(self, irc, channel, thing):
+        assert thing[-2:] in ('++', '--')
+        if thing.endswith('++'):
+            thing = thing[:-2]
+            if ircutils.strEqual(thing, irc.msg.nick) and \
+               not self.registryValue('allowSelfRating', channel):
+                irc.error('You\'re not allowed to adjust your own karma.')
+            elif thing:
+                self.db.increment(channel, self._normalizeThing(thing))
+                self._respond(irc, channel)
+        else:
+            thing = thing[:-2]
+            if ircutils.strEqual(thing, irc.msg.nick) and \
+               not self.registryValue('allowSelfRating', channel):
+                irc.error('You\'re not allowed to adjust your own karma.')
+            elif thing:
+                self.db.decrement(channel, self._normalizeThing(thing))
+                self._respond(irc, channel)
+    
+    def tokenizedCommand(self, irc, msg, tokens):
+        channel = msg.args[0]
+        if not ircutils.isChannel(channel):
+            return
+        if tokens[-1][-2:] in ('++', '--'):
+            thing = ' '.join(tokens)
+            self._doKarma(irc, channel, thing)
+
+    def doPrivmsg(self, irc, msg):
+        if not msg.repliedTo:
+            channel = msg.args[0]
+            if ircutils.isChannel(channel) and \
+               self.registryValue('allowUnaddressedKarma', channel):
+                irc = callbacks.SimpleProxy(irc, msg)
+                thing = msg.args[1].rstrip()
+                if thing[-2:] in ('++', '--'):
+                    self._doKarma(irc, channel, thing)
+            
     def karma(self, irc, msg, args):
         """[<channel>] [<thing> [<thing> ...]]
 
@@ -322,36 +371,6 @@ class Karma(callbacks.PrivmsgCommandAndRegexp):
                 return ''
         name = name.strip('()')
         return name
-
-    def increaseKarma(self, irc, msg, match):
-        r"(\S+|\(.+\))\+\+\s*$"
-        channel = msg.args[0]
-        if not ircutils.isChannel(channel):
-            return
-        name = self.getName(irc.nick, msg, match)
-        if not name:
-            return
-        if not self.registryValue('allowSelfRating', msg.args[0]):
-            if ircutils.strEqual(name, msg.nick):
-                return
-        self.db.increment(channel, name)
-        if self.registryValue('response', msg.args[0]):
-            irc.replySuccess()
-
-    def decreaseKarma(self, irc, msg, match):
-        r"(\S+|\(.+\))--\s*$"
-        channel = msg.args[0]
-        if not ircutils.isChannel(channel):
-            return
-        name = self.getName(irc.nick, msg, match)
-        if not name:
-            return
-        if not self.registryValue('allowSelfRating', msg.args[0]):
-            if ircutils.strEqual(name, msg.nick):
-                return
-        self.db.decrement(channel, name)
-        if self.registryValue('response', msg.args[0]):
-            irc.replySuccess()
 
 
 Class = Karma
