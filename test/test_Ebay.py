@@ -38,28 +38,22 @@ class EbayTest(PluginTestCase, PluginDocumentation):
             'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=3053641570')
 
     def testSnarfer(self):
-        self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'\
-            '&category=176&item=3053767552', '.*Cisco NP-4T.*Serial Module'\
+        self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'
+            '&category=176&item=3053767552', '.*Cisco NP-4T.*Serial Module'
             '.*US \$74\.95.*')
-        self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&'\
-            'category=28033&item=3053353651', '.*Cisco 2524 Router - NO '\
+        self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&'
+            'category=28033&item=3053353651', '.*Cisco 2524 Router - NO '
             'RESERVE.*izontech \(.*')
         # test snarfing other countries
-        self.assertRegexp('http://cgi.ebay.ca/ws/eBayISAPI.dll?ViewItem&'\
+        self.assertRegexp('http://cgi.ebay.ca/ws/eBayISAPI.dll?ViewItem&'
             'item=2357056673', 'Buffalo Pemmican')
-        self.assertRegexp('http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&'\
+        self.assertRegexp('http://cgi.ebay.co.uk/ws/eBayISAPI.dll?ViewItem&'
             'item=2355464443', 'Any Clear Crazy')
-        self.assertRegexp('http://cgi.ebay.com.au/ws/eBayISAPI.dll?ViewItem&'\
+        self.assertRegexp('http://cgi.ebay.com.au/ws/eBayISAPI.dll?ViewItem&'
             'item=2762983161&category=4607', 'Apple Mac G4')
         # test .com/.*/ws/eBat compatibility
-        self.assertRegexp('http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'\
+        self.assertRegexp('http://cgi.ebay.com/ebaymotors/ws/eBayISAPI.dll?'
             'ViewItem&item=2439393310&category=33708', '88-89 CRX amber')
 
-    def testToggle(self):
-        self.assertHelp('ebay toggle')
-        self.assertRegexp('ebay toggle auction', '\(auction: (?:On|Off)\)')
-        self.assertRegexp('ebay toggle auction off', '\(auction: Off\)')
-        self.assertRegexp('ebay toggle auction off', '\(auction: Off\)')
-        self.assertRegexp('ebay toggle auction on', '\(auction: On\)')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
