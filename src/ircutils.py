@@ -70,13 +70,13 @@ def joinHostmask(nick, ident, host):
     assert nick and ident and host
     return '%s!%s@%s' % (nick, ident, host)
 
-_lowertrans = string.maketrans(string.ascii_uppercase + r'\[]',
-                               string.ascii_lowercase + r'|{}')
-def nickToLower(nick):
+_lowertrans = string.maketrans(string.ascii_uppercase + r'\[]~',
+                               string.ascii_lowercase + r'|{}^')
+def toLower(nick):
     return nick.translate(_lowertrans)
 
 def nickEqual(nick1, nick2):
-    return nickToLower(nick1) == nickToLower(nick2)
+    return toLower(nick1) == toLower(nick2)
 
 nickchars = string.ascii_lowercase + string.ascii_uppercase + r'-[]\\`^{}'
 _nickre = re.compile(r'^[%s]+$' % re.escape(nickchars))
@@ -87,10 +87,11 @@ def isNick(s):
         return False
 
 def isChannel(s):
-    return (s and s[0] in '#&+!')
+    return (s and s[0] in '#&+!' and len(s) <= 50 and \
+            '\x07' not in s and ',' not in s and ' ' not in s)
 
 def hostmaskPatternEqual(pattern, hostmask):
-    return fnmatch.fnmatch(nickToLower(hostmask), nickToLower(pattern))
+    return fnmatch.fnmatch(toLower(hostmask), toLower(pattern))
 
 _ipchars = string.digits + '.'
 def isIP(s):
@@ -176,11 +177,11 @@ def replyTo(msg):
 class nick(str):
     """This class does case-insensitive comparisons of nicks."""
     def __init__(self, s):
-        self.lowered = nickToLower(s)
+        self.lowered = toLower(s)
 
     def __eq__(self, s):
         try:
-            return nickToLower(s) == self.lowered
+            return toLower(s) == self.lowered
         except:
             return False
 

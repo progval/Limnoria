@@ -58,7 +58,7 @@ def addressed(nick, msg):
             return msg.args[1][1:].strip()
         else:
             return msg.args[1].strip()
-    elif ircutils.nickToLower(msg.args[1]).startswith(nick):
+    elif ircutils.toLower(msg.args[1]).startswith(nick):
         try:
             return msg.args[1].split(None, 1)[1].strip()
         except IndexError:
