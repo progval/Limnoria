@@ -51,6 +51,7 @@ import conf
 import utils
 import world
 import ircutils
+import webutils
 
 try:
     mxCrap = {}
