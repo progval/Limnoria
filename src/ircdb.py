@@ -104,7 +104,8 @@ _invert = invertCapability
 class CapabilitySet(sets.Set):
     """A subclass of set handling basic capability stuff."""
     def __init__(self, capabilities=()):
-        super(CapabilitySet, self).__init__()
+        self.__parent = super(CapabilitySet, self)
+        self.__parent.__init__()
         for capability in capabilities:
             self.add(capability)
 
@@ -112,20 +113,20 @@ class CapabilitySet(sets.Set):
         """Adds a capability to the set."""
         capability = ircutils.toLower(capability)
         inverted = _invert(capability)
-        if super(CapabilitySet, self).__contains__(inverted):
-            super(CapabilitySet, self).remove(inverted)
-        super(CapabilitySet, self).add(capability)
+        if self.__parent.__contains__(inverted):
+            self.__parent.remove(inverted)
+        self.__parent.add(capability)
 
     def remove(self, capability):
         """Removes a capability from the set."""
         capability = ircutils.toLower(capability)
-        super(CapabilitySet, self).remove(capability)
+        self.__parent.remove(capability)
 
     def __contains__(self, capability):
         capability = ircutils.toLower(capability)
-        if super(CapabilitySet, self).__contains__(capability):
+        if self.__parent.__contains__(capability):
             return True
-        if super(CapabilitySet, self).__contains__(_invert(capability)):
+        if self.__parent.__contains__(_invert(capability)):
             return True
         else:
             return False
@@ -135,9 +136,9 @@ class CapabilitySet(sets.Set):
         'allowed' given its (or its anticapability's) presence in the set.
         """
         capability = ircutils.toLower(capability)
-        if super(CapabilitySet, self).__contains__(capability):
+        if self.__parent.__contains__(capability):
             return True
-        elif super(CapabilitySet, self).__contains__(_invert(capability)):
+        elif self.__parent.__contains__(_invert(capability)):
             return False
         else:
             raise KeyError, capability
@@ -149,14 +150,18 @@ class CapabilitySet(sets.Set):
 antiOwner = makeAntiCapability('owner')
 class UserCapabilitySet(CapabilitySet):
     """A subclass of CapabilitySet to handle the owner capability correctly."""
+    def __init__(self, *args, **kwargs):
+        self.__parent = super(UserCapabilitySet, self)
+        self.__parent.__init__(*args, **kwargs)
+        
     def __contains__(self, capability):
         capability = ircutils.toLower(capability)
         if capability == 'owner' or capability == antiOwner:
             return True
-        elif super(UserCapabilitySet, self).__contains__('owner'):
+        elif self.__parent.__contains__('owner'):
             return True
         else:
-            return super(UserCapabilitySet, self).__contains__(capability)
+            return self.__parent.__contains__(capability)
 
     def check(self, capability):
         """Returns the appropriate boolean for whether a given capability is
@@ -166,23 +171,23 @@ class UserCapabilitySet(CapabilitySet):
         """
         capability = ircutils.toLower(capability)
         if capability == 'owner' or capability == antiOwner:
-            if super(UserCapabilitySet, self).__contains__('owner'):
+            if self.__parent.__contains__('owner'):
                 return not isAntiCapability(capability)
             else:
                 return isAntiCapability(capability)
-        elif super(UserCapabilitySet, self).__contains__('owner'):
+        elif self.__parent.__contains__('owner'):
             if isAntiCapability(capability):
                 return False
             else:
                 return True
         else:
-            return super(UserCapabilitySet, self).check(capability)
+            return self.__parent.check(capability)
 
     def add(self, capability):
         """Adds a capability to the set.  Just make sure it's not -owner."""
         capability = ircutils.toLower(capability)
         assert capability != '-owner', '"-owner" disallowed.'
-        super(UserCapabilitySet, self).add(capability)
+        self.__parent.add(capability)
 
 class IrcUser(object):
     """This class holds the capabilities and authentications for a user."""
