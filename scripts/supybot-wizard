@@ -463,7 +463,7 @@ def main():
         try:
             id = ircdb.users.getUserId(name)
             u = ircdb.users.getUser(id)
-            if u.checkCapability('owner'):
+            if u._checkCapability('owner'):
                 output("""That user already exists, and has owner capabilities
                 already.  Perhaps you added it before? """)
                 if yn('Do you want to remove its owner capability?',
