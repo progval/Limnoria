@@ -171,8 +171,8 @@ class IrcState(object):
 
     def reset(self):
         self.history = MaxLengthQueue(conf.maxHistory)
-        self.nicksToHostmasks = {}
-        self.channels = {}
+        self.nicksToHostmasks = ircutils.IrcDict()
+        self.channels = ircutils.IrcDict()
 
     def __getstate__(self):
         d = {}
