@@ -45,12 +45,8 @@ Commands include:
 from baseplugin import *
 
 import re
-import time
 import urllib
 import urllib2
-import xml.dom.minidom
-
-import rssparser
 
 import utils
 import debug
@@ -233,23 +229,6 @@ class Http(callbacks.Privmsg):
             irc.error(msg, 'the format of the page was odd.')
         except urllib2.URLError:
             irc.error(msg, 'Couldn\'t open the search page.')
-
-    _slashdotTime = 0.0
-    def slashdot(self, irc, msg, args):
-        """takes no arguments
-
-        Returns the current headlines on slashdot.org, News for Nerds, Stuff
-        that Matters.
-        """
-        if time.time() - self._slashdotTime > 1800:
-            results = rssparser.parse('http://slashdot.org/slashdot.rss')
-            headlines = [x['title'] for x in results['items']]
-            self._slashdotResponse = ' :: '.join(headlines)
-            while len(self._slashdotResponse) > 400:
-                headlines.pop()
-                self._slashdotResponse = ' :: '.join(headlines)
-            self._slashdotTime = time.time()
-        irc.reply(msg, self._slashdotResponse)
 
     _geekquotere = re.compile('<p class="qt">(.*?)</p>')
     def geekquote(self, irc, msg, args):
