@@ -317,7 +317,16 @@ class User(callbacks.Plugin):
         Returns the capabilities of the user specified by <name>; if <name>
         isn't specified, returns the hostmasks of the user calling the command.
         """
-        irc.reply('[%s]' % '; '.join(user.capabilities))
+        try:
+            u = ircdb.users.getUser(msg.prefix)
+        except KeyError:
+            irc.errorNotRegistered()
+        else:
+            if u == user or u._checkCapability('owner'):
+                irc.reply('[%s]' % '; '.join(user.capabilities), private=True)
+            else:
+                irc.error(conf.supybot.replies.incorrectAuthentication(),
+                          Raise=True)
     capabilities = wrap(capabilities, [first('otherUser', 'user')])
 
     def identify(self, irc, msg, args, user, password):
