@@ -63,10 +63,24 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
+# I should write/copy a generalized proxy at some point.
+class ReWrapper(object):
+    def __init__(self, L):
+        self.s = utils.dqrepr(' '.join(L))
+        self.r = re.compile('|'.join(imap(re.escape, L)))
+
+    def findall(self, *args, **kwargs):
+        return self.r.findall(*args, **kwargs)
+
+    def __str__(self):
+        return self.s
+    __repr__ = __str__
+        
+
 def SmileyType(s):
     try:
         L = configurable.SpaceSeparatedStrListType(s)
-        return re.compile('|'.join(imap(re.escape, L)))
+        return ReWrapper(L)
     except configurable.Error:
         raise configurable.Error, 'Value must be a space-separated list of ' \
                                   'smileys or frowns.'
