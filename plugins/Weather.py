@@ -112,29 +112,30 @@ class Weather(callbacks.Privmsg):
         channel = None
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
-        if not args:
-            s = self.userValue('lastLocation', msg.prefix)
-            if s:
-                args = [s]
+        if not location:
+            location = self.userValue('lastLocation', msg.prefix)
+        if location is None:
+            raise callbacks.ArgumentError
         self.setUserValue('lastLocation', msg.prefix,
                           location, ignoreNoUser=True)
+        args = [location]
         realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)
         try:
-            realCommand(irc, msg, args)
+            realCommand(irc, msg, args[:])
         except NoLocation:
             self.log.info('%s lookup failed, Trying others.', realCommandName)
             for command in self.weatherCommands:
                 if command != realCommandName:
                     self.log.info('Trying %s.', command)
                     try:
-                        getattr(self, command)(irc, msg, args)
+                        getattr(self, command)(irc, msg, args[:])
                         self.log.info('%s lookup succeeded.', command)
                         break
                     except NoLocation:
                         self.log.info('%s lookup failed as backup.', command)
-    weather = wrap(weather, ['text'])
-            
+    weather = wrap(weather, [additional('text')])
+
 
     def _toCelsius(self, temp, unit):
         if unit == 'K':
@@ -304,7 +305,7 @@ class Weather(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.errorPossibleBug('The format of the page was odd.')
-    ham = commands.wrap(ham, ['something'])
+    ham = commands.wrap(ham, ['text'])
 
     _cnnUrl = 'http://weather.cnn.com/weather/search?wsearch='
     _cnnFTemp = re.compile(r'(-?\d+)(&deg;)(F)</span>', re.I | re.S)
@@ -372,7 +373,7 @@ class Weather(callbacks.Privmsg):
             irc.reply(' '.join(resp))
         else:
             irc.errorPossibleBug('Could not find weather information.')
-    cnn = commands.wrap(cnn, ['something'])
+    cnn = commands.wrap(cnn, ['text'])
 
     _wunderUrl = 'http://mobile.wunderground.com/cgi-bin/' \
                  'findweather/getForecast?query='
@@ -466,7 +467,7 @@ class Weather(callbacks.Privmsg):
             irc.reply(' '.join(resp))
         else:
             irc.error('Could not find weather information.')
-    wunder = commands.wrap(wunder, ['something'])
+    wunder = commands.wrap(wunder, ['text'])
 
 conf.registerPlugin('Weather')
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'temperatureUnit',
