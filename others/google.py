@@ -163,7 +163,7 @@ def output(results, params):
 class OutputFormatter:
     def boil(self, data):
         if type(data) == type(u""):
-            return data.encode("ISO-8859-1", "replace")
+            return data.encode("utf-8", "replace")
         else:
             return data
 
