@@ -98,7 +98,13 @@ def canonicalName(command):
     Currently, this makes everything lowercase and removes all dashes and
     underscores.
     """
-    return command.translate(string.ascii, '\t -_').lower()
+    assert not isinstance(command, unicode)
+    special = '\t -_'
+    reAppend = ''
+    while command and command[-1] in special:
+        reAppend = command[-1] + reAppend
+        command = command[:-1]
+    return command.translate(string.ascii, special).lower() + reAppend
 
 def reply(msg, s, prefixName=True, private=False, notice=False):
     """Makes a reply to msg with the payload s"""

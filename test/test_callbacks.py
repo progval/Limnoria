@@ -124,7 +124,8 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual('foobar', callbacks.canonicalName('FOO-bar'))
         self.assertEqual('foobar', callbacks.canonicalName('FOOBAR'))
         self.assertEqual('foobar', callbacks.canonicalName('foo___bar'))
-        self.assertEqual('foobar', callbacks.canonicalName('_f_o_o-b_a_r_'))
+        self.assertEqual('foobar', callbacks.canonicalName('_f_o_o-b_a_r'))
+        self.assertEqual('foobar--', callbacks.canonicalName('foobar--'))
 
     def testAddressed(self):
         oldprefixchars = conf.prefixChars
