@@ -308,15 +308,13 @@ class DB(object):
                 yield record
 
     def random(self):
-        # XXX This can be optimized not to deserialize each record.
         try:
-            return random.choice(self)
+            return self._newRecord(*random.choice(self.map))
         except IndexError:
             return None
 
     def size(self):
-        # XXX Likewise as above.
-        return ilen(self)
+        return ilen(self.map)
 
     def flush(self):
         self.map.flush()
