@@ -32,9 +32,14 @@
 import os
 import sys
 
-if sys.version_info < (2, 3, 0):
-    sys.stderr.write('This program requires Python >= 2.3.0\n')
+def error(s):
+    sys.stderr.write(s)
+    if not s.endswith(os.linesep):
+        sys.stderr.write(os.linesep)
     sys.exit(-1)
+    
+if sys.version_info < (2, 3, 0):
+    error('This program requires Python >= 2.3.0')
 
 import supybot
 
@@ -75,9 +80,9 @@ def getPlugins(pluginDirs):
     return plugins
 
 def loadPlugin(name):
-    import supybot.Owner as Owner
+    import supybot.plugin as plugin
     try:
-        module = Owner.loadPluginModule(name)
+        module = plugin.loadPluginModule(name)
         if hasattr(module, 'Class'):
             return module
         else:
@@ -159,8 +164,7 @@ def main():
     (options, args) = parser.parse_args()
     if os.name == 'posix':
         if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
-            sys.stderr.write('Please, don\'t run this as root.\n')
-            sys.exit(-1)
+            error('Please, don\'t run this as root.')
 
     filename = ''
     if args:
@@ -401,7 +405,13 @@ def main():
 
     plugins = getPlugins(pluginDirs)
     for s in ('Admin', 'User', 'Channel', 'Misc', 'Config'):
-        configurePlugin(loadPlugin(s), advanced)
+        m = loadPlugin(s)
+        if m is not None:
+            configurePlugin(m, advanced)
+        else:
+            error('There was an error loading one of the core plugins that '
+                  'under almost all circumstances are loaded.  Go ahead and '
+                  'fix that error and run this script again.')
     clearLoadedPlugins(plugins, conf.supybot.plugins)
 
     output("""Now we're going to run you through plugin configuration. There's
