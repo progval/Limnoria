@@ -349,29 +349,4 @@ class TwoWayDictionary(dict):
         dict.__delitem__(self, value)
 
 
-class WorkQueue(object):
-    def __init__(self, q=None, n=1):
-        if q is None:
-            q = Queue.Queue()
-        self.q = q
-        self.numberOfThreads = n
-        self.threads = []
-        for _ in xrange(n):
-            t = threading.Thread(target=self.target)
-            self.threads.append(t)
-            t.start()
-        
-    def target(self):
-        while 1:
-            f = self.q.get()
-            if f is None:
-                self.q.put(None)
-                break
-            else:
-                f()
-
-    def enqueue(self, f):
-        self.q.put(f)
-
-
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
