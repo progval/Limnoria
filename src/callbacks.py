@@ -140,7 +140,7 @@ def reply(msg, s, prefixName=True, private=False,
     if not s:
         s = 'Error: I tried to send you an empty message.'
     # Let's may sure we don't do, "#channel: foo.".
-    if prefixName and not ircutils.isChannel(to):
+    if to is None and prefixName and not ircutils.isChannel(to):
         s = '%s: %s' % (to, s)
     # And now, let's decide whether it's a PRIVMSG or a NOTICE.
     msgmaker = ircmsgs.privmsg
