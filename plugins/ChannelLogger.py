@@ -35,7 +35,6 @@ Logs each channel to its own individual logfile.
 
 from baseplugin import *
 
-import re
 import time
 from cStringIO import StringIO
 
@@ -51,7 +50,6 @@ import ircutils
 ###
 class ChannelLogger(irclib.IrcCallback):
     logs = ircutils.IrcDict()
-    actionre = re.compile('\x01ACTION (.*)\x01')
     def __init__(self):
         self.laststate = None
         world.flushers.append(self.flush)
@@ -89,20 +87,21 @@ class ChannelLogger(irclib.IrcCallback):
     def doPrivmsg(self, irc, msg):
         (recipients, text) = msg.args
         for channel in recipients.split(','):
-            log = self.getLog(channel)
-            self.timestamp(log)
-            m = re.match(self.actionre, text)
-            if m:
-                log.write('* %s %s\n' % (msg.nick, m.group(1)))
-            else:
-                log.write('<%s> %s\n' % (msg.nick, text))
+            if ircutils.isChannel(channel):
+                log = self.getLog(channel)
+                self.timestamp(log)
+                if ircmsgs.isAction(msg):
+                    log.write('* %s %s\n' % (msg.nick, ircmsgs.unAction(msg)))
+                else:
+                    log.write('<%s> %s\n' % (msg.nick, text))
 
     def doNotice(self, irc, msg):
         (recipients, text) = msg.args
         for channel in recipients.split(','):
-            log = self.getLog(channel)
-            self.timestamp(log)
-            log.write('-%s- %s\n' % (msg.nick, text))
+            if ircutils.isChannel(channel):
+                log = self.getLog(channel)
+                self.timestamp(log)
+                log.write('-%s- %s\n' % (msg.nick, text))
 
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
@@ -126,10 +125,12 @@ class ChannelLogger(irclib.IrcCallback):
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
-        log = self.getLog(channel)
-        self.timestamp(log)
-        log.write('*** %s sets mode: %s %s\n' % \
-                 (msg.nick or msg.prefix, msg.args[1], ' '.join(msg.args[2:])))
+        if ircutils.isChannel(channel):
+            log = self.getLog(channel)
+            self.timestamp(log)
+            log.write('*** %s sets mode: %s %s\n' % \
+                      (msg.nick or msg.prefix, msg.args[1],
+                       ' '.join(msg.args[2:])))
 
     def doTopic(self, irc, msg):
         channel = msg.args[0]
@@ -146,10 +147,8 @@ class ChannelLogger(irclib.IrcCallback):
     def outFilter(self, irc, msg):
         # Gotta catch my own messages *somehow* :)
         # Let's try this little trick...
-        if msg.command == 'PRIVMSG' or msg.command == 'NOTICE':
-            newmsgstr = ':%s!x@y %s %s :%s' % (irc.nick, msg.command,
-                                               msg.args[0], msg.args[1:])
-            self(irc, ircmsgs.IrcMsg(newmsgstr))
+        m = ircmsgs.IrcMsg(msg=msg, prefix=irc.prefix)
+        self(irc, m)
         return msg
 
 
