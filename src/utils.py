@@ -212,6 +212,13 @@ def dqrepr(s):
     # return '"' + repr("'\x00" + s)[6:]
     return '"%s"' % s.encode('string_escape').replace('"', '\\"')
 
+#XXX We're using this to centralize how we quote a string since %r/repr()
+# doesn't play nicely with unicode characters.  This eventually needs to be
+# replaced to *not* use repr()
+def quoted(s):
+    """Returns a quoted s."""
+    return repr(s)
+
 nonEscapedSlashes = re.compile(r'(?<!\\)/')
 def perlReToPythonRe(s):
     """Converts a string representation of a Perl regular expression (i.e.,

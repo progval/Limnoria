@@ -146,6 +146,12 @@ class UtilsTest(SupyTestCase):
             self.assertEqual(s, eval(r), s)
             self.failUnless(r[0] == '"' and r[-1] == '"', s)
 
+    def testQuoted(self):
+        s = 'foo'
+        t = 'let\'s'
+        self.assertEqual("'%s'" % s, utils.quoted(s), s)
+        self.assertEqual('"%s"' % t, utils.quoted(t), t)
+
     def testPerlReToPythonRe(self):
         r = utils.perlReToPythonRe('m/foo/')
         self.failUnless(r.search('foo'))
