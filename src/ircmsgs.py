@@ -90,6 +90,8 @@ class IrcMsg(object):
         if s:
             originalString = s
             try:
+                if not s.endswith('\n'):
+                    s += '\n'
                 self._str = s
                 if s[0] == ':':
                     self.prefix, s = s[1:].split(None, 1)
