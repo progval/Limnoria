@@ -43,7 +43,6 @@ import os.path
 import sqlite
 
 import conf
-import debug
 import ircmsgs
 import callbacks
 
@@ -205,7 +204,7 @@ if __name__ == '__main__':
                     (key, value) = r.split(line, 1)
                     cursor.execute(sql, key, value)
                 except Exception, e:
-                    print 'Invalid line (%s): %r' %(debug.exnToString(e),line)
+                    print 'Invalid line (%s): %r' %(utils.exnToString(e),line)
     db.commit()
 
 

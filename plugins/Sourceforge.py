@@ -41,7 +41,6 @@ import urllib2
 from itertools import ifilter, imap
 
 import conf
-import debug
 import utils
 __revision__ = "$Id$"
 
@@ -159,7 +158,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 return 'http://sourceforge.net%s%s' % (utils.htmlToText(
                     m.group(1)), self._hrefOpts)
         except urllib2.HTTPError, e:
-            raise callbacks.Error, e.msg()
+            raise callbacks.Error, str(e)
 
     def _getTrackerList(self, url):
         try:
@@ -318,18 +317,17 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 head = '%s #%s:' % (ircutils.bold(linktype), num)
                 resp.append(desc)
             else:
-                debug.msg('%s does not appear to be a proper Sourceforge '\
-                    'Tracker page (%s)' % (url, conf.replyPossibleBug))
+                s = '%s does not appear to be a proper Sourceforge ' \
+                    'Tracker page (%s)' % (url, conf.replyPossibleBug)
+                self.log.warning(s)
             for r in self._res:
                 m = r.search(s)
                 if m:
                     resp.append('%s: %s' % self._bold(m.groups()))
             irc.reply(msg, '%s #%s: %s' % (ircutils.bold(linktype),
                 ircutils.bold(num), '; '.join(resp)), prefixName = False)
-        except urllib2.HTTPError, e:
-            debug.msg(e.msg())
-        except socket.error, e:
-            debug.msg(e.msg())
+        except (urllib2.HTTPError, socket.error), e:
+            self.log.warning(str(e))
     sfSnarfer = privmsgs.urlSnarfer(sfSnarfer)
 
 Class = Sourceforge

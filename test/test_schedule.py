@@ -33,7 +33,6 @@ from test import *
 
 import time
 
-import debug
 import schedule
 
 class TestSchedule(unittest.TestCase):

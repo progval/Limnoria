@@ -41,7 +41,6 @@ import socket
 import textwrap
 import threading
 
-import debug
 import utils
 import world
 import ircmsgs
@@ -75,19 +74,18 @@ class DCC(callbacks.Privmsg):
                 i = ircutils.dccIP(ip)
                 sock.bind((host, 0))
                 port = sock.getsockname()[1]
-                debug.msg('DCC CHAT port opened at (%s, %s)' % (host, port),
-                          'normal')
+                self.log.info('DCC CHAT port opened at (%s, %s)', host, port)
                 sock.listen(1)
                 irc.queueMsg(ircmsgs.privmsg(msg.nick,
                                              '\x01DCC CHAT chat %s %s\x01' % \
                                              (i, port)))
                 (realSock, addr) = sock.accept()
-                debug.msg('DCC CHAT accepted from %s' % (addr,), 'normal')
+                self.log.info('DCC CHAT accepted from %s', addr)
                 for line in textwrap.wrap(text, 80):
                     realSock.send(line)
                     realSock.send('\n')
             finally:
-                debug.msg('Finally closing sock and realSock.', 'normal')
+                self.log.info('Finally closing sock and realSock.')
                 sock.close()
                 try:
                     realSock.close()

@@ -165,7 +165,6 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
                 formats.append(s)
         sql = """SELECT id, quote FROM quotes
                  WHERE %s""" % ' AND '.join(criteria)
-        #debug.printf(sql)
         cursor = db.cursor()
         cursor.execute(sql, *formats)
         if cursor.rowcount == 0:

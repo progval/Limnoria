@@ -42,7 +42,6 @@ from cStringIO import StringIO
 
 import os
 import conf
-import debug
 import world
 import irclib
 import ircmsgs
@@ -85,7 +84,7 @@ class ChannelLogger(irclib.IrcCallback):
                 log.flush()
         except ValueError, e:
             if e.args[0] != 'I/O operation on a closed file':
-                debug.recoverableException()
+                self.log.exception('Odd exception:')
 
     def getLog(self, channel):
         if channel in self.logs:
@@ -96,7 +95,7 @@ class ChannelLogger(irclib.IrcCallback):
                 self.logs[channel] = log
                 return log
             except IOError:
-                debug.recoverableException()
+                self.log.exception('Error opening log:')
                 return StringIO()
 
     def timestamp(self, log):

@@ -50,7 +50,6 @@ from itertools import imap, ifilter
 import sqlite
 
 import conf
-import debug
 import utils
 import ircdb
 import ircmsgs
@@ -359,7 +358,6 @@ class ChannelDB(plugins.ChannelDBHandler,
         cursor = db.cursor()
         (optlist, rest) = getopt.getopt(args, '', ['user'])
         name = privmsgs.getArgs(rest)
-        #debug.printf(optlist)
         if ('--user', '') in optlist:
             table = 'user_stats'
             criterion = 'user_id=%s'
@@ -376,7 +374,6 @@ class ChannelDB(plugins.ChannelDBHandler,
             criterion = 'normalized=%s'
             name = ircutils.toLower(name)
         sql = "SELECT last_seen,last_msg FROM %s WHERE %s" % (table,criterion)
-        #debug.printf(sql)
         cursor.execute(sql, name)
         if cursor.rowcount == 0:
             irc.reply(msg, 'I have not seen %s.' % name)

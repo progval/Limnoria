@@ -45,7 +45,6 @@ import time
 sys.path.append(os.pardir)
 
 import conf
-import debug
 import ircmsgs
 import callbacks
 
@@ -55,34 +54,34 @@ class Ctcp(callbacks.PrivmsgRegexp):
     public = False
     def ping(self, irc, msg, match):
         "\x01PING (.*)\x01"
-        debug.msg('Received CTCP PING from %s' % msg.nick, 'normal')
+        self.log.info('Received CTCP PING from %s', msg.prefix)
         irc.queueMsg(notice(msg.nick, '\x01PING %s\x01' % match.group(1)))
 
     def version(self, irc, msg, match):
         "\x01VERSION\x01"
-        debug.msg('Received CTCP VERSION from %s' % msg.nick, 'normal')
+        self.log.info('Received CTCP VERSION from %s', msg.prefix)
         s = '\x01VERSION SupyBot %s\x01' % conf.version
         irc.queueMsg(notice(msg.nick, s))
 
     def userinfo(self, irc, msg, match):
         "\x01USERINFO\x01"
-        debug.msg('Received CTCP USERINFO from %s' % msg.nick, 'normal')
+        self.log.info('Received CTCP USERINFO from %s', msg.prefix)
         irc.queueMsg(notice(msg.nick, '\x01USERINFO\x01'))
 
     def time(self, irc, msg, match):
         "\x01TIME\x01"
-        debug.msg('Received CTCP TIME from %s' % msg.nick, 'normal')
+        self.log.info('Received CTCP TIME from %s' % msg.prefix)
         irc.queueMsg(notice(msg.nick, '\x01%s\x01' % time.ctime()))
 
     def finger(self, irc, msg, match):
         "\x01FINGER\x01"
-        debug.msg('Received CTCP FINGER from %s' % msg.nick, 'normal')
+        self.log.info('Received CTCP FINGER from %s' % msg.prefix)
         s = '\x01SupyBot, the best Python bot in existence!\x01'
         irc.queueMsg(notice(msg.nick, s))
 
     def source(self, irc, msg, match):
         "\x01SOURCE\x01"
-        debug.msg('Received CTCP SOURCE from %s' % msg.nick, 'normal')
+        self.log.info('Received CTCP SOURCE from %s' % msg.prefix)
         s = 'http://www.sourceforge.net/projects/supybot/'
         irc.queueMsg(notice(msg.nick, s))
 

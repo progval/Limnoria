@@ -72,10 +72,6 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
         finally:
             conf.allowEval = originalConfAllowEval
 
-    def testSettrace(self):
-        self.assertNotError('settrace')
-        self.assertNotError('unsettrace')
-
     def testIrcquote(self):
         self.assertResponse('ircquote PRIVMSG %s :foo' % self.irc.nick, 'foo')
 

@@ -111,7 +111,6 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testTell(self):
         m = self.getMsg('tell foo [plugin tell]')
-        #debug.printf(repr(m))
         self.failUnless(m.args[0] == 'foo')
         self.failUnless('Misc' in m.args[1])
         m = self.getMsg('tell #foo [plugin tell]')
@@ -151,6 +150,9 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testApropos(self):
         self.assertNotError('apropos f')
         self.assertError('apropos asldkfjasdlkfja')
+
+    def testAproposDoesntReturnNonCanonicalNames(self):
+        self.assertNotRegexp('apropos exec', '_exec')
 
     def testRevision(self):
         self.assertNotError('revision Misc')

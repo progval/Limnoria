@@ -37,7 +37,6 @@ __revision__ = "$Id$"
 
 import plugins
 
-import debug
 import ircutils
 import callbacks
 

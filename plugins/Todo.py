@@ -47,7 +47,6 @@ import os.path
 import sqlite
 
 import conf
-import debug
 import ircdb
 import utils
 import privmsgs

@@ -35,7 +35,6 @@ import os
 import unittest
 
 import conf
-import debug
 import ircdb
 import ircutils
 

@@ -35,7 +35,7 @@ Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 
 from __future__ import division
 
-__revision__ = "$Id$"
+__revision__ ="$Id$"
 
 import fix
 
@@ -43,8 +43,8 @@ import time
 import socket
 from itertools import imap
 
+import log
 import conf
-import debug
 import drivers
 import ircmsgs
 import schedule
@@ -69,7 +69,6 @@ class SocketDriver(drivers.IrcDriver):
         self.reconnect()
 
     def _sendIfMsgs(self):
-        #debug.methodNamePrintf(self, '_sendIfMsgs')
         msgs = [self.irc.takeMsg()]
         while msgs[-1] is not None:
             msgs.append(self.irc.takeMsg())
@@ -83,12 +82,10 @@ class SocketDriver(drivers.IrcDriver):
                 # (11, 'Resource temporarily unavailable') raised if connect
                 # hasn't finished yet.
                 if e.args[0] != 11:
-                    s = 'Disconnect from %s: %s' % (self.server, e.args[1])
-                    debug.msg(s, 'normal')
+                    log.warning('Disconnect from %s: %s',self.server,e.args[1])
                     self.die()
         
     def run(self):
-        #debug.methodNamePrintf(self, 'run')
         if not self.connected:
             time.sleep(conf.poll) # Otherwise we might spin.
             return
@@ -100,26 +97,22 @@ class SocketDriver(drivers.IrcDriver):
             for line in lines:
                 start = time.time()
                 msg = ircmsgs.IrcMsg(line)
-                debug.msg('Time to parse IrcMsg: %s' % (time.time()-start),
-                          'verbose')
+                log.verbose('Time to parse IrcMsg: %s', time.time()-start)
                 try:
                     self.irc.feedMsg(msg)
                 except:
-                    debug.msg('Exception caught outside Irc object.', 'normal')
-                    debug.recoverableException()
+                    log.exception('Uncaught exception outside Irc object:')
         except socket.timeout:
             pass
         except socket.error, e:
             # Same as with _sendIfMsgs.
             if e.args[0] != 11:
-                s = 'Disconnect from %s: %s' % (self.server, e.args[1])
-                debug.msg(s, 'normal')
+                log.warning('Disconnect from %s: %s', self.server, e.args[1])
                 self.die()
             return
         self._sendIfMsgs()
         
     def reconnect(self):
-        #debug.methodNamePrintf(self, 'reconnect')
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.conn.settimeout(conf.poll*10) # Allow more time for connect.
         if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
@@ -129,21 +122,19 @@ class SocketDriver(drivers.IrcDriver):
             self.conn.settimeout(conf.poll)
         except socket.error, e:
             if e.args[0] != 115:
-                debug.msg('Error connecting to %s: %s' % (self.server, e))
+                log.warning('Error connecting to %s: %s', self.server, e)
                 self.die()
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
         
 
     def die(self):
-        #debug.methodNamePrintf(self, 'die')
         self.irc.reset()
         self.conn.close()
         self.connected = False
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
-        debug.msg('Scheduling reconnect to %s at %s' % (self.server, whenS),
-                  'normal')
+        log.info('Scheduling reconnect to %s at %s', self.server, whenS)
         schedule.addEvent(self.reconnect, when)
 
     def name(self):

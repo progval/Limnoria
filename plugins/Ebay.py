@@ -43,7 +43,6 @@ __revision__ = "$Id$"
 import plugins
 
 import conf
-import debug
 import utils
 import plugins
 import ircutils
@@ -132,11 +131,10 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         if not self.configurables.get('auction-snarfer', channel=msg.args[0]):
             return
         url = match.group(0)
-        #debug.printf(url)
         try:
             irc.reply(msg, self._getResponse(url), prefixName=False)
         except EbayError, e:
-            debug.msg('Ebay Auction Snarfer: %s: %s' % (url, e))
+            self.log.exception('ebaySnarfer exception at %s:', url)
     ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)
 
     def _getResponse(self, url):
@@ -162,7 +160,6 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             m = r.search(s)
             if m:
                 if r in self._multiField:
-                    #debug.printf(m.groups())
                     # [:3] is to make sure that we don't pass a tuple with
                     # more than 3 items. this allows self._bidder to work
                     # since self._bidder returns a 5 item tuple

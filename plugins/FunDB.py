@@ -48,7 +48,6 @@ from itertools import imap
 import sqlite
 
 import conf
-import debug
 import ircdb
 import utils
 import world
@@ -241,7 +240,7 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
         except ValueError, e:
             irc.error(msg, 'The regexp wasn\'t valid: %s.' % e.args[0])
         except re.error, e:
-            irc.error(msg, debug.exnToString(e))
+            irc.error(msg, utils.exnToString(e))
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()

@@ -43,7 +43,6 @@ import fix
 import re
 import string
 
-import debug
 import ircutils
 
 ###
@@ -124,13 +123,14 @@ class IrcMsg(object):
                 else:
                     self.args = msg.args
             else:
-                self.prefix = prefix
-                self.command = command
+                self.prefix = intern(prefix)
+                self.command = intern(command)
                 assert all(ircutils.isValidArgument, args)
                 self.args = args
-        self.args = tuple(self.args)
+        self.args = tuple(map(intern, self.args))
         if ircutils.isUserHostmask(self.prefix):
-            (self.nick,self.user,self.host)=ircutils.splitHostmask(self.prefix)
+            (self.nick,self.user,self.host) = \
+                 map(intern, ircutils.splitHostmask(self.prefix))
         else:
             (self.nick, self.user, self.host) = (self.prefix,)*3
 

@@ -44,7 +44,6 @@ import os.path
 
 import sqlite
 
-import debug
 import ircmsgs
 import ircutils
 import privmsgs
@@ -91,7 +90,6 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
             return
         channel = msg.args[0]
         db = self.getDb(channel)
-        #debug.printf([channel, db.db.filename])
         cursor = db.cursor()
         if ircmsgs.isAction(msg):
             words = ircmsgs.unAction(msg).split()
@@ -132,7 +130,6 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
-        #debug.printf([channel, db.db.filename])
         cursor = db.cursor()
         words = []
         cursor.execute("""SELECT id, first, second FROM pairs
@@ -174,7 +171,6 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
-        #debug.printf([channel, db.db.filename])
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM pairs""")
         n = cursor.fetchone()[0]
@@ -189,7 +185,6 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
-        #debug.printf([channel, db.db.filename])
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM pairs WHERE is_first=1""")
         n = cursor.fetchone()[0]
@@ -204,7 +199,6 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
-        #debug.printf([channel, db.db.filename])
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM follows""")
         n = cursor.fetchone()[0]
@@ -219,7 +213,6 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
-        #debug.printf([channel, db.db.filename])
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM follows WHERE word ISNULL""")
         n = cursor.fetchone()[0]

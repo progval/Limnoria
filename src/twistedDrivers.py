@@ -35,8 +35,8 @@ import fix
 
 import time
 
+import log
 import conf
-import debug
 import ircdb
 import drivers
 import ircmsgs
@@ -51,8 +51,7 @@ class TwistedRunnerDriver(drivers.IrcDriver):
         try:
             reactor.iterate(conf.poll)
         except:
-            debug.msg('Except caught outside reactor.', 'normal')
-            debug.recoverableException()
+            log.exception('Uncaught exception outside reactor:')
 
 class SupyIrcProtocol(LineReceiver):
     delimiter = '\n'
@@ -63,12 +62,11 @@ class SupyIrcProtocol(LineReceiver):
     def lineReceived(self, line):
         start = time.time()
         msg = ircmsgs.IrcMsg(line)
-        debug.msg('Time to parse IrcMsg: %s' % (time.time()-start), 'verbose')
+        log.verbose('Time to parse IrcMsg: %s', time.time()-start)
         try:
             self.factory.irc.feedMsg(msg)
         except:
-            debug.msg('Exception caught outside Irc object.', 'normal')
-            debug.recoverableException()
+            log.exception('Uncaught exception outside Irc object:')
 
     def checkIrcForMsgs(self):
         if self.connected:
@@ -80,7 +78,7 @@ class SupyIrcProtocol(LineReceiver):
     def connectionLost(self, failure):
         self.mostRecentCall.cancel()
         self.factory.irc.reset()
-        debug.msg(failure.getErrorMessage(), 'normal')
+        log.warning(failure.getErrorMessage())
 
     def connectionMade(self):
         self.factory.irc.driver = self
@@ -105,14 +103,10 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
 
 class MyShell(Shell):
     def checkUserAndPass(self, username, password):
-        #debug.printf(repr(username))
-        #debug.printf(repr(password))
         try:
             id = ircdb.users.getUserId(username)
             u = ircdb.users.getUser(id)
-            #debug.printf(u)
             if u.checkPassword(password) and u.checkCapability('owner'):
-                #debug.printf('returning True')
                 return True
             else:
                 return False

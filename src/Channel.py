@@ -42,7 +42,6 @@ import time
 from itertools import imap
 
 import conf
-import debug
 import ircdb
 import utils
 import ircmsgs

@@ -49,8 +49,6 @@ started = time.time()
 import os.path
 import unittest
 
-import debug
-
 import world
 world.startedAt = started
 import ircdb
@@ -134,7 +132,6 @@ class PluginTestCase(unittest.TestCase):
         if self.cleanDataDir:
             for filename in os.listdir(conf.dataDir):
                 os.remove(os.path.join(conf.dataDir, filename))
-        debug.reset()
         ircdb.users.reload()
         ircdb.channels.reload()
         if self.plugins is None:
@@ -166,7 +163,6 @@ class PluginTestCase(unittest.TestCase):
         if self.myVerbose:
             print # Extra newline, so it's pretty.
         msg = ircmsgs.privmsg(self.irc.nick, query, prefix=self.prefix)
-        #debug.printf(msg)
         if self.myVerbose:
             print 'Feeding: %r' % msg
         self.irc.feedMsg(msg)
@@ -370,10 +366,14 @@ if __name__ == '__main__':
     if not os.path.exists(conf.logDir):
         os.mkdir(conf.logDir)
 
-    debug._close()
     for filename in os.listdir(conf.logDir):
-        os.remove(os.path.join(conf.logDir, filename))
-    debug._open()
+        if filename == 'plugins':
+            continue
+        filename = os.path.join(conf.logDir, filename)
+        os.remove(filename)
+    pluginLogDir = os.path.join(conf.logDir, 'plugins')
+    for filename in os.listdir(pluginLogDir):
+        os.remove(os.path.join(pluginLogDir, filename))
 
     parser = optparse.OptionParser(usage='Usage: %prog [options]',
                                    version='Supybot %s' % conf.version)
@@ -390,9 +390,6 @@ if __name__ == '__main__':
     parser.add_option('-v', '--verbose', action='store_true', default=False,
                       help='Sets the verbose flag, printing extra information '
                            'about each test that runs.')
-    parser.add_option('-s', '--stderr', action='store_true', default=False,
-                      help='Sets debug.stderr to True, printing standard log '
-                           'messages to stderr.')
     (options, args) = parser.parse_args()
     if not args:
         args = map(path, glob.glob(os.path.join('test', 'test_*.py')))
@@ -414,11 +411,6 @@ if __name__ == '__main__':
     else:
         world.myVerbose = False
 
-    if options.stderr:
-        debug.stderr = True
-    else:
-        debug.stderr = False
-    
     world.testing = True
     names = [os.path.splitext(os.path.basename(name))[0] for name in args]
     names.sort()
@@ -427,6 +419,5 @@ if __name__ == '__main__':
     runner.run(suite)
     print 'Total asserts: %s' % unittest.asserts
     world.testing = False
-    debug._close()
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

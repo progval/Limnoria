@@ -38,6 +38,7 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
     def testBug(self):
         self.assertHelp('bug')
         m = self.getMsg('bugs gaim')
+        self.failUnless(m, 'No response from Sourceforge.')
         n = re.search('#(\d+)', m.args[1]).group(1)
         self.assertNotError('bug gaim %s' % n)
         self.assertError('bug gaim')
@@ -54,6 +55,7 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
 
     def testRfe(self):
         m = self.getMsg('rfes gaim')
+        self.failUnless(m, 'No response from Sourceforge.')
         n = re.search('#(\d+)', m.args[1]).group(1)
         self.assertNotError('rfe gaim %s' % n)
         self.assertError('rfe gaim')

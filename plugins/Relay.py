@@ -43,7 +43,6 @@ import time
 from itertools import imap, ifilter
 
 import conf
-import debug
 import utils
 import world
 import irclib

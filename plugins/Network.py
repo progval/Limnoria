@@ -41,7 +41,6 @@ import sets
 import socket
 import telnetlib
 
-import debug
 import utils
 import ircutils
 import privmsgs
@@ -119,7 +118,6 @@ class Network(callbacks.Privmsg):
                 (domain, url, status, created, updated, expires)
             irc.reply(msg, s)
         except NameError, e:
-            #debug.printf(e)
             irc.error(msg, 'I couldn\'t find such a domain.')
         
 

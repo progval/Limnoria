@@ -49,10 +49,8 @@ class FixRelayBot(irclib.IrcCallback):
     _re = re.compile(r'<([^@]+)@[^>]+>\s+(.*)')
     def inFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
-            #debug.printf('Message command was PRIVMSG')
             m = self._re.match(msg.args[1])
             if m:
-                #debug.printf('Regexp matched: %r, %r, %r' % m.groups())
                 nick = m.group(1)
                 host = random.random()*100
                 newprefix = ircutils.joinHostmask(nick, nick, host)

@@ -38,8 +38,8 @@ import sets
 import time
 from itertools import imap, chain
 
+import log
 import conf
-import debug
 import utils
 import world
 import ircdb
@@ -102,10 +102,8 @@ class IrcCallback(IrcCommandDispatcher):
             try:
                 method(irc, msg)
             except Exception, e:
-                debug.recoverableException()
-                s = 'Exception (%s) raised by %s.%s' % \
-                    (e, self.__class__.__name__, method.im_func.func_name)
-                debug.msg(s)
+                s = 'Exception caught in generic IrcCallback.__call__:'
+                log.exception(s)
 
     def reset(self):
         """Resets the callback.  Called when reconnected to the server."""
@@ -151,7 +149,7 @@ class IrcMsgQueue(object):
         """Enqueues a given message."""
         if msg in self.msgs:
             if not world.startup:
-                debug.msg('Not adding msg %s to queue' % msg, 'normal')
+                log.info('Not adding msg %s to queue' % msg)
         else:
             self.msgs.add(msg)
             if msg.command in _high:
@@ -163,18 +161,19 @@ class IrcMsgQueue(object):
 
     def dequeue(self):
         """Dequeues a given message."""
+        msg = None
         if self.highpriority:
             msg = self.highpriority.dequeue()
         elif self.normal:
             msg = self.normal.dequeue()
         elif self.lowpriority:
             msg = self.lowpriority.dequeue()
-        else:
-            msg = None
         if msg:
-            if msg not in self.msgs:
-                debug.msg('Odd, dequeuing a message that\'s not in self.msgs.')
-            self.msgs.discard(msg)
+            try:
+                self.msgs.remove(msg)
+            except KeyError:
+                s = 'Odd, dequeuing a message that\'s not in self.msgs.'
+                log.warning(s)
         return msg
 
     def __nonzero__(self):
@@ -404,10 +403,10 @@ class Irc(IrcCommandDispatcher):
                              '333', '353', '332', '366', '005'])
     def __init__(self, nick, user='', ident='', password='', callbacks=None):
         world.ircs.append(self)
-        self.nick = nick
+        self.nick = intern(nick)
         self.password = password
-        self.user = user or nick    # Default to nick if user isn't provided.
-        self.ident = ident or nick  # Ditto.
+        self.user = intern(user or nick)  # Default to nick
+        self.ident = intern(ident or nick)  # Ditto.
         self.prefix = '%s!%s@%s' % (nick, ident, 'unset.domain')
         if callbacks is None:
             self.callbacks = []
@@ -481,13 +480,14 @@ class Irc(IrcCommandDispatcher):
             msg = self.fastqueue.dequeue()
         elif self.queue:
             if not world.testing and now - self.lastTake <= conf.throttleTime:
-                debug.msg('Irc.takeMsg throttling.', 'verbose')
+                log.debug('Irc.takeMsg throttling.')
             else:
                 self.lastTake = now
                 msg = self.queue.dequeue()
         elif now > (self.lastping + conf.pingInterval):
             if self.outstandingPing:
-                debug.msg('Reconnecting, ping not replied to.', 'normal')
+                s = 'Reconnecting to %s, ping not replied to.' % self.server
+                log.warning(s)
                 self.driver.reconnect()
                 self.reset()
             else:
@@ -497,7 +497,7 @@ class Irc(IrcCommandDispatcher):
                 self.queueMsg(ircmsgs.ping(now))
         if msg:
             for callback in reviter(self.callbacks):
-                #debug.printf(repr(msg))
+                log.debug(repr(msg))
                 try:
                     outFilter = getattr(callback, 'outFilter')
                 except AttributeError, e:
@@ -505,18 +505,18 @@ class Irc(IrcCommandDispatcher):
                 try:
                     msg = outFilter(self, msg)
                 except:
-                    debug.recoverableException()
+                    log.exception('Exception caught in outFilter:')
                     continue
                 if msg is None:
-                    s = '%s.outFilter returned None' % callback.name()
-                    debug.msg(s)
-                    return None
+                    log.debug('%s.outFilter returned None' % callback.name())
+                    return self.takeMsg()
             if len(str(msg)) > 512:
+                # Yes, this violates the contract, but at this point it doesn't
+                # matter.  That's why we gotta go munging in private attributes
                 msg._str = msg._str[:500] + '\r\n'
                 msg._len =  len(str(msg))
             self.state.addMsg(self, msg)
-            s = '%s  %s' % (time.strftime(conf.logTimestampFormat), msg)
-            debug.msg(s, 'low')
+            log.info('Outgoing message: ' + str(msg).rstrip('\r\n'))
             if msg.command == 'NICK':
                 # We don't want a race condition where the server's NICK
                 # back to us is lost and someone else steals our nick and uses
@@ -562,35 +562,30 @@ class Irc(IrcCommandDispatcher):
     def doNick(self, msg):
         """Handles NICK messages."""
         if msg.nick == self.nick:
-            newNick = msg.args[0]
+            newNick = intern(msg.args[0])
             user = ircdb.users.getUser(0)
             user.unsetAuth()
             user.hostmasks = []
             try:
                 ircdb.users.getUser(newNick)
-                s = 'User already registered with name %s' % newNick
-                debug.msg(s, 'high')
+                log.error('User already registered with name %s' % newNick)
             except KeyError:
                 user.name = newNick
             ircdb.users.setUser(0, user)
             self.nick = newNick
             (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
             self.prefix = ircutils.joinHostmask(self.nick, user, domain)
+            self.prefix = intern(self.prefix)
 
     def feedMsg(self, msg):
         """Called by the IrcDriver; feeds a message received."""
-        debug.msg('%s  %s'%(time.strftime(conf.logTimestampFormat), msg),'low')
+        log.info('Incoming message: ' + str(msg).rstrip('\r\n'))
 
         # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
         # messages with our nick instead of our prefix.  We'll fix that here.
         if msg.prefix == self.nick:
-            debug.msg('Got one of those odd nick-instead-of-prefix msgs.')
+            log.debug('Got one of those odd nick-instead-of-prefix msgs.')
             msg = ircmsgs.IrcMsg(prefix=self.prefix, msg=msg)
-
-        # Dispatch to specific handlers for commands.
-        method = self.dispatchCommand(msg.command)
-        if method is not None:
-            method(msg)
 
         # This catches cases where we know our own nick (from sending it to the
         # server) but we don't yet know our prefix.
@@ -610,32 +605,37 @@ class Irc(IrcCommandDispatcher):
             if msg.prefix != self.server:
                 self.server = msg.prefix
 
+        # Dispatch to specific handlers for commands.
+        method = self.dispatchCommand(msg.command)
+        if method is not None:
+            method(msg)
+
         # Now update the IrcState object.
         try:
             self.state.addMsg(self, msg)
         except:
-            debug.recoverableException()
+            log.exception('Exception in update of IrcState object:')
 
         # Now call the callbacks.
         for callback in self.callbacks:
             try:
                 m = callback.inFilter(self, msg)
                 if not m:
-                    s = '%s.inFilter returned None' % callback.name()
-                    debug.msg(s)
+                    log.debug('%s.inFilter returned None' % callback.name())
                     return
                 msg = m
             except:
-                debug.recoverableException()
+                log.exception('Uncaught exception in inFilter:')
         for callback in self.callbacks:
             try:
                 if callback is not None:
                     callback(self, msg)
             except:
-                debug.recoverableException()
+                log.exception('Uncaught exception in callback:')
 
     def die(self):
         """Makes the Irc object die.  Dead."""
+        log.info('Irc object for %s dying.' % self.server)
         for callback in self.callbacks:
             callback.die()
         if self.driver is not None:

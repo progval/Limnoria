@@ -39,8 +39,8 @@ import time
 import string
 from itertools import imap
 
+import log
 import conf
-import debug
 import utils
 import world
 import ircutils
@@ -589,40 +589,30 @@ def _x(capability, ret):
 
 def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
     if isChannelCapability(capability):
-        #debug.printf('isChannelCapability true.')
         (channel, capability) = fromChannelCapability(capability)
         try:
             c = channels.getChannel(channel)
             if capability in c.capabilities:
-                #debug.printf('capability in c.capabilities')
                 return c.checkCapability(capability)
             else:
-                #debug.printf('capability not in c.capabilities')
                 return _x(capability, c.defaultAllow)
         except KeyError:
-            #debug.printf('no such channel %s' % channel)
             pass
     if capability in conf.defaultCapabilities:
-        #debug.printf('capability in conf.defaultCapability')
         return True
     elif invertCapability(capability) in conf.defaultCapabilities:
-        #debug.printf('inverse capability in conf.defaultCapability')
         return False
     else:
-        #debug.printf('returning appropriate value given no good reason')
         return _x(capability, conf.defaultAllow)
 
 def checkCapability(hostmask, capability, users=users, channels=channels):
     """Checks that the user specified by name/hostmask has the capabilty given.
     """
-    #debug.printf('*** checking %s for %s' % (hostmask, capability))
     if world.startup:
-        #debug.printf('world.startup is active.')
         return _x(capability, True)
     try:
         u = users.getUser(hostmask)
         if u.secure and not u.checkHostmask(hostmask, useAuth=False):
-            #debug.printf('Secure user with non-matching hostmask.')
             raise KeyError
     except KeyError:
         # Raised when no hostmasks match.
@@ -630,16 +620,13 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
                                               channels=channels)
     except ValueError, e:
         # Raised when multiple hostmasks match.
-        debug.msg('%s: %s' % (hostmask, e))
+        log.warning('%s: %s', hostmask, e)
         return _checkCapabilityForUnknownUser(capability, users=users,
                                               channels=channels)
-    #debug.printf('user found.')
     if capability in u.capabilities:
-        #debug.printf('found capability in u.capabilities.')
         return u.checkCapability(capability)
     else:
         if isChannelCapability(capability):
-            #debug.printf('isChannelCapability true, user found too.')
             (channel, capability) = fromChannelCapability(capability)
             try:
                 chanop = makeChannelCapability(channel, 'op')
@@ -649,19 +636,14 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
                 pass
             c = channels.getChannel(channel)
             if capability in c.capabilities:
-                #debug.printf('capability in c.capabilities')
                 return c.checkCapability(capability)
             else:
-                #debug.printf('capability not in c.capabilities')
                 return _x(capability, c.defaultAllow)
         if capability in conf.defaultCapabilities:
-            #debug.printf('capability in conf.defaultCapabilities')
             return True
         elif invertCapability(capability) in conf.defaultCapabilities:
-            #debug.printf('inverse capability in conf.defaultCapabilities')
             return False
         else:
-            #debug.printf('returning appropriate value given no good reason')
             return _x(capability, conf.defaultAllow)
 
 

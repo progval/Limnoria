@@ -191,8 +191,8 @@ class Status(callbacks.Privmsg):
             elif sys.platform.startswith('netbsd'):
                 mem = os.stat('/proc/%s/mem')[7]
             response += '  I\'m taking up %s kB of memory.' % mem
-        except Exception, e:
-            debug.msg(debug.exnToString(e))
+        except Exception:
+            self.log.exception('Uncaught exception in cpustats:')
         irc.reply(msg, response)
 
     def cmdstats(self, irc, msg, args):

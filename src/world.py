@@ -45,8 +45,8 @@ import types
 import atexit
 import threading
 
+import log
 import conf
-import debug
 
 startedAt = 0.0
 
@@ -83,12 +83,11 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
         except IOError: # Win98 sux0rs!
             pass
     if gc.garbage:
-        debug.msg('Uncollectable garbage: %s' % gc.garbage, 'normal')
+        log.warning('Uncollectable garbage: %s', gc.garbage)
     if 'noflush' not in tempvars:
         flush()
-    debug.msg('Regexp cache size: %s' % len(sre._cache), 'verbose')
-    msg = '%s upkeep ran.' % time.strftime(conf.logTimestampFormat)
-    debug.msg(msg, 'verbose')
+    log.verbose('Regexp cache size: %s', len(sre._cache))
+    log.info('%s upkeep ran.', time.strftime(conf.logTimestampFormat))
     return collected
 
 def makeIrcsDie():

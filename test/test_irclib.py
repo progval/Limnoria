@@ -35,7 +35,6 @@ import copy
 import pickle
 
 import conf
-import debug
 import irclib
 import ircmsgs
 
@@ -81,7 +80,7 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         try:
             repr(q)
         except Exception, e:
-            self.fail('repr(q) raised an exception: %s' % debug.exnToString(e))
+            self.fail('repr(q) raised an exception: %s' % utils.exnToString(e))
 
     def testEmpty(self):
         q = irclib.IrcMsgQueue()

@@ -53,7 +53,6 @@ sys.stdout = StringIO()
 import this
 sys.stdout = sys.__stdout__
 
-import debug
 import utils
 import ircutils
 import privmsgs
@@ -200,7 +199,6 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             if m:
                 resp.append('%s: %s' % self._bold(m.groups()))
         if resp:
-            #debug.printf('; '.join(resp))
             irc.reply(msg, '; '.join(resp), prefixName = False)
     aspnRecipes = privmsgs.urlSnarfer(aspnRecipes)
             

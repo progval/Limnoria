@@ -44,8 +44,8 @@ import imp
 import sys
 import linecache
 
+import log
 import conf
-import debug
 import utils
 import world
 import ircdb
@@ -62,7 +62,7 @@ def loadPluginModule(name):
         try:
             files.extend(os.listdir(dir))
         except EnvironmentError:
-            debug.msg('Invalid plugin directory: %s' % dir, 'verbose')
+            log.warning('Invalid plugin directory: %s', dir)
     loweredFiles = map(str.lower, files)
     try:
         index = loweredFiles.index(name.lower()+'.py')
@@ -188,9 +188,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             try:
                 irc.reply(msg, repr(eval(s)))
             except SyntaxError, e:
-                irc.reply(msg, '%s: %r' % (debug.exnToString(e), s))
+                irc.reply(msg, '%s: %r' % (utils.exnToString(e), s))
             except Exception, e:
-                irc.reply(msg, debug.exnToString(e))
+                irc.reply(msg, utils.exnToString(e))
         else:
             irc.error(msg, conf.replyEvalNotAllowed)
 
@@ -205,7 +205,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 exec s
                 irc.reply(msg, conf.replySuccess)
             except Exception, e:
-                irc.reply(msg, debug.exnToString(e))
+                irc.reply(msg, utils.exnToString(e))
         else:
             irc.error(msg, conf.replyEvalNotAllowed)
 
@@ -222,7 +222,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 try:
                     value = eval(value)
                 except Exception, e:
-                    irc.error(msg, debug.exnToString(e))
+                    irc.error(msg, utils.exnToString(e))
                     return
                 setattr(conf, name, value)
                 irc.reply(msg, conf.replySuccess)
@@ -279,22 +279,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         conf.defaultCapabilities.remove(capability)
         irc.reply(msg, conf.replySuccess)
 
-    def settrace(self, irc, msg, args):
-        """takes no arguments
-
-        Starts the function-tracing debug mode; beware that this makes *huge*
-        logfiles.
-        """
-        sys.settrace(debug.tracer)
-        irc.reply(msg, conf.replySuccess)
-
-    def unsettrace(self, irc, msg, args):
-        """takes no arguments
-
-        Stops the function-tracing debug mode."""
-        sys.settrace(None)
-        irc.reply(msg, conf.replySuccess)
-
     def ircquote(self, irc, msg, args):
         """<string to be sent to the server>
 
@@ -303,10 +287,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         s = privmsgs.getArgs(args)
         try:
             m = ircmsgs.IrcMsg(s)
+        except Exception, e:
+            irc.error(msg, utils.exnToString(e))
+        else:
             irc.queueMsg(m)
-        except Exception:
-            debug.recoverableException()
-            irc.error(msg, conf.replyError)
 
     def quit(self, irc, msg, args):
         """[<int return value>]
@@ -321,7 +305,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             driver.die()
         for irc in world.ircs[:]:
             irc.die()
-        debug.exit(i)
+        raise SystemExit
 
     def flush(self, irc, msg, args):
         """takes no arguments
@@ -383,7 +367,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             if name in str(e):
                 irc.error(msg, 'No plugin %s exists.' % name)
             else:
-                irc.error(msg, debug.exnToString(e))
+                irc.error(msg, utils.exnToString(e))
             return
         loadPluginClass(irc, module)
         irc.reply(msg, conf.replySuccess)

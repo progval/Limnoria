@@ -41,9 +41,9 @@ import re
 import os
 import sys
 
+import log
 import conf
 import ansi
-import debug
 import ircmsgs
 
 _drivers = {}
@@ -134,7 +134,7 @@ def run():
             if name not in _deadDrivers:
                 driver.run()
         except:
-            debug.recoverableException()
+            log.exception('Uncaught exception in in drivers.run:')
             _deadDrivers.append(name)
     for name in _deadDrivers:
         try:

@@ -34,6 +34,8 @@
 Bugzilla bug retriever
 """
 
+__revision__ = "$Id$"
+
 import os
 import re
 import string
@@ -43,9 +45,7 @@ from itertools import imap, ifilter
 from htmlentitydefs import entitydefs as entities
 
 import conf
-import debug
 import utils
-__revision__ = "$Id$"
 
 import plugins
 import ircutils
@@ -194,13 +194,10 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         try:
             name = self.shorthand[name]
             (url, description) = self.db[name]
-            #debug.printf(url)
-            #debug.printf(description)
         except KeyError:
             irc.error(msg, replyNoBugzilla % name)
             return
         queryurl = '%s/xml.cgi?id=%s' % (url, number)
-        #debug.printf(queryurl)
         try:
             summary = self._get_short_bug_summary(queryurl,description,number)
         except BugzillaError, e:

@@ -41,7 +41,6 @@ import re
 import random
 
 import conf
-import debug
 import utils
 import ircdb
 import ircmsgs
@@ -161,7 +160,7 @@ class Topic(callbacks.Privmsg):
             irc.error(msg, 'The regexp wasn\'t valid: %s' % e.args[0])
             return
         except re.error, e:
-            irc.error(msg, debug.exnToString(e))
+            irc.error(msg, utils.exnToString(e))
             return
         topics = self._splitTopic(irc.state.getTopic(channel))
         if not topics:
@@ -214,7 +213,6 @@ class Topic(callbacks.Privmsg):
         except IndexError:
             irc.error(msg, 'That\'s not a valid topic number.')
             return
-        ## debug.printf(topic)
         match = self.topicUnformatter.match(topic)
         if match is None:
             name = ''

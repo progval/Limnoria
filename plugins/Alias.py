@@ -43,7 +43,6 @@ import sets
 import types
 
 import conf
-import debug
 import utils
 import privmsgs
 import callbacks

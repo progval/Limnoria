@@ -11,17 +11,17 @@ import sets
 import pydoc
 import pprint
 import socket
+import logging
 import optparse
 import textwrap
 from itertools import imap
 
 import ansi
 import conf
-import debug
 import utils
 import ircutils
 
-debug.minimumPriority = 'high'
+conf.minimumLogPriority = logging.CRITICAL
 
 useColor = False
 
@@ -69,7 +69,7 @@ def loadPlugin(name):
     except Exception, e:
         myPrint("""We encountered a bit of trouble trying to load plugin %r.
         Python told us %r.  We'll skip over it for now, you can always add it
-        later.""" % (name, debug.exnToString(e)))
+        later.""" % (name, utils.exnToString(e)))
         return None
 
 def describePlugin(module, showUsage):
@@ -146,7 +146,6 @@ def main():
     server = None
     onStart = []
     afterConnect = []
-    debugVariables = {}
     configVariables = {}
     
     myPrint("""This is a wizard to help you start running supybot.  What it
@@ -473,39 +472,39 @@ def main():
         configVariables['enablePipeSyntax'] = True
 
     ###
-    # debug variables.
+    # logging variables.
     ###
 
-    # debug.stderr
+    # conf.stdoutLogging
     myPrint("""By default, your bot will log not only to files in the logs
-    directory you gave it, but also to stderr.  We find this useful for
+    directory you gave it, but also to stdout.  We find this useful for
     debugging, and also just for the pretty output (it's colored!)""")
-    if yn('Would you like to turn off this logging to stderr?') == 'y':
-        debugVariables['stderr'] = False
+    if yn('Would you like to turn off this logging to stdout?') == 'y':
+        confVariables['stdoutLogging'] = False
     else:
-        # debug.colorterm
+        # conf.something
         myPrint("""Some terminals may not be able to display the pretty colors
         logged to stderr.  By default, though, we turn the colors off for
         Windows machines and leave it on for *nix machines.""")
         if yn('Would you like to turn this colorization off?') == 'y':
-            debugVariables['colorterm'] = False
+            confVariables['colorterm'] = False
 
-    # debug.minimumPriority
-    myPrint("""Your bot can handle debug messages at four priorities, 'high,'
-    'normal,' 'low,' and 'verbose,' in decreasing order of priority.  By
-    default, your bot will log all of these priorities.  You can, however,
-    specify that he only log messages above a certain priority level.  Of
-    course, all error messages will still be logged.""")
-    priority = anything('What would you like the minimum priority to be?  '
-                        'Just press enter to accept the default.')
-    while priority and priority not in ['verbose', 'low', 'normal', 'high']:
-        myPrint("""That's not a valid priority.  Valid priorities include
-        'verbose,' 'low,' 'normal,' and 'high,' not including the quotes or
-        the commas.""")
-        priority = anything('What would you like the minimum priority to be?  '
-                            'Just press enter to accept the default.')
-    if priority:
-        debugVariables['minimumPriority'] = priority
+##     # conf.minimumLogPriority
+##     myPrint("""Your bot can handle debug messages at several priorities,
+##     CRITICAL, in decreasing order of priority.  By
+##     default, your bot will log all of these priorities.  You can, however,
+##     specify that he only log messages above a certain priority level.  Of
+##     course, all error messages will still be logged.""")
+##     priority = anything('What would you like the minimum priority to be?  '
+##                         'Just press enter to accept the default.')
+##     while priority and priority not in ['verbose', 'low', 'normal', 'high']:
+##         myPrint("""That's not a valid priority.  Valid priorities include
+##         'verbose,' 'low,' 'normal,' and 'high,' not including the quotes or
+##         the commas.""")
+##         priority = anything('What would you like the minimum priority to be?  '
+##                             'Just press enter to accept the default.')
+##     if priority:
+##         confVariables['minimumLogPriority'] = priority
 
     if advanced:
         myPrint("""Here's some stuff you only get to choose if you're an
@@ -625,7 +624,6 @@ def main():
     template = template.replace('"%%server%%"', repr(server))
     template = template.replace('"%%onStart%%"', format(onStart))
     template = template.replace('"%%afterConnect%%"', format(afterConnect))
-    template = template.replace('"%%debugVariables%%"', format(debugVariables))
     template = template.replace('"%%configVariables%%"',
                                 format(configVariables))
     template = template.replace('/usr/bin/env python',

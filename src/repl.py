@@ -39,7 +39,7 @@ import sys
 import traceback
 from cStringIO import StringIO
 
-import debug
+import log
 
 filename = 'repl'
 
@@ -86,7 +86,7 @@ class Repl(object):
         line = line.rstrip()
         self.lines.append(line)
         if len(self.lines) > 100:
-            debug.msg('too many lines in Repl.', 'normal')
+            log.warning('Too many lines in Repl.')
             self.lines = []
             return None
         if line == '' or line == '\n' or line == '\r\n':

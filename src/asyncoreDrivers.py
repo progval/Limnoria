@@ -40,9 +40,9 @@ import socket
 import asyncore
 import asynchat
 
-import repl
+import log
 import conf
-import debug
+import repl
 import ircdb
 import world
 import drivers
@@ -51,16 +51,15 @@ import schedule
 
 class AsyncoreRunnerDriver(drivers.IrcDriver):
     def run(self):
-        #debug.printf(asyncore.socket_map)
+        log.printf(repr(asyncore.socket_map))
         try:
             asyncore.poll(conf.poll)
         except:
-            debug.recoverableException()
+            log.exception('Uncaught exception:')
 
 
 class AsyncoreDriver(asynchat.async_chat, object):
     def __init__(self, (server, port), irc):
-        #debug.methodNamePrintf(self, '__init__')
         asynchat.async_chat.__init__(self)
         self.server = (server, port)
         self.irc = irc
@@ -71,22 +70,19 @@ class AsyncoreDriver(asynchat.async_chat, object):
         try:
             self.connect(self.server)
         except:
-            debug.recoverableException('terse')
+            log.exception('Error connecting:')
             self.close()
 
     def scheduleReconnect(self):
-        #debug.methodNamePrintf(self, 'scheduleReconnect')
         when = time.time() + 60
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
-        debug.msg('Scheduling reconnect to %s at %s' % (self.server, whenS),
-                  'normal')
+        log.info('Scheduling reconnect to %s at %s', self.server, whenS)
         def makeNewDriver():
             self.irc.reset()
             driver = self.__class__(self.server, self.irc)
         schedule.addEvent(makeNewDriver, when)
 
     def writable(self):
-        #debug.methodNamePrintf(self, 'writable')
         while self.connected:
             m = self.irc.takeMsg()
             if m:
@@ -96,38 +92,31 @@ class AsyncoreDriver(asynchat.async_chat, object):
         return asynchat.async_chat.writable(self)
 
     def handle_error(self):
-        #debug.recoverableException()
         self.handle_close()
 
     def collect_incoming_data(self, s):
-        #debug.methodNamePrintf(self, 'collect_incoming_data')
         self.buffer += s
 
     def found_terminator(self):
-        #debug.methodNamePrintf(self, 'found_terminator')
         start = time.time()
         msg = ircmsgs.IrcMsg(self.buffer)
-        debug.msg('Time to parse IrcMsg: %s' % (time.time()-start), 'verbose')
+        log.verbose('Time to parse IrcMsg: %s', time.time()-start)
         self.buffer = ''
         try:
             self.irc.feedMsg(msg)
         except:
-            debug.msg('Exception caught outside Irc object.', 'normal')
-            debug.recoverableException()
+            log.exception('Uncaught exception outside Irc object:')
 
     def handle_close(self):
-        #debug.methodNamePrintf(self, 'handle_close')
         self.scheduleReconnect()
         self.die()
 
     reconnect = handle_close
 
     def handle_connect(self):
-        #debug.methodNamePrintf(self, 'handle_connect')
         pass
 
     def die(self):
-        #debug.methodNamePrintf(self, 'die')
         self.close()
 
 
@@ -141,7 +130,7 @@ class ReplListener(asyncore.dispatcher, object):
 
     def handle_accept(self):
         (sock, addr) = self.accept()
-        debug.msg('Connection made to telnet-REPL: ' + str(addr),'normal')
+        log.info('Connection made to telnet-REPL: %s', addr)
         Repl((sock, addr))
 
 
@@ -191,8 +180,7 @@ Name: """ % (world.version, sys.version.translate(string.ascii, '\r\n'))
                 self.push('Unknown user.\n')
                 self.tries += 1
                 self.prompt = 'Name: '
-                msg = 'Unknown user %s on telnet REPL.' % name
-                debug.msg(msg,'high')
+                log.warning('Unknown user %s on telnet REPL.', name)
             self.push(self.prompt)
         elif self.u is not None and not self.authed:
             password = self.buffer
@@ -205,16 +193,16 @@ Name: """ % (world.version, sys.version.translate(string.ascii, '\r\n'))
                     self.push('Only owners can use this feature.\n')
                     self.close()
                     msg = 'Attempted non-owner user %s on telnet REPL' % name
-                    debug.msg(msg, 'high')
+                    log.warning(msg)
             else:
                 self.push('Incorrect Password.\n')
                 self.prompt = 'Name: '
                 self.u = None
                 msg = 'Invalid password for user %s on telnet REPL.' % name
-                debug.msg(msg, 'high')
+                log.warning(msg)
             self.push(self.prompt)
         elif self.authed:
-            debug.msg('Telnet REPL: %s' % self.buffer)
+            log.info('Telnet REPL: %s', self.buffer)
             ret = self.repl.addLine(self.buffer+'\r\n')
             self.buffer = ''
             if ret is not repl.NotYet:

@@ -42,7 +42,6 @@ import sets
 import urllib2
 
 import conf
-import debug
 import utils
 import plugins
 import ircutils
@@ -183,12 +182,9 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         r"http://(?:www\.)?gameknot\.com/chess\.pl\?bd=\d+(&r=\d+)?"
         if not self.configurables.get('game-snarfer', channel=msg.args[0]):
             return
-        #debug.printf('Got a GK URL from %s' % msg.prefix)
         url = match.group(0)
         fd = urllib2.urlopen(url)
-        #debug.printf('Got the connection.')
         s = fd.read()
-        #debug.printf('Got the string.')
         fd.close()
         try:
             if 'no longer available' in s:
@@ -197,13 +193,13 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 return
             m = self._gkGameTitle.search(s)
             if m is None:
-                debug.msg('Gameknot._gkGameTitle didn\'t match (%s).' % url)
+                self.log.warning('_gkGameTitle didn\'t match (%s).', url)
                 return
             gameTitle = m.groups()
             gameTitle = ircutils.bold(gameTitle)
             L = self._gkPlayer.findall(s)
             if not L:
-                debug.msg('Gameknot._gkPlayer didn\'t match (%s).' % url)
+                self.log.warning('_gkPlayer didn\'t match (%s).', url)
                 return
             ((wRating, wName), (bRating, bName)) = L
             wName = ircutils.bold(wName)
@@ -242,7 +238,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             irc.error(msg,'That doesn\'t appear to be a proper Gameknot game.'\
                 ' (%s)' % conf.replyPossibleBug)
         except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+            irc.error(msg, utils.exnToString(e))
     gameknotSnarfer = privmsgs.urlSnarfer(gameknotSnarfer)
 
     def gameknotStatsSnarfer(self, irc, msg, match):

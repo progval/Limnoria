@@ -56,6 +56,7 @@ started = time.time()
 
 import supybot
 
+import log
 import conf
 
 defaultNick = "%%nick%%"
@@ -68,7 +69,6 @@ conf.commandsOnStart = "%%onStart%%"
 
 afterConnect = "%%afterConnect%%"
 
-debugVariables = "%%debugVariables%%"
 configVariables = "%%configVariables%%"
 
 if not isinstance(configVariables, basestring):
@@ -77,17 +77,9 @@ if not isinstance(configVariables, basestring):
 
 if not os.path.exists(conf.dataDir):
     os.mkdir(conf.dataDir)
-if not os.path.exists(conf.logDir):
-    os.mkdir(conf.logDir)
 if not os.path.exists(conf.confDir):
     os.mkdir(conf.confDir)
     
-import debug
-
-if not isinstance(debugVariables, basestring):
-    for (name, value) in debugVariables.iteritems():
-        setattr(debug, name, value)
-
 def main():
     import world
     import drivers
@@ -97,11 +89,10 @@ def main():
     try:
         while world.ircs:
             drivers.run()
+    except (SystemExit, KeyboardInterrupt):
+        sys.exit(0)
     except:
-        try:
-            debug.recoverableException()
-        except: # It must've been deadly for a reason :)
-            sys.exit(0)
+        log.exception('Exception raised out of drivers.run:')
 
 if __name__ == '__main__':
     ###

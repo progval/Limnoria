@@ -37,6 +37,7 @@ import sys
 
 import sets
 import os.path
+import logging
 
 ###
 # Directions:
@@ -58,6 +59,18 @@ pluginDirs = [os.path.join(installDir, s) for s in ('src', 'plugins')]
 ###
 userfile = 'users.conf'
 channelfile = 'channels.conf'
+
+###
+# minimumLogPriority: The minimum priority that will be logged.  Defaults to
+#                     logging.INFO, which is probably a good value.  Can also
+#                     be usefully set to logging.{DEBUG,WARNING,ERROR,CRITICAL}
+###
+minimumLogPriority = logging.INFO
+
+###
+# stdoutLogging: Determines whether or not the bot logs to stdout.
+###
+stdoutLogging = True
 
 ###
 # logTimestampFormat: A format string defining how timestamps should be.  Check

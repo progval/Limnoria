@@ -39,7 +39,6 @@ __revision__ = "$Id$"
 import plugins
 
 import conf
-import debug
 import ircdb
 import ircmsgs
 import plugins
@@ -104,7 +103,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
 
     def doJoin(self, irc, msg):
         if not self.started:
-            debug.msg('Enforcer not started.', 'normal')
+            self.log.warning('Enforcer not started.')
             return
         channel = msg.args[0]
         c = ircdb.channels.getChannel(channel)
@@ -123,7 +122,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
 
     def doTopic(self, irc, msg):
         if not self.started:
-            debug.msg('Enforcer not started.', 'normal')
+            self.log.info('Enforcer not started.')
             return
         channel = msg.args[0]
         topic = msg.args[1]
@@ -142,7 +141,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
     def do332(self, irc, msg):
         # This command gets sent right after joining a channel.
         if not self.started:
-            debug.msg('Enforcer not started.', 'normal')
+            self.log.info('Enforcer not started.')
             return
         (channel, topic) = msg.args[1:]
         self.topics[channel] = topic
@@ -157,7 +156,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
 
     def doKick(self, irc, msg):
         if not self.started:
-            debug.msg('Enforcer not started.', 'normal')
+            self.log.info('Enforcer not started.')
             return
         channel = msg.args[0]
         kicked = msg.args[1].split(',')
@@ -182,7 +181,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
 
     def doMode(self, irc, msg):
         if not self.started:
-            debug.msg('Enforcer not started.', 'normal')
+            self.log.info('Enforcer not started.')
             return
         channel = msg.args[0]
         if not ircutils.isChannel(channel) or msg.nick == self.chanserv:
@@ -246,9 +245,6 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
             if ircutils.isUserHostmask(msg.prefix) and \
                not msg.nick == self.chanserv:
                 return callbacks.Privmsg.__call__(self, irc, msg)
-        else:
-            debug.msg('Enforcer plugin not started.  '
-                      'Give the bot the start command.', 'normal')
 
 
 Class = Enforcer

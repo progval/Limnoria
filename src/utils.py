@@ -456,8 +456,11 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
         return eval(s, namespace, namespace)
     else:
         raise ValueError, 'Unsafe string.'
-    
-    
+
+
+def exnToString(e):
+    """Turns a simple exception instance into a string (better than str(e))"""
+    return '%s: %s' % (e.__class__.__name__, e)
 
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.

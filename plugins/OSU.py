@@ -40,7 +40,6 @@ import plugins
 
 import urllib2
 
-import debug
 import utils
 import privmsgs
 import callbacks
@@ -261,7 +260,7 @@ class OSU(callbacks.Privmsg):
             else:
                 irc.reply(msg, 'Possible matches: %s' % ', '.join(emails))
         except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+            irc.error(msg, utils.exnToString(e))
 
     def building(self, irc, msg, args):
         """<building abbreviation>

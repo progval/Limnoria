@@ -76,7 +76,6 @@ class Schedule(drivers.IrcDriver):
             self.counter += 1
         elif isinstance(name, int):
             raise ValueError, 'int names are reserved for the scheduler.'
-        #debug.printf('Added event to schedule: %s' % name)
         assert name not in self.events
         self.events[name] = f
         heapq.heappush(self.schedule, mytuple((t, name)))
@@ -97,7 +96,6 @@ class Schedule(drivers.IrcDriver):
     removePeriodicEvent = removeEvent
 
     def run(self):
-        #debug.printf(`(time.time(), self.schedule)`)
         while self.schedule and self.schedule[0][0] < time.time():
             (t, name) = heapq.heappop(self.schedule)
             f = self.events[name]

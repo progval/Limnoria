@@ -49,7 +49,6 @@ __revision__ = "$Id$"
 import fix
 import cdb
 import conf
-import debug
 import utils
 import world
 import ircdb
@@ -203,8 +202,7 @@ class PeriodicFileDownloader(object):
             s = infd.read(4096)
         infd.close()
         outfd.close()
-        msg = 'Downloaded %s in %s seconds' % (filename, time.time() - start)
-        debug.msg(msg, 'verbose')
+        self.log.info('Downloaded %s in %s seconds',filename,time.time()-start)
         self.downloadedCounter[filename] += 1
         self.lastDownloaded[filename] = time.time()
         if f is None:
@@ -218,15 +216,14 @@ class PeriodicFileDownloader(object):
             start = time.time()
             f(newFilename)
             total = time.time() - start
-            msg = 'Function ran on %s in %s seconds' % (filename, total)
-            debug.msg(msg, 'verbose')
+            self.log.info('Function ran on %s in %s seconds', filename, total)
         self.currentlyDownloading.remove(filename)
 
     def getFile(self, filename):
         (url, timeLimit, f) = self.periodicFiles[filename]
         if time.time() - self.lastDownloaded[filename] > timeLimit and \
            filename not in self.currentlyDownloading:
-            debug.msg('Beginning download of %s' % url, 'verbose')
+            self.log.info('Beginning download of %s', url)
             self.currentlyDownloading.add(filename)
             args = (filename, url, f)
             name = '%s #%s' % (filename, self.downloadedCounter[filename])
@@ -345,12 +342,11 @@ class Configurable(object):
                 try:
                     self.configurables.set(name, eval(value), channel)
                 except ConfigurableTypeError, e:
-                    name = '%s.%s' % (self.__class__.__name__, name)
-                    s = 'Couldn\'t read configurable %s from file: %s'%(name,e)
-                    debug.msg(s)
+                    s = 'Couldn\'t read configurable from file: %s'
+                    self.log.warning(s, e)
                 except KeyError, e:
-                    s = 'Configurable variable %s doesn\'t exist anymore'%name
-                    debug.msg(s)
+                    s = 'Configurable variable %s doesn\'t exist anymore.'
+                    self.log.warning(s, name)
 
     def die(self):
         fd = file(self.filename, 'w')

@@ -50,7 +50,6 @@ import mimetypes
 from itertools import imap
 
 import conf
-import debug
 import utils
 import ircmsgs
 import ircutils

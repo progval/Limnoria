@@ -38,17 +38,17 @@ __revision__ = "$Id$"
 
 import plugins
 
+import os
+import time
+
+import sqlite
+
+import conf
 import utils
 import ircdb
 import ircutils
 import privmsgs
 import callbacks
-import conf
-import debug
-
-import os.path
-import time
-import sqlite
 
 
 def configure(onStart, afterConnect, advanced):

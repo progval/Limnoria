@@ -45,7 +45,6 @@ from itertools import imap
 import sqlite
 
 import conf
-import debug
 import utils
 import ircdb
 import ircmsgs

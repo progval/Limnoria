@@ -42,7 +42,6 @@ import types
 import threading
 
 import conf
-import debug
 import ircdb
 import world
 import ircutils
@@ -166,14 +165,12 @@ def urlSnarfer(f):
         if q is None:
             q = structures.smallqueue()
             self._snarfedUrls = q
-        #debug.printf('before pruning: %r' % q)
         while q and q[0][2] < cutoff:
             q.dequeue()
-        #debug.printf('after pruning: %r' % q)
         url = match.group(0)
         if any(lambda t: t[0] == url and t[1] == msg.args[0], q) and \
                not world.testing:
-            debug.msg('Refusing to snarf %s.' % url)
+            self.log.warning('Refusing to snarf %s.', url)
         else:
             q.enqueue((url, msg.args[0], now))
             if self.threaded:

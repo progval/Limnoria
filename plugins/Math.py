@@ -46,7 +46,6 @@ from itertools import imap
 
 import unum.units
 
-import debug
 import utils
 import privmsgs
 import callbacks
@@ -120,7 +119,6 @@ class Math(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         text = text.translate(string.ascii, '_[] \t')
         text = text.replace('lambda', '')
-        #debug.printf(text)
         def handleMatch(m):
             s = m.group(1)
             if s.startswith('0x'):
@@ -137,7 +135,6 @@ class Math(callbacks.Privmsg):
                 x = abs(x)
             return str(x)
         text = self._mathRe.sub(handleMatch, text)
-        #debug.printf(text)
         try:
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(msg, self._complexToString(x))
@@ -149,7 +146,7 @@ class Math(callbacks.Privmsg):
         except NameError, e:
             irc.error(msg, '%s is not a defined function.' % str(e).split()[1])
         except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+            irc.error(msg, utils.exnToString(e))
 
     _rpnEnv = {
         'dup': lambda s: s.extend([s.pop()]*2),

@@ -48,7 +48,6 @@ import SOAP
 import google
 
 import conf
-import debug
 import utils
 import ircmsgs
 import plugins
@@ -106,7 +105,7 @@ totalSearches = 0
 totalTime = 0
 last24hours = structures.queue()
 
-def search(*args, **kwargs):
+def search(log, *args, **kwargs):
     try:
         global totalSearches, totalTime, last24hours
         data = google.doGoogleSearch(*args, **kwargs)
@@ -123,7 +122,7 @@ def search(*args, **kwargs):
         else:
             raise
     except SOAP.faultType, e:
-        debug.msg(debug.exnToString(e))
+        log.exception('Uncaught SOAP error:')
         raise callbacks.Error, 'Invalid Google license key.'
 
 class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
@@ -201,7 +200,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             else:
                 kwargs[option[2:]] = argument
         searchString = privmsgs.getArgs(rest)
-        data = search(searchString, **kwargs)
+        data = search(self.log, searchString, **kwargs)
         irc.reply(msg, self.formatData(data))
 
     def metagoogle(self, irc, msg, args):
@@ -222,7 +221,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             else:
                 kwargs[option[2:]] = argument
         searchString = privmsgs.getArgs(rest)
-        data = search(searchString, **kwargs)
+        data = search(self.log, searchString, **kwargs)
         meta = data.meta
         categories = [d['fullViewableName'] for d in meta.directoryCategories]
         categories = [utils.dqrepr(s.replace('_', ' ')) for s in categories]
@@ -247,7 +246,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
 
         results = []
         for arg in args:
-            data = search(arg)
+            data = search(self.log, arg)
             results.append((data.meta.estimatedTotalResultsCount, arg))
         results.sort()
         results.reverse()
@@ -286,7 +285,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             return
         searchString = match.group(1)
         try:
-            data = search(searchString, safeSearch=1)
+            data = search(self.log, searchString, safeSearch=1)
         except google.NoLicenseKey:
             return
         if data.results:

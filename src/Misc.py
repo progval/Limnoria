@@ -43,7 +43,6 @@ import getopt
 from itertools import imap, ifilter
 
 import conf
-import debug
 import utils
 import irclib
 import ircmsgs
@@ -54,7 +53,7 @@ import callbacks
 class Misc(callbacks.Privmsg):
     priority = sys.maxint
     def invalidCommand(self, irc, msg, tokens):
-        #debug.printf('Misc.invalidCommand called')
+        self.log.debug('Misc.invalidCommand called')
         if conf.replyWhenNotCommand:
             command = tokens and tokens[0] or ''
             irc.error(msg, '%r is not a valid command.' % command)
@@ -112,7 +111,8 @@ class Misc(callbacks.Privmsg):
                not isinstance(cb, callbacks.PrivmsgRegexp):
                 for attr in dir(cb):
                     if s in attr and cb.isCommand(attr):
-                        commands.setdefault(attr, []).append(cb.name())
+                        if attr == callbacks.canonicalName(attr):
+                            commands.setdefault(attr, []).append(cb.name())
         for (key, names) in commands.iteritems():
             if len(names) == 1:
                 L.append(key)
@@ -210,10 +210,13 @@ class Misc(callbacks.Privmsg):
                 irc.error(msg, 'Module %s has no __revision__.' % name)
         else:
             def getVersion(s):
-                return s.split(None, 3)[2]
+                try:
+                    return s.split(None, 3)[2]
+                except:
+                    self.log.exception('Couldn\'t get id string: %r', s)
             names = {}
             dirs = map(os.path.abspath, conf.pluginDirs)
-            for (name, module) in sys.modules.iteritems():
+            for (name, module) in sys.modules.items(): # Don't use iteritems.
                 if hasattr(module, '__revision__'):
                     if 'supybot' in module.__file__:
                         names[name] = getVersion(module.__revision__)
@@ -251,7 +254,10 @@ class Misc(callbacks.Privmsg):
             if file.endswith('.log'):
                 stats = os.stat(os.path.join(conf.logDir, file))
                 result.append((file, str(stats.st_size)))
-        irc.reply(msg, ', '.join(imap(': '.join, result)))
+        if result:
+            irc.reply(msg, ', '.join(imap(': '.join, result)))
+        else:
+            irc.reply(msg, 'I couldn\'t find any logfiles.')
 
     def getprefixchar(self, irc, msg, args):
         """takes no arguments

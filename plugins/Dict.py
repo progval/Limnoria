@@ -44,7 +44,6 @@ import socket
 import dictclient
 
 import conf
-import debug
 import utils
 import plugins
 import ircutils

@@ -47,7 +47,6 @@ from itertools import imap, ifilter
 
 import conf
 import utils
-import debug
 import privmsgs
 import callbacks
 
@@ -66,9 +65,14 @@ class Http(callbacks.Privmsg):
     def callCommand(self, method, irc, msg, *L):
         try:
             callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
-        except socket.gaierror, e:
-            irc.error(msg, e.args[1])
-        except urllib2.HTTPError, r:
+        except socket.error, e:
+            if e.args[0] == 111:
+                irc.error(msg, 'Connection refused.')
+            elif e.args[0] in (110, 10060):
+                irc.error(msg, 'Connection timed out.')
+            else:
+                irc.error(msg, e.args[1])
+        except (urllib2.HTTPError, urllib2.URLError), e:
             irc.error(msg, str(e))
 
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
@@ -115,7 +119,7 @@ class Http(callbacks.Privmsg):
                       'and a popularity of %s, is in version %s.' % \
                       (project, lastupdated, vitality, popularity, version))
         except FreshmeatException, e:
-            irc.error(msg, debug.exnToString(e))
+            irc.error(msg, utils.exnToString(e))
 
     def stockquote(self, irc, msg, args):
         """<company symbol>
@@ -182,7 +186,6 @@ class Http(callbacks.Privmsg):
             city = '+'.join(args)
             city = city.rstrip(',')
             city = city.lower()
-            #debug.printf((state, city))
             #We must break the States up into two sections.  The US and
             #Canada are the only countries that require a State argument.
             
@@ -199,7 +202,6 @@ class Http(callbacks.Privmsg):
                   'pass=&dpp=&forecast=zandh&config=&'\
                   'place=%s&state=%s&country=%s' % \
                   (city, state, country)
-            #debug.printf(url)
 	    html = getPage(url)
 	    if 'was not found' in html:
 	        url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
@@ -290,7 +292,6 @@ class Http(callbacks.Privmsg):
         for (i, s) in enumerate(defs):
             if s.startswith('[not an acronym]'):
                 defs[i] = s.split('is ', 1)[1]
-        #debug.printf(defs)
         if len(defs) == 0:
             irc.reply(msg,'No definitions found.  (%s)'%conf.replyPossibleBug)
         else:

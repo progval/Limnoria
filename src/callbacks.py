@@ -56,8 +56,8 @@ import threading
 from itertools import imap, ifilter
 from cStringIO import StringIO
 
+import log
 import conf
-import debug
 import utils
 import world
 import ircdb
@@ -199,7 +199,7 @@ class Tokenizer:
         ends = []
         while True:
             token = lexer.get_token()
-            #debug.printf(repr(token))
+            log.printf(repr(token))
             if not token:
                 break
             elif token == '|':
@@ -239,7 +239,7 @@ def tokenize(s):
         _lastTokenized = None
         _lastTokenizedResult = None
         raise SyntaxError, str(e)
-    debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
+    log.verbose('tokenize took %s seconds.' % (time.time() - start))
     return copy.deepcopy(_lastTokenizeResult)
 
 def getCommands(tokens):
@@ -276,7 +276,7 @@ def formatArgumentError(method, name=None):
 class IrcObjectProxy:
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args):
-        #debug.printf('IrcObjectProxy.__init__: %s' % args)
+        log.printf('IrcObjectProxy.__init__: %s' % args)
         self.irc = irc
         self.msg = msg
         self.args = args
@@ -307,7 +307,7 @@ class IrcObjectProxy:
 
     def _callInvalidCommands(self):
         for cb in self.irc.callbacks:
-            #debug.printf('Trying to call %s.invalidCommand' % cb.name())
+            log.printf('Trying to call %s.invalidCommand' % cb.name())
             if self.finished:
                 break
             if hasattr(cb, 'invalidCommand'):
@@ -347,22 +347,21 @@ class IrcObjectProxy:
                     del self.args[0]
                     cb = cbs[0]
                 anticap = ircdb.makeAntiCapability(name)
-                #debug.printf('Checking for %s' % anticap)
+                log.printf('Checking for %s' % anticap)
                 if ircdb.checkCapability(self.msg.prefix, anticap):
-                    #debug.printf('Being prevented with anticap')
-                    debug.msg('Preventing %s from calling %s' % \
-                              (self.msg.nick, name), 'normal')
+                    log.printf('Being prevented with anticap')
+                    log.info('Preventing %s from calling %s' %
+                             (self.msg.nick, name))
                     s = conf.replyNoCapability % name
                     self.error(self.msg, s, private=True)
                     return
                 recipient = self.msg.args[0]
                 if ircutils.isChannel(recipient):
                     chancap = ircdb.makeChannelCapability(recipient, anticap)
-                    #debug.printf('Checking for %s' % chancap)
                     if ircdb.checkCapability(self.msg.prefix, chancap):
-                        #debug.printf('Being prevented with chancap')
-                        debug.msg('Preventing %s from calling %s' % \
-                                  (self.msg.nick, name), 'normal')
+                        log.printf('Being prevented with chancap')
+                        log.info('Preventing %s from calling %s' %
+                                 (self.msg.nick, name))
                         s = conf.replyNoCapability % name
                         self.error(self.msg, s, private=True)
                         return
@@ -380,10 +379,10 @@ class IrcObjectProxy:
                 if not isinstance(self.irc, irclib.Irc):
                     self.error(self.msg, 'Command %r cannot be nested.' % name)
             except (SyntaxError, Error), e:
-                self.reply(self.msg, debug.exnToString(e))
+                self.reply(self.msg, utils.exnToString(e))
             except Exception, e:
-                debug.recoverableException()
-                self.error(self.msg, debug.exnToString(e))
+                log.exception('Uncaught exception in finalEval:')
+                self.error(self.msg, utils.exnToString(e))
 
     def reply(self, msg, s, noLengthCheck=False, prefixName=True,
               action=False, private=False, notice=False, to=None):
@@ -496,7 +495,7 @@ class CommandThread(threading.Thread):
         name = '%s.%s with args %r' % (self.className, self.commandName, args)
         threading.Thread.__init__(self, target=callCommand, name=name,
                                   args=(command, irc, msg, args)+L)
-        debug.msg('Spawning thread %s' % name, 'verbose')
+        log.verbose('Spawning thread %s' % name)
         self.irc = irc
         self.msg = msg
         self.setDaemon(True)
@@ -512,10 +511,10 @@ class CommandThread(threading.Thread):
                 s = 'Command %r cannot be nested.' % self.commandName
                 self.irc.error(self.msg, s)
         except (SyntaxError, Error), e:
-            self.irc.reply(self.msg, debug.exnToString(e))
+            self.irc.reply(self.msg, utils.exnToString(e))
         except Exception, e:
-            debug.recoverableException()
-            self.irc.error(self.msg, debug.exnToString(e))
+            log.exception('Uncaught exception in CommandThread.run:')
+            self.irc.error(self.msg, utils.exnToString(e))
 
 
 class ConfigIrcProxy(object):
@@ -527,7 +526,7 @@ class ConfigIrcProxy(object):
         return None
 
     def error(self, msg, s, *args):
-        debug.msg('ConfigIrcProxy saw an error: %s' % s, 'normal')
+        log.info('ConfigIrcProxy saw an error: %s' % s)
 
     def getRealIrc(self):
         irc = self.__dict__['irc']
@@ -554,7 +553,10 @@ class Privmsg(irclib.IrcCallback):
     def __init__(self):
         self.__parent = super(Privmsg, self)
         self.Proxy = IrcObjectProxy
-        canonicalname = canonicalName(self.name())
+        myName = self.name()
+        self.log = log.getPluginLogger(myName)
+        ### Setup the dispatcher command.
+        canonicalname = canonicalName(myName)
         self._original = getattr(self, canonicalname, None)
         docstring = """<command> [<args> ...]
         
@@ -562,7 +564,7 @@ class Privmsg(irclib.IrcCallback):
         commands provided by this plugin.  In most cases this dispatcher
         command is unnecessary; in cases where more than one plugin defines a
         given command, use this command to tell the bot which plugin's command
-        to use.""" % (self.name(), self.name())
+        to use.""" % (myName, myName)
         def dispatcher(self, irc, msg, args):
             def handleBadArgs():
                 if self._original:
@@ -599,7 +601,7 @@ class Privmsg(irclib.IrcCallback):
             args = args[:]
             command = canonicalName(args.pop(0))
             if self.isCommand(command):
-                #debug.printf('%s: %r' % (command, args))
+                self.log.debug('%s: %r', command, args)
                 method = getattr(self, command)
                 line = '%s %s' % (command, ' '.join(imap(utils.dqrepr, args)))
                 msg = ircmsgs.privmsg(fakeIrc.nick, line, fakeIrc.prefix)
@@ -614,7 +616,7 @@ class Privmsg(irclib.IrcCallback):
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
                 self.__parent.__call__(irc, msg)
             else:
-                debug.msg('Ignoring %s.' % msg.prefix)
+                self.log.info('Ignoring %s', msg.prefix)
         else:
             self.__parent.__call__(irc, msg)
 
@@ -637,8 +639,7 @@ class Privmsg(irclib.IrcCallback):
         start = time.time()
         f(irc, msg, *L)
         elapsed = time.time() - start
-        funcname = '%s.%s' % (f.im_class.__name__, f.im_func.func_name)
-        debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
+        self.log.info('%s took %s seconds', f.im_func.func_name, elapsed)
 
 
 class IrcObjectProxyRegexp(object):
@@ -696,18 +697,15 @@ class PrivmsgRegexp(Privmsg):
                     r = re.compile(value.__doc__, self.flags)
                     self.res.append((r, value))
                 except re.error, e:
-                    s = '%s.%s has an invalid regexp %s: %s' % \
-                        (self.__class__.__name__, name,
-                         value.__doc__, debug.exnToString(e))
-                    debug.msg(s)
+                    self.log.warning('Invalid regexp: %r (%s)',value.__doc__,e)
         self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
 
     def callCommand(self, method, irc, msg, *L):
         try:
             self.__parent.callCommand(method, irc, msg, *L)
         except Exception, e:
-            debug.recoverableException()
-            irc.error(msg, debug.exnToString(e))
+            self.log.exception('Uncaught exception from callCommand:')
+            irc.error(msg, utils.exnToString(e))
 
     def doPrivmsg(self, irc, msg):
         for (r, method) in self.res:
@@ -749,8 +747,8 @@ class PrivmsgCommandAndRegexp(Privmsg):
             self.__parent.callCommand(f, irc, msg, *L)
         except Exception, e:
             if 'catchErrors' in kwargs and kwargs['catchErrors']:
-                irc.error(msg, debug.exnToString(e))
-                debug.recoverableException()
+                self.log.exception('Uncaught exception in callCommand:')
+                irc.error(msg, utils.exnToString(e))
             else:
                 raise
 

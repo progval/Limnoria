@@ -49,7 +49,6 @@ import urlparse
 import sqlite
 
 import conf
-import debug
 import utils
 import ircmsgs
 import ircutils
@@ -176,10 +175,9 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                 cursor = db.cursor()
                 (tinyurl, updateDb) = self._getTinyUrl(url, channel)
                 if tinyurl is None:
-                    debug.msg('tinyurl was None for url %r' % url)
+                    self.log.warning('tinyurl was None for url %r', url)
                     return
                 elif updateDb:
-                    #debug.printf(url)
                     self._updateTinyDb(url, tinyurl, channel)
                 s = '%s (was <%s>)' % (ircutils.bold(tinyurl), url)
                 irc.reply(msg, s, prefixName=False)
@@ -206,7 +204,6 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         if cursor.rowcount == 0:
             updateDb = True
             try:
-                #debug.printf('Trying to get tinyurl for %r' % url)
                 fd = urllib2.urlopen('http://tinyurl.com/create.php?url=%s' %
                                      url)
                 s = fd.read()
@@ -220,14 +217,13 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                 if cmd:
                     raise callbacks.Error, e.msg()
                 else:
-                    debug.msg(e.msg())
+                    self.log.warning(str(e))
         else:
             updateDb = False
             tinyurl = cursor.fetchone()[0]
         return (tinyurl, updateDb)
 
     def _formatUrl(self, url, added, addedBy):
-        #debug.printf((url, added, addedBy))
         when = time.strftime(conf.humanTimestampFormat,
                              time.localtime(int(added)))
         return '<%s> (added by %s at %s)' % (url, addedBy, when)
