@@ -143,7 +143,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         server = self._getNextServer()
         drivers.log.connect(self.currentServer)
         try:
-            self.conn = utils.getSocket(server[0])
+            self.conn = utils.net.getSocket(server[0])
             vhost = conf.supybot.protocols.irc.vhost()
             self.conn.bind((vhost, 0))
         except socket.error, e:
