@@ -81,5 +81,10 @@ class NoteTestCase(PluginTestCase):
         self.assertRegexp('note search --regexp m/1,2/', r'#2')
         self.assertRegexp('note search --sent test', r'#1')
 
+    def testNext(self):
+        self.assertNotError('note send inkedmn testing')
+        _ = self.getMsg(' ')
+        self.assertRegexp('note next', 'testing')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
