@@ -176,7 +176,8 @@ class Alias(callbacks.Privmsg):
         (name, alias) = privmsgs.getArgs(args, needed=2)
         realName = callbacks.canonicalName(name)
         if name != realName:
-            irc.error('That name isn\'t valid.  Try %r instead.' % realName)
+            irc.error(msg, 'That name isn\'t valid.  Try %r instead.' %\
+                realName)
             return
         else:
             name = realName
