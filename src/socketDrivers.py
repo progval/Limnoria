@@ -84,7 +84,7 @@ class SocketDriver(drivers.IrcDriver):
                 # hasn't finished yet.
                 if e.args[0] != 11:
                     log.warning('Disconnect from %s: %s',self.server,e.args[1])
-                    self.die()
+                    self.reconnect(wait=True)
         
     def run(self):
         if not self.connected:
@@ -109,12 +109,11 @@ class SocketDriver(drivers.IrcDriver):
             # Same as with _sendIfMsgs.
             if e.args[0] != 11:
                 log.warning('Disconnect from %s: %s', self.server, e.args[1])
-                self.die()
+                self.reconnect(wait=True)
             return
         self._sendIfMsgs()
         
     def reconnect(self, wait=False):
-        self.conn.close()
         if wait:
             self._scheduleReconnect()
             return
@@ -137,6 +136,8 @@ class SocketDriver(drivers.IrcDriver):
 
     def _scheduleReconnect(self):
         self.irc.reset()
+        if self.connected:
+            self.conn.close()
         self.connected = False
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
