@@ -33,6 +33,16 @@ import sets
 import supybot.utils as utils
 
 class UtilsTest(SupyTestCase):
+    def testExnToString(self):
+        try:
+            raise KeyError, 1
+        except Exception, e:
+            self.assertEqual(utils.exnToString(e), 'KeyError: 1')
+        try:
+            raise EOFError
+        except Exception, e:
+            self.assertEqual(utils.exnToString(e), 'EOFError')
+
     def testMatchCase(self):
         f = utils.matchCase
         self.assertEqual('bar', f('foo', 'bar'))
