@@ -394,9 +394,11 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         else:
             self._whois[(irc, nick)][-1][msg.command] = msg
 
+    do301 = do311
     do312 = do311
     do317 = do311
     do319 = do311
+    do320 = do311
 
     def do318(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
@@ -447,8 +449,20 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
             server = d['312'].args[2]
         else:
             server = '<unknown>'
-        s = '%s (%s) has been on server %s since %s (idle for %s) and %s.' % \
-            (user, hostmask, server, signon, idle, channels)
+        if '301' in d:
+            away = '  %s is away: %s.' % (user, d['301'].args[2])
+        else:
+            away = ''
+        if '320' in d:
+            if d['320'].args[2]:
+                identify = ' identified'
+            else:
+                identify = ''
+        else:
+            identify = ''
+        s = '%s (%s) has been%s on server %s since %s (idle for %s) and '\
+            '%s.%s' % (user, hostmask, identify, server, signon, idle,
+                       channels, away)
         replyIrc.reply(replyMsg, s)
         del self._whois[(irc, nick)]
 
