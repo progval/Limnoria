@@ -29,6 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Provides fun/useless commands that require threads.
+
+Commands include:
+  dns
+"""
+
 from baseplugin import *
 
 import socket
@@ -39,7 +46,7 @@ import callbacks
 
 class ThreadedFunCommands(callbacks.Privmsg):
     threaded = True
-    def nslookup(self, irc, msg, args):
+    def dns(self, irc, msg, args):
         "<host|ip>"
         host = privmsgs.getArgs(args)
         if ircutils.isIP(host):
@@ -54,9 +61,6 @@ class ThreadedFunCommands(callbacks.Privmsg):
                 irc.reply(msg, ip)
             except socket.error:
                 irc.error(msg, 'Host not found.')
-
-    host = nslookup
-    dns = nslookup
 
 
 Class = ThreadedFunCommands
