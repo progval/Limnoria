@@ -483,4 +483,13 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
     else:
         return False
 
+def getUser(irc, s):
+    if ircutils.isHostmask(s):
+        return users.getUserName(s)
+    else:
+        if users.hasUser(s):
+            return s
+        else:
+            return users.getUserName(irc.state.nickToHostmask(s))
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

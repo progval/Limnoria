@@ -119,7 +119,11 @@ class Notes(callbacks.Privmsg):
         if ircutils.isChannel(msg.args[0]): 
             public = 1
         else: 
-            public = 0 
+            public = 0
+        debug.printf(senderID)
+        debug.printf(recipID)
+        debug.printf(public)
+        debug.printf(note)
         self.cursor.execute("""INSERT INTO notes VALUES 
                                (NULL, %s, %s, %s, %s, %s, %s)""", 
                                senderID, recipID, int(time.time()),

@@ -235,7 +235,10 @@ class FunDB(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
 
     def addlart(self, irc, msg, args):
-        """<lart>"""
+        """<lart>
+
+        The target of the lart is represented with '$who'.
+        """
         lart = privmsgs.getArgs(args)
         if lart.find('$who') == -1:
             irc.error(msg, 'There must be an $who in the lart somewhere.')

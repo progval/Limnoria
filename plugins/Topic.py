@@ -56,8 +56,9 @@ class Topic(callbacks.Privmsg):
     def addtopic(self, irc, msg, args):
         "[<channel>] (if not sent in the channel itself) <topic>"
         channel = privmsgs.getChannel(msg, args)
+        capability = ircdb.makeChannelCapability(channel, 'topic')
         topic = privmsgs.getArgs(args)
-        if ircdb.checkCapability(msg.prefix, 'topic'):
+        if ircdb.checkCapability(msg.prefix, capability):
             if topic.find(self.topicSeparator) != -1:
                 s = 'You can\'t have %s in your topic' % self.topicSeparator
                 irc.error(msg, s)
@@ -72,28 +73,30 @@ class Topic(callbacks.Privmsg):
                 newTopic = formattedTopic
             irc.queueMsg(ircmsgs.topic(channel, newTopic))
         else:
-            irc.error(msg, conf.replyNoCapability % 'topic')
+            irc.error(msg, conf.replyNoCapability % capability)
 
     def shuffletopic(self, irc, msg, args):
         "[<channel>] (if not sent in the channel itself)"
         channel = privmsgs.getChannel(msg, args)
-        if ircdb.checkCapability(msg.prefix, 'topic'):
+        capability = ircdb.makeChannelCapability(channel, 'topic')
+        if ircdb.checkCapability(msg.prefix, capability):
             topics = irc.state.getTopic(channel).split(self.topicSeparator)
             random.shuffle(topics)
             newtopic = self.topicSeparator.join(topics)
             irc.queueMsg(ircmsgs.topic(channel, newtopic))
         else:
-            irc.error(msg, conf.replyNoCapability % 'topic')
+            irc.error(msg, conf.replyNoCapability % capability)
 
     def removetopic(self, irc, msg, args):
         "[<channel>] (if not sent in the channel itself) <topic number>"
         channel = privmsgs.getChannel(msg, args)
+        capability = ircdb.makeChannelCapability(channel, 'topic')
         try:
             number = int(privmsgs.getArgs(args))
         except ValueError:
             irc.error(msg, 'The argument must be a number.')
             return
-        if ircdb.checkCapability(msg.prefix, 'topic'):
+        if ircdb.checkCapability(msg.prefix, capability):
             topics = irc.state.getTopic(channel).split(self.topicSeparator)
             topic = topics.pop(number)
             debug.printf(topic)
@@ -105,7 +108,7 @@ class Topic(callbacks.Privmsg):
             newTopic = self.topicSeparator.join(topics)
             irc.queueMsg(ircmsgs.topic(channel, newTopic))
         else:
-            irc.error(msg, conf.replyNoCapability % 'topic')
+            irc.error(msg, conf.replyNoCapability % capability)
 
 
 Class = Topic
