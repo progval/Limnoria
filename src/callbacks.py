@@ -751,14 +751,14 @@ class CommandThread(threading.Thread):
     """Just does some extra logging and error-recovery for commands that need
     to run in threads.
     """
-    def __init__(self, target=None, args=None):
+    def __init__(self, target=None, args=None, kwargs=None):
         (self.name, self.command, self.cb) = args
         world.threadsSpawned += 1
         threadName = 'Thread #%s (for %s.%s)' % (world.threadsSpawned,
                                                  self.cb.name(), self.name)
         log.debug('Spawning thread %s' % threadName)
         threading.Thread.__init__(self, target=target,
-                                  name=threadName, args=args)
+                                  name=threadName, args=args, kwargs=kwargs)
         self.setDaemon(True)
         self.originalThreaded = self.cb.threaded
         self.cb.threaded = True
