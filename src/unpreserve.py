@@ -63,6 +63,7 @@ class Reader(object):
                 self.creator = self.Creator(*self.args, **self.kwargs)
                 self.modifiedCreator = False
                 self.indent = indent
+            (command, rest) = s.split(None, 1)
             command = self.normalizeCommand(command)
             self.modifiedCreator = True
             if hasattr(self.creator, command):
