@@ -173,16 +173,6 @@ error = _logger.error
 critical = _logger.critical
 exception = _logger.exception
 
-printf = curry(_logger.log, 1)
-logging.PRINTF = 1
-logging._levelNames['PRINTF'] = logging.PRINTF
-logging._levelNames[logging.PRINTF] = 'PRINTF'
-
-verbose = curry(_logger.log, 5)
-logging.VERBOSE = 5
-logging._levelNames['VERBOSE'] = logging.VERBOSE
-logging._levelNames[logging.VERBOSE] = 'VERBOSE'
-
 atexit.register(logging.shutdown)
 
 def getPluginLogger(name):
