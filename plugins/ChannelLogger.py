@@ -112,11 +112,11 @@ class ChannelLogger(callbacks.Privmsg):
         self.__parent.__init__()
         self.lastMsg = None
         self.laststate = None
-        self.logs = ircutils.IrcDict()
+        self.logs = {}
         world.flushers.append(self.flush)
 
     def die(self):
-        for log in self.logs.itervalues():
+        for log in self._logs():
             log.close()
         world.flushers = [x for x in world.flushers
                           if hasattr(x, 'im_class') and
@@ -124,7 +124,8 @@ class ChannelLogger(callbacks.Privmsg):
 
     def __call__(self, irc, msg):
         try:
-            super(self.__class__, self).__call__(irc, msg)
+            if msg.args and irc.isChannel(msg.args[0]):
+                super(self.__class__, self).__call__(irc, msg)
             if self.lastMsg:
                 self.laststate.addMsg(irc, self.lastMsg)
             else:
@@ -134,18 +135,23 @@ class ChannelLogger(callbacks.Privmsg):
             self.lastMsg = msg
 
     def reset(self):
-        for log in self.logs.itervalues():
+        for log in self._logs():
             log.close()
         self.logs.clear()
 
+    def _logs(self):
+        for logs in self.logs.itervalues():
+            for log in logs.itervalues():
+                yield log
+
     def flush(self):
         self.checkLogNames()
-        try:
-            for log in self.logs.itervalues():
+        for log in self._logs():
+            try:
                 log.flush()
-        except ValueError, e:
-            if e.args[0] != 'I/O operation on a closed file':
-                self.log.exception('Odd exception:')
+            except ValueError, e:
+                if e.args[0] != 'I/O operation on a closed file':
+                    self.log.exception('Odd exception:')
 
     def logNameTimestamp(self, channel):
         format = self.registryValue('filenameTimestamp', channel)
@@ -174,23 +180,29 @@ class ChannelLogger(callbacks.Privmsg):
         return logDir
 
     def checkLogNames(self):
-        for (channel, log) in self.logs.items():
-            if self.registryValue('rotateLogs', channel):
-                name = self.getLogName(channel)
-                if name != log.name:
-                    log.close()
-                    del self.logs[channel]
+        for (irc, logs) in self.logs.items():
+            for (channel, log) in logs.items():
+                if self.registryValue('rotateLogs', channel):
+                    name = self.getLogName(channel)
+                    if name != log.name:
+                        log.close()
+                        del logs[channel]
 
-    def getLog(self, irc,  channel):
+    def getLog(self, irc, channel):
         self.checkLogNames()
-        if channel in self.logs:
-            return self.logs[channel]
+        try:
+            logs = self.logs[irc]
+        except KeyError:
+            logs = ircutils.IrcDict()
+            self.logs[irc] = logs
+        if channel in logs:
+            return logs[channel]
         else:
             try:
                 name = self.getLogName(channel)
                 logDir = self.getLogDir(irc, channel)
                 log = file(os.path.join(logDir, name), 'a')
-                self.logs[channel] = log
+                logs[channel] = log
                 return log
             except IOError:
                 self.log.exception('Error opening log:')
