@@ -40,8 +40,8 @@ except ImportError:
     sqlite = None
 
 if sqlite is not None:
-    class NotesTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Notes', 'Misc', 'User')
+    class NoteTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Note', 'Misc', 'User')
         def testSendnote(self):
             #print repr(ircdb.users.getUser(self.prefix))
             self.prefix = 'foo!bar@baz'
@@ -49,19 +49,19 @@ if sqlite is not None:
             (id, u) = ircdb.users.newUser()
             u.name = 'inkedmn'
             ircdb.users.setUser(id, u)
-            self.assertRegexp('sendnote inkedmn test', '#1')
-            self.assertError('sendnote alsdkjfasldk foo')
-            self.assertNotRegexp('sendnote inkedmn test2', 'the operation')
+            self.assertRegexp('note send inkedmn test', '#1')
+            self.assertError('note send alsdkjfasldk foo')
+            self.assertNotRegexp('note send inkedmn test2', 'the operation')
 
         def testNote(self):
             # self.assertNotError('note 1')
-            self.assertError('note blah')
+            self.assertError('note get blah')
 
         def testNotes(self):
-            self.assertNotError('notes')
+            self.assertNotError('note list')
 
         def testOldNotes(self):
-            self.assertNotError('oldnotes')
+            self.assertNotError('note list --old')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -52,7 +52,7 @@ import callbacks
 
 dbfilename = os.path.join(conf.dataDir, 'Notes.db')
 
-class Notes(callbacks.Privmsg):
+class Note(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.makeDB(dbfilename)
@@ -109,7 +109,7 @@ class Notes(callbacks.Privmsg):
                               WHERE notes.to_id=%s""", id)
             self.db.commit()
 
-    def sendnote(self, irc, msg, args):
+    def send(self, irc, msg, args):
         """<recipient> <text>
 
         Sends a new note to the user specified.
@@ -146,7 +146,7 @@ class Notes(callbacks.Privmsg):
         id = cursor.fetchone()[0]
         irc.reply(msg, 'Note #%s sent to %s.' % (id, name))
 
-    def note(self, irc, msg, args):
+    def get(self, irc, msg, args):
         """<note id>
 
         Retrieves a single note by its unique note id.
@@ -186,11 +186,16 @@ class Notes(callbacks.Privmsg):
         else:
             return '#%s (private)' % id
 
-    def notes(self, irc, msg, args):
-        """takes no arguments
+    def list(self, irc, msg, args):
+        """[--old]
 
-        Retrieves the ids of all your unread notes.
+        Retrieves the ids of all your unread notes.  If --old is given, list
+        read notes.
         """
+        if '--old' in args:
+            while '--old' in args:
+                args.remove('--old')
+            self._oldnotes(irc, msg, args)
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
@@ -208,7 +213,7 @@ class Notes(callbacks.Privmsg):
             L = [self._formatNoteData(msg, *t) for t in cursor.fetchall()]
             irc.reply(msg, utils.commaAndify(L))
 
-    def oldnotes(self, irc, msg, args):
+    def _oldnotes(self, irc, msg, args):
         """takes no arguments
 
         Returns a list of your most recent old notes.
@@ -230,7 +235,6 @@ class Notes(callbacks.Privmsg):
             irc.reply(msg, utils.commaAndify(ids))
 
 
-
-Class = Notes
+Class = Note
 
 # vim: shiftwidth=4 tabstop=8 expandtab textwidth=78:
