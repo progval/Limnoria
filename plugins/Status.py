@@ -178,11 +178,9 @@ class Status(callbacks.Privmsg):
                     'of system time, for a total of %.2f seconds of CPU '
                     'time.  My children have taken %.2f seconds of user time '
                     'and %.2f seconds of system time for a total of %.2f '
-                    'seconds of CPU time. I\'ve taken a total of %.2f%% of '
-                    'this computer\'s time. Out of %s I have %s active.' % 
+                    'seconds of CPU time.  Out of %s I have %s active.' % 
                     (user, system, user + system,
                      childUser, childSystem, childUser + childSystem,
-                     (user+system+childUser+childSystem)/timeRunning,
                      utils.nItems(world.threadsSpawned, 'thread', 'spawned'),
                      activeThreads))
         mem = None
