@@ -116,12 +116,12 @@ class Status(callbacks.Privmsg):
 
     def inFilter(self, irc, msg):
         self.recvdMsgs += 1
-        self.recvdBytes += len(str(msg))
+        self.recvdBytes += len(msg)
         return msg
 
     def outFilter(self, irc, msg):
         self.sentMsgs += 1
-        self.sentBytes += len(str(msg))
+        self.sentBytes += len(msg)
         return msg
 
     def die(self):
