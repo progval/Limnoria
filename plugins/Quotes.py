@@ -90,11 +90,9 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
                          VALUES(NULL, %s, %s, %s)""",
                        msg.nick, quotetime, quote)
         db.commit()
-        criteria = ['added_by="%s"' % msg.nick]
-        criteria.append('added_at=%s' % quotetime)
-        criteria.append('quote="%s"' % quote)
-        sql = """SELECT id FROM quotes WHERE %s""" % ' AND '.join(criteria)
-        cursor.execute(sql)
+        sql = """SELECT id FROM quotes
+                 WHERE added_by=%s AND added_at=%s AND quote=%s"""
+        cursor.execute(sql, msg.nick, quotetime, quote)
         quoteid = cursor.fetchone()[0]
         irc.reply(msg, '%s (Quote #%s added)' % (conf.replySuccess, quoteid))
 

@@ -42,6 +42,7 @@ import time
 import conf
 import debug
 import utils
+import world
 import irclib
 import drivers
 import ircmsgs
