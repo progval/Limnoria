@@ -544,11 +544,13 @@ class SourceNestedPluginTestCase(PluginTestCase):
         self.assertHelp('help f')
         self.assertHelp('help e g h')
         self.assertHelp('help e g i j')
-        self.assertRegexp('list e', 'f, g h, and g i j')
+        self.assertRegexp('list e', 'f, g h, g i j, and same')
 
     def testCommandSameNameAsNestedPlugin(self):
         cb = self.E(self.irc)
         self.irc.addCallback(cb)
+        self.assertResponse('e f', 'f') # Just to make sure it was loaded.
+        self.assertEqual(cb.getCommand(['e', 'same']), ['e', 'same'])
         self.assertResponse('e same', 'same')
 
                 

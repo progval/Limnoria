@@ -1020,33 +1020,31 @@ class Commands(BasePlugin):
             return self.getCommand(command) == command
 
     def getCommand(self, args):
+        assert args == map(canonicalName, args)
         first = args[0]
-        if len(args) >= 2 and first == self.canonicalName():
-            command = self.getCommand(args[1:])
-            if command:
-                command.insert(0, first)
-                return command
         for cb in self.cbs:
             if first == cb.canonicalName():
-                command = cb.getCommand(args[1:])
-                if command:
-                    command.insert(0, first)
-                    return command
+                return cb.getCommand(args)
         if self.isCommandMethod(first):
             return [first]
+        elif first == self.canonicalName():
+            ret = self.getCommand(args[1:])
+            if ret:
+                return [first] + ret
         return []
     
     def getCommandMethod(self, command):
         """Gets the given command from this plugin."""
+        #print '*** %s.getCommandMethod(%r)' % (self.name(), command)
         assert not isinstance(command, basestring)
         assert command == map(canonicalName, command)
         assert self.getCommand(command) == command
+        for cb in self.cbs:
+            if command[0] == cb.canonicalName():
+                return cb.getCommandMethod(command)
         if len(command) > 1:
-            if command[0] == self.canonicalName():
-                return self.getCommandMethod(command[1:])
-            for cb in self.cbs:
-                if command[0] == cb.canonicalName():
-                    return cb.getCommandMethod(command)
+            assert command[0] == self.canonicalName()
+            return self.getCommandMethod(command[1:])
         else:
             return getattr(self, command[0])
 
@@ -1058,7 +1056,10 @@ class Commands(BasePlugin):
         for cb in self.cbs:
             name = cb.canonicalName()
             for command in cb.listCommands():
-                commands.append(' '.join([name, command]))
+                if command == name:
+                    commands.append(command)
+                else:
+                    commands.append(' '.join([name, command]))
         commands.sort()
         return commands
     
