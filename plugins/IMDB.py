@@ -79,6 +79,7 @@ class IMDB(callbacks.Privmsg):
                 s = '"%s" is apparently a person.  ' \
                     'More information is available at <%s>' % \
                     (movie.title(), movie.url)
+                irc.reply(msg, s)
             else:
                 irc.reply(msg, self._formatMovie(movie))
         elif len(movies) > 20:
