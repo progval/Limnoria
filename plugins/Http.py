@@ -262,7 +262,7 @@ class Http(callbacks.Privmsg):
             url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
                   'config=&forecast=zandh&pands=%s&Submit=GO' % args[0]
 
-        debug.printf(url)
+        #debug.printf(url)
         try:
             fd = urllib2.urlopen(url)
             html = fd.read()
@@ -337,7 +337,7 @@ class Http(callbacks.Privmsg):
         fd.close()
         # The following definitions are stripped and empties are removed.
         defs = filter(None, map(str.strip, self._acronymre.findall(html)))
-        debug.printf(defs)
+        #debug.printf(defs)
         if len(defs) == 0:
             irc.reply(msg, 'No definitions found.')
         else:
