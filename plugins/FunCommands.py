@@ -44,7 +44,6 @@ import sys
 import new
 import md5
 import sha
-import this
 import time
 import math
 import cmath
@@ -56,6 +55,12 @@ import inspect
 import telnetlib
 import threading
 import mimetypes
+
+# Stupid printing on import...
+from cStringIO import StringIO
+sys.stdout = StringIO()
+import this
+sys.stdout = sys.__stdout__
 
 #import conf
 import debug
