@@ -31,9 +31,7 @@
 
 from testsupport import *
 
-import supybot.conf as conf
-
-class AdminTestCase(PluginTestCase, PluginDocumentation):
+class AdminTestCase(PluginTestCase):
     plugins = ('Admin',)
     def testChannels(self):
         def getAfterJoinMessages():
@@ -119,9 +117,13 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
         self.assertEqual(m.args[0], '#foo,#bar')
 
     def testNick(self):
-        m = self.getMsg('nick foobar')
-        self.assertEqual(m.command, 'NICK')
-        self.assertEqual(m.args[0], 'foobar')
+        original = conf.supybot.nick()
+        try:
+            m = self.getMsg('nick foobar')
+            self.assertEqual(m.command, 'NICK')
+            self.assertEqual(m.args[0], 'foobar')
+        finally:
+            conf.supybot.nick.setValue(original)
 
     def testAddCapabilityOwner(self):
         self.assertError('admin addcapability %s owner' % self.nick)
