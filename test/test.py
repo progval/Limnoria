@@ -56,6 +56,7 @@ supybot.protocols.irc.throttleTime: 0
 supybot.reply.whenAddressedBy.chars: @
 supybot.networks.test.server: should.not.need.this
 supybot.nick: test
+supybot.databases.users.allowUnregistration: True
 """)
 fd.close()
 
