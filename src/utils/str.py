@@ -318,7 +318,15 @@ def has(i):
     else:
         return 'have'
 
-_formatRe = re.compile('%([isfbhL])')
+def toBool(s):
+    s = s.strip().lower()
+    if s in ('true', 'on', 'enable', 'enabled', '1'):
+        return True
+    elif s in ('false', 'off', 'disable', 'disabled', '0'):
+        return False
+    else:
+        raise ValueError, 'Invalid string for toBool: %s' % quoted(s)
+
 def format(s, *args, **kwargs):
     kwargs.setdefault('decimalSeparator', decimalSeparator)
     kwargs.setdefault('thousandsSeparator', thousandsSeparator)
@@ -344,13 +352,4 @@ def format(s, *args, **kwargs):
             assert False, 'Invalid char in sub (in format).'
     return _formatRe.sub(sub, s)
             
-def toBool(s):
-    s = s.strip().lower()
-    if s in ('true', 'on', 'enable', 'enabled', '1'):
-        return True
-    elif s in ('false', 'off', 'disable', 'disabled', '0'):
-        return False
-    else:
-        raise ValueError, 'Invalid string for toBool: %s' % quoted(s)
-
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
