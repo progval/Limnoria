@@ -69,8 +69,7 @@ def configure(advanced):
     while yn('Would you like to add a file?'):
         filename = something('What\'s the filename?')
         try:
-            dataDir = conf.supybot.directories.data()
-            fd = file(os.path.join(dataDir, filename))
+            fd = file(filename)
         except EnvironmentError, e:
             output('I couldn\'t open that file: %s' % e)
             continue
