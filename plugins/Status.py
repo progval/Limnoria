@@ -59,48 +59,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Status')
 
-class UptimeDB(object):
-    def __init__(self, filename='uptimes'):
-        dataDir = conf.supybot.directories.data()
-        self.filename = os.path.join(dataDir, filename)
-        if os.path.exists(self.filename):
-            fd = file(self.filename)
-            s = fd.read()
-            fd.close()
-            s = s.replace('\n', ' ')
-            self.uptimes = eval(s)
-        else:
-            self.uptimes = []
-
-    def die(self):
-        fd = file(self.filename, 'w')
-        fd.write(repr(self.top(50)))
-        fd.write('\n')
-        fd.close()
-
-    def add(self):
-        if world.startedAt != 0 and \
-           not any(lambda t: t[0] == world.startedAt, self.uptimes):
-            self.uptimes.append((world.startedAt, None))
-
-    def top(self, n=3):
-        def decorator(t):
-            return t[1] - t[0]
-        def invertCmp(cmp):
-            def f(x, y):
-                return -cmp(x, y)
-            return f
-        def notNone(t):
-            return t[1] is not None and t[0] != 0
-        utils.sortBy(decorator, self.uptimes, cmp=invertCmp(cmp))
-        return list(islice(ifilter(notNone, self.uptimes), n))
-
-    def update(self):
-        for (i, t) in enumerate(self.uptimes):
-            if t[0] == world.startedAt:
-                self.uptimes[i] = (t[0], time.time())
-        
-
 class Status(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -126,24 +84,6 @@ class Status(callbacks.Privmsg):
     def die(self):
         self.uptimes.update()
         self.uptimes.die()
-
-    def bestuptime(self, irc, msg, args):
-        """takes no arguments
-
-        Returns the highest uptimes attained by the bot.
-        """
-        L = self.uptimes.top()
-        if not L:
-            irc.error('I don\'t have enough data to answer that.')
-            return
-        def format((started, ended)):
-            return '%s until %s; up for %s' % \
-                   (time.strftime(conf.supybot.humanTimestampFormat(),
-                                  time.localtime(started)),
-                    time.strftime(conf.supybot.humanTimestampFormat(),
-                                  time.localtime(ended)),
-                    utils.timeElapsed(ended-started))
-        irc.reply(utils.commaAndify(imap(format, L)))
 
     def net(self, irc, msg, args):
         """takes no arguments

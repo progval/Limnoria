@@ -37,12 +37,6 @@ import world
 
 class StatusTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Status',)
-    def testBestuptime(self):
-        self.assertNotRegexp('bestuptime', '33 years')
-        self.assertNotError('unload Status')
-        self.assertNotError('load Status')
-        self.assertNotError('bestuptime')
-
     def testNetstats(self):
         self.assertNotError('net')
 

@@ -1,3 +1,6 @@
+	* Removed Status.bestuptime, since it was buggy and no one felt
+	like maintaining it.
+	
 	* Added Http.cyborg, a fun little command for getting cyborg
 	abbreviations for names.
 	
