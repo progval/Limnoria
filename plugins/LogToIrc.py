@@ -39,6 +39,8 @@ __revision__ = "$Id$"
 import plugins
 
 import logging
+import os.path
+from itertools import imap
 
 import log
 import conf
@@ -59,6 +61,7 @@ class IrcHandler(logging.Handler):
             s = utils.normalizeWhitespace(self.format(record))
         except:
             self.handleError(record)
+            return
         for target in config.targets():
             msgmaker = ircmsgs.privmsg
             if config.notice() and not ircutils.isChannel(target):
@@ -94,14 +97,19 @@ class IrcHandler(logging.Handler):
                         
                         
 class IrcFormatter(log.Formatter):
-    def formatException(self, ei):
-        import cStringIO
-        import traceback
-        sio = cStringIO.StringIO()
-        traceback.print_exception(ei[0], ei[1], None, None, sio)
-        s = sio.getvalue()
-        sio.close()
-        return s
+    def formatException(self, (E, e, tb)):
+        L = [utils.exnToString(e), '::']
+        while tb:
+            lineno = tb.tb_lineno
+            code = tb.tb_frame.f_code
+            function = code.co_name
+            filename = os.path.basename(code.co_filename)
+            L.append('[%s|%s|%s]' % (filename, function, lineno))
+            tb = tb.tb_next
+        del tb
+        while sum(imap(len, L)) > 425:
+            L.pop()
+        return ' '.join(L)
 
 
 class ColorizedIrcFormatter(IrcFormatter):
@@ -117,9 +125,9 @@ class ColorizedIrcFormatter(IrcFormatter):
         s = IrcFormatter.format(self, record, *args, **kwargs)
         if conf.supybot.plugins.LogToIrc.colorized():
             if record.levelno == logging.CRITICAL:
-                s = ircutils.bold(ircutils.mircColor(s, fg='red'))
+                s = ircutils.bold(ircutils.bold(s))
             elif record.levelno == logging.ERROR:
-                s = ircutils.mircColor(s, fg='orange')
+                s = ircutils.mircColor(s, fg='red')
             elif record.levelno == logging.WARNING:
                 s = ircutils.mircColor(s, fg='yellow')
         return s
