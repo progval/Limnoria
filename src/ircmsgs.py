@@ -79,7 +79,10 @@ class IrcMsg(object):
         self._user = user
         self._host = host
         self._command = command
+        if self.command == 'NICK':
+            self._args[0] = ircutils.nick(self._args[0])
         self._args = tuple(args)
+            
 
     prefix = property(lambda self: self._prefix)
     nick = property(lambda self: self._nick)
