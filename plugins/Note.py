@@ -35,6 +35,7 @@ users that can be retrieved later.
 """
 
 __revision__ = "$Id$"
+__author__ = "Daniel DiPaolo (Strike) <ddipaolo AT users DOT sf DOT net>"
 
 import plugins
 

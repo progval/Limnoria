@@ -35,6 +35,7 @@ random "I dunno"-like responses.
 """
 
 __revision__ = "$Id$"
+__author__ = "Daniel DiPaolo (Strike) <ddipaolo AT users DOT sf DOT net>"
 
 import os
 import time
