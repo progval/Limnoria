@@ -81,7 +81,6 @@ class AsyncoreDriver(asynchat.async_chat, object):
         def makeNewDriver():
             self.irc.reset()
             driver = self.__class__(self.server, self.irc)
-            driver.irc.driver = driver
         schedule.addEvent(makeNewDriver, when)
 
     def writable(self):
