@@ -203,21 +203,22 @@ class Channel(callbacks.Privmsg):
     kick = privmsgs.checkChannelCapability(kick, 'op')
 
     def kban(self, irc, msg, args):
-        """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] 
+        """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]
 
         If you have the #channel,op capability, this will kickban <nick> for
         as many seconds as you specify, or else (if you specify 0 seconds or
         don't specify a number of seconds) it will ban the person indefinitely.
         --exact bans only the exact hostmask; --nick bans just the nick;
         --user bans just the user, and --host bans just the host.  You can
-        combine these options as you choose.
+        combine these options as you choose.  <reason> is a reason to give for
+        the kick.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
         channel = privmsgs.getChannel(msg, args)
         (optlist, rest) = getopt.getopt(args, '', ['exact', 'nick',
                                                    'user', 'host'])
-        (bannedNick, length) = privmsgs.getArgs(rest, optional=1)
+        (bannedNick, length, reason) = privmsgs.getArgs(rest, optional=2)
         # Check that they're not trying to make us kickban ourself.
         if not ircutils.isNick(bannedNick):
             self.log.warning('%r tried to kban a non nick: %r',
@@ -230,8 +231,14 @@ class Channel(callbacks.Privmsg):
         try:
             length = int(length or 0)
         except ValueError:
-            irc.error('Ban length must be a valid integer.')
-            return
+            if reason:
+                reason = ' '.join((length, reason))
+                length = 0
+            else:
+                irc.error('Ban length must be a valid integer.')
+                return
+        if not reason:
+            reason = msg.nick
         try:
             bannedHostmask = irc.state.nickToHostmask(bannedNick)
         except KeyError:
@@ -272,8 +279,10 @@ class Channel(callbacks.Privmsg):
         # #channel,op and the bannee doesn't have #channel,op; or that the
         # bannee and the banner are both the same person.
         def doBan():
+            if bannedNick in irc.state.channels[channel].ops:
+                irc.queueMsg(ircmsgs.deop(channel, bannedNick))
             irc.queueMsg(ircmsgs.ban(channel, banmask))
-            irc.queueMsg(ircmsgs.kick(channel, bannedNick, msg.nick))
+            irc.queueMsg(ircmsgs.kick(channel, bannedNick, reason))
             if length > 0:
                 def f():
                     irc.queueMsg(ircmsgs.unban(channel, banmask))
