@@ -55,21 +55,14 @@ def configure(onStart, afterConnect, advanced):
 
 class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
-    regexps = sets.Set(['gameknotSnarfer'])
+    regexps = sets.Set(['gameknotSnarfer', 'gameknotStatsSnarfer'])
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
     _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
         '"#FFFF00">(\d+)')
     _gkteam = re.compile(r'Team:(<.*?>)+(?P<name>.*?)</span>')
     _gkseen = re.compile(r'(seen on GK:\s+([^[]+)\s+|.*?is hiding.*?)')
-    def gkstats(self, irc, msg, args):
-        """<name>
-
-        Returns the stats Gameknot keeps on <name>.  Gameknot is an online
-        website for playing chess (rather similar to correspondence chess, just
-        somewhat faster) against players from all over the world.
-        """
-        name = privmsgs.getArgs(args)
+    def getStats(self, name):
         gkprofile = 'http://www.gameknot.com/stats.pl?%s' % name
         try:
             fd = urllib2.urlopen(gkprofile)
@@ -92,20 +85,32 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 games = '%s active games' % games
             if 'Team:' in profile:
                 team = self._gkteam.search(profile).group('name')
-                irc.reply(msg, '%s (team: %s) is rated %s and has %s ' \
-                          'and a record of W-%s, L-%s, D-%s.  %s' % \
-                          (name, team, rating, games, w, l, d, seen))
+                s = '%s (team: %s) is rated %s and has %s ' \
+                    'and a record of W-%s, L-%s, D-%s.  %s' % \
+                    (name, team, rating, games, w, l, d, seen)
             else:
-                irc.reply(msg, '%s is rated %s and has %s ' \
-                          'and a record of W-%s, L-%s, D-%s.  %s' % \
-                          (name, rating, games, w, l, d, seen))
+                s = '%s is rated %s and has %s ' \
+                    'and a record of W-%s, L-%s, D-%s.  %s' % \
+                    (name, rating, games, w, l, d, seen)
+            return s
         except AttributeError:
             if ('User %s not found!' % name) in profile:
-                irc.error(msg, 'No user %s exists.' % name)
+                raise callbacks.Error, 'No user %s exists.' % name
             else:
-                irc.error(msg, 'The format of the page was odd.')
+                raise callbacks.Error, 'The format of the page was odd.'
         except urllib2.URLError:
-            irc.error(msg, 'Couldn\'t connect to gameknot.com.')
+            raise callbacks.Error, 'Couldn\'t connect to gameknot.com'
+        
+        
+    def gkstats(self, irc, msg, args):
+        """<name>
+
+        Returns the stats Gameknot keeps on <name>.  Gameknot is an online
+        website for playing chess (rather similar to correspondence chess, just
+        somewhat faster) against players from all over the world.
+        """
+        name = privmsgs.getArgs(args)
+        irc.reply(msg, self.getStats(name))
 
     _gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
     _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
@@ -139,6 +144,12 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
               'That doesn\'t appear to be a proper Gameknot game.'))
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
+
+    def gameknotStatsSnarfer(self, irc, msg, match):
+        r"http://gameknot\.com/stats\.pl\?([^&]+)"
+        name = match.group(1)
+        s = self.getStats(name)
+        irc.queueMsg(ircmsgs.privmsg(msg.args[0], s))
 
 Class = Gameknot
 
