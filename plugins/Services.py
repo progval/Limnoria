@@ -66,6 +66,10 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.nickserv = ''
+        self.reset()
+
+    def reset(self):
+        self.got376 = False
 
     def start(self, irc, msg, args):
         """<nick> <password> [<nickserv> <chanserv>]
@@ -94,6 +98,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def _doIdentify(self, irc):
         assert self.nickserv, 'Nickserv must not be empty.'
+        assert irc.nick == self.nick, 'Identifying with not normal nick.'
         self.log.info('Sending identify (current nick: %s)' % irc.nick)
         identify = 'IDENTIFY %s' % self.password
         # It's important that this next statement is irc.sendMsg, not
@@ -117,22 +122,28 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self.sentGhost = False
 
     def do376(self, irc, msg):
+        self.got376 = True
         if self.nickserv: # Check to see if we're started.
             assert self.nick, 'Services: Nick must not be empty.'
             if irc.nick == self.nick:
                 self._doIdentify(irc)
             else:
                 self._doGhost(irc)
-                self._doIdentify(irc)
         else:
             self.log.warning('do376 called without plugin being started.')
     do422 = do377 = do376
 
     def do433(self, irc, msg):
-        if self.nickserv:
+        if self.nickserv and self.got376:
             self._doGhost(irc)
         else:
             self.log.warning('do433 called without plugin being started.')
+
+    def doNick(self, irc, msg):
+        if msg.args[0] == self.nick:
+            hostmask = '*!' + '@'.join(ircutils.splitHostmask(msg.prefix)[1:])
+            if ircutils.hostmaskPatternEqual(hostmask, irc.prefix):
+                self._doIdentify(irc)
 
     def doNotice(self, irc, msg):
         if self.nickserv and msg.nick == self.nickserv:
