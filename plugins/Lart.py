@@ -85,9 +85,6 @@ class Lart(plugins.ChannelIdDatabasePlugin):
             (target, reason) = map(str.strip, text.split(' for ', 1))
         else:
             (target, reason) = (text, '')
-        if ircutils.strEqual(target, irc.nick):
-            target = msg.nick
-            reason = 'trying to dis me'
         if id is not None:
             try:
                 lart = self.db.get(channel, id)
@@ -100,10 +97,14 @@ class Lart(plugins.ChannelIdDatabasePlugin):
                 irc.error('There are no larts in my database for %s.' %channel)
                 return
         text = self._replaceFirstPerson(lart.text, msg.nick)
-        reason = self._replaceFirstPerson(reason, msg.nick)
+        if ircutils.strEqual(target, irc.nick):
+            target = msg.nick
+            reason = self._replaceFirstPerson('trying to dis me', irc.nick)
+        else:
+            target = self._replaceFirstPerson(target, msg.nick)
+            reason = self._replaceFirstPerson(reason, msg.nick)
         if target.endswith('.'):
             target = target.rstrip('.')
-        target = self._replaceFirstPerson(target, msg.nick)
         text = text.replace('$who', target)
         if reason:
             text += ' for ' + reason
