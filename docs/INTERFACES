@@ -1,0 +1,87 @@
+These are the interfaces of some of the objects you'll deal with if
+you code for Supybot.
+
+ircmsgs.IrcMsg:
+	This is the object that represents an IRC message.  It has
+	several methods and attributes.  The most important thing
+	about this class, however, is that it *is* hashable, and thus
+	*cannot* be modified.  Do not change any attributes; any code
+	that modifies an IRC message is *broken* and should not
+	exist.
+
+	Interesting Methods:
+		    __init__: One of the more complex initializers in 
+		    a class.  It can be used in three different ways:
+
+		    1) It can be given a string, as one received from
+                       the server, which it will then parse into its
+                       separate components and instantiate the class
+                       with those components as attributes.
+
+		    2) It can be given a command, some (optional)
+                       arguments, and a (optional) prefix, and will
+                       instantiate the class with those components as
+                       attributes.
+
+		    3) It can be given, in addition to any of the
+                       above arguments, a 'msg' keyword argument that
+                       will use the attributes of msg as defaults.
+                       This exists to make it easier to copy
+                       messages, since the class is immutable.
+
+		    __str__: This returns the message in a string form
+		    suitable for sending to a server.
+
+		    __repr__: This returns the message in a form
+		    suitable for eval(), assuming the name "IrcMsg" is
+		    in your namespace and is bound to this class.
+
+	Interesting Attributes:
+		    This is the meat of this class.  These are
+		    generally what you'll be looking at with IrcMsgs.
+
+		    command: This is the command of the IrcMsg --
+		    PRIVMSG, NOTICE, WHOIS, etc.
+
+		    args: This is a tuple of the arguments to the
+		    IrcMsg.  Some messages have arguments, some don't,
+		    depending on what command they are.  You are, of
+		    course, always assured that args exists and is a
+		    tuple, though it might be empty.
+
+		    prefix: This is the hostmask of the person/server
+		    the message is from.  In general, you won't be
+		    setting this on your outgoing messages, but
+		    incoming messages will always have one.  This is
+		    the whole hostmask; if the message was received
+		    from a server, it'll be the server's hostmask; if
+		    the message was received from a user, it'll be the
+		    whole user hostmask.  In that case, however, it's
+		    also parsed out into the nick/user/host
+		    attributes, which are probably more useful to
+		    check for many purposes.
+
+		    nick: If the message was sent by a user, this will
+		    be the nick of the user.  If it was sent by a
+		    server, this will be the server's name (something
+		    like calvino.freenode.net or similar).
+
+		    user: If the message was sent by a user, this will
+		    be the user string of the user -- what they put
+		    into their IRC client for their "full name."  If
+		    it was sent by a server, it'll be the server's
+		    name, again.
+
+		    host: If the message was sent by a user, this will
+		    be the host portion of their hostmask.  If it was
+		    sent by a server, it'll be the server's name (yet
+		    again :))
+		 
+                       
+irclib.Irc:
+	This is the object to handle everything about IRC except the
+	actual connection to the server itself.
+
+	Interesting attributes:
+		    nick: the current nick of the bot.
+		    prefix: the current prefix of the bot.
