@@ -56,7 +56,7 @@ class Notes(callbacks.Privmsg):
 
     def makeDB(self):
         "create Notes database and tables"
-        self.db = sqlite.connect(self.filename)
+        self.db = sqlite.connect(self.filename, converters={'bool': bool})
         self.cursor = self.db.cursor()
         self.cursor.execute("""CREATE TABLE users (
                                id INTEGER PRIMARY KEY,
