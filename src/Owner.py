@@ -215,6 +215,13 @@ class LogProxy(object):
     def __getattr__(self, attr):
         return getattr(self.log, attr)
 
+conf.registerPlugin('Owner')
+conf.registerGlobalValue(conf.supybot.plugins.Owner, 'quitMsg',
+    registry.String('', """Determines what quit message will be used by default.
+    If the quit command is called without a quit message, this will be used.  If
+    this value is empty, the nick of the person giving the quit command will be
+    used."""))
+
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
@@ -510,10 +517,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         """[<text>]
 
         Exits the bot with the QUIT message <text>.  If <text> is not given,
-        your nick will be substituted.
+        the default quit message (supybot.plugins.Owner.quitMsg) will be used.
+        If there is no default quitMsg set, your nick will be used.
         """
         if not text:
-            text = msg.nick
+            text = self.registryValue('quitMsg') or msg.nick
         irc.noReply()
         m = ircmsgs.quit(text)
         world.upkeep()
