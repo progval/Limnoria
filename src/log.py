@@ -268,6 +268,7 @@ class ValidLogLevel(registry.String):
         level = logging.getLevelName(self.value)
         if level.startswith('Level'):
             level = level.split()[-1]
+        return level
 
 class LogLevel(ValidLogLevel):
     """Invalid log level.  Value must be either DEBUG, INFO, WARNING, ERROR,
