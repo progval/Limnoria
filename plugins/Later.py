@@ -65,7 +65,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Later, 'maximum',
     registry.NonNegativeInteger(0, """Determines the maximum number of messages
     to be queued for a user.  If this value is 0, there is no maximum."""))
 conf.registerGlobalValue(conf.supybot.plugins.Later, 'private',
-    registry.Boolean(False, """Determines whether users will be notified in the
+    registry.Boolean(True, """Determines whether users will be notified in the
     first place in which they're seen, or in private."""))
 
 class Later(callbacks.Privmsg):
