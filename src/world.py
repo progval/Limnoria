@@ -41,15 +41,14 @@ import sre
 import time
 import types
 import atexit
-try:
-    import msvcrt
-except ImportError:
-    pass
+import threading
 
 import conf
 import debug
 
 startedAt = 0.0
+
+mainThread = threading.currentThread()
 
 threadsSpawned = 1 # Starts at one for the initial "thread."
 commandsProcessed = 0
@@ -75,7 +74,10 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
     collected = gc.collect()
     if os.name == 'nt':
         try:
+            import msvcrt
             msvcrt.heapmin()
+        except ImportError:
+            pass
         except IOError: # Win98 sux0rs!
             pass
     if gc.garbage:

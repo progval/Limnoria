@@ -59,7 +59,7 @@ import callbacks
 
 import Owner
 
-dbfilename = os.path.join(conf.dataDir, 'MoobotFactoids.db')
+dbfilename = os.path.join(conf.dataDir, 'MoobotFactoids')
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
@@ -118,41 +118,46 @@ class OptionList(object):
 def pickOptions(s):
     return OptionList().tokenize(s)
 
+
+class MoobotDBHandler(plugins.DBHandler):
+    def makeDb(self, filename):
+        """create MoobotFactoids database and tables"""
+        if os.path.exists(filename):
+            db = sqlite.connect(filename)
+        else:
+            db = sqlite.connect(filename, converters={'bool': bool})
+            cursor = db.cursor()
+            cursor.execute("""CREATE TABLE factoids (
+                              key TEXT PRIMARY KEY,
+                              created_by INTEGER,
+                              created_at TIMESTAMP,
+                              modified_by INTEGER,
+                              modified_at TIMESTAMP,
+                              locked_at TIMESTAMP,
+                              locked_by INTEGER,
+                              last_requested_by TEXT,
+                              last_requested_at TIMESTAMP,
+                              fact TEXT,
+                              requested_count INTEGER
+                              )""")
+            db.commit()
+        return db
+
+    
 class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     priority = 98
     addressedRegexps = ['changeFactoid', 'augmentFactoid',
                         'replaceFactoid', 'addFactoid']
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        self.makeDb(dbfilename)
-
-    def makeDb(self, filename):
-        """create MoobotFactoids database and tables"""
-        if os.path.exists(filename):
-            self.db = sqlite.connect(filename)
-            return
-        self.db = sqlite.connect(filename, converters={'bool': bool})
-        cursor = self.db.cursor()
-        cursor.execute("""CREATE TABLE factoids (
-                          key TEXT PRIMARY KEY,
-                          created_by INTEGER,
-                          created_at TIMESTAMP,
-                          modified_by INTEGER,
-                          modified_at TIMESTAMP,
-                          locked_at TIMESTAMP,
-                          locked_by INTEGER,
-                          last_requested_by TEXT,
-                          last_requested_at TIMESTAMP,
-                          fact TEXT,
-                          requested_count INTEGER
-                          )""")
-        self.db.commit()
+        self.dbHandler = MoobotDBHandler(dbfilename)
 
     def die(self):
         # Handle DB stuff
-        self.db.commit()
-        self.db.close()
-        del self.db
+        db = self.dbHandler.getDb()
+        db.commit()
+        db.close()
+        del db
 
     def parseFactoid(self, irc, msg, fact):
         type = "define"  # Default is to just spit the factoid back as a
@@ -171,14 +176,15 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
 
     def updateFactoidRequest(self, key, hostmask):
         """Updates the last_requested_* fields of a factoid row"""
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""UPDATE factoids SET
                           last_requested_by = %s,
                           last_requested_at = %s,
                           requested_count = requested_count +1
                           WHERE key = %s""",
                           hostmask, int(time.time()), key)
-        self.db.commit()
+        db.commit()
 
     def invalidCommand(self, irc, msg, tokens):
         key = ' '.join(tokens)
@@ -186,7 +192,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         if key.startswith('\x01'):
             return
         # Check the factoid db for an appropriate reply
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT fact FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             return False
@@ -210,7 +217,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     def addFactoid(self, irc, msg, match):
         r"^(.+?)\s+(?:is|_is_)\s+(.+)"
         # First, check and see if the entire message matches a factoid key
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT * FROM factoids WHERE key LIKE %s""",
                        match.group().rstrip('?! '))
         if cursor.rowcount != 0:
@@ -240,7 +248,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           (%s, %s, %s, NULL, NULL, NULL, NULL, NULL, NULL,
                            %s, 0)""",
                            key, id, int(time.time()), fact)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
     def changeFactoid(self, irc, msg, match):
@@ -252,7 +260,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, conf.replyNotRegistered)
             return
         key, regexp = match.groups()
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         # Check and make sure it's in the DB 
         cursor.execute("""SELECT locked_at, fact FROM factoids
                           WHERE key LIKE %s""", key)
@@ -275,7 +284,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           SET fact = %s, modified_by = %s,   
                           modified_at = %s WHERE key = %s""",
                           new_fact, id, int(time.time()), key)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
     def augmentFactoid(self, irc, msg, match):
@@ -287,7 +296,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, conf.replyNotRegistered)
             return
         key, new_text = match.groups()
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         # Check and make sure it's in the DB 
         cursor.execute("""SELECT locked_at, fact FROM factoids
                           WHERE key LIKE %s""", key)
@@ -305,7 +315,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           SET fact = %s, modified_by = %s,
                           modified_at = %s WHERE key = %s""",
                           new_fact, id, int(time.time()), key)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
     def replaceFactoid(self, irc, msg, match):
@@ -322,7 +332,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         if '_is_' in match.group():
             key, new_fact = imap(str.strip, match.group().split('_is_', 1))
             key = key.split(' ', 1)[1]  # Take out everything to first space
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         # Check and make sure it's in the DB 
         cursor.execute("""SELECT locked_at, fact FROM factoids
                           WHERE key LIKE %s""", key)
@@ -343,7 +354,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           locked_at = NULL
                           WHERE key = %s""",
                           new_fact, id, int(time.time()), key)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
     def literal(self, irc, msg, args):
@@ -353,7 +364,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         the factoid value is done as it is with normal retrieval.
         """
         key = privmsgs.getArgs(args, required=1)
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT fact FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "No such factoid: %r" % key)
@@ -371,7 +383,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         # Start building the response string
         s = key + ": "
         # Next, get all the info and build the response piece by piece
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT created_by, created_at, modified_by,
                           modified_at, last_requested_by, last_requested_at,
                           requested_count, locked_by, locked_at FROM
@@ -418,7 +431,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, conf.replyNotRegistered)
             return
         key = privmsgs.getArgs(args, required=1)
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT created_by, locked_by FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
@@ -450,7 +464,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
            id = None
         cursor.execute("""UPDATE factoids SET locked_at = %s, locked_by = %s
                           WHERE key = %s""", locked_at, id, key)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
     def lock(self, irc, msg, args):
@@ -484,7 +498,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         method = getattr(self, '_most%s' % arg, None)
         if method is None:
             raise callbacks.ArgumentError
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM factoids""")
         if int(cursor.fetchone()[0]) == 0:
             irc.error(msg, 'I don\'t have any factoids in my database!')
@@ -535,7 +550,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         except KeyError:
             irc.error(msg, "No such user: %r" % author)
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT key FROM factoids
                           WHERE created_by = %s
                           ORDER BY key""", id)
@@ -554,7 +570,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         """
         search = privmsgs.getArgs(args, required=1)
         glob = '%' + search + '%'
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT key FROM factoids
                           WHERE key LIKE %s
                           ORDER BY key""",
@@ -574,7 +591,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         """
         search = privmsgs.getArgs(args, required=1)
         glob = '%' + search + '%'
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT key FROM factoids
                           WHERE fact LIKE %s
                           ORDER BY key""",
@@ -599,7 +617,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, conf.replyNotRegistered)
             return
         key = privmsgs.getArgs(args, required=1)
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT key, locked_at FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
@@ -610,7 +629,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, "Factoid is locked, cannot remove.")
             return
         cursor.execute("""DELETE FROM factoids WHERE key = %s""", key)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
 Class = MoobotFactoids

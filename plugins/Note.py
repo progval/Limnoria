@@ -47,54 +47,62 @@ import debug
 import utils
 import ircdb
 import ircmsgs
+import plugins
 import privmsgs
 import ircutils
 import callbacks
 
 dbfilename = os.path.join(conf.dataDir, 'Notes.db')
 
+class NoteDb(plugins.DBHandler):
+    def makeDb(self, filename):
+        "create Notes database and tables"
+        if os.path.exists(filename):
+            db = sqlite.connect(filename)
+        else:
+            db = sqlite.connect(filename, converters={'bool': bool})
+            cursor = db.cursor()
+            cursor.execute("""CREATE TABLE notes (
+                              id INTEGER PRIMARY KEY,
+                              from_id INTEGER,
+                              to_id INTEGER,
+                              added_at TIMESTAMP,
+                              notified BOOLEAN,
+                              read BOOLEAN,
+                              public BOOLEAN,
+                              note TEXT
+                              )""")
+            db.commit()
+        return db
+        
+
+
 class Note(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.makeDB(dbfilename)
-
-    def makeDB(self, filename):
-        "create Notes database and tables"
-        if os.path.exists(filename):
-            self.db = sqlite.connect(filename)
-            return
-        self.db = sqlite.connect(filename, converters={'bool': bool})
-        cursor = self.db.cursor()
-        cursor.execute("""CREATE TABLE notes (
-                          id INTEGER PRIMARY KEY,
-                          from_id INTEGER,
-                          to_id INTEGER,
-                          added_at TIMESTAMP,
-                          notified BOOLEAN,
-                          read BOOLEAN,
-                          public BOOLEAN,
-                          note TEXT
-                          )""")
-        self.db.commit()
+        self.dbHandler = NoteDb(name=os.path.join(conf.dataDir, 'Notes'))
 
     def setAsRead(self, id):
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""UPDATE notes
                           SET read=1, notified=1
                           WHERE id=%s""", id)
-        self.db.commit()
+        db.commit()
 
     def die(self):
-        self.db.commit()
-        self.db.close()
-        del self.db
+        db = self.dbHandler.getDb()
+        db.commit()
+        db.close()
+        del db
 
     def doPrivmsg(self, irc, msg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM notes
                           WHERE notes.to_id=%s AND notified=0""", id)
         unnotified = int(cursor.fetchone()[0])
@@ -108,7 +116,7 @@ class Note(callbacks.Privmsg):
             irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
             cursor.execute("""UPDATE notes SET notified=1
                               WHERE notes.to_id=%s""", id)
-            self.db.commit()
+            db.commit()
 
     def send(self, irc, msg, args):
         """<recipient> <text>
@@ -135,12 +143,13 @@ class Note(callbacks.Privmsg):
             public = 1
         else:
             public = 0
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         now = int(time.time())
         cursor.execute("""INSERT INTO notes VALUES
                           (NULL, %s, %s, %s, 0, 0, %s, %s)""",
                        fromId, toId, now, public, note)
-        self.db.commit()
+        db.commit()
         cursor.execute("""SELECT id FROM notes WHERE
                           from_id=%s AND to_id=%s AND added_at=%s""",
                        fromId, toId, now)
@@ -158,7 +167,8 @@ class Note(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT note, to_id, from_id, added_at, public
                           FROM notes
                           WHERE (to_id=%s OR from_id=%s) AND id=%s""",
@@ -202,7 +212,8 @@ class Note(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT id, from_id, public
                           FROM notes
                           WHERE notes.to_id=%s AND notes.read=0""", id)
@@ -224,7 +235,8 @@ class Note(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT id, from_id, public
                           FROM notes
                           WHERE notes.to_id=%s AND notes.read=1""", id)

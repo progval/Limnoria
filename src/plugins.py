@@ -54,11 +54,49 @@ import ircutils
 import privmsgs
 import callbacks
 
+try:
+    import sqlite
+    Connection = sqlite.Connection
+    class MyConnection(sqlite.Connection):
+        def commit(self, *args, **kwargs):
+            if self.autocommit:
+                return
+            else:
+                Connection.commit(self, *args, **kwargs)
+    sqlite.Connection = MyConnection
+except ImportError:
+    pass
+
+class DBHandler(object):
+    def __init__(self, name=None, suffix='.db'):
+        if name is None:
+            self.name = self.__class__.__name__
+        else:
+            self.name = name
+        if suffix and suffix[0] != '.':
+            suffix = '.' + suffix
+        self.suffix = suffix
+        self.cachedDb = None
+
+    def makeFilename(self):
+        return self.name + self.suffix
+
+    def makeDb(self, filename):
+        raise NotImplementedError
+
+    def getDb(self):
+        if self.cachedDb is None or \
+           threading.currentThread() is not world.mainThread:
+            db = self.makeDb(self.makeFilename())
+        else:
+            db = self.cachedDb
+        db.autocommit = 1
+        return db
+        
 class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.
     """
     suffix = '.db'
-    threaded = False
     def __init__(self, suffix='.db'):
         self.dbCache = ircutils.IrcDict()
         suffix = self.suffix
@@ -78,16 +116,13 @@ class ChannelDBHandler(object):
 
     def getDb(self, channel):
         """Use this to get a database for a specific channel."""
-        try:
-            if self.threaded:
-                return self.makeDb(self.makeFilename(channel))
-            else:
-                return self.dbCache[channel]
-        except KeyError:
+        if channel not in self.dbCache or \
+           threading.currentThread() is not world.mainThread:
             db = self.makeDb(self.makeFilename(channel))
-            if not self.threaded:
-                self.dbCache[channel] = db
-            return db
+        else:
+            db = self.dbCache[channel]
+        db.autocommit = 1
+        return db
 
     def die(self):
         for db in self.dbCache.itervalues():
