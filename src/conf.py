@@ -267,10 +267,6 @@ for (name, s) in registry._cache.iteritems():
             registerNetwork(name)
 
 
-registerGlobalValue(supybot, 'channels',
-    SpaceSeparatedSetOfChannels([], """Determines what channels the bot will
-    join when it connects to the server."""))
-
 ###
 # Reply/error tweaking.
 ###

@@ -134,7 +134,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                ircdb.checkCapability(msg.prefix, 'admin'):
                 self.log.info('Invited to %s by %s.', channel, msg.prefix)
                 irc.queueMsg(ircmsgs.join(channel))
-                conf.supybot.channels().add(channel)
+                conf.supybot.networks.get(irc.network).channels().add(channel)
 
     def join(self, irc, msg, args):
         """<channel>[,<key>] [<channel>[,<key>] ...]

@@ -342,9 +342,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         world.starting = False
 
     def do376(self, irc, msg):
-        channels = ircutils.IrcSet(conf.supybot.channels())
-        channels |= conf.supybot.networks.get(irc.network).channels()
-        channels = list(channels)
+        channels = list(conf.supybot.networks.get(irc.network).channels())
         if not channels:
             return
         utils.sortBy(lambda s: ',' not in s, channels)
