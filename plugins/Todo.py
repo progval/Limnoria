@@ -295,6 +295,36 @@ class Todo(callbacks.Privmsg):
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
+    def change(self, irc, msg, args):
+        """<task id> <regexp>
+
+        Modify the task with the given id using the supplied regexp.
+        """
+        try:
+            userid = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        taskid, regexp = privmsgs.getArgs(args, needed=2)
+        # Check the regexp first, it's easier and doesn't require a db query
+        try:
+            replacer = utils.perlReToReplacer(regexp)
+        except ValueError:
+            irc.error(msg, '%r is not a valid regexp' % regexp)
+            return
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT task FROM todo
+                          WHERE userid = %s AND id = %s
+                          AND active = 1""", userid, taskid)
+        if cursor.rowcount == 0:
+            irc.error(msg, '%r is not a valid task id' % taskid)
+            return
+        newtext = replacer(cursor.fetchone()[0])
+        cursor.execute("""UPDATE todo SET task = %s
+                          WHERE id = %s""", newtext, taskid)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
+
 Class = Todo
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
