@@ -135,8 +135,6 @@ class Relay(callbacks.Privmsg):
                 users.append('\x02%s\x02: %s' % (abbreviation, usersS))
         irc.reply(msg, '; '.join(users))
         
-            
-
     def _formatPrivmsg(self, nick, abbreviation, msg):
         if ircmsgs.isAction(msg):
             return '* %s/%s %s' % (nick, abbreviation, ircmsgs.unAction(msg))
@@ -217,7 +215,8 @@ class Relay(callbacks.Privmsg):
             if channel in self.channels:
                 for otherIrc in self.ircs.itervalues():
                     if otherIrc != irc:
-                        otherIrc.queueMsg(ircmsgs.topic(channel, topic))
+                        if otherIrc.state.getTopic(channel) != topic:
+                            otherIrc.queueMsg(ircmsgs.topic(channel, topic))
             
         return msg
 
