@@ -62,9 +62,9 @@ def configure(onStart, afterConnect, advanced):
 class HeraldDB(object):
     def __init__(self):
         self.heralds = {}
-        self.open()
         dataDir = conf.supybot.directories.data()
         self.filename = os.path.join(dataDir, 'Herald.db')
+        self.open()
 
     def open(self):
         dataDir = conf.supybot.directories.data()
