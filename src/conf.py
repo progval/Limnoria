@@ -91,13 +91,11 @@ def registerGroup(Group, name, group=None):
 
 def registerGlobalValue(group, name, value):
     value.channelValue = False
-    #value._lastModified = time.time() # So reloads don't change the value.
     return group.register(name, value)
 
 def registerChannelValue(group, name, value):
     value._supplyDefault = True
     value.channelValue = True
-    #value._lastModified = time.time() # So reloads don't change the value.
     return group.register(name, value)
 
 def registerPlugin(name, currentValue=None, public=True):
@@ -614,6 +612,13 @@ registerGlobalValue(supybot.directories, 'plugins',
     [config supybot.directories.plugins], newPluginDirectory'."""))
 
 registerGroup(supybot, 'plugins') # This will be used by plugins, but not here.
+registerGlobalValue(supybot.plugins, 'alwaysLoadDefault',
+    registry.Boolean(True, """Determines whether the bot will always load
+    the default plugins (Admin, Channel, Config, Misc, Owner, and User)
+    regardless of what their configured state is.  Generally, if these
+    plugins are configured not to load, you didn't do it on purpose, and
+    you still want them to load.  Users who don't want to load these plugins
+    are smart enough to change the value of this variable appropriately :)"""))
 
 ###
 # supybot.databases.  For stuff relating to Supybot's databases (duh!)
