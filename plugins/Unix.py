@@ -54,7 +54,7 @@ import privmsgs
 import callbacks
 import utils
 
-def configure(onStart):
+def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('Unix', True)
     spellCmd = utils.findBinaryInPath('aspell')

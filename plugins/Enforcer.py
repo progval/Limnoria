@@ -46,7 +46,7 @@ import privmsgs
 import ircutils
 import callbacks
 
-def configure(onStart):
+def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('Enforcer', True)
     chanserv = something('What\'s the name of ChanServ on your network?')

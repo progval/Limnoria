@@ -45,10 +45,6 @@ import ircutils
 import privmsgs
 import callbacks
 
-def configure(onStart):
-    from questions import expect, anything, yn
-    conf.registerPlugin('Utilities', True)
-
 class Utilities(callbacks.Privmsg):
     def ignore(self, irc, msg, args):
         """takes no arguments

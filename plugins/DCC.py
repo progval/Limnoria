@@ -49,15 +49,6 @@ import ircutils
 import privmsgs
 import callbacks
 
-
-def configure(onStart):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
-    from questions import expect, anything, something, yn
-    conf.registerPlugin('DCC', True)
-
 class DCC(callbacks.Privmsg):
     def chat(self, irc, msg, args):
         """<text>

@@ -51,14 +51,6 @@ import privmsgs
 import callbacks
 
 
-def configure(onStart):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
-    from questions import expect, anything, something, yn
-    conf.registerPlugin('Status', True)
-
 class Status(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)

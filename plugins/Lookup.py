@@ -55,7 +55,7 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-def configure(onStart):
+def configure(advanced):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the

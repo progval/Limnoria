@@ -42,10 +42,6 @@ import privmsgs
 import callbacks
 
 
-def configure(advanced):
-    from questions import expect, anything, something, yn
-    conf.registerPlugin('WordStats', True)
-
 conf.registerPlugin('WordStats')
 conf.registerChannelValue(conf.supybot.plugins.WordStats,
     'wordstatsRankingDisplay',

@@ -65,7 +65,7 @@ if hasattr(math, '__file__'):
     L.append(math.__file__)
 pythonPath = map(os.path.dirname, L)
 
-def configure(onStart):
+def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('Python', True)
     if yn("""This plugin provides a snarfer for ASPN Python Recipe URLs;

@@ -53,7 +53,7 @@ import privmsgs
 import callbacks
 import configurable
 
-def configure(onStart):
+def configure(advanced):
     import socket
     from questions import expect, anything, something, yn
     conf.registerPlugin('Relay', True)

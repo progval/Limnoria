@@ -53,14 +53,6 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-def configure(onStart):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
-    from questions import expect, anything, something, yn
-    conf.registerPlugin('News', True)
-
 class News(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)

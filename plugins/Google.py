@@ -59,7 +59,7 @@ import privmsgs
 import callbacks
 import structures
 
-def configure(onStart):
+def configure(advanced):
     from questions import expect, anything, something, yn
     print 'To use Google\'t Web Services, you must have a license key.'
     if yn('Do you have a license key?') == 'y':

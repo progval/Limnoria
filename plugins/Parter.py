@@ -49,7 +49,7 @@ import plugins
 import privmsgs
 import callbacks
 
-def configure(onStart):
+def configure(advanced):
     from questions import something, yn
     conf.registerPlugin('Parter', True)
     s = ' '

@@ -47,14 +47,6 @@ import privmsgs
 import callbacks
 import structures
 
-def configure(onStart):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
-    from questions import expect, anything, something, yn
-    conf.registerPlugin('Alias', True)
-
 class AliasError(Exception):
     pass
 

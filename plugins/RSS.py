@@ -51,7 +51,7 @@ import privmsgs
 import registry
 import callbacks
 
-def configure(onStart):
+def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('RSS', True)
     prompt = 'Would you like to add an RSS feed?'

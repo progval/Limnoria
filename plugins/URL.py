@@ -61,7 +61,7 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-def configure(onStart):
+def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('URL', True)
     if yn("""This plugin offers a snarfer that will go to tinyurl.com and get

@@ -90,7 +90,7 @@ class BugzillaError(Exception):
     pass
 
 
-def configure(onStart):
+def configure(advanced):
     from questions import expect, anything, yn
     conf.registerPlugin('Bugzilla', True)
     print 'The Bugzilla plugin has the functionality to watch for URLs'

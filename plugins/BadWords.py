@@ -48,7 +48,7 @@ import ircmsgs
 import privmsgs
 import callbacks
 
-def configure(onStart):
+def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('BadWords', True)
     while yn('Would you like to add some bad words?') == 'y':
