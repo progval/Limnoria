@@ -85,7 +85,8 @@ class SupyIrcProtocol(LineReceiver):
         self.factory.continueTrying = False
         self.transport.loseConnection()
 
-    def reconnect(self):
+    def reconnect(self, wait=None):
+        # We ignore wait here, because we handled our own waiting.
         drivers.log.reconnect(self.irc.network)
         self.transport.loseConnection()
 
