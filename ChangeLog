@@ -5,6 +5,9 @@
 	* Fixed numerous bugs, high and low, big and small and
 	in-between.  Definitely worthy of a release.
 	
+	* Added supybot.plugins.ChannelLogger.includeNetworkName, so the
+	logs aren't strangified when relaying between channels.
+	
 	* Added a --capability option to User.list, to allow people to
 	list all the users possessing a certain capability.  The main
 	reason this was added is so jemfinch can tell who owns which

@@ -61,6 +61,12 @@ conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'noLogPrefix',
     registry.String('[nolog]', """Determines what string a message should be
     prefixed with in order not to be logged.  If you don't want any such
     prefix, just set it to the empty string."""))
+conf.registerChannelValue(conf.supybot.plugins.ChannelLogger,
+    'includeNetworkName', registry.Boolean(True, """Determines whether the bot
+    will include the name of the network in the filename for channel logs.
+    Since this is a channel-specific value, you can override for any channel.
+    You almost certainly want this to be True if you're relaying in a given
+    channel."""))
 conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'rotateLogs',
     registry.Boolean(False, """Determines whether the bot will automatically
     rotate the logs for this channel."""))
@@ -138,7 +144,6 @@ class ChannelLogger(callbacks.Privmsg):
                     del self.logs[channel]
 
     def getLog(self, channel):
-        channel = ircutils.toLower(channel)
         self.checkLogNames()
         if channel in self.logs:
             return self.logs[channel]
@@ -159,8 +164,13 @@ class ChannelLogger(callbacks.Privmsg):
             log.write(time.strftime(format))
             log.write('  ')
 
-    def doLog(self, channel, s):
-        channel = ircutils.toLower(channel)
+    def normalizeChannel(self, irc, channel):
+        if self.registryValue('includeNetworkName', channel):
+            channel = '%s@%s' % (channel, irc.network)
+        return ircutils.toLower(channel)
+
+    def doLog(self, irc, channel, s):
+        channel = self.normalizeChannel(irc, channel)
         log = self.getLog(channel)
         if self.registryValue('timestamp', channel):
             self.timestamp(log)
@@ -177,20 +187,20 @@ class ChannelLogger(callbacks.Privmsg):
             if ircutils.isChannel(channel):
                 nick = msg.nick or irc.nick
                 if ircmsgs.isAction(msg):
-                    self.doLog(channel,
+                    self.doLog(irc, channel,
                                '* %s %s\n' % (nick, ircmsgs.unAction(msg)))
                 else:
-                    self.doLog(channel, '<%s> %s\n' % (nick, text))
+                    self.doLog(irc, channel, '<%s> %s\n' % (nick, text))
 
     def doNotice(self, irc, msg):
         (recipients, text) = msg.args
         for channel in recipients.split(','):
             if ircutils.isChannel(channel):
-                self.doLog(channel, '-%s- %s\n' % (msg.nick, text))
+                self.doLog(irc, channel, '-%s- %s\n' % (msg.nick, text))
 
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
-            self.doLog(channel,
+            self.doLog(irc, channel,
                        '*** %s has joined %s\n' %
                        (msg.nick or msg.prefix, channel))
 
@@ -201,21 +211,22 @@ class ChannelLogger(callbacks.Privmsg):
             (channel, target) = msg.args
             kickmsg = ''
         if kickmsg:
-            self.doLog(channel,
+            self.doLog(irc, channel,
                        '*** %s was kicked by %s (%s)\n' %
                        (target, msg.nick, kickmsg))
         else:
-            self.doLog(channel,
+            self.doLog(irc, channel,
                        '*** %s was kicked by %s\n' % (target, msg.nick))
 
     def doPart(self, irc, msg):
         for channel in msg.args[0].split(','):
-            self.doLog(channel, '*** %s has left %s\n' % (msg.nick, channel))
+            self.doLog(irc, channel,
+                       '*** %s has left %s\n' % (msg.nick, channel))
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
         if ircutils.isChannel(channel) and msg.args[1:]:
-            self.doLog(channel,
+            self.doLog(irc, channel,
                        '*** %s sets mode: %s %s\n' %
                        (msg.nick or msg.prefix, msg.args[1],
                         ' '.join(msg.args[2:])))
@@ -224,13 +235,13 @@ class ChannelLogger(callbacks.Privmsg):
         if len(msg.args) == 1:
             return # It's an empty TOPIC just to get the current topic.
         channel = msg.args[0]
-        self.doLog(channel,
+        self.doLog(irc, channel,
                    '*** %s changes topic to "%s"\n' % (msg.nick, msg.args[1]))
 
     def doQuit(self, irc, msg):
         for (channel, chan) in self.laststate.channels.iteritems():
             if msg.nick in chan.users:
-                self.doLog(channel, '*** %s has quit IRC\n' % msg.nick)
+                self.doLog(irc, channel, '*** %s has quit IRC\n' % msg.nick)
 
     def outFilter(self, irc, msg):
         # Gotta catch my own messages *somehow* :)
