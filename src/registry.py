@@ -205,7 +205,11 @@ class Group(object):
             raise InvalidRegistryName, name
         if node is None:
             node = Group()
-        if name not in self._children: # XXX Is this right?
+        # We tried in any number of horrible ways to make it so that
+        # re-registering something would work.  It doesn't, plain and simple.
+        # For the longest time, we had an "Is this right?" comment here, but
+        # from experience, we now know that it most definitely *is* right.
+        if name not in self._children:
             self._children[name] = node
             self._added.append(name)
             names = split(self._name)
