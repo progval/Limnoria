@@ -124,31 +124,43 @@ if __name__ == '__main__':
     ###
     # Modules.
     ###
+    filenames = os.listdir(conf.pluginDir)
+    plugins = []
+    for filename in filenames:
+        if filename.endswith('.py') and \
+           filename.lower() != filename:
+            plugins.append(os.path.splitext(filename)[0])
+        plugins.sort()
     if yn('Would you like to see a list of the available modules?') == 'y':
-        filenames = os.listdir(conf.pluginDir)
-        plugins = []
-        for filename in filenames:
-            if filename.endswith('.py') and \
-               filename.lower() != filename:
-                plugins.append(os.path.splitext(filename)[0])
         print 'The available plugins are:\n  %s' % '\n  '.join(plugins)
-        while yn('Would you like to add a plugin?') == 'y':
-            plugin = expect('What plugin?', plugins)
-            moduleInfo = imp.find_module(plugin)
-            try:
-                module = imp.load_module(plugin, *moduleInfo)
-            except ImportError, e:
-                print 'Sorry, this plugin cannot be loaded.  You need the ' \
-                      'python module %s to load it.' % e.args[0].split()[-1]
-                continue
+    while yn('Would you like to add a plugin?') == 'y':
+        plugin = expect('What plugin?', plugins)
+        moduleInfo = imp.find_module(plugin)
+        try:
+            module = imp.load_module(plugin, *moduleInfo)
+        except ImportError, e:
+            print 'Sorry, this plugin cannot be loaded.  You need the ' \
+                  'python module %s to load it.' % e.args[0].split()[-1]
+            continue
+        if module.__doc__:
             print module.__doc__
-            if yn('Would you like to add this plugin?') == 'y':
-                if hasattr(module, 'configure'):
-                    module.configure(onStart, afterConnect, advanced)
-                else:
-                    onStart.append('load %s' % plugin)
-                if 'load %s' % plugin in onStart:
-                    plugins.remove(plugin)
+        else:
+            print 'This plugin has no documentation.'
+        if hasattr(module, 'example'):
+            print
+            print 'Here\'s an example of usage of this module:'
+            print
+            print module.example
+        if yn('Would you like to add this plugin?') == 'y':
+            if hasattr(module, 'configure'):
+                module.configure(onStart, afterConnect, advanced)
+            else:
+                onStart.append('load %s' % plugin)
+            for s in onStart:
+                if s.startswith('load'):
+                    (_, plugin) = s.split()
+                    if plugin in plugins:
+                        plugins.remove(plugin)
 
     ###
     # Commands
@@ -160,7 +172,12 @@ if __name__ == '__main__':
                      'to run before the bot connects to the server?'
         onStart.append(anything('What command?'))
     if yn('Do you want the bot to join any channels?') == 'y':
-        channels = anything('What channels? (separate channels by spaces)')
+        channels = something('What channels? (separate channels by spaces)')
+        while not all(ircutils.isChannel, channels.split()):
+            for channel in channels.split():
+                if not ircutils.isChannel(channel):
+                    print '%r isn\'t a valid channel.' % channel
+            channels = something('What channels?')
         afterConnect.append('join %s' % channels)
     postConnect = 'Would you like any commands to run ' \
                   'when the bot is finished connecting to the server?'
@@ -169,25 +186,23 @@ if __name__ == '__main__':
                       'when the bot is finished connecting to the server?'
         afterConnect.append(anything('What command?'))
 
+    template = template.replace('%%onStart%%', pprint.pformat(onStart))
+    template = template.replace('%%afterConnect%%',
+                                pprint.pformat(afterConnect))
+
+
     ###
     # Set owner user.
     ###
     if yn('Would you like to add an owner user?') == 'y':
-        owner = anything('What should the owner\'s username be?')
-        password = anything('What should the owner\'s password be?')
+        owner = something('What should the owner\'s username be?')
+        password = something('What should the owner\'s password be?')
         user = ircdb.IrcUser()
         user.setPassword(password)
         user.addCapability('owner')
         while yn('Would you like to add a hostmask for the owner?') == 'y':
-            user.addHostmask(anything('What hostmask?'))
+            user.addHostmask(something('What hostmask?'))
         ircdb.users.setUser(owner, user)
-
-    ###
-    # Finito!
-    ###
-    template = template.replace('%%onStart%%', pprint.pformat(onStart))
-    template = template.replace('%%afterConnect%%',
-                                pprint.pformat(afterConnect))
 
     ###
     # Configuration variables in conf.py.
@@ -195,7 +210,17 @@ if __name__ == '__main__':
     configVariables = {}
     if advanced and \
        yn('Would you like to modify the default config variables?')=='y':
-        pass
+        print 'Supybot can use various "drivers" for actually handling the '
+        print 'network connects the bot makes.  One of the most robust of '
+        print 'these is the Twisted <http://www.twistedmatrix.com/> driver. '
+        if yn('Would you like to use the Twisted driver?') == 'y':
+            try:
+                import twistedDrivers
+                configVariables['driverModule'] = 'twistedDrivers'
+            except:
+                print 'Sorry, twisted doesn\'t seem to be installed.'
+                
+                
     template = template.replace('%%configVariables%%',
                                 pprint.pformat(configVariables))
 
