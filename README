@@ -26,8 +26,16 @@ understand or think you know of a better way to do something, *please*
 post it on Sourceforge.net so we can improve the bot!
 
 
+WINDOWS USERS:
+--------------
+The wizards (supybot-wizard.py, supybot-newplugin.py, and
+supybot-adduser.py) are all installed to your Python directory's
+\Scripts.  What that *probably* means is that you'll run them like
+this: C:\Python23\Scripts\supybot-wizard.py .
+
+
 DEVELOPERS:
-------------
+-----------
 Read OVERVIEW to see what the modules are used for.  Read EXAMPLE to see some
 examples of callbacks and command written for the bot.  Read STYLE if you ever
 wish to contribute.
