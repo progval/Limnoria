@@ -44,9 +44,9 @@ from cStringIO import StringIO
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -98,16 +98,14 @@ class Filter(callbacks.Privmsg):
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit',
                        'hebrew']
-    def outfilter(self, irc, msg, args, channel):
+    def outfilter(self, irc, msg, args, channel, command):
         """[<channel>] [<command>]
 
         Sets the outFilter of this plugin to be <command>.  If no command is
         given, unsets the outFilter.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        command = privmsgs.getArgs(args, required=0, optional=1)
         if command:
-            command = callbacks.canonicalName(command)
             if command in self._filterCommands:
                 method = getattr(self, command)
                 self.outFilters.setdefault(channel, []).append(method)
@@ -117,35 +115,36 @@ class Filter(callbacks.Privmsg):
         else:
             self.outFilters[channel] = []
             irc.replySuccess()
-    outfilter = privmsgs.checkChannelCapability(outfilter, 'op')
+    outfilter = wrap(outfilter,
+                     [('checkChannelCapability', 'op'), '?commandName'])
 
-    def hebrew(self, irc, msg, args):
+    def hebrew(self, irc, msg, args, text):
         """<text>
 
         Removes all the vowels from <text>.  (If you're curious why this is
         named 'hebrew' it's because I (jemfinch) thought of it in Hebrew class,
         and printed Hebrew often elides the vowels.)
         """
-        text = privmsgs.getArgs(args)
         text = filter(lambda c: c not in 'aeiou', text)
         irc.reply(text)
+    hebrew = wrap(hebrew, ['text'])
         
-    def squish(self, irc, msg, args):
+    def squish(self, irc, msg, args, text):
         """<text>
 
         Removes all the spaces from <text>.
         """
-        text = privmsgs.getArgs(args)
         text = ''.join(text.split())
         irc.reply(text)
+    squish = wrap(squish, ['text'])
 
-    def binary(self, irc, msg, args):
+    def binary(self, irc, msg, args, text):
         """<text>
 
         Returns the binary representation of <text>.
         """
         L = []
-        for c in privmsgs.getArgs(args):
+        for c in text:
             LL = []
             i = ord(c)
             counter = 8
@@ -162,44 +161,44 @@ class Filter(callbacks.Privmsg):
             LL.reverse()
             L.extend(LL)
         irc.reply(''.join(L))
+    binary = wrap(binary, ['text'])
 
-    def hexlify(self, irc, msg, args):
+    def hexlify(self, irc, msg, args, text):
         """<text>
 
         Returns a hexstring from the given string; a hexstring is a string
         composed of the hexadecimal value of each character in the string
         """
-        text = privmsgs.getArgs(args)
         irc.reply(text.encode('hex_codec'))
+    hexlify = wrap(hexlify, ['text'])
 
-    def unhexlify(self, irc, msg, args):
+    def unhexlify(self, irc, msg, args, text):
         """<hexstring>
 
         Returns the string corresponding to <hexstring>.  Obviously,
         <hexstring> must be a string of hexadecimal digits.
         """
-        text = privmsgs.getArgs(args)
         try:
             irc.reply(text.decode('hex_codec'))
         except TypeError:
             irc.error('Invalid input.')
+    unhexlify = wrap(unhexlify, ['text'])
 
-    def rot13(self, irc, msg, args):
+    def rot13(self, irc, msg, args, text):
         """<text>
 
         Rotates <text> 13 characters to the right in the alphabet.  Rot13 is
         commonly used for text that simply needs to be hidden from inadvertent
         reading by roaming eyes, since it's easily reversible.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(text.encode('rot13'))
+    rot13 = wrap(rot13, ['text'])
 
-    def lithp(self, irc, msg, args):
+    def lithp(self, irc, msg, args, text):
         """<text>
 
         Returns the lisping version of <text>
         """
-        text = privmsgs.getArgs(args)
         text = text.replace('sh', 'th')
         text = text.replace('SH', 'TH')
         text = text.replace('Sh', 'Th')
@@ -216,6 +215,7 @@ class Filter(callbacks.Privmsg):
         text = text.replace('tion', 'thion')
         text = text.replace('TION', 'THION')
         irc.reply(text)
+    lithp = wrap(lithp, ['text'])
 
     _leettrans = string.maketrans('oOaAeElBTiIts', '004433187!1+5')
     _leetres = [(re.compile(r'\b(?:(?:[yY][o0O][oO0uU])|u)\b'), 'j00'),
@@ -224,16 +224,16 @@ class Filter(callbacks.Privmsg):
                 (re.compile(r'[aA][tT]'), '@'),
                 (re.compile(r'[sS]\b'), 'z'),
                 (re.compile(r'x'), '><'),]
-    def leet(self, irc, msg, args):
+    def leet(self, irc, msg, args, text):
         """<text>
 
         Returns the l33tspeak version of <text>
         """
-        s = privmsgs.getArgs(args)
         for (r, sub) in self._leetres:
-            s = re.sub(r, sub, s)
-        s = s.translate(self._leettrans)
-        irc.reply(s)
+            text = re.sub(r, sub, text)
+        text = text.translate(self._leettrans)
+        irc.reply(text)
+    leet = wrap(leet, ['text'])
 
     _supaleetreplacers = [('xX', '><'), ('kK', '|<'), ('rR', '|2'),
                           ('hH', '|-|'), ('L', '|_'), ('uU', '|_|'),
@@ -243,22 +243,22 @@ class Filter(callbacks.Privmsg):
                           ('D', '|)'), ('B', '|3'), ('I', ']['), ('Vv', '\\/'),
                           ('wW', '\\/\\/'), ('d', 'c|'), ('b', '|>'),
                           ('c', '<'), ('h', '|n'),]
-    def supa1337(self, irc, msg, args):
+    def supa1337(self, irc, msg, args, text):
         """<text>
 
         Replies with an especially k-rad translation of <text>.
         """
-        s = privmsgs.getArgs(args)
         for (r, sub) in self._leetres:
-            s = re.sub(r, sub, s)
+            text = re.sub(r, sub, text)
         for (letters, replacement) in self._supaleetreplacers:
             for letter in letters:
-                s = s.replace(letter, replacement)
-        irc.reply(s)
+                text = text.replace(letter, replacement)
+        irc.reply(text)
+    supa1337 = wrap(supa1337, ['text'])
 
     _scrambleRe = re.compile(r'(?:\b|(?![a-zA-Z]))([a-zA-Z])([a-zA-Z]*)'
                              r'([a-zA-Z])(?:\b|(?![a-zA-Z]))')
-    def scramble(self, irc, msg, args):
+    def scramble(self, irc, msg, args, text):
         """<text>
 
         Replies with a string where each word is scrambled; i.e., each internal
@@ -268,9 +268,9 @@ class Filter(callbacks.Privmsg):
             L = list(m.group(2))
             random.shuffle(L)
             return '%s%s%s' % (m.group(1), ''.join(L), m.group(3))
-        text = privmsgs.getArgs(args)
         s = self._scrambleRe.sub(_subber, text)
         irc.reply(s)
+    scramble = wrap(scramble, ['text'])
 
     _code = {
         "A" : ".-",
@@ -322,12 +322,11 @@ class Filter(callbacks.Privmsg):
     }
     _revcode = dict([(y, x) for (x, y) in _code.items()])
     _unmorsere = re.compile('([.-]+)')
-    def unmorse(self, irc, msg, args):
+    def unmorse(self, irc, msg, args, text):
         """<Morse code text>
 
         Does the reverse of the morse command.
         """
-        text = privmsgs.getArgs(args)
         text = text.replace('_', '-')
         def morseToLetter(m):
             s = m.group(1)
@@ -337,13 +336,13 @@ class Filter(callbacks.Privmsg):
         text = text.replace(' ', '')
         text = text.replace('\x00', ' ')
         irc.reply(text)
+    unmorse = wrap(unmorse, ['text'])
 
-    def morse(self, irc, msg, args):
+    def morse(self, irc, msg, args, text):
         """<text>
 
         Gives the Morse code equivalent of a given string.
         """
-        text = privmsgs.getArgs(args)
         L = []
         for c in text.upper():
             if c in self._code:
@@ -351,14 +350,15 @@ class Filter(callbacks.Privmsg):
             else:
                 L.append(c)
         irc.reply(' '.join(L))
+    morse = wrap(morse, ['text'])
 
-    def reverse(self, irc, msg, args):
+    def reverse(self, irc, msg, args, text):
         """<text>
 
         Reverses <text>.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(text[::-1])
+    reverse = wrap(reverse, ['text'])
 
     def _color(self, c, fg=None):
         if c == ' ':
@@ -367,39 +367,38 @@ class Filter(callbacks.Privmsg):
             fg = str(random.randint(2, 15)).zfill(2)
         return '\x03%s%s' % (fg, c)
 
-    def colorize(self, irc, msg, args):
+    def colorize(self, irc, msg, args, text):
         """<text>
 
         Returns <text> with each character randomly colorized.
         """
-        text = privmsgs.getArgs(args)
         L = [self._color(c) for c in text]
         irc.reply('%s%s' % (''.join(L), '\x03'))
+    colorize = wrap(colorize, ['text'])
 
-    def rainbow(self, irc, msg, args):
+    def rainbow(self, irc, msg, args, text):
         """<text>
 
         Returns <text> colorized like a rainbow.
         """
         colors = itertools.cycle([4, 7, 8, 3, 2, 12, 6])
-        text = privmsgs.getArgs(args)
         L = [self._color(c, fg=colors.next()) for c in text]
         irc.reply(''.join(L) + '\x03')
+    rainbow = wrap(rainbow, ['text'])
 
-    def stripcolor(self, irc, msg, args):
+    def stripcolor(self, irc, msg, args, text):
         """<text>
 
         Returns <text> stripped of all color codes.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(ircutils.stripColor(text))
+    stripcolor = wrap(stripcolor, ['text'])
 
-    def aol(self, irc, msg, args):
+    def aol(self, irc, msg, args, text):
         """<text>
 
         Returns <text> as if an AOLuser had said it.
         """
-        text = privmsgs.getArgs(args)
         text = text.replace(' you ', ' u ')
         text = text.replace(' are ', ' r ')
         text = text.replace(' love ', ' <3 ')
@@ -419,8 +418,9 @@ class Filter(callbacks.Privmsg):
         smiley = random.choice(['<3', ':)', ':-)', ':D', ':-D'])
         text += smiley*3
         irc.reply(text)
+    aol = wrap(aol, ['text'])
 
-    def jeffk(self, irc, msg, args):
+    def jeffk(self, irc, msg, args, text):
         """<text>
 
         Returns <text> as if JeffK had said it himself.
@@ -468,11 +468,11 @@ class Filter(callbacks.Privmsg):
                                           '!!~', '~~~!'])
                 if random.random() < 0.5:
                     exclaim += random.choice(['!', '~', '!~', '~!!~~',
+
                                               '!!~', '~~~!'])
                 laugh = ''.join([' ', laugh1, laugh2, insult, exclaim])
                 text += laugh
             return text
-        text = privmsgs.getArgs(args)
         if random.random() < .03:
             irc.reply(randomlyLaugh('NO YUO', probability=1))
             return
@@ -513,6 +513,7 @@ class Filter(callbacks.Privmsg):
         if random.random() < .4:
             text = text.upper()
         irc.reply(text)
+    jeffk = wrap(jeffk, ['text'])
 
     # Keeping these separate so people can just replace the alphabets for
     # whatever their language of choice
@@ -563,12 +564,11 @@ class Filter(callbacks.Privmsg):
         '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
         '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
     }
-    def spellit(self, irc, msg, args):
+    def spellit(self, irc, msg, args, text):
         """<text>
 
         Returns <text>, phonetically spelled out.
         """
-        text = privmsgs.getArgs(args)
         d = {}
         if self.registryValue('spellit.replaceLetters'):
             d.update(self._spellLetters)
@@ -591,6 +591,7 @@ class Filter(callbacks.Privmsg):
                 pass
             write(c)
         irc.reply(out.getvalue())
+    spellit = wrap(spellit, ['text'])
 
 
 Class = Filter
