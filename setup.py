@@ -63,7 +63,9 @@ except ImportError, e:
     people to install what should be included by default with Python you'd
     understand why we're unhappy about this.  Anyway, to reiterate, install the
     development package for Python that your distribution supplies.""")
+    sys.stderr.write(os.linesep*2)
     sys.stderr.write(textwrap.fill(s))
+    sys.stderr.write(os.linesep*2)
     sys.exit(-1)
     
     
