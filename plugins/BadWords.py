@@ -80,6 +80,7 @@ def subber(m):
     return nastyChars[:len(m.group(1))]
 
 class BadWords(callbacks.Privmsg):
+    priority = 1
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.badwords = sets.Set()

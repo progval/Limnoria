@@ -162,6 +162,7 @@ example = utils.wrapLines("""
 """)
 
 class FunCommands(callbacks.Privmsg):
+    priority = 98 # Really just to test.
     dictServer = 'dict.org'
     def __init__(self):
         callbacks.Privmsg.__init__(self)

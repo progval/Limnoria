@@ -66,6 +66,7 @@ class IrcCallback(IrcCommandDispatcher):
     "doCommand" -- doPrivmsg, doNick, do433, etc.  These will be called
     on matching messages.
     """
+    priority = 99
     def name(self):
         return self.__class__.__name__
 
@@ -368,6 +369,7 @@ class Irc(object):
 
     def addCallback(self, callback):
         self.callbacks.append(callback)
+        utils.sortBy(lambda cb: cb.priority, self.callbacks)
 
     def getCallback(self, name):
         name = name.lower()
@@ -409,7 +411,7 @@ class Irc(object):
                 self.outstandingPing = True
                 self.queueMsg(ircmsgs.ping(now))
         if msg:
-            for callback in self.callbacks:
+            for callback in reviter(self.callbacks):
                 #debug.printf(repr(msg))
                 try:
                     outFilter = getattr(callback, 'outFilter')
