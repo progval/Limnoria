@@ -100,7 +100,7 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT max(id) FROM quotes""")
+        cursor.execute("""SELECT COUNT(*) FROM quotes""")
         maxid = int(cursor.fetchone()[0])
         if maxid is None:
             maxid = 0
@@ -142,22 +142,29 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
                 formats.append(argument)
             elif option == 'regexp':
                 try:
-                    r = re.compile(argument, re.I)
-                except re.error, e:
-                    irc.error(msg, str(e))
-                    return
+                    r = utils.perlReToPythonRe(argument)
+                except ValueError:
+                    try:
+                        r = re.compile(argument, re.I)
+                    except re.error, e:
+                        irc.error(msg, str(e))
+                        return
                 def p(s):
-                    return bool(r.match(s))
+                    return int(bool(r.search(s)))
                 predicateName += 'p'
                 db.create_function(predicateName, 1, p)
                 criteria.append('%s(quote)' % predicateName)
         for s in rest:
-            s = '%%%s%%' % s
-            criteria.append('quote LIKE %s')
-            formats.append(s)
+            try:
+                i = int(s)
+                criteria.append('id=%s' % i)
+            except ValueError:
+                s = '%%%s%%' % s
+                criteria.append('quote LIKE %s')
+                formats.append(s)
         sql = """SELECT id, quote FROM quotes
                  WHERE %s""" % ' AND '.join(criteria)
-        debug.printf(sql)
+        #debug.printf(sql)
         cursor = db.cursor()
         cursor.execute(sql, *formats)
         if cursor.rowcount == 0:
@@ -214,7 +221,7 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
             irc.reply(msg, 'Quote %r added by %s at %s.' % \
                            (quote, added_by, timestamp))
         else:
-            irc.reply(msg, 'There isn\'t a quote with that id.')
+            irc.error(msg, 'There isn\'t a quote with that id.')
 
     def removequote(self, irc, msg, args):
         """[<channel>] <id>
@@ -229,7 +236,10 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'op')
         if ircdb.checkCapability(msg.prefix, capability):
             cursor.execute("""DELETE FROM quotes WHERE id=%s""", id)
-            irc.reply(msg, conf.replySuccess)
+            if cursor.rowcount == 0:
+                irc.error(msg, 'There was no such quote.')
+            else:
+                irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
