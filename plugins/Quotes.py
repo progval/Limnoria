@@ -122,19 +122,15 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
             cursor.execute("""SELECT id, quote FROM quotes WHERE p(quote)""")
             if cursor.rowcount == 0:
                 irc.reply(msg, 'No quotes matched that regexp.')
-                return
             elif cursor.rowcount == 1:
                 (id, quote) = cursor.fetchone()
                 irc.reply(msg, 'Quote %s: %s' % (id, quote))
-                return
             elif cursor.rowcount > 5:
                 ids = [t[0] for t in cursor.fetchall()]
                 irc.reply(msg, 'Quotes %s matched.' % ', '.join(ids))
-                return
             else:
                 L = ['%s: %s' % (id,s[:30]) for (id,s) in cursor.fetchall()]
                 irc.reply(msg, 'These quotes matched: %s' % ', '.join(L))
-                return
 
     def randomquote(self, irc, msg, args):
         "[<channel>] (if not sent through the channel itself)"
@@ -149,7 +145,6 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
             return
         (id, quote) = cursor.fetchone()
         irc.reply(msg, '%s [#%s]' % (quote, id))
-        return
 
     def quoteinfo(self, irc, msg, args):
         "[<channel>] (if not sent through the channel itself) <number>"
@@ -158,16 +153,14 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT * FROM quotes WHERE id=%s""", id)
-        (id, added_by, added_at, quote) = cursor.fetchone()
-        if row:
+        if cursor.rowcount == 1:
+            (id, added_by, added_at, quote) = cursor.fetchone()
             timestamp = time.strftime(conf.humanTimestampFormat,
                                       time.localtime(int(added_at)))
             irc.reply(msg, 'Quote %r added by %s at %s.' % \
-                           (quote, added_by, timestamp)
-            return
+                           (quote, added_by, timestamp))
         else:
             irc.reply(msg, 'There isn\'t a quote with that id.')
-            return
 
     def removequote(self, irc, msg, args):
         "[<channel>] (if not sent through the channel itself) <number>"
