@@ -70,18 +70,18 @@ class Channel(callbacks.Privmsg):
             if self.registryValue('alwaysRejoin', channel):
                 irc.sendMsg(ircmsgs.join(channel)) # Fix for keys.
 
-    def mode(self, irc, msg, args, channel):
+    def mode(self, irc, msg, args, channel, modes):
         """[<channel>] <mode> [<arg> ...]
 
         Sets the mode in <channel> to <mode>, sending the arguments given.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        irc.queueMsg(ircmsgs.mode(channel, args))
+        irc.queueMsg(ircmsgs.mode(channel, modes))
     mode = wrap(mode,
                 [('checkChannelCapability', 'op'),
-                 ('haveOp', 'change the mode')],
-                requireExtra=True)
+                 ('haveOp', 'change the mode'),
+                 many('text')])
 
     def limit(self, irc, msg, args, channel, limit):
         """[<channel>] [<limit>]
@@ -96,7 +96,7 @@ class Channel(callbacks.Privmsg):
             irc.queueMsg(ircmsgs.mode(channel, ['-l']))
     limit = wrap(mode, [('checkChannelCapability', 'op'),
                         ('haveOp', 'change the limit'),
-                        ('?nonNegativeInt', 0)])
+                        additional('nonNegativeInt', 0)])
 
     def moderate(self, irc, msg, args, channel):
         """[<channel>]
@@ -132,9 +132,10 @@ class Channel(callbacks.Privmsg):
         else:
             irc.queueMsg(ircmsgs.mode(channel, ['-k']))
     key = wrap(key, [('checkChannelCapability', 'op'),
-                     ('haveOp', 'change the keyword'), '?capability'])
+                     ('haveOp', 'change the keyword'),
+                     additional('capability')])
 
-    def op(self, irc, msg, args, channel):
+    def op(self, irc, msg, args, channel, nicks):
         """[<channel>] [<nick> ...]
 
         If you have the #channel,op capability, this will give all the <nick>s
@@ -142,93 +143,103 @@ class Channel(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        if not args:
-            args = [msg.nick]
-        irc.queueMsg(ircmsgs.ops(channel, args))
+        if not nicks:
+            nicks = [msg.nick]
+        irc.queueMsg(ircmsgs.ops(channel, nicks))
     op = wrap(op, [('checkChannelCapability', 'op'),
-                   ('haveOp', 'op someone')], allowExtra=True)
+                   ('haveOp', 'op someone'),
+                   any('nickInChannel')])
 
-    def halfop(self, irc, msg, args, channel):
-        """[<channel>]
+    def halfop(self, irc, msg, args, channel, nicks):
+        """[<channel>] [<nick> ...]
 
         If you have the #channel,halfop capability, this will give all the
         <nick>s you provide halfops.  If you don't provide any <nick>s, this
         will give you halfops. <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        if not args:
-            args = [msg.nick]
-        irc.queueMsg(ircmsgs.halfops(channel, args))
+        if not nicks:
+            nicks = [msg.nick]
+        irc.queueMsg(ircmsgs.halfops(channel, nicks))
     halfop = wrap(halfop, [('checkChannelCapability', 'halfop'),
-                           ('haveOp', 'halfop someone')], allowExtra=True)
+                           ('haveOp', 'halfop someone'),
+                           many('nickInChannel')])
 
-    def voice(self, irc, msg, args, channel):
-        """[<channel>]
+    def voice(self, irc, msg, args, channel, nicks):
+        """[<channel>] [<nick> ...]
 
         If you have the #channel,voice capability, this will voice all the
         <nick>s you provide.  If you don't provide any <nick>s, this will
         voice you. <channel> is only necessary if the message isn't sent in the
         channel itself.
         """
-        if not args:
-            args = [msg.nick]
-        irc.queueMsg(ircmsgs.voices(channel, args))
+        if not nicks:
+            nicks = [msg.nick]
+        irc.queueMsg(ircmsgs.voices(channel, nicks))
     voice = wrap(voice, [('checkChannelCapability', 'voice'),
-                         ('haveOp', 'voice someone')], allowExtra=True)
+                         ('haveOp', 'voice someone'),
+                         many('nickInChannel')])
 
-    def deop(self, irc, msg, args, channel):
+    def deop(self, irc, msg, args, channel, nicks):
         """[<channel>] [<nick> ...]
 
         If you have the #channel,op capability, this will remove operator
         privileges from all the nicks given.  If no nicks are given, removes
         operator privileges from the person sending the message.
         """
-        if not args:
-            args.append(msg.nick)
-        if irc.nick in args:
+        if irc.nick in nicks:
             irc.error('I cowardly refuse to deop myself.  If you really want '
                       'me deopped, tell me to op you and then deop me '
-                      'yourself.')
+                      'yourself.', Raise=True)
+        if not nicks:
+            nicks = [msg.nick]
         else:
-            irc.queueMsg(ircmsgs.deops(channel, args))
+            irc.queueMsg(ircmsgs.deops(channel, nicks))
     deop = wrap(deop, [('checkChannelCapability', 'op'),
-                       ('haveOp', 'deop someone')], allowExtra=True)
+                       ('haveOp', 'deop someone'),
+                       many('nickInChannel')])
 
-    def dehalfop(self, irc, msg, args, channel):
+    def dehalfop(self, irc, msg, args, channel, nicks):
         """[<channel>] [<nick> ...]
 
         If you have the #channel,op capability, this will remove half-operator
         privileges from all the nicks given.  If no nicks are given, removes
         half-operator privileges from the person sending the message.
         """
-        if not args:
-            args.append(msg.nick)
-        if irc.nick in args:
+        if irc.nick in nicks:
             irc.error('I cowardly refuse to dehalfop myself.  If you really '
                       'want me dehalfopped, tell me to op you and then '
-                      'dehalfop me yourself.')
+                      'dehalfop me yourself.', Raise=True)
+        if not nicks:
+            nicks = [msg.nick]
         else:
-            irc.queueMsg(ircmsgs.dehalfops(channel, args))
+            irc.queueMsg(ircmsgs.dehalfops(channel, nicks))
     dehalfop = wrap(dehalfop, [('checkChannelCapability', 'halfop'),
-                               ('haveOp', 'dehalfop someone')],allowExtra=True)
+                               ('haveOp', 'dehalfop someone'),
+                               many('nickInChannel')])
 
-    def devoice(self, irc, msg, args, channel):
+    # XXX These nicks should really be sets, rather than lists, especially
+    #     we check whether the bot's nick is in them.
+    # XXX We should respect the MODES part of an 005 here.  Helper function
+    #     material.
+    def devoice(self, irc, msg, args, channel, nicks):
         """[<channel>] [<nick> ...]
 
         If you have the #channel,op capability, this will remove voice from all
         the nicks given.  If no nicks are given, removes voice from the person
         sending the message.
         """
-        if not args:
-            args.append(msg.nick)
-        if irc.nick in args:
+        if irc.nick in nicks:
             irc.error('I cowardly refuse to devoice myself.  If you really '
                       'want me devoiced, tell me to op you and then devoice '
-                      'me yourself.')
+                      'me yourself.', Raise=True)
+        if not nicks:
+            nicks = [msg.nick]
         else:
-            irc.queueMsg(ircmsgs.devoices(channel, args))
+            irc.queueMsg(ircmsgs.devoices(channel, nicks))
     devoice = wrap(devoice, [('checkChannelCapability', 'voice'),
-                             ('haveOp', 'devoice someone')], allowExtra=True)
+                             ('haveOp', 'devoice someone'),
+                             many('nickInChannel')])
 
     def cycle(self, irc, msg, args, channel, key):
         """[<channel>] [<key>]
@@ -243,7 +254,8 @@ class Channel(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.part(channel))
         irc.queueMsg(ircmsgs.join(channel, key))
         irc.noReply()
-    cycle = wrap(cycle, [('checkChannelCapability','op'),'?anything'])
+    cycle = wrap(cycle, [('checkChannelCapability','op'),
+                         additional('anything')])
 
     def kick(self, irc, msg, args, channel, nick, reason):
         """[<channel>] <nick> [<reason>]
@@ -266,7 +278,9 @@ class Channel(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.kick(channel, nick, reason))
         irc.noReply()
     kick = wrap(kick, [('checkChannelCapability', 'op'),
-                       ('haveOp', 'kick someone'), 'nick', '?anything'])
+                       ('haveOp', 'kick someone'),
+                       'nickInChannel',
+                       additional('anything')])
 
     def kban(self, irc, msg, args,
              optlist, channel, bannedNick, length, reason):
@@ -359,12 +373,11 @@ class Channel(callbacks.Privmsg):
             exact,nick,user,host
     kban = wrap(kban,
                 [('checkChannelCapability', 'op'),
+                 getopts({'exact':None,'nick':None,'user':None,'host':None}),
                  ('haveOp', 'kick or ban someone'),
-                 'nick', ('expiry?', 0), '?anything'],
-                getopts={'exact': None,
-                         'nick': None,
-                         'user': None,
-                         'host': None})
+                 'nickInChannel',
+                 optional('expiry', 0),
+                 additional('anything')])
 
     def unban(self, irc, msg, args, channel, hostmask):
         """[<channel>] <hostmask>
@@ -376,7 +389,8 @@ class Channel(callbacks.Privmsg):
         """
         irc.queueMsg(ircmsgs.unban(channel, hostmask))
     unban = wrap(unban, [('checkChannelCapability', 'op'),
-                         ('haveOp', 'unban someone'), 'hostmask'])
+                         ('haveOp', 'unban someone'),
+                         'hostmask'])
 
     def invite(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
@@ -387,7 +401,8 @@ class Channel(callbacks.Privmsg):
         """
         irc.queueMsg(ircmsgs.invite(nick, channel))
     invite = wrap(invite, [('checkChannelCapability', 'op'),
-                           ('haveOp', 'invite someone'), 'nick'])
+                           ('haveOp', 'invite someone'),
+                           'nick'])
 
     def lobotomize(self, irc, msg, args, channel):
         """[<channel>]
@@ -434,7 +449,8 @@ class Channel(callbacks.Privmsg):
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
     permban = wrap(permban, [('checkChannelCapability', 'op'),
-                             'hostmask', ('?expiry', 0)])
+                             'hostmask',
+                             additional('expiry', 0)])
 
     def unpermban(self, irc, msg, args, channel, banmask):
         """[<channel>] <hostmask>
@@ -478,7 +494,7 @@ class Channel(callbacks.Privmsg):
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
     ignore = wrap(ignore, [('checkChannelCapability', 'op'),
-                           'hostmask', ('?expiry', 0)])
+                           'hostmask', additional('expiry', 0)])
 
     def unignore(self, irc, msg, args, channel, banmask):
         """[<channel>] <hostmask>
@@ -594,7 +610,7 @@ class Channel(callbacks.Privmsg):
         ircdb.channels.setChannel(channel, chan)
         irc.replySuccess()
     setcapability = wrap(setcapability,
-                         [('checkChannelCapability', 'op'), 'capability+'])
+                         [('checkChannelCapability', 'op'), many('capability')])
 
     def unsetcapability(self, irc, msg, args, channel, capabilities):
         """[<channel>] <capability> [<capability> ...]
@@ -618,7 +634,8 @@ class Channel(callbacks.Privmsg):
                        utils.pluralize('capability', len(fail))), Raise=True)
         irc.replySuccess()
     unsetcapability = wrap(unsetcapability,
-                           [('checkChannelCapability', 'op'), 'capability+'])
+                           [('checkChannelCapability', 'op'),
+                            many('capability')])
 
     def capabilities(self, irc, msg, args, channel):
         """[<channel>]
@@ -656,7 +673,7 @@ class Channel(callbacks.Privmsg):
         L = list(irc.state.channels[channel].users)
         utils.sortBy(str.lower, L)
         irc.reply(utils.commaAndify(L))
-    nicks = wrap(nicks, ['channel'])
+    nicks = wrap(nicks, ['inChannel']) # XXX Check that the caller is in chan.
 
     def alertOps(self, irc, channel, s, frm=None):
         """Internal message for notifying all the #channel,ops in a channel of
