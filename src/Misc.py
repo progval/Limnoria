@@ -156,7 +156,7 @@ class Misc(callbacks.Privmsg):
             else:
                 irc.error('%s has no help.' % name)
         if len(args) > 1:
-            cb = irc.getCallback(args[0])
+            cb = irc.getCallback(args[0]) # No pop, we'll use this later.
             if cb is not None:
                 command = callbacks.canonicalName(privmsgs.getArgs(args[1:]))
                 command = command.lstrip(conf.supybot.prefixChars())
@@ -169,7 +169,12 @@ class Misc(callbacks.Privmsg):
             else:
                 irc.error('There is no such plugin %s.' % args[0])
             return
-        command = callbacks.canonicalName(privmsgs.getArgs(args))
+        name = privmsgs.getArgs(args)
+        cb = irc.getCallback(name)
+        if cb is not None and cb.__doc__ and not getattr(cb, '_original'):
+            irc.reply(utils.normalizeWhitespace(cb.__doc__))
+            return
+        command = callbacks.canonicalName(name)
         # Users might expect "@help @list" to work.
         command = command.lstrip(conf.supybot.prefixChars()) 
         cbs = callbacks.findCallbackForCommand(irc, command)
