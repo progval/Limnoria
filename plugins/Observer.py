@@ -41,7 +41,7 @@ import random
 
 import supybot.conf as conf
 import supybot.utils as utils
-import supybot.privmsgs as privmsgs
+from supybot.commands import *
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -165,39 +165,36 @@ class Observer(callbacks.Privmsg):
         else:
             irc.reply('There were no relevant observers.')
 
-    def enable(self, irc, msg, args, channel):
+    def enable(self, irc, msg, args, channel, name):
         """[<channel>] <name>
 
         Enables the observer <name> in <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        name = privmsgs.getArgs(args)
         if name not in self.registryValue('observers'):
             irc.error('There is no observer %s.' % name, Raise=True)
         self.registryValue('observers.active', channel).append(name)
         irc.replySuccess()
-    enable = privmsgs.checkChannelCapability(enable, 'op')
+    enable = wrap(enable, [('checkChannelCapability', 'op'), 'something'])
 
-    def disable(self, irc, msg, args, channel):
+    def disable(self, irc, msg, args, channel, name):
         """[<channel>] <name>
 
         Disables the observer <name> in <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        name = privmsgs.getArgs(args)
         try:
             self.registryValue('observers.active', channel).remove(name)
             irc.replySuccess()
         except (KeyError, ValueError):
             irc.error('The observer %s was not active on %s.' % (name,channel))
-    disable = privmsgs.checkChannelCapability(disable, 'op')
+    disable = wrap(disable, [('checkChannelCapability', 'op'), 'something'])
 
-    def info(self, irc, msg, args):
+    def info(self, irc, msg, args, name):
         """<name>
 
         Returns the relevant information on the observer specified by <name>.
         """
-        name = privmsgs.getArgs(args)
         if name not in self.registryValue('observers'):
             irc.error('That\'s not a valid observer.', Raise=True)
         g = self.registryValue('observers.%s' % name, value=False)
@@ -207,8 +204,9 @@ class Observer(callbacks.Privmsg):
         irc.reply('%s matches the regular expression %s and '
                   'runs the command %s with a probability of %s' %
                   (name, regexp, command, probability))
+    info = wrap(info, ['something'])
 
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, name, probability, regexp, command):
         """<name> [<probability>] <regexp> <command>
 
         Calls <command> when <regexp> matches a given message.  Before
@@ -218,19 +216,15 @@ class Observer(callbacks.Privmsg):
         otherwise it should be a floating point probability that the observer
         will execute if it matches.
         """
-        if len(args) < 3:
-            raise callbacks.ArgumentError
-        try:
-            probability = float(args[1])
-            del args[1]
-        except ValueError:
-            probability = 1.0
-        (name, regexp, command) = privmsgs.getArgs(args, required=3)
         if not registry.isValidRegistryName(name):
             irc.error('That\'s not a valid observer name.  Please be sure '
                       'there are no spaces in the name.', Raise=True)
         registerObserver(name, regexp, command, probability)
         irc.replySuccess()
+    add = wrap(add, ['something',
+                     optional('float', 1.0),
+                     ('regexpMatcher', False),
+                     'text'])
 
     def remove(self, irc, msg, args):
         """<name>

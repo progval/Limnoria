@@ -38,8 +38,8 @@ import supybot.plugins as plugins
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -78,9 +78,6 @@ class Anonymous(callbacks.Privmsg):
                 _ = ircdb.users.getUser(msg.prefix)
             except KeyError:
                 irc.errorNotRegistered(Raise=True)
-        if channel not in irc.state.channels:
-            irc.error('I\'m not in %s, chances are that I can\'t say anything '
-                      'in there.' % channel, Raise=True)
         capability = self.registryValue('requireCapability')
         if capability:
             if not ircdb.checkCapability(msg.prefix, capability):
@@ -96,27 +93,27 @@ class Anonymous(callbacks.Privmsg):
             irc.error('That channel has set its capabilities so as to '
                       'disallow the use of this plugin.', Raise=True)
 
-    def say(self, irc, msg, args):
+    def say(self, irc, msg, args, channel, text):
         """<channel> <text>
 
         Sends <text> to <channel>.
         """
-        (channel, text) = privmsgs.getArgs(args, required=2)
         self._preCheck(irc, msg, channel)
         self.log.info('Saying %s in %s due to %s.',
                       utils.quoted(text), channel, msg.prefix)
         irc.queueMsg(ircmsgs.privmsg(channel, text))
+    say = wrap(say, ['inChannel', 'text'])
 
-    def do(self, irc, msg, args):
+    def do(self, irc, msg, args, channel, text):
         """<channel> <action>
 
         Performs <action> in <channel>.
         """
-        (channel, action) = privmsgs.getArgs(args, required=2)
         self._preCheck(irc, msg, channel)
         self.log.info('Performing %s in %s due to %s.',
-                      utils.quoted(action), channel, msg.prefix)
-        irc.queueMsg(ircmsgs.action(channel, action))
+                      utils.quoted(text), channel, msg.prefix)
+        irc.queueMsg(ircmsgs.action(channel, text))
+    do = wrap(do, ['inChannel', 'text'])
 
 
 Class = Anonymous
