@@ -135,18 +135,6 @@ def checkChannelCapability(f, capability):
             irc.errorNoCapability(chancap)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
-def thread(f):
-    """Makes sure a command spawns a thread when called."""
-    def newf(self, irc, msg, args, *L, **kwargs):
-        if threading.currentThread() is world.mainThread:
-            t = callbacks.CommandThread(target=irc._callCommand,
-                                        args=(f.func_name, self),
-                                        kwargs=kwargs)
-            t.start()
-        else:
-            f(self, irc, msg, args, *L, **kwargs)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
-
 def channel(f):
     """Gives the command an extra channel arg as if it had called getChannel"""
     def newf(self, irc, msg, args, *L, **kwargs):
