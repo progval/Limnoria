@@ -87,6 +87,8 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
     if not dying:
         log.debug('Regexp cache size: %s', len(sre._cache))
         log.debug('Pattern cache size: %s'%len(ircutils._patternCache))
+        log.debug('HostmaskPatternEqual cache size: %s' %
+                  len(ircutils._hostmaskPatternEqualCache))
         log.info('%s upkeep ran.', time.strftime(conf.logTimestampFormat))
     return collected
 

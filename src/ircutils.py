@@ -125,10 +125,10 @@ def isChannel(s):
 _match = fnmatch.fnmatchcase
 
 _patternCache = {}
-def hostmaskPatternEqual(pattern, hostmask):
+def _hostmaskPatternEqual(pattern, hostmask):
     """Returns True if hostmask matches the hostmask pattern pattern."""
     try:
-        return bool(_patternCache[pattern](hostmask))
+        return _patternCache[pattern](hostmask) is not None
     except KeyError:
         fd = sio()
         for c in pattern:
@@ -149,7 +149,16 @@ def hostmaskPatternEqual(pattern, hostmask):
         fd.write('$')
         f = re.compile(fd.getvalue(), re.I).match
         _patternCache[pattern] = f
-        return bool(f(hostmask))
+        return f(hostmask) is not None
+
+_hostmaskPatternEqualCache = {}
+def hostmaskPatternEqual(pattern, hostmask):
+    try:
+        return _hostmaskPatternEqualCache[(pattern, hostmask)]
+    except KeyError:
+        b = _hostmaskPatternEqual(pattern, hostmask)
+        _hostmaskPatternEqualCache[(pattern, hostmask)] = b
+        return b
 
 _ipchars = string.digits + '.'
 def isIP(s):
