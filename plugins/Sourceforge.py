@@ -175,16 +175,15 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 linktype = m.group(1)
                 linktype = utils.depluralize(linktype)
                 (num, desc) = n.groups()
-                head = '%s #%s:' % (ircutils.bold(linktype), num)
-                resp.append(desc)
+                head = '%s #%s: %s' % (ircutils.bold(linktype), num, desc)
+                resp.append(head)
             else:
                 return None
             for r in self._regexps:
                 m = r.search(s)
                 if m:
                     resp.append('%s: %s' % self._bold(m.groups()))
-            return '%s #%s: %s' % (ircutils.bold(linktype), ircutils.bold(num),
-                                   '; '.join(resp))
+            return '; '.join(resp)
         except webutils.WebError, e:
             raise TrackerError, str(e)
 
@@ -201,7 +200,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             if resp is None:
                 irc.error('Invalid Tracker page snarfed: %s' % url)
             else:
-                irc.reply(resp)
+                irc.reply('%s <%s>' % (resp, url))
         except TrackerError, e:
             irc.error(str(e))
 
