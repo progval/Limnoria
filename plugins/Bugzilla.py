@@ -77,7 +77,7 @@ def configure(advanced):
     conf.registerPlugin('Bugzilla', True)
     output("""The Bugzilla plugin has the functionality to watch for URLs
               that match a specific pattern (we call this a snarfer). When
-              a supybot sees such a URL, it will parse the web page for
+              a Supybot sees such a URL, it will parse the web page for
               information and reply with the results.""")
     if yn('Do you want this bug snarfer enabled by default?', default=False):
         conf.supybot.plugins.Bugzilla.bugSnarfer.setValue(True)

@@ -402,7 +402,7 @@ class FormatParser(object):
 
 def wrap(s, length):
     if length < 100:
-        raise ValueError, 'Use with a length greater than 100, sucka.'
+        raise ValueError, 'Use ircutils.wrap with a length greater than 100.'
     processed = []
     chunks = textwrap.wrap(s, length)
     context = None
@@ -508,6 +508,8 @@ mircColors = IrcDict({
     'pink': '13',
     'dark grey': '14',
     'light grey': '15',
+    'dark gray': '14',
+    'light gray': '15',
 })
 
 # We'll map integers to their string form so mircColor is simpler.

@@ -299,7 +299,7 @@ class Filter(callbacks.Privmsg):
     _revcode = dict([(y, x) for (x, y) in _code.items()])
     _unmorsere = re.compile('([.-]+)')
     def unmorse(self, irc, msg, args):
-        """<morse code text>
+        """<Morse code text>
 
         Does the reverse of the morse command.
         """
@@ -317,7 +317,7 @@ class Filter(callbacks.Privmsg):
     def morse(self, irc, msg, args):
         """<text>
 
-        Gives the morse code equivalent of a given string.
+        Gives the Morse code equivalent of a given string.
         """
         text = privmsgs.getArgs(args)
         L = []

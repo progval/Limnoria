@@ -258,7 +258,7 @@ def toXml(msg, pretty=True, includeTime=True):
 def prettyPrint(msg, addRecipients=False):
     """Provides a client-friendly string form for messages.
 
-    IIRC, I copied BitchX's (or was it xchat's?) format for messages.
+    IIRC, I copied BitchX's (or was it XChat's?) format for messages.
     """
     def nickorprefix():
         return msg.nick or msg.prefix

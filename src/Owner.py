@@ -99,7 +99,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
     return module
 
 def loadPluginClass(irc, module, register=None):
-    """Loads the plugin Class from the given module into the given irc."""
+    """Loads the plugin Class from the given module into the given Irc."""
     try:
         cb = module.Class()
     except AttributeError:
@@ -154,7 +154,7 @@ class holder(object):
 class LogProxy(object):
     """<text>
 
-    Logs <text> to the global supybot log at critical priority.  Useful for
+    Logs <text> to the global Supybot log at critical priority.  Useful for
     marking logfiles for later searching.
     """
     __name__ = 'log' # Necessary for help.
@@ -356,7 +356,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             else:
                 # This should never happen, so I haven't bothered updating
                 # this error string to say --allow-eval.
-                irc.error('You must run supybot with the --allow-eval '
+                irc.error('You must run Supybot with the --allow-eval '
                           'option for this command to be enabled.')
 
         def _exec(self, irc, msg, args):
@@ -373,7 +373,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     irc.reply(utils.exnToString(e))
             else:
                 # This should never happen.
-                irc.error('You must run supybot with the --allow-eval '
+                irc.error('You must run Supybot with the --allow-eval '
                           'option for this command to be enabled.')
     else:
         def eval(self, irc, msg, args):

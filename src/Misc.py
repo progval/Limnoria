@@ -250,7 +250,7 @@ class Misc(callbacks.Privmsg):
             newest ='The newest version available online is %s.'%newest.strip()
         except webutils.WebError, e:
             self.log.warning('Couldn\'t get website version: %r', e)
-            newest = 'I could\'t fetch the newest version ' \
+            newest = 'I couldn\'t fetch the newest version ' \
                      'from the Supybot website.'
         s = 'The current (running) version of this Supybot is %s.  %s' % \
             (conf.version, newest)

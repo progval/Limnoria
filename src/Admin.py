@@ -111,7 +111,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         try:
             channel = msg.args[1]
             (irc, msg) = self.joins.pop(channel)
-            irc.error('Cannot join %s, I\'m not identified with the nickserv.'
+            irc.error('Cannot join %s, I\'m not identified with the NickServ.'
                       % channel)
         except KeyError:
             self.log.debug('Got 515 without Admin.join being called.')
@@ -192,7 +192,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             self.log.debug('Got 433 without Admin.nick being called.')
 
     def do438(self, irc, msg):
-        """Can't change nick while in +m channel.  Could just be freenode."""
+        """Can't change nick while in +m channel.  Could just be Freenode."""
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
             channel = msg.args[-1].strip().split()[-1][1:-1]
