@@ -130,6 +130,7 @@ def myPrint(s, unformatted=True):
     print
 
 def main():
+    global useColor
     parser = optparse.OptionParser(usage='Usage: %prog [options]',
                                    version='Supybot %s' % conf.version)
     (options, args) = parser.parse_args()
