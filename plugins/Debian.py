@@ -203,7 +203,36 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
             (numberOfPackages, len(responses), ', '.join(responses))
         irc.reply(msg, s)
 
-
+    def debincoming(self, irc, msg, args):
+        """<package name>
+        
+        checks debian incoming for specified package name"""
+        pkgname = privmsgs.getArgs(args) 
+        _maxnum = 15
+        fd = urllib2.urlopen('http://incoming.debian.org')
+        pkgre = pkgname.replace('.','\.').replace('*','.*')
+        pkgre = re.compile(r'<a href="(%s)">%s</a>' % (pkgre, pkgre))
+        line = fd.readline()
+        pkgs = []
+        while len(line) != 0:
+            if '.deb"' not in line:
+                pass
+            else:
+                try:
+                    pkgs.append('%s :: '  % pkgre.search(line).group(1))
+                except AttributeError:
+                    pass
+            line = fd.readline()
+        fd.close()
+        if len(pkgs) <= _maxnum:
+            s = 'Total matches: %s.   %s' % (len(pkgs), ', '.join(pkgs))
+        elif len(pkgs) > _maxnum:
+            s = 'Total matches: %s, shown: %s.  %s' % \
+                (len(pkgs), _maxnum, ', '.join(pkgs[:14]))
+        else:
+            s = 'I didn\'t find any matches for %s' % pkgname
+        irc.reply(msg, s)
+        
 Class = Debian
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
