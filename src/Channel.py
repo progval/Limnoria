@@ -61,6 +61,10 @@ conf.registerChannelValue(conf.supybot.plugins.Channel, 'alwaysRejoin',
     rejoin a channel whenever it's kicked from the channel."""))
 
 class Channel(callbacks.Privmsg):
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        self.invites = {}
+
     def doKick(self, irc, msg):
         channel = msg.args[0]
         if msg.args[1] == irc.nick:
@@ -420,9 +424,42 @@ class Channel(callbacks.Privmsg):
         sent in the channel itself.
         """
         self._sendMsg(irc, ircmsgs.invite(nick or msg.nick, channel))
+        self.invites[(irc.getRealIrc(), ircutils.toLower(nick))] = irc
     invite = wrap(invite, [('checkChannelCapability', 'op'),
                            ('haveOp', 'invite someone'),
                            additional('nick')])
+
+    def do341(self, irc, msg):
+        (_, nick, channel) = msg.args
+        nick = ircutils.toLower(nick)
+        replyIrc = self.invites.pop((irc, nick), None)
+        if replyIrc is not None:
+            self.log.info('Inviting %s to %s by command of %s.',
+                          nick, channel, replyIrc.msg.prefix)
+            replyIrc.replySuccess()
+        else:
+            self.log.info('Inviting %s to %s.', nick, channel)
+
+    def do443(self, irc, msg):
+        (_, nick, channel, _) = msg.args
+        nick = ircutils.toLower(nick)
+        replyIrc = self.invites.pop((irc, nick), None)
+        if replyIrc is not None:
+            replyIrc.error('%s is already in %s.' % (nick, channel))
+
+    def do401(self, irc, msg):
+        nick = msg.args[1]
+        nick = ircutils.toLower(nick)
+        replyIrc = self.invites.pop((irc, nick), None)
+        if replyIrc is not None:
+            replyIrc.error('There is no %s on this network.' % nick)
+
+    def do504(self, irc, msg):
+        nick = msg.args[1]
+        nick = ircutils.toLower(nick)
+        replyIrc = self.invites.pop((irc, nick), NOne)
+        if replyirc is not None:
+            replyIrc.error('There is not %s on this server.' % nick)
 
     def lobotomize(self, irc, msg, args, channel):
         """[<channel>]
