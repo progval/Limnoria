@@ -44,6 +44,7 @@ Commands include:
 from baseplugin import *
 
 import time
+import operator
 
 import google
 
@@ -81,14 +82,20 @@ class Google(callbacks.Privmsg):
     def formatData(self, data):
         self._searched(data)
         time = '(search took %s seconds)' % data.meta.searchTime
-        results = data.results[:3]
-        results = ['\x02%s\x02: %s' % \
-                   (utils.htmlToText(r.title.encode('utf-8')), r.URL) \
-                   for r in results]
+        results = []
+        for result in data.results:
+            title = utils.htmlToText(result.title.encode('utf-8'))
+            url = result.URL
+            if title:
+                results.append('\x02%s\x02: %s' % (title, url))
+            else:
+                results.append(url)
+        while reduce(operator.add, map((4).__add__,map(len, results)),0) > 400:
+            results.pop()
         if not results:
             return 'No matches found %s' % time
         else:
-            return '%s %s' % (' ;; '.join(results), time)
+            return '%s %s' % (' :: '.join(results), time)
 
     def googlelicensekey(self, irc, msg, args):
         """<key>
@@ -102,7 +109,11 @@ class Google(callbacks.Privmsg):
     googlelicensekey = privmsgs.checkCapability(googlelicensekey, 'admin')
         
     def google(self, irc, msg, args):
-        "<search string>"
+        """<search string>
+
+        Searches google.com for the given string.  As many results as can fit
+        are included.
+        """
         searchString = privmsgs.getArgs(args)
         data = google.doGoogleSearch(searchString,
                                      language='lang_en',
