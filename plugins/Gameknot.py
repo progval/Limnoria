@@ -68,15 +68,19 @@ def configure(onStart, afterConnect, advanced):
             onStart.append('Gameknot toggle stat off')
 
 
-class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
+class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     threaded = True
     regexps = ['gameknotSnarfer', 'gameknotStatsSnarfer']
-    toggles = plugins.ToggleDictionary({'game' : True,
-                                        'stat' : True})
-    def __init__(self):
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        plugins.Toggleable.__init__(self)
-
+    configurables = plugins.ConfigurableDictionary(
+        [('game-snarfer', plugins.ConfigurableTypes.bool, True,
+          """Determines whether the game URL snarfer is active; if so, the bot
+          will reply to the channel with a summary of the game data when it
+          sees a Gameknot game on the channel."""),
+         ('stats-snarfer', plugins.ConfigurableTypes.bool, True,
+          """Determines whether the stats URL snarfer is active; if so, the bot
+          will reply to the channel with a summary of the stats of any player
+          whose stats URL is seen on the channel.""")]
+        )
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:</td><td class=sml>(\d+)</td></tr>')
     _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
@@ -167,7 +171,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     _gkReason = re.compile(r'won\s+\(\S+\s+(\S+)\)')
     def gameknotSnarfer(self, irc, msg, match):
         r"http://(?:www\.)?gameknot\.com/chess\.pl\?bd=\d+(&r=\d+)?"
-        if not self.toggles.get('game', channel=msg.args[0]):
+        if not self.configurables.get('game-snarfer', channel=msg.args[0]):
             return
         #debug.printf('Got a GK URL from %s' % msg.prefix)
         url = match.group(0)
@@ -217,14 +221,16 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                 ' (%s)' % conf.replyPossibleBug)
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
+    gameknotSnarfer = privmsgs.urlSnarfer(gameknotSnarfer)
 
     def gameknotStatsSnarfer(self, irc, msg, match):
         r"http://gameknot\.com/stats\.pl\?([^&]+)"
-        if not self.toggles.get('stat', channel=msg.args[0]):
+        if not self.configurables.get('stats-snarfer', channel=msg.args[0]):
             return
         name = match.group(1)
         s = self.getStats(name)
         irc.reply(msg, s, prefixName=False)
+    gameknotStatsSnarfer = privmsgs.urlSnarfer(gameknotStatsSnarfer)
 
 Class = Gameknot
 
