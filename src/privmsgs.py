@@ -116,13 +116,13 @@ def checkChannelCapability(f, capability):
 
     Do note that you need to add a "channel" argument to your argument list.
     """
-    def newf(self, irc, msg, args, *L):
+    def newf(self, irc, msg, args, *L, **kwargs):
         channel = getChannel(msg, args)
         chancap = ircdb.makeChannelCapability(channel, capability)
         if ircdb.checkCapability(msg.prefix, chancap):
             L += (channel,)
             ff = types.MethodType(f, self, self.__class__)
-            ff(irc, msg, args, *L)
+            ff(irc, msg, args, *L, **kwargs)
         else:
             self.log.warning('%r attempted %s without %s.',
                              msg.prefix, f.func_name, capability)
@@ -145,20 +145,21 @@ def _threadedWrapMethod(f):
 def thread(f):
     """Makes sure a command spawns a thread when called."""
     f = _threadedWrapMethod(f)
-    def newf(self, irc, msg, args, *L):
+    def newf(self, irc, msg, args, *L, **kwargs):
         ff = types.MethodType(f, self, self.__class__)
         t = callbacks.CommandThread(target=irc._callCommand,
-                                    args=(f.func_name, ff, self))
+                                    args=(f.func_name, ff, self),
+                                    kwargs=kwargs)
         t.start()
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 def channel(f):
     """Gives the command an extra channel arg as if it had called getChannel"""
-    def newf(self, irc, msg, args, *L):
+    def newf(self, irc, msg, args, *L, **kwargs):
         channel = getChannel(msg, args)
         L = (channel,) + L
         ff = types.MethodType(f, self, self.__class__)
-        ff(irc, msg, args, *L)
+        ff(irc, msg, args, *L, **kwargs)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 class UrlSnarfThread(threading.Thread):
@@ -174,7 +175,7 @@ _snarfed = structures.smallqueue()
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
     f = _threadedWrapMethod(f)
-    def newf(self, irc, msg, match, *L):
+    def newf(self, irc, msg, match, *L, **kwargs):
         channel = msg.args[0]
         if ircutils.isChannel(channel):
             c = ircdb.channels.getChannel(channel)
@@ -194,7 +195,7 @@ def urlSnarfer(f):
         else:
             _snarfed.enqueue((url, channel, now))
             if self.threaded:
-                f(self, irc, msg, match, *L)
+                f(self, irc, msg, match, *L, **kwargs)
             else:
                 L = list(L)
                 t = UrlSnarfThread(target=f,args=[self,irc,msg,match]+L,url=url)
