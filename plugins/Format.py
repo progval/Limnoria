@@ -108,6 +108,24 @@ class Format(callbacks.Privmsg):
                 return
         irc.reply(ircutils.mircColor(text, fg=fg, bg=bg))
 
+    def format(self, irc, msg, args):
+        """<format string> [<arg> ...]
+
+        Expands a Python-style format string using the remaining args.  Just be
+        sure always to use %s, not %d or %f or whatever, because all the args
+        are strings.
+        """
+        try:
+            s = args.pop(0)
+        except IndexError:
+            raise callbacks.ArgumentError
+        try:
+            s %= tuple(args)
+        except TypeError:
+            irc.error('Not enough arguments for the format string.')
+            return
+        irc.reply(s)
+
 
 
 Class = Format
