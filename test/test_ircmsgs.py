@@ -110,6 +110,10 @@ class IrcMsgTestCase(unittest.TestCase):
         self.assertEqual(msg2.command, 'PRIVMSG')
         self.assertEqual(msg2.args, msg.args)
 
+    def testMalformedIrcMsgRaised(self):
+        self.assertRaises(ircmsgs.MalformedIrcMsg, ircmsgs.IrcMsg, ':foo')
+        self.assertRaises(ircmsgs.MalformedIrcMsg, ircmsgs.IrcMsg,
+                          args=('biff',), prefix='foo!bar@baz')
 
 class FunctionsTestCase(unittest.TestCase):
     def testIsAction(self):

@@ -47,6 +47,9 @@ import ircutils
 # IrcMsg class -- used for representing IRC messages acquired from a network.
 ###
 
+class MalformedIrcMsg(ValueError):
+    pass
+
 class IrcMsg(object):
     """Class to represent an IRC message.
 
@@ -79,24 +82,28 @@ class IrcMsg(object):
     def __init__(self, s='', command='', args=None, prefix='', msg=None):
         assert not (msg and s), 'Ircmsg.__init__ cannot accept both s and msg'
         if not s and not command and not msg:
-            raise ValueError, 'IRC messages require a command.'
+            raise MalformedIrcMsg, 'IRC messages require a command.'
         self._str = None
         self._repr = None
         self._hash = None
         self._len = None
         if s:
-            self._str = s
-            if s[0] == ':':
-                self.prefix, s = s[1:].split(None, 1)
-            else:
-                self.prefix = ''
-            if ' :' in s:
-                s, last = s.split(' :', 1)
-                self.args = s.split()
-                self.args.append(last.rstrip('\r\n'))
-            else:
-                self.args = s.split()
-            self.command = self.args.pop(0)
+            originalString = s
+            try:
+                self._str = s
+                if s[0] == ':':
+                    self.prefix, s = s[1:].split(None, 1)
+                else:
+                    self.prefix = ''
+                if ' :' in s:
+                    s, last = s.split(' :', 1)
+                    self.args = s.split()
+                    self.args.append(last.rstrip('\r\n'))
+                else:
+                    self.args = s.split()
+                self.command = self.args.pop(0)
+            except (IndexError, ValueError):
+                raise MalformedIrcMsg, repr(originalString)
         else:
             if msg is not None:
                 if prefix:
