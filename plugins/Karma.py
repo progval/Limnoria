@@ -165,18 +165,18 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
             else:
                 irc.reply(msg, 'I didn\'t know the karma for any '
                                'of those things.')
-        else: # No name was given.  Return the top/bottom 3 karmas.
+        else: # No name was given.  Return the top/bottom N karmas.
             limit = self.configurables.get('karma-ranking-display', channel)
             cursor.execute("""SELECT name, added-subtracted
                               FROM karma
                               ORDER BY added-subtracted DESC
                               LIMIT %s""", limit)
-            highest = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
+            highest=['%r (%s)' % (t[0], int(t[1])) for t in cursor.fetchall()]
             cursor.execute("""SELECT name, added-subtracted
                               FROM karma
                               ORDER BY added-subtracted ASC
                               LIMIT %s""", limit)
-            lowest = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
+            lowest=['%r (%s)' % (t[0], int(t[1])) for t in cursor.fetchall()]
             if not (highest and lowest):
                 irc.error(msg, 'I have no karma for this channel.')
             else:
