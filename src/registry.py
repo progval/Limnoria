@@ -189,14 +189,35 @@ class StringSurroundedBySpaces(String):
             v += ' '
         self.value = v
             
-class CommaSeparatedListOfStrings(String):
+class SeparatedListOf(Value):
+    Value = Value
+    def splitter(self, s):
+        """Override this with a function that takes a string and returns a list
+        of strings."""
+        raise NotImplementedError
+
+    def joiner(self, L):
+        """Override this to join the internal list for output."""
+        raise NotImplementedError
+    
     def set(self, s):
-        String.set(self, s)
-        self.setValue(map(str.strip, re.split(r'\s*,\s*', self.value)))
+        L = self.splitter(s)
+        for (i, s) in enumerate(L):
+            v = self.Value(s, 'help does not matter here')
+            L[i] = v()
+        self.setValue(L)
 
     def __str__(self):
-        return ','.join(self.value)
+        return self.joiner(self.value)
+        
 
+class CommaSeparatedListOfStrings(SeparatedListOf):
+    Value = String
+    def splitter(self, s):
+        return re.split(r'\s*,\s*', s)
+    def joiner(self, L):
+        return ','.join(L)
+    
 class CommaSeparatedSetOfStrings(CommaSeparatedListOfStrings):
     def setValue(self, v):
         self.value = sets.Set(v)
