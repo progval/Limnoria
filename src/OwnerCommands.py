@@ -50,7 +50,10 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         setattr(self.__class__, 'exec', self._exec)
 
     def eval(self, irc, msg, args):
-        """<string to be evaluated by the Python interpreter>"""
+        """<expression>
+
+        Evaluates <expression> and returns its value.
+        """
         if conf.allowEval:
             s = privmsgs.getArgs(args)
             try:
@@ -63,7 +66,10 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
             irc.error(msg, conf.replyEvalNotAllowed)
 
     def _exec(self, irc, msg, args):
-        """<code to exec>"""
+        """<statement>
+
+        Execs <code>.  Returns success if it didn't raise any exceptions.
+        """
         if conf.allowEval:
             s = privmsgs.getArgs(args)
             try:
@@ -264,11 +270,17 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
             irc.error(msg, 'There was no callback %s' % name)
 
     def cvsup(self, irc, msg, args):
-        """takes no arguments"""
+        """takes no arguments
+
+        Returns the return code of 'cvs up'
+        """
         irc.reply(msg, str(os.system('cvs up')))
 
     def say(self, irc, msg, args):
-        """<channel> <text>"""
+        """<channel> <text>
+
+        Says <text> in <channel>
+        """
         (channel, text) = privmsgs.getArgs(args, needed=2)
         irc.queueMsg(ircmsgs.privmsg(channel, text))
 
