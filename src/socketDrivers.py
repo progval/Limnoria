@@ -57,6 +57,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.irc = irc
         drivers.ServersMixin.__init__(self, irc)
         drivers.IrcDriver.__init__(self) # Must come after setting irc.
+        self.conn = None
         self.servers = ()
         self.eagains = 0
         self.inbuffer = ''
@@ -180,7 +181,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
     def die(self):
         drivers.log.die(self.irc)
-        self.conn.close()
+        if self.conn is not None:
+            self.conn.close()
         # self.irc.die() Kill off the ircs yourself, jerk!
 
     def name(self):
