@@ -43,6 +43,7 @@ import os
 import re
 import md5
 import sha
+import types
 import string
 import sgmllib
 import compiler
@@ -525,9 +526,17 @@ def nonEmptyLines(fd):
 def nonCommentNonEmptyLines(fd):
     return nonEmptyLines(nonCommentLines(fd))
 
+def changeFunctionName(f, name, doc=None):
+    if doc is None:
+        doc = f.__doc__
+    newf = types.FunctionType(f.func_code, f.func_globals, name,
+                              f.func_defaults, f.func_closure)
+    newf.__doc__ = doc
+    return newf
 
 if __name__ == '__main__':
     import sys, doctest
     doctest.testmod(sys.modules['__main__'])
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
