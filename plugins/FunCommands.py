@@ -717,7 +717,7 @@ class FunCommands(callbacks.Privmsg):
             s = eval(funcname + '.__doc__')
             s = s.replace('\n\n', '. ')
             s = ' '.join(s.split())
-        except NameError:
+        except (SyntaxError, NameError):
             irc.error(msg, 'No such function exists.')
             return
         except AttributeError:
@@ -796,13 +796,15 @@ class FunCommands(callbacks.Privmsg):
     dns = privmsgs.thread(dns)
 
     def dict(self, irc, msg, args):
-        """<word>
+        """<word> [<dictionary>]
 
         Looks up the definition of <word> on dict.org's dictd server.
         """
-        word = privmsgs.getArgs(args)
+        (word, dictionary) = privmsgs.getArgs(args, optional=1)
+        if not dictionary:
+            dictionary = '*'
         conn = dictclient.Connection('dict.org')
-        definitions = conn.define('*', word)
+        definitions = conn.define(dictionary, word)
         if not definitions:
             irc.reply(msg, 'No definition for %r could be found.' % word)
             return
@@ -813,10 +815,12 @@ class FunCommands(callbacks.Privmsg):
             s = utils.normalizeWhitespace(s).rstrip(';.,')
             L.append('%s: %s' % (db, s))
         utils.sortBy(len, L)
+        originalFirst = L[0]
         ircutils.shrinkList(L, '; ')
         if not L:
             irc.reply(msg, 'No definitions small enough to fit into an IRC ' \
-                           'message were found.')
+                           'message were found.  Here\'s a chopped version: ' \
+                      + originalFirst[:375])
             return
         s = '%s, %s shown: %s' % \
             (utils.nItems(len(definitions), 'result'), len(L), '; '.join(L))
