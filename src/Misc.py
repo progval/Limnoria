@@ -352,7 +352,7 @@ class Misc(callbacks.Privmsg):
             names.sort()
             irc.reply(utils.commaAndify(names))
         else:
-            irc.error('There is no such command %s' % command)
+            irc.error('There is no such command %s.' % command)
 
     def author(self, irc, msg, args):
         """<plugin>
