@@ -37,6 +37,7 @@ from baseplugin import *
 
 import re
 import gzip
+import sets
 import popen2
 import random
 import os.path
@@ -122,24 +123,23 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         try:
             r = re.compile(regexp, re.I)
         except re.error, e:
-            irc.error(msg, e)
+            irc.error(msg, )
             return
         if self.usePythonZegrep:
             r = gzip.open(self.contents)
             r = ifilter(imap(lambda line: r.search(line), fd))
         (r, w) = popen2.popen4(['zegrep', regexp, self.contents])
-        packages = []
+        packages = sets.Set()  # Make packages unique
         try:
             for line in r:
                 try:
-                    (filename, package) = line[:-1].split()
+                    (filename, pkg_list) = line[:-1].split()
                     if filename == 'FILE':
                         # This is the last line before the actual files.
                         continue
                 except ValueError: # Unpack list of wrong size.
                     continue       # We've not gotten to the files yet.
-                if r.search(filename):
-                    packages.extend(package.split(','))
+                packages.update(pkg_list.split(','))
                 if len(packages) > 40:
                     irc.error(msg, 'More than 40 results returned, ' \
                                    'please be more specific.')
