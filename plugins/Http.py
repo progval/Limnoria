@@ -265,7 +265,8 @@ class Http(callbacks.Privmsg):
         quote = ' // '.join(quote.splitlines())
         irc.reply(msg, quote)
 
-    _acronymre = re.compile(r'width="7\d%" bgcolor="[^"]+">(?:<b>)?([^<]+)')
+    _acronymre = re.compile(r'valign="middle" width="7\d%" bgcolor="[^"]+">'
+                            r'(?:<b>)?([^<]+)')
     def acronym(self, irc, msg, args):
         """<acronym>
 
