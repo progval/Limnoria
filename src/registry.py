@@ -278,7 +278,7 @@ class Value(Group):
         self.__parent.__init__(help, **kwargs)
         self._default = default
         self._private = private
-        self.showDefault = showDefault
+        self._showDefault = showDefault
         self._help = utils.normalizeWhitespace(help.strip())
         if setDefault:
             self.setValue(default)
@@ -453,7 +453,7 @@ class NormalizedString(String):
         default = self.normalize(default)
         self.__parent = super(NormalizedString, self)
         self.__parent.__init__(default, *args, **kwargs)
-        self.showDefault = False
+        self._showDefault = False
 
     def normalize(self, s):
         return utils.normalizeWhitespace(s.strip())
