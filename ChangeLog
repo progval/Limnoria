@@ -1,3 +1,13 @@
+	* Added several configuration variables to the Status plugin to
+	determine how verbose the cpu command is.
+	
+	* Added a configuration variable to the Dunno plugin,
+	supybot.plugins.Dunno.prefixNick, which determines whether the
+	bot will prefix the nick of the user giving an invalid command to
+	its "dunno" response.  Formerly, it never would; the default for
+	this variable, however, is True, because that's how the rest of
+	Supybot works.
+	
 	* Added Owner.rename, a command for renaming commands in other
 	plugins.
 	
