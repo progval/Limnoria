@@ -45,68 +45,53 @@ import string
 from itertools import imap
 
 import supybot.utils as utils
-import supybot.privmsgs as privmsgs
+from supybot.commands import wrap
 import supybot.callbacks as callbacks
 
 import convertcore
 
+baseArg = ('int', 'base', lambda i: i <= 36)
 
 class Math(callbacks.Privmsg):
-    ###
-    # So this is how the 'calc' command works:
-    # First, we make a nice little safe environment for evaluation; basically,
-    # the names in the 'math' and 'cmath' modules.  Then, we remove the ability
-    # of a random user to get ints evaluated: this means we have to turn all
-    # int literals (even octal numbers and hexadecimal numbers) into floats.
-    # Then we delete all square brackets, underscores, and whitespace, so no
-    # one can do list comprehensions or call __...__ functions.
-    ###
-    def base(self, irc, msg, args):
+    def base(self, irc, msg, args, frm, to, number):
         """<fromBase> [<toBase>] <number>
 
         Converts from base <fromBase> to base <toBase>. If <toBase> is left
         out, it converts to decimal.
         """
-        (frm, to, number) = privmsgs.getArgs(args, required=2, optional=1)
-        if number == '':
-            number = to
-            to = '10'
-        try:
-            frm = int(frm)
-            to = int(to)
-            if not ((2 <= frm <= 36) and (2 <= to <= 36)):
-                raise ValueError
-        except ValueError:
-            irc.error('Bases must be an integer between 2 and 36.')
-            return
+        if not number:
+            number = str(to)
+            to = 10
         try:
             irc.reply(self._convertBaseToBase(number, to, frm))
         except ValueError:
             irc.error('Invalid <number> for base %s: %s' % (frm, number))
+    base = wrap(base, [('int', 'base', lambda i: 2 <= i <= 36),
+                       ('int?', 10, 'base', lambda i: 2 <= i <= 36),
+                       '?something'])
 
     def _convertDecimalToBase(self, number, base):
         """
             Convert a decimal number to another base; returns a string.
         """
-        negative = False
-        if number < 0:
-            negative = True
-            number = -number
-        valStr = ''
         if number == 0:
             return '0'
+        elif number < 0:
+            negative = True
+            number = -number
+        else:
+            negative = False
+        digits = []
         while number != 0:
             digit = number % base
             if digit >= 10:
                 digit = string.uppercase[digit - 10]
             else:
                 digit = str(digit)
-            valStr = digit + valStr
+            digits.append(digit)
             number = number // base
-        if negative:
-            return '-%s' % valStr
-        else:
-            return valStr
+        digits.reverse()
+        return '-'*negative + ''.join(digits)
 
     def _convertBaseToBase(self, number, toBase, fromBase):
         """
@@ -167,7 +152,16 @@ class Math(callbacks.Privmsg):
         else:
             return '%s%s' % (realS, imagS)
 
-    def calc(self, irc, msg, args):
+    ###
+    # So this is how the 'calc' command works:
+    # First, we make a nice little safe environment for evaluation; basically,
+    # the names in the 'math' and 'cmath' modules.  Then, we remove the ability
+    # of a random user to get ints evaluated: this means we have to turn all
+    # int literals (even octal numbers and hexadecimal numbers) into floats.
+    # Then we delete all square brackets, underscores, and whitespace, so no
+    # one can do list comprehensions or call __...__ functions.
+    ###
+    def calc(self, irc, msg, args, text):
         """<math expression>
 
         Returns the value of the evaluated <math expression>.  The syntax is
@@ -176,7 +170,6 @@ class Math(callbacks.Privmsg):
         crash to the bot with something like 10**10**10**10.  One consequence
         is that large values such as 10**24 might not be exact.
         """
-        text = privmsgs.getArgs(args)
         if text != text.translate(string.ascii, '_[]'):
             irc.error('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
@@ -216,15 +209,15 @@ class Math(callbacks.Privmsg):
             irc.error('%s is not a defined function.' % str(e).split()[1])
         except Exception, e:
             irc.error(str(e))
+    calc = wrap(calc, ['text'])
 
-    def icalc(self, irc, msg, args):
+    def icalc(self, irc, msg, args, text):
         """<math expression>
 
         This is the same as the calc command except that it allows integer
         math, and can thus cause the bot to suck up CPU.  Hence it requires
         the 'trusted' capability to use.
         """
-        text = privmsgs.getArgs(args)
         if text != text.translate(string.ascii, '_[]'):
             irc.error('There\'s really no reason why you should have '
                            'underscores or brackets in your mathematical '
@@ -249,7 +242,7 @@ class Math(callbacks.Privmsg):
             irc.error('%s is not a defined function.' % str(e).split()[1])
         except Exception, e:
             irc.error(utils.exnToString(e))
-    icalc = privmsgs.checkCapability(icalc, 'trusted')
+    icalc = wrap(icalc, [('checkCapability', 'trusted'), 'text'])
 
     _rpnEnv = {
         'dup': lambda s: s.extend([s.pop()]*2),
@@ -302,38 +295,22 @@ class Math(callbacks.Privmsg):
             s = ', '.join(imap(self._complexToString, imap(complex, stack)))
             irc.reply('Stack: [%s]' % s)
 
-    def convert(self, irc, msg, args):
+    def convert(self, irc, msg, args, number, unit1, to, unit2):
         """[<number>] <unit> to <other unit>
 
         Converts from <unit> to <other unit>. If number isn't given, it
         defaults to 1. For unit information, see 'units' command.
         """
-
-        # see if the first arg is a number of some sort
-        if args:
-            try:
-                num = float(args[0])
-                args.pop(0)
-            except ValueError:
-                num = 1.0
-        else:
-            raise callbacks.ArgumentError
-
         try:
-            the_rest = ' '.join(args)
-            (unit1, unit2) = the_rest.split(' to ')
-        except ValueError:
-            raise callbacks.ArgumentError
-
-        try:
-            newNum = convertcore.convert(num, unit1, unit2)
+            newNum = convertcore.convert(number, unit1, unit2)
             newNum = self._floatToString(newNum)
-
-            irc.reply('%s' % newNum)
+            irc.reply(str(newNum))
         except convertcore.UnitDataError, ude:
             irc.error(str(ude))
+    convert = wrap(convert, [('float?', 1.0), 'something',
+                             ('literal?', '', 'to'), 'something'])
 
-    def units(self, irc, msg, args):
+    def units(self, irc, msg, args, type):
         """ [<type>]
 
         With no arguments, returns a list of measurement types, which can be
@@ -341,11 +318,8 @@ class Math(callbacks.Privmsg):
         the units of that type.
         """
 
-        if len(args) == 0:
-            type = None
-        else:
-            type = ' '.join(args)
         irc.reply(convertcore.units(type))
+    units = wrap(units, [('?something', None)])
 
 Class = Math
 

@@ -78,15 +78,15 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('base 10 36 [base 36 csalnwea]', 'CSALNWEA')
         self.assertResponse('base 5 4 [base 4 5 212231]', '212231')
 
-        self.assertRegexp('base 37 1', 'between 2 and 36')
-        self.assertRegexp('base 1 1', 'between 2 and 36')
-        self.assertRegexp('base 12 1 1', 'between 2 and 36')
-        self.assertRegexp('base 1 12 1', 'between 2 and 36')
-        self.assertRegexp('base 1.0 12 1', 'between 2 and 36')
-        self.assertRegexp('base A 1', 'between 2 and 36')
+        self.assertError('base 37 1')
+        self.assertError('base 1 1')
+        self.assertError('base 12 1 1')
+        self.assertError('base 1 12 1')
+        self.assertError('base 1.0 12 1')
+        self.assertError('base A 1')
 
-        self.assertRegexp('base 4 4', 'Invalid <number>')
-        self.assertRegexp('base 10 12 A', 'Invalid <number>')
+        self.assertError('base 4 4')
+        self.assertError('base 10 12 A')
 
         print
         print "If we have not fixed a bug with Math.base, the following ",
@@ -163,10 +163,8 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertError('convert 1 m to kpa')
 
     def testConvertSingularPlural(self):
-        self.assertResponse('convert [calc 2*pi] rads to degrees',
-                            '360')
-        self.assertResponse('convert 1 carat to grams',
-                            '0.2')
+        self.assertResponse('convert [calc 2*pi] rads to degrees', '360')
+        self.assertResponse('convert 1 carat to grams', '0.2')
         self.assertResponse('convert 10 lbs to oz', '160')
         self.assertResponse('convert mA to amps', '0.001')
 
