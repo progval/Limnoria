@@ -104,6 +104,12 @@ def nickEqual(nick1, nick2):
 _nickchars = r'_[]\`^{}|-'
 nickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$' % (re.escape(_nickchars),
                                                      re.escape(_nickchars)))
+def isCtcp(msg):
+    """Returns whether or not msg is a CTCP message."""
+    return msg.command == 'PRIVMSG' and \
+           msg.args[1].startswith('\x01') and \
+           msg.args[1].endswith('\x01')
+
 def isNick(s):
     """Returns True if s is a valid IRC nick."""
     if re.match(nickRe, s):

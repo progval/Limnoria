@@ -55,7 +55,6 @@ class FunctionsTestCase(unittest.TestCase):
             'abr-ubr1.sbo-abr.ma.cable.rcn.com'
         self.failUnless(ircutils.hostmaskPatternEqual(s, s))
         
-
     def testIsUserHostmask(self):
         self.failUnless(ircutils.isUserHostmask(self.hostmask))
         self.failUnless(ircutils.isUserHostmask('a!b@c'))
@@ -84,6 +83,10 @@ class FunctionsTestCase(unittest.TestCase):
         self.failIf(ircutils.isChannel('#foobar\x07'))
         self.failIf(ircutils.isChannel('foo'))
         self.failIf(ircutils.isChannel(''))
+
+    def testIsCtcp(self):
+        self.failUnless(ircutils.isCtcp(ircmsgs.privmsg('foo',
+                                                        '\x01VERSION\x01')))
 
     def testBold(self):
         s = ircutils.bold('foo')
