@@ -32,9 +32,10 @@
 from baseplugin import *
 
 import re
+import time
 import urllib2
 import threading
-#import xml.dom.minidom
+import xml.dom.minidom
 
 import debug
 import privmsgs
@@ -208,5 +209,25 @@ class Http(callbacks.Privmsg):
             irc.error(msg, 'the format of the page was odd.')
         except urllib2.URLError:
             irc.error(msg, 'Couldn\'t open the search page.')
+
+    _slashdotTime = 0.0
+    def slashdot(self, irc, msg, args):
+        "takes no arguments"
+        if time.time() - self._slashdotTime > 1800:
+            try:
+                fd = urllib2.urlopen('http://slashdot.org/slashdot.xml')
+                slashdotXml = fd.read()
+                fd.close()
+                dom = xml.dom.minidom.parseString(slashdotXml)
+                headlines = []
+                for headline in dom.getElementsByTagName('title'):
+                    headlines.append(str(headline.firstChild.data))
+                self._slashdotResponse = ' :: '.join(headlines)
+                self._slashdotTime = time.time()
+            except urllib2.URLError, e:
+                irc.error(msg, str(e))
+                return
+        irc.reply(msg, self._slashdotResponse)
+
 
 Class = Http
