@@ -338,7 +338,7 @@ def timestamp(t):
         t = time.time()
     return time.ctime(t)
 
-_formatRe = re.compile('%([bfhiLnpqstu%])')
+_formatRe = re.compile('%(\.\d+f|[bfhiLnpqstu%])')
 def format(s, *args, **kwargs):
     """w00t.
 
@@ -364,9 +364,8 @@ def format(s, *args, **kwargs):
         elif char == 'i':
             # XXX Improve me!
             return str(args.pop())
-        elif char == 'f':
-            # XXX Improve me!
-            return str(args.pop())
+        elif char.endswith('f'):
+            return ('%'+char) % args.pop()
         elif char == 'b':
             return be(args.pop())
         elif char == 'h':
