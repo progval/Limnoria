@@ -97,7 +97,7 @@ class Time(callbacks.Privmsg):
         now = int(time.time())
         new = parse(s)
         if new != now:
-            irc.reply(new)
+            irc.reply(str(new))
         else:
             irc.error('That\'s right now!')
     at = wrap(at, ['text'])
