@@ -88,7 +88,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
 
     def writable(self):
         #debug.methodNamePrintf(self, 'writable')
-        while True:
+        while self.connected:
             m = self.irc.takeMsg()
             if m:
                 self.push(str(m))
