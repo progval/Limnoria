@@ -40,6 +40,7 @@ import re
 import string
 import random
 import itertools
+from cStringIO import StringIO
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -510,6 +511,8 @@ class Filter(callbacks.Privmsg):
         'arr', 's': 'ess', 't': 'tee', 'u': 'you', 'v': 'vee', 'w':
         'double-you', 'x': 'ecks', 'y': 'why', 'z': 'zee'
     }
+    for (k, v) in _spellLetters.items():
+        _spellLetters[k.upper()] = v
     _spellPunctuation = {
         '!': 'exclamation point',
         '"': 'quote',
@@ -554,21 +557,28 @@ class Filter(callbacks.Privmsg):
         Returns <text>, phonetically spelled out.
         """
         text = privmsgs.getArgs(args)
-        replaceLetters  = self.registryValue('spellit.replaceLetters')
-        replacePunctuation  = self.registryValue('spellit.replacePunctuation')
-        replaceNumbers  = self.registryValue('spellit.replaceNumbers')
-        newtext = ''
+        d = {}
+        if self.registryValue('spellit.replaceLetters'):
+            d.update(self._spellLetters)
+        if self.registryValue('spellit.replaceNumbers'):
+            d.update(self._spellNumbers)
+        if self.registryValue('spellit.replacePunctuation'):
+            d.update(self._spellPunctuation)
+# A bug in unicode on OSX prevents me from testing this.
+##         dd = {}
+##         for (c, v) in d.iteritems():
+##             dd[ord(c)] = unicode(v + ' ')
+##         irc.reply(unicode(text).translate(dd))
+        out = StringIO()
+        write = out.write
         for c in text:
-            if self._spellLetters.has_key(c.lower()) and replaceLetters:
-                newtext += '%s ' % self._spellLetters[c.lower()]
-            elif self._spellPunctuation.has_key(c) and replacePunctuation:
-                newtext += '%s ' % self._spellPunctuation[c]
-            elif self._spellNumbers.has_key(c) and replaceNumbers:
-                newtext += '%s ' % self._spellNumbers[c]
-            else:
-                newtext += '%s' % c
-        irc.reply(newtext)
-
+            try:
+                c = d[c]
+                write(' ')
+            except KeyError:
+                pass
+            write(c)
+        irc.reply(out.getvalue())
 
 
 Class = Filter

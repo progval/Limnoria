@@ -93,11 +93,11 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
                           'exclamation point period percent')
         self.assertNotError('config plugins.Filter.spellit.replaceLetters off')
         self.assertRegexp('spellit asasdfasdf12345@#$!%^',
-                          'asasdfasdfone two three four five at pound '
+                          'asasdfasdf one two three four five at pound '
                           'dollar sign exclamation point percent caret')
         self.assertNotError('config plugins.Filter.spellit.replaceNumbers off')
         self.assertRegexp('spellit asasdfasdf12345@#$!%^',
-                          'asasdfasdf12345at pound dollar sign exclamation '
+                          'asasdfasdf12345 at pound dollar sign exclamation '
                           'point percent caret')
         self.assertNotError('config '
                             'plugins.Filter.spellit.replacePunctuation off')
