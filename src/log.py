@@ -40,6 +40,7 @@ import types
 import atexit
 import logging
 import operator
+import textwrap
 import traceback
 
 import supybot.ansi as ansi
@@ -84,6 +85,15 @@ class StdoutStreamHandler(logging.StreamHandler):
             del logging._handlers[self]
         finally:
             logging._releaseLock()
+
+    def format(self, record):
+        s = logging.StreamHandler.format(self, record)
+        if record.levelname != 'ERROR' and conf.supybot.log.stdout.wrap():
+            # We check for ERROR there because otherwise, tracebacks (which are
+            # already wrapped by Python itself) wrap oddly.
+            prefixLen = len(record.name) + 2 # ": "
+            s = textwrap.fill(s, width=78, subsequent_indent=' '*prefixLen)
+        return s
 
     def emit(self, record):
         if conf.supybot.log.stdout() and not conf.daemonized:
@@ -278,6 +288,10 @@ class BooleanRequiredFalseOnWindows(registry.Boolean):
 conf.registerGlobalValue(conf.supybot.log.stdout, 'colorized',
     BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs
     to stdout (if enabled) will be colorized with ANSI color."""))
+
+conf.registerGlobalValue(conf.supybot.log.stdout, 'wrap',
+    registry.Boolean(True, """Determines whether the bot will wrap its logs
+    when they're output to stdout."""))
 
 conf.registerGlobalValue(conf.supybot.log, 'timestampFormat',
     registry.String('[%d-%b-%Y %H:%M:%S]', """Determines the format string for

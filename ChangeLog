@@ -1,3 +1,6 @@
+	* Added supybot.log.stdout.wrap, to allow optional (defaulting to
+	True) wrapping of stdout logs.
+	
 	* Added supybot.databases.plugins.channelSpecific, a channel
 	value that determines whether the database used for channel-based
 	plugins will be a channel-specific database or a global database.
