@@ -39,6 +39,7 @@ import csv
 import math
 import sets
 import random
+from itertools import ilen
 
 import supybot.cdb as cdb
 import supybot.utils as utils
@@ -309,6 +310,9 @@ class DB(object):
 
     def flush(self):
         self.map.flush()
+
+    def vacuum(self):
+        self.map.vacuum()
 
     def close(self):
         self.map.close()
