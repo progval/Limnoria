@@ -33,7 +33,7 @@ import re
 
 from test import *
 
-class SfTest(PluginTestCase, PluginDocumentation):
+class SourceforgeTest(PluginTestCase, PluginDocumentation):
     plugins = ('Sourceforge',)
     def testBugs(self):
         self.assertNotError('bugs')
