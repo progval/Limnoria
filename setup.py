@@ -38,6 +38,7 @@ plugins = [
     'Dict',
     'Filter',
     'Format',
+    'Google',
     'Herald',
     'Math',
     'Network',
