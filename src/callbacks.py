@@ -97,8 +97,6 @@ def reply(msg, s):
         m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (msg.nick, s))
     else:
         m = ircmsgs.privmsg(msg.nick, s)
-    if len(m) > 512:
-        m = reply(msg, 'My response would\'ve been too long.')
     return m
 
 def error(msg, s):
@@ -317,6 +315,8 @@ class IrcObjectProxy:
                 self.irc.reply(msg, s)
             else:
                 s = ircutils.safeArgument(s)
+                if len(s) + len(self.irc.prefix) > 512:
+                    s = 'My response would\'ve been too long.'
                 self.irc.queueMsg(reply(msg, s))
         else:
             self.args[self.counter] = s

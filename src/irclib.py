@@ -486,6 +486,9 @@ class Irc(object):
                     self.driver.scheduleReconnect()
                 if self.driver:
                     self.driver.die()
+        elif msg.command == 'PRIVMSG':
+            if msg.nick == self.nick:
+                self.prefix = msg.prefix
         # Now update the IrcState object.
         try:
             self.state.addMsg(self, msg)

@@ -147,8 +147,8 @@ class IrcMsg(object):
         self._len = 0
         if self.prefix:
             self._len += len(self.prefix)
-        else:
-            self._len += 42 # Ironically, the average length of an IRC prefix.
+##         else:
+##             self._len += 42
         self._len += len(self.command)
         if self.args:
             for arg in self.args:
