@@ -50,6 +50,28 @@ fd.close()
 
 msgs = [ircmsgs.IrcMsg(s) for s in rawmsgs]
 
+nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
+         'alb','d0rt','jemfinch','StyxAlso','fors','deltab','gd',
+         'hellz_hunter','are_j|pub_comp','jason_','dreid','sayke_','winjer',
+         'TenOfTen','GoNoVas','queuetue','the|zzz','Hellfried','Therion',
+         'shro','DaCa','rexec','polin8','r0ky','aaron_','ironfroggy','eugene',
+         'faassen','tirloni','mackstann','Yhg1s','ElBarono','vegai','shang',
+         'typo_','kikoforgetme','asqui','TazyTiggy','fab','nixman','liiwi',
+         'AdamV','paolo','red_one','_AleX_','lament','jamessan','supybot',
+         'macr0_zzz','plaisthos','redghost','disco','mphardy','gt3','mathie',
+         'jonez','r0ky-office','tic','d33p','ES3merge','talin','af','flippo',
+         'sholden','ameoba','shepherg','j2','Acapnotic','dash','merlin262',
+         'Taaus','_moshez','rik','jafo__','blk-majik','JT__','itamar',
+         'kermit-','davidmccabe','glyph','jojo','dave_p','goo','hyjinx',
+         'SamB','exarkun','drewp','Ragica','skylan','redgore','k3','Ra1stlin',
+         'StevenK','carball','h3x','carljm','_jacob','teratorn','frangen',
+         'phed','datazone','Yaggo','acct_','nowhere','pyn','ThomasWaldmann',
+         'dunker','pilotLight','brainless','LoganH_','jmpnz','steinn',
+         'EliasREC','lowks__','OldSmrf','Mad77','snibril','delta','psy',
+         'skimpIzu','Kengur','MoonFallen','kotkis','Hyperi']
+
+nicks += [msg.nick for msg in msgs if msg.nick]
+
 def getMsgs(command):
     return [msg for msg in msgs if msg.command == command]
     
