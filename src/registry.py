@@ -117,10 +117,12 @@ class Integer(Value):
 class PositiveInteger(Value):
     def set(self, s):
         try:
+            original = self.value
             self.value = int(s)
             if self.value < 0:
-                raise InvalidRegistryValue, 'Value must be a positive integer.'
+                raise ValueError
         except ValueError:
+            self.value = original
             raise InvalidRegistryValue, 'Value must be a positive integer.'
 
 class Float(Value):
