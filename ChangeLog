@@ -1,4 +1,6 @@
-2003-10-10  Jeremy Fincher  <jfincher@functor>
+2003-10-11  Jeremy Fincher  <jfincher@functor>
+
+	* Version 0.73.1!
 
 	* Fixed imports in the DCC plugin.
 
@@ -32,8 +34,6 @@
 
 	* Fixed a bug in the Enforcer plugin that would cause the bot to
 	ban everyone from the channel whenever ChanServ deopped someone.
-
-2003-10-07  Jeremy Fincher  <jfincher@functor>
 
 	* Changed the "whois" command in the Network plugin to "internic"
 	instead.
