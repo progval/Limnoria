@@ -396,7 +396,7 @@ class Relay(callbacks.Privmsg):
                 channel = channel.replace('+', 'is voiced on ')
                 channels[i] = channel
         else:
-            channels = ['isn\'t on any channels']
+            channels = ['isn\'t on any non-secret channels']
         if not channels[0].startswith('is'):
             channels[0] = 'is on ' + channels[0]
         channels = utils.commaAndify(channels)
