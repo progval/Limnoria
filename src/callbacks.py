@@ -200,10 +200,15 @@ class Tokenizer:
         return args
 
 def tokenize(s):
+    start = time.time()
     try:
-        return Tokenizer().tokenize(s)
+        args = Tokenizer().tokenize(s)
     except ValueError, e:
         raise SyntaxError, str(e)
+    debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
+    return args
+    
+    
 
 class IrcObjectProxy:
     def __init__(self, irc, msg, args):
