@@ -122,7 +122,7 @@ class IrcMsgQueue(object):
                 debug.msg('Not adding msg %s to queue' % msg, 'normal')
         else:
             self.msgs.add(msg)
-            if msg.command in ('MODE', 'KICK', 'PONG'):
+            if msg.command in ('MODE', 'KICK', 'PONG', 'NICK'):
                 self.highpriority.enqueue(msg)
             elif msg.command in ('PRIVMSG', 'PING', 'WHO', 'NOTICE'):
                 self.lowpriority.enqueue(msg)
