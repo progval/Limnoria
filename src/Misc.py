@@ -44,7 +44,7 @@ import supybot.fix as fix
 import os
 import sys
 import time
-import getopt
+
 from itertools import imap, ifilter
 
 import supybot.log as log
@@ -53,7 +53,7 @@ import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
-from supybot.commands import wrap
+from supybot.commands import additional, getopts, optional, wrap
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.webutils as webutils
@@ -185,7 +185,7 @@ class Misc(callbacks.Privmsg):
                 else:
                     irc.error('That plugin exists, but it has no '
                               'commands with help.')
-    list = wrap(list, ['?plugin'], getopts={'private': ''})
+    list = wrap(list, [getopts({'private':''}), optional('plugin')])
 
     def apropos(self, irc, msg, args, s):
         """<string>
@@ -251,7 +251,7 @@ class Misc(callbacks.Privmsg):
             cb = cbs[0]
             method = getattr(cb, command)
             getHelp(method)
-    help = wrap(help, [('plugin?', None, False), 'commandName'])
+    help = wrap(help, [additional(('plugin', False)), 'commandName'])
 
     def hostmask(self, irc, msg, args, nick):
         """[<nick>]
@@ -262,7 +262,7 @@ class Misc(callbacks.Privmsg):
         if not nick:
             nick = msg.nick
         irc.reply(irc.state.nickToHostmask(nick))
-    hostmask = wrap(hostmask, ['?seenNick'])
+    hostmask = wrap(hostmask, [optional('seenNick')])
 
     def version(self, irc, msg, args):
         """takes no arguments
@@ -408,7 +408,7 @@ class Misc(callbacks.Privmsg):
             irc.reply(utils.mungeEmailForWeb(str(module.__author__)))
         else:
             irc.reply('That plugin doesn\'t have an author that claims it.')
-    author = wrap(author, [('plugin', False)])
+    author = wrap(author, [('plugin')])
 
     def more(self, irc, msg, args, nick):
         """[<nick>]
@@ -441,7 +441,7 @@ class Misc(callbacks.Privmsg):
             irc.error('You haven\'t asked me a command!')
         except IndexError:
             irc.error('That\'s all, there is no more.')
-    more = wrap(more, ['?seenNick'])
+    more = wrap(more, [optional('seenNick')])
 
     def _validLastMsg(self, msg):
         return msg.prefix and \
@@ -526,14 +526,14 @@ class Misc(callbacks.Privmsg):
                       'my history of %s messages.' % len(irc.state.history))
         else:
             irc.reply(utils.commaAndify(resp))
-    last = wrap(last, getopts={'nolimit': '',
-                               'on': 'something',
-                               'with': 'something',
-                               'from': 'something',
-                               'without': 'something',
-                               'in': 'callerInChannel',
-                               'regexp': 'regexpMatcher',})
-                               
+    last = wrap(last, [getopts({'nolimit': '',
+                                'on': 'something',
+                                'with': 'something',
+                                'from': 'something',
+                                'without': 'something',
+                                'in': 'callerInChannel',
+                                'regexp': 'regexpMatcher',})])
+
 
     def tell(self, irc, msg, args, target, text):
         """<nick> <text>
@@ -702,7 +702,7 @@ class Misc(callbacks.Privmsg):
             irc.reply(buildPeopleString(module))
         else:
             irc.reply(buildPersonString(module))
-    contributors = wrap(contributors, ['plugin', '?nick'])
+    contributors = wrap(contributors, ['plugin', optional('nick')])
 
 Class = Misc
 
