@@ -81,19 +81,19 @@ if sqlite is not None:
             self.assertNotError('add insult foo')
             self.assertRegexp('lart me', 'jabs t3st \(#1\)')
             self.assertRegexp('praise me', 'pets t3st \(#1\)')
-            self.assertRegexp('insult me', 't3st: foo \(#1\)')
+            self.assertResponse('insult me', 't3st: foo (#1)')
             self.assertRegexp('lart whamme', 'jabs whamme \(#1\)')
             self.assertRegexp('praise whamme', 'pets whamme \(#1\)')
-            self.assertRegexp('insult whamme', 'whamme: foo \(#1\)')
+            self.assertResponse('insult whamme', 'whamme: foo (#1)')
             self.assertRegexp('lart my knee', 'jabs t3st\'s knee \(#1\)')
             self.assertRegexp('praise my knee', 'pets t3st\'s knee \(#1\)')
-            self.assertRegexp('insult my knee', 't3st\'s knee: foo \(#1\)')
+            self.assertResponse('insult my knee', 't3st\'s knee: foo (#1)')
             self.assertRegexp('lart sammy the snake', 'jabs sammy the snake'\
                 ' \(#1\)')
             self.assertRegexp('praise sammy the snake', 'pets sammy the snake'\
                 ' \(#1\)')
-            self.assertRegexp('insult sammy the snake', 'sammy the snake: foo'\
-                ' \(#1\)')
+            self.assertResponse('insult sammy the snake', 'sammy the snake: '\
+                'foo (#1)')
             self.assertRegexp('lart me for my', 'jabs t3st for t3st\'s \(#1\)')
             self.assertRegexp('praise me for my', 'pets t3st for t3st\'s '\
                 '\(#1\)')

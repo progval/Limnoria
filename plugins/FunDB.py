@@ -159,7 +159,7 @@ class FunDB(callbacks.Privmsg):
             insultee = nick
             insult = insult.replace("$who", insultee)
             s = '%s: %s (#%s)' % (insultee, insult, id)
-            irc.reply(msg, s)
+            irc.reply(msg, s, prefixName=False)
 
     def crossword(self, irc, msg, args):
         """<word>
