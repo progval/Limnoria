@@ -32,14 +32,21 @@
 from test import *
 
 import utils
+import ircdb
 
-class NotesTestCase(PluginTestCase):
-    plugins = ('Notes', 'MiscCommands')
+class NotesTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('Notes', 'MiscCommands', 'UserCommands')
     def testHelps(self):
         self.assertNotError('help sendnote')
         self.assertNotError('list Notes')
         
     def testSendnote(self):
+        #print repr(ircdb.users.getUser(self.prefix))
+        self.prefix = 'foo!bar@baz'
+        self.assertNotError('register foo bar')
+        (id, u) = ircdb.users.newUser()
+        u.name = 'inkedmn'
+        ircdb.users.setUser(id, u)
         self.assertNotError('sendnote inkedmn test')
         self.assertError('sendnote alsdkjfasldk foo')
     
