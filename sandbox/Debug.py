@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 ###
-# Copyright (c) 2002-2004, Jeremiah Fincher
+# Copyright (c) 2002, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,8 @@
 ###
 
 """
-This is for debugging only.  If this somehow gets added and
-committed, remove it immediately.  It should not be released.
+This is for jemfinch's debugging only.  If this somehow gets added and
+committed, remove it immediately.  It must not be released.
 """
 
 __revision__ = "$Id$"
@@ -43,6 +43,7 @@ import exceptions
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
@@ -55,50 +56,57 @@ def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('Debug', True)
 
+def getTracer(fd):
+    def tracer(frame, event, _):
+        if event == 'call':
+            code = frame.f_code
+            print >>fd, '%s: %s' % (code.co_filename, code.co_name)
+    return tracer
 
 class Debug(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
-    def eval(self, irc, msg, args):
+    def eval(self, irc, msg, args, text):
         """<expression>
 
         Evaluates the given expression.
         """
-        s = privmsgs.getArgs(args)
         try:
-            irc.reply(repr(eval(s)))
+            irc.reply(repr(eval(text)))
         except Exception, e:
             irc.reply(utils.exnToString(e))
+    eval = wrap(eval, ['text'])
 
-    def exn(self, irc, msg, args):
+    def exn(self, irc, msg, args, name):
         """<exception name>
 
         Raises the exception matching <exception name>.
         """
-        name = privmsgs.getArgs(args)
         exn = getattr(exceptions, name)
         raise exn, msg.prefix
+    exn = wrap(exn, ['text'])
 
-    def sendquote(self, irc, msg, args):
+    def sendquote(self, irc, msg, args, text):
         """<raw IRC message>
 
         Sends (not queues) the raw IRC message given.
         """
-        msg = ircmsgs.IrcMsg(privmsgs.getArgs(args))
+        msg = ircmsgs.IrcMsg(text)
         irc.sendMsg(msg)
+    sendquote = wrap(sendquote, ['text'])
 
-    def settrace(self, irc, msg, args):
+    def settrace(self, irc, msg, args, filename):
         """[<filename>]
 
         Starts tracing function calls to <filename>.  If <filename> is not
         given, sys.stdout is used.  This causes much output.
         """
-        filename = privmsgs.getArgs(args, optional=1, required=0)
         if filename:
             fd = file(filename, 'a')
         else:
             fd = sys.stdout
-        sys.settrace(utils.callTracer(fd))
+        sys.settrace(getTracer(fd))
         irc.replySuccess()
+    settrace = wrap(settrace, [additional('filename')])
 
     def unsettrace(self, irc, msg, args):
         """takes no arguments
@@ -107,6 +115,15 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
         """
         sys.settrace(None)
         irc.replySuccess()
+    unsettrace = wrap(unsettrace)
+
+    def channeldb(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Returns the result of the channeldb converter.
+        """
+        irc.reply(channel)
+    channeldb = wrap(channeldb, ['channeldb'])
 
 
 Class = Debug
