@@ -131,7 +131,7 @@ class Weather(callbacks.Privmsg):
                     try:
                         getattr(self, command)(irc, msg, args[:])
                         self.log.info('%s lookup succeeded.', command)
-                        break
+                        return
                     except NoLocation:
                         self.log.info('%s lookup failed as backup.', command)
             irc.error('Could not retrieve weather for %s.' %
