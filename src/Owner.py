@@ -220,6 +220,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     continue
                 registerDefaultPlugin(name, s)
 
+    def _getIrc(self, network):
+        network = network.lower()
+        for irc in world.ircs:
+            if irc.network.lower() == network:
+                return irc
+        return None
+
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and not world.testing:
             if ircutils.strEqual(msg.args[0], irc.nick):
@@ -652,13 +659,24 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.error('There was no plugin %s.' % name)
 
     def reconnect(self, irc, msg, args):
-        """takes no arguments
+        """[<network>]
 
-        Disconnects and then reconnects to the current network.
+        Disconnects and then reconnects to <network>.  If no network is given,
+        disconnects and then reconnects to the network the command was given
+        on.
         """
+        network = privmsgs.getArgs(args, required=0, optional=1)
+        if network:
+            badIrc = self._getIrc(network)
+            if badIrc is None:
+                irc.error('I\'m not currently connected on %s.' % network)
+                return
+        else:
+            badIrc = irc
         try:
-            irc.driver.reconnect()
-            irc.replySuccess()
+            badIrc.driver.reconnect()
+            if badIrc != irc:
+                irc.replySuccess()
         except AttributeError: # There's a cleaner way to do this, but I'm lazy.
             irc.error('I couldn\'t reconnect.  You should restart me instead.')
 
@@ -786,10 +804,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         defaults to 6667, the default port for IRC.
         """
         (network, server) = privmsgs.getArgs(args, optional=1)
-        for otherIrc in world.ircs:
-            if otherIrc.network == network:
-                irc.error('I\'m already connected to %s.' % network)
-                return
+        otherIrc = self._getIrc(network)
+        if otherIrc is not None:
+            irc.error('I\'m already connected to %s.' % network)
+            return
         if server:
             if ':' in server:
                 (server, port) = server.split(':')
@@ -806,7 +824,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 return
         newIrc = self._connect(network, serverPort=serverPort)
         conf.supybot.networks().add(network)
-        assert newIrc.callbacks == irc.callbacks, 'callbacks list is different'
+        assert newIrc.callbacks is irc.callbacks, 'callbacks list is different'
         irc.replySuccess()
 
     def disconnect(self, irc, msg, args):
@@ -819,23 +837,19 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         (network, quitMsg) = privmsgs.getArgs(args, optional=1)
         if not quitMsg:
             quitMsg = msg.nick
-        for otherIrc in world.ircs:
-            if otherIrc.network == network:
-                # Here, rather than lower, in case we're being told to
-                # disconnect from the network we received the command on.
-                irc.replySuccess()
-                otherIrc.queueMsg(ircmsgs.quit(quitMsg))
-                otherIrc.die()
-                break
+        otherIrc = self._getIrc(network)
+        if otherIrc is not None:
+            # replySuccess here, rather than lower, in case we're being
+            # told to disconnect from the network we received the command on.
+            irc.replySuccess()
+            otherIrc.queueMsg(ircmsgs.quit(quitMsg))
+            otherIrc.die()
         else:
             irc.error('I\'m not connected to %s.' % network, Raise=True)
-        conf.supybot.networks().remove(network)
-
-
+        conf.supybot.networks().discard(network)
 
 
 Class = Owner
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
