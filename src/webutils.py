@@ -39,10 +39,10 @@ import urllib2
 class WebException(Exception):
     pass
 
-def getUrl(url, size=None):
-    """Gets a page.  Returns a string that is the page gotten."""
+def getUrlFd(url):
     try:
         fd = urllib2.urlopen(url)
+        return fd
     except socket.error, e:
         if e.args[0] == 111:
             raise WebException, 'Connection refused.'
@@ -52,6 +52,10 @@ def getUrl(url, size=None):
             raise WebException, str(e)
     except (urllib2.HTTPError, urllib2.URLError), e:
         raise WebException, str(e)
+    
+def getUrl(url, size=None):
+    """Gets a page.  Returns a string that is the page gotten."""
+    fd = getUrlFd(url)
     if size is None:
         text = fd.read()
     else:
