@@ -38,11 +38,14 @@ __revision__ = "$Id$"
 
 import plugins
 
+import sets
 import time
+import types
 from itertools import imap
 
 import rssparser
 
+import conf
 import utils
 import privmsgs
 import callbacks
@@ -50,30 +53,60 @@ import callbacks
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load RSS')
-    if 'load Alias' not in onStart:
-        print 'The RSS configure questions need the Alias plugin, but it is '
-        print 'not loaded.'
-        if yn('Do you want to load that plugin now?') == 'y':
-            onStart.append('load Alias')
-        else:
-            print 'You can still use the RSS plugin, but you won\'t be asked'
-            print 'any further questions.'
-            return
     prompt = 'Would you like to add an RSS feed?'
     while yn(prompt) == 'y':
         prompt = 'Would you like to add another RSS feed?'
         name = something('What\'s the name of the website?')
         url = something('What\'s the URL of the RSS feed?')
-        onStart.append('alias add %s "rss %s"' % (name, url))
-        onStart.append('alias lock %s' % name)
+        onStart.append('rss add %s %s' % (name, url))
+        #onStart.append('alias lock %s' % name)
 
 class RSS(callbacks.Privmsg):
     threaded = True
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        self.feedNames = sets.Set()
         self.lastRequest = {}
         self.cachedFeeds = {}
 
+    def add(self, irc, msg, args):
+        """<name> <url>
+
+        Adds a command to this plugin that will look up the RSS feed at the
+        given URL.
+        """
+        (name, url) = privmsgs.getArgs(args, required=2)
+        docstring = """takes no arguments
+
+        Reports the titles for %s at the RSS feed <%s>.  RSS feeds are only
+        looked up every half hour at the most (since that's how most
+        websites prefer it).
+        """ % (name, url)
+        name = callbacks.canonicalName(name)
+        def f(self, irc, msg, args):
+            args.insert(0, url)
+            self.rss(irc, msg, args)
+        f = types.FunctionType(f.func_code, f.func_globals,
+                               f.func_name, closure=f.func_closure)
+        f.__doc__ = docstring
+        self.feedNames.add(name)
+        setattr(self.__class__, name, f)
+        irc.reply(msg, conf.replySuccess)
+
+    def remove(self, irc, msg, args):
+        """<name>
+
+        Removes the command for looking up RSS feeds at <name> from
+        this plugin.
+        """
+        name = privmsgs.getArgs(args)
+        name = callbacks.canonicalName(name)
+        if name not in self.feedNames:
+            irc.error(msg, 'That\'s not a valid RSS feed command name.')
+            return
+        delattr(self.__class__, name)
+        irc.reply(msg, conf.replySuccess)
+        
     def rss(self, irc, msg, args):
         """<url>
 

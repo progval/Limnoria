@@ -27,6 +27,9 @@
 	* Added Karma.most for determining various "mosts" in the Karma
 	database.
 	
+	* Changed RSS so RSS feed commands may be added while the bot is
+	running, and so added RSS feed commands are in the RSS plugin.
+	
 	* Changed Lookup so added lookups are added in the Lookup plugin
 	itself so there's no dependency on Alias, and so loaded lookups
 	can be seen via 'list Lookup'.

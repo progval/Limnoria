@@ -38,8 +38,17 @@ class RSSTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotRegexp('rss info http://slashdot.org/slashdot.rss',
                              '-1 years')
 
-    def testRsstitles(self):
+    def testRss(self):
         self.assertNotError('rss http://slashdot.org/slashdot.rss')
+
+    def testRssAdd(self):
+        self.assertNotError('rss add slashdot '
+                            'http://slashdot.org/slashdot.rss')
+        self.assertNotError('slashdot')
+        self.assertNotError('rss slashdot')
+        self.assertNotError('rss remove slashdot')
+        self.assertError('slashdot')
+        self.assertError('rss slashdot')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
