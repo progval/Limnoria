@@ -47,7 +47,8 @@ class HttpTest(PluginTestCase, PluginDocumentation):
                             'Slashdot: News for nerds, stuff that matters')
         self.assertResponse('title http://www.slashdot.org/',
                             'Slashdot: News for nerds, stuff that matters')
-        self.assertNotRegexp('http://www.amazon.com/exec/obidos/tg/detail/-/'
+        self.assertNotRegexp('title '
+                             'http://www.amazon.com/exec/obidos/tg/detail/-/'
                              '1884822312/qid=1063140754/sr=8-1/ref=sr_8_1/'
                              '002-9802970-2308826?v=glance&s=books&n=507846',
                              'no HTML title')
