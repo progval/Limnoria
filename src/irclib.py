@@ -690,10 +690,11 @@ class Irc(IrcCommandDispatcher):
         # Let's reset nicks in case we had to use a weird one.
         self.alternateNicks = conf.supybot.nick.alternates()[:]
         umodes = conf.supybot.protocols.irc.umodes()
-        umodes = umodes.lstrip('+')
         if umodes:
-            log.info('Sending user modes to %s: +%s', self.network, umodes)
-            self.sendMsg(ircmsgs.mode(self.nick, '+%s' % umodes))
+            if umodes[0] not in '+-':
+                umodes = '+' + umodes
+            log.info('Sending user modes to %s: %s', self.network, umodes)
+            self.sendMsg(ircmsgs.mode(self.nick, umodes))
     do377 = do422 = do376
 
     def do433(self, msg):
