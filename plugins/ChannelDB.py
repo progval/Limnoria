@@ -62,6 +62,7 @@ frownre = re.compile('|'.join(map(re.escape, frowns)))
 class ChannelDB(callbacks.Privmsg,
                 plugins.Configurable,
                 plugins.ChannelDBHandler):
+    noIgnore = True
     configurables = plugins.ConfigurableDictionary(
         [('self-stats', plugins.ConfigurableTypes.bool, True,
           """Determines whether the bot will keep channel statistics on itself,
@@ -115,7 +116,8 @@ class ChannelDB(callbacks.Privmsg,
                               quits INTEGER
                               )""")
             cursor.execute("""CREATE TABLE nick_seen (
-                              name TEXT UNIQUE ON CONFLICT REPLACE,
+                              name TEXT,
+                              normalized TEXT UNIQUE ON CONFLICT REPLACE,
                               last_seen TIMESTAMP,
                               last_msg TEXT
                               )""")
@@ -202,8 +204,8 @@ class ChannelDB(callbacks.Privmsg,
                               msgs=msgs+1,
                               actions=actions+%s""",
                        smileys, frowns, chars, words, int(isAction))
-        cursor.execute("""INSERT INTO nick_seen VALUES (%s, %s, %s)""",
-                       msg.nick, int(time.time()), s)
+        cursor.execute("""INSERT INTO nick_seen VALUES (%s, %s, %s, %s)""",
+                       msg.nick,ircutils.toLower(msg.nick),int(time.time()),s)
         try:
             if self.outFiltering:
                 id = 0
@@ -359,7 +361,8 @@ class ChannelDB(callbacks.Privmsg,
                     return
         else:
             table = 'nick_seen'
-            criterion = 'nickeq(name,%s)'
+            criterion = 'normalized=%s'
+            name = ircutils.toLower(name)
         sql = "SELECT last_seen,last_msg FROM %s WHERE %s" % (table,criterion)
         #debug.printf(sql)
         cursor.execute(sql, name)
