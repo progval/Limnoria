@@ -89,6 +89,8 @@ def checkCapability(f, capability):
         if ircdb.checkCapability(msg.prefix, capability):
             f(self, irc, msg, args)
         else:
+            self.log.warning('%r attempted %s without %s.',
+                             msg.prefix, f.func_name, capability)
             irc.error(msg, conf.replyNoCapability % capability)
     newf = types.FunctionType(newf.func_code, newf.func_globals,
                               f.func_name, closure=newf.func_closure)
@@ -108,6 +110,8 @@ def checkChannelCapability(f, capability):
             ff = types.MethodType(f, self, self.__class__)
             ff(irc, msg, args, *L)
         else:
+            self.log.warning('%r attempted %s without %s.',
+                             msg.prefix, f.func_name, capability)
             irc.error(msg, conf.replyNoCapability % chancap)
     newf = types.FunctionType(newf.func_code, newf.func_globals,
                               f.func_name, closure=newf.func_closure)
@@ -170,7 +174,7 @@ def urlSnarfer(f):
         url = match.group(0)
         if any(lambda t: t[0] == url and t[1] == msg.args[0], q) and \
                not world.testing:
-            self.log.warning('Refusing to snarf %s.', url)
+            self.log.warning('Refusing to snarf %s from %r.', url, msg.prefix)
         else:
             q.enqueue((url, msg.args[0], now))
             if self.threaded:
@@ -196,6 +200,8 @@ class CapabilityCheckingPrivmsg(callbacks.Privmsg):
         if ircdb.checkCapability(msg.prefix, self.capability):
             callbacks.Privmsg.callCommand(self, f, irc, msg, args)
         else:
+            self.log.warning('%r tried to call %s without %s.',
+                             msg.prefix, f.im_func.func_name, self.capability)
             irc.error(msg, conf.replyNoCapability % self.capability)
 
 
