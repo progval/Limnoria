@@ -99,6 +99,10 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
         'Winning bidder'), self._winningBidder.search(s).group(1),
         self._winningBidder.search(s).group(2))
 
+    _buyNow = re.compile(r'alt="Buy It Now">.*?<b>([^<]+)</b>')
+    _getBuynow = lambda self, s: '%s: %s' % (ircutils.bold('Buy It Now'),
+        self._buyNow.search(s).group(1))
+
     _seller = re.compile(r'Seller information.+?<a href[^>]+>([^<]+)</a>'\
         '.+ViewFeedback.+">(\d+)</a>', _reopts)
     _getSeller = lambda self, s: '%s: %s (%s)' % (ircutils.bold('Seller'),
@@ -135,8 +139,8 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
         self._getResponse(irc, msg, url)
 
     def ebaySnarfer(self, irc, msg, match):
-        r"http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem&(?:item=\d+"\
-            "(?:&category=\d+)?|category=\d+&item=\d+)"
+        r"http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem(?:&item=\d+|"\
+            "&category=\d+)+"
         if not self.snarfer:
             return
         url = match.group(0)
@@ -146,8 +150,9 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
         fd = urllib2.urlopen(url)
         s = fd.read()
         fd.close()
-        searches = (self._getBid, self._getWinningbid, self._getTime,
-            self._getBidder, self._getWinningbidder, self._getSeller)
+        searches = (self._getBid, self._getBuynow, self._getWinningbid,
+            self._getTime, self._getBidder, self._getWinningbidder,
+            self._getSeller)
         try:
             (num, desc) = self._info.search(s).groups()
             resp = ['%s%s: %s' % (ircutils.bold('Item #'), ircutils.bold(num),
