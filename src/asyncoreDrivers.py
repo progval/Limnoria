@@ -123,7 +123,6 @@ class AsyncoreDriver(asynchat.async_chat, object):
     def die(self):
         #debug.methodNamePrintf(self, 'die')
         self.close()
-        drivers.IrcDriver.die(self)
 
     
 class ReplListener(asyncore.dispatcher, object):
