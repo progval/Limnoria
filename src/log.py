@@ -39,6 +39,8 @@ import time
 import types
 import atexit
 import logging
+import operator
+import traceback
 
 import ansi
 import conf
@@ -57,6 +59,17 @@ class Formatter(logging.Formatter):
                 raise
         return logging.Formatter.formatException(self, (E, e, tb))
 
+
+class Logger(logging.Logger):
+    def exception(self, *args):
+        (E, e, tb) = sys.exc_info()
+        tbinfo = traceback.extract_tb(tb)
+        path = '/'.join(map(operator.itemgetter(2), tbinfo))
+        eStrId = '%s:%s' % (E, path)
+        eId = hash(eStrId) & 0xFFFF
+        logging.Logger.exception(self, *args)
+        self.error('Exception id: %s', eId)
+        self.error('Exception string: %s', eStrId)
 
 class BetterStreamHandler(logging.StreamHandler):
     def emit(self, record):
@@ -107,7 +120,7 @@ class BetterFileHandler(logging.FileHandler):
 class ColorizedFormatter(Formatter):
     def formatException(self, (E, e, tb)):
         if conf.supybot.log.stdout.colorized():
-            return ''.join([ansi.BOLD, ansi.RED,
+            return ''.join([ansi.RED,
                             Formatter.formatException(self, (E, e, tb)),
                             ansi.RESET])
         else:
@@ -133,6 +146,7 @@ formatter = Formatter('%(levelname)s %(asctime)s %(message)s')
 pluginFormatter = Formatter('%(levelname)s %(asctime)s %(name)s %(message)s')
 
 # These are not.
+logging.setLoggerClass(Logger)
 _logger = logging.getLogger('supybot')
 debug = _logger.debug
 info = _logger.info
@@ -272,16 +286,17 @@ registry.String('[%d-%b-%Y %H:%M:%S]',
 Python documentation for the time module to see what formats are accepted.
 If you set this variable to the empty string, times will be logged in a
 simple seconds-since-epoch format."""))
-if not os.path.exists(conf.supybot.directories.log()):
-    os.mkdir(conf.supybot.directories.log(), 0755)
 
-pluginLogDir = os.path.join(conf.supybot.directories.log(), 'plugins')
+_logDir = conf.supybot.directories.log()
+if not os.path.exists(_logDir):
+    os.mkdir(_logDir, 0755)
+
+pluginLogDir = os.path.join(_logDir, 'plugins')
 
 if not os.path.exists(pluginLogDir):
     os.mkdir(pluginLogDir, 0755)
 
-_handler = BetterFileHandler(os.path.join(conf.supybot.directories.log(),
-                                          'misc.log'))
+_handler = BetterFileHandler(os.path.join(_logDir, 'misc.log'))
 _handler.setFormatter(formatter)
 _handler.setLevel(-1)
 _logger.addHandler(_handler)
