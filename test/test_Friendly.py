@@ -41,16 +41,22 @@ class FriendlyTestCase(PluginTestCase):
         self.assertNotError('heya, %s' % self.irc.nick)
         self.assertNotError('howdy %s' % self.irc.nick)
         self.assertNotError('hi, %s!' % self.irc.nick)
+        self.assertNotRegexp('hi, %s' % self.irc.nick,
+                             '^%s: ' % self.irc.nick)
 
     def testGoodbye(self):
         self.assertNotError('seeya %s!' % self.irc.nick)
         self.assertNotError('bye, %s.' % self.irc.nick)
+        self.assertNotRegexp('bye, %s' % self.irc.nick,
+                             '^%s: ' % self.irc.nick)
 
     def testBeGracious(self):
         self.assertNotError('thanks, %s' % self.irc.nick)
         self.assertNotError('thank you, %s' % self.irc.nick)
         self.assertNotError('thx %s' % self.irc.nick)
         self.assertNotError('%s: thx!' % self.irc.nick)
+        self.assertNotRegexp('thanks, %s' % self.irc.nick,
+                             '^%s: ' % self.irc.nick)
 
 
 
