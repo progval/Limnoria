@@ -249,7 +249,8 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         cursor.execute("""SELECT count(user_id), option_id
                           FROM votes
                           WHERE poll_id=%s 
-                          GROUP BY option_id""",
+                          GROUP BY option_id
+                          ORDER BY count(user_id) DESC""",
                           poll_id)
         if cursor.rowcount == 0:
             s = 'This poll has no votes yet.'
