@@ -179,7 +179,7 @@ class Alias(callbacks.Privmsg):
         # with an Irc, we add our aliases and then delete ourselves :)
         for (alias, (command, locked)) in self.aliases.iteritems():
             try:
-                self.addAlias(irc, msg, alias, command, locked)
+                self.addAlias(irc, alias, command, locked)
             except Exception, e:
                 self.log.exception('Exception when trying to add alias %s.  '
                                    'Removing from the Alias database.' % alias)
@@ -218,7 +218,7 @@ class Alias(callbacks.Privmsg):
     unlock = privmsgs.checkCapability(unlock, 'admin')
 
     _invalidCharsRe = re.compile(r'[\[\]\s]')
-    def addAlias(self, irc, msg, name, alias, lock=False):
+    def addAlias(self, irc, name, alias, lock=False):
         if self._invalidCharsRe.search(name):
             raise AliasError, 'Names cannot contain spaces or square brackets.'
         if '|' in name:
