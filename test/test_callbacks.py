@@ -98,6 +98,19 @@ class TokenizerTestCase(unittest.TestCase):
                              ['baz', 'quux', ['foo', 'bar']])
         finally:
             conf.enablePipeSyntax = False
+
+    def testBold(self):
+        s = '\x02foo\x02'
+        self.assertEqual(tokenize(s), [s])
+        s = s[:-1] + '\x0f'
+        self.assertEqual(tokenize(s), [s])
+        
+
+    def testColor(self):
+        s = '\x032,3foo\x03'
+        self.assertEqual(tokenize(s), [s])
+        s = s[:-1] + '\x0f'
+        self.assertEqual(tokenize(s), [s])
         
 
 class FunctionsTestCase(unittest.TestCase):
