@@ -146,7 +146,7 @@ class FunDB(callbacks.Privmsg):
                           ORDER BY random()
                           LIMIT 1""")
         (id, insult) = cursor.fetchone()
-        if nick.strip() in (irc.nick, 'himself'):
+        if nick.strip() in (irc.nick, 'himself', 'me'):
             insultee = msg.nick
         else:
             insultee = nick
@@ -312,7 +312,7 @@ class FunDB(callbacks.Privmsg):
                           ORDER BY random()
                           LIMIT 1""")
         (id, lart) = cursor.fetchone()
-        if nick == irc.nick:
+        if nick == irc.nick or nick == 'me':
             lartee = msg.nick
         else:
             lartee = nick
