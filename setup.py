@@ -35,6 +35,7 @@ plugins = [
     'Channel',
     'Config',
     'Dict',
+    'Format',
     'Math',
     'Misc',
     'Owner',
