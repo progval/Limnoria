@@ -80,6 +80,11 @@ class OptionList(object):
                 return '(%s' % ''.join(ret) #)
             elif token == ')':
                 if len(ret) > 1:
+                    if '|' in ret:
+                        L = map(''.join,utils.itersplit(lambda x: x=='|', ret))
+                        return random.choice(L)
+                    else:
+                        return ''.join(ret)
                     return [x for x in ret if x != '|']
                 elif len(ret) == 1:
                         return '(%s)' % ret[0]
@@ -105,34 +110,12 @@ class OptionList(object):
                 break
             elif token == '(':
                 ret.append(self._insideParens(lexer))
-            elif token == ')':
-                if ret: #(
-                    ret[-1] += ')'
-                else: #(
-                    ret.append(')')
-            elif token == '|':
-                ret.append(token)
             else:
-                if ret and ret[-1] == '|':
-                    pipe = ret.pop()
-                    first = ret.pop()
-                    ret.append(pipe.join([first, token]))
-                else:
-                    ret.append(token)
-        return ret
+                ret.append(token)
+        return ''.join(ret)
 
-def tokenize(s):
+def pickOptions(s):
     return OptionList().tokenize(s)
-
-def pick(L, recursed=False):
-    L = L[:]
-    for (i, elt) in enumerate(L):
-        if isinstance(elt, list):
-            L[i] = pick(elt, recursed=True)
-    if recursed:
-        return random.choice(L)
-    else:
-        return L
 
 class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     priority = 98
@@ -173,7 +156,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     def parseFactoid(self, irc, msg, fact):
         type = "define"  # Default is to just spit the factoid back as a
                          # definition of what the key is (i.e., "foo is bar")
-        newfact = ''.join(pick(tokenize(fact)))
+        newfact = pickOptions(fact)
         if newfact.startswith("<reply>"):
             newfact = newfact.replace("<reply>", "", 1)
             newfact = newfact.strip()

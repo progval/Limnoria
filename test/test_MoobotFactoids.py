@@ -40,27 +40,12 @@ if sqlite is not None:
     MoobotFactoids = Owner.loadPluginModule('MoobotFactoids')
     MF = MoobotFactoids
     class OptionListTestCase(unittest.TestCase):
-        def testEmptyParens(self):
-            self.assertEqual(MF.tokenize('()'), ['()'])
-
-        def testNoBarParens(self):
-            self.assertEqual(MF.tokenize('(foo)'), ['(foo)'])
-
-        def testDanglingParens(self):
-            self.assertEqual(MF.tokenize('(foo'), ['(foo'])
-            self.assertEqual(MF.tokenize('(foo|bar'),['(foo|bar'])
-            self.assertEqual(MF.tokenize('foo)'), ['foo)'])
-            self.assertEqual(MF.tokenize('foo|bar)'),['foo|bar)'])
-
-        def testPipesOutsideParens(self):
-            self.assertEqual(MF.tokenize('1|2'), ['1|2'])
-
-        def testStandardBehavior(self):
-            self.assertEqual(MF.tokenize('(foo|bar)'), [['foo', 'bar']])
-            self.assertEqual(MF.tokenize('(foo|bar|baz)'),
-                             [['foo','bar','baz']])
-            self.assertEqual(MF.tokenize('(foo|(bar|baz))'),
-                             [['foo', ['bar', 'baz']]])
+        def testPickOptions(self):
+            for i in xrange(10):
+                self.failUnless(MF.pickOptions('(a|b)') in ['a', 'b'])
+                self.failUnless(MF.pickOptions('a') == 'a')
+                self.failUnless(MF.pickOptions('(a|b (c|d))') in
+                                ['a', 'b c', 'b d'])
 
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('MoobotFactoids', 'User', 'Utilities')
