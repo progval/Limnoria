@@ -45,6 +45,7 @@ import urlparse
 import sqlite
 
 import utils
+import ircmsgs
 import privmsgs
 import callbacks
 
@@ -115,7 +116,11 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
                 cursor.execute("""UPDATE urls SET next_msg=%s
                                   WHERE url=%s AND added=%s""",
                                msg.args[1], url, added)
-        for url in self._urlRe.findall(msg.args[1]):
+        if ircmsgs.isAction(msg):
+            text = ircmsgs.unAction(msg)
+        else:
+            text = msg.args[1]
+        for url in self._urlRe.findall(text):
             (protocol, site, filename, _, _, _) = urlparse.urlparse(url)
             previousMsg = ''
             for oldMsg in reviter(irc.state.history):
