@@ -50,6 +50,12 @@ class RSSTestCase(PluginTestCase, PluginDocumentation):
         self.assertError('slashdot')
         self.assertError('rss slashdot')
 
+    def testCantAddFeedNamedRss(self):
+        self.assertError('rss add rss http://slashdot.org/slashdot.rss')
+
+    def testCantRemoveMethodThatIsntFeed(self):
+        self.assertError('rss remvoe rss')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

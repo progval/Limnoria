@@ -95,7 +95,7 @@ class LookupDB(plugins.DBHandler):
 class Lookup(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.domains = sets.Set()
+        self.lookupDomains = sets.Set()
         self.dbHandler = LookupDB(name=os.path.join(conf.dataDir, 'Lookup'))
         
     def die(self):
@@ -108,7 +108,7 @@ class Lookup(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args)
         name = callbacks.canonicalName(name)
-        if name not in self.domains:
+        if name not in self.lookupDomains:
             irc.error(msg, 'That\'s not a valid lookup to remove.')
             return
         db = self.dbHandler.getDb()
@@ -134,6 +134,10 @@ class Lookup(callbacks.Privmsg):
         (name, filename) = privmsgs.getArgs(args, required=2)
         name = utils.depluralize(name)
         name = callbacks.canonicalName(name)
+        if hasattr(self, name):
+            s = 'I already have a command in this plugin named %s' % name
+            irc.error(msg, s)
+            return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         try:
@@ -189,7 +193,7 @@ class Lookup(callbacks.Privmsg):
         f = types.FunctionType(f.func_code, f.func_globals,
                                f.func_name, closure=f.func_closure)
         f.__doc__ = docstring
-        self.domains.add(name)
+        self.lookupDomains.add(name)
         setattr(self.__class__, name, f)
 
     def _lookup(self, irc, msg, args):

@@ -83,6 +83,10 @@ class RSS(callbacks.Privmsg):
         websites prefer it).
         """ % (name, url)
         name = callbacks.canonicalName(name)
+        if hasattr(self, name):
+            s = 'I already have a command in this plugin named %s' % name
+            irc.error(msg, s)
+            return
         def f(self, irc, msg, args):
             args.insert(0, url)
             self.rss(irc, msg, args)

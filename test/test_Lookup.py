@@ -49,6 +49,12 @@ if sqlite:
             'your mom': 'my mom',
             'foo\\:bar': 'baz',
         }
+        def testCantRemoveNonLookupMethod(self):
+            self.assertError('remove lookup')
+
+        def testCantCreateLookupNamedLookup(self):
+            self.assertError('lookup add lookup foo.supyfact')
+            
         def setUp(self):
             PluginTestCase.setUp(self)
             fd = file(os.path.join(conf.dataDir, 'foo.supyfact'), 'w')
