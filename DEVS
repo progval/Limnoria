@@ -10,17 +10,17 @@ plugin-writing and more into framework-enhancement.  Rather than list the
 specific things he's done, you can just attribute anything that isn't
 otherwise attributed to other people to him.
 
-Daniel DiPaolo is a lazy Texan punk with no job who spends his free time
-coding, playing ultimate frisbee, and arguing pointless things on the
-internet.  As far as the bot goes, he's mainly a plugin developer but he
-has helped here and there with various under-the-hood things and is one
-of the few people (other than jemfinch) who understands the inner workings
-of Supybot.  His biggest plugin contribution (in terms of sheer lines of
-code) has been the MoobotFactoids plugin and all the workd involved in
-getting that plugin to work, but he has also helped with a lot of testing,
-debugging, and brainstorming.  He also wrote the Dunno, News, and Todo
-plugins and is responsible for a significant amount of code in the Poll,
-Debian, QuoteGrabs, Karma, and ChannelDB plugins.
+Daniel DiPaolo (Strike/ddipaolo) is a lazy Texan punk with no job who spends
+his free time coding, playing ultimate frisbee, and arguing pointless things on
+the internet.  As far as the bot goes, he's mainly a plugin developer but he
+has helped here and there with various under-the-hood things and is one of the
+few people (other than jemfinch) who understands the inner workings of Supybot.
+His biggest plugin contribution (in terms of sheer lines of code) has been the
+MoobotFactoids plugin and all the workd involved in getting that plugin to
+work, but he has also helped with a lot of testing, debugging, and
+brainstorming.  He also wrote the Dunno, News, and Todo plugins and is
+responsible for a significant amount of code in the Poll, Debian, QuoteGrabs,
+Karma, and ChannelDB plugins.
 
 Brett Kelly (inkedmn) is a hobbyist (soon to be professional :)) coder
 from southern California who enjoys collecting tattoos (on his body) and
