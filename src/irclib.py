@@ -28,19 +28,18 @@
 ###
 
 import copy
-import sets
 import time
 import random
-import operator
 
 import supybot.log as log
 import supybot.conf as conf
-from utils.str import rsplit
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
+
+from utils.str import rsplit
 from utils.iter import imap, chain, cycle
 from supybot.structures import queue, smallqueue, RingBuffer
 
@@ -136,8 +135,8 @@ class IrcCallback(IrcCommandDispatcher):
 # Basic queue for IRC messages.  It doesn't presently (but should at some
 # later point) reorder messages based on priority or penalty calculations.
 ###
-_high = sets.ImmutableSet(['MODE', 'KICK', 'PONG', 'NICK', 'PASS', 'CAPAB'])
-_low = sets.ImmutableSet(['PRIVMSG', 'PING', 'WHO', 'NOTICE'])
+_high = frozenset(['MODE', 'KICK', 'PONG', 'NICK', 'PASS', 'CAPAB'])
+_low = frozenset(['PRIVMSG', 'PING', 'WHO', 'NOTICE'])
 class IrcMsgQueue(object):
     """Class for a queue of IrcMsgs.  Eventually, it should be smart.
 
@@ -162,7 +161,7 @@ class IrcMsgQueue(object):
         self.highpriority = smallqueue()
         self.normal = smallqueue()
         self.lowpriority = smallqueue()
-        self.msgs = sets.Set()
+        self.msgs = set()
 
     def enqueue(self, msg):
         """Enqueues a given message."""
@@ -289,7 +288,7 @@ class ChannelState(object):
             elif c == 'b':
                 set = self.bans
             else: # We don't care yet, so we'll just return an empty set.
-                set = sets.Set()
+                set = set()
             return set
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
             (action, modeChar) = mode
@@ -556,9 +555,9 @@ class Irc(IrcCommandDispatcher):
     __firewalled__ = {'die': None,
                       'feedMsg': None,
                       'takeMsg': None,}
-    _nickSetters = sets.Set(['001', '002', '003', '004', '250', '251', '252',
-                             '254', '255', '265', '266', '372', '375', '376',
-                             '333', '353', '332', '366', '005'])
+    _nickSetters = set(['001', '002', '003', '004', '250', '251', '252',
+                        '254', '255', '265', '266', '372', '375', '376',
+                        '333', '353', '332', '366', '005'])
     # We specifically want these callbacks to be common between all Ircs,
     # that's why we don't do the normal None default with a check.
     def __init__(self, network, callbacks=_callbacks):
@@ -597,7 +596,7 @@ class Irc(IrcCommandDispatcher):
         # This is the new list we're building, which will be tsorted.
         cbs = []
         # The vertices are self.callbacks itself.  Now we make the edges.
-        edges = sets.Set()
+        edges = set()
         for cb in self.callbacks:
             (before, after) = cb.callPrecedence(self)
             assert cb not in after, 'cb was in its own after.'
@@ -607,7 +606,7 @@ class Irc(IrcCommandDispatcher):
             for otherCb in after:
                 edges.add((cb, otherCb))
         def getFirsts():
-            firsts = sets.Set(self.callbacks) - sets.Set(cbs)
+            firsts = set(self.callbacks) - set(cbs)
             for (before, after) in edges:
                 firsts.discard(after)
             return firsts
