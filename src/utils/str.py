@@ -351,6 +351,7 @@ def format(s, *args, **kwargs):
     q: quoted (takes a string)
     n: nItems (takes a 2-tuple of (n, item) or a 3-tuple of (n, between, item))
     t: time, formatted (takes an int)
+    u: url, wrapped in braces (this should be configurable at some point)
     """
     args = list(args)
     args.reverse() # For more efficient popping.
@@ -396,6 +397,8 @@ def format(s, *args, **kwargs):
                 raise ValueError, 'Invalid value for %%n in format: %s' % t
         elif char == 't':
             return timestamp(args.pop())
+        elif char == 'u':
+            return '<%s>' % args.pop()
         elif char == '%':
             return '%'
         else:
