@@ -46,14 +46,14 @@ class DunnoTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testDunnoSearch(self):
         self.assertNotError('dunno add foo')
-        self.assertRegexp('dunno search moo', 'No dunnos found')
+        self.assertRegexp('dunno search moo', 'No.*dunnos.*found')
         self.assertNotError('dunno add moo')
-        self.assertRegexp('dunno search moo', r'\(1 found\)')
-        self.assertRegexp('dunno search m', r'\(1 found\)')
+        self.assertRegexp('dunno search moo', r'1 found')
+        self.assertRegexp('dunno search m', r'1 found')
         # Test multiple adds
         for i in range(5):
             self.assertNotError('dunno add moo%s' % i)
-        self.assertRegexp('dunno search moo', r'\(6 found\)')
+        self.assertRegexp('dunno search moo', r'6 found')
 
     def testDunnoGet(self):
         self.assertNotError('dunno add moo')
@@ -67,3 +67,7 @@ class DunnoTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('dunno add moo')
         self.assertNotError('dunno change 1 s/moo/bar/')
         self.assertRegexp('dunno get 1', '.*?: \'bar\'')
+
+    def testDollarCommand(self):
+        self.assertNotError("dunno add I can't $command.")
+        self.assertResponse('asdf', "I can't asdf.")

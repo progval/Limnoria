@@ -460,7 +460,7 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
             L.append(self.searchSerializeRecord(record))
         if L:
             L.sort()
-            irc.reply(utils.commaAndify(L))
+            irc.reply('%s found: %s' % (len(L), utils.commaAndify(L)))
         else:
             irc.reply('No matching %s were found.' %
                       utils.pluralize(self.name().lower()))

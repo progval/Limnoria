@@ -78,7 +78,8 @@ class Dunno(plugins.ChannelIdDatabasePlugin):
             if dunno is not None:
                 dunno = dunno.text
                 prefixName = self.registryValue('prefixNick', channel)
-                dunno = ircutils.standardSubstitute(irc, msg, dunno)
+                env = {'command': tokens[0]}
+                dunno = ircutils.standardSubstitute(irc, msg, dunno, env=env)
                 irc.reply(dunno, prefixName=prefixName)
 
 
