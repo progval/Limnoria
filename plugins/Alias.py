@@ -85,32 +85,64 @@ def findBiggestAt(alias):
         return 0
 
 def makeNewAlias(name, alias):
+    original = alias
     if findAliasCommand(name, alias):
         raise RecursiveAlias
-    biggestDollar = findBiggestDollar(alias)
-    biggestAt = findBiggestAt(alias)
-    wildcard = '$*' in alias
+    biggestDollar = findBiggestDollar(original)
+    biggestAt = findBiggestAt(original)
+    wildcard = '$*' in original
     if biggestAt and wildcard:
-        raise AliasError, 'Can\'t use $* and optional args (@1, etc.)'
+        raise AliasError, 'Can\'t mix $* and optional args (@1, etc.)'
+    if original.count('$*') > 1:
+        raise AliasError, 'There can be only one $* in an alias.'
     def f(self, irc, msg, args):
-        alias_ = alias.replace('$nick', msg.nick)
-        if '$channel' in alias:
+        alias = original.replace('$nick', msg.nick)
+        if '$channel' in original:
             channel = privmsgs.getChannel(msg, args)
-            alias_ = alias_.replace('$channel', channel)
+            alias = alias.replace('$channel', channel)
+        tokens = callbacks.tokenize(alias)
         if not wildcard and biggestDollar or biggestAt:
-            args = privmsgs.getArgs(args, needed=biggestDollar,
+            args = privmsgs.getArgs(args,
+                                    needed=biggestDollar,
                                     optional=biggestAt)
-            # Gotta have a tuple.
-            if biggestDollar + biggestAt == 1 and not wildcard:
-                args = (args,)
-        def replace(m):
+            # Gotta have a mutable sequence (for replace).
+            if biggestDollar + biggestAt == 1: # We got a string, no tuple.
+                args = [args]
+        def regexpReplace(m):
             idx = int(m.group(1))
-            return utils.dqrepr(args[idx-1])
-        alias_ = dollarRe.sub(replace, alias_)
-        args = args[biggestDollar:]
-        alias_ = atRe.sub(replace, alias_)
-        alias_ = alias_.replace('$*', ' '.join(map(utils.dqrepr, args)))
-        self.Proxy(irc.irc, msg, callbacks.tokenize(alias_))
+            return args[idx-1]
+        def replace(tokens, replacer):
+            for (i, token) in enumerate(tokens):
+                if isinstance(token, list):
+                    replace(token, replacer)
+                else:
+                    tokens[i] = replacer(token)
+        replace(tokens, lambda s: dollarRe.sub(regexpReplace, s))
+        if biggestAt:
+            assert not wildcard
+            args = args[biggestDollar:]
+            replace(tokens, lambda s: atRe.sub(regexpReplace, s))
+        if wildcard:
+            assert not biggestAt
+            # Gotta remove the things that have already been subbed in.
+            i = biggestDollar
+            while i:
+                args.pop(0)
+                i -= 1
+            def everythingReplace(tokens):
+                for (i, token) in enumerate(tokens):
+                    if isinstance(token, list):
+                        if everythingReplace(token):
+                            return
+                    if token == '$*':
+                        tokens[i:i+1] = args
+                        return True
+                    elif '$*' in token:
+                        tokens[i] = token.replace('$*', ' '.join(args))
+                        return True
+                return False
+            everythingReplace(tokens)
+        self.Proxy(irc.irc, msg, tokens)
     f = types.FunctionType(f.func_code, f.func_globals,
                            name, closure=f.func_closure)
     f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \

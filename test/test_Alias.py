@@ -133,6 +133,14 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('alias add myrepr "repr @1"')
         self.assertResponse('myrepr foo', '"foo"')
         self.assertResponse('myrepr ""', '""')
+
+    def testNoExtraSpaces(self):
+        self.assertNotError('alias add foo "action takes $1\'s money"')
+        self.assertResponse('foo bar', '\x01ACTION takes bar\'s money\x01')
+
+    def testNoExtraQuotes(self):
+        self.assertNotError('alias add myre "echo s/$1/$2/g"')
+        self.assertResponse('myre foo bar', 's/foo/bar/g')
         
 
 
