@@ -236,6 +236,13 @@ class ChannelLogger(callbacks.Privmsg):
             if ircutils.isChannel(channel):
                 self.doLog(irc, channel, '-%s- %s\n' % (msg.nick, text))
 
+    def doNick(self, irc, msg):
+        oldNick = msg.nick
+        newNick = msg.args[0]
+        for (channel, c) in irc.state.channels.iteritems():
+            if newNick in c.users:
+                self.doLog(irc, channel,
+                           '*** %s is now known as %s\n' % (oldNick, newNick))
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
             self.doLog(irc, channel,
