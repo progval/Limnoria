@@ -35,6 +35,7 @@ Allows 'aliases' for other commands.
 
 import plugins
 
+import os
 import re
 import sets
 import types
@@ -44,6 +45,7 @@ import debug
 import utils
 import privmsgs
 import callbacks
+import structures
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
@@ -153,7 +155,19 @@ def makeNewAlias(name, alias):
 class Alias(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.frozen = sets.Set()
+        filename = os.path.join(conf.dataDir, 'Aliases.db')
+        # Schema: {name: [alias, frozen]}
+        self.aliases = structures.PersistentDictionary(filename)
+
+    def __call__(self, irc, msg):
+        # Adding the aliases requires an Irc.  So the first time we get called
+        # with an Irc, we add our aliases and then delete ourselves :)
+        for (name, (alias, frozen)) in self.aliases.iteritems():
+            self.addAlias(irc, name, alias, frozen)
+        del self.__class__.__call__
+        
+    def die(self):
+        self.aliases.close()
 
     def freeze(self, irc, msg, args):
         """<alias>
@@ -163,7 +177,7 @@ class Alias(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
-            self.frozen.add(name)
+            self.aliases[name][1] = True
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'There is no such alias.')
@@ -177,7 +191,7 @@ class Alias(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
-            self.frozen.discard(name)
+            self.aliases[name][1] = False
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'There is no such alias.')
@@ -198,22 +212,23 @@ class Alias(callbacks.Privmsg):
         if [cb for cb in cbs if cb != self]:
             s = 'A command with the name %r already exists.' % name
             raise AliasError, s
-        if name in self.frozen:
-            raise AliasError, 'Alias %r is frozen.' % name
+        if name in self.aliases:
+            (currentAlias, frozen) = self.aliases[name]
+            if frozen and currentAlias != alias:
+                raise AliasError, 'Alias %r is frozen.' % name
         try:
             f = makeNewAlias(name, alias)
         except RecursiveAlias:
             raise AliasError, 'You can\'t define a recursive alias.'
         setattr(self.__class__, name, f)
-        if freeze:
-            self.frozen.add(name)
+        self.aliases[name] = [alias, freeze]
 
     def removeAlias(self, name, evenIfFrozen=False):
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
-            if evenIfFrozen or name not in self.frozen:
+            if evenIfFrozen or not self.aliases[name][1]:
                 delattr(self.__class__, name)
-                self.frozen.discard(name)
+                del self.aliases[name]
             else:
                 raise AliasError, 'That alias is frozen.'
         else:
