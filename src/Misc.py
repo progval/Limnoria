@@ -505,8 +505,8 @@ class Misc(callbacks.Privmsg):
     def notice(self, irc, msg, args):
         """<text>
 
-        Replies with <text> in a private notice.  Use nested commands to your
-        benefit here.
+        Replies with <text> in a notice.  Use nested commands to your benefit
+        here.  If you want a private notice, nest the private command.
         """
         text = privmsgs.getArgs(args)
         irc.reply(text, notice=True)
