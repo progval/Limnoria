@@ -196,7 +196,7 @@ class Misc(callbacks.Privmsg):
             return
         command = callbacks.canonicalName(name)
         # Users might expect "@help @list" to work.
-        command = command.lstrip(conf.supybot.prefixChars())
+        # command = command.lstrip(conf.supybot.prefixChars())
         cbs = callbacks.findCallbackForCommand(irc, command)
         if len(cbs) > 1:
             tokens = [command]
@@ -211,7 +211,10 @@ class Misc(callbacks.Privmsg):
                           'you want help with.'% utils.commaAndify(names))
                 return
             else:
-                assert len(tokens) == 2
+                if len(tokens) == 1:
+                    # It's a src plugin that wasn't disambiguated.
+                    tokens.append(tokens[0])
+                assert len(tokens) == 2, tokens
                 cb = irc.getCallback(tokens[0])
                 method = getattr(cb, tokens[1])
                 getHelp(method)
