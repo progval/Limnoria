@@ -102,6 +102,7 @@ if __name__ == '__main__':
         ident = anything('What ident would you like the bot to use?')
         configfd.write('Ident: %s\n' % ident)
     configfd.write('\n')
+    configfd.write('# Commands to run before connecting.')
     configfd.write('load AdminCommands\n')
     configfd.write('load UserCommands\n')
     configfd.write('load ChannelCommands\n')
@@ -137,6 +138,7 @@ if __name__ == '__main__':
         configfd.write(anything('What command?'))
         configfd.write('\n')
     configfd.write('\n')
+    configfd.write('# Commands to run after the bot is connected.')
     if yn('Do you want the bot to join any channels?') == 'y':
         channels = anything('What channels? (separate channels by spaces)')
         configfd.write('join %s\n' % channels)
