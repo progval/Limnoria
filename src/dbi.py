@@ -309,7 +309,10 @@ class DB(object):
 
     def random(self):
         # XXX This can be optimized not to deserialize each record.
-        return random.choice(self)
+        try:
+            return random.choice(self)
+        except IndexError:
+            return None
 
     def size(self):
         # XXX Likewise as above.
