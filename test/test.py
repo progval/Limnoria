@@ -174,16 +174,16 @@ class PluginTestCase(unittest.TestCase):
         self.assertEqual(m.args[1], expectedResponse,
                          '%r != %r' % (expectedResponse, m.args[1]))
 
-    def assertRegexp(self, query, regexp):
+    def assertRegexp(self, query, regexp, flags=re.I):
         m = self._feedMsg(query)
         self.failUnless(m, 'query %r returned None.' % query)
-        self.failUnless(re.search(regexp, m.args[1]),
+        self.failUnless(re.search(regexp, m.args[1], flags),
                         '%r does not match %r' % (m.args[1], regexp))
 
-    def assertNotRegexp(self, query, regexp):
+    def assertNotRegexp(self, query, regexp, flags=re.I):
         m = self._feedMsg(query)
         self.failUnless(m, 'query %r returned None.' % query)
-        self.failUnless(re.search(regexp, m.args[1]) is None,
+        self.failUnless(re.search(regexp, m.args[1], flags) is None,
                         '%r matched %r' % (m.args[1], regexp))
 
     def assertRegexps(self, query, regexps):
