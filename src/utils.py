@@ -392,6 +392,13 @@ def be(i):
     else:
         return 'are'
 
+def has(i):
+    """Returns the form of the verb 'to have' based on the number i."""
+    if i == 1:
+        return 'has'
+    else:
+        return 'have'
+
 def sortBy(f, L):
     """Uses the decorate-sort-undecorate pattern to sort L by function f."""
     for (i, elt) in enumerate(L):
