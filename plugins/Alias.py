@@ -40,6 +40,7 @@ import sets
 
 import conf
 import debug
+import utils
 import privmsgs
 import callbacks
 
@@ -51,6 +52,42 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Alias')
 
+example = utils.wrapLines("""
+<jemfinch> @list Alias
+<supybot> jemfinch: advogato, alias, debplanet, devshed, freeze, gnome, googlebsd, googlelinux, googlemac, k5, kde, kt, lambda, linuxmag, lj, lwn, nyttech, osnews, pypi, python, slashdot, unalias, unfreeze
+<jemfinch> (just pay attention to the freeze/unfreeze and alias/unalias)
+<jemfinch> @alias rot26 "rot13 [rot13 $1]"
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @rot26 jemfinch
+<supybot> jemfinch: jemfinch
+<jemfinch> @unalias rot26
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @rot26 jemfinch
+<jemfinch> (look, Ma!  No rot26!)
+<Cerlyn> ooohh
+<jemfinch> @alias rot26 "rot13 [rot13 $1]"
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @freeze rot26
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> (now's your queue :))
+<Cerlyn> @unalias rot26
+<supybot> Cerlyn: Error: That alias is frozen.
+<Cerlyn> @unalias rot26nothere
+<supybot> Cerlyn: Error: There is no such alias.
+<Cerlyn> @unfreeze rot26
+<supybot> Cerlyn: Error: You don't have the "admin" capability.
+<jemfinch> @unfreeze rot26
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> (now try to remove it :))
+<Cerlyn> @unalias rot26
+<supybot> Cerlyn: The operation succeeded.
+<jemfinch> @rot26 blah blah blah
+<jemfinch> @help slashdot
+<supybot> jemfinch: slashdot <an alias, None arguments> (for more help use the morehelp command)
+<jemfinch> hehe...I should fix that.
+<jemfinch> @morehelp slashdot
+""")
+
 class RecursiveAlias(Exception):
     pass
 
@@ -61,9 +98,10 @@ def findAliasCommand(s, alias):
 dollarRe = re.compile(r'\$(\d+)')
 def findBiggestDollar(alias):
     dollars = dollarRe.findall(alias)
+    dollars = map(int, dollars)
     dollars.sort()
     if dollars:
-        return int(dollars[-1])
+        return dollars[-1]
     else:
         return None
 
@@ -135,27 +173,27 @@ class Alias(callbacks.Privmsg):
         format.  Underscores can be used to represent arguments to the alias
         itself; for instance ...
         """
+        (name, alias) = privmsgs.getArgs(args, needed=2)
+        realName = callbacks.canonicalName(name)
+        if name != realName:
+            irc.error('That name isn\'t valid.  Try %r instead.' % realName)
+            return
+        else:
+            name = realName
+        cb = irc.findCallback(name)
+        if cb is not None and cb != self:
+            irc.error(msg, 'A command with that name already exists.')
+            return
+        if name in self.frozen:
+            irc.error(msg, 'That alias is frozen.')
+            return
         try:
-            (name, alias) = privmsgs.getArgs(args, needed=2)
-            name = callbacks.canonicalName(name)
-            cb = irc.findCallback(name)
-            if cb is not None and cb != self:
-                irc.error(msg, 'A command with that name already exists.')
-                return
-            if name in self.frozen:
-                irc.error(msg, 'That alias is frozen.')
-                return
-            try:
-                f = makeNewAlias(name, alias)
-            except RecursiveAlias:
-                irc.error(msg, 'You can\'t define a recursive alias.')
-            setattr(self.__class__, name, f)
-            irc.reply(msg, conf.replySuccess)
-        except Exception, e:
-            debug.recoverableException()
-            print debug.exnToString(e)
-        except:
-            print 'exception raised'
+            f = makeNewAlias(name, alias)
+        except RecursiveAlias:
+            irc.error(msg, 'You can\'t define a recursive alias.')
+            return
+        setattr(self.__class__, name, f)
+        irc.reply(msg, conf.replySuccess)
 
 
     def unalias(self, irc, msg, args):
