@@ -503,13 +503,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         if name.endswith('.py'):
             name = name[:-3]
         if irc.getCallback(name):
-            irc.error('That module is already loaded.')
+            irc.error('That plugin is already loaded.')
             return
         try:
             module = loadPluginModule(name, ignoreDeprecation)
         except Deprecated:
-            irc.error('Plugin %r is deprecated.  '
-                      'Use --deprecated to force it to load.'  % name)
+            irc.error('That plugin is deprecated.  '
+                      'Use --deprecated to force it to load.')
             return
         except ImportError, e:
             if name in str(e):
