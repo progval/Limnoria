@@ -218,7 +218,7 @@ class Relay(callbacks.Privmsg):
         Starts relaying between the channel <channel> on all networks.  If on a
         network the bot isn't in <channel>, he'll join.  This commands is
         required even if the bot is in the channel on both networks; he won't
-        relay between those channels unless he's told to oin both
+        relay between those channels unless he's told to join both
         channels.
         """
         if not self.started:
