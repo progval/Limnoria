@@ -1,3 +1,10 @@
+	* Added a clear command to the Karma plugin, so channel ops can
+	clear the karma for a given name.
+	
+	* Added a redo command to the Topic plugin, to redo the last
+	undo.
+
+	
 2004-08-27  Jeremy Fincher  <jemfinch@supybot.org>
 
 	* Version 0.79.9!
