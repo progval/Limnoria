@@ -349,11 +349,10 @@ class Fun(callbacks.Privmsg):
         if not ircutils.isChannel(channel):
             irc.error('This message must be sent in a channel.')
         if random.randint(1, 6) == 1:
-            if irc.nick not in irc.state.channels[channel].ops:
-                irc.reply('*BANG* Hey, who put a blank in here?!',
-                          prefixName=False)
-            else:
+            if irc.nick in irc.state.channels[channel].ops:
                 irc.queueMsg(ircmsgs.kick(channel, nick, 'BANG!'))
+            else:
+                irc.reply('*BANG* Hey, who put a blank in here?!')
         else:
             irc.reply('*click*')
 
