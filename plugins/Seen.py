@@ -82,16 +82,6 @@ class SeenDB(plugins.ChannelUserDB):
     def seen(self, channel, nickOrId):
         return self[channel, nickOrId]
 
-conf.registerPlugin('Seen')
-conf.registerChannelValue(conf.supybot.plugins.Seen, 'trackJoins',
-    registry.Boolean(False, """Determines whether the bot will track JOINs for
-    the Seen database."""))
-conf.registerChannelValue(conf.supybot.plugins.Seen, 'trackParts',
-    registry.Boolean(False, """Determines whether the bot will track PARTs for
-    the Seen database."""))
-conf.registerChannelValue(conf.supybot.plugins.Seen, 'trackQuits',
-    registry.Boolean(False, """Determines whether the bot will track QUITs for
-    the Seen database."""))
 filename = os.path.join(conf.supybot.directories.data(), 'Seen.db')
             
 class Seen(callbacks.Privmsg):
@@ -109,39 +99,6 @@ class Seen(callbacks.Privmsg):
         self.db.close()
         callbacks.Privmsg.die(self)
         
-    def doJoin(self, irc, msg):
-        if self.registryValue('trackJoins'):
-            joinMsg = ircmsgs.prettyPrint(msg)
-            channel = msg.args[0]
-            self.db.update(channel, msg.nick, joinMsg)
-            try:
-                id = ircdb.users.getUserId(msg.prefix)
-                self.db.update(channel, id, joinMsg)
-            except KeyError:
-                pass # Not in the database.
-
-    def doPart(self, irc, msg):
-        if self.registryValue('trackParts'):
-            partMsg = ircmsgs.prettyPrint(msg)
-            channel = msg.args[0]
-            self.db.update(channel, msg.nick, partMsg)
-            try:
-                id = ircdb.users.getUserId(msg.prefix)
-                self.db.update(channel, id, partMsg)
-            except KeyError:
-                pass # Not in the database
-
-    def doQuit(self, irc, msg):
-        if self.registryValue('trackQuits'):
-            quitMsg = ircmsgs.prettyPrint(msg)
-            channel = msg.args[0]
-            self.db.update(channel, msg.nick, quitMsg)
-            try:
-                id = ircdb.users.getUserId(msg.prefix)
-                self.db.update(channel, id, quitMsg)
-            except KeyError:
-                pass # Not in the database
-
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):
             said = ircmsgs.prettyPrint(msg)
