@@ -203,7 +203,7 @@ class IrcTestCase(unittest.TestCase):
         self.failIf(self.irc.fastqueue)
         self.failIf(self.irc.state.history)
         self.failIf(self.irc.state.channels)
-        self.failIf(self.irc.outstandingPongs)
+        self.failIf(self.irc.outstandingPing)
         self.assertEqual(self.irc._nickmods, conf.nickmods)
 
     def testHistory(self):
