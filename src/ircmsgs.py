@@ -301,7 +301,7 @@ def ops(channel, nicks, prefix=''):
     assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
-                  args=(channel, '+' + ('o'*len(nicks)), nicks))
+                  args=(channel, '+' + ('o'*len(nicks))) + tuple(nicks))
 
 def deop(channel, nick, prefix=''):
     """Returns a MODE to deop nick on channel."""
@@ -314,7 +314,7 @@ def deops(channel, nicks, prefix=''):
     assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
-                  args=(channel, '-' + ('o'*len(nicks)), nicks))
+                  args=(channel, '-' + ('o'*len(nicks))) + tuple(nicks))
 
 def halfop(channel, nick, prefix=''):
     """Returns a MODE to halfop nick on channel."""
@@ -328,7 +328,7 @@ def halfops(channel, nicks, prefix=''):
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix,
                   command=MODE,
-                  args=(channel, '+' + ('h'*len(nicks)), nicks))
+                  args=(channel, '+' + ('h'*len(nicks))) + tuple(nicks))
 
 def dehalfop(channel, nick, prefix=''):
     """Returns a MODE to dehalfop nick on channel."""
@@ -341,7 +341,7 @@ def dehalfops(channel, nicks, prefix=''):
     assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
-                  args=(channel, '-' + ('h'*len(nicks)), nicks))
+                  args=(channel, '-' + ('h'*len(nicks))) + tuple(nicks))
 
 def voice(channel, nick, prefix=''):
     """Returns a MODE to voice nick on channel."""
@@ -354,7 +354,7 @@ def voices(channel, nicks, prefix=''):
     assert isChannel(channel), repr(channel)
     assert all(isNick, nicks)
     return IrcMsg(prefix=prefix, command=MODE,
-                  args=(channel, '+' + ('v'*len(nicks)), nicks))
+                  args=(channel, '+' + ('v'*len(nicks))) + tuple(nicks))
 
 def devoice(channel, nick, prefix=''):
     """Returns a MODE to devoice nick on channel."""
@@ -367,7 +367,7 @@ def devoices(channel, nicks, prefix=''):
     assert isChannel(channel), repr(channel)
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
-                  args=(channel, '-' + ('v'*len(nicks)), nicks))
+                  args=(channel, '-' + ('v'*len(nicks))) + tuple(nicks))
 
 def ban(channel, hostmask, exception='', prefix=''):
     """Returns a MODE to ban nick on channel."""

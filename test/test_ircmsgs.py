@@ -187,5 +187,29 @@ class FunctionsTestCase(unittest.TestCase):
     def testQuit(self):
         self.failUnless(ircmsgs.quit(prefix='foo!bar@baz'))
 
+    def testOps(self):
+        m = ircmsgs.ops('#foo', ['foo', 'bar', 'baz'])
+        self.assertEqual(str(m), 'MODE #foo +ooo foo bar :baz\r\n')
+
+    def testDeops(self):
+        m = ircmsgs.deops('#foo', ['foo', 'bar', 'baz'])
+        self.assertEqual(str(m), 'MODE #foo -ooo foo bar :baz\r\n')
+
+    def testVoices(self):
+        m = ircmsgs.voices('#foo', ['foo', 'bar', 'baz'])
+        self.assertEqual(str(m), 'MODE #foo +vvv foo bar :baz\r\n')
+
+    def testDevoices(self):
+        m = ircmsgs.devoices('#foo', ['foo', 'bar', 'baz'])
+        self.assertEqual(str(m), 'MODE #foo -vvv foo bar :baz\r\n')
+
+    def testHalfops(self):
+        m = ircmsgs.halfops('#foo', ['foo', 'bar', 'baz'])
+        self.assertEqual(str(m), 'MODE #foo +hhh foo bar :baz\r\n')
+
+    def testDehalfops(self):
+        m = ircmsgs.dehalfops('#foo', ['foo', 'bar', 'baz'])
+        self.assertEqual(str(m), 'MODE #foo -hhh foo bar :baz\r\n')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
