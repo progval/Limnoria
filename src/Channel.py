@@ -69,12 +69,35 @@ class Channel(callbacks.Privmsg):
         """[<channel>] <mode> [<arg> ...]
 
         Sets the mode in <channel> to <mode>, sending the arguments given.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         if not args:
             raise callbacks.ArgumentError
         irc.queueMsg(ircmsgs.mode(channel, args))
     mode = privmsgs.checkChannelCapability(mode, 'op')
 
+    def limit(self, irc, msg, args, channel):
+        """[<channel>] <limit>
+
+        Sets the channel limit to <limit>.  If <limit> is 0, removes the
+        channel limit.  <channel> is only necessary if the message isn't sent
+        in the channel itself.
+        """
+        limit = privmsg.getArgs(args)
+        try:
+            limit = int(limit)
+            if limit < 0:
+                raise ValueError
+        except ValueError:
+            irc.error('%r is not a positive integer.' % limit)
+            return
+        if limit:
+            irc.queueMsg(ircmsgs.mode(channel, ['+l', limit]))
+        else:
+            irc.queueMsg(ircmsgs.mode(channel, ['-l']))
+    limit = privmsgs.checkChannelCapability(limit, 'op')
+                        
     def op(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
 
