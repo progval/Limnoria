@@ -357,6 +357,15 @@ class MiscCommands(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.privmsg(target, s))
         raise callbacks.CannotNest
 
+    def private(self, irc, msg, args):
+        """<text>
+
+        Replies with <text> in private.  Use nested commands to your benefit
+        here.
+        """
+        text = privmsgs.getArgs(args)
+        irc.reply(msg, text, private=True)
+
 
 
 Class = MiscCommands

@@ -121,6 +121,10 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('echo %s' % ('abc'*300), 'more')
         self.assertRegexp('more', 'more')
         self.assertNotRegexp('more', 'more')
+    
+    def testPrivate(self):
+        m = self.getMsg('private [list]')
+        self.failIf(ircutils.isChannel(m.args[0]))
         
 
 
