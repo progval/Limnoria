@@ -163,7 +163,7 @@ class MiscCommands(callbacks.Privmsg):
         Returns the size of the various logfiles in use.  If given a specific
         logfile, returns only the size of that logfile.
         """
-        filename = privmsgs.getArgs(needed=0, optional=1)
+        filename = privmsgs.getArgs(args, needed=0, optional=1)
         if filename:
             if not file.endswith('.log'):
                 irc.error(msg, 'That filename doesn\'t appear to be a log.')
