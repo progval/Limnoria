@@ -172,7 +172,7 @@ class Topic(callbacks.Privmsg):
         if ircdb.checkCapability(msg.prefix, capability):
             topics = irc.state.getTopic(channel).split(self.topicSeparator)
             topic = topics.pop(number)
-            debug.printf(topic)
+            ## debug.printf(topic)
             (topic, name) = self.topicUnformatter.match(topic).groups()
             try:
                 username = ircdb.users.getUserName(msg.prefix)
