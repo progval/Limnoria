@@ -137,8 +137,15 @@ class ChannelStat(irclib.IrcCommandDispatcher):
             self.doPayload(*msg.args)
         self.parts += 1
 
+    def doJoin(self, msg):
+        if len(msg.args) == 2:
+            self.doPayload(*msg.args)
+        self.joins += 1
+
     def doMode(self, msg):
         self.modes += 1
+
+    # doQuit is handled by the plugin.
 
 
 class UserStat(ChannelStat):
