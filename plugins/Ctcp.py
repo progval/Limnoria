@@ -119,7 +119,7 @@ class Ctcp(callbacks.PrivmsgRegexp):
     def finger(self, irc, msg, match):
         "\x01FINGER\x01"
         self.log.info('Received CTCP FINGER from %s' % msg.prefix)
-        irc._reply(irc, msg, 'Supybot, the best Python IRC bot in existence!')
+        self._reply(irc, msg, 'Supybot, the best Python IRC bot in existence!')
 
     def source(self, irc, msg, match):
         "\x01SOURCE\x01"
