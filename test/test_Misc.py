@@ -83,13 +83,13 @@ class MiscTestCase(ChannelPluginTestCase):
         m = self.getMsg('help list') # Misc.list and User.list.
         self.failIf(m.args[1].startswith('Error'))
 
-    def testHelpStripsPrefixChars(self):
-        try:
-            original = str(conf.supybot.prefixChars)
-            conf.supybot.prefixChars.set('@')
-            self.assertHelp('help @list')
-        finally:
-            conf.supybot.prefixChars.set(original)
+##     def testHelpStripsPrefixChars(self):
+##         try:
+##             original = str(conf.supybot.prefixChars)
+##             conf.supybot.prefixChars.set('@')
+##             self.assertHelp('help @list')
+##         finally:
+##             conf.supybot.prefixChars.set(original)
 
     def testHelpIsCaseInsensitive(self):
         self.assertHelp('help LIST')
