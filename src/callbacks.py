@@ -621,6 +621,7 @@ class IrcObjectProxy(RichReplyMethods):
         """Returns a two-tuple of (command, plugins) that has the command
         (a list of strings) and the plugins for which it was a command."""
         assert isinstance(args, list)
+        args = map(canonicalName, args)
         cbs = []
         maxL = []
         for cb in self.irc.callbacks:
@@ -632,9 +633,10 @@ class IrcObjectProxy(RichReplyMethods):
                 maxL = L
                 cbs.append((cb, L))
                 assert isinstance(L, list), \
-                       'getCommand now returns a list, not a bool.'
+                       'getCommand now returns a list, not a method.'
                 assert utils.iter.startswith(L, args), \
-                       'getCommand must return a prefix of the args given.'
+                       'getCommand must return a prefix of the args given.  ' \
+                       '(args given: %r, returned: %r)' % (args, L)
         log.debug('findCallbacksForCommands: %r', cbs)
         cbs = [cb for (cb, L) in cbs if L == maxL]
         if len(maxL) == 1:
@@ -955,14 +957,27 @@ class DisabledCommands(object):
             if self.d[command] is not None:
                 self.d[command].remove(plugin)
 
+class BasePlugin(object):
+    def __init__(self, *args, **kwargs):
+        self.cbs = []
+        for attr in dir(self):
+            if attr != canonicalName(attr):
+                continue
+            obj = getattr(self, attr)
+            if isinstance(obj, type) and issubclass(obj, BasePlugin):
+                cb = obj(*args, **kwargs)
+                setattr(self, attr, cb)
+                self.cbs.append(cb)
+                cb.log = log.getPluginLogger('%s.%s' % (self.name(),cb.name()))
+        super(BasePlugin, self).__init__(*args, **kwargs)
 
-class Commands(object):
+class Commands(BasePlugin):
     # For awhile, a comment stood here to say, "Eventually callCommand."  But
     # that's wrong, because we can't do generic error handling in this
     # callCommand -- plugins need to be able to override callCommand and do
     # error handling there (see the Http plugin for an example).
-    __firewalled__ = {'isCommand': None,}
-                      # 'invalidCommand': None} # Gotta raise callbacks.Error.
+    __firewalled__ = {'isCommand': None,
+                      '_callCommand': None}
     commandArgs = ['self', 'irc', 'msg', 'args']
     # These must be class-scope, so all plugins use the same one.
     _disabled = DisabledCommands()
@@ -995,6 +1010,7 @@ class Commands(object):
             return False
 
     def isCommand(self, command):
+        """Convenience, backwards-compatibility, semi-deprecated."""
         if isinstance(command, basestring):
             return self.isCommandMethod(command)
         else:
@@ -1004,32 +1020,45 @@ class Commands(object):
             return self.getCommand(command) == command
 
     def getCommand(self, args):
-        first = canonicalName(args[0])
+        first = args[0]
         if len(args) >= 2 and first == self.canonicalName():
-            second = canonicalName(args[1])
-            if second != self.canonicalName() and self.isCommandMethod(second):
-                return args[:2]
+            command = self.getCommand(args[1:])
+            if command:
+                command.insert(0, first)
+                return command
+        for cb in self.cbs:
+            if first == cb.canonicalName():
+                command = cb.getCommand(args[1:])
+                if command:
+                    command.insert(0, first)
+                    return command
         if self.isCommandMethod(first):
-            return args[:1]
+            return [first]
         return []
     
     def getCommandMethod(self, command):
         """Gets the given command from this plugin."""
         assert not isinstance(command, basestring)
-        command = map(canonicalName, command)
+        assert command == map(canonicalName, command)
         assert self.getCommand(command) == command
-        if len(command) == 2:
-            assert command[0] == self.canonicalName()
-            return self.getCommandMethod([command[1]])
+        if len(command) > 1:
+            if command[0] == self.canonicalName():
+                return self.getCommandMethod(command[1:])
+            for cb in self.cbs:
+                if command[0] == cb.canonicalName():
+                    return cb.getCommandMethod(command)
         else:
             return getattr(self, command[0])
 
     def listCommands(self):
         commands = []
-        name = canonicalName(self.name())
         for s in dir(self):
             if self.isCommand(s):
                 commands.append(s)
+        for cb in self.cbs:
+            name = cb.canonicalName()
+            for command in cb.listCommands():
+                commands.append(' '.join([name, command]))
         commands.sort()
         return commands
     
@@ -1072,12 +1101,11 @@ class Commands(object):
     def getCommandHelp(self, command):
         method = self.getCommandMethod(command)
         if hasattr(method, '__doc__'):
-            return getHelp(method)
+            return getHelp(method, name=formatCommand(command))
         else:
             return format('The %q command has no help.',formatCommand(command))
 
-
-class PluginMixin(irclib.IrcCallback):
+class PluginMixin(BasePlugin, irclib.IrcCallback):
     public = True
     alwaysCall = ()
     threaded = False
@@ -1086,6 +1114,7 @@ class PluginMixin(irclib.IrcCallback):
     Proxy = IrcObjectProxy
     def __init__(self, irc):
         self.__parent = super(PluginMixin, self)
+        self.__parent.__init__(irc)
         myName = self.name()
         self.log = log.getPluginLogger(myName)
         # We can't do this because of the specialness that Owner and Misc do.
