@@ -61,16 +61,27 @@ class AdminTestCase(PluginTestCase):
         self.assertNotError('admin ignore foo!bar@baz')
         self.assertNotError('admin ignores')
 
-    def testAddcapability(self):
-        self.assertError('addcapability sdlkfj foo')
+    def testCapabilityAdd(self):
+        self.assertError('capability add foo bar')
         u = ircdb.users.newUser()
         u.name = 'foo'
         ircdb.users.setUser(u)
-        self.assertError('removecapability foo bar')
-        self.assertNotRegexp('removecapability foo bar', 'find')
+        self.assertNotError('capability add foo bar')
+        self.assertError('addcapability foo baz')
+        self.assert_('bar' in u.capabilities)
+        ircdb.users.delUser(u.id)
 
-    def testRemoveCapability(self):
-        self.assertError('removecapability alsdfkjasd foo')
+    def testCapabilityRemove(self):
+        self.assertError('capability remove foo bar')
+        u = ircdb.users.newUser()
+        u.name = 'foo'
+        ircdb.users.setUser(u)
+        self.assertNotError('capability add foo bar')
+        self.assert_('bar' in u.capabilities)
+        self.assertError('removecapability foo bar')
+        self.assertNotError('capability remove foo bar')
+        self.assert_(not 'bar' in u.capabilities)
+        ircdb.users.delUser(u.id)
 
     def testJoin(self):
         m = self.getMsg('join #foo')
@@ -110,8 +121,7 @@ class AdminTestCase(PluginTestCase):
             conf.supybot.nick.setValue(original)
 
     def testAddCapabilityOwner(self):
-        self.assertError('admin addcapability %s owner' % self.nick)
-
+        self.assertError('admin capability add %s owner' % self.nick)
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 

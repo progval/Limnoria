@@ -237,57 +237,59 @@ class Admin(callbacks.Plugin):
             irc.replySuccess()
     part = wrap(part, [optional('validChannel'), additional('text')])
 
-    def addcapability(self, irc, msg, args, user, capability):
-        """<name|hostmask> <capability>
+    class capability(callbacks.Commands):
 
-        Gives the user specified by <name> (or the user to whom <hostmask>
-        currently maps) the specified capability <capability>
-        """
-        # Ok, the concepts that are important with capabilities:
-        #
-        ### 1) No user should be able to elevate his privilege to owner.
-        ### 2) Admin users are *not* superior to #channel.ops, and don't
-        ###    have God-like powers over channels.
-        ### 3) We assume that Admin users are two things: non-malicious and
-        ###    and greedy for power.  So they'll try to elevate their privilege
-        ###    to owner, but they won't try to crash the bot for no reason.
+        def add(self, irc, msg, args, user, capability):
+            """<name|hostmask> <capability>
 
-        # Thus, the owner capability can't be given in the bot.  Admin users
-        # can only give out capabilities they have themselves (which will
-        # depend on supybot.capabilities and its child default) but generally
-        # means they can't mess with channel capabilities.
-        if ircutils.strEqual(capability, 'owner'):
-            irc.error('The "owner" capability can\'t be added in the bot.  '
-                      'Use the supybot-adduser program (or edit the '
-                      'users.conf file yourself) to add an owner capability.')
-            return
-        if ircdb.isAntiCapability(capability) or \
-           ircdb.checkCapability(msg.prefix, capability):
-            user.addCapability(capability)
-            ircdb.users.setUser(user)
-            irc.replySuccess()
-        else:
-            irc.error('You can\'t add capabilities you don\'t have.')
-    addcapability = wrap(addcapability, ['otherUser', 'lowered'])
+            Gives the user specified by <name> (or the user to whom <hostmask>
+            currently maps) the specified capability <capability>
+            """
+            # Ok, the concepts that are important with capabilities:
+            #
+            ### 1) No user should be able to elevate his privilege to owner.
+            ### 2) Admin users are *not* superior to #channel.ops, and don't
+            ###    have God-like powers over channels.
+            ### 3) We assume that Admin users are two things: non-malicious and
+            ###    and greedy for power.  So they'll try to elevate their privilege
+            ###    to owner, but they won't try to crash the bot for no reason.
 
-    def removecapability(self, irc, msg, args, user, capability):
-        """<name|hostmask> <capability>
-
-        Takes from the user specified by <name> (or the user to whom
-        <hostmask> currently maps) the specified capability <capability>
-        """
-        if ircdb.checkCapability(msg.prefix, capability) or \
-           ircdb.isAntiCapability(capability):
-            try:
-                user.removeCapability(capability)
+            # Thus, the owner capability can't be given in the bot.  Admin users
+            # can only give out capabilities they have themselves (which will
+            # depend on supybot.capabilities and its child default) but generally
+            # means they can't mess with channel capabilities.
+            if ircutils.strEqual(capability, 'owner'):
+                irc.error('The "owner" capability can\'t be added in the bot.  '
+                          'Use the supybot-adduser program (or edit the '
+                          'users.conf file yourself) to add an owner capability.')
+                return
+            if ircdb.isAntiCapability(capability) or \
+               ircdb.checkCapability(msg.prefix, capability):
+                user.addCapability(capability)
                 ircdb.users.setUser(user)
                 irc.replySuccess()
-            except KeyError:
-                irc.error('That user doesn\'t have that capability.')
-        else:
-            s = 'You can\'t remove capabilities you don\'t have.'
-            irc.error(s)
-    removecapability = wrap(removecapability, ['otherUser','lowered'])
+            else:
+                irc.error('You can\'t add capabilities you don\'t have.')
+        add = wrap(add, ['otherUser', 'lowered'])
+
+        def remove(self, irc, msg, args, user, capability):
+            """<name|hostmask> <capability>
+
+            Takes from the user specified by <name> (or the user to whom
+            <hostmask> currently maps) the specified capability <capability>
+            """
+            if ircdb.checkCapability(msg.prefix, capability) or \
+               ircdb.isAntiCapability(capability):
+                try:
+                    user.removeCapability(capability)
+                    ircdb.users.setUser(user)
+                    irc.replySuccess()
+                except KeyError:
+                    irc.error('That user doesn\'t have that capability.')
+            else:
+                s = 'You can\'t remove capabilities you don\'t have.'
+                irc.error(s)
+        remove = wrap(remove, ['otherUser','lowered'])
 
     def ignore(self, irc, msg, args, hostmask, expires):
         """<hostmask|nick> [<expires>]
