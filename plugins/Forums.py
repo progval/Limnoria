@@ -41,8 +41,6 @@ class Forums(callbacks.PrivmsgRegexp):
             ((wRating, wName), (bRating, bName)) = self.gkPlayer.findall(s)
             wRating = wRating.replace('<br>', ' ')
             bRating = bRating.replace('<br>', ' ')
-            wRating = wRating.replace('Rating', 'Rating:')
-            bRating = bRating.replace('Rating', 'Rating:')
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
               '%s (%s) vs. %s (%s)' % (wName, wRating, bName, bRating)))
             
