@@ -458,41 +458,41 @@ class User(callbacks.Privmsg):
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
 
-    def config(self, irc, msg, args):
-        """[--list] <name> [<value>]
+##     def config(self, irc, msg, args):
+##         """[--list] <name> [<value>]
 
-        Sets the user configuration variable <name> to <value>, if given.  If
-        <value> is not given, returns the current value of <name> for the user
-        giving the command.  If --list is given, lists the values in <name>.
-        """
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNoUser()
-            return
-        list = False
-        (optlist, args) = getopt.getopt(args, '', ['list'])
-        for (option, arg) in optlist:
-            if option == '--list':
-                list = True
-        if len(args) >= 2:
-            # We're setting.
-            pass
-        else:
-            # We're getting.
-            name = privmsgs.getArgs(args)
-            if not name.startswith('users.'):
-                name = 'users.' + name
-            try:
-                wrapper = Config.getWrapper(name)
-                wrapper = wrapper.get(str(id))
-            except InvalidRegistryValue, e:
-                irc.error('%r is not a valid configuration variable.' % name)
-                return
-            if list:
-                pass
-            else:
-                irc.reply(str(wrapper))
+##         Sets the user configuration variable <name> to <value>, if given.  If
+##         <value> is not given, returns the current value of <name> for the user
+##         giving the command.  If --list is given, lists the values in <name>.
+##         """
+##         try:
+##             id = ircdb.users.getUserId(msg.prefix)
+##         except KeyError:
+##             irc.errorNoUser()
+##             return
+##         list = False
+##         (optlist, args) = getopt.getopt(args, '', ['list'])
+##         for (option, arg) in optlist:
+##             if option == '--list':
+##                 list = True
+##         if len(args) >= 2:
+##             # We're setting.
+##             pass
+##         else:
+##             # We're getting.
+##             name = privmsgs.getArgs(args)
+##             if not name.startswith('users.'):
+##                 name = 'users.' + name
+##             try:
+##                 wrapper = Config.getWrapper(name)
+##                 wrapper = wrapper.get(str(id))
+##             except InvalidRegistryValue, e:
+##                 irc.error('%r is not a valid configuration variable.' % name)
+##                 return
+##             if list:
+##                 pass
+##             else:
+##                 irc.reply(str(wrapper))
 
 Class = User
 
