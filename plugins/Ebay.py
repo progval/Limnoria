@@ -60,7 +60,7 @@ def configure(advanced):
     if yn('Do you want the Ebay snarfer enabled by default?'):
         conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
 
-class EbayError(callbacks.Error):
+class EbayError(Exception):
     pass
 
 conf.registerPlugin('Ebay')
@@ -115,7 +115,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(str(e))
 
     def ebaySnarfer(self, irc, msg, match):
-        r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?" \
+        r"http://cgi\.ebay\.(?:[a-z]+.?)+/(?:.*?/)?(?:ws/)?" \
         r"eBayISAPI\.dll\?ViewItem(?:&item=\d+|&category=\d+)+"
         if not self.registryValue('auctionSnarfer', msg.args[0]):
             return
@@ -123,7 +123,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
         try:
             irc.reply(self._getResponse(url), prefixName=False)
         except EbayError, e:
-            self.log.exception('ebaySnarfer exception at %s:', url)
+            self.log.warning('ebaySnarfer exception at %s: %s', url, str(e))
     ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)
 
     def _getResponse(self, url):
