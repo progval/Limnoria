@@ -297,10 +297,7 @@ class UsersDictionary(object):
             for (name, user) in self.dict.iteritems():
                 if user.checkHostmask(s):
                     self.cache[s] = name
-                    if name in self.revcache:
-                        self.revcache[name].append(s)
-                    else:
-                        self.revcache[name] = [s]
+                    self.revcache.setdefault(name,[]).append(s)
                     return name
             raise KeyError, s
 
