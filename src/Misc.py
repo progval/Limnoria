@@ -211,7 +211,7 @@ class Misc(callbacks.Privmsg):
         """[<module>]
 
         Gives the latest revision of <module>.  If <module> isn't given, gives
-        the revision of all supybot modules.
+        the revision of all Supybot modules.
         """
         name = privmsgs.getArgs(args, required=0, optional=1)
         if name:
