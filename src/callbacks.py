@@ -60,7 +60,6 @@ import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
-import supybot.plugins as plugins
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
@@ -428,7 +427,7 @@ class RichReplyMethods(object):
             s = '%s  %s' % (prefix, s)
         else:
             s = prefix
-        return plugins.standardSubstitute(self, self.msg, s)
+        return ircutils.standardSubstitute(self, self.msg, s)
 
     def _getConfig(self, wrapper):
         return conf.get(wrapper, self.msg.args[0])

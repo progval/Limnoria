@@ -51,6 +51,7 @@ import supybot.utils as utils
 import supybot.world as world
 import supybot.ircutils as ircutils
 import supybot.webutils as webutils
+import supybot.callbacks as callbacks
 
 try:
     # We need to sweep away all that mx.* crap because our code doesn't account
@@ -350,6 +351,14 @@ class ChannelUserDB(ChannelUserDictionary):
         return a list (of any type serializable to csv)."""
         raise NotImplementedError
 
+
+## class ChannelIdDatabasePlugin(callbacks.Privmsg):
+##     def __init__(self):
+##         # XXX Register configuration variables.
+##         self.__parent = super(ChannelIdDatabasePlugin, self)
+##         self.__parent.__init__(self)
+##         self.db = self.DB()
+
 class PeriodicFileDownloader(object):
     """A class to periodically download a file/files.
 
@@ -456,56 +465,6 @@ class PeriodicFileDownloader(object):
             world.threadsSpawned += 1
 
 
-def standardSubstitute(irc, msg, text, env=None):
-    """Do the standard set of substitutions on text, and return it"""
-    if ircutils.isChannel(msg.args[0]):
-        channel = msg.args[0]
-    else:
-        channel = 'somewhere'
-    def randInt():
-        return str(random.randint(-1000, 1000))
-    def randDate():
-        t = pow(2,30)*random.random()+time.time()/4.0
-        return time.ctime(t)
-    def randNick():
-        if channel != 'somewhere':
-            L = list(irc.state.channels[channel].users)
-            if len(L) > 1:
-                n = msg.nick
-                while n == msg.nick:
-                    n = random.choice(L)
-                return n
-            else:
-                return msg.nick
-        else:
-            return 'someone'
-    ctime = time.ctime()
-    localtime = time.localtime()
-    vars = ircutils.IrcDict({
-        'who': msg.nick,
-        'nick': msg.nick,
-        'user': msg.user,
-        'host': msg.host,
-        'channel': channel,
-        'botnick': irc.nick,
-        'now': ctime, 'ctime': ctime,
-        'randnick': randNick, 'randomnick': randNick,
-        'randdate': randDate, 'randomdate': randDate,
-        'rand': randInt, 'randint': randInt, 'randomint': randInt,
-        'today': time.strftime('%d %b %Y', localtime),
-        'year': localtime[0],
-        'month': localtime[1],
-        'monthname': time.strftime('%b', localtime),
-        'date': localtime[2],
-        'day': time.strftime('%A', localtime),
-        'h': localtime[3], 'hr': localtime[3], 'hour': localtime[3],
-        'm': localtime[4], 'min': localtime[4], 'minute': localtime[4],
-        's': localtime[5], 'sec': localtime[5], 'second': localtime[5],
-        'tz': time.tzname[time.daylight],
-        })
-    if env is not None:
-        vars.update(env)
-    return utils.perlVariableSubstitute(vars, text)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
