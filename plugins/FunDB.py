@@ -36,6 +36,7 @@ Provides fun commands that require a database to operate.
 from baseplugin import *
 
 import string
+import random
 import os.path
 
 import sqlite
@@ -83,6 +84,11 @@ def makeDb(dbfilename, replace=False):
                       word TEXT UNIQUE ON CONFLICT IGNORE
                       )""")
     cursor.execute("""CREATE INDEX sorted_words_word ON sorted_words (word)""")
+    cursor.execute("""CREATE TABLE zipcodes (
+                      zipcode INTEGER PRIMARY KEY,
+                      city TEXT,
+                      state CHAR(2)
+                      )""")
     db.commit()
     return db
 
@@ -410,6 +416,54 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, ', '.join(words))
         else:
             irc.reply(msg, 'That word has no anagrams that I know of.')
+
+    def zipcode(self, irc, msg, args):
+        """<zipcode>
+
+        Returns the City, ST for a given zipcode.
+        """
+        try:
+            zipcode = int(privmsgs.getArgs(args))
+        except ValueError:
+            irc.error(msg, 'Invalid zipcode.')
+            return
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT city, state
+                          FROM zipcodes
+                          WHERE zipcode=%s""", zipcode)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'I have nothing for that zipcode.')
+        else:
+            (city, state) = cursor.fetchone()
+            irc.reply(msg, '%s, %s' % (city, state))
+        
+
+    def zipcodefor(self, irc, msg, args):
+        """<city> <state>
+
+        Returns the zipcode for a <city> in <state>.
+        """
+        (city, state) = privmsgs.getArgs(args, needed=2)
+        if '%' in msg.args[1]:
+            irc.error(msg, '% wildcard is not allowed.  Use _ instead.')
+            return
+        city = city.rstrip(',') # In case they did "City, ST"
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT zipcode
+                          FROM zipcodes
+                          WHERE city LIKE %s AND
+                                state LIKE %s""", city, state)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'I have no zipcode for that city/state.')
+        elif cursor.rowcount == 1:
+            irc.reply(msg, str(cursor.fetchone()[0]))
+        else:
+            zipcodes = [str(t[0]) for t in cursor.fetchall()]
+            ircutils.shrinkList(zipcodes, ', ', 400)
+            if len(zipcodes) < cursor.rowcount:
+                random.shuffle(zipcodes)
+            irc.reply(msg, '(%s shown of %s): %s' % \
+                      (len(zipcodes), cursor.rowcount, ', '.join(zipcodes)))
         
 Class = FunDB
 
@@ -417,7 +471,8 @@ Class = FunDB
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 3:
-        print 'Usage: %s <words|larts|excuses|insults> file' % sys.argv[0]
+        print 'Usage: %s <words|larts|excuses|insults|zipcodes> file' % \
+              sys.argv[0]
         sys.exit(-1)
     category = sys.argv[1]
     filename = sys.argv[2]
@@ -439,6 +494,20 @@ if __name__ == '__main__':
             cursor.execute("""INSERT INTO insults VALUES (NULL, %s)""", line)
         elif category == 'excuses':
             cursor.execute("""INSERT INTO excuses VALUES (NULL, %s)""", line)
+        elif category == 'zipcodes':
+            (zipcode, cityState) = line.split(':')
+            if '-' in zipcode:
+                (begin, end) = map(int, zipcode.split('-'))
+                zipcodes = range(begin, end+1)
+                (zipcode, _) = zipcode.split('-')
+            else:
+                zipcodes = [int(zipcode)]
+            cityStateList = cityState.split(', ')
+            state = cityStateList.pop()
+            city = ', '.join(cityStateList)
+            for zipcode in zipcodes:
+                cursor.execute("""INSERT INTO zipcodes VALUES (%s, %s, %s)""",
+                               zipcode, city, state)
     db.commit()
     db.close()
             

@@ -191,7 +191,7 @@ class Http(callbacks.Privmsg):
             search = urllib.unquote(search)
             s = 'There appears to be no definition for %s.' % search
             irc.reply(msg, s)
-
+    '''
     _zipcode = re.compile(r'Local Forecast for (.*), (.*?) ')
     def zipcode(self, irc, msg, args):
         """<US zip code>
@@ -208,6 +208,7 @@ class Http(callbacks.Privmsg):
             irc.error(msg, 'the format of the page was odd.')
         except urllib2.URLError:
             irc.error(msg, 'Couldn\'t open search page.')
+    '''
 
     
     _tempregex = re.compile('CLASS=obsTempTextA>(\d+)&deg;F</b></td>',\
