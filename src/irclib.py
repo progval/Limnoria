@@ -159,7 +159,7 @@ class IrcState(object):
         self.reset()
 
     def reset(self):
-        self.history = []
+        self.history = queue()
         self.nicksToHostmasks = {}
         self.channels = {}
 
@@ -171,9 +171,9 @@ class IrcState(object):
         return ret
 
     def addMsg(self, irc, msg):
-        self.history.append(msg)
+        self.history.enqueue(msg)
         if len(self.history) > conf.maxHistory:
-            del self.history[0]
+            self.history.dequeue()
         if ircutils.isUserHostmask(msg.prefix) and not msg.command == 'NICK':
             self.nicksToHostmasks[msg.nick] = msg.prefix
         if msg.command == '352': # Response to a WHO command.
