@@ -596,6 +596,8 @@ class Relay(callbacks.Privmsg):
             if msg.nick == irc.nick:
                 return
             (channel, newTopic) = msg.args
+            if channel not in self.registryValue('channels'):
+                return
             network = self.abbreviations[irc]
             if self.registryValue('topicSync', channel):
                 m = ircmsgs.topic(channel, newTopic)
