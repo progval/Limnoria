@@ -708,7 +708,9 @@ class Irc(IrcCommandDispatcher):
             # I don't think we should do this.  Why should it matter?  If it's
             # something important, then the server will send it back to us,
             # and if it's just a privmsg/notice/etc., we don't care.
-            # self.state.addMsg(self, msg)
+            # On second thought, we need this for testing.
+            if world.testing:
+                self.state.addMsg(self, msg)
             log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
             if msg.command == 'JOIN':
                 channels = msg.args[0].split(',')
