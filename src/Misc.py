@@ -346,8 +346,8 @@ class Misc(callbacks.Privmsg):
             if option == 'fancy':
                 fancy = True
             elif option == 'from':
-                predicates.append(lambda m, arg=arg: ircutils.nickEqual(m.nick,
-                                                                        arg))
+                predicates.append(lambda m, arg=arg: \
+                                  ircutils.hostmaskPatternEqual(arg, m.nick))
             elif option == 'in' or option == 'to':
                 if not ircutils.isChannel(arg):
                     irc.error(msg, 'Argument to --%s must be a channel.' % arg)

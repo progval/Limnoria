@@ -69,7 +69,8 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         finally:
             conf.prefixChars = original
         self.assertHelp('help list')
-        self.assertRegexp('help help', r'^\x02\(help')
+        self.assertRegexp('help help', r'^\(\x02help')
+        self.assertRegexp('help misc help', r'^\(\x02misc help')
         self.assertError('help morehelp')
 
     def testList(self):
@@ -120,6 +121,8 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('last --regexp m/bar/', 'foo bar baz')
         self.assertResponse('last --from %s' % self.nick.upper(),
                             '@last --regexp m/bar/')
+        self.assertResponse('last --from %s*' % self.nick[0],
+                            '@last --from %s' % self.nick.upper())
 
     def testMore(self):
         self.assertRegexp('echo %s' % ('abc'*300), 'more')
