@@ -337,7 +337,8 @@ class IrcObjectProxy:
                     #debug.printf('Being prevented with anticap')
                     debug.msg('Preventing %s from calling %s' % \
                               (self.msg.nick, name), 'normal')
-                    self.error(self.msg, conf.replyNoCapability % name)
+                    s = conf.replyNoCapability % name
+                    self.error(self.msg, s, private=True)
                     return
                 recipient = self.msg.args[0]
                 if ircutils.isChannel(recipient):
@@ -347,7 +348,8 @@ class IrcObjectProxy:
                         #debug.printf('Being prevented with chancap')
                         debug.msg('Preventing %s from calling %s' % \
                                   (self.msg.nick, name), 'normal')
-                        self.error(self.msg, conf.replyNoCapability % name)
+                        s = conf.replyNoCapability % name
+                        self.error(self.msg, s, private=True)
                         return
                 command = getattr(cb, name)
                 if cb.threaded:
@@ -507,10 +509,10 @@ class ConfigIrcProxy(object):
     def __init__(self, irc):
         self.__dict__['irc'] = irc
         
-    def reply(self, msg, s):
+    def reply(self, msg, s, *args):
         return None
 
-    def error(self, msg, s):
+    def error(self, msg, s, *args):
         debug.msg('ConfigIrcProxy saw an error: %s' % s, 'normal')
 
     findCallback = IrcObjectProxy.findCallback.im_func
@@ -621,8 +623,9 @@ class IrcObjectProxyRegexp:
     def __init__(self, irc, *args):
         self.irc = irc
 
-    def error(self, msg, s):
-        self.reply(msg, 'Error: ' + s)
+    def error(self, msg, s, private=False):
+        private = private or conf.errorReplyPrivate
+        self.reply(msg, 'Error: ' + s, private=private)
 
     def reply(self, msg, s, prefixName=True, action=False, private=False,):
         if action:

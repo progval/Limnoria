@@ -167,6 +167,15 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertResponse("eval irc.reply(msg, 'foo', action=True)",
                             '\x01ACTION foo\x01')
 
+    def testErrorPrivateKwarg(self):
+        try:
+            originalConfErrorReplyPrivate = conf.errorReplyPrivate
+            conf.errorReplyPrivate = False
+            m = self.getMsg("eval irc.error(msg, 'foo', private=True)")
+            self.failIf(ircutils.isChannel(m.args[0]))
+        finally:
+            conf.errorReplyPrivate = originalConfErrorReplyPrivate
+
     def testErrorReplyPrivate(self):
         try:
             originalConfErrorReplyPrivate = conf.errorReplyPrivate
