@@ -46,6 +46,7 @@ import supybot.world as world
 import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.irclib as irclib
+import supybot.plugin as plugin
 import supybot.drivers as drivers
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
@@ -53,82 +54,6 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 import supybot.structures as structures
-
-class Deprecated(ImportError):
-    pass
-
-def loadPluginModule(name, ignoreDeprecation=False):
-    """Loads (and returns) the module for the plugin with the given name."""
-    files = []
-    pluginDirs = conf.supybot.directories.plugins()
-    for dir in pluginDirs:
-        try:
-            files.extend(os.listdir(dir))
-        except EnvironmentError: # OSError, IOError superclass.
-            log.warning('Invalid plugin directory: %s; removing.',
-                        utils.quoted(dir))
-            conf.supybot.directories.plugins().remove(dir)
-    loweredFiles = map(str.lower, files)
-    try:
-        index = loweredFiles.index(name.lower()+'.py')
-        name = os.path.splitext(files[index])[0]
-        if name in sys.modules:
-            m = sys.modules[name]
-            if not hasattr(m, 'Class'):
-                raise ImportError, 'Module is not a plugin.'
-    except ValueError: # We'd rather raise the ImportError, so we'll let go...
-        pass
-    moduleInfo = imp.find_module(name, pluginDirs)
-    try:
-        module = imp.load_module(name, *moduleInfo)
-    except:
-        sys.modules.pop(name, None)
-        raise
-    if 'deprecated' in module.__dict__ and module.deprecated:
-        if ignoreDeprecation:
-            log.warning('Deprecated plugin loaded: %s', name)
-        else:
-            raise Deprecated, 'Attempted to load deprecated plugin %s' % \
-                              utils.quoted(name)
-    if module.__name__ in sys.modules:
-        sys.modules[module.__name__] = module
-    linecache.checkcache()
-    return module
-
-def loadPluginClass(irc, module, register=None):
-    """Loads the plugin Class from the given module into the given Irc."""
-    try:
-        cb = module.Class()
-    except AttributeError, e:
-        if 'Class' in str(e):
-            raise callbacks.Error, \
-                  'This plugin module doesn\'t have a "Class" ' \
-                  'attribute to specify which plugin should be ' \
-                  'instantiated.  If you didn\'t write this ' \
-                  'plugin, but received it with Supybot, file ' \
-                  'a bug with us about this error.'
-        else:
-            raise
-    plugin = cb.name()
-    public = True
-    if hasattr(cb, 'public'):
-        public = cb.public
-    conf.registerPlugin(plugin, register, public)
-    assert not irc.getCallback(plugin)
-    try:
-        renames = registerRename(plugin)()
-        if renames:
-            for command in renames:
-                v = registerRename(plugin, command)
-                newName = v()
-                assert newName
-                renameCommand(cb, command, newName)
-        else:
-            conf.supybot.commands.renames.unregister(plugin)
-    except registry.NonExistentRegistryEntry, e:
-        pass # The plugin isn't there.
-    irc.addCallback(cb)
-    return cb
 
 ###
 # supybot.commands.
@@ -302,8 +227,9 @@ class Owner(callbacks.Privmsg):
                         # This is debug because each log logs its beginning.
                         self.log.debug('Loading %s.' % name)
                         try:
-                            m = loadPluginModule(name, ignoreDeprecation=True)
-                            loadPluginClass(irc, m)
+                            m = plugin.loadPluginModule(name,
+                                                        ignoreDeprecation=True)
+                            plugin.loadPluginClass(irc, m)
                         except callbacks.Error, e:
                             # This is just an error message.
                             log.warning(str(e))
@@ -314,7 +240,7 @@ class Owner(callbacks.Privmsg):
                 else:
                     # Let's import the module so configuration is preserved.
                     try:
-                        _ = loadPluginModule(name)
+                        _ = plugin.loadPluginModule(name)
                     except Exception, e:
                         log.debug('Attempted to load %s to preserve its '
                                   'configuration, but load failed: %s',
@@ -492,8 +418,8 @@ class Owner(callbacks.Privmsg):
             irc.error('%s is already loaded.' % name.capitalize())
             return
         try:
-            module = loadPluginModule(name, ignoreDeprecation)
-        except Deprecated:
+            module = plugin.loadPluginModule(name, ignoreDeprecation)
+        except plugin.Deprecated:
             irc.error('%s is deprecated.  Use --deprecated '
                       'to force it to load.' % name.capitalize())
             return
@@ -503,7 +429,7 @@ class Owner(callbacks.Privmsg):
             else:
                 irc.error(str(e))
             return
-        cb = loadPluginClass(irc, module)
+        cb = plugin.loadPluginClass(irc, module)
         name = cb.name() # Let's normalize this.
         conf.registerPlugin(name, True)
         irc.replySuccess()
@@ -521,14 +447,14 @@ class Owner(callbacks.Privmsg):
             if hasattr(module, 'reload'):
                 x = module.reload()
             try:
-                module = loadPluginModule(name)
+                module = plugin.loadPluginModule(name)
                 if hasattr(module, 'reload'):
                     module.reload(x)
                 for callback in callbacks:
                     callback.die()
                     del callback
                 gc.collect() # This makes sure the callback is collected.
-                callback = loadPluginClass(irc, module)
+                callback = plugin.loadPluginClass(irc, module)
                 irc.replySuccess()
             except ImportError:
                 for callback in callbacks:

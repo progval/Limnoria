@@ -30,7 +30,7 @@
 from supybot.test import *
 
 import supybot.conf as conf
-import supybot.plugins.Owner as Owner
+import supybot.plugin as plugin
 
 class OwnerTestCase(PluginTestCase):
     plugins = ('Utilities', 'Relay', 'Network', 'Admin', 'Channel')
@@ -97,13 +97,4 @@ class OwnerTestCase(PluginTestCase):
         self.assertError('defaultplugin foobar owner')
         
 
-
-class FunctionsTestCase(SupyTestCase):
-    def testLoadPluginModule(self):
-        self.assertRaises(ImportError, Owner.loadPluginModule, 'asldj')
-        self.failUnless(Owner.loadPluginModule('Owner'))
-        self.failUnless(Owner.loadPluginModule('owner'))
-
-
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
-
