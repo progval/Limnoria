@@ -1,3 +1,7 @@
+	* Changed the logging infrastructure significantly; each plugin
+	now has its own logger (and thus logfile), in addition to being
+	logged in the main logfile.
+	
 	* Fixed bug in which the bot wouldn't rejoin channels after a
 	reconnect.  Thank the Lord for tcpkill :)
 	
