@@ -143,7 +143,8 @@ example = utils.wrapLines("""
 <supybot> str(object) -> string. Return a nice string representation of the object. If the argument is a string, the return value is the same object.
 <jemfinch> @dns kernel.org
 <supybot> 204.152.189.116
-<jemfinch> @kernel
+<jemfinch> @zen
+<supybot> jemfinch: Beautiful is better than ugly.
 """)
 
 class FunCommands(callbacks.Privmsg):
