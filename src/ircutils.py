@@ -63,40 +63,47 @@ def isUserHostmask(s):
         return False
 
 def isServerHostmask(s):
-    """Returns True if s is a valid server hostmask."""
+    """s => bool
+    Returns True if s is a valid server hostmask."""
     return not isUserHostmask(s)
 
 def nickFromHostmask(hostmask):
-    """Returns the nick from a user hostmask."""
+    """hostmask => nick
+    Returns the nick from a user hostmask."""
     assert isUserHostmask(hostmask)
     return hostmask.split('!', 1)[0]
 
 def userFromHostmask(hostmask):
-    """Returns the user from a user hostmask."""
+    """hostmask => user
+    Returns the user from a user hostmask."""
     assert isUserHostmask(hostmask)
     return hostmask.split('!', 1)[1].split('@', 1)[0]
 
 def hostFromHostmask(hostmask):
-    """Returns the host from a user hostmask."""
+    """hostmask => host
+    Returns the host from a user hostmask."""
     assert isUserHostmask(hostmask)
     return hostmask.split('@', 1)[1]
 
 def splitHostmask(hostmask):
-    """Returns the nick, user, host of a user hostmask."""
+    """hostmask => (nick, user, host)
+    Returns the nick, user, host of a user hostmask."""
     assert isUserHostmask(hostmask)
     nick, rest = hostmask.split('!', 1)
     user, host = rest.split('@', 1)
     return (nick, user, host)
 
 def joinHostmask(nick, ident, host):
-    """Joins the nick, ident, host into a user hostmask."""
+    """nick, user, host => hostmask
+    Joins the nick, ident, host into a user hostmask."""
     assert nick and ident and host
     return '%s!%s@%s' % (nick, ident, host)
 
 _rfc1459trans = string.maketrans(string.ascii_uppercase + r'\[]~',
                                  string.ascii_lowercase + r'|{}^')
 def toLower(s, casemapping=None):
-    """Returns the string s lowered according to IRC case rules."""
+    """s => s
+    Returns the string s lowered according to IRC case rules."""
     if casemapping is None or casemapping == 'rfc1459':
         return s.translate(_rfc1459trans)
     elif casemapping == 'ascii': # freenode
@@ -105,7 +112,8 @@ def toLower(s, casemapping=None):
         raise ValueError, 'Invalid casemapping: %s' % utils.quoted(casemapping)
 
 def strEqual(nick1, nick2):
-    """Returns True if nick1 == nick2 according to IRC case rules."""
+    """s1, s2 => bool
+    Returns True if nick1 == nick2 according to IRC case rules."""
     assert isinstance(nick1, basestring) 
     assert isinstance(nick2, basestring)
     return toLower(nick1) == toLower(nick2)
@@ -117,7 +125,8 @@ nickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$'
                     % (re.escape(_nickchars), re.escape(_nickchars)))
 
 def isNick(s, strictRfc=True, nicklen=None):
-    """Returns True if s is a valid IRC nick."""
+    """s => bool
+    Returns True if s is a valid IRC nick."""
     if strictRfc:
         ret = bool(nickRe.match(s))
         if ret and nicklen is not None:
@@ -129,7 +138,8 @@ def isNick(s, strictRfc=True, nicklen=None):
                not ' ' in s and not '!' in s
 
 def isChannel(s, chantypes='#&+!', channellen=50):
-    """Returns True if s is a valid IRC channel name."""
+    """s => bool
+    Returns True if s is a valid IRC channel name."""
     return s and \
            ',' not in s and \
            '\x07' not in s and \
@@ -139,7 +149,6 @@ def isChannel(s, chantypes='#&+!', channellen=50):
 
 _patternCache = {}
 def _hostmaskPatternEqual(pattern, hostmask):
-    """Returns True if hostmask matches the hostmask pattern pattern."""
     try:
         return _patternCache[pattern](hostmask) is not None
     except KeyError:
@@ -168,6 +177,8 @@ def _hostmaskPatternEqual(pattern, hostmask):
 
 _hostmaskPatternEqualCache = {}
 def hostmaskPatternEqual(pattern, hostmask):
+    """pattern, hostmask => bool
+    Returns True if hostmask matches the hostmask pattern pattern."""
     try:
         return _hostmaskPatternEqualCache[(pattern, hostmask)]
     except KeyError:
@@ -246,7 +257,8 @@ def separateModes(args):
     return ret
 
 def joinModes(modes):
-    """Joins modes of the same form as returned by separateModes."""
+    """[(mode, targetOrNone), ...] => args
+    Joins modes of the same form as returned by separateModes."""
     args = []
     modeChars = []
     currentMode = '\x00'
