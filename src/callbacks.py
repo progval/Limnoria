@@ -340,7 +340,7 @@ def formatArgumentError(method, name=None):
 class IrcObjectProxy:
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args):
-        #debug.printf('__init__: %s' % args)
+        #debug.printf('IrcObjectProxy.__init__: %s' % args)
         self.irc = irc
         self.msg = msg
         self.args = args
@@ -370,6 +370,7 @@ class IrcObjectProxy:
 
     def _callInvalidCommands(self):
         for cb in self.irc.callbacks:
+            #debug.printf('Trying to call %s.invalidCommand' % cb.name())
             if self.finished:
                 break
             if hasattr(cb, 'invalidCommand'):
@@ -381,7 +382,7 @@ class IrcObjectProxy:
         name = canonicalName(self.args[0])
         cbs = findCallbackForCommand(self, name)
         if len(cbs) == 0:
-            if self.irc.nick == self.msg.nick:
+            if self.irc.nick == self.msg.nick and not world.testing:
                 return
             for cb in self.irc.callbacks:
                 if isinstance(cb, PrivmsgRegexp):
