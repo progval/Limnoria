@@ -55,36 +55,7 @@ import callbacks
 
 dbFilename = os.path.join(conf.dataDir, 'FunDB.db')
 
-def makeDb(dbfilename, replace=False):
-    if os.path.exists(dbfilename):
-        if replace:
-            os.remove(dbfilename)
-    db = sqlite.connect(dbfilename)
-    createTables(db, [x for x in tableDict.keys() if not tableExists(db, x)])
-    return db
-
-def addWord(db, word, commit=False):
-    word = word.strip().lower()
-    L = list(word)
-    L.sort()
-    sorted = ''.join(L)
-    cursor = db.cursor()
-    cursor.execute("""INSERT INTO sorted_words VALUES (NULL, %s)""", sorted)
-    cursor.execute("""INSERT INTO words VALUES (NULL, %s,
-                      (SELECT id FROM sorted_words
-                       WHERE word=%s))""", word, sorted)
-    if commit:
-        db.commit()
-
-def tableExists(db, table):
-    cursor = db.cursor()
-    try:
-        cursor.execute("""SELECT * from %s LIMIT 1""" % table)
-        return True
-    except sqlite.DatabaseError:
-        return False
-
-tableDict = {
+tableCreateStatements = {
     'larts': ("""CREATE TABLE larts (
                  id INTEGER PRIMARY KEY,
                  lart TEXT, added_by TEXT,
@@ -114,31 +85,46 @@ tableDict = {
                  word TEXT UNIQUE ON CONFLICT IGNORE,
                  sorted_word_id INTEGER
                  )""",
-                """CREATE INDEX sorted_word_id ON words (sorted_word_id)"""),
-    'sorted_words': ("""CREATE TABLE sorted_words (
-                        id INTEGER PRIMARY KEY,
-                        word TEXT UNIQUE ON CONFLICT IGNORE
-                        )""",
-                     """CREATE INDEX sorted_words_word 
-                        ON sorted_words (word)"""),
+              """CREATE INDEX sorted_word_id ON words (sorted_word_id)""",
+              """CREATE TABLE sorted_words (
+                 id INTEGER PRIMARY KEY,
+                 word TEXT UNIQUE ON CONFLICT IGNORE
+                 )""",
+              """CREATE INDEX sorted_words_word ON sorted_words (word)"""),
     'uptime': ("""CREATE TABLE uptime (
                   started INTEGER UNIQUE ON CONFLICT IGNORE,
                   ended INTEGER
                   )""",)
     }
     
-def createTables(db, tables=tableDict.keys()):
-    if len(tables) < 1:
-        return db
-    else:
-        cursor = db.cursor()
-        tableList = [table for table in tableDict.keys() if table in
-            tables]
-        for table in tableList:
-            for command in tableDict[table]:
-                cursor.execute(command)
+def makeDb(dbfilename, replace=False):
+    if os.path.exists(dbfilename):
+        if replace:
+            os.remove(dbfilename)
+    db = sqlite.connect(dbfilename)
+    cursor = db.cursor()
+    for table in tableCreateStatements:
+        try:
+            cursor.execute("""SELECT * FROM %s LIMIT 1""" % table)
+        except sqlite.DatabaseError: # The table doesn't exist.
+            for sql in tableCreateStatements[table]:
+                cursor.execute(sql)
+    db.commit()
+    return db
+
+def addWord(db, word, commit=False):
+    word = word.strip().lower()
+    L = list(word)
+    L.sort()
+    sorted = ''.join(L)
+    cursor = db.cursor()
+    cursor.execute("""INSERT INTO sorted_words VALUES (NULL, %s)""", sorted)
+    cursor.execute("""INSERT INTO words VALUES (NULL, %s,
+                      (SELECT id FROM sorted_words
+                       WHERE word=%s))""", word, sorted)
+    if commit:
         db.commit()
-        return db
+
 
 class FunDB(callbacks.Privmsg):
     """
