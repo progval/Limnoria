@@ -234,7 +234,7 @@ class IrcObjectProxy:
             if callback is None:
                 self.reply(msg, '[%s]' % ' '.join(args))
             callback.callCommand(getattr(callback, name), 
-                                 (self, self.msg, self.args))
+                                 self, self.msg, self.args)
         except Error, e:
             self.reply(self.msg, debug.exnToString(e))
         except Exception, e:
@@ -273,6 +273,23 @@ class IrcObjectProxyThreaded(IrcObjectProxy):
     def error(self, msg, s):
         self.reply(msg, 'Error: ' + s)
 
+class CommandThread(threading.Thread):
+    def __init__(self, command, irc, msg, args):
+        name = '%s.%s with args %r' % (command.im_class.__name__,
+                                       command.im_func.func_name, args)
+        threading.Thread.__init__(self, target=command, name=name,
+                                  args=(irc, msg, args))
+        self.irc = irc
+        self.msg = msg
+    def run(self):
+        try:
+            threading.Thread.run(self)
+        except Error, e:
+            self.irc.reply(self.msg, debug.exnToString(e))
+        except Exception, e:
+            debug.recoverableException()
+            self.irc.error(self.msg, debug.exnToString(e))
+
         
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
@@ -307,14 +324,14 @@ class Privmsg(irclib.IrcCallback):
         else:
             return False
 
-    def callCommand(self, f, args):
+    def callCommand(self, f, irc, msg, args):
         if self.threaded:
-            thread = threading.Thread(target=f, args=args)
+            thread = CommandThread(f, irc, msg, args)
             thread.setDaemon(True)
             thread.start()
             debug.printf('Spawned new thread: %s' % thread)
         else:
-            f(*args)
+            f(irc, msg, args)
 
     def _getCommands(self, args):
         commands = []
@@ -423,5 +440,5 @@ class PrivmsgRegexp(Privmsg):
                 msg = self.rateLimiter.get()
                 if msg:
                     irc = IrcObjectProxyRegexp(irc)
-                    self.callCommand(method, (irc, msg, m))
+                    self.callCommand(method, irc, msg, m)
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
