@@ -35,7 +35,7 @@ import re
 
 import utils
 
-class FunCommandsTest(PluginTestCase, PluginDocumentation):
+class FunTest(PluginTestCase, PluginDocumentation):
     plugins = ('Fun',)
     def testNoErrors(self):
         self.assertNotError('leet foobar')

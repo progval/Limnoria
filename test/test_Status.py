@@ -36,7 +36,7 @@ import world
 class StatusTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Status', 'OwnerCommands')
     def testBestuptime(self):
-        self.assertError('bestuptime')
+        self.assertNotRegexp('bestuptime', '33 years')
         self.assertNotError('unload Status')
         self.assertNotError('load Status')
         self.assertNotError('bestuptime')
