@@ -89,7 +89,7 @@ class Anonymous(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         if c.lobotomized:
             irc.error('I\'m lobotomized in %s.' % channel, Raise=True)
-        if not c.checkCapability(self.name()):
+        if not c._checkCapability(self.name()):
             irc.error('That channel has set its capabilities so as to '
                       'disallow the use of this plugin.', Raise=True)
 
