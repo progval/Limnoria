@@ -456,19 +456,16 @@ class Irc(object):
             self.nick = msg.args[0]
             (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
             self.prefix = '%s!%s@%s' % (self.nick, user, domain)
-        elif msg.command in self._nickSetters:
-            #debug.printf('msg.command in self._nickSetters')
-            newnick = msg.args[0]
-            if self.nick != newnick:
-                debug.printf('Hmm...self.nick != newnick.  Odd.')
-            self.nick = newnick
         # Respond to PING requests.
-        elif msg.command == 'PING':
+        if msg.command == 'PING':
             self.sendMsg(ircmsgs.pong(msg.args[0]))
+        if msg.command == 'PONG':
+            self.outstandingPing = False
         # Send new nicks on 433
-        elif msg.command == '433' or msg.command == '432':
+        if msg.command == '433' or msg.command == '432':
             self.sendMsg(ircmsgs.nick(self._nickmods.pop(0) % self.nick))
         if msg.nick == self.nick:
+            self.prefix = msg.prefix
             if ircdb.users.hasUser(self.nick):
                 u = ircdb.users.getUser(self.nick)
                 if not u.hasHostmask(msg.prefix):
@@ -479,17 +476,18 @@ class Irc(object):
                                   hostmasks=[msg.prefix])
                 ircdb.users.setUser(self.nick, u)
                 atexit.register(lambda: catch(ircdb.users.delUser(self.nick)))
-        elif msg.command == 'PONG':
-            self.outstandingPing = False
-        elif msg.command == 'ERROR':
+        if msg.command == 'ERROR':
             if msg.args[0].startswith('Closing Link'):
                 if hasattr(self.driver, 'scheduleReconnect'):
                     self.driver.scheduleReconnect()
                 if self.driver:
                     self.driver.die()
-        elif msg.command == 'PRIVMSG':
-            if msg.nick == self.nick:
-                self.prefix = msg.prefix
+        if msg.command in self._nickSetters:
+            #debug.printf('msg.command in self._nickSetters')
+            newnick = msg.args[0]
+            if self.nick != newnick:
+                debug.printf('Hmm...self.nick != newnick.  Odd.')
+            self.nick = newnick
         # Now update the IrcState object.
         try:
             self.state.addMsg(self, msg)
