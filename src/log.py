@@ -202,6 +202,8 @@ class ValidLogLevel(registry.String):
         self.setValue(level)
 
     def __str__(self):
+        # The str() is necessary here; apparently getLevelName returns an
+        # integer on occasion.  logging--
         level = str(logging.getLevelName(self.value))
         if level.startswith('Level'):
             level = level.split()[-1]
@@ -229,7 +231,7 @@ conf.registerGlobalValue(conf.supybot.log, 'level',
     will be.  Valid values are VERBOSE, DEBUG, INFO, WARNING, ERROR,
     and CRITICAL, in order of increasing priority."""))
 conf.registerGlobalValue(conf.supybot.log, 'statistics',
-    ValidLogLevel('VERBOSE', """Determines what level statistics reporting
+    ValidLogLevel(-1, """Determines what level statistics reporting
     is to be logged at.  Mostly, this just includes, for instance, the time it
     took to parse a message, process a command, etc.  You probably don't care
     about this."""))
@@ -382,12 +384,20 @@ if not os.path.exists(pluginLogDir):
 _handler = BetterFileHandler(os.path.join(_logDir, 'misc.log'))
 _handler.setFormatter(formatter)
 _handler.setLevel(-1)
+class PluginLogFilter(logging.Filter):
+    def filter(self, record):
+        if conf.supybot.log.plugins.individualLogfiles():
+            if record.msg.name.startswith('supybot.plugins'):
+                return False
+        return True
+_handler.addFilter(PluginLogFilter())
+
 _logger.addHandler(_handler)
 _logger.setLevel(conf.supybot.log.level())
 
 if not conf.daemonized:
     _stdoutHandler = StdoutStreamHandler(sys.stdout)
-    _stdoutFormatter = ColorizedFormatter('YOU SHOULD NEVER SEE THIS!')
+    _stdoutFormatter = ColorizedFormatter('IF YOU SEE THIS, FILE A BUG!')
     _stdoutHandler.setFormatter(_stdoutFormatter)
     _stdoutHandler.setLevel(-1)
     _logger.addHandler(_stdoutHandler)
