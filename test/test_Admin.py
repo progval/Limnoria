@@ -58,6 +58,7 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('setprefixchar $')
         self.assertResponse('getprefixchar', "'$'")
         self.assertError('setprefixchar p')
+        self.assertNoResponse(' ', 2)  # make sure we return
 
     def testAddcapability(self):
         self.assertError('addcapability sdlkfj foo')
