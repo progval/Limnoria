@@ -46,6 +46,9 @@ from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import ReconnectingClientFactory
 
 class TwistedRunnerDriver(drivers.IrcDriver):
+    def name(self):
+        return self.__class__.__name__
+
     def run(self):
         try:
             reactor.iterate(conf.supybot.drivers.poll())
@@ -69,23 +72,21 @@ class SupyIrcProtocol(LineReceiver):
             msg = self.irc.takeMsg()
             if msg:
                 self.transport.write(str(msg))
-        if not self.irc.zombie:
-            self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
+        self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
 
     def connectionLost(self, failure):
+        self.mostRecentCall.cancel()
         drivers.log.disconnect(self.factory.currentServer, errorMsg(failure))
-        if not self.irc.zombie:
-            self.irc.reset()
-        else:
+        if self.irc.zombie:
             # Let's take and take and take until our IRC is DESTROYED!
             x = 1
             while x:
                 x = self.irc.takeMsg()
 
     def connectionMade(self):
-        self.irc.reset()
         self.factory.resetDelay()
         self.irc.driver = self
+        self.irc.reset()
 
     def die(self):
         drivers.log.die(self.irc)
