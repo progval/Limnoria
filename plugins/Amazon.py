@@ -30,7 +30,7 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+Amazon module, to use Amazon's Web Services.  Currently only does ISBN lookups.
 """
 
 from baseplugin import *
@@ -42,7 +42,6 @@ import privmsgs
 import callbacks
 
 
-
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
@@ -52,7 +51,7 @@ def configure(onStart, afterConnect, advanced):
     print 'To use Amazon\'s Web Services, you must have a license key.'
     if yn('Do you have a license key?') == 'y':
         key = anything('What is it?')
-        onStart.append('load Amazon')
+
         onStart.append('amazonlicensekey %s' % key)
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
