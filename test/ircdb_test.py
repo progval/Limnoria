@@ -31,6 +31,7 @@
 
 from test import *
 
+import os
 import unittest
 
 import ircdb
@@ -147,3 +148,33 @@ class FunctionsTestCase(unittest.TestCase):
     def testMakeAntiCapability(self):
         self.assertEqual(ircdb.makeAntiCapability('foo'), '!foo')
         self.assertEqual(ircdb.makeAntiCapability('#foo.bar'), '#foo.!bar')
+
+
+class UsersDictionaryTestCase(unittest.TestCase):
+    filename = 'emptyUsers.conf'
+    def setUp(self):
+        fd = file(self.filename, 'w')
+        fd.write('{}\n')
+        fd.close()
+        self.users = ircdb.UsersDictionary(self.filename)
+        
+    def tearDown(self):
+        os.remove(self.filename)
+        
+    def testGetSetDelUser(self):
+        self.assertRaises(KeyError, self.users.getUser, 'foo')
+        self.assertRaises(KeyError, self.users.getUser, 'foo!bar@baz')
+        u = ircdb.IrcUser()
+        hostmask = 'foo!bar@baz'
+        banmask = ircutils.banmask(hostmask)
+        u.addHostmask(banmask)
+        self.users.setUser('foo', u)
+        self.assertEqual(self.users.getUser('foo'), u)
+        self.assertEqual(self.users.getUser(hostmask), u)
+        self.assertEqual(self.users.getUser(banmask), u)
+        # The UsersDictionary shouldn't allow users to be added whose hostmasks
+        # match another user's already in the database.
+        self.assertRaises(ValueError, self.users.setUser, 'bar', u)
+        #self.assertRaises(ValueError, self.users.setUser, 'biff', '*!*@*')
+        
+        
