@@ -99,7 +99,7 @@ class Config(callbacks.Privmsg):
         if groups:
             L = []
             for (vname, v) in group._children.iteritems():
-                if v.added:
+                if v._added:
                     L.append(vname)
             utils.sortBy(str.lower, L)
             return L
