@@ -1,207 +1,541 @@
-Here's an example of how to code a few callbacks for SupyBot.
+Ok, so you want to write a callback for supybot.  Good, then this is
+the place to be.  We're going to start from the top (the highest
+level, where supybot code does the most work for you) and move lower
+after that.
 
-Let's say you want to make an annoying "Mimic" callback that repeats everything
-anyone says to the bot or on the channels the bot is in.  That
-shouldn't be too hard.  First, you'll need to make a new module to
-hold the plugin:
+So have you used supybot?  If not, you need to go use it, get a feel
+for it, see how the various commands work and such.
 
-$ scripts/newplugin.py Mimic
+So now that we know you've used supybot, we'll start getting into
+details.
 
-That'll make the file plugins/Mimic.py, which will 
+First, the easiest way to start writing a module is to use the wizard
+provided, scripts/newplugin.py.  Here's an example session:
+
+-----
+functor% scripts/newplugin.py
+What should the name of the plugin be? Random
+Supybot offers two major types of plugins: command-based and regexp-
+based.  Command-based plugins are the kind of plugins you've seen most
+when you've used supybot.  They're also the most featureful and
+easiest to write.  Commands can be nested,  for instance, whereas
+regexp-based callbacks can't do nesting.  That doesn't mean that
+you'll never want regexp-based callbacks. They offer a flexibility
+that command-based callbacks don't offer; however, they don't tie into
+the whole system as well.  If you need to combine a command-based
+callback with some regexp-based methods, you can do so by subclassing
+callbacks.PrivmsgCommandAndRegexp and then adding a class-level
+attribute "regexps" that is a sets.Set of methods that are regexp-
+based.  But you'll have to do that yourself after this wizard is
+finished :)
+Do you want a command-based plugin or a regexp-based plugin? [command/
+                                                              regexp] command
+Sometimes you't want a callback to be threaded.  If its methods
+(command or regexp-based, either one) will take a signficant amount
+of time to run, you'll want to thread them so they don't block
+the entire bot.
+
+Does your plugin need to be threaded? [y/n] n
+Your new plugin template is in plugins/Random.py
+functor%
+-----
+
+So that's what it looks like.  Now let's look at the source code:
+
+-----
+#!/usr/bin/env python
+
+###
+# Copyright (c) 2002, Jeremiah Fincher
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   * Redistributions of source code must retain the above copyright notice,
+#     this list of conditions, and the following disclaimer.
+#   * Redistributions in binary form must reproduce the above copyright notice,
+#     this list of conditions, and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#   * Neither the name of the author of this software nor the name of
+#     contributors to this software may be used to endorse or promote products
+#     derived from this software without specific prior written consent.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+###
+
+"""
+Add the module docstring here.  This will be used by the setup.py script.
+"""
+
+from baseplugin import *
+
+import utils
+import privmsgs
+import callbacks
 
 
-[code]
-class AnnoyingMimic(irclib.IrcCallback):
-    def doPrivmsg(self, irc, msg):
-        irc.queueMsg(ircmsgs.privmsg(msg.args[0], msg.args[1]))
-[/code]
+def configure(onStart, afterConnect, advanced):
+    # This will be called by setup.py to configure this module.  onStart and
+    # afterConnect are both lists.  Append to onStart the commands you would
+    # like to be run when the bot is started; append to afterConnect the
+    # commands you would like to be run when the bot has finished connecting.
+    from questions import expect, anything, something, yn
+    onStart.append('load Random')
 
-Almost every callback will inherit from irclib.IrcCallback somewhere in their
-class hierarchy.  irclib.IrcCallback does a lot of the basic stuff that call-
-backs have to do, and inheriting from it relieves the programmer from such
-pedantries.  All you have to do to start writing callbacks inheriting from
-irclib.IrcCallback is write functions of the form "doCommand", where "Command"
-is a valid ircCommand.  The "ChannelLogger" plugin is a good illustrative
-example of a callback being called on different commands.
+example = utils.wrapLines("""
+Add an example IRC session using this module here.
+""")
 
-The "irc" argument there is the irc object that is calling the callback.  To
-see what kind of interface it provides, read the class definition in irclib.
-Really, you only need to know a few methods if you're writing simple callbacks:
-'queueMsg', which queues a message to be sent later, and 'sendMsg' which tries
-to send it right away (well, as soon as the Irc object's driver asks for
-another message to send, which is generally right away).  The Irc object also
-provides some attributes that might come in useful, most notably "nick" (the
-nick of the bot) and "state" (an IrcState object that does various useful
-things like keeping a history of the most recent irc messages.)
+class Random(callbacks.Privmsg):
+    pass
 
-Irc messsages are represented by the IrcMsg class in ircmsgs.  It has several
-useful methods and attributes, but it's probably easier for you to read the
-code than for me to tell you about it.  The ircmsgs module also provides a set
-of useful little commands to create IrcMsg objects that do particular little
-things; for instance, ircmsgs.privmsg(recipient, msg) sends a PRIVMSG command
-to a channel or user (whatever recipient turns out to be).  Check out the code
-to see other functions for making IrcMsg objects.
 
-Now, that wasn't too bad.  Now, however you're going to have to get it into the
-bot.  Note that AnnoyingMimic doesn't have an __init__.  This'll make it pretty
-simple to get it into the configuration system.  Look for the section of the
-config file where you see all the configurations for Irc objects.  These
-configurations are going to be lists of (class name, args, kwargs) tuples which
-contain the name of a callback class to be instantiated, a tuple of the argu-
-ments to be passed to the __init__ function for that class, and a dictionary
-of the keyword arguments to be passed to the __init__ function of that class.
-For instance, if AnnoyingMimic was in a file 'mycallbacks.py', its config-
-uration in the config file would look like this:
+Class = Random
 
-[code]
-('mycallbacks.AnnoyingMimic', (), {})
-[/code]
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+-----
 
-Since it doesn't have an __init__, there are no arguments or keyword arguments
-to pass to the class.  Just throw something like that in a list of callbacks
-that you use for your bot (you can have several lists, you'll notice later on
-in the 'drivers' variable that they're used), and you're ready to go!
+So a few notes, before we customize it.
 
-Now, let's say you want to make your AnnoyingMimic class a little less
-annoying.  Now, you only want to mimic people *you* find annoying.  The easiest
-way to do that is to make it so you tell the class who to mimic when you
-instantiate it.  This means adding an __init__ function, and modifying your
-configuration slightly.
+You'll probably want to change the copyright notice to be your name.
+It wouldn't stick even if you kept my name, so you might as well :)
 
-[code]
-class AnnoyingMimic(irclib.IrcCallback):
-    def __init__(self, nicksToAnnoy):
-        self.nicksToAnnoy = nicksToAnnoy
+Describe what you want the plugin to do in the docstring.  This is
+used in scripts/setup.py in order to explain to the user the purpose
+of the module.  It's also returned when someone asks the bot for help
+for a given module (instead of help for a certain command).  We'll
+change this one to "Lots of stuff relating to random numbers."
 
-    def doPrivmsg(self, irc, msg):
-        if msg.nick() in self.nicksToAnnoy:
-            irc.queueMsg(ircmsgs.privmsg(msg.args[0], msg.args[1]))
-[/code]
+Then there are the imports.  The utils module is used (in example,
+which we'll see later).  The callbacks module is used (the class
+you're given subclasses callbacks.Privmsg) but the privmsgs module
+isn't used.  That's alright; we can almost guarantee you'll use it, so
+we go ahead and add the import to the template.
 
-(Now, really, to make this efficient, you'd want a slightly different version
-that turned the nicksToAnnoy argument into a dictionary so nick lookups would
-be O(1) instead of O(n) in the length of the list of nicks to annoy, but that
-would obfuscate the problem.  I'll leave that as an exercise left up to the
-reader.)
+Then you see a "configure" function.  This the function that's called
+when users decide to add your module in scripts/setup.py.  You'll note
+that by default it simply adds "load Example" at the bottom.  For many
+plugins this is all you need; for more complex plugins, you might need
+to ask questions and add commands based on the answers.
 
-So now your AnnoyingMimic class has an __init__ function that accepts a list
-of nicks to annoy, but how do you pass it those nicks?  Simple!  Change the
-configuration slightly:
+Then there's an example string.  It's simply an example of usage of
+the plugin in practice.  scripts/setup.py offers to show the user an
+example of the module usage; this is what it shows them.  You'll note
+that it's wrapped for you in utils.wrapLines so you don't have to
+bother with it; just paste a session directly out of your IRC client
+and you'll be set.
 
-[code]
-('mycallbacks.AnnoyingMimic', (['jemfinch', 'GnuVince'],), {})
-[/code]
+Now comes the meat of the plugin: the plugin class.
 
-That's the wonder of this configuration system -- you can use all the Python
-syntax you want, so you have practically unlimited flexibility.
+What you're given is a skeleton: a simple subclass of
+callbacks.Privmsg for you to start with.  Now let's add a command.
 
-(Note that since the 'arguments' member of that tuple is a single-member tuple,
-you'll have to stick a comma after the first (only) element because otherwise
-Python wouldn't believe it's a tuple.)
+I don't know what you know about random number generators, but the
+short of it is that they start at a certain number (a seed) and they
+continue (via some somewhat complicated/unpredictable algorithm) from
+there.  This seed (and the rest of the sequence, really) is all nice
+and packaged up in Python's random module, the Random object.  So the
+first thing we're going to have to do is give our plugin a Random
+object.
 
-So, again, you choose to make your AnnoyingMimic less annoying -- really, you
-decide to make it not annoying at all by making it only mimic people who ask to
-be repeated.  You want to make a class that has an "echo" command that repeats
-the message to those who ask it.  You want people to be able to tell the bot,
-"echo The quick brown fox jumps over the lazy dog!" and have the bot say right
-back, "The quick brown fox jumps over the lazy dog!".  That's easy!  Here's the
-code:
+Normally, when we want to give instances of a class an object, we'll
+do so in the __init__ method.  And that works great for plugins, too.
+The one thing you have to be careful of is that you call the
+superclass __init__ method at the end of your own __init__.  So to add
+this random.Random object to our plugin, we can replace the "pass"
+statement with this:
 
-[code]
-reply = callbacks.reply
+    def __init__(self):
+        self.rng = random.Random()
+        callbacks.Privmsg.__init__(self)
 
-class Echo(callbacks.Privmsg):
-    def echo(self, irc, msg, args):
-        "<text>"
-        text = self.getArgs(args)
-        self.reply(text)
-[/code]
+(rng is an abbreviation for "random number generator," in case you
+were curious)
 
-So that seemed pretty simple there, too.  Let's explain what's going on:
+Do be careful not to give your __init__ any arguments (other than
+self, of course).  There's no way anything will ever get to them!  If
+you have some sort of initial values you need to get to your plugin
+before it can do anything interesting, add a command that gets those
+values.  By convention, those commands begin with "start" -- check out
+the Relay and Enforcer plugins for examples of such commands.
 
-callbacks.Privmsg is an easy way to create "commands" which are simple named
-functions that use a universal scheme for delimiting arguments -- basically,
-they'll all act the same in how they get their arguments.  callbacks.Privmsg
-takes a Privmsg (it has a doPrivmsg function and inherits from
-irclib.IrcCallback) and first determines if it's addressed to the bot -- the
-message must either be PRIVMSGed directly to the bot, or PRIVMSGed over a
-channel the bot is in and either start with a character in conf.prefixchars or
-start with the bot's name.  Don't worry, callbacks.Privmsg almost always does
-The Right Thing.  After deciding that the bot has been addressed,
-callbacks.Privmsg then parses the text of the message into a list of strings.
-Here are a few examples of what it would do:
+There's an easier way to get our plugin to have its own rng than to
+define an __init__.  Plugins are unique among classes because we're
+always certain that there will only be one instance -- supybot doesn't
+allow us to load multiple instances of a single plugin.  So instead of
+adding the rng in __init__, we can just add it as a attribute to the
+class itself.  Like so (replacing the "pass" statement again):
 
-"""arg1 arg2 arg3"""
-['arg1', 'arg2', 'arg3']
+    rng = random.Random()
 
-"""'arg1 arg2 arg3' arg4""" # Note the quotes.
-['arg1 arg2 arg3', 'arg4']
+And we save two lines of code and make our code a little more clear :)
 
-getArgs is a function that just a little bit of magic.  It takes an optional
-argument (that defaults to 1) of the number of args needed.  If more than one
-argument is needed, it checks that the proper number of arguments has been
-given, and then returns a tuple of those arguments.  So if you wanted 3 args
-from a message, you'd do something like this:
+Now that we have an RNG, we need some way to get random numbers.  So
+first, we'll add a command that simply gets the next random number and
+gives it back to the user.  It takes no arguments, of course (what
+would you give it?)  Here's the command, and I'll follow that with the
+explanation of what each part means.
 
-(name, oldpassword, newpassword) = self.getArgs(args, 3)
+    def random(self, irc, msg, args):
+        """takes no arguments
 
-See how simple that is?  If getArgs only needs one argument, however, it does
-something a bit magic -- first of all, it doesn't return a tuple, it just
-returns the argument itself.  This makes it so you can type:
+        Returns the next random number generated by the random number
+        generator.
+        """
+        irc.reply(msg, str(self.rng.random()))
 
-text = self.getArgs(args)
+And that's it!  Pretty simple, huh?  Anyway, you're probably wondering
+what all that *means*.  We'll start with the def statement:
 
-Instead of:
+    def random(self, irc, msg, args):
 
-(text,) = self.getArgs(args)
+What that does is define a command "random".  You can call it by
+saying "@random" (or whatever prefix character your specific bot
+uses).  The arguments are a bit less obvious.  Self is self-evident
+(hah!).  Irc is the Irc object passed to the command; Msg is the
+original IrcMsg object.  But you're really not going to have to deal
+with either of these too much (with the exception of calling irc.reply
+or irc.error).  What you're *really* interested in is the args arg.
+That if a list of all the arguments passed to your command, pre-parsed
+and already evaluated (i.e., you never have to worry about nested
+commands, or handling double quoted strings, or splitting on
+whitespace -- the work has already been done for you).  You can read
+about the Irc object in irclib.py (you won't find .reply or .error
+there, though, because you're actually getting an IrcObjectProxy, but
+that's beyond the level we wanna describe here :)).  You can read
+about the msg object in ircmsgs.py.  But again, aside from calling
+irc.reply or irc.error, you'll very rarely be using these objects.
 
-It just makes things easier that way.  Also, however, if *only* one argument
-is needed, it does something a bit more magical.  A lot of commands take only
-one argument and then do some processing on it -- for example, look at the
-privmsgs module, the "FunCommands" callback, at the commands 'leet' and
-'rot13'.  This is all great, but because of the way args are normally parsed
-by callbacks.Privmsg, you'd have to always enclose that argument in quotes.
-For instance, you'd have to type this:
+(In case you're curious, the answer is yes, you *must* name your
+arguments (self, irc, msg, args).  The names of those arguments is one
+of the ways that supybot uses to determine which methods in a plugin
+class are commands and which aren't.  And while we're talking about
+naming restrictions, all your commands should be named in
+all-lowercase with no underscores.  Before calling a command, supybot
+always converts the command name to lowercase and removes all dashes
+and underscores.  On the other hand, you now know an easy way to make
+sure a method is never called (even if its arguments are (self, irc,
+msg, args), however unlikely that may be).  Just name it with an
+underscore or an uppercase letter in it :))
 
-bot: leet "The quick brown fox jumps over the lazy dog."
+You'll also note that the docstring is odd.  The wonderful thing about
+the supybot framework is that it's easy to write complete commands
+with help and everything: the docstring *IS* the help!  Given the
+docstring, this is what a supybot does:
 
-From experience, I can tell you that most people will forget the quotes almost
-every time they talk to the bot.  Since having only one argument is such a
-command case, getArgs special-cases it to string.join all the args with spaces.
-Now you can say:
+    <angryman> jemfinch: random takes no arguments (for more help 
+               use the morehelp command)
+    <jemfinch> $morehelp random
+    <angryman> jemfinch: Returns the next random number from the 
+               current random number generator. 
 
-bot: leet The quick brown fox jumps over the lazy dog.
+Help <command> replies with the first line of the command's docstring;
+there should be a blank line following, and then morehelp <command>
+will reply with the remainder of the docstring.  So that explains the
+docstring.  Now on to the actual body of the function:
 
-And it'll return the same exact thing as above.  Of course, the original still
-works, but since people forget the quotes so often, it's good to go easy on
-them :)  We're actually using that behavior with our callback above: by using
-getArgs, now our users can say:
+    irc.reply(msg, str(self.rng.random()))
 
-echo foo bar baz
+Irc.reply takes two arguments, an IrcMsg (like the one passed into
+your function) and a string.  The IrcMsg is used to determine who the
+reply should go to and whether or not it should be sent in private
+message (commands sent in private are replied to in private).  The
+string is the reply to be sent.  Don't worry about length restrictions
+or anything -- if the string you want to send is too big for an IRC
+message (and oftentimes that turns out to be the case :)) the supybot
+framework handles that entirely transparently to you.  Do make sure,
+however, that you give irc.reply a string.  It doesn't take anything
+else (sometimes even unicode fails!).  That's why we have
+"str(self.rnd.random())" instead of simply "self.rng.random()" -- we
+had to give irc.reply a string.
 
-Instead of always having to say:
+Anyway, now that we have an RNG, we have a need for seed!  Of course,
+Python gives us a good seed already (it uses the current time as a
+seed if we don't give it one) but users might want to be able to
+repeat "random" sequences, so letting them set the seed is a good
+thing.  So we'll add a seed command to give the RNG a specific seed:
 
-echo "foo bar baz"
+    def seed(self, irc, msg, args):
+        """<seed>
 
-Anyway, you're probably wondering how that callback works.  It inherits from
-callbacks.Privmsg, which as I mentioned before, has a doPrivmsg callback.  So
-when callbacks.Privmsg receives a PRIVMSG command, it parses it and then tries
-to find if it has a method by the same name as the command -- if it does, and
-that method looks like this:
+        Sets the seed of the random number generator.  <seed> must be 
+        an int or a long.
+        """
+        seed = privmsgs.getArgs(args)
+        try:
+            seed = long(seed)
+        except ValueError:
+            # It wasn't a valid long!
+            irc.error(msg, '<seed> must be a valid int or long.')
+            return
+        self.rng.seed(seed)
+        irc.reply(msg, conf.replySuccess)
 
-def method(self, irc, msg, args):
-    ...
+So this one's a bit more complicated.  But it's still pretty simple.
+The method name is "seed" so that'll be the command name.  The
+arguments are the same, the docstring is of the same form, so we don't
+need to go over that again.  The body of the function, however, is
+significantly different.
 
-Then it calls that method with the appropriate arguments.  Easy, huh?  Don't
-worry, it gets even cooler :)  So you write a command like echo and you want
-to provide the user with some help using it.  You were probably wondering why
-the docstring to that "echo" method above looked so weird, but now you know:
-it *is* the help for the command!  callbacks.Privmsg has its own command, help,
-which will return the *docstring* for any other command!  So it's cake to write
-your own commands and help.
+privmsgs.getArgs is a function you're going to be seeing a lot of when
+you write plugins for supybot.  What it does is basically give you the
+right number of arguments for your comamnd.  In this case, we want one
+argument.  But we might have been given any number of arguments by the
+user.  So privmsgs.getArgs joins them appropriately, leaving us with
+one single "seed" argument (by default, it returns one argument as a
+single value; more arguments are returned in a tuple/list).  Yes, we
+could've just said "seed = args[0]" and gotten the first argument, but
+what if the user didn't pass us an argument at all?  Then we've got to
+catch the IndexError from args[0] and complain to the user about it.
+Privmsgs.getArgs, on the other hand, handles all that for us.  If the
+user didn't give us enough arguments, it'll reply with the help string
+for the command, thus saving us the effort.
 
-(This, of course, means that if you *don't* write a help string for your
-command, you have no excuse and are just plain lazy.  So write help strings!)
+So we have the seed from privmsgs.getArgs.  But it's a string.  The
+next three lines is pretty darn obvious: we're just converting the
+string to a int of some sort.  But if it's not, that's when we're
+going to call irc.error.  It has the same interface as we saw before
+in irc.reply, but it makes sure to remind the user that an error has
+been encountered (currently, that means it puts "Error: " at the
+beginning of the message).  After erroring, we return.  It's important
+to remember this return here; otherwise, we'll just keep going down
+through the function and try to use this "seed" variable that never
+got assigned.  A good general rule of thumb is that any time you use
+irc.error, you'll want to return immediately afterwards.
 
-There's a bit more I could tutorialize on, but it would be more esoteric, and
-better a reference material than as a tutorial.  I'll put that in another file.
+Then we set the seed -- that's a simple function on our rng object.
+Assuming that succeeds (and doesn't raise an exception, which it
+shouldn't, because we already read the documentation and know that it
+should work) we reply to say that everything worked fine.  That's what
+conf.replySuccess says.  By default, it has the very dry (and
+appropriately robot-like) "The operation succeeded." but you're
+perfectly welcome to customize it yourself -- conf.py was written to
+be modified!
+
+So that's a bit more complicated command.  But we still haven't dealt
+with multiple arguments.  Let's do that next.
+
+So these random numbers are useful, but they're not the kind of random
+numbers we usually want in Real Life.  In Real Life, we like to tell
+someone to "pick a number between 1 and 10."  So let's write a
+function that does that.  Of course, we won't hardcode the 1 or the 10
+into the function, but we'll take them as arguments.  First the
+function:
+
+    def range(self, irc, msg, args):
+        """<start> <end>
+
+        Returns a number between <start> and <end>, inclusive (i.e., the number
+        can be either of the endpoints.
+        """
+        (start, end) = privmsgs.getArgs(args, needed=2)
+        try:
+            end = int(end)
+            start = int(start)
+        except ValueError:
+            irc.error(msg, '<start> and <end> must both be integers.')
+            return
+        # .randrange() doesn't include the endpoint, so we use end+1.
+        irc.reply(msg, str(self.rng.randrange(start, end+1)))
+
+Pretty simple.  This is becoming old hat by now.  The only new thing
+here is the call to privmsgs.getArgs.  We have to make sure, since we
+want two values, to pass a keyword parameter "needed" into
+privmsgs.getArgs.  Of course, privmsgs.getArgs handles all the
+checking for missing arguments and whatnot so we don't have to.
+
+The Random object we're using offers us a "sample" method that takes a
+sequence and a number (we'll call it N) and returns a list of N items
+taken randomly from the sequence.  So I'll show you an example that
+takes advantage of multiple arguments but doesn't use
+privmsgs.getArgs (and thus has to handle its own errors if the number
+of arguments isn't right).  Here's the code:
+
+    def sample(self, irc, msg, args):
+        """<number of items> [<text> ...]
+
+        Returns a sample of the <number of items> taken from the remaining
+        arguments.  Obviously <number of items> must be less than the number
+        of arguments given.
+        """
+        try:
+            n = int(args.pop(0))
+        except IndexError: # raised by .pop(0)
+            raise callbacks.ArgumentError
+        except ValueError:
+            irc.error(msg, '<number of items> must be an integer.')
+            return
+        if n > len(args):
+            irc.error(msg, '<number of items> must be less than the number '
+                           'of arguments.')
+            return
+        sample = self.rng.sample(args, n)
+        irc.reply(msg, utils.commaAndify(map(repr, sample)))
+
+Most everything here is familiar.  The difference between this and the
+previous examples is that we're dealing with args directly, rather
+than through getArgs.  Since we already have the arguments in a list,
+it doesn't make any sense to have privmsgs.getArgs smush them all
+together into a big long string that we'll just have to re-split.  But
+we still want the nice error handling of privmsgs.getArgs.  So what do
+we do?  We raise callbacks.ArgumentError!  That's the secret juju
+that privmsgs.getArgs is doing; now we're just doing it ourself.
+Someone up our callchain knows how to handle it so a neat error
+message is returned.  So in this function, if .pop(0) fails, we
+weren't given enough arguments and thus need to tell the user how to
+call us.
+
+So we have the args, we have the number, we do a simple call to
+random.sample and then we do this funky utils.commaAndify to it.
+Yeah, so I was running low on useful names :)  Anyway, what it does is
+take a list of strings and return a string with them joined by a
+comma, the last one being joined with a comma and "and".  So the list
+['foo', 'bar', 'baz'] becomes "foo, bar, and baz".  It's pretty useful
+for showing the user lists in a useful form.  We map the strings with
+repr() first just to surround them with quotes.
+
+So we have one more example.  Yes, I hear your groans, but it's
+pedagogically useful :)  This time we're going to write a command that
+makes the bot roll a die.  It'll take one argument (the number of
+sides on the die) and will respond with the equivalent of "/me rolls a
+__" where __ is the number the bot rolled.  So here's the code:
+
+    def diceroll(self, irc, msg, args):
+        """[<number of sides>]
+
+        Rolls a die with <number of sides> sides.  The default number
+        of sides is 6.
+        """
+        try:
+            n = privmsgs.getArgs(args, needed=0, optional=1)
+            if not n:
+                n = 6
+            n = int(n)
+        except ValueError:
+            irc.error(msg, 'Dice have integer numbers of sides.  Use one.')
+            return
+        s = 'rolls a %s' % self.rng.randrange(1, n+1)
+        irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), s))
+        raise callbacks.CannotNest
+
+There's a lot of stuff you haven't seen before in there.  The most
+important, though, is the first thing you'll notice that's different:
+the privmsg.getArgs call.  Here we're offering a default argument in
+case the user is too lazy to supply one (or just wants a nice,
+standard six-sided die :))  Privmsgs.getArgs supports that; we'll just
+tell it that we don't *need* any arguments (via needed=0) and that we
+*might like* one argument (optional=1).  If the user provides an
+argument, we'll get it -- if they don't, we'll just get an empty
+string.  Hence the "if not n: n = 6", where we provide the default.
+
+Later, though, you'll see something other than irc.reply.  This is
+irc.queueMsg, the general interface for sending messages to the
+server.  It's what irc.reply is using under the covers.  It takes an
+IrcMsg object.  Fortunately, that's exactly what's returned by
+ircmsgs.action.  An action message, just in case you don't know, is a
+/me kind of message.  ircmsgs.action is a helper function that takes a
+target (a place to send the message, either a channel or a person) and
+a payload (the thing to /me) and returns the appropriate IrcMsg
+object.  ircutils.replyTo simply takes an IrcMsg and returns where we
+should reply to; if the message was originally sent to a channel,
+we'll reply to there, if it was originally sent to us privately, we'll
+reply in private.
+
+At the end, you might be surprised by the "raise
+callbacks.CannotNest".  That's used simply because at the moment you
+can't nest actions (just like  you can't nest anything that doesn't go
+through irc.reply).  That raise just makes sure the user finds this
+out if he tries to nest this like "@rot13 [diceroll]".
+
+So that's our plugin.  5 commands, each building in complexity.  You
+should now be able to write most anything you want to do in Supybot.
+Except regexp-based plugins, but that's a story for another day (and
+those aren't nearly as cool as these command-based callbacks anyway
+:)).  Now we need to flesh it out to make it a full-fledged plugin.
+
+Let's take a look at that configure function newplugin.py made for
+us.  Here it is, in case you've forgotten:
+
+def configure(onStart, afterConnect, advanced):
+    # This will be called by setup.py to configure this module.  onStart and
+    # afterConnect are both lists.  Append to onStart the commands you would
+    # like to be run when the bot is started; append to afterConnect the
+    # commands you would like to be run when the bot has finished connecting.
+    from questions import expect, anything, something, yn
+    onStart.append('load Random')
+
+You remember when you first started running supybot and ran
+scripts/setup.py and it asked you all those questions?  Well, now's
+your chance to ask other users some questions of your own.  In our
+case, with our Random plugin, it might be nice to offer the user the
+ability to specify a seed to use whenever the plugin is loaded.  So
+let's ask him if he wants to do that, and if so, let's ask him what
+the seed should be.
+
+def configure(onStart, afterConnect, advanced):
+    # This will be called by setup.py to configure this module.  onStart and
+    # afterConnect are both lists.  Append to onStart the commands you would
+    # like to be run when the bot is started; append to afterConnect the
+    # commands you would like to be run when the bot has finished connecting.
+    from questions import expect, anything, something, yn
+    onStart.append('load Random')
+    if yn('Do you want to specify a seed to be used for the RNG')=='y':
+        seed = something('What seed?  It must be an int or long.')
+        while not seed.isdigit():
+            print 'That\'s not a valid seed.'
+            seed = something('What seed?')
+        onStart.append('seed %s' % seed)
+
+As you can see, what the questions module does is fairly self-evident:
+yn returns either 'y' or 'n'; something returns *something* (but
+nothing; for nothing, you'd want anything).  So basically we ask some
+questions until we get a good seed.  Then we do this
+"onStart.append('seed %s' % seed)" doohickey.  onStart is a list of
+the commands to run when the bot starts; we're just throwing our
+little piece into it.  These commands will then be written into the
+template scripts/setup.py creates for the bot.
+
+Now the only thing missing from our plugin is an example.  Here, I'll
+make one really quickly:
+
+    <jemfinch> $list Random
+    <angryman> diceroll, random, range, sample, seed
+    <jemfinch> $random
+    <angryman> 0.478084042957
+    <jemfinch> $random
+    <angryman> 0.960634332773
+    <jemfinch> $seed 50
+    <angryman> The operation succeeded.
+    <jemfinch> $random
+    <angryman> 0.497536568759
+    <jemfinch> $seed 50
+    <angryman> The operation succeeded.
+    <jemfinch> $random
+    <angryman> 0.497536568759
+    <jemfinch> $range 1 10
+    <angryman> 3
+    <jemfinch> $range 1 10000000000000
+    <angryman> 6374111614437
+    <jemfinch> $diceroll
+    * angryman rolls a 2
+    <jemfinch> $diceroll
+    * angryman rolls a 3
+    <jemfinch> $diceroll 100
+    * angryman rolls a 97
+ 
+So we'll throw this into our example string (where the template says
+to put it) and then we're done!  We've written our own plugin from
+scratch (well, from the boilerplate that we got from
+scripts/newplugin.py :)) and survived!  Now go write more plugins for
+supybot, and send them to me so I can use them too :)
