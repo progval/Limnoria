@@ -24,6 +24,9 @@
 	determines what file the bot should write its PID to.  The
 	default is not to write the PID file at all.
 
+	* Added a comma argument to utils.commaAndify, which specifies the
+	character to use in place of the comma.
+
 	
 2004-04-16  Jeremy Fincher  <jemfinch@supybot.org>
 	
