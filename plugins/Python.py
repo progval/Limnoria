@@ -119,8 +119,11 @@ class Python(callbacks.Privmsg):
                         if info[0] is not None:
                             info[0].close()
                     except ImportError:
-                        irc.error(msg, 'No such module %s exists.' % name)
-                        return
+                        if parts == ['os', 'path']:
+                            newmodule = os.path
+                        else:
+                            irc.error(msg, 'No such module %s exists.' % name)
+                            return
                 if hasattr(newmodule, functionName):
                     f = getattr(newmodule, functionName)
                     if hasattr(f, '__doc__'):
