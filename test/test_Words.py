@@ -54,6 +54,7 @@ class WordsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('guess hello')
         self.assertNotError('hangman')
         self.assertNotError('guess j')
+        self.assertNotError('g')
         self.assertNotError('letters')
 
 

@@ -65,7 +65,9 @@ conf.registerChannelValue(conf.supybot.plugins.Words.hangman, 'prefix',
 conf.registerChannelValue(conf.supybot.plugins.Words.hangman, 'timeout',
     registry.Integer(300, """Determines how long a game must be idle before it
     will be replaced with a new game."""))
-
+conf.registerChannelValue(conf.supybot.plugins.Words.hangman, 'letterCommands',
+    registry.Boolean(True, """Determines whether the bot will provide a command
+    for each letter while a game is in progress in a channel."""))
 
 def wordsFile():
     return file(conf.supybot.plugins.Words.file())
@@ -180,6 +182,15 @@ class Words(callbacks.Privmsg):
     ###
     # HANGMAN
     ###
+    def tokenizedCommand(self, irc, msg, tokens):
+        channel = msg.args[0]
+        if ircutils.isChannel(channel):
+            if channel in self.games:
+                if len(tokens) == 1:
+                    c = tokens[0]
+                    if c.isalpha():
+                        self.guess(irc, msg, [c])
+            
     games = ircutils.IrcDict()
     validLetters = list(string.ascii_lowercase)
 
