@@ -385,7 +385,7 @@ class Owner(callbacks.Plugin):
                             'hostmask to id mapping')))
             ircdb.users._hostmaskCache.clear()
             L.append(format('linecache line cache flushed: %s cleared.',
-                            (len(linecache.cache, 'line'))))
+                            (len(linecache.cache), 'line'))))
             linecache.clearcache()
             sys.exc_clear()
         collected = world.upkeep()
