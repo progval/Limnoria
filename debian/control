@@ -2,7 +2,7 @@ Source: supybot
 Section: net
 Priority: optional
 Maintainer: James Vega <vega.james@gmail.com>
-Build-Depends: debhelper (>= 4.1.67), python (>= 2.3), python-dev (>= 2.3), docbook-to-man (>= 2.0.0)
+Build-Depends: debhelper (>= 4.1.67), cdbs, python (>= 2.3), python-dev (>= 2.3), docbook-to-man (>= 2.0.0)
 Standards-Version: 3.6.1.0
 
 Package: supybot
@@ -17,3 +17,5 @@ Description: robust and user friendly Python IRC bot
  flexible and powerful ACL system for controlling access to
  commands, as well as more than 50 builtin plugins providing
  around 400 actual commands.
+ .
+  Homepage: http://supybot.sourceforge.net/

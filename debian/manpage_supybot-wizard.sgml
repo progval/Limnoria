@@ -121,11 +121,11 @@ manpage.1: manpage.sgml
     <para>This manual page was originally written by &dhusername; &dhemail; for
       the &debian; system (but may be used by others).  Permission is
       granted to copy, distribute and/or modify this document under
-      the terms of the supybot license, a BSD-style license. 
+      the terms of the Supybot license, a BSD-style license. 
     </para>
         <para>
-          On Debian systems with supybot installed, the complete text
-          of the supybot license can be found in /usr/share/doc/supybot/LICENSE
+          On Debian systems with Supybot installed, the complete text
+          of the Supybot license can be found in /usr/share/doc/supybot/LICENSE
         </para>
 
   </refsect1>

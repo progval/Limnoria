@@ -57,7 +57,7 @@ manpage.1: manpage.sgml
   <refnamediv>
     <refname>&dhpackage;</refname>
 
-    <refpurpose>Adds a user to a supybot configuration file</refpurpose>
+    <refpurpose>Adds a user to a Supybot configuration file</refpurpose>
   </refnamediv>
   <refsynopsisdiv>
     <cmdsynopsis>
@@ -70,7 +70,7 @@ manpage.1: manpage.sgml
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><command>&dhpackage;</command> adds a user to a supybot
+    <para><command>&dhpackage;</command> adds a user to a Supybot
      configuration file.</para>
 
   </refsect1>
@@ -153,10 +153,10 @@ manpage.1: manpage.sgml
     <para>This manual page was originally written by &dhusername; &dhemail; for
       the &debian; system (but may be used by others).  Permission is
       granted to copy, distribute and/or modify this document under
-      the terms of the supybot license, a BSD-style license. 
+      the terms of the Supybot license, a BSD-style license. 
     </para>
 	<para>
-	  On Debian systems with supybot installed, the complete text
+	  On Debian systems with Supybot installed, the complete text
           of the supybot license can be found in /usr/share/doc/supybot/LICENSE
 	</para>
 

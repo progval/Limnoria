@@ -5,7 +5,7 @@ supybot (0.79.9-1) unstable; urgency=high
   * Urgency high to get the RC fix into Sarge (hopefully)
   * debian/control:
     + Downgrade Recommends: python-sqlite to Suggests: python-sqlite
-    + Update Build-Depends: cdbs, debhelper (>= 4.1.0)
+    + Update Build-Depends: cdbs, debhelper (>= 4.1.67)
     + Bump Standard-Version to 3.6.1.0, no changes necessary
   * Convert to cdbs
 
