@@ -196,7 +196,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
 
     def doNick(self, irc, msg):
         if msg.nick == irc.nick or msg.args[0] == irc.nick:
-            del self.pendingNickChanges[irc]
+            try:
+                del self.pendingNickChanges[irc]
+            except KeyError:
+                self.log.debug('Got NICK without Admin.nick being called.')
             
     def nick(self, irc, msg, args):
         """<nick>
