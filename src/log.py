@@ -217,15 +217,16 @@ class MetaFirewall(type):
 
 
 class LogLevel(registry.Value):
+    """Invalid log level.  Value must be either DEBUG, INFO, WARNING, ERROR,
+    or CRITICAL."""
     def set(self, s):
         s = s.upper()
         try:
-            self.value = getattr(logging, s)
+            self.setValue(getattr(logging, s))
             _logger.setLevel(self.value) # _logger defined later.
         except AttributeError:
-            s = 'Invalid log level: should be one of ' \
-                'DEBUG, INFO, WARNING, ERROR, or CRITICAL.'
-            raise registry.InvalidRegistryValue, s
+            self.error()
+
     def __str__(self):
         return logging.getLevelName(self.value)
     
