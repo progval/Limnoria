@@ -5,14 +5,37 @@ import supybot
 from fix import *
 
 import os
+import sys
 import pydoc
+import pprint
 import socket
 import textwrap
 
+import ansi
 import conf
+import debug
 import utils
 import ircutils
+
+debug.minimumDebugPriority = 'high'
+
+useColor = False
+
+def wrapWithBold(f):
+    def ff(*args, **kwargs):
+        if useColor:
+            sys.stdout.write(ansi.BOLD)
+        ret = f(*args, **kwargs)
+        if useColor:
+            print ansi.RESET
+        return ret
+    return ff
+
 from questions import yn, anything, something, expect
+yn = wrapWithBold(yn)
+expect = wrapWithBold(expect)
+anything = wrapWithBold(anything)
+something = wrapWithBold(something)
 
 def getPlugins():
     filenames = []
@@ -65,6 +88,7 @@ def configurePlugin(module, onStart, afterConnect, advanced):
     if hasattr(module, 'configure'):
         myPrint("""Beginning configuration for %s..."""%module.Class.__name__)
         module.configure(onStart, afterConnect, advanced)
+        print # Blank line :)
         myPrint("""Done!""")
     else:
         onStart.append('load %s' % name)
@@ -83,8 +107,9 @@ def getDirectoryName(default):
                        '[defaults to %s]' % os.path.join(os.curdir, default))
         if not dir:
             dir = default
+        dir = os.path.abspath(dir)
         try:
-            os.mkdir(dir)
+            os.makedirs(dir)
             done = True
         except OSError, e:
             if e.args[0] != 17: # File exists.
@@ -120,12 +145,25 @@ if __name__ == '__main__':
     server = None
     onStart = []
     afterConnect = []
+    debugVariables = {}
     configVariables = {}
     
     myPrint("""This is a wizard to help you start running supybot.  What it
     will do is create a single Python file whose effect will be that of
     starting an IRC bot with the options you select here.  So hold on tight
     and be ready to be interrogated :)""")
+
+    myPrint("""First of all, we can bold the questions you're asked so you can
+    easily distinguish the mostly useless blather (like this) from the
+    questions that you actually have to answer.""")
+    if yn('Would you like to try this bolding?') == 'y':
+        useColor = True
+        if yn('Do you see this in bold?') == 'n':
+            myPrint("""Sorry, it looks like your terminal isn't ANSI compliant.
+            Try again some other day, on some other terminal :)""")
+            useColor = False
+        else:
+            myPrint("""Great!""")
 
     ###
     # Preliminary questions.
@@ -396,6 +434,40 @@ if __name__ == '__main__':
     if yn('Would you like to enable the pipe syntax for nesting?') == 'y':
         configVariables['enablePipeSyntax'] = True
 
+    ###
+    # debug variables.
+    ###
+
+    # debug.stderr
+    myPrint("""By default, your bot will log not only to files in the logs
+    directory you gave it, but also to stderr.  We find this useful for
+    debugging, and also just for the pretty output (it's colored!)""")
+    if yn('Would you like to turn off this logging to stderr?') == 'y':
+        debugVariables['stderr'] = False
+    else:
+        # debug.colorterm
+        myPrint("""Some terminals may not be able to display the pretty colors
+        logged to stderr.  By default, though, we turn the colors off for
+        Windows machines and leave it on for *nix machines.""")
+        if yn('Would you like to turn this colorization off?') == 'y':
+            debugVariables['colorterm'] = False
+
+    # debug.minimumDebugPriority
+    myPrint("""Your bot can handle debug messages at four priorities, 'high,'
+    'normal,' 'low,' and 'verbose,' in decreasing order of priority.  By
+    default, your bot will log all of these priorities.  You can, however,
+    specify that he only log messages above a certain priority level.  Of
+    course, all error messages will still be logged.""")
+    priority = anything('What would you like the minimum priority to be?  '
+                        'Just press enter to accept the default.')
+    while priority and priority not in ['verbose', 'low', 'normal', 'high']:
+        myPrint("""That's not a valid priority.  Valid priorities include
+        'verbose,' 'low,' 'normal,' and 'high,' not including the quotes or
+        the commas.""")
+        priority = anything('What would you like the minimum priority to be?  '
+                            'Just press enter to accept the default.')
+    debugVariables['minimumDebugPriority'] = priority
+
     if advanced:
         myPrint("""Here's some stuff you only get to choose if you're an
         advanced user :)""")
@@ -491,15 +563,18 @@ if __name__ == '__main__':
     template = template.replace('"%%server%%"', repr(server))
     template = template.replace('"%%onStart%%"', format(onStart))
     template = template.replace('"%%afterConnect%%"', format(afterConnect))
+    template = template.replace('"%%debugVariables%%"', format(debugVariables))
     template = template.replace('"%%configVariables%%"',
                                 format(configVariables))
+    template = template.replace('/usr/bin/env python',
+                                os.path.normpath(sys.executable))
 
     filename = '%s-botscript.py' % nick
     fd = file(filename, 'w')
     fd.write(template)
     fd.close()
 
-    if not sys.platform.startswith('win'):
+    if os.name == 'posix':
         os.chmod(filename, 0755)
         
     myPrint("""All done!  Your new bot script is %s.  If you're running a *nix,
