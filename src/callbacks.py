@@ -342,6 +342,7 @@ class IrcObjectProxy:
                         #debug.printf('Being prevented with chancap')
                         debug.msg('Preventing %s from calling %s' % \
                                   (self.msg.nick, name), 'normal')
+                        self.error(self.msg, conf.replyNoCapability %^name)
                         return
                 command = getattr(cb, name)
                 if cb.threaded:
