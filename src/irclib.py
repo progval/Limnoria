@@ -777,7 +777,7 @@ class Irc(IrcCommandDispatcher):
                      channel, self.network, elapsed)
             popped = True
         if popped and not self.startedSync:
-            log.info('Finished syncing all channels on %s.', self.network)
+            log.info('All channels synced on %s.', self.network)
 
     def doError(self, msg):
         """Handles ERROR messages."""
