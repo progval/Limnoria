@@ -121,8 +121,9 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
             return
         users = []
         for (abbreviation, otherIrc) in self.ircs.iteritems():
-            Channel = otherIrc.state.channels[channel]
-            users.append('%s: %s' % (abbreviation, ', '.join(Channel.users)))
+            if abbreviation != self.abbreviations[irc]:
+                Channel = otherIrc.state.channels[channel]
+                users.append('%s: %s'%(abbreviation,', '.join(Channel.users)))
         irc.reply(msg, '; '.join(users))
         
             
