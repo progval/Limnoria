@@ -164,7 +164,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
         set.update(words)
         self.words.setValue(set)
         irc.replySuccess()
-    add = wrap(add, [many('text')])
+    add = wrap(add, [many('something')])
 
     def remove(self, irc, msg, args, words):
         """<word> [<word> ...]
@@ -176,7 +176,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
             set.discard(word)
         self.words.setValue(set)
         irc.replySuccess()
-    remove = wrap(remove, [many('text')])
+    remove = wrap(remove, [many('something')])
 
 
 Class = BadWords
