@@ -1,3 +1,6 @@
+	* Added Weather.wunder, which uses wunderground.com to report the
+	current weather status.
+
 	* Added an Infobot plugin, to emulate Infobot.
 
 	* Changed supybot.defaultCapabilities to be a space-separated
