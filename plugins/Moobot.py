@@ -42,7 +42,8 @@ from baseplugin import *
 import re
 import base64
 
-smport ircmsgs
+import utils
+import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
