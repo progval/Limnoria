@@ -45,8 +45,25 @@ urlRe = re.compile(r"(\w+://[^\])>\s]+)", re.I)
 
 REFUSED = 'Connection refused.'
 TIMED_OUT = 'Connection timed out.'
+UNKNOWN_HOST = 'Unknown host.'
 RESET_BY_PEER = 'Connection reset by peer.'
 
+def strError(e):
+    try:
+        n = e.args[0]
+    except Exception:
+        return str(e)
+    if n == 111:
+        return REFUSED
+    elif n in (110, 10060):
+        return TIMED_OUT
+    elif n == 104:
+        return RESET_BY_PEER
+    elif n == 8:
+        return UNKNOWN_HOST
+    else:
+        return str(e)
+    
 def getUrlFd(url):
     """Gets a file-like object for a url."""
     try:
@@ -55,15 +72,10 @@ def getUrlFd(url):
     except socket.timeout, e:
         raise WebError, TIMED_OUT
     except socket.error, e:
-        if e.args[0] == 111:
-            raise WebError, REFUSED
-        elif e.args[0] in (110, 10060):
-            raise WebError, TIMED_OUT
-        elif e.args[0] == 104:
-            raise WebError, RESET_BY_PEER
-        else:
-            raise WebError, str(e)
-    except (urllib2.HTTPError, urllib2.URLError), e:
+        raise WebError, strError(e)
+    except urllib2.URLError, e:
+        raise WebError, strError(e.reason)
+    except urllib2.HTTPError, e:
         raise WebError, str(e)
     
 def getUrl(url, size=None):
