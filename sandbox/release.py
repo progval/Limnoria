@@ -89,7 +89,7 @@ if __name__ == '__main__':
     system('scp docs.tar.bz2 %s@supybot.sf.net:/home/groups/s/su/supybot'
            '/htdocs/docs/.' % u)
     system('ssh %s@supybot.sf.net "cd /home/groups/s/su/supybot/htdocs/docs; '
-           'tar jxf docs.tar.bz2"')
+           'tar jxf docs.tar.bz2"' % u)
 
     print 'Cleaning up generated documentation.'
     shutil.rmtree('docs/plugins')
