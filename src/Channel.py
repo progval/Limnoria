@@ -271,9 +271,8 @@ class Channel(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        if nick not in irc.state.channels[channel].users:
-            irc.error('%s isn\'t in %s.' % (nick, channel))
-            return
+        if ircutils.strEqual(nick, irc.nick):
+            irc.error('I cowardly refuse to kick myself.', Raise=True)
         if not reason:
             reason = msg.nick
         kicklen = irc.state.supported.get('kicklen', sys.maxint)
