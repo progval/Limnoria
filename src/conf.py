@@ -349,7 +349,7 @@ supybot.register('pingInterval', registry.Integer(120, """Determines the
 number of seconds between sending pings to the server, if pings are being sent
 to the server."""))
 
-supybot.register('upkeepInterval', registry.PositiveInteger(300, """Determines
+supybot.register('upkeepInterval', registry.PositiveInteger(3600, """Determines
 the number of seconds between running the upkeep function that flushes
 (commits) open databases, collects garbage, and records some useful statistics
 at the debugging level."""))
