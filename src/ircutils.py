@@ -416,8 +416,6 @@ class FormatParser(object):
             context.bg = self.getInt()
 
 def wrap(s, length):
-    if length < 100:
-        raise ValueError, 'Use ircutils.wrap with a length greater than 100.'
     processed = []
     chunks = textwrap.wrap(s, length)
     context = None
