@@ -102,10 +102,11 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
             id = int(cursor.fetchone()[0])
             cursor.execute("""INSERT INTO follows VALUES (NULL, %s, %s)""",
                            id, follower)
-        cursor.execute("""INSERT INTO pairs VALUES (NULL, %s, %s, 0)""",
-                       second, follower)
-        cursor.execute("""SELECT id FROM pairs
-                          WHERE first=%s AND second=%s""", second, follower)
+        if not isFirst: # i.e., if the loop iterated at all.
+            cursor.execute("""INSERT INTO pairs VALUES (NULL, %s, %s, 0)""",
+                           second, follower)
+            cursor.execute("""SELECT id FROM pairs
+                              WHERE first=%s AND second=%s""", second,follower)
         id = int(cursor.fetchone()[0])
         cursor.execute("""INSERT INTO follows VALUES (NULL, %s, NULL)""", id)
         db.commit()
