@@ -211,7 +211,7 @@ def dqrepr(s):
     """Returns a repr() of s guaranteed to be in double quotes."""
     # The wankers-that-be decided not to use double-quotes anymore in 2.3.
     # return '"' + repr("'\x00" + s)[6:]
-    return '"%s"' % s.encode('unicode_escape').replace('"', '\\"')
+    return '"%s"' % s.encode('string_escape').replace('"', '\\"')
 
 nonEscapedSlashes = re.compile(r'(?<!\\)/')
 def perlReToPythonRe(s):
