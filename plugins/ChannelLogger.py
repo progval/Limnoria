@@ -90,10 +90,11 @@ class ChannelLogger(irclib.IrcCallback):
             if ircutils.isChannel(channel):
                 log = self.getLog(channel)
                 self.timestamp(log)
+                nick = msg.nick or irc.nick
                 if ircmsgs.isAction(msg):
-                    log.write('* %s %s\n' % (msg.nick, ircmsgs.unAction(msg)))
+                    log.write('* %s %s\n' % (nick, ircmsgs.unAction(msg)))
                 else:
-                    log.write('<%s> %s\n' % (msg.nick, text))
+                    log.write('<%s> %s\n' % (nick, text))
 
     def doNotice(self, irc, msg):
         (recipients, text) = msg.args
