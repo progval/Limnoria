@@ -429,12 +429,14 @@ class PrivmsgRegexp(Privmsg):
         Privmsg.__init__(self)
         self.Proxy = IrcObjectProxyRegexp
         self.res = []
+        self.commandArgs = ['self', 'irc', 'msg', 'match']
         #for name, value in self.__class__.__dict__.iteritems():
         for name, value in self.__class__.__dict__.items():
             value = getattr(self, name)
-            if name[0] != '_' and inspect.ismethod(value) and \
-               inspect.getargs(value.im_func.func_code) == \
-               (['self', 'irc', 'msg', 'match'], None, None):
+##             if name[0] != '_' and inspect.ismethod(value) and \
+##                inspect.getargs(value.im_func.func_code) == \
+##                (['self', 'irc', 'msg', 'match'], None, None):
+            if self.isCommand(name):
                 try:
                     r = re.compile(value.__doc__, self.flags)
                     self.res.append((r, value))
