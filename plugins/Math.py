@@ -79,7 +79,7 @@ class Math(callbacks.Privmsg):
             if not ((2 <= frm <= 36) and (2 <= to <= 36)):
                 raise ValueError
         except ValueError:
-            irc.error('Bases must be integers between 2 and 36.')
+            irc.error('Bases must be an integer between 2 and 36.')
             return
         try:
             irc.reply(self._convertBaseToBase(number, to, frm))
