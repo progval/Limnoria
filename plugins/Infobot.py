@@ -494,7 +494,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         return s
 
     _forceRe = re.compile(r'^no[,: -]+', re.I)
-    _karmaRe = re.compile(r'^\S+(?:\+\+|--)(?:\s+)?$')
+    _karmaRe = re.compile(r'^(?:\S+|\(.+\))(?:\+\+|--)(?:\s+)?$')
     def doPrivmsg(self, irc, msg):
         try:
             if ircmsgs.isCtcp(msg):

@@ -131,7 +131,7 @@ class SqliteKarmaDB(object):
         cursor.execute("""SELECT name, added-subtracted FROM karma
                           ORDER BY added-subtracted ASC LIMIT %s""", limit)
         return [(t[0], int(t[1])) for t in cursor.fetchall()]
-        
+
     def rank(self, channel, thing):
         db = self._getDb(channel)
         cursor = db.cursor()
@@ -150,7 +150,7 @@ class SqliteKarmaDB(object):
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM karma""")
         return int(cursor.fetchone()[0])
-    
+
     def increment(self, channel, name):
         db = self._getDb(channel)
         cursor = db.cursor()
@@ -160,7 +160,7 @@ class SqliteKarmaDB(object):
         cursor.execute("""UPDATE karma SET added=added+1
                           WHERE normalized=%s""", normalized)
         db.commit()
-        
+
     def decrement(self, channel, name):
         db = self._getDb(channel)
         cursor = db.cursor()
@@ -194,11 +194,11 @@ class SqliteKarmaDB(object):
         cursor.execute("""UPDATE karma SET subtracted=0, added=0
                           WHERE normalized=%s""", normalized)
         db.commit()
-    
+
 
 def KarmaDB():
     return SqliteKarmaDB()
-        
+
 class Karma(callbacks.PrivmsgCommandAndRegexp):
     addressedRegexps = ['increaseKarma', 'decreaseKarma']
     def __init__(self):
@@ -295,11 +295,11 @@ class Karma(callbacks.PrivmsgCommandAndRegexp):
     clear = privmsgs.checkChannelCapability(clear, 'op')
 
     def increaseKarma(self, irc, msg, match):
-        r"^(\S+)\+\+\s*$"
+        r"^(\S+|\(.+\))\+\+\s*$"
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
-        name = match.group(1)
+        name = match.group(1).strip('()')
         if not self.registryValue('allowSelfRating', msg.args[0]):
             if ircutils.strEqual(name, msg.nick):
                 return
@@ -308,11 +308,11 @@ class Karma(callbacks.PrivmsgCommandAndRegexp):
             irc.replySuccess()
 
     def decreaseKarma(self, irc, msg, match):
-        r"^(\S+)--\s*$"
+        r"^(\S+|\(.+\))--\s*$"
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
-        name = match.group(1)
+        name = match.group(1).strip('()')
         if not self.registryValue('allowSelfRating', msg.args[0]):
             if ircutils.strEqual(name, msg.nick):
                 return

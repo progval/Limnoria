@@ -185,10 +185,14 @@ if sqlite is not None:
             self.assertNotError('karma clear foo')
             self.assertRegexp('karma foo', '0')
             self.assertNotRegexp('karma foo', '1')
-            
+
         def testNoKarmaDunno(self):
             self.assertNotError('load Infobot')
             self.assertNoResponse('foo++')
+
+        def testMultiWordKarma(self):
+            self.assertNoResponse('(foo bar)++', 1)
+            self.assertRegexp('karma "foo bar"', '1')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
