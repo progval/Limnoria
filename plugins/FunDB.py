@@ -36,6 +36,8 @@ Provides fun commands that require a database to operate.
 from baseplugin import *
 
 import sets
+import time
+import atexit
 import string
 import random
 import os.path
@@ -100,6 +102,10 @@ def makeDb(dbfilename, replace=False):
                       city TEXT,
                       state CHAR(2)
                       )""")
+    cursor.execute("""CREATE TABLE uptime (
+                      started INTEGER UNIQUE ON CONFLICT IGNORE,
+                      ended INTEGER
+                      )""")
     db.commit()
     return db
 
@@ -123,10 +129,17 @@ class FunDB(callbacks.Privmsg):
     database-backed commands for crossword puzzle solving, anagram searching,
     larting, excusing, and insulting.
     """
+    _tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self._tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
         self.db = makeDb(dbFilename)
+        cursor = db.cursor()
+        started = int(world.startedAt)
+        cursor.execute("""INSERT INTO uptime VALUES (%s, NULL)""", started)
+        def f():
+            cursor.execute("""UPDATE uptime SET ended=%s WHERE started=%s""",
+                           int(time.time()), started)
+        atexit.register(f)
 
     def die(self):
         self.db.commit()
@@ -144,6 +157,32 @@ class FunDB(callbacks.Privmsg):
                 return ('is', string)
             else:
                 return ('are', '%ss' % string)
+
+    def bestuptime(self, irc, msg, args):
+        """takes no arguments.
+
+        Returns the highest uptimes attained by the bot.
+        """
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT started, ended FROM uptime
+                          WHERE ended NOTNULL
+                          ORDER BY ended-started DESC""")
+        L = []
+        lenSoFar = 0
+        counter = cursor.rowcount
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'I don\'t have enough data to answer that.')
+            return
+        while counter and lenSoFar < 400:
+            (started, ended) = map(int, cursor.fetchone())
+            s = '%s, up for %s' % \
+                (time.strftime(conf.humanTimestampFormat,
+                               time.localtime(ended)),
+                 utils.timeElapsed(ended-started))
+            lenSoFar += len(s)
+            counter -= 1
+            L.append(s)
+        irc.reply(msg, ircutils.privmsgPayload(L, '; '))
 
     def insult(self, irc, msg, args):
         """<nick>
@@ -241,7 +280,7 @@ class FunDB(callbacks.Privmsg):
         cursor = self.db.cursor()
         sql = """INSERT INTO %ss VALUES (NULL, %%s, %%s, 'nobody',
                  0)""" % table
-        cursor.execute(sql, s, msg.prefix)
+        cursor.execute(sql, s, name)
         self.db.commit()
         sql = """SELECT id FROM %ss WHERE %s=%%s""" % (table, table)
         cursor.execute(sql, s)
