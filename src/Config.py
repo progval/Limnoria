@@ -138,7 +138,7 @@ class Config(callbacks.Privmsg):
         try:
             L = self._list(name)
         except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0])
+            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
         if L:
             irc.reply(utils.commaAndify(L))
         else:
@@ -175,7 +175,7 @@ class Config(callbacks.Privmsg):
             else:
                 self._get(irc, msg, args)
         except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0])
+            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
 
     def channel(self, irc, msg, args):
         """[<channel>] <name> [<value>]
@@ -191,7 +191,7 @@ class Config(callbacks.Privmsg):
         try:
             wrapper = getWrapper(args[0])
         except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0])
+            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
         if not wrapper.channelValue:
             irc.error('That configuration variable is not a channel-specific '
                       'configuration variable.')
@@ -248,7 +248,7 @@ class Config(callbacks.Privmsg):
         try:
             wrapper = getWrapper(name)
         except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0])
+            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
         if hasattr(wrapper, 'help'):
             s = wrapper.help
             if not wrapper._private:
@@ -267,7 +267,7 @@ class Config(callbacks.Privmsg):
         try:
             wrapper = getWrapper(name)
         except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0])
+            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
         v = wrapper.__class__(wrapper._default, '')
         irc.reply(str(v))
 
