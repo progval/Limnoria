@@ -145,7 +145,8 @@ class Channel(callbacks.Privmsg):
         if not args:
             args = [msg.nick]
         irc.queueMsg(ircmsgs.ops(channel, args))
-    op = wrap(op, [('checkChannelCapability', 'op'), ('haveOp', 'op someone')])
+    op = wrap(op, [('checkChannelCapability', 'op'),
+                   ('haveOp', 'op someone')], allowExtra=True)
 
     def halfop(self, irc, msg, args, channel):
         """[<channel>]
@@ -159,7 +160,7 @@ class Channel(callbacks.Privmsg):
             args = [msg.nick]
         irc.queueMsg(ircmsgs.halfops(channel, args))
     halfop = wrap(halfop, [('checkChannelCapability', 'halfop'),
-                           ('haveOp', 'halfop someone')])
+                           ('haveOp', 'halfop someone')], allowExtra=True)
 
     def voice(self, irc, msg, args, channel):
         """[<channel>]
@@ -173,7 +174,7 @@ class Channel(callbacks.Privmsg):
             args = [msg.nick]
         irc.queueMsg(ircmsgs.voices(channel, args))
     voice = wrap(voice, [('checkChannelCapability', 'voice'),
-                         ('haveOp', 'voice someone')])
+                         ('haveOp', 'voice someone')], allowExtra=True)
 
     def deop(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
@@ -191,7 +192,7 @@ class Channel(callbacks.Privmsg):
         else:
             irc.queueMsg(ircmsgs.deops(channel, args))
     deop = wrap(deop, [('checkChannelCapability', 'op'),
-                       ('haveOp', 'deop someone')])
+                       ('haveOp', 'deop someone')], allowExtra=True)
 
     def dehalfop(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
@@ -209,7 +210,7 @@ class Channel(callbacks.Privmsg):
         else:
             irc.queueMsg(ircmsgs.dehalfops(channel, args))
     dehalfop = wrap(dehalfop, [('checkChannelCapability', 'halfop'),
-                               ('haveOp', 'dehalfop someone')])
+                               ('haveOp', 'dehalfop someone')],allowExtra=True)
 
     def devoice(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
@@ -227,7 +228,7 @@ class Channel(callbacks.Privmsg):
         else:
             irc.queueMsg(ircmsgs.devoices(channel, args))
     devoice = wrap(devoice, [('checkChannelCapability', 'voice'),
-                             ('haveOp', 'devoice someone')])
+                             ('haveOp', 'devoice someone')], allowExtra=True)
 
     def cycle(self, irc, msg, args, channel, key):
         """[<channel>] [<key>]
@@ -362,7 +363,7 @@ class Channel(callbacks.Privmsg):
                          'nick': None,
                          'user': None,
                          'host': None})
-    
+
     def unban(self, irc, msg, args, channel, hostmask):
         """[<channel>] <hostmask>
 
