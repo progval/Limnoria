@@ -701,6 +701,17 @@ class FunCommands(callbacks.Privmsg):
             return
         irc.reply(msg, s)
 
+    def tell(self, irc, msg, args):
+        """<nick|channel> <text>
+
+        Tells the <nick|channel> whatever <text> is.  Use nested commands to
+        your benefit here.
+        """
+        (target, text) = privmsgs.getArgs(args, needed=2)
+        s = '%s wants me to tell you: %s' % (msg.nick, text)
+        irc.queueMsg(ircmsgs.privmsg(target, s))
+        raise callbacks.CannotNest
+
     def dns(self, irc, msg, args):
         """<host|ip>"""
         host = privmsgs.getArgs(args)

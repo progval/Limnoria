@@ -84,6 +84,14 @@ class FunCommandsTest(PluginTestCase):
             i = ord(c)
             self.assertResponse('ord %s' % utils.dqrepr(c), str(i))
 
+    def testTell(self):
+        m = self.getMsg('tell foo [rot13 foobar]')
+        self.failUnless(m.args[0] == 'foo')
+        self.failUnless('sbbone' in m.args[1])
+        m = self.getMsg('tell #foo [rot13 foobar]')
+        self.failUnless(m.args[0] == '#foo')
+        self.failUnless('sbbone' in m.args[1])
+        
     def testDns(self):
         self.assertNotError('dns slashdot.org')
 
