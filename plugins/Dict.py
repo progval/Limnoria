@@ -136,7 +136,7 @@ class Dict(callbacks.Privmsg):
             s = utils.normalizeWhitespace(s).rstrip(';.,')
             L.append('%s: %s' % (db, s))
         utils.sortBy(len, L)
-        if dictionary == '*':
+        if dictionary == '*' and len(dbs) > 1:
             s = '%s responded: %s' % (utils.commaAndify(dbs), '; '.join(L)) 
         else:
             s = '; '.join(L)
