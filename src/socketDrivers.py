@@ -71,6 +71,7 @@ class SocketDriver(drivers.IrcDriver):
         self.inbuffer = ''
         self.outbuffer = ''
         self.connected = False
+        self.eagains = 0
         self.reconnectWaitsIndex = 0
         self.reconnectWaits = reconnectWaits
         self.reconnect()
@@ -85,12 +86,16 @@ class SocketDriver(drivers.IrcDriver):
             try:
                 sent = self.conn.send(self.outbuffer)
                 self.outbuffer = self.outbuffer[sent:]
+                self.eagains = 0
             except socket.error, e:
                 # (11, 'Resource temporarily unavailable') raised if connect
                 # hasn't finished yet.
-                if e.args[0] != 11:
+                if e.args[0] != 11 and self.eagains > 120:
                     log.warning('Disconnect from %s: %s', self.server, e)
                     self.reconnect(wait=True)
+                else:
+                    log.debug('Got EAGAIN, current count: %s', self.eagains)
+                    self.eagains += 1
         
     def run(self):
         if not self.connected:
@@ -101,6 +106,7 @@ class SocketDriver(drivers.IrcDriver):
         self._sendIfMsgs()
         try:
             self.inbuffer += self.conn.recv(1024)
+            self.eagains = 0
             lines = self.inbuffer.split('\n')
             self.inbuffer = lines.pop()
             for line in lines:
@@ -115,9 +121,12 @@ class SocketDriver(drivers.IrcDriver):
             pass
         except socket.error, e:
             # Same as with _sendIfMsgs.
-            if e.args[0] != 11:
+            if e.args[0] != 11 or self.eagains > 120:
                 log.warning('Disconnect from %s: %s', self.server, e)
                 self.reconnect(wait=True)
+            else:
+                log.debug('Got EAGAIN, current count: %s', self.eagains)
+                self.eagains += 1
             return
         self._sendIfMsgs()
         
