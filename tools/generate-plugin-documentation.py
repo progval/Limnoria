@@ -160,10 +160,11 @@ def makePluginDocumentation(pluginWindow):
     </div>
     <div style="text-align: center;">
     <br />
-    <a href="plugins/%s.html">&lt;- %s</a> |
-    <a href="plugins.html">Plugin Index</a> |
-    <a href="../index.html">Home</a> | <a href="commands.html">Command Index
-    </a> | <a href="plugins/%s.html">%s -&gt;</a>
+    <a href="%s.html">&lt;- %s</a> |
+    <a href="../plugins.html">Plugin Index</a> |
+    <a href="../../index.html">Home</a> |
+    <a href="../commands.html">Command Index</a> |
+    <a href="%s.html">%s -&gt;</a>
     %s
     ''' % (prev, cprev, next, cnext, genFooter())))
     fd.close()
@@ -243,8 +244,8 @@ if __name__ == '__main__':
     prepIndex()
     plugins = [p for p in genPlugins()]
     plugins.sort()
-    plugins.insert(0, None)
-    plugins.append(None)
+    plugins.insert(0, [None])
+    plugins.append([None])
     for pluginWindow in window(plugins, 3):
         makePluginDocumentation(pluginWindow)
     finishIndex()
