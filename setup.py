@@ -34,6 +34,7 @@ plugins = [
     'Babelfish',
     'Channel',
     'Config',
+    'Ctcp',
     'Dict',
     'Filter',
     'Format',
