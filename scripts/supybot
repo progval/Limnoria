@@ -136,7 +136,7 @@ if __name__ == '__main__':
     parser.add_option('', '--allow-root', action='store_true',
                       dest='allowRoot',
                       help='Determines whether the bot will be allowed to run'
-                           'as root.  You don\'t want this.  Don\'t do it.'
+                           'as root.  You don\'t want this.  Don\'t do it.  '
                            'Even if you think you want it, you don\'t.  '
                            'You\'re probably dumb if you do this.')
                       
