@@ -42,7 +42,9 @@ import os.path
 import unittest
 
 import world
+import irclib
 import ircmsgs
+import ircutils
 
 fd = file(os.path.join('test', 'rfc2812.msgs'), 'r')
 rawmsgs = [line.strip() for line in fd]
@@ -75,35 +77,37 @@ nicks += [msg.nick for msg in msgs if msg.nick]
 def getMsgs(command):
     return [msg for msg in msgs if msg.command == command]
 
-class Cmd(object):
-    def __init__(self, command, *args):
-        self.args = (command,) + args
-
-    def toString(self, recursed=False):
-        if recursed:
-            return '[%s]' % ' '.join(map(utils.dqrepr, args))
-        else:
-            L = [conf.prefixChars[0]]
-            for arg in args:
-                if isinstance(arg, self.__class__):
-                    L.append(utils.dqrepr(arg.toString(recursed=True)))
-                else:
-                    L.append(utils.dqrepr(arg))
-                L.append(' ')
-            L.pop()
-            return ''.join(L)
-
-    def __str__(self):
-        return self.toString()
-                    
 class PluginTestCase(unittest.TestCase):
-    channels = ()
-    def getResponse(self, command, prefix=None, channel=None):
-        pass
-    
-    def getResponseMsg(self, msg):
-        pass
-    
+    """Subclass this to write a test case for a plugin.  See test_FunCommands
+    for an example.
+    """
+    def setUp(self, nick='test'):
+        self.nick = nick
+        self.prefix = ircutils.joinHostmask(nick, 'user', 'host.domain.tld')
+        self.irc = irclib.Irc(nick)
+        while self.irc.takeMsg():
+            pass
+        self.irc.addCallback(self.plugin)
+        
+    def assertResponse(self, query, expectedResponse):
+        self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
+        response = self.irc.takeMsg()
+        self.failUnless(response)
+        self.assertEqual(response.args[1], expectedResponse)
+
+    def assertResponses(self, query, expectedResponses):
+        self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
+        responses = []
+        while 1:
+            m = self.irc.takeMsg()
+            if m:
+                responses.append(m)
+            else:
+                break
+        self.assertEqual(len(expectedResponses), len(responses))
+        for (response, expected) in zip(responses, expectedResponses):
+            self.assertEqual(response.args[1], expected)
+            
     
 if __name__ == '__main__':
     world.testing = True
