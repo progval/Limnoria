@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Ultra-liberal RSS parser
 
 Visit http://diveintomark.org/projects/rss_parser/ for the latest version

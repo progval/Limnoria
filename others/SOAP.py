@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ################################################################################
 #
 # SOAP.py 0.9.7 - Cayce Ullman    (cayce@actzero.com)

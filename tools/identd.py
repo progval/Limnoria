@@ -1,4 +1,4 @@
-#!/usr/local/bin/python -u
+#!/usr/bin/env python -u
 
 import asyncore
 import asynchat
