@@ -30,7 +30,7 @@
 ###
 
 """
-This is the template for bots.  scripts/setup.py uses this file to make
+This is the template for bots.  supybot-wizard.py uses this file to make
 customized startup files for bots.
 """
 
@@ -46,25 +46,25 @@ import optparse
 
 started = time.time()
 
-if 'src' not in sys.path:
-    sys.path.insert(0, 'src')
+import supybot
 
 import conf
 
-defaultNick = %%nick%%
-defaultUser = %%user%%
-defaultIdent = %%ident%%
-defaultServer = %%server%%
-defaultPassword = %%password%%
+defaultNick = "%%nick%%"
+defaultUser = "%%user%%"
+defaultIdent = "%%ident%%"
+defaultServer = "%%server%%"
+defaultPassword = "%%password%%"
 
-conf.commandsOnStart = %%onStart%%
+conf.commandsOnStart = "%%onStart%%"
 
-afterConnect = %%afterConnect%%
+afterConnect = "%%afterConnect%%"
 
-configVariables = %%configVariables%%
+configVariables = "%%configVariables%%"
 
-for (name, value) in configVariables.iteritems():
-    setattr(conf, name, value)
+if not isinstance(configVariables, basestring):
+    for (name, value) in configVariables.iteritems():
+        setattr(conf, name, value)
 
 
 def main():
