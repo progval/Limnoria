@@ -77,8 +77,8 @@ class AsyncoreDriver(asynchat.async_chat, object):
             log.warning('Error connecting to %s: %s', self.server[0], e)
             self.reconnect(wait=True)
 
-    def _scheduleReconnect(self):
-        when = time.time() + 60
+    def _scheduleReconnect(self, at=60):
+        when = time.time() + at
         if not world.dying:
             whenS = log.timestamp(when)
             log.info('Scheduling reconnect to %s at %s', self.server[0], whenS)
