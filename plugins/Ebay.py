@@ -115,7 +115,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(str(e))
 
     def ebaySnarfer(self, irc, msg, match):
-        r"http://cgi\.ebay\.(?:[a-z]+.?)+/(?:.*?/)?(?:ws/)?" \
+        r"http://cgi\.ebay\.(?:[a-z]+\.?)+/(?:.*?/)?(?:ws/)?" \
         r"eBayISAPI\.dll\?ViewItem(?:&item=\d+|&category=\d+)+"
         if not self.registryValue('auctionSnarfer', msg.args[0]):
             return
