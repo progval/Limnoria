@@ -35,6 +35,11 @@ class UtilitiesTestCase(PluginTestCase):
     plugins = ('Utilities', 'Status')
     def testIgnore(self):
         self.assertNoResponse('ignore foo bar baz', 1)
+        self.assertError('ignore [re m/foo bar]')
+
+    def testSuccess(self):
+        self.assertNotError('success 1')
+        self.assertError('success [re m/foo bar]')
 
     def testStrjoin(self):
         self.assertResponse('strjoin + foo bar baz', 'foo+bar+baz')

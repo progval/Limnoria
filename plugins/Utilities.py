@@ -47,12 +47,22 @@ import callbacks
 
 class Utilities(callbacks.Privmsg):
     def ignore(self, irc, msg, args):
-        """takes no arguments
+        """requires no arguments
 
         Does nothing.  Useful sometimes for sequencing commands when you don't
         care about their non-error return values.
         """
         pass
+
+    def success(self, irc, msg, args):
+        """requires no arguments
+
+        Does nothing except to reply with a success message.  This is useful
+        when you want to run multiple commands as nested commands, and don't
+        care about their output as long as they're successful.  An error, of
+        course, will break out of this command.
+        """
+        irc.replySuccess()
 
     def strjoin(self, irc, msg, args):
         """<separator> <string 1> [<string> ...]
