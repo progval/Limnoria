@@ -69,20 +69,20 @@ class FunctionsTestCase(unittest.TestCase):
     def testBold(self):
         s = ircutils.bold('foo')
         self.assertEqual(s[0], '\x02')
-        self.assertEqual(s[-1], '\x02')
+        self.assertEqual(s[-1], '\x0F')
 
     def testMircColor(self):
         # No colors provided should return the same string
         s = 'foo'
         self.assertEqual(s, ircutils.mircColor(s))
         # Test positional args
-        self.assertEqual('\x030foo\x03', ircutils.mircColor(s, 'white'))
-        self.assertEqual('\x031,2foo\x03',ircutils.mircColor(s,'black','blue'))
-        self.assertEqual('\x03,3foo\x03', ircutils.mircColor(s, None, 'green'))
+        self.assertEqual('\x030foo\x0F', ircutils.mircColor(s, 'white'))
+        self.assertEqual('\x031,2foo\x0F',ircutils.mircColor(s,'black','blue'))
+        self.assertEqual('\x03,3foo\x0F', ircutils.mircColor(s, None, 'green'))
         # Test keyword args
-        self.assertEqual('\x034foo\x03', ircutils.mircColor(s, fg='red'))
-        self.assertEqual('\x03,5foo\x03', ircutils.mircColor(s, bg='brown'))
-        self.assertEqual('\x036,7foo\x03',
+        self.assertEqual('\x034foo\x0F', ircutils.mircColor(s, fg='red'))
+        self.assertEqual('\x03,5foo\x0F', ircutils.mircColor(s, bg='brown'))
+        self.assertEqual('\x036,7foo\x0F',
                          ircutils.mircColor(s, bg='orange', fg='purple'))
 
     def testMircColors(self):
@@ -163,6 +163,14 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(ircutils.joinModes(modes),
                          ['+be-l', plusB[1], plusE[1]])
 
+    def testUnColor(self):
+        self.assertEqual(ircutils.unColor('\x03foo\x03'), 'foo')
+        self.assertEqual(ircutils.unColor('\x03foo\x0F'), 'foo')
+        self.assertEqual(ircutils.unColor('\x0312foo\x03'), 'foo')
+        self.assertEqual(ircutils.unColor('\x0312,14foo\x03'), 'foo')
+        self.assertEqual(ircutils.unColor('\x0312foo\x0F'), 'foo')
+        self.assertEqual(ircutils.unColor('\x0312,14foo\x0F'), 'foo')
+        
 
 class IrcDictTestCase(unittest.TestCase):
     def test(self):

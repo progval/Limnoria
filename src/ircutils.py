@@ -205,7 +205,15 @@ def joinModes(modes):
 
 def bold(s):
     """Returns the string s, bolded."""
-    return "\x02%s\x02" % s
+    return '\x02%s\x0F' % s
+
+def reverse(s):
+    """Returns the string s, reverse-videoed."""
+    return '\x16%s\x0F' % s
+
+def underline(s):
+    """Returns the string s, underlined."""
+    return '\x1F%s\x0F' % s
 
 mircColors = {
     None: '',
@@ -239,11 +247,11 @@ def mircColor(s, fg=None, bg=None):
     if fg is None or isinstance(fg, str):
         fg = mircColors[fg]
     if bg is None:
-        return '\x03%s%s\x03' % (fg, s)
+        return '\x03%s%s\x0F' % (fg, s)
     else:
         if isinstance(bg, str):
             bg = mircColors[bg]
-        return '\x03%s,%s%s\x03' % (fg, bg, s)
+        return '\x03%s,%s%s\x0F' % (fg, bg, s)
 
 def canonicalColor(s, bg=False, shift=0):
     h = hash(s) >> shift
@@ -258,7 +266,7 @@ def canonicalColor(s, bg=False, shift=0):
     else:
         return (fg, None)
 
-_unColorRe = re.compile('\x03(?:\\d+|\\d+,\\d+)?')
+_unColorRe = re.compile('(\x0F|\x03(?:\\d+|\\d+,\\d+)?)')
 def unColor(s):
     return _unColorRe.sub('', s)
 
@@ -266,7 +274,7 @@ def isValidArgument(s):
     """Returns if s is strictly a valid argument for an IRC message."""
     return '\r' not in s and '\n' not in s and '\x00' not in s
 
-notFunky = string.ascii[32:]+'\x02'+'\x03'
+notFunky = string.ascii[32:]+'\x02\x03\x0F\x16\x1F'
 def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
     if isValidArgument(s) and s.translate(string.ascii, notFunky) == '':
