@@ -475,6 +475,12 @@ def getUrl(irc, msg, args, state):
     else:
         irc.errorInvalid('url', args[0])
 
+def getEmail(irc, msg, args, state):
+    if utils.net.emailRe.match(args[0]):
+        state.args.append(args.pop(0))
+    else:
+        irc.errorInvalid('email', args[0])
+
 def getHttpUrl(irc, msg, args, state):
     if utils.web.httpUrlRe.match(args[0]):
         state.args.append(args.pop(0))
@@ -557,6 +563,7 @@ wrappers = ircutils.IrcDict({
     'color': getIrcColor,
     'now': getNow,
     'url': getUrl,
+    'email': getEmail,
     'httpUrl': getHttpUrl,
     'long': getLong,
     'float': getFloat,

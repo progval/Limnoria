@@ -142,5 +142,12 @@ class ConverterTestCase(CommandsTestCase):
         self.assertState(['url'], [url], [url])
         self.assertState(['httpUrl'], [url], [url])
 
+    def testEmail(self):
+        email = 'jemfinch@supybot.com'
+        self.assertState(['email'], [email], [email])
+        self.assertError(['email'], ['foo'])
+        self.assertError(['email'], ['foo@'])
+        self.assertError(['email'], ['@foo'])
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
