@@ -108,31 +108,32 @@ def main():
             name = something('What should the name of the plugin be?')
             if name.endswith('.py'):
                 name = name[:-3]
-        print textwrap.fill(textwrap.dedent("""
+        print textwrap.dedent("""
         Supybot offers two major types of plugins: command-based and
         regexp-based.  Command-based plugins are the kind of plugins
-        you've seen most when you've used supybot.  They're also the
-        most featureful and easiest to write.  Commands can be nested, 
-        for instance, whereas regexp-based callbacks can't do nesting.
+        you've seen most when you've used supybot.  They're also the most
+        featureful and easiest to write.  Commands can be nested, for
+        instance, whereas regexp-based callbacks can't do nesting.
 
         That doesn't mean that you'll never want regexp-based callbacks.
-        They offer a flexibility that command-based callbacks don't offer;
-        however, they don't tie into the whole system as well.
+        They offer a flexibility that command-based callbacks don't
+        offer; however, they don't tie into the whole system as well.
 
         If you need to combine a command-based callback with some
         regexp-based methods, you can do so by subclassing
         callbacks.PrivmsgCommandAndRegexp and then adding a class-level
         attribute "regexps" that is a sets.Set of methods that are
         regexp-based.  But you'll have to do that yourself after this
-        wizard is finished :)
-        """).strip())
+        wizard is finished.)""").strip()
+        print
         kind = expect('Do you want a command-based plugin' \
                       ' or a regexp-based plugin?', ['command', 'regexp'])
 
-        print textwrap.fill("""Sometimes you'll want a callback to be
-        threaded.  If its methods (command or regexp-based, either one) will
-        take a significant amount of time to run, you'll want to thread them so
-        they don't block the entire bot.""")
+        print textwrap.fill(textwrap.dedent("""
+        Sometimes you'll want a callback to be threaded.  If its methods
+        (command or regexp-based, either one) will take a significant amount
+        of time to run, you'll want to thread them so they don't block the
+        entire bot.""").strip())
         print
         threaded = yn('Does your plugin need to be threaded?')
 
