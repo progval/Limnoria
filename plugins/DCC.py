@@ -42,19 +42,18 @@ import threading
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 class DCC(callbacks.Privmsg):
-    def chat(self, irc, msg, args):
+    def chat(self, irc, msg, args, text):
         """<text>
 
         Sends <text> to the user via a DCC CHAT.  Use nested commands to your
         benefit here.
         """
-        text = privmsgs.getArgs(args)
         def openChatPort():
             try:
                 host = ircutils.hostFromHostmask(irc.prefix)
@@ -112,6 +111,7 @@ class DCC(callbacks.Privmsg):
         world.threadsSpawned += 1
         t.setDaemon(True)
         t.start()
+    chat = wrap(chat, ['text'])
 
 
 

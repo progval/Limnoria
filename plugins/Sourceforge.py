@@ -49,7 +49,6 @@ import supybot.utils as utils
 import supybot.plugins as plugins
 from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.webutils as webutils
 import supybot.callbacks as callbacks
@@ -418,53 +417,33 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         else:
             return ''
 
-    def total(self, irc, msg, args):
+    def total(self, irc, msg, args, type, project):
         """{bugs,rfes} [<project>]
 
         Returns the total count of open bugs or rfes.  <project> is only
         necessary if a default project is not set.
         """
-        if not args:
-            raise callbacks.ArgumentError
-        type = args.pop(0)
         if type == 'bugs':
-            self._totalbugs(irc, msg, args)
+            self._totalbugs(irc, msg, project)
         elif type == 'rfes':
-            self._totalrfes(irc, msg, args)
-        else:
-            raise callbacks.ArgumentError
+            self._totalrfes(irc, msg, project)
+    total = wrap(total, [literal(('bugs', 'rfes')), additional('something')])
 
-    def _totalbugs(self, irc, msg, args):
-        """[<project>]
-
-        Returns a count of the open/total bugs.  <project> is not needed if a
-        default project is set.
-        """
-        project = privmsgs.getArgs(args, required=0, optional=1)
+    def _totalbugs(self, irc, msg, project):
         project = project or self.registryValue('defaultProject', msg.args[0])
-        if not project:
-            raise callbacks.ArgumentError
         total = self._getNumBugs(project)
         if total:
             irc.reply(total)
         else:
-            irc.error('Could not find bug statistics.')
+            irc.error('Could not find bug statistics for %s.' % project)
 
-    def _totalrfes(self, irc, msg, args):
-        """[<project>]
-
-        Returns a count of the open/total RFEs.  <project> is not needed if a
-        default project is set.
-        """
-        project = privmsgs.getArgs(args, required=0, optional=1)
+    def _totalrfes(self, irc, msg, project):
         project = project or self.registryValue('defaultProject', msg.args[0])
-        if not project:
-            raise callbacks.ArgumentError
         total = self._getNumRfes(project)
         if total:
             irc.reply(total)
         else:
-            irc.error('Could not find RFE statistics.')
+            irc.error('Could not find RFE statistics for %s.' % project)
 
     def fight(self, irc, msg, args, optlist, projects):
         """[--{bugs,rfes}] [--{open,closed}] <project name> <project name> \

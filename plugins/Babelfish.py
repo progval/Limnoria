@@ -44,7 +44,7 @@ import babelfish
 
 import supybot.conf as conf
 import supybot.utils as utils
-import supybot.privmsgs as privmsgs
+from supybot.commands import *
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -95,16 +95,13 @@ class Babelfish(callbacks.Privmsg):
         """
         irc.reply(utils.commaAndify(babelfish.available_languages))
 
-    def translate(self, irc, msg, args):
+    def translate(self, irc, msg, args, fromLang, to, toLang, text):
         """<from-language> [to] <to-language> <text>
 
         Returns <text> translated from <from-language> into <to-language>.
         Beware that translating to or from languages that use multi-byte
         characters may result in some very odd results.
         """
-        if len(args) >= 2 and args[1] == 'to':
-            args.pop(1)
-        (fromLang, toLang, text) = privmsgs.getArgs(args, required=3)
         chan = msg.args[0]
         try:
             (fromLang, toLang) = self._getLang(fromLang, toLang, chan)
@@ -131,15 +128,17 @@ class Babelfish(callbacks.Privmsg):
         except babelfish.BabelfishChangedError, e:
             irc.error('Babelfish has foiled our plans by changing its '
                       'webpage format.')
+    translate = wrap(translate, 
+                     ['something', optional(literal('to')),
+                      'something', 'text'])
 
-    def babelize(self, irc, msg, args):
+    def babelize(self, irc, msg, args, fromLang, toLang, text):
         """<from-language> <to-language> <text>
 
         Translates <text> repeatedly between <from-language> and <to-language>
         until it doesn't change anymore or 12 times, whichever is fewer.  One
         of the languages must be English.
         """
-        (fromLang, toLang, text) = privmsgs.getArgs(args, required=3)
         chan = msg.args[0]
         try:
             (fromLang, toLang) = self._getLang(fromLang, toLang, chan)
@@ -170,14 +169,18 @@ class Babelfish(callbacks.Privmsg):
         except babelfish.BabelfishChangedError, e:
             irc.reply('Babelfish has foiled our plans by changing its '
                       'webpage format.')
+    babelize = wrap(babelize, ['something', 'something', 'text'])
 
-    def randomlanguage(self, irc, msg, args):
-        """[<allow-english>]
+    def randomlanguage(self, irc, msg, args, optlist):
+        """[--allow-english]
 
-        Returns a random language supported by babelfish.  If <allow-english>
+        Returns a random language supported by babelfish.  If --allow-english
         is provided, will include English in the list of possible languages.
         """
-        allowEnglish = privmsgs.getArgs(args, required=0, optional=1)
+        allowEnglish = False
+        for (option, arg) in optlist:
+            if option == 'allow-english':
+                allowEnglish = True
         languages = self.registryValue('languages', msg.args[0])
         if not languages:
             irc.error('I can\'t speak any other languages.')
@@ -185,6 +188,7 @@ class Babelfish(callbacks.Privmsg):
         while not allowEnglish and language == 'English':
             language = random.choice(languages)
         irc.reply(language)
+    randomlanguage = wrap(randomlanguage, [getopts({'allow-english': ''})])
 
 Class = Babelfish
 
