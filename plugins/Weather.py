@@ -60,7 +60,7 @@ class WeatherUnit(registry.String):
         s = s.capitalize()
         if s not in unitAbbrevs:
             raise registry.InvalidRegistryValue,\
-                'Unit must be one of Fahrenheit, Celsius, or Kelvin.'
+                  'Unit must be one of Fahrenheit, Celsius, or Kelvin.'
         s = unitAbbrevs[s]
         registry.String.setValue(self, s)
 
@@ -69,11 +69,13 @@ class WeatherCommand(registry.String):
         m = Weather.weatherCommands
         if s not in m:
             raise registry.InvalidRegistryValue,\
-                'Command must be one of %s' % utils.commaAndify(m)
+                  'Command must be one of %s' % utils.commaAndify(m)
         else:
             method = getattr(Weather, s)
             Weather.weather.im_func.__doc__ = method.__doc__
         registry.String.setValue(self, s)
+
+# Registry variables moved to the bottom to use Weather.weatherCommands.
 
 class Weather(callbacks.Privmsg):
     weatherCommands = ['ham', 'cnn']
@@ -326,7 +328,8 @@ conf.registerChannelValue(conf.supybot.plugins.Weather, 'temperatureUnit',
     reporting the weather."""))
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'command',
     WeatherCommand('cnn', """Sets the default command to use when retrieving 
-    the weather."""))
+    the weather.  Command must be one of %s.""" %
+    utils.commaAndify(Weather.weatherCommands, And='or')))
 
 Class = Weather
 
