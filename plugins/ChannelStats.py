@@ -55,10 +55,10 @@ frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 smileyre = re.compile('|'.join([re.escape(s) for s in smileys]))
 frownre = re.compile('|'.join([re.escape(s) for s in frowns]))
 
-class ChannelStats(callbacks.Privmsg, DBHandler):
+class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        DBHandler.__init__(self)
+        ChannelDBHandler.__init__(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):

@@ -52,9 +52,9 @@ import ircdb
 import privmsgs
 import callbacks
 
-class Quotes(DBHandler, callbacks.Privmsg):
+class Quotes(ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
-        DBHandler.__init__(self)
+        ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
 
     def makeDb(self, filename):

@@ -14,7 +14,7 @@ import conf
 import world
 import callbacks
 
-class DBHandler(object):
+class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.
     """
     suffix = '.db'

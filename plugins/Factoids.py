@@ -55,9 +55,9 @@ import ircdb
 import privmsgs
 import callbacks
 
-class Factoids(DBHandler, callbacks.Privmsg):
+class Factoids(ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
-        DBHandler.__init__(self)
+        ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
         
     def makeDb(self, filename):
