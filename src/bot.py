@@ -37,16 +37,9 @@ from fix import *
 
 import sys
 import email
+import getopt
 
 import conf
-import world
-import debug
-import irclib
-import ircmsgs
-import drivers
-import schedule
-import privmsgs
-import asyncoreDrivers
 
 sys.path.append(conf.pluginDir)
 
@@ -69,22 +62,27 @@ class ConfigurationDict(dict):
         return dict.__contains__(self, key.lower())
 
 
-class ConfigAfter376(irclib.IrcCallback):
-    public = False
-    def __init__(self, msgs):
-        self.msgs = msgs
-
-    def do376(self, irc, msg):
-        #debug.printf('Firing ConfigAfter376 messages')
-        for msg in self.msgs:
-            irc.queueMsg(msg)
-
-    do377 = do376
-
-def reportConfigError(filename, msg):
-    debug.recoverableError('%s: %s' % (filename, msg))
 
 def processConfigFile(filename):
+    import debug
+    import world
+    import irclib
+    import ircmsgs
+    import privmsgs
+    import asyncoreDrivers
+    def reportConfigError(filename, msg):
+        debug.recoverableError('%s: %s' % (filename, msg))
+    class ConfigAfter376(irclib.IrcCallback):
+        public = False
+        def __init__(self, msgs):
+            self.msgs = msgs
+
+        def do376(self, irc, msg):
+            #debug.printf('Firing ConfigAfter376 messages')
+            for msg in self.msgs:
+                irc.queueMsg(msg)
+
+        do377 = do376
     try:
         fd = file(filename)
         m = email.message_from_file(fd)
@@ -134,7 +132,23 @@ def processConfigFile(filename):
         reportConfigError(filename, msg)
 
 def main():
-    for filename in sys.argv[1:]:
+    (optlist, filenames) = getopt.getopt(sys.argv[1:], 'c:')
+    for (option, argument) in optlist:
+        if option == '-c':
+            myLocals = {}
+            myGlobals = {}
+            execfile(argument, myGlobals, myLocals)
+            for (key, value) in myGlobals.iteritems():
+                setattr(conf, key, value)
+            for (key, value) in myLocals.iteritems():
+                setattr(conf, key, value)
+        else:
+            print 'Unexpected argument %s; ignoring.' % option
+    import debug
+    import world
+    import drivers
+    import schedule
+    for filename in filenames:
         processConfigFile(filename)
     schedule.addPeriodicEvent(world.upkeep, 300)
     try:
