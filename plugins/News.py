@@ -98,7 +98,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         db.commit()
         return db
 
-    def addnews(self, irc, msg, args, channel):
+    def add(self, irc, msg, args, channel):
         """[<channel>] <expires> <subject>: <text>
 
         Adds a given news item of <text> to a channel with the given <subject>.
@@ -131,7 +131,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
                        subject[:-1], text, added_at, expires, name)
         db.commit()
         irc.reply(msg, conf.replySuccess)
-    addnews = privmsgs.checkChannelCapability(addnews, 'news')
+    add = privmsgs.checkChannelCapability(add, 'news')
 
     def _readnews(self, irc, msg, args):
         """[<channel>] <number>
@@ -190,7 +190,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
             s = 'News for %s: %s' % (channel, '; '.join(items))
             irc.reply(msg, s)
 
-    def removenews(self, irc, msg, args, channel):
+    def remove(self, irc, msg, args, channel):
         """[<channel>] <number>
 
         Removes the news item with id <number> from <channel>.  <channel> is
@@ -206,9 +206,9 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
             cursor.execute("""DELETE FROM news WHERE news.id = %s""", id)
             db.commit()
             irc.reply(msg, conf.replySuccess)
-    removenews = privmsgs.checkChannelCapability(removenews, 'news')
+    remove = privmsgs.checkChannelCapability(remove, 'news')
             
-    def changenews(self, irc, msg, args, channel):
+    def change(self, irc, msg, args, channel):
         """[<channel>] <number> <regexp>
 
         Changes the news item with id <number> from <channel> according to the
@@ -235,9 +235,9 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("""UPDATE news SET subject=%s, item=%s WHERE id=%s""",
                        newSubject, newItem, id)
         irc.reply(msg, conf.replySuccess)
-    changenews = privmsgs.checkChannelCapability(changenews, 'news')
+    change = privmsgs.checkChannelCapability(change, 'news')
 
-    def oldnews(self, irc, msg, args):
+    def old(self, irc, msg, args):
         """[<channel>] [<number>]
 
         Returns the old news item for <channel> with id <number>.  If no number
