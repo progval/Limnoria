@@ -87,6 +87,13 @@ def close(registry, filename, annotated=True):
                 first = False
             else:
                 lines.insert(0, '\n')
+            lines.append('#\n')
+            try:
+                original = value.value
+                value.value = value.default
+                lines.append('# Default value: %s\n' % value)
+            finally:
+                value.value = original
             lines.append('###\n')
             fd.writelines(lines)
         fd.write('%s: %s\n' % (name, value))
