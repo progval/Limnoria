@@ -3,8 +3,9 @@ johhnyace, who gave me the modem that helped me tremendously in development.
 inkedmn, who wrote the:
     gkstats,
     weather,
-    and zipcode commands for the Http module.
-    AND the Notes module.
+    and zipcode commands for the Http plugin.
+    and the debincoming command for the Debian plugin.
+    AND the Notes plugin.
 jamessan, who wrote the:
     babelfish related commands.
     fixes for acronym, gkstats, google groups snarfer, setup.py stuff.

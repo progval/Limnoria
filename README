@@ -17,8 +17,22 @@ stringent guidelines I've found useful to check my code.
 
 USERS:
 ------
-All commands should be run from the root directory, never from any
-subdirectory such as conf/, log/, src/, or plugins/.
+First, you gotta have Python 2.3 for this.  That's alright, though,
+because Python 2.3 rocks, and you should have it anyway :)
 
-All you have to do to get a working bot is run scripts/setup.py and
-answer the questions!
+Assuming "python" is in your path and points to Python 2.3 or newer,
+then you need to run this:
+
+python setup.py install
+
+from the untarred directory to install the source files.  Then just
+run supybot-wizard.py (it's been installed in your path somewhere) to
+create a script that will run your bot as you answered the questions
+in the wizard.
+
+If you have any trouble, feel free to swing by #sourcereview on
+irc.freenode.net or irc.oftc.net (we have a supybot there relaying, so
+either network works) and ask questions.  We'll be happy to help
+wherever we can.  And by all means, if you find anything hard to
+understand or think you know of a better way to do something, *please*
+post it on Sourceforge.net so we can improve the bot!
