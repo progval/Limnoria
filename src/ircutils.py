@@ -244,8 +244,8 @@ def mircColor(s, fg=None, bg=None):
             bg = mircColors[bg]
         return '\x03%s,%s%s\x03' % (fg, bg, s)
 
-def canonicalColor(s, bg=False):
-    h = hash(s)
+def canonicalColor(s, bg=False, shift=0):
+    h = hash(s) >> shift
     fg = h % 14 + 2 # The + 2 is to rule out black and white.
     if bg:
         bg = (h >> 4) & 3 # The 5th, 6th, and 7th least significant bits.
@@ -253,9 +253,13 @@ def canonicalColor(s, bg=False):
             bg += 8
         else:
             bg += 2
-        return mircColor(s, fg, bg)
+        return (fg, bg)
     else:
-        return mircColor(s, fg)
+        return (fg, None)
+
+_unColorRe = re.compile('\x03(?:\\d+|\\d+,\\d+)?')
+def unColor(s):
+    return _unColorRe.sub('', s)
 
 def isValidArgument(s):
     """Returns if s is strictly a valid argument for an IRC message."""
