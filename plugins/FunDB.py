@@ -182,15 +182,29 @@ class FunDB(callbacks.Privmsg):
         irc.reply(msg, ', '.join(words))
 
     def excuse(self, irc, msg, args):
-        """takes no arguments
+        """[<id>]
 
-        Gives you a standard BOFH excuse.
+        Gives you a standard, random BOFH excuse or the excuse with the given 
+        <id>.
         """
+        id = privmsgs.getArgs(args, needed=0, optional=1)
         cursor = self.db.cursor()
-        cursor.execute("""SELECT id, excuse FROM excuses
-                          WHERE excuse NOTNULL
-                          ORDER BY random()
-                          LIMIT 1""")
+        if id:
+            try:
+                id = int(id)
+            except ValueError:
+                irc.error(msg, 'The <id> argument must be an integer.')
+                return
+            cursor.execute("""SELECT id, excuse FROM excuses WHERE id=%s""",
+                           id)
+            if cursor.rowcount == 0:
+                irc.error(msg, 'There is no such excuse.')
+                return
+        else:
+            cursor.execute("""SELECT id, excuse FROM excuses
+                              WHERE excuse NOTNULL
+                              ORDER BY random()
+                              LIMIT 1""")
         if cursor.rowcount == 0:
             irc.error(msg, 'There are currently no available excuses.')
         else:

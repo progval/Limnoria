@@ -72,10 +72,15 @@ if sqlite is not None:
 
         def testExcuse(self):
             self.assertNotError('dbadd excuse Power failure')
-            self.assertNotError('excuse')
-            self.assertNotError('excuse a few random words')
+            self.assertResponse('excuse', 'Power failure (#1)')
+            self.assertError('excuse a few random words')
             self.assertNotError('dbnum excuse')
+            self.assertNotError('dbadd excuse /pub/lunch')
+            self.assertResponse('excuse 1', 'Power failure (#1)')
             self.assertNotError('dbremove excuse 1')
+            self.assertNotError('dbnum excuse')
+            self.assertResponse('excuse', '/pub/lunch (#2)')
+            self.assertNotError('dbremove excuse 2')
             self.assertNotError('dbnum excuse')
             self.assertError('excuse')
 
