@@ -210,6 +210,9 @@ class Group(object):
             oldNode = self._children[name]
             node._added = oldNode._added
             node._children = oldNode._children
+            for v in node._children.values():
+                if v.__class__ is oldNode.X:
+                    v.__class__ = node.X
         self._children[name] = node
         if name not in self._added:
             self._added.append(name)
@@ -221,8 +224,7 @@ class Group(object):
 
     def unregister(self, name):
         try:
-            node = self._children[name]
-            del self._children[name]
+            node = self._children.pop(name)
             self._added.remove(name)
             if node._name in _cache:
                 del _cache[node._name]
