@@ -462,8 +462,7 @@ class FunCommands(callbacks.Privmsg):
             s = 'That function has no documentation.'
         irc.reply(msg, s)
                 
-                
-            
 
 Class = FunCommands
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
