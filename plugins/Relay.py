@@ -168,7 +168,7 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
         if msg.command == 'PRIVMSG':
             abbreviations = self.abbreviations.values()
             rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
-            rAction = re.compile(r'* \w+/(?:%s) ' % '|'.join(abbreviations))
+            rAction = re.compile(r'\* \w+/(?:%s) ' % '|'.join(abbreviations))
             if not (rPrivmsg.match(msg.args[1]) or rAction.match(msg.args[1])):
                 channel = msg.args[0]
                 abbreviation = self.abbreviations[irc]
