@@ -1,3 +1,11 @@
+	* Added supybot.plugins.Quotes.requireRegistration, which
+	determines whether a user need be registered to add Quotes to
+	the Quotes database.
+
+	* Added supybot.plugins.RSS.showLinks, which determines whether
+	the bot will show links to the RSS headlines along with the
+	normally displayed titles.
+
 	* Removed supybot.reply.withPrivateNotice and split it into two
 	separate configuration variables, supybot.reply.withNotice and
 	supybot.reply.inPrivate.

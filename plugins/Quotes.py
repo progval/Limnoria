@@ -47,6 +47,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 try:
@@ -54,6 +55,11 @@ try:
 except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this '\
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
+
+conf.registerPlugin('Quotes')
+conf.registerGlobalValue(conf.supybot.plugins.Quotes, 'requireRegistration',
+    registry.Boolean(False, """Determines whether the bot should require people
+    trying to use this plugin to be registered."""))
 
 class QuoteRecord(object):
     __metaclass__ = dbi.Record
@@ -64,8 +70,14 @@ class QuoteRecord(object):
         ]
     def __str__(self):
         format = conf.supybot.humanTimestampFormat()
+        try:
+            user = ircdb.users.getUser(int(self.by)).name
+        except ValueError:
+            user = self.by
+        except KeyError:
+            user = 'a user that is no longer registered'
         return 'Quote %r added by %s at %s.' % \
-               (self.text, self.by,
+               (self.text, user,
                 time.strftime(format, time.localtime(float(self.at))))
 
 class SqliteQuotesDB(object):
@@ -109,6 +121,8 @@ class SqliteQuotesDB(object):
         cursor = db.cursor()
         cursor.execute("""SELECT id, added_by, added_at, quote FROM quotes
                           ORDER BY random() LIMIT 1""")
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError
         (id, by, at, text) = cursor.fetchone()
         return QuoteRecord(id, by=by, at=int(at), text=text)
 
@@ -186,7 +200,18 @@ class Quotes(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         quote = privmsgs.getArgs(args)
-        id = self.db.add(channel, msg.nick, quote)
+        if self.registryValue('requireRegistration'):
+            try:
+                by = ircdb.users.getUserId(msg.prefix)
+            except KeyError:
+                irc.errorNotRegistered()
+                return
+        else:
+            try:
+                by = ircdb.users.getUserId(msg.prefix)
+            except KeyError:
+                by = msg.nick
+        id = self.db.add(channel, by, quote)
         irc.replySuccess('(Quote #%s added)' % id)
 
     def stats(self, irc, msg, args):
@@ -265,11 +290,11 @@ class Quotes(callbacks.Privmsg):
         the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        quote = self.db.random(channel)
-        if quote:
+        try:
+            quote = self.db.random(channel)
             self._replyQuote(irc, quote)
-        else:
-            self.error('I have no quotes for this channel.')
+        except dbi.NoRecordError:
+            irc.error('I have no quotes for this channel.')
 
     def info(self, irc, msg, args):
         """[<channel>] <id>
