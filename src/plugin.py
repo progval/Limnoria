@@ -101,7 +101,8 @@ def loadPluginClass(irc, module, register=None):
     if hasattr(cb, 'public'):
         public = cb.public
     conf.registerPlugin(plugin, register, public)
-    assert not irc.getCallback(plugin)
+    assert not irc.getCallback(plugin), \
+           'There is already a %r plugin registered.' % plugin
     try:
         renames = []#XXX registerRename(plugin)()
         if renames:

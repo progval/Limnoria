@@ -192,7 +192,8 @@ class Owner(callbacks.Plugin):
             conf.registerNetwork(network, password)
             serverS = '%s:%s' % serverPort
             conf.supybot.networks.get(network).servers.append(serverS)
-            assert conf.supybot.networks.get(network).servers()
+            assert conf.supybot.networks.get(network).servers(), \
+                   'No servers are set for the %s network.' % network
         self.log.info('Creating new Irc for %s.', network)
         newIrc = irclib.Irc(network)
         for irc in world.ircs:
