@@ -28,9 +28,7 @@
 ###
 
 """
-Keeps track of URLs posted to a channel, along with relevant context.  Allows
-searching for URLs and returning random URLs.  Also provides statistics on the
-URLs in the database.
+Shrinks URLs using tinyurl.com (and soon, ln-s.net as well).
 """
 
 __revision__ = "$Id$"
@@ -69,26 +67,75 @@ conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'tinyurlSnarfer',
     registry.Boolean(False, """Determines whether the
     tinyurl snarfer is enabled.  This snarfer will watch for URLs in the
     channel, and if they're sufficiently long (as determined by
-    supybot.plugins.ShrinkUrl.tinyurlSnarfer.minimumLength) it will post a smaller
-    from tinyurl.com."""))
-conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl.tinyurlSnarfer,
-    'minimumLength',
-    registry.PositiveInteger(48, """The minimum length a URL must be before the
-    tinyurl snarfer will snarf it."""))
+    supybot.plugins.ShrinkUrl.minimumLength) it will post a
+    smaller URL from tinyurl.com."""))
+conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'minimumLength',
+    registry.PositiveInteger(48, """The minimum length a URL must be before
+    the bot will shrink it."""))
 conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'nonSnarfingRegexp',
-    registry.Regexp(None, """Determines what URLs are to be snarfed and stored
-    in the database in the channel; URLs matching the regexp given will not be
-    snarfed.  Give the empty string if you have no URLs that you'd like to
-    exclude from being snarfed."""))
+    registry.Regexp(None, """Determines what URLs are to be snarfed; URLs
+    matching the regexp given will not be snarfed.  Give the empty string if
+    you have no URLs that you'd like to exclude from being snarfed."""))
+conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'outFilter',
+    registry.Boolean(False, """Determines whether the bot will shrink the URLs
+    of outgoing messages if those URLs are longer than
+    supybot.plugins.ShrinkUrl.minimumLength."""))
 
+class CdbShrunkenUrlDB(object):
+    def __init__(self, filename):
+        self.db = conf.supybot.databases.types.cdb.connect(filename)
+        
+    def get(self, url):
+        return self.db[url]
+
+    def set(self, url, tinyurl):
+        self.db[url] = tinyurl
+
+    def close(self):
+        self.db.close()
+
+    def flush(self):
+        self.db.flush()
+
+ShrunkenUrlDB = plugins.DB('ShrinkUrl', {'cdb': CdbShrunkenUrlDB})
+        
 class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
     regexps = ['tinyurlSnarfer']
+    def __init__(self):
+        self.db = ShrunkenUrlDB()
+        self.__parent = super(ShrinkUrl, self)
+        self.__parent.__init__()
+        
+    def die(self):
+        self.db.close()
+
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
-            super(ShrinkUrl, self).callCommand(name, irc, msg, *L, **kwargs)
+            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
         except webutils.WebError, e:
             irc = callbacks.SimpleProxy(irc, msg)
             irc.error(str(e))
+
+    def _outFilterThread(self, irc, msg):
+        (channel, text) = msg.args
+        for m in webutils.httpUrlRe.finditer(text):
+            url = m.group(1)
+            if len(url) > self.registryValue('minimumLength', channel):
+                shortUrl = self._getTinyUrl(url)
+                text = text.replace(url, shortUrl)
+        newMsg = ircmsgs.privmsg(channel, text, msg=msg)
+        newMsg.tag('shrunken')
+        irc.queueMsg(newMsg)
+
+    def outFilter(self, irc, msg):
+        channel = msg.args[0]
+        if msg.command == 'PRIVMSG' and ircutils.isChannel(channel):
+            if not msg.shrunken:
+                if self.registryValue('outFilter', channel):
+                    if webutils.httpUrlRe.search(msg.args[1]):
+                        self._outFilterThread(irc, msg)
+                        return None
+        return msg
             
     def tinyurlSnarfer(self, irc, msg, match):
         r"https?://[^\])>\s]{13,}"
@@ -101,7 +148,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
             if r and r.search(url) is not None:
                 self.log.debug('Matched nonSnarfingRegexp: %r', url)
                 return
-            minlen = self.registryValue('tinyurlSnarfer.minimumLength',channel)
+            minlen = self.registryValue('minimumLength',channel)
             if len(url) >= minlen:
                 tinyurl = self._getTinyUrl(url)
                 if tinyurl is None:
@@ -109,18 +156,25 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
                     return
                 domain = webutils.getDomain(url)
                 s = '%s (at %s)' % (ircutils.bold(tinyurl), domain)
-                irc.reply(s, prefixName=False)
+                m = irc.reply(s, prefixName=False)
+                m.tag('shrunken')
     tinyurlSnarfer = privmsgs.urlSnarfer(tinyurlSnarfer)
 
     _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
     def _getTinyUrl(self, url):
-        s = webutils.getUrl('http://tinyurl.com/create.php?url=%s' % url)
-        m = self._tinyRe.search(s)
-        if m is None:
-            tinyurl = None
-        else:
-            tinyurl = m.group(1)
-        return tinyurl
+        # XXX This should use a database, eventually, especially once we write
+        # the outFilter.
+        try:
+            return self.db.get(url)
+        except KeyError:
+            s = webutils.getUrl('http://tinyurl.com/create.php?url=%s' % url)
+            m = self._tinyRe.search(s)
+            if m is None:
+                tinyurl = None
+            else:
+                tinyurl = m.group(1)
+                self.db.set(url, tinyurl)
+            return tinyurl
 
     def tiny(self, irc, msg, args):
         """<url>
@@ -132,10 +186,9 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
             irc.error('Stop being a lazy-biotch and type the URL yourself.')
             return
         tinyurl = self._getTinyUrl(url)
-        domain = webutils.getDomain(url)
-        s = '%s (at %s)' % (ircutils.bold(tinyurl), domain)
         if tinyurl is not None:
-            irc.reply(s)
+            m = irc.reply(tinyurl)
+            m.tag('shrunken')
         else:
             s = 'Could not parse the TinyURL.com results page.'
             irc.errorPossibleBug(s)
