@@ -327,7 +327,13 @@ class IrcObjectProxy:
             if self.finished:
                 break
             if hasattr(cb, 'invalidCommand'):
-                cb.invalidCommand(self, self.msg, self.args)
+                try:
+                    cb.invalidCommand(self, self.msg, self.args)
+                except Exception, e:
+                    cb.log.exception('Uncaught exception in invalidCommand:')
+                    log.warning('Uncaught exception in %s.invalidCommand, '
+                                'continuing to call other invalidCommands.' %
+                                cb.name())
                 
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
@@ -433,6 +439,7 @@ class IrcObjectProxy:
                 if len(s) < allowedLength:
                     self.irc.queueMsg(reply(msg, s, self.prefixName,
                                             self.private,self.notice,self.to))
+                    self.finished = True
                     return
                 msgs = textwrap.wrap(s, allowedLength-30) # -30 is for "nick:"
                 msgs.reverse()

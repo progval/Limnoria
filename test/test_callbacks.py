@@ -323,6 +323,35 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     def testNoEscapingAttributeErrorFromTokenizeWithFirstElementList(self):
         self.assertError('[plugin list] list')
 
+    class InvalidCommand(callbacks.Privmsg):
+        def invalidCommand(self, irc, msg, tokens):
+            irc.reply(msg, 'foo')
+
+    def testInvalidCommandOneReplyOnly(self):
+        try:
+            original = conf.replyWhenNotCommand
+            conf.replyWhenNotCommand = True
+            self.assertRegexp('asdfjkl', 'not a valid command')
+            self.irc.addCallback(self.InvalidCommand())
+            self.assertResponse('asdfjkl', 'foo')
+            self.assertNoResponse(' ', 2)
+        finally:
+            conf.replyWhenNotCommand = original
+
+    class BadInvalidCommand(callbacks.Privmsg):
+        def invalidCommand(self, irc, msg, tokens):
+            s = 'This shouldn\'t keep Misc.invalidCommand from being called'
+            raise Exception, s
+        
+    def testBadInvalidCommandDoesNotKillAll(self):
+        try:
+            original = conf.replyWhenNotCommand
+            conf.replyWhenNotCommand = True
+            self.irc.addCallback(self.BadInvalidCommand())
+            self.assertRegexp('asdfjkl', 'not a valid command')
+        finally:
+            conf.replyWhenNotCommand = original
+            
 
 class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
     plugins = ('Utilities',) # Gotta put something.
