@@ -203,7 +203,7 @@ class Note(callbacks.Plugin):
         """
         try:
             note = self.db.get(id)
-        except KeyError:
+        except dbi.NoRecordError:
             irc.error('That\'s not a note in my database.', Raise=True)
         if note.to != user.id:
             irc.error('You may only reply to notes '
@@ -226,7 +226,10 @@ class Note(callbacks.Plugin):
         Unsends the note with the id given.  You must be the
         author of the note, and it must be unread.
         """
-        note = self.db.get(id)
+        try:
+            note = self.db.get(id)
+        except dbi.NoRecordError:
+            irc.errorInvalid('note id')
         if note.frm == user.id:
             if not note.read:
                 self.db.unsend(id)
@@ -257,9 +260,8 @@ class Note(callbacks.Plugin):
         """
         try:
             note = self.db.get(id)
-        except KeyError:
-            irc.error('That\'s not a valid note id.')
-            return
+        except dbi.NoRecordError:
+            irc.errorInvalid('note id')
         if user.id != note.frm and user.id != note.to:
             s = 'You may only retrieve notes you\'ve sent or received.'
             irc.error(s)
