@@ -56,11 +56,11 @@
 supybot \(em A robust and user friendly Python IRC bot 
 .SH "SYNOPSIS" 
 .PP 
-\fBsupybot\fR [\fB\options\fP] \fIconfigFile\fR  
+\fBsupybot\fR [\fBoptions\fP] \fIconfigFile\fR  
 .SH "DESCRIPTION" 
 .PP 
-\fBsupybot\fR is a robust, user-friendly, 
-and programmer-friendly Python IRC bot.  It aims to be an adequate 
+\fBsupybot\fR is a robust, user\-friendly, 
+and programmer\-friendly Python IRC bot.  It aims to be an adequate 
 replacement for most existing IRC bots.  It includes a very 
 flexible and poerful ACL system for controlling access to 
 commands, as well as more than 50 builtin plugins providing 
@@ -69,56 +69,56 @@ around 400 actual commands.
 .SH "OPTIONS" 
 .PP 
 These programs follow the usual GNU command line syntax, 
-with long options starting with two dashes (`-').  A summary of 
+with long options starting with two dashes (\`\-\').  A summary of 
 options is included below. 
  
-.IP "\fB\--version\fP" 10 
+.IP "\fB\-\-version\fP" 10 
 Show version of program. 
-.IP "\fB\-h\fP           \fB\--help\fP         " 10 
+.IP "\fB\-h\fP           \fB\-\-help\fP         " 10 
 Show summary of options. 
-.IP "\fB\-P\fP           \fB\--profile\fP         " 10 
+.IP "\fB\-P\fP           \fB\-\-profile\fP         " 10 
 Enable profiling. 
 .IP "\fB\-O\fP" 10 
-Optimizes asserts out of the code; -O0 optimizes asserts 
+Optimizes asserts out of the code; \-O0 optimizes asserts 
 and uses psyco. 
  
-.IP "\fB\-nNICK\fP           \fB\--nick=NICK\fP         " 10 
+.IP "\fB\-nNICK\fP           \fB\-\-nick=NICK\fP         " 10 
 Nick the bot should use. 
-.IP "\fB\-uUSER\fP           \fB\--user=USER\fP         " 10 
+.IP "\fB\-uUSER\fP           \fB\-\-user=USER\fP         " 10 
 Full username the bot should use. 
-.IP "\fB\-iIDENT\fP           \fB\--ident=IDENT\fP         " 10 
+.IP "\fB\-iIDENT\fP           \fB\-\-ident=IDENT\fP         " 10 
 Ident the bot should use.   
-.IP "\fB\-d\fP           \fB\--daemon\fP         " 10 
+.IP "\fB\-d\fP           \fB\-\-daemon\fP         " 10 
 Determines whether the bot will daemonize.  This is a 
 no-op on non-POSIX systems. 
  
-.IP "\fB\--allow-eval\fP" 10 
+.IP "\fB\-\-allow-eval\fP" 10 
 Determines whether the bot will allow the evaluation 
 of arbitrary Python code. 
  
-.IP "\fB\--allow-default-owner\fP" 10 
+.IP "\fB\-\-allow-default-owner\fP" 10 
 Determines whether the bot will allow its defaultCapabilities 
 not to include "-owner", thus giving all users the owner capability 
 by default.  This is dumb, hence we require a command-line option. 
  
-.IP "\fB\--allow-root\fP" 10 
+.IP "\fB\-\-allow-root\fP" 10 
 Determines whether the bot will be allowed to run as root.  You 
 don't want this.  Don't do it.  Even if you think you want it, you don't. 
  
-.IP "\fB\--debug\fP" 10 
+.IP "\fB\-\-debug\fP" 10 
 Determines whether some extra debugging stuff will be logged by 
 this script. 
  
 .SH "SEE ALSO" 
 .PP 
 python (1), supybot-wizard (1), supybot-adduser (1), 
-supybot-newplugin (1). 
+supybot\-newplugin (1). 
 .SH "AUTHOR" 
 .PP 
 This manual page was originally written by Jonathan Hseu vomjom@debian.org for 
 the \fBDebian\fP system (but may be used by others).  Permission is 
 granted to copy, distribute and/or modify this document under 
-the terms of the Supybot license, a BSD-style license.  
+the terms of the Supybot license, a BSD\-style license.  
  
 .PP 
 On Debian systems with Supybot installed, the complete text 
