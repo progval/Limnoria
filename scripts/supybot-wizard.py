@@ -132,7 +132,7 @@ def upgradeFromFormerBotscript(filename):
     #botscript = __import__(filename)
     ### Eh, just don't forget this.
 
-if __name__ == '__main__':
+def main():
     ### Remember to do some optparse stuff here.  Especially we need to
     ### remember to be able to upgrade from another created botscript.
 
@@ -599,3 +599,9 @@ if __name__ == '__main__':
     you can start your bot script with the command line "./%s".  If you're not
     running a *nix or similar machine, you'll just have to start it like you
     start all your other Python scripts.""" % (filename, filename))
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
