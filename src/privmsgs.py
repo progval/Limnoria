@@ -290,12 +290,12 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         """
         name = getArgs(args)
         if name in [cb.name() for cb in irc.callbacks]:
-            irc.error('Sorry, that module is already loaded.')
+            irc.error(msg, 'That module is already loaded.')
             return
         try:
             moduleInfo = imp.find_module(name)
         except ImportError:
-            irc.error(msg, 'Sorry, no plugin %s exists.' % name)
+            irc.error(msg, 'No plugin %s exists.' % name)
             return
         module = imp.load_module(name, *moduleInfo)
         callback = module.Class()
@@ -316,7 +316,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
             try:
                 moduleInfo = imp.find_module(name)
             except ImportError:
-                irc.error(msg, 'Sorry, no plugin %s exists.' % name)
+                irc.error(msg, 'No plugin %s exists.' % name)
                 return
             module = imp.load_module(name, *moduleInfo)
             callback = module.Class()
