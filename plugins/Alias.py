@@ -253,6 +253,8 @@ class Alias(callbacks.Privmsg):
             raise AliasError, 'Names cannot contain spaces or square brackets.'
         if conf.supybot.pipeSyntax() and '|' in name:
             raise AliasError, 'Names cannot contain pipes.'
+        if irc.getCallback(name):
+            raise AliasError, 'Names cannot coincide with names of plugins.'
         realName = callbacks.canonicalName(name)
         if name != realName:
             s = 'That name isn\'t valid.  Try %r instead.' % realName
