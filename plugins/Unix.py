@@ -111,7 +111,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Unix.fortune, 'files',
 
 conf.registerGroup(conf.supybot.plugins.Unix, 'spell')
 conf.registerGlobalValue(conf.supybot.plugins.Unix.spell, 'command',
-    registry.String(utils.findBinaryInPath('aspell') or \
+    registry.String(utils.findBinaryInPath('aspell') or
                     utils.findBinaryInPath('ispell') or '', """Determines what
     command will be called for the spell command."""))
 
@@ -286,5 +286,5 @@ class Unix(callbacks.Privmsg):
 
 
 Class = Unix
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
