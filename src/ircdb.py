@@ -218,6 +218,9 @@ class IrcChannel(object):
     def checkCapability(self, capability):
         if capability in self.capabilities:
             return True
+        anticapability = makeAntiCapability(capability)
+        if anticapability in self.capabilities:
+            return False
         else:
             if isAntiCapability(capability):
                 return not self.defaultAllow
