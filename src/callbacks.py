@@ -800,7 +800,7 @@ class IrcObjectProxy(IrcReplyProxy):
         target = self.private and self.to or self.msg.args[0]
         if self.finalEvaled:
             try:
-                if not isinstance(self.irc, irclib.Irc):
+                if isinstance(self.irc, self.__class__):
                     s = s[:conf.supybot.reply.maximumLength()]
                     return self.irc.reply(s, to=self.to,
                                           notice=self.notice,
