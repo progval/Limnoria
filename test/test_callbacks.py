@@ -314,6 +314,14 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             """Third"""
             irc.reply(' '.join(args))
 
+    def tearDown(self):
+        if hasattr(self.First, 'first'):
+            del self.First.first
+        if hasattr(self.Second, 'second'):
+            del self.Second.second
+        if hasattr(self.FirstRepeat, 'firstrepeat'):
+            del self.FirstRepeat.firstrepeat
+
     def testDispatching(self):
         self.irc.addCallback(self.First())
         self.irc.addCallback(self.Second())
