@@ -180,8 +180,11 @@ class Misc(callbacks.Privmsg):
             else:
                 for name in names:
                     L.append('%s %s' % (name, key))
-        L.sort()
-        irc.reply(msg, utils.commaAndify(L))
+        if L:
+            L.sort()
+            irc.reply(msg, utils.commaAndify(L))
+        else:
+            irc.error(msg, 'No appropriate commands were found.')
 
     def help(self, irc, msg, args):
         """[<plugin>] <command>
