@@ -137,7 +137,7 @@ class Todo(callbacks.Privmsg):
                      for item in cursor.fetchall()]
             irc.reply(msg, utils.commaAndify(s))
 
-    def addtodo(self, irc, msg, args):
+    def add(self, irc, msg, args):
         """[--priority=<num>] <text>
 
         Adds <text> as a task in your own personal todo list.  The optional
@@ -165,7 +165,7 @@ class Todo(callbacks.Privmsg):
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
-    def removetodo(self, irc, msg, args):
+    def remove(self, irc, msg, args):
         """<task id>
 
         Removes <task id> from your personal todo list.
@@ -188,7 +188,7 @@ class Todo(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
 
     _sqlTrans = string.maketrans('*?', '%_')
-    def searchtodo(self, irc, msg, args):
+    def search(self, irc, msg, args):
         """[--{regexp,exact}=<value>] [<glob>]
 
         Searches the keyspace for tasks matching <glob>.  If --regexp is given,

@@ -50,31 +50,31 @@ if sqlite is not None:
             self.assertNotError('todo')
             self.assertRegexp('todo', 'You have no tasks in your todo list.')
             # Add a task
-            self.assertNotError('addtodo wash my car')
+            self.assertNotError('todo add wash my car')
             self.assertRegexp('todo', '#1: wash my car')
             # Check that task
             self.assertNotError('todo 1')
 
         def testAddtodo(self):
-            self.assertNotError('addtodo code a new plugin')
-            self.assertNotError('addtodo --priority=1000 fix all bugs')
+            self.assertNotError('todo add code a new plugin')
+            self.assertNotError('todo add --priority=1000 fix all bugs')
 
         def testRemovetodo(self):
-            self.assertNotError('addtodo do something else')
-            self.assertNotError('removetodo 1')
+            self.assertNotError('todo add do something else')
+            self.assertNotError('todo remove 1')
 
         def testSearchtodo(self):
-            self.assertNotError('addtodo task number one')
-            self.assertRegexp('searchtodo task*', '#1: task number one')
-            self.assertNotError('addtodo task number two is much longer than'
+            self.assertNotError('todo add task number one')
+            self.assertRegexp('todo search task*', '#1: task number one')
+            self.assertNotError('todo add task number two is much longer than'
                                 ' task number one')
-            self.assertRegexp('searchtodo task*', '#1: task number one and #2:'
+            self.assertRegexp('todo search task*','#1: task number one and #2:'
                               ' task number two is much longer than task '
                               'number...')
-            self.assertRegexp('searchtodo --exact "task number one"',
+            self.assertRegexp('todo search --exact "task number one"',
                               '#1: task number one')
-            self.assertError('searchtodo --regexp s/bustedregex')
-            self.assertRegexp('searchtodo --regexp m/task/', '#1: task number'
+            self.assertError('todo search --regexp s/bustedregex')
+            self.assertRegexp('todo search --regexp m/task/', '#1: task number'
                               ' one and #2: task number two is much longer '
                               'than task number...')
 
