@@ -120,18 +120,19 @@ def isNick(s, strictRfc=True, nicklen=None):
             ret = len(s) <= nicklen
         return ret
     else:
+        # XXX special values to isChannel?
         return not isChannel(s) and \
                not isUserHostmask(s) and \
                not ' ' in s and not '!' in s
 
-def isChannel(s, chantypes='#&+!'):
+def isChannel(s, chantypes='#&+!', channellen=50):
     """Returns True if s is a valid IRC channel name."""
     return s and \
-           len(s) <= 50 and \
-            ',' not in s and \
-            '\x07' not in s and \
-            s[0] in chantypes and \
-            len(s.split()) == 1
+           ',' not in s and \
+           '\x07' not in s and \
+           s[0] in chantypes and \
+           len(s) <= channellen and \
+           len(s.split(None, 1)) == 1
 
 _patternCache = {}
 def _hostmaskPatternEqual(pattern, hostmask):
