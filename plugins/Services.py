@@ -127,7 +127,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     necessary if the bot is properly configured."""
     capability = 'admin'
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
+        self.__parent = super(Services, self)
+        self.__parent.__init__()
         for nick in self.registryValue('nicks'):
             registerNick(nick)
         self.reset()
@@ -209,7 +210,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             self.sentGhost = True
 
     def __call__(self, irc, msg):
-        callbacks.Privmsg.__call__(self, irc, msg)
+        self.__parent.__call__(irc, msg)
         nick = self._getNick()
         if nick not in self.registryValue('nicks'):
             return
