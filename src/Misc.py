@@ -38,7 +38,7 @@ import fix
 import os
 import sys
 import getopt
-from itertools import ifilter
+from itertools import imap, ifilter
 
 import conf
 import debug
@@ -173,13 +173,13 @@ class Misc(callbacks.Privmsg):
         hostmask of the person giving the command.
         """
         nick = privmsgs.getArgs(args, required=0, optional=1)
-        try:
-            if nick:
+        if nick:
+            try:
                 irc.reply(msg, irc.state.nickToHostmask(nick))
-            else:
-                irc.reply(msg, msg.prefix)
-        except KeyError:
-            irc.error(msg, 'I haven\'t seen anyone named %r' % nick)
+            except KeyError:
+                irc.error(msg, 'I haven\'t seen anyone named %r' % nick)
+        else:
+            irc.reply(msg, msg.prefix)
 
     def version(self, irc, msg, args):
         """takes no arguments
@@ -214,7 +214,7 @@ class Misc(callbacks.Privmsg):
             if file.endswith('.log'):
                 stats = os.stat(os.path.join(conf.logDir, file))
                 result.append((file, str(stats.st_size)))
-        irc.reply(msg, ', '.join(map(': '.join, result)))
+        irc.reply(msg, ', '.join(imap(': '.join, result)))
 
     def getprefixchar(self, irc, msg, args):
         """takes no arguments
@@ -286,29 +286,26 @@ class Misc(callbacks.Privmsg):
                                                    
         predicates = []
         for (option, arg) in optlist:
-            option = option.strip('-')
-            if option == 'from':
+            if option == '--from':
                 predicates.append(lambda m, arg=arg: \
                                   ircutils.hostmaskPatternEqual(arg, m.nick))
-            elif option == 'in' or option == 'to':
+            elif option == '--in' or option == 'to':
                 if not ircutils.isChannel(arg):
                     irc.error(msg, 'Argument to --%s must be a channel.' % arg)
                     return
                 predicates.append(lambda m, arg=arg: m.args[0] == arg)
-            elif option == 'with':
+            elif option == '--with':
                 predicates.append(lambda m, arg=arg: arg in m.args[1])
-            elif option == 'regexp':
+            elif option == '--regexp':
                 try:
                     r = utils.perlReToPythonRe(arg)
                 except ValueError, e:
                     irc.error(msg, str(e))
                     return
                 predicates.append(lambda m: r.search(m.args[1]))
-        first = True
-        for m in ifilter(self._validLastMsg, reviter(irc.state.history)):
-            if first:
-                first = False
-                continue
+        iterable = ifilter(self._validLastMsg, reviter(irc.state.history))
+        iterable.next() # Drop the first message.
+        for m in iterable:
             for predicate in predicates:
                 if not predicate(m):
                     break
