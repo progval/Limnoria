@@ -79,6 +79,8 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
         # test that it works
         self.assertNotError('https://sourceforge.net/tracker/?'
                             'func=detail&atid=105470&aid=827260&group_id=5470')
+        self.assertNoResponse('https://sourceforge.net/tracker/?'\
+            'group_id=58965&atid=489447')
 
     def testDisablesfsnarfer(self):
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
