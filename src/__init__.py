@@ -31,11 +31,9 @@ import sys
 import os.path
 import dynamicScope
 
-installDir = os.path.dirname(sys.modules[__name__].__file__)
+import supybot.utils as utils
 
-othersDir = os.path.join(installDir, 'others')
-
-sys.path.insert(0, othersDir)
+__builtins__['format'] = utils.str.format
 
 class Author(object):
     def __init__(self, name=None, nick=None, email=None, **kwargs):
