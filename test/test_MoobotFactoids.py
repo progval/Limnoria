@@ -53,6 +53,9 @@ if sqlite is not None:
             self.assertResponse('foo', 'foo is foo')
             self.assertNotError('bar is <reply>moo is moo')
             self.assertResponse('bar', 'moo is moo')
+            # Check substitution
+            self.assertNotError('who is <reply>$who')
+            self.assertResponse('who', 'foo')
 
         def testLiteral(self):
             self.assertError('literal moo') # no factoids yet

@@ -159,7 +159,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         self.db.close()
         del self.db
 
-    def parseFactoid(self, fact):
+    def parseFactoid(self, irc, msg, fact):
         type = "define"  # Default is to just spit the factoid back as a
                          # definition of what the key is (i.e., "foo is bar")
         newfact = ''.join(pick(tokenize(fact)))
@@ -171,6 +171,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             newfact = newfact.replace("<action>", "", 1)
             newfact = newfact.strip()
             type = "action"
+        newfact = plugins.standardSubstitute(irc, msg, newfact)
         return (type, newfact)
 
     def updateFactoidRequest(self, key, hostmask):
@@ -200,7 +201,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             hostmask = msg.prefix
             self.updateFactoidRequest(key, hostmask)
             # Now actually get the factoid and respond accordingly
-            (type, text) = self.parseFactoid(fact)
+            (type, text) = self.parseFactoid(irc, msg, fact)
             if type == "action":
                 irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), text))
             elif type == "reply":
