@@ -32,14 +32,24 @@
 from testsupport import *
 
 url = 'http://www.advogato.org/rss/articles.xml'
-if network:
-    class RSSTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('RSS',)
+class RSSTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('RSS',)
+    def testRssAddBadName(self):
+        self.assertError('rss add "foo bar" %s' % url)
+
+    def testCantAddFeedNamedRss(self):
+        self.assertError('rss add rss %s' % url)
+
+    def testCantRemoveMethodThatIsntFeed(self):
+        self.assertError('rss remove rss')
+
+    if network:
         def testRssinfo(self):
             self.assertNotError('rss info %s' % url)
             self.assertNotError('rss add advogato %s' % url)
             self.assertNotError('rss info advogato')
             self.assertNotError('rss info AdVogATo')
+            self.assertNotError('rss remove advogato')
 
         def testRssinfoDoesTimeProperly(self):
             self.assertNotRegexp('rss info http://slashdot.org/slashdot.rss',
@@ -51,26 +61,12 @@ if network:
             self.failUnless(m.args[1].count('||') == 1)
 
         def testRssAdd(self):
-            try:
-                orig = conf.supybot.reply.whenNotCommand()
-                conf.supybot.reply.whenNotCommand.setValue(True)
-                self.assertNotError('rss add advogato %s' % url)
-                self.assertNotError('advogato')
-                self.assertNotError('rss advogato')
-                self.assertNotError('rss remove advogato')
-                self.assertError('advogato')
-                self.assertError('rss advogato')
-            finally:
-                conf.supybot.reply.whenNotCommand.setValue(orig)
-
-        def testRssAddBadName(self):
-            self.assertError('rss add "foo bar" %s' % url)
-
-        def testCantAddFeedNamedRss(self):
-            self.assertError('rss add rss %s' % url)
-
-        def testCantRemoveMethodThatIsntFeed(self):
-            self.assertError('rss remove rss')
+            self.assertNotError('rss add advogato %s' % url)
+            self.assertNotError('advogato')
+            self.assertNotError('rss advogato')
+            self.assertNotError('rss remove advogato')
+            self.assertError('advogato')
+            self.assertError('rss advogato')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
