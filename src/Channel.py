@@ -229,8 +229,6 @@ class Channel(callbacks.Privmsg):
                                ('haveOp', 'dehalfop someone'),
                                any('nickInChannel')])
 
-    # XXX These nicks should really be sets, rather than lists, especially
-    #     we check whether the bot's nick is in them.
     # XXX We should respect the MODES part of an 005 here.  Helper function
     #     material.
     def devoice(self, irc, msg, args, channel, nicks):
