@@ -41,6 +41,7 @@ import fix
 import time
 import heapq
 
+import log
 import drivers
 
 class mytuple(tuple):
