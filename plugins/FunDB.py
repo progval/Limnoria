@@ -78,7 +78,6 @@ def addWord(db, word, commit=False):
 
 def tableExists(db, table):
     cursor = db.cursor()
-    sql = 
     try:
         cursor.execute("""SELECT * from %s LIMIT 1""" % table)
         return True
