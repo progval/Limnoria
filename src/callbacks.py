@@ -677,6 +677,10 @@ class IrcObjectProxy(RichReplyMethods):
         return cbs
 
     def finalEval(self):
+        # Now that we've already iterated through our args and made sure
+        # that any list of args was evaluated (by spawning another
+        # IrcObjectProxy to evaluated it into a string), we can finally
+        # evaluated our own list of arguments.
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
         command = self.args[0]
