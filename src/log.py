@@ -202,7 +202,7 @@ class ValidLogLevel(registry.String):
         self.setValue(level)
 
     def __str__(self):
-        level = logging.getLevelName(self.value)
+        level = str(logging.getLevelName(self.value))
         if level.startswith('Level'):
             level = level.split()[-1]
         return level
