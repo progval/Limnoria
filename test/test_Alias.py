@@ -120,7 +120,7 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testChannel(self):
         self.assertNotError('alias add channel echo $channel')
-        self.assertResponse('channel', self.channel)
+        self.assertResponse('alias channel', self.channel)
 
     def testNick(self):
         self.assertNotError('alias add sendingnick "rot13 [rot13 $nick]"')
