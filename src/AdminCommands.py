@@ -159,11 +159,16 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
             try:
                 id = ircdb.users.getUserId(name)
                 user = ircdb.users.getUser(id)
+            except KeyError:
+                irc.error(msg, conf.replyNoUser)
+                return
+            try:
                 user.removeCapability(capability)
                 ircdb.users.setUser(id, user)
                 irc.reply(msg, conf.replySuccess)
             except KeyError:
-                irc.error(msg, conf.replyNoUser)
+                irc.error(msg, 'That user doesn\'t have that capability.')
+                return
         else:
             s = 'You can\'t remove capabilities you don\'t have.'
             irc.error(msg, s)

@@ -39,6 +39,11 @@ class AdminCommandsTestCase(PluginTestCase, PluginDocumentation):
 
     def testAddcapability(self):
         self.assertError('addcapability sdlkfj foo')
+        (id, u) = ircdb.users.newUser()
+        u.name = 'foo'
+        ircdb.users.setUser(id, u)
+        self.assertError('removecapability foo bar')
+        self.assertNotRegexp('removecapability foo bar', 'find')
 
     def testRemoveCapability(self):
         self.assertError('removecapability alsdfkjasd foo')
