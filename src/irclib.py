@@ -642,10 +642,11 @@ class Irc(IrcCommandDispatcher):
     def doError(self, msg):
         """Handles ERROR messages."""
         log.info('Error message from %s: %s', self.server, msg.args[0])
-        if msg.args[0].startswith('Closing Link'):
-           self.driver.reconnect()
-        elif 'too fast' in msg.args[0]:
-           self.driver.reconnect(wait=True)
+        if not self.zombie:
+           if msg.args[0].startswith('Closing Link'):
+              self.driver.reconnect()
+           elif 'too fast' in msg.args[0]:
+              self.driver.reconnect(wait=True)
 
     def doNick(self, msg):
         """Handles NICK messages."""
