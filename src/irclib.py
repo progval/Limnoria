@@ -644,7 +644,7 @@ class Irc(IrcCommandDispatcher):
         if not self.zombie:
             self.fastqueue.enqueue(msg)
         else:
-            log.warning('Refusing to send %r; %s is a zombie.', self, msg)
+            log.warning('Refusing to send %r; %s is a zombie.', msg, self)
 
     def takeMsg(self):
         """Called by the IrcDriver; takes a message to be sent."""
@@ -667,7 +667,7 @@ class Irc(IrcCommandDispatcher):
                 log.warning('Ping sent at %s not replied to.',
                             log.timestamp(self.lastping))
                 self.driver.reconnect()
-            else:
+            elif not self.zombie:
                 self.lastping = now
                 now = str(int(now))
                 self.outstandingPing = True
