@@ -96,6 +96,7 @@ class RSS(callbacks.Privmsg):
         self.feedNames = sets.Set()
         self.lastRequest = {}
         self.cachedFeeds = {}
+        self.currentlyDownloading = sets.Set()
         for (name, url) in registry._cache.iteritems():
             name = name.lower()
             if name.startswith('supybot.plugins.rss.feeds.'):
@@ -151,20 +152,27 @@ class RSS(callbacks.Privmsg):
     def willGetNewFeed(self, url):
         now = time.time()
         wait = self.registryValue('waitPeriod')
+        if url in self.currentlyDownloading:
+            return False
         if url not in self.lastRequest or now - self.lastRequest[url] > wait:
             return True
         else:
             return False
+
     def getFeed(self, url):
         if self.willGetNewFeed(url):
             try:
-                self.log.info('Downloading new feed from <%s>', url)
-                results = rssparser.parse(url)
-            except sgmllib.SGMLParseError:
-                self.log.exception('Uncaught exception from rssparser:')
-                raise callbacks.Error, 'Invalid (unparseable) RSS feed.'
-            self.cachedFeeds[url] = results
-            self.lastRequest[url] = time.time()
+                self.currentlyDownloading.add(url)
+                try:
+                    self.log.info('Downloading new feed from <%s>', url)
+                    results = rssparser.parse(url)
+                except sgmllib.SGMLParseError:
+                    self.log.exception('Uncaught exception from rssparser:')
+                    raise callbacks.Error, 'Invalid (unparseable) RSS feed.'
+                self.cachedFeeds[url] = results
+                self.lastRequest[url] = time.time()
+            finally:
+                self.currentlyDownloading.discard(url)
         return self.cachedFeeds[url]
 
     def getHeadlines(self, feed):
