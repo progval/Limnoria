@@ -53,7 +53,7 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         """
         keys = []
         channels = []
-        for s in args:
+        for channel in args:
             if ',' in s:
                 (channel, key) = s.split(',', 1)
                 channels.insert(0, channel)
