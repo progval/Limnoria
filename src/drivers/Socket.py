@@ -63,7 +63,12 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.connected = False
         self.reconnectWaitsIndex = 0
         self.reconnectWaits = reconnectWaits
-        self.connect()
+        #Only connect to non-SSL servers
+        if self.networkGroup.get('ssl').value:
+            drivers.log.error('The Socket driver can not connect to SSL \
+                                servers. Stopping.')
+        else:
+            self.connect()
 
     def _getNextServer(self):
         oldServer = getattr(self, 'currentServer', None)
