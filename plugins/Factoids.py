@@ -298,8 +298,7 @@ class Factoids(callbacks.Privmsg):
                 try:
                     irc.reply(factoids[number])
                 except IndexError:
-                    irc.error('That\'s not a valid number for that key.')
-                    return
+                    irc.errorInvalid('number for that key')
             else:
                 intro = self.registryValue('factoidPrefix', channel)
                 prefix = '%s %s' % (utils.quoted(key), intro)
@@ -333,8 +332,8 @@ class Factoids(callbacks.Privmsg):
         """
         factoids = self.db.get(channel, key)
         self._replyFactoids(irc, channel, key, factoids, number)
-    whatis = wrap(whatis, ['channeldb', reverse(optional('positiveInt', 0)), 'text'],
-                  allowExtra=True)
+    whatis = wrap(whatis, ['channeldb', reverse(optional('positiveInt', 0)),
+                           'something'])
 
     def lock(self, irc, msg, args, channel, key):
         """[<channel>] <key>
@@ -345,7 +344,7 @@ class Factoids(callbacks.Privmsg):
         """
         self.db.lock(channel, key)
         irc.replySuccess()
-    lock = wrap(lock, ['channeldb', 'text'], allowExtra=True)
+    lock = wrap(lock, ['channeldb', 'something'])
 
     def unlock(self, irc, msg, args, channel, key):
         """[<channel>] <key>
@@ -356,7 +355,7 @@ class Factoids(callbacks.Privmsg):
         """
         self.db.unlock(channel, key)
         irc.replySuccess()
-    unlock = wrap(unlock, ['channeldb', 'text'], allowExtra=True)
+    unlock = wrap(unlock, ['channeldb', 'something'])
 
     def forget(self, irc, msg, args, channel, number, key):
         """[<channel>] <key> [<number>|*]
@@ -383,7 +382,7 @@ class Factoids(callbacks.Privmsg):
                       'or use * to designate all of them.' % str(e))
     forget = wrap(forget, ['channeldb',
                            reverse(first('positiveInt', ('literal', '*'))),
-                           'text'], allowExtra=True)
+                           'something'])
 
     def random(self, irc, msg, args, channel):
         """[<channel>]
@@ -422,7 +421,7 @@ class Factoids(callbacks.Privmsg):
             (utils.quoted(key), locked and 'locked' or 'not locked',
              utils.nItems('factoid', counter), factoids)
         irc.reply(s)
-    info = wrap(info, ['channeldb', 'text'], allowExtra=True)
+    info = wrap(info, ['channeldb', 'something'])
 
     def change(self, irc, msg, args):
         """[<channel>] <key> <number> <regexp>
@@ -497,7 +496,7 @@ class Factoids(callbacks.Privmsg):
             irc.reply('No keys matched that query.')
     search = wrap(search, ['channeldb',
                            getopts({'values':'', 'regexp':'regexpMatcher'}),
-                           additional('text')])
+                           additional('something')]) # XXX 'glob' spec
 
 
 Class = Factoids
