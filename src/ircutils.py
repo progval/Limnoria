@@ -54,12 +54,6 @@ from cStringIO import StringIO as sio
 
 import utils
 
-###
-# strictRfc: Determines whether the bot will very strictly follow the RCE
-#            or whether it will allow things like @ and . in nicks.
-###
-strictRfc = False
-
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
     p1 = s.find('!')
@@ -112,18 +106,12 @@ def nickEqual(nick1, nick2):
 
 
 _nickchars = r'_[]\`^{}|-'
-strictNickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$'
-                          % (re.escape(_nickchars), re.escape(_nickchars)))
-_nickchars += '@.'
 nickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$'
                     % (re.escape(_nickchars), re.escape(_nickchars)))
 
 def isNick(s):
     """Returns True if s is a valid IRC nick."""
-    if strictRfc:
-        return bool(strictNickRe.match(s))
-    else:
-        return bool(nickRe.match(s))
+    return bool(nickRe.match(s))
 
 def isChannel(s):
     """Returns True if s is a valid IRC channel name."""

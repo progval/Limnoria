@@ -53,6 +53,12 @@ _pluginsDir = os.path.join(installDir, 'plugins')
 ###
 allowEval = False
 
+###
+# strictRfc: Determines whether the bot will very strictly follow the RCE
+#            or whether it will allow things like @ and . in nicks.
+###
+strictRfc = False
+
 supybot = registry.Group()
 supybot.setName('supybot')
 

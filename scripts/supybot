@@ -322,8 +322,7 @@ if __name__ == '__main__':
     import callbacks
     import Owner
 
-    import ircutils
-    ircutils.strictRfc = options.strictRfc
+    conf.strictRfc = options.strictRfc
 
     irc = irclib.Irc(nick, user, ident, password)
     callback = Owner.Class()
