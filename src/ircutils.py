@@ -216,7 +216,7 @@ def separateModes(args):
     [('+s', None), ('-o', 'test')]
 
     >>> separateModes(['+sntl', '100'])
-    [('+s', None), ('+n', None), ('+t', None), ('+l', '100')]
+    [('+s', None), ('+n', None), ('+t', None), ('+l', 100)]
     """
     if not args:
         return []
@@ -236,7 +236,12 @@ def separateModes(args):
             else:
                 requireArguments = _minusRequireArguments
             if modes[index] in requireArguments:
-                ret.append((last + modes[index], args.pop(0)))
+                arg = args.pop(0)
+                try:
+                    arg = int(arg)
+                except ValueError:
+                    pass
+                ret.append((last + modes[index], arg))
             else:
                 ret.append((last + modes[index], None))
             index += 1

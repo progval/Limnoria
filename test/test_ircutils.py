@@ -154,7 +154,7 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(ircutils.separateModes(['+s-o', 'x']),
                          [('+s', None), ('-o', 'x')])
         self.assertEqual(ircutils.separateModes(['+sntl', '100']),
-                        [('+s', None),('+n', None),('+t', None),('+l', '100')])
+                        [('+s', None),('+n', None),('+t', None),('+l', 100)])
 
     def testToLower(self):
         self.assertEqual('jemfinch', ircutils.toLower('jemfinch'))
