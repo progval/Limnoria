@@ -40,64 +40,59 @@ import plugins
 
 import re
 import sets
+import time
 
 import conf
 import utils
 import ircdb
 import ircmsgs
 import privmsgs
+import registry
 import callbacks
 
 def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('BadWords', True)
-    while yn('Would you like to add some bad words?'):
+    if yn('Would you like to add some bad words?'):
         words = anything('What words? (separate individual words by spaces)')
-        onStart.append('badwords add %s' % words)
+        conf.supybot.plugins.BadWords.words.set(words)
 
 nastyChars = '!@#$' * 256
 def subber(m):
     return nastyChars[:len(m.group(1))]
 
+class LastModifiedSetOfStrings(registry.SpaceSeparatedListOfStrings):
+    List = sets.Set
+    lastModified = 0
+    def setValue(self, v):
+        self.lastModified = time.time()
+        registry.SpaceSeparatedSetOfStrings.setValue(self, v)
+
+conf.registerPlugin('BadWords')
+conf.registerChannelValue(conf.supybot.plugins.BadWords, 'words',
+    registry.SpaceSeparatedListOfStrings([], """Determines what words are
+    considered to be 'bad' so the bot won't say them."""))
+
 class BadWords(privmsgs.CapabilityCheckingPrivmsg):
     priority = 1
-    capability = 'admin'
     def __init__(self):
         privmsgs.CapabilityCheckingPrivmsg.__init__(self)
-        self._badwords = sets.Set()
+        self.lastModified = 0
+        self.words = conf.supybot.plugins.BadWords.words
 
     def outFilter(self, irc, msg):
-        if hasattr(self, 'regexp') and msg.command == 'PRIVMSG':
+        if msg.command == 'PRIVMSG':
+            if self.lastModified < self.words.lastModified:
+                self.makeRegexp(self.words())
+                self.lastModified = time.time()
             s = msg.args[1]
             s = self.regexp.sub(subber, s)
             return ircmsgs.privmsg(msg.args[0], s)
         else:
             return msg
 
-    def makeRegexp(self):
-        self.regexp = re.compile(r'\b('+'|'.join(self._badwords)+r')\b', re.I)
-
-    def add(self, irc, msg, args):
-        """<word> [<word> ...]
-
-        Adds all <word>s to the list of words the bot isn't to say.
-        """
-        words = privmsgs.getArgs(args).split()
-        for word in words:
-            self._badwords.add(word)
-        self.makeRegexp()
-        irc.replySuccess()
-
-    def remove(self, irc, msg, args):
-        """<word> [<word> ...]
-
-        Removes all <word>s from the list of words the bot isn't to say.
-        """
-        words = privmsgs.getArgs(args).split()
-        for word in words:
-            self._badwords.discard(word)
-        self.makeRegexp()
-        irc.replySuccess()
+    def makeRegexp(self, iterable):
+        self.regexp = re.compile(r'\b('+'|'.join(iterable)+r')\b', re.I)
 
 
 Class = BadWords
