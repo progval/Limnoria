@@ -31,7 +31,12 @@
 The Lookup plugin handles looking up various values by their key.
 """
 
+import supybot
+
 __revision__ = "$Id$"
+__contributors__ = {
+    supybot.authors.skorobeus: ['--nokey parameter', 'database abstraction'],
+    }
 
 import supybot.plugins as plugins
 
@@ -42,6 +47,7 @@ import sets
 import getopt
 import string
 
+import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.privmsgs as privmsgs
@@ -85,159 +91,97 @@ def configure(advanced):
             continue
         command = something('What would you like the command to be?')
         conf.registerGlobalValue(lookups,command, registry.String(filename,''))
-
+        nokeyVal = yn('Would you like the key to be shown for random \
+                        responses?')
+        conf.registerGlobalValue(lookups.get(command), 'nokey', 
+                                    registry.Boolean(nokeyVal, ''))
 
 conf.registerPlugin('Lookup')
 conf.registerGroup(conf.supybot.plugins.Lookup, 'lookups')
 
-class LookupDB(plugins.DBHandler):
-    def makeDb(self, filename):
-        return sqlite.connect(filename)
-
-class Lookup(callbacks.Privmsg):
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        self.lookupDomains = sets.Set()
-        dataDir = conf.supybot.directories.data()
-        self.dbHandler = LookupDB(name=os.path.join(dataDir, 'Lookup'))
-        for (name, value) in registry._cache.iteritems():
-            name = name.lower()
-            if name.startswith('supybot.plugins.lookup.lookups.'):
-                name = name[len('supybot.plugins.lookup.lookups.'):]
-                if '.' in name:
-                    continue
-                self.addRegistryValue(name, value)
-        group = conf.supybot.plugins.Lookup.lookups
-        for (name, value) in group.getValues(fullNames=False):
-            name = name.lower() # Just in case.
-            filename = value()
-            try:
-                self.addDatabase(name, filename)
-                self.addCommand(name)
-            except Exception, e:
-                self.log.warning('Couldn\'t add lookup %s: %s', name, e)
-
-    def _shrink(self, s):
-        return utils.ellipsisify(s, 50)
-
-    def die(self):
-        self.dbHandler.die()
-
-    def remove(self, irc, msg, args):
-        """<name>
-
-        Removes the lookup for <name>.
-        """
-        name = privmsgs.getArgs(args)
-        name = callbacks.canonicalName(name)
-        if name not in self.lookupDomains:
-            irc.error('That\'s not a valid lookup to remove.')
-            return
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
+class SqliteLookupDB(object):
+    def __init__(self, filename):
         try:
-            cursor.execute("""DROP TABLE %s""" % name)
-            db.commit()
-            delattr(self.__class__, name)
-            irc.replySuccess()
-        except sqlite.DatabaseError:
-            irc.error('No such lookup exists.')
-    remove = privmsgs.checkCapability(remove, 'admin')
-
-    _splitRe = re.compile(r'(?<!\\):')
-    def add(self, irc, msg, args):
-        """<name> <filename>
-
-        Adds a lookup for <name> with the key/value pairs specified in the
-        colon-delimited file specified by <filename>.  <filename> is searched
-        for in conf.supybot.directories.data.  If <name> is not singular, we
-        try to make it singular before creating the command.
-        """
-        (name, filename) = privmsgs.getArgs(args, required=2)
-        name = utils.depluralize(name)
-        name = callbacks.canonicalName(name)
-        if hasattr(self, name):
-            s = 'I already have a command in this plugin named %s' % name
-            irc.error(s)
-            return
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
+            import sqlite
+        except ImportError:
+            raise callbacks.Error, 'You need to have PySQLite installed to '\
+                                   'use this plugin.  Download it at '\
+                                   '<http://pysqlite.sf.net/>'
+        self.filename = filename
         try:
-            cursor.execute("""SELECT * FROM %s LIMIT 1""" % name)
-            self.addCommand(name)
-        except sqlite.DatabaseError:
-            try:
-                self.addDatabase(name, filename)
-            except EnvironmentError, e:
-                irc.error('Could not open %s: %s' % (filename, e.args[1]))
-                return
-            self.addCommand(name)
-        self.addRegistryValue(name, filename)
-        irc.replySuccess('Lookup %s added.' % name)
-    add = privmsgs.checkCapability(add, 'admin')
+            self.db = sqlite.connect(self.filename)
+        except sqlite.DatabaseError, e:
+            raise dbi.InvalidDBError, str(e)
 
-    def addRegistryValue(self, name, filename):
-        v = registry.String(filename, '')
-        conf.supybot.plugins.Lookup.lookups.register(name, v)
-
-    def addDatabase(self, name, filename):
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        dataDir = conf.supybot.directories.data()
-        filename = os.path.join(dataDir, filename)
-        fd = file(filename)
-        try:
-            cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
-        except sqlite.DatabaseError:
-            cursor.execute("CREATE TABLE %s (key TEXT, value TEXT)" % name)
-            sql = "INSERT INTO %s VALUES (%%s, %%s)" % name
-            for line in utils.nonCommentNonEmptyLines(fd):
-                line = line.rstrip('\r\n')
-                try:
-                    (key, value) = self._splitRe.split(line, 1)
-                    key = key.replace('\\:', ':')
-                except ValueError:
-                    cursor.execute("""DROP TABLE %s""" % name)
-                    s = 'Invalid line in %s: %r' % (filename, line)
-                    raise callbacks.Error, s
-                cursor.execute(sql, key, value)
-            cursor.execute("CREATE INDEX %s_keys ON %s (key)" % (name, name))
-            db.commit()
-
-    def addCommand(self, name):
-        def f(self, irc, msg, args):
-            args.insert(0, name)
-            self._lookup(irc, msg, args)
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
+    def close(self):
+        self.db.close()
+        
+    def getRecordCount(self, tableName):
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM %s""" % tableName)
         rows = int(cursor.fetchone()[0])
-        docstring = """[<key>]
+        if rows == 0:
+            raise dbi.NoRecordError
+        return rows
+        
+    def checkLookup(self, name):
+        cursor = self.db.cursor()
+        sql = "SELECT name FROM sqlite_master \
+                WHERE type='table' \
+                AND name='%s'" % name
+        cursor.execute(sql)
+        if cursor.rowcount == 0:
+            return False
+        else:
+            return True
 
-        If <key> is given, looks up <key> in the %s database.  Otherwise,
-        returns a random key: value pair from the database.  There are
-        %s in the database.
-        """ % (name, utils.nItems(name, rows))
-        f = utils.changeFunctionName(f, name, docstring)
-        self.lookupDomains.add(name)
-        setattr(self.__class__, name, f)
+    def addLookup(self, name, fd, splitRe):
+        cursor = self.db.cursor()
+        cursor.execute("CREATE TABLE %s (key TEXT, value TEXT)" % name)
+        sql = "INSERT INTO %s VALUES (%%s, %%s)" % name
+        for line in utils.nonCommentNonEmptyLines(fd):
+            line = line.rstrip('\r\n')
+            try:
+                (key, value) = splitRe.split(line, 1)
+                key = key.replace('\\:', ':')
+            except ValueError:
+                cursor.execute("""DROP TABLE %s""" % name)
+                s = 'Invalid line in %s: %r' % (filename, line)
+                raise callbacks.Error, s
+            cursor.execute(sql, key, value)
+        cursor.execute("CREATE INDEX %s_keys ON %s (key)" % (name, name))
+        self.db.commit()
+    
+    def dropLookup(self, name):
+        cursor = self.db.cursor()
+        if self.checkLookup(name):
+            cursor.execute("""DROP TABLE %s""" % name)
+            self.db.commit()
+        else:
+            raise dbi.NoRecordError
+            
+    def getResults(self, name, key):
+        cursor = self.db.cursor()
+        sql = """SELECT value FROM %s WHERE key LIKE %%s""" % name
+        cursor.execute(sql, key)
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError
+        else:
+            return cursor.fetchall()
+            
+    def getRandomResult(self, name, key):
+        cursor = self.db.cursor()
+        sql = """SELECT key, value FROM %s
+                 ORDER BY random() LIMIT 1""" % name
+        cursor.execute(sql)
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError
+        else:
+            return cursor.fetchone()
 
     _sqlTrans = string.maketrans('*?', '%_')
-    def search(self, irc, msg, args):
-        """[--{regexp}=<value>] [--values] <name> <glob>
-
-        Searches the domain <name> for lookups matching <glob>.  If --regexp
-        is given, its associated value is taken as a regexp and matched
-        against the lookups.  If --values is given, search the values rather
-        than the keys.
-        """
-        column = 'key'
-        while '--values' in args:
-            column = 'value'
-            args.remove('--values')
-        (options, rest) = getopt.getopt(args, '', ['regexp='])
-        (name, globs) = privmsgs.getArgs(rest, optional=1)
-        db = self.dbHandler.getDb()
+    def searchResults(self, name, options, globs, column):
+        cursor = self.db.cursor()
         criteria = []
         formats = []
         predicateName = 'p'
@@ -252,7 +196,7 @@ class Lookup(callbacks.Privmsg):
                     return
                 def p(s, r=r):
                     return int(bool(r.search(s)))
-                db.create_function(predicateName, 1, p)
+                self.db.create_function(predicateName, 1, p)
                 predicateName += 'p'
         for glob in globs.split():
             if '?' not in glob and '*' not in glob:
@@ -263,17 +207,161 @@ class Lookup(callbacks.Privmsg):
             raise callbacks.ArgumentError
         #print 'criteria: %s' % repr(criteria)
         #print 'formats: %s' % repr(formats)
-        cursor = db.cursor()
         sql = """SELECT key, value FROM %s WHERE %s""" % \
               (name, ' AND '.join(criteria))
         #print 'sql: %s' % sql
         cursor.execute(sql, formats)
         if cursor.rowcount == 0:
-            irc.reply('No entries in %s matched that query.' % name)
+            raise dbi.NoRecordError
         else:
-            lookups = ['%s: %s' % (item[0], self._shrink(item[1]))
-                       for item in cursor.fetchall()]
-            irc.reply(utils.commaAndify(lookups))
+            return cursor.fetchall()
+        
+LookupDB = plugins.DB('Lookup',
+                        {'sqlite': SqliteLookupDB,
+                        }
+                     )
+
+class Lookup(callbacks.Privmsg):
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        self.lookupDomains = sets.Set()
+        try:
+            self.db = LookupDB()
+        except Exception:
+            self.log.exception('Error loading %s:', self.filename)
+            raise # So it doesn't get loaded without its database.
+        for (name, value) in registry._cache.iteritems():
+            name = name.lower()
+            if name.startswith('supybot.plugins.lookup.lookups.'):
+                name = name[len('supybot.plugins.lookup.lookups.'):]
+                if '.' in name:
+                    continue
+                self.addRegistryValue(name, value)
+        group = conf.supybot.plugins.Lookup.lookups
+        for (name, value) in group.getValues(fullNames=False):
+            name = name.lower() # Just in case.
+            filename = value()
+            try:
+                if not self.db.checkLookup(name):
+                    self.addDatabase(name, filename)
+                self.addCommand(name)
+            except Exception, e:
+                self.log.warning('Couldn\'t add lookup %s: %s', name, e)
+
+    def _shrink(self, s):
+        return utils.ellipsisify(s, 50)
+
+    def die(self):
+        self.db.close()
+
+    def remove(self, irc, msg, args):
+        """<name>
+
+        Removes the lookup for <name>.
+        """
+        name = privmsgs.getArgs(args)
+        name = callbacks.canonicalName(name)
+        if name not in self.lookupDomains:
+            irc.error('That\'s not a valid lookup to remove.')
+            return
+        try:
+            self.db.dropLookup(name)
+            delattr(self.__class__, name)
+            self.delRegistryValues(name)
+            irc.replySuccess()
+        except dbi.NoRecordError:
+            irc.error('No such lookup exists.')
+    remove = privmsgs.checkCapability(remove, 'admin')
+
+    _splitRe = re.compile(r'(?<!\\):')
+    def add(self, irc, msg, args):
+        """[--nokey] <name> <filename>
+
+        Adds a lookup for <name> with the key/value pairs specified in the
+        colon-delimited file specified by <filename>.  <filename> is searched
+        for in conf.supybot.directories.data.  If <name> is not singular, we
+        try to make it singular before creating the command.  If the --nokey
+        option is specified, the new lookup will display only the value when
+        queried, and will omit the key from the response.
+        """
+        opts = ['nokey']
+        (optlist, rest) = getopt.getopt(args, '', opts)
+        (name, filename) = privmsgs.getArgs(rest, required=2)
+        nokey = False
+        for (option, argument) in optlist:
+            option = option.lstrip('-')
+            if option == 'nokey':
+                nokey = True
+        #print 'nokey: %s' % nokey
+        name = utils.depluralize(name)
+        name = callbacks.canonicalName(name)
+        if hasattr(self, name):
+            s = 'I already have a command in this plugin named %s' % name
+            irc.error(s)
+            return
+        if not self.db.checkLookup(name):
+            try:
+                self.addDatabase(name, filename)
+            except EnvironmentError, e:
+                irc.error('Could not open %s: %s' % (filename, e.args[1]))
+                return
+        self.addCommand(name)
+        self.addRegistryValue(name, filename, nokey)
+        irc.replySuccess('Lookup %s added.' % name)
+    add = privmsgs.checkCapability(add, 'admin')
+
+    def addRegistryValue(self, name, filename, nokey = False):
+        group = conf.supybot.plugins.Lookup.lookups
+        conf.registerGlobalValue(group, name, registry.String(filename, ''))
+        #print 'nokey: %s' % nokey
+        conf.registerGlobalValue(group.get(name), 'nokey', registry.Boolean(nokey, ''))
+
+    def delRegistryValues(self, name):
+        group = conf.supybot.plugins.Lookup.lookups
+        group.unregister(name)
+        
+    def addDatabase(self, name, filename):
+        dataDir = conf.supybot.directories.data()
+        filename = os.path.join(dataDir, filename)
+        fd = file(filename)
+        self.db.addLookup(name, fd, self._splitRe)        
+
+    def addCommand(self, name):
+        def f(self, irc, msg, args):
+            args.insert(0, name)
+            self._lookup(irc, msg, args)
+        rows = self.db.getRecordCount(name)
+        docstring = """[<key>]
+
+        If <key> is given, looks up <key> in the %s database.  Otherwise,
+        returns a random key: value pair from the database.  There are
+        %s in the database.
+        """ % (name, utils.nItems(name, rows))
+        f = utils.changeFunctionName(f, name, docstring)
+        self.lookupDomains.add(name)
+        setattr(self.__class__, name, f)
+
+    def search(self, irc, msg, args):
+        """[--{regexp}=<value>] [--values] <name> <glob>
+
+        Searches the domain <name> for lookups matching <glob>.  If --regexp
+        is given, its associated value is taken as a regexp and matched
+        against the lookups.  If --values is given, search the values rather
+        than the keys.
+        """
+        column = 'key'
+        while '--values' in args:
+            column = 'value'
+            args.remove('--values')
+        (options, rest) = getopt.getopt(args, '', ['regexp='])
+        (name, globs) = privmsgs.getArgs(rest, optional=1)
+        try:
+            results = self.db.searchResults(name, options, globs, column)
+        except dbi.NoRecordError:
+            irc.reply('No entries in %s matched that query.' % name)
+        lookups = ['%s: %s' % (item[0], self._shrink(item[1]))
+                   for item in results]
+        irc.reply(utils.commaAndify(lookups))
 
     def _lookup(self, irc, msg, args):
         """<name> <key>
@@ -281,39 +369,29 @@ class Lookup(callbacks.Privmsg):
         Looks up the value of <key> in the domain <name>.
         """
         (name, key) = privmsgs.getArgs(args, optional=1)
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        if key:
-            sql = """SELECT value FROM %s WHERE key LIKE %%s""" % name
-            try:
-                cursor.execute(sql, key)
-            except sqlite.DatabaseError, e:
-                if 'no such table' in str(e):
-                    irc.error('I don\'t have a domain %s' % name)
+        if self.db.checkLookup(name):
+            results = []
+            if key:
+                try:
+                    results = self.db.getResults(name, key)
+                except dbi.NoRecordError:
+                    irc.error('I couldn\'t find %s in %s.' % (key, name))
+                    return
+                if len(results) == 1:
+                    irc.reply(results[0][0])
                 else:
-                    irc.error(str(e))
-                return
-            if cursor.rowcount == 0:
-                irc.error('I couldn\'t find %s in %s.' % (key, name))
-            elif cursor.rowcount == 1:
-                irc.reply(cursor.fetchone()[0])
+                    values = [t[0] for t in results]
+                    irc.reply('%s could be %s' % (key, ', or '.join(values)))
             else:
-                values = [t[0] for t in cursor.fetchall()]
-                irc.reply('%s could be %s' % (key, ', or '.join(values)))
-        else:
-            sql = """SELECT key, value FROM %s
-                     ORDER BY random() LIMIT 1""" % name
-            try:
-                cursor.execute(sql)
-            except sqlite.DatabaseError, e:
-                if 'no such table' in str(e):
-                    irc.error('I don\'t have a domain %r' % name)
+                (key, value) = self.db.getRandomResult(name, key)
+                nokeyRegKey = 'lookups.%s.nokey' % name
+                if not self.registryValue(nokeyRegKey):
+                    irc.reply('%s: %s' % (key, value))
                 else:
-                    irc.error(str(e))
-                return
-            (key, value) = cursor.fetchone()
-            irc.reply('%s: %s' % (key, value))
-
+                    irc.reply('%s' % value)
+        else:
+            irc.error('I don\'t have a domain %s' % name)
+            return
 
 Class = Lookup
 
