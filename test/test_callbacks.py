@@ -243,8 +243,8 @@ class PrivmsgTestCase(ChannelPluginTestCase):
 
     def testHelpDispatching(self):
         self.irc.addCallback(self.First())
-        self.assertNotError('help firstcmd')
-        self.assertNotError('help first firstcmd')
+        self.assertHelp('help firstcmd')
+        self.assertHelp('help first firstcmd')
         self.irc.addCallback(self.FirstRepeat())
         self.assertError('help firstcmd')
         self.assertRegexp('help first firstcmd', 'First', 0) # no re.I flag.

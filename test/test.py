@@ -207,6 +207,12 @@ class PluginTestCase(unittest.TestCase):
         self.failIf(lastGetHelp in m.args[1],
                     '%r returned the help string.' % query)
 
+    def assertHelp(self, query):
+        m = self._feedMsg(query)
+        if m is None:
+            raise TimeoutError, query
+        self.failUnless(lastGetHelp in m.args[1])
+
     def assertNoResponse(self, query, timeout=None):
         m = self._feedMsg(query, timeout)
         self.failIf(m, 'Unexpected response: %s' % msg.args[1])
