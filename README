@@ -5,29 +5,16 @@ Read LICENSE.  It's a 2-clause BSD license, but you should read it anyway.
 
 USERS:
 ------
-First, you gotta have Python 2.3 for this.  That's alright, though,
-because Python 2.3 rocks, and you should have it anyway :)
-
-Assuming "python" is in your path and points to Python 2.3 or newer,
-then you need to run this:
-
-python setup.py install
-
-from the untarred directory to install the source files.  Then just
-run supybot-wizard (it's been installed in your path somewhere) to
-create a script that will run your bot as you answered the questions
-in the wizard.
+Read docs/GETTING_STARTED for an introduction to the bot.  Read
+docs/CAPABILITIES to see how to use capabilities more to your
+benefit. 
 
 If you have any trouble, feel free to swing by #supybot on
-irc.freenode.net or irc.oftc.net (we have a supybot there relaying, so
-either network works) and ask questions.  We'll be happy to help
+irc.freenode.net or irc.oftc.net (we have a Supybot there relaying,
+so either network works) and ask questions.  We'll be happy to help
 wherever we can.  And by all means, if you find anything hard to
-understand or think you know of a better way to do something, *please*
-post it on Sourceforge.net so we can improve the bot!
-
-If you want, try out the included default botscripts.  Just be sure to
-actually add an owner user for yourself with supybot-adduser.  (An
-"owner user" is simply one with the owner capability).
+understand or think you know of a better way to do something,
+*please* post it on Sourceforge.net so we can improve the bot!
 
 WINDOWS USERS:
 --------------
@@ -39,14 +26,17 @@ this: C:\Python23\python C:\Python23\Scripts\supybot-wizard
 
 DEVELOPERS:
 -----------
-Read OVERVIEW to see what the modules are used for.  Read EXAMPLE to see some
-examples of callbacks and command written for the bot.  Read STYLE if you ever
-wish to contribute.
+Read OVERVIEW to see what the modules are used for.  Read EXAMPLE to
+see some examples of callbacks and commands written for the bot.
+Read INTEFACES to see what kinds of objects you'll be dealing with.
+Read STYLE if you wish to contribute; all contributed code must meet
+the guidelines set forth there..
 
 Use PyLint.  It's even better than PyChecker.  A sample .pylintrc file
 is included as tools/pylintrc.  Copy this to ~/.pylintrc and you'll be
 able to check your code with the same stringent guidelines I've found
 useful to check my code. (deja vu? :))
 
-If you run the tests on Windows (or on a modem connection), be sure to 
-exclude (test\test.py -e) test\test_Debian.py.  
+Be sure to run "test/test.py --help" to see what options are available
+to you when testing.  Windows users in particular should be sure to
+exclude test_Debian.py and test_Unix.py.

@@ -80,7 +80,11 @@ ircmsgs.IrcMsg:
                        
 irclib.Irc:
 	This is the object to handle everything about IRC except the
-	actual connection to the server itself.
+	actual connection to the server itself.  (*NOTE* that the
+	object actually received by commands in subclasses of
+	callbacks.Privmsg is an IrcObjectProxy, which is described
+	later.  It augments the following interface with several
+	methods of its own to help plugin authors.)
 
 	Interesting Methods:
 		    The two following messages (queueMsg and
@@ -207,3 +211,48 @@ irclib.IrcCallback:
 		    basically, they're given the first chances
 		    on the way in and the last chances on the
 		    way out.
+
+
+callbacks.IrcObjectProxy:
+	IrcObjectProxy is a proxy for an irclib.Irc instance that
+	serves to provide a much fuller interface for handling
+	replies and errors as well as to handle the nesting of
+	commands.  This is what you'll be dealing with almost all the
+	time when writing commands; when writing doCommand methods
+	(the kind you read about in the interface description of
+	irclib.IrcCallback) you'll be dealing with plain old
+	irclib.Irc objects.
+
+	Interesting methods:
+		    reply: Called to reply to the current message
+	            with a string that is to be the reply.
+
+		    replySuccess, replyError: These reply with the
+		    configured responses for success and generic
+		    error, respectively.  If an additional argument
+		    is given, it's (intelligently) appended to the
+		    generic message to be more specific.
+
+		    error: Called to send an error reply to the
+		    current message; not only does the response
+		    indicate an error, but commands that error out
+		    break the nested-command chain, which is
+		    generally useful for not confusing the user :)
+
+		    errorNoCapability: Like error, except it accepts
+		    the capability that's missing and integrates it
+		    into the configured error message for such
+		    things.  Also accepts an additional string for a
+		    more descriptive message, if that's what you
+		    want.
+
+		    errorPossibleBug, errorNotRegistered,
+		    errorNoUser, errorRequiresPrivacy: These methods
+		    reply with the appropriate configured error
+		    message for the conditions in their names; they
+		    all take an additional arguments to be more
+		    specific about the conditions they indicate, but
+		    this argument is very rarely necessary.
+
+		    getRealIrc: Returns the actual Irc object being
+		    proxied for.

@@ -1,3 +1,12 @@
+Version 0.77.0
+
+Configuration has been *entirely* redone.  Read the new
+GETTING_STARTED document to see how to work with configuration
+variables now.  Your old botscripts from earlier versions *will not*
+work with the new configuration method.  We'd appreciate it if you'd
+rerun the wizard in order for us to find any bugs that remain in it
+before we officially declare ourselves Beta.
+
 Version 0.76.1
 
 Almost entirely bugfixes, just some minor (and some less minor) bugs
