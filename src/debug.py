@@ -161,8 +161,11 @@ def recoverableException(type='detailed'):
     else:
         del lastTimes[0]
     try:
-        if type == 'detailed' and conf.detailedTracebacks:
-            text = cgitb.text((E, e, tb))
+        if type == 'detailed':
+            if conf.detailedTracebacks:
+                text = cgitb.text((E, e, tb))
+            else:
+                text = ''.join(traceback.format_exception(E, e, tb))
         elif type == 'normal':
             text = ''.join(traceback.format_exception(E, e, tb))
         elif type == 'terse':
