@@ -44,24 +44,110 @@ if sqlite is not None:
             # Create a valid user to use
             self.prefix = 'foo!bar@baz'
             self.assertNotError('register tester moo')
-            
+
         def testLiteral(self):
             self.assertError('literal moo') # no factoids yet
             self.assertNotError('moo is <reply>foo')
-            self.assertRegexp('literal moo', '<reply>foo')
+            self.assertResponse('literal moo', '<reply>foo')
             self.assertNotError('moo2 is moo!')
-            self.assertRegexp('literal moo2', 'moo!')
+            self.assertResponse('literal moo2', 'moo!')
             self.assertNotError('moo3 is <action>foo')
-            self.assertRegexp('literal moo3', '<action>foo')
+            self.assertResponse('literal moo3', '<action>foo')
 
         def testGetFactoid(self):
             self.assertNotError('moo is <reply>foo')
-            self.assertRegexp('moo', 'foo')
+            self.assertResponse('moo', 'foo')
             self.assertNotError('moo2 is moo!')
-            self.assertRegexp('moo2', 'moo2 is moo!')
+            self.assertResponse('moo2', 'moo2 is moo!')
             self.assertNotError('moo3 is <action>foo')
             self.assertAction('moo3', 'foo')
+            # Test and make sure it's parsing
+            self.assertNotError('moo4 is <reply>(1|2|3)')
+            self.assertRegexp('moo4', '^(1|2|3)$')
 
+        def testFactinfo(self):
+            self.assertNotError('moo is <reply>foo')
+            self.assertRegexp('factinfo moo', '^moo: Created by tester on.*$')
+            self.assertNotError('moo')
+            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+                              '.*?\. Last requested by foo!bar@baz on .*?, '
+                              'requested 1 time.$')
+            self.assertNotError('moo')
+            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+                              '.*?\. Last requested by foo!bar@baz on .*?, '
+                              'requested 2 times.$')
+            self.assertNotError('moo =~ s/foo/bar/')
+            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+                              '.*?\. Last modified by tester on .*?\. '
+                              'Last requested by foo!bar@baz on .*?, '
+                              'requested 2 times.$')
+            self.assertNotError('lock moo')
+            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+                              '.*?\. Last modified by tester on .*?\. '
+                              'Last requested by foo!bar@baz on .*?, '
+                              'requested 2 times. Locked on .*\.$')
+            self.assertNotError('unlock moo')
+            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+                              '.*?\. Last modified by tester on .*?\. '
+                              'Last requested by foo!bar@baz on .*?, '
+                              'requested 2 times.$')
+
+        def testLockUnlock(self):
+            self.assertNotError('moo is <reply>moo')
+            self.assertNotError('lock moo')
+            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+                              '.*?\. Locked on .*?\.')
+            # switch user
+            self.prefix = 'moo!moo@moo'
+            self.assertNotError('register nottester moo')
+            self.assertError('unlock moo')
+            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+                              '.*?\. Locked on .*?\.')
+            # switch back
+            self.prefix = 'foo!bar@baz'
+            self.assertNotError('identify tester moo')
+            self.assertNotError('unlock moo')
+            self.assertRegexp('factinfo moo', '^moo: Created by tester on'
+                              '.*?\.')
+                              
+        def testChangeFactoid(self):
+            self.assertNotError('moo is <reply>moo')
+            self.assertNotError('moo =~ s/moo/moos/')
+            self.assertResponse('moo', 'moos')
+            self.assertNotError('moo =~ s/reply/action/')
+            self.assertAction('moo', 'moos')
+            self.assertNotError('moo =~ s/moos/(moos|woofs)/')
+            self.assertActionRegexp('moo', '^(moos|woofs)$')
+            self.assertError('moo =~ s/moo/')
+
+        def testListkeys(self):
+            self.assertResponse('listkeys *', 'No keys found matching \'*\'.')
+            self.assertNotError('moo is <reply>moo')
+            self.assertResponse('listkeys moo', 'Key search for \'moo\' '
+                              '(1 found): moo')
+            self.assertResponse('listkeys foo', 'No keys found matching '
+                                '\'foo\'.')
+            # Throw in a bunch more
+            for i in range(10):
+                self.assertNotError('moo%s is <reply>moo' % i)
+            self.assertRegexp('listkeys moo', '^Key search for \'moo\' '
+                              '(11 found): (moo\d*, )+ and moo9$')
+            self.assertRegexp('listkeys *', '^Key search for \'*\' '
+                              '(12 found): foo, (moo\d*, )+ and moo9$')
+
+        def testListvalues(self):
+            self.assertNotError('moo is <reply>moo')
+            self.assertResponse('listvalues moo', 'Value search for \'moo\' '
+                                '(1 found): moo')
+
+        def testListauth(self):
+            self.assertNotError('moo is <reply>moo')
+            self.assertResponse('listauth tester', 'Author search for tester '
+                                '(1 found): moo')
+
+    class DunnoTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('MiscCommands', 'MoobotFactoids', 'UserCommands')
+        def testDunno(self):
+            self.assertNotError('apfasdfjoia') # Should say a dunno, no error
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
-

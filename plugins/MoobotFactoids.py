@@ -125,7 +125,7 @@ def pick(L, recursed=False):
 
 class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     priority = 1000
-    addressedRegexps = sets.Set(['addFactoids'])
+    addressedRegexps = sets.Set(['addFactoids', 'changeFactoids'])
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.makeDB(dbfilename)
@@ -149,7 +149,6 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           created_at TIMESTAMP,
                           modified_by INTEGER,
                           modified_at TIMESTAMP,
-                          locked_by INTEGER,
                           locked_at TIMESTAMP,
                           last_requested_by TEXT,
                           last_requested_at TIMESTAMP,
@@ -237,9 +236,44 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             return
         # Otherwise, 
         cursor.execute("""INSERT INTO factoids VALUES
-                          (%s, %s, %s, NULL, NULL, NULL, NULL, NULL, NULL,
+                          (%s, %s, %s, NULL, NULL, NULL, NULL, NULL,
                            %s, 0)""",
                            key, id, int(time.time()), fact)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
+
+    def changeFactoids(self, irc, msg, match):
+        r"(\S+)\s+=~\s+(\S+)"
+        # Must be registered!
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        key, regexp = match.groups()
+        cursor = self.db.cursor()
+        # Check and make sure it's in the DB 
+        cursor.execute("""SELECT locked_at, fact FROM factoids
+                          WHERE key = %s""", key)
+        if cursor.rowcount == 0:
+            irc.error(msg, "Factoid '%s' not found." % key)
+            return
+        # No dice if it's locked, no matter who it is
+        (locked_at, fact) = cursor.fetchone()
+        if locked_at is not None:
+            irc.error(msg, "Factoid '%s' is locked." % key)
+            return
+        # It's fair game if we get to here
+        try:
+            r = utils.perlReToReplacer(regexp)
+        except ValueError, e:
+            irc.error(msg, "Invalid regexp: %s" % regexp)
+            return
+        new_fact = r(fact) 
+        cursor.execute("""UPDATE factoids   
+                          SET fact = %s, modified_by = %s,   
+                          modified_at = %s WHERE key = %s""",
+                       new_fact, id, int(time.time()), key)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
@@ -271,14 +305,13 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor = self.db.cursor()
         cursor.execute("""SELECT created_by, created_at, modified_by,
                           modified_at, last_requested_by, last_requested_at,
-                          requested_count, locked_by, locked_at FROM
+                          requested_count, locked_at FROM
                           factoids WHERE key = %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "No such factoid: %s" % key)
             return
         (created_by, created_at, modified_by, modified_at, last_requested_by,
-         last_requested_at, requested_count, locked_by, locked_at) = \
-         cursor.fetchone()
+         last_requested_at, requested_count, locked_at) = cursor.fetchone()
         # First, creation info.
         # Map the integer created_by to the username
         creat_by = ircdb.users.getUser(created_by).name
@@ -297,15 +330,56 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             last_at = time.strftime(conf.humanTimestampFormat,
                                     time.localtime(int(last_requested_at)))
             req_count = requested_count
-            s += " Last requested by %s on %s, requested %s times." % \
-                 (last_by, last_at, req_count)
+            times_str = utils.nItems(requested_count, 'time')
+            s += " Last requested by %s on %s, requested %s." % \
+                 (last_by, last_at, times_str)
         # Last, locked info
-        if locked_by is not None:
-             lock_by = ircdb.users.getUser(locked_by).name
+        if locked_at is not None:
              lock_at = time.strftime(conf.humanTimestampFormat,
                                      time.localtime(int(locked_at)))
-             s += " Locked by %s on %s." % (lock_by, lock_at)
+             s += " Locked on %s." % lock_at
         irc.reply(msg, s)
+
+
+    def _lock(self, irc, msg, args, lock=True):
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        key = privmsgs.getArgs(args, needed=1)
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT created_by, locked_at FROM factoids
+                          WHERE key = %s""", key)
+        if cursor.rowcount == 0:
+            irc.error(msg, "No such factoid: %s" % key)
+            return
+        (created_by, locked_at) = cursor.fetchone()
+        # Don't perform redundant operations
+        if lock:
+           if locked_at is not None:
+               irc.error(msg, "Factoid '%s' is already locked." % key)
+               return
+        else:
+           if locked_at is None:
+               irc.error(msg, "Factoid '%s' is not locked." % key)
+               return
+        # Can only lock/unlock own factoids
+        if created_by != id:
+            s = "unlock"
+            if lock:
+               s = "lock"
+            irc.error(msg, "Cannot %s someone else's factoid." % s)
+            return
+        # Okay, we're done, ready to lock/unlock
+        if lock:
+           locked_at = int(time.time())
+        else:
+           locked_at = None
+        cursor.execute("""UPDATE factoids SET locked_at = %s
+                          WHERE key = %s""", locked_at, key)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
 
     def lock(self, irc, msg, args):
         """<factoid key>
@@ -313,29 +387,15 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         Locks the factoid with the given factoid key.  Requires that the user
         be registered and have created the factoid originally.
         """
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
-            return
-        key = privmsgs.getArgs(args, needed=1)
-        cursor = self.db.cursor() 
-        cursor.execute("""SELECT created_by, locked_by FROM factoids
-                          WHERE key = %s""", key)
-        if cursor.rowcount == 0:
-            irc.error(msg, "No such factoid: %s" % key)
-            return
-        (created_by, locked_by) = cursor.fetchone()
-        if locked_by is not None:
-            irc.error(msg, "Factoid '%s' is already locked." % key)
-            return
-        if created_by != id:
-            irc.error(msg, "Cannot lock someone else's factoid." % key)
-            return
-        cursor.execute("""UPDATE factoids SET locked_by = %s, locked_at = %s
-                          WHERE key = %s""", id, int(time.time()), key)
-        self.db.commit()
-        irc.reply(msg, conf.replySuccess)
+        self._lock(irc, msg, args, True)
+
+    def unlock(self, irc, msg, args):
+        """<factoid key>
+
+        Unlocks the factoid with the given factoid key.  Requires that the
+        user be registered and have locked the factoid.
+        """
+        self._lock(irc, msg, args, False)
 
 Class = MoobotFactoids
 
