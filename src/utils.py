@@ -315,6 +315,7 @@ def pluralize(i, s):
                 return s + 's'
 
 def depluralize(s):
+    """Returns the singular of s."""
     lowered = s.lower()
     if lowered in plurals:
         return _matchCase(s, plurals[lowered])
