@@ -60,8 +60,24 @@ class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
     def testGetprefixchar(self):
         self.assertNotError('getprefixchar')
 
-    def testModuleof(self):
-        self.assertResponse('moduleof moduleof', 'MiscCommands')
+    def testPlugin(self):
+        self.assertResponse('plugin plugin', 'MiscCommands')
+
+    def testTell(self):
+        m = self.getMsg('tell foo [plugin tell]')
+        self.failUnless(m.args[0] == 'foo')
+        self.failUnless('MiscCommands' in m.args[1])
+        m = self.getMsg('tell #foo [plugin tell]')
+        self.failUnless(m.args[0] == '#foo')
+        self.failUnless('MiscCommands' in m.args[1])
+
+    def testLast(self):
+        self.feedMsg('foo bar baz')
+        self.assertResponse('last', 'foo bar baz')
+        self.assertResponse('last', 'last')
+        self.assertResponse('last --with foo', 'foo bar baz')
+        self.assertResponse('last --regexp m/\s+/', 'last --with foo')
+        self.assertResponse('last --regexp m/bar/', 'foo bar baz')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -629,59 +629,6 @@ class FunCommands(callbacks.Privmsg):
                     dicts, lists, tuples, refcounts)
         irc.reply(msg, response)
 
-    def last(self, irc, msg, args):
-        """[--{from,in,to,with,regexp,fancy}] <args>
-
-        Returns the last message matching the given criteria.  --from requires
-        a nick from whom the message came; --in and --to require a channel the
-        message was sent to; --with requires some string that had to be in the
-        message; --regexp requires a regular expression the message must match
-        --fancy determines whether or not to show the nick; the default is not
-        """
-
-        (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
-                                                   'with=', 'regexp=',
-                                                   'fancy'])
-        fancy = False
-        predicates = []
-        for (option, arg) in optlist:
-            option = option.strip('-')
-            if option == 'fancy':
-                fancy = True
-            elif option == 'from':
-                predicates.append(lambda m, arg=arg: m.nick == arg)
-            elif option == 'in' or option == 'to':
-                if not ircutils.isChannel(arg):
-                    irc.error(msg, 'Argument to --%s must be a channel.' % arg)
-                    return
-                predicates.append(lambda m, arg=arg: m.args[0] == arg)
-            elif option == 'with':
-                predicates.append(lambda m, arg=arg: arg in m.args[1])
-            elif option == 'regexp':
-                try:
-                    r = utils.perlReToPythonRe(arg)
-                except ValueError, e:
-                    irc.error(msg, str(e))
-                    return
-                predicates.append(lambda m: r.search(m.args[1]))
-        first = True
-        for m in reviter(irc.state.history):
-            if first:
-                first = False
-                continue
-            if not m.prefix or m.command != 'PRIVMSG':
-                continue
-            for predicate in predicates:
-                if not predicate(m):
-                    break
-            else:
-                if fancy:
-                    irc.reply(msg, ircmsgs.prettyPrint(m))
-                else:
-                    irc.reply(msg, m.args[1])
-                return
-        irc.error(msg, 'I couldn\'t find a message matching that criteria.')
-
     def levenshtein(self, irc, msg, args):
         """<string1> <string2>
 
@@ -741,18 +688,7 @@ class FunCommands(callbacks.Privmsg):
             return
         irc.reply(msg, s)
 
-    def tell(self, irc, msg, args):
-        """<nick|channel> <text>
-
-        Tells the <nick|channel> whatever <text> is.  Use nested commands to
-        your benefit here.
-        """
-        (target, text) = privmsgs.getArgs(args, needed=2)
-        s = '%s wants me to tell you: %s' % (msg.nick, text)
-        irc.queueMsg(ircmsgs.privmsg(target, s))
-        raise callbacks.CannotNest
-
-    _eightballs = [
+    _eightballs = (
         'outlook not so good.',
         'my reply is no.',
         'don\'t count on it.',
@@ -772,8 +708,7 @@ class FunCommands(callbacks.Privmsg):
         'without a doubt.',
         'reply hazy, try again.',
         'as I see it, yes.',
-        ]
-        
+        )
     def eightball(self, irc, msg, args):
         """[<question>]
 
