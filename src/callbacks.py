@@ -430,12 +430,16 @@ class IrcObjectProxy:
                 if len(s) > allowedLength*50:
                     log.warning('Cowardly refusing to "more" %s bytes.'%len(s))
                     s = s[:allowedLength*50]
+                if len(s) < allowedLength:
+                    self.irc.queueMsg(reply(msg, s, self.prefixName,
+                                            self.private,self.notice,self.to))
+                    return
                 msgs = textwrap.wrap(s, allowedLength-30) # -30 is for "nick:"
                 msgs.reverse()
                 response = msgs.pop()
                 if msgs:
-                    response += ' \x02(%s)\x0F' % \
-                                utils.nItems(len(msgs), 'message', 'more')
+                    response = ircutils.bold('(%s)')
+                    response %= utils.nItems(len(msgs), 'message', 'more')
                 mask = msg.prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
                 private = self.private or not ircutils.isChannel(msg.args[0])
