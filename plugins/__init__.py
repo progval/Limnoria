@@ -111,6 +111,8 @@ class DBHandler(object):
 
 
 def makeChannelFilename(channel, filename, dirname=None):
+    assert ircutils.isChannel(channel), 'channel not a channel, ' \
+           'the arguments to makeChannelFilename are probably reversed.'
     assert filename == os.path.basename(filename), 'We don\'t handle dirs.'
     channel = ircutils.toLower(channel)
     if conf.supybot.databases.plugins.channelSpecific.get(channel)():
