@@ -332,7 +332,7 @@ class Integer(Value):
             self.error()
 
 class NonNegativeInteger(Integer):
-    """Value must not be negative."""
+    """Value must be a non-negative integer."""
     def setValue(self, v):
         if v < 0:
             self.error()
