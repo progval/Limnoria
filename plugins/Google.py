@@ -199,8 +199,15 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     callBefore = ['URL']
     regexps = ['googleSnarfer', 'googleGroups']
     def __init__(self):
-        super(Google, self).__init__()
+        self.__parent = super(Google, self)
+        self.__parent.__init__()
         google.setLicense(self.registryValue('licenseKey'))
+
+    def callCommand(self, name, irc, msg, *L, **kwargs):
+        try:
+            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
+        except xml.sax.SAXReaderNotAvailable, e:
+            irc.error('No XML parser available.')
 
     _colorGoogles = {}
     def _getColorGoogle(self, m):
