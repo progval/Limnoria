@@ -99,12 +99,25 @@ def loadPluginModule(name, ignoreDeprecation=False):
     linecache.checkcache()
     return module
 
-def loadPluginClass(irc, module):
+def loadPluginClass(irc, module, register=None):
     """Loads the plugin Class from the given module into the given irc."""
-    callback = module.Class()
-    assert not irc.getCallback(callback.name())
-    irc.addCallback(callback)
+    cb = module.Class()
+    name = cb.name()
+    conf.registerPlugin(name)
+    public = True
+    if hasattr(cb, 'public'):
+        public = cb.public
+    conf.registerPlugin(name, register)
+    conf.supybot.plugins.get(name).register('public',
+        registry.Boolean(public, """Determines whether this plugin is
+        publically visible."""))
+    assert not irc.getCallback(name)
+    irc.addCallback(cb)
+    return cb
 
+conf.registerPlugin('Owner', True)
+conf.supybot.plugins.Owner.register('public', registry.Boolean(True,
+    """Determines whether this plugin is publically visible."""))
 conf.registerGroup(conf.supybot, 'commands')
 conf.registerGroup(conf.supybot.commands, 'defaultPlugins')
 conf.supybot.commands.defaultPlugins.help = utils.normalizeWhitespace("""
@@ -197,7 +210,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         privmsgs.CapabilityCheckingPrivmsg.reset(self)
 
     def do001(self, irc, msg):
-        self.log.info('Loading other src/ plugins.')
+        if len(irc.callbacks) < 6:
+            self.log.info('Loading other src/ plugins.')
         for s in ('Admin', 'Channel', 'Config', 'Misc', 'User'):
             if irc.getCallback(s) is None:
                 self.log.info('Loading %s.' % s)
@@ -205,6 +219,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 loadPluginClass(irc, m)
         self.log.info('Loading plugins/ plugins.')
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):
+            if name.lower() == 'owner':
+                continue # Just in case.
             if irc.getCallback(name) is None:
                 if value():
                     if not irc.getCallback(name):

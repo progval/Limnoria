@@ -1,3 +1,8 @@
+	* Added a configuration variable for every plugin, "public", that
+	determines whether the plugin is considered public (i.e., whether
+	it will show up in the list command when the list command isn't
+	given the --private option).
+	
 	* Added Misc.author, a command for finding out which author
 	claims a particular plugin.
 	

@@ -83,8 +83,10 @@ class Misc(callbacks.Privmsg):
         name = privmsgs.getArgs(rest, required=0, optional=1)
         name = callbacks.canonicalName(name)
         if not name:
-            names = [cb.name() for cb in irc.callbacks
-                     if evenPrivate or (hasattr(cb, 'public') and cb.public)]
+            def isPublic(cb):
+                name = cb.name()
+                return conf.supybot.plugins.get(name).public() or evenPrivate
+            names = [cb.name() for cb in irc.callbacks if isPublic(cb)]
             names.sort()
             irc.reply(utils.commaAndify(names))
         else:
