@@ -227,6 +227,12 @@ def window(L, size):
     for i in xrange(len(L) - (size-1)):
         yield L[i:i+size]
 
+def ilen(iterator):
+    i = 0
+    for _ in iterator:
+        i += 1
+    return i
+
 ## def group(seq, groupSize):
 ##     L = []
 ##     LL = []
