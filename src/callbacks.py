@@ -775,8 +775,11 @@ class DisabledCommands(object):
         if plugin is None:
             self.d[command] = None
         else:
-            if self.d[command] is not None:
-                self.d[command].add(plugin)
+            if command in self.d:
+                if self.d[command] is not None:
+                    self.d[command].add(plugin)
+            else:
+                self.d[command] = CanonicalNameSet([plugin])
 
     def remove(self, command, plugin=None):
         if plugin is None:
