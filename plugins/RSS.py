@@ -105,11 +105,10 @@ class RSS(callbacks.Privmsg):
         headlines = [d['title'].strip().replace('\n', ' ') \
                      for d in feed['items']]
         headlines = map(utils.htmlToText, headlines)
-        payload = ircutils.privmsgPayload(headlines, ' :: ')
-        if not payload:
+        if not headlines:
             irc.error(msg, 'Error grabbing RSS feed')
             return
-        irc.reply(msg, payload)
+        irc.reply(msg, ' :: '.join(headlines)
 
     def rssinfo(self, irc, msg, args):
         """<url>
