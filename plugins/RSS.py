@@ -167,7 +167,7 @@ class RSS(callbacks.Privmsg):
 
     def buildHeadlines(self, headlines, channel, config='announce.showLinks'):
         newheadlines = []
-        if self.registryValue('%s' % config, channel):
+        if self.registryValue(config, channel):
             for headline in headlines:
                 if headline[1]:
                     newheadlines.append('%s <%s>' % headline)
@@ -210,8 +210,8 @@ class RSS(callbacks.Privmsg):
                     if bold:
                         pre = ircutils.bold(pre)
                         sep = ircutils.bold(sep)
-                    newheadlines = self.buildHeadlines(newheadlines, channel)
-                    irc.replies(newheadlines, prefixer=pre, joiner=sep,
+                    headlines = self.buildHeadlines(newheadlines, channel)
+                    irc.replies(headlines, prefixer=pre, joiner=sep,
                                 to=channel, prefixName=False, private=True)
         finally:
             self.releaseLock(url)
