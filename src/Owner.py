@@ -237,6 +237,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     self.log.error('Could not connect to %s: %s.', network, e)
         # Setup plugins and default plugins for commands.
         for (name, s) in registry._cache.iteritems():
+            if 'alwaysLoadDefault' in name or 'alwaysLoadImportant' in name:
+                continue
             if name.startswith('supybot.plugins'):
                 try:
                     (_, _, name) = registry.split(name)
@@ -298,10 +300,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         self.log.info('Loading plugins.')
         alwaysLoadSrcPlugins = conf.supybot.plugins.alwaysLoadImportant()
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):
-            if name.lower() in ('owner', 'alwaysloadimportant'):
-                continue
             if irc.getCallback(name) is None:
                 load = value()
+                # XXX This (_srcPlugins) should be changed to the configurable
+                #     importantPlugins.
                 if not load and name in self._srcPlugins:
                     if alwaysLoadSrcPlugins:
                         s = '%s is configured not to be loaded, but is being '\
