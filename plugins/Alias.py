@@ -223,7 +223,7 @@ class Alias(callbacks.Privmsg):
         else:
             raise AliasError, 'There is no such alias.'
 
-    def alias(self, irc, msg, args):
+    def add(self, irc, msg, args):
         """<name> <alias commands>
 
         Defines an alias <name> for the commands <commands>.  The <commands>
@@ -238,7 +238,7 @@ class Alias(callbacks.Privmsg):
         except AliasError, e:
             irc.error(msg, str(e))
 
-    def unalias(self, irc, msg, args):
+    def remove(self, irc, msg, args):
         """<name>
 
         Removes the given alias, if unfrozen.

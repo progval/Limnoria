@@ -68,48 +68,54 @@ class FunctionsTest(unittest.TestCase):
 class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Alias', 'Fun', 'Utilities', 'Misc')
     def testAliasHelp(self):
-        self.assertNotError('alias slashdot foo')
+        self.assertNotError('alias add slashdot foo')
         self.assertRegexp('help slashdot', "Alias for 'foo'")
+
+    def testRemove(self):
+        self.assertNotError('alias add foo echo bar')
+        self.assertResponse('foo', 'bar')
+        self.assertNotError('alias remove foo')
+        self.assertNoResponse('foo', 2)
         
     def testDollars(self):
-        self.assertNotError('alias rot26 "rot13 [rot13 $1]"')
+        self.assertNotError('alias add rot26 "rot13 [rot13 $1]"')
         self.assertResponse('rot26 foobar', 'foobar')
 
     def testMoreDollars(self):
-        self.assertNotError('alias rev "echo $3 $2 $1"')
+        self.assertNotError('alias add rev "echo $3 $2 $1"')
         self.assertResponse('rev foo bar baz', 'baz bar foo')
 
     def testAllArgs(self):
-        self.assertNotError('alias swap "echo $2 $1 $*"')
+        self.assertNotError('alias add swap "echo $2 $1 $*"')
         self.assertResponse('swap 1 2 3 4 5', '2 1 3 4 5')
-        self.assertError('alias foo "echo $1 @1 $*"')
+        self.assertError('alias add foo "echo $1 @1 $*"')
 
     def testNoRecursion(self):
-        self.assertError('alias rotinfinity "rot13 [rotinfinity $1]"')
+        self.assertError('alias add rotinfinity "rot13 [rotinfinity $1]"')
 
     def testNonCanonicalName(self):
-        self.assertError('alias FOO foo')
-        self.assertError('alias [] foo')
-        self.assertError('alias "foo bar" foo')
+        self.assertError('alias add FOO foo')
+        self.assertError('alias add [] foo')
+        self.assertError('alias add "foo bar" foo')
         try:
             conf.enablePipeSyntax = True
-            self.assertError('alias "foo|bar" foo')
+            self.assertError('alias add "foo|bar" foo')
             conf.enablePipeSyntax = False
-            self.assertNotError('alias "foo|bar" foo')
+            self.assertNotError('alias add "foo|bar" foo')
         finally:
             conf.enablePipeSyntax = False
 
     def testNotCannotNestRaised(self):
-        self.assertNotError('alias mytell "tell $channel $1"')
+        self.assertNotError('alias add mytell "tell $channel $1"')
         self.assertNotError('mytell #foo bugs')
         self.assertNoResponse('blah blah blah', 2)
 
     def testChannel(self):
-        self.assertNotError('alias channel echo $channel')
+        self.assertNotError('alias add channel echo $channel')
         self.assertResponse('channel', self.channel)
 
     def testNick(self):
-        self.assertNotError('alias sendingnick "rot13 [rot13 $nick]"')
+        self.assertNotError('alias add sendingnick "rot13 [rot13 $nick]"')
         self.assertResponse('sendingnick', self.nick)
 
     def testAddRemoveAlias(self):
@@ -122,7 +128,7 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNoResponse('foobar', 2)
 
     def testOptionalArgs(self):
-        self.assertNotError('alias myrepr "repr @1"')
+        self.assertNotError('alias add myrepr "repr @1"')
         self.assertResponse('myrepr foo', '"foo"')
         self.assertResponse('myrepr ""', '""')
         
