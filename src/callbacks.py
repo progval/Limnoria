@@ -1041,12 +1041,12 @@ class Commands(object):
         self.log.info('%s called by %q.', formatCommand(command), msg.prefix)
         # XXX I'm being extra-special-careful here, but we need to refactor
         #     this.
-        for name in command:
-            cap = checkCommandCapability(msg, self, name)
-            if cap:
-                irc.errorNoCapability(cap)
-                return
         try:
+            for name in command:
+                cap = checkCommandCapability(msg, self, name)
+                if cap:
+                    irc.errorNoCapability(cap)
+                    return
             try:
                 self.callingCommand = command
                 self.callCommand(command, irc, msg, *args, **kwargs)
