@@ -223,7 +223,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
             option = option[2:] # Strip off the --.
             if option == 'nolimit':
                 nolimit = True
-            if option == 'from':
+            elif option == 'from':
                 criteria.append('added_by LIKE %s')
                 formats.append(argument)
             elif option == 'with':
