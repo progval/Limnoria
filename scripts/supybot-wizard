@@ -241,8 +241,9 @@ def main():
     pluginDirs = conf.supybot.directories.plugins()
     output("""Currently, the bot knows about the following directories:""")
     output(format('%L', pluginDirs))
-    while yn('Would you like to add another plugin directory?',
-             default=False):
+    while yn('Would you like to add another plugin directory?  '
+             'Adding a local plugin directory is good style.',
+             default=True):
         (pluginDir, _) = getDirectoryName('plugins', basedir=basedir)
         if pluginDir not in pluginDirs:
             pluginDirs.append(pluginDir)
