@@ -49,8 +49,8 @@ if conf.pluginDir not in sys.path:
     sys.path.insert(0, conf.pluginDir)
 
 def makePluginDocumentation(filename):
-    trClasses = { 'dark':'light', 'light':'dark' }
-    trClass = 'dark'
+    trClasses = { 'lightyellow':'lightgreen', 'lightgreen':'lightyellow' }
+    trClass = 'lightyellow'
     pluginName = filename.split('.')[0]
     moduleInfo = imp.find_module(pluginName)
     module = imp.load_module(pluginName, *moduleInfo)

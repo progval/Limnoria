@@ -1,37 +1,38 @@
 body {
-  background:#fff;
-  color:#000;
+  background:white;
 }
+
+table {
+  border: 2px solid lightsteelblue;
+  border-collapse: collapse;
+}
+
 tr#headers {
-  text-align:center;
+  text-align:left;
   font-weight:bold;
-  margin:none;
-  border:none;
 }
+
 td {
   padding: 0px 3px 0px 3px;
-  white-space:nowrap;
+  border: 1px solid lightsteelblue;
+  white-space: nowrap;
 }
+
 pre {
-  border:1px solid black;
+  border:1px solid lightsteelblue;
+  border-bottom:3px solid lightsteelblue;
   padding:3px;
-  background:#e4eaf2;
-  color:inherit;
+  background:floralwhite;
 }
+
 .detail {
   white-space:normal;
 }
-.dark {
-  background:#c2cfdf;
-  color:inherit;
+
+.lightyellow {
+  background:aliceblue;
 }
-.dark td {
-  border:1px solid black;
-}
-.light {
-  background:#e4eaf2;
-  color:inherit;
-}
-.light td {
-  border:1px solid black;
+
+.lightgreen {
+  background:white;
 }
