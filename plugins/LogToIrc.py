@@ -31,7 +31,7 @@
 ###
 
 """
-Allows for sending the bot's logging output to a channel or nick.
+Allows for sending the bot's logging output to channels or users.
 """
 
 __revision__ = "$Id$"
@@ -187,15 +187,19 @@ conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'notice',
 
 def configure(advanced):
     from questions import something, anything, yn, output
-    target = ''
-    while not target:
+    output("""Here you can set which channels and who the bot has to send log
+              messages to. Note that by default in order to log to a channel
+              the channel has to have mode +s set. Logging to a user requires
+              the user to have the Owner capability.""")
+    targets = ''
+    while not targets:
         try:
-            target = anything('Which channel would you like to send log '
-                              'messages too?')
+            targets = anything('Which channels or users would you like to '
+                               'send log messages to?')
             conf.supybot.plugins.LogToIrc.target.set(target)
         except registry.InvalidRegistryValue, e:
             output(str(e))
-            target = ''
+            targets = ''
     colorized = yn('Would you like these messages to be colored?')
     conf.supybot.plugins.LogToIrc.colorized.setValue(colorized)
     if advanced:
