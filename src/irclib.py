@@ -88,10 +88,13 @@ class IrcCallback(IrcCommandDispatcher):
                       'name': lambda self: self.__class__.__name__,}
 
     def __cmp__(self, other):
-       ret = cmp(self.priority, other.priority)
-       if not ret:
-          ret = cmp(self.name(), other.name())
-       return ret
+        if isinstance(other, IrcCallback):
+            ret = cmp(self.priority, other.priority)
+            if ret == 0:
+                ret = cmp(self.name(), other.name())
+            return ret
+        else:
+            return super(IrcCallback, self).__cmp__(other)
     
     def name(self):
         """Returns the name of the callback."""
