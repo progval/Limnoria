@@ -346,7 +346,7 @@ def format(s, *args, **kwargs):
     p: pluralize (takes a string)
     q: quoted (takes a string)
     n: nItems (takes a 2-tuple of (n, item) or a 3-tuple of (n, between, item))
-    t: time, formated (takes an int)
+    t: time, formatted (takes an int)
     """
     args = list(args)
     args.reverse() # For more efficient popping.
