@@ -51,9 +51,9 @@ import BeautifulSoup
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.commands as commands
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.webutils as webutils
 import supybot.callbacks as callbacks
@@ -107,7 +107,7 @@ class Weather(callbacks.Privmsg):
     def _noLocation(self):
         raise NoLocation, noLocationError
 
-    def weather(self, irc, msg, args):
+    def weather(self, irc, msg, args, location):
         # This specifically does not have a docstring.
         channel = None
         if ircutils.isChannel(msg.args[0]):
@@ -116,7 +116,6 @@ class Weather(callbacks.Privmsg):
             s = self.userValue('lastLocation', msg.prefix)
             if s:
                 args = [s]
-        location = privmsgs.getArgs(args)
         self.setUserValue('lastLocation', msg.prefix,
                           location, ignoreNoUser=True)
         realCommandName = self.registryValue('command', channel)
@@ -134,6 +133,7 @@ class Weather(callbacks.Privmsg):
                         break
                     except NoLocation:
                         self.log.info('%s lookup failed as backup.', command)
+    weather = wrap(weather, ['text'])
             
 
     def _toCelsius(self, temp, unit):
