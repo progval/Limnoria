@@ -172,6 +172,12 @@ class PluginTestCase(unittest.TestCase):
         self.failUnless(re.search(regexp, m.args[1]),
                         '%r does not match %r' % (m.args[1], regexp))
 
+    def assertNotRegexp(self, query, regexp):
+        m = self._feedMsg(query)
+        self.failUnless(m)
+        self.failUnless(re.search(regexp, m.args[1]) is None,
+                        '%r matched %r' % (m.args[1], regexp))
+
     def assertRegexps(self, query, regexps):
         started = time.time()
         total = len(regexps)*self.timeout
