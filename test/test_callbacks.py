@@ -320,6 +320,9 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertError('load [foo')
         self.assertError('load foo]')
 
+    def testNoEscapingAttributeErrorFromTokenizeWithFirstElementList(self):
+        self.assertError('[plugin list] list')
+
 
 class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
     plugins = ('Utilities',) # Gotta put something.

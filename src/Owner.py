@@ -123,6 +123,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         if s:
             try:
                 tokens = callbacks.tokenize(s)
+                if tokens and isinstance(tokens[0], list):
+                    s = 'The command called may not be the result ' \
+                        'of a nested command.'
+                    irc.queueMsg(callbacks.error(msg, s))
+                    return
             except SyntaxError, e:
                 irc.queueMsg(callbacks.error(msg, str(e)))
                 return
