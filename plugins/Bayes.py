@@ -135,7 +135,7 @@ class Bayes(callbacks.Privmsg):
             text = utils.ellipsisify(text, 30)
             self.log.debug('Classified %r as %s. (%.2f%%)', text, kind, prob)
         self.db.trainNick(channel, msg.nick, text)
-                
+
     def guess(self, irc, msg, args, channel, text):
         """[<channel>] <text>
 
@@ -176,7 +176,7 @@ class Bayes(callbacks.Privmsg):
         else:
             irc.reply('I have no idea who might\'ve said that.')
     who = wrap(who, ['channeldb', 'something'])
-        
+
     def train(self, irc, msg, args, channel, language, pattern):
         """[<channel>] <language> <glob>
 
@@ -196,8 +196,7 @@ class Bayes(callbacks.Privmsg):
             fd.close()
         irc.replySuccess()
     train = wrap(train, ['channeldb', 'something', 'something'])
-            
-        
+
 
 Class = Bayes
 
