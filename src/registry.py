@@ -276,7 +276,7 @@ class Value(Group):
     def set(self, s):
         """Override this with a function to convert a string to whatever type
         you want, and call self.setValue to set the value."""
-        raise NotImplementedError
+        self.setValue(s)
 
     def setValue(self, v):
         """Check conditions on the actual value type here.  I.e., if you're a
