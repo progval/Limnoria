@@ -291,12 +291,18 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             # You have been unbanned from (oftc)
             irc.sendMsg(ircmsgs.join(channel))
         elif 'isn\'t registered' in s:
+            # XXX We should notify the user that this happened as well.
             self.log.info('Received "%s isn\'t registered" from ChanServ',
                           channel)
         elif 'this channel has been registered' in s:
             self.log.debug('Got "Registered channel" from ChanServ.')
         elif 'already opped' in s:
+            # This shouldn't happen, Services.op should refuse to run if
+            # we already have ops.
             self.log.debug('Got "Already opped" from ChanServ.')
+        elif 'access level' in s and 'is required' in s:
+            # XXX We should notify the user that this happened.
+            self.log.debug('Got "Access level required" from ChanServ.')
         else:
             self.log.warning('Got unexpected notice from ChanServ: %r.', msg)
 
