@@ -397,3 +397,7 @@ class CheckCapabilityTestCase(unittest.TestCase):
         self.failIf(self.checkCapability(self.antichanfoo, self.chancap))
         self.failUnless(self.checkCapability(self.antichanfoo,
                                              self.antichancap))
+
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+

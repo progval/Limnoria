@@ -175,3 +175,5 @@ if __name__ == '__main__':
     runner.run(suite)
     print 'Total asserts: %s' % unittest.asserts
     world.testing = False
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -269,3 +269,6 @@ class IrcCallbackTestCase(unittest.TestCase):
         expected.insert(0, ircmsgs.password(password))
         self.assertEqual(msgs, expected)
         conf.throttleTime = oldconfthrottle
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+

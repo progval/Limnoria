@@ -84,3 +84,4 @@ class FunCommandsTest(PluginTestCase):
             i = ord(c)
             self.assertResponse('ord %s' % utils.dqrepr(c), str(i))
 
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

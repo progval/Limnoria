@@ -376,3 +376,6 @@ class MaxLengthQueueTestCase(unittest.TestCase):
         self.assertEqual(len(q), 3)
         self.assertEqual(q[0], 3)
 
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+

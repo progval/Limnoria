@@ -116,3 +116,5 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(ircmsgs.privmsg(channelMsg.args[0],
                                          '%s: foo' % channelMsg.nick),
                          callbacks.reply(channelMsg, 'foo'))
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

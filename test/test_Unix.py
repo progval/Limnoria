@@ -40,3 +40,5 @@ class UnixTestCase(PluginTestCase):
                           'not find')
         self.assertNotError('spell Strizzike')
         self.assertError('spell foo bar baz')
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -61,3 +61,7 @@ class FunctionsTest(unittest.TestCase):
                          args + [''])
         self.assertEqual(privmsgs.getArgs(args, needed=0, optional=1),
                          ' '.join(args))
+
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+

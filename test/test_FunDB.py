@@ -31,34 +31,8 @@
 
 from test import *
 
-import Alias
-
-
-class FunctionsTest(unittest.TestCase):
-    def testFindAliasCommand(self):
-        s = 'command'
-        self.failIf(Alias.findAliasCommand(s, ''))
-        self.failIf(Alias.findAliasCommand(s, 'foo'))
-        self.failIf(Alias.findAliasCommand(s, 'foo bar [  baz]'))
-        self.failIf(Alias.findAliasCommand(s, 'foo bar [baz]'))
-        self.failUnless(Alias.findAliasCommand(s, s))
-        self.failUnless(Alias.findAliasCommand(s, '  %s' % s))
-        self.failUnless(Alias.findAliasCommand(s, '[%s]' % s))
-        self.failUnless(Alias.findAliasCommand(s, '[ %s]' % s))
-        self.failUnless(Alias.findAliasCommand(s, 'foo bar [%s]' % s))
-        self.failUnless(Alias.findAliasCommand(s, 'foo bar [ %s]' % s))
-
-    def testFindBiggestDollar(self):
-        self.assertEqual(Alias.findBiggestDollar(''), None)
-        self.assertEqual(Alias.findBiggestDollar('foo'), None)
-        self.assertEqual(Alias.findBiggestDollar('$0'), 0)
-        self.assertEqual(Alias.findBiggestDollar('$1'), 1)
-        self.assertEqual(Alias.findBiggestDollar('$2'), 2)
-        self.assertEqual(Alias.findBiggestDollar('$3'), 3)
-        self.assertEqual(Alias.findBiggestDollar('foo bar $1'), 1)
-        self.assertEqual(Alias.findBiggestDollar('foo $2 $1'), 2)
-        self.assertEqual(Alias.findBiggestDollar('foo $0 $1'), 1)
-        self.assertEqual(Alias.findBiggestDollar('foo $1 $3'), 3)
-        self.assertEqual(Alias.findBiggestDollar('$10 bar $1'), 10)
+class TestFunDB(PluginTestCase):
+    pass
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+

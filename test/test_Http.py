@@ -60,3 +60,7 @@ class HttpTest(PluginTestCase):
 
     def testNetcraft(self):
         self.assertNotError('netcraft slashdot.org')
+
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+

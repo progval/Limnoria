@@ -154,3 +154,6 @@ class FunctionsTestCase(unittest.TestCase):
         keys.pop()
         self.assertEqual(ircmsgs.joins(channels, keys).args,
                          ('#osu,#umich', 'michiganSucks'))
+
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

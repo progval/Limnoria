@@ -190,3 +190,8 @@ class IrcDictTestCase(unittest.TestCase):
         self.assertEqual(12, d['#foo'])
         d['#fOOBAR[]'] = 'blah'
         self.assertEqual('blah', d['#foobar{}'])
+
+
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+

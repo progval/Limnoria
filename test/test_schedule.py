@@ -66,3 +66,5 @@ class TestSchedule(unittest.TestCase):
         
 
         
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+

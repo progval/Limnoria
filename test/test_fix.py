@@ -117,3 +117,6 @@ class FunctionsTest(unittest.TestCase):
         self.assertEqual(lflatten([[[[[[[[[[]]]]]]]]]]), [])
         self.assertEqual(lflatten([1, [2, [3, 4], 5], 6]), [1, 2, 3, 4, 5, 6])
         self.assertRaises(TypeError, lflatten, 1)
+
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
