@@ -164,7 +164,7 @@ class Fun(callbacks.Privmsg):
         else:
             s = 'I couldn\'t figure out that filename.'
             irc.reply(s)
-    mimetype = wrap(mimetype, ['something'])
+    mimetype = wrap(mimetype, ['text'])
 
     def md5(self, irc, msg, args, text):
         """<text>
@@ -286,7 +286,7 @@ class Fun(callbacks.Privmsg):
                       'it with some smaller inputs.')
         else:
             irc.reply(str(utils.distance(s1, s2)))
-    levenshtein = wrap(levenshtein, ['text', 'text'])
+    levenshtein = wrap(levenshtein, ['something', 'text'])
 
     def soundex(self, irc, msg, args, text, length):
         """<string> [<length>]
@@ -296,7 +296,7 @@ class Fun(callbacks.Privmsg):
         length, use 0.
         """
         irc.reply(utils.soundex(text, length))
-    soundex = wrap(soundex, ['text', additional('int', 4)])
+    soundex = wrap(soundex, ['somethingWithoutSpaces', additional('int', 4)])
 
     # The list of words and algorithm are pulled straight the mozbot
     # MagicEightBall.bm module: http://tinyurl.com/7ytg7

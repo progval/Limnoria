@@ -164,7 +164,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         registerBugzilla(name, url, description)
         self.shorthand = utils.abbrev(self.db.keys())
         irc.replySuccess()
-    add = wrap(add, ['text', 'url', additional('text')])
+    add = wrap(add, ['something', 'url', additional('text')])
 
     def remove(self, irc, msg, args, name):
         """<abbreviation>
@@ -337,7 +337,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             (utils.nItems('bug', len(bugs)), utils.quoted(searchstr),
              ' AND '.join(keywords), utils.commaAndify(map(str, bugids)))
         irc.reply(s)
-    search = wrap(search, [getopts({'keywords':'text'}), 'text', 'text'])
+    search = wrap(search, [getopts({'keywords':'text'}), 'something', 'text'])
 
     def bug(self, irc, msg, args, name, number):
         """<abbreviation> <number>
@@ -369,7 +369,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         report['summary'] = self._mk_summary_string(summary, bold)
         s = '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report
         irc.reply(s)
-    bug = wrap(bug, ['text', ('id', 'bug')])
+    bug = wrap(bug, ['something', ('id', 'bug')])
 
     def _mk_summary_string(self, summary, bold):
         L = []

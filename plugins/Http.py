@@ -171,7 +171,7 @@ class Http(callbacks.Privmsg):
                       (project, lastupdated, vitality, popularity, version))
         except FreshmeatException, e:
             irc.error(str(e))
-    freshmeat = wrap(freshmeat, ['something'])
+    freshmeat = wrap(freshmeat, ['text'])
 
     def stockquote(self, irc, msg, args, symbol):
         """<company symbol>
@@ -179,9 +179,6 @@ class Http(callbacks.Privmsg):
         Gets the information about the current price and change from the
         previous day of a given company (represented by a stock symbol).
         """
-        if ' ' in symbol:
-            irc.error('Only one stockquote can be looked up at a time.')
-            return
         url = 'http://finance.yahoo.com/d/quotes.csv?s=%s' \
               '&f=sl1d1t1c1ohgv&e=.csv' % symbol
         quote = webutils.getUrl(url)
