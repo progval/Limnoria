@@ -37,7 +37,7 @@ if __name__ == '__main__':
         error('Invalid version string: '
               'must be of the form MAJOR.MINOR.PATCHLEVEL.')
         
-    if firstLine('RELNOTES') != 'Version %s':
+    if firstLine('RELNOTES') != 'Version %s' % v:
         error('Invalid first line in RELNOTES.')
 
     (first, _, third) = firstLines('ChangeLog', 3)

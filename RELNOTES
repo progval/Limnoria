@@ -1,3 +1,12 @@
+Version 0.80.0pre3
+
+The URL database has been changed again, but it will use a different
+filename so you shouldn't run into conflicts, just a newly-empty
+database.
+
+We upgraded the SOAP stuff in others; you may do well to do a
+setup.py install --clean this time around.
+
 Version 0.80.0pre2
 
 Many more bugs have been fixed.  A few more plugins have been updated
