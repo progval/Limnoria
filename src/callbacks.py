@@ -1191,6 +1191,11 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
         else:
             group.set(value)
 
+    def getPluginHelp(self):
+        if hasattr(self, '__doc__'):
+            return self.__doc__
+        else:
+            return None
 
 class Plugin(PluginMixin, Commands):
     pass

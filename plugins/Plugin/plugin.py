@@ -47,8 +47,9 @@ class Plugin(callbacks.Plugin):
         Returns a useful description of how to use <plugin>, if the plugin has
         one.
         """
-        if hasattr(cb, '__doc__') and cb.__doc__:
-            irc.reply(utils.str.normalizeWhitespace(cb.__doc__))
+        doc = cb.getPluginHelp()
+        if doc:
+            irc.reply(utils.str.normalizeWhitespace(doc))
         else:
             irc.reply('That plugin is loaded, but has no plugin help.')
     help = wrap(help, ['plugin'])
