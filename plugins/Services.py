@@ -50,7 +50,7 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     nick = anything('What is your registered nick?')
     password = anything('What is your password for that nick?')
-    onStart.append('load NickServ')
+    onStart.append('load Services')
     onStart.append('startnickserv %s %s' % (nick, password))
 
 class Services(privmsgs.CapabilityCheckingPrivmsg):
