@@ -177,9 +177,8 @@ class Misc(callbacks.Privmsg):
     def help(self, irc, msg, args):
         """[<plugin>] <command>
 
-        This command gives a much more useful description than the simple
-        argument list given by the command 'syntax'.  <plugin> is only
-        necessary if the command is in more than one plugin.
+        This command gives a useful description of what <command> does.
+        <plugin> is only necessary if the command is in more than one plugin.
         """
         def helpFor(method):
             doclines = method.__doc__.splitlines()
@@ -214,10 +213,10 @@ class Misc(callbacks.Privmsg):
         command = command.lstrip(conf.prefixChars) 
         cbs = callbacks.findCallbackForCommand(irc, command)
         if len(cbs) > 1:
-            irc.error(msg, 'That command exists in the %s %s.  Please specify '
-                           'exactly which plugin command you want help with.'%\
-                           (utils.commaAndify([cb.name() for cb in cbs]),
-                            utils.nItems(len(cbs), 'plugin')))
+            irc.error(msg, 'That command exists in the %s plugins.  '
+                           'Please specify exactly which plugin command '
+                           'you want help with.'% \
+                           utils.commaAndify([cb.name() for cb in cbs]))
             return
         elif not cbs:
             irc.error(msg, 'There is no such command %s.' % command)
