@@ -211,6 +211,29 @@ class StringWithSpaceOnRight(String):
         if v.rstrip() == v:
             v += ' '
         String.setValue(self, v)
+
+class Regexp(Value):
+    def set(self, s):
+        try:
+            if s:
+                self.value = utils.perlReToPythonRe(s)
+            else:
+                self.value = None
+            self.sr = s
+        except ValueError, e:
+            raise InvalidRegistryValue, 'Value must be a valid regexp: %s' % e
+
+    def setValue(self, v):
+        if v is None:
+            self.sr = ''
+            self.value = None
+        else:
+            raise InvalidRegistryValue, \
+                  'Can\'t set to a regexp, there would be an inconsistency ' \
+                  'between the regexp and the recorded string value.'
+
+    def __str__(self):
+        return self.sr
         
 class SeparatedListOf(Value):
     Value = Value

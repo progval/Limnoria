@@ -31,6 +31,8 @@
 
 from testsupport import *
 
+import re
+
 import conf
 import registry
 
@@ -119,6 +121,16 @@ class ValuesTestCase(unittest.TestCase):
         self.assertEqual(v(), ['foo', 'bar', 'baz'])
         v.set('foo,bar')
         self.assertEqual(v(), ['foo', 'bar'])
+
+    def testRegexp(self):
+        v = registry.Regexp(None, 'help')
+        self.assertEqual(v(), None)
+        v.set('m/foo/')
+        self.failUnless(v().match('foo'))
+        v.set('')
+        self.assertEqual(v(), None)
+        self.assertRaises(registry.InvalidRegistryValue,
+                          v.setValue, re.compile(r'foo'))
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
