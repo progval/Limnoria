@@ -150,7 +150,7 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         if len(packages) == 0:
             irc.reply(msg, 'I found no packages with that file.')
         else:
-            irc.reply(msg, ircutils.privmsgPayload(packages, ', '))
+            irc.reply(msg, utils.commaAndify(packages))
                 
     _debreflags = re.DOTALL | re.IGNORECASE
     _debpkgre = re.compile(r'<a.*>(.*?)</a>', _debreflags)
@@ -196,8 +196,6 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
                     if pkgMatch and brMatch:
                         s = '%s (%s)' % (pkgMatch.group(1), brMatch.group(1))
                         responses.append(s)
-        random.shuffle(responses)
-        ircutils.shrinkList(responses, ', ', 400)
         s = 'Total matches: %s, shown: %s.  %s' % \
             (numberOfPackages, len(responses), ', '.join(responses))
         irc.reply(msg, s)
