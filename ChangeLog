@@ -1,3 +1,7 @@
+	* Added a Topic.separator command, which replaces the current
+	separator with a new separator, changing the topic to reflect the
+	change.
+	
 	* Changed the supybot.user configuration variable so that if it
 	isn't configured, the user will stay up-to-date with the current
 	version of the bot.  To take advantage of this, set your

@@ -425,6 +425,17 @@ class Topic(callbacks.Privmsg):
             irc.error('There is no default topic configured for %s.' % channel)
     default = wrap(default, ['canChangeTopic'])
 
+    def separator(self, irc, msg, args, channel, separator):
+        """[<channel>] <separator>
+
+        Sets the topic separator for <channel> to <separator>  Converts the
+        current topic appropriately.
+        """
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        self.setRegistryValue('separator', separator, channel)
+        self._sendTopics(irc, channel, topics)
+    separator = wrap(separator, ['canChangeTopic', 'something'])
+
 Class = Topic
 
 

@@ -190,6 +190,19 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
             self.assertResponse('topic', 'foo || bar')
         finally:
             conf.supybot.plugins.Topic.format.setValue(original)
+
+    def testSeparator(self):
+        original = conf.supybot.plugins.Topic.format()
+        try:
+            conf.supybot.plugins.Topic.format.setValue('$topic')
+            self.assertResponse('topic add foo', 'foo')
+            self.assertResponse('topic add bar', 'foo || bar')
+            self.assertResponse('topic add baz', 'foo || bar || baz')
+            self.assertResponse('topic separator |', 'foo | bar | baz')
+            self.assertResponse('topic separator ::', 'foo :: bar :: baz')
+            self.assertResponse('topic separator ||', 'foo || bar || baz')
+        finally:
+            conf.supybot.plugins.Topic.format.setValue(original)
             
         
 
