@@ -118,8 +118,9 @@ def upkeep():
     if doFlush:
         flush()
         # This is so registry._cache gets filled.
-        if registryFilename is not None:
-            registry.open(registryFilename)
+        # This seems dumb, so we'll try not doing it anymore.
+        #if registryFilename is not None:
+        #    registry.open(registryFilename)
     if not dying:
         log.debug('Regexp cache size: %s', len(sre._cache))
         log.debug('Pattern cache size: %s'%len(ircutils._patternCache))
