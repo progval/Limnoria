@@ -38,11 +38,8 @@ from baseplugin import *
 import re
 import sets
 import time
-import random
 import urllib
 import urllib2
-
-import babelfish
 
 import utils
 import debug
@@ -57,10 +54,6 @@ example = utils.wrapLines("""
 <supybot> ASAP could be As Soon As Possible, or A Simplified Asset (disposal) Procedure, or A Stupid Acting Person (Dilbert comic strip), or Academic Strategic Alliances Program, or Accelerated Situational Awareness Prototype, or Accelerated Systems Applications and Products (data processing), or Acquisitions Strategies and Plans, or Administrative Services Automation Program, or Administrative Services Automation Project
 <jemfinch> @deepthought
 <supybot> #331: Probably one of the worst things about being a genie in a magic lamp is a little thing called "lamp stench."
-<jemfinch> @translate en de "Probably one of the worst things about being a genie in a magic lamp is a little thing called \"lamp stench.\""
-<supybot> Vermutlich eins der schlechtesten Sachen ber Sein ein genie in einer magischen Lampe ist eine kleine Sache, die genannt wird "Lampe stench."
-<jemfinch> @babelize en de "Probably one of the worst things about being a genie in a magic lamp is a little thing called \"lamp stench.\""
-<supybot> From the worst its thing surplus is a genius in magic lamp a small thing, is characterized "lamp Gestank."
 <jemfinch> @foldoc perl
 <supybot> < language , tool > A high-level programming language, started by Larry Wall in 1987 and developed as an open source project. It has an eclectic heritage, deriving from the ubiquitous C programming language and to a lesser extent from sed , awk , various Unix shell languages, Lisp , and at least a dozen other tools and languages. Originally developed for Unix , it is now available for many platforms .
 <jemfinch> @freshmeat supybot
@@ -128,7 +121,7 @@ class Http(callbacks.Privmsg):
             text = fd.read()
             m = self._titleRe.search(text)
             if m is not None:
-                irc.reply(msg, m.group(1))
+                irc.reply(msg, utils.htmlToText(m.group(1)))
             else:
                 irc.reply(msg, 'That URL appears to have no HTML title.')
         except ValueError, e:
@@ -403,75 +396,6 @@ class Http(callbacks.Privmsg):
             irc.reply(msg, 'No results found for %s.' % hostname)
         else:
             irc.error(msg, 'The format of the was odd.')
-
-    _abbrevs = utils.abbrev(map(str.lower, babelfish.available_languages))
-    _abbrevs['de'] = 'german'
-    _abbrevs['jp'] = 'japanese'
-    _abbrevs['kr'] = 'korean'
-    _abbrevs['es'] = 'spanish'
-    _abbrevs['pt'] = 'portuguese'
-    _abbrevs['it'] = 'italian'
-    _abbrevs['zh'] = 'chinese'
-    for language in babelfish.available_languages:
-        _abbrevs[language] = language
-    def translate(self, irc, msg, args):
-        """<from-language> <to-language> <text>
-
-        Returns the text translated to the new language.
-        """
-        (fromLang, toLang, text) = privmsgs.getArgs(args, needed=3)
-        try:
-            fromLang = self._abbrevs[fromLang.lower()]
-            toLang = self._abbrevs[toLang.lower()]
-            translation = babelfish.translate(text, fromLang, toLang)
-            irc.reply(msg, translation)
-        except (KeyError, babelfish.LanguageNotAvailableError), e:
-            irc.error(msg, '%s is not a valid language.  Valid languages ' \
-                      'include %s' % \
-                      (e, utils.commaAndify(babelfish.available_languages)))
-        except babelfish.BabelizerIOError, e:
-            irc.error(msg, e)
-        except babelfish.BabelfishChangedError, e:
-            irc.error(msg, 'Babelfish has foiled our plans by changing its ' \
-                           'webpage format')
-
-    def babelize(self, irc, msg, args):
-        """<from-language> <to-language> <text>
-
-        Translates <text> repeatedly between <from-language> and <to-language>
-        until it doesn't change anymore or 12 times, whichever is fewer.  One
-        of the languages must be English.
-        """
-        (fromLang, toLang, text) = privmsgs.getArgs(args, needed=3)
-        try:
-            fromLang = self._abbrevs[fromLang.lower()]
-            toLang = self._abbrevs[toLang.lower()]
-            if fromLang != 'english' and toLang != 'english':
-                irc.error(msg, 'One language must be English.')
-                return
-            translations = babelfish.babelize(text, fromLang, toLang)
-            irc.reply(msg, translations[-1])
-        except (KeyError, babelfish.LanguageNotAvailableError), e:
-            irc.reply(msg, '%s is not a valid language.  Valid languages ' \
-                      'include %s' % \
-                      (e, utils.commaAndify(babelfish.available_languages)))
-        except babelfish.BabelizerIOError, e:
-            irc.reply(msg, e)
-        except babelfish.BabelfishChangedError, e:
-            irc.reply(msg, 'Babelfish has foiled our plans by changing its ' \
-                           'webpage format')
-
-    def randomlanguage(self, irc, msg, args):
-        """[<allow-english>]
-
-        Returns a random language supported by babelfish.  If <allow-english>
-        is provided, will include English in the list of possible languages.
-        """
-        allowEnglish = privmsgs.getArgs(args, needed=0, optional=1)
-        language = random.sample(babelfish.available_languages, 1)[0]
-        while not allowEnglish and language == 'English':
-            language = random.sample(babelfish.available_languages, 1)[0]
-        irc.reply(msg, language)
 
     def kernel(self, irc, msg, args):
         """takes no arguments

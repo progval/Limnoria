@@ -31,44 +31,21 @@
 
 from test import *
 
-class HttpTest(PluginTestCase):
-    plugins = ('Http',)
-    def testDeepthought(self):
-        self.assertNotError('deepthought')
+class BabelFishTestCase(PluginTestCase):
+    plugins = ('Babelfish',)
+    def testTranslate(self):
+        self.assertResponse('translate en sp food',
+                            'alimento')
+        self.assertError('translate foo en food')
+        self.assertError('translate en foo food')
 
-    def testStockquote(self):
-        self.assertNotError('stockquote MSFT')
+    def testBabelize(self):
+        self.assertNotError('babelize en sp foo')
+        self.assertError('babelize sp fr foo')
 
-    def testFreshmeat(self):
-        self.assertNotError('freshmeat supybot')
+    def testRandomlanguage(self):
+        self.assertNotError('randomlanguage')
 
-    def testTitle(self):
-        self.assertResponse('title slashdot.org',
-                            'Slashdot: News for nerds, stuff that matters')
-        self.assertResponse('title http://www.slashdot.org/',
-                            'Slashdot: News for nerds, stuff that matters')
-
-    def testFoldoc(self):
-        self.assertNotError('foldoc perl')
-
-    def testGeekquote(self):
-        self.assertNotError('geekquote')
-        self.assertNotError('geekquote multiline')
-
-    def testAcronym(self):
-        self.assertNotError('acronym PERL')
-
-    def testNetcraft(self):
-        self.assertNotError('netcraft slashdot.org')
-
-    def testWeather(self):
-        self.assertNotError('weather Columbus, OH')
-        self.assertNotError('weather 43221')
-        self.assertNotRegexp('weather Paris, FR', 'Virginia')
-        self.assertError('weather alsdkfjasdl, asdlfkjsadlfkj')
-
-    def testKernel(self):
-        self.assertNotError('kernel')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
