@@ -374,9 +374,9 @@ class Privmsg(irclib.IrcCallback):
             s = addressed(irc.nick, msg)
             try:
                 args = tokenize(s)
+                self.Proxy(irc, msg, args)
             except SyntaxError, e:
                 irc.queueMsg(reply(msg, debug.exnToString(e)))
-            self.Proxy(irc, msg, args)
 
     def isCommand(self, methodName):
         # This function is ugly, but I don't want users to call methods like
@@ -419,8 +419,11 @@ class Privmsg(irclib.IrcCallback):
                 self.rateLimiter.put(msg)
                 msg = self.rateLimiter.get()
                 if msg:
-                    args = tokenize(s)
-                    self.Proxy(irc, msg, args)
+                    try:
+                        args = tokenize(s)
+                        self.Proxy(irc, msg, args)
+                    except SyntaxError, e:
+                        irc.queueMsg(reply(msg, debug.exnToString(e)))
 
 
 class IrcObjectProxyRegexp:
