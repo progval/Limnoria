@@ -7,8 +7,9 @@ spell-check them.
 
 import os
 import sys
-import symbol
 import parser
+import string
+import symbol
 
 import supybot.utils as utils
 
