@@ -150,6 +150,13 @@ class MiscCommands(callbacks.Privmsg):
         """
         irc.reply(msg, world.version)
 
+    def source(self, irc, msg, args):
+        """takes no arguments
+
+        Returns a URL saying where to get SupyBot.
+        """
+        irc.reply(msg, 'http://www.sf.net/projects/supybot/')
+
     def logfilesize(self, irc, msg, args):
         """takes no arguments
 
