@@ -87,7 +87,49 @@ if sqlite is not None:
             self.assertNotError('seen %s' % self.nick)
             self.assertNotError('seen %s' % self.nick.upper())
 
-        def testWordStats(self):
+        def testWordStatsNoArgs(self):
+            self.assertResponse('wordstats', 'I am not currently keeping any '
+                                             'word stats.')
+            self.assertNotError('addword lol')
+            self.assertResponse('wordstats', 'Currently keeping stats for: '
+                                             '\'lol\'')
+
+        def testWordStatsUser(self):
+            self.assertNotError('addword lol')
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
+                                             prefix=self.prefix))
+            self.assertResponse('wordstats foo', '\'lol\': 2')
+            self.assertNotError('addword moo')
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'moo',
+                                             prefix=self.prefix))
+            self.assertResponse('wordstats foo', '\'lol\': 2 and \'moo\': 2')
+
+        def testWordStatsWord(self):
+            userPrefix1 = 'moo!bar@baz'; userNick1 = 'moo'
+            userPrefix2 = 'boo!bar@baz'; userNick2 = 'boo'
+            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
+                                             'register %s bar' % userNick1,
+                                             prefix=userPrefix1))
+            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
+                                             'register %s bar' % userNick2,
+                                             prefix=userPrefix2))
+            _ = self.irc.takeMsg()
+            _ = self.irc.takeMsg()
+            self.assertNotError('addword lol')
+            self.assertResponse('wordstats lol', 'Top 1 \'lol\'er: foo: 1')
+            for i in range(5):
+                self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
+                                                 prefix=userPrefix1))
+            self.assertResponse('wordstats lol', 'Top 2 \'lol\'ers: %s: 5 '
+                                                 'and foo: 2' % userNick1)
+            for i in range(10):
+                self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
+                                                 prefix=userPrefix2))
+            self.assertResponse('wordstats lol', 'Top 3 \'lol\'ers: %s: 10, '
+                                                 '%s: 5, and foo: 3' % (\
+                                                 userNick2, userNick1))
+
+        def testWordStatsUserWord(self):
             self.assertNotError('addword lol')
             self.assertResponse('wordstats foo lol',
                                 'foo has said \'lol\' 1 time.')
