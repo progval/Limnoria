@@ -37,9 +37,14 @@ except ImportError:
     sqlite = None
 
 if sqlite is not None:
-    class MarkovTestCase(PluginTestCase, PluginDocumentation):
+    class MarkovTestCase(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('Markov',)
-        pass # Put actual tests here.
+        def testMarkov(self):
+            self.assertSnarfNoResponse('Feed the db some text')
+            self.assertNotError('markov')
+            self.assertNotError('markov Feed the')
+            self.assertNotError('markov Feed')
+            self.assertError('markov foo bar')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

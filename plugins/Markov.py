@@ -122,7 +122,6 @@ class DbmMarkovDB(object):
         db = self._getDb(channel)
         firsts = db['\n \n'].split()
         if firsts:
-            firsts.pop() # Empty line.
             if firsts:
                 return ('\n', random.choice(firsts))
             else:
@@ -218,28 +217,45 @@ class Markov(callbacks.Privmsg):
             self.q.enqueue(doPrivmsg)
 
     def markov(self, irc, msg, args):
-        """[<channel>]
+        """[<channel>] [word1 word2]
 
         Returns a randomly-generated Markov Chain generated sentence from the
         data kept on <channel> (which is only necessary if not sent in the
-        channel itself).
+        channel itself).  If word1 and word2 are specified, they will be used
+        to start the Markov chain.
         """
         channel = privmsgs.getChannel(msg, args)
+        (word1, word2) = privmsgs.getArgs(args, required=0, optional=2)
         def markov(db):
-            try:
-                words = list(db.getFirstPair(channel))
-            except KeyError:
-                irc.error('I don\'t have any first pairs for %s.' % channel)
-                return
-            # words[-2:] is of the form ('\r', word)
+            if word1 and word2:
+                givenArgs = True
+                words = [word1, word2]
+            else:
+                givenArgs = False
+                try:
+                    # words is of the form ['\r', word]
+                    words = list(db.getFirstPair(channel))
+                except KeyError:
+                    irc.error('I don\'t have any first pairs for %s.' %channel)
+                    return
             follower = words[-1]
             last = False
             resp = []
             while not last:
                 resp.append(follower)
-                (follower,last) = db.getFollower(channel, words[-2], words[-1])
+                try:
+                    (follower,last) = db.getFollower(channel, words[-2],
+                                                     words[-1])
+                except KeyError:
+                    irc.error('I found a broken link in the Markov chain.  '
+                              'Maybe I received two bad links to start the '
+                              'chain.')
+                    return
                 words.append(follower)
-            irc.reply(' '.join(resp))
+            if givenArgs:
+                irc.reply(' '.join(words))
+            else:
+                irc.reply(' '.join(resp))
         self.q.enqueue(markov)
 
     def firsts(self, irc, msg, args):
