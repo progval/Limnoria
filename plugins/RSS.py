@@ -43,8 +43,11 @@ And you'll be able to call the command like this:
 
 slashdot
 
+Also includes a function for getting info about a specific feed, rssinfo.
+
 Commands include:
   rsstitles
+  rssinfo
 """
 
 from baseplugin import *
@@ -72,8 +75,19 @@ def configure(onStart, afterConnect, advanced):
         prompt = 'Would you like to add another RSS feed?'
         name = anything('What\'s the name of the website?')
         url = anything('What\'s the URL of the RSS feed?')
+        if yn('Would you like to add an alias for accessing ' \
+          '%s\'s info?' % name) == 'y':
+            if advanced:
+                infocmd = anything('What would you like for the info alias?')
+            else:
+                infocmd = name + "info"
+                print 'You will be able to  access %s\'s info via the ' \
+                    '\'%s\' command' % (name, infocmd)
         onStart.append('alias %s "rsstitles %s"' % (name, url))
         onStart.append('freeze %s' % name)
+        if infocmd:
+            onStart.append('alias %s "rssinfo %s"' % (infocmd, url))
+            onStart.append('freeze %s' % infocmd)
         
 
 class RSS(callbacks.Privmsg):
@@ -81,7 +95,7 @@ class RSS(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.lastRequest = {}
-        self.responses = {}
+        self.cachedFeeds = {}
 
     def rsstitles(self, irc, msg, args):
         """<url>
@@ -92,18 +106,52 @@ class RSS(callbacks.Privmsg):
         now = time.time()
         if url not in self.lastRequest or now - self.lastRequest[url] > 1800:
             results = rssparser.parse(url)
-            headlines = [d['title'].strip().replace('\n', ' ') \
-                         for d in results['items']]
-            while reduce(operator.add, map(len, headlines), 0) > 350:
-                headlines.pop()
-            if not headlines:
-                irc.error(msg, 'Error grabbing RSS feed')
-                return
-            self.responses[url] = ' :: '.join(headlines)
+            self.cachedFeeds[url] = results
             self.lastRequest[url] = now
-        irc.reply(msg, self.responses[url])
+
+        feed = self.cachedFeeds[url]
+        headlines = [d['title'].strip().replace('\n', ' ') \
+                     for d in feed['items']]
+        while reduce(operator.add, map(len, headlines), 0) > 350:
+            headlines.pop()
+        if not headlines:
+            irc.error(msg, 'Error grabbing RSS feed')
+            return
+        response = ' :: '.join(headlines)
+        irc.reply(msg, response)
+    
+    def rssinfo(self, irc, msg, args):
+        """<url>
+
+        Returns information from the given RSS feed, namely the title,
+        URL, description, and last update date, if available.
+        """
+        url = privmsgs.getArgs(args)
+        now = time.time()
+        if url not in self.lastRequest or now - self.lastRequest[url] > 1800:
+            results = rssparser.parse(url)
+            self.cachedFeeds[url] = results
+            self.lastRequest[url] = now
+
+        feed = self.cachedFeeds[url]
+        info = feed['channel']
+        if not info:
+            irc.error(msg, 'Error grabbing RSS feed')
+            return
+        # check the 'modified' key, if it's there, convert it here first
+        if feed.get('modified'):
+            date = time.asctime(feed['modified'])
+        else:
+            date = "unavailable"
+        # The rest of the entries are all available in the channel key
+        response = "Title: %s :: URL: %s :: Description: %s :: Last updated: %s" % (
+                info.get('title', 'unavailable').strip(), 
+                info.get('link', 'unavailable').strip(),
+                info.get('description', 'unavailable').strip(),
+                date)
+        irc.reply(msg, response)
 
 
 Class = RSS
 
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=78:
