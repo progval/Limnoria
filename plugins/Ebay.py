@@ -161,10 +161,11 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             m = r.search(s)
             if m:
                 if r in self._multiField:
-                    # [:3] is to make sure that we don't pass a tuple with
-                    # more than 3 items. this allows self._bidder to work
-                    # since self._bidder returns a 5 item tuple
-                    resp.append('%s: %s (%s)' % bold(m.groups()[:3]))
+                    # Have to filter the results from self._bidder since
+                    # 2 of the 5 items in its tuple will always be None.
+                    #self.log.warning(m.groups())
+                    matches = filter(None, m.groups())
+                    resp.append('%s: %s (%s)' % bold(matches))
                 else:
                     resp.append('%s: %s' % bold(m.groups()))
         if resp:
