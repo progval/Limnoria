@@ -134,8 +134,9 @@ class SqliteMarkovDB(object):
 class DbmMarkovDB(object):
     def __init__(self, filename):
         self.dbs = ircutils.IrcDict()
-        # Stupid anydbm seems to append .db to the end of this.
-        self.filename = filename.replace('.db', '')
+        ## Stupid anydbm seems to append .db to the end of this.
+        #self.filename = filename.replace('.db', '')
+        self.filename = filename
 
     def close(self):
         for db in self.dbs.values():
