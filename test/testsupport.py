@@ -131,8 +131,22 @@ class PluginTestCase(SupyTestCase):
     cleanConfDir = True
     cleanDataDir = True
     config = {}
-    def __init__(self, *args, **kwargs):
-        SupyTestCase.__init__(self, *args, **kwargs)
+    def __init__(self, methodName='runTest'):
+        originalRunTest = getattr(self, methodName)
+        def runTest(self):
+            run = True
+            if hasattr(self, 'irc') and self.irc:
+                for cb in self.irc.callbacks:
+                    cbModule = sys.modules[cb.__class__.__module__]
+                    if hasattr(cbModule, 'deprecated') and cbModule.deprecated:
+                        print 
+                        print 'Ignored, %s is deprecated.' % cb.name()
+                        run = False
+            if run:
+                originalRunTest()
+        runTest = utils.changeFunctionName(runTest, methodName)
+        setattr(self.__class__, methodName, runTest)
+        SupyTestCase.__init__(self, methodName=methodName)
         self.originals = {}
 
     def setUp(self, nick='test'):
@@ -178,10 +192,7 @@ class PluginTestCase(SupyTestCase):
         else:
             for name in self.plugins:
                 if name not in ('Owner', 'Misc', 'Config'):
-                    try:
-                        module = Owner.loadPluginModule(name)
-                    except Owner.Deprecated, e:
-                        return utils.exnToString(e)
+                    module = Owner.loadPluginModule(name,ignoreDeprecation=True)
                     cb = Owner.loadPluginClass(self.irc, module)
         for (name, value) in self.config.iteritems():
             group = conf.supybot
@@ -203,6 +214,7 @@ class PluginTestCase(SupyTestCase):
         ircdb.ignores.close()
         ircdb.channels.close()
         SupyTestCase.tearDown(self)
+        self.irc = None
         gc.collect()
 
     def _feedMsg(self, query, timeout=None, to=None, frm=None,
