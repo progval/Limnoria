@@ -55,12 +55,14 @@ import callbacks
 import structures
 
 try:
-    if 'mx' in sys.modules:
-        original = sys.modules['mx']
-        sys.modules['mx'] = None
+    mxCrap = {}
+    for (name, module) in sys.modules.items():
+        if name.startswith('mx'):
+            mxCrap[name] = module
+            sys.modules[name] = None
     import sqlite
-    if 'mx' in sys.modules:
-        sys.modules['mx'] = original
+    for (name, module) in mxCrap.items():
+        sys.modules[name] = module
     sqlite.have_datetime = False
     Connection = sqlite.Connection
     class MyConnection(sqlite.Connection):
