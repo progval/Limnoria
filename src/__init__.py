@@ -36,10 +36,8 @@ import os.path
 
 installDir = os.path.dirname(sys.modules[__name__].__file__)
 
-srcDir = os.path.join(installDir, 'src')
 othersDir = os.path.join(installDir, 'others')
 
-sys.path.insert(0, srcDir)
 sys.path.insert(0, othersDir)
 
 class Author(object):
@@ -60,9 +58,13 @@ class authors(object): # This is basically a bag.
     skorobeus = Author('Kevin Murphy', 'Skorobeus', 'skoro@skoroworld.com')
     inkedmn = Author('Brett Kelly', 'inkedmn', 'inkedmn@users.sf.net')
     bwp = Author('Brett Phipps', 'bwp', 'phippsb@gmail.com')
+    unknown = Author('Unknown author', 'unknown', 'unknown@supybot.org')
 
     # Let's be somewhat safe about this.
     def __getattr__(self, attr):
-        return Author('Unknown author', 'unknown', 'unknown@supybot.org')
+        try:
+            return getattr(super(authors, self), attr.lower())
+        except AttributeError:
+            return self.unknown
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
