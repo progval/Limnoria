@@ -524,9 +524,10 @@ class Relay(callbacks.Privmsg):
         else:
             s = '%s has quit %s.' % (msg.nick, network)
         for channel in self.registryValue('channels'):
-            if msg.nick in self.ircstates[irc].channels[channel].users:
-                m = ircmsgs.privmsg(channel, s)
-                self._sendToOthers(irc, m)
+            if channel in self.ircstates[irc].channels:
+                if msg.nick in self.ircstates[irc].channels[channel].users:
+                    m = ircmsgs.privmsg(channel, s)
+                    self._sendToOthers(irc, m)
 
     def outFilter(self, irc, msg):
         irc = self._getRealIrc(irc)
