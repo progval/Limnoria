@@ -74,8 +74,8 @@ class Http(callbacks.Privmsg):
         if not url.startswith('http://'):
             irc.error('Only HTTP urls are valid.')
             return
+        fd = webutils.getUrlFd(url)
         try:
-            fd = webutils.getUrlFd(url)
             s = ', '.join(['%s: %s' % (k, v) for (k, v) in fd.headers.items()])
             irc.reply(s)
         finally:
@@ -113,16 +113,19 @@ class Http(callbacks.Privmsg):
             return
         fd = webutils.getUrlFd(url)
         try:
-            size = fd.headers['Content-Length']
-            irc.reply('%s is %s bytes long.' % (url, size))
-        except KeyError:
-            size = conf.supybot.protocols.http.peekSize()
-            s = fd.read(size)
-            if len(s) != size:
-                irc.reply('%s is %s bytes long.' % (url, len(s)))
-            else:
-                irc.reply('The server didn\'t tell me how long %s is '
-                          'but it\'s longer than %s bytes.' % (url, size))
+            try:
+                size = fd.headers['Content-Length']
+                irc.reply('%s is %s bytes long.' % (url, size))
+            except KeyError:
+                size = conf.supybot.protocols.http.peekSize()
+                s = fd.read(size)
+                if len(s) != size:
+                    irc.reply('%s is %s bytes long.' % (url, len(s)))
+                else:
+                    irc.reply('The server didn\'t tell me how long %s is '
+                              'but it\'s longer than %s bytes.' % (url, size))
+        finally:
+            fd.close()
 
     def title(self, irc, msg, args):
         """<url>
@@ -286,8 +289,8 @@ class Http(callbacks.Privmsg):
 
         Returns information about the current version of the Linux kernel.
         """
+        fd = webutils.getUrlFd('http://kernel.org/kdist/finger_banner')
         try:
-            fd = webutils.getUrlFd('http://kernel.org/kdist/finger_banner')
             stable = 'unknown'
             beta = 'unknown'
             for line in fd:
@@ -313,9 +316,9 @@ class Http(callbacks.Privmsg):
         urlClean = search.replace(' ', '+')
         host = 'http://pgp.mit.edu:11371'
         url = '%s/pks/lookup?op=index&search=%s' % (host, urlClean)
+        fd = webutils.getUrlFd(url, headers={})
         try:
             L = []
-            fd = webutils.getUrlFd(url)
             for line in iter(fd.next, ''):
                 info = self._pgpkeyre.search(line)
                 if info:
@@ -417,6 +420,21 @@ class Http(callbacks.Privmsg):
                 'Longitude: %s (%s)' % (info[-1], longdir),
                ]
         irc.reply('; '.join(resp))
+
+    def bender(self, irc, msg, args):
+        """takes no arguments
+
+        Returns a random Bender (from Futurama) quote from Slashdot's HTTP
+        headers.
+        """
+        fd = webutils.getUrlFd('http://slashdot.org/')
+        try:
+            if 'X-Bender' in fd.headers:
+                irc.reply(fd.headers['X-Bender'])
+            else:
+                irc.reply('Slashdot seems to be running low on Bender quotes.')
+        finally:
+            fd.close()
 
 
 Class = Http
