@@ -229,7 +229,7 @@ class MaxLengthQueue(queue):
 
     def __setstate__(self, (length, q)):
         self.length = length
-        queue.__getstate__(self, q)
+        queue.__setstate__(self, q)
         
     def enqueue(self, elt):
         if len(self) > self.length:
