@@ -377,33 +377,35 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, reply)
 
     def lart(self, irc, msg, args):
-        """[--id=<id>] <text> [for <reason>]
+        """[<id>] <text> [for <reason>]
 
         Uses a lart on <text> (giving the reason, if offered). Will use lart
         number <id> from the database when <id> is given.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['id='])
-        privmsgs.getArgs(rest)
+        (id, nick) = privmsgs.getArgs(args, optional=1)
+        try:
+            id = int(id)
+            if id < 1:
+                irc.error(msg, 'There is no such lart.')
+                return
+        except ValueError:
+            nick = ' '.join([id, nick]).strip()
+            id = 0
+        if not nick:
+            raise callbacks.ArgumentError
+        
         try:
             (nick, reason) = map(' '.join,
-                             utils.itersplit('for'.__eq__, rest, 1))
+                             utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
-            nick = ' '.join(rest)
             reason = ''
+        
         cursor = self.db.cursor()
-        for (option, argument) in optlist:
-            if option == '--id':
-                try:
-                    argument = int(argument)
-                except ValueError:
-                    irc.error(msg, 'The <id> argument must be an integer.')
-                    return
-                cursor.execute("""SELECT id, lart FROM larts WHERE id=%s""",
-                               argument)
-                if cursor.rowcount == 0:
-                    irc.error(msg, 'There is no such lart.')
-                    return
-                break
+        if id:
+            cursor.execute("""SELECT id, lart FROM larts WHERE id=%s""", id)
+            if cursor.rowcount == 0:
+                irc.error(msg, 'There is no such lart.')
+                return
         else:
             cursor.execute("""SELECT id, lart FROM larts
                               WHERE lart NOTNULL
@@ -425,38 +427,41 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, s, action=True)
 
     def praise(self, irc, msg, args):
-        """[--id=<id>] <text> [for <reason>]
+        """[<id>] <text> [for <reason>]
 
         Uses a praise on <text> (giving the reason, if offered). Will use
         praise number <id> from the database when <id> is given.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['id='])
-        privmsgs.getArgs(rest)
+        (id, nick) = privmsgs.getArgs(args, optional=1)
+        try:
+            id = int(id)
+            if id < 1:
+                irc.error(msg, 'There is no such praise.')
+                return
+        except ValueError:
+            nick = ' '.join([id, nick]).strip()
+            id = 0
+        if not nick:
+            raise callbacks.ArgumentError
+        
         try:
             (nick, reason) = map(' '.join,
-                             utils.itersplit('for'.__eq__, rest, 1))
+                             utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
-            nick = ' '.join(rest)
             reason = ''
+        
         cursor = self.db.cursor()
-        for (option, argument) in optlist:
-            if option == '--id':
-                try:
-                    argument = int(argument)
-                except ValueError:
-                    irc.error(msg, 'The <id> argument must be an integer.')
-                    return
-                cursor.execute("""SELECT id, praise FROM praises WHERE id=%s""",
-                               argument)
-                if cursor.rowcount == 0:
-                    irc.error(msg, 'There is no such praise.')
-                    return
-                break
+        if id:
+            cursor.execute("""SELECT id, praise FROM praises WHERE id=%s""", id)
+            if cursor.rowcount == 0:
+                irc.error(msg, 'There is no such praise.')
+                return
         else:
             cursor.execute("""SELECT id, praise FROM praises
                               WHERE praise NOTNULL
                               ORDER BY random()
                               LIMIT 1""")
+        
         if cursor.rowcount == 0:
             irc.error(msg, 'There are currently no available praises.')
         else:
