@@ -87,7 +87,7 @@ def configure(onStart, afterConnect, advanced):
     while yn('Would like to relay between any more channels?') == 'y':
         channel = anything('What channel?')
         afterConnect.append('relayjoin %s' % channel)
-    
+
 
 class Relay(callbacks.Privmsg):
     def __init__(self):
@@ -99,7 +99,7 @@ class Relay(callbacks.Privmsg):
         self.lastmsg = ircmsgs.ping('this is just a fake message')
         self.channels = sets.Set()
         self.abbreviations = {}
-        
+
     def inFilter(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
@@ -110,7 +110,7 @@ class Relay(callbacks.Privmsg):
             self.ircstates[irc].addMsg(irc, self.lastmsg)
         self.lastmsg = msg
         return msg
-    
+
     def startrelay(self, irc, msg, args):
         """<network abbreviation for current server>
 
@@ -131,7 +131,7 @@ class Relay(callbacks.Privmsg):
 
     def relayconnect(self, irc, msg, args):
         """<network abbreviation> <domain:port> (port defaults to 6667)
-        
+
         Connects to another network at <domain:port>.  The network
         abbreviation <network abbreviation> is used when relaying messages from
         that network to other networks.
@@ -267,7 +267,7 @@ class Relay(callbacks.Privmsg):
     do312 = do311
     do317 = do311
     do319 = do311
-    
+
     def do318(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
@@ -289,7 +289,7 @@ class Relay(callbacks.Privmsg):
         s = '%s (%s) has been online since %s (idle for %s) and is on %s' % \
             (nick, hostmask, signon, idle, channels)
         replyIrc.reply(replyMsg, s)
-            
+
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
         nick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
@@ -358,7 +358,7 @@ class Relay(callbacks.Privmsg):
                 for otherIrc in self.ircs.itervalues():
                     if otherIrc != irc:
                         otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
-                    
+
     def doNick(self, irc, msg):
         if self.started:
             if not isinstance(irc, irclib.Irc):
@@ -386,7 +386,7 @@ class Relay(callbacks.Privmsg):
                     for otherIrc in self.ircs.itervalues():
                         if otherIrc != irc:
                             otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
-                            
+
     def outFilter(self, irc, msg):
         if not self.started:
             return msg
@@ -419,9 +419,9 @@ class Relay(callbacks.Privmsg):
                     if otherIrc != irc:
                         if otherIrc.state.getTopic(channel) != topic:
                             otherIrc.queueMsg(ircmsgs.topic(channel, topic))
-            
+
         return msg
 
 Class = Relay
-        
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

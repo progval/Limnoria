@@ -4,7 +4,7 @@ This module allows you to access Amazon's web APIs,
 to do things like search Amazon and get the results programmatically.
 Described here:
   http://www.amazon.com/webservices
-  
+
 You need a Amazon-provided license key to use these services.
 Follow the link above to get one.  These functions will look in
 several places (in this order) for the license key:
@@ -90,13 +90,13 @@ def version():
 %(__copyright__)s
 released %(__date__)s
 """ % globals()
-    
+
 ## utility functions
 def setLicense(license_key):
     """set license key"""
     global LICENSE_KEY
     LICENSE_KEY = license_key
-    
+
 def getLicense(license_key = None):
     """get license key
 
@@ -139,7 +139,7 @@ def _getScriptDir():
         return os.path.abspath(os.path.dirname(sys.modules[__name__].__file__))
 
 class Bag: pass
-    
+
 def unmarshal(element):
     rc = Bag()
     if isinstance(element, minidom.Element) and (element.tagName == 'Details'):
@@ -181,7 +181,7 @@ def search(search_type, keyword, product_line, type="heavy", page=None,
     http://www.amazon.com/webservices
     to get one.  Then you can either pass it to
     this function every time, or set it globally; see the module docs for details.
-    
+
     Parameters:
     keyword - keyword to search
     search_type - in (KeywordSearch, BrowseNodeSearch, AsinSearch, UpcSearch, AuthorSearch, ArtistSearch, ActorSearch, DirectorSearch, ManufacturerSearch, ListManiaSearch, SimilaritySearch)
@@ -240,10 +240,10 @@ def browseBestSellers(browse_node, product_line="books", type="heavy", page=1, l
 
 def searchByASIN(ASIN, type="heavy", license_key=None, http_proxy=None):
     return search("AsinSearch", ASIN, None, type, None, license_key, http_proxy)
-  
+
 def searchByUPC(UPC, type="heavy", license_key=None, http_proxy=None):
     return search("UpcSearch", UPC, None, type, None, license_key, http_proxy)
-  
+
 def searchByAuthor(author, type="heavy", page=1, license_key=None, http_proxy=None):
     return search("AuthorSearch", author, "books", type, page, license_key, http_proxy)
 

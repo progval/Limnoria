@@ -50,7 +50,7 @@ class IrcMsgQueueTestCase(unittest.TestCase):
     def testEmpty(self):
         q = irclib.IrcMsgQueue()
         self.failIf(q)
-        
+
     def testEnqueueDequeue(self):
         q = irclib.IrcMsgQueue()
         q.enqueue(self.msg)
@@ -131,7 +131,7 @@ class ChannelTestCase(unittest.TestCase):
         self.failIf('quuz' in c.halfops)
         self.failIf('quuz' in c.voices)
 
-        
+
 class IrcStateTestCase(unittest.TestCase):
     class FakeIrc:
         nick = 'nick'
@@ -171,11 +171,11 @@ class IrcStateTestCase(unittest.TestCase):
                 self.assertEqual(state1, state2)
             except Exception:
                 pass
-            
+
 
     """
     def testChannels(self):
-        channel = 
+        channel =
         state = irclib.IrcState()
         state.addMsg(self.irc, ircmsgs.join('#foo'))
     """

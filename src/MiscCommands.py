@@ -131,7 +131,7 @@ class MiscCommands(callbacks.Privmsg):
                                    (command, simplehelp))
             else:
                 irc.error(msg, 'That command has no help at all.')
-        
+
     def bug(self, irc, msg, args):
         """takes no arguments
 

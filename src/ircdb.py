@@ -152,7 +152,7 @@ class UserCapabilitySet(CapabilitySet):
         capability = ircutils.toLower(capability)
         assert capability != '!owner', '"!owner" disallowed.'
         CapabilitySet.add(self, capability)
-        
+
 class IrcUser(object):
     """This class holds the capabilities and authentications for a user.
     """
@@ -498,7 +498,7 @@ def _x(capability, ret):
         return not ret
     else:
         return ret
-    
+
 def checkCapability(hostmask, capability, users=users, channels=channels):
     #debug.printf('*** checking %s for %s' % (hostmask, capability))
     if world.startup:
@@ -560,7 +560,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
         else:
             #debug.printf('returning appropriate value given no good reason')
             return _x(capability, conf.defaultAllow)
-        
+
 
 def checkCapabilities(hostmask, capabilities, requireAll=False):
     """Checks that a user has capabilities in a list.

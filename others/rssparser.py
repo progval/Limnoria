@@ -120,7 +120,7 @@ class RSSParser(sgmllib.SGMLParser):
             prefix = self.namespacemap.get(prefix, prefix)
             name = prefix + ':' + suffix
         return name
-        
+
     def _getAttribute(self, attrs, name):
         value = [v for k, v in attrs if self._mapToStandardPrefix(k) == name]
         if value:
@@ -128,7 +128,7 @@ class RSSParser(sgmllib.SGMLParser):
         else:
             value = None
         return value
-            
+
     def start_channel(self, attrs):
         self.push('channel', 0)
         self.inchannel = 1
@@ -392,7 +392,7 @@ def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
 
 def get_etag(resource):
     """
-    Get the ETag associated with a response returned from a call to 
+    Get the ETag associated with a response returned from a call to
     open_resource().
 
     If the resource was not returned from an HTTP server or the server did

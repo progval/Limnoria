@@ -122,7 +122,7 @@ class FunCommands(callbacks.Privmsg):
             irc.reply(msg, chr(i))
         except ValueError:
             irc.error(msg, 'That number doesn\'t map to an 8-bit character.')
-                
+
     def base(self, irc, msg, args):
         """<base> <number>
 
@@ -154,7 +154,7 @@ class FunCommands(callbacks.Privmsg):
             LL.reverse()
             L.extend(LL)
         irc.reply(msg, ''.join(L))
-        
+
 
     def encode(self, irc, msg, args):
         """<encoding> <text>
@@ -173,7 +173,7 @@ class FunCommands(callbacks.Privmsg):
         """
         encoding, text = privmsgs.getArgs(args, needed=2)
         irc.reply(msg, text.decode(encoding).encode('utf-8'))
-        
+
     def hexlify(self, irc, msg, args):
         """<text>
 
@@ -323,7 +323,7 @@ class FunCommands(callbacks.Privmsg):
         text = text.replace('x', 'kth')
         text = text.replace('X', 'KTH')
         irc.reply(msg, text)
-        
+
     _leettrans = string.maketrans('oOaAeElBTiIts', '004433187!1+5')
     _leetres = ((re.compile(r'\b(?:(?:[yY][o0O][oO0uU])|u)\b'), 'j00'),
                 (re.compile(r'fear'), 'ph33r'),
@@ -405,7 +405,7 @@ class FunCommands(callbacks.Privmsg):
             return '%s*i' % imag
         else:
             return '%s+%si' % (real, imag)
-        
+
     def calc(self, irc, msg, args):
         """<math expression>
 
@@ -540,7 +540,7 @@ class FunCommands(callbacks.Privmsg):
     def lastfrom(self, irc, msg, args):
         """[<channel>] <nick>
 
-        Returns the last message in <channel> from <nick>.  <channel> is only 
+        Returns the last message in <channel> from <nick>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
@@ -616,7 +616,7 @@ class FunCommands(callbacks.Privmsg):
             irc.error(msg, 'That function has no documentation.')
             return
         irc.reply(msg, s)
-                
+
 
 Class = FunCommands
 

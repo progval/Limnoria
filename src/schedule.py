@@ -47,7 +47,7 @@ class RTuple(tuple):
         return not tuple.__le__(self, other)
     def __cmp__(self, other):
         return -1*tuple.__cmp__(self, other)
-    
+
 class Schedule(drivers.IrcDriver):
     def __init__(self):
         drivers.IrcDriver.__init__(self)

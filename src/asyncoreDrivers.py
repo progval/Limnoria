@@ -126,7 +126,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
     def die(self):
         self.close()
 
-    
+
 class ReplListener(asyncore.dispatcher, object):
     def __init__(self, port=conf.telnetPort):
         asyncore.dispatcher.__init__(self)

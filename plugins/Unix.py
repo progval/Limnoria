@@ -61,7 +61,7 @@ def configure(onStart, afterConnect, advanced):
         print 'choose to install it later, and then the module will'
         print 'automatically work, as long as it is in the path of the'
         print 'user that supybot runs under.'
-        print 
+        print
 
     print 'The "progstats" command can reveal potentially sensitive'
     print 'information about your machine.  Here\'s an example of its output:'
@@ -80,7 +80,7 @@ def progstats():
                 os.getcwd(), " ".join(sys.argv),
                 sys.version.translate(string.ascii, '\r\n'))
     return response
-    
+
 
 class Unix(callbacks.Privmsg):
     def __init__(self):
@@ -117,7 +117,7 @@ class Unix(callbacks.Privmsg):
         except KeyError:
             name = '(unknown)'
         irc.reply(msg, '%s (#%s): %s' % (name, i, os.strerror(i)))
-            
+
     def progstats(self, irc, msg, args):
         """takes no arguments
 
@@ -144,7 +144,7 @@ class Unix(callbacks.Privmsg):
             salt = makeSalt()
         irc.reply(msg, crypt.crypt(password, salt))
 
-    def spell(self, irc, msg, args): 
+    def spell(self, irc, msg, args):
         """<word>
 
         Returns the result of passing <word> to aspell/ispell.  The results
@@ -158,7 +158,7 @@ class Unix(callbacks.Privmsg):
             return
         self._spellWrite.write(word)
         self._spellWrite.write('\n')
-        line = self._spellRead.readline() 
+        line = self._spellRead.readline()
         # aspell puts extra whitespace, ignore it
         while line == '\n':
             line = self._spellRead.readline()
@@ -178,7 +178,7 @@ class Unix(callbacks.Privmsg):
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
         irc.reply(msg, resp)
-            
+
 
 Class = Unix
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

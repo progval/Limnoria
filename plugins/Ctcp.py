@@ -30,7 +30,7 @@
 ###
 
 """
-Handles standard CTCP responses to PING, TIME, SOURCE, VERSION, USERINFO, 
+Handles standard CTCP responses to PING, TIME, SOURCE, VERSION, USERINFO,
 and FINGER.
 """
 

@@ -119,7 +119,7 @@ class Topic(callbacks.Privmsg):
         except IndexError:
             irc.error(msg, 'That\'s not a valid index.')
             return
-        
+
     def changetopic(self, irc, msg, args):
         """[<channel>] <number> <regexp>
 
@@ -159,7 +159,7 @@ class Topic(callbacks.Privmsg):
         topics.insert(number, newTopic)
         newTopic = self.topicSeparator.join(topics)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
-        
+
     def removetopic(self, irc, msg, args):
         "[<channel>] (if not sent in the channel itself) <topic number>"
         channel = privmsgs.getChannel(msg, args)

@@ -263,7 +263,7 @@ class TestCase:
     def _fail(self, msg):
         """Underlying implementation of failure."""
         raise self.failureException, msg
-    
+
     def fail(self, msg=None):
         """Fail immediately, with the given message."""
         global asserts

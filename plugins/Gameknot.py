@@ -116,8 +116,8 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 raise callbacks.Error, 'The format of the page was odd.'
         except urllib2.URLError:
             raise callbacks.Error, 'Couldn\'t connect to gameknot.com'
-        
-        
+
+
     def gkstats(self, irc, msg, args):
         """<name>
 

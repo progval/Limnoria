@@ -45,7 +45,7 @@ except ImportError:
     class conf:
         logDir = '.'
         detailedTracebacks = True
-    
+
 import world
 
 ###

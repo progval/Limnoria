@@ -183,7 +183,7 @@ class RingBufferTestCase(unittest.TestCase):
         b = RingBuffer(100, range(10))
         b1 = RingBuffer(10, range(10))
         self.failIf(b == b1)
-        
+
     def testIter(self):
         b = RingBuffer(3, range(3))
         L = []
@@ -214,7 +214,7 @@ class QueueTest(unittest.TestCase):
         self.assertRaises(IndexError, q.__getitem__, -(n+1))
         self.assertRaises(IndexError, q.__getitem__, n)
         self.assertEqual(q[3:7], queue([3, 4, 5, 6]))
-        
+
     def testSetitem(self):
         q1 = queue()
         self.assertRaises(IndexError, q1.__setitem__, 0, 0)
@@ -224,7 +224,7 @@ class QueueTest(unittest.TestCase):
         for (i, elt) in enumerate(q2):
             q2[i] = elt*2
         self.assertEqual([x*2 for x in q1], list(q2))
-        
+
     def testNonzero(self):
         q = queue()
         self.failIf(q, 'queue not zero after initialization')
@@ -301,7 +301,7 @@ class QueueTest(unittest.TestCase):
         self.assertEqual(q, eval(repr(q)), 'repr doesn\'t eval to same queue')
         q.enqueue((1,))
         self.assertEqual(q, eval(repr(q)), 'repr doesn\'t eval to same queue')
-        
+
     def testEnqueueDequeue(self):
         q = queue()
         self.assertRaises(IndexError, q.dequeue)
@@ -360,7 +360,7 @@ class MaxLengthQueueTestCase(unittest.TestCase):
         q = MaxLengthQueue(3, (1, 2, 3))
         self.assertEqual(list(q), [1, 2, 3])
         self.assertRaises(TypeError, MaxLengthQueue, 3, 1, 2, 3)
-        
+
     def testMaxLength(self):
         q = MaxLengthQueue(3)
         q.enqueue(1)

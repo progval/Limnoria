@@ -87,7 +87,7 @@ class SupyIrcProtocol(LineReceiver):
         self.transport.loseConnection()
 
     reconnect = die
-        
+
 
 class SupyReconnectingFactory(ReconnectingClientFactory):
     maxDelay = 600
@@ -96,7 +96,7 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
         self.irc = irc
         self.server = (server, port)
         reactor.connectTCP(server, port, self)
-        
+
 
 class MyShell(Shell):
     def checkUserAndPass(self, username, password):
@@ -112,13 +112,13 @@ class MyShell(Shell):
                 return False
         except KeyError:
             return False
-            
+
 class MyShellFactory(ShellFactory):
     protocol = MyShell
 
 if conf.telnetEnable and __name__ != '__main__':
     reactor.listenTCP(conf.telnetPort, MyShellFactory())
-        
+
 
 Driver = SupyReconnectingFactory
 

@@ -63,8 +63,8 @@ class TestSchedule(unittest.TestCase):
         self.assertEqual(i[0], 11)
         time.sleep(3)
         self.assertEqual(i[0], 11)
-        
 
-        
+
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

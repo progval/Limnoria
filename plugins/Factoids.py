@@ -30,7 +30,7 @@
 ###
 
 """
-Handles "factoids," little tidbits of information held in a database and 
+Handles "factoids," little tidbits of information held in a database and
 available on demand via several commands.
 
 Commands include:
@@ -59,7 +59,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
-        
+
     def makeDb(self, filename):
         if os.path.exists(filename):
             return sqlite.connect(filename)
@@ -120,7 +120,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'That factoid is locked.')
-        
+
     def lookup(self, irc, msg, args):
         "[<channel>] (If not sent in the channel itself) <key> [<number>]"
         channel = privmsgs.getChannel(msg, args)
@@ -141,7 +141,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         else:
             factoid = results[number][0]
             irc.reply(msg, '%s/%s: %s' % (key, number, factoid))
-            
+
     def lock(self, irc, msg, args):
         "[<channel>] (If not sent in the channel itself) <key>"
         channel = privmsgs.getChannel(msg, args)
@@ -155,7 +155,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-        
+
     def unlock(self, irc, msg, args):
         "[<channel>] (If not sent in the channel itself) <key>"
         channel = privmsgs.getChannel(msg, args)
@@ -183,7 +183,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-            
+
     def randomfactoid(self, irc, msg, args):
         "[<channel>] (If not sent in the channel itself)"
         channel = privmsgs.getChannel(msg, args)
@@ -226,7 +226,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         s = 'Key %r is %s and has %s factoids associated with it: %s' % \
             (key, locked and 'locked' or 'not locked', counter, '; '.join(L))
         irc.reply(msg, s)
-                       
+
 
 
 Class = Factoids

@@ -75,6 +75,6 @@ class ThreadedFunCommands(callbacks.Privmsg):
                 beta = version.strip()
         irc.reply(msg, 'The latest stable kernel is %s; ' \
                        'the latest beta kernel is %s.' % (stable, beta))
-        
+
 Class = ThreadedFunCommands
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -100,7 +100,7 @@ def getKeywordArgs(irc, msg, d=None):
             args.append(left)
     del args[0] # The command name itself.
     return (args, d)
-            
+
 def checkCapability(f, capability):
     def newf(self, irc, msg, args):
         if ircdb.checkCapability(msg.prefix, capability):
@@ -225,7 +225,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         """
         world.upkeep()
         irc.reply(msg, conf.replySuccess)
-            
+
     def set(self, irc, msg, args):
         """<name> <value>
 
@@ -280,7 +280,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         world.superReload(__import__(name))
         irc.reply(msg, conf.replySuccess)
     '''
-        
+
     def reload(self, irc, msg, args):
         """<callback name>
 
@@ -307,7 +307,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
                 irc.error(msg, 'No plugin %s exists.' % name)
         else:
             irc.error(msg, 'There was no callback %s.' % name)
-        
+
     def unload(self, irc, msg, args):
         """<callback name>
 

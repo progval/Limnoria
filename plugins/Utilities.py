@@ -48,11 +48,11 @@ def configure(onStart, afterConnect, advanced):
 class Utilities(callbacks.Privmsg):
     def ignore(self, irc, msg, args):
         pass
-    
+
     def shrink(self, irc, msg, args):
         text = privmsgs.getArgs(args)
         irc.reply(msg, text[:400])
-        
+
     def strjoin(self, irc, msg, args):
         "<separator> <strings to join>"
         sep = args.pop(0)
@@ -128,7 +128,7 @@ class Utilities(callbacks.Privmsg):
             irc.error(msg, 'Invalid regexp: %s' % e.args[0])
             return
         irc.reply(msg, ' '.join(r.findall(text)))
-        
-        
+
+
 Class = Utilities
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

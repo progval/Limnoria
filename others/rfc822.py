@@ -387,7 +387,7 @@ class Message:
 
     def __contains__(self, name):
         return name.lower() in self.dict
-    
+
     def __getitem__(self, name):
         """Get a specific header, as from a dictionary."""
         return self.dict[name.lower()]

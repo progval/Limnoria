@@ -78,7 +78,7 @@ class FunCommandsTest(PluginTestCase):
     def testPydoc(self):
         self.assertNotError('pydoc str')
         self.assertError('pydoc foobar')
-        
+
     def testOrd(self):
         for c in map(chr, range(256)):
             i = ord(c)

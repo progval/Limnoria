@@ -66,10 +66,10 @@ class RingBuffer(object):
                     return False
             return True
         return False
-    
+
     def __nonzero__(self):
         return len(self) > 0
-    
+
     def __contains__(self, elt):
         return elt in self.L
 
@@ -88,7 +88,7 @@ class RingBuffer(object):
     def extend(self, seq):
         for elt in seq:
             self.append(elt)
-            
+
     def __getitem__(self, idx):
         if self.full:
             oidx = idx
@@ -226,7 +226,7 @@ class queue(object):
                 return self.front[-(idx+1)]
             else:
                 return self.back[(idx-len(self.front))]
-        
+
     def __setitem__(self, oidx, value):
         if len(self) == 0:
             raise IndexError, 'queue index out of range'
@@ -272,7 +272,7 @@ class queue(object):
         self.front = L
         self.back = []
 
-            
+
 class MaxLengthQueue(queue):
     __slots__ = ('length',)
     def __init__(self, length, seq=()):
@@ -285,7 +285,7 @@ class MaxLengthQueue(queue):
     def __setstate__(self, (length, q)):
         self.length = length
         queue.__setstate__(self, q)
-        
+
     def enqueue(self, elt):
         queue.enqueue(self, elt)
         if len(self) > self.length:

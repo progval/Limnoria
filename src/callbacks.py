@@ -98,7 +98,7 @@ def reply(msg, s):
     if len(m) > 512:
         m = reply(msg, 'My response would\'ve been too long.')
     return m
-        
+
 class RateLimiter:
     lastRequest = {}
     def __init__(self):
@@ -232,8 +232,8 @@ def tokenize(s):
         raise SyntaxError, str(e)
     debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
     return args
-    
-    
+
+
 
 class IrcObjectProxy:
     def __init__(self, irc, msg, args):
@@ -340,7 +340,7 @@ class CommandThread(threading.Thread):
         self.irc = irc
         self.msg = msg
         self.setDaemon(True)
-        
+
     def run(self):
         try:
             start = time.time()
@@ -356,7 +356,7 @@ class CommandThread(threading.Thread):
             debug.recoverableException()
             self.irc.error(self.msg, debug.exnToString(e))
 
-        
+
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     threaded = False
@@ -508,7 +508,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
             method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
             self.res.append((r, method))
-            
+
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
             return
@@ -528,10 +528,10 @@ class PrivmsgCommandAndRegexp(Privmsg):
                 if msg:
                     args = tokenize(s)
                     self.Proxy(irc, msg, args)
-                    
-            
-                    
-            
-        
+
+
+
+
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -126,7 +126,7 @@ class FunctionsTestCase(unittest.TestCase):
         withException = ircmsgs.ban(channel, ban, exception)
         self.assertEqual(ircutils.separateModes(withException.args[1:]),
                          [('+b', ban), ('+e', exception)])
-        
+
     def testBans(self):
         channel = '#osu'
         bans = ['*!*@*', 'jemfinch!*@*']

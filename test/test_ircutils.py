@@ -84,14 +84,14 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual('\x03,5foo\x03', ircutils.mircColor(s, bg='brown'))
         self.assertEqual('\x036,7foo\x03',
                          ircutils.mircColor(s, bg='orange', fg='purple'))
-        
+
     def testMircColors(self):
         # Make sure all (k, v) pairs are also (v, k) pairs.
         for (k, v) in ircutils.mircColors.items():
             if k:
                 self.assertEqual(ircutils.mircColors[v], k)
-        
-        
+
+
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'
         bolds = ircutils.bold(s)

@@ -66,7 +66,7 @@ def findBiggestDollar(alias):
         return int(dollars[-1])
     else:
         return None
-    
+
 def makeNewAlias(name, alias):
     if findAliasCommand(name, alias):
         raise RecursiveAlias
@@ -105,7 +105,7 @@ class Alias(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.frozen = sets.Set()
-        
+
     def freeze(self, irc, msg, args):
         """<alias>
 
@@ -133,7 +133,7 @@ class Alias(callbacks.Privmsg):
         else:
             irc.error(msg, 'There is no such alias.')
     unfreeze = privmsgs.checkCapability(unfreeze, 'admin')
-    
+
     def alias(self, irc, msg, args):
         """<name> <alias commands>
 
@@ -164,7 +164,7 @@ class Alias(callbacks.Privmsg):
             print debug.exnToString(e)
         except:
             print 'exception raised'
-            
+
 
     def unalias(self, irc, msg, args):
         """<name>
@@ -181,8 +181,8 @@ class Alias(callbacks.Privmsg):
                 irc.error(msg, 'That alias is frozen.')
         else:
             irc.error(msg, 'There is no such alias.')
-        
-        
+
+
 
 
 Class = Alias

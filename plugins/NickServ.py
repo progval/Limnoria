@@ -39,12 +39,14 @@ Commands include:
 from baseplugin import *
 
 import re
+import time
 
 import conf
 import ircdb
 import ircmsgs
 import privmsgs
 import ircutils
+import schedule
 import callbacks
 
 def configure(onStart, afterConnect, advanced):
@@ -55,20 +57,21 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('startnickserv %s %s' % (nick, password))
 
 class NickServ(privmsgs.CapabilityCheckingPrivmsg):
-    capability = 'owner'
+    capability = 'admin'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.nickserv = ''
-        
+
     def startnickserv(self, irc, msg, args):
-        "<bot's nick> <password> <NickServ's nick (defaults to NickServ)>"
+        "<bot's nick> <password> <NickServ's nick (defaults to NickServ)> " \
+                "<ChanServ's nick (defaults to ChanServ)"
         if ircutils.isChannel(msg.args[0]):
             irc.error(msg, conf.replyRequiresPrivacy)
             return
-        (self.nick, self.password, nickserv) = privmsgs.getArgs(args, 
-                                                                needed=2, 
-                                                                optional=1)
+        (self.nick, self.password, nickserv, chanserv) = \
+                    privmsgs.getArgs(args, needed=2, optional=2)
         self.nickserv = nickserv or 'NickServ'
+        self.chanserv = chanserv or 'ChanServ'
         self.sentGhost = False
         self._ghosted = re.compile('%s.*killed' % self.nick)
         irc.reply(msg, conf.replySuccess)
@@ -94,6 +97,19 @@ class NickServ(privmsgs.CapabilityCheckingPrivmsg):
                 ghost = 'GHOST %s %s' % (self.nick, self.password)
                 irc.queueMsg(ircmsgs.privmsg(self.nickserv, ghost))
                 self.sentGhost = True
+                def flipSentGhost():
+                    self.sentGhost = False
+                schedule.addEvent(flipSentGhost, time.time() + 300)
+
+    def getops(self, irc, msg, args):
+        """[<channel>]
+
+        Attempts to get ops from ChanServ in <channel>.  If no channel is
+        given, the current channel is assumed.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        irc.sendMsg(ircmsgs.privmsg(self.chanserv, 'op %s' % channel))
+
 
 
 Class = NickServ

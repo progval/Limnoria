@@ -53,7 +53,7 @@ class KillBold(callbacks.Privmsg):
             return ircmsgs.privmsg(msg.args[0],msg.args[1].replace('\x02', ''))
         else:
             return msg
-        
+
 Class = KillBold
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -131,7 +131,7 @@ class Infobot(callbacks.PrivmsgRegexp):
             irc.queueMsg(ircmsgs.privmsg(nick, s))
         except KeyError:
             irc.reply(msg, 'I don\'t know anything about %s' % key)
-        
+
     def factoid(self, irc, msg, match):
         r"^(no[ :,-]+)?(.+?)\s+(was|is|am|were|are)\s+(also\s+)?(.+?)(?!\?+)$"
         (correction, key, isAre, addition, value) = match.groups()
@@ -151,7 +151,7 @@ class Infobot(callbacks.PrivmsgRegexp):
         else:
             self.insertFactoid(key, isAre, value)
             irc.reply(msg, self.getRandomSaying('confirms'))
-            
+
     def unknown(self, irc, msg, match):
         r"^(.+?)\?[?.! ]*$"
         key = match.group(1)
@@ -169,12 +169,12 @@ class Infobot(callbacks.PrivmsgRegexp):
         numAre = cursor.fetchone()[0]
         s = 'I have %s is factoids and %s are factoids' % (numIs, numAre)
         irc.reply(msg, s)
-                  
 
-    
+
+
 
 Class = Infobot
-        
+
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 2 and sys.argv[1] not in ('is', 'are'):
@@ -202,5 +202,5 @@ if __name__ == '__main__':
                     print 'Invalid line (%s): %r' %(debug.exnToString(e),line)
     db.commit()
 
-                    
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

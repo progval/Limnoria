@@ -179,7 +179,7 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-        
+
 
 Class = Quotes
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

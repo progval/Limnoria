@@ -112,7 +112,7 @@ class IrcMsg(object):
         else:
             (self.nick, self.user, self.host) = (self.prefix,)*3
         self.args = tuple(self.args)
-            
+
     def __str__(self):
         if self._str is not None:
             return self._str
@@ -155,7 +155,7 @@ class IrcMsg(object):
                 self._len += len(arg) + 1 # Remember space prior to the arg.
         self._len += 2 # For colon before the prefix and before the last arg.
         return self._len
-    
+
     def __eq__(self, other):
         return hash(self) == hash(other) and \
                self.command == other.command and \
@@ -249,7 +249,7 @@ def prettyPrint(msg, addRecipients=False):
     elif msg.command == 'TOPIC':
         s = '*** %s changes topic to %s' % (nickorprefix(), msg.args[1])
     return s
-    
+
 ###
 # Various IrcMsg functions
 ###

@@ -58,7 +58,7 @@ class TwistedCommands(callbacks.Privmsg):
             failure.printDetailedTraceback()
             irc.error(msg, failure.getErrorMessage())
         return errback
-    
+
     dictnumberre = re.compile('^\d+:\s*(.*)$')
     def dictCallback(self, irc, msg, word):
         def formatDictResults(definitions):
@@ -91,7 +91,7 @@ class TwistedCommands(callbacks.Privmsg):
         deferred = dict.define('dict.org', 2628, 'wn', word)
         deferred.addCallback(self.dictCallback(irc, msg, word))
         deferred.addErrback(self.defaultErrback(irc, msg))
-            
+
 
 class TwistedRegexp(callbacks.PrivmsgRegexp):
     def dccrecv(self, irc, msg, match):

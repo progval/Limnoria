@@ -4,7 +4,7 @@ This module allows you to access Google's web APIs through SOAP,
 to do things like search Google and get the results programmatically.
 Described here:
   http://www.google.com/apis/
-  
+
 You need a Google-provided license key to use these services.
 Follow the link above to get one.  These functions will look in
 several places (in this order) for the license key:
@@ -77,7 +77,7 @@ released %(__date__)s
 
 Thanks to:
 %(__credits__)s""" % globals()
-    
+
 def usage():
     program = os.path.basename(sys.argv[0])
     print """Usage: %(program)s [options] [querytype] query
@@ -109,7 +109,7 @@ def setLicense(license_key):
     """set license key"""
     global LICENSE_KEY
     LICENSE_KEY = license_key
-    
+
 def getLicense(license_key = None):
     """get license key
 
@@ -175,7 +175,7 @@ class TextOutputFormatter(OutputFormatter):
                 print "directoryCategory: %s" % self.boil(category["fullViewableName"])
             for attr in [node for node in dir(meta) if node <> "directoryCategories" and node[:2] <> '__']:
                 print "%s:" % attr, self.boil(getattr(meta, attr))
-        
+
     def doGoogleSearch(self, data, params):
         results = data.results
         if params.get("feelingLucky", 0):
@@ -190,7 +190,7 @@ class TextOutputFormatter(OutputFormatter):
                     print "%s:" % attr, self.boil(getattr(result, attr))
             print
         self.common(data, params)
-    
+
     def doGetCachedPage(self, data, params):
         print data
         self.common(data, params)
@@ -227,7 +227,7 @@ class SearchResultsMetaData(_SearchBase):
         {'fullViewableName': Open Directory category,
          'specialEncoding': encoding scheme of this directory category}
     searchTime - total search time, in seconds
-    """    
+    """
     pass
 
 class SearchResult(_SearchBase):
@@ -270,7 +270,7 @@ def doGoogleSearch(q, start=0, maxResults=10, filter=1, restrict='',
     You need a license key to call this function; see
     http://www.google.com/apis/ to get one.  Then you can either pass it to
     this function every time, or set it globally; see the module docs for details.
-    
+
     Parameters:
     q - search string.  Anything you could type at google.com, you can pass here.
         See http://www.google.com/help/features.html for examples of advanced features.
@@ -321,13 +321,13 @@ def doGetCachedPage(url, license_key = None, http_proxy = None):
     You need a license key to call this function; see
     http://www.google.com/apis/ to get one.  Then you can either pass it to
     this function every time, or set it globally; see the module docs for details.
-    
+
     Parameters:
     url - address of page to get
     license_key (optional) - Google license key
     http_proxy (optional) - address of HTTP proxy to use for sending and receiving SOAP messages
 
-    Returns: string, text of cached page    
+    Returns: string, text of cached page
     """
     http_proxy = getProxy(http_proxy)
     remoteserver = SOAP.SOAPProxy(_url, namespace=_namespace, http_proxy=http_proxy)
@@ -340,7 +340,7 @@ def doSpellingSuggestion(phrase, license_key = None, http_proxy = None):
     You need a license key to call this function; see
     http://www.google.com/apis/ to get one.  Then you can either pass it to
     this function every time, or set it globally; see the module docs for details.
-    
+
     Parameters:
     phrase - word or phrase to spell-check
     http_proxy (optional) - address of HTTP proxy to use for sending and receiving SOAP messages

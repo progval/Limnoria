@@ -79,20 +79,20 @@ class Notes(callbacks.Privmsg):
                                note TEXT
                                )""")
         self.db.commit()
-   
+
     def _addUser(self, username):
         "Not callable from channel, used to add users to database."
         cursor = self.db.cursor()
         cursor.execute('INSERT INTO users VALUES (NULL, %s)', username)
         self.db.commit()
-        
+
     def getUserId(self, username):
         "Returns the user id matching the given username from the users table."
         cursor = self.db.cursor()
         cursor.execute('SELECT id FROM users where name=%s', username)
         if cursor.rowcount != 0:
             return cursor.fetchone()[0]
-        else: 
+        else:
             raise KeyError, username
 
     def getUserName(self, userid):
@@ -116,7 +116,7 @@ class Notes(callbacks.Privmsg):
         "Called when module is unloaded/reloaded."
         self.db.commit()
         self.db.close()
-    
+
     def doJoin(self, irc, msg):
         try:
             name = ircdb.users.getUserName(msg.prefix)
@@ -151,7 +151,7 @@ class Notes(callbacks.Privmsg):
 
     def sendnote(self, irc, msg, args):
         """<recipient> <text>
-        
+
         Sends a new note to the user specified.
         """
         (name, note) = privmsgs.getArgs(args, needed=2)
@@ -165,13 +165,13 @@ class Notes(callbacks.Privmsg):
         self._addUser(recipient)
         senderId = self.getUserId(sender)
         recipId = self.getUserId(recipient)
-        if ircutils.isChannel(msg.args[0]): 
+        if ircutils.isChannel(msg.args[0]):
             public = 1
-        else: 
-            public = 0 
+        else:
+            public = 0
         cursor = self.db.cursor()
-        cursor.execute("""INSERT INTO notes VALUES 
-                               (NULL, %s, %s, %s, 0, 0, %s, %s)""", 
+        cursor.execute("""INSERT INTO notes VALUES
+                               (NULL, %s, %s, %s, 0, 0, %s, %s)""",
                                senderId, recipId, int(time.time()),
                                public, note)
         self.db.commit()
@@ -179,7 +179,7 @@ class Notes(callbacks.Privmsg):
 
     def note(self, irc, msg, args):
         """<note id>
-        
+
         Retrieves a single note by unique note id.
         """
         noteid = privmsgs.getArgs(args)
@@ -191,7 +191,7 @@ class Notes(callbacks.Privmsg):
             return
         cursor = self.db.cursor()
         cursor.execute("""SELECT notes.note, notes.to_id, notes.from_id,
-                                      notes.added_at, notes.public 
+                                      notes.added_at, notes.public
                                FROM users, notes
                                WHERE users.name=%s AND
                                      notes.to_id=users.id AND
@@ -216,7 +216,7 @@ class Notes(callbacks.Privmsg):
 
     def notes(self, irc, msg, args):
         """takes no arguments
-        
+
         Retrieves all your unread notes.
         """
         try:
@@ -275,7 +275,7 @@ class Notes(callbacks.Privmsg):
             ircutils.shrinkList(ids, ', ', 425)
             ids.reverse()
             irc.reply(msg, ', '.join(ids))
-                          
+
 
 
 Class = Notes

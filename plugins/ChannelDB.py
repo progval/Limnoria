@@ -111,7 +111,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
                           )""")
         db.commit()
         return db
-    
+
     def doPrivmsg(self, irc, msg):
         callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
         if ircutils.isChannel(msg.args[0]):
@@ -174,7 +174,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         except KeyError:
             pass
         db.commit()
-                                                   
+
     def doPart(self, irc, msg):
         channel = msg.args[0]
         db = self.getDb(channel)

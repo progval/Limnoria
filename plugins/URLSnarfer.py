@@ -187,8 +187,8 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         else:
             (url,) = cursor.fetchone()
             irc.reply(msg, url)
-            
-    
+
+
 Class = URLSnarfer
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

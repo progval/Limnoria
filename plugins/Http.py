@@ -212,7 +212,7 @@ class Http(callbacks.Privmsg):
             irc.error(msg, 'Couldn\'t open search page.')
     '''
 
-    
+
     _tempregex = re.compile('CLASS=obsTempTextA>(\d+)&deg;F</b></td>',\
                          re.IGNORECASE)
     _cityregex = re.compile(r'Local Forecast for (.*), (.*?) ')
@@ -263,7 +263,7 @@ class Http(callbacks.Privmsg):
         quote = utils.htmlToText(m.group(1))
         quote = ' // '.join(quote.splitlines())
         irc.reply(msg, quote)
-        
+
     _acronymre = re.compile(r'<td[^w]+width="70[^>]+>(?:<b>)?([^<]+)(?:</b>)?')
     def acronym(self, irc, msg, args):
         """<acronym>
@@ -321,7 +321,7 @@ class Http(callbacks.Privmsg):
     _debBranches = ('stable', 'testing', 'unstable', 'experimental')
     def debversion(self, irc, msg, args):
         """<package name> [stable|testing|unstable|experimental]
-        
+
         Returns the current version(s) of a Debian package in the given branch
         (if any, otherwise all available ones are displayed).
         """
@@ -363,7 +363,7 @@ class Http(callbacks.Privmsg):
             (numberOfPackages, len(responses), ', '.join(responses))
         irc.reply(msg, s)
 
-            
+
 
 Class = Http
 

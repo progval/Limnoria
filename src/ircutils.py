@@ -309,7 +309,7 @@ class IrcString(str):
 
     def __str__(self):
         return str(self.original)
-    
+
     def __eq__(self, s):
         try:
             return toLower(s) == self.lowered

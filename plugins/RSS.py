@@ -84,7 +84,7 @@ def configure(onStart, afterConnect, advanced):
         if infocmd:
             onStart.append('alias %s "rssinfo %s"' % (infocmd, url))
             onStart.append('freeze %s' % infocmd)
-        
+
 
 class RSS(callbacks.Privmsg):
     threaded = True
@@ -114,7 +114,7 @@ class RSS(callbacks.Privmsg):
             irc.error(msg, 'Error grabbing RSS feed')
             return
         irc.reply(msg, payload)
-    
+
     def rssinfo(self, irc, msg, args):
         """<url>
 
@@ -142,7 +142,7 @@ class RSS(callbacks.Privmsg):
         # The rest of the entries are all available in the channel key
         response = 'Title: %s;  URL: <%s>;  ' \
                    'Description: %s;  Last updated %s.' % (
-                       info.get('title', 'unavailable').strip(), 
+                       info.get('title', 'unavailable').strip(),
                        info.get('link', 'unavailable').strip(),
                        info.get('description', 'unavailable').strip(),
                        when)

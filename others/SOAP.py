@@ -3230,7 +3230,7 @@ class SOAPBuilder:
 
         self.out += '</%s>\n' % tag
     dump_dict = dump_dictionary # 4/18/2002 - MAP - for Python 2.2
-    
+
     def dump_instance(self, obj, tag, typed = 1, ns_map = {}):
         if not tag:
             # If it has a name use it.
@@ -3404,7 +3404,7 @@ class HTTPTransport:
         else:
             real_addr = addr.host
             real_path = addr.path
-            
+
         if addr.proto == 'https':
             r = httplib.HTTPS(real_addr)
         else:
@@ -3501,7 +3501,7 @@ class SOAPProxy:
         self.unwrap_results = unwrap_results
         self.http_proxy     = http_proxy
         self.config         = config
-        
+
 
     def __call(self, name, args, kw, ns = None, sa = None, hd = None,
         ma = None):

@@ -104,7 +104,7 @@ def addWord(db, word, commit=False):
                        WHERE word=%s))""", word, sorted)
     if commit:
         db.commit()
-    
+
 
 class FunDB(callbacks.Privmsg):
     """
@@ -119,7 +119,7 @@ class FunDB(callbacks.Privmsg):
     def die(self):
         self.db.commit()
         self.db.close()
-        
+
     '''
     def praise(self, irc, msg, args):
         """<something>
@@ -182,7 +182,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There is no such insult.')
         else:
             irc.reply(msg, cursor.fetchone()[0])
-            
+
     def addinsult(self, irc, msg, args):
         """<insult>
 
@@ -267,7 +267,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There is no such excuse.')
         else:
             irc.reply(msg, cursor.fetchone()[0])
-            
+
     def addexcuse(self, irc, msg, args):
         """<excuse>
 
@@ -294,7 +294,7 @@ class FunDB(callbacks.Privmsg):
         cursor.execute("""DELETE FROM excuses WHERE id=%s""", id)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
-    
+
     def numexcuses(self, irc, msg, args):
         """takes no arguments
 
@@ -343,7 +343,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There is no such lart.')
         else:
             irc.reply(msg, cursor.fetchone()[0])
-            
+
     def addlart(self, irc, msg, args):
         """<lart>
 
@@ -377,7 +377,7 @@ class FunDB(callbacks.Privmsg):
 
     def numlarts(self, irc, msg, args):
         """takes no arguments
-        
+
         Returns the number of larts currently in the database.
         """
         cursor = self.db.cursor()
@@ -443,7 +443,7 @@ class FunDB(callbacks.Privmsg):
         else:
             (city, state) = cursor.fetchone()
             irc.reply(msg, '%s, %s' % (city, state))
-        
+
 
     def zipcodefor(self, irc, msg, args):
         """<city> <state>
@@ -474,7 +474,7 @@ class FunDB(callbacks.Privmsg):
                 random.shuffle(zipcodes)
             irc.reply(msg, '(%s shown of %s): %s' % \
                       (len(zipcodes), cursor.rowcount, ', '.join(zipcodes)))
-        
+
 Class = FunDB
 
 
@@ -520,5 +520,5 @@ if __name__ == '__main__':
                                zipcode, city, state)
     db.commit()
     db.close()
-            
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78: 
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

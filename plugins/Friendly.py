@@ -52,7 +52,7 @@ class Friendly(callbacks.PrivmsgRegexp):
         if match.group(1) == irc.nick:
             irc.queueMsg(ircmsgs.privmsg(msg.args[0], '%s!' % msg.nick))
 
-    
+
 Class = Friendly
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

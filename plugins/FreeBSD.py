@@ -204,8 +204,8 @@ class FreeBSD(callbacks.Privmsg):
                            'Please narrow your search.' % cursor.rowcount)
         else:
             irc.reply(msg, ', '.join(names))
-                
-                
+
+
     def numports(self, irc, msg, args):
         """takes no arguments
 
@@ -249,10 +249,10 @@ class FreeBSD(callbacks.Privmsg):
         categories = map(lambda t: t[0], cursor.fetchall())
         irc.reply(msg, '%s; Categories: %s; Maintainer: %s; Website: %s' %
                      (info, ', '.join(categories), maintainer, website))
-        
+
 
 Class = FreeBSD
-    
+
 
 if __name__ == '__main__':
     makeDb(dbFile, getIndex(), replace=True)

@@ -160,8 +160,8 @@ class PluginTestCase(unittest.TestCase):
         self.assertEqual(len(expectedResponses), len(responses))
         for (m, expected) in zip(responses, expectedResponses):
             self.assertEqual(m.args[1], expected)
-            
-    
+
+
 if __name__ == '__main__':
     world.testing = True
     if len(sys.argv) > 1:

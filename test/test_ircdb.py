@@ -103,7 +103,7 @@ class UserCapabilitySetTestCase(unittest.TestCase):
         d.add('owner')
         self.failUnless(d.check('owner'))
 
-        
+
 
 class CapabilitySetTestCase(unittest.TestCase):
     def testContains(self):
@@ -119,7 +119,7 @@ class CapabilitySetTestCase(unittest.TestCase):
         s.add('!foo')
         self.failUnless('foo' in s)
         self.failUnless('!foo' in s)
-            
+
     def testCheck(self):
         s = ircdb.CapabilitySet()
         self.assertRaises(KeyError, s.check, 'foo')
@@ -146,7 +146,7 @@ class CapabilitySetTestCase(unittest.TestCase):
         s.add('foo')
         self.failUnless(s.check('foo'))
         self.failIf(s.check('!foo'))
-        
+
 
 class UserCapabilitySetTestCase(unittest.TestCase):
     def testOwner(self):
@@ -179,7 +179,7 @@ class IrcUserTestCase(unittest.TestCase):
         u.addCapability('owner')
         self.failUnless(u.checkCapability('foo'))
         self.failIf(u.checkCapability('!foo'))
-        
+
     def testInitCapabilities(self):
         u = ircdb.IrcUser(capabilities=['foo'])
         self.failUnless(u.checkCapability('foo'))
@@ -211,7 +211,7 @@ class IrcUserTestCase(unittest.TestCase):
         u = ircdb.IrcUser(ignore=True)
         self.failIf(u.checkCapability('foo'))
         self.failUnless(u.checkCapability('!foo'))
-        
+
 class IrcChannelTestCase(unittest.TestCase):
     def testInit(self):
         c = ircdb.IrcChannel()
@@ -240,7 +240,7 @@ class IrcChannelTestCase(unittest.TestCase):
     def testLobotomized(self):
         c = ircdb.IrcChannel(lobotomized=True)
         self.failUnless(c.checkIgnored(''))
-        
+
     def testIgnored(self):
         prefix = 'foo!bar@baz'
         banmask = ircutils.banmask(prefix)
@@ -262,10 +262,10 @@ class UsersDictionaryTestCase(unittest.TestCase):
         fd.write('{}\n')
         fd.close()
         self.users = ircdb.UsersDictionary(self.filename)
-        
+
     def tearDown(self):
         os.remove(self.filename)
-        
+
     def testGetSetDelUser(self):
         self.assertRaises(KeyError, self.users.getUser, 'foo')
         self.assertRaises(KeyError, self.users.getUser, 'foo!bar@baz')
@@ -283,7 +283,7 @@ class UsersDictionaryTestCase(unittest.TestCase):
         u.removeHostmask(banmask)
         u.addHostmask('*!*@*')
         self.assertRaises(ValueError, self.users.setUser, 'biff', u)
-        
+
 
 class CheckCapabilityTestCase(unittest.TestCase):
     filename = 'CheckCapabilityTestCase.conf'
@@ -334,7 +334,7 @@ class CheckCapabilityTestCase(unittest.TestCase):
         self.users.setUser('antichanfoo', antichanfoo)
         channel = ircdb.IrcChannel()
         self.channels.setChannel(self.channel, channel)
-        
+
     def tearDown(self):
         os.remove(self.filename)
 
@@ -383,10 +383,10 @@ class CheckCapabilityTestCase(unittest.TestCase):
     def testJustChanFoo(self):
         self.channels.setChannel(self.channel, self.channelnothing)
         self.failUnless(self.checkCapability(self.justchanfoo, self.chancap))
-        self.failIf(self.checkCapability(self.justchanfoo, self.antichancap)) 
+        self.failIf(self.checkCapability(self.justchanfoo, self.antichancap))
         self.channelnothing.defaultAllow = not self.channelnothing.defaultAllow
         self.failUnless(self.checkCapability(self.justchanfoo, self.chancap))
-        self.failIf(self.checkCapability(self.justchanfoo, self.antichancap)) 
+        self.failIf(self.checkCapability(self.justchanfoo, self.antichancap))
         self.channels.setChannel(self.channel, self.channelanticap)
         self.failUnless(self.checkCapability(self.justchanfoo, self.chancap))
         self.failIf(self.checkCapability(self.justchanfoo, self.antichancap))

@@ -170,5 +170,5 @@ if __name__ == '__main__':
     print 'You\'re done!  Now run the bot with the command line:'
     print 'src/bot.py conf/%s' % name
     print
-        
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

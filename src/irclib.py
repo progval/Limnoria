@@ -227,7 +227,7 @@ class IrcState(IrcCommandDispatcher):
 
     def __ne__(self, other):
         return not self == other
-    
+
     def copy(self):
         ret = self.__class__()
         ret.history = copy.copy(self.history)
