@@ -232,7 +232,7 @@ why these default to what they do."""))
 ###
 supybot.registerGroup('replies')
 
-registerChannelValue(supybot.replies, 'success',
+registerChannelValue(supybot.replies, 'error',
     registry.NormalizedString("""An error has occurred and has been logged.
     Please contact this bot's administrator for more information.""", """
     Determines what error message the bot gives when it wants to be
