@@ -36,7 +36,6 @@ Provides commands useful to users in general. This plugin is loaded by default.
 import string
 
 import conf
-import utils
 import ircdb
 import ircutils
 import privmsgs
@@ -331,6 +330,7 @@ class UserCommands(callbacks.Privmsg):
         If a specific True/False value is not given, it inverts the current
         value.
         """
+        (password, value) = privmsgs.getArgs(args, optional=1)
         if not self._checkNotChannel(irc, msg, password):
             return
         try:
@@ -338,7 +338,6 @@ class UserCommands(callbacks.Privmsg):
             user = ircdb.users.getUser(id)
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
-        (password, value) = privmsgs.getArgs(args, optional=1)
         if value == '':
             value = not user.secure
         elif value.lower() in ('true', 'false'):
