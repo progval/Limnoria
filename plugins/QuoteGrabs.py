@@ -111,8 +111,10 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):
             (channel, payload) = msg.args
-            length = self.registryValue('randomGrabber.minimumLength', channel)
-            words = self.registryValue('randomGrabber.minimumWords', channel)
+            words = self.registryValue('randomGrabber.minimumWords',
+                                       channel)
+            length = self.registryValue('randomGrabber.minimumCharacters',
+                                        channel)
             if self.registryValue('randomGrabber', channel):
                 if len(payload) > length and len(payload.split()) > words:
                     db = self.getDb(channel)
