@@ -75,7 +75,7 @@ class SocketDriver(drivers.IrcDriver):
         self.eagains = 0
         self.reconnectWaitsIndex = 0
         self.reconnectWaits = reconnectWaits
-        self.reconnect()
+        self.connect()
 
     def _sendIfMsgs(self):
         msgs = [self.irc.takeMsg()]
@@ -128,7 +128,10 @@ class SocketDriver(drivers.IrcDriver):
             return
         self._sendIfMsgs()
 
-    def reconnect(self, wait=False):
+    def connect(self, wait=False):
+        self.reconnect(wait, reset=False)
+        
+    def reconnect(self, wait=False, reset=True):
         if self.connected:
             log.info('Reconnect called on driver for %s.' % self.irc)
             self.conn.close()
@@ -139,7 +142,8 @@ class SocketDriver(drivers.IrcDriver):
             log.info('Reconnect waiting.')
             self._scheduleReconnect()
             return
-        self.irc.reset()
+        if reset:
+            self.irc.reset()
         try:
             self.conn = utils.getSocket(self.server[0])
         except socket.error, e:
