@@ -521,6 +521,9 @@ class Irc(IrcCommandDispatcher):
 
     def reset(self):
         """Resets the Irc object.  Called when the driver reconnects."""
+        if self.zombie:
+            self._reallyDie()
+            return
         self._setNonResettingVariables()
         self.state.reset()
         self.queue.reset()
