@@ -44,7 +44,8 @@ from twisted.internet.protocol import ReconnectingClientFactory
 try:
     from OpenSSL import SSL
 except ImportError:
-    drivers.log.debug('PyOpenSSL is not available, can not connect to SSL servers.')
+    drivers.log.warning('PyOpenSSL is not available, can not connect to SSL servers.')
+    SSL = None
 
 class TwistedRunnerDriver(drivers.IrcDriver):
     def name(self):
@@ -125,10 +126,13 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
 
     def connectSSL(self, server, port, vhost):
         """Connect to the server using an SSL socket."""
-        drivers.log.debug('Attempting an SSL connection.')
-        reactor.connectSSL(server, port, self,
-                        ssl.ClientContextFactory(), bindAddress=(vhost, 0))
-                    
+        drivers.log.info('Attempting an SSL connection.')
+        if SSL:
+            reactor.connectSSL(server, port, self,
+                ssl.ClientContextFactory(), bindAddress=(vhost, 0))
+        else:
+            drivers.log.error('PyOpenSSL is not available. Not connecting.')
+       
     def clientConnectionFailed(self, connector, r):
         drivers.log.connectError(self.currentServer, errorMsg(r))
         (connector.host, connector.port) = self._getNextServer()
