@@ -63,12 +63,12 @@ def configure(advanced):
         prompt = 'Would you like to add another RSS feed?'
         name = something('What\'s the name of the website?')
         url = something('What\'s the URL of the RSS feed?')
+        # XXX How should we fix this?  I'm thinking just remove it.
         registerFeed(name, url)
 
-class AnnouncedFeeds(registry.SpaceSeparatedListOf):
-    Value = registry.String
-    List = ircutils.IrcSet
-
+class AnnouncedFeeds(registry.SpaceSeparatedListOfStrings):
+    List = callbacks.CanonicalNameSet
+    
 conf.registerPlugin('RSS')
 conf.registerChannelValue(conf.supybot.plugins.RSS, 'bold', registry.Boolean(
     True, """Determines whether the bot will bold the title of the feed when it
@@ -81,19 +81,16 @@ conf.registerChannelValue(conf.supybot.plugins.RSS, 'announcementPrefix',
     is prepended (if any) to the new news item announcements made in the
     channel."""))
 conf.registerChannelValue(conf.supybot.plugins.RSS, 'announce',
-    AnnouncedFeeds([], """Determines which RSS feeds should be announced in
-    the channel; valid input is a list of strings (either registered RSS feeds
-    or RSS feed URLs) separated by spaces."""))
+    AnnouncedFeeds([], """Determines which RSS feeds should be announced in the
+    channel; valid input is a list of strings (either registered RSS feeds or
+    RSS feed URLs) separated by spaces."""))
 conf.registerGlobalValue(conf.supybot.plugins.RSS, 'waitPeriod',
     registry.PositiveInteger(1800, """Indicates how many seconds the bot will
     wait between retrieving RSS feeds; requests made within this period will
     return cached results."""))
-conf.registerGroup(conf.supybot.plugins.RSS, 'feeds')
-conf.supybot.plugins.RSS.feeds.help = utils.normalizeWhitespace("""These are
-the registered feeds for the RSS plugin.""")
-
-def registerFeed(name, url):
-    conf.supybot.plugins.RSS.feeds.register(name, registry.String(url, ''))
+conf.registerGlobalValue(conf.supybot.plugins.RSS, 'feeds',
+    AnnouncedFeeds([], """Determines what feeds should be accessible as
+    commands."""))
 
 class RSS(callbacks.Privmsg):
     threaded = True
@@ -104,13 +101,15 @@ class RSS(callbacks.Privmsg):
         self.lastRequest = {}
         self.cachedFeeds = {}
         self.gettingLockLock = threading.Lock()
-        for (name, url) in registry._cache.iteritems():
-            if name.startswith('supybot.plugins.rss.feeds.'):
-                name = rsplit(name, '.', 1)[-1]
-                v = registry.String('', 'help is not needed here')
-                v.set(url)
-                url = v()
-                self.makeFeedCommand(name, url)
+        for name in self.registryValue('feeds'):
+            self._registerFeed(name)
+            url = self.registryValue('feeds.%s' % name)
+            self.makeFeedCommand(name, url)
+
+    def _registerFeed(self, name, url=''):
+        self.registryValue('feeds').add(name)
+        group = self.registryValue('feeds', value=False)
+        group.register(name, registry.String(url, ''))
 
     def __call__(self, irc, msg):
         callbacks.Privmsg.__call__(self, irc, msg)
@@ -259,7 +258,7 @@ class RSS(callbacks.Privmsg):
         f.url = url # Used by __call__.
         self.feedNames.add(name)
         setattr(self.__class__, name, f)
-        registerFeed(name, url)
+        self._registerFeed(name, url)
 
     def add(self, irc, msg, args):
         """<name> <url>
