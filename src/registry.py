@@ -230,6 +230,9 @@ class SeparatedListOf(Value):
             L[i] = v()
         self.setValue(L)
 
+    def setValue(self, v):
+        Value.setValue(self, list(v))
+
     def __str__(self):
         return self.joiner(self.value)
         
@@ -309,9 +312,11 @@ class Group(object):
     def getValues(self, getChildren=False, fullNames=True):
         L = []
         items = self.values.items()
-        for (name, child) in self.children.items():
-            if hasattr(child, 'value'):
-                items.append((name, child))
+        # If getChildren=True, the group will insert itself into its getValues.
+        if not getChildren: 
+            for (name, child) in self.children.items():
+                if hasattr(child, 'value'):
+                    items.append((name, child))
         utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
         for (name, value) in items:
             if fullNames:
@@ -346,6 +351,12 @@ class GroupWithValue(Group):
     def __str__(self):
         return str(self.value)
 
+    def getValues(self, getChildren=False, fullNames=True):
+        L = Group.getValues(self, getChildren, fullNames)
+        if getChildren:
+            L.insert(0, (self.getName(), self))
+        return L
+
 
 class GroupWithDefault(GroupWithValue):
     def __init__(self, value):
@@ -362,6 +373,7 @@ class GroupWithDefault(GroupWithValue):
         GroupWithValue.__init__(self, value)
         
     def __makeChild(self, attr, s):
+        #print '***', attr, ':', repr(s)
         v = copy.copy(self.value)
         v.set(s)
         v.__class__ = self.X
