@@ -33,10 +33,6 @@
 Silently listens to every message received on a channel and keeps statistics
 concerning joins, parts, and various other commands in addition to tracking
 statistics about smileys, actions, characters, and words.
-
-Commands include:
-  seen
-  stats
 """
 
 from baseplugin import *
@@ -57,8 +53,8 @@ import callbacks
 smileys = (':)', ';)', ':]', ':-)', ':-D', ':D', ':P', ':p', '(=', '=)')
 frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 
-smileyre = re.compile('|'.join([re.escape(s) for s in smileys]))
-frownre = re.compile('|'.join([re.escape(s) for s in frowns]))
+smileyre = re.compile('|'.join(map(re.escape, smileys)))
+frownre = re.compile('|'.join(map(re.escape, frowns)))
 
 class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
     def __init__(self):
@@ -70,9 +66,9 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
             return sqlite.connect(filename)
         db = sqlite.connect(filename)
         cursor = db.cursor()
-        cursor.execute("""CREATE TABLE stats (
+        cursor.execute("""CREATE TABLE user_stats (
                           id INTEGER PRIMARY KEY,
-                          username TEXT UNIQUE,
+                          name TEXT UNIQUE,
                           last_seen TIMESTAMP,
                           last_msg TEXT,
                           smileys INTEGER,
@@ -88,7 +84,22 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                           modes INTEGER,
                           topics INTEGER
                           )""")
-        cursor.execute("""CREATE INDEX stats_username ON stats (username)""")
+        cursor.execute("""CREATE TABLE channel_stats (
+                          smileys INTEGER,
+                          frowns INTEGER,
+                          chars INTEGER,
+                          words INTEGER,
+                          msgs INTEGER,
+                          actions INTEGER,
+                          joins INTEGER,
+                          parts INTEGER,
+                          kicks INTEGER,
+                          modes INTEGER,
+                          topics INTEGER
+                          )""")
+        cursor.execute("""INSERT INTO channel_stats
+                          VALUES (0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0)""")
         db.commit()
         return db
     
@@ -98,133 +109,129 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
             (channel, s) = msg.args
             db = self.getDb(channel)
             cursor = db.cursor()
+            chars = len(s)
+            words = len(s.split())
+            isAction = ircmsgs.isAction(msg)
+            frowns = len(frownre.findall(s))
+            smileys = len(smileyre.findall(s))
+            cursor.execute("""UPDATE channel_stats
+                              SET smileys=smileys+%s,
+                                  frowns=frowns+%s,
+                                  chars=chars+%s,
+                                  words=words+%s,
+                                  msgs=msgs+1,
+                                  actions=actions+%s""",
+                           smileys, frowns, chars, words, isAction)
             try:
                 name = ircdb.users.getUserName(msg.prefix)
             except KeyError:
                 return
-            cursor.execute("""SELECT * FROM stats WHERE username=%s""", name)
-            if cursor.rowcount == 0: # User isn't in database.
-                cursor.execute("""INSERT INTO stats VALUES (
+            cursor.execute("""SELECT COUNT(*)
+                              FROM user_stats
+                              WHERE name=%s""", name)
+            count = int(cursor.fetchone()[0])
+            if count == 0: # User isn't in database.
+                cursor.execute("""INSERT INTO user_stats VALUES (
                                   NULL, %s, %s, %s, %s, %s,
                                   %s, %s, 1, %s,
                                   0, 0, 0, 0, 0, 0 )""",
                                name, int(time.time()), msg.args[1],
-                               len(smileyre.findall(s)),
-                               len(frownre.findall(s)), len(s), len(s.split()),
-                               int(ircmsgs.isAction(msg)))
+                               smileys, frowns, chars, words, isAction)
             else:
-                cursor.execute("""SELECT chars, words, msgs,
-                                         actions, smileys, frowns
-                                  FROM stats WHERE username=%s""", name)
-                values = cursor.fetchone()
-                cursor.execute("""UPDATE stats SET
-                                  last_seen=%s, last_msg=%s, chars=%s,
-                                  words=%s, msgs=%s, actions=%s,
-                                  smileys=%s, frowns=%s
-                                  WHERE username=%s""",
-                               int(time.time()),
-                               s,
-                               int(values.chars) + len(s),
-                               int(values.words) + len(s.split()),
-                               int(values.msgs) + 1,
-                               int(values.actions) + ircmsgs.isAction(msg),
-                               int(values.smileys) + len(smileyre.findall(s)),
-                               int(values.frowns) + len(frownre.findall(s)),
-                               name)
+                cursor.execute("""UPDATE user_stats SET
+                                  last_seen=%s, last_msg=%s, chars=chars+%s,
+                                  words=words+%s, msgs=msgs+1,
+                                  actions=actions+%s, smileys=smileys+%s,
+                                  frowns=frowns+%s
+                                  WHERE name=%s""",
+                               int(time.time()), s,
+                               chars, words, isAction, smileys, frowns, name)
             db.commit()
 
     def doJoin(self, irc, msg):
-        try:
-            name = ircdb.users.getUserName(msg.prefix)
-        except KeyError:
-            return
-        channels = msg.args[0].split(',')
-        for channel in channels:
-            db = self.getDb(channel)
-            cursor = db.cursor()
-            cursor.execute("SELECT joins FROM stats WHERE username=%s", name)
-            if cursor.rowcount == 0:
-                return
-            joins = cursor.fetchone()[0]
-            cursor.execute("UPDATE stats SET joins=%s WHERE username=%s",
-                           joins+1, name)
-            db.commit()
-                                                   
-    def doPart(self, irc, msg):
-        try:
-            name = ircdb.users.getUserName(msg.prefix)
-        except KeyError:
-            return
-        channels = msg.args[0].split(',')
-        for channel in channels:
-            db = self.getDb(channel)
-            cursor = db.cursor()
-            cursor.execute("SELECT parts FROM stats WHERE username=%s", name)
-            if cursor.rowcount == 0:
-                return
-            parts = cursor.fetchone()[0]
-            cursor.execute("UPDATE stats SET parts=%s WHERE username=%s",
-                           parts+1, name)
-            db.commit()
-
-    def doTopic(self, irc, msg):
-        try:
-            name = ircdb.users.getUserName(msg.prefix)
-        except KeyError:
-            return
         channel = msg.args[0]
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT topics FROM stats WHERE username=%s", name)
-        if cursor.rowcount == 0:
-            return
-        topics = cursor.fetchone()[0]
-        cursor.execute("UPDATE stats SET topics=%s WHERE username=%s",
-                       topics+1, name)
+        cursor.execute("""UPDATE channel_stats SET joins=joins+1""")
+        try:
+            name = ircdb.users.getUserName(msg.prefix)
+            cursor.execute("""UPDATE user_stats
+                              SET joins=joins+1
+                              WHERE name=%s""", name)
+        except KeyError:
+            pass
+        db.commit()
+                                                   
+    def doPart(self, irc, msg):
+        channel = msg.args[0]
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""UPDATE channel_stats SET parts=parts+1""")
+        try:
+            name = ircdb.users.getUserName(msg.prefix)
+            cursor.execute("UPDATE user_stats SET parts=parts+1 WHERE name=%s",
+                           name)
+        except KeyError:
+            pass
+        db.commit()
+
+    def doTopic(self, irc, msg):
+        channel = msg.args[0]
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""UPDATE channel_stats SET topics=topics+1""")
+        try:
+            name = ircdb.users.getUserName(msg.prefix)
+            cursor.execute("""UPDATE user_stats
+                              SET topics=topics+1
+                              WHERE name=%s""", name)
+        except KeyError:
+            pass
         db.commit()
 
     def doMode(self, irc, msg):
-        try:
-            name = ircdb.users.getUserName(msg.prefix)
-        except KeyError:
-            return
         channel = msg.args[0]
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("SELECT modes FROM stats WHERE username=%s", name)
-        if cursor.rowcount == 0:
-            return
-        modes = cursor.fetchone()[0]
-        cursor.execute("UPDATE stats SET modes=%s WHERE username=%s",
-                       modes+1, name)
+        cursor.execute("""UPDATE channel_stats SET modes=modes+1""")
+        try:
+            name = ircdb.users.getUserName(msg.prefix)
+            cursor.execute("""UPDATE user_stats
+                              SET modes=modes+1
+                              WHERE name=%s""", name)
+        except KeyError:
+            pass
         db.commit()
 
     def doKick(self, irc, msg):
-        db = self.getDb(msg.args[0])
+        channel = msg.args[0]
+        db = self.getDb(channel)
         cursor = db.cursor()
+        cursor.execute("""UPDATE channel_stats SET kicks=kicks+1""")
         try:
             name = ircdb.users.getUserName(msg.prefix)
-            cursor.execute("SELECT kicks FROM stats WHERE username=%s", name)
-            if cursor.rowcount != 0:
-                kicks = cursor.fetchone()[0]
-                cursor.execute("UPDATE stats SET kicks=%s WHERE username=%s",
-                               kicks+1, name)
+            cursor.execute("""UPDATE user_stats
+                              SET kicks=kicks+1
+                              WHERE name=%s""", name)
         except KeyError:
             pass
         try:
             kicked = msg.args[1]
             name = ircdb.users.getUserName(irc.state.nickToHostmask(kicked))
-            cursor.execute("SELECT kicked FROM stats WHERE username=%s", name)
-            if cursor.rowcount != 0:
-                kicked = cursor.fetchone()[0]
-                cursor.execute("UPDATE stats SET kicked=%s WHERE username=%s",
-                               kicked+1, name)
+            cursor.execute("""UPDATE user_stats
+                              SET kicked=kicked+1
+                              WHERE name=%s""", name)
         except KeyError:
             pass
         db.commit()
 
     def seen(self, irc, msg, args):
-        "[<channel>] (if not sent on the channel itself) <nick>"
+        """[<channel>] <nick>
+
+        Returns the last time <nick> was seen and what <nick> was last seen
+        saying.  <channel> is only necessary if the message isn't sent on the
+        channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         name = privmsgs.getArgs(args)
         if not ircdb.users.hasUser(name):
@@ -236,8 +243,8 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                 return
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT last_seen, last_msg FROM stats
-                          WHERE username=%s""", name)
+        cursor.execute("""SELECT last_seen, last_msg FROM user_stats
+                          WHERE name=%s""", name)
         if cursor.rowcount == 0:
             irc.reply(msg, 'I have no stats for that user.')
         else:
@@ -248,7 +255,11 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
             irc.reply(msg, s)
 
     def stats(self, irc, msg, args):
-        "[<channel>] (if not sent in the channel itself) <nick>"
+        """[<channel>] <nick>
+
+        Returns the statistics for <nick> on <channel>.  <channel> is only
+        necessary if the message isn't sent on the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         name = privmsgs.getArgs(args)
         if not ircdb.users.hasUser(name):
@@ -262,7 +273,7 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
         cursor = db.cursor()
         cursor.execute("""SELECT smileys, frowns, chars, words, msgs, actions,
                                  joins, parts, kicks, kicked, modes, topics
-                          FROM stats WHERE username=%s""", name)
+                          FROM user_stats WHERE name=%s""", name)
         if cursor.rowcount == 0:
             irc.reply(msg, 'I have no stats for that user.')
             return
@@ -277,6 +288,27 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
              name, values.joins, values.parts, values.kicks,
              values.kicked, values.topics,
              values.modes)
+        irc.reply(msg, s)
+
+    def channelstats(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the statistics for <channel>.  <channel> is only necessary if
+        the message isn't sent on the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT * FROM channel_stats""")
+        values = cursor.fetchone()
+        s = 'On %s there have been %s messages, containing %s characters, ' \
+            '%s words, %s smileys, and %s frowns; %s of those messages were ' \
+            'ACTIONs.  There have been %s joins, %s parts, %s kicks, ' \
+            '%s mode changes, and %s topic changes.' % \
+            (channel, values.msgs, values.chars,
+             values.words, values.smileys, values.frowns, values.actions,
+             values.joins, values.parts, values.kicks,
+             values.modes, values.topics)
         irc.reply(msg, s)
 
 
