@@ -30,10 +30,7 @@
 ###
 
 """
-NickServ: Handles management of nicks with NickServ.
-
-Commands include:
-  startnickserv (bot's nick, password, NickServ's nick [defaults to NickServ])
+Services: Handles management of nicks with NickServ, and ops with ChanServ.
 """
 
 from baseplugin import *
@@ -56,7 +53,7 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load NickServ')
     onStart.append('startnickserv %s %s' % (nick, password))
 
-class NickServ(privmsgs.CapabilityCheckingPrivmsg):
+class Services(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -112,6 +109,6 @@ class NickServ(privmsgs.CapabilityCheckingPrivmsg):
 
 
 
-Class = NickServ
+Class = Services
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
