@@ -189,6 +189,18 @@ class FunctionsTestCase(SupyTestCase):
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(original)
 
+    def testIsNickNeverAllowsSpaces(self):
+        try:
+            original = conf.supybot.protocols.irc.strictRfc()
+            conf.supybot.protocols.irc.strictRfc.setValue(True)
+            self.failIf(ircutils.isNick('foo bar'))
+            conf.supybot.protocols.irc.strictRfc.setValue(False)
+            self.failIf(ircutils.isNick('foo bar'))
+        finally:
+            conf.supybot.protocols.irc.strictRfc.setValue(original)
+            
+                       
+
     def testBanmask(self):
         for msg in msgs:
             if ircutils.isUserHostmask(msg.prefix):
