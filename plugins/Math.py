@@ -294,7 +294,7 @@ class Math(callbacks.Privmsg):
             s = ', '.join(imap(self._complexToString, imap(complex, stack)))
             irc.reply('Stack: [%s]' % s)
 
-    def convert(self, irc, msg, args, number, unit1, to, unit2):
+    def convert(self, irc, msg, args, number, unit1, unit2):
         """[<number>] <unit> to <other unit>
 
         Converts from <unit> to <other unit>. If number isn't given, it
@@ -306,8 +306,7 @@ class Math(callbacks.Privmsg):
             irc.reply(str(newNum))
         except convertcore.UnitDataError, ude:
             irc.error(str(ude))
-    convert = wrap(convert, [optional('float', 1.0), 'something',
-                             additional(('literal', 'to'), ''), 'text'])
+    convert = wrap(convert, [optional('float', 1.0),'something','to','text'])
 
     def units(self, irc, msg, args, type):
         """ [<type>]

@@ -490,6 +490,10 @@ def getLiteral(irc, msg, args, state, literals, errmsg=None):
     else:
         raise callbacks.ArgumentError
 
+def getTo(irc, msg, args, state):
+    if args[0].lower() == 'to':
+        args.pop(0)
+
 def getPlugin(irc, msg, args, state, require=True):
     cb = irc.getCallback(args[0])
     if cb is not None:
@@ -530,6 +534,7 @@ wrappers = ircutils.IrcDict({
     'haveOp': getHaveOp,
     'expiry': getExpiry,
     'literal': getLiteral,
+    'to': getTo,
     'nick': getNick,
     'seenNick': getSeenNick,
     'channel': getChannel,

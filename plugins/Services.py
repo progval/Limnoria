@@ -515,7 +515,7 @@ class Services(callbacks.Privmsg):
         else:
             irc.error('You must set supybot.plugins.Services.NickServ before '
                       'I\'m able to do identify.')
-    identify = wrap(identify, ['checkCapability', 'admin'])
+    identify = wrap(identify, [('checkCapability', 'admin')])
 
     def ghost(self, irc, msg, args, nick):
         """[<nick>]

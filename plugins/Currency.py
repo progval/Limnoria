@@ -76,7 +76,7 @@ class Currency(callbacks.Privmsg):
                               r'(.*)</body>', re.I | re.S)
     _xeConvert = re.compile(r'<TD[^>]+><FONT[^>]+>\s+([\d.]+\s+\w{3}\s+='
                             r'\s+[\d.]+\s+\w{3})', re.I | re.S)
-    def xe(self, irc, msg, args, number, curr1, to, curr2):
+    def xe(self, irc, msg, args, number, curr1, curr2):
         """[<number>] <currency1> [to] <currency2>
 
         Converts from <currency1> to <currency2>.  If number isn't given, it
@@ -107,10 +107,9 @@ class Currency(callbacks.Privmsg):
         else:
             irc.error('XE must\'ve changed the format of their site.')
             return
-    xe = wrap(xe, [optional('float', 1.0), 'lowered', 
-                   optional(literal('to')), 'lowered'])
+    xe = wrap(xe, [optional('float', 1.0), 'lowered', 'to', 'lowered'])
 
-    def yahoo(self, irc, msg, args, number, curr1, to, curr2):
+    def yahoo(self, irc, msg, args, number, curr1, curr2):
         """[<number>] <currency1> to <currency2>
 
         Converts from <currency1> to <currency2>.  If number isn't given, it
@@ -135,8 +134,7 @@ class Currency(callbacks.Privmsg):
         if '.' not in resp[0] and 'e' not in resp[0]:
             resp[0] = '%s.00' % resp[0]
         irc.reply(' '.join(resp))
-    yahoo = wrap(yahoo, [optional(float, 1.0), 'lowered',
-                         optional(literal('to')), 'lowered'])
+    yahoo = wrap(yahoo, [optional(float, 1.0), 'lowered', 'to', 'lowered'])
 
 conf.registerPlugin('Currency')
 conf.registerChannelValue(conf.supybot.plugins.Currency, 'command',
