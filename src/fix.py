@@ -259,5 +259,8 @@ def partition(p, L):
         else:
             no.append(elt)
     return (yes, no)
+
+def flip((x, y)):
+    return (y, x)
     
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
