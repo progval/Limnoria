@@ -825,7 +825,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         newIrc = self._connect(network, serverPort=serverPort)
         conf.supybot.networks().add(network)
         assert newIrc.callbacks is irc.callbacks, 'callbacks list is different'
-        irc.replySuccess()
+        irc.replySuccess('Connection to %s initiated.' % network)
 
     def disconnect(self, irc, msg, args):
         """<network> [<quit message>]
