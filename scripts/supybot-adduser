@@ -69,8 +69,8 @@ def main():
     import log
     import ircdb
 
-    oldPriority = conf.supybot.log.minimumPriority()
-    conf.supybot.log.minimumPriority.set('CRITICAL')
+    oldLogLevel = conf.supybot.log.level()
+    conf.supybot.log.level.set('CRITICAL')
 
     if not options.name:
         name = ''
@@ -124,7 +124,7 @@ def main():
         user.addCapability(capability)
     ircdb.users.setUser(id, user)
     print 'User %s added.' % name
-    conf.supybot.log.minimumPriority.setValue(oldPriority)
+    conf.supybot.log.level.setValue(oldLogLevel)
     registry.close(conf.supybot, args[0])
 
 if __name__ == '__main__':

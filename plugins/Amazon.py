@@ -50,20 +50,17 @@ import callbacks
 
 
 def configure(advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    print 'To use Amazon\'s Web Services, you must have a license key.'
-    if yn('Do you have a license key?') == 'y':
+    output('To use Amazon\'s Web Services, you must have a license key.')
+    if yn('Do you have a license key?'):
         key = anything('What is it?')
 
         conf.registerPlugin('Amazon', True)
         conf.supybot.plugins.Amazon.licenseKey.set(key)
     else:
-        print 'You\'ll need to get a key before you can use this plugin.'
-        print 'You can apply for a key at http://www.amazon.com/webservices/'
+        output("""You'll need to get a key before you can use this plugin.
+                  You can apply for a key at
+                  http://www.amazon.com/webservices/""")
 
 class LicenseKey(registry.String):
     def set(self, s):

@@ -66,11 +66,11 @@ def configure(advanced):
     conf.registerPlugin('URL', True)
     if yn("""This plugin offers a snarfer that will go to tinyurl.com and get
              a shorter version of long URLs that are sent to the channel.
-             Would you like this snarfer to be enabled?"""):
+             Would you like this snarfer to be enabled?""", default=False):
         conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
     if yn("""This plugin also offers a snarfer that will try to fetch the
              title of URLs that it sees in the channel.  Would like you this
-             snarfer to be enabled?"""):
+             snarfer to be enabled?""", default=False):
         conf.supybot.plugins.URL.titleSnarfer.setValue(True)
 
 conf.registerPlugin('URL')

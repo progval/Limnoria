@@ -54,8 +54,8 @@ import callbacks
 
 def configure(advanced):
     from questions import expect, anything, something, yn
-    print 'The default dictd server is dict.org.'
-    if yn('Would you like to specify a different dictd server?') == 'y':
+    output('The default dictd server is dict.org.')
+    if yn('Would you like to specify a different dictd server?'):
         server = something('What server?')
         conf.supybot.plugins.Dict.server.set(server)
 

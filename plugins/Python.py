@@ -70,7 +70,7 @@ def configure(advanced):
     conf.registerPlugin('Python', True)
     if yn("""This plugin provides a snarfer for ASPN Python Recipe URLs;
              it will output the name of the Recipe when it sees such a URL.
-             Would you like to enable this snarfer?""") == 'y':
+             Would you like to enable this snarfer?"""):
         conf.supybot.plugins.Python.aspnSnarfer.setValue(True)
 
 conf.registerPlugin('Python')

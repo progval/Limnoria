@@ -56,26 +56,21 @@ except ImportError:
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 def configure(advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     conf.registerPlugin('Lookup', True)
-    print 'This module allows you to define commands that do a simple key'
-    print 'lookup and return some simple value.  It has a command "add"'
-    ### TODO: fix conf.dataDir here.  I'm waiting until we rewrite this with
-    ### a proper question.py print statement.
-    print 'that takes a command name and a file in conf.dataDir and adds a'
-    print 'command with that name that responds with mapping from that file.'
-    print 'The file itself should be composed of lines of the form key:value.'
-    while yn('Would you like to add a file?') == 'y':
+    output("""This module allows you to define commands that do a simple key
+              lookup and return some simple value.  It has a command "add"
+              that takes a command name and a file from the data dir and adds a
+              command with that name that responds with the mapping from that
+              file. The file itself should be composed of lines
+              of the form key:value.""")
+    while yn('Would you like to add a file?'):
         filename = something('What\'s the filename?')
         try:
             dataDir = conf.supybot.directories.data()
             fd = file(os.path.join(dataDir, filename))
         except EnvironmentError, e:
-            print 'I couldn\'t open that file: %s' % e
+            output('I couldn\'t open that file: %s' % e)
             continue
         counter = 1
         try:
@@ -86,7 +81,8 @@ def configure(advanced):
                 (key, value) = line.split(':', 1)
                 counter += 1
         except ValueError:
-            print 'That\'s not a valid file; line #%s is malformed.' % counter
+            output('That\'s not a valid file; '
+                   'line #%s is malformed.' % counter)
             continue
         command = something('What would you like the command to be?')
         onStart.append('lookup add %s %s' % (command, filename))

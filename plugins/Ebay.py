@@ -53,17 +53,13 @@ import callbacks
 
 
 def configure(advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     conf.registerPlugin('Ebay', True)
-    print 'The Ebay plugin has the functionality to watch for URLs'
-    print 'that match a specific pattern (we call this a snarfer). When'
-    print 'supybot sees such a URL, he will parse the web page for'
-    print 'information and reply with the results.\n'
-    if yn('Do you want the Ebay snarfer enabled by default?') == 'y':
+    output("""The Ebay plugin has the functionality to watch for URLs
+              that match a specific pattern (we call this a snarfer). When
+              supybot sees such a URL, he will parse the web page for
+              information and reply with the results."""
+    if yn('Do you want the Ebay snarfer enabled by default?'):
         conf.supybot.plugins.Ebay.auctionSnarfer.setValue(True)
 
 class EbayError(callbacks.Error):

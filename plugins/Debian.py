@@ -58,29 +58,25 @@ import callbacks
 
 
 def configure(advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     conf.registerPlugin('Debian', True)
     if not utils.findBinaryInPath('zegrep'):
         if not advanced:
-            print 'I can\'t find zegrep in your path.  This is necessary '
-            print 'to run the file command.  I\'ll disable this command '
-            print 'now.  When you get zegrep in your path, use the command '
-            print '"enable file" to re-enable the command.'
+            output("""I can't find zegrep in your path.  This is necessary
+                      to run the file command.  I'll disable this command
+                      now.  When you get zegrep in your path, use the command
+                      "enable file" to re-enable the command.""")
             onStart.append('disable file')
         else:
-            print 'I can\'t find zegrep in your path.  If you want to run the '
-            print 'file command with any sort of expediency, you\'ll need '
-            print 'it.  You can use a python equivalent, but it\'s about two '
-            print 'orders of magnitude slower.  THIS MEANS IT WILL TAKE AGES '
-            print 'TO RUN THIS COMMAND.  Don\'t do this.'
-            if yn('Do you want to use a Python equivalent of zegrep?') == 'y':
+            output("""I can't find zegrep in your path.  If you want to run
+                      the file command with any sort of expediency, you'll
+                      need it.  You can use a python equivalent, but it's
+                      about two orders of magnitude slower.  THIS MEANS IT
+                      WILL TAKE AGES TO RUN THIS COMMAND.  Don't do this.""")
+            if yn('Do you want to use a Python equivalent of zegrep?'):
                 conf.supybot.plugins.Debian.pythonZegrep.setValue(True)
             else:
-                print 'I\'ll disable file now.'
+                output('I\'ll disable file now.')
                 onStart.append('disable file')
 
 conf.registerPlugin('Debian')

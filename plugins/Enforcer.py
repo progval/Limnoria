@@ -53,12 +53,9 @@ def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('Enforcer', True)
     chanserv = anything("""What\'s the name of ChanServ on your network?  If
-    there is no ChanServ on your network, just press enter without entering
-    anything.""")
-    if yn('Do you want the bot to take revenge on rule breakers?'):
-        revenge = True
-    else:
-        revenge = False
+                           there is no ChanServ on your network, just press
+                           enter without entering anything.""")
+    revenge = yn('Do you want the bot to take revenge on rule breakers?')
     conf.supybot.plugins.Enforcer.ChanServ.set(chanserv)
     conf.supybot.plugins.Enforcer.takeRevenge.setValue(revenge)
 

@@ -53,44 +53,42 @@ import callbacks
 
 
 def configure(advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     conf.registerPlugin('Sourceforge', True)
-    print 'The Sourceforge plugin has the functionality to watch for URLs'
-    print 'that match a specific pattern (we call this a snarfer). When'
-    print 'supybot sees such a URL, he will parse the web page for'
-    print 'information and reply with the results.\n'
-    if yn('Do you want this snarfer to be enabled by default?') == 'y':
+    output("""The Sourceforge plugin has the functionality to watch for URLs
+              that match a specific pattern (we call this a snarfer). When
+              supybot sees such a URL, he will parse the web page for
+              information and reply with the results.""")
+    if yn('Do you want this snarfer to be enabled by default?'):
         conf.supybot.plugins.Sourceforge.trackerSnarfer.setValue(True)
 
-    print 'The bugs and rfes commands of the Sourceforge plugin can be set'
-    print 'to query a default project when no project is specified.  If this'
-    print 'project is not set, calling either of those commands will display'
-    print 'the associated help.  With the default project set, calling'
-    print 'bugs/rfes with no arguments will find the most recent bugs/rfes'
-    print 'for the default project.\n'
-    if yn('Do you want to specify a default project?') == 'y':
+    output("""The bugs and rfes commands of the Sourceforge plugin can be set
+              to query a default project when no project is specified.  If this
+              project is not set, calling either of those commands will display
+              the associated help.  With the default project set, calling
+              bugs/rfes with no arguments will find the most recent bugs/rfes
+              for the default project.""")
+    if yn('Do you want to specify a default project?'):
         project = anything('Project name:')
         if project:
             conf.supybot.plugins.Sourceforge.project.set(project)
 
-    print 'Sourceforge is quite the word to type, and it may get annoying'
-    print 'typing it all the time because Supybot makes you use the plugin'
-    print 'name to disambiguate calls to ambiguous commands (i.e., the bug'
-    print 'command is in this plugin and the Bugzilla plugin; if both are'
-    print 'loaded, you\'ll have you type "sourceforge bug ..." to get this'
-    print 'bug command).  You may save some time by making an alias for'
-    print '"sourceforge".  We like to make it "sf".'
-    if yn('Would you like to add sf as an alias for Sourceforge?') == 'y':
+    output("""Sourceforge is quite the word to type, and it may get annoying
+              typing it all the time because Supybot makes you use the plugin
+              name to disambiguate calls to ambiguous commands (i.e., the bug
+              command is in this plugin and the Bugzilla plugin; if both are
+              loaded, you\'ll have you type "sourceforge bug ..." to get this
+              bug command).  You may save some time by making an alias for
+              "sourceforge".  We like to make it "sf"."""
+    if yn('Would you like to add sf as an alias for Sourceforge?',
+          default=True):
         if not conf.supybot.plugins.Alias():
-            print 'This depends on the Alias module.'
-            if yn('Would you like to load the Alias plugin now?') == 'y':
+            output('This depends on the Alias module.')
+            if yn('Would you like to load the Alias plugin now?',
+                  default=True):
                 conf.registerPlugin('Alias', True)
             else:
-                print 'Then I can\'t add such an alias.'
+                output('Then I can\'t add such an alias.')
                 return
         onStart.append('alias add sf sourceforge $*')
 

@@ -61,32 +61,32 @@ def configure(advanced):
     if not spellCmd:
         spellCmd = utils.findBinaryInPath('ispell')
     if not spellCmd:
-        print 'NOTE: I couldn\'t find aspell or ispell in your path,'
-        print 'so that function of this module will not work.  You may'
-        print 'choose to install it later.  To re-enable this command then, '
-        print 'remove the "disable spell" line from your configuration file.'
+        output("""NOTE: I couldn't find aspell or ispell in your path, so that
+                  function of this module will not work.  You may choose to
+                  install it later.  To re-enable this command then, remove
+                  the "disable spell" line from your configuration file.""")
         onStart.append('disable spell')
     fortuneCmd = utils.findBinaryInPath('fortune')
     if not fortuneCmd:
-        print 'NOTE: I couldn\'t find fortune in your path, so that function '
-        print 'of this module will not work.  You may choose to install it '
-        print 'later.  To re-enable this command then, remove the '
-        print '"disable fortune" command from your configuration file.'
+        output("""NOTE: I couldn't find fortune in your path, so that function
+                  of this module will not work.  You may choose to install it
+                  later.  To re-enable this command then, remove the
+                  '"disable fortune" command from your configuration file.""")
         onStart.append('disable fortune')
     wtfCmd = utils.findBinaryInPath('wtf')
     if not wtfCmd:
-        print 'NOTE: I couldn\'t find wtf in your path, so that function of '
-        print 'this module won\'t work.  You may choose to install it later; '
-        print 'to re-enable this command then, remove the "disable wtf" '
-        print 'command from your configuration file or simply tell the bot '
-        print '"enable wtf"'
+        output("""NOTE: I couldn't find wtf in your path, so that function of
+                  this module won't work.  You may choose to install it later;
+                  to re-enable this command then, remove the "disable wtf"
+                  command from your configuration file or simply tell the bot
+                  "enable wtf" instead.""")
         onStart.append('disable wtf')
-    print 'The "progstats" command can reveal potentially sensitive'
-    print 'information about your machine.  Here\'s an example of its output:'
-    print
-    print progstats()
-    print
-    if yn('Would you like to disable this command for non-owner users?')=='y':
+    output("""The "progstats" command can reveal potentially sensitive
+              information about your machine. Here's an example of its output:
+
+              %s\n""" % progstats())
+    if yn('Would you like to disable this command for non-owner users?',
+          default=True):
         onStart.append('disable progstats')
 
 def progstats():

@@ -54,10 +54,10 @@ def configure(advanced):
     conf.registerPlugin('Parter', True)
     s = ' '
     while s:
-        if yn('Would you like to automatically part a channel?') == 'y':
+        if yn('Would you like to automatically part a channel?'):
             s = something('What channel?')
             while not ircutils.isChannel(s):
-                print 'That\'s not a valid channel.'
+                output('That\'s not a valid channel.')
                 s = something('What channel?')
             onStart.append('autopartchannel %s' % s)
         else:

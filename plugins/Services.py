@@ -53,12 +53,8 @@ def configure(advanced):
     conf.registerPlugin('Services', True)
     nick = something('What is your registered nick?')
     password = something('What is your password for that nick?')
-    chanserv = 'ChanServ'
-    if yn('Is your ChanServ named something other than ChanServ?') == 'y':
-        chanserv = something('What is your ChanServ named?')
-    nickserv = 'NickServ'
-    if yn('Is your NickServ named something other than NickServ?') == 'y':
-        nickserv = something('What is your NickServ named?')
+    chanserv = something('What is your ChanServ named?', default='ChanServ')
+    nickserv = something('What is your NickServ named?', default='NickServ')
     conf.supybot.plugins.Services.nick.setValue(nick)
     conf.supybot.plugins.Services.password.setValue(password)
     conf.supybot.plugins.Services.NickServ.setValue(nickserv)

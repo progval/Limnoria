@@ -225,10 +225,10 @@ def main():
     # Store the minimum log priority if set, because we set it to a temporary
     # value during the wizard
     try:
-        priority = registry._cache['supybot.log.minimumPriority']
+        priority = registry._cache['supybot.log.level']
     except KeyError:
         priority = 'INFO'
-    registry._cache['supybot.log.minimumPriority'] = 'CRITICAL'
+    registry._cache['supybot.log.level'] = 'CRITICAL'
     
     # Now that we're all set, import conf and log
     import conf
@@ -364,17 +364,18 @@ def main():
     world unless you can make that bot join some channels.""")
     if yn('Do you want your bot to join some channels when he connects?',
           default=True):
-        defaultChannels = ','.join(conf.supybot.channels())
-        channels = something('What channels?  Separate channels with '
-                             'commas.', default=defaultChannels)
-        while not all(ircutils.isChannel, channels.split(',')):
-            # FIXME: say which ones weren't channels.
-            output("""Not all of those are valid IRC channels.  Be sure to
-            prefix the channel with # (or +, or !, or &, but no one uses those
-            channels, really).""")
-            channels = something('What channels?',
-                                 default=defaultChannels)
-    conf.supybot.channels.set(channels)
+        defaultChannels = ' '.join(conf.supybot.channels())
+        while True:
+            channels = something('What channels?  Separate channels with '
+                                 'spaces.', default=defaultChannels)
+            try:
+                conf.supybot.channels.set(channels)
+                break
+            except registry.InvalidRegistryValue:
+                # FIXME: say which ones weren't channels.
+                output("""Not all of those are valid IRC channels.  Be sure to
+                prefix the channel with # (or +, or !, or &, but no one uses those
+                channels, really).""")
 
     ###
     # Plugins
@@ -535,19 +536,19 @@ def main():
                 not yn('Would you like to turn this colorization off?',
                 default=False))
 
-    # conf.supybot.log.minimumPriority
+    # conf.supybot.log.level
     output("""Your bot can handle debug messages at several priorities,
     CRITICAL, in decreasing order of priority.  By
     default, your bot will log all of these priorities.  You can, however,
     specify that he only log messages above a certain priority level.  Of
     course, all error messages will still be logged.""")
-    newPriority = something('What would you like the minimum priority to be?  '
+    newLogLevel = something('What would you like the minimum priority to be?  '
                          'Just press enter to accept the default.',
                          default=priority).lower()
-    while newPriority not in ['debug', 'info', 'warning', 'error', 'critical']:
+    while newLogLevel not in ['debug', 'info', 'warning', 'error', 'critical']:
         output("""That's not a valid priority.  Valid priorities include
         'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL'""")
-        newPriority = something('What would you like the minimum priority to '
+        newLogLevel = something('What would you like the minimum priority to '
                              'be?  Just press enter to accept the default.',
                              default=priority).lower()
 
@@ -640,8 +641,8 @@ def main():
     ###
     # Write the registry
     ###
-    # Replace the temporary value in supybot.log.minimumPriority
-    conf.supybot.log.minimumPriority.set(newPriority)
+    # Replace the temporary value in supybot.log.level
+    conf.supybot.log.level.set(newLogLevel)
 
     # Save the registry
     if not filename:

@@ -57,40 +57,40 @@ def configure(advanced):
     import socket
     from questions import expect, anything, something, yn
     conf.registerPlugin('Relay', True)
-    startNetwork = anything('What is the name of the network you\'re ' \
+    startNetwork = anything('What is the name of the network you\'re '
                             'connecting to first?')
     onStart.append('relay start %s' % startNetwork)
-    while yn('Do you want to connect to another network for relaying?') == 'y':
-        network = anything('What is the name of the network you want to ' \
+    while yn('Do you want to connect to another network for relaying?'):
+        network = anything('What is the name of the network you want to '
                            'connect to?')
         server = ''
         while not server:
             server = anything('What server does that network use?')
             try:
-                print 'Looking up %s' % server
+                output('Looking up %s' % server)
                 ip = socket.gethostbyname(server)
-                print 'Found %s (%s)' % (server, ip)
+                output('Found %s (%s)' % (server, ip))
             except socket.error:
-                print 'Sorry, but I couldn\'t find that server.'
+                output('Sorry, but I couldn\'t find that server.')
                 server = ''
         if yn('Does that server require you to connect on a port other than '
-              'the default port for IRC (6667)?') == 'y':
+              'the default port for IRC (6667)?', default=False):
             port = ''
             while not port:
                 port = anything('What port is that?')
                 try:
                     int(port)
                 except ValueError:
-                    print 'Sorry, but that isn\'t a valid port.'
+                    output('Sorry, but that isn\'t a valid port.')
                     port = ''
             server = ':'.join((server, port))
         onStart.append('relay connect %s %s' % (network, server))
     channel = anything('What channel would you like to relay between?')
     afterConnect.append('relay join %s' % utils.dqrepr(channel))
-    while yn('Would like to relay between any more channels?') == 'y':
+    while yn('Would like to relay between any more channels?'):
         channel = anything('What channel?')
         afterConnect.append('relay join %s' % channel)
-    if yn('Would you like to use color to distinguish between nicks?') == 'y':
+    if yn('Would you like to use color to distinguish between nicks?'):
         afterConnect.append('relay color 2')
 
 

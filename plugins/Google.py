@@ -61,12 +61,12 @@ import structures
 
 def configure(advanced):
     from questions import expect, anything, something, yn
-    print 'To use Google\'t Web Services, you must have a license key.'
-    if yn('Do you have a license key?') == 'y':
+    output('To use Google\'t Web Services, you must have a license key.')
+    if yn('Do you have a license key?'):
         key = something('What is it?')
         while len(key) != 32:
-            print 'That\'s not a valid Google license key.'
-            if yn('Are you sure you have a valid Google license key?') == 'y':
+            output('That\'s not a valid Google license key.')
+            if yn('Are you sure you have a valid Google license key?'):
                 key = something('What is it?')
             else:
                 key = ''
@@ -74,34 +74,33 @@ def configure(advanced):
         if key:
             conf.registerPlugin('Google', True)
             conf.supybot.plugins.Google.licenseKey.setValue(key)
-        print 'The Google plugin has the functionality to watch for URLs'
-        print 'that match a specific pattern (we call this a snarfer).'
-        print 'When supybot sees such a URL, he will parse the web page'
-        print 'for information and reply with the results.'
-        print
-        print 'Google has two available snarfers: Google Groups link'
-        print 'snarfing and a google search snarfer.'
-        print
+        output("""The Google plugin has the functionality to watch for URLs
+                  that match a specific pattern. (We call this a snarfer)
+                  When supybot sees such a URL, it will parse the web page
+                  for information and reply with the results.
+
+                  Google has two available snarfers: Google Groups link
+                  snarfing and a google search snarfer.""")
         if yn('Do you want the Google Groups link snarfer enabled by '
-            'default?') == 'y':
+            'default?'):
             conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
-        if yn('Do you want the Google search snarfer enabled by default?') \
-            == 'y':
+        if yn('Do you want the Google search snarfer enabled by default?'):
             conf.supybot.plugins.Google.searchSnarfer.setValue(True)
         if not conf.supybot.plugins.Alias():
-            print 'Google depends on the Alias module for some extra commands.'
-            if yn('Would you like to load the Alias module now?') == 'y':
+            output('Google depends on the Alias module '
+                   'for some extra commands.')
+            if yn('Would you like to load the Alias module now?'):
                 conf.registerPlugin('Alias', True)
             else:
-                print 'You can still use the Google module, but you won\'t ' \
-                      'have these extra commands enabled.'
+                output('You can still use the Google module, but you won\'t '
+                       'have these extra commands enabled.')
                 return
         onStart.append('alias add googlelinux "google --restrict=linux $1"')
         onStart.append('alias add googlebsd "google --restrict=bsd $1"')
         onStart.append('alias add googlemac "google --restrict=mac $1"')
     else:
-        print 'You\'ll need to get a key before you can use this plugin.'
-        print 'You can apply for a key at http://www.google.com/apis/'
+        output("""You'll need to get a key before you can use this plugin.
+                  You can apply for a key at http://www.google.com/apis/""")
 
 
 totalSearches = 0

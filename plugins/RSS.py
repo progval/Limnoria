@@ -55,7 +55,7 @@ def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('RSS', True)
     prompt = 'Would you like to add an RSS feed?'
-    while yn(prompt) == 'y':
+    while yn(prompt):
         prompt = 'Would you like to add another RSS feed?'
         name = something('What\'s the name of the website?')
         url = something('What\'s the URL of the RSS feed?')

@@ -93,11 +93,11 @@ class BugzillaError(Exception):
 def configure(advanced):
     from questions import expect, anything, yn
     conf.registerPlugin('Bugzilla', True)
-    print 'The Bugzilla plugin has the functionality to watch for URLs'
-    print 'that match a specific pattern (we call this a snarfer). When'
-    print 'supybot sees such a URL, he will parse the web page for'
-    print 'information and reply with the results.\n'
-    if yn('Do you want this bug snarfer enabled by default?') == 'y':
+    output("""The Bugzilla plugin has the functionality to watch for URLs
+              that match a specific pattern (we call this a snarfer). When
+              supybot sees such a URL, he will parse the web page for
+              information and reply with the results.""")
+    if yn('Do you want this bug snarfer enabled by default?', default=False):
         conf.supybot.plugins.Bugzilla.bugSnarfer.setValue(True)
 
 conf.registerPlugin('Bugzilla')
