@@ -341,6 +341,9 @@ class Http(callbacks.Privmsg):
                                  (package, branch))
             html = fd.read()
             fd.close()
+            m = self._debnumpkgsre.search(html)
+            if m:
+                numberOfPackages = m.group(1)
             m = self._debtablere.search(html)
             if m is None:
                 responses.append('No package found for: %s (%s)' % \
@@ -348,9 +351,6 @@ class Http(callbacks.Privmsg):
             else:
                 tableData = m.group(1)
                 rows = tableData.split('</TR>')
-                m = self._debnumpkgsre.search(tableData)
-                if m:
-                    numberOfPackages += int(m.group(1))
                 for row in rows:
                     pkgMatch = self._debpkgre.search(row)
                     brMatch = self._debbrre.search(row)
