@@ -253,18 +253,21 @@ class LogLevel(ValidLogLevel):
         ValidLogLevel.setValue(self, v)
         _logger.setLevel(self.value) # _logger defined later.
 
-conf.supybot.directories.register('log', registry.String('logs', """Determines
-what directory the bot will store its logfiles in."""))
+conf.registerGlobalValue(conf.supybot.directories, 'log',
+    registry.String('logs', """Determines what directory the bot will store its
+    logfiles in."""))
 
-conf.supybot.register('log')
-conf.supybot.log.register('level', LogLevel(logging.INFO, """Determines what
-the minimum priority level logged will be.  Valid values are DEBUG, INFO,
-WARNING, ERROR, and CRITICAL, in order of increasing priority."""))
-conf.supybot.log.register('stdout', registry.Boolean(True, """Determines
-whether the bot will log to stdout."""))
-conf.supybot.log.register('individualPluginLogfiles', registry.Boolean(True,
-    """Determines whether the bot will separate plugin logs into their own
-    individual logfiles."""))
+conf.registerGroup(conf.supybot, 'log')
+conf.registerGlobalValue(conf.supybot.log, 'level',
+    LogLevel(logging.INFO, """Determines what the minimum priority level logged
+    will be.  Valid values are DEBUG, INFO, WARNING, ERROR, and CRITICAL, in
+    order of increasing priority."""))
+conf.registerGlobalValue(conf.supybot.log, 'stdout',
+    registry.Boolean(True, """Determines whether the bot will log to
+    stdout."""))
+conf.registerGlobalValue(conf.supybot.log, 'individualPluginLogfiles',
+    registry.Boolean(True, """Determines whether the bot will separate plugin
+    logs into their own individual logfiles."""))
 
 class BooleanRequiredFalseOnWindows(registry.Boolean):
     def set(self, s):
@@ -272,16 +275,16 @@ class BooleanRequiredFalseOnWindows(registry.Boolean):
         if self.value and os.name == 'nt':
             raise InvalidRegistryValue, 'Value cannot be true on Windows.'
 
-conf.supybot.log.stdout.register('colorized',
-BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs to
-stdout (if enabled) will be colorized with ANSI color."""))
+conf.registerGlobalValue(conf.supybot.log.stdout, 'colorized',
+    BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs
+    to stdout (if enabled) will be colorized with ANSI color."""))
 
-conf.supybot.log.register('timestampFormat',
-registry.String('[%d-%b-%Y %H:%M:%S]',
-"""Determines the format string for timestamps in logfiles.  Refer to the
-Python documentation for the time module to see what formats are accepted.
-If you set this variable to the empty string, times will be logged in a
-simple seconds-since-epoch format."""))
+conf.registerGlobalValue(conf.supybot.log, 'timestampFormat',
+    registry.String('[%d-%b-%Y %H:%M:%S]', """Determines the format string for
+    timestamps in logfiles.  Refer to the Python documentation for the time
+    module to see what formats are accepted. If you set this variable to the
+    empty string, times will be logged in a simple seconds-since-epoch
+    format."""))
 
 _logDir = conf.supybot.directories.log()
 if not os.path.exists(_logDir):

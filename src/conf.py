@@ -103,6 +103,12 @@ def registerPlugin(name, currentValue=None):
         supybot.plugins.get(name).setValue(currentValue)
     return registerGroup(users.plugins, name)
 
+def channelValue(group, channel=None):
+    if channel is None:
+        return group()
+    else:
+        return group.get(channel)()
+
 ###
 # The user info registry.
 ###
@@ -294,79 +300,87 @@ registerChannelValue(supybot.reply, 'pipeSyntax',
     option will allow nested commands with a syntax similar to UNIX pipes, for
     example: 'bot: foo | bar'."""))
 
-supybot.reply.register('whenNotCommand', registry.Boolean(True, """
-Determines whether the bot will reply with an error message when it is
-addressed but not given a valid command.  If this value is False, the bot
-will remain silent."""))
+registerChannelValue(supybot.reply, 'whenNotCommand',
+    registry.Boolean(True, """Determines whether the bot will reply with an
+    error message when it is addressed but not given a valid command.  If this
+    value is False, the bot will remain silent."""))
 
-supybot.reply.register('detailedErrors', registry.Boolean(False, """Determines
-whether error messages that result from bugs in the bot will show a detailed
-error message (the uncaught exception) or a generic error message."""))
+registerGlobalValue(supybot.reply, 'detailedErrors',
+    registry.Boolean(False, """Determines whether error messages that result
+    from bugs in the bot will show a detailed error message (the uncaught
+    exception) or a generic error message."""))
 
-supybot.reply.register('errorInPrivate', registry.Boolean(False, """
-Determines whether the bot will send error messages to users in private.  You
-might want to do this in order to keep channel traffic to minimum.  This can
-be used in combination with supybot.reply.errorWithNotice."""))
+registerChannelValue(supybot.reply, 'errorInPrivate',
+    registry.Boolean(False, """Determines whether the bot will send error
+    messages to users in private.  You might want to do this in order to keep
+    channel traffic to minimum.  This can be used in combination with
+    supybot.reply.errorWithNotice."""))
 
-supybot.reply.register('errorWithNotice', registry.Boolean(False, """
-Determines whether the bot will send error messages to users via NOTICE instead
-of PRIVMSG.  You might want to do this so users can ignore NOTICEs from the bot
-and not have to see error messages; or you might want to use it in combination
-with supybot.reply.errorInPrivate so private errors don't open a query window
-in most IRC clients."""))
+registerChannelValue(supybot.reply, 'errorWithNotice',
+    registry.Boolean(False, """Determines whether the bot will send error
+    messages to users via NOTICE instead of PRIVMSG.  You might want to do this
+    so users can ignore NOTICEs from the bot and not have to see error
+    messages; or you might want to use it in combination with
+    supybot.reply.errorInPrivate so private errors don't open a query window
+    in most IRC clients."""))
 
-supybot.reply.register('noCapabilityError', registry.Boolean(False, """
-Determines whether the bot will send an error message to users who attempt to
-call a command for which they do not have the necessary capability.  You may
-wish to make this True if you don't want users to understand the underlying
-security system preventing them from running certain commands."""))
+registerChannelValue(supybot.reply, 'noCapabilityError',
+    registry.Boolean(False, """Determines whether the bot will send an error
+    message to users who attempt to call a command for which they do not have
+    the necessary capability.  You may wish to make this True if you don't want
+    users to understand the underlying security system preventing them from
+    running certain commands."""))
 
-supybot.reply.register('withPrivateNotice', registry.Boolean(False, """
-Determines whether the bot will reply with a private notice to users rather
-than sending a message to a channel.  Private notices are particularly nice
-because they don't generally cause IRC clients to open a new query window."""))
+registerChannelValue(supybot.reply, 'withPrivateNotice',
+    registry.Boolean(False, """Determines whether the bot will reply with a
+    private notice to users rather than sending a message to a channel.
+    Private notices are particularly nice because they don't generally cause
+    IRC clients to open a new query window."""))
 
-supybot.reply.register('withNickPrefix', registry.Boolean(True, """
-Determines whether the bot will always prefix the user's nick to its reply to
-that user's command."""))
+registerChannelValue(supybot.reply, 'withNickPrefix',
+    registry.Boolean(True, """Determines whether the bot will always prefix the
+    user's nick to its reply to that user's command."""))
 
-supybot.reply.register('whenAddressedByNick', registry.Boolean(True, """
-Determines whether the bot will reply when people address it by its nick,
-rather than with a prefix character."""))
+registerChannelValue(supybot.reply, 'whenAddressedByNick',
+    registry.Boolean(True, """Determines whether the bot will reply when people
+    address it by its nick, rather than with a prefix character."""))
 
-supybot.reply.register('whenNotAddressed', registry.Boolean(False, """
-Determines whether the bot should attempt to reply to all messages even if they
-don't address it (either via its nick or a prefix character).  If you set this
-to True, you almost certainly want to set supybot.reply.whenNotCommand to
-False."""))
+registerChannelValue(supybot.reply, 'whenNotAddressed',
+    registry.Boolean(False, """Determines whether the bot should attempt to
+    reply to all messages even if they don't address it (either via its nick
+    or a prefix character).  If you set this to True, you almost certainly want
+    to set supybot.reply.whenNotCommand to False."""))
 
-supybot.reply.register('requireChannelCommandsToBeSentInChannel',
-registry.Boolean(False, """Determines whether the bot will allow you to send
-channel-related commands outside of that channel.  Sometimes people find it
-confusing if a channel-related command (like Filter.outfilter) changes the
-behavior of the channel but was sent outside the channel itself."""))
+registerChannelValue(supybot.reply, 'requireChannelCommandsToBeSentInChannel',
+    registry.Boolean(False, """Determines whether the bot will allow you to
+    send channel-related commands outside of that channel.  Sometimes people
+    find it confusing if a channel-related command (like Filter.outfilter)
+    changes the behavior of the channel but was sent outside the channel
+    itself."""))
 
-supybot.register('followIdentificationThroughNickChanges',
-registry.Boolean(False, """Determines whether the bot will unidentify someone
-when that person changes his or her nick.  Setting this to True will cause the
-bot to track such changes.  It defaults to false for a little greater security.
-"""))
+registerGlobalValue(supybot, 'followIdentificationThroughNickChanges',
+    registry.Boolean(False, """Determines whether the bot will unidentify
+    someone when that person changes his or her nick.  Setting this to True
+    will cause the bot to track such changes.  It defaults to False for a
+    little greater security."""))
 
-supybot.register('alwaysJoinOnInvite', registry.Boolean(False, """Determines
-whether the bot will always join a channel when it's invited.  If this value
-is False, the bot will only join a channel if the user inviting it has the
-'admin' capability (or if it's explicitly told to join the channel using the
-Admin.join command)"""))
+registerGlobalValue(supybot, 'alwaysJoinOnInvite',
+    registry.Boolean(False, """Determines whether the bot will always join a
+    channel when it's invited.  If this value is False, the bot will only join
+    a channel if the user inviting it has the 'admin' capability (or if it's
+    explicitly told to join the channel using the Admin.join command)"""))
 
-supybot.register('showSimpleSyntax', registry.Boolean(False, """Supybot
-normally replies with the full help whenever a user misuses a command.  If this
-value is set to True, the bot will only reply with the syntax of the command
-(the first line of the docstring) rather than the full help."""))
+# XXX: ChannelValue not respected for this.
+registerChannelValue(supybot.reply, 'showSimpleSyntax',
+    registry.Boolean(False, """Supybot normally replies with the full help
+    whenever a user misuses a command.  If this value is set to True, the bot
+    will only reply with the syntax of the command (the first line of the
+    help) rather than the full help."""))
 
 ###
 # Replies
 ###
-supybot.register('replies')
+registerGroup(supybot, 'replies')
 
 registerChannelValue(supybot.replies, 'success',
     registry.NormalizedString("""The operation succeeded.""", """Determines
@@ -436,29 +450,31 @@ registerChannelValue(supybot.replies, 'possibleBug',
 # End supybot.replies.
 ###
 
+# XXX: This should be SpaceSeparated, if it survives.
 supybot.register('nickmods', registry.CommaSeparatedListOfStrings(
     '__%s__,%s^,%s`,%s_,%s__,_%s,__%s,[%s]'.split(','),
     """A list of modifications to be made to a nick when the nick the bot tries
     to get from the server is in use.  There should be one %s in each string;
     this will get replaced with the original nick."""))
 
-supybot.register('snarfThrottle', registry.Float(10.0, """A floating point
-number of seconds to throttle snarfed URLs, in order to prevent loops between
-two bots snarfing the same URLs and having the snarfed URL in the output of
-the snarf message."""))
+registerGlobalValue(supybot, 'snarfThrottle',
+    registry.Float(10.0, """A floating point number of seconds to throttle
+    snarfed URLs, in order to prevent loops between two bots snarfing the same
+    URLs and having the snarfed URL in the output of the snarf message."""))
 
-supybot.register('upkeepInterval', registry.PositiveInteger(3600, """Determines
-the number of seconds between running the upkeep function that flushes
-(commits) open databases, collects garbage, and records some useful statistics
-at the debugging level."""))
+registerGlobalValue(supybot, 'upkeepInterval',
+    registry.PositiveInteger(3600, """Determines the number of seconds between
+    running the upkeep function that flushes (commits) open databases, collects
+    garbage, and records some useful statistics at the debugging level."""))
 
-supybot.register('flush', registry.Boolean(True, """Determines whether the bot
-will periodically flush data and configuration files to disk.  Generally, the
-only time you'll want to set this to False is when you want to modify those
-configuration files by hand and don't want the bot to flush its current version
-over your modifications.  Do note that if you change this to False inside the
-bot, your changes won't be flushed.  To make this change permanent, you must
-edit the registry yourself."""))
+registerGlobalValue(supybot, 'flush',
+    registry.Boolean(True, """Determines whether the bot will periodically
+    flush data and configuration files to disk.  Generally, the only time
+    you'll want to set this to False is when you want to modify those
+    configuration files by hand and don't want the bot to flush its current
+    version over your modifications.  Do note that if you change this to False
+    inside the bot, your changes won't be flushed.  To make this change
+    permanent, you must edit the registry yourself."""))
 
 ###
 # supybot.drivers.  For stuff relating to Supybot's drivers (duh!)

@@ -270,14 +270,15 @@ class Tokenizer:
                 args[-1].append(ends.pop())
         return args
 
-def tokenize(s, brackets=None):
+def tokenize(s, brackets=None, channel=None):
     """A utility function to create a Tokenizer and tokenize a string."""
     start = time.time()
     try:
-        tokens = brackets
         if brackets is None:
-            tokens = conf.supybot.reply.brackets()
-        if conf.supybot.reply.pipeSyntax():
+            tokens = conf.channelValue(conf.supybot.reply.brackets, channel)
+        else:
+            tokens = brackets
+        if conf.channelValue(conf.supybot.reply.pipeSyntax, channel):
             tokens = '%s|' % tokens
         return Tokenizer(tokens).tokenize(s)
     except ValueError, e:
@@ -304,11 +305,11 @@ def findCallbackForCommand(irc, commandName):
                     L.append(callback)
     return L
 
-def formatArgumentError(method, name=None):
+def formatArgumentError(method, name=None, channel=None):
     if name is None:
         name = method.__name__
     if hasattr(method, '__doc__') and method.__doc__:
-        if conf.supybot.showSimpleSyntax():
+        if conf.channelValue(conf.supybot.reply.showSimpleSyntax, channel):
             return getSyntax(method, name=name)
         else:
             return getHelp(method, name=name)
