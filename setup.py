@@ -44,6 +44,7 @@ plugins = [
     'Later',
     'Math',
     'Network',
+    'NickCapture',
     'Misc',
     'Owner',
     'QuoteGrabs',
