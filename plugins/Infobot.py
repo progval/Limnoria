@@ -42,6 +42,7 @@ import sqlite
 
 import conf
 import debug
+import ircmsgs
 import callbacks
 
 dbfilename = os.path.join(conf.dataDir, 'Infobot.db')
@@ -52,11 +53,11 @@ def makeDb(filename):
     db = sqlite.connect(filename)
     cursor = db.cursor()
     cursor.execute("""CREATE TABLE is_factoids (
-                      key TEXT,
+                      key TEXT UNIQUE ON CONFLICT REPLACE,
                       value TEXT
                       )""")
     cursor.execute("""CREATE TABLE are_factoids (
-                      key TEXT,
+                      key TEXT UNIQUE ON CONFLICT REPLACE,
                       value TEXT
                       )""")
     cursor.execute("""CREATE TABLE dont_knows (saying TEXT)""")
@@ -77,59 +78,95 @@ class Infobot(callbacks.PrivmsgRegexp):
     def __init__(self):
         callbacks.PrivmsgRegexp.__init__(self)
         self.db = makeDb(dbfilename)
-        self.cursor = self.db.cursor()
+
+    def die(self):
+        self.db.commit()
+        self.db.close()
 
     def getRandomSaying(self, table):
+        cursor = self.db.cursor()
         sql = 'SELECT saying FROM %s ORDER BY random() LIMIT 1' % table
-        self.cursor.execute(sql)
-        return self.cursor.fetchone()[0]
+        cursor.execute(sql)
+        return cursor.fetchone()[0]
 
     def getFactoid(self, key):
-        self.cursor.execute('SELECT value FROM is_factoids WHERE key=%s', key)
-        if self.cursor.rowcount != 0:
+        cursor = self.db.cursor()
+        cursor.execute('SELECT value FROM is_factoids WHERE key=%s', key)
+        if cursor.rowcount != 0:
             statement = self.getRandomSaying('statements')
-            value = self.cursor.fetchone()[0]
+            value = cursor.fetchone()[0]
             return '%s %s is %s' % (statement, key, value)
-        self.cursor.execute('SELECT value FROM are_factoids WHERE key=%s', key)
-        if self.cursor.rowcount != 0:
+        cursor.execute('SELECT value FROM are_factoids WHERE key=%s', key)
+        if cursor.rowcount != 0:
             statement = self.getRandomSaying('statements')
-            value = self.cursor.fetchone()[0]
+            value = cursor.fetchone()[0]
             return '%s %s are %s' % (statement, key, value)
         raise KeyError, key
 
+    def hasFactoid(self, key, isAre):
+        cursor = self.db.cursor()
+        sql = 'SELECT COUNT(*) FROM %s_factoids WHERE key=%%s' % isAre
+        cursor.execute(sql, key)
+        return int(cursor.fetchone()[0])
+
+    def insertFactoid(self, key, isAre, value):
+        cursor = self.db.cursor()
+        sql = 'INSERT INTO %s_factoids VALUES (%%s, %%s)' % isAre
+        cursor.execute(sql, key, value)
+        self.db.commit()
+
     def forget(self, irc, msg, match):
-        r"^forget\s+(.+?)[?.! ]*$"
+        r"^forget\s+(.+?)(?![?.! ]*)$"
         key = match.group(1)
-        self.cursor.execute('DELETE FROM is_factoids WHERE key=%s', key)
-        self.cursor.execute('DELETE FROM are_factoids WHERE key=%s', key)
+        cursor = self.db.cursor()
+        cursor.execute('DELETE FROM is_factoids WHERE key=%s', key)
+        cursor.execute('DELETE FROM are_factoids WHERE key=%s', key)
         irc.reply(msg, self.getRandomSaying('confirms'))
 
     def tell(self, irc, msg, match):
-        r"^tell\s+(.+?)\s+about\s+(.+?)[?.! ]*$"
+        r"^tell\s+(.+?)\s+about\s+(.+?)(?!\?+)[.! ]*)$"
         (nick, key) = match.groups()
         try:
             s = '%s wants you to know that %s' %(msg.nick,self.getFactoid(key))
-            irc.queueMsg(irmcsgs.privmsg(nick, s)
+            irc.queueMsg(irmcsgs.privmsg(nick, s))
         except KeyError:
             irc.reply(msg, 'I don\'t know anything about %s' % key)
         
     def factoid(self, irc, msg, match):
-        r"^(no[ :,-]+)?(.+?)\s+(was|is|am|were|are)\s+(also\s+)?(.+)$"
-        pass
-
+        r"^(no[ :,-]+)?(.+?)\s+(was|is|am|were|are)\s+(also\s+)?(.+?)(?!\?+)$"
+        (correction, key, isAre, addition, value) = match.groups()
+        if self.hasFactoid(key, isAre):
+            if not correction:
+                factoid = self.getFactoid(key)
+                irc.reply(msg, 'No, %s %s %s' % (key, isAre, factoid))
+            elif addition:
+                factoid = self.getFactoid(key)
+                newFactoid = '%s, or %s' % (factoid, value)
+                self.insertFactoid(key, isAre, newFactoid)
+                irc.reply(msg, self.getRandomSaying('confirms'))
+            else:
+                self.insertFactoid(key, isAre, value)
+                irc.reply(msg, self.getRandomSaying('confirms'))
+            return
+        else:
+            self.insertFactoid(key, isAre, value)
+            irc.reply(msg, self.getRandomSaying('confirms'))
+            
     def unknown(self, irc, msg, match):
-        r"^(.+?)[?.! ]*$"
+        r"^(.+?)\?[?.! ]*$"
         key = match.group(1)
         try:
-            irc.queueMsg(ircmsgs.privmsg(msg.args[0], self.getFactoid(key)))
+            irc.reply(msg, self.getFactoid(key))
+            #irc.queueMsg(ircmsgs.privmsg(msg.args[0], self.getFactoid(key)))
         except KeyError:
             irc.reply(msg, self.getRandomSaying('dont_knows'))
 
     def info(self, irc, msg, match):
         r"^info$"
-        self.cursor.execute("SELECT COUNT(*) FROM is_factoids")
+        cursor = self.db.cursor()
+        cursor.execute("SELECT COUNT(*) FROM is_factoids")
         numIs = self.cursor.fetchone()[0]
-        self.cursor.execute("SELECT COUNT(*) FROM are_factoids")
+        cursor.execute("SELECT COUNT(*) FROM are_factoids")
         numAre = self.cursor.fetchone()[0]
         s = 'I have %s is factoids and %s are factoids' % (numIs, numAre)
         irc.reply(msg, s)
