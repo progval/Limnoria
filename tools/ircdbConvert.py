@@ -4,23 +4,22 @@ import os
 import sys
 import shutil
 
-if len(sys.argv) < 3:
+if len(sys.argv) != 3:
     sys.stderr.write('Usage: %s <users file> <channels file>\n')
     sys.exit(-1)
-    
-(userFile, channelFile) = sys.argv[1:]
+
 
 import supybot
+import fix
 
-import conf
-conf.supybot.directories.conf.setValue('.')
-conf.supybot.databases.users.filename.setValue(userFile)
-conf.supybot.databases.channels.filename.setValue(channelFile)
+(userFile, channelFile) = sys.argv[1:]
+    
+class IrcUser:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
 
-import log
-conf.supybot.log.stdout.setValue(False)
-
-import ircdb
+UserCapabilitySet = list
+CapabilitySet = list
 
 def write(fd, s):
     fd.write(s)
@@ -30,9 +29,12 @@ if __name__ == '__main__':
     shutil.copy(userFile, userFile + '.bak')
     shutil.copy(channelFile, channelFile + '.bak')
     # Users.conf.
+    fd = file(userFile)
+    s = fd.read().strip()
+    (_, L) = eval(s, locals(), globals())
     fd = file(userFile, 'w')
-    for (i, u) in enumerate(ircdb.users.users):
-        if u is None:
+    for (i, u) in enumerate(L):
+        if i == 0 or u is None:
             continue
         write(fd, 'user %s' % i)
         write(fd, '  name %s' % u.name)
@@ -53,8 +55,11 @@ if __name__ == '__main__':
     fd.close()
 
     # Channels.conf.
+    fd = file(channelFile)
+    s = fd.read().strip()
+    d = eval(s, locals(), globals())
     fd = file(channelFile, 'w')
-    for (name, c) in ircdb.channels.iteritems():
+    for (name, c) in d.iteritems():
         write(fd, 'channel %s' % name)
         write(fd, '  defaultAllow %s' % c.defaultAllow)
         write(fd, '  lobotomized %s' % c.lobotomized)
