@@ -326,7 +326,7 @@ def getUserName(id):
     else:
         return id
 
-class ChannelIdDatabasePlugin(callbacks.Privmsg):
+class ChannelIdDatabasePlugin(callbacks.Plugin):
     class DB(DbiChannelDB):
         class DB(dbi.DB):
             class Record(dbi.Record):
