@@ -39,6 +39,7 @@ import re
 import os
 import sys
 import atexit
+import shutil
 import os.path
 
 if sys.version_info < (2, 3, 0):
@@ -221,6 +222,7 @@ if __name__ == '__main__':
         try:
             # The registry *MUST* be opened before importing log or conf.
             registry.open(registryFilename)
+            shutil.copy(registryFilename, registryFilename + '.bak')
         except registry.InvalidRegistryFile, e:
             sys.stderr.write(str(e))
             sys.stderr.write(os.linesep)
