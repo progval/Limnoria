@@ -46,9 +46,9 @@ class ConfigTestCase(ChannelPluginTestCase):
 
     def testHelp(self):
         self.assertError('config help alsdkfj')
-        self.assertError('config help supybot')
-        self.assertError('config help supybot.plugins')
         self.assertError('config help supybot.alsdkfj')
+        self.assertNotError('config help supybot') # We tell the user to list.
+        self.assertNotError('config help supybot.plugins')
         self.assertNotError('config help supybot.replies.success')
         self.assertNotError('config help replies.success')
 
@@ -56,6 +56,11 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertNotRegexp('config help ' # Cont'd.
                              'supybot.commands.defaultPlugins.help',
                              'AssertionError')
+
+    def testHelpExhaustively(self):
+        L = conf.supybot.getValues(getChildren=True)
+        for (name, v) in L:
+            self.assertNotError('config help %s' % name)
 
     def testSearch(self):
         self.assertNotError('config search chars')
