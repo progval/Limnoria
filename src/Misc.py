@@ -49,30 +49,6 @@ import ircutils
 import privmsgs
 import callbacks
 
-def replyWhenNotCommand(irc, msg, notCommands):
-    """This is called when supybot thinks he has received a command but the
-    apparent command actually isn't a command.  Replace it with something that
-    suits your purposes more, if you want.
-    """
-    def isCtcpCommand(s):
-        return s.startswith('\x01')
-    if not any(isCtcpCommand, notCommands):
-        notCommands = map(repr, notCommands)
-        if len(notCommands) == 1:
-            s = '%s is not a command.' % notCommands[0]
-        else:
-            s = '%s are not commands' % \
-                utils.commaAndify(notCommands)
-        irc.reply(msg, s)
-
-def reload(x=None):
-    """Called when this plugin is reloaded."""
-    global replyWhenNotCommand
-    if x is None:
-        return replyWhenNotCommand
-    else:
-        replyWhenNotCommand = x
-
 class Misc(callbacks.Privmsg):
     priority = sys.maxint
     def invalidCommand(self, irc, msg, tokens):
