@@ -73,9 +73,14 @@ Class = %s
 '''.strip() # This removes the newlines that precede and follow the text.
 
 if __name__ == '__main__':
-    name = anything('What should the name of the plugin be?')
+    name = something('What should the name of the plugin be?')
     if name.endswith('.py'):
         name = name[:-3]
+    while name[0].islower():
+        print 'Plugin names must begin with a capital.'
+        name = something('What should the name of the plugin be?')
+        if name.endswith('.py'):
+            name = name[:-3]
     print textwrap.fill(textwrap.dedent("""
     Supybot offers two major types of plugins: command-based and
     regexp-based.  Command-based plugins are the kind of plugins
