@@ -108,6 +108,7 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('foobar', 'sbbone')
         self.assertRaises(Alias.AliasError, cb.removeAlias, 'foobar')
         cb.removeAlias('foobar', evenIfFrozen=True)
+        self.failIf('foobar' in cb.frozen)
         self.assertNoResponse('foobar', 2)
 
     def testOptionalArgs(self):

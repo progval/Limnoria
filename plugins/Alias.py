@@ -206,6 +206,7 @@ class Alias(callbacks.Privmsg):
         if hasattr(self, name) and self.isCommand(name):
             if evenIfFrozen or name not in self.frozen:
                 delattr(self.__class__, name)
+                self.frozen.discard(name)
             else:
                 raise AliasError, 'That alias is frozen.'
         else:
