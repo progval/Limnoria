@@ -306,7 +306,8 @@ registerGlobalValue(supybot.reply, 'oneToOne',
 registerChannelValue(supybot.reply, 'whenNotCommand',
     registry.Boolean(True, """Determines whether the bot will reply with an
     error message when it is addressed but not given a valid command.  If this
-    value is False, the bot will remain silent."""))
+    value is False, the bot will remain silent, as long as no other plugins
+    override the normal behavior."""))
 
 registerGroup(supybot.reply, 'error')
 registerGlobalValue(supybot.reply.error, 'detailed',
