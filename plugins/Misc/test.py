@@ -30,7 +30,8 @@
 from supybot.test import *
 
 class MiscTestCase(ChannelPluginTestCase):
-    plugins = ('Misc', 'Utilities', 'Gameknot', 'Anonymous', 'Dict', 'User')
+#    plugins = ('Misc', 'Utilities', 'Gameknot', 'Anonymous', 'Dict', 'User')
+    plugins = ('Misc', 'Utilities', 'Anonymous', 'Dict', 'User')
     def testAction(self):
         self.assertAction('action moos', 'moos')
 
@@ -47,19 +48,19 @@ class MiscTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.reply.whenNotCommand.set(original)
 
-    if network:
-        def testNotReplyWhenRegexpsMatch(self):
-            try:
-                orig = conf.supybot.reply.whenNotCommand()
-                gk = conf.supybot.plugins.Gameknot.gameSnarfer()
-                conf.supybot.reply.whenNotCommand.setValue(True)
-                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
-                self.prefix = 'somethingElse!user@host.domain.tld'
-                self.assertSnarfNotError(
-                        'http://gameknot.com/chess.pl?bd=1019508')
-            finally:
-                conf.supybot.reply.whenNotCommand.setValue(orig)
-                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(gk)
+#    if network:
+#        def testNotReplyWhenRegexpsMatch(self):
+#            try:
+#                orig = conf.supybot.reply.whenNotCommand()
+#                gk = conf.supybot.plugins.Gameknot.gameSnarfer()
+#                conf.supybot.reply.whenNotCommand.setValue(True)
+#                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
+#                self.prefix = 'somethingElse!user@host.domain.tld'
+#                self.assertSnarfNotError(
+#                        'http://gameknot.com/chess.pl?bd=1019508')
+#            finally:
+#                conf.supybot.reply.whenNotCommand.setValue(orig)
+#                conf.supybot.plugins.Gameknot.gameSnarfer.setValue(gk)
 
     def testNotReplyWhenNotCanonicalName(self):
         try:
