@@ -125,6 +125,10 @@ def search(log, *args, **kwargs):
     except SOAP.faultType, e:
         log.exception('Uncaught SOAP error:')
         raise callbacks.Error, 'Invalid Google license key.'
+    except xml.sax.SAXException, e:
+        log.exception('Uncaught SAX error:')
+        raise callbacks.Error, 'Google returned an unparseable response.  ' \
+                               'The full traceback has been logged.'
 
 class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     threaded = True
