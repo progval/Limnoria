@@ -152,19 +152,28 @@ class Todo(callbacks.Privmsg):
                     s = 'Todos for %s: %s' % (arg, utils.commaAndify(L))
                 irc.reply(msg, s)
             else:
-                cursor.execute("""SELECT userid, priority, added_at, task
+                cursor.execute("""SELECT userid,priority,added_at,task,active
                                   FROM todo WHERE id = %s""", taskid)
                 if cursor.rowcount == 0:
                     irc.error(msg, '%r is not a valid task id' % taskid)
                     return
-                userid, pri, added_at, task = cursor.fetchone()
+                (userid, pri, added_at, task, active) = cursor.fetchone()
                 # Construct and return the reply
-                username = ircdb.users.getUser(userid).name
+                user = ircdb.users.getUser(userid)
+                if user is None:
+                    name = 'a removed user'
+                else:
+                    name = user.name
+                if int(active):
+                    active = 'Active'
+                else:
+                    active = 'Inactive'
                 if pri:
                     task += ', priority: %s' % pri
                 added_at = time.strftime(conf.humanTimestampFormat,
                                          time.localtime(int(added_at)))
-                s = "Todo for %s: %s (Added at %s)" % (username,task,added_at)
+                s = "%s todo for %s: %s (Added at %s)" % \
+                    (active, name, task, added_at)
                 irc.reply(msg, s)
 
     def add(self, irc, msg, args):
