@@ -37,6 +37,7 @@ import supybot
 import plugins
 
 import os
+import copy
 import string
 import time
 import random
@@ -101,16 +102,15 @@ class HangmanGame:
     def __init__(self):
         self.gameOn = False
         self.timeout = 0
-        self.timeGuess = time.time()
+        self.timeGuess = 0
         self.tries = 0
         self.prefix = ''
         self.guessed = False
-        self.unused = [chr(c) for c in range(ord('a'), ord('z')+1)]
+        self.unused = ''
         self.hidden = ''
         self.guess = ''
         
-    def getWord(self):
-        dbHandler = WordsDB(os.path.join(conf.dataDir, 'Words'))
+    def getWord(self, dbHandler):
         db = dbHandler.getDb()
         cur = db.cursor()
         cur.execute("""SELECT word FROM words ORDER BY random() LIMIT 1""")
@@ -270,9 +270,12 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         if not game.gameOn:
             game.gameOn = True
             game.timeout = self.configurables.get('timeout', channel)
+            game.timeGuess = time.time()
             game.tries = self.configurables.get('tries', channel)
             game.prefix = self.configurables.get('prefix', channel) + ' '
-            game.hidden = game.getWord()
+            game.guessed = False
+            game.unused = copy.copy(self.validLetters)
+            game.hidden = game.getWord(self.dbHandler)
             game.guess = '_' * len(game.hidden)
             irc.reply(msg, '%sOkay ladies and gentlemen, you have '
                       'a %s-letter word to find, you have %s!' %
