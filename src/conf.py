@@ -72,7 +72,7 @@ daemonized = False
 allowEval = False
 
 ###
-# allowDefaultOwner: True if the defaultCapabilities are allowed not to include
+# allowDefaultOwner: True if supybot.capabilities is allowed not to include
 #                    '-owner' -- that is, if all users should be automatically
 #                    recognized as owners.  That would suck, hence we require a
 #                    command-line option to allow this stupidity.
@@ -136,6 +136,7 @@ class ValidNick(registry.String):
 
 class ValidNicks(registry.SpaceSeparatedListOf):
     Value = ValidNick
+    # XXX: Duplicates?
 
 class ValidNickAllowingPercentS(ValidNick):
     """Value must be a valid IRC nick, with the possible exception of a %s
@@ -273,10 +274,7 @@ class DefaultCapabilities(registry.SpaceSeparatedListOfStrings):
         if '-owner' not in self.value and not allowDefaultOwner:
             print '*** You must run supybot with the --allow-default-owner'
             print '*** option in order to allow a default capability of owner.'
-            print '*** Don\'t do that, it\'s dumb.  In all likelihood, you\'re'
-            print '*** getting this message because you didn\'t remove the'
-            print '*** commas from your supybot.defaultCapabilities value in'
-            print '*** in your configuration file before start the bot.'
+            print '*** Don\'t do that, it\'s dumb.'
             self.value.add('-owner')
 
 ###
