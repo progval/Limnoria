@@ -70,7 +70,10 @@ def strError(e):
     else:
         return str(e)
 
-_headers = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'}
+_headers = {
+    'User-agent': 'Mozilla/4.0 (compatible; Supybot %s)' % conf.version,
+    }
+
 def getUrlFd(url, headers=None):
     """Gets a file-like object for a url."""
     if headers is None:
