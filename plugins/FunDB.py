@@ -38,14 +38,10 @@ __revision__ = "$Id$"
 import supybot.plugins as plugins
 
 import re
+import csv
 import sets
-import time
-import getopt
-import string
-import os.path
-from itertools import imap
-
-import supybot.registry as registry
+import random
+import itertools
 
 import supybot.conf as conf
 import supybot.ircdb as ircdb
@@ -54,74 +50,165 @@ import supybot.world as world
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-tableCreateStatements = {
-    'larts': ("""CREATE TABLE larts (
-                 id INTEGER PRIMARY KEY,
-                 lart TEXT,
-                 added_by TEXT
-                 )""",),
-    'praises': ("""CREATE TABLE praises (
-                   id INTEGER PRIMARY KEY,
-                   praise TEXT,
-                   added_by TEXT
-                   )""",),
-    'insults': ("""CREATE TABLE insults (
-                   id INTEGER PRIMARY KEY,
-                   insult TEXT,
-                   added_by TEXT
-                   )""",),
-    'excuses': ("""CREATE TABLE excuses (
-                   id INTEGER PRIMARY KEY,
-                   excuse TEXT,
-                   added_by TEXT
-                   )""",),
-    }
+class FunDBDBInterface(object):
+    def close(self):
+        pass
+
+    def flush(self):
+        pass
+    
+    def get(self, channel, type, id):
+        """Returns just the text associated with the channel, type, and id."""
+        raise NotImplementedError
+
+    def info(self, channel, type, id):
+        """Returns the test and the metadata associated with the
+        channel, type, and id."""
+        raise NotImplementedError
+
+    def add(self, channel, type, text, by):
+        raise NotImplementedError
+
+    def remove(self, channel, type, id):
+        raise NotImplementedError
+
+    def change(self, channel, type, id, f):
+        raise NotImplementedError
+
+    def random(self, channel, type):
+        raise NotImplementedError
+
+    def size(self, channel, type):
+        raise NotImplementedError
+
+    def search(self, channel, type, p):
+        """Returns a list of (id, text) pairs whose text matches predicate p"""
+        raise NotImplementedError
+
+class FlatfileFunDBDB(FunDBDBInterface):
+    class FunDBDB(plugins.FlatfileDB):
+        def serialize(self, v):
+            return csv.join(map(str, v))
+
+        def deserialize(self, s):
+            return csv.split(s)
+        
+    def __init__(self):
+        self.dbs = ircutils.IrcDict()
+        self.filenames = sets.Set()
+
+    def close(self):
+        for filename in self.filenames:
+            try:
+                db = self.FunDBDB(filename)
+                db.close()
+            except EnvironmentError:
+                pass
+
+    def _getDb(self, channel, type):
+        type = type.lower()
+        if channel not in self.dbs:
+            self.dbs[channel] = {}
+        if type not in self.dbs[channel]:
+            filename = type.capitalize() + '.db'
+            filename = plugins.makeChannelFilename(channel, filename)
+            self.filenames.add(filename)
+            self.dbs[channel][type] = self.FunDBDB(filename)
+        return self.dbs[channel][type]
+
+    def get(self, channel, type, id):
+        return self.info(channel, type, id)[1]
+
+    def info(self, channel, type, id):
+        db = self._getDb(channel, type)
+        return db.getRecord(id)
+
+    def add(self, channel, type, text, by):
+        db = self._getDb(channel, type)
+        return db.addRecord([by, text])
+
+    def remove(self, channel, type, id):
+        db = self._getDb(channel, type)
+        db.delRecord(id)
+
+    def change(self, channel, type, id, f):
+        db = self._getDb(channel, type)
+        (by, text) = db.getRecord(id)
+        db.setRecord(id, [by, f(text)])
+
+    def random(self, channel, type):
+        db = self._getDb(channel, type)
+        t = random.choice(db.records())
+        if t is not None:
+            (id, (by, text)) = t
+            t = (id, text)
+        return t
+
+    def size(self, channel, type):
+        db = self._getDb(channel, type)
+        return itertools.ilen(db.records())
+
+    def search(self, channel, type, p):
+        db = self._getDb(channel, type)
+        L = []
+        for (id, record) in db.records():
+            text = record[1]
+            if p(text):
+                L.append((id, text))
+        return L
+                
+
+def FunDBDB():
+    return FlatfileFunDBDB()
 
 conf.registerPlugin('FunDB')
 conf.registerChannelValue(conf.supybot.plugins.FunDB, 'showIds',
-    registry.Boolean(True, """Determine whether the bot will show the id of an
-    excuse/insult/praise/lart."""))
+    registry.Boolean(True, """Determines whether the bot will show the id of an
+    insult/praise/lart."""))
 
-class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
+class FunDB(callbacks.Privmsg):
     """
     Contains the 'fun' commands that require a database.  Currently includes
-    database-backed commands for crossword puzzle solving, anagram searching,
-    larting, praising, excusing, and insulting.
+    commands for larting, praising, excusing, and insulting.
     """
-    _tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
+    _types = ('insult', 'lart', 'praise')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.ChannelDBHandler.__init__(self)
+        self.db = FunDBDB()
 
     def die(self):
-        callbacks.Privmsg.die(self)
-        plugins.ChannelDBHandler.die(self)
+        self.db.die()
 
-    def makeDb(self, dbfilename, replace=False):
-        if os.path.exists(dbfilename):
-            if replace:
-                os.remove(dbfilename)
-        db = sqlite.connect(dbfilename)
-        cursor = db.cursor()
-        for table in tableCreateStatements:
-            try:
-                cursor.execute("""SELECT * FROM %s LIMIT 1""" % table)
-            except sqlite.DatabaseError: # The table doesn't exist.
-                for sql in tableCreateStatements[table]:
-                    cursor.execute(sql)
-        db.commit()
-        return db
+    def _validType(self, irc, type, error=True):
+        if type not in self._types:
+            if error:
+                irc.error('%r is not a valid type.  Valid types include %s.' %
+                          (type, utils.commaAndify(self._types)))
+            return False
+        else:
+            return True
+
+    def _validId(self, irc, id, error=True):
+        try:
+            return int(id)
+        except ValueError:
+            if error:
+                irc.error('The <id> argument must be an integer.')
+            return None
+
+    def _isRegistered(self, irc, msg):
+        try:
+            return ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.errorNotRegistered()
+            return None
 
     def add(self, irc, msg, args):
-        """[<channel>] <lart|excuse|insult|praise> <text>
+        """[<channel>] <lart|insult|praise> <text>
 
         Adds another record to the data referred to in the first argument.  For
         commands that will later respond with an ACTION (lart and praise), $who
@@ -132,65 +219,44 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
         the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (table, s) = privmsgs.getArgs(args, required=2)
-        table = table.lower()
-        try:
-            name = ircdb.users.getUser(msg.prefix).name
-        except KeyError:
-            irc.errorNotRegistered()
+        (type, s) = privmsgs.getArgs(args, required=2)
+        type = type.lower()
+        userId = self._isRegistered(irc, msg)
+        if not userId:
             return
-        if table == "lart" or table == "praise":
+        if not self._validType(irc, type):
+            return
+        if type == "lart" or type == "praise":
             if '$who' not in s:
                 irc.error('There must be a $who in the lart/praise somewhere')
                 return
-        elif table not in self._tables:
-            irc.error('"%s" is not valid. Valid values include %s.' %
-                           (table, utils.commaAndify(self._tables)))
-            return
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        sql = """INSERT INTO %ss VALUES (NULL, %%s, %%s)""" % table
-        cursor.execute(sql, s, name)
-        db.commit()
-        sql = """SELECT id FROM %ss WHERE %s=%%s
-                 ORDER BY id DESC LIMIT 1""" % (table, table)
-        cursor.execute(sql, s)
-        id = cursor.fetchone()[0]
-        irc.replySuccess('(%s #%s added)' % (table, id))
+        id = self.db.add(channel, type, s, userId)
+        irc.replySuccess('(%s #%s added)' % (type, id))
 
     def remove(self, irc, msg, args):
-        """[<channel>] <lart|excuse|insult|praise> <id>
+        """[<channel>] <lart|insult|praise> <id>
 
         Removes the data, referred to in the first argument, with the id
         number <id> from the database.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (table, id) = privmsgs.getArgs(args, required=2)
-        table = table.lower()
+        (type, id) = privmsgs.getArgs(args, required=2)
+        if not self._isRegistered(irc, msg):
+            return
+        if not self._validType(irc, type):
+            return
+        id = self._validId(irc, id)
+        if id is None:
+            return
         try:
-            ircdb.users.getUser(msg.prefix).name
+            self.db.remove(channel, type, id)
+            irc.replySuccess()
         except KeyError:
-            irc.errorNotRegistered()
-            return
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error('The <id> argument must be an integer.')
-            return
-        if table not in self._tables:
-            irc.error('"%s" is not valid. Valid values include %s.' %
-                           (table, utils.commaAndify(self._tables)))
-            return
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        sql = """DELETE FROM %ss WHERE id=%%s""" % table
-        cursor.execute(sql, id)
-        db.commit()
-        irc.replySuccess()
+            irc.error('There is no %s with that id.' % type)
 
     def change(self, irc, msg, args):
-        """[<channel>] <lart|excuse|insult|praise> <id> <regexp>
+        """[<channel>] <lart|insult|praise> <id> <regexp>
 
         Changes the data, referred to in the first argument, with the id
         number <id> according to the regular expression <regexp>. <id> is the
@@ -199,129 +265,95 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
         message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (table, id, regexp) = privmsgs.getArgs(args, required=3)
-        table = table.lower()
-        try:
-            name = ircdb.users.getUser(msg.prefix).name
-        except KeyError:
-            irc.errorNotRegistered()
+        (type, id, regexp) = privmsgs.getArgs(args, required=3)
+        if not self._validType(irc, type):
             return
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error('The <id> argument must be an integer.')
+        id = self._validId(irc, id)
+        if id is None:
             return
-        if table not in self._tables:
-            irc.error('"%s" is not valid. Valid values include %s.' %
-                           (table, utils.commaAndify(self._tables)))
+        if not self._isRegistered(irc, msg):
             return
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.error('The regexp wasn\'t valid: %s.' % e.args[0])
+            irc.error('That regexp wasn\'t valid: %s.' % e.args[0])
+            return
         except re.error, e:
             irc.error(utils.exnToString(e))
             return
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
-        cursor.execute(sql, id)
-        if cursor.rowcount == 0:
-            irc.error('There is no such %s.' % table)
-        else:
-            old_entry = cursor.fetchone()[0]
-            new_entry = replacer(old_entry)
-            sql = """UPDATE %ss SET %s=%%s, added_by=%%s WHERE id=%%s""" % \
-                  (table, table)
-            cursor.execute(sql, new_entry, name, id)
-            db.commit()
+        try:
+            self.db.change(channel, type, id, replacer)
             irc.replySuccess()
+        except KeyError:
+            irc.error('There is no %s with that id.' % type)
 
     def stats(self, irc, msg, args):
-        """[<channel>] <lart|excuse|insult|praise>
+        """[<channel>] <lart|insult|praise>
 
         Returns the number of records, of the type specified, currently in
         the database.  <channel> is only necessary if the message isn't sent
         in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        table = privmsgs.getArgs(args)
-        table = table.lower()
-        if table not in self._tables:
-            irc.error('%r is not valid. Valid values include %s.' %
-                           (table, utils.commaAndify(self._tables)))
+        type = privmsgs.getArgs(args)
+        if not self._validType(irc, type):
             return
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        sql = """SELECT count(*) FROM %ss""" % table
-        cursor.execute(sql)
-        total = int(cursor.fetchone()[0])
+        total = self.db.size(channel, type)
         irc.reply('There %s currently %s in my database.' %
-                  (utils.be(total), utils.nItems(table, total)))
+                  (utils.be(total), utils.nItems(type, total)))
 
     def get(self, irc, msg, args):
-        """[<channel>] <lart|excuse|insult|praise> <id>
+        """[<channel>] <lart|insult|praise> <id>
 
-        Gets the record with id <id> from the table specified.  <channel> is
+        Gets the record with id <id> from the type specified.  <channel> is
         only necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (table, id) = privmsgs.getArgs(args, required=2)
-        table = table.lower()
+        (type, id) = privmsgs.getArgs(args, required=2)
+        if not self._validType(irc, type):
+            return
+        id = self._validId(irc, id)
+        if id is None:
+            return
         try:
-            id = int(id)
-        except ValueError:
-            irc.error('The <id> argument must be an integer.')
-            return
-        if table not in self._tables:
-            irc.error('"%s" is not valid. Valid values include %s.' %
-                           (table, utils.commaAndify(self._tables)))
-            return
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
-        cursor.execute(sql, id)
-        if cursor.rowcount == 0:
-            irc.error('There is no such %s.' % table)
-        else:
-            reply = cursor.fetchone()[0]
-            irc.reply(reply)
+            text = self.db.get(channel, type, id)
+            irc.reply(text)
+        except KeyError:
+            irc.error('There is no %s with that id.' % type)
 
     def info(self, irc, msg, args):
-        """[<channel>] <lart|excuse|insult|praise> <id>
+        """[<channel>] <lart|insult|praise> <id>
 
-        Gets the info for the record with id <id> from the table specified.
+        Gets the info for the record with id <id> from the type specified.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (table, id) = privmsgs.getArgs(args, required=2)
-        table = table.lower()
+        (type, id) = privmsgs.getArgs(args, required=2)
+        if not self._validType(irc, type):
+            return
+        id = self._validId(irc, id)
+        if id is None:
+            return
         try:
-            id = int(id)
-        except ValueError:
-            irc.error('The <id> argument must be an integer.')
-            return
-        if table not in self._tables:
-            irc.error('"%s" is not valid. Valid values include %s.' %
-                           (table, utils.commaAndify(self._tables)))
-            return
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        sql = """SELECT added_by FROM %ss WHERE id=%%s""" % table
-        cursor.execute(sql, id)
-        if cursor.rowcount == 0:
-            irc.error('There is no such %s.' % table)
-        else:
-            add = cursor.fetchone()[0]
-            reply = '%s #%s: Created by %s.' % (table, id, add)
+            (text, by) = self.db.info(channel, type, id)
+            reply = '%s #%s: %r; Created by %s.' % (type, id, text, by)
             irc.reply(reply)
+        except KeyError:
+            irc.error('There is no %s with that id.' % type)
 
-    def _formatResponse(self, s, id, showids):
-        if showids:
+    def _formatResponse(self, s, id, channel):
+        if self.registryValue('showIds', channel):
             return '%s (#%s)' % (s, id)
         else:
             return s
+
+    _meRe = re.compile(r'\bme\b', re.I)
+    _myRe = re.compile(r'\bmy\b', re.I)
+    def _replaceFirstPerson(self, s, nick):
+        s = self._meRe.sub(nick, s)
+        s = self._myRe.sub('%s\'s' % nick, s)
+        return s
 
     def insult(self, irc, msg, args):
         """[<channel>] <nick>
@@ -333,56 +365,15 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
         nick = privmsgs.getArgs(args)
         if not nick:
             raise callbacks.ArgumentError
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT id, insult FROM insults
-                          WHERE insult NOT NULL
-                          ORDER BY random()
-                          LIMIT 1""")
-        if cursor.rowcount == 0:
+        t = self.db.random(channel, 'insult')
+        if t is None:
             irc.error('There are currently no available insults.')
         else:
-            (id, insult) = cursor.fetchone()
-            nick = re.sub(r'\bme\b', msg.nick, nick)
-            nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
+            (id, insult) = t
+            nick = self._replaceFirstPerson(nick, msg.nick)
             insult = '%s: %s' % (nick, insult.replace('$who', nick))
-            showid = self.registryValue('showIds', channel)
-            irc.reply(self._formatResponse(insult, id, showid),
+            irc.reply(self._formatResponse(insult, id, channel),
                       prefixName=False)
-
-    def excuse(self, irc, msg, args):
-        """[<channel>] [<id>]
-
-        Gives you a standard, random BOFH excuse or the excuse with the given
-        <id>.  <channel> is only necessary if the message isn't sent in the
-        channel itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        id = privmsgs.getArgs(args, required=0, optional=1)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        if id:
-            try:
-                id = int(id)
-            except ValueError:
-                irc.error('The <id> argument must be an integer.')
-                return
-            cursor.execute("""SELECT id, excuse FROM excuses WHERE id=%s""",
-                           id)
-            if cursor.rowcount == 0:
-                irc.error('There is no such excuse.')
-                return
-        else:
-            cursor.execute("""SELECT id, excuse FROM excuses
-                              WHERE excuse NOTNULL
-                              ORDER BY random()
-                              LIMIT 1""")
-        if cursor.rowcount == 0:
-            irc.error('There are currently no available excuses.')
-        else:
-            (id, excuse) = cursor.fetchone()
-            showid = self.registryValue('showIds', channel)
-            irc.reply(self._formatResponse(excuse, id, showid))
 
     def lart(self, irc, msg, args):
         """[<channel>] [<id>] <text> [for <reason>]
@@ -393,51 +384,39 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
         """
         channel = privmsgs.getChannel(msg, args)
         (id, nick) = privmsgs.getArgs(args, optional=1)
-        try:
-            id = int(id)
-            if id < 1:
-                irc.error('There is no such lart.')
-                return
-        except ValueError:
-            nick = ' '.join([id, nick]).strip()
-            id = 0
+        id = self._validId(irc, id, error=False)
+        if id is None:
+            nick = privmsgs.getArgs(args)
         nick = nick.rstrip('.')
         if not nick:
             raise callbacks.ArgumentError
         if nick == irc.nick:
             nick = msg.nick
         try:
-            (nick, reason) = imap(' '.join,
+            (nick, reason) = itertools.imap(' '.join,
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
-        db = self.getDb(channel)
-        cursor = db.cursor()
         if id:
-            cursor.execute("""SELECT id, lart FROM larts WHERE id=%s""", id)
-            if cursor.rowcount == 0:
+            try:
+                lart = self.db.get(channel, 'lart', id)
+                t = (id, lart)
+            except KeyError:
                 irc.error('There is no such lart.')
                 return
         else:
-            cursor.execute("""SELECT id, lart FROM larts
-                              WHERE lart NOTNULL
-                              ORDER BY random()
-                              LIMIT 1""")
-        if cursor.rowcount == 0:
+            t = self.db.random(channel, 'lart')
+        if t is None:
             irc.error('There are currently no available larts.')
         else:
-            (id, lart) = cursor.fetchone()
-            nick = re.sub(r'\bme\b', msg.nick, nick)
-            reason = re.sub(r'\bme\b', msg.nick, reason)
-            nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
-            reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
-            lartee = nick
-            s = lart.replace('$who', lartee)
+            (id, lart) = t
+            nick = self._replaceFirstPerson(nick, msg.nick)
+            reason = self._replaceFirstPerson(reason, msg.nick)
+            s = lart.replace('$who', nick)
             if reason:
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
-            showid = self.registryValue('showIds', channel)
-            irc.reply(self._formatResponse(s, id, showid), action=True)
+            irc.reply(self._formatResponse(s, id, channel), action=True)
 
     def praise(self, irc, msg, args):
         """[<channel>] [<id>] <text> [for <reason>]
@@ -449,90 +428,39 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
         """
         channel = privmsgs.getChannel(msg, args)
         (id, nick) = privmsgs.getArgs(args, optional=1)
-        try:
-            id = int(id)
-            if id < 1:
-                irc.error('There is no such praise.')
-                return
-        except ValueError:
-            nick = ' '.join([id, nick]).strip()
-            id = 0
+        id = self._validId(irc, id, error=False)
+        if id is None:
+            nick = privmsgs.getArgs(args)
         nick = nick.rstrip('.')
         if not nick:
             raise callbacks.ArgumentError
         try:
-            (nick, reason) = imap(' '.join,
+            (nick, reason) = itertools.imap(' '.join,
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
-        db = self.getDb(channel)
-        cursor = db.cursor()
         if id:
-            cursor.execute("""SELECT id, praise FROM praises WHERE id=%s""",id)
-            if cursor.rowcount == 0:
+            try:
+                praise = self.db.get(channel, 'praise', id)
+                t = (id, praise)
+            except KeyError:
                 irc.error('There is no such praise.')
                 return
         else:
-            cursor.execute("""SELECT id, praise FROM praises
-                              WHERE praise NOTNULL
-                              ORDER BY random()
-                              LIMIT 1""")
-        if cursor.rowcount == 0:
+            t = self.db.random(channel, 'praise')
+        if t is None:
             irc.error('There are currently no available praises.')
         else:
-            (id, praise) = cursor.fetchone()
-            nick = re.sub(r'\bme\b', msg.nick, nick)
-            reason = re.sub(r'\bme\b', msg.nick, reason)
-            nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
-            reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
-            praisee = nick
-            s = praise.replace('$who', praisee)
+            (id, praise) = t
+            nick = self._replaceFirstPerson(nick, msg.nick)
+            reason = self._replaceFirstPerson(reason, msg.nick)
+            s = praise.replace('$who', nick)
             if reason:
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
-            showid = self.registryValue('showIds', channel)
-            irc.reply(self._formatResponse(s, id, showid), action=True)
+            irc.reply(self._formatResponse(s, id, channel), action=True)
 
 Class = FunDB
 
-
-if __name__ == '__main__':
-    import sys
-    if len(sys.argv) < 3 or len(sys.argv) > 4:
-        print 'Usage: %s <channel> <larts|excuses|insults|zipcodes> file' \
-              ' [<console>]' % sys.argv[0]
-        sys.exit(-1)
-    if len(sys.argv) == 4:
-        added_by = sys.argv.pop()
-    else:
-        added_by = '<console>'
-    (channel, category, filename) = sys.argv[1:]
-    plugin = Class()
-    db = plugin.getDb(channel)
-    cursor = db.cursor()
-    for line in open(filename, 'r'):
-        line = line.rstrip()
-        if not line:
-            continue
-        elif category == 'larts':
-            if '$who' in line:
-                cursor.execute("""INSERT INTO larts VALUES (NULL, %s, %s)""",
-                               line, added_by)
-            else:
-                print 'Invalid lart: %s' % line
-        elif category == 'praises':
-            if '$who' in line:
-                cursor.execute("""INSERT INTO praises VALUES (NULL, %s, %s)""",
-                               line, added_by)
-            else:
-                print 'Invalid praise: %s' % line
-        elif category == 'insults':
-            cursor.execute("""INSERT INTO insults VALUES (NULL, %s, %s)""",
-                           line, added_by)
-        elif category == 'excuses':
-            cursor.execute("""INSERT INTO excuses VALUES (NULL, %s, %s )""",
-                           line, added_by)
-    db.commit()
-    db.close()
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -122,20 +122,6 @@ if sqlite is not None:
             self.assertNotError('remove praise 1')
             self.assertNotError('remove insult 1')
 
-        def testExcuse(self):
-            self.assertNotError('add excuse Power failure')
-            self.assertResponse('excuse', 'Power failure (#1)')
-            self.assertError('excuse a few random words')
-            self.assertRegexp('stats excuse', r'currently 1 excuse')
-            self.assertNotError('add excuse /pub/lunch')
-            self.assertResponse('excuse 1', 'Power failure (#1)')
-            self.assertNotError('remove excuse 1')
-            self.assertRegexp('stats excuse', r'currently 1 excuse')
-            self.assertResponse('excuse', '/pub/lunch (#2)')
-            self.assertNotError('remove excuse 2')
-            self.assertRegexp('stats excuse', r'currently 0')
-            self.assertError('excuse')
-
         def testInsult(self):
             self.assertNotError('add insult Fatty McFatty')
             self.assertResponse('insult jemfinch',
@@ -152,8 +138,6 @@ if sqlite is not None:
             self.assertNotError('add lart stubs $who')
             self.assertNotError('add #tester insult nimrod')
             self.assertNotError('add insult nimwit')
-            self.assertNotError('add #tester excuse He did it!')
-            self.assertNotError('add excuse She did it!')
             self.assertResponse('praise jemfinch',
                                 '\x01ACTION pats jemfinch (#1)\x01')
             self.assertResponse('praise #tester jemfinch',
@@ -165,8 +149,6 @@ if sqlite is not None:
             self.assertResponse('insult jemfinch', 'jemfinch: nimwit (#1)')
             self.assertResponse('insult #tester jemfinch',
                                 'jemfinch: nimrod (#1)')
-            self.assertResponse('excuse', 'She did it! (#1)')
-            self.assertResponse('excuse #tester', 'He did it! (#1)')
 
         def testPraise(self):
             self.assertNotError('add praise pets $who')
@@ -211,7 +193,6 @@ if sqlite is not None:
             self.assertError('stats 1')
             self.assertRegexp('stats praise', r'currently 0')
             self.assertRegexp('stats lart',   r'currently 0')
-            self.assertRegexp('stats excuse', r'currently 0')
             self.assertRegexp('stats insult', r'currently 0')
 
         def testChange(self):
