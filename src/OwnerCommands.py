@@ -34,7 +34,7 @@ Provides commands useful to the owner of the bot; the commands here require
 their caller to have the 'owner' capability.  This plugin is loaded by default.
 """
 
-from fix import *
+import fix
 
 import gc
 import imp

@@ -38,7 +38,7 @@ PrivmsgRegexp class.  Read their respective docstrings for more information on
 how to use them.
 """
 
-from fix import *
+import fix
 
 import re
 import sets

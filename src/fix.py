@@ -29,8 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-## from __future__ import generators
-
 """
 Fixes stuff that Python should have but doesn't.
 """
@@ -131,5 +129,9 @@ def rsplit(s, sep=None, maxsplit=-1):
     L.reverse()
     return [s[::-1] for s in L]
 
+for name in __all__:
+    __builtins__[name] = globals()[name]
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+

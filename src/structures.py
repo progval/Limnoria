@@ -35,7 +35,7 @@ Data structures for Python.
 
 ## from __future__ import generators
 
-from fix import *
+import fix
 
 import types
 

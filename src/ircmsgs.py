@@ -36,7 +36,7 @@ construct such messages in an easier way than the constructor for the IrcMsg
 object (which, as you'll read later, is quite...full-featured :))
 """
 
-from fix import *
+import fix
 
 import re
 import string

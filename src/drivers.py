@@ -33,7 +33,7 @@
 Contains various drivers (network, file, and otherwise) for using IRC objects.
 """
 
-from fix import *
+import fix
 
 import re
 import os

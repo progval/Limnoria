@@ -35,7 +35,7 @@ Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 
 from __future__ import division
 
-from fix import *
+import fix
 
 import time
 import socket

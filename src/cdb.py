@@ -34,7 +34,7 @@ Database module, similar to dbhash.  Uses a format similar to (if not entirely
 the same as) DJB's CDB <http://cr.yp.to/cdb.html>.
 """
 
-from fix import *
+import fix
 
 import os
 import sys

@@ -33,7 +33,7 @@
 Miscellaneous commands.
 """
 
-from fix import *
+import fix
 
 import os
 import sys

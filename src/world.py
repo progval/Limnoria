@@ -33,7 +33,7 @@
 Module for general worldly stuff, like global variables and whatnot.
 """
 
-from fix import *
+import fix
 
 import os
 import gc

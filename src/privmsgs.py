@@ -33,7 +33,7 @@
 Includes various accessories for callbacks.Privmsg based callbacks.
 """
 
-from fix import *
+import fix
 
 import new
 

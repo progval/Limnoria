@@ -36,7 +36,7 @@ nick class to handle nicks (so comparisons and hashing and whatnot work in an
 IRC-case-insensitive fashion), and numerous other things.
 """
 
-from fix import *
+import fix
 
 import re
 import sets

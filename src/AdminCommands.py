@@ -34,7 +34,7 @@ These are commands useful for administrating the bot; they all require their
 caller to have the 'admin' capability.  This plugin is loaded by default.
 """
 
-from fix import *
+import fix
 
 import time
 import pprint
