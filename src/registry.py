@@ -85,16 +85,18 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                     first = False
                 else:
                     lines.insert(0, '\n')
-                lines.append('#\n')
-                try:
-                    original = value.value
-                    value.value = value.default
-                    lines.append('# Default value: %s\n' % value)
-                finally:
-                    value.value = original
+                if hasattr(value, 'value'):
+                    lines.append('#\n')
+                    try:
+                        original = value.value
+                        value.value = value.default
+                        lines.append('# Default value: %s\n' % value)
+                    finally:
+                        value.value = original
                 lines.append('###\n')
                 fd.writelines(lines)
-        fd.write('%s: %s\n' % (name, value))
+        if hasattr(value, 'value'): # This lets us print help for non-valued.
+            fd.write('%s: %s\n' % (name, value))
     fd.close()
 
 
@@ -177,7 +179,7 @@ class Group(object):
         L = []
         for name in self.added:
             node = self.children[name]
-            if hasattr(node, 'value'):
+            if hasattr(node, 'value') or hasattr(node, 'help'):
                 if node.__class__ is not self.X:
                     L.append((node.name, node))
             if getChildren:
