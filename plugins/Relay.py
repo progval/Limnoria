@@ -170,7 +170,8 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
                 for otherIrc in self.ircs.itervalues():
                     if otherIrc != irc:
                         if channel in otherIrc.state.channels:
-                            msg = ircmsgs.privmsg(channel, s)
+                            otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+        return msg
 
 Class = Relay
         
