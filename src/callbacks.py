@@ -402,6 +402,8 @@ class IrcObjectProxy:
         name = canonicalName(self.args[0])
         cbs = findCallbackForCommand(self, name)
         if len(cbs) == 0:
+            if self.irc.nick == self.msg.nick:
+                return
             for cb in self.irc.callbacks:
                 if isinstance(cb, PrivmsgRegexp):
                     for (r, _) in cb.res:
