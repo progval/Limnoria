@@ -98,6 +98,11 @@ class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
         self.assertError('unload MiscCommands')
 
     def testSetconf(self):
+        self.assertRegexp('setconf', 'confDir')
+        self.assertNotRegexp('setconf', 'allowEval')
+        self.assertResponse('setconf confDir', 'confDir is a string.')
+        self.assertResponse('setconf whackyConfOption',
+                            'Error: That conf variable doesn\'t exist.')
         try:
             originalConfAllowEval = conf.allowEval
             conf.allowEval = False
@@ -129,7 +134,7 @@ class OwnerCommandsTestCase(PluginTestCase, PluginDocumentation):
         finally:
             conf.allowEval = originalConfAllowEval
 
-        
+
 class FunctionsTestCase(unittest.TestCase):
     def testLoadPluginModule(self):
         self.assertRaises(ImportError, OwnerCommands.loadPluginModule, 'asldj')

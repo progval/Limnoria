@@ -115,35 +115,71 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
             irc.error(msg, conf.replyEvalNotAllowed)
 
     def setconf(self, irc, msg, args):
-        """<name> <value>
+        """[<name> [<value>]]
 
-        Sets the value of the conf-module variable <name> to <value>.
+        Lists adjustable variables in the conf-module by default, shows the
+        variable type with only the <name> argument and sets the value of the
+        variable to <value> when both arguments are given.
         """
-        (name, value) = privmsgs.getArgs(args, needed=2)
-        if conf.allowEval:
-            try:
-                value = eval(value)
-            except Exception, e:
-                irc.error(msg, debug.exnToString(e))
-                return
-            setattr(conf, name, value)
-            irc.reply(msg, conf.replySuccess)
-        else:
-            if name == 'allowEval':
-                irc.error(msg, 'You can\'t set the value of allowEval.')
-                return
-            elif name not in conf.types:
-                irc.error(msg, 'I can\'t set that conf variable.')
-                return
-            else:
-                converter = conf.types[name]
+        (name, value) = privmsgs.getArgs(args, needed=0, optional=2)
+        if name and value:
+            if conf.allowEval:
                 try:
-                    value = converter(value)
-                except ValueError, e:
-                    irc.error(msg, str(e))
+                    value = eval(value)
+                except Exception, e:
+                    irc.error(msg, debug.exnToString(e))
                     return
                 setattr(conf, name, value)
                 irc.reply(msg, conf.replySuccess)
+            else:
+                if name == 'allowEval':
+                    irc.error(msg, 'You can\'t set the value of allowEval.')
+                    return
+                elif name not in conf.types:
+                    irc.error(msg, 'I can\'t set that conf variable.')
+                    return
+                else:
+                    converter = conf.types[name]
+                    try:
+                        value = converter(value)
+                    except ValueError, e:
+                        irc.error(msg, str(e))
+                        return
+                    setattr(conf, name, value)
+                    irc.reply(msg, conf.replySuccess)
+        elif name:
+            typetable = {'mystr': 'string',
+            'mybool': 'boolean',
+            'float': 'float'}
+            
+            try:
+                vtype = conf.types[name].__name__
+            except KeyError:
+                irc.error(msg, 'That conf variable doesn\'t exist.')
+                return
+            try:
+                irc.reply(msg, '%s is a %s.' % (name, typetable[vtype]))
+            except KeyError:
+                irc.error(msg, '%s is of an unknown type.' % name)
+        else:
+            options = conf.types.keys()
+            options.sort()
+            irc.reply(msg, ', '.join(options))
+
+    def listconf(self, irc, msg, args):
+        """takes no arguments
+        
+        Lists the variables in conf-module that can be adjusted with setconf.
+        """
+        options = []
+        for key in conf.types.keys():
+            otype = conf.types[key].__name__
+            if otype[:2] == 'my':
+                otype = otype[2:]
+            options.append('%s (%s)' % (key, otype))
+        
+        options.sort()
+        irc.reply(msg, ', '.join(options))
 
     def setdefaultcapability(self, irc, msg, args):
         """<capability>
