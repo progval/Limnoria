@@ -243,7 +243,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
             if cursor.rowcount == 0:
                 irc.error(msg, 'There was no such quote.')
             else:
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 

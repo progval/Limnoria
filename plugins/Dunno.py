@@ -112,7 +112,7 @@ class Dunno(callbacks.Privmsg):
                           VALUES(NULL, %s, %s, %s)""",
                           id, int(time.time()), text)
         self.db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def remove(self, irc, msg, args):
         """<id>
@@ -141,7 +141,7 @@ class Dunno(callbacks.Privmsg):
             return
         cursor.execute("""DELETE FROM dunnos WHERE id = %s""" % dunno_id)
         self.db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def search(self, irc, msg, args):
         """<text>

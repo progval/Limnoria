@@ -173,7 +173,7 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
             irc.error(msg, conf.replyNoUser)
             return
         self.db.setHerald(id, channel, herald)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def remove(self, irc, msg, args):
         """[<channel>] <user|nick|hostmask>
@@ -191,7 +191,7 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
             irc.error(msg, conf.replyNoUser)
             return
         self.db.delHerald(id, channel)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
 
 Class = Herald

@@ -161,7 +161,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         for m in reviter(irc.state.history):
             if m.command == 'PRIVMSG' and ircutils.nickEqual(m.nick, nick):
                 self._grab(irc, m, msg.prefix)
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
                 return
         irc.error(msg, 'I couldn\'t find a proper message to grab.')
 

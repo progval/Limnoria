@@ -143,7 +143,7 @@ class Factoids(plugins.ChannelDBHandler,
                               (NULL, %s, %s, %s, %s)""",
                            id, name, int(time.time()), factoid)
             db.commit()
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, 'That factoid is locked.')
 
@@ -206,7 +206,7 @@ class Factoids(plugins.ChannelDBHandler,
             cursor = db.cursor()
             cursor.execute("UPDATE keys SET locked=1 WHERE key LIKE %s", key)
             db.commit()
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
@@ -225,7 +225,7 @@ class Factoids(plugins.ChannelDBHandler,
             cursor = db.cursor()
             cursor.execute("UPDATE keys SET locked=0 WHERE key LIKE %s", key)
             db.commit()
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
@@ -266,7 +266,7 @@ class Factoids(plugins.ChannelDBHandler,
                 cursor.execute("""DELETE FROM factoids WHERE key_id=%s""", id)
                 cursor.execute("""DELETE FROM keys WHERE key LIKE %s""", key)
                 db.commit()
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
             else:
                 if number is not None:
                     results = cursor.fetchall()
@@ -277,7 +277,7 @@ class Factoids(plugins.ChannelDBHandler,
                         return
                     cursor.execute("DELETE FROM factoids WHERE id=%s", id)
                     db.commit()
-                    irc.reply(msg, conf.replySuccess)
+                    irc.replySuccess(msg)
                 else:
                     irc.error(msg, '%s factoids have that key.  ' \
                                    'Please specify which one to remove, ' \
@@ -377,7 +377,7 @@ class Factoids(plugins.ChannelDBHandler,
         newfact = replacer(fact)
         cursor.execute("UPDATE factoids SET fact=%s WHERE id=%s", newfact, id)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args):

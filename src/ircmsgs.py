@@ -218,7 +218,7 @@ def isAction(msg):
     else:
         return False
 
-_unactionre = re.compile(r'^\x01ACTION (.*)\x01$')
+_unactionre = re.compile(r'^\x01ACTION\s+(.*)\x01$')
 def unAction(msg):
     """Returns the payload (i.e., non-ACTION text) of an ACTION msg."""
     assert isAction(msg)

@@ -192,7 +192,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             irc.error(msg, 'That doesn\'t seem to be a valid license key.')
             return
         google.setLicense(key)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     licensekey = privmsgs.checkCapability(licensekey, 'admin')
 
     def google(self, irc, msg, args):

@@ -112,7 +112,7 @@ class Amazon(callbacks.Privmsg,configurable.Mixin):
         """
         key = privmsgs.getArgs(args)
         amazon.setLicense(key)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     licensekey = privmsgs.checkCapability(licensekey, 'admin')
 
     def isbn(self, irc, msg, args):

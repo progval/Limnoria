@@ -186,7 +186,7 @@ class Alias(callbacks.Privmsg):
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
             self.aliases[name][1] = True
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, 'There is no such alias.')
     lock = privmsgs.checkCapability(lock, 'admin')
@@ -200,7 +200,7 @@ class Alias(callbacks.Privmsg):
         name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
             self.aliases[name][1] = False
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, 'There is no such alias.')
     unlock = privmsgs.checkCapability(unlock, 'admin')
@@ -259,7 +259,7 @@ class Alias(callbacks.Privmsg):
             self.addAlias(irc, name, alias)
             self.log.info('Adding alias %r for %r (from %s)' %
                           (name, alias, msg.prefix))
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except AliasError, e:
             irc.error(msg, str(e))
 
@@ -272,7 +272,7 @@ class Alias(callbacks.Privmsg):
         try:
             self.removeAlias(name)
             self.log.info('Removing alias %r (from %s)' % (name, msg.prefix))
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except AliasError, e:
             irc.error(msg, str(e))
 

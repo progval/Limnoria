@@ -181,7 +181,7 @@ class Note(callbacks.Privmsg):
             if not read:
                 cursor.execute("""DELETE FROM notes WHERE id=%s""", id)
                 db.commit()
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
             else:
                 irc.error(msg, 'That note has been read already.')
         else:

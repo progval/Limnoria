@@ -232,7 +232,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                           SET added=added+1
                           WHERE normalized=%s""", normalized)
         if self.configurables.get('karma-response', msg.args[0]):
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
 
     def decreaseKarma(self, irc, msg, match):
         r"^(\S+)--(|\s+)$"
@@ -246,7 +246,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                           SET subtracted=subtracted+1
                           WHERE normalized=%s""", normalized)
         if self.configurables.get('karma-response', msg.args[0]):
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
 
 
 Class = Karma

@@ -153,7 +153,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             url = url[:-1]
         self.db[name] = [url, description]
         self.shorthand = utils.abbrev(self.db.keys())
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def remove(self, irc, msg, args):
         """<abbreviation>
@@ -166,7 +166,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             name = self.shorthand[name]
             del self.db[name]
             self.shorthand = utils.abbrev(self.db.keys())
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except KeyError:
             irc.error(msg, replyNoBugzilla % name)
 

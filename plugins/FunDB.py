@@ -189,7 +189,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         sql = """DELETE FROM %ss WHERE id=%%s""" % table
         cursor.execute(sql, id)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def change(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise> <id> <regexp>
@@ -237,7 +237,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
                   (table, table)
             cursor.execute(sql, new_entry, name, id)
             db.commit()
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
 
     def num(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise>

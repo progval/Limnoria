@@ -176,7 +176,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         f.url = url # Used by __call__.
         self.feedNames.add(name)
         setattr(self.__class__, name, f)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def remove(self, irc, msg, args):
         """<name>
@@ -190,7 +190,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
             irc.error(msg, 'That\'s not a valid RSS feed command name.')
             return
         delattr(self.__class__, name)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
         
     def rss(self, irc, msg, args):
         """<url>

@@ -190,7 +190,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             if command in conf.defaultCapabilities:
                 conf.defaultCapabilities.remove(command)
             conf.defaultCapabilities.add(capability)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
 
     def enable(self, irc, msg, args):
         """<command>
@@ -205,7 +205,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             return
         if anticapability in conf.defaultCapabilities:
             conf.defaultCapabilities.remove(anticapability)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, 'That command wasn\'t disabled.')
 
@@ -242,7 +242,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 user = ircdb.users.getUser(id)
                 user.addCapability(capability)
                 ircdb.users.setUser(id, user)
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
         else:
@@ -267,7 +267,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             try:
                 user.removeCapability(capability)
                 ircdb.users.setUser(id, user)
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
             except KeyError:
                 irc.error(msg, 'That user doesn\'t have that capability.')
                 return
@@ -291,7 +291,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error(msg, 'I can\'t find a hostmask for %s' % arg)
                 return
         conf.ignores.append(hostmask)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def unignore(self, irc, msg, args):
         """<hostmask|nick>
@@ -312,7 +312,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             conf.ignores.remove(hostmask)
             while hostmask in conf.ignores:
                 conf.ignores.remove(hostmask)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except ValueError:
             irc.error(msg, '%s wasn\'t in conf.ignores.' % hostmask)
             
@@ -339,7 +339,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 return
         else:
             conf.prefixChars = s
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
 
     def reportbug(self, irc, msg, args):
         """<description>
@@ -366,7 +366,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                       ['supybot-bugs@lists.sourceforge.net'],
                       email)
         smtp.quit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     reportbug = privmsgs.thread(reportbug)
 
 

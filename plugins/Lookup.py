@@ -122,7 +122,7 @@ class Lookup(callbacks.Privmsg):
             cursor.execute("""DROP TABLE %s""" % name)
             db.commit()
             delattr(self.__class__, name)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except sqlite.DatabaseError:
             irc.error(msg, 'No such lookup exists.')
     remove = privmsgs.checkCapability(remove, 'admin')
@@ -148,7 +148,7 @@ class Lookup(callbacks.Privmsg):
         try:
             cursor.execute("""SELECT * FROM %s LIMIT 1""" % name)
             self.addCommand(name)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except sqlite.DatabaseError:
             # Good, there's no such database.
             try:

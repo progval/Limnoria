@@ -174,7 +174,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         self.ircstates[realIrc] = irclib.IrcState()
         self.lastmsg[realIrc] = ircmsgs.ping('this is just a fake message')
         self.started = True
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     start = privmsgs.checkCapability(start, 'owner')
 
     def connect(self, irc, msg, args):
@@ -202,7 +202,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         self.abbreviations[newIrc] = abbreviation
         self.ircstates[newIrc] = irclib.IrcState()
         self.lastmsg[newIrc] = ircmsgs.ping('this is just a fake message')
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     connect = privmsgs.checkCapability(connect, 'owner')
 
     def disconnect(self, irc, msg, args):
@@ -220,7 +220,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         world.ircs.remove(otherIrc)
         del self.ircs[network]
         del self.abbreviations[otherIrc]
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     disconnect = privmsgs.checkCapability(disconnect, 'owner')
 
     def join(self, irc, msg, args):
@@ -243,7 +243,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         for otherIrc in self.ircs.itervalues():
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     join = privmsgs.checkCapability(join, 'owner')
 
     def part(self, irc, msg, args):
@@ -264,7 +264,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         for otherIrc in self.ircs.itervalues():
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     part = privmsgs.checkCapability(part, 'owner')
 
     def command(self, irc, msg, args):
@@ -286,7 +286,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         Owner = irc.getCallback('Owner')
         Owner.disambiguate(irc, args)
         self.Proxy(otherIrc, msg, args)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     command = privmsgs.checkCapability(command, 'admin')
         
     def say(self, irc, msg, args):

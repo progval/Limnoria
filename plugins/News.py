@@ -115,7 +115,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("INSERT INTO news VALUES (NULL, %s, %s, %s, %s, %s)",
                        subject[:-1], text, added_at, expires, name)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     add = privmsgs.checkChannelCapability(add, 'news')
 
     def _readnews(self, irc, msg, args):
@@ -190,7 +190,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         else:
             cursor.execute("""DELETE FROM news WHERE news.id = %s""", id)
             db.commit()
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
     remove = privmsgs.checkChannelCapability(remove, 'news')
             
     def change(self, irc, msg, args, channel):
@@ -219,7 +219,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         (newSubject, newItem) = s.split(': ')
         cursor.execute("""UPDATE news SET subject=%s, item=%s WHERE id=%s""",
                        newSubject, newItem, id)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     change = privmsgs.checkChannelCapability(change, 'news')
 
     def old(self, irc, msg, args):

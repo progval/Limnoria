@@ -95,7 +95,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self._ghosted = re.compile('(Ghost|%s).*killed' % self.nick, re.I)
         self.sentGhost = False
         self.log.info('Services started.')
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def _doIdentify(self, irc):
         assert self.nickserv, 'Nickserv must not be empty.'
@@ -186,7 +186,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         """
         if self.nickserv:
             self._doIdentify(irc)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             s = 'This plugin must first be started via the start command.'
             irc.error(msg, s)

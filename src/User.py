@@ -117,7 +117,7 @@ class User(callbacks.Privmsg):
         user.setPassword(password, hashed=hashed)
         user.addHostmask(msg.prefix)
         ircdb.users.setUser(id, user)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def unregister(self, irc, msg, args):
         """<name> <password>
@@ -134,7 +134,7 @@ class User(callbacks.Privmsg):
             return
         if user.checkPassword(password):
             ircdb.users.delUser(id)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, conf.replyIncorrectAuth)
 
@@ -163,7 +163,7 @@ class User(callbacks.Privmsg):
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             user.name = newname
             ircdb.users.setUser(id, user)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
             
     def addhostmask(self, irc, msg, args):
         """<name> <hostmask> [<password>]
@@ -199,7 +199,7 @@ class User(callbacks.Privmsg):
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             user.addHostmask(hostmask)
             ircdb.users.setUser(id, user)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, conf.replyIncorrectAuth)
             return
@@ -227,7 +227,7 @@ class User(callbacks.Privmsg):
                 irc.error(msg, 'There was no such hostmask.')
                 return
             ircdb.users.setUser(id, user)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, conf.replyIncorrectAuth)
             return
@@ -256,7 +256,7 @@ class User(callbacks.Privmsg):
         if user.checkPassword(oldpassword):
             user.setPassword(newpassword, hashed=hashed)
             ircdb.users.setUser(id, user)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, conf.replyIncorrectAuth)
 
@@ -340,7 +340,7 @@ class User(callbacks.Privmsg):
             try:
                 user.setAuth(msg.prefix)
                 ircdb.users.setUser(id, user)
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
             except ValueError:
                 irc.error(msg, 'Your secure flag is true and your hostmask '
                                'doesn\'t match any of your known hostmasks.')
@@ -360,7 +360,7 @@ class User(callbacks.Privmsg):
             return
         user.unsetAuth()
         ircdb.users.setUser(id, user)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def whoami(self, irc, msg, args):
         """takes no arguments

@@ -243,7 +243,7 @@ class Todo(callbacks.Privmsg):
                 cursor.execute("""UPDATE todo SET active = 0 WHERE id = %s""",
                                taskid)
             db.commit()
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args):
@@ -319,7 +319,7 @@ class Todo(callbacks.Privmsg):
         cursor.execute("""UPDATE todo SET priority = %s
                           WHERE id = %s""", priority, id)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def change(self, irc, msg, args):
         """<task id> <regexp>
@@ -350,7 +350,7 @@ class Todo(callbacks.Privmsg):
         cursor.execute("""UPDATE todo SET task = %s
                           WHERE id = %s""", newtext, taskid)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
 Class = Todo
 

@@ -170,7 +170,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             irc.error(msg, 'Id #%s is not an existing poll.')
             return
         cursor.execute("""UPDATE polls SET open=0 WHERE id=%s""", id)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def add(self, irc, msg, args):
         """[<channel>] <id> <option text>
@@ -217,7 +217,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         cursor.execute("""INSERT INTO options VALUES
                           (%s, %s, %s)""",
                           option_id, poll_id, option)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def vote(self, irc, msg, args):
         """[<channel>] <poll id> <option id>
@@ -267,7 +267,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             cursor.execute("""UPDATE votes SET option_id=%s
                               WHERE user_id=%s AND poll_id=%s""",
                               option_id, userId, poll_id)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def results(self, irc, msg, args):
         """[<channel>] <id>

@@ -285,7 +285,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.lobotomized = True
         ircdb.channels.setChannel(channel, c)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     lobotomize = privmsgs.checkChannelCapability(lobotomize, 'op')
 
     def unlobotomize(self, irc, msg, args, channel):
@@ -299,7 +299,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.lobotomized = False
         ircdb.channels.setChannel(channel, c)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     unlobotomize = privmsgs.checkChannelCapability(unlobotomize, 'op')
 
     def permban(self, irc, msg, args, channel):
@@ -321,7 +321,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.addBan(banmask)
         ircdb.channels.setChannel(channel, c)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     permban = privmsgs.checkChannelCapability(permban, 'op')
 
     def unpermban(self, irc, msg, args, channel):
@@ -335,7 +335,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.removeBan(banmask)
         ircdb.channels.setChannel(channel, c)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     unpermban = privmsgs.checkChannelCapability(unpermban, 'op')
 
     def ignore(self, irc, msg, args, channel):
@@ -357,7 +357,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.addIgnore(banmask)
         ircdb.channels.setChannel(channel, c)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     ignore = privmsgs.checkChannelCapability(ignore, 'op')
 
     def unignore(self, irc, msg, args, channel):
@@ -371,7 +371,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.removeIgnore(banmask)
         ircdb.channels.setChannel(channel, c)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     unignore = privmsgs.checkChannelCapability(unignore, 'op')
 
     def ignores(self, irc, msg, args, channel):
@@ -409,7 +409,7 @@ class Channel(callbacks.Privmsg):
             user = ircdb.users.getUser(id)
             user.addCapability(capability)
             ircdb.users.setUser(id, user)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
     addcapability = privmsgs.checkChannelCapability(addcapability,'op')
@@ -429,7 +429,7 @@ class Channel(callbacks.Privmsg):
             user = ircdb.users.getUser(id)
             user.removeCapability(capability)
             ircdb.users.setUser(id, user)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
     removecapability = privmsgs.checkChannelCapability(removecapability, 'op')
@@ -454,7 +454,7 @@ class Channel(callbacks.Privmsg):
             irc.error(msg, s)
             return
         ircdb.channels.setChannel(channel, c)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     setdefaultcapability = \
         privmsgs.checkChannelCapability(setdefaultcapability, 'op')
 
@@ -469,7 +469,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.addCapability(capability)
         ircdb.channels.setChannel(channel, c)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     setcapability = privmsgs.checkChannelCapability(setcapability, 'op')
 
     def unsetcapability(self, irc, msg, args, channel):
@@ -484,7 +484,7 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.removeCapability(capability)
         ircdb.channels.setChannel(channel, c)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
     unsetcapability = privmsgs.checkChannelCapability(unsetcapability, 'op')
 
     def capabilities(self, irc, msg, args):

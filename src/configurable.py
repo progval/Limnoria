@@ -291,7 +291,7 @@ class Mixin(object):
                     if ircdb.checkCapability(msg.prefix, capability):
                         try:
                             self.configurables.set(name, value, channel)
-                            irc.reply(msg, conf.replySuccess)
+                            irc.replySuccess(msg)
                         except Error, e:
                             irc.error(msg, str(e))
                     else:
@@ -304,7 +304,7 @@ class Mixin(object):
                     if ircdb.checkCapability(msg.prefix, 'admin'):
                         try:
                             self.globalConfigurables.set(name, value, channel)
-                            irc.reply(msg, conf.replySuccess)
+                            irc.replySuccess(msg)
                         except Error, e:
                             irc.error(msg, str(e))
                     else:

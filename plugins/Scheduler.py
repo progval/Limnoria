@@ -97,7 +97,7 @@ class Scheduler(callbacks.Privmsg):
             pass
         try:
             schedule.removeEvent(id)
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except KeyError:
             irc.error(msg, 'Invalid event id.')
 
@@ -118,7 +118,7 @@ class Scheduler(callbacks.Privmsg):
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addPeriodicEvent(f, seconds, name)
         # We don't reply because the command runs immediately.
-        # irc.reply(msg, conf.replySuccess)
+        # irc.replySuccess(msg)
 
 
 Class = Scheduler

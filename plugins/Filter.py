@@ -90,12 +90,12 @@ class Filter(callbacks.Privmsg):
             if command in self._filterCommands:
                 method = getattr(self, command)
                 self.outFilters.setdefault(channel, []).append(method)
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
             else:
                 irc.error(msg, 'That\'s not a valid filter command.')
         else:
             self.outFilters[channel] = []
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
     outfilter = privmsgs.checkChannelCapability(outfilter, 'op')
     
     def squish(self, irc, msg, args):

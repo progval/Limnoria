@@ -271,7 +271,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                            %s, 0)""",
                            key, id, int(time.time()), fact)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def changeFactoid(self, irc, msg, match):
         r"(.+)\s+=~\s+(.+)"
@@ -307,7 +307,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           modified_at = %s WHERE key = %s""",
                           new_fact, id, int(time.time()), key)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def augmentFactoid(self, irc, msg, match):
         r"(.+?) is also (.+)"
@@ -338,7 +338,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           modified_at = %s WHERE key = %s""",
                           new_fact, id, int(time.time()), key)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def replaceFactoid(self, irc, msg, match):
         r"^no,?\s+(.+?)\s+is\s+(.+)"
@@ -377,7 +377,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           WHERE key = %s""",
                           new_fact, id, int(time.time()), key)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def literal(self, irc, msg, args):
         """<factoid key>
@@ -487,7 +487,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""UPDATE factoids SET locked_at = %s, locked_by = %s
                           WHERE key = %s""", locked_at, id, key)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def lock(self, irc, msg, args):
         """<factoid key>
@@ -656,7 +656,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             return
         cursor.execute("""DELETE FROM factoids WHERE key = %s""", key)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
 Class = MoobotFactoids
 

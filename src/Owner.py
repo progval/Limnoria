@@ -201,7 +201,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             except KeyError:
                 irc.error(msg,'I have no default plugin for that command.')
                 return
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
                                 
     def eval(self, irc, msg, args):
         """<expression>
@@ -228,7 +228,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             s = privmsgs.getArgs(args)
             try:
                 exec s
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
             except Exception, e:
                 irc.reply(msg, utils.exnToString(e))
         else:
@@ -250,7 +250,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     irc.error(msg, utils.exnToString(e))
                     return
                 setattr(conf, name, value)
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
             else:
                 if name == 'allowEval':
                     irc.error(msg, 'You can\'t set the value of allowEval.')
@@ -266,7 +266,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                         irc.error(msg, str(e))
                         return
                     setattr(conf, name, value)
-                    irc.reply(msg, conf.replySuccess)
+                    irc.replySuccess(msg)
         elif name:
             typeNames = {conf.mystr: 'string',
                          conf.mybool: 'boolean',
@@ -293,7 +293,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         """
         capability = callbacks.canonicalName(privmsgs.getArgs(args))
         conf.defaultCapabilities.add(capability)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def unsetdefaultcapability(self, irc, msg, args):
         """<capability>
@@ -302,7 +302,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         """
         capability = callbacks.canonicalName(privmsgs.getArgs(args))
         conf.defaultCapabilities.remove(capability)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def ircquote(self, irc, msg, args):
         """<string to be sent to the server>
@@ -339,7 +339,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         Runs all the periodic flushers in world.flushers.
         """
         world.flush()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def upkeep(self, irc, msg, args):
         """takes no arguments
@@ -361,7 +361,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         """
         (name, value) = privmsgs.getArgs(args, optional=1)
         world.tempvars[name] = value
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def unset(self, irc, msg, args):
         """<name>
@@ -371,7 +371,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         name = privmsgs.getArgs(args)
         try:
             del world.tempvars[name]
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         except KeyError:
             irc.error(msg, 'That variable wasn\'t set.')
 
@@ -396,7 +396,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error(msg, utils.exnToString(e))
             return
         loadPluginClass(irc, module)
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def reload(self, irc, msg, args):
         """<plugin>
@@ -419,7 +419,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     del callback
                 gc.collect()
                 callback = loadPluginClass(irc, module)
-                irc.reply(msg, conf.replySuccess)
+                irc.replySuccess(msg)
             except ImportError:
                 for callback in callbacks:
                     irc.addCallback(callback)
@@ -440,7 +440,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 callback.die()
                 del callback
             gc.collect()
-            irc.reply(msg, conf.replySuccess)
+            irc.replySuccess(msg)
         else:
             irc.error(msg, 'There was no callback %s' % name)
 
@@ -452,7 +452,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         """
         ircdb.users.reload()
         ircdb.channels.reload()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
 
 Class = Owner

@@ -86,7 +86,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
         for word in words:
             self._badwords.add(word)
         self.makeRegexp()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def remove(self, irc, msg, args):
         """<word> [<word> ...]
@@ -97,7 +97,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
         for word in words:
             self._badwords.discard(word)
         self.makeRegexp()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
 
 Class = BadWords

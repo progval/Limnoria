@@ -496,7 +496,7 @@ class ChannelDB(plugins.ChannelDBHandler,
         cursor = db.cursor()
         cursor.execute("""INSERT INTO words VALUES (NULL, %s)""", word)
         db.commit()
-        irc.reply(msg, conf.replySuccess)
+        irc.replySuccess(msg)
 
     def wordstats(self, irc, msg, args):
         """[<channel>] [<user>] [<word>]

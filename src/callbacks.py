@@ -65,9 +65,6 @@ import irclib
 import ircmsgs
 import ircutils
 
-###
-# Privmsg: handles privmsg commands in a standard fashion.
-###
 def addressed(nick, msg):
     """If msg is addressed to 'name', returns the portion after the address.
     Otherwise returns the empty string.
@@ -289,8 +286,41 @@ def checkCommandCapability(msg, command):
            ircdb.checkCapability(msg.prefix, command) or \
            ircdb.checkCapability(msg.prefix, chancap)
 
+
+class RichReplyMethods(object):
+    """This is a mixin so these replies need only be defined once."""
+    def _makeReply(self, prefix, s):
+        if s:
+            s = '%s  %s' % (prefix, s)
+        else:
+            s = prefix
+        return s
+
+    def replySuccess(self, msg, s='', **kwargs):
+        self.reply(msg, self._makeReply(conf.replySuccess, s), **kwargs)
+
+    def replyNoCapability(self, msg, capability, s='', **kwargs):
+        s = self._makeReply(conf.replyNoCapability % s, s)
+        self.reply(msg, s, **kwargs)
+
+    def replyNotRegistered(self, msg, s='', **kwargs):
+        self.reply(msg, self._makeReply(conf.replyNotRegistered, s), **kwargs)
+
+    def replyPossibleBug(self, msg, s='', **kwargs):
+        self.reply(msg, self._makeReply(conf.replyPossibleBug, s), **kwargs)
+
+    def replyNoUser(self, msg, s='', **kwargs):
+        self.reply(msg, self._makeReply(conf.replyNoUser, s), **kwargs)
+
+    def replyRequiresPrivacy(self, msg, s='', **kwargs):
+        s = self._makeReply(conf.replyRequiresPrivacy, s)
+        self.reply(msg, s, **kwargs)
+
+    def replyError(self, msg, s='', **kwargs):
+        self.reply(msg, self._makeReply(conf.replyError, s), **kwargs)
+
             
-class IrcObjectProxy:
+class IrcObjectProxy(RichReplyMethods):
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args):
         log.debug('IrcObjectProxy.__init__: %s' % args)
@@ -471,21 +501,6 @@ class IrcObjectProxy:
             self.args[self.counter] = s
             self.evalArgs()
 
-    def replySuccess(self, msg, s='', **kwargs):
-        if s:
-            s = '%s  %s' % (conf.replySuccess, s)
-        else:
-            s = conf.replySuccess
-        self.reply(msg, s, **kwargs)
-
-    def replyNoCapability(self, msg, capability, s='', **kwargs):
-        if s:
-            s = '%s   %s' % (conf.replyNoCapability % capability, s)
-        else:
-            s = conf.replyNoCapability % capability
-        self.reply(msg, s, **kwargs)
-
-
     def error(self, msg, s, private=False):
         """error(msg, text) -> replies to msg with an error message of text.
 
@@ -559,7 +574,7 @@ class CommandThread(threading.Thread):
                 self.irc.error(self.msg, s)
 
 
-class ConfigIrcProxy(object):
+class ConfigIrcProxy(RichReplyMethods):
     """Used as a proxy Irc object during configuration. """
     def __init__(self, irc):
         self.__dict__['irc'] = irc
@@ -713,7 +728,7 @@ class Privmsg(irclib.IrcCallback):
         self.log.info('%s took %s seconds', name, elapsed)
 
 
-class IrcObjectProxyRegexp(object):
+class IrcObjectProxyRegexp(RichReplyMethods):
     def __init__(self, irc, *args):
         self.irc = irc
 
