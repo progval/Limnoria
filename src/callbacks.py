@@ -385,6 +385,7 @@ class IrcObjectProxy:
                                 utils.nItems(len(msgs), 'message', 'more')
                 mask = msg.prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
+                Privmsg._mores[msg.nick]=(ircutils.isChannel(msg.args[0]),msgs)
                 self.irc.queueMsg(reply(msg, response, self.prefixName))
         else:
             self.args[self.counter] = s

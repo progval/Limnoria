@@ -165,6 +165,8 @@ class MiscCommands(callbacks.Privmsg):
         messages = pprint.pformat(irc.state.history[-10:])
         email = textwrap.dedent("""
         Subject: %s
+        From: jemfinch@users.sourceforge.net
+        To: supybot-bugs@lists.sourceforge.net
         Date: %s
 
         Bug report for Supybot %s.
@@ -247,10 +249,12 @@ class MiscCommands(callbacks.Privmsg):
         userHostmask = msg.prefix.split('!', 1)[1]
         if nick:
             try:
-                hostmask = irc.state.nickToHostmask(nick)
-                otherUserHostmask = hostmask.split('!', 1)[1]
-                L = self._mores[otherUserHostmask][:]
-                self._mores[userHostmask] = L
+                (public, L) = self._mores[nick]
+                if public:
+                    self._mores[userHostmask] = L[:]
+                else:
+                    irc.error(msg, '%s has no public mores.' % nick)
+                    return
             except KeyError:
                 irc.error(msg, 'Sorry, I can\'t find a hostmask for %s' % nick)
                 return
