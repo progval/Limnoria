@@ -206,7 +206,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         cursor.execute("""SELECT COUNT(user_id) FROM votes
                           WHERE poll_id=%s""",
                           poll_id)
-        if cursor.fetchone()[0] != 0:
+        if int(cursor.fetchone()[0]) != 0:
             irc.error(msg, 'Cannot add options to a poll with votes.')
             return
         # Get the next highest id
@@ -247,7 +247,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         if cursor.rowcount == 0:
             irc.error(msg, 'There is no such poll.')
             return
-        elif cursor.fetchone()[0] == 0:
+        elif int(cursor.fetchone()[0]) == 0:
             irc.error(msg, 'That poll is closed.')
             return
         cursor.execute("""SELECT id FROM options
