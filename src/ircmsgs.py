@@ -224,7 +224,7 @@ class IrcMsg(object):
 
 def isCtcp(msg):
     """Returns whether or not msg is a CTCP message."""
-    return msg.command == 'PRIVMSG' and \
+    return msg.command in ('PRIVMSG', 'NOTICE') and \
            msg.args[1].startswith('\x01') and \
            msg.args[1].endswith('\x01')
 
