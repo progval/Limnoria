@@ -78,5 +78,15 @@ if sqlite is not None:
                               ' one and #2: task number two is much longer '
                               'than task number...')
 
+        def testSetPriority(self):
+            self.assertNotError('todo add --priority=1 moo')
+            self.assertRegexp('todo 1', 'moo, priority: 1 \(Added '
+                              'at: .*?\)')
+            self.assertNotError('setpriority 1 50')
+            self.assertRegexp('todo 1', 'moo, priority: 50 \(Added '
+                              'at: .*?\)')
+            self.assertNotError('setpriority 1 0')
+            self.assertRegexp('todo 1', 'moo \(Added at: .*?\)')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

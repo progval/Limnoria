@@ -237,6 +237,33 @@ class Todo(callbacks.Privmsg):
                      for item in cursor.fetchall()]
             irc.reply(msg, utils.commaAndify(tasks))
 
+    def setpriority(self, irc, msg, args):
+        """<id> <priority>
+
+        Sets the priority of the todo with the given id to the specified value.
+        """
+        try:
+            user_id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        (id, priority) = privmsgs.getArgs(args, needed=2)
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT userid, priority FROM todo
+                          WHERE id = %s""", id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'No note with id %d' % id)
+            return
+        (userid, oldpriority) = cursor.fetchone()
+        if userid != user_id:
+            irc.error(msg, 'Todo #%d does not belong to you.' % id)
+            return
+        # If we make it here, we're okay
+        cursor.execute("""UPDATE todo SET priority = %s
+                          WHERE id = %s""", priority, id)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
+
 Class = Todo
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
