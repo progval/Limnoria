@@ -19,3 +19,9 @@ some fun:
 
 * Have the bot detect when other bots are in the channel responding
   to the same prefix character, and do something based on that.
+
+* Unicode support.  Basically, we'd have to have a way to set the
+  encoding for the server, and use unicode throughout internally.
+  The real issue is how much it would affect the current code to
+  switch it over to unicode, and what kind of burden it would put on
+  plugin authors to deal with that issue.
