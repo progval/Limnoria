@@ -34,7 +34,7 @@ class Forums(callbacks.PrivmsgRegexp):
 
     gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
     def gameknot(self, irc, msg, match):
-        r"http://gameknot.com/chess.pl?bd=\d+&r=\d+"
+        r"http://gameknot.com/chess.pl\?bd=\d+&r=\d+"
         fd = urllib2.urlopen(match.group(0))
         s = fd.read()
         try:
