@@ -705,6 +705,28 @@ class Channel(callbacks.Privmsg):
         utils.sortBy(str.lower, L)
         irc.reply(utils.commaAndify(L))
 
+    def alertOps(self, irc, channel, s, frm=None):
+        """Internal message for notifying all the #channel,ops in a channel of
+        a given situation."""
+        capability = ircdb.makeChannelCapability(channel, 'op')
+        s = 'Alert to all %s ops: %s' % (channel, s)
+        if frm is not None:
+            s += ' (from %s)' % frm
+        for nick in irc.state.channels[channel].users:
+            hostmask = irc.state.nickToHostmask(nick)
+            if ircdb.checkCapability(hostmask, capability):
+                irc.reply(s, to=nick, private=True)
+
+    def alert(self, irc, msg, args, channel):
+        """[<channel>] <text>
+
+        Sends <text> to all the users in <channel> who have the <channel>,op
+        capability.
+        """
+        text = privmsgs.getArgs(args)
+        self.alertOps(irc, channel, text, frm=msg.nick)
+    alert = privmsgs.checkChannelCapability(alert, 'op')
+
 
 Class = Channel
 
