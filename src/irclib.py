@@ -206,6 +206,8 @@ class ChannelState(object):
     def addUser(self, user):
         "Adds a given user to the ChannelState.  Power prefixes are handled."
         nick = user.lstrip('@%+')
+        if not nick:
+            return
         while user and user[0] in '@%+':
             (marker, user) = (user[0], user[1:])
             if marker == '@':
@@ -531,6 +533,11 @@ class Irc(IrcCommandDispatcher):
         else:
             return None
 
+    def do001(self, msg):
+        """Prints some logging."""
+        log.info('Received 001 from the server.')
+        log.info('Hostmasks of user 0: %r' % ircdb.users.getUser(0).hostmasks)
+
     def doPing(self, msg):
         """Handles PING messages."""
         self.sendMsg(ircmsgs.pong(msg.args[0]))
@@ -573,6 +580,7 @@ class Irc(IrcCommandDispatcher):
             (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
             self.prefix = ircutils.joinHostmask(self.nick, user, domain)
             self.prefix = intern(self.prefix)
+            log.info('Changing user 0 hostmask to %r' % self.prefix)
 
     def feedMsg(self, msg):
         """Called by the IrcDriver; feeds a message received."""
@@ -587,19 +595,21 @@ class Irc(IrcCommandDispatcher):
         # This catches cases where we know our own nick (from sending it to the
         # server) but we don't yet know our prefix.
         if msg.nick == self.nick and self.prefix != msg.prefix:
+            log.info('Updating user 0 prefix: %r' % msg.prefix)
             self.prefix = msg.prefix
             user = ircdb.users.getUser(0)
             user.hostmasks = []
             user.name = self.nick
             user.addHostmask(msg.prefix)
-            user.setPassword(utils.mktemp())
             ircdb.users.setUser(0, user)
 
         # This keeps our nick and server attributes updated.
         if msg.command in self._nickSetters:
             if msg.args[0] != self.nick:
+                log.info('Nick attribute wasn\'t updated.')
                 self.nick = msg.args[0]
             if msg.prefix != self.server:
+                log.info('Server attribute wasn\'t updated.')
                 self.server = msg.prefix
 
         # Dispatch to specific handlers for commands.
