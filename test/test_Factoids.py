@@ -93,6 +93,8 @@ if sqlite is not None:
             self.assertRegexp('search --regexp /^.+i/',
                               'jemfinch.*strike')
             self.assertNotRegexp('search --regexp /^.+i/', 'inkedmn')
+            self.assertRegexp('search --regexp m/j/ --regexp m/ss/','jamessan')
+            self.assertRegexp('search --regexp m/^j/ *ss*', 'jamessan')
             self.assertRegexp('search --regexp /^j/',
                               'jemfinch.*jamessan')
             self.assertRegexp('search j*', 'jemfinch.*jamessan')
