@@ -33,6 +33,8 @@
 Plugin for handling Karma stuff for a channel.
 """
 
+import supybot
+
 __revision__ = "$Id$"
 __contributors__ = {
     supybot.authors.jamessan: ['allowUnaddressedKarma'],
