@@ -43,6 +43,9 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotRegexp('calc [9, 5] + [9, 10]', 'TypeError')
         self.assertError('calc [9, 5] + [9, 10]')
         self.assertNotError('calc degrees(2)')
+# Bug in Python <= 2.3.2.
+##         self.assertNotError('calc log(8,2)')
+##         self.assertNotError('calc log(8,2)')
 
     def testRpn(self):
         self.assertResponse('rpn 5 2 +', '7')
@@ -50,7 +53,7 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('rpn 1 dup', 'Stack: [1, 1]')
         self.assertResponse('rpn 2 3 4 + -', str(2-7))
         self.assertNotError('rpn 2 degrees')
-
+        
     def testConvert(self):
         self.assertResponse('convert 1 m to cm', '100.0 cm')
         self.assertResponse('convert 1 M to cm', '100.0 cm')
