@@ -55,7 +55,7 @@ if sqlite is not None:
                 '\x01ACTION jabs jemfinch for being dumb (#1)\x01')
             self.assertResponse('lart jemfinch',
                 '\x01ACTION jabs jemfinch (#1)\x01')
-            self.assertNotError('num lart')
+            self.assertRegexp('num lart', 'currently 1 lart')
             self.assertNotError('add lart shoots $who')
             self.assertRegexp('lart 1', '^lart \[<id>\]')
             self.assertResponse('lart 1 jemfinch',
@@ -63,33 +63,34 @@ if sqlite is not None:
             self.assertResponse('lart 2 jemfinch for being dumb',
                 '\x01ACTION shoots jemfinch for being dumb (#2)\x01')
             self.assertNotError('remove lart 1')
-            self.assertNotError('num lart')
+            self.assertRegexp('num lart', 'currently 1 lart')
             self.assertResponse('lart jemfinch',
                 '\x01ACTION shoots jemfinch (#2)\x01')
             self.assertNotError('remove lart 2')
-            self.assertNotError('num lart')
+            self.assertRegexp('num lart', 'currently 0')
             self.assertError('lart jemfinch')
 
         def testExcuse(self):
             self.assertNotError('add excuse Power failure')
             self.assertResponse('excuse', 'Power failure (#1)')
             self.assertError('excuse a few random words')
-            self.assertNotError('num excuse')
+            self.assertRegexp('num excuse', 'currently 1 excuse')
             self.assertNotError('add excuse /pub/lunch')
             self.assertResponse('excuse 1', 'Power failure (#1)')
             self.assertNotError('remove excuse 1')
-            self.assertNotError('num excuse')
+            self.assertRegexp('num excuse', 'currently 1 excuse')
             self.assertResponse('excuse', '/pub/lunch (#2)')
             self.assertNotError('remove excuse 2')
-            self.assertNotError('num excuse')
+            self.assertRegexp('num excuse', 'currently 0')
             self.assertError('excuse')
 
         def testInsult(self):
             self.assertNotError('add insult Fatty McFatty')
-            self.assertNotError('insult jemfinch')
-            self.assertNotError('num insult')
+            self.assertResponse('insult jemfinch', 'jemfinch: Fatty McFatty '\
+                '(#1)')
+            self.assertRegexp('num insult', 'currently 1')
             self.assertNotError('remove insult 1')
-            self.assertNotError('num insult')
+            self.assertRegexp('num insult', 'currently 0')
             self.assertError('insult jemfinch')
 
         def testPraise(self):
@@ -99,7 +100,7 @@ if sqlite is not None:
                 '\x01ACTION pets jemfinch for being him (#1)\x01')
             self.assertResponse('praise jemfinch',
                 '\x01ACTION pets jemfinch (#1)\x01')
-            self.assertNotError('num praise')
+            self.assertRegexp('num praise', 'currently 1')
             self.assertNotError('add praise gives $who a cookie')
             self.assertRegexp('praise 1', '^praise \[<id>\]')
             self.assertResponse('praise 1 jemfinch',
@@ -107,16 +108,16 @@ if sqlite is not None:
             self.assertResponse('praise 2 jemfinch for being him',
                 '\x01ACTION gives jemfinch a cookie for being him (#2)\x01')
             self.assertNotError('remove praise 1')
-            self.assertNotError('num praise')
+            self.assertRegexp('num praise', 'currently 1')
             self.assertResponse('praise jemfinch',
                 '\x01ACTION gives jemfinch a cookie (#2)\x01')
             self.assertNotError('remove praise 2')
-            self.assertNotError('num praise')
+            self.assertRegexp('num praise', 'currently 0')
             self.assertError('praise jemfinch')
 
         def testInfo(self):
             self.assertNotError('add praise $who')
-            self.assertNotError('info praise 1')
+            self.assertRegexp('info praise 1', 'Created by')
             self.assertNotError('remove praise 1')
             self.assertError('info fake 1')
 
@@ -124,17 +125,17 @@ if sqlite is not None:
             self.assertError('get fake 1')
             self.assertError('get lart foo')
             self.assertNotError('add praise pets $who')
-            self.assertNotError('get praise 1')
+            self.assertResponse('get praise 1', 'pets $who')
             self.assertNotError('remove praise 1')
             self.assertError('get praise 1')
 
         def testNum(self):
             self.assertError('num fake')
             self.assertError('num 1')
-            self.assertNotError('num praise')
-            self.assertNotError('num lart')
-            self.assertNotError('num excuse')
-            self.assertNotError('num insult')
+            self.assertRegexp('num praise', 'currently 0')
+            self.assertRegexp('num lart', 'currently 0')
+            self.assertRegexp('num excuse', 'currently 0')
+            self.assertRegexp('num insult', 'currently 0')
 
         def testChange(self):
             self.assertNotError('add praise teaches $who perl')

@@ -142,6 +142,8 @@ class FunDB(callbacks.Privmsg):
         Insults <nick>.
         """
         nick = privmsgs.getArgs(args)
+        if not nick:
+            raise callbacks.ArgumentError
         cursor = self.db.cursor()
         cursor.execute("""SELECT id, insult FROM insults
                           WHERE insult NOT NULL
@@ -149,20 +151,16 @@ class FunDB(callbacks.Privmsg):
                           LIMIT 1""")
         if cursor.rowcount == 0:
             irc.error(msg, 'There are currently no available insults.')
-            return
-        (id, insult) = cursor.fetchone()
-        nick = nick.strip()
-        if nick in (irc.nick, 'yourself', 'me'):
-            insultee = msg.nick
         else:
-            insultee = nick
-        if ircutils.isChannel(msg.args[0]):
-            means = msg.args[0]
+            (id, insult) = cursor.fetchone()
+            nick = nick.strip()
+            if nick in (irc.nick, 'yourself', 'me'):
+                insultee = msg.nick
+            else:
+                insultee = nick
+            insult = insult.replace("$who", insultee)
             s = '%s: %s (#%s)' % (insultee, insult, id)
-        else:
-            means = insultee
-            s = insult
-        irc.queueMsg(ircmsgs.privmsg(means, s))
+            irc.reply(msg, s)
 
     def crossword(self, irc, msg, args):
         """<word>
