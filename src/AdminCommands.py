@@ -217,7 +217,7 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
                       email)
         smtp.quit()
         irc.reply(msg, conf.replySuccess)
-    bug = privmsgs.thread(bug)
+    reportbug = privmsgs.thread(reportbug)
 
 
 Class = AdminCommands
