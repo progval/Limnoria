@@ -133,6 +133,14 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         finally:
             conf.supybot.plugins.Topic.format.setValue(original)
             
+    def testDefault(self):
+        self.assertError('topic default')
+        try:
+            original = conf.supybot.plugins.Topic.default()
+            conf.supybot.plugins.Topic.default.setValue('foo bar baz')
+            self.assertResponse('topic default', 'foo bar baz')
+        finally:
+            conf.supybot.plugins.Topic.default.setValue(original)
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

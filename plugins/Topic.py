@@ -51,11 +51,6 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-conf.registerPlugin('Topic')
-conf.registerChannelValue(conf.supybot.plugins.Topic, 'separator',
-    registry.StringSurroundedBySpaces(' || ', """Determines what separator is
-    used between individually added topics in the channel topic."""))
-
 class TopicFormat(registry.String):
     "Value must include $topic, otherwise the actual topic would be left out."
     def setValue(self, v):
@@ -64,6 +59,10 @@ class TopicFormat(registry.String):
         else:
             self.error()
             
+conf.registerPlugin('Topic')
+conf.registerChannelValue(conf.supybot.plugins.Topic, 'separator',
+    registry.StringSurroundedBySpaces(' || ', """Determines what separator is
+    used between individually added topics in the channel topic."""))
 conf.registerChannelValue(conf.supybot.plugins.Topic, 'format',
     TopicFormat('$topic ($nick)', """Determines what format is used to add
     topics in the topic.  All the standard substitutes apply, in addiction to
@@ -73,6 +72,9 @@ conf.registerChannelValue(conf.supybot.plugins.Topic, 'recognizeTopiclen',
     TOPICLEN value sent to it by the server and thus refuse to send TOPICs
     longer than the TOPICLEN.  These topics are likely to be truncated by the
     server anyway, so this defaults to True."""))
+conf.registerChannelValue(conf.supybot.plugins.Topic, 'default',
+    registry.String('', """Determines what the default topic for the channel
+    is.  This is used by the default command to set this topic."""))
 conf.registerGroup(conf.supybot.plugins.Topic, 'undo')
 conf.registerChannelValue(conf.supybot.plugins.Topic.undo, 'max',
     registry.NonNegativeInteger(10, """Determines the number of previous
@@ -370,7 +372,8 @@ class Topic(callbacks.Privmsg):
         """[<channel>]
 
         Restores the topic to the one previous to the last topic command that
-        set it.
+        set it.  <channel> is only necessary if the message isn't sent in the
+        channel itself.
         """
         topics = self._getUndo(channel) # This is the last topic sent.
         topics = self._getUndo(channel) # This is the topic list we want.
@@ -379,6 +382,20 @@ class Topic(callbacks.Privmsg):
         else:
             irc.error('There are no more undos for %s.' % channel)
     undo = privmsgs.channel(undo)
+
+    def default(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Sets the topic in <channel> to the default topic for <channel>.  The
+        default topic for a channel may be configured via the configuration
+        variable supybot.plugins.Topic.default.
+        """
+        topic = self.registryValue('default', channel)
+        if topic:
+            self._sendTopics(irc, channel, [topic])
+        else:
+            irc.error('There is no default topic configured for %s.' % channel)
+    default = privmsgs.channel(default)
 
 Class = Topic
 
