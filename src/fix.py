@@ -186,4 +186,23 @@ def flip((x, y)):
     """Flips a two-tuple around.  (x, y) becomes (y, x)."""
     return (y, x)
 
+
+def any(p, seq):
+    """Returns true if any element in seq satisfies predicate p."""
+    if p is None:
+        p = bool
+    for elt in seq:
+        if p(elt):
+            return True
+    return False
+
+def all(p, seq):
+    """Returns true if all elements in seq satisfy predicate p."""
+    if p is None:
+        p = bool
+    for elt in seq:
+        if not p(elt):
+            return False
+    return True
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
