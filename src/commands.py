@@ -361,14 +361,21 @@ def getChannelDb(irc, msg, args, state, **kwargs):
     channelSpecific = conf.supybot.databases.plugins.channelSpecific
     try:
         getChannel(irc, msg, args, state, **kwargs)
-        if state.channel and not conf.get(channelSpecific, state.channel):
-            state.channel = conf.get(channelSpecific.channel, state.channel)
+        channel = channelSpecific.getChannelLink(state.channel)
+        state.channel = channel
+        state.args[-1] = channel
     except (callbacks.ArgumentError, IndexError):
         if channelSpecific():
             raise
+        channel = channelSpecific.link()
+        if not conf.get(channelSpecific.link.allow, channel):
+            log.warning('channelSpecific.link is globally set to %s, but '
+                        '%s disallows linking to its db.' % (channel, channel))
+            raise
         else:
-            state.channel = channelSpecific.channel()
-            state.args.append(state.channel)
+            channel = channelSpecific.getChannelLink(channel)
+            state.channel = channel
+            state.args.append(channel)
 
 def inChannel(irc, msg, args, state):
     if not state.channel:

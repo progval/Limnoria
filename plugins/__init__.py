@@ -158,10 +158,10 @@ class DBHandler(object):
 
 
 def makeChannelFilename(filename, channel=None, dirname=None):
+    assert channel is not None, 'Death to those who use None for their channel'
     filename = os.path.basename(filename)
-    if channel is None or \
-       not conf.get(conf.supybot.databases.plugins.channelSpecific, channel):
-        channel = conf.supybot.databases.plugins.channelSpecific.channel()
+    channelSpecific = conf.supybot.databases.plugins.channelSpecific
+    channel = channelSpecific.getChannelLink(channel)
     channel = ircutils.toLower(channel)
     if dirname is None:
         dirname = conf.supybot.directories.data.dirize(channel)
@@ -170,10 +170,9 @@ def makeChannelFilename(filename, channel=None, dirname=None):
     return os.path.join(dirname, filename)
 
 def getChannel(channel):
+    assert channel is not None, 'Death to those who use None for their channel'
     channelSpecific = conf.supybot.databases.plugins.channelSpecific
-    if not conf.get(channelSpecific, channel):
-        channel = conf.get(channelSpecific.channel, channel)
-    return channel
+    return channelSpecific.getChannelLink(channel)
 
 # XXX This shouldn't be a mixin.  This should be contained by classes that
 #     want such behavior.  But at this point, it wouldn't gain much for us

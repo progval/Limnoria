@@ -204,7 +204,7 @@ registerGlobalValue(supybot, 'user',
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
     List = ircutils.IrcSet
-    
+
 registerGlobalValue(supybot, 'networks',
     Networks([], """Determines what networks the bot will connect to.""",
              orderAlphabetically=True))
@@ -220,7 +220,7 @@ class Servers(registry.SpaceSeparatedListOfStrings):
         (server, port) = s.split(':')
         port = int(port)
         return (server, port)
-    
+
     def __call__(self):
         L = registry.SpaceSeparatedListOfStrings.__call__(self)
         return map(self.convert, L)
@@ -231,7 +231,7 @@ class Servers(registry.SpaceSeparatedListOfStrings):
     def append(self, s):
         L = registry.SpaceSeparatedListOfStrings.__call__(self)
         L.append(s)
-        
+
 class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
     sorted = True
     List = ircutils.IrcSet
@@ -417,9 +417,9 @@ registerChannelValue(supybot.reply.whenAddressedBy, 'chars',
     reply to.  A prefix character is a single character that the bot will use
     to determine what messages are addressed to it; when there are no prefix
     characters set, it just uses its nick.  Each character in this string is
-    interpreted individually; you can have multiple prefix chars simultaneously,
-    and if any one of them is used as a prefix the bot will assume it is being
-    addressed."""))
+    interpreted individually; you can have multiple prefix chars
+    simultaneously, and if any one of them is used as a prefix the bot will
+    assume it is being addressed."""))
 
 registerChannelValue(supybot.reply.whenAddressedBy, 'strings',
     registry.SpaceSeparatedSetOfStrings([], """Determines what strings the bot
@@ -432,9 +432,9 @@ registerChannelValue(supybot.reply.whenAddressedBy, 'nick',
     registry.Boolean(True, """Determines whether the bot will reply when people
     address it by its nick, rather than with a prefix character."""))
 registerChannelValue(supybot.reply.whenAddressedBy.nick, 'atEnd',
-    registry.Boolean(False, """Determines whether the bot will reply when people
-    address it by its nick at the end of the message, rather than at the
-    beginning."""))
+    registry.Boolean(False, """Determines whether the bot will reply when
+    people address it by its nick at the end of the message, rather than at
+    the beginning."""))
 registerChannelValue(supybot.reply.whenAddressedBy, 'nicks',
     registry.SpaceSeparatedSetOfStrings([], """Determines what extra nicks the
     bot will always respond to when addressed by, even if its current nick is
@@ -491,7 +491,7 @@ registerChannelValue(supybot.replies, 'genericNoCapability',
     This could be because you actually possess the anti-capability for the
     capability that's required of you, or because the channel provides that
     anti-capability by default, or because the global capabilities include
-    that anti-capability.  Or, it could be because the channel or 
+    that anti-capability.  Or, it could be because the channel or
     supybot.capabilities.default is set to False, meaning that no commands are
     allowed unless explicitly in your capabilities.  Either way, you can't do
     what you want to do.""",
@@ -549,7 +549,7 @@ class ValidQuotes(registry.Value):
 
     def __str__(self):
         return str(self.value)
-                    
+
 registerChannelValue(supybot.commands, 'quotes',
     ValidQuotes('"', """Determines what characters are valid for quoting
     arguments to commands in order to prevent them from being tokenized.
@@ -692,7 +692,7 @@ class DataFilenameDirectory(DataFilename, Directory):
     def __call__(self):
         v = DataFilename.__call__(self)
         v = Directory.__call__(self)
-        return v  
+        return v
 
 registerGroup(supybot, 'directories')
 registerGlobalValue(supybot.directories, 'conf',
@@ -790,19 +790,55 @@ registerGlobalValue(supybot.databases.channels, 'filename',
     for the channels database.  This file will go into the directory specified
     by the supybot.directories.conf variable."""))
 
+# TODO This will need to do more in the future (such as making sure link.allow
+# will let the link occur), but for now let's just leave it as this.
+class ChannelSpecific(registry.Boolean):
+    def getChannelLink(self, channel):
+        channelSpecific = supybot.databases.plugins.channelSpecific
+        channels = [channel]
+        def hasLinkChannel(channel):
+            if not get(channelSpecific, channel):
+                lchannel = get(channelSpecific.link, channel)
+                if not get(channelSpecific.link.allow, lchannel):
+                    return False
+                return channel != lchannel
+            return False
+        lchannel = channel
+        while hasLinkChannel(lchannel):
+            if lchannel not in channels:
+                channels.append(lchannel)
+                lchannel = get(channelSpecific.link, lchannel)
+            else:
+                # Found a cyclic link.  We'll just use the current channel
+                lchannel = channel
+                break
+        return lchannel
+
 registerGroup(supybot.databases, 'plugins')
 registerChannelValue(supybot.databases.plugins, 'channelSpecific',
-    registry.Boolean(True, """Determines whether database-based plugins that
+    ChannelSpecific(True, """Determines whether database-based plugins that
     can be channel-specific will be so.  This can be overridden by individual
-    channels.  Do note that the bot likely needs to be restarted for changes of
-    this variable to take effect; also note that you may wish to set
-    supybot.databases.plugins.channelSpecific.channel appropriately if you
-    wish to share a certain channel's databases globally."""))
-registerChannelValue(supybot.databases.plugins.channelSpecific, 'channel',
+    channels.  Do note that the bot needs to be restarted immediately after
+    changing this variable or your db plugins may not work for your channel;
+    also note that you may wish to set
+    supybot.databases.plugins.channelSpecific.link appropriately if you wish
+    to share a certain channel's databases globally."""))
+registerChannelValue(supybot.databases.plugins.channelSpecific, 'link',
     ValidChannel('#', """Determines what channel global (non-channel-specific)
     databases will be considered a part of.  This is helpful if you've been
-    running channel-specific for awhile and want to turn the databases for your
-    primary channel into global databases."""))
+    running channel-specific for awhile and want to turn the databases for
+    your primary channel into global databases.  If
+    supybot.databases.plugins.channelSpecific.link.allow prevents linking, the
+    current channel will be used.  Do note that the bot needs to be restarted
+    immediately after changing this variable or your db plugins may not work
+    for your channel."""))
+registerChannelValue(supybot.databases.plugins.channelSpecific.link, 'allow',
+    registry.Boolean(True, """Determines whether another channel's global
+    (non-channel-specific) databases will be allowed to link to this channel's
+    databases.  Do note that the bot needs to be restarted immediately after
+    changing this variable or your db plugins may not work for your channel.
+    """))
+
 
 class CDB(registry.Boolean):
     def connect(self, filename):
@@ -884,8 +920,8 @@ registerGlobalValue(supybot.protocols.irc, 'queueDuplicateMessages',
     registry.Boolean(False, """Determines whether the bot will allow duplicate
     messages to be queued for delivery to the server.  This is a safety
     mechanism put in place to prevent plugins from sending the same message
-    multiple times; most of the time it doesn't matter, but when it does, you'll
-    probably want it to disallowed."""))
+    multiple times; most of the time it doesn't matter, but when it does,
+    you'll probably want it to disallowed."""))
 
 ###
 # supybot.protocols.http
