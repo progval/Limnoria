@@ -167,7 +167,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     def _getTrackerInfo(self, url):
         try:
             s = webutils.getUrl(url)
-            self.log.warning(s)
             resp = []
             head = ''
             m = self._linkType.search(s)
