@@ -137,7 +137,7 @@ class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
                         cursor.execute("""INSERT INTO tinyurls VALUES
                             (NULL, %s, %s)""", id, tinyurl)
                     if self.toggles.get('tinyreply', channel=msg.args[0]):
-                        irc.queueMsg(callbacks.reply(msg, '%s (was %s)' %
+                        irc.queueMsg(callbacks.reply(msg, '%s (was <%s>)' %
                             (ircutils.bold(tinyurl), url), prefixName=False))
             key = (msg.nick, channel)
             self.nextMsgs.setdefault(key, []).append((url, added))
