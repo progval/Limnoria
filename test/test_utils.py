@@ -132,6 +132,10 @@ class UtilsTest(SupyTestCase):
         self.assertEqual(d['fool'], 'fool')
         self.assertEqual(d['foo'], 'foo')
 
+    def testAbbrevFailsWithDups(self):
+        L = ['english', 'english']
+        self.assertRaises(ValueError, utils.abbrev, L)
+
     def testSoundex(self):
         L = [('Euler', 'E460'),
              ('Ellery', 'E460'),

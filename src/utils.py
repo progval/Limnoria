@@ -101,6 +101,9 @@ def eachSubstring(s):
 
 def abbrev(strings, d=None):
     """Returns a dictionary mapping unambiguous abbreviations to full forms."""
+    if len(strings) != len(set(strings)):
+        raise ValueError, \
+              'strings given to utils.abbrev have duplicates: %r' % strings
     if d is None:
         d = {}
     for s in strings:
