@@ -350,23 +350,43 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             channel = msg.args[1] # nick is msg.args[0].
             self.checkPrivileges(irc, channel)
 
-    def getops(self, irc, msg, args):
+    def op(self, irc, msg, args):
         """[<channel>]
 
-        Attempts to get ops from ChanServ in <channel>.  If no channel is
-        given, the current channel is assumed.
+        Attempts to get opped by ChanServ in <channel>.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         try:
             if irc.nick in irc.state.channels[channel].ops:
-                irc.error('I\'ve already got ops in %s' % channel)
+                irc.error('I\'m already opped in %s.' % channel)
             else:
                 chanserv = self.registryValue('ChanServ')
                 if chanserv:
                     irc.sendMsg(ircmsgs.privmsg(chanserv, 'op %s' % channel))
                 else:
                     irc.error('You must set supybot.plugins.Services.ChanServ '
-                              'before I\'m able to do get ops.')
+                              'before I\'m able to do get opped.')
+        except KeyError:
+            irc.error('I\'m not in %s.' % channel)
+
+    def voice(self, irc, msg, args):
+        """[<channel>]
+
+        Attempts to get voiced by ChanServ in <channel>.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        try:
+            if irc.nick in irc.state.channels[channel].voices:
+                irc.error('I\'m already voiced in %s.' % channel)
+            else:
+                chanserv = self.registryValue('ChanServ')
+                if chanserv:
+                    irc.sendMsg(ircmsgs.privmsg(chanserv,'voice %s' % channel))
+                else:
+                    irc.error('You must set supybot.plugins.Services.ChanServ '
+                              'before I\'m able to do get voiced.')
         except KeyError:
             irc.error('I\'m not in %s.' % channel)
 
