@@ -267,7 +267,7 @@ def findBinaryInPath(s):
             break
     return cmdLine
 
-def commaAndify(seq, And='and'):
+def commaAndify(seq, comma=',', And='and'):
     """Given a a sequence, returns an english clause for that sequence.
 
     I.e., given [1, 2, 3], returns '1, 2, and 3'
@@ -282,7 +282,8 @@ def commaAndify(seq, And='and'):
         return ' '.join(L)
     else:
         L[-1] = '%s %s' % (And, L[-1])
-        return ', '.join(L)
+        sep = '%s ' % comma
+        return sep.join(L)
 
 _unCommaTheRe = re.compile(r'(.*),\s*(the)$', re.I)
 def unCommaThe(s):

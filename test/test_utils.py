@@ -192,17 +192,20 @@ class UtilsTest(SupyTestCase):
         L = ['foo']
         original = L[:]
         self.assertEqual(utils.commaAndify(L), 'foo')
-        self.assertEqual(utils.commaAndify(L, 'or'), 'foo')
+        self.assertEqual(utils.commaAndify(L, And='or'), 'foo')
         self.assertEqual(L, original)
         L.append('bar')
         original = L[:]
         self.assertEqual(utils.commaAndify(L), 'foo and bar')
-        self.assertEqual(utils.commaAndify(L, 'or'), 'foo or bar')
+        self.assertEqual(utils.commaAndify(L, And='or'), 'foo or bar')
         self.assertEqual(L, original)
         L.append('baz')
         original = L[:]
         self.assertEqual(utils.commaAndify(L), 'foo, bar, and baz')
-        self.assertEqual(utils.commaAndify(L, 'or'), 'foo, bar, or baz')
+        self.assertEqual(utils.commaAndify(L, And='or'), 'foo, bar, or baz')
+        self.assertEqual(utils.commaAndify(L, comma=';'), 'foo; bar; and baz')
+        self.assertEqual(utils.commaAndify(L, comma=';', And='or'),
+                         'foo; bar; or baz')
         self.assertEqual(L, original)
         self.failUnless(utils.commaAndify(sets.Set(L)))
 
