@@ -139,15 +139,6 @@ if __name__ == '__main__':
         postConnect = 'Would you like any other commands to run ' \
                       'when the bot is finished connecting to the server?'
         afterConnect.append(anything('What command?'))
-    for command in onStart:
-        configfd.write(command)
-        configfd.write('\n')
-    configfd.write('\n')
-    for command in afterConnect:
-        configfd.write(command)
-        configfd.write('\n')
-    configfd.close()
-
     ###
     # Set owner user.
     ###
@@ -157,11 +148,22 @@ if __name__ == '__main__':
         user = ircdb.IrcUser()
         user.setPassword(password)
         user.addCapability('owner')
+        while yn('Would you like to add a hostmask for the owner?') == 'y':
+            user.addHostmask(anything('What hostmask?'))
         ircdb.users.setUser(owner, user)
 
     ###
     # Finito!
     ###
+    for command in onStart:
+        configfd.write(command)
+        configfd.write('\n')
+    configfd.write('\n')
+    for command in afterConnect:
+        configfd.write(command)
+        configfd.write('\n')
+    configfd.close()
+
     print
     print 'You\'re done!  Now run the bot with the command line:'
     print 'src/bot.py conf/%s' % name
