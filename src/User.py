@@ -125,7 +125,7 @@ class User(callbacks.Privmsg):
             pass
         user = ircdb.users.newUser()
         user.name = name
-        user.setPassword(password, hashed=hashed)
+        user.setPassword(password)
         if addHostmask:
             user.addHostmask(msg.prefix)
         ircdb.users.setUser(user)
