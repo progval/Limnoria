@@ -1,5 +1,8 @@
 Version 0.80.0pre3
 
+supybot.channels doesn't exist anymore; now the only list of channels
+to join is per-network, in supybot.networks.<network>.channels.
+
 The URL database has been changed again, but it will use a different
 filename so you shouldn't run into conflicts, just a newly-empty
 database.
