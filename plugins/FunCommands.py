@@ -156,6 +156,25 @@ class FunCommands(callbacks.Privmsg):
             L.extend(LL)
         irc.reply(msg, ''.join(L))
         
+
+    def encode(self, irc, msg, args):
+        """<encoding> <text>
+
+        Returns an encoded form of the given text; the valid encodings are
+        available in the documentation of the Python codecs module.
+        """
+        encoding, text = privmsgs.getArgs(args, needed=2)
+        irc.reply(msg, text.encode(encoding))
+
+    def decode(self, irc, msg, args):
+        """<encoding> <text>
+
+        Returns an un-encoded form of the given text; the valid encodings are
+        available in the documentation of the Python codecs module.
+        """
+        encoding, text = privmsgs.getArgs(args, needed=2)
+        irc.reply(msg, text.decode(encoding).encode('utf-8'))
+        
     def hexlify(self, irc, msg, args):
         """<text>
 
