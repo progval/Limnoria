@@ -457,16 +457,13 @@ class OnlySomeStrings(String):
                                   'This is a bug.'
         self.__parent = super(OnlySomeStrings, self)
         self.__parent.__init__(*args, **kwargs)
+        self.__doc__ = 'Valid values include %s.' % \
+                        utils.commaAndify(map(repr, self.validStrings))
 
     def help(self):
         strings = [s for s in self.validStrings if s]
         return '%s  Valid strings: %s.' % \
                 (self._help, utils.commaAndify(strings))
-
-    def error(self):
-        self.__parent.error('That is not a valid value.  '
-                            'Valid values include %s.' % \
-                            utils.commaAndify(map(repr, self.validStrings)))
 
     def normalize(self, s):
         lowered = s.lower()
