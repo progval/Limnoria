@@ -624,6 +624,7 @@ class IrcObjectProxy(RichReplyMethods):
         maxL = []
         for cb in self.irc.callbacks:
             L = cb.getCommand(args)
+            log.debug('%s.getCommand(%r) returned %r', cb.name(), args, L)
             if L and L >= maxL:
                 maxL = L
                 cbs.append((cb, L))
@@ -995,7 +996,7 @@ class Commands(object):
         first = canonicalName(args[0])
         if len(args) >= 2 and first == self.canonicalName():
             second = canonicalName(args[1])
-            if self.isCommandMethod(second):
+            if second != self.canonicalName() and self.isCommandMethod(second):
                 return args[:2]
         if self.isCommandMethod(first):
             return args[:1]
@@ -1003,14 +1004,13 @@ class Commands(object):
     
     def getCommandMethod(self, command):
         """Gets the given command from this plugin."""
-        self.log.debug('*** command: %s', str(command))
         command = map(canonicalName, command)
-        try:
-            return getattr(self, command[0])
-        except AttributeError:
+        assert self.getCommand(command) == command
+        if len(command) == 2:
             assert command[0] == self.canonicalName()
-            assert len(command) >= 2
-            return getattr(self, command[1])
+            return self.getCommandMethod([command[1]])
+        else:
+            return getattr(self, command[0])
 
     def listCommands(self):
         commands = []
@@ -1037,7 +1037,10 @@ class Commands(object):
                 self.callCommand(command, irc, msg, *args, **kwargs)
             finally:
                 self.callingCommand = None
-        except (getopt.GetoptError, ArgumentError):
+        except (getopt.GetoptError, ArgumentError), e:
+            self.log.debug('Got %s, giving argument error.',
+                           utils.exnToString(e))
+            self.log.exception('Wow, really difficulties here:')
             method = self.getCommandMethod(command)
             irc.reply(formatArgumentError(method, name=formatCommand(command)))
         except (SyntaxError, Error), e:
