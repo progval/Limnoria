@@ -113,6 +113,8 @@ class UtilsTest(unittest.TestCase):
         self.failUnless(r.search('foo'))
         r = utils.perlReToPythonRe('m/\\//')
         self.failUnless(r.search('/'))
+        r = utils.perlReToPythonRe('m/cat/i')
+        self.failUnless(r.search('CAT'))
 
     def testPerlReToReplacer(self):
         f = utils.perlReToReplacer('s/foo/bar/')
@@ -127,6 +129,8 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(f('foobarbaz'), 'foorz')
         f = utils.perlReToReplacer('s/ba\\///g')
         self.assertEqual(f('fooba/rba/z'), 'foorz')
+        f = utils.perlReToReplacer('s/cat/dog/i')
+        self.assertEqual(f('CATFISH'), 'dogFISH')
 
     def testFindBinaryInPath(self):
         if os.name == 'posix':

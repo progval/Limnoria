@@ -227,7 +227,7 @@ def perlReToPythonRe(s):
     flag = 0
     try:
         for c in flags.upper():
-            flag &= getattr(re, c)
+            flag |= getattr(re, c)
     except AttributeError:
         raise ValueError, 'Invalid flag: %s' % c
     return re.compile(regexp, flag)
