@@ -179,7 +179,7 @@ class Poll(callbacks.Privmsg):
         Vote yes or no on an active poll with the given id. This command can 
         also be used to override the previous vote.
         """
-        (id, vote) = privmsgs.getArgs(args, needed=2)
+        (id, vote) = privmsgs.getArgs(args, required=2)
         try:
             id = int(id)
         except ValueError:

@@ -52,14 +52,14 @@ class FunctionsTest(unittest.TestCase):
     def testGetArgs(self):
         args = ['foo', 'bar', 'baz']
         self.assertEqual(privmsgs.getArgs(args), ' '.join(args))
-        self.assertEqual(privmsgs.getArgs(args, needed=2),
+        self.assertEqual(privmsgs.getArgs(args, required=2),
                          [args[0], ' '.join(args[1:])])
-        self.assertEqual(privmsgs.getArgs(args, needed=3), args)
+        self.assertEqual(privmsgs.getArgs(args, required=3), args)
         self.assertRaises(callbacks.ArgumentError,
-                          privmsgs.getArgs, args, needed=4)
-        self.assertEqual(privmsgs.getArgs(args, needed=3, optional=1),
+                          privmsgs.getArgs, args, required=4)
+        self.assertEqual(privmsgs.getArgs(args, required=3, optional=1),
                          args + [''])
-        self.assertEqual(privmsgs.getArgs(args, needed=0, optional=1),
+        self.assertEqual(privmsgs.getArgs(args, required=0, optional=1),
                          ' '.join(args))
 
 

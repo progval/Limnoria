@@ -118,7 +118,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         commands. <description> is the common name for the bugzilla and will
         be listed with the bugzilla query.
         """
-        (shorthand, url, description) = privmsgs.getArgs(args, needed=3)
+        (shorthand, url, description) = privmsgs.getArgs(args, required=3)
         cursor = self.db.cursor()
         cursor.execute("""INSERT INTO bugzillas VALUES (%s, %s, %s)""",
                     shorthand, url, description)
@@ -153,7 +153,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         List defined bugzillae. If <abbreviation> is specified, list the
         information for that bugzilla.
         """
-        shorthand = privmsgs.getArgs(args, needed=0, optional=1)
+        shorthand = privmsgs.getArgs(args, required=0, optional=1)
         if shorthand:
             cursor = self.db.cursor()
             cursor.execute("""SELECT url,description from bugzillas where
@@ -205,7 +205,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
 
         Look up bug <number> in the bugzilla associated with <abbreviation>.
         """
-        (shorthand, num) = privmsgs.getArgs(args, needed=2)
+        (shorthand, num) = privmsgs.getArgs(args, required=2)
         cursor = self.db.cursor()
         cursor.execute("""SELECT url,description from bugzillas where
                           shorthand = %s""", shorthand)

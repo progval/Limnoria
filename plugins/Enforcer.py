@@ -84,7 +84,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
         to in other bots as 'bitch mode.')  It defaults to True.
         """
         self.topics = {}
-        (chanserv, revenge) = privmsgs.getArgs(args, needed=0, optional=2)
+        (chanserv, revenge) = privmsgs.getArgs(args, required=0, optional=2)
         self.chanserv = chanserv or 'ChanServ'
         self.started = True
         revenge = revenge.capitalize()

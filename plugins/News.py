@@ -153,7 +153,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        number = privmsgs.getArgs(args, needed=0, optional=1)
+        number = privmsgs.getArgs(args, required=0, optional=1)
         if number:
             self._readnews(irc, msg, [channel, number])
             return
@@ -195,7 +195,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         s/text/replacement/flags.  <channel> is only necessary if the message
         isn't sent on the channel itself.
         """
-        (id, regexp) = privmsgs.getArgs(args, needed=2)
+        (id, regexp) = privmsgs.getArgs(args, required=2)
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
@@ -224,7 +224,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         is only necessary if the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        id = privmsgs.getArgs(args, needed=0, optional=1)
+        id = privmsgs.getArgs(args, required=0, optional=1)
         db = self.getDb(channel)
         cursor = db.cursor()
         if id:

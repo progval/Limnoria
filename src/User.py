@@ -60,7 +60,7 @@ class User(callbacks.Privmsg):
         on disk, rather than being stored in plaintext.
         """
         (optlist, rest) = getopt.getopt(args, '', ['hashed'])
-        (name, password) = privmsgs.getArgs(rest, needed=2)
+        (name, password) = privmsgs.getArgs(rest, required=2)
         hashed = False
         for (option, arg) in optlist:
             if option == '--hashed':
@@ -94,7 +94,7 @@ class User(callbacks.Privmsg):
 
         Unregisters <name> from the user database.
         """
-        (name, password) = privmsgs.getArgs(args, needed=2)
+        (name, password) = privmsgs.getArgs(args, required=2)
         if not self._checkNotChannel(irc, msg, password):
             return
         try:
@@ -117,7 +117,7 @@ class User(callbacks.Privmsg):
         If you include the <password> parameter, this message must be sent
         to the bot privately (not on a channel).
         """
-        (name, newname, password) = privmsgs.getArgs(args, needed=2,optional=1)
+        (name, newname, password) = privmsgs.getArgs(args, required=2,optional=1)
         if not self._checkNotChannel(irc, msg, password):
             return
         try:

@@ -114,7 +114,7 @@ class Note(callbacks.Privmsg):
 
         Sends a new note to the user specified.
         """
-        (name, note) = privmsgs.getArgs(args, needed=2)
+        (name, note) = privmsgs.getArgs(args, required=2)
         if ircdb.users.hasUser(name):
             toId = ircdb.users.getUserId(name)
         else:

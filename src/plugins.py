@@ -312,7 +312,7 @@ class Configurable(object):
         if not ircdb.checkCapability(msg.prefix, capability):
             irc.error(msg, conf.replyNoCapability % capability)
             return
-        (name, value) = privmsgs.getArgs(args, needed=0, optional=2)
+        (name, value) = privmsgs.getArgs(args, required=0, optional=2)
         if not name:
             irc.reply(msg, utils.commaAndify(self.configurables.names()))
             return

@@ -85,7 +85,7 @@ class Fun(callbacks.Privmsg):
         given, unsets the outFilter.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        command = privmsgs.getArgs(args, needed=0, optional=1)
+        command = privmsgs.getArgs(args, required=0, optional=1)
         if command:
             command = callbacks.canonicalName(command)
             if command in self._filterCommands:
@@ -152,7 +152,7 @@ class Fun(callbacks.Privmsg):
 
         Converts from base <base> the number <number>
         """
-        (base, number) = privmsgs.getArgs(args, needed=2)
+        (base, number) = privmsgs.getArgs(args, required=2)
         irc.reply(msg, str(long(number, int(base))))
 
     def binary(self, irc, msg, args):
@@ -186,7 +186,7 @@ class Fun(callbacks.Privmsg):
         available in the documentation of the Python codecs module:
         <http://www.python.org/doc/lib/node126.html>.
         """
-        encoding, text = privmsgs.getArgs(args, needed=2)
+        encoding, text = privmsgs.getArgs(args, required=2)
         irc.reply(msg, text.encode(encoding))
 
     def decode(self, irc, msg, args):
@@ -196,7 +196,7 @@ class Fun(callbacks.Privmsg):
         available in the documentation of the Python codecs module:
         <http://www.python.org/doc/lib/node126.html>.
         """
-        encoding, text = privmsgs.getArgs(args, needed=2)
+        encoding, text = privmsgs.getArgs(args, required=2)
         irc.reply(msg, text.decode(encoding).encode('utf-8'))
 
     def hexlify(self, irc, msg, args):
@@ -410,7 +410,7 @@ class Fun(callbacks.Privmsg):
         Returns the levenshtein distance (also known as the "edit distance"
         between <string1> and <string2>
         """
-        (s1, s2) = privmsgs.getArgs(args, needed=2)
+        (s1, s2) = privmsgs.getArgs(args, required=2)
         irc.reply(msg, str(utils.distance(s1, s2)))
 
     def soundex(self, irc, msg, args):

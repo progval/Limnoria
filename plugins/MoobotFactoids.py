@@ -368,7 +368,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         Returns the literal factoid for the given factoid key.  No parsing of
         the factoid value is done as it is with normal retrieval.
         """
-        key = privmsgs.getArgs(args, needed=1)
+        key = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
         cursor.execute("""SELECT fact FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
@@ -383,7 +383,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
 
         Returns the various bits of info on the factoid for the given key.
         """
-        key = privmsgs.getArgs(args, needed=1)
+        key = privmsgs.getArgs(args, required=1)
         # Start building the response string
         s = key + ": "
         # Next, get all the info and build the response piece by piece
@@ -433,7 +433,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        key = privmsgs.getArgs(args, needed=1)
+        key = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
         cursor.execute("""SELECT created_by, locked_by FROM factoids
                           WHERE key LIKE %s""", key)
@@ -545,7 +545,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         author has an integer name, you'll have to use that author's id to use
         this function (so don't use integer usernames!).
         """
-        author = privmsgs.getArgs(args, needed=1)
+        author = privmsgs.getArgs(args, required=1)
         try:
             id = ircdb.users.getUserId(author)
         except KeyError:
@@ -568,7 +568,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
 
         Lists the keys of the factoids whose key contains the provided text.
         """
-        search = privmsgs.getArgs(args, needed=1)
+        search = privmsgs.getArgs(args, required=1)
         glob = '%' + search + '%'
         cursor = self.db.cursor()
         cursor.execute("""SELECT key FROM factoids
@@ -588,7 +588,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
 
         Lists the keys of the factoids whose value contains the provided text.
         """
-        search = privmsgs.getArgs(args, needed=1)
+        search = privmsgs.getArgs(args, required=1)
         glob = '%' + search + '%'
         cursor = self.db.cursor()
         cursor.execute("""SELECT key FROM factoids
@@ -614,7 +614,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        key = privmsgs.getArgs(args, needed=1)
+        key = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
         cursor.execute("""SELECT key, locked_at FROM factoids
                           WHERE key LIKE %s""", key)

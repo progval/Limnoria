@@ -99,7 +99,7 @@ class Dunno(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        text = privmsgs.getArgs(args, needed=1)
+        text = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
         cursor.execute("""INSERT INTO dunnos
                           VALUES(NULL, %s, %s, %s)""",
@@ -118,7 +118,7 @@ class Dunno(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        dunno_id = privmsgs.getArgs(args, needed=1)
+        dunno_id = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
         cursor.execute("""SELECT added_by, dunno
                           FROM dunnos
@@ -142,7 +142,7 @@ class Dunno(callbacks.Privmsg):
         Search for dunno containing the given text.  Returns the ids of the
         dunnos with the text in them.
         """
-        text = privmsgs.getArgs(args, needed=1)
+        text = privmsgs.getArgs(args, required=1)
         glob = "%" + text + "%"
         cursor = self.db.cursor()
         cursor.execute("""SELECT id FROM dunnos
@@ -160,7 +160,7 @@ class Dunno(callbacks.Privmsg):
 
         Display the text of the dunno with the given id.
         """
-        id = privmsgs.getArgs(args, needed=1)
+        id = privmsgs.getArgs(args, required=1)
         try:
             id = int(id)
         except ValueError:

@@ -78,7 +78,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             irc.error(msg, conf.replyRequiresPrivacy)
             return
         (self.nick, self.password, nickserv, chanserv) = \
-                    privmsgs.getArgs(args, needed=2, optional=2)
+                    privmsgs.getArgs(args, required=2, optional=2)
         self.nick = ircutils.IrcString(self.nick)
         self.nickserv = ircutils.IrcString(nickserv or 'NickServ')
         self.chanserv = ircutils.IrcString(chanserv or 'ChanServ')

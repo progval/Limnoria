@@ -69,7 +69,7 @@ class Babelfish(callbacks.Privmsg):
 
         Returns <text> translated from <from-language> into <to-language>.
         """
-        (fromLang, toLang, text) = privmsgs.getArgs(args, needed=3)
+        (fromLang, toLang, text) = privmsgs.getArgs(args, required=3)
         try:
             fromLang = self._abbrevs[fromLang.lower()]
             toLang = self._abbrevs[toLang.lower()]
@@ -92,7 +92,7 @@ class Babelfish(callbacks.Privmsg):
         until it doesn't change anymore or 12 times, whichever is fewer.  One
         of the languages must be English.
         """
-        (fromLang, toLang, text) = privmsgs.getArgs(args, needed=3)
+        (fromLang, toLang, text) = privmsgs.getArgs(args, required=3)
         try:
             fromLang = self._abbrevs[fromLang.lower()]
             toLang = self._abbrevs[toLang.lower()]
@@ -117,7 +117,7 @@ class Babelfish(callbacks.Privmsg):
         Returns a random language supported by babelfish.  If <allow-english>
         is provided, will include English in the list of possible languages.
         """
-        allowEnglish = privmsgs.getArgs(args, needed=0, optional=1)
+        allowEnglish = privmsgs.getArgs(args, required=0, optional=1)
         language = random.choice(babelfish.available_languages)
         while not allowEnglish and language == 'English':
             language = random.choice(babelfish.available_languages)

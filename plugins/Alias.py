@@ -105,7 +105,7 @@ def makeNewAlias(name, alias):
         tokens = callbacks.tokenize(alias)
         if not wildcard and biggestDollar or biggestAt:
             args = privmsgs.getArgs(args,
-                                    needed=biggestDollar,
+                                    required=biggestDollar,
                                     optional=biggestAt)
             # Gotta have a mutable sequence (for replace).
             if biggestDollar + biggestAt == 1: # We got a string, no tuple.
@@ -242,7 +242,7 @@ class Alias(callbacks.Privmsg):
         format.  Underscores can be used to represent arguments to the alias
         itself; for instance ...
         """
-        (name, alias) = privmsgs.getArgs(args, needed=2)
+        (name, alias) = privmsgs.getArgs(args, required=2)
         try:
             self.addAlias(irc, name, alias)
             irc.reply(msg, conf.replySuccess)

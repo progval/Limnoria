@@ -184,7 +184,7 @@ class FunDB(callbacks.Privmsg):
         Gives you a standard, random BOFH excuse or the excuse with the given 
         <id>.
         """
-        id = privmsgs.getArgs(args, needed=0, optional=1)
+        id = privmsgs.getArgs(args, required=0, optional=1)
         cursor = self.db.cursor()
         if id:
             try:
@@ -218,7 +218,7 @@ class FunDB(callbacks.Privmsg):
         when it used that lart against, say, jemfinch, to say '/me slices
         jemfinch in half with a free AOL cd'
         """
-        (table, s) = privmsgs.getArgs(args, needed=2)
+        (table, s) = privmsgs.getArgs(args, required=2)
         table = table.lower()
         try:
             name = ircdb.users.getUser(msg.prefix).name
@@ -250,7 +250,7 @@ class FunDB(callbacks.Privmsg):
         Removes the data, referred to in the first argument, with the id
         number <id> from the database.
         """
-        (table, id) = privmsgs.getArgs(args, needed=2)
+        (table, id) = privmsgs.getArgs(args, required=2)
         table = table.lower()
         try:
             ircdb.users.getUser(msg.prefix).name
@@ -280,7 +280,7 @@ class FunDB(callbacks.Privmsg):
         zero-based index into the db; <regexp> is a regular expression of the
         form s/regexp/replacement/flags.
         """
-        (table, id, regexp) = privmsgs.getArgs(args, needed=3)
+        (table, id, regexp) = privmsgs.getArgs(args, required=3)
         table = table.lower()
         try:
             name = ircdb.users.getUser(msg.prefix).name
@@ -341,7 +341,7 @@ class FunDB(callbacks.Privmsg):
 
         Gets the record with id <id> from the table specified.
         """
-        (table, id) = privmsgs.getArgs(args, needed=2)
+        (table, id) = privmsgs.getArgs(args, required=2)
         table = table.lower()
         try:
             id = int(id)
@@ -366,7 +366,7 @@ class FunDB(callbacks.Privmsg):
 
         Gets the info for the record with id <id> from the table specified.
         """
-        (table, id) = privmsgs.getArgs(args, needed=2)
+        (table, id) = privmsgs.getArgs(args, required=2)
         table = table.lower()
         try:
             id = int(id)

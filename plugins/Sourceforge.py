@@ -177,7 +177,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         Returns a list of the most recent bugs filed against <project>.
         Defaults to searching for bugs in the project set by defaultproject.
         """
-        project = privmsgs.getArgs(args, needed=0, optional=1)
+        project = privmsgs.getArgs(args, required=0, optional=1)
         if not project:
             project = self.configurables.get('default-project', msg.args[0])
             if not project:
@@ -221,7 +221,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         Returns a list of the most recent RFEs filed against <project>.
         Defaults to searching for RFEs in the project set by defaultproject.
         """
-        project = privmsgs.getArgs(args, needed=0, optional=1)
+        project = privmsgs.getArgs(args, required=0, optional=1)
         if not project:
             project = self.configurables.get('default-project', msg.args[0])
             if not project:

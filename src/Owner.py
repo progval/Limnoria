@@ -202,7 +202,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         variable type with only the <name> argument and sets the value of the
         variable to <value> when both arguments are given.
         """
-        (name, value) = privmsgs.getArgs(args, needed=0, optional=2)
+        (name, value) = privmsgs.getArgs(args, required=0, optional=2)
         if name and value:
             if conf.allowEval:
                 try:

@@ -71,7 +71,7 @@ class Utilities(callbacks.Privmsg):
         <text>.  The first and second arguments must necessarily be the same
         length.
         """
-        (bad, good, text) = privmsgs.getArgs(args, needed=3)
+        (bad, good, text) = privmsgs.getArgs(args, required=3)
         irc.reply(msg, text.translate(string.maketrans(bad, good)))
 
     def strupper(self, irc, msg, args):
@@ -114,7 +114,7 @@ class Utilities(callbacks.Privmsg):
         thing as strjoin "", since if <string 2> contains spaces, they won't be
         removed by strconcat.
         """
-        (first, second) = privmsgs.getArgs(args, needed=2)
+        (first, second) = privmsgs.getArgs(args, required=2)
         irc.reply(msg, first+second)
 
     def echo(self, irc, msg, args):
@@ -134,7 +134,7 @@ class Utilities(callbacks.Privmsg):
         s/regexp/replacement/flags, returns the result of applying such a
         regexp to <text>
         """
-        (regexp, text) = privmsgs.getArgs(args, needed=2)
+        (regexp, text) = privmsgs.getArgs(args, required=2)
         f = None
         try:
             r = utils.perlReToPythonRe(regexp)

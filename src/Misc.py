@@ -72,7 +72,7 @@ class Misc(callbacks.Privmsg):
         for (option, argument) in optlist:
             if option == '--private':
                 evenPrivate = True
-        name = privmsgs.getArgs(rest, needed=0, optional=1)
+        name = privmsgs.getArgs(rest, required=0, optional=1)
         name = name.lower()
         if not name:
             names = [cb.name() for cb in irc.callbacks
@@ -172,7 +172,7 @@ class Misc(callbacks.Privmsg):
         Returns the hostmask of <nick>.  If <nick> isn't given, return the
         hostmask of the person giving the command.
         """
-        nick = privmsgs.getArgs(args, needed=0, optional=1)
+        nick = privmsgs.getArgs(args, required=0, optional=1)
         try:
             if nick:
                 irc.reply(msg, irc.state.nickToHostmask(nick))
@@ -201,7 +201,7 @@ class Misc(callbacks.Privmsg):
         Returns the size of the various logfiles in use.  If given a specific
         logfile, returns only the size of that logfile.
         """
-        filename = privmsgs.getArgs(args, needed=0, optional=1)
+        filename = privmsgs.getArgs(args, required=0, optional=1)
         if filename:
             if not filename.endswith('.log'):
                 irc.error(msg, 'That filename doesn\'t appear to be a log.')
@@ -243,7 +243,7 @@ class Misc(callbacks.Privmsg):
         If <nick> is given, it takes the continuation of the last command from
         <nick> instead of the person sending this message.
         """
-        nick = privmsgs.getArgs(args, needed=0, optional=1)
+        nick = privmsgs.getArgs(args, required=0, optional=1)
         userHostmask = msg.prefix.split('!', 1)[1]
         if nick:
             try:
@@ -330,7 +330,7 @@ class Misc(callbacks.Privmsg):
         Tells the <nick|channel> whatever <text> is.  Use nested commands to
         your benefit here.
         """
-        (target, text) = privmsgs.getArgs(args, needed=2)
+        (target, text) = privmsgs.getArgs(args, required=2)
         s = '%s wants me to tell you: %s' % (msg.nick, text)
         irc.queueMsg(ircmsgs.privmsg(target, s))
         raise callbacks.CannotNest

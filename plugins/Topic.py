@@ -138,7 +138,7 @@ class Topic(callbacks.Privmsg):
         s/regexp/replacement/flags.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
-        (number, regexp) = privmsgs.getArgs(args, needed=2)
+        (number, regexp) = privmsgs.getArgs(args, required=2)
         try:
             number = int(number)
             if number > 0:

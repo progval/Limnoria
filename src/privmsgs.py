@@ -58,22 +58,22 @@ def getChannel(msg, args):
         raise callbacks.Error, 'Command must be sent in a channel or ' \
                                'include a channel in its arguments.'
 
-def getArgs(args, needed=1, optional=0):
-    """Take the needed arguments from args.
+def getArgs(args, required=1, optional=0):
+    """Take the required/optional arguments from args.
 
-    Always returns a list of size needed + optional, filling it with however
+    Always returns a list of size required + optional, filling it with however
     many empty strings is necessary to fill the tuple to the right size.
 
-    If there aren't enough args even to satisfy needed, raise an error and
+    If there aren't enough args even to satisfy required, raise an error and
     let the caller handle sending the help message.
     """
-    if len(args) < needed:
+    if len(args) < required:
         raise callbacks.ArgumentError
-    if len(args) < needed + optional:
-        ret = list(args) + ([''] * (needed + optional - len(args)))
-    elif len(args) >= needed + optional:
-        ret = list(args[:needed + optional - 1])
-        ret.append(' '.join(args[needed + optional - 1:]))
+    if len(args) < required + optional:
+        ret = list(args) + ([''] * (required + optional - len(args)))
+    elif len(args) >= required + optional:
+        ret = list(args[:required + optional - 1])
+        ret.append(' '.join(args[required + optional - 1:]))
     if len(ret) == 1:
         return ret[0]
     else:

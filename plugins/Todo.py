@@ -95,7 +95,7 @@ class Todo(callbacks.Privmsg):
         will return a list of task ids that that user has added to their todo
         list.
         """
-        arg = privmsgs.getArgs(args, needed=0, optional=1)
+        arg = privmsgs.getArgs(args, required=0, optional=1)
 
         userid = None
         taskid = None
@@ -186,7 +186,7 @@ class Todo(callbacks.Privmsg):
                 except ValueError, e:
                     irc.error(msg, '%r is an invalid priority' % arg)
                     return
-        text = privmsgs.getArgs(rest, needed=1)
+        text = privmsgs.getArgs(rest, required=1)
         cursor = self.db.cursor()
         cursor.execute("""INSERT INTO todo
                           VALUES (NULL, %s, %s, %s, %s, 1)""",
@@ -205,7 +205,7 @@ class Todo(callbacks.Privmsg):
             irc.error(msg, conf.replyNotRegistered)
             return
 
-        taskid = privmsgs.getArgs(args, needed=1)
+        taskid = privmsgs.getArgs(args, required=1)
         cursor = self.db.cursor()
         cursor.execute("""SELECT * FROM todo
                           WHERE id = %s AND userid = %s
@@ -277,7 +277,7 @@ class Todo(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        (id, priority) = privmsgs.getArgs(args, needed=2)
+        (id, priority) = privmsgs.getArgs(args, required=2)
         cursor = self.db.cursor()
         cursor.execute("""SELECT userid, priority FROM todo
                           WHERE id = %s AND active = 1""", id)
@@ -304,7 +304,7 @@ class Todo(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-        taskid, regexp = privmsgs.getArgs(args, needed=2)
+        taskid, regexp = privmsgs.getArgs(args, required=2)
         # Check the regexp first, it's easier and doesn't require a db query
         try:
             replacer = utils.perlReToReplacer(regexp)

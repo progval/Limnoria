@@ -94,7 +94,7 @@ class Channel(callbacks.Privmsg):
         this will cause the bot to "cycle", or PART and then JOIN the channel.
         If <key> is given, join the channel using that key.
         """
-        key = privmsgs.getArgs(args, needed=0, optional=1)
+        key = privmsgs.getArgs(args, required=0, optional=1)
         if not key:
             key = None
         irc.queueMsg(ircmsgs.part(channel))
@@ -249,7 +249,7 @@ class Channel(callbacks.Privmsg):
         The <channel> argument is only necessary if the message isn't being
         sent in the channel itself.
         """
-        channelarg = privmsgs.getArgs(args, needed=0, optional=1)
+        channelarg = privmsgs.getArgs(args, required=0, optional=1)
         channel = channelarg or channel
         c = ircdb.channels.getChannel(channel)
         if len(c.ignores) == 0:

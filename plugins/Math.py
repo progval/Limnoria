@@ -213,7 +213,7 @@ class Math(callbacks.Privmsg):
             n = args.pop(0)
         else:
             n = 1
-        (unit1, to, unit2) = privmsgs.getArgs(args, needed=3)
+        (unit1, to, unit2) = privmsgs.getArgs(args, required=3)
         if to != 'to':
             raise callbacks.ArgumentError
         try:

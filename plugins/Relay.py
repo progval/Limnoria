@@ -167,7 +167,7 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
         if not self.started:
             irc.error(msg, 'You must use the start command first.')
             return
-        abbreviation, server = privmsgs.getArgs(args, needed=2)
+        abbreviation, server = privmsgs.getArgs(args, required=2)
         if isinstance(irc, irclib.Irc):
             realIrc = irc
         else:

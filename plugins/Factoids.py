@@ -321,7 +321,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         <regexp>.
         """
         channel = privmsgs.getChannel(msg, args)
-        (key, number, regexp) = privmsgs.getArgs(args, needed=3)
+        (key, number, regexp) = privmsgs.getArgs(args, required=3)
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:

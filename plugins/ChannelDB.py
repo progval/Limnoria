@@ -385,7 +385,7 @@ class ChannelDB(plugins.ChannelDBHandler, # Must be first (die).
         isn't given, it defaults to the user sending the command.
         """
         channel = privmsgs.getChannel(msg, args)
-        name = privmsgs.getArgs(args, needed=0, optional=1)
+        name = privmsgs.getArgs(args, required=0, optional=1)
         if not name:
             try:
                 id = ircdb.users.getUserId(msg.prefix)
@@ -483,7 +483,7 @@ class ChannelDB(plugins.ChannelDBHandler, # Must be first (die).
         available for that word, do we assume it's <user>.)
         """
         channel = privmsgs.getChannel(msg, args)
-        (arg1, arg2) = privmsgs.getArgs(args, needed=0, optional=2)
+        (arg1, arg2) = privmsgs.getArgs(args, required=0, optional=2)
         db = self.getDb(channel)
         cursor = db.cursor()
         if not arg1 and not arg2:

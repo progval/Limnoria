@@ -113,7 +113,7 @@ class Lookup(callbacks.Privmsg):
         for in conf.dataDir.  Use 'lookup <name> <key>' to get the value of
         the key in the file.
         """
-        (name, filename) = privmsgs.getArgs(args, needed=2)
+        (name, filename) = privmsgs.getArgs(args, required=2)
         db = getDb()
         cursor = db.cursor()
         try:
