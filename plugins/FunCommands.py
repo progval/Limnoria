@@ -622,7 +622,10 @@ class FunCommands(callbacks.Privmsg):
         else:
             try:
                 ip = socket.gethostbyname(host)
-                irc.reply(msg, ip)
+                if ip == '64.94.110.11':
+                    irc.reply(msg, 'Host not found.')
+                else:
+                    irc.reply(msg, ip)
             except socket.error:
                 irc.error(msg, 'Host not found.')
     dns = privmsgs.thread(dns)

@@ -90,6 +90,7 @@ class FunCommandsTest(PluginTestCase, PluginDocumentation):
         
     def testDns(self):
         self.assertNotError('dns slashdot.org')
+        self.assertResponse('dns alsdkjfaslkdfjaslkdfj.com', 'Host not found.')
 
     def testWhois(self):
         self.assertNotError('whois ohio-state.edu')
