@@ -97,15 +97,22 @@ class Misc(callbacks.Privmsg):
                     irc = callbacks.IrcObjectProxyRegexp(irc)
                     replyWhenNotCommand(irc, msg, notCommands)
                 elif ambiguousCommands:
-                    L = []
-                    while ambiguousCommands:
+                    if len(ambiguousCommands) == 1: # Common case.
                         (command, cbs) = ambiguousCommands.popitem()
-                        L.append('%s is available in the %s plugins' % \
+                        s = 'The command %r is available in the plugins %s.  '\
+                            'Please specify the plugin whose command you ' \
+                            'wish to call by using its name as a command ' \
+                            'before %r' % \
+                            (command, utils.commaAndify(cbs), command)
+                    else:
+                        L = []
+                        while ambiguousCommands:
+                            (command, cbs) = ambiguousCommands.popitem()
+                            L.append('%r is available in the plugins %s' % \
                                  (command, utils.commaAndify(cbs)))
-                    s = '%s; please specify which plugins to call %s from.' % \
-                        ('; '.join(L),
-                         len(L) > 1 and 'these commands' or 'this command')
-                    irc.error(msg, s)
+                        s = '%s; please specify from which plugins to ' \
+                            'call these commands.' % '; '.join(L)
+                    irc.queueMsg(callbacks.reply(msg, 'Error: ' + s))
         
     def list(self, irc, msg, args):
         """[--private] [<module name>]
