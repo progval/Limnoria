@@ -202,7 +202,7 @@ class Group(object):
         if not isValidRegistryName(name):
             raise InvalidRegistryName, name
         if node is None:
-            node = Group()
+            node = Group(self._supplyDefault)
         if name not in self._children: # XXX Is this right?
             self._children[name] = node
             self.added.append(name)
