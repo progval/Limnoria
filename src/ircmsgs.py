@@ -260,7 +260,7 @@ def toXml(msg, pretty=True, includeTime=True):
     L.append('</msg>\n')
     return ''.join(L)
 
-def prettyPrint(msg, addRecipients=False):
+def prettyPrint(msg, addRecipients=False, timestampFormat=None):
     """Provides a client-friendly string form for messages.
 
     IIRC, I copied BitchX's (or was it XChat's?) format for messages.
@@ -304,6 +304,9 @@ def prettyPrint(msg, addRecipients=False):
         s = '*** %s has quit IRC%s' % (msg.nick, quitmsg)
     elif msg.command == 'TOPIC':
         s = '*** %s changes topic to %s' % (nickorprefix(), msg.args[1])
+    at = getattr(msg, 'receivedAt', False)
+    if timestampFormat and at:
+        s = '%s %s' % (time.strftime(timestampFormat, time.localtime(at)), s)
     return s
 
 ###

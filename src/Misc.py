@@ -63,6 +63,11 @@ conf.registerGlobalValue(conf.supybot.plugins.Misc, 'listPrivatePlugins',
     plugins with the list command if given the --private switch.  If this is
     disabled, non-owner users should be unable to see what private plugins
     are loaded."""))
+conf.registerGlobalValue(conf.supybot.plugins.Misc, 'timestampFormat',
+    registry.String('[%H:%M:%S]', """Determines the format string for
+    timestamps in the Misc.last command.  Refer to the Python documentation
+    for the time module to see what formats are accepted. If you set this
+    variable to the empty string, the timestamp will not be shown."""))
 
 class Misc(callbacks.Privmsg):
     def __init__(self):
@@ -454,31 +459,38 @@ class Misc(callbacks.Privmsg):
                ircutils.isChannel(msg.args[0])
 
     def last(self, irc, msg, args):
-        """[--{from,in,to,with,without,regexp,nolimit}] <args>
+        """[--{from,in,on,with,without,regexp,nolimit}] <args>
 
         Returns the last message matching the given criteria.  --from requires
-        a nick from whom the message came; --in and --to require a channel the
-        message was sent to; --with requires some string that had to be in the
-        message; --regexp requires a regular expression the message must i
-        match; --nolimit returns all the messages that can be found.  By
-        default, the current channel is searched.
+        a nick from whom the message came; --in requires a channel the message
+        was sent to; --on requires a netowkr the message was sent on; --with
+        requires some string that had to be in the message; --regexp requires
+        a regular expression the message must i match; --nolimit returns all
+        the messages that can be found.  By default, the current channel is
+        searched.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
+        (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'on=',
                                                    'with=', 'regexp=',
                                                    'without=', 'nolimit'])
         predicates = {}
         nolimit = False
         if ircutils.isChannel(msg.args[0]):
-            predicates['in'] = lambda m: m.args[0] == msg.args[0]
+            predicates['in'] = lambda m: ircutils.strEqual(m.args[0],
+                                                           msg.args[0])
+        predicates['on'] = lambda m: m.receivedOn == msg.receivedOn
         for (option, arg) in optlist:
             if option == '--from':
                 def f(m, arg=arg):
                     return ircutils.hostmaskPatternEqual(arg, m.nick)
                 predicates['from'] = f
-            elif option == '--in' or option == 'to':
+            elif option == '--in':
                 def f(m, arg=arg):
-                    return m.args[0] == arg
+                    return ircutils.strEqual(m.args[0], arg)
                 predicates['in'] = f
+            elif option == '--on':
+                def f(m, arg=arg):
+                    return m.receivedOn == arg
+                predicates['on'] = f
             elif option == '--with':
                 def f(m, arg=arg):
                     return arg.lower() in m.args[1].lower()
@@ -505,15 +517,16 @@ class Misc(callbacks.Privmsg):
         iterable.next() # Drop the first message.
         predicates = list(utils.flatten(predicates.itervalues()))
         resp = []
+        tsf = self.registryValue('timestampFormat')
         for m in iterable:
             for predicate in predicates:
                 if not predicate(m):
                     break
             else:
                 if nolimit:
-                    resp.append(ircmsgs.prettyPrint(m))
+                    resp.append(ircmsgs.prettyPrint(m, timestampFormat=tsf))
                 else:
-                    irc.reply(ircmsgs.prettyPrint(m))
+                    irc.reply(ircmsgs.prettyPrint(m, timestampFormat=tsf))
                     return
         if not resp:
             irc.error('I couldn\'t find a message matching that criteria in '

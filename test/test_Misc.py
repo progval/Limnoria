@@ -32,13 +32,13 @@
 from testsupport import *
 
 class MiscTestCase(ChannelPluginTestCase):
-    plugins = ('Misc', 'Utilities', 'Gameknot', 'Ctcp', 'Dict', 'User')
+    plugins = ('Misc', 'Utilities', 'Gameknot', 'Anonymous', 'Dict', 'User')
     def testAction(self):
         self.assertAction('action moos', 'moos')
 
     def testActionDoesNotAllowEmptyString(self):
-        self.assertError('action')
-        self.assertError('action ""')
+        self.assertHelp('action')
+        self.assertHelp('action ""')
 
     def testReplyWhenNotCommand(self):
         try:
@@ -97,10 +97,13 @@ class MiscTestCase(ChannelPluginTestCase):
         # If Ctcp changes to public, these tests will break.  So if
         # the next assert fails, change the plugin we test for public/private
         # to some other non-public plugin.
-        name = 'Ctcp'
-        self.failIf(self.irc.getCallback(name).public)
+        name = 'Anonymous'
+        conf.supybot.plugins.Anonymous.public.setValue(False)
         self.assertNotRegexp('list', name)
         self.assertRegexp('list --private', name)
+        conf.supybot.plugins.Anonymous.public.setValue(True)
+        self.assertRegexp('list', name)
+        self.assertNotRegexp('list --private', name)
 
     def testListDoesNotIncludeNonCanonicalName(self):
         self.assertNotRegexp('list Owner', '_exec')
@@ -113,6 +116,8 @@ class MiscTestCase(ChannelPluginTestCase):
 
     if network:
         def testVersion(self):
+            print '*** This test should start passing when we have our '\
+                  'threaded issues resolved.'
             self.assertNotError('version')
 
     def testSource(self):
@@ -134,19 +139,28 @@ class MiscTestCase(ChannelPluginTestCase):
         self.failIf(ircmsgs.isAction(m))
 
     def testLast(self):
-        self.feedMsg('foo bar baz')
-        self.assertResponse('last', '<%s> foo bar baz' % self.nick)
-        self.assertRegexp('last', '<%s> @last' % self.nick)
-        self.assertResponse('last --with foo', '<%s> foo bar baz' % self.nick)
-        self.assertResponse('last --without foo', '<%s> @last' % self.nick)
-        self.assertRegexp('last --regexp m/\s+/', 'last --without foo')
-        self.assertResponse('last --regexp m/bar/',
-                            '<%s> foo bar baz' % self.nick)
-        self.assertResponse('last --from %s' % self.nick.upper(),
-                            '<%s> @last --regexp m/bar/' % self.nick)
-        self.assertResponse('last --from %s*' % self.nick[0],
-                            '<%s> @last --from %s' %
-                            (self.nick, self.nick.upper()))
+        orig = conf.supybot.plugins.Misc.timestampFormat()
+        try:
+            conf.supybot.plugins.Misc.timestampFormat.setValue('')
+            self.feedMsg('foo bar baz')
+            self.assertResponse('last', '<%s> foo bar baz' % self.nick)
+            self.assertRegexp('last', '<%s> @last' % self.nick)
+            self.assertResponse('last --with foo', '<%s> foo bar baz' % \
+                                self.nick)
+            self.assertResponse('last --without foo', '<%s> @last' % self.nick)
+            self.assertRegexp('last --regexp m/\s+/', 'last --without foo')
+            self.assertResponse('last --regexp m/bar/',
+                                '<%s> foo bar baz' % self.nick)
+            self.assertResponse('last --from %s' % self.nick.upper(),
+                                '<%s> @last --regexp m/bar/' % self.nick)
+            self.assertResponse('last --from %s*' % self.nick[0],
+                                '<%s> @last --from %s' %
+                                (self.nick, self.nick.upper()))
+            conf.supybot.plugins.Misc.timestampFormat.setValue('foo')
+            self.assertSnarfNoResponse('foo bar baz', 1)
+            self.assertResponse('last', 'foo <%s> foo bar baz' % self.nick)
+        finally:
+            conf.supybot.plugins.Misc.timestampFormat.setValue(orig)
 
     def testMore(self):
         self.assertRegexp('echo %s' % ('abc'*300), 'more')
