@@ -51,7 +51,7 @@ class Friendly(callbacks.PrivmsgRegexp):
             irc.queueMsg(callbacks.reply(msg, s, prefixName=False))
 
     def exclaim(self, irc, msg, match):
-        r"^([^\s]+)!"
+        r"^([^\s]+)!$"
         if match.group(1) == irc.nick:
             s = msg.nick + '!'
             irc.queueMsg(callbacks.reply(msg, s, prefixName=False))
