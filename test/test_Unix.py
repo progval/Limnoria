@@ -31,27 +31,30 @@
 
 from test import *
 
-class UnixTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Unix',)
-    def testSpell(self):
-        self.assertRegexp('spell Strike', 'correctly')
-        self.assertRegexp('spell asdlkfjasdlfkjsdalfkjasdflkasjdflskdfjlsd',
-                          'not find')
-        self.assertNotError('spell Strizzike')
-        self.assertError('spell foo bar baz')
+import os
 
-    def testErrno(self):
-        self.assertRegexp('errno 12', '^ENOMEM')
-        self.assertRegexp('errno ENOMEM', '#12')
+if os.name == 'posix':
+    class UnixTestCase(PluginTestCase, PluginDocumentation):
+        plugins = ('Unix',)
+        def testSpell(self):
+            self.assertRegexp('spell Strike', 'correctly')
+            self.assertRegexp('spell asdlkjsdalfkjasdflkasjdflskdfjlsd',
+                              'not find')
+            self.assertNotError('spell Strizzike')
+            self.assertError('spell foo bar baz')
 
-    def testProgstats(self):
-        self.assertNotError('progstats')
+        def testErrno(self):
+            self.assertRegexp('errno 12', '^ENOMEM')
+            self.assertRegexp('errno ENOMEM', '#12')
 
-    def testCrypt(self):
-        self.assertNotError('crypt jemfinch')
+        def testProgstats(self):
+            self.assertNotError('progstats')
 
-    def testFortune(self):
-        self.assertNotError('fortune')
+        def testCrypt(self):
+            self.assertNotError('crypt jemfinch')
+
+        def testFortune(self):
+            self.assertNotError('fortune')
 
     
 

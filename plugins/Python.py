@@ -39,7 +39,7 @@ import plugins
 import os
 import imp
 import sys
-import crypt
+import math
 import random
 import string
 
@@ -53,7 +53,7 @@ import utils
 import privmsgs
 import callbacks
 
-pythonPath = map(os.path.dirname, [os.__file__, crypt.__file__])
+pythonPath = map(os.path.dirname, [os.__file__, math.__file__])
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and

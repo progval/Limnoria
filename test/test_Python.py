@@ -31,14 +31,17 @@
 
 from test import *
 
+import os
+
 class PythonTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Python',)
     def testPydoc(self):
         self.assertError('pydoc foobar')
         self.assertError('pydoc assert')
         self.assertNotError('pydoc str')
-        self.assertNotRegexp('pydoc crypt.crypt', 'NameError')
-        self.assertNotError('pydoc crypt.crypt')
+        if os.name == 'posix':
+            self.assertNotRegexp('pydoc crypt.crypt', 'NameError')
+            self.assertNotError('pydoc crypt.crypt')
         self.assertNotError('pydoc math.sin')
         self.assertNotError('pydoc string.translate')
         self.assertNotError('pydoc fnmatch.fnmatch')
