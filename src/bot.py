@@ -37,7 +37,6 @@ from fix import *
 
 import sys
 import time
-import email
 import getopt
 #import pprint
 
@@ -68,15 +67,13 @@ class ConfigurationDict(dict):
 
 
 
-def processConfigFile(filename):
+def handleConfigFile(filename):
     import debug
     import irclib
     import ircmsgs
     import drivers
     import ircutils
     import privmsgs
-    def reportConfigError(filename, msg):
-        debug.recoverableError('%s: %s' % (filename, msg))
     class ConfigAfter376(irclib.IrcCallback):
         public = False
         def __init__(self, commands):
@@ -91,63 +88,21 @@ def processConfigFile(filename):
                 irc.queueMsg(msg)
 
         do377 = do376
-    try:
-        fd = file(filename)
-        m = email.message_from_file(fd)
-        d = ConfigurationDict(m.items())
-        if 'nick' not in d:
-            reportConfigError(filename, 'No nick defined.')
-            return
-        if 'server' not in d:
-            reportConfigError(filename, 'No server defined.')
-            return
-        nick = d['nick']
-        server = d['server']
-        password = d['password']
-        if ':' in server:
-            (server, port) = server.split(':', 1)
-            try:
-                server = (server, int(port))
-            except ValueError:
-                reportConfigError(filename, 'Server has invalid port.')
-                return
-        else:
-            server = (server, 6667)
-        user = d['user'] or nick
-        ident = d['ident'] or nick
-        irc = irclib.Irc(nick, user, ident, password)
-        for Class in privmsgs.standardPrivmsgModules:
-            irc.addCallback(Class())
-        world.startup = True
-        text = m.get_payload()
-        while 1:
-            # Gotta remove all extra newlines.
-            newtext = text.replace('\n\n\n', '\n\n')
-            if newtext == text:
-                text = newtext
-                break
-            else:
-                text = newtext
-        lines = text.splitlines()
-        #debug.printf(pprint.pformat(lines))
-        (startup, after376) = tuple(itersplit(lines,lambda s: not s, True))
-        #debug.printf('startup: %r' % startup)
-        #debug.printf('after376: %r' % after376)
-        prefix = ircutils.joinHostmask(nick, ident, 'host')
-        for line in filter(None, startup):
-            if not line.startswith('#'):
-                irc.feedMsg(ircmsgs.privmsg(irc.nick, line, prefix=prefix))
-        irc.reset()
-        world.startup = False
-        irc.addCallback(ConfigAfter376(after376))
-        driver = drivers.newDriver(server, irc)
-    except IOError, e:
-        reportConfigError(filename, e)
-    except email.Errors.HeaderParseError, e:
-        s = str(e)
-        problem = s[s.rfind('`')+1:-2]
-        msg = 'Invalid configuration format: %s' % problem
-        reportConfigError(filename, msg)
+    nick = conf.config['nick']
+    user = conf.config['user']
+    ident = conf.config['ident']
+    prefix = ircutils.joinHostmask(nick, ident, 'host')
+    password = conf.config['password']
+    irc = irclib.Irc(nick, user, ident, password)
+    for Class in privmsgs.standardPrivmsgModules:
+        irc.addCallback(Class())
+    world.startup = True
+    for line in conf.config['onStart']:
+        irc.feedMsg(ircmsgs.privmsg(irc.nick, line, prefix=prefix))
+    irc.reset()
+    world.startup = False
+    irc.addCallback(ConfigAfter376(conf.config['afterConnect']))
+    driver = drivers.newDriver(conf.config['server'], irc)
 
 def main():
     (optlist, filenames) = getopt.getopt(sys.argv[1:], 'Opc:')
@@ -166,7 +121,8 @@ def main():
     import drivers
     import schedule
     for filename in filenames:
-        processConfigFile(filename)
+        conf.processConfig(filename)
+        handleConfigFile(filename)
     schedule.addPeriodicEvent(world.upkeep, 300)
     try:
         while world.ircs:
