@@ -38,6 +38,7 @@ class GameknotTestCase(PluginTestCase, PluginDocumentation):
     def testGkstats(self):
         self.assertNotError('gkstats jemfinch')
         self.assertError('gkstats %s' % utils.mktemp())
+        self.assertNotError('gkstats Strike')
 
     def testUrlSnarfer(self):
         self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
