@@ -42,9 +42,11 @@ import supybot.fix as fix
 
 import os
 import sys
+import time
 import getopt
 from itertools import imap, ifilter
 
+import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
@@ -72,8 +74,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Misc, 'timestampFormat',
 class Misc(callbacks.Privmsg):
     def __init__(self):
         super(Misc, self).__init__()
-        timeout = conf.supybot.abuse.flood.command.invalid
-        self.invalidCommands = ircutils.FloodQueue(timeout)
+        self.invalidCommands = ircutils.FloodQueue(60)
 
     callAfter = utils.Everything()
     callBefore = utils.Nothing()
@@ -100,7 +101,7 @@ class Misc(callbacks.Privmsg):
             ircdb.ignores.add(banmask, time.time() + punishment)
             irc.reply('You\'ve given me %s invalid commands within the last '
                       'minute; I\'m now ignoring you for %s.' %
-                      (maximum, utils.timeElapsed(punishment)))
+                      (maximum, utils.timeElapsed(punishment, seconds=False)))
             return
         # Now, for normal handling.
         channel = msg.args[0]
