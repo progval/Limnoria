@@ -56,28 +56,16 @@ started = time.time()
 
 import supybot
 
+import registry
 import conf
 
-defaultNick = "%%nick%%"
-defaultUser = "%%user%%"
-defaultIdent = "%%ident%%"
-defaultServer = "%%server%%"
-defaultPassword = "%%password%%"
+registry.open('supybot.conf')
+conf.allowEval = "%%allowEval%%"
 
-conf.commandsOnStart = "%%onStart%%"
-
-afterConnect = "%%afterConnect%%"
-
-configVariables = "%%configVariables%%"
-
-if not isinstance(configVariables, basestring):
-    for (name, value) in configVariables.iteritems():
-        setattr(conf, name, value)
-
-if not os.path.exists(conf.dataDir):
-    os.mkdir(conf.dataDir)
-if not os.path.exists(conf.confDir):
-    os.mkdir(conf.confDir)
+if not os.path.exists(conf.supybot.directories.data()):
+    os.mkdir(conf.supybot.directories.data())
+if not os.path.exists(conf.supybot.directories.conf()):
+    os.mkdir(conf.supybot.directories.conf())
     
 # Must be after import conf.
 import log
@@ -105,8 +93,6 @@ if __name__ == '__main__':
     # -O (optimizing)
     # -n, --nick (nick)
     # -s, --server (server)
-    # --startup (commands to run onStart)
-    # --connect (commands to run afterConnect)
     # --config (configuration values)
     parser = optparse.OptionParser(usage='Usage: %prog [options]',
                                    version='supybot %s' % conf.version)
@@ -116,26 +102,22 @@ if __name__ == '__main__':
                       help='-O optimizes asserts out of the code; ' \
                            '-OO optimizes asserts and uses psyco.')
     parser.add_option('-n', '--nick', action='store',
-                      dest='nick', default=defaultNick,
+                      dest='nick', default=conf.supybot.nick(),
                       help='nick the bot should use')
     parser.add_option('-s', '--server', action='store',
-                      dest='server', default=defaultServer,
+                      dest='server', default=conf.supybot.server(),
                       help='server to connect to')
     parser.add_option('-u', '--user', action='store',
-                      dest='user', default=defaultUser,
+                      dest='user', default=conf.supybot.user(),
                       help='full username the bot should use')
     parser.add_option('-i', '--ident', action='store',
-                      dest='ident', default=defaultIdent,
+                      dest='ident', default=conf.supybot.ident(),
                       help='ident the bot should use')
     parser.add_option('-p', '--password', action='store',
-                      dest='password', default=defaultPassword,
+                      dest='password', default=conf.supybot.password(),
                       help='server password the bot should use')
-    parser.add_option('--startup', action='append', dest='onStart',
-                      help='file of additional commands to run at startup.')
-    parser.add_option('--connect', action='append', dest='afterConnect',
-                      help='file of additional commands to run after connect')
-    parser.add_option('--config', action='append', dest='conf',
-                      help='file of configuration variables to set')
+    #parser.add_option('--config', action='append', dest='conf',
+    #                  help='file of configuration variables to set')
 
     (options, args) = parser.parse_args()
 
@@ -145,32 +127,18 @@ if __name__ == '__main__':
             import psyco
             psyco.full()
 
-    if options.onStart:
-        for filename in options.onStart:
-            fd = file(filename)
-            for line in fd:
-                conf.commandsOnStart.append(line.rstrip())
-            fd.close()
-
-    if options.afterConnect:
-        for filename in options.afterConnect:
-            fd = file(filename)
-            for line in fd:
-                afterConnect.append(line.rstrip())
-            fd.close()
-
-    assignmentRe = re.compile('\s*[:=]\s*')
-    if options.conf:
-        for filename in options.conf:
-            fd = file(filename)
-            for line in fd:
-                (name, valueString) = assignmentRe.split(line.rstrip(), 1)
-                try:
-                    value = eval(valueString)
-                except Exception, e:
-                    sys.stderr.write('Invalid configuration value: %r' % \
-                                     valueString)
-                    sys.exit(-1)
+    #assignmentRe = re.compile('\s*[:=]\s*')
+    #if options.conf:
+    #    for filename in options.conf:
+    #        fd = file(filename)
+    #        for line in fd:
+    #            (name, valueString) = assignmentRe.split(line.rstrip(), 1)
+    #            try:
+    #                value = eval(valueString)
+    #            except Exception, e:
+    #                sys.stderr.write('Invalid configuration value: %r' % \
+    #                                 valueString)
+    #                sys.exit(-1)
 
     nick = options.nick
     user = options.user
@@ -190,24 +158,9 @@ if __name__ == '__main__':
     import callbacks
     import Owner
 
-    class ConfigAfterConnect(irclib.IrcCallback):
-        public = False
-        def __init__(self, commands):
-            self.commands = commands
-        def do376(self, irc, msg):
-            for command in self.commands:
-                msg = ircmsgs.privmsg(irc.nick, command, prefix=irc.prefix)
-                irc.queueMsg(msg)
-        do377 = do376
-        do422 = do376 # MOTD File is missing.
-
-    # We pre-tokenize the commands just to save on significant amounts of work.
-    conf.commandsOnStart = map(callbacks.tokenize, conf.commandsOnStart)
-
     irc = irclib.Irc(nick, user, ident, password)
     callback = Owner.Class()
     irc.addCallback(callback)
-    irc.addCallback(ConfigAfterConnect(afterConnect))
     callback.configure(irc)
     driver = drivers.newDriver(server, irc)
     

@@ -33,10 +33,26 @@
 
 __revision__ = "$Id$"
 
+import sys
 import textwrap
 from getpass import getpass as getPass
 
-def expect(prompt, possibilities, recursed=False, doindent=True):
+import ansi
+import utils
+
+useColor = False
+
+def output(s, unformatted=True, useBold=False):
+    if unformatted:
+        s = textwrap.fill(utils.normalizeWhitespace(s))
+    if useColor and useBold:
+        sys.stdout.write(ansi.BOLD)
+    print s
+    if useColor and useBold:
+        print ansi.RESET
+    print
+
+def expect(prompt, possibilities, recursed=False, doindent=True, default=None):
     """Prompt the user with prompt, allow them to choose from possibilities.
 
     If possibilities is empty, allow anything.
@@ -47,70 +63,75 @@ def expect(prompt, possibilities, recursed=False, doindent=True):
     else:
         indent = ''
     if recursed:
-        print 'Sorry, that response was not an option.'
+        output('Sorry, that response was not an option.', unformatted=False)
     if possibilities:
         prompt = '%s [%s]' % (originalPrompt, '/'.join(possibilities))
         if len(prompt) > 70:
             prompt = '%s [%s]' % (originalPrompt, '/ '.join(possibilities))
-            prompt = textwrap.fill(prompt, subsequent_indent=indent)
-    else:
-        prompt = textwrap.fill(prompt)
+    if default is not None:
+        prompt = '%s (default: %s)' % (prompt, default)
+    prompt = textwrap.fill(prompt, subsequent_indent=indent)
     prompt = prompt.replace('/ ', '/')
     prompt = prompt.strip() + ' '
+    if useColor:
+        sys.stdout.write(ansi.BOLD)
     s = raw_input(prompt)
+    if useColor:
+        print ansi.RESET
     s = s.strip()
     if possibilities:
         if s in possibilities:
             return s
+        elif not s and default is not None:
+            return default
         else:
             return expect(originalPrompt, possibilities, recursed=True,
-                          doindent=doindent)
+                          doindent=doindent, default=default)
     else:
+        if not s and default is not None:
+            return default
         return s.strip()
-
-def expectWithDefault(prompt, possibilities, default):
-    """Same as expect, except with a default."""
-    indent = ' ' * ((len(prompt)%68) + 2)
-    prompt = '%s [%s] (default: %s) ' % \
-             (prompt.strip(), '/'.join(possibilities), default)
-    if len(prompt) > 70:
-        prompt = '%s [%s] (default: %s) ' % \
-                 (prompt.strip(), ' / '.join(possibilities), default)
-    prompt = textwrap.fill(prompt, subsequent_indent=indent)
-    s = raw_input(prompt)
-    s = s.strip()
-    if s in possibilities:
-        return s
-    else:
-        return default
 
 def anything(prompt):
     """Allow anything from the user."""
     return expect(prompt, [])
 
-def something(prompt):
+def something(prompt, default=None):
     """Allow anything *except* nothing from the user."""
-    s = expect(prompt, [])
+    s = expect(prompt, [], default=default)
     while not s:
-        print 'Sorry, you must enter a value.'
-        s = expect(prompt, [])
+        output('Sorry, you must enter a value.', unformatted=False)
+        s = expect(prompt, [], default=default)
     return s
 
-def yn(prompt):
+def yn(prompt, default=None):
     """Allow only 'y' or 'n' from the user."""
-    return expect(prompt, ['y', 'n'], doindent=False)
+    if default is not None:
+        if default:
+            default = 'y'
+        else:
+            default = 'n'
+    s = expect(prompt, ['y', 'n'], doindent=False, default=default)
+    if s is 'y':
+        return True
+    return False
 
 def getpass(prompt='Enter password: '):
+    """Prompt the user for a password."""
     password = ''
     password2 = ' '
     assert prompt
     if not prompt[-1].isspace():
         prompt += ' '
     while True:
+        if useColor:
+            sys.stdout.write(ansi.BOLD)
         password = getPass(prompt)
         password2 = getPass('Re-enter password: ')
+        if useColor:
+            print ansi.RESET
         if password != password2:
-            print 'Passwords don\'t match.'
+            output('Passwords don\'t match.', unformatted=False)
         else:
             break
     return password

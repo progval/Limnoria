@@ -13,37 +13,22 @@ import pprint
 import socket
 import logging
 import optparse
-import textwrap
 from itertools import imap
 
 import ansi
+import registry
 import conf
+import log
 import utils
 import ircutils
+import Owner
 
-conf.minimumLogPriority = logging.CRITICAL
-
-useColor = False
-
-def wrapWithBold(f):
-    def ff(*args, **kwargs):
-        if useColor:
-            sys.stdout.write(ansi.BOLD)
-        ret = f(*args, **kwargs)
-        if useColor:
-            print ansi.RESET
-        return ret
-    return ff
-
-from questions import yn, anything, something, expect, getpass
-yn = wrapWithBold(yn)
-expect = wrapWithBold(expect)
-anything = wrapWithBold(anything)
-something = wrapWithBold(something)
+import questions
+from questions import output, yn, anything, something, expect, getpass
 
 def getPlugins():
     filenames = []
-    for dir in conf.pluginDirs:
+    for dir in conf.supybot.directories.plugins():
         filenames.extend(os.listdir(dir))
     plugins = sets.Set([])
     for filename in filenames:
@@ -55,63 +40,58 @@ def getPlugins():
     return plugins
 
 def loadPlugin(name):
-    import Owner
     try:
         module = Owner.loadPluginModule(name)
         if hasattr(module, 'Class'):
             return module
         else:
-            myPrint("""That plugin loaded fine, but didn't seem to be a real
+            output("""That plugin loaded fine, but didn't seem to be a real
             Supybot plugin; there was no Class variable to tell us what class
             to load when we load the plugin.  We'll skip over it for now, but
             you can always add it later.""")
             return None
     except Exception, e:
-        myPrint("""We encountered a bit of trouble trying to load plugin %r.
+        output("""We encountered a bit of trouble trying to load plugin %r.
         Python told us %r.  We'll skip over it for now, you can always add it
         later.""" % (name, utils.exnToString(e)))
         return None
 
 def describePlugin(module, showUsage):
     if module.__doc__:
-        myPrint(module.__doc__, unformatted=False)
+        output(module.__doc__, unformatted=False)
     elif hasattr(module.Class, '__doc__'):
-        myPrint(module.Class.__doc__, unformatted=False)
+        output(module.Class.__doc__, unformatted=False)
     else:
-        myPrint("""Unfortunately, this plugin doesn't seem to have any
+        output("""Unfortunately, this plugin doesn't seem to have any
         documentation.  Sorry about that.""")
     if showUsage:
         if hasattr(module, 'example'):
             if yn('This plugin has a usage example.  '
-                  'Would you like to see it?') == 'y':
+                  'Would you like to see it?', default=False):
                 pydoc.pager(module.example)
         else:
-            myPrint("""This plugin has no usage example.""")
+            output("""This plugin has no usage example.""")
     
-def configurePlugin(module, onStart, afterConnect, advanced):
+def configurePlugin(module, advanced):
     if hasattr(module, 'configure'):
-        myPrint("""Beginning configuration for %s..."""%module.Class.__name__)
-        module.configure(onStart, afterConnect, advanced)
+        output("""Beginning configuration for %s..."""%module.Class.__name__)
+        module.configure(advanced)
         print # Blank line :)
-        myPrint("""Done!""")
+        output("""Done!""")
     else:
-        onStart.append('load %s' % module.__name__)
+        Owner.registerPlugin(module, currentValue=True)
 
-def clearLoadedPlugins(onStart, plugins):
-    for s in onStart:
-        if s.startswith('load '):
-            (_, plugin) = s.split(None, 1)
-            if plugin in plugins:
-                plugins.remove(plugin)
+def clearLoadedPlugins(plugins):
+    for plugin, group in conf.supybot.plugins.children.iteritems():
+        if plugin in plugins and group():
+            plugins.remove(plugin)
 
 _windowsVarRe = re.compile(r'%(\w+)%')
 def getDirectoryName(default):
     done = False
     while not done:
-        dir = anything('What directory do you want to use?  '
-                       '[defaults to %s]' % os.path.join(os.curdir, default))
-        if not dir:
-            dir = default
+        dir = something('What directory do you want to use?',
+                       default=os.path.join(os.curdir, default))
         dir = os.path.expanduser(dir)
         dir = _windowsVarRe.sub(r'$\1', dir)
         dir = os.path.expandvars(dir)
@@ -121,139 +101,122 @@ def getDirectoryName(default):
             done = True
         except OSError, e:
             if e.args[0] != 17: # File exists.
-                myPrint("""Sorry, I couldn't make that directory for some
+                output("""Sorry, I couldn't make that directory for some
                 reason.  The Operating System told me %s.  You're going to
                 have to pick someplace else.""" % e)
             else:
                 done = True
     return os.path.expandvars(os.path.expanduser(dir))
-        
-def myPrint(s, unformatted=True):
-    if unformatted:
-        s = utils.normalizeWhitespace(s)
-    print textwrap.fill(s)
-    print
 
 def main():
-    global useColor
+    conf.supybot.log.minimumPriority.setValue('CRITICAL')
     parser = optparse.OptionParser(usage='Usage: %prog [options]',
                                    version='Supybot %s' % conf.version)
     (options, args) = parser.parse_args()
-    nick = ''
-    user = ''
-    ident = ''
-    serverpassword = ''
-    server = None
-    onStart = []
-    afterConnect = []
-    configVariables = {}
     
-    myPrint("""This is a wizard to help you start running supybot.  What it
+    output("""This is a wizard to help you start running supybot.  What it
     will do is create a single Python file whose effect will be that of
     starting an IRC bot with the options you select here.  So hold on tight
     and be ready to be interrogated :)""")
 
-    myPrint("""First of all, we can bold the questions you're asked so you can
+    output("""First of all, we can bold the questions you're asked so you can
     easily distinguish the mostly useless blather (like this) from the
     questions that you actually have to answer.""")
-    if yn('Would you like to try this bolding?') == 'y':
-        useColor = True
-        if yn('Do you see this in bold?') == 'n':
-            myPrint("""Sorry, it looks like your terminal isn't ANSI compliant.
+    if yn('Would you like to try this bolding?', default=True):
+        questions.useColor = True
+        if not yn('Do you see this in bold?'):
+            output("""Sorry, it looks like your terminal isn't ANSI compliant.
             Try again some other day, on some other terminal :)""")
-            useColor = False
+            questions.useColor = False
         else:
-            myPrint("""Great!""")
+            output("""Great!""")
 
     ###
     # Preliminary questions.
     ###
-    myPrint("""We've got some preliminary things to get out of the way before
+    output("""We've got some preliminary things to get out of the way before
     we can really start asking you questions that directly relate to what your
     bot is going to be like.""")
 
     # Advanced?
-    myPrint("""We want to know if you consider yourself an advanced Supybot
+    output("""We want to know if you consider yourself an advanced Supybot
     user because some questions are just utterly boring and useless for new
     users.  Others might not make sense unless you've used Supybot for some
     time.""")
-    advanced = yn('Are you an advanced Supybot user?') == 'y'
+    advanced = yn('Are you an advanced Supybot user?', default=False)
 
     ### Directories.
-    myPrint("""Now we've got to ask you some questions about where some of
+    output("""Now we've got to ask you some questions about where some of
     your directories are (or, perhaps, will be :)).  If you're running this
     wizard from the directory you'll actually be starting your bot from and
     don't mind creating some directories in the current directory, then just
     don't give answers to these questions and we'll create the directories we
     need right here in this directory.""")
 
-    # logDir
-    myPrint("""Your bot will need to put his logs somewhere.  Do you have any
+    # conf.supybot.directories.log
+    output("""Your bot will need to put his logs somewhere.  Do you have any
     specific place you'd like them?  If not, just press enter and we'll make
     a directory named "logs" right here.""")
-    conf.logDir = getDirectoryName('logs')
-    configVariables['logDir'] = conf.logDir
+    conf.supybot.directories.log.setValue(getDirectoryName('logs'))
 
-    # dataDir
-    myPrint("""Your bot will need to put various data somewhere.  Things like
+    # conf.supybot.directories.data
+    output("""Your bot will need to put various data somewhere.  Things like
     databases, downloaded files, etc.  Do you have any specific place you'd
     like the bot to put these things?  If not, just press enter and we'll make
     a directory named "data" right here.""")
-    conf.dataDir = getDirectoryName('data')
-    configVariables['dataDir'] = conf.dataDir
+    conf.supybot.directories.data.setValue(getDirectoryName('data'))
 
-    # confDir
-    myPrint("""Your bot must know where to find his configuration files.  It'll
+    # conf.supybot.directories.conf
+    output("""Your bot must know where to find his configuration files.  It'll
     probably only make one or two, but it's gotta have some place to put them.
     Where should that place be?  If you don't care, just press enter and we'll
     make a directory right here named "conf" where it'll store his stuff. """)
-    conf.confDir = getDirectoryName('conf')
-    configVariables['confDir'] = conf.confDir
+    conf.supybot.directories.conf.setValue(getDirectoryName('conf'))
 
-    myPrint("Good!  We're done with the directory stuff.")
+    output("Good!  We're done with the directory stuff.")
 
     # pluginDirs
-    myPrint("""Your bot will also need to know where to find his plugins at.
+    output("""Your bot will also need to know where to find his plugins at.
     Of course, he already knows where the plugins that he came with are, but
     your own personal plugins that you write for will probably be somewhere
     else.  Where do you plan to put those plugins?  If you don't know, just
     press enter and we'll put a "plugins" directory right here that you can
     stick your own personal plugins in.""")
+    pluginDirs = conf.supybot.directories.plugins()
     pluginDir = getDirectoryName('plugins')
-    conf.pluginDirs.insert(0, pluginDir)
-    myPrint("""Of course, you can have more than one plugin directory.""")
-    while yn('Would you like to add another plugin directory?') == 'y':
+    if pluginDir not in pluginDirs:
+        pluginDirs.append(pluginDir)
+    output("""Of course, you can have more than one plugin directory.""")
+    while yn('Would you like to add another plugin directory?',
+             default=False):
         pluginDir = getDirectoryName('plugins')
-        if pluginDir != 'plugins' and pluginDir not in conf.pluginDirs:
-            conf.pluginDirs.insert(0, pluginDir)
-    configVariables['pluginDirs'] = conf.pluginDirs
+        if pluginDir not in pluginDirs:
+            pluginDirs.append(pluginDir)
+    conf.supybot.directories.plugins.setValue(pluginDirs)
 
     ###
     # Bot stuff
     ###
-    myPrint("""Now we're going to ask you things that actually relate to the
+    output("""Now we're going to ask you things that actually relate to the
     bot you'll be running.""")
 
-    # server
-    if server:
-        if yn('You\'ve already got a default server of %s:%s.  '
-              'Do you want to change this?' % server) == 'y':
-            server = None
+    # conf.supybot.server
+    server = None
     while not server:
         serverString = something('What server would you like to connect to?')
         try:
-            myPrint("""Looking up %s...""" % serverString)
+            output("""Looking up %s...""" % serverString)
             ip = socket.gethostbyname(serverString)
         except:
-            myPrint("""Sorry, I couldn't find that server.  Perhaps you
+            output("""Sorry, I couldn't find that server.  Perhaps you
             misspelled it?""")
             continue
-        myPrint("""Found %s (%s).""" % (serverString, ip))
-        myPrint("""IRC Servers almost always accept connections on port
+        output("""Found %s (%s).""" % (serverString, ip))
+        output("""IRC Servers almost always accept connections on port
         6667.  They can, however, accept connections anywhere their admin
         feels like he wants to accept connections from.""")
-        if yn('Does this server require connection on a non-standard port?') \
-            =='y':
+        if yn('Does this server require connection on a non-standard port?',
+              default=False):
             port = 0
             while not port:
                 port = something('What port is that?')
@@ -262,98 +225,85 @@ def main():
                     if not (0 < i < 65536):
                         raise ValueError
                 except ValueError:
-                    myPrint("""That's not a valid port.""")
+                    output("""That's not a valid port.""")
                     port = 0
         else:
             port = 6667
         server = ':'.join(map(str, [serverString, port]))
+    conf.supybot.server.setValue(server)
 
-    # nick
-    if nick:
-        if yn("You've already got a default nick of %s.  "
-              "Do you want to change this?" % nick) == 'y':
-            nick = ''
+    # conf.supybot.nick
+    nick = ''
     while not nick:
         nick = something('What nick would you like your bot to use?')
         if not ircutils.isNick(nick):
-            myPrint("""That's not a valid nick.  Go ahead and pick another.""")
+            output("""That's not a valid nick.  Go ahead and pick another.""")
             nick = ''
+    conf.supybot.nick.setValue(nick)
 
-    # user
-    if user:
-        if yn("You've already got a default user of %s.  "
-              "Do you want to change this?" % user) == 'y':
-              user = ''
-    if not user:
-        myPrint("""If you've ever done a /whois on a person, you know that IRC
-        provides a way for users to show the world their full name.  What would
-        you like your bot's full name to be?  If you don't care, just press
-        enter and it'll be the same as your bot's nick.""")
+    # conf.supybot.user
+    user = ''
+    output("""If you've ever done a /whois on a person, you know that IRC
+    provides a way for users to show the world their full name.  What would
+    you like your bot's full name to be?  If you don't care, just press
+    enter and it'll be the same as your bot's nick.""")
     while not user:
         user = anything('What would you like your bot\'s full name to be?')
         if not user:
             user = nick
+    conf.supybot.user.setValue(user)
 
-    # ident (if advanced)
+    # conf.supybot.ident (if advanced)
     if advanced:
-        if ident:
-            if yn("You've already got a default ident of %s.  "
-                  "Do you want to change this?" % ident) == 'y':
-                ident = ''
-        if not ident:
-            myPrint("""IRC servers also allow you to set your ident, which they
-            might need if they can't find your identd server.  What would you
-            like your ident to be?  If you don't care, press enter and we'll
-            use the same string as your bot's nick.""")
+        ident = ''
+        output("""IRC servers also allow you to set your ident, which they
+        might need if they can't find your identd server.  What would you
+        like your ident to be?  If you don't care, press enter and we'll
+        use the same string as your bot's nick.""")
         while not ident:
             ident = anything('What would you like your bot\'s ident to be?')
             if not ident:
                 ident = nick
     else:
         ident = nick
+    conf.supybot.ident.setValue(ident)
 
-    # password
-    if serverpassword:
-        if yn('You\'ve already got a default password of %s.  '
-              'Do you want to change this?' % password) == 'y':
-            serverpassword = ''
-    if not serverpassword:
-        myPrint("""Some servers require a password to connect to them.  Most
-        public servers don't.  If you try to connect to a server and for some
-        reason it just won't work, it might be that you need to set a
-        password.""")
-        if yn('Do you want to set such a password?') == 'y':
-            serverpassword = getpass()
+    # conf.supybot.password
+    output("""Some servers require a password to connect to them.  Most
+    public servers don't.  If you try to connect to a server and for some
+    reason it just won't work, it might be that you need to set a
+    password.""")
+    if yn('Do you want to set such a password?', default=False):
+            conf.supybot.password.setValue(getpass())
 
-    myPrint("""Of course, having an IRC bot isn't the most useful thing in the
+    # conf.supybot.channels
+    output("""Of course, having an IRC bot isn't the most useful thing in the
     world unless you can make that bot join some channels.""")
-    if yn('Do you want your bot to join some channels when he connects?')=='y':
-        channels = something('What channels?  Separate channels by spaces.')
-        channels = channels.split()
+    if yn('Do you want your bot to join some channels when he connects?',
+          default=True):
+        channels = something('What channels?  Separate channels with '
+                             'spaces.').split()
         while not all(ircutils.isChannel, channels):
             # FIXME: say which ones weren't channels.
-            myPrint("""Not all of those are valid IRC channels.  Be sure to
+            output("""Not all of those are valid IRC channels.  Be sure to
             prefix the channel with # (or +, or !, or &, but no one uses those
             channels, really).""")
-            channels = something('What channels?')
-        afterConnect.append('admin join %s' %
-                            ' '.join(imap(utils.dqrepr, channels)))
+            channels = something('What channels?').split()
+    conf.supybot.channels.setValue(channels)
 
     ###
     # Plugins
     ###
     plugins = getPlugins()
-    for s in ('Admin','User','Channel','Misc'):
-        s = 'load %s' % s
-        if s not in onStart:
-            onStart.append(s)
-    clearLoadedPlugins(onStart, plugins)
+    for s in ('Admin', 'User', 'Channel', 'Misc', 'Config'):
+        configurePlugin(s, advanced)
+    clearLoadedPlugins(plugins)
 
     # bulk
     addedBulk = False
-    if advanced and yn('Would you like to add plugins en masse first?') == 'y':
+    if advanced and yn('Would you like to add plugins en masse first?'):
         addedBulk = True
-        myPrint("""The available plugins are %s.  What plugins would you like
+        output("""The available plugins are %s.  What plugins would you like
         to add?  If you've changed your mind and would rather not add plugins
         in bulk like this, just press enter and we'll move on to the individual
         plugin configuration.""" % utils.commaAndify(plugins))
@@ -361,54 +311,55 @@ def main():
         for name in re.split(r',?\s+', massPlugins):
             module = loadPlugin(name)
             if module is not None:
-                configurePlugin(module, onStart, afterConnect, advanced)
-                clearLoadedPlugins(onStart, plugins)
+                configurePlugin(module, advanced)
+                clearLoadedPlugins(plugins)
 
     # individual
-    if yn('Would you like to look at plugins individually?') == 'y':
-        myPrint("""Next comes your oppurtunity to learn more about the plugins
+    if yn('Would you like to look at plugins individually?'):
+        output("""Next comes your oppurtunity to learn more about the plugins
         that are available and select some (or all!) of them to run in your
         bot.  Before you have to make a decision, of course, you'll be able to
         see a short description of the plugin and, if you choose, an example
         session with the plugin.  Let's begin.""")
         # until we get example strings again, this will default to false
-        #showUsage =yn('Would you like the option of seeing usage examples?') \
-        #            =='y'
+        #showUsage =yn('Would you like the option of seeing usage examples?')
         showUsage = False
         name = expect('What plugin would you like to look at?', plugins)
         while name:
             module = loadPlugin(name)
             if module is not None:
                 describePlugin(module, showUsage)
-                if yn('Would you like to load this plugin?') == 'y':
-                    configurePlugin(module, onStart, afterConnect, advanced)
-                    clearLoadedPlugins(onStart, plugins)
-            if yn('Would you like add another plugin?') == 'n':
+                if yn('Would you like to load this plugin?', default=True):
+                    configurePlugin(module, advanced)
+                    clearLoadedPlugins(plugins)
+            if not yn('Would you like add another plugin?'):
                 break
             name = expect('What plugin would you like to look at?', plugins)
     
     ###
     # Sundry
     ###
-    myPrint("""Although supybot offers a supybot-adduser.py script, with which
+    output("""Although supybot offers a supybot-adduser.py script, with which
     you can add users to your bot's user database, it's *very* important that
     you have an owner user for you bot.""")
-    if yn('Would you like to add an owner user for your bot?') == 'y':
+    if yn('Would you like to add an owner user for your bot?', default=True):
         import ircdb
         name = something('What should the owner\'s username be?')
         try:
             id = ircdb.users.getUserId(name)
             u = ircdb.users.getUser(id)
             if u.checkCapability('owner'):
-                myPrint("""That user already exists, and has owner capabilities
+                output("""That user already exists, and has owner capabilities
                 already.  Perhaps you added it before? """)
-                if yn('Do you want to remove its owner capability?')=='y':
+                if yn('Do you want to remove its owner capability?',
+                      default=False):
                     u.removeCapability('owner')
                     ircdb.users.setUser(id, u)
             else:
-                myPrint("""That user already exists, but doesn't have owner
+                output("""That user already exists, but doesn't have owner
                 capabilities.""")
-                if yn('Do you want to add to it owner capabilities?') == 'y':
+                if yn('Do you want to add to it owner capabilities?',
+                      default=False):
                     u.addCapability('owner')
                     ircdb.users.setUser(id, u)
         except KeyError:
@@ -419,7 +370,7 @@ def main():
             u.addCapability('owner')
             ircdb.users.setUser(id, u)
 
-    myPrint("""Of course, when you're in an IRC channel you can address the bot
+    output("""Of course, when you're in an IRC channel you can address the bot
     by its nick and it will respond, if you give it a valid command (it may or
     may not respond, depending on what your config variable replyWhenNotCommand
     is set to).  But your bot can also respond to a short "prefix character,"
@@ -427,36 +378,29 @@ def main():
     the same effect.  Of course, you don't *have* to have a prefix char, but
     if the bot ends up participating significantly in your channel, it'll ease
     things.""")
-    if yn('Would you like to set the prefix char(s) for your bot?') == 'y':
-        myPrint("""Enter any characters you want here, but be careful: they
+    if yn('Would you like to set the prefix char(s) for your bot?',
+          default=True):
+        output("""Enter any characters you want here, but be careful: they
         should be rare enough that people don't accidentally address the bot
         (simply because they'll probably be annoyed if they do address the bot
         on accident).  You can even have more than one.  I (jemfinch) am quite
         partial to @, but that's because I've been using it since my ocamlbot
         days.""")
         import callbacks
-        invalidPrefixChar = False
-        conf.prefixChars = anything('What would you like your bot\'s '
-                                    'prefix character(s) to be?')
-        for c in conf.prefixChars:
-            if c not in conf.validPrefixChars:
-                invalidPrefixChar = True
-        while invalidPrefixChar:
-            invalidPrefixChar = False
-            for c in conf.prefixChars:
-                if c not in conf.validPrefixChars:
-                    invalidPrefixChar = True
-                    myPrint('%r is not a valid prefixChar.' % c)
-            conf.prefixChars = anything('That includes one or more invalid '
-                                        'prefix characters.  What would you '
-                                        'like your bot\'s prefix character(s)'
-                                        'to be?')
-        configVariables['prefixChars'] = conf.prefixChars
+        while True:
+            try:
+                conf.supybot.prefixChars.setValue(
+                                    something('What would you like your '
+                                    'bot\'s prefix character(s) to be?',
+                                    default='@'))
+                break
+            except registry.InvalidRegistryValue, reason:
+                output(reason)
     else:
-        configVariables['prefixChars'] = ''
+        conf.supybot.prefixChars.setValue('')
 
     # enablePipeSyntax
-    myPrint("""Supybot allows nested commands.  You've probably
+    output("""Supybot allows nested commands.  You've probably
     read about them in our website or documentation, and almost certainly have
     seen them in the plugin examples (if you chose to read them),  By default,
     they work with a syntax that looks something like Lisp with square
@@ -467,102 +411,104 @@ def main():
     syntax is disabled by default because so many people have pipes in their
     nicks, and we've found it to be somewhat frustrating to have to quote such
     nicks in commands.""")
-    if yn('Would you like to enable the pipe syntax for nesting?') == 'y':
-        configVariables['enablePipeSyntax'] = True
+    conf.supybot.pipeSyntax.setValue(yn('Would you like to enable the pipe '
+                                 'syntax for nesting?', default=False))
 
     ###
     # logging variables.
     ###
 
-    # conf.stdoutLogging
-    myPrint("""By default, your bot will log not only to files in the logs
+    # conf.supybot.log.stdout
+    output("""By default, your bot will log not only to files in the logs
     directory you gave it, but also to stdout.  We find this useful for
     debugging, and also just for the pretty output (it's colored!)""")
-    if yn('Would you like to turn off this logging to stdout?') == 'y':
-        configVariables['stdoutLogging'] = False
-    else:
+    conf.supybot.log.stdout.setValue(not yn('Would you like to turn off '
+                                     'this logging to stdout?', default=False))
+    if conf.supybot.log.stdout():
         # conf.something
-        myPrint("""Some terminals may not be able to display the pretty colors
+        output("""Some terminals may not be able to display the pretty colors
         logged to stderr.  By default, though, we turn the colors off for
         Windows machines and leave it on for *nix machines.""")
-        if yn('Would you like to turn this colorization off?') == 'y':
-            configVariables['colorizedStdoutLogging'] = False
+        if os.name is not 'nt':
+            conf.supybot.log.stdout.colorized.setValue(
+                not yn('Would you like to turn this colorization off?',
+                default=False))
 
-    # conf.minimumLogPriority
-    myPrint("""Your bot can handle debug messages at several priorities,
+    # conf.supybot.log.minimumPriority
+    output("""Your bot can handle debug messages at several priorities,
     CRITICAL, in decreasing order of priority.  By
     default, your bot will log all of these priorities.  You can, however,
     specify that he only log messages above a certain priority level.  Of
     course, all error messages will still be logged.""")
-    priority = anything('What would you like the minimum priority to be?  '
-                        'Just press enter to accept the default.')
-    priority = priority.lower()
-    while priority and priority not in ['debug', 'info',
-                                        'warning', 'error', 'critical']:
-        myPrint("""That's not a valid priority.  Valid priorities include
-        'debug', 'info', 'warning', 'error', and 'critical'""")
-        priority = anything('What would you like the minimum priority to be?  '
-                            'Just press enter to accept the default.')
-    if priority:
-        configVariables['minimumLogPriority']=getattr(logging,priority.upper())
+    priority = something('What would you like the minimum priority to be?  '
+                         'Just press enter to accept the default.',
+                         default='INFO').lower()
+    while priority not in ['debug', 'info', 'warning', 'error', 'critical']:
+        output("""That's not a valid priority.  Valid priorities include
+        'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL'""")
+        priority = something('What would you like the minimum priority to be?'
+                             '  Just press enter to accept the default.',
+                             default='INFO').lower()
 
     if advanced:
-        myPrint("""Here's some stuff you only get to choose if you're an
+        output("""Here's some stuff you only get to choose if you're an
         advanced user :)""")
 
-        # replyWithNickPrefix
-        myPrint("""By defualt, the bot will respond to all commands with a
+        # conf.supybot.reply.withNickPrefix
+        output("""By defualt, the bot will respond to all commands with a
         Nick: <response> response.  That is, the user making the command will
-        have their nick prefixed to the command.  If conf.replyWithNickPrefix
-        is set to False, replies from the bot will not include this nick
-        prefix.""")
-        if yn('Would you like to turn off this nick prefix?') == 'y':
-            configVariables['replyWithNickPrefix'] = False
+        have their nick prefixed to the command.
+        If supybot.reply.withNickPrefix is set to False, replies from the bot
+        will not include this nick prefix.""")
+        conf.supybot.reply.withNickPrefix.setValue(
+            not yn('Would you like to turn off this nick prefix?',
+            default=False))
 
-        # replyWhenAddressedByNick
-        myPrint("""By default, the bot will respond when addressed by its nick.
+        # conf.supybot.reply.whenAddressedByNick
+        output("""By default, the bot will respond when addressed by its nick.
         That is, if the bot's nick is 'botnick', then 'botnick: foo' will call
         the foo command.  If replyWhenAddressedByNick is False, the bot will
         not respond to such messages.  Make sure you have a prefixChar set if
         you set this, otherwise people will only be able to communicate with
         the bot through private messages.""")
-        if yn('Would you like to turn off the bot\'s replies to messages '
-              'prefixed with its nick?') == 'y':
-            configVariables['replyWhenAddressedByNick'] = False
+        conf.supybot.reply.whenAddressedByNick.setValue(
+            not yn('Would you like to turn off the bot\'s replies to messages '
+                   'prefixed with its nick?', default=False))
 
-        # showOnlySyntax
-        myPrint("""By default, when the bot receives a message with invalid
+        # conf.supybot.showSimpleSyntax
+        output("""By default, when the bot receives a message with invalid
         arguments, the bot returns the full help (syntax and description) of
         the command.  If showOnlySyntax is set to True, though, the bot will
         return just the syntax of the command.  Of course, the help will still
         be available via the help command.""")
-        if yn('Would you like to show only the syntax of commands when '
-              'they\'re given invalid arguments?') == 'y':
-            configVariables['showOnlySyntax'] = True
+        conf.supybot.showSimpleSyntax.setValue(
+            yn('Would you like to show only the syntax of commands when '
+              'they\'re given invalid arguments?', default=False))
 
-        # replyWhenNotCommand
-        myPrint("""By default, when people address your bot but don't give it
+        # conf.supybot.reply.whenNotCommand
+        output("""By default, when people address your bot but don't give it
         a valid command, it'll respond with a message saying that they didn't
         give it a valid command.  When your channel grows more accustomed to
         the bot, they may prefer that it not do that, since any command you
         give the bot (at least within the included plugins) will respond with
         something, so invalid commands are still noticeable.  This decreases
         the channel traffic somewhat.""")
-        if yn('Would you like to turn off the bot\'s replies when he\'s '
-              'addressed but given a non-command?') == 'y':
-            configVariables['replyWhenNotCommand'] = False
+        conf.supybot.reply.whenNotCommand.setValue(
+            not yn('Would you like to turn off the bot\'s replies when he\'s '
+              'addressed but given a non-command?', default=False))
 
-        # replyWithPrivateNotice
-        myPrint("""When a user sends a command to the bot from within a
+        # conf.supybot.reply.withPrivateNotice
+        output("""When a user sends a command to the bot from within a
         channel, the bot, by default, also responds to that channel. In some
         rather busy channels this might be considered spam, especially if the
         command returns several lines in its result. In this case you may want
         to notice the user instead.""")
-        if yn('Would you like the bot to notice replies to users in private '
-              'when a command is executed in a channel?') == 'y':
-            configVariables['replyWithPrivateNotice'] = True
+        conf.supybot.reply.withPrivateNotice.setValue(
+            yn('Would you like the bot to notice replies to users in private '
+              'when a command is executed in a channel?', default=False))
 
-        myPrint("""Here in supybot-developer world, we really like Python.  In
+        # allowEval
+        output("""Here in supybot-developer world, we really like Python.  In
         fact, we like it so much we just couldn't do without the ability to
         have our bots evaluate arbitrary Python code.  Of course, we are aware
         of the possible security hazards in allowing such a thing, but we're
@@ -576,57 +522,37 @@ def main():
         can't do via a command because the command you want doesn't exist, you
         should tell us and we'll implement the command (rather than make you
         allow eval).  But either way, here's your chance to enable it.""")
-        if yn('Would you like to enable allowEval, possibly opening you to '
-              'a significant security risk?') == 'y':
-            configVariables['allowEval'] = True
+        allowEval = yn('Would you like to enable allowEval, possibly opening '
+                       'you to a significant security risk?', default=False)
 
-        # throttleTime
-        myPrint("""In order to prevent flooding itself off the network,
+        # conf.supybot.throttleTime
+        output("""In order to prevent flooding itself off the network,
         your bot by default will not send more than one message per second to
         the network.  This is, however, configurable.""")
         if yn('Would you like to change the minimum amount of time between '
-              'messages your bot sends to the network?') == 'y':
-            throttleTime = None
-            while throttleTime is None:
-                throttleTime = something('How long do you want your bot to '
-                                         'wait between sending messages to '
-                                         'the server?  Floating point values '
-                                         'are accepted.')
+              'messages your bot sends to the network?', default=False):
+            while True:
                 try:
-                    throttleTime = float(throttleTime)
-                except ValueError:
-                    myPrint("""That's not a valid time.  You'll need to give
+                    conf.supybot.throttleTime.setValue(something(
+                        'How long do you want your bot to wait between '
+                        'sending messages to the server?  Floating '
+                        'point values are accepted.'))
+                    break
+                except InvalidRegistryValue:
+                    output("""That's not a valid time.  You'll need to give
                     a floating-point number.""")
-                    throttleTime = None
         
     ###
     # This is close to the end.
     ###
     if not advanced:
-        myPrint("""There are a lot of options we didn't ask you about simply
+        output("""There are a lot of options we didn't ask you about simply
         because we'd rather you get up and running and have time left to play
         around with your bot.  But come back and see us!  When you've played
         around with your bot enough to know what you like, what you don't like,
         what you'd like to change, then come back and run this script again
         and tell us you're an advanced user.  Some of those questions might be
         boring, but they'll really help you customize your bot :)""")
-    else:
-        myPrint("""This is your last chance to do any configuration before I
-        write the bot script.""")
-        if yn('Would you like to add any commands to be given to the bot '
-              'before it connects to the server?') == 'y':
-            command = True
-            while command:
-                command = something('Command? ')
-                onStart.append(command)
-                command = yn('Would you like to add another command?') == 'y'
-        if yn('Would you like to add any commands to be given to the bot '
-              'after it connects to the server?') == 'y':
-            command = True
-            while command:
-                command = Something('Command? ')
-                afterConnect.append(command)
-                command = yn('Would you like to add another command?') == 'y'
 
     ###
     # Writing the bot script.
@@ -637,15 +563,8 @@ def main():
     fd.close()
 
     format = pprint.pformat
-    template = template.replace('"%%nick%%"', repr(nick))
-    template = template.replace('"%%user%%"', repr(user))
-    template = template.replace('"%%ident%%"', repr(ident))
-    template = template.replace('"%%password%%"', repr(serverpassword))
-    template = template.replace('"%%server%%"', repr(server))
-    template = template.replace('"%%onStart%%"', format(onStart))
-    template = template.replace('"%%afterConnect%%"', format(afterConnect))
-    template = template.replace('"%%configVariables%%"',
-                                format(configVariables))
+    template = template.replace('"%%allowEval%%"',
+                                format(allowEval))
     template = template.replace('/usr/bin/env python',
                                 os.path.normpath(sys.executable))
 
@@ -656,8 +575,15 @@ def main():
 
     if os.name == 'posix':
         os.chmod(filename, 0755)
-        
-    myPrint("""All done!  Your new bot script is %s.  If you're running a *nix,
+    
+    # Overwrite temporary minimum log priority
+    conf.supybot.log.minimumPriority.setValue(priority)
+    
+    # Save the registry registry
+    registry.close(conf.supybot, 'supybot.conf')
+    
+    # Done!
+    output("""All done!  Your new bot script is %s.  If you're running a *nix,
     you can start your bot script with the command line "./%s".  If you're not
     running a *nix or similar machine, you'll just have to start it like you
     start all your other Python scripts.""" % (filename, filename))
@@ -666,8 +592,12 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
+        # We may still be using bold text when exiting during a prompt
+        if questions.useColor:
+            import ansi
+            print ansi.RESET
         print
         print
-        myPrint("""Well, it looks like you cancelled out of the wizard before
+        output("""Well, it looks like you cancelled out of the wizard before
         it was done.  Unfortunately, I didn't get to write anything to file.
         Please run the wizard again to completion.""")
