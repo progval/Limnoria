@@ -51,6 +51,7 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('topic get 0')
 
     def testAdd(self):
+        self.assertError('topic add #floorgle')
         m = self.getMsg('topic add foo')
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], self.channel)
@@ -58,7 +59,7 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         m = self.getMsg('topic add bar')
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], self.channel)
-        self.assertError('topic add #floorgle')
+        self.assertEqual(m.args[1], 'foo (test) || bar (test)')
 
     def testChange(self):
         _ = self.getMsg('topic add foo')
