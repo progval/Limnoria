@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ###
 # Copyright (c) 2003-2004, James Vega
 # All rights reserved.

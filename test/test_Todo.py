@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ###
 # Copyright (c) 2003, Daniel DiPaolo
 # All rights reserved.

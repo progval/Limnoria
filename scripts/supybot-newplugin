@@ -46,8 +46,6 @@ import supybot.conf as conf
 from supybot.questions import *
 
 template = '''
-#!%s
-
 ###
 # Copyright (c) 2004, Jeremiah Fincher
 # All rights reserved.

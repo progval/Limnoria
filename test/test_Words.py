@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ###
 # Copyright (c) 2003, Vincent Foley
 # All rights reserved.
