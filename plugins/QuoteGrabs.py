@@ -63,6 +63,8 @@ Add an example IRC session using this module here.
 """)
 
 grabTime = 864000 # 10 days
+minRandomLength = 8
+minRandomWords = 3
 
 class QuoteGrabs(plugins.ChannelDBHandler,
                  plugins.Toggleable,
@@ -95,7 +97,8 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
             if self.toggles.get('random', channel):
-                if len(msg.args[1]) > 8 and len(msg.args[1].split()) > 3:
+                if len(msg.args[1]) > minRandomLength and \
+                   len(msg.args[1].split()) > minRandomWords:
                     db = self.getDb(channel)
                     cursor = db.cursor()
                     cursor.execute("""SELECT added_at FROM quotegrabs
