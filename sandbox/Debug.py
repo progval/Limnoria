@@ -75,6 +75,14 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
         exn = getattr(exceptions, name)
         raise exn, msg.prefix
 
+    def sendquote(self, irc, msg, args):
+        """<raw IRC message>
+
+        Sends (not queues) the raw IRC message given.
+        """
+        msg = ircmsgs.IrcMsg(privmsgs.getArgs(args))
+        irc.sendMsg(msg)
+
 
 Class = Debug
 
