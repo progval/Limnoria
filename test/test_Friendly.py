@@ -29,39 +29,30 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-"""
-Just a regexp module to make the bot a wee bit friendlier.
-"""
+from test import *
 
-from baseplugin import *
+class FriendlyTestCase(PluginTestCase):
+    plugins = ('Friendly',)
+    def testExclaim(self):
+        s = '%s!' % self.irc.nick
+        self.assertEqual(s, s)
 
-import re
+    def testGreet(self):
+        self.assertNotError('heya, %s' % self.irc.nick)
+        self.assertNotError('howdy %s' % self.irc.nick)
+        self.assertNotError('hi, %s!' % self.irc.nick)
 
-import ircmsgs
-import callbacks
+    def testGoodbye(self):
+        self.assertNotError('seeya %s!' % self.irc.nick)
+        self.assertNotError('bye, %s.' % self.irc.nick)
 
-class Friendly(callbacks.PrivmsgRegexp):
-    def greet(self, irc, msg, match):
-        r"(?:heya?|(?:w(?:hat'?s\b|as)s?up)|howdy|hi|hello)"
-        if irc.nick in msg.args[1]:
-            irc.queueMsg(callbacks.reply(msg, 'howdy, %s :)' % msg.nick))
-
-    def goodbye(self, irc, msg, match):
-        r"(?:good)?bye|adios|vale|ciao|au revoir|seeya|night"
-        if irc.nick in msg.args[1]:
-            irc.queueMsg(callbacks.reply(msg, 'seeya, %s!' % msg.nick))
-
-    def exclaim(self, irc, msg, match):
-        r"^([^\s]+)!"
-        if match.group(1) == irc.nick:
-            irc.queueMsg(callbacks.reply(msg, '%s!' % msg.nick))
-
-    def beGracious(self, irc, msg, match):
-        r"\b(?:thank'?s?|thx|tnks?)\b"
-        if irc.nick in msg.args[1]:
-            irc.queueMsg(callbacks.reply(msg,'you\'re welcome, %s' % msg.nick))
+    def testBeGracious(self):
+        self.assertNotError('thanks, %s' % self.irc.nick)
+        self.assertNotError('thank you, %s' % self.irc.nick)
+        self.assertNotError('thx %s' % self.irc.nick)
+        self.assertNotError('%s: thx!' % self.irc.nick)
 
 
-Class = Friendly
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
+
