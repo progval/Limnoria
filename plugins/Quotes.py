@@ -31,14 +31,6 @@
 
 """
 Maintains a Quotes database for each channel.
-
-Commands include:
-  quote
-  addquote
-  removequote
-  maxquote
-  randomquote
-  quoteinfo
 """
 
 from baseplugin import *
