@@ -83,7 +83,7 @@ class RSS(callbacks.Privmsg):
             self.lastRequest[url] = now
 
         feed = self.cachedFeeds[url]
-        headlines = [d['title'].strip().replace('\n', ' ') \
+        headlines = [utils.htmlToText(d['title'].strip())
                      for d in feed['items']]
         if not headlines:
             irc.error(msg, 'Error grabbing RSS feed')
