@@ -60,6 +60,7 @@ import ircmsgs
 import ircutils
 import callbacks
 import Owner
+import Misc
 
 originalCallbacksGetHelp = callbacks.getHelp
 lastGetHelp = 'x'*1000
@@ -144,13 +145,14 @@ class PluginTestCase(unittest.TestCase):
         while self.irc.takeMsg():
             pass
         _ = Owner.loadPluginClass(self.irc, Owner)
+        _ = Owner.loadPluginClass(self.irc, Misc)
         if isinstance(self.plugins, str):
-            if self.plugins != 'Owner':
+            if self.plugins not in ('Owner', 'Misc'):
                 module = Owner.loadPluginModule(self.plugins)
                 cb = Owner.loadPluginClass(self.irc, module)
         else:
             for name in self.plugins:
-                if name != 'Owner':
+                if name not in ('Owner', 'Misc'):
                     module = Owner.loadPluginModule(name)
                     cb = Owner.loadPluginClass(self.irc, module)
 
