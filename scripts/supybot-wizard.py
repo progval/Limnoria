@@ -483,21 +483,25 @@ if __name__ == '__main__':
     template = fd.read()
     fd.close()
 
+    format = pprint.pformat
     template = template.replace('"%%nick%%"', repr(nick))
     template = template.replace('"%%user%%"', repr(user))
     template = template.replace('"%%ident%%"', repr(ident))
     template = template.replace('"%%password%%"', repr(password))
     template = template.replace('"%%server%%"', repr(server))
-    template = template.replace('"%%onStart%%"', repr(onStart))
-    template = template.replace('"%%afterConnect%%"', repr(afterConnect))
-    template = template.replace('"%%configVariables%%"', repr(configVariables))
-    template = template.replace('"%%ident%%"', repr(ident))
+    template = template.replace('"%%onStart%%"', format(onStart))
+    template = template.replace('"%%afterConnect%%"', format(afterConnect))
+    template = template.replace('"%%configVariables%%"',
+                                format(configVariables))
 
-    filename = '%s.py' % nick
+    filename = '%s-botscript.py' % nick
     fd = file(filename, 'w')
     fd.write(template)
     fd.close()
 
+    if not sys.platform.startswith('win'):
+        os.chmod(filename, 0755)
+        
     myPrint("""All done!  Your new bot script is %s.  If you're running a *nix,
     you can start your bot script with the command line "./%s".  If you're not
     running a *nix or similar machine, you'll just have to start it like you
