@@ -320,6 +320,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             del self.Second.second
         if hasattr(self.FirstRepeat, 'firstrepeat'):
             del self.FirstRepeat.firstrepeat
+        ChannelPluginTestCase.tearDown(self)
 
     def testDispatching(self):
         self.irc.addCallback(self.First())
