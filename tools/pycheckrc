@@ -141,16 +141,16 @@ usesInput = 1
 usesExec = 0
 
 # ignore warnings from files under standard library
-ignoreStandardLibrary = 0
+ignoreStandardLibrary = 1
 
 # ignore warnings from the list of modules
 blacklist = ['Tkinter', 'wxPython', 'gtk', 'GTK', 'GDK', 'asynchat']
 
 # ignore global variables not used if name is one of these values
-variablesToIgnore = ['__version__', '__warningregistry__', '__all__', '__credits__', '__author__', '__email__']
+variablesToIgnore = ['__version__', '__warningregistry__', '__all__', '__credits__', '__author__', '__email__',]
 
 # ignore unused locals/arguments if name is one of these values
-unusedNames = ['_', 'empty', 'unused', 'dummy', 'irc', 'args', 'msg', 'match']
+unusedNames = ['_', 'empty', 'unused', 'dummy', 'irc', 'args', 'msg', 'match', 'afterConnect', 'onStart', 'advanced', 'yn', 'expect', 'anything', 'something',]
 
 # ignore use of deprecated modules/functions
 deprecated = 1

@@ -44,16 +44,11 @@ And you'll be able to call the command like this:
 slashdot
 
 Also includes a function for getting info about a specific feed, rssinfo.
-
-Commands include:
-  rsstitles
-  rssinfo
 """
 
 from baseplugin import *
 
 import time
-import operator
 
 import rssparser
 

@@ -37,7 +37,6 @@ sys.path.insert(0, 'plugins')
 from fix import *
 
 import re
-import sys
 import glob
 import time
 import os.path
@@ -141,11 +140,11 @@ class PluginTestCase(unittest.TestCase):
 
     def assertRegexps(self, query, regexps):
         started = time.time()
-        total = len(expectedResponses)*self.timeout
-        while expectedResponses and time.time() - started < total:
+        total = len(regexps)*self.timeout
+        while regexps and time.time() - started < total:
             m = self._feedMsg(query)
             self.failUnless(m, msg)
-            regepx = expectedResponses.pop(0)
+            regexp = regexps.pop(0)
             self.failUnless(re.search(regexp, m.args[1]),
                             '%r does not match %r' % (m.args[1], regexp))
         self.failIf(time.time() - started > total)

@@ -138,7 +138,7 @@ class RingBufferTestCase(unittest.TestCase):
         self.assertRaises(ValueError, b.__setitem__, slice(0, 10), [])
         b[2:4] = L[2:4]
         self.assertEquals(b[2:4], L[2:4])
-        for i in range(len(b)):
+        for _ in range(len(b)):
             b.append(0)
         b[2:4] = L[2:4]
         self.assertEquals(b[2:4], L[2:4])

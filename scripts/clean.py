@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import os, sys, os.path, shutil
+import os, os.path
 
-def removeFiles(arg, dirname, names):
+def removeFiles(_, dirname, names):
     for name in names:
         if name[-4:] in ('.pyc', 'pyo'):
             os.remove(os.path.join(dirname, name))

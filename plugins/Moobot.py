@@ -118,7 +118,6 @@ class Moobot(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         text = text.replace('_', '-')
-        L = []
         def morseToLetter(m):
             s = m.group(1)
             return self._revcode.get(s, s)

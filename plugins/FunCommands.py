@@ -47,7 +47,6 @@ import sha
 import time
 import math
 import cmath
-import types
 import string
 import random
 import urllib

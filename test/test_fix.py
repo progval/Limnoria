@@ -33,8 +33,6 @@
 
 from test import *
 
-import pickle
-
 class FunctionsTest(unittest.TestCase):
     def testCatch(self):
         def f():
@@ -46,7 +44,7 @@ class FunctionsTest(unittest.TestCase):
         revL = list(reviter(L))
         L.reverse()
         self.assertEqual(L, revL, 'reviter didn\'t return reversed list')
-        for elt in reviter([]):
+        for _ in reviter([]):
             self.fail('reviter caused iteration over empty sequence')
 
     def testGroup(self):

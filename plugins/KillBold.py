@@ -36,7 +36,6 @@ Removes all bold output by the bot.
 from baseplugin import *
 
 import ircmsgs
-import privmsgs
 import callbacks
 
 

@@ -47,7 +47,8 @@ class IrcMsgTestCase(unittest.TestCase):
                             strmsg.replace(':', '') == strmsg)
 
     def testRepr(self):
-        from ircmsgs import IrcMsg
+        IrcMsg = ircmsgs.IrcMsg
+        ignore(IrcMsg) # Make pychecker happy.
         for msg in msgs:
             self.assertEqual(msg, eval(repr(msg)))
 

@@ -178,9 +178,8 @@ def main():
             sys.exit(0)
 
 if __name__ == '__main__':
-    import sys
     if '-p' in sys.argv:
-        import profile, time
+        import profile
         sys.argv.remove('-p')
         profile.run('main()', '%i.prof' % time.time())
     if '-O' in sys.argv:

@@ -51,7 +51,7 @@ class HtmlToText(sgmllib.SGMLParser):
         self.tagReplace = tagReplace
         sgmllib.SGMLParser.__init__(self)
 
-    def unknown_starttag(self, tag, attrib):
+    def unknown_starttag(self, tag, attr):
         self.data.append(self.tagReplace)
 
     def unknown_endtag(self, tag):

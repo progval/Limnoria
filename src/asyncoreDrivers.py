@@ -45,7 +45,6 @@ import ircdb
 import world
 import drivers
 import ircmsgs
-import ircutils
 import schedule
 
 class AsyncoreRunnerDriver(drivers.IrcDriver):

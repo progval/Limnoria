@@ -31,7 +31,6 @@
 
 from test import *
 
-import copy
 import pickle
 
 import conf

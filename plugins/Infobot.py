@@ -116,7 +116,7 @@ class Infobot(callbacks.PrivmsgRegexp):
         self.db.commit()
 
     def forget(self, irc, msg, match):
-        r"^forget\s+(.+?)(?![?.! ]*)$"
+        r"^forget\s+(.+?)(?!\?+)[?.! ]*$"
         key = match.group(1)
         cursor = self.db.cursor()
         cursor.execute('DELETE FROM is_factoids WHERE key=%s', key)
@@ -128,7 +128,7 @@ class Infobot(callbacks.PrivmsgRegexp):
         (nick, key) = match.groups()
         try:
             s = '%s wants you to know that %s' %(msg.nick,self.getFactoid(key))
-            irc.queueMsg(irmcsgs.privmsg(nick, s))
+            irc.queueMsg(ircmsgs.privmsg(nick, s))
         except KeyError:
             irc.reply(msg, 'I don\'t know anything about %s' % key)
         
@@ -157,7 +157,6 @@ class Infobot(callbacks.PrivmsgRegexp):
         key = match.group(1)
         try:
             irc.reply(msg, self.getFactoid(key))
-            #irc.queueMsg(ircmsgs.privmsg(msg.args[0], self.getFactoid(key)))
         except KeyError:
             irc.reply(msg, self.getRandomSaying('dont_knows'))
 
@@ -165,9 +164,9 @@ class Infobot(callbacks.PrivmsgRegexp):
         r"^info$"
         cursor = self.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM is_factoids")
-        numIs = self.cursor.fetchone()[0]
+        numIs = cursor.fetchone()[0]
         cursor.execute("SELECT COUNT(*) FROM are_factoids")
-        numAre = self.cursor.fetchone()[0]
+        numAre = cursor.fetchone()[0]
         s = 'I have %s is factoids and %s are factoids' % (numIs, numAre)
         irc.reply(msg, s)
                   

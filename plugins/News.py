@@ -69,6 +69,7 @@ class News(callbacks.Privmsg, ChannelDBHandler):
                           added_by TEXT
                           )""")
         db.commit()
+        return db
 
     def addnews(self, irc, msg, args):
         """[<channel>] <expires> <text>
