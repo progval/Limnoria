@@ -43,6 +43,7 @@ import urllib2
 
 import google
 
+import conf
 import utils
 import ircmsgs
 import privmsgs
