@@ -290,6 +290,12 @@ def genPlugins():
                     yield (pluginName, module, plugin)
 
 if __name__ == '__main__':
+    if not os.path.exists(conf.dataDir):
+        os.mkdir(conf.dataDir)
+    if not os.path.exists(conf.confDir):
+        os.mkdir(conf.confDir)
+    if not os.path.exists(conf.logDir):
+        os.mkdir(conf.logDir)
     prepIndex()
     plugins = [p for p in genPlugins()]
     plugins.sort()
