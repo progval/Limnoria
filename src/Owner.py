@@ -44,6 +44,7 @@ import imp
 import sys
 import sets
 import getopt
+import logging
 import linecache
 
 import log
@@ -126,6 +127,8 @@ registerDefaultPlugin('capabilities', 'User')
 class holder(object):
     pass
 
+# This is used so we can support a "log" command as well as a "self.log"
+# Logger.
 class LogProxy(object):
     """<text>
 
@@ -145,6 +148,18 @@ class LogProxy(object):
     def __getattr__(self, attr):
         return getattr(self.log, attr)
 
+
+class LogErrorHandler(logging.Handler):
+    irc = None
+    def handle(self, record):
+        if record.levelno >= logging.ERROR:
+            if record.exc_info:
+                (_, e, _) = record.exc_info
+                s = 'Uncaught exception in %s: %s' % (record.module, e)
+            else:
+                s = record.msg
+            # Send to the owner dudes.
+            
 
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
@@ -372,7 +387,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def flush(self, irc, msg, args):
         """takes no arguments
 
-        Runs all the periodic flushers in world.flushers.
+        Runs all the periodic flushers in world.flushers.  This includes
+        flushing all logs and all configuration changes to disk.
         """
         world.flush()
         irc.replySuccess()
