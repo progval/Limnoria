@@ -103,7 +103,7 @@ class DbmMarkovDB(object):
             self.dbs[channel] = anydbm.open(filename, 'c')
         return self.dbs[channel]
 
-    def _flush(db):
+    def _flush(self, db):
         if hasattr(db, 'sync'):
             db.sync()
         if hasattr(db, 'flush'):
