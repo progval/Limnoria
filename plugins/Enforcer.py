@@ -169,7 +169,7 @@ class Enforcer(callbacks.Privmsg):
                 del self.unbans[banmask]
             eventId = schedule.addEvent(unban, when)
             self.unbans[banmask] = eventId
-                
+
     def doJoin(self, irc, msg):
         if ircutils.strEqual(msg.nick, irc.nick):
             return
@@ -177,15 +177,15 @@ class Enforcer(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         if c.checkBan(msg.prefix) and self.registryValue('autoBan', channel):
             self._doBan(irc, channel, msg.prefix)
-        elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
-            if self.registryValue('autoOp', channel):
-                irc.queueMsg(ircmsgs.op(channel, msg.nick))
-        elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'halfop')):
-            if self.registryValue('autoHalfop', channel):
-                irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
-        elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'voice')):
-            if self.registryValue('autoVoice', channel):
-                irc.queueMsg(ircmsgs.voice(channel, msg.nick))
+        elif self.registryValue('autoOp', channel) and \
+                ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
+            irc.queueMsg(ircmsgs.op(channel, msg.nick))
+        elif self.registryValue('autoHalfop', channel) and \
+                ircdb.checkCapability(msg.prefix, _chanCap(channel, 'halfop')):
+            irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
+        elif self.registryValue('autoVoice', channel) and \
+                ircdb.checkCapability(msg.prefix, _chanCap(channel, 'voice')):
+            irc.queueMsg(ircmsgs.voice(channel, msg.nick))
         self._enforceLimit(irc, channel)
 
     def doTopic(self, irc, msg):
