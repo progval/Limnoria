@@ -122,6 +122,8 @@ class Utilities(callbacks.Privmsg):
 
         Returns the arguments given it.
         """
+        if not args:
+            raise callbacks.ArgumentError
         irc.reply(msg, ' '.join(args), prefixName=False)
 
     def action(self, irc, msg, args):

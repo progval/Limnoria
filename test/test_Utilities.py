@@ -61,6 +61,7 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('strconcat foo bar baz', 'foobar baz')
 
     def testEcho(self):
+        self.assertHelp('echo')
         self.assertResponse('echo foo', 'foo')
         m = self.getMsg('cpustats')
         self.assertResponse('echo "%s"' % m.args[1], m.args[1])
