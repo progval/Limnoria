@@ -516,7 +516,11 @@ class UsersDictionary(utils.IterableMap):
     def open(self, filename):
         self.filename = filename
         reader = unpreserve.Reader(IrcUserCreator, self)
-        reader.readFile(filename)
+        try:
+            reader.readFile(filename)
+        except Exception, e:
+            log.error('Invalid user dictionary file, starting from scratch.')
+            log.error('Exact error: %s', utils.exnToString(e))
 
     def reload(self):
         """Reloads the database from its file."""
@@ -675,7 +679,11 @@ class ChannelsDictionary(utils.IterableMap):
     def open(self, filename):
         self.filename = filename
         reader = unpreserve.Reader(IrcChannelCreator, self)
-        reader.readFile(filename)
+        try:
+            reader.readFile(filename)
+        except Exception, e:
+            log.error('Invalid channel database, starting from scratch.')
+            log.error('Exact error: %s', utils.exnToString(e))
 
     def flush(self):
         """Flushes the channel database to its file."""
