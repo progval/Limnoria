@@ -40,12 +40,12 @@ if network:
                                 'Host not found.')
 
         def testWhois(self):
-            self.assertNotError('network whois ohio-state.edu')
-            self.assertError('network whois www.ohio-state.edu')
-            self.assertNotError('network whois kuro5hin.org')
-            self.assertError('network whois www.kuro5hin.org')
-            self.assertNotError('network whois microsoft.com')
-            self.assertNotError('network whois inria.fr')
+            self.assertNotError('internet whois ohio-state.edu')
+            self.assertError('internet whois www.ohio-state.edu')
+            self.assertNotError('internet whois kuro5hin.org')
+            self.assertError('internet whois www.kuro5hin.org')
+            self.assertNotError('internet whois microsoft.com')
+            self.assertNotError('internet whois inria.fr')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
