@@ -194,7 +194,7 @@ class Lookup(callbacks.Privmsg):
         If <key> is given, looks up <key> in the %s database.  Otherwise,
         returns a random key: value pair from the database.  There are
         %s in the database.
-        """ % (name, utils.nItems(rows, name))
+        """ % (name, utils.nItems(name, rows))
         f = types.FunctionType(f.func_code, f.func_globals,
                                f.func_name, closure=f.func_closure)
         f.__doc__ = docstring
@@ -203,25 +203,26 @@ class Lookup(callbacks.Privmsg):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args):
-        """[--{regexp,exact}=<value>] <name> <glob>
+        """[--{regexp}=<value>] [--values] <name> <glob>
 
         Searches the domain <name> for lookups matching <glob>.  If --regexp
         is given, its associated value is taken as a regexp and matched
-        against the lookups; if --exact is given, its associated value is
-        taken as an exact string to match against the lookups.
+        against the lookups.  If --values is given, search the values rather
+        than the keys.
         """
-        (options, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
+        column = 'key'
+        while '--values' in args:
+            column = 'value'
+            args.remove('--values')
+        (options, rest) = getopt.getopt(args, '', ['regexp='])
         (name, globs) = privmsgs.getArgs(rest, optional=1)
         db = self.dbHandler.getDb()
         criteria = []
         formats = []
         predicateName = 'p'
         for (option, arg) in options:
-            if option == '--exact':
-                criteria.append('value LIKE %s')
-                formats.append('%' + arg + '%')
-            elif option == '--regexp':
-                criteria.append('%s(value)' % predicateName)
+            if option == '--regexp':
+                criteria.append('%s(%s)' % (predicateName, column))
                 try:
                     r = utils.perlReToPythonRe(arg)
                 except ValueError, e:
@@ -233,19 +234,21 @@ class Lookup(callbacks.Privmsg):
                 db.create_function(predicateName, 1, p)
                 predicateName += 'p'
         for glob in globs.split():
-            criteria.append('value LIKE %s')
             if '?' not in glob and '*' not in glob:
                 glob = '*%s*' % glob
+            criteria.append('%s LIKE %%s' % column)
             formats.append(glob.translate(self._sqlTrans))
+        if not criteria:
+            raise callbacks.ArgumentError
         #print 'criteria: %s' % repr(criteria)
         #print 'formats: %s' % repr(formats)
         cursor = db.cursor()
-        sql = """SELECT key, value FROM %s WHERE %s""" % (name,
-                ' AND '.join(criteria))
+        sql = """SELECT key, value FROM %s WHERE %s""" % \
+              (name, ' AND '.join(criteria))
         #print 'sql: %s' % sql
         cursor.execute(sql, formats)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'No %ss matched that query.' % name)
+            irc.reply(msg, 'No %s matched that query.' % utils.pluralize(name))
         else:
             lookups = ['%s: %s' % (item[0], self._shrink(item[1]))
                        for item in cursor.fetchall()]
