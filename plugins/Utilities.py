@@ -155,7 +155,7 @@ class Utilities(callbacks.Privmsg):
 
         Returns the arguments given it.
         """
-        irc.reply(msg, ' '.join(args))
+        irc.reply(msg, ' '.join(args), prefixName=False)
 
     def re(self, irc, msg, args):
         """<regexp> <text>
