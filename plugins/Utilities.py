@@ -122,7 +122,9 @@ class Utilities(callbacks.Privmsg):
         """
         if not args:
             raise callbacks.ArgumentError
-        irc.reply(' '.join(args), prefixName=False)
+        text = privmsgs.getArgs(args)
+        text = plugins.standardSubstitute(irc, msg, text)
+        irc.reply(text, prefixName=False)
 
     def re(self, irc, msg, args):
         """<regexp> <text>

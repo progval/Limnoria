@@ -1,3 +1,5 @@
+	* Updated echo to use the standard substitute on its reply.
+	
 	* Updated Network.whois so that it can now retrieve
 	information on all domains.
 
@@ -8,9 +10,9 @@
 	Weather.weather is called and in which unit (C, F, K) to report
 	the weather.
 
-	* Made standard replies (such as supybot.replies.success, etc.)
-	use the standard substitute (such as $nick, $who, $channel, etc.)
-	in their text.
+	* Updated standard replies (such as supybot.replies.success, etc.)
+	to use the standard substitute (such as $nick, $who, $channel,
+	etc.) in their text.
 	
 	* Fixed snarfers to respect lobotomies.
 	
