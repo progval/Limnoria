@@ -48,9 +48,9 @@ class Dict(callbacks.Privmsg):
         try:
             server = conf.supybot.plugins.Dict.server()
             conn = dictclient.Connection(server)
-            dbs = conn.getdbdescs().keys()
+            dbs = list(conn.getdbdescs().keys())
             dbs.sort()
-            irc.reply(utils.str.commaAndify(dbs))
+            irc.reply(format('%L', dbs))
         except socket.error, e:
             irc.error(utils.web.strError(e))
     dictionaries = wrap(dictionaries)
@@ -98,11 +98,10 @@ class Dict(callbacks.Privmsg):
         dbs = set()
         if not definitions:
             if dictionary == '*':
-                irc.reply('No definition for %s could be found.' %
-                          utils.str.quoted(word))
+                irc.reply(format('No definition for %q could be found.', word))
             else:
-                irc.reply('No definition for %s could be found in %s' %
-                          (utils.str.quoted(word), ircutils.bold(dictionary)))
+                irc.reply(format('No definition for %q could be found in %s',
+                                 word, ircutils.bold(dictionary)))
             return
         L = []
         for d in definitions:
@@ -113,7 +112,7 @@ class Dict(callbacks.Privmsg):
             L.append('%s: %s' % (db, s))
         utils.gen.sortBy(len, L)
         if dictionary == '*' and len(dbs) > 1:
-            s = '%s responded: %s' % (utils.str.commaAndify(dbs), '; '.join(L))
+            s = format('%L responded: %s', list(dbs), '; '.join(L))
         else:
             s = '; '.join(L)
         irc.reply(s)

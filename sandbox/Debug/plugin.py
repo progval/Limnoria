@@ -67,7 +67,7 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
     _evalEnv.update(globals())
     def eval(self, irc, msg, args, s):
         """<expression>
-        
+
         Evaluates <expression> (which should be a Python expression) and
         returns its value.  If an exception is raised, reports the
         exception (and logs the traceback to the bot's logfile).
@@ -80,13 +80,12 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
             self._evalEnv['_'] = x
             irc.reply(repr(x))
         except SyntaxError, e:
-            irc.reply('%s: %s' % (utils.exnToString(e),
-                                  utils.quoted(s)))
+            irc.reply(format('%s: %q', utils.gen.exnToString(e), s))
     eval = wrap(eval, ['text'])
 
     def _exec(self, irc, msg, args, s):
         """<statement>
-        
+
         Execs <code>.  Returns success if it didn't raise any exceptions.
         """
         exec s
@@ -163,7 +162,7 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
         while times:
             L.append(gc.collect())
             times -= 1
-        irc.reply(utils.commaAndify(map(str, L)))
+        irc.reply(format('%L', map(str, L)))
     collect = wrap(collect, [additional('positiveInt', 1)])
 
 

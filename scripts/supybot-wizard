@@ -240,7 +240,7 @@ def main():
     else.""")
     pluginDirs = conf.supybot.directories.plugins()
     output("""Currently, the bot knows about the following directories:""")
-    output(utils.commaAndify(pluginDirs))
+    output(format('%L', pluginDirs))
     while yn('Would you like to add another plugin directory?',
              default=False):
         (pluginDir, _) = getDirectoryName('plugins', basedir=basedir)
@@ -422,8 +422,7 @@ def main():
     addedBulk = False
     if advanced and yn('Would you like to add plugins en masse first?'):
         addedBulk = True
-        output("""The available plugins are: %s.""" % \
-                                                   utils.commaAndify(plugins))
+        output(format("""The available plugins are: %L.""", plugins))
         output("""What plugins would you like to add?  If you've changed your
         mind and would rather not add plugins in bulk like this, just press
         enter and we'll move on to the individual plugin configuration.""")

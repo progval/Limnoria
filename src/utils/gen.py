@@ -40,8 +40,8 @@ import UserDict
 import traceback
 
 from iter import imap
+from str import format
 from file import mktemp
-from str import quoted, nItems, commaAndify
 
 def abbrev(strings, d=None):
     """Returns a dictionary mapping unambiguous abbreviations to full forms."""
@@ -76,40 +76,40 @@ def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
     be used.
     """
     ret = []
-    def format(s, i):
+    def Format(s, i):
         if i or leadingZeroes or ret:
             if short:
                 ret.append('%s%s' % (i, s[0]))
             else:
-                ret.append(nItems(i, s))
+                ret.append(format('%n', (i, s)))
     elapsed = int(elapsed)
     assert years or weeks or days or \
            hours or minutes or seconds, 'One flag must be True'
     if years:
         (yrs, elapsed) = (elapsed // 31536000, elapsed % 31536000)
-        format('year', yrs)
+        Format('year', yrs)
     if weeks:
         (wks, elapsed) = (elapsed // 604800, elapsed % 604800)
-        format('week', wks)
+        Format('week', wks)
     if days:
         (ds, elapsed) = (elapsed // 86400, elapsed % 86400)
-        format('day', ds)
+        Format('day', ds)
     if hours:
         (hrs, elapsed) = (elapsed // 3600, elapsed % 3600)
-        format('hour', hrs)
+        Format('hour', hrs)
     if minutes or seconds:
         (mins, secs) = (elapsed // 60, elapsed % 60)
         if leadingZeroes or mins:
-            format('minute', mins)
+            Format('minute', mins)
         if seconds:
             leadingZeroes = True
-            format('second', secs)
+            Format('second', secs)
     if not ret:
         raise ValueError, 'Time difference not great enough to be noted.'
     if short:
         return ' '.join(ret)
     else:
-        return commaAndify(ret)
+        return format('%L', ret)
 
 def findBinaryInPath(s):
     """Return full path of a binary if it's in PATH, otherwise return None."""
@@ -150,7 +150,7 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
         if node.__class__ is compiler.ast.Module:
             return node.doc
         else:
-            raise ValueError, 'Unsafe string: %s' % quoted(s)
+            raise ValueError, format('Unsafe string: %q', s)
     node = nodes[0]
     if node.__class__ is not compiler.ast.Discard:
         raise ValueError, 'Invalid expression: %s' % quoted(s)

@@ -118,7 +118,7 @@ class Misc(callbacks.Privmsg):
                         (not private and isPublic(cb))]
             names.sort()
             if names:
-                irc.reply(utils.str.commaAndify(names))
+                irc.reply(format('%L', names))
             else:
                 if private:
                     irc.reply('There are no private plugins.')
@@ -143,7 +143,7 @@ class Misc(callbacks.Privmsg):
                             commands.append(s)
                 if commands:
                     commands.sort()
-                    irc.reply(utils.str.commaAndify(commands))
+                    irc.reply(format('%L', commands))
                 else:
                     irc.error('That plugin exists, but it has no '
                               'commands with help.')
@@ -172,7 +172,7 @@ class Misc(callbacks.Privmsg):
                     L.append('%s %s' % (name, key))
         if L:
             L.sort()
-            irc.reply(utils.str.commaAndify(L))
+            irc.reply(format('%L', L))
         else:
             irc.reply('No appropriate commands were found.')
     apropos = wrap(apropos, ['lowered'])
@@ -204,9 +204,9 @@ class Misc(callbacks.Privmsg):
                 irc.error('There is no command %s.' % command)
             elif len(cbs) > 1:
                 names = sorted([cb.name() for cb in cbs])
-                irc.error('That command exists in the %s plugins.  '
-                          'Please specify exactly which plugin command '
-                          'you want help with.'% utils.str.commaAndify(names))
+                irc.error(format('That command exists in the %L plugins.  '
+                                 'Please specify exactly which plugin command '
+                                 'you want help with.', names))
             else:
                 getHelp(cbs[0])
         else:
@@ -260,13 +260,14 @@ class Misc(callbacks.Privmsg):
         if cbs:
             names = [cb.name() for cb in cbs]
             names.sort()
-            plugin = utils.str.commaAndify(names)
             if irc.nested:
-                irc.reply(utils.str.commaAndify(names))
+                irc.reply(format('%L', names))
             else:
-                irc.reply('The %s command is available in the %s %s.' %
-                          (utils.str.quoted(command), plugin,
-                           utils.str.pluralize('plugin', len(names))))
+                s = 'plugin'
+                if len(names) > 1:
+                    s = utils.str.pluralize(s)
+                irc.reply(format('The %q command is available in the %L %s.',
+                                 command, names, s))
         else:
             irc.error('There is no such command %s.' % command)
     plugin = wrap(plugin, ['commandName'])
@@ -311,8 +312,7 @@ class Misc(callbacks.Privmsg):
             L = self._mores[userHostmask]
             chunk = L.pop()
             if L:
-                chunk += ' \x02(%s)\x0F' % \
-                         utils.str.nItems('message', len(L), 'more')
+                chunk += format(' \x02(%n)\x0F', (len(L), 'message', 'more'))
             irc.reply(chunk, True)
         except KeyError:
             irc.error('You haven\'t asked me a command; perhaps you want '
@@ -404,7 +404,7 @@ class Misc(callbacks.Privmsg):
             irc.error('I couldn\'t find a message matching that criteria in '
                       'my history of %s messages.' % len(irc.state.history))
         else:
-            irc.reply(utils.str.commaAndify(resp))
+            irc.reply(format('%L', resp))
     last = wrap(last, [getopts({'nolimit': '',
                                 'on': 'something',
                                 'with': 'something',
@@ -491,7 +491,7 @@ class Misc(callbacks.Privmsg):
             shortname[, shortname and shortname].
             """
             L = [getShortName(n) for n in longList]
-            return utils.str.commaAndify(L)
+            return format('%L', L)
         def sortAuthors():
             """
             Sort the list of 'long names' based on the number of contributions
@@ -525,9 +525,9 @@ class Misc(callbacks.Privmsg):
                     except ValueError:
                         pass
                 if contribs:
-                    contrib = '%s %s contributed to it.' % \
-                        (buildContributorsString(contribs),
-                        utils.str.has(len(contribs)))
+                    contrib = format('%s %h contributed to it.',
+                                     buildContributorsString(contribs),
+                                     len(contribs))
                     hasContribs = True
                 elif hasAuthor:
                     contrib = 'has no additional contributors listed'
@@ -557,19 +557,22 @@ class Misc(callbacks.Privmsg):
                                                            contributions)
             results = []
             if commands:
-                results.append(
-                    'the %s %s' %(utils.str.commaAndify(commands),
-                                  utils.str.pluralize('command',len(commands))))
+                s = 'command'
+                if len(commands) > 1:
+                    s = utils.str.pluralize(s)
+                results.append(format('the %L %s', commands, s))
             if nonCommands:
-                results.append('the %s' % utils.str.commaAndify(nonCommands))
+                results.append(format('the %L', nonCommands))
             if results and isAuthor:
-                return '%s wrote the %s plugin and also contributed %s' % \
-                    (fullName, cb.name(), utils.str.commaAndify(results))
+                return format('%s wrote the %s plugin and also contributed %L',
+                              (fullName, cb.name(), results))
             elif results and not isAuthor:
-                return '%s contributed %s to the %s plugin' % \
-                    (fullName, utils.str.commaAndify(results), cb.name())
+                return format('%s contributed %L to the %s plugin',
+                              fullName, results, cb.name())
             elif isAuthor and not results:
                 return '%s wrote the %s plugin' % (fullName, cb.name())
+            # XXX Does this ever actually get reached?  If so, the string
+            # formatting needs to be fixed.
             else:
                 return '%s has no listed contributions for the %s plugin %s' %\
                     (fullName, cb.name())

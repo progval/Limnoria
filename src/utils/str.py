@@ -33,6 +33,7 @@ Simple utility functions related to strings.
 
 import re
 import new
+import sys
 import string
 import textwrap
 

@@ -46,13 +46,12 @@ class BanmaskStyle(registry.SpaceSeparatedSetOfStrings):
         assert self.validStrings, 'There must be some valid strings.  ' \
                                   'This is a bug.'
         registry.SpaceSeparatedSetOfStrings.__init__(self, *args, **kwargs)
-        self.__doc__ = 'Valid values include %s.' % \
-                        utils.str.commaAndify(map(repr, self.validStrings))
+        self.__doc__ = format('Valid values include %L.',
+                              map(repr, self.validStrings))
 
     def help(self):
         strings = [s for s in self.validStrings if s]
-        return '%s  Valid strings: %s.' % \
-                (self._help, utils.str.commaAndify(strings))
+        return format('%s  Valid strings: %L.', self._help, strings)
 
     def normalize(self, s):
         lowered = s.lower()

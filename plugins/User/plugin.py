@@ -70,8 +70,8 @@ class User(callbacks.Privmsg):
             else:
                 users.append(u.name)
         if users:
-            utils.sortBy(str.lower, users)
-            irc.reply(utils.str.commaAndify(users))
+            utils.gen.sortBy(str.lower, users)
+            irc.reply(format('%L', users))
         else:
             if predicates:
                 irc.reply('There are no matching registered users.')
@@ -154,7 +154,7 @@ class User(callbacks.Privmsg):
         """
         try:
             id = ircdb.users.getUserId(newname)
-            irc.error('%s is already registered.' % utils.str.quoted(newname))
+            irc.error(format('%q is already registered.', newname))
             return
         except KeyError:
             pass
@@ -291,7 +291,7 @@ class User(callbacks.Privmsg):
         def getHostmasks(user):
             hostmasks = map(repr, user.hostmasks)
             hostmasks.sort()
-            return utils.str.commaAndify(hostmasks)
+            return format('%L', hostmasks)
         try:
             user = ircdb.users.getUser(msg.prefix)
             if name:

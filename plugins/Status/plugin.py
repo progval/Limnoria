@@ -193,7 +193,7 @@ class Status(callbacks.Privmsg):
                         commands.add(attr)
         commands = list(commands)
         commands.sort()
-        irc.reply(utils.str.commaAndify(commands))
+        irc.reply(format('%L', commands))
     commands = wrap(commands)
 
     def uptime(self, irc, msg, args):

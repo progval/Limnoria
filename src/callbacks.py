@@ -489,8 +489,8 @@ class RichReplyMethods(object):
         if 'Raise' not in kwargs:
             kwargs['Raise'] = True
         if isinstance(capability, basestring): # checkCommandCapability!
-            log.warning('Denying %s for lacking %s capability.',
-                        self.msg.prefix, utils.str.quoted(capability))
+            log.warning(format('Denying %s for lacking %q capability.',
+                        self.msg.prefix, capability))
             if not self._getConfig(conf.supybot.reply.error.noCapability):
                 v = self._getConfig(conf.supybot.replies.noCapability)
                 s = self.__makeReply(v % capability, s)
@@ -866,7 +866,7 @@ class IrcObjectProxy(RichReplyMethods):
                     response = msgs.pop()
                     if msgs:
                         n = ircutils.bold('(%s)')
-                        n %= utils.str.nItems(len(msgs), 'message', 'more')
+                        n %= format('%n', (len(msgs), 'message', 'more'))
                         response = '%s %s' % (response, n)
                     prefix = msg.prefix
                     if self.to and ircutils.isNick(self.to):
@@ -1118,8 +1118,7 @@ class Privmsg(irclib.IrcCallback):
     def getCommand(self, name):
         """Gets the given command from this plugin."""
         name = canonicalName(name)
-        assert self.isCommand(name), '%s is not a command.' % \
-                                     utils.str.quoted(name)
+        assert self.isCommand(name), format('%s is not a command.', name)
         return getattr(self, name)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
@@ -1155,7 +1154,7 @@ class Privmsg(irclib.IrcCallback):
         elif hasattr(command, '__doc__'):
             return getHelp(command)
         else:
-            return 'The %s command has no help.' % utils.str.quoted(name)
+            return format('The %s command has no help.', name)
 
     def registryValue(self, name, channel=None, value=True):
         plugin = self.name()
@@ -1286,9 +1285,9 @@ class PrivmsgRegexp(Privmsg):
                     r = re.compile(value.__doc__, self.flags)
                     self.res.append((r, name))
                 except re.error, e:
-                    self.log.warning('Invalid regexp: %s (%s)',
-                                     utils.str.quoted(value.__doc__), e)
-        utils.sortBy(operator.itemgetter(1), self.res)
+                    self.log.warning(format('Invalid regexp: %q (%s)',
+                                            value.__doc__, e))
+        utils.gen.sortBy(operator.itemgetter(1), self.res)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:

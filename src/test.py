@@ -96,7 +96,7 @@ class SupyTestCase(unittest.TestCase):
     def setUp(self):
         log.critical('Beginning test case %s', self.id())
         threads = [t.getName() for t in threading.enumerate()]
-        log.critical('Threads: %s' % utils.str.commaAndify(threads))
+        log.critical(format('Threads: %L', threads))
         unittest.TestCase.setUp(self)
 
     def tearDown(self):

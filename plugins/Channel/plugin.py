@@ -284,13 +284,12 @@ class Channel(callbacks.Privmsg):
         # Check that they're not trying to make us kickban ourself.
         self.log.debug('In kban')
         if not irc.isNick(bannedNick):
-            self.log.warning('%s tried to kban a non nick: %s',
-                             utils.str.quoted(msg.prefix),
-                             utils.str.quoted(bannedNick))
+            self.log.warning(format('%q tried to kban a non nick: %q',
+                                    msg.prefix, bannedNick))
             raise callbacks.ArgumentError
         elif bannedNick == irc.nick:
-            self.log.warning('%s tried to make me kban myself.',
-                             utils.str.quoted(msg.prefix))
+            self.log.warning(format('%q tried to make me kban myself.',
+                                    msg.prefix))
             irc.error('I cowardly refuse to kickban myself.')
             return
         if not reason:
@@ -327,8 +326,8 @@ class Channel(callbacks.Privmsg):
         # Check (again) that they're not trying to make us kickban ourself.
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
             if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
-                self.log.warning('%s tried to make me kban myself.',
-                                 utils.str.quoted(msg.prefix))
+                self.log.warning(format('%q tried to make me kban myself.',
+                                        msg.prefix))
                 irc.error('I cowardly refuse to ban myself.')
                 return
             else:
@@ -351,16 +350,16 @@ class Channel(callbacks.Privmsg):
             doBan()
         elif ircdb.checkCapability(msg.prefix, capability):
             if ircdb.checkCapability(bannedHostmask, capability):
-                self.log.warning('%s tried to ban %s, but both have %s',
-                                 msg.prefix, utils.str.quoted(bannedHostmask),
-                                 capability)
+                self.log.warning(
+                        format('%s tried to ban %q, but both have %s',
+                               msg.prefix, bannedHostmask, capability))
                 irc.error('%s has %s too, you can\'t ban him/her/it.' %
                           (bannedNick, capability))
             else:
                 doBan()
         else:
-            self.log.warning('%s attempted kban without %s',
-                             utils.str.quoted(msg.prefix), capability)
+            self.log.warning(format('%q attempted kban without %s',
+                                    msg.prefix, capability))
             irc.errorNoCapability(capability)
             exact,nick,user,host
     kban = wrap(kban,
@@ -513,7 +512,7 @@ class Channel(callbacks.Privmsg):
         # XXX Add the expirations.
         c = ircdb.channels.getChannel(channel)
         if c.bans:
-            irc.reply(utils.str.commaAndify(map(utils.str.dqrepr, c.bans)))
+            irc.reply(format('%L', map(utils.str.dqrepr, c.bans)))
         else:
             irc.reply('There are currently no permanent bans on %s' % channel)
     permbans = wrap(permbans, [('checkChannelCapability', 'op')])
@@ -558,8 +557,8 @@ class Channel(callbacks.Privmsg):
         # XXX Add the expirations.
         c = ircdb.channels.getChannel(channel)
         if len(c.ignores) == 0:
-            s = 'I\'m not currently ignoring any hostmasks in %s' % \
-                utils.str.quoted(channel)
+            s = format('I\'m not currently ignoring any hostmasks in %q',
+                       channel)
             irc.reply(s)
         else:
             L = sorted(c.ignores)
@@ -599,9 +598,10 @@ class Channel(callbacks.Privmsg):
                 fail.append(c)
         ircdb.users.setUser(user)
         if fail:
-            irc.error('That user didn\'t have the %s %s.' %
-                      (utils.str.commaAndify(fail),
-                       utils.str.pluralize('capability', len(fail))),
+            s = 'capability'
+            if len(fail) > 1:
+                s = utils.str.pluralize(s)
+            irc.error(format('That user didn\'t have the %L %s.', fail, s),
                       Raise=True)
         irc.replySuccess()
     removecapability = wrap(removecapability,
@@ -660,9 +660,10 @@ class Channel(callbacks.Privmsg):
                 fail.append(c)
         ircdb.channels.setChannel(channel, chan)
         if fail:
-            irc.error('I do not know about the %s %s.' %
-                      (utils.str.commaAndify(fail),
-                       utils.str.pluralize('capability', len(fail))),
+            s = 'capability'
+            if len(fail) > 1:
+                s = utils.str.pluralize(s)
+            irc.error(format('I do not know about the %L %s.', fail, s),
                       Raise=True)
         irc.replySuccess()
     unsetcapability = wrap(unsetcapability,

@@ -384,9 +384,9 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
 
     def getCommandHelp(self, name):
         help = self.__parent.getCommandHelp(name)
-        help = help.replace('$Types', utils.str.pluralize(self.name()))
+        help = help.replace('$Types', format('%p', self.name()))
         help = help.replace('$Type', self.name())
-        help = help.replace('$types', utils.str.pluralize(self.name().lower()))
+        help = help.replace('$types', format('%p', self.name().lower()))
         help = help.replace('$type', self.name().lower())
         return help
 
@@ -437,8 +437,8 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
     remove = wrap(remove, ['user', 'channeldb', 'id'])
 
     def searchSerializeRecord(self, record):
-        text = utils.str.quoted(utils.str.ellipsisify(record.text, 50))
-        return '#%s: %s' % (record.id, text)
+        text = utils.str.ellipsisify(record.text, 50)
+        return format('#%s: %q' % (record.id, text))
 
     def search(self, irc, msg, args, channel, optlist, glob):
         """[<channel>] [--{regexp,by} <value>] [<glob>]

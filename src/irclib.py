@@ -35,6 +35,7 @@ import operator
 
 import supybot.log as log
 import supybot.conf as conf
+from utils.str import rsplit
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
@@ -168,8 +169,8 @@ class IrcMsgQueue(object):
         if msg in self.msgs and \
            not conf.supybot.protocols.irc.queueDuplicateMessages():
             s = str(msg).strip()
-            log.info('Not adding message %s to queue, already added.',
-                     utils.str.quoted(s))
+            log.info(
+                format('Not adding message %q to queue, already added.', s))
             return False
         else:
             self.msgs.add(msg)

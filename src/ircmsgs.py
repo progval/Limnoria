@@ -188,9 +188,8 @@ class IrcMsg(object):
     def __repr__(self):
         if self._repr is not None:
             return self._repr
-        self._repr = 'IrcMsg(prefix=%s, command=%s, args=%r)' % \
-                     (utils.str.quoted(self.prefix),
-                      utils.str.quoted(self.command), self.args)
+        self._repr = format('IrcMsg(prefix=%q, command=%q, args=%r)',
+                            self.prefix, self.command, self.args)
         return self._repr
 
     def __reduce__(self):

@@ -64,7 +64,7 @@ class Babelfish(callbacks.Privmsg):
 
         Returns the languages that Babelfish can translate to/from.
         """
-        irc.reply(utils.str.commaAndify(babelfish.available_languages))
+        irc.reply(format('%L', babelfish.available_languages))
 
     def translate(self, irc, msg, args, fromLang, toLang, text):
         """<from-language> [to] <to-language> <text>
@@ -77,20 +77,20 @@ class Babelfish(callbacks.Privmsg):
         try:
             (fromLang, toLang) = self._getLang(fromLang, toLang, chan)
             if not fromLang or not toLang:
-                langs = self.registryValue('languages', chan)
+                langs = list(self.registryValue('languages', chan))
                 if not langs:
                     irc.error('I do not speak any other languages.')
                     return
                 else:
-                    irc.error('I only speak %s.' % utils.str.commaAndify(langs))
+                    irc.error(format('I only speak %L.', langs))
                     return
             translation = babelfish.translate(text, fromLang, toLang)
             irc.reply(utils.web.htmlToText(translation))
         except (KeyError, babelfish.LanguageNotAvailableError), e:
             languages = self.registryValue('languages', chan)
             if languages:
-                languages = 'Valid languages include %s' % \
-                        utils.str.commaAndify(sorted(languages))
+                languages = format('Valid languages include %L',
+                                   sorted(languages))
             else:
                 languages = 'I do not speak any other languages.'
             irc.errorInvalid('language', str(e), languages)
@@ -120,16 +120,15 @@ class Babelfish(callbacks.Privmsg):
                     irc.error('I do not speak any other languages.')
                     return
                 else:
-                    irc.error('I only speak %s.' % utils.str.commaAndify(langs,
-                                                                     And='or'))
+                    irc.error(format('I only speak %L.', (langs, 'or')))
                     return
             translations = babelfish.babelize(text, fromLang, toLang)
             irc.reply(utils.web.htmlToText(translations[-1]))
         except (KeyError, babelfish.LanguageNotAvailableError), e:
             languages = self.registryValue('languages', chan)
             if languages:
-                languages = 'Valid languages include %s' % \
-                        utils.str.commaAndify(sorted(languages))
+                languages = format('Valid languages include %L',
+                                   sorted(languages))
             else:
                 languages = 'I do not speak any other languages.'
             irc.errorInvalid('language', str(e), languages)

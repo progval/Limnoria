@@ -130,7 +130,7 @@ class Config(callbacks.Privmsg):
         """
         L = self._list(group)
         if L:
-            irc.reply(utils.str.commaAndify(L))
+            irc.reply(format('%L', L))
         else:
             irc.error('There don\'t seem to be any values in %s.' % group._name)
     list = wrap(list, ['configVar'])
@@ -147,7 +147,7 @@ class Config(callbacks.Privmsg):
                 if not ircutils.isChannel(possibleChannel):
                     L.append(name)
         if L:
-            irc.reply(utils.str.commaAndify(L))
+            irc.reply(format('%L', L))
         else:
             irc.reply('There were no matching configuration variables.')
     search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?

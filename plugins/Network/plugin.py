@@ -168,19 +168,19 @@ class Network(callbacks.Privmsg):
                     normal.append(channel)
             L = []
             if ops:
-                L.append('is an op on %s' % utils.str.commaAndify(ops))
+                L.append(format('is an op on %L', ops))
             if halfops:
-                L.append('is a halfop on %s' % utils.str.commaAndify(halfops))
+                L.append(format('is a halfop on %L', halfops))
             if voices:
-                L.append('is voiced on %s' % utils.str.commaAndify(voices))
+                L.append(format('is voiced on %L', voices))
             if normal:
                 if L:
-                    L.append('is also on %s' % utils.str.commaAndify(normal))
+                    L.append(format('is also on %L', normal))
                 else:
-                    L.append('is on %s' % utils.str.commaAndify(normal))
+                    L.append(format('is on %L', normal))
         else:
             L = ['isn\'t on any non-secret channels']
-        channels = utils.str.commaAndify(L)
+        channels = format('%L', L)
         if '317' in d:
             idle = utils.gen.timeElapsed(d['317'].args[2])
             signon = time.strftime(conf.supybot.reply.format.time(),
@@ -241,8 +241,8 @@ class Network(callbacks.Privmsg):
         Returns the networks to which the bot is currently connected.
         """
         L = ['%s: %s' % (ircd.network, ircd.server) for ircd in world.ircs]
-        utils.sortBy(str.lower, L)
-        irc.reply(utils.str.commaAndify(L))
+        utils.gen.sortBy(str.lower, L)
+        irc.reply(format('%L', L))
     networks = wrap(networks)
 
     def doPong(self, irc, msg):

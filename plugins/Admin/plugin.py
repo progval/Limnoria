@@ -184,8 +184,8 @@ class Admin(callbacks.Privmsg):
     def do438(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
-            irc.error('I can\'t change nicks, the server said %s.' %
-                      utils.str.quoted(msg.args[2]), private=True)
+            irc.error(format('I can\'t change nicks, the server said %q.',
+                      msg.args[2]), private=True)
         else:
             self.log.debug('Got 438 without Admin.nick being called.')
 
