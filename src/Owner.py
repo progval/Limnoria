@@ -401,7 +401,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     self.log.exception('Uncaught exception in Owner.eval.  '
                                        'This is not a bug.  Please do not '
                                        'report it.')
-                    irc.reply(utils.exnToString(e)
+                    irc.reply(utils.exnToString(e))
             else:
                 # There's a potential that allowEval got changed after we were
                 # loaded.  Let's be extra-special-safe.
