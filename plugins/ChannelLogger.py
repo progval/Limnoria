@@ -167,7 +167,7 @@ class ChannelLogger(callbacks.Privmsg):
                 logDir = os.path.join(logDir, channel)
             if self.registryValue('directories.timestamp'):
                 format = self.registryValue('directories.timestamp.format')
-                timeDir =time.strtime(format)
+                timeDir =time.strftime(format)
                 logDir = os.path.join(logDir, timeDir)
         if not os.path.exists(logDir):
             os.makedirs(logDir)
