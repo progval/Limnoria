@@ -32,7 +32,7 @@
 from testsupport import *
 
 class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Misc', 'Utilities', 'Gameknot', 'Ctcp', 'Dict')
+    plugins = ('Misc', 'Utilities', 'Gameknot', 'Ctcp', 'Dict', 'User')
     def testAction(self):
         self.assertAction('action moos', 'moos')
 
@@ -70,6 +70,10 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('help help', r'^\(\x02help')
         self.assertRegexp('help misc help', r'^\(\x02misc help')
         self.assertError('help nonExistentCommand')
+
+    def testHelpDoesAmbiguityWithDefaultPlugins(self):
+        m = self.getMsg('help list') # Misc.list and User.list.
+        self.failIf(m.args[1].startswith('Error'))
 
     def testHelpStripsPrefixChars(self):
         try:

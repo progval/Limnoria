@@ -1,4 +1,7 @@
-	* Added Lookup.search
+	* Fixed Misc.help to follow the same default plugin rules that the
+	rest of the bot follows.
+	
+	* Added Lookup.search for searching the various loaded lookups.
 
 	* Updated Todo.remove to allow removing multiple taskids
 

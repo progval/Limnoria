@@ -137,6 +137,11 @@ class Misc(callbacks.Privmsg):
         This command gives a useful description of what <command> does.
         <plugin> is only necessary if the command is in more than one plugin.
         """
+        def getHelp(method, name=None):
+            if hasattr(method, '__doc__') and method.__doc__:
+                irc.reply(msg, callbacks.getHelp(method, name=name))
+            else:
+                irc.error(msg, '%s has no help.' % name)
         if len(args) > 1:
             cb = irc.getCallback(args[0])
             if cb is not None:
@@ -145,10 +150,7 @@ class Misc(callbacks.Privmsg):
                 name = ' '.join(args)
                 if hasattr(cb, 'isCommand') and cb.isCommand(command):
                     method = getattr(cb, command)
-                    if hasattr(method, '__doc__') and method.__doc__ != None:
-                        irc.reply(msg, callbacks.getHelp(method, name=name))
-                    else:
-                        irc.error(msg, 'That command has no help.')
+                    getHelp(method, name)
                 else:
                     irc.error(msg, 'There is no such command %s.' % name)
             else:
@@ -159,21 +161,28 @@ class Misc(callbacks.Privmsg):
         command = command.lstrip(conf.prefixChars) 
         cbs = callbacks.findCallbackForCommand(irc, command)
         if len(cbs) > 1:
-            names = [cb.name() for cb in cbs]
-            names.sort()
-            irc.error(msg, 'That command exists in the %s plugins.  '
-                           'Please specify exactly which plugin command '
-                           'you want help with.'% utils.commaAndify(names))
-            return
+            tokens = [command]
+            ambiguous = {}
+            Owner = irc.getCallback('Owner')
+            Owner.disambiguate(irc, tokens, ambiguous)
+            if ambiguous:
+                names = [cb.name() for cb in cbs]
+                names.sort()
+                irc.error(msg, 'That command exists in the %s plugins.  '
+                               'Please specify exactly which plugin command '
+                               'you want help with.'% utils.commaAndify(names))
+                return
+            else:
+                assert len(tokens) == 2
+                cb = irc.getCallback(tokens[0])
+                method = getattr(cb, tokens[1])
+                getHelp(method)
         elif not cbs:
             irc.error(msg, 'There is no such command %s.' % command)
         else:
             cb = cbs[0]
             method = getattr(cb, command)
-            if hasattr(method, '__doc__') and method.__doc__ is not None:
-                irc.reply(msg, callbacks.getHelp(method, name=command))
-            else:
-                irc.error(msg, '%s has no help.' % command)
+            getHelp(method)
 
     def hostmask(self, irc, msg, args):
         """[<nick>]
@@ -377,7 +386,8 @@ class Misc(callbacks.Privmsg):
             else:
                 irc.reply(msg, ircmsgs.prettyPrint(m))
                 return
-        irc.error(msg, 'I couldn\'t find a message matching that criteria.')
+        irc.error(msg, 'I couldn\'t find a message matching that criteria in '
+                       'my history of %s messages.' % len(irc.state.history))
 
     def tell(self, irc, msg, args):
         """<nick|channel> <text>
