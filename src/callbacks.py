@@ -1127,6 +1127,7 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
         return canonicalName(self.name())
     
     def __call__(self, irc, msg):
+        irc = SimpleProxy(irc, msg)
         if msg.command == 'PRIVMSG':
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
                 self.__parent.__call__(irc, msg)
