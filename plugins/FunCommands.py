@@ -486,6 +486,7 @@ class FunCommands(callbacks.Privmsg):
         dicts = 0
         lists = 0
         tuples = 0
+        refcounts = 0
         objs = gc.get_objects()
         for obj in objs:
             if isinstance(obj, tuple):
@@ -500,11 +501,12 @@ class FunCommands(callbacks.Privmsg):
                 classes += 1
             elif inspect.ismodule(obj):
                 modules += 1
+            refcounts += sys.getrefcount(obj)
         response = 'I have %s objects: %s modules, %s classes, %s functions, '\
                    '%s dictionaries, %s lists, and %s tuples (and a few other'\
-                   ' different types).' %\
+                   ' different types).  I have a total of %s references.' %\
                    (len(objs), modules, classes, functions,
-                    dicts, lists, tuples)
+                    dicts, lists, tuples, refcounts)
         irc.reply(msg, response)
 
     def last(self, irc, msg, args):
