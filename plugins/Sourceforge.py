@@ -196,7 +196,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
 
     _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
     _sfTitle = re.compile(r'<h2>\[ (\d+) \] ([^<]+)</h2>', re.I)
-    _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
+    _linkType = re.compile(r'Project: (\w+ \w+|\w+): Tracker', re.I)
     def _getTrackerInfo(self, url):
         """
         Parses the specific tracker page, returning useful information.
