@@ -74,15 +74,12 @@ frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
-class ChannelDB(plugins.ChannelDBHandler,
-                callbacks.PrivmsgCommandAndRegexp,
-                plugins.Toggleable):
-    addressedRegexps = sets.Set(['increaseKarma', 'decreaseKarma'])
+class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
     toggles = plugins.ToggleDictionary({'selfstats': True})
     def __init__(self):
-        plugins.ChannelDBHandler.__init__(self)
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        callbacks.Privmsg.__init__(self)
         plugins.Toggleable.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
         self.lastmsg = None
         self.laststate = None
         self.outFiltering = False
@@ -134,14 +131,6 @@ class ChannelDB(plugins.ChannelDBHandler,
             cursor.execute("""INSERT INTO channel_stats
                               VALUES (0, 0, 0, 0, 0, 0,
                                       0, 0, 0, 0, 0, 0)""")
-
-            cursor.execute("""CREATE TABLE karma (
-                              id INTEGER PRIMARY KEY,
-                              name TEXT,
-                              normalized TEXT UNIQUE ON CONFLICT IGNORE,
-                              added INTEGER,
-                              subtracted INTEGER
-                              )""")
             db.commit()
         def p(s1, s2):
             return int(ircutils.nickEqual(s1, s2))
@@ -156,10 +145,9 @@ class ChannelDB(plugins.ChannelDBHandler,
                 self.laststate = irc.state.copy()
         finally:
             self.lastmsg = msg
-        callbacks.PrivmsgCommandAndRegexp.__call__(self, irc, msg)
+        super(ChannelDB, self).__call__(irc, msg)
         
     def doPrivmsg(self, irc, msg):
-        callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
         if ircutils.isChannel(msg.args[0]):
             self._updatePrivmsgStats(msg)
 
@@ -351,85 +339,6 @@ class ChannelDB(plugins.ChannelDBHandler,
             s = '%s was last seen here %s ago saying %r' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
             irc.reply(msg, s)
-
-    def karma(self, irc, msg, args):
-        """[<channel>] [<text>]
-
-        Returns the karma of <text>.  If <text> is not given, returns the top
-        three and bottom three karmas. <channel> is only necessary if the
-        message isn't sent on the channel itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        if len(args) == 1:
-            name = args[0]
-            normalized = name.lower()
-            cursor.execute("""SELECT added, subtracted
-                              FROM karma
-                              WHERE normalized=%s""", normalized)
-            if cursor.rowcount == 0:
-                irc.reply(msg, '%s has no karma.' % name)
-            else:
-                (added, subtracted) = map(int, cursor.fetchone())
-                total = added - subtracted
-                s = 'Karma for %r has been increased %s %s ' \
-                    'and decreased %s %s for a total karma of %s.' % \
-                    (name, added, utils.pluralize(added, 'time'),
-                     subtracted, utils.pluralize(subtracted, 'time'), total)
-                irc.reply(msg, s)
-        elif len(args) > 1:
-            normalizedArgs = map(str.lower, args)
-            criteria = ' OR '.join(['normalized=%s'] * len(args))
-            sql = """SELECT name, added-subtracted
-                     FROM karma WHERE %s
-                     ORDER BY added-subtracted DESC""" % criteria
-            cursor.execute(sql, *normalizedArgs)
-            if cursor.rowcount > 0:
-                s = utils.commaAndify(['%s: %s' % (n, t)
-                                       for (n,t) in cursor.fetchall()])
-                irc.reply(msg, s + '.')
-            else:
-                irc.reply(msg, 'I didn\'t know the karma for any '
-                               'of those things.')
-        else: # No name was given.  Return the top/bottom 3 karmas.
-            cursor.execute("""SELECT name, added-subtracted
-                              FROM karma
-                              ORDER BY added-subtracted DESC
-                              LIMIT 3""")
-            highest = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
-            cursor.execute("""SELECT name, added-subtracted
-                              FROM karma
-                              ORDER BY added-subtracted ASC
-                              LIMIT 3""")
-            lowest = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
-            s = 'Highest karma: %s.  Lowest karma: %s.' % \
-                (utils.commaAndify(highest), utils.commaAndify(lowest))
-            irc.reply(msg, s)
-            
-    def increaseKarma(self, irc, msg, match):
-        r"^(\S+)\+\+$"
-        name = match.group(1)
-        normalized = name.lower()
-        db = self.getDb(msg.args[0])
-        cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, %s, 0, 0)""",
-                       name, normalized)
-        cursor.execute("""UPDATE karma
-                          SET added=added+1
-                          WHERE normalized=%s""", normalized)
-
-    def decreaseKarma(self, irc, msg, match):
-        r"^(\S+)--$"
-        name = match.group(1)
-        normalized = name.lower()
-        db = self.getDb(msg.args[0])
-        cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, %s, 0, 0)""",
-                       name, normalized)
-        cursor.execute("""UPDATE karma
-                          SET subtracted=subtracted+1
-                          WHERE normalized=%s""", normalized)
 
     def stats(self, irc, msg, args):
         """[<channel>] [<name>]
