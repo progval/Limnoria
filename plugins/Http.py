@@ -237,7 +237,7 @@ class Http(callbacks.Privmsg):
                           (name, rating, games, w, l, d, seen))
         except AttributeError:
             if profile.find('User %s not found!' % name) != -1:
-                irc.error(msg, 'No user %s exists.')
+                irc.error(msg, 'No user %s exists.' % name)
             else:
                 irc.error(msg, 'The format of the page was odd.')
         except urllib2.URLError:
