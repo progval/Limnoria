@@ -62,15 +62,19 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load URL')
 
-class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
-    toggles = plugins.ToggleDictionary({'tinysnarf':True,
-                                        'tinyreply':True})
-    _maxUrlLen = 46
+class URL(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
+    configurables = plugins.ConfigurableDictionary(
+        [('tinyurl-snarfer', plugins.ConfigurableTypes.bool, True,
+          """Determines whether the bot will output shorter versions of URLs
+          longer than the tinyurl-minimum-length config variable."""),
+         ('tinyurl-minimum-length', plugins.ConfigurableTypes.int, 46,
+          """The minimum length a URL must be before the tinyurl-snarfer will
+          snarf it and offer a tinyurl replacement."""),]
+    )
     def __init__(self):
         self.nextMsgs = {}
         callbacks.Privmsg.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
-        plugins.Toggleable.__init__(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):
@@ -97,7 +101,7 @@ class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
         db.commit()
         return db
 
-    _urlRe = re.compile(r"([-a-z0-9+.]+://[-\w=#!*()',$;&/@:%?.~]+)", re.I)
+    _urlRe = re.compile(r"([^\[<(\s]+://[^\])>\s]+)", re.I)
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
         db = self.getDb(channel)
@@ -125,20 +129,23 @@ class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
                               (NULL, %s, %s, %s, %s, %s, '', %s, %s, %s)""",
                            url, added, addedBy, msg.args[1], previousMsg,
                            protocol, site, filename)
-            if self.toggles.get('tinysnarf', channel=msg.args[0]) and\
-                len(url) > self._maxUrlLen:
+            channel = msg.args[0]
+            snarf = self.configurables.get('tinyurl-snarfer', channel)
+            minlen = self.configurables.get('tinyurl-minimum-length', channel)
+            if snarf and len(url) > minlen:
                 cursor.execute("""SELECT id FROM urls WHERE url=%s AND
-                    added=%s AND added_by=%s""", url, added, addedBy)
+                                  added=%s AND added_by=%s""",
+                               url, added, addedBy)
                 if cursor.rowcount != 0:
                     #debug.printf(url)
                     tinyurl = self._getTinyUrl(url)
                     if tinyurl:
                         id = int(cursor.fetchone()[0])
-                        cursor.execute("""INSERT INTO tinyurls VALUES
-                            (NULL, %s, %s)""", id, tinyurl)
-                    if self.toggles.get('tinyreply', channel=msg.args[0]):
-                        irc.queueMsg(callbacks.reply(msg, '%s (was <%s>)' %
-                            (ircutils.bold(tinyurl), url), prefixName=False))
+                        cursor.execute("""INSERT INTO tinyurls
+                                          VALUES (NULL, %s, %s)""",id, tinyurl)
+                        tinyurl = ircutils.bold(tinyurl)
+                        s = '%s (was <%s>)' % (tinyurl, url)
+                        irc.queueMsg(callbacks.reply(msg, s, prefixName=False))
             key = (msg.nick, channel)
             self.nextMsgs.setdefault(key, []).append((url, added))
         db.commit()
@@ -193,13 +200,13 @@ class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
         Returns a TinyURL.com version of <url>
         """
         url = privmsgs.getArgs(args)
-        if self.toggles.get('tinysnarf', channel=msg.args[0]) and\
-            self.toggles.get('tinyreply', channel=msg.args[0]):
+        if self.configurables.get('tinyurl-snarfer', channel=msg.args[0]):
             return
         url = self._getTinyUrl(url, cmd=True)
         if not url:
-            irc.error(msg, 'Could not parse the TinyURL.com results page. '\
-                '(%s)' % conf.replyPossibleBug)
+            s = 'Could not parse the TinyURL.com results page.  (%s)' % \
+                conf.replyPossibleBug
+            irc.error(msg, s)
         else:
             irc.reply(msg, url)
 
