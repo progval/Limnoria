@@ -31,14 +31,20 @@
 
 from test import *
 
+import ircdb
+
 class UserCommandsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('UserCommands',)
     prefix1 = 'somethingElse!user@host.tld'
     prefix2 = 'EvensomethingElse!user@host.tld'
-    def testRegister(self):
+    def testRegisterUnregister(self):
         self.prefix = self.prefix1
         self.assertNotError('register foo bar')
         self.assertError('register foo baz')
+        self.failUnless(ircdb.users.getUserId('foo'))
+        self.assertNotError('unregister foo bar')
+        self.assertRaises(KeyError, ircdb.users.getUserId, 'foo')
+        
 
     def testChangeUsername(self):
         self.prefix = self.prefix1
