@@ -110,7 +110,11 @@ class RSS(callbacks.Privmsg):
         self.gettingLockLock = threading.Lock()
         for name in self.registryValue('feeds'):
             self._registerFeed(name)
-            url = self.registryValue('feeds.%s' % name)
+            try:
+                url = self.registryValue('feeds.%s' % name)
+            except registry.NonExistentRegistryEntry:
+                self.log.warning('%s is not a registered feed, removing.',name)
+                continue
             self.makeFeedCommand(name, url)
             self.getFeed(url) # So announced feeds don't announce on startup.
 
