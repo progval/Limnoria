@@ -187,7 +187,7 @@ if __name__ == '__main__':
     import callbacks
     import OwnerCommands
 
-    class ConfigAfter376(irclib.IrcCallback):
+    class ConfigAfterConnect(irclib.IrcCallback):
         public = False
         def __init__(self, commands):
             self.commands = commands
@@ -196,6 +196,7 @@ if __name__ == '__main__':
                 msg = ircmsgs.privmsg(irc.nick, command, prefix=irc.prefix)
                 irc.queueMsg(msg)
         do377 = do376
+        do422 = do376 # MOTD File is missing.
 
     # We pre-tokenize the commands just to save on significant amounts of work.
     conf.commandsOnStart = map(callbacks.tokenize, conf.commandsOnStart)
@@ -204,7 +205,7 @@ if __name__ == '__main__':
     callback = OwnerCommands.Class()
     callback.configure(irc)
     irc.addCallback(callback)
-    irc.addCallback(ConfigAfter376(afterConnect))
+    irc.addCallback(ConfigAfterConnect(afterConnect))
     driver = drivers.newDriver(server, irc)
     
     if options.profile:
