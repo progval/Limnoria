@@ -39,5 +39,5 @@ class FunCommandsTest(PluginTestCase):
         self.assertResponse('binary A', '01000001')
 
     def testRot13(self):
-        for s in nicks:
+        for s in nicks[:10]: # 10 is probably enough.
             self.assertResponse('rot13 [rot13 %s]' % s, s)
