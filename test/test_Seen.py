@@ -43,7 +43,8 @@ class ChannelDBTestCase(ChannelPluginTestCase):
                                          'register foo bar',
                                          prefix=self.prefix))
         _ = self.irc.takeMsg()
-        ircdb.users.getUser(self.nick).addCapability(self.channel + '.op')
+        chancap = ircdb.makeChannelCapability(self.channel, 'op')
+        ircdb.users.getUser(self.nick).addCapability(chancap)
 
     def testNoKeyErrorEscapeFromSeen(self):
         self.assertRegexp('seen asldfkjasdlfkj', '^I have not seen')
