@@ -56,44 +56,31 @@ import utils
 import webutils
 import ircutils
 import privmsgs
+import registry
 import callbacks
-import configurable
 
 L = [os.__file__]
 if hasattr(math, '__file__'):
     L.append(math.__file__)
 pythonPath = map(os.path.dirname, L)
 
-def configure(onStart, afterConnect, advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
+def configure(onStart):
     from questions import expect, anything, something, yn
-    onStart.append('load Python')
+    conf.registerPlugin('Python', True)
     if yn("""This plugin provides a snarfer for ASPN Python Recipe URLs;
              it will output the name of the Recipe when it sees such a URL.
              Would you like to enable this snarfer?""") == 'y':
-        onStart.append('python config aspn-snarfer on')
+        conf.supybot.plugins.Python.aspnSnarfer.setValue(True)
 
-class Python(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
+conf.registerPlugin('Python')
+conf.registerChannelValue(conf.supybot.plugins.Python, 'aspnSnarfer',
+    registry.Boolean(False, """Determines whether the ASPN Python recipe
+    snarfer is enabled.  If so, it will message the channel with the name of
+    the recipe when it see an ASPN Python recipe link on the channel."""))
+
+class Python(callbacks.PrivmsgCommandAndRegexp):
     modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
     regexps = ['aspnRecipes']
-    configurables = configurable.Dictionary(
-        [('aspn-snarfer', configurable.BoolType, False,
-          """Determines whether the ASPN Python recipe snarfer is enabled.  If
-          so, it will message the channel with the name of the recipe when it
-          sees an ASPN Python recipe link on the channel.""")]
-    )
-
-    def __init__(self):
-        configurable.Mixin.__init__(self)
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
-
-    def die(self):
-        configurable.Mixin.die(self)
-        callbacks.PrivmsgCommandAndRegexp.die(self)
-        
     def pydoc(self, irc, msg, args):
         """<python function>
 
@@ -188,7 +175,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     _bold = lambda self, g: (ircutils.bold(g[0]),) + g[1:]
     def aspnRecipes(self, irc, msg, match):
         r"http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/\d+"
-        if not self.configurables.get('aspn-snarfer', channel=msg.args[0]):
+        if not self.registryValue('aspnSnarfer', msg.args[0]):
             return
         url = match.group(0)
         s = webutils.getUrl(url)

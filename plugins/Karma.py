@@ -43,8 +43,8 @@ import conf
 import utils
 import plugins
 import privmsgs
+import registry
 import callbacks
-import configurable
 
 try:
     import sqlite
@@ -52,41 +52,29 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-def configure(onStart, afterConnect, advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
-    from questions import expect, anything, something, yn
-    onStart.append('load Karma')
+
+conf.registerPlugin('Karma')
+conf.registerChannelValue(conf.supybot.plugins.Karma, 'simpleOutput',
+    registry.Boolean(False, """Determines whether the bot will output shorter
+    versions of the karma output when requesting a single thing's karma."""))
+conf.registerChannelValue(conf.supybot.plugins.Karma, 'karmaResponse',
+    registry.Boolean(False, """Determines whether the bot will reply with a
+    success message when something's karma is incrneased or decreased."""))
+conf.registerChannelValue(conf.supybot.plugins.Karma, 'karmaRankingDisplay',
+    registry.Integer(3, """Determines how many highest/lowest karma things are
+    shown when karma is called with no arguments."""))
+conf.registerChannelValue(conf.supybot.plugins.Karma, 'karmaMostDisplay',
+    registry.Integer(25, """Determines how many karma things are shown when
+    the most command is called.'"""))
 
 class Karma(callbacks.PrivmsgCommandAndRegexp,
-            configurable.Mixin,
             plugins.ChannelDBHandler):
-    addressedRegexps = ['increaseKarma', 'decreaseKarma']
-    configurables = configurable.Dictionary(
-        [('simple-output', configurable.BoolType, False,
-          """Determines whether the bot will output shorter versions of the
-          karma output when requesting a single thing's karma. (example: 'foo:
-          1')"""),
-         ('karma-response', configurable.BoolType, False,
-          """Determines whether the bot will reply with a success message when
-          something's karma is increased or decreased."""),
-         ('karma-ranking-display', configurable.IntType, 3,
-          """Determines how many highest/lowest karma things are shown when
-          karma is called with no arguments."""),
-         ('karma-most-display', configurable.IntType, 25,
-          """Determines how many karma things are shown when karma most is
-          called."""),]
-    )
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        configurable.Mixin.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
 
     def die(self):
         callbacks.PrivmsgCommandAndRegexp.die(self)
-        configurable.Mixin.die(self)
         plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, filename):
@@ -131,7 +119,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
             else:
                 (added, subtracted) = imap(int, cursor.fetchone())
                 total = added - subtracted
-                if self.configurables.get('simple-output', channel):
+                if self.registryValue('simpleOutput', channel):
                     s = '%s: %s' % (name, total)
                 else:
                     s = 'Karma for %r has been increased %s ' \
@@ -166,7 +154,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                 irc.reply('I didn\'t know the karma for any '
                                'of those things.')
         else: # No name was given.  Return the top/bottom N karmas.
-            limit = self.configurables.get('karma-ranking-display', channel)
+            limit = self.registryValue('karmaRankingDisplay', channel)
             cursor.execute("""SELECT name, added-subtracted
                               FROM karma
                               ORDER BY added-subtracted DESC
@@ -204,7 +192,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                 orderby = 'added+subtracted'
             sql = "SELECT name, %s FROM karma ORDER BY %s DESC LIMIT %s" % \
                   (orderby, orderby,
-                   self.configurables.get('karma-most-display', channel))
+                   self.registryValue('karmaMostDisplay', channel))
             db = self.getDb(channel)
             cursor = db.cursor()
             cursor.execute(sql)
@@ -227,7 +215,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
         cursor.execute("""UPDATE karma
                           SET added=added+1
                           WHERE normalized=%s""", normalized)
-        if self.configurables.get('karma-response', msg.args[0]):
+        if self.registryValue('karmaResponse', msg.args[0])
             irc.replySuccess()
 
     def decreaseKarma(self, irc, msg, match):
@@ -241,7 +229,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
         cursor.execute("""UPDATE karma
                           SET subtracted=subtracted+1
                           WHERE normalized=%s""", normalized)
-        if self.configurables.get('karma-response', msg.args[0]):
+        if self.registryValue('karmaResponse', msg.args[0]):
             irc.replySuccess()
 
 
