@@ -48,36 +48,34 @@ from structures import PersistentDictionary
 
 def fromChannelCapability(capability):
     """Returns a (channel, capability) tuple from a channel capability."""
-    if not isChannelCapability(capability):
-        raise ValueError, '%s is not a channel capability' % capability
-    #return capability.rsplit('.', 1)
-    return rsplit(capability, '.', 1)
+    assert isChannelCapability(capability)
+    return capability.split(',', 1)
 
 def isChannelCapability(capability):
     """Returns True if capability is a channel capability; False otherwise."""
-    if '.' in capability:
-        (channel, capability) = capability.split('.', 1)
+    if ',' in capability:
+        (channel, capability) = capability.split(',', 1)
         return ircutils.isChannel(channel)
     else:
         return False
 
 def makeChannelCapability(channel, capability):
     """Makes a channel capability given a channel and a capability."""
-    return '%s.%s' % (channel, capability)
+    return '%s,%s' % (channel, capability)
 
 def isAntiCapability(capability):
     """Returns True if capability is an anticapability; False otherwise."""
     if isChannelCapability(capability):
         (_, capability) = fromChannelCapability(capability)
-    return capability[0] == '-'
+    return capability and capability[0] == '-'
 
 def makeAntiCapability(capability):
     """Returns the anticapability of a given capability."""
     assert not isAntiCapability(capability), 'makeAntiCapability does not ' \
            'work on anticapabilities; you probably want invertCapability.'
-    if '.' in capability:
+    if isChannelCapability(capability):
         (channel, capability) = fromChannelCapability(capability)
-        return '%s.-%s' % (channel, capability)
+        return makeChannelCapability(channel, '-' + capability)
     else:
         return '-' + capability
 
@@ -87,7 +85,7 @@ def unAntiCapability(capability):
         raise ValueError, '%s is not an anti capability' % capability
     if isChannelCapability(capability):
         (channel, capability) = fromChannelCapability(capability)
-        return '.'.join((channel, capability[1:]))
+        return ','.join((channel, capability[1:]))
     else:
         return capability[1:]
 
