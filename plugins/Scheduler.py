@@ -63,7 +63,7 @@ class Scheduler(callbacks.Privmsg):
             raise callbacks.Error, callbacks.ambiguousReply(ambiguous)
         def f():
             if remove:
-                del self.events[f.eventId]
+                del self.events[str(f.eventId)]
             self.Proxy(irc.irc, msg, tokens)
         return f
 
@@ -71,7 +71,7 @@ class Scheduler(callbacks.Privmsg):
         """<seconds> <command>
 
         Schedules the command string <command> to run <seconds> seconds in the
-        future.  For example, 'schedule add [seconds 30m] "echo [cpu]"' will
+        future.  For example, 'scheduler add [seconds 30m] "echo [cpu]"' will
         schedule the command "cpu" to be sent to the channel the schedule add
         command was given in (with no prefixed nick, a consequence of using
         echo).
