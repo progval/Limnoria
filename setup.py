@@ -48,6 +48,7 @@ plugins = [
     'Scheduler',
     'ShrinkUrl',
     'Status',
+    'Topic',
     'User',
     'Utilities',
     'Web',
