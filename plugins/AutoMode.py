@@ -101,8 +101,9 @@ class AutoMode(callbacks.Privmsg):
                 if ircdb.checkCapability(msg.prefix, cap):
                     msgmaker = getattr(ircmsgs, type)
                     irc.queueMsg(msgmaker(channel, msg.nick))
-                    if not fallthrough:
-                        raise Continue
+                    raise Continue # Even if fallthrough, let's only do one.
+            elif not fallthrough:
+                raise Continue
         try:
             do('op')
             if 'h' in irc.state.supported['prefix']:
