@@ -140,6 +140,24 @@ if __name__ == '__main__':
                 plugins.remove(plugin)
     if yn('Would you like to see a list of the available modules?') == 'y':
         print 'The available plugins are:\n  %s' % '\n  '.join(plugins)
+    if advanced and yn('Would you like to add plugins en masse first?') == 'y':
+        plugins = something('What plugins? (separate by spaces)').split()
+        for plugin in plugins:
+            moduleInfo = imp.find_module(plugin, conf.pluginDirs)
+            try:
+                module = imp.load_module(plugin, *moduleInfo)
+            except ImportError, e:
+                print 'Sorry, %s could not be loaded.' % plugin
+                continue
+            if hasattr(module, 'configure'):
+                module.configure(onStart, afterConnect, advanced)
+            else:
+                onStart.append('load %s' % plugin)
+    for s in onStart:
+        if s.startswith('load'):
+            (_, plugin) = s.split()
+            if plugin in plugins:
+                plugins.remove(plugin)
     usage = True
     if advanced and \
        yn('Would you like the option of seeing usage examples?')=='n':
