@@ -96,11 +96,16 @@ class SocketDriver(drivers.IrcDriver):
         #debug.methodNamePrintf(self, 'reconnect')
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.conn.settimeout(conf.poll)
-        self.conn.connect(self.server)
+        try:
+            self.conn.connect(self.server)
+        except socket.error, e:
+            debug.msg('Error connecting to %s: %s' % (self.server, e))
+            self.die()
         self.connected = True
 
     def die(self):
         #debug.methodNamePrintf(self, 'die')
+        self.irc.reset()
         self.conn.close()
         self.connected = False
         schedule.addEvent(self.reconnect, time.time()+300)
