@@ -39,6 +39,7 @@ import plugins
 
 import re
 import sys
+import copy
 import time
 from itertools import imap, ifilter
 
@@ -164,7 +165,7 @@ class Relay(callbacks.Privmsg):
         abbreviation = privmsgs.getArgs(args)
         self.ircs[abbreviation] = realIrc
         self.abbreviations[realIrc] = abbreviation
-        self.ircstates[realIrc] = irclib.IrcState()
+        self.ircstates[realIrc] = copy.copy(realIrc.state)
         self.lastmsg[realIrc] = ircmsgs.ping('this is just a fake message')
         self.started = True
         irc.replySuccess()
