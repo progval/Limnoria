@@ -377,11 +377,12 @@ class IrcObjectProxy:
             self.msg = msg
             self.args = args
             self.counter = 0
-            self.finalEvaled = False
             self.action = False
-            self.private = False
             self.notice = False
+            self.private = False
+            self.finished = False
             self.prefixName = True
+            self.finalEvaled = False
             self.noLengthCheck = False
             world.commandsProcessed += 1
             self.evalArgs()
@@ -415,6 +416,8 @@ class IrcObjectProxy:
                             return
             # Ok, no regexp-based things matched.
             for cb in self.irc.callbacks:
+                if self.finished:
+                    break
                 if hasattr(cb, 'invalidCommand'):
                     cb.invalidCommand(self, self.msg, self.args)
         else:
@@ -508,6 +511,7 @@ class IrcObjectProxy:
                 else:
                     self.irc.queueMsg(reply(msg, response, self.prefixName,
                                             notice=self.notice))
+            self.finished = True
         else:
             self.args[self.counter] = s
             self.evalArgs()
@@ -526,6 +530,7 @@ class IrcObjectProxy:
                 self.irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
             else:
                 self.irc.queueMsg(reply(msg, s))
+        self.finished = True
 
     def killProxy(self):
         """Kills this proxy object and all its parents."""
