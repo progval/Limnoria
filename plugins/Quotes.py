@@ -37,10 +37,12 @@ from baseplugin import *
 
 import re
 import time
+import getopt
 import os.path
 
 import sqlite
 
+import utils
 import ircdb
 import privmsgs
 import callbacks
@@ -59,15 +61,25 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE quotes (
                           id INTEGER PRIMARY KEY,
-                          added_by VARCHAR(255),
+                          added_by TEXT,
                           added_at TIMESTAMP,
+                          quote TEXT
+                          );""")
+        cursor.execute("""CREATE TABLE quotegrabs (
+                          id INTEGER PRIMARY KEY,
+                          nick TEXT,
+                          added_by TEXT,
                           quote TEXT
                           );""")
         db.commit()
         return db
 
     def addquote(self, irc, msg, args):
-        "[<channel>] (if not sent through the channel itself) <quote>"
+        """[<channel>] <quote>
+
+        Adds <quote> to the quotes database for <channel>.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         quote = privmsgs.getArgs(args)
         db = self.getDb(channel)
@@ -78,52 +90,99 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
         db.commit()
         irc.reply(msg, conf.replySuccess)
 
-    def maxquote(self, irc, msg, args):
-        "[<channel>] (if not sent through the channel itself)"
+    def numquotes(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the numbers of quotes in the quote database for <channel>.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT max(id) FROM quotes""")
-        maxid = cursor.fetchone()[0]
+        maxid = int(cursor.fetchone()[0])
         if maxid is None:
             maxid = 0
-        s = 'There are approximately %s quotes in the database.' % maxid
+        if maxid == 1:
+            IS = 'is'
+            QUOTE = 'quote'
+        else:
+            IS = 'are'
+            QUOTE = 'quotes'
+        s = 'There %s %s %s in my database.' % (IS, maxid, QUOTE)
         irc.reply(msg, s)
 
     def quote(self, irc, msg, args):
-        "[<channel>] (if not sent through the channel itself) <number|regexp>"
+        """[<channel>] --{id,regexp,from}=<value> [--{id,regexp,from}=<value>]
+
+        Returns quote(s) matching the given criteria.  --from is who added the
+        quote; --id is the id number of the quote; --regexp is a regular
+        expression to search for.
+        """
         channel = privmsgs.getChannel(msg, args)
-        value = privmsgs.getArgs(args)
+        (optlist, rest) = getopt.getopt(args, '', ['id=', 'regexp=', 'from='])
+        if not optlist and not rest:
+            raise callbacks.ArgumentError
+        criteria = []
+        formats = []
+        predicateName = ''
         db = self.getDb(channel)
+        for (option, argument) in optlist:
+            option = option.lstrip('-')
+            if option == 'id':
+                try:
+                    argument = int(argument)
+                    criteria.append('id=%s' % argument)
+                except ValueError:
+                    irc.error(msg, '--id value must be an integer.')
+                    return
+            elif option == 'from':
+                criteria.append('added_by=%s')
+                formats.append(argument)
+            elif option == 'regexp':
+                try:
+                    r = re.compile(argument, re.I)
+                except re.error, e:
+                    irc.error(msg, str(e))
+                    return
+                def p(s):
+                    return bool(r.match(s))
+                predicateName += 'p'
+                db.create_function(predicateName, 1, p)
+                criteria.append('%s(quote)' % predicateName)
+        for s in rest:
+            s = '%%%s%%' % s
+            criteria.append('quote LIKE %s')
+            formats.append(s)
+        sql = """SELECT id, quote FROM quotes
+                 WHERE %s""" % ' AND '.join(criteria)
+        debug.printf(sql)
         cursor = db.cursor()
-        try:
-            id = int(value)
-            cursor.execute("""SELECT quote FROM quotes WHERE id=%s""", id)
-            ret = cursor.fetchall()
-            if ret:
-                irc.reply(msg, ret[0][0])
-            else:
-                irc.reply(msg, "That quote doesn't exist.")
-        except ValueError: # It's not an int.
-            r = re.compile(value, re.I)
-            def p(s):
-                return bool(r.match(s))
-            db.create_function('p', 1, p)
-            cursor.execute("""SELECT id, quote FROM quotes WHERE p(quote)""")
-            if cursor.rowcount == 0:
-                irc.reply(msg, 'No quotes matched that regexp.')
-            elif cursor.rowcount == 1:
-                (id, quote) = cursor.fetchone()
-                irc.reply(msg, 'Quote %s: %s' % (id, quote))
-            elif cursor.rowcount > 5:
-                ids = [t[0] for t in cursor.fetchall()]
-                irc.reply(msg, 'Quotes %s matched.' % ', '.join(ids))
-            else:
-                L = ['%s: %s' % (id,s[:30]) for (id,s) in cursor.fetchall()]
-                irc.reply(msg, 'These quotes matched: %s' % ', '.join(L))
+        cursor.execute(sql, *formats)
+        if cursor.rowcount == 0:
+            irc.reply(msg, 'No quotes matched that criteria.')
+        elif cursor.rowcount == 1:
+            (id, quote) = cursor.fetchone()
+            irc.reply(msg, '#%s: %s' % (id, quote))
+        elif cursor.rowcount > 10:
+            irc.reply(msg, 'More than 10 quotes matched your criteria.  '
+                           'Please narrow your query.')
+        else:
+            results = cursor.fetchall()
+            idsWithSnippets = []
+            for (id, quote) in results:
+                s = '#%s: "%s..."' % (id, quote[:30])
+                idsWithSnippets.append(s)
+            irc.reply(msg, utils.commaAndify(idsWithSnippets))
+        ### FIXME: we need to remove those predicates from the database.
 
     def randomquote(self, irc, msg, args):
-        "[<channel>] (if not sent through the channel itself)"
+        """[<channel>]
+
+        Returns a random quote from <channel>.  <channel> is only necessary if
+        the message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -134,10 +193,15 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
             irc.error(msg, 'It seems that quote database is empty.')
             return
         (id, quote) = cursor.fetchone()
-        irc.reply(msg, '%s [#%s]' % (quote, id))
+        irc.reply(msg, '%s (#%s)' % (quote, id))
 
     def quoteinfo(self, irc, msg, args):
-        "[<channel>] (if not sent through the channel itself) <number>"
+        """[<channel>] <id>
+
+        Returns the metadata about the quote <id> in the quotes
+        database for <channel>.  <channel> is only necessary if the message
+        isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         id = privmsgs.getArgs(args)
         db = self.getDb(channel)
@@ -153,7 +217,11 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
             irc.reply(msg, 'There isn\'t a quote with that id.')
 
     def removequote(self, irc, msg, args):
-        "[<channel>] (if not sent through the channel itself) <number>"
+        """[<channel>] <id>
+
+        Removes quote <id> from the quotes database for <channel>.  <channel>
+        is only necessary if the message isn't sent in the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
         id = privmsgs.getArgs(args)
         db = self.getDb(channel)
