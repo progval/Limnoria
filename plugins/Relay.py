@@ -96,11 +96,12 @@ class Relay(callbacks.Privmsg):
     priority = sys.maxint
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        self._whois = {}
         self.ircs = ircs
         self.started = False
-        self.ircstates = ircstates
+        self.relayedMsgs = {}
         self.lastmsg = lastmsg
-        self._whois = {}
+        self.ircstates = ircstates
         self.abbreviations = abbreviations
 
     def __call__(self, irc, msg):
@@ -504,6 +505,11 @@ class Relay(callbacks.Privmsg):
         for otherIrc in self.ircs.itervalues():
             if otherIrc != irc:
                 if msg.args[0] in otherIrc.state.channels:
+                    if msg.command == 'PRIVMSG':
+                        try:
+                            self.relayedMsgs[msg].append(otherIrc)
+                        except KeyError:
+                            self.relayedMsgs[msg] = [otherIrc]
                     otherIrc.queueMsg(msg)
 
     def doPrivmsg(self, irc, msg):
@@ -615,18 +621,10 @@ class Relay(callbacks.Privmsg):
         irc = self._getRealIrc(irc)
         if msg.command == 'PRIVMSG':
             abbreviations = self.abbreviations.values()
-            rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
-            rAction = re.compile(r'\* [^/]+@(?:%s) ' % '|'.join(abbreviations))
-            text = ircutils.stripColor(msg.args[1])
-            if not (rPrivmsg.match(text) or \
-                    rAction.match(text) or \
-                    'has left on ' in text or \
-                    'has joined on ' in text or \
-                    'has quit' in text or \
-                    'was kicked by' in text or \
-                    text.startswith('mode change') or \
-                    text.startswith('nick change') or \
-                    text.startswith('topic change')):
+            if msg in self.relayedMsgs and irc in self.relayedMsgs[msg]:
+                self.relayedMsgs[msg].remove(irc)
+                if not self.relayedMsgs[msg]:
+                    del self.relayedMsgs[msg]
                 channel = msg.args[0]
                 if channel in self.registryValue('channels'):
                     abbreviation = self.abbreviations[irc]
