@@ -65,15 +65,7 @@ A: Currently, no. Feel free to make your case to us as to why a
 
 Q: How do I make my Supybot connect to multiple servers?
 
-A: You'll need to use the Relay plugin.  As long as you don't call
-   the "relay join" command, it won't actually do any relaying between
-   channels (even if the bot is on the same channel on different
-   networks).  In order to use the Relay plugin, you'll want to first
-   call the "relay start" command, followed by the "relay connect"
-   command.  These commands are (unfortunately) not persistent at this
-   time, so you'll need to give them to the bot anytime you start it
-   up.  We'll probably have this lack of persistence rectified before
-   the next release.
+A: Just use the "connect" command in the Owner plugin.  Easy as pie!
 
 
 Q: Can Supybot do factoids?
@@ -85,9 +77,9 @@ A: Supybot most certainly can!  In fact, we offer two full-fledged
    factoids-related plugin.  It offers full integration with Supybot's
    nested commands as well as a complete 1:n key to factoid ratio,
    with lookup by individual number.  Factoids also uses a
-   channel-specific database instead of a global database, although in
-   the future it will likely be a configuration option whether to use
-   channel-specific or global databases for such plugins.
+   channel-specific database instead of a global database, though
+   that's configurable with the
+   supybot.databases.plugins.channelSpecific configuration variable.
 
    MoobotFactoids (written by Strike) is much more full-featured,
    offering users the ability to define factoids in a slightly more
