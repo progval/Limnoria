@@ -58,7 +58,7 @@ class Relay(callbacks.Privmsg):
             self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
         finally:
             self.lastmsg[irc] = msg
-        self.__parent.__call__(self, irc, msg)
+        self.__parent.__call__(irc, msg)
 
     def do376(self, irc, msg):
         networkGroup = conf.supybot.networks.get(irc.network)
