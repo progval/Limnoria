@@ -150,6 +150,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     def _getTrackerList(self, url):
         try:
             text = webutils.getUrl(url)
+            if "No matches found." in text:
+                return 'No trackers were found.'
             head = '#%s: %s'
             resp = [head % entry for entry in self._formatResp(text)]
             if resp:
