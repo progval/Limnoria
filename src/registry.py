@@ -297,13 +297,21 @@ class String(Value):
             raise InvalidRegistryValue, '%r is not a string.' % s
 
 class OnlySomeStrings(String):
-    normalize = staticmethod(str.lower)
     validStrings = ()
     def __init__(self, *args, **kwargs):
         assert self.validStrings, 'There must be some valid strings.  ' \
                                   'This is a bug.'
         String.__init__(self, *args, **kwargs)
         
+    def normalize(self, s):
+        lowered = s.lower()
+        L = list(map(str.lower, self.validStrings))
+        try:
+            i = L.index(lowered)
+        except ValueError:
+            return s # This is handled in setValue.
+        return self.validStrings[i]
+    
     def setValue(self, s):
         s = self.normalize(s)
         if s in self.validStrings:
