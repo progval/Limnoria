@@ -539,40 +539,6 @@ class Misc(callbacks.Privmsg):
         else:
             irc.reply(utils.commaAndify(resp))
 
-    def seconds(self, irc, msg, args):
-        """[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]
-
-        Returns the number of seconds in the number of <years>, <weeks>,
-        <days>, <hours>, <minutes>, and <seconds> given.  An example usage is
-        "seconds 2h 30m", which would return 9000, which is 3600*2 + 30*60.
-        Useful for scheduling events at a given number of seconds in the
-        future.
-        """
-        if not args:
-            raise callbacks.ArgumentError
-        seconds = 0
-        for arg in args:
-            if not arg or arg[-1] not in 'ywdhms':
-                raise callbacks.ArgumentError
-            (s, kind) = arg[:-1], arg[-1]
-            try:
-                i = int(s)
-            except ValueError:
-                irc.errorInvalid('argument', arg, Raise=True)
-            if kind == 'y':
-                seconds += i*31536000
-            elif kind == 'w':
-                seconds += i*604800
-            elif kind == 'd':
-                seconds += i*86400
-            elif kind == 'h':
-                seconds += i*3600
-            elif kind == 'm':
-                seconds += i*60
-            elif kind == 's':
-                seconds += i
-        irc.reply(str(seconds))
-
     def tell(self, irc, msg, args):
         """<nick> <text>
 
