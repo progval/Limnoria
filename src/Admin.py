@@ -232,6 +232,12 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             for channel in L:
                 conf.supybot.channels().remove(channel)
         irc.queueMsg(ircmsgs.parts(args, msg.nick))
+        inAtLeastOneChannel = False
+        for channel in args:
+            if msg.nick in irc.state.channels[arg].users:
+                inAtLeastOneChannel = True
+        if not inAtLeastOneChannel:
+            irc.replySuccess()
 
     def disable(self, irc, msg, args):
         """<command>
