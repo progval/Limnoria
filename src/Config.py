@@ -251,7 +251,7 @@ class Config(callbacks.Privmsg):
             irc.errorInvalid('configuration variable', e.args[0], Raise=True)
         if hasattr(wrapper, 'help'):
             s = wrapper.help
-            if not wrapper._private:
+            if hasattr(wrapper, 'value') and not wrapper._private:
                 s += '  (Current value: %s)' % wrapper
             irc.reply(s)
         else:
