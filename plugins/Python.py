@@ -49,10 +49,13 @@ import string
 # Stupid printing on import...
 from cStringIO import StringIO
 try:
+    # We used to use sys.__stdout__ here, but that caused problems with
+    # daemonization, since sys.stdout is replaced with a StringIO.
+    original = sys.stdout
     sys.stdout = StringIO()
     import this
 finally:
-    sys.stdout = sys.__stdout__
+    sys.stdout = original
 
 import supybot.conf as conf
 import supybot.utils as utils
