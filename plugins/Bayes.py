@@ -76,10 +76,12 @@ class PickleBayesDB(plugins.DbiChannelDB):
             self.filename = filename
             self.nickFilename = self.filename.replace('pickle', 'nick.pickle')
             self.bayes = reverend.thomas.Bayes(tokenize)
-            if os.path.exists(self.filename):
+            if os.path.exists(self.filename) and \
+               os.path.getsize(self.filename):
                 self.bayes.load(self.filename)
             self.nickBayes = reverend.thomas.Bayes(tokenize)
-            if os.path.exists(self.nickFilename):
+            if os.path.exists(self.nickFilename) and \
+               os.path.getsize(self.nickFilename):
                 self.nickBayes.load(self.nickFilename)
 
         def close(self):
