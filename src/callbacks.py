@@ -704,7 +704,6 @@ class Privmsg(irclib.IrcCallback):
         return getattr(self, methodName)
 
     def callCommand(self, method, irc, msg, *L):
-        self.log.critical(repr(method))
         name = method.im_func.func_name
         assert L, 'Odd, nothing in L.  This can\'t happen.'
         self.log.info('Command %s called with args %s by %s',
