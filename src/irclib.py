@@ -402,6 +402,7 @@ class IrcState(IrcCommandDispatcher):
     def doQuit(self, irc, msg):
         for channel in self.channels.itervalues():
             channel.removeUser(msg.nick)
+        del self.nicksToHostmasks[msg.nick]
 
     def doTopic(self, irc, msg):
         if len(msg.args) == 1:
