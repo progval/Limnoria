@@ -121,13 +121,16 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         # that).
         regexp = privmsgs.getArgs(args).lstrip('^/')
         try:
-            r = re.compile(regexp, re.I)
-        except re.error, e:
-            irc.error(msg, )
+            re_obj = re.compile(regexp, re.I)
+        except:
+            irc.error(msg, "Error in filename: %s" % regexp)
             return
         if self.usePythonZegrep:
-            r = gzip.open(self.contents)
-            r = ifilter(imap(lambda line: r.search(line), fd))
+            fd = gzip.open(self.contents)
+            r = imap(lambda tup: tup[0], \
+                     ifilter(lambda tup: tup[0], \
+                             imap(lambda line: (re_obj.search(line), line),
+                                  fd)))
         (r, w) = popen2.popen4(['zegrep', regexp, self.contents])
         packages = sets.Set()  # Make packages unique
         try:
