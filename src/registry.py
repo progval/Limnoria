@@ -332,6 +332,7 @@ class GroupWithValue(Group):
         Group.__init__(self)
         self.value = value
         self.help = value.help
+        self.default = value.default
 
     def set(self, s):
         self.value.set(s)
