@@ -208,7 +208,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""SELECT fact FROM factoids WHERE key = %s""", key)
         if cursor.rowcount == 0:
             text = self._getDunno(msg.nick)
-            irc.reply(msg, text)
+            irc.reply(msg, text, prefixName=False)
         else:
             fact = cursor.fetchone()[0]
             # Update the requested count/requested by for this key
@@ -219,9 +219,9 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             if type == "action":
                 irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), text))
             elif type == "reply":
-                irc.reply(msg, text)
+                irc.reply(msg, text, prefixName=False)
             elif type == "define":
-                irc.reply(msg, "%s is %s" % (key, text))
+                irc.reply(msg, "%s is %s" % (key, text), prefixName=False)
             else:
                 irc.error(msg, "Spurious type from parseFactoid.")
 
