@@ -289,11 +289,11 @@ class FunCommands(callbacks.Privmsg):
             i = long(literal, 8)
             return '%s%s.0' % (previous, i)
         text = self._mathHex.sub(hex2float, text)
-        debug.printf('After unhexing: %r' % text)
+        #debug.printf('After unhexing: %r' % text)
         text = self._mathOctal.sub(oct2float, text)
-        debug.printf('After unocting: %r' % text)
+        #debug.printf('After unocting: %r' % text)
         text = self._mathInt.sub(r'\1.0', text)
-        debug.printf('After uninting: %r' % text)
+        #debug.printf('After uninting: %r' % text)
         try:
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             real = x.real
