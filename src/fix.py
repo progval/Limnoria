@@ -93,9 +93,10 @@ True = int.__new__(bool, 1)
 
 
 class set(object):
-    def __init__(self, *args):
+    __slots__ = ('d',)
+    def __init__(self, seq=()):
         self.d = {}
-        for x in args:
+        for x in seq:
             self.d[x] = None
 
     def __contains__(self, x):
@@ -105,7 +106,8 @@ class set(object):
         return self.d.iterkeys()
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, repr(self.d.keys())[1:-1])
+        return '%s([%s])' % (self.__class__.__name__,
+                             ', '.join(map(repr, self.d.iterkeys())))
 
     def __nonzero__(self):
         if self.d:
@@ -138,26 +140,26 @@ class set(object):
 
 class queue(dict):
     __slots__ = ('first', 'last')
-    def __init__(self, *args):
+    def __init__(self, seq=()):
         self.first = 0
         self.last = 0
-        for elt in args:
+        for elt in seq:
             self.enqueue(elt)
 
     def enqueue(self, elt):
-        self[self.last] = elt
+        dict.__setitem__(self, self.last, elt)
         self.last += 1
 
     def peek(self):
         try:
-            return self[self.first]
+            return dict.__getitem__(self, self.first)
         except KeyError:
             raise IndexError, 'peek into empty queue'
 
     def dequeue(self):
         try:
-            ret = self[self.first]
-            del self[self.first]
+            ret = dict.__getitem__(self, self.first)
+            dict.__delitem__(self, self.first)
             self.first += 1
             return ret
         except KeyError:
@@ -171,7 +173,7 @@ class queue(dict):
 
     def __iter__(self):
         for i in xrange(self.first, self.last):
-            yield self[i]
+            yield dict.__getitem__(self, i)
             
     def __eq__(self, other):
         if len(self) == len(other):
@@ -183,8 +185,26 @@ class queue(dict):
             return False
 
     def __repr__(self):
-        return 'queue(%s)' % ', '.join(map(repr, self.itervalues()))
+        return 'queue([%s])' % ', '.join(map(repr, self.itervalues()))
 
+    def __getitem__(self, i):
+        try:
+            if i >= 0:
+                return dict.__getitem__(self, i+self.first)
+            else:
+                return dict.__getitem__(self, i+self.last)
+        except KeyError:
+            raise IndexError, i
+
+    def __setitem__(self, i, v):
+        try:
+            if i >= 0:
+                dict.__setitem__(self, i+self.first, v)
+            else:
+                dict.__setitem__(self, i+self.last, v)
+        except KeyError:
+            raise IndexError, i
+            
 
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.
@@ -201,28 +221,24 @@ class IterableMap(object):
             yield value
 
     def items(self):
-        ret = []
-        for t in self.iteritems():
-            ret.append(t)
-        return ret
+        return list(self.iteritems())
 
     def keys(self):
-        ret = []
-        for key in self.iterkeys():
-            ret.append(key)
-        return ret
+        return list(self.iterkeys())
 
     def values(self):
-        ret = []
-        for value in self.itervalues():
-            ret.append(value)
-        return ret
+        return list(self.itervalues())
 
     def __len__(self):
         ret = 0
         for _ in self.iteritems():
             ret += 1
         return ret
+
+    def __nonzero__(self):
+        for _ in self.iteritems():
+            return True
+        return False
 
 def mktemp(suffix=''):
     import sha
