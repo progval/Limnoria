@@ -172,6 +172,21 @@ class FunDB(callbacks.Privmsg):
             s = insult
         irc.queueMsg(ircmsgs.privmsg(means, s))
 
+    def getinsult(self, irc, msg, args):
+        """<id>"""
+        id = privmsgs.getArgs(args)
+        try:
+            id = int(id)
+        except ValueError:
+            irc.error(msg, 'The id must be an integer.')
+            return
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT insult FROM insults WHERE id=%s""", id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There is no such insult.')
+        else:
+            irc.reply(msg, cursor.fetchone()[0])
+            
     def addinsult(self, irc, msg, args):
         """<insult>"""
         insult = privmsgs.getArgs(args)
@@ -229,6 +244,21 @@ class FunDB(callbacks.Privmsg):
         (id, excuse) = cursor.fetchone()
         irc.reply(msg, '%s (#%s)' % (excuse, id))
 
+    def getexcuse(self, irc, msg, args):
+        """<id>"""
+        id = privmsgs.getArgs(args)
+        try:
+            id = int(id)
+        except ValueError:
+            irc.error(msg, 'The id must be an integer.')
+            return
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT excuse FROM excuses WHERE id=%s""", id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There is no such excuse.')
+        else:
+            irc.reply(msg, cursor.fetchone()[0])
+            
     def addexcuse(self, irc, msg, args):
         """<excuse>"""
         excuse = privmsgs.getArgs(args)
@@ -280,6 +310,21 @@ class FunDB(callbacks.Privmsg):
         lart = lart.replace("$who", lartee)
         irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
 
+    def getlart(self, irc, msg, args):
+        """<id>"""
+        id = privmsgs.getArgs(args)
+        try:
+            id = int(id)
+        except ValueError:
+            irc.error(msg, 'The id must be an integer.')
+            return
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT lart FROM larts WHERE id=%s""", id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There is no such lart.')
+        else:
+            irc.reply(msg, cursor.fetchone()[0])
+            
     def addlart(self, irc, msg, args):
         """<lart>
 
