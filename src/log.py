@@ -36,6 +36,7 @@ import fix
 import os
 import sys
 import cgitb
+import types
 import atexit
 import logging
 
@@ -65,17 +66,43 @@ class Formatter(logging.Formatter):
         return cgitb.text((E, e, tb)).rstrip('\r\n')
 
 
-class DailyRotatingHandler(logging.FileHandler):
+class BetterStreamHandler(logging.StreamHandler):
+    def emit(self, record):
+        msg = self.format(record)
+        if not hasattr(types, "UnicodeType"): #if no unicode support...
+            self.stream.write("%s\n" % msg)
+        else:
+            try:
+                self.stream.write("%s\n" % msg)
+            except UnicodeError:
+                self.stream.write("%s\n" % msg.encode("UTF-8"))
+        self.flush()
+        
+
+class BetterFileHandler(logging.FileHandler):
+    def emit(self, record):
+        msg = self.format(record)
+        if not hasattr(types, "UnicodeType"): #if no unicode support...
+            self.stream.write("%s\n" % msg)
+        else:
+            try:
+                self.stream.write("%s\n" % msg)
+            except UnicodeError:
+                self.stream.write("%s\n" % msg.encode("UTF-8"))
+        self.flush()
+        
+
+class DailyRotatingHandler(BetterFileHandler):
     def __init__(self, *args):
         self.lastRollover = time.localtime()
-        logging.FileHandler.__init__(self, *args)
+        BetterFileHandler.__init__(self, *args)
         
     def emit(self, record):
         now = time.localtime()
         if now[2] != self.lastRollover[2]:
             self.doRollover()
         self.lastRollover = now
-        logging.FileHandler.emit(self, record)
+        BetterFileHandler.emit(self, record)
         
     def doRollover(self):
         self.stream.close()
@@ -118,14 +145,14 @@ pluginFormatter = Formatter('%(levelname)s %(asctime)s %(name)s %(message)s')
 
 # These are not.
 _logger = logging.getLogger('supybot')
-_handler = logging.FileHandler(os.path.join(conf.logDir, 'misc.log'))
+_handler = BetterFileHandler(os.path.join(conf.logDir, 'misc.log'))
 _handler.setFormatter(formatter)
 _handler.setLevel(conf.minimumLogPriority)
 _logger.addHandler(_handler)
 _logger.setLevel(-1)
 
 if conf.stdoutLogging:
-    _stdoutHandler = logging.StreamHandler(sys.stdout)
+    _stdoutHandler = BetterStreamHandler(sys.stdout)
     _formatString = '%(name)s: %(levelname)s %(asctime)s %(message)s'
     _stdoutFormatter = ColorizedFormatter(_formatString)
     _stdoutHandler.setFormatter(_stdoutFormatter)
@@ -155,7 +182,7 @@ def getPluginLogger(name):
     log = logging.getLogger('supybot.plugins.%s' % name)
     if not log.handlers:
         filename = os.path.join(pluginLogDir, '%s.log' % name)
-        handler = logging.FileHandler(filename)
+        handler = BetterFileHandler(filename)
         handler.setLevel(conf.minimumLogPriority)
         handler.setFormatter(pluginFormatter)
         log.addHandler(handler)
