@@ -97,7 +97,15 @@ def registerGlobalValue(group, name, value):
 def registerChannelValue(group, name, value):
     value._supplyDefault = True
     value.channelValue = True
-    return group.register(name, value)
+    g = group.register(name, value)
+    gname = g._name.lower()
+    for name in registry._cache.iterkeys():
+        if name.lower().startswith(gname) and len(gname) < len(name):
+            name = name[len(gname)+1:] # +1 for .
+            parts = registry.split(name)
+            if len(parts) == 1 and parts[0] and ircutils.isChannel(parts[0]):
+                # This gets the channel values so they always persist.
+                g.get(parts[0])()
 
 def registerPlugin(name, currentValue=None, public=True):
     group = registerGlobalValue(supybot.plugins, name,
