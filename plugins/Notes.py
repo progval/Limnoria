@@ -44,6 +44,7 @@ from baseplugin import *
 import time
 import string
 import os.path
+import operator
 
 import sqlite
 
