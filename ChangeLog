@@ -1,3 +1,5 @@
+	* Added Bugzilla module
+	
 	* Changed the name of the "bug" command in the AdminCommands
 	plugin to "reportbug" instead.
 	
