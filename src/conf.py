@@ -50,7 +50,7 @@ _pluginsDir = os.path.join(installDir, 'plugins')
 #            arbitrary Python code.  This is specifically *not* a registry
 #            variable because it shouldn't be modifiable in the bot.
 ###
-allowEval = False
+allowEval = True
 
 
 supybot = registry.Group()
@@ -113,6 +113,41 @@ class SpaceSeparatedListOfChannels(registry.SeparatedListOf):
 supybot.register('channels', SpaceSeparatedListOfChannels(['#supybot'], """
 Determines what channels the bot will join when it connects to the server."""))
 
+class ValidPrefixChars(registry.String):
+    def set(self, s):
+        registry.String.set(self, s)
+        if self.value.translate(string.ascii,
+                                '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
+            raise registry.InvalidRegistryValue, \
+                  'Value must contain only ~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'
+
+supybot.register('prefixChars', ValidPrefixChars('@', """Determines what prefix
+characters the bot will reply to.  A prefix character is a single character
+that the bot will use to determine what messages are addressed to it; when
+there are no prefix characters set, it just uses its nick."""))
+
+supybot.register('defaultCapabilities',
+registry.CommaSeparatedSetOfStrings(['-owner', '-admin', '-trusted'], """
+These are the capabilities that are given to everyone by default.  If they are
+normal capabilities, then the user will have to have the appropriate
+anti-capability if you want to override these capabilities; if they are
+anti-capabilities, then the user will have to have the actual capability to
+override these capabilities.  See docs/CAPABILITIES if you don't understand
+why these default to what they do."""))
+
+supybot.register('ignores', registry.CommaSeparatedListOfStrings('', """
+A list of hostmasks ignored by the bot.  Add people you don't like to here.
+"""))
+
+supybot.register('directories')
+supybot.directories.register('conf', registry.String('conf', """
+Determines what directory configuration data is put into."""))
+supybot.directories.register('data', registry.String('data', """
+Determines what directory data is put into."""))
+supybot.directories.register('plugins',
+registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir],
+"""Determines what directories the bot will look for plugins in."""))
+
 supybot.register('databases')
 supybot.databases.register('users')
 supybot.databases.register('channels')
@@ -124,15 +159,6 @@ supybot.databases.channels.register('filename',registry.String('channels.conf',
 """Determines what filename will be used for the channels database.  This file
 will go into the directory specified by the supybot.directories.conf
 variable."""))
-                                                                
-supybot.register('directories')
-supybot.directories.register('conf', registry.String('conf', """
-Determines what directory configuration data is put into."""))
-supybot.directories.register('data', registry.String('data', """
-Determines what directory data is put into."""))
-supybot.directories.register('plugins',
-registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir],
-"""Determines what directories the bot will look for plugins in."""))
 
 supybot.register('humanTimestampFormat', registry.String('%I:%M %p, %B %d, %Y',
 """Determines how timestamps printed for human reading should be formatted.
@@ -248,15 +274,6 @@ normally replies with the full help whenever a user misuses a command.  If this
 value is set to True, the bot will only reply with the syntax of the command
 (the first line of the docstring) rather than the full help."""))
 
-supybot.register('defaultCapabilities',
-registry.CommaSeparatedSetOfStrings(['-owner', '-admin', '-trusted'], """
-These are the capabilities that are given to everyone by default.  If they are
-normal capabilities, then the user will have to have the appropriate
-anti-capability if you want to override these capabilities; if they are
-anti-capabilities, then the user will have to have the actual capability to
-override these capabilities.  See docs/CAPABILITIES if you don't understand
-why these default to what they do."""))
-
 ###
 # Replies
 ###
@@ -357,23 +374,6 @@ supybot.register('defaultIgnore', registry.Boolean(False, """Determines
 whether the bot will ignore unregistered users by default.  Of course, that'll
 make it particularly hard for those users to register with the bot, but that's
 your problem to solve."""))
-
-supybot.register('ignores', registry.CommaSeparatedListOfStrings('', """
-A list of hostmasks ignored by the bot.  Add people you don't like to here.
-"""))
-
-class ValidPrefixChars(registry.String):
-    def set(self, s):
-        registry.String.set(self, s)
-        if self.value.translate(string.ascii,
-                                '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
-            raise registry.InvalidRegistryValue, \
-                  'Value must contain only ~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'
-
-supybot.register('prefixChars', ValidPrefixChars('@', """Determines what prefix
-characters the bot will reply to.  A prefix character is a single character
-that the bot will use to determine what messages are addressed to it; when
-there are no prefix characters set, it just uses its nick."""))
 
 ###
 # Driver stuff.
