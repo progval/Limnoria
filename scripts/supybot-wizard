@@ -437,16 +437,20 @@ def main():
         partial to @, but that's because I've been using it since my ocamlbot
         days.""")
         import callbacks
+        invalidPrefixChar = False
         conf.prefixChars = anything('What would you like your bot\'s '
                                     'prefix character(s) to be?')
-        invalidPrefixChar = True
+        for c in conf.prefixChars:
+            if c not in conf.validPrefixChars:
+                invalidPrefixChar = True
         while invalidPrefixChar:
+            invalidPrefixChar = False
             for c in conf.prefixChars:
                 if c not in conf.validPrefixChars:
                     invalidPrefixChar = True
                     myPrint('%r is not a valid prefixChar.' % c)
             conf.prefixChars = anything('That includes one or more invalid '
-                                        'prefix characters.  What would you'
+                                        'prefix characters.  What would you '
                                         'like your bot\'s prefix character(s)'
                                         'to be?')
         configVariables['prefixChars'] = conf.prefixChars
