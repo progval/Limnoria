@@ -521,7 +521,8 @@ class Misc(callbacks.Privmsg):
             irc.error('You just told me, why should I tell myself?')
             return
         elif target not in irc.state.nicksToHostmasks:
-            irc.error('I haven\'t seen %s, I\'ll let you do the telling.')
+            s = 'I haven\'t seen %s, I\'ll let you do the telling.' % target
+            irc.error(s)
             return
         if irc.action:
             irc.action = False
