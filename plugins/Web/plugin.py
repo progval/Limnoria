@@ -40,6 +40,12 @@ class Web(callbacks.PluginRegexp):
     """Add the help for "@help Web" here."""
     regexps = ['titleSnarfer']
     threaded = True
+    def callCommand(self, command, irc, msg, *args, **kwargs):
+        try:
+            super(Web, self).callCommand(command, irc, msg, *args, **kwargs)
+        except utils.web.Error, e:
+            irc.reply(str(e))
+            
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
     def titleSnarfer(self, irc, msg, match):
         r"https?://[^\])>\s]+"
