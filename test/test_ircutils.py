@@ -40,6 +40,22 @@ import ircutils
 
 class FunctionsTestCase(unittest.TestCase):
     hostmask = 'foo!bar@baz'
+    def testHostmaskPatternEqual(self):
+        for msg in msgs:
+            if msg.prefix and ircutils.isUserHostmask(msg.prefix):
+                s = msg.prefix
+                self.failUnless(ircutils.hostmaskPatternEqual(s, s),
+                                '%r did not match itself.' % s)
+                banmask = ircutils.banmask(s)
+                self.failUnless(ircutils.hostmaskPatternEqual(banmask, s),
+                                '%r did not match %r' % (s, banmask))
+        s = 'supybot!~supybot@dhcp065-024-075-056.columbus.rr.com'
+        self.failUnless(ircutils.hostmaskPatternEqual(s, s))
+        s = 'jamessan|work!~jamessan@209-6-166-196.c3-0.' \
+            'abr-ubr1.sbo-abr.ma.cable.rcn.com'
+        self.failUnless(ircutils.hostmaskPatternEqual(s, s))
+        
+
     def testIsUserHostmask(self):
         self.failUnless(ircutils.isUserHostmask(self.hostmask))
         self.failUnless(ircutils.isUserHostmask('a!b@c'))
@@ -128,9 +144,10 @@ class FunctionsTestCase(unittest.TestCase):
     def testBanmask(self):
         for msg in msgs:
             if ircutils.isUserHostmask(msg.prefix):
-                self.failUnless(ircutils.hostmaskPatternEqual
-                                (ircutils.banmask(msg.prefix),
-                                 msg.prefix))
+                banmask = ircutils.banmask(msg.prefix)
+                self.failUnless(ircutils.hostmaskPatternEqual(banmask,
+                                                              msg.prefix),
+                                '%r didn\'t match %r' % (msg.prefix, banmask))
         self.assertEqual(ircutils.banmask('foobar!user@host'), '*!*@host')
 
     def testSeparateModes(self):
