@@ -1,3 +1,7 @@
+	* Fixed sorting in Status' uptime database.
+	
+	* Updated the Gameknot tests for expired games.
+	
 	* Added a 'server' attribute to Irc objects to unify the way to
 	access such information.
 	

@@ -84,16 +84,13 @@ class UptimeDB(object):
 
     def top(self, n=3):
         def decorator(t):
-            if t[1] is None:
-                return 0.0
-            else:
-                t[1] - t[0]
+            return t[1] - t[0]
         def invertCmp(cmp):
             def f(x, y):
                 return -cmp(x, y)
             return f
         def notNone(t):
-            return t[1] is not None
+            return t[1] is not None and t[0] != 0
         utils.sortBy(decorator, self.uptimes, cmp=invertCmp(cmp))
         return list(islice(ifilter(notNone, self.uptimes), n))
 
