@@ -42,7 +42,10 @@ class FunTest(PluginTestCase, PluginDocumentation):
         self.assertNotError('lithp meghan sweeney')
         self.assertNotError('objects')
         self.assertNotError('levenshtein Python Perl')
+
+    def testSoundex(self):
         self.assertNotError('soundex jemfinch')
+        self.assertNotRegexp('soundex foobar 3:30', 'ValueError')
 
     def testJeffk(self):
         for i in range(100):

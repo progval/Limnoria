@@ -492,7 +492,7 @@ class Fun(callbacks.Privmsg):
             try:
                 length = int(length)
             except ValueError:
-                irc.error(msg, '%r isn\'t a valid length.')
+                irc.error(msg, '%r isn\'t a valid length.' % length)
                 return
         else:
             length = 4
