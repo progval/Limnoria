@@ -133,8 +133,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
     def __call__(self, irc, msg):
         if self.started:
             try:
-                if not isinstance(irc, irclib.Irc):
-                    irc = irc.getRealIrc()
+                irc = self._getRealIrc(irc)
                 self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
             finally:
                 self.lastmsg[irc] = msg
@@ -143,15 +142,18 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
     def die(self):
         callbacks.Privmsg.die(self)
         configurable.Mixin.die(self)
-        for irc in self.abbreviations:
-            if irc != originalIrc:
-                irc.callbacks[:] = []
-                irc.die()
+        # Let's not kill the ircs, so we can reload this plugin.
 
     def do376(self, irc, msg):
         if self.channels:
             irc.queueMsg(ircmsgs.joins(self.channels))
     do377 = do422 = do376
+
+    def _getRealIrc(self, irc):
+        if isinstance(irc, irclib.Irc):
+            return irc
+        else:
+            return irc.getRealIrc()
 
     def start(self, irc, msg, args):
         """<network abbreviation for current server>
@@ -164,10 +166,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         will show up as 'user@oftc'.
         """
         global originalIrc
-        if isinstance(irc, irclib.Irc):
-            realIrc = irc
-        else:
-            realIrc = irc.getRealIrc()
+        realIrc = self._getRealIrc(irc)
         originalIrc = realIrc
         abbreviation = privmsgs.getArgs(args)
         self.ircs[abbreviation] = realIrc
@@ -189,10 +188,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
             irc.error(msg, 'You must use the start command first.')
             return
         abbreviation, server = privmsgs.getArgs(args, required=2)
-        if isinstance(irc, irclib.Irc):
-            realIrc = irc
-        else:
-            realIrc = irc.getRealIrc()
+        realIrc = self._getRealIrc(irc)
         if ':' in server:
             (server, port) = server.split(':')
             port = int(port)
@@ -326,10 +322,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         if not self.started:
             irc.error(msg, 'You must use the start command first.')
             return
-        if isinstance(irc, irclib.Irc):
-            realIrc = irc
-        else:
-            realIrc = irc.getRealIrc()
+        realIrc = self._getRealIrc(irc)
         channel = privmsgs.getChannel(msg, args)
         if channel not in self.channels:
             irc.error(msg, 'I\'m not relaying %s.' % channel)
@@ -381,10 +374,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
             irc.error(msg, 'You must use the start command first.')
             return
         nickAtNetwork = privmsgs.getArgs(args)
-        if isinstance(irc, irclib.Irc):
-            realIrc = irc
-        else:
-            realIrc = irc.getRealIrc()
+        realIrc = self._getRealIrc(irc)
         try:
             (nick, network) = nickAtNetwork.split('@', 1)
             if not ircutils.isNick(nick):
@@ -409,8 +399,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         self._whois[(otherIrc, nick)] = (irc, msg, {})
 
     def do311(self, irc, msg):
-        if not isinstance(irc, irclib.Irc):
-            irc = irc.getRealIrc()
+        irc = self._getRealIrc(irc)
         nick = ircutils.toLower(msg.args[1])
         if (irc, nick) not in self._whois:
             return
@@ -424,8 +413,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
     do320 = do311
 
     def do318(self, irc, msg):
-        if not isinstance(irc, irclib.Irc):
-            irc = irc.getRealIrc()
+        irc = self._getRealIrc(irc)
         nick = ircutils.toLower(msg.args[1])
         if (irc, nick) not in self._whois:
             return
@@ -490,8 +478,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         del self._whois[(irc, nick)]
 
     def do402(self, irc, msg):
-        if not isinstance(irc, irclib.Irc):
-            irc = irc.getRealIrc()
+        irc = self._getRealIrc(irc)
         nick = ircutils.toLower(msg.args[1])
         if (irc, nick) not in self._whois:
             return
@@ -531,9 +518,8 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
                     otherIrc.queueMsg(msg)
 
     def doPrivmsg(self, irc, msg):
-        if not isinstance(irc, irclib.Irc):
-            irc = irc.getRealIrc()
         if self.started and ircutils.isChannel(msg.args[0]):
+            irc = self._getRealIrc(irc)
             channel = msg.args[0]
             if channel not in self.channels or ircutils.isCtcp(msg):
                 return
@@ -544,8 +530,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
 
     def doJoin(self, irc, msg):
         if self.started:
-            if not isinstance(irc, irclib.Irc):
-                irc = irc.getRealIrc()
+            irc = self._getRealIrc(irc)
             channel = msg.args[0]
             if channel not in self.channels:
                 return
@@ -556,8 +541,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
 
     def doPart(self, irc, msg):
         if self.started:
-            if not isinstance(irc, irclib.Irc):
-                irc = irc.getRealIrc()
+            irc = self._getRealIrc(irc)
             channel = msg.args[0]
             if channel not in self.channels:
                 return
@@ -568,8 +552,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
 
     def doMode(self, irc, msg):
         if self.started:
-            if not isinstance(irc, irclib.Irc):
-                irc = irc.getRealIrc()
+            irc = self._getRealIrc(irc)
             channel = msg.args[0]
             if channel not in self.channels:
                 return
@@ -581,8 +564,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
 
     def doKick(self, irc, msg):
         if self.started:
-            if not isinstance(irc, irclib.Irc):
-                irc = irc.getRealIrc()
+            irc = self._getRealIrc(irc)
             channel = msg.args[0]
             if channel not in self.channels:
                 return
@@ -598,8 +580,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
 
     def doNick(self, irc, msg):
         if self.started:
-            if not isinstance(irc, irclib.Irc):
-                irc = irc.getRealIrc()
+            irc = self._getRealIrc(irc)
             newNick = msg.args[0]
             network = self.abbreviations[irc]
             s = 'nick change by %s to %s on %s' % (msg.nick, newNick, network)
@@ -610,8 +591,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
 
     def doTopic(self, irc, msg):
         if self.started:
-            if not isinstance(irc, irclib.Irc):
-                irc = irc.getRealIrc()
+            irc = self._getRealIrc(irc)
             if msg.nick == irc.nick:
                 return
             (channel, newTopic) = msg.args
@@ -625,8 +605,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
 
     def doQuit(self, irc, msg):
         if self.started:
-            if not isinstance(irc, irclib.Irc):
-                irc = irc.getRealIrc()
+            irc = self._getRealIrc(irc)
             network = self.abbreviations[irc]
             if msg.args:
                 s = '%s has quit %s (%s)' % (msg.nick, network, msg.args[0])
@@ -640,8 +619,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
     def outFilter(self, irc, msg):
         if not self.started:
             return msg
-        if not isinstance(irc, irclib.Irc):
-            irc = irc.getRealIrc()
+        irc = self._getRealIrc(irc)
         if msg.command == 'PRIVMSG':
             abbreviations = self.abbreviations.values()
             rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
