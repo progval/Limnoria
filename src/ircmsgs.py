@@ -266,7 +266,7 @@ def prettyPrint(msg, addRecipients=False):
             quitmsg = ' (%s)' % msg.args[0]
         else:
             quitmsg = ''
-        s = '*** %s has quit IRC%s' % quitmsg
+        s = '*** %s has quit IRC%s' % (msg.nick, quitmsg)
     elif msg.command == 'TOPIC':
         s = '*** %s changes topic to %s' % (nickorprefix(), msg.args[1])
     return s
