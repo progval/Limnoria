@@ -311,12 +311,12 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             fd = urllib2.urlopen(request)
             text = fd.read()
             fd.close()
-        elif '&output=gplain' not in match.group(0):
-            mThread = self._ggThread.search(text)
-            mGroup = self._ggGroup.search(text)
-        else:
+        elif '&output=gplain' in match.group(0):
             mThread = self._ggPlainThread.search(text)
             mGroup = self._ggPlainGroup.search(text)
+        else:
+            mThread = self._ggThread.search(text)
+            mGroup = self._ggGroup.search(text)
         if mThread and mGroup:
             irc.reply(msg, 'Google Groups: %s, %s' % (mGroup.group(1),
                 mThread.group(1)), prefixName = False)
