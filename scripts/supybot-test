@@ -33,8 +33,6 @@ import os
 import time
 started = time.time()
 
-print 'Testing began at %s (pid %s)' % (time.ctime(), os.getpid())
-
 import supybot
 import logging
 
@@ -179,6 +177,7 @@ if __name__ == '__main__':
             
     suite = unittest.TestSuite(test.suites)
     runner = unittest.TextTestRunner(verbosity=2)
+    print 'Testing began at %s (pid %s)' % (time.ctime(), os.getpid())
     runner.run(suite)
 
     if hasattr(unittest, 'asserts'):
