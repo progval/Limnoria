@@ -65,34 +65,36 @@ class HeraldDB(object):
         self.open()
 
     def open(self):
-        fd = file(os.path.join(conf.dataDir, 'Herald.db'))
-        for line in fd:
-            line = line.rstrip()
-            try:
-                (idChannel, msg) = line.split(':', 1)
-                (id, channel) = idChannel.split(',', 1)
-                id = int(id)
-            except ValueError:
-                log.warning('Invalid line in HeraldDB: %r', line)
-                continue
-            self.heralds[id] = msg
-        fd.close()
+        filename = os.path.join(conf.dataDir, 'Herald.db')
+        if os.path.exists(filename):
+            fd = file(filename)
+            for line in fd:
+                line = line.rstrip()
+                try:
+                    (idChannel, msg) = line.split(':', 1)
+                    (id, channel) = idChannel.split(',', 1)
+                    id = int(id)
+                except ValueError:
+                    log.warning('Invalid line in HeraldDB: %r', line)
+                    continue
+                self.heralds[(id, channel)] = msg
+            fd.close()
 
     def close(self):
         fd = file(os.path.join(conf.dataDir, 'Herald.db'), 'w')
         L = self.heralds.items()
         L.sort()
-        for (id, msg) in L:
-            fd.write('%s:%s%s' % (id, msg, os.linesep))
+        for ((id, channel), msg) in L:
+            fd.write('%s,%s:%s%s' % (id, channel, msg, os.linesep))
         fd.close()
         
-    def getHerald(id, channel):
+    def getHerald(self, id, channel):
         return self.heralds[(id, channel)]
 
-    def setHerald(id, channel, msg):
+    def setHerald(self, id, channel, msg):
         self.heralds[(id, channel)] = msg
 
-    def delHerald(id, channel):
+    def delHerald(self, id, channel):
         del self.heralds[(id, channel)]
 
 
@@ -109,14 +111,16 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
           bot will not herald the person when he or she rejoins."""),]
     )
     def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        configurable.Mixin.__init__(self)
         self.db = HeraldDB()
         self.lastParts = {}
         self.lastHerald = {}
 
     def die(self):
         self.db.close()
-        callbacks.Privmsg.die()
-        configurable.Mixin.die()
+        callbacks.Privmsg.die(self)
+        configurable.Mixin.die(self)
 
     def doJoin(self, irc, msg):
         channel = msg.args[0]
@@ -128,7 +132,7 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
                 return
             now = time.time()
             throttle = self.configurables.get('throttle-time', channel)
-            if now - self.lastHeralds[(id, channel)] > throttle:
+            if now - self.lastHerald.get((id, channel), 0) > throttle:
                 if (id, channel) in self.lastParts:
                    i = self.configurables.get('throttle-after-part', channel) 
                    if now - self.lastParts[(id, channel)] < i:
@@ -147,6 +151,7 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
                 id = ircdb.users.getUserId(hostmask)
             else:
                 raise KeyError
+        return id
 
     def add(self, irc, msg, args):
         """[<channel>] <user|nick|hostmask> <msg>
