@@ -115,7 +115,10 @@ class Math(callbacks.Privmsg):
         """<math expression>
 
         Returns the value of the evaluted <math expression>.  The syntax is
-        Python syntax; the type of arithmetic is floating point.
+        Python syntax; the type of arithmetic is floating point.  Floating
+        point arithmetic is used in order to prevent a user from being able to
+        crash to the bot with something like 10**10**10**10.  One consequence
+        is that large values such as 10**24 might not be exact.
         """
         text = privmsgs.getArgs(args)
         text = text.translate(string.ascii, '_[] \t')
