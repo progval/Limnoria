@@ -330,8 +330,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 except Exception, e:
                     irc.reply(utils.exnToString(e))
             else:
-                # This should never happen, so I haven't bothered updating
-                # this error string to say --allow-eval.
+                # This should never happen.
                 irc.error('You must run supybot with the --allow-eval '
                           'option for this command to be enabled.')
     else:
@@ -340,6 +339,20 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.error('You must give your bot the --allow-eval option for '
                       'this command to be enabled.')
         _exec = eval
+            
+    def announce(self, irc, msg, args):
+        """<text>
+
+        Sends <text> to all channels the bot is currently on and not
+        lobotomized in.
+        """
+        text = privmsgs.getArgs(args)
+        u = ircdb.users.getUser(msg.prefix)
+        text = 'Announcement from my owner (%s): %s' % (u.name, text)
+        for channel in irc.state.channels:
+            c = ircdb.channels.getChannel(channel)
+            if not c.lobotomized:
+                irc.queueMsg(ircmsgs.privmsg(channel, text))
             
     def defaultplugin(self, irc, msg, args):
         """[--remove] <command> [<plugin>]
