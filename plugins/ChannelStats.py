@@ -47,9 +47,12 @@ import getopt
 import string
 from itertools import imap, ifilter
 
+import log
 import conf
 import utils
+import world
 import ircdb
+import irclib
 import ircmsgs
 import plugins
 import ircutils
@@ -90,62 +93,164 @@ conf.registerChannelValue(conf.supybot.plugins.ChannelStats, 'frowns',
     (i.e., pieces of text with no spaces in them ) are considered 'frowns' for
     the purposes of stats-keeping."""))
 
+class ChannelStat(irclib.IrcCommandDispatcher):
+    def __init__(self, actions=0, chars=0, frowns=0, joins=0, kicks=0, modes=0,
+                 msgs=0, parts=0, quits=0, smileys=0, topics=0, words=0):
+        self.actions = actions
+        self.chars = chars
+        self.frowns = frowns
+        self.joins = joins
+        self.kicks = kicks
+        self.modes = modes
+        self.msgs = msgs
+        self.parts = parts
+        self.quits = quits
+        self.smileys = smileys
+        self.topics = topics
+        self.words = words
+        self._values = ['actions', 'chars', 'frowns', 'joins', 'kicks','modes',
+                       'msgs', 'parts', 'quits', 'smileys', 'topics', 'words']
+    def values(self):
+        return map(curry(getattr, self), self._values)
+
+    def addMsg(self, msg):
+        self.msgs += 1
+        method = self.dispatchCommand(msg.command)
+        if method is not None:
+            method(msg)
+
+    def doPayload(self, channel, payload):
+        self.chars += len(payload)
+        self.words += len(payload.split())
+        fRe = conf.supybot.plugins.ChannelStats.get('frowns').get(channel)()
+        sRe =conf.supybot.plugins.ChannelStats.get('smileys').get(channel)()
+        self.frowns += len(fRe.findall(payload))
+        self.smileys += len(sRe.findall(payload))
+
+    def doPrivmsg(self, msg):
+        self.doPayload(*msg.args)
+        if ircmsgs.isAction(msg):
+            self.actions += 1
+
+    def doTopic(self, msg):
+        self.doPayload(*msg.args)
+        self.topics += 1
+
+    def doKick(self, msg):
+        self.kicks += 1
+
+    def doPart(self, msg):
+        self.doPayload(*msg.args)
+        self.parts += 1
+
+    def doMode(self, msg):
+        self.modes += 1
+
+
+class UserStat(ChannelStat):
+    def __init__(self, id, kicked=0, *args):
+        ChannelStat.__init__(self, *args)
+        self.id = id
+        self.kicked = kicked
+        self._values.insert(0, 'kicked')
+
+    def doKick(self, msg):
+        self.doPayload(msg.args[0], msg.args[2])
+        self.kicks += 1
+
+class StatsDB(object):
+    def __init__(self, filename):
+        self.filename = filename
+        self.channels = ircutils.IrcDict()
+        self.channelStats = ircutils.IrcDict()
+        try:
+            fd = file(filename)
+        except EnvironmentError, e:
+            log.info('Couldn\'t open %s: %s', filename, e)
+            return
+        lineno = 0
+        for line in fd:
+            lineno += 1
+            line = line.rstrip('\r\n')
+            try:
+                (channelOrId, rest) = line.split(':', 1)
+                if ircutils.isChannel(channelOrId):
+                    channel = channelOrId
+                    values = map(int, rest.split(','))
+                    self.channelStats[channel] = ChannelStat(*values)
+                else:
+                    id = int(channelOrId)
+                    (channel, rest) = rest.split(':', 1)
+                    d = self.channels.setdefault(channel, {})
+                    values = map(int, rest.split(','))
+                    d[id] = UserStat(id, *values)
+            except ValueError:
+                log.warning('Invalid line (#%s): %r', lineno, line)
+                continue
+        fd.close()
+
+    def flush(self):
+        fd = file(self.filename, 'w')
+        L = self.channelStats.items()
+        L.sort()
+        for (channel, stat) in L:
+            fd.write('%s:%s' % (channel, ','.join(map(str, stat.values()))))
+            fd.write(os.linesep)
+            if channel not in self.channels:
+                continue
+            d = self.channels[channel]
+            LL = d.items()
+            LL.sort()
+            for (id, stat) in LL:
+                fd.write('%s:%s:%s' % (id, channel,
+                                       ','.join(map(str, stat.values()))))
+                fd.write(os.linesep)
+        fd.close()
+
+    def close(self):
+        self.flush()
+        self.channels.clear()
+        self.channelStats.clear()
+                
+    def addMsg(self, msg, id=None):
+        channel = msg.args[0]
+        if ircutils.isChannel(channel):
+            if channel not in self.channelStats:
+                self.channelStats[channel] = ChannelStat()
+            self.channelStats[channel].addMsg(msg)
+            try:
+                if id is None:
+                    id = ircdb.users.getUserId(msg.prefix)
+            except KeyError:
+                return
+            if channel not in self.channels:
+                self.channels[channel] = {}
+            if id not in self.channels[channel]:
+                self.channels[channel][id] = UserStat(id)
+            self.channels[channel][id].addMsg(msg)
+
+    def get(self, channel, id=None):
+        if id is None:
+            return self.channelStats[channel]
+        else:
+            return self.channels[channel][id]
+            
         
-class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
+class ChannelStats(callbacks.Privmsg):
     noIgnore = True
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.ChannelDBHandler.__init__(self)
         self.lastmsg = None
         self.laststate = None
         self.outFiltering = False
+        self.db = StatsDB(os.path.join(conf.supybot.directories.data(),
+                                       'ChannelStats.db'))
+        world.flushers.append(self.db.flush)
 
     def die(self):
+        world.flushers.remove(self.db.flush)
+        self.db.close()
         callbacks.Privmsg.die(self)
-        plugins.ChannelDBHandler.die(self)
-
-    def makeDb(self, filename):
-        if os.path.exists(filename):
-            db = sqlite.connect(filename)
-        else:
-            db = sqlite.connect(filename)
-            cursor = db.cursor()
-            cursor.execute("""CREATE TABLE user_stats (
-                              id INTEGER PRIMARY KEY,
-                              user_id INTEGER UNIQUE ON CONFLICT IGNORE,
-                              smileys INTEGER,
-                              frowns INTEGER,
-                              chars INTEGER,
-                              words INTEGER,
-                              msgs INTEGER,
-                              actions INTEGER,
-                              joins INTEGER,
-                              parts INTEGER,
-                              kicks INTEGER,
-                              kicked INTEGER,
-                              modes INTEGER,
-                              topics INTEGER,
-                              quits INTEGER
-                              )""")
-            cursor.execute("""CREATE TABLE channel_stats (
-                              smileys INTEGER,
-                              frowns INTEGER,
-                              chars INTEGER,
-                              words INTEGER,
-                              msgs INTEGER,
-                              actions INTEGER,
-                              joins INTEGER,
-                              parts INTEGER,
-                              kicks INTEGER,
-                              modes INTEGER,
-                              topics INTEGER,
-                              quits INTEGER
-                              )""")
-            cursor.execute("""INSERT INTO channel_stats
-                              VALUES (0, 0, 0, 0, 0, 0,
-                                      0, 0, 0, 0, 0, 0)""")
-            db.commit()
-        return db
 
     def __call__(self, irc, msg):
         try:
@@ -155,152 +260,49 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
                 self.laststate = irc.state.copy()
         finally:
             self.lastmsg = msg
+        self.db.addMsg(msg)
         super(ChannelStats, self).__call__(irc, msg)
         
-    def doPrivmsg(self, irc, msg):
-        if not ircutils.isChannel(msg.args[0]):
-            return
-        else:
-            self._updatePrivmsgStats(msg)
-
-    def _updatePrivmsgStats(self, msg):
-        (channel, s) = msg.args
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        chars = len(s)
-        words = len(s.split())
-        isAction = ircmsgs.isAction(msg)
-        frowns = len(self.registryValue('frowns', channel).findall(s))
-        smileys = len(self.registryValue('smileys', channel).findall(s))
-        s = ircmsgs.prettyPrint(msg)
-        cursor.execute("""UPDATE channel_stats
-                          SET smileys=smileys+%s,
-                              frowns=frowns+%s,
-                              chars=chars+%s,
-                              words=words+%s,
-                              msgs=msgs+1,
-                              actions=actions+%s""",
-                       smileys, frowns, chars, words, int(isAction))
-        try:
-            if self.outFiltering:
-                id = 0
-            else:
-                id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            return
-        cursor.execute("""INSERT INTO user_stats VALUES (
-                          NULL, %s, 0, 0, 0, 0, 0, 0,
-                          0, 0, 0, 0, 0, 0, 0)""", id)
-        cursor.execute("""UPDATE user_stats SET
-                          chars=chars+%s,
-                          words=words+%s, msgs=msgs+1,
-                          actions=actions+%s, smileys=smileys+%s,
-                          frowns=frowns+%s
-                          WHERE user_id=%s""",
-                       chars, words, int(isAction), smileys, frowns, id)
-        db.commit()
-
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
             if ircutils.isChannel(msg.args[0]):
                 if self.registryValue('selfStats', msg.args[0]):
                     try:
                         self.outFiltering = True
-                        self._updatePrivmsgStats(msg)
+                        self.db.addMsg(msg, 0)
                     finally:
                         self.outFiltering = False
         return msg
 
-    def doPart(self, irc, msg):
-        channel = msg.args[0]
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""UPDATE channel_stats SET parts=parts+1""")
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-            cursor.execute("""UPDATE user_stats SET parts=parts+1
-                              WHERE user_id=%s""", id)
-        except KeyError:
-            pass
-        db.commit()
-
-    def doTopic(self, irc, msg):
-        channel = msg.args[0]
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""UPDATE channel_stats SET topics=topics+1""")
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-            cursor.execute("""UPDATE user_stats
-                              SET topics=topics+1
-                              WHERE user_id=%s""", id)
-        except KeyError:
-            pass
-        db.commit()
-
-    def doMode(self, irc, msg):
-        channel = msg.args[0]
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""UPDATE channel_stats SET modes=modes+1""")
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-            cursor.execute("""UPDATE user_stats
-                              SET modes=modes+1
-                              WHERE user_id=%s""", id)
-        except KeyError:
-            pass
-        db.commit()
-
-    def doKick(self, irc, msg):
-        channel = msg.args[0]
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""UPDATE channel_stats SET kicks=kicks+1""")
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-            cursor.execute("""UPDATE user_stats
-                              SET kicks=kicks+1
-                              WHERE user_id=%s""", id)
-        except KeyError:
-            pass
-        try:
-            kicked = msg.args[1]
-            id = ircdb.users.getUserId(irc.state.nickToHostmask(kicked))
-            cursor.execute("""UPDATE user_stats
-                              SET kicked=kicked+1
-                              WHERE user_id=%s""", id)
-        except KeyError:
-            pass
-        db.commit()
-
-    def doJoin(self, irc, msg):
-        channel = msg.args[0]
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""UPDATE channel_stats SET joins=joins+1""")
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-            cursor.execute("""UPDATE user_stats
-                              SET joins=joins+1
-                              WHERE user_id=%s""", id)
-        except KeyError:
-            pass
-        db.commit()
-
     def doQuit(self, irc, msg):
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            id = None
         for (channel, c) in self.laststate.channels.iteritems():
             if msg.nick in c.users:
-                db = self.getDb(channel)
-                cursor = db.cursor()
-                cursor.execute("""UPDATE channel_stats SET quits=quits+1""")
-                try:
-                    id = ircdb.users.getUserId(msg.prefix)
-                    cursor.execute("""UPDATE user_stats SET quits=quits+1
-                                      WHERE user_id=%s""", id)
-                except KeyError:
-                    pass
-                db.commit()
+                if channel not in self.db.channelStats:
+                    self.db.channelStats[channel] = ChannelStat()
+                self.db.channelStats[channel].quits += 1
+                if id is not None:
+                    if channel not in self.db.channels:
+                        self.db.channels[channel] = {}
+                    if id not in self.db.channels[channel]:
+                        self.db.channels[channel][id] = UserStat(id)
+                    self.db.channels[channel][id].quits += 1
+
+    def doKick(self, irc, msg):
+        (channel, nick, _) = msg.args
+        hostmask = irc.state.nickToHostmask(nick)
+        try:
+            id = ircdb.users.getUserId(hostmask)
+        except KeyError:
+            return
+        if channel not in self.db.channels:
+            self.db.channels[channel] = {}
+        if id not in self.db.channels[channel]:
+            self.db.channels[channel][id] = UserStat(id)
+        self.db.channels[channel][id].kicked += 1
 
     def stats(self, irc, msg, args):
         """[<channel>] [<name>]
@@ -329,34 +331,31 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
                 return
         else:
             id = ircdb.users.getUserId(name)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT * FROM user_stats WHERE user_id=%s""", id)
-        if cursor.rowcount == 0:
-            irc.error('I have no stats for that user.')
-            return
-        values = cursor.fetchone()
-        s = '%s has sent %s; a total of %s, %s, ' \
-            '%s, and %s; %s of those messages %s' \
-            '%s has joined %s, parted %s, quit %s, kicked someone %s, ' \
-            'been kicked %s, changed the topic %s, ' \
-            'and changed the mode %s.' % \
-            (name, utils.nItems('message', values.msgs),
-             utils.nItems('character', values.chars),
-             utils.nItems('word', values.words),
-             utils.nItems('smiley', values.smileys),
-             utils.nItems('frown', values.frowns),
-             values.actions, values.actions == 1 and 'was an ACTION.  '
-                                                 or 'were ACTIONs.  ',
-             name,
-             utils.nItems('time', values.joins),
-             utils.nItems('time', values.parts),
-             utils.nItems('time', values.quits),
-             utils.nItems('time', values.kicks),
-             utils.nItems('time', values.kicked),
-             utils.nItems('time', values.topics),
-             utils.nItems('time', values.modes))
-        irc.reply(s)
+        try:
+            stats = self.db.get(channel, id)
+            s = '%s has sent %s; a total of %s, %s, ' \
+                '%s, and %s; %s of those messages %s' \
+                '%s has joined %s, parted %s, quit %s, kicked someone %s, ' \
+                'been kicked %s, changed the topic %s, ' \
+                'and changed the mode %s.' % \
+                (name, utils.nItems('message', stats.msgs),
+                 utils.nItems('character', stats.chars),
+                 utils.nItems('word', stats.words),
+                 utils.nItems('smiley', stats.smileys),
+                 utils.nItems('frown', stats.frowns),
+                 stats.actions, stats.actions == 1 and 'was an ACTION.  '
+                                                     or 'were ACTIONs.  ',
+                 name,
+                 utils.nItems('time', stats.joins),
+                 utils.nItems('time', stats.parts),
+                 utils.nItems('time', stats.quits),
+                 utils.nItems('time', stats.kicks),
+                 utils.nItems('time', stats.kicked),
+                 utils.nItems('time', stats.topics),
+                 utils.nItems('time', stats.modes))
+            irc.reply(s)
+        except KeyError:
+            irc.error('I have no stats for that %s in %s' % (name, channel))
 
     def channelstats(self, irc, msg, args):
         """[<channel>]
@@ -365,19 +364,27 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
         the message isn't sent on the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT * FROM channel_stats""")
-        values = cursor.fetchone()
-        s = 'On %s there have been %s messages, containing %s characters, ' \
-            '%s words, %s smileys, and %s frowns; %s of those messages were ' \
-            'ACTIONs.  There have been %s joins, %s parts, %s quits, ' \
-            '%s kicks, %s mode changes, and %s topic changes.' % \
-            (channel, values.msgs, values.chars,
-             values.words, values.smileys, values.frowns, values.actions,
-             values.joins, values.parts, values.quits,
-             values.kicks, values.modes, values.topics)
-        irc.reply(s)
+        try:
+            stats = self.db.get(channel)
+            s = 'On %s there have been %s messages, containing %s ' \
+                'characters, %s, %s, and %s; ' \
+                '%s of those messages %s.  There have been ' \
+                '%s, %s, %s, %s, %s, and %s.' % \
+                (channel, stats.msgs, stats.chars,
+                 utils.nItems('word', stats.words),
+                 utils.nItems('smiley', stats.smileys),
+                 utils.nItems('frown', stats.frowns),
+                 stats.actions, stats.actions == 1 and 'was an ACTION'
+                                                     or 'were ACTIONs',
+                 utils.nItems('join', stats.joins),
+                 utils.nItems('part', stats.parts),
+                 utils.nItems('quit', stats.quits),
+                 utils.nItems('kick', stats.kicks),
+                 utils.nItems('change', stats.modes, between='mode'),
+                 utils.nItems('change', stats.topics, between='topic'))
+            irc.reply(s)
+        except KeyError:
+            irc.error('I\'ve never been on %s.' % channel)
 
                            
 Class = ChannelStats
