@@ -34,6 +34,7 @@ from fix import *
 import os
 import sys
 import imp
+import linecache
 
 import conf
 import debug
@@ -254,6 +255,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
             irc.error(msg, 'No plugin %s exists.' % name)
             return
         module = imp.load_module(name, *moduleInfo)
+        linecache.checkcache()
         callback = module.Class()
         irc.addCallback(callback)
         irc.reply(msg, conf.replySuccess)
@@ -284,6 +286,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
             try:
                 moduleInfo = imp.find_module(name)
                 module = imp.load_module(name, *moduleInfo)
+                linecache.checkcache()
                 callback = module.Class()
                 irc.addCallback(callback)
                 irc.reply(msg, conf.replySuccess)
