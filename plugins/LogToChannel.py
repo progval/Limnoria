@@ -142,7 +142,7 @@ def configure(advanced):
     conf.supybot.plugins.LogToChannel.colorized.setValue(colorized)
     if advanced:
         level = ''
-        while not level
+        while not level:
             try:
                 level = something('What would you like the minimum priority '
                                   'level to be which will be logged to IRC?')
