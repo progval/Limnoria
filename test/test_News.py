@@ -76,6 +76,8 @@ if sqlite is not None:
 
         def testOldnews(self):
             self.assertError('oldnews')
+            self.assertNotError('addnews 0 a: b')
+            self.assertError('oldnews')
             self.assertNotError('addnews 5 foo: bar')
             self.assertError('oldnews')
             print

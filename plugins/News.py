@@ -262,7 +262,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
                 irc.reply(msg, '%s: %s' % (cursor, item))
         else:
             cursor.execute("""SELECT id, subject FROM news
-                              WHERE expires_at < %s
+                              WHERE expires_at <> 0 AND expires_at < %s
                               ORDER BY id DESC""", int(time.time()))
             if cursor.rowcount == 0:
                 irc.error(msg, 'I have no news for that channel.')
