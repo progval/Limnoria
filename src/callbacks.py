@@ -143,6 +143,7 @@ def canonicalName(command):
 
 def reply(msg, s, prefixName=None, private=None,
           notice=None, to=None, action=None, error=False):
+    msg.repliedTo = True
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
     if ircutils.isChannel(target):
@@ -581,18 +582,23 @@ class IrcObjectProxy(RichReplyMethods):
         cbs = findCallbackForCommand(self, name)
         if len(cbs) == 0:
             for cb in self.irc.callbacks:
-                if isinstance(cb, PrivmsgRegexp):
-                    for (r, name) in cb.res:
-                        if r.search(self.msg.args[1]):
-                            log.debug('Skipping invalidCommand: %s.%s',
-                                      cb.name(), name)
-                            return
-                elif isinstance(cb, PrivmsgCommandAndRegexp):
-                    for (r, name) in cb.res:
-                        if r.search(self.msg.args[1]):
-                            log.debug('Skipping invalidCommand: %s.%s',
-                                      cb.name(), name)
-                            return
+# We used not to run invalidCommands if regexps matched, but now I'd say that
+# invalidCommands are more essential than regexps, so it is regexps that should
+# have to work around invalidCommands, not vice-versa.
+##                 if isinstance(cb, PrivmsgRegexp):
+##                     for (r, name) in cb.res:
+##                         if r.search(self.msg.args[1]):
+##                             log.debug('Skipping invalidCommand: %s.%s',
+##                                       cb.name(), name)
+##                             return
+                if isinstance(cb, PrivmsgCommandAndRegexp):
+##                     for (r, name) in cb.res:
+##                         if r.search(self.msg.args[1]):
+##                             log.debug('Skipping invalidCommand: %s.%s',
+##                                       cb.name(), name)
+##                             return
+# Although we still consider addressedRegexps to be commands, so we don't call
+# invalidCommnads if an addressedRegexp matches.
                     payload = addressed(self.irc.nick, self.msg)
                     for (r, name) in cb.addressedRes:
                         if r.search(payload):
@@ -762,6 +768,9 @@ class IrcObjectProxy(RichReplyMethods):
                 raise ArgumentError # We shouldn't get here, but just in case.
         self.finished = True
 
+    def noReply(self):
+        self.finished = True
+        
     def getRealIrc(self):
         """Returns the real irclib.Irc object underlying this proxy chain."""
         if isinstance(self.irc, irclib.Irc):
