@@ -333,8 +333,8 @@ class FunDB(callbacks.Privmsg):
             total = int(cursor.fetchone()[0])
         except ValueError:
             irc.error(msg, 'Unexpected response from database')
-        irc.reply(msg, 'There %s currently %s %s in my database' % \
-                  (utils.be(total), total, utils.pluralize(total, table)))
+        irc.reply(msg, 'There %s currently %s in my database' % \
+                  (utils.be(total), utils.nItems(total, table)))
 
     def dbget(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
@@ -386,9 +386,8 @@ class FunDB(callbacks.Privmsg):
         else:
             (add,req,count) = cursor.fetchone()
             reply = '%s #%s: Created by %s. last requested by %s, requested '\
-                    ' a total of %s %s' % \
-                    (table, id, add, req,
-                     count, utils.pluralize(count, 'time'))
+                    ' a total of %s' % \
+                    (table, id, add, req, utils.nItems(count, 'time'))
             irc.reply(msg, reply)
 
     def lart(self, irc, msg, args):
