@@ -646,33 +646,6 @@ class CommandThread(threading.Thread):
             self.cb.threaded = self.originalThreaded
 
 
-class ConfigIrcProxy(RichReplyMethods):
-    """Used as a proxy Irc object during configuration. """
-    def __init__(self, irc):
-        self.__dict__['irc'] = irc
-        
-    def reply(self, s, *args, **kwargs):
-        assert not isinstance(s, ircmsgs.IrcMsg), \
-               'Old code alert: there is no longer a "msg" argument to reply.'
-        return None
-
-    def error(self, s, *args, **kwargs):
-        log.warning('ConfigIrcProxy saw an error: %s' % s)
-
-    def getRealIrc(self):
-        irc = self.__dict__['irc']
-        if hasattr(irc, 'getRealIrc'):
-            return irc.getRealIrc()
-        else:
-            return irc
-
-    def __getattr__(self, attr):
-        return getattr(self.getRealIrc(), attr)
-
-    def __setattr__(self, attr, value):
-        setattr(self.getRealIrc(), attr, value)
-
-    
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     __metaclass__ = log.MetaFirewall
