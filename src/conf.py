@@ -196,7 +196,7 @@ Determines whether the bot will send error messages to users in private."""))
 supybot.reply.register('noCapabilityError', registry.Boolean(False, """
 Determines whether the bot will send an error message to users who attempt to
 call a command for which they do not have the necessary capability.  You may
-wish to make this False if you don't want users to understand the underlying
+wish to make this True if you don't want users to understand the underlying
 security system preventing them from running certain commands."""))
 
 supybot.reply.register('withPrivateNotice', registry.Boolean(False, """

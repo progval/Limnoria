@@ -359,7 +359,7 @@ class RichReplyMethods(object):
         if isinstance(capability, basestring): # checkCommandCapability!
             log.warning('Denying %s for lacking %r capability',
                         self.msg.prefix, capability)
-            if conf.supybot.reply.noCapabilityError():
+            if not conf.supybot.reply.noCapabilityError():
                 v = conf.supybot.replies.noCapability.get(self.msg.args[0])()
                 s = self.__makeReply(v % capability, s)
                 self.error(s, **kwargs)
