@@ -154,7 +154,7 @@ class FunDB(callbacks.Privmsg):
         else:
             (id, insult) = cursor.fetchone()
             nick = nick.strip()
-            nick = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, nick)
+            nick = re.sub(r'\bme\b', msg.nick, nick)
             nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
             insultee = nick
             insult = insult.replace("$who", insultee)
@@ -426,8 +426,8 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available larts.')
         else:
             (id, lart) = cursor.fetchone()
-            nick = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, nick)
-            reason = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, reason)
+            nick = re.sub(r'\bme\b', msg.nick, nick)
+            reason = re.sub(r'\bme\b', msg.nick, reason)
             nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
             reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
             lartee = nick
@@ -478,8 +478,8 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available praises.')
         else:
             (id, praise) = cursor.fetchone()
-            nick = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, nick)
-            reason = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, reason)
+            nick = re.sub(r'\bme\b', msg.nick, nick)
+            reason = re.sub(r'\bme\b', msg.nick, reason)
             nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
             reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
             praisee = nick
