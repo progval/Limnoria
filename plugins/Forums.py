@@ -7,6 +7,7 @@ import urllib2
 
 import ircmsgs
 import ircutils
+import ircutils
 import callbacks
 
 htmlStripper = re.compile(r'<[^>]+>')
@@ -39,6 +40,8 @@ class Forums(callbacks.PrivmsgRegexp):
         s = fd.read()
         try:
             ((wRating, wName), (bRating, bName)) = self.gkPlayer.findall(s)
+            wName = ircutils.bold(wName)
+            bName = ircutils.bold(bName)
             wRating = wRating.replace('<br>', ' ')
             bRating = bRating.replace('<br>', ' ')
             wRating = wRating.replace('Wins', '; Wins')
