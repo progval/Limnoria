@@ -344,9 +344,10 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
             (id, insult) = cursor.fetchone()
             nick = re.sub(r'\bme\b', msg.nick, nick)
             nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
-            insult = insult.replace('$who', nick)
+            insult = '%s: %s' % (nick, insult.replace('$who', nick))
             showid = self.registryValue('showIds', channel)
-            irc.reply(self._formatResponse(insult, id, showid), to=nick)
+            irc.reply(self._formatResponse(insult, id, showid),
+                      prefixName=False)
 
     def excuse(self, irc, msg, args):
         """[<channel>] [<id>]

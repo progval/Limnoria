@@ -145,6 +145,29 @@ if sqlite is not None:
             self.assertRegexp('stats insult', 'currently 0')
             self.assertError('insult jemfinch')
 
+        def testChannelReplies(self):
+            self.assertNotError('add #tester praise pets $who')
+            self.assertNotError('add praise pats $who')
+            self.assertNotError('add #tester lart stabs $who')
+            self.assertNotError('add lart stubs $who')
+            self.assertNotError('add #tester insult nimrod')
+            self.assertNotError('add insult nimwit')
+            self.assertNotError('add #tester excuse He did it!')
+            self.assertNotError('add excuse She did it!')
+            self.assertResponse('praise jemfinch',
+                                '\x01ACTION pats jemfinch (#1)\x01')
+            self.assertResponse('praise #tester jemfinch',
+                                '\x01ACTION pets jemfinch (#1)\x01')
+            self.assertResponse('lart jemfinch',
+                                '\x01ACTION stubs jemfinch (#1)\x01')
+            self.assertResponse('lart #tester jemfinch',
+                                '\x01ACTION stabs jemfinch (#1)\x01')
+            self.assertResponse('insult jemfinch', 'jemfinch: nimwit (#1)')
+            self.assertResponse('insult #tester jemfinch',
+                                'jemfinch: nimrod (#1)')
+            self.assertResponse('excuse', 'She did it! (#1)')
+            self.assertResponse('excuse #tester', 'He did it! (#1)')
+
         def testPraise(self):
             self.assertNotError('add praise pets $who')
             self.assertHelp('praise')
