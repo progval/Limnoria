@@ -42,12 +42,14 @@ import supybot.fix as fix
 import sys
 import time
 import getopt
+
 from itertools import imap
 
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
+import supybot.commands as commands
 import supybot.schedule as schedule
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -77,41 +79,33 @@ class Channel(callbacks.Privmsg):
             if self.registryValue('alwaysRejoin', channel):
                 irc.sendMsg(ircmsgs.join(channel)) # Fix for keys.
 
-    def mode(self, irc, msg, args, channel):
+    def mode(self, irc, msg, args, channel, mode):
         """[<channel>] <mode> [<arg> ...]
 
         Sets the mode in <channel> to <mode>, sending the arguments given.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        if not args:
-            raise callbacks.ArgumentError
         if self.haveOps(irc, channel, 'change the mode'):
-            irc.queueMsg(ircmsgs.mode(channel, args))
-    mode = privmsgs.checkChannelCapability(mode, 'op')
+            irc.queueMsg(ircmsgs.mode(channel, mode))
+    mode = commands.wrap(mode, [('channel', 'op'), 'something'])
 
-    def limit(self, irc, msg, args, channel):
+    def limit(self, irc, msg, args, channel, limit):
         """[<channel>] <limit>
 
         Sets the channel limit to <limit>.  If <limit> is 0, removes the
         channel limit.  <channel> is only necessary if the message isn't sent
         in the channel itself.
         """
-        limit = privmsgs.getArgs(args)
-        try:
-            limit = int(limit)
-            if limit < 0:
-                raise ValueError
-        except ValueError:
-            irc.error('%r is not a positive integer.' % limit)
-            return
+        if limit < 0:
+            irc.error('%r is not a positive integer.' % limit, Raise=True)
         if limit:
             if self.haveOps(irc, channel, 'set the limit'):
                 irc.queueMsg(ircmsgs.mode(channel, ['+l', limit]))
         else:
             if self.haveOps(irc, channel, 'unset the limit'):
                 irc.queueMsg(ircmsgs.mode(channel, ['-l']))
-    limit = privmsgs.checkChannelCapability(limit, 'op')
+    limit = commands.wrap(mode, [('channel', 'op'), 'int'])
 
     def moderate(self, irc, msg, args, channel):
         """[<channel>]
@@ -122,7 +116,7 @@ class Channel(callbacks.Privmsg):
         """
         if self.haveOps(irc, channel, 'moderate the channel'):
             irc.queueMsg(ircmsgs.mode(channel, ['+m']))
-    moderate = privmsgs.checkChannelCapability(moderate, 'op')
+    moderate = commands.wrap(moderate, [('channel', 'op')])
 
     def unmoderate(self, irc, msg, args, channel):
         """[<channel>]
@@ -133,23 +127,22 @@ class Channel(callbacks.Privmsg):
         """
         if self.haveOps(irc, channel, 'unmoderate the channel'):
             irc.queueMsg(ircmsgs.mode(channel, ['-m']))
-    unmoderate = privmsgs.checkChannelCapability(unmoderate, 'op')
+    unmoderate = commands.wrap(unmoderate, [('channel', 'op')])
 
-    def key(self, irc, msg, args, channel):
+    def key(self, irc, msg, args, channel, key):
         """[<channel>] [<key>]
 
         Sets the keyword in <channel> to <key>.  If <key> is not given, removes
         the keyword requirement to join <channel>.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        key = privmsgs.getArgs(args, required=0, optional=1)
         if key:
             if self.haveOps(irc, channel, 'set the keyword'):
                 irc.queueMsg(ircmsgs.mode(channel, ['+k', key]))
         else:
             if self.haveOps(irc, channel, 'unset the keyword'):
                 irc.queueMsg(ircmsgs.mode(channel, ['-k']))
-    key = privmsgs.checkChannelCapability(key, 'op')
+    key = commands.wrap(key, [('channel', 'op')], ['something'])
 
     def op(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
@@ -163,7 +156,7 @@ class Channel(callbacks.Privmsg):
             args = [msg.nick]
         if self.haveOps(irc, channel, 'op you'):
             irc.queueMsg(ircmsgs.ops(channel, args))
-    op = privmsgs.checkChannelCapability(op, 'op')
+    op = commands.wrap(op, [('channel', 'op')])
 
     def halfop(self, irc, msg, args, channel):
         """[<channel>]
@@ -177,7 +170,7 @@ class Channel(callbacks.Privmsg):
             args = [msg.nick]
         if self.haveOps(irc, channel, 'halfop you'):
             irc.queueMsg(ircmsgs.halfops(channel, args))
-    halfop = privmsgs.checkChannelCapability(halfop, 'halfop')
+    halfop = commands.wrap(halfop, [('channel', 'halfop')])
 
     def voice(self, irc, msg, args, channel):
         """[<channel>]
@@ -191,7 +184,7 @@ class Channel(callbacks.Privmsg):
             args = [msg.nick]
         if self.haveOps(irc, channel, 'voice you'):
             irc.queueMsg(ircmsgs.voices(channel, args))
-    voice = privmsgs.checkChannelCapability(voice, 'voice')
+    voice = commands.wrap(voice, [('channel', 'voice')])
 
     def deop(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
@@ -208,7 +201,7 @@ class Channel(callbacks.Privmsg):
                       'yourself.')
         elif self.haveOps(irc, channel, 'deop someone'):
             irc.queueMsg(ircmsgs.deops(channel, args))
-    deop = privmsgs.checkChannelCapability(deop, 'op')
+    deop = commands.wrap(deop, [('channel', 'op')])
 
     def dehalfop(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
@@ -225,7 +218,7 @@ class Channel(callbacks.Privmsg):
                       'dehalfop me yourself.')
         elif self.haveOps(irc, channel, 'dehalfop someone'):
             irc.queueMsg(ircmsgs.dehalfops(channel, args))
-    dehalfop = privmsgs.checkChannelCapability(dehalfop, 'op')
+    dehalfop = commands.wrap(dehalfop, [('channel', 'halfop')])
 
     def devoice(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
@@ -242,9 +235,9 @@ class Channel(callbacks.Privmsg):
                       'me yourself.')
         elif self.haveOps(irc, channel, 'devoice someone'):
             irc.queueMsg(ircmsgs.devoices(channel, args))
-    devoice = privmsgs.checkChannelCapability(devoice, 'op')
+    devoice = commands.wrap(devoice, [('channel', 'voice')])
 
-    def cycle(self, irc, msg, args, channel):
+    def cycle(self, irc, msg, args, channel, key):
         """[<channel>] [<key>]
 
         If you have the #channel,op capability, this will cause the bot to
@@ -252,14 +245,13 @@ class Channel(callbacks.Privmsg):
         the channel using that key. <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
-        key = privmsgs.getArgs(args, required=0, optional=1)
         if not key:
             key = None
         irc.queueMsg(ircmsgs.part(channel))
         irc.queueMsg(ircmsgs.join(channel, key))
-    cycle = privmsgs.checkChannelCapability(cycle, 'op')
+    cycle = commands.wrap(cycle, [('channel', 'op')], ['something'])
 
-    def kick(self, irc, msg, args, channel):
+    def kick(self, irc, msg, args, channel, nick, reason):
         """[<channel>] <nick> [<reason>]
 
         Kicks <nick> from <channel> for <reason>.  If <reason> isn't given,
@@ -268,7 +260,6 @@ class Channel(callbacks.Privmsg):
         itself.
         """
         if self.haveOps(irc, channel, 'kick someone'):
-            (nick, reason) = privmsgs.getArgs(args, optional=1)
             if nick not in irc.state.channels[channel].users:
                 irc.error('%s isn\'t in %s.' % (nick, channel))
                 return
@@ -280,9 +271,9 @@ class Channel(callbacks.Privmsg):
                           'length for a KICK reason on this server.')
                 return
             irc.queueMsg(ircmsgs.kick(channel, nick, reason))
-    kick = privmsgs.checkChannelCapability(kick, 'op')
+    kick = commands.wrap(kick, [('channel', 'op'), 'something'], ['something'])
 
-    def kban(self, irc, msg, args):
+    def kban(self, irc, msg, args, channel, bannedNick, length, reason, *optlist):
         """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]
 
         If you have the #channel,op capability, this will kickban <nick> for
@@ -295,11 +286,8 @@ class Channel(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        (optlist, rest) = getopt.getopt(args, '', ['exact', 'nick',
-                                                   'user', 'host'])
-        (bannedNick, length, reason) = privmsgs.getArgs(rest, optional=2)
         # Check that they're not trying to make us kickban ourself.
+        self.log.critical('In kban')
         if not ircutils.isNick(bannedNick):
             self.log.warning('%r tried to kban a non nick: %r',
                              msg.prefix, bannedNick)
@@ -337,13 +325,13 @@ class Channel(callbacks.Privmsg):
             buser = '*'
             bhost = '*'
             for (option, _) in optlist:
-                if option == '--nick':
+                if option == 'nick':
                     bnick = nick
-                elif option == '--user':
+                elif option == 'user':
                     buser = user
-                elif option == '--host':
+                elif option == 'host':
                     bhost = host
-                elif option == '--exact':
+                elif option == 'exact':
                     (bnick, buser, bhost) = \
                                    ircutils.splitHostmask(bannedHostmask)
             banmask = ircutils.joinHostmask(bnick, buser, bhost)
@@ -384,8 +372,16 @@ class Channel(callbacks.Privmsg):
             self.log.warning('%r attempted kban without %s',
                              msg.prefix, capability)
             irc.errorNoCapability(capability)
+            exact,nick,user,host
+    kban = \
+        commands.wrap(kban, ['channel', 'something'],
+                      [('expiry', 0), 'something'],
+                      getopts={'exact': None,
+                               'nick': None,
+                               'user': None,
+                               'host': None})
 
-    def unban(self, irc, msg, args, channel):
+    def unban(self, irc, msg, args, channel, hostmask):
         """[<channel>] <hostmask>
 
         Unbans <hostmask> on <channel>.  Especially useful for unbanning
@@ -393,22 +389,20 @@ class Channel(callbacks.Privmsg):
         the channel.  <channel> is only necessary if the message isn't sent
         in the channel itself.
         """
-        hostmask = privmsgs.getArgs(args)
         if self.haveOps(irc, channel, 'unban someone'):
             irc.queueMsg(ircmsgs.unban(channel, hostmask))
-    unban = privmsgs.checkChannelCapability(unban, 'op')
+    unban = commands.wrap(unban, [('channel', 'op'), 'hostmask'])
 
-    def invite(self, irc, msg, args, channel):
+    def invite(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
 
         If you have the #channel,op capability, this will invite <nick>
         to join <channel>. <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        nick = privmsgs.getArgs(args)
         if self.haveOps(irc, channel, 'invite someone'):
             irc.queueMsg(ircmsgs.invite(nick, channel))
-    invite = privmsgs.checkChannelCapability(invite, 'op')
+    invite = commands.wrap(invite, [('channel', 'op'), 'something'])
 
     def lobotomize(self, irc, msg, args, channel):
         """[<channel>]
@@ -422,7 +416,7 @@ class Channel(callbacks.Privmsg):
         c.lobotomized = True
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
-    lobotomize = privmsgs.checkChannelCapability(lobotomize, 'op')
+    lobotomize = commands.wrap(lobotomize, [('channel', 'op')])
 
     def unlobotomize(self, irc, msg, args, channel):
         """[<channel>]
@@ -436,9 +430,9 @@ class Channel(callbacks.Privmsg):
         c.lobotomized = False
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
-    unlobotomize = privmsgs.checkChannelCapability(unlobotomize, 'op')
+    unlobotomize = commands.wrap(unlobotomize, [('channel', 'op')])
 
-    def permban(self, irc, msg, args, channel):
+    def permban(self, irc, msg, args, channel, banmask, expires):
         """[<channel>] <nick|hostmask> [<expires>]
 
         If you have the #channel,op capability, this will effect a permanent
@@ -450,29 +444,14 @@ class Channel(callbacks.Privmsg):
         will never automatically expire. <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        (nickOrHostmask, expires) = privmsgs.getArgs(args, optional=1)
-        if ircutils.isNick(nickOrHostmask) and \
-           nickOrHostmask in irc.state.nicksToHostmasks:
-            banmask = ircutils.banmask(irc.state.nickToHostmask(nickOrHostmask))
-        elif ircutils.isUserHostmask(nickOrHostmask):
-            banmask = nickOrHostmask
-        else:
-            irc.errorInvalid('nick or hostmask', nickOrHostmask, Raise=True)
-        if expires:
-            try:
-                expires = int(float(expires))
-                expires += int(time.time())
-            except ValueError:
-                irc.errorInvalid('number of seconds',nickOrHostmask,Raise=True)
-        else:
-            expires = 0
         c = ircdb.channels.getChannel(channel)
         c.addBan(banmask, expires)
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
-    permban = privmsgs.checkChannelCapability(permban, 'op')
+    permban = \
+        commands.wrap(permban, [('channel', 'op'), 'banmask', ('expiry', 0)])
 
-    def unpermban(self, irc, msg, args, channel):
+    def unpermban(self, irc, msg, args, channel, banmask):
         """[<channel>] <hostmask>
 
         If you have the #channel,op capability, this will remove the permanent
@@ -485,7 +464,7 @@ class Channel(callbacks.Privmsg):
         ircdb.channels.setChannel(channel, c)
         #irc.queueMsg(ircmsgs.unban(channel, banmask))
         irc.replySuccess()
-    unpermban = privmsgs.checkChannelCapability(unpermban, 'op')
+    unpermban = commands.wrap(unpermban, [('channel', 'op'), 'banmask'])
 
     def permbans(self, irc, msg, args, channel):
         """[<channel>]
@@ -499,9 +478,9 @@ class Channel(callbacks.Privmsg):
             irc.reply(utils.commaAndify(map(utils.dqrepr, c.bans)))
         else:
             irc.reply('There are currently no permanent bans on %s' % channel)
-    permbans = privmsgs.checkChannelCapability(permbans, 'op')
+    permbans = commands.wrap(permbans, [('channel', 'op')])
 
-    def ignore(self, irc, msg, args, channel):
+    def ignore(self, irc, msg, args, channel, banmask, expires):
         """[<channel>] <nick|hostmask> [<expires>]
 
         If you have the #channel,op capability, this will set a permanent
@@ -511,40 +490,25 @@ class Channel(callbacks.Privmsg):
         ignore will never automatically expire.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        (nickOrHostmask, expires) = privmsgs.getArgs(args, optional=1)
-        if ircutils.isNick(nickOrHostmask):
-            banmask = ircutils.banmask(irc.state.nickToHostmask(nickOrHostmask))
-        elif ircutils.isUserHostmask(nickOrHostmask):
-            banmask = nickOrHostmask
-        else:
-            irc.errorInvalid('nick or hostmask', nickOrHostmask, Raise=True)
-        if expires:
-            try:
-                expires = int(float(expires))
-                expires += int(time.time())
-            except ValueError:
-                irc.errorInvalid('number of seconds',nickOrHostmask,Raise=True)
-        else:
-            expires = 0
         c = ircdb.channels.getChannel(channel)
         c.addIgnore(banmask, expires)
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
-    ignore = privmsgs.checkChannelCapability(ignore, 'op')
+    ignore = \
+            commands.wrap(ignore,[('channel', 'op'), 'banmask', ('expiry', 0)])
 
-    def unignore(self, irc, msg, args, channel):
+    def unignore(self, irc, msg, args, channel, banmask):
         """[<channel>] <hostmask>
 
         If you have the #channel,op capability, this will remove the permanent
         ignore on <hostmask> in the channel. <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        banmask = privmsgs.getArgs(args)
         c = ircdb.channels.getChannel(channel)
         c.removeIgnore(banmask)
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
-    unignore = privmsgs.checkChannelCapability(unignore, 'op')
+    unignore = commands.wrap(unignore, [('channel', 'op'), 'something'])
 
     def ignores(self, irc, msg, args, channel):
         """[<channel>]
@@ -554,8 +518,6 @@ class Channel(callbacks.Privmsg):
         itself.
         """
         # XXX Add the expirations.
-        channelarg = privmsgs.getArgs(args, required=0, optional=1)
-        channel = channelarg or channel
         c = ircdb.channels.getChannel(channel)
         if len(c.ignores) == 0:
             s = 'I\'m not currently ignoring any hostmasks in %r' % channel
@@ -563,9 +525,9 @@ class Channel(callbacks.Privmsg):
         else:
             L = sorted(c.ignores)
             irc.reply(utils.commaAndify(imap(repr, L)))
-    ignores = privmsgs.checkChannelCapability(ignores, 'op')
+    ignores = commands.wrap(ignores, [('channel', 'op')])
 
-    def addcapability(self, irc, msg, args, channel):
+    def addcapability(self, irc, msg, args, channel, hostmask, capabilities):
         """[<channel>] <name|hostmask> <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will give the user
@@ -573,20 +535,21 @@ class Channel(callbacks.Privmsg):
         the capability <capability> in the channel. <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        (name, capabilities) = privmsgs.getArgs(args, 2)
         try:
-            id = ircdb.users.getUserId(name)
+            id = ircdb.users.getUserId(hostmask)
             user = ircdb.users.getUser(id)
         except KeyError:
             irc.errorNoUser()
-        for c in capability.split():
+        for c in capabilities.split():
             c = ircdb.makeChannelCapability(channel, c)
             user.addCapability(c)
         ircdb.users.setUser(id, user)
         irc.replySuccess()
-    addcapability = privmsgs.checkChannelCapability(addcapability,'op')
+    addcapability = \
+        commands.wrap(addcapability,
+                      [('channel', 'op'), 'hostmask', 'something'])
 
-    def removecapability(self, irc, msg, args, channel):
+    def removecapability(self, irc, msg, args, channel, hostmask, capabilities):
         """[<channel>] <name|hostmask> <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will take from the user
@@ -594,9 +557,8 @@ class Channel(callbacks.Privmsg):
         the capability <capability> in the channel. <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        (name, capabilities) = privmsgs.getArgs(args, 2)
         try:
-            id = ircdb.users.getUserId(name)
+            id = ircdb.users.getUserId(hostmask)
         except KeyError:
             irc.errorNoUser()
             return
@@ -614,48 +576,44 @@ class Channel(callbacks.Privmsg):
                       (utils.commaAndify(fail),
                        utils.pluralize('capability', len(fail))), Raise=True)
         irc.replySuccess()
-    removecapability = privmsgs.checkChannelCapability(removecapability, 'op')
+    removecapability = \
+        commands.wrap(removecapability,
+                      [('channel', 'op'), 'hostmask', 'something'])
 
-    def setdefaultcapability(self, irc, msg, args, channel):
-        """[<channel>] <default response to unknown capabilities> <True|False>
+    def setdefaultcapability(self, irc, msg, args, channel, v):
+        """[<channel>] {True|False}
 
         If you have the #channel,op capability, this will set the default
         response to non-power-related (that is, not {op, halfop, voice}
         capabilities to be the value you give. <channel> is only necessary if
         the message isn't sent in the channel itself.
         """
-        v = privmsgs.getArgs(args)
-        v = v.capitalize()
         c = ircdb.channels.getChannel(channel)
-        if v == 'True':
+        if v:
             c.setDefaultCapability(True)
-        elif v == 'False':
-            c.setDefaultCapability(False)
         else:
-            s = 'The default value must be either True or False.'
-            irc.error(s)
-            return
+            c.setDefaultCapability(False)
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
     setdefaultcapability = \
-        privmsgs.checkChannelCapability(setdefaultcapability, 'op')
+        commands.wrap(setdefaultcapability, [('channel', 'op'), 'boolean'])
 
-    def setcapability(self, irc, msg, args, channel):
+    def setcapability(self, irc, msg, args, channel, capabilities):
         """[<channel>] <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will add the channel
         capability <capability> for all users in the channel. <channel> is
         only necessary if the message isn't sent in the channel itself.
         """
-        capabilities = privmsgs.getArgs(args)
         chan = ircdb.channels.getChannel(channel)
         for c in capabilities.split():
             chan.addCapability(c)
         ircdb.channels.setChannel(channel, chan)
         irc.replySuccess()
-    setcapability = privmsgs.checkChannelCapability(setcapability, 'op')
+    setcapability = \
+        commands.wrap(setcapability, [('channel', 'op'), 'something'])
 
-    def unsetcapability(self, irc, msg, args, channel):
+    def unsetcapability(self, irc, msg, args, channel, capabilities):
         """[<channel>] <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will unset the channel
@@ -663,7 +621,6 @@ class Channel(callbacks.Privmsg):
         channel default capability will take precedence. <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        capabilities = privmsgs.getArgs(args)
         chan = ircdb.channels.getChannel(channel)
         fail = []
         for c in capabilities.split():
@@ -677,18 +634,19 @@ class Channel(callbacks.Privmsg):
                       (utils.commaAndify(fail),
                        utils.pluralize('capability', len(fail))), Raise=True)
         irc.replySuccess()
-    unsetcapability = privmsgs.checkChannelCapability(unsetcapability, 'op')
+    unsetcapability = \
+        commands.wrap(unsetcapability, [('channel', 'op'), 'something'])
 
-    def capabilities(self, irc, msg, args):
+    def capabilities(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the capabilities present on the <channel>. <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         c = ircdb.channels.getChannel(channel)
         L = sorted(c.capabilities)
         irc.reply('[%s]' % '; '.join(L))
+    capabilities = commands.wrap(capabilities, ['channel'])
 
     def lobotomies(self, irc, msg, args):
         """takes no arguments
@@ -706,16 +664,16 @@ class Channel(callbacks.Privmsg):
         else:
             irc.reply('I\'m not currently lobotomized in any channels.')
 
-    def nicks(self, irc, msg, args):
+    def nicks(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the nicks in <channel>.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         L = list(irc.state.channels[channel].users)
         utils.sortBy(str.lower, L)
         irc.reply(utils.commaAndify(L))
+    nicks = commands.wrap(nicks, ['channel'])
 
     def alertOps(self, irc, channel, s, frm=None):
         """Internal message for notifying all the #channel,ops in a channel of

@@ -122,7 +122,7 @@ class SnarfIrc(object):
     def reply(self, *args, **kwargs):
         _snarfed.enqueue(self.channel, self.url)
         self.irc.reply(*args, **kwargs)
-        
+
 # This lock is used to serialize the calls to snarfers, so
 # earlier snarfers are guaranteed to beat out later snarfers.
 _snarfLock = threading.Lock()
@@ -178,9 +178,32 @@ def getInt(irc, msg, args, default=None, type='integer'):
             return default
         else:
             irc.errorInvalid(type, s, Raise=True)
-    
+
 def getId(irc, msg, args):
     getInt(irc, msg, args, type='id')
+
+def getExpiry(irc, msg, args, default=None):
+    s = args.pop(0)
+    try:
+        expires = int(float(s))
+        expires += int(time.time())
+    except ValueError:
+        if default is not None:
+            return default
+        else:
+            irc.errorInvalid('number of seconds', s, Raise=True)
+
+def getBoolean(irc, msg, args, default=None):
+    s = args.pop(0).strip().lower()
+    if s in ('true', 'on', 'enable', 'enabled'):
+        return True
+    elif s in ('false', 'off', 'disable', 'disabled'):
+        return False
+    elif default is not None:
+        return default
+    else:
+        irc.error("Value must be either True or False (or On or Off).",
+                  Raise=True)
 
 def getChannelDb(irc, msg, args, **kwargs):
     if not conf.supybot.databases.plugins.channelSpecific():
@@ -202,6 +225,16 @@ def getHostmask(irc, msg, args):
         try:
             s = args.pop(0)
             return irc.state.nickToHostmask(s)
+        except KeyError:
+            irc.errorInvalid('nick or hostmask', s, Raise=True)
+
+def getBanmask(irc, msg, args):
+    if ircutils.isUserHostmask(args[0]):
+        return args.pop(0)
+    else:
+        try:
+            s = args.pop(0)
+            return ircutils.banmask(irc.state.nickToHostmask(s))
         except KeyError:
             irc.errorInvalid('nick or hostmask', s, Raise=True)
 
@@ -254,6 +287,8 @@ def getNick(irc, msg, args):
 def getChannel(irc, msg, args, cap=None):
     if ircutils.isChannel(args[0]):
         channel = args.pop(0)
+        print '*** channel? %s' % channel
+        print '*** args? %s' % args
     elif ircutils.isChannel(msg.args[0]):
         channel = msg.args[0]
     else:
@@ -283,22 +318,25 @@ def getPlugin(irc, msg, args, requirePresent=False):
     if requirePresent and cb is None:
         irc.errorInvalid('plugin', s, Raise=True)
     return cb
-        
+
 argWrappers = ircutils.IrcDict({
     'id': getId,
     'int': getInt,
+    'expiry': getExpiry,
     'nick': getNick,
     'channel': getChannel,
     'plugin': getPlugin,
+    'boolean': getBoolean,
     'lowered': getLowered,
     'something': getSomething,
     'channelDb': getChannelDb,
     'hostmask': getHostmask,
+    'banmask': getBanmask,
     'user': getUser,
     'otherUser': getOtherUser,
     'regexpMatcher': getMatcher,
     'validChannel': validChannel,
-    'regexpReplacer': getReplacer, 
+    'regexpReplacer': getReplacer,
 })
 
 def args(irc,msg,args, required=[], optional=[], getopts=None, noExtra=False):
@@ -368,14 +406,16 @@ def args(irc,msg,args, required=[], optional=[], getopts=None, noExtra=False):
             callConverter(converterName)
     except IndexError:
         if req:
+            print '*** commands.args IndexError'
             raise callbacks.ArgumentError
         while opt:
             del opt[-1]
             starArgs.append('')
     if noExtra and args:
+        print '*** commands.args noExtra and args'
         raise callbacks.ArgumentError
     return starArgs
-    
+
 # These are used below, but we need to rename them so their names aren't
 # shadowed by our locals.
 _args = args
@@ -393,6 +433,6 @@ def wrap(f, required=[], optional=[],
         for wrapper in wrappers:
             newf = wrapper(newf)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
-                    
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
