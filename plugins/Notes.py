@@ -158,11 +158,16 @@ class Notes(callbacks.Privmsg):
         else:
             public = 0
         cursor = self.db.cursor()
+        now = int(time.time())
         cursor.execute("""INSERT INTO notes VALUES
                           (NULL, %s, %s, %s, 0, 0, %s, %s)""",
-                       fromId, toId, int(time.time()), public, note)
+                       fromId, toId, now, public, note)
         self.db.commit()
-        irc.reply(msg, conf.replySuccess)
+        cursor.execute("""SELECT id FROM notes WHERE
+                          from_id=%s AND to_id=%s AND added_at=%s""",
+                       fromId, toId, now)
+        id = cursor.fetchone()[0]
+        irc.reply(msg, 'Note #%s sent to %s.' % (id, name))
 
     def note(self, irc, msg, args):
         """<note id>

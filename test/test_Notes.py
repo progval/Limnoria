@@ -42,10 +42,6 @@ except ImportError:
 if sqlite is not None:
     class NotesTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('Notes', 'Misc', 'User')
-        def testHelps(self):
-            self.assertNotError('help sendnote')
-            self.assertNotError('list Notes')
-
         def testSendnote(self):
             #print repr(ircdb.users.getUser(self.prefix))
             self.prefix = 'foo!bar@baz'
@@ -53,8 +49,9 @@ if sqlite is not None:
             (id, u) = ircdb.users.newUser()
             u.name = 'inkedmn'
             ircdb.users.setUser(id, u)
-            self.assertNotError('sendnote inkedmn test')
+            self.assertRegexp('sendnote inkedmn test', '#1')
             self.assertError('sendnote alsdkjfasldk foo')
+            self.assertNotRegexp('sendnote inkedmn test2', 'the operation')
 
         def testNote(self):
             # self.assertNotError('note 1')
