@@ -2,6 +2,12 @@
 	
 	* Version 0.73.1!
 
+	* Fixed a bug in Math.{calc,rpn} where certain functions
+	("degrees" in particular) that didn't like complex arguments would
+	fail on numbers on which they shouldn't.
+
+	* Added an optional "key" argument to ChannelCommands.cycle.
+
 	* Fixed bolding in supybot-wizard.py.
 	
 	* Fixed handling of the secure flag by ircdb.IrcUser.setAuth;
