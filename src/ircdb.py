@@ -447,8 +447,10 @@ class UsersDB(object):
         if id in self._nameCache:
             del self._nameCache[self._nameCache[id]]
             del self._nameCache[id]
-        for hostmask in self._hostmaskCache.get(id, []):
-            del self._hostmaskCache[hostmask]
+        if id in self._hostmaskCache:
+            for hostmask in self._hostmaskCache[id]:
+                del self._hostmaskCache[hostmask]
+            del self._hostmaskCache[id]
 
     def newUser(self):
         """Allocates a new user in the database and returns it and its id."""
