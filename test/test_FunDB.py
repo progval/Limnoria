@@ -156,7 +156,7 @@ class TestFunDB(ChannelPluginTestCase, PluginDocumentation):
 
     def testInfo(self):
         self.assertNotError('add praise $who')
-        self.assertRegexp('info praise 1', r'Created by')
+        self.assertRegexp('info praise 1', r'Created by [^\d]+')
         self.assertNotError('remove praise 1')
         self.assertError('info fake 1')
 

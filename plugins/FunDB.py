@@ -62,7 +62,7 @@ class DbiFunDBDB(object):
                 'by',
                 'text',
                 ]
-            
+
     def __init__(self):
         self.dbs = ircutils.IrcDict()
         self.filenames = sets.Set()
@@ -132,6 +132,12 @@ class FunDB(callbacks.Privmsg):
 
     def die(self):
         self.db.close()
+
+    def _getBy(self, by):
+        try:
+            return ircdb.users.getUser(int(by)).name
+        except ValueError:
+            return by
 
     def _validType(self, irc, type, error=True):
         if type not in self._types:
@@ -287,7 +293,8 @@ class FunDB(callbacks.Privmsg):
             return
         try:
             x = self.db.get(channel, type, id)
-            reply = '%s #%s: %r; Created by %s.' % (type, x.id, x.text, x.by)
+            reply = '%s #%s: %r; Created by %s.' % (type, x.id, x.text,
+                                                    self._getBy(x.by))
             irc.reply(reply)
         except KeyError:
             irc.error('There is no %s with that id.' % type)
