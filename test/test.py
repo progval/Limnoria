@@ -53,6 +53,10 @@ if not os.path.exists(conf.dataDir):
 for filename in os.listdir(conf.dataDir):
     os.remove(os.path.join(conf.dataDir, filename))
 
+import debug
+
+debug.minimumDebugPriority = 'high'
+
 import world
 import irclib
 import drivers
