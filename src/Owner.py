@@ -388,8 +388,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def reload(self, irc, msg, args):
         """<plugin>
 
-        Unloads and subsequently reloads the callback by name; use the 'list'
-        command to see a list of the currently loaded callbacks.
+        Unloads and subsequently reloads the plugin by name; use the 'list'
+        command to see a list of the currently loaded plugins.
         """
         name = privmsgs.getArgs(args)
         callbacks = irc.removeCallback(name)
