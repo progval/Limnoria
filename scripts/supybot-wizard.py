@@ -466,7 +466,8 @@ if __name__ == '__main__':
         the commas.""")
         priority = anything('What would you like the minimum priority to be?  '
                             'Just press enter to accept the default.')
-    debugVariables['minimumDebugPriority'] = priority
+    if priority:
+        debugVariables['minimumDebugPriority'] = priority
 
     if advanced:
         myPrint("""Here's some stuff you only get to choose if you're an
