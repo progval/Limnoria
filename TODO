@@ -7,15 +7,6 @@ the more likely it'll be done before next release):
 * It'd be nice to be able to use a backslash to continue lines in the
   registry, so we could linewrap long strings or lists.
 
-* URL snarfers need to run one at a time, in order for the _snarfed
-  queue to work properly.
-
-* We could use some better log formatting -- there's no reason
-  "supybot:" needs to be there, especially when we've disabled
-  plugin-specific logfiles.
-
-* Karma needs to use invalidCommand so it can be nested.
-
 * We need to store the key for channels in the registry and have an
   easy way for plugins to send joins to channels based on their
   registry configuration.
@@ -23,9 +14,6 @@ the more likely it'll be done before next release):
 * We need to note when bans expire on a channel and send the unban,
   that way plugins can use the ircdb ban stuff and not worry about
   sending or scheduling unbans.
-
-* Filters need to be added to the logs during testing so many logs
-  (useless during testing) won't occur.
 
 * We should probably add a "hello" command to make things more
   compatible with Eggdrop, since we've been replacing many eggdrop
@@ -42,10 +30,10 @@ the more likely it'll be done before next release):
 Problems that involve a lot of tedious minutiae, but really need to
 be done at some point:
 
-* ircutils.{isChannel,isNick,toLower} should be static methods on
-  each Irc object, since they can vary per-network.  That's not the
-  tedious part; the tedious part is having every other place that
-  uses them use those methods instead.
+* ircutils.{isChannel,isNick,toLower} should be methods on each Irc
+  object, since they can vary per-network.  That's not the tedious
+  part; the tedious part is having every other place that uses them
+  use those methods instead.
 
 Hard problems that won't get done until someone really wants to have
 some fun:
