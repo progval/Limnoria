@@ -65,9 +65,7 @@ class FreshmeatException(Exception):
 
 class Http(callbacks.Privmsg):
     threaded = True
-
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
-
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
             super(Http, self).callCommand(name, irc, msg, *L, **kwargs)
