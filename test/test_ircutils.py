@@ -212,6 +212,10 @@ class IrcDictTestCase(unittest.TestCase):
         self.assertEqual(d['jemfinch[]'], 'bar')
         self.assertEqual(d['JEMFINCH[]'], 'bar')
 
+    def testKeys(self):
+        d = ircutils.IrcDict()
+        self.assertEqual(d.keys(), [])
+
     def testSetdefault(self):
         d = ircutils.IrcDict()
         d.setdefault('#FOO', []).append(1)

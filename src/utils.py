@@ -601,8 +601,13 @@ class InsensitivePreservingDict(UserDict.DictMixin, object):
         del self.data[self.key(k)]
 
     def iteritems(self):
-        for t in self.data.itervalues():
-            yield t
+        return self.data.itervalues()
+
+    def keys(self):
+        L = []
+        for (k, _) in self.iteritems():
+            L.append(k)
+        return L
     
     def __reduce__(self):
         return (self.__class__, (dict(self.data.values()),))

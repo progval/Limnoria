@@ -349,6 +349,7 @@ class UtilsTest(unittest.TestCase):
         ipd = utils.InsensitivePreservingDict
         d = ipd(dict(Foo=10))
         self.failUnless(d['foo'] == 10)
+        self.assertEqual(d.keys(), ['Foo'])
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
