@@ -261,15 +261,11 @@ class Relay(callbacks.Privmsg):
             
     def _formatPrivmsg(self, nick, abbreviation, msg):
         # colorize nicks
-        colorNumber = (hash(nick) % 14) + 2
+        nick = ircutils.canonicalColor(nick)
         if ircmsgs.isAction(msg):
-            return '* %s@%s %s' % \
-                   (ircutils.mircColor(nick, colorNumber), abbreviation,
-                    ircmsgs.unAction(msg))
+            return '* %s@%s %s' % (nick, abbreviation, ircmsgs.unAction(msg))
         else:
-            return '<%s@%s> %s' % \
-                   (ircutils.mircColor(nick, colorNumber),
-                    abbreviation, msg.args[1])
+            return '<%s@%s> %s' % (nick, abbreviation, msg.args[1])
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
