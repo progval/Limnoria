@@ -359,6 +359,7 @@ class UsersDictionaryTestCase(IrcdbTestCase):
         hostmask = 'foo!xyzzy@baz.domain.com'
         banmask = ircutils.banmask(hostmask)
         u.addHostmask(banmask)
+        u.addHostmask(hostmask)
         u.name = 'foo'
         self.users.setUser(id, u)
         self.assertEqual(self.users.getUser('foo'), u)
