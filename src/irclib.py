@@ -686,9 +686,14 @@ class Irc(IrcCommandDispatcher):
             if len(str(msg)) > 512:
                 # Yes, this violates the contract, but at this point it doesn't
                 # matter.  That's why we gotta go munging in private attributes
-                log.warning('Truncating %r, message is too long.', msg)
+                #
+                # I'm changing this to a log.debug to fix a possible loop in
+                # the LogToIrc plugin.  Since users can't do anything about
+                # this issue, there's no fundamental reason to make it a
+                # warning.
+                log.debug('Truncating %r, message is too long.', msg)
                 msg._str = msg._str[:500] + '\r\n'
-                msg._len =  len(str(msg))
+                msg._len = len(str(msg))
             # I don't think we should do this.  Why should it matter?  If it's
             # something important, then the server will send it back to us,
             # and if it's just a privmsg/notice/etc., we don't care.
