@@ -213,7 +213,7 @@ class Topic(callbacks.Privmsg):
         else:
             topics.append(topic)
         self._sendTopics(irc, channel, topics)
-    add = wrap(add, ['canChangeTopic', 'topic'])
+    add = wrap(add, ['canChangeTopic', rest('topic')])
 
     def insert(self, irc, msg, args):
         """[<channel>] <topic>
@@ -319,7 +319,7 @@ class Topic(callbacks.Privmsg):
         self._sendTopics(irc, channel, topics)
     set = wrap(set, ['canChangeTopic',
                      optional('topicNumber', 0),
-                     ('topic', False)])
+                     rest(('topic', False))])
 
     def remove(self, irc, msg, args, channel, number):
         """[<channel>] <number>
