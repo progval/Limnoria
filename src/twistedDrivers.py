@@ -60,8 +60,7 @@ class SupyIrcProtocol(LineReceiver):
 
     def lineReceived(self, line):
         start = time.time()
-        msg = ircmsgs.IrcMsg(line)
-        #log.debug('Time to parse IrcMsg: %s', time.time()-start)
+        msg = drivers.parseMsg(line)
         self.irc.feedMsg(msg)
 
     def checkIrcForMsgs(self):

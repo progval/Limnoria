@@ -162,6 +162,10 @@ error = _logger.error
 critical = _logger.critical
 exception = _logger.exception
 
+def stat(*args):
+    level = conf.supybot.log.statistics()
+    _logger.log(level, *args)
+    
 setLevel = _logger.setLevel
 
 atexit.register(logging.shutdown)
@@ -276,6 +280,11 @@ conf.registerGlobalValue(conf.supybot.log, 'level',
     LogLevel(logging.INFO, """Determines what the minimum priority level logged
     will be.  Valid values are DEBUG, INFO, WARNING, ERROR, and CRITICAL, in
     order of increasing priority."""))
+conf.registerGlobalValue(conf.supybot.log, 'statistics',
+    ValidLogLevel(logging.DEBUG, """Determines what level statistics reporting
+    is to be logged at.  Mostly, this just includes, for instance, the time it
+    took to parse a message, process a command, etc.  You probably don't care
+    about this."""))
 conf.registerGlobalValue(conf.supybot.log, 'stdout',
     registry.Boolean(True, """Determines whether the bot will log to
     stdout."""))

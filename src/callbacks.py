@@ -299,7 +299,7 @@ def tokenize(s, brackets=None, channel=None):
         return Tokenizer(tokens).tokenize(s)
     except ValueError, e:
         raise SyntaxError, str(e)
-    #log.debug('tokenize took %s seconds.' % (time.time() - start))
+    log.stat('tokenize took %s seconds.' % (time.time() - start))
 
 def getCommands(tokens):
     """Given tokens as output by tokenize, returns the command names."""
@@ -911,7 +911,7 @@ class Privmsg(irclib.IrcCallback):
         start = time.time()
         method(irc, msg, *L)
         elapsed = time.time() - start
-        self.log.debug('%s took %s seconds', name, elapsed)
+        log.stat('%s took %s seconds', name, elapsed)
 
     def registryValue(self, name, channel=None, value=True):
         plugin = self.name()

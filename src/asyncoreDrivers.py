@@ -106,8 +106,7 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
 
     def found_terminator(self):
         start = time.time()
-        msg = ircmsgs.IrcMsg(self.buffer)
-        #log.debug('Time to parse IrcMsg: %s', time.time()-start)
+        msg = drivers.parseMsg(self.buffer)
         self.buffer = ''
         self.irc.feedMsg(msg)
 
