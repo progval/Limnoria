@@ -294,6 +294,8 @@ if __name__ == '__main__':
         signal.signal(signal.SIGHUP, signal.SIG_IGN)
         log.info('Completed daemonization.  Current PID: %s', os.getpid())
 
+    os.umask(077)
+
     # Let's write the PID file.  This has to go after daemonization, obviously.
     pidFile = conf.supybot.pidFile()
     if pidFile:
