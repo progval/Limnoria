@@ -57,6 +57,21 @@ supybot = registry.Group()
 supybot.setName('supybot')
 supybot.registerGroup('plugins') # This will be used by plugins, but not here.
 
+def registerPlugin(name, currentValue=None):
+    supybot.plugins.registerGroup(
+        name,
+        registry.GroupWithValue(registry.Boolean(False, """Determines whether
+        this plugin is loaded by default.""")))
+    if currentValue is not None:
+        supybot.plugins.getChild(name).setValue(currentValue)
+
+def registerChannelValue(group, name, value):
+    group.registerGroup(name, registry.GroupWithDefault(value))
+
+def registerGlobalValue(group, name, value):
+    group.register(name, value)
+        
+                                       
 class ValidNick(registry.String):
     def set(self, s):
         original = getattr(self, 'value', self.default)
@@ -218,55 +233,57 @@ why these default to what they do."""))
 ###
 supybot.registerGroup('replies')
 
-supybot.replies.registerGroup('error', registry.GroupWithDefault(
+registerChannelValue(supybot.replies, 'success',
     registry.NormalizedString("""An error has occurred and has been logged.
     Please contact this bot's administrator for more information.""", """
     Determines what error message the bot gives when it wants to be
-    ambiguous.""")))
+    ambiguous."""))
 
-supybot.replies.registerGroup('noCapability', registry.GroupWithDefault(
+registerChannelValue(supybot.replies, 'noCapability',
     registry.NormalizedString("""You don't have the %r capability.  If you
     think that you should have this capability, be sure that you are identified
     before trying again.  The 'whoami' command can tell you if you're
     identified.""", """Determines what error message is given when the bot is
     telling someone they aren't cool enough to use the command they tried to
-    use.""")))
+    use."""))
 
-supybot.replies.registerGroup('success', registry.GroupWithDefault(
+registerChannelValue(supybot.replies, 'success',
     registry.NormalizedString("""The operation succeeded.""", """Determines
-    what message the bot replies with when a command succeeded.""")))
+    what message the bot replies with when a command succeeded."""))
 
-supybot.replies.registerGroup('incorrectAuthentication',
-    registry.GroupWithDefault(
+registerChannelValue(supybot.replies, 'incorrectAuthentication',
     registry.NormalizedString("""Your hostmask doesn't match or your password
     is wrong.""", """Determines what message the bot replies with when someone
     tries to use a command that requires being identified or having a password
-    and neither credential is correct.""")))
+    and neither credential is correct."""))
 
-supybot.replies.registerGroup('noUser', registry.GroupWithDefault(
+registerChannelValue(supybot.replies, 'noUser',
     registry.NormalizedString("""I can't find that user in my user
     database.""", """Determines what error message the bot replies with when
     someone tries to accessing some information on a user the bot doesn't know
-    about.""")))
+    about."""))
 
-supybot.replies.registerGroup('notRegistered', registry.GroupWithDefault(
+registerChannelValue(supybot.replies, 'notRegistered',
     registry.NormalizedString("""You must be registered to use this command.
     If you are already registered, you must either identify (using the identify
     command) or add a hostmask matching your current hostmask (using the
     addhostmask command).""", """Determines what error message the bot replies
     with when someone tries to do something that requires them to be registered
-    but they're not currently recognized.""")))
+    but they're not currently recognized."""))
 
-supybot.replies.registerGroup('requiresPrivacy', registry.GroupWithDefault(
+registerChannelValue(supybot.replies, 'requiresPrivacy',
     registry.NormalizedString("""That operation cannot be done in a
     channel.""", """Determines what error messages the bot sends to people who
-    try to do things in a channel that really should be done in private.""")))
+    try to do things in a channel that really should be done in private."""))
 
 supybot.replies.register('possibleBug', registry.NormalizedString("""This may
 be a bug.  If you think it is, please file a bug report at
 <http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>.""",
 """Determines what message the bot sends when it thinks you've encountered a
 bug that the developers don't know about."""))
+###
+# End supybot.replies.
+###
 
 supybot.register('pingServer', registry.Boolean(True, """Determines whether
 the bot will send PINGs to the server it's connected to in order to keep the

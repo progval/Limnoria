@@ -51,8 +51,6 @@ import ircutils
 import privmsgs
 import callbacks
 
-import Owner
-
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
@@ -68,11 +66,12 @@ def configure(onStart, afterConnect, advanced):
 
 replyTimeout = 'Timeout on the dictd server.'
 
-Owner.registerPlugin('Dict', True)
+conf.registerPlugin('Dict', True)
 # TODO: We should make this check to see if there's actually a dictd server
 # running on the host given.
-conf.supybot.plugins.Dict.register('server', registry.String('dict.org', """
-Determines what server the bot will retrieve definitions from."""))
+conf.registerChannelValue(conf.supybot.plugins.Dict, 'server',
+    registry.String('dict.org', """Determines what server the bot will
+    retrieve definitions from."""))
 
 class Dict(callbacks.Privmsg):
     threaded = True
