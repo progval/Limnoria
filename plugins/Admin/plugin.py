@@ -45,7 +45,6 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 

@@ -39,7 +39,6 @@ import supybot.utils as utils
 import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 class User(callbacks.Privmsg):
