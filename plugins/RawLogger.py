@@ -35,6 +35,7 @@ Logs raw IRC messages to a file, conf.dataDir/raw.log
 
 from baseplugin import *
 
+import os
 import conf
 import world
 import irclib

@@ -38,6 +38,7 @@ from baseplugin import *
 import time
 from cStringIO import StringIO
 
+import os
 import conf
 import debug
 import world
