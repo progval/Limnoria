@@ -1,3 +1,93 @@
+	* Added the facility to supporting several different database
+	implementations in a plugin, allowing the user to specify which
+	databases are supported as well as in what order of preference.
+
+	* Added the Insult plugin, for colorful, creative insults.
+
+	* Added the UrbanDict plugin, for defining words based on
+	UrbanDictionary.com.
+
+	* Added the Observer plugin, for watching a channel for regexps
+	and running commands when the bot sees such regexps.
+
+	* Moved Http.geekquote to a new Geekquote plugin, added a command
+	for using qdb.us, and added a snarfer.
+
+	* Added a SuperIgnore plugin, a good example of an inFilter and a
+	way to completely, totally ignore people.
+
+	* Changed the name of the Network plugin to Internet.
+
+	* Added a new Network plugin, and moved some commands from Owner,
+	Misc, and Relay to it.
+	
+	* Added CTCP flood protection.
+
+	* Added a supybot.plugins.Karma.allowUnaddressedKarma
+	configuration variable, for allowing karma increments/decrements
+	similar to Infobot.
+
+	* Added supybot.reply.whenAddressedBy.nicks, to allow users to
+	specify a list of nicks to which the bot will respond as if they
+	were its own nick.
+
+	* Added the ability to support multiple-word karma
+	increments/decrements.
+	
+	* Changed Owner.rename to be handled persistently; now renames
+	work across restarts of the bot or reloads of a plugin.
+	
+	* Changed Misc.last to include a timestamp for when the message
+	was sent.
+	
+	* Added the Channel.alert command, to send all currently
+	connected ops on a channel a message.
+	
+	* Changed the MoobotFactoids plugin to allow commands to be
+	nested in factoids definitions and searches.
+	
+	* Removed the futurama command in favor of adding a
+	futurama.supyfact file to supybot-data.
+	
+	* Improved the Http.kernel command, showing more kernel types.
+	
+	* Added a new contributors command and a way of storing
+	contributors and their contributions in a plugin.
+	
+	* Changed the name of Anonymous.action to Anonymous.do, to be
+	more consistent with "say" and other bots (MozBot, iirc).
+
+	* Added the ability for channel bans and ignores and global
+	ignores to have expiration times.
+
+	* Added invalid command flood protection.
+
+	* Changed RSS' headlines output to bold the separators in order
+	to make it easier to distinguish the headlines.
+
+	* Added a --no-network option to supybot-wizard.
+	
+	* Added several attributes to IrcMsg objects as they pass through
+	the bot; currently we tag them with receivedAt, receivedBy, and
+	receivedOn.
+	
+	* Added RichReplyMethods.errorInvalid, a nice helper method for
+	sending errors about invalid values.
+	
+	* Changed the --nonetwork and --noplugins options to test/test.py
+	to --no-network and --no-plugins.
+	
+	* Changed plugins.makeChannelFilename, swapping the order of the
+	channel and filename arguments and making the channel optional.
+	
+	* Changed the first argument to callbacks.Privmsg.callCommand to
+	be a name rather than a method, for greater justice.
+	
+	* Added a new mechanism for ordering plugins (subclasses of
+	callbacks.Privmsg) which is much more flexible than a simple
+	priority system.
+
+	
 2004-09-06 James Vega <jamessan@users.sf.net>
 
 	* Version 0.79.9999!
