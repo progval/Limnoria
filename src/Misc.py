@@ -95,8 +95,8 @@ class Misc(callbacks.Privmsg):
                     L = []
                     while ambiguousCommands:
                         (command, cbs) = ambiguousCommands.popitem()
-                        L.append('%r is available in the %s plugins' % \
-                             (command, utils.commaAndify(cbs)))
+                        L.append('The command %r is available in the %s '
+                                 'plugins' % (command, utils.commaAndify(cbs)))
                     s = '%s; please specify from which plugins to ' \
                         'call these commands.' % '; '.join(L)
                 irc.queueMsg(callbacks.reply(msg, 'Error: ' + s))
