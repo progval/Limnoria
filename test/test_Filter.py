@@ -88,6 +88,22 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
         for s in self._strings:
             self.assertResponse('stripcolor [colorize %s]' % s, s)
 
+    def testSpellit(self):
+        self.assertRegexp('spellit abc123!.%', 'ay bee see one two three '
+                          'exclamation point period percent')
+        self.assertNotError('config plugins.Filter.spellit.replaceLetters off')
+        self.assertRegexp('spellit asasdfasdf12345@#$!%^',
+                          'asasdfasdfone two three four five at pound '
+                          'dollar sign exclamation point percent caret')
+        self.assertNotError('config plugins.Filter.spellit.replaceNumbers off')
+        self.assertRegexp('spellit asasdfasdf12345@#$!%^',
+                          'asasdfasdf12345at pound dollar sign exclamation '
+                          'point percent caret')
+        self.assertNotError('config '
+                            'plugins.Filter.spellit.replacePunctuation off')
+        self.assertResponse('spellit asasdfasdf12345@#$!%^',
+                            'asasdfasdf12345@#$!%^')
+
     def testOutfilter(self):
         s = self.nick.encode('rot13')
         self.assertNotError('outfilter rot13')

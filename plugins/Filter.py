@@ -46,7 +46,20 @@ import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.callbacks as callbacks
+
+conf.registerPlugin('Filter')
+conf.registerGroup(conf.supybot.plugins.Filter, 'spellit')
+conf.registerGlobalValue(conf.supybot.plugins.Filter.spellit,
+    'replaceLetters', registry.Boolean(True, """Determines whether or not to
+    replace letters in the output of spellit."""))
+conf.registerGlobalValue(conf.supybot.plugins.Filter.spellit,
+    'replacePunctuation', registry.Boolean(True, """Determines whether or not
+    to replace punctuation in the output of spellit."""))
+conf.registerGlobalValue(conf.supybot.plugins.Filter.spellit,
+    'replaceNumbers', registry.Boolean(True, """Determines whether or not to
+    replace numbers in the output of spellit."""))
 
 class MyFilterProxy(object):
     def reply(self, s):
@@ -82,7 +95,7 @@ class Filter(callbacks.Privmsg):
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
-                       'supa1337', 'colorstrip', 'aol', 'rainbow']
+                       'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit']
     def outfilter(self, irc, msg, args, channel):
         """[<channel>] [<command>]
 
@@ -487,6 +500,75 @@ class Filter(callbacks.Privmsg):
         if random.random() < .4:
             text = text.upper()
         irc.reply(text)
+
+    # Keeping these separate so people can just replace the alphabets for
+    # whatever their language of choice
+    _spellLetters = {
+        'a': 'ay', 'b': 'bee', 'c': 'see', 'd': 'dee', 'e': 'ee', 'f': 'eff',
+        'g': 'gee', 'h': 'aych', 'i': 'eye', 'j': 'jay', 'k': 'kay', 'l':
+        'ell', 'm': 'em', 'n': 'en', 'o': 'oh', 'p': 'pee', 'q': 'cue', 'r':
+        'arr', 's': 'ess', 't': 'tee', 'u': 'you', 'v': 'vee', 'w':
+        'double-you', 'x': 'ecks', 'y': 'why', 'z': 'zee'
+    }
+    _spellPunctuation = {
+        '!': 'exclamation point',
+        '"': 'quote',
+        '#': 'pound',
+        '$': 'dollar sign',
+        '%': 'percent',
+        '&': 'ampersand',
+        '\'': 'single quote',
+        '(': 'left paren',
+        ')': 'right paren',
+        '*': 'asterisk',
+        '+': 'plus',
+        ',': 'comma',
+        '-': 'minus',
+        '.': 'period',
+        '/': 'slash',
+        ':': 'colon',
+        ';': 'semicolon',
+        '<': 'less than',
+        '=': 'equals',
+        '>': 'greater than',
+        '?': 'question mark',
+        '@': 'at',
+        '[': 'left bracket',
+        '\\': 'backslash',
+        ']': 'right bracket',
+        '^': 'caret',
+        '_': 'underscore',
+        '`': 'backtick',
+        '{': 'left brace',
+        '|': 'pipe',
+        '}': 'right brace',
+        '~': 'tilde'
+    }
+    _spellNumbers = {
+        '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
+        '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
+    }
+    def spellit(self, irc, msg, args):
+        """<text>
+
+        Returns <text>, phonetically spelled out.
+        """
+        text = privmsgs.getArgs(args)
+        replaceLetters  = self.registryValue('spellit.replaceLetters')
+        replacePunctuation  = self.registryValue('spellit.replacePunctuation')
+        replaceNumbers  = self.registryValue('spellit.replaceNumbers')
+        newtext = ''
+        for c in text:
+            if self._spellLetters.has_key(c.lower()) and replaceLetters:
+                newtext += '%s ' % self._spellLetters[c.lower()]
+            elif self._spellPunctuation.has_key(c) and replacePunctuation:
+                newtext += '%s ' % self._spellPunctuation[c]
+            elif self._spellNumbers.has_key(c) and replaceNumbers:
+                newtext += '%s ' % self._spellNumbers[c]
+            else:
+                newtext += '%s' % c
+        irc.reply(newtext)
+
 
 
 Class = Filter
