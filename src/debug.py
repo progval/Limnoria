@@ -130,7 +130,13 @@ def unrecoverableError(msg):
     recoverableError(msg)
     exit(-1)
 
-def recoverableException():
+def recoverableException(type='detailed'):
+    """Logs an exception that's recoverable.
+
+    The 'type' argument can be either 'detailed' (for a nice cgitb traceback),
+    'normal' (for a normal traceback), or 'terse' (for a short line stating
+    the exception raised).
+    """
     if world.testing:
         return
     (E, e, tb) = sys.exc_info()
@@ -144,9 +150,12 @@ def recoverableException():
     else:
         del lastTimes[0]
     try:
-        if not conf.detailedTracebacks:
-            1/0
-        text = cgitb.text((E, e, tb))
+        if type == 'detailed' and conf.detailedTracebacks:
+            text = cgitb.text((E, e, tb))
+        elif type == 'normal':
+            text = ''.join(traceback.format_exception(E, e, tb))
+        elif type == 'terse':
+            text = exnToString(e)
     except:
         text = ''.join(traceback.format_exception(E, e, tb))
     del tb # just to be safe.
@@ -171,6 +180,7 @@ def msg(s, priority='low'):
             _writeNewline(sys.stderr, s)
             if colorterm:
                 sys.stderr.write(ansi.RESET)
+        s = '%s: %s' % (priority.upper(), s)
         _writeNewline(_debugfd, s)
         _debugfd.flush()
 
@@ -189,4 +199,5 @@ def tracer(frame, event, _):
         s = '%s: %s\n' % (frame.f_code.co_filename, frame.f_code.co_name)
         _tracefd.write(s)
         _tracefd.flush()
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
