@@ -153,7 +153,7 @@ class Error(Exception):
 class Tokenizer:
     quotes = '"`'
     nonbacktickquotes = '"'
-    validChars = string.ascii[33:].translate(string.ascii, '\'"`[]')
+    validChars = string.ascii[33:].translate(string.ascii, '"`[]')
     def __init__(self, tokens=''):
         self.validChars = self.validChars.translate(string.ascii, tokens)
 
