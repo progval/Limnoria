@@ -125,7 +125,7 @@ class Dict(callbacks.Privmsg):
                 irc.reply(msg, 'No definition for %r could be found.' % word)
             else:
                 irc.reply(msg, 'No definition for %r could be found in %s' % \
-                          dictionary)
+                          (word, dictionary))
             return
         L = []
         for d in definitions:
