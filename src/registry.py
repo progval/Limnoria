@@ -387,7 +387,7 @@ class Regexp(Value):
             self.sr = ''
             Value.setValue(self, None)
         else:
-            raise ValueError, \
+            raise InvalidRegistryValue, \
                   'Can\'t set to a regexp, there would be an inconsistency ' \
                   'between the regexp and the recorded string value.'
 
