@@ -81,6 +81,7 @@ class Dictionary(object):
         return self.defaults[name]
 
     def getChannels(self, name):
+        name = callbacks.canonicalName(name)
         d = ircutils.IrcDict()
         for (channel, names) in self.channels.iteritems():
             if name in names:
