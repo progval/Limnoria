@@ -49,6 +49,8 @@ if conf.pluginDir not in sys.path:
     sys.path.insert(0, conf.pluginDir)
 
 def makePluginDocumentation(filename):
+    trClasses = { 'dark':'light', 'light':'dark' }
+    trClass = 'dark'
     pluginName = filename.split('.')[0]
     moduleInfo = imp.find_module(pluginName)
     module = imp.load_module(pluginName, *moduleInfo)
@@ -58,13 +60,21 @@ def makePluginDocumentation(filename):
     plugin = module.Class()
     if isinstance(plugin, callbacks.Privmsg) and not \
        isinstance(plugin, callbacks.PrivmsgRegexp):
-        fd = file('plugindocs/%s.html' % pluginName, 'w')
+        fd = file(os.path.join(directory,'%s.html' % pluginName), 'w')
         fd.write(textwrap.dedent("""
-        <html><title>Documentation for the %s plugin for Supybot</title>
-        <body>%s<br><br>
-        <table><tr><td>Command</td><td>Args</td><td>Detailed Help</td></tr>
+        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+        <html lang="en-us">
+        <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Documentation for the %s plugin for Supybot</title>
+        <link rel="stylesheet" type="text/css" href="supybot.css">
+        <body><div>
+        %s<br><br><table>
+        <tr id="headers"><td>Command</td><td>Args</td><td>
+        Detailed Help</td></tr>
         """) % (pluginName, cgi.escape(module.__doc__)))
         for attr in dir(plugin):
+            trClass = trClasses[trClass]
             if plugin.isCommand(attr):
                 method = getattr(plugin, attr)
                 if hasattr(method, '__doc__'):
@@ -76,8 +86,9 @@ def makePluginDocumentation(filename):
                         doclines = map(str.strip, doclines)
                         morehelp = ' '.join(doclines)
                     fd.write(textwrap.dedent("""
-                    <tr><td>%s</td><td>%s</td><td>%s</td></tr>
-                    """) % (attr, cgi.escape(help), cgi.escape(morehelp)))
+                    <tr class="%s"><td>%s</td><td>%s</td><td class="detail">%s
+                    </td></tr>
+                    """) % (trClass, attr, cgi.escape(help), cgi.escape(morehelp)))
         fd.write(textwrap.dedent("""
         </table>
         """))
@@ -86,12 +97,16 @@ def makePluginDocumentation(filename):
             s = s.replace('\\n', '\n')
             s = s.replace("\\'", "'")
             fd.write(textwrap.dedent("""
-            <p>Here's an example session with this plugin:
+            <p>Here's an example session with this plugin:</p>
             <pre>
             %s
             </pre>
-            </p>
             """) % cgi.escape(s))
+        fd.write(textwrap.dedent("""
+        </div>
+        </body>
+        </html>
+        """))
         fd.close()
 
 if __name__ == '__main__':
