@@ -55,10 +55,43 @@ import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
+class BanmaskStyle(registry.SpaceSeparatedSetOfStrings):
+    validStrings = ('exact', 'nick', 'user', 'host')
+    def __init__(self, *args, **kwargs):
+        assert self.validStrings, 'There must be some valid strings.  ' \
+                                  'This is a bug.'
+        registry.SpaceSeparatedSetOfStrings.__init__(self, *args, **kwargs)
+        self.__doc__ = 'Valid values include %s.' % \
+                        utils.commaAndify(map(repr, self.validStrings))
+
+    def help(self):
+        strings = [s for s in self.validStrings if s]
+        return '%s  Valid strings: %s.' % \
+                (self._help, utils.commaAndify(strings))
+
+    def normalize(self, s):
+        lowered = s.lower()
+        L = list(map(str.lower, self.validStrings))
+        try:
+            i = L.index(lowered)
+        except ValueError:
+            return s # This is handled in setValue.
+        return self.validStrings[i]
+
+    def setValue(self, v):
+        v = map(self.normalize, v)
+        for s in v:
+            if s not in self.validStrings:
+                self.error()
+        registry.SpaceSeparatedSetOfStrings.setValue(self, self.List(v))
+
 conf.registerPlugin('Channel')
 conf.registerChannelValue(conf.supybot.plugins.Channel, 'alwaysRejoin',
     registry.Boolean(True, """Determines whether the bot will always try to
     rejoin a channel whenever it's kicked from the channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Channel, 'banmask',
+    BanmaskStyle(['user', 'host'], """Determines what will be used as the
+    default banmask style."""))
 
 class Channel(callbacks.Privmsg):
     def __init__(self):
@@ -321,7 +354,7 @@ class Channel(callbacks.Privmsg):
         except KeyError:
             irc.error('I haven\'t seen %s.' % bannedNick, Raise=True)
         capability = ircdb.makeChannelCapability(channel, 'op')
-        if optlist:
+        def makeBanmask(bannedHostmask, options):
             (nick, user, host) = ircutils.splitHostmask(bannedHostmask)
             self.log.debug('*** nick: %s' % nick)
             self.log.debug('*** user: %s' % user)
@@ -329,7 +362,7 @@ class Channel(callbacks.Privmsg):
             bnick = '*'
             buser = '*'
             bhost = '*'
-            for (option, _) in optlist:
+            for option in options:
                 if option == 'nick':
                     bnick = nick
                 elif option == 'user':
@@ -339,9 +372,12 @@ class Channel(callbacks.Privmsg):
                 elif option == 'exact':
                     (bnick, buser, bhost) = \
                                    ircutils.splitHostmask(bannedHostmask)
-            banmask = ircutils.joinHostmask(bnick, buser, bhost)
+            return ircutils.joinHostmask(bnick, buser, bhost)
+        if optlist:
+            banmask = makeBanmask(bannedHostmask, [o[0] for o in optlist])
         else:
-            banmask = ircutils.banmask(bannedHostmask)
+            banmask = makeBanmask(bannedHostmask,
+                                  self.registryValue('banmask', channel))
         # Check (again) that they're not trying to make us kickban ourself.
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
             if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
