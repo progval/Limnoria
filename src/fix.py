@@ -31,6 +31,10 @@
 
 ## from __future__ import generators
 
+"""
+Fixes stuff that Python should have but doesn't.
+"""
+
 import sys
 import string
 
@@ -48,110 +52,6 @@ def catch(f, *args, **kwargs):
         return f(*args, **kwargs)
     except:
         return None
-
-## class bool(int):
-##     """2.3 came out."""
-##     def __new__(cls, val=0):
-##         # This constructor always returns an existing instance
-##         if val:
-##             return True
-##         else:
-##             return False
-
-##     def __repr__(self):
-##         if self:
-##             return "True"
-##         else:
-##             return "False"
-
-##     __str__ = __repr__
-
-##     def __and__(self, other):
-##         if isinstance(other, bool):
-##             return bool(int(self) & int(other))
-##         else:
-##             return int.__and__(self, other)
-
-##     __rand__ = __and__
-
-##     def __or__(self, other):
-##         if isinstance(other, bool):
-##             return bool(int(self) | int(other))
-##         else:
-##             return int.__or__(self, other)
-
-##     __ror__ = __or__
-
-##     def __xor__(self, other):
-##         if isinstance(other, bool):
-##             return bool(int(self) ^ int(other))
-##         else:
-##             return int.__xor__(self, other)
-
-##     __rxor__ = __xor__
-
-## False = int.__new__(bool, 0)
-## True = int.__new__(bool, 1)
-
-
-## class set(object):
-##     """2.3 came out."""
-##     __slots__ = ('d',)
-##     def __init__(self, seq=()):
-##         self.d = {}
-##         for x in seq:
-##             self.d[x] = None
-
-##     def __contains__(self, x):
-##         return x in self.d
-
-##     def __iter__(self):
-##         return self.d.iterkeys()
-
-##     def __repr__(self):
-##         return '%s([%s])' % (self.__class__.__name__,
-##                              ', '.join(map(repr, self.d.iterkeys())))
-
-##     def __nonzero__(self):
-##         if self.d:
-##             return True
-##         else:
-##             return False
-
-##     def __getstate__(self):
-##         return (self.d.keys(),)
-
-##     def __setstate__(self, (L,)):
-##         self.d = {}
-##         for x in L:
-##             self.d[x] = None
-
-##     def __len__(self):
-##         return len(self.d)
-
-##     def add(self, x):
-##         self.d[x] = None
-
-##     def remove(self, x):
-##         del self.d[x]
-
-##     def discard(self, x):
-##         try:
-##             del self.d[x]
-##         except KeyError:
-##             pass
-
-##     def __eq__(self, other):
-##         return self.d == other.d
-
-##     def __ne__(self, other):
-##         return not self.d == other.d
-
-## ##     def __getstate__(self):
-## ##         return self.d
-
-## ##     def __setstate__(self, d):
-## ##         self.d = d
 
 
 class IterableMap(object):
@@ -205,31 +105,27 @@ def mktemp(suffix=''):
         s = m.hexdigest()
     return sha.sha(s + str(time.time())).hexdigest() + suffix
 
-def zipiter(*args):
-    args = map(iter, args)
-    while 1:
-        L = []
-        for arg in args:
-            L.append(arg.next())
-        yield tuple(L)
-
 def reviter(L):
+    """Iterates through a list in reverse."""
     for i in xrange(len(L) - 1, -1, -1):
         yield L[i]
 
 def window(L, size):
+    """Returns a sliding 'window' through the list L of size size."""
     if size < 1:
         raise ValueError, 'size <= 0 unallowed.'
     for i in xrange(len(L) - (size-1)):
         yield L[i:i+size]
 
 def ilen(iterator):
+    """Returns the length of an iterator."""
     i = 0
     for _ in iterator:
         i += 1
     return i
 
 def group(seq, groupSize, noneFill=True):
+    """Groups a given sequence into sublists of length groupSize."""
     ret = []
     L = []
     i = groupSize
@@ -250,6 +146,7 @@ def group(seq, groupSize, noneFill=True):
     return ret
 
 def itersplit(iterable, isSeparator, yieldEmpty=False):
+    """Splits an iterator based on a predicate isSeparator."""
     acc = []
     for element in iterable:
         if isSeparator(element):
@@ -262,6 +159,8 @@ def itersplit(iterable, isSeparator, yieldEmpty=False):
         yield acc
 
 def flatten(seq, strings=False):
+    """Flattens a list of lists into a single list.  See the test for examples.
+    """
     for elt in seq:
         if not strings and type(elt) == str or type(elt) == unicode:
             yield elt
@@ -273,6 +172,7 @@ def flatten(seq, strings=False):
                 yield elt
 
 def partition(p, L):
+    """Partitions a list L based on a predicate p.  Returns a (yes,no) tuple"""
     no = []
     yes = []
     for elt in L:
@@ -283,6 +183,7 @@ def partition(p, L):
     return (yes, no)
 
 def flip((x, y)):
+    """Flips a two-tuple around.  (x, y) becomes (y, x)."""
     return (y, x)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
