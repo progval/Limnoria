@@ -179,6 +179,10 @@ class ArgumentError(Error):
     """The bot replies with a help message when this is raised."""
     pass
 
+class CannotNest(Error):
+    """Exception to be raised by commands that cannot be nested."""
+    pass
+
 class Tokenizer:
     # This will be used as a global environment to evaluate strings in.
     # Evaluation is, of course, necessary in order to allowed escaped
@@ -310,6 +314,9 @@ class IrcObjectProxy:
             else:
                 s = 'Invalid arguments for %s.' % name
             self.reply(self.msg, s)
+        except CannotNest, e:
+            if not isinstance(self.irc, irclib.Irc):
+                self.error(self.msg, 'Command %r cannot be nested.' % name)
         except (SyntaxError, Error), e:
             self.reply(self.msg, debug.exnToString(e))
         except Exception, e:
@@ -330,7 +337,10 @@ class IrcObjectProxy:
             self.evalArgs()
 
     def error(self, msg, s):
-        self.reply(msg, 'Error: ' + s)
+        if isinstance(self.irc, self.__class__):
+            self.irc.error(msg, s)
+        else:
+            self.irc.queueMsg(reply(msg, 'Error: ' + s))
 
     def killProxy(self):
         if not isinstance(self.irc, irclib.Irc):
@@ -385,6 +395,10 @@ class CommandThread(threading.Thread):
             else:
                 s = 'Invalid arguments for %s.' % self.commandName
             self.irc.reply(self.msg, s)
+        except CannotNest:
+            if not isinstance(self.irc.irc, irclib.Irc):
+                s = 'Command %r cannot be nested.' % self.commandName
+                self.irc.error(self.msg, s)
         except (SyntaxError, Error), e:
             self.irc.reply(self.msg, debug.exnToString(e))
         except Exception, e:
@@ -453,7 +467,7 @@ class Privmsg(irclib.IrcCallback):
                 args = tokenize(s)
                 self.Proxy(irc, msg, args)
             except SyntaxError, e:
-                irc.queueMsg(reply(msg, debug.exnToString(e)))
+                irc.queueMsg(reply(msg, str(e)))
 
     def isCommand(self, methodName):
         # This function is ugly, but I don't want users to call methods like

@@ -159,22 +159,22 @@ class FunDB(callbacks.Privmsg):
         if cursor.rowcount == 0:
             irc.error(msg, 'There are currently no available insults.')
             return
+        (id, insult) = cursor.fetchone()
+        sql = """UPDATE insults SET use_count=use_count+1, requested_by=%s
+                 WHERE id=%s"""
+        cursor.execute(sql, msg.prefix, id)
+        nick = nick.strip()
+        if nick in (irc.nick, 'yourself', 'me'):
+            insultee = msg.nick
         else:
-            (id, insult) = cursor.fetchone()
-            sql = """UPDATE insults SET use_count=use_count+1, requested_by=%s
-                     WHERE id=%s"""
-            cursor.execute(sql, msg.prefix, id)
-            if nick.strip() in (irc.nick, 'himself', 'me'):
-                insultee = msg.nick
-            else:
-                insultee = nick
-            if ircutils.isChannel(msg.args[0]):
-                means = msg.args[0]
-                s = '%s: %s (#%s)' % (insultee, insult, id)
-            else:
-                means = insultee
-                s = insult
-            irc.queueMsg(ircmsgs.privmsg(means, s))
+            insultee = nick
+        if ircutils.isChannel(msg.args[0]):
+            means = msg.args[0]
+            s = '%s: %s (#%s)' % (insultee, insult, id)
+        else:
+            means = insultee
+            s = insult
+        irc.queueMsg(ircmsgs.privmsg(means, s))
 
     def crossword(self, irc, msg, args):
         """<word>
@@ -380,6 +380,7 @@ class FunDB(callbacks.Privmsg):
                 lartee = nick
             lart = lart.replace("$who", lartee)
             irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
+        raise callbacks.CannotNest
 
     def praise(self, irc, msg, args):
         """[<channel>] <nick>
@@ -408,6 +409,7 @@ class FunDB(callbacks.Privmsg):
                 praisee = nick
             praise = praise.replace("$who", praisee)
             irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (praise, id)))
+        raise callbacks.CannotNest
 
     def addword(self, irc, msg, args):
         """<word>
