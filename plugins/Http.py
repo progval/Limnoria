@@ -143,7 +143,8 @@ class Http(callbacks.Privmsg):
             if m is not None:
                 irc.reply(msg, utils.htmlToText(m.group(1).strip()))
             else:
-                irc.reply(msg, 'That URL appears to have no HTML title.')
+                irc.reply(msg, 'That URL appears to have no HTML title '
+                               'within the first %s bytes.' % self.maxSize)
         except ValueError, e:
             irc.error(msg, str(e))
 
