@@ -44,6 +44,7 @@ plugins = [
     'Google',
     'Herald',
     'Internet',
+    'Lart',
     'Later',
     'Math',
     'Network',
