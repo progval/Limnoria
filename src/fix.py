@@ -38,7 +38,8 @@ Fixes stuff that Python should have but doesn't.
 import sys
 import string
 
-sys.path.insert(0, 'others')
+if 'others' not in sys.path:
+    sys.path.insert(0, 'others')
 
 string.ascii = string.maketrans('', '')
 
