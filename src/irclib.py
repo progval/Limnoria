@@ -163,6 +163,15 @@ class IrcState(object):
         self.nicksToHostmasks = {}
         self.channels = {}
 
+    def __getstate__(self):
+        d = {}
+        for s in self.__slots__:
+            d[s] = getattr(self, s)
+
+    def __setstate__(self, d):
+        for (name, value) in d.iteritems():
+            setattr(self, name, value)
+    
     def copy(self):
         ret = self.__class__()
         ret.history = copy.copy(self.history)
