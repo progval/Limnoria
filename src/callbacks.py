@@ -192,7 +192,7 @@ class Tokenizer:
     #
     # These are the characters valid in a token.  Everything printable except
     # double-quote, left-bracket, and right-bracket.
-    validChars = string.ascii[33:].translate(string.ascii, '"[]')
+    validChars = string.ascii[33:].translate(string.ascii, '"[]|')
     def __init__(self, tokens=''):
         self.validChars = self.validChars.translate(string.ascii, tokens)
 
@@ -224,17 +224,29 @@ class Tokenizer:
         lexer.quotes = '"'
         lexer.wordchars = self.validChars
         args = []
+        ends = []
         while True:
             token = lexer.get_token()
             #debug.printf(repr(token))
             if not token:
                 break
+            elif token == '|':
+                if not args:
+                    raise SyntaxError, '"|" with nothing preceding'
+                ends.append(args)
+                args = []
             elif token == '[':
                 args.append(self.insideBrackets(lexer))
             elif token == ']':
                 raise SyntaxError, 'Spurious "["'
             else:
                 args.append(self.handleToken(token))
+        if ends:
+            if not args:
+                raise SyntaxError, '"|" with nothing following'
+            args.append(ends.pop())
+            while ends:
+                args[-1].append(ends.pop())
         return args
 
 def tokenize(s):
