@@ -103,6 +103,14 @@ So the command above adds the hostmask I'm currently using to my
 user's list of recognized hostmasks.  I'm only required to give
 mypassword if I'm not already identified with the bot.
 
+Now, with all that out of the way, we can continue telling you how to
+load plugins :)  Remember earlier when I told you to try "help
+load"?  That's the very command you'll be using.  Basically, if you
+want to load, say, the Fun plugin, then "load Fun".  Simple, right?
+If you need a list of the plugins you can load, you'll have to either
+list the directory the plugins are in, or you'll have to check our
+website -- look for the "Plugin index."
+
 Another command you might find yourself needing somewhat often is the
 "more" command.  The IRC protocol limits messages to 512 bytes, 60 or
 so of which must be devoted to some bookkeeping.  Sometimes, however,
