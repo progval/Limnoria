@@ -162,10 +162,8 @@ class Lookup(callbacks.Privmsg):
             except sqlite.DatabaseError:
                 cursor.execute("CREATE TABLE %s (key TEXT, value TEXT)" % name)
                 sql = "INSERT INTO %s VALUES (%%s, %%s)" % name
-                for line in fd:
+                for line in utils.nonCommentNonEmptyLines(fd):
                     line = line.rstrip('\r\n')
-                    if not line or line.startswith('#'):
-                        continue
                     try:
                         (key, value) = self._splitRe.split(line, 1)
                         key = key.replace('\\:', ':')
