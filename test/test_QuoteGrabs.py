@@ -91,7 +91,8 @@ class QuoteGrabsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
                                          prefix=testPrefix))
         self.assertNotError('grab foo')
-        self.assertResponse('quotegrabs get 1', '<foo> test')
+        self.assertRegexp('quotegrabs get 1',
+                          '<foo> test \(Said by: foo!bar@baz on .*?\)')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

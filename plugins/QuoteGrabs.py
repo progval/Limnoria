@@ -210,13 +210,15 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT quote FROM quotegrabs
-                          WHERE id = %s""", id)
+        cursor.execute("""SELECT quote, hostmask, added_at
+                          FROM quotegrabs WHERE id = %s""", id)
         if cursor.rowcount == 0:
             irc.error(msg, 'No quotegrab for id %r' % id)
             return
-        quote = cursor.fetchone()[0]
-        irc.reply(msg, quote)
+        quote, hostmask, timestamp = cursor.fetchone()
+        time_str = time.strftime(conf.humanTimestampFormat,
+                                 time.localtime(float(timestamp)))
+        irc.reply(msg, '%s (Said by: %s on %s)' % (quote, hostmask, time_str))
 
 
 Class = QuoteGrabs
