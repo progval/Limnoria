@@ -57,6 +57,10 @@ conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger,
     'flushImmediately', registry.Boolean(False, """Determines whether channel
     logfiles will be flushed anytime they're written to, rather than being
     buffered by the operating system."""))
+conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger,
+    'stripFormatting', registry.Boolean(True, """Determines whether
+    formatting characters (such as bolding, color, etc.) are removed when
+    writing the logs to disk."""))
 conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'timestamp',
     registry.Boolean(True, """Determines whether the logs for this channel are
     timestamped with the timestamp in supybot.log.timestampFormat."""))
@@ -191,6 +195,8 @@ class ChannelLogger(callbacks.Privmsg):
         log = self.getLog(channel)
         if self.registryValue('timestamp', channel):
             self.timestamp(log)
+        if self.registryValue('stripFormatting', channel):
+            s = ircutils.stripFormatting(s)
         log.write(s)
         if self.registryValue('flushImmediately'):
             log.flush()
