@@ -157,6 +157,23 @@ class Misc(callbacks.Privmsg):
             irc.error(msg, 'There is no plugin named %s, ' \
                            'or that plugin has no commands.' % name)
 
+    def apropos(self, irc, msg, args):
+        """<string>
+
+        Searches for <string> in the commands currently offered by the bot,
+        returning a list of the commands containing that string.
+        """
+        s = privmsgs.getArgs(args)
+        L = []
+        for cb in irc.callbacks:
+            if isinstance(cb, callbacks.Privmsg) and \
+               not isinstance(cb, callbacks.PrivmsgRegexp):
+                for attr in dir(cb):
+                    if s in attr and cb.isCommand(attr):
+                        L.append(callbacks.canonicalName(attr))
+        L.sort()
+        irc.reply(msg, utils.commaAndify(L))
+
     def help(self, irc, msg, args):
         """[<plugin>] <command>
 

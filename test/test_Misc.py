@@ -135,6 +135,10 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testHostmask(self):
         self.assertResponse('hostmask', self.prefix)
 
+    def testApropos(self):
+        self.assertNotError('apropos f')
+        
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
