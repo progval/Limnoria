@@ -92,6 +92,7 @@ def configure(onStart, afterConnect, advanced):
 class Relay(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        self.color = 0
         self.ircs = {}
         self.whois = {}
         self.started = False
@@ -255,6 +256,22 @@ class Relay(callbacks.Privmsg):
         otherIrc.queueMsg(ircmsgs.whois(nick))
         self.whois[(otherIrc, nick)] = (irc, msg, {})
 
+    def relaycolor(self, irc, msg, args):
+        """<0,1,2>
+
+        0 turns coloring of nicks/angle brackets off entirely.  1 colors the
+        nicks, but not the angle brackets.  2 colors both.
+        """
+        try:
+            self.color = int(privmsgs.getArgs(args))
+            if color != 0 and color != 1 and color != 2:
+                raise callbacks.ArgumentError
+        except ValueError:
+            raise callbacks.ArgumentError
+        irc.reply(msg, conf.replySuccess)
+
+    relaycolor = privmsgs.checkCapability(relaycolor, 'admin')
+
     def do311(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
@@ -292,14 +309,23 @@ class Relay(callbacks.Privmsg):
 
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
-        nick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
-        colors = ircutils.canonicalColor(nick, shift=4)
+        if self.color >= 1:
+            nick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
+        if self.color >= 2:
+            colors = ircutils.canonicalColor(nick, shift=4)
         if ircmsgs.isAction(msg):
-            t = ircutils.mircColor('*', *colors)
+            if self.color >= 2:
+                t = ircutils.mircColor('*', *colors)
+            else:
+                t = '*'
             s = '%s %s@%s %s' % (t, nick, network, ircmsgs.unAction(msg))
         else:
-            lt = ircutils.mircColor('<', *colors)
-            gt = ircutils.mircColor('>', *colors)
+            if self.color >= 2:
+                lt = ircutils.mircColor('<', *colors)
+                gt = ircutils.mircColor('>', *colors)
+            else:
+                lt = '<'
+                gt = '>'
             s = '%s%s@%s%s %s' % (lt, nick, network, gt, msg.args[1])
         return s
 
