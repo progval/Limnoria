@@ -517,7 +517,7 @@ class Relay(callbacks.Privmsg):
         if not self.registryValue('hostmasks', channel):
             hostmask = ' '
         else:
-            hostmask = ' (%s) ' % msg.prefix
+            hostmask = ' (%s)' % msg.prefix
         s = '%s%s has left on %s' % (msg.nick, hostmask, network)
         m = ircmsgs.privmsg(channel, s)
         self._sendToOthers(irc, m)
