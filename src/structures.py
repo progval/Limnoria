@@ -38,6 +38,7 @@ Data structures for Python.
 import fix
 
 import types
+import string
 
 class RingBuffer(object):
     """Class to represent a fixed-size ring buffer."""
@@ -340,3 +341,30 @@ class TwoWayDictionary(dict):
         value = self[key]
         dict.__delitem__(self, key)
         dict.__delitem__(self, value)
+
+
+class PersistentDictionary(dict):
+    _trans = string.maketrans('\r\n', '  ')
+    _locals = locals
+    _globals = globals
+    def __init__(self, filename, globals=None, locals=None):
+        mylocals = locals
+        myglobals = globals
+        if mylocals is None:
+            mylocals = self._locals()
+        if myglobals is None:
+            myglobals = self._globals()
+        self.filename = filename
+        try:
+            fd = file(filename, 'r')
+            s = fd.read()
+            fd.close()
+            s.translate(self._trans)
+            super(self.__class__, self).__init__(eval(s, myglobals, mylocals))
+        except IOError:
+            pass
+
+    def close(self):
+        fd = file(self.filename, 'w')
+        fd.write(repr(self))
+        fd.close()

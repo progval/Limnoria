@@ -574,6 +574,19 @@ class TwoWayDictionaryTestCase(unittest.TestCase):
         del d['bar']
         self.failIf('bar' in d)
         self.failIf('foo' in d)
+
+
+class PersistentDictionaryTestCase(unittest.TestCase):
+    def test(self):
+        d = PersistentDictionary('test.dict')
+        d['foo'] = 'bar'
+        d[1] = 2
+        d.close()
+        d1 = PersistentDictionary('test.dict')
+        self.failUnless('foo' in d)
+        self.assertEqual(d['foo'], 'bar')
+        self.failUnless(1 in d)
+        self.assertEqual(d[1], 2)
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
