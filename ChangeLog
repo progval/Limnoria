@@ -1,3 +1,7 @@
+	* Added a reconnect command to the Owner plugin.  It won't work
+	for people using asyncoreDrivers, but those people should be few
+	and far between these days.
+	
 	* Added aol filter in the Filter plugin.
 	
 	* Added Nickometer plugin, a translation of Infobot's Nickometer.

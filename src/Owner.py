@@ -540,6 +540,18 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         else:
             irc.error('There was no callback %s.' % name)
 
+    def reconnect(self, irc, msg, args):
+        """takes no arguments
+
+        Disconnects and then reconnects to the current network.
+        """
+        try:
+            irc.driver.reconnect()
+            irc.replySuccess()
+        except AttributeError: # There's a cleaner way to do this, but I'm lazy.
+            irc.error('I couldn\'t reconnect.  You should restart me instead.')
+        
+
 
 Class = Owner
 
