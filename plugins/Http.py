@@ -447,6 +447,50 @@ class Http(callbacks.Privmsg):
         finally:
             fd.close()
 
+    _filextre = re.compile(
+        r'<strong>Extension:</strong>.*?<tr>.*?</tr>\s+<tr>\s+<td colspan='\
+        r'"2">(?:<a href[^>]+>([^<]+)</a>\s+|([^<]+))</td>\s+<td>'\
+        r'(?:<a href[^>]+>([^<]+)</a>|<img src="images/spacer.gif"(.))',
+        re.I|re.S)
+    def extension(self, irc, msg, args):
+        """<ext>
+
+        Returns the results of querying filext.com for file extenstions that
+        match <ext>.
+        """
+        ext = privmsgs.getArgs(args)
+        invalid = '|<>\^=?/[]";,*'
+        for c in invalid:
+            if c in ext:
+                irc.error(msg, '\'%s\' is an invalid extension character' % c)
+                return
+        s = 'http://www.filext.com/detaillist.php?extdetail=%s&goButton=Go'
+        try:
+            text = webutils.getUrl(s % ext)
+        except webutils.WebError, e:
+            irc.error(msg, str(e))
+        matches = self._filextre.findall(text)
+        #print matches
+        res = []
+        for match in matches:
+            (file1, file2, comp1, comp2) = match
+            if file1:
+                filetype = file1.strip()
+            else:
+                filetype = file2.strip()
+            if comp1:
+                company = comp1.strip()
+            else:
+                company = comp2.strip()
+            if company:
+                res.append('%s\'s %s' % (company, filetype))
+            else:
+                res.append(filetype)
+        if res:
+            irc.reply(msg, utils.commaAndify(res))
+        else:
+            irc.error(msg, 'No matching file extenstions were found.')
+
 Class = Http
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -33,6 +33,12 @@ from testsupport import *
 
 class HttpTest(PluginTestCase, PluginDocumentation):
     plugins = ('Http',)
+    def testExtension(self):
+        self.assertHelp('extension')
+        self.assertRegexp('extension doc', r'Microsoft\'s Word Document')
+        self.assertError('extension zapohd')
+        self.assertError('extension fo<')
+
     def testHeaders(self):
         self.assertError('headers ftp://ftp.cdrom.com/pub/linux')
         self.assertNotError('headers http://www.slashdot.org/')
