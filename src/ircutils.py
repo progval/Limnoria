@@ -45,6 +45,7 @@ import copy
 import sets
 import time
 import random
+import socket
 import string
 import fnmatch
 import operator
@@ -162,7 +163,7 @@ def hostmaskPatternEqual(pattern, hostmask):
 
 _ipchars = string.digits + '.'
 def isIP(s):
-    """Not quite perfect, but close enough until I can find the regexp I want.
+    """Returns whether or not a given string is an IPV4 address.
 
     >>> isIP('255.255.255.255')
     1
@@ -170,16 +171,16 @@ def isIP(s):
     >>> isIP('abc.abc.abc.abc')
     0
     """
-    if s.translate(string.ascii, _ipchars) == '':
-        quads = s.split('.')
-        if len(quads) <= 4:
-            for quad in quads:
-                if int(quad) >= 256:
-                    return False
-            return True
-        else:
-            return False
-    else:
+    try:
+        return bool(socket.inet_aton(s))
+    except socket.error:
+        return False
+
+def isIPV6(s):
+    """Returns whether or not a given string is an IPV6 address."""
+    try:
+        return bool(socket.inet_pton(socket.AF_INET6, s))
+    except socket.error:
         return False
 
 def banmask(hostmask):
@@ -194,7 +195,13 @@ def banmask(hostmask):
     assert isUserHostmask(hostmask)
     host = hostFromHostmask(hostmask)
     if isIP(host):
-        return '*!*@%s.*' % host[:host.rfind('.')]
+        L = host.split('.')
+        L[-1] = '*'
+        return '*!*@' + '.'.join(L)
+    elif isIPV6(host):
+        L = host.split(':')
+        L[-1] = '*'
+        return '*!*@' + ':'.join(L)
     else:
         if '.' in host:
             return '*!*@*%s' % host[host.find('.'):]

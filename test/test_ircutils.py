@@ -130,6 +130,11 @@ class FunctionsTestCase(unittest.TestCase):
         self.failUnless(ircutils.isIP('100.100.100.100'))
         self.failUnless(ircutils.isIP('255.255.255.255'))
 
+    def testIsIPV6(self):
+        f = ircutils.isIPV6
+        self.failUnless(f('2001::'))
+        self.failUnless(f('2001:888:0:1::666'))
+
     def testIsNick(self):
         self.failUnless(ircutils.isNick('jemfinch'))
         self.failUnless(ircutils.isNick('jemfinch0'))
@@ -152,6 +157,7 @@ class FunctionsTestCase(unittest.TestCase):
                                                               msg.prefix),
                                 '%r didn\'t match %r' % (msg.prefix, banmask))
         self.assertEqual(ircutils.banmask('foobar!user@host'), '*!*@host')
+        self.assertEqual(ircutils.banmask('foo!bar@2001::'), '*!*@2001::*')
 
     def testSeparateModes(self):
         self.assertEqual(ircutils.separateModes(['+ooo', 'x', 'y', 'z']),
