@@ -39,83 +39,59 @@ import supybot
 import supybot.plugins as plugins
 
 import os
+import re
 import copy
-import string
 import time
 import random
-
-import sqlite
+import string
 
 import supybot.conf as conf
 import supybot.utils as utils
-import supybot.privmsgs as privmsgs
-import supybot.callbacks as callbacks
 import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
 import supybot.registry as registry
+import supybot.callbacks as callbacks
+
+conf.registerPlugin('Words')
+conf.registerGlobalValue(conf.supybot.plugins.Words, 'file',
+    conf.DataFilename('words', """Determines what file in your data directory
+    will be used by this plugin as its list of words."""))
+conf.registerGroup(conf.supybot.plugins.Words, 'hangman')
+conf.registerChannelValue(conf.supybot.plugins.Words.hangman, 'maxTries',
+    registry.Integer(6, """Determines how many oppurtunities users will have to
+    guess letters in the hangman game."""))
+conf.registerChannelValue(conf.supybot.plugins.Words.hangman, 'prefix',
+    registry.StringWithSpaceOnRight('-= HANGMAN =- ', """Determines what prefix
+    string is placed in front of hangman-related messages sent to the
+    channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Words.hangman, 'timeout',
+    registry.Integer(300, """Determines how long a game must be idle before it
+    will be replaced with a new game."""))
 
 
-class WordsDB(plugins.DBHandler):
-    def makeDb(self, filename):
-        if os.path.exists(filename):
-            db = sqlite.connect(filename)
-        else:
-            db = sqlite.connect(filename, converters={'bool': bool})
-            cursor = db.cursor()
-            cursor.execute("""CREATE TABLE words (
-                              id INTEGER PRIMARY KEY,
-                              word TEXT UNIQUE ON CONFLICT IGNORE,
-                              sorted_word_id INTEGER)""")
-            cursor.execute("""CREATE TABLE sorted_words (
-                              id INTEGER PRIMARY KEY,
-                              word TEXT UNIQUE ON CONFLICT IGNORE)""")
-            cursor.execute("""CREATE INDEX sorted_word_id
-                              ON words (sorted_word_id)""")
-            cursor.execute("""CREATE INDEX sorted_words_word
-                              ON sorted_words (word)""")
-            db.commit()
-        return db
-
-def addWord(db, word, commit=False):
-    word = word.strip().lower()
-    if word.translate(string.ascii, string.ascii_letters):
-        raise ValueError, 'Invalid word: %r' % word
-    L = list(word)
-    L.sort()
-    sorted = ''.join(L)
-    cursor = db.cursor()
-    cursor.execute("""INSERT INTO sorted_words VALUES (NULL, %s)""", sorted)
-    cursor.execute("""INSERT INTO words VALUES (NULL, %s,
-                      (SELECT id FROM sorted_words
-                       WHERE word=%s))""", word, sorted)
-    if commit:
-        db.commit()
-
+def wordsFile():
+    return file(conf.supybot.plugins.Words.file())
 
 class HangmanGame:
     def __init__(self):
-        self.timeout = 0
-        self.timeGuess = 0
         self.tries = 0
+        self.guess = ''
         self.prefix = ''
-        self.guessed = False
         self.unused = ''
         self.hidden = ''
-        self.guess = ''
+        self.timeout = 0
+        self.timeGuess = 0
+        self.guessed = False
 
-    def getWord(self, dbHandler):
-        db = dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute("""SELECT word FROM words ORDER BY random() LIMIT 1""")
-        if cursor.rowcount != 0:
-            word = cursor.fetchone()[0]
-            return word.lower()
-        else:
-            raise callbacks.Error, 'My words database is currently empty.'
+    def getWord(self):
+        fd = wordsFile()
+        try:
+            return random.choice(fd).strip().lower()
+        finally:
+            fd.close()
 
     def letterPositions(self, letter, word):
-        """
-        Returns a list containing the positions of letter in word.
-        """
+        """Returns a list containing the positions of letter in word."""
         lst = []
         for (i, c) in enumerate(word):
             if c == letter:
@@ -135,100 +111,54 @@ class HangmanGame:
                 newWord.append(c)
         return ''.join(newWord)
 
-    def triesLeft(self, n):
+    def triesLeft(self, n=None):
         """
         Returns the number of tries and the correctly pluralized try/tries
         """
+        if n is None:
+            n = self.tries
         return utils.nItems('try', n)
 
     def letterArticle(self, letter):
-        """
-        Returns 'a' or 'an' to match the letter that will come after
-        """
+        """Returns 'a' or 'an' to match the letter that will come after."""
         anLetters = 'aefhilmnorsx'
         if letter in anLetters:
             return 'an'
         else:
             return 'a'
 
-conf.registerPlugin('Words')
-conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanMaxTries',
-    registry.Integer(6, """Determines how many oppurtunities users will have to
-    guess letters in the hangman game."""))
-conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanPrefix',
-    registry.StringWithSpaceOnRight('-= HANGMAN -= ', """Determines what prefix
-    string is placed in front of hangman-related messages sent to the
-    channel."""))
-conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanTimeout',
-    registry.Integer(300, """Determines how long a game must be idle before it
-    will be replaced with a new game."""))
 
 class Words(callbacks.Privmsg):
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        dataDir = conf.supybot.directories.data()
-        self.dbHandler = WordsDB(os.path.join(dataDir, 'Words'))
-
-    def add(self, irc, msg, args):
-        """<word> [<word>]
-
-        Adds a word or words to the database of words.  This database is used
-        for the other commands in this plugin.
-        """
-        if not args:
-            raise callbacks.ArgumentError
-        for word in args:
-            if word.translate(string.ascii, string.ascii_letters):
-                irc.error('Word must contain only letters.')
-                return
-            else:
-                addWord(self.dbHandler.getDb(), word, commit=True)
-        irc.replySuccess()
-
     def crossword(self, irc, msg, args):
         """<word>
 
         Gives the possible crossword completions for <word>; use underscores
         ('_') to denote blank spaces.
         """
+        # XXX: Should we somehow disable this during a hangman game?
         word = privmsgs.getArgs(args).lower()
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        if '%' in word:
-            irc.error('"%" isn\'t allowed in the word.')
-            return
-        cursor.execute("""SELECT word FROM words
-                          WHERE word LIKE %s
-                          ORDER BY word""", word)
-        words = [t[0] for t in cursor.fetchall()]
+        word = re.escape(word)
+        word = word.replace('\\_', '_') # Stupid re.escape escapes underscores!
+        word = word.replace('_', '.')
+        word = '^%s$' % word
+        wordRe = re.compile(word, re.I)
+        words = []
+        fd = wordsFile()
+        try:
+            for line in fd:
+                line = line.strip()
+                if wordRe.match(line):
+                    words.append(line)
+                    if len(words) > 100:
+                        irc.reply('More than 100 words matched.')
+                        return
+        finally:
+            fd.close()
         if words:
+            words.sort()
             irc.reply(utils.commaAndify(words))
         else:
             irc.reply('No matching words were found.')
-
-    def anagram(self, irc, msg, args):
-        """<word>
-
-        Using the words database, determines if a word has any anagrams.
-        """
-        word = privmsgs.getArgs(args).strip().lower()
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        L = list(word.lower())
-        L.sort()
-        sorted = ''.join(L)
-        cursor.execute("""SELECT id FROM sorted_words WHERE word=%s""", sorted)
-        if cursor.rowcount == 0:
-            irc.reply('That word has no anagrams I could find.')
-        else:
-            id = cursor.fetchone()[0]
-            cursor.execute("""SELECT words.word FROM words
-                              WHERE sorted_word_id=%s""", id)
-            if cursor.rowcount > 1:
-                words = [t[0] for t in cursor.fetchall()]
-                irc.reply(utils.commaAndify(words))
-            else:
-                irc.reply('That word has no anagrams I could find.')
 
     ###
     # HANGMAN
@@ -237,7 +167,7 @@ class Words(callbacks.Privmsg):
     validLetters = list(string.ascii_lowercase)
 
     def endGame(self, channel):
-        self.games[channel] = None
+        del self.games[channel]
 
     def letters(self, irc, msg, args):
         """[<channel>]
@@ -250,9 +180,13 @@ class Words(callbacks.Privmsg):
         if channel in self.games:
             game = self.games[channel]
             if game is not None:
-                irc.reply('%s%s' % (game.prefix, ' '.join(game.unused)))
+                self._hangmanReply(irc, channel, ' '.join(game.unused))
                 return
-        irc.error('There is no hangman game going on right now.')
+        irc.error('There is currently no hangman game in %s.' % channel)
+
+    def _hangmanReply(self, irc, channel, s):
+        s = self.registryValue('hangman.prefix', channel=channel) + s
+        irc.reply(s, prefixName=False)
 
     def hangman(self, irc, msg, args):
         """[<channel>]
@@ -268,31 +202,30 @@ class Words(callbacks.Privmsg):
         if self.games[channel] is None:
             self.games[channel] = HangmanGame()
             game = self.games[channel]
-            game.timeout = self.registryValue('hangmanTimeout', channel)
+            game.timeout = self.registryValue('hangman.timeout', channel)
             game.timeGuess = time.time()
-            game.tries = self.registryValue('hangmanMaxTries', channel)
-            game.prefix = self.registryValue('hangmanPrefix', channel)
+            game.tries = self.registryValue('hangman.maxTries', channel)
+            game.prefix = self.registryValue('hangman.prefix', channel)
             game.guessed = False
             game.unused = copy.copy(self.validLetters)
-            game.hidden = game.getWord(self.dbHandler)
+            game.hidden = game.getWord()
             game.guess = '_' * len(game.hidden)
-            irc.reply('%sOkay ladies and gentlemen, you have '
-                      'a %s-letter word to find, you have %s!' %
-                      (game.prefix, len(game.hidden),
-                      game.triesLeft(game.tries)), prefixName=False)
+            self._hangmanReply(irc, channel,
+                               'Okay ladies and gentlemen, you have '
+                               'a %s-letter word to find, you have %s!' %
+                               (len(game.hidden), game.triesLeft()))
         # So, a game is going on, but let's see if it's timed out.  If it is
         # we create a new one, otherwise we inform the user
         else:
             game = self.games[channel]
-            secondsEllapsed = time.time() - game.timeGuess
-            if secondsEllapsed > game.timeout:
+            secondsElapsed = time.time() - game.timeGuess
+            if secondsElapsed > game.timeout:
                 self.endGame(channel)
                 self.hangman(irc, msg, args)
             else:
-                irc.error('Sorry, there is already a game going on.  '
-                          '%s left before timeout.' % \
-                          utils.nItems('second',
-                                       int(game.timeout - secondsEllapsed)))
+                irc.reply('Sorry, there is already a game going on.  '
+                          '%s left before the game times out.' % \
+                          utils.timeElapsed(game.timeout - secondsElapsed))
 
     def guess(self, irc, msg, args):
         """[<channel>] <letter|word>
@@ -314,18 +247,19 @@ class Words(callbacks.Privmsg):
         if letter in game.unused:
             del game.unused[game.unused.index(letter)]
             if letter in game.hidden:
-                irc.reply('%sYes, there is %s %r' % (game.prefix,
-                    game.letterArticle(letter), letter), prefixName=False)
+                self._hangmanReply(irc, channel,
+                                   'Yes, there is %s %r.' %
+                                   (game.letterArticle(letter), letter))
                 game.guess = game.addLetter(letter, game.guess,
-                        game.letterPositions(letter, game.hidden))
+                                            game.letterPositions(letter,
+                                                                 game.hidden))
                 if game.guess == game.hidden:
                     game.guessed = True
             else:
-                irc.reply('%sNo, there is no %s' % (game.prefix,`letter`),
-                        prefixName=False)
+                self._hangmanReply(irc, channel, 'No, there is no %r.' % letter)
                 game.tries -= 1
-            irc.reply('%s%s (%s left)' % (game.prefix, game.guess,
-                game.triesLeft(game.tries)), prefixName=False)
+            self._hangmanReply(irc, channel,
+                               '%s (%s left)' % (game.guess, game.triesLeft()))
         # User input a valid character that has already been tried
         elif letter in self.validLetters:
             irc.error('That letter has already been tried.')
@@ -338,24 +272,25 @@ class Words(callbacks.Privmsg):
                 if letter == game.hidden:
                     game.guessed = True
                 else:
-                    irc.reply('%syou did not guess the correct word '
-                        'and you lose a try' % game.prefix, prefixName=False)
+                    self._hangmanReply(irc, channel,
+                                       'You did not guess the word, so you '
+                                       'lose a try.')
                     game.tries -= 1
             else:
                 # User input an invalid character
                 if len(letter) == 1:
-                    irc.error('That is not a valid character.')
+                    irc.error('That is not a valid letter.')
                 # User input an invalid word (len(try) != len(hidden))
                 else:
                     irc.error('That is not a valid word guess.')
         # Verify if the user won or lost
         if game.guessed and game.tries > 0:
-            irc.reply('%sYou win! The word was indeed %s' %
-                    (game.prefix, game.hidden), prefixName=False)
+            self._hangmanReply(irc, channel,
+                               'You win!  The was indeed %r.' % game.hidden)
             self.endGame(channel)
         elif not game.guessed and game.tries == 0:
-            irc.reply('%sYou lose! The word was %s' %
-                    (game.prefix, game.hidden), prefixName=False)
+            self._hangmanReply(irc, channel,
+                               'You lose!  The was %r.' % game.hidden)
             self.endGame(channel)
     ###
     # END HANGMAN
