@@ -50,6 +50,8 @@ template = '''
 Add the module docstring here.  This will be used by the setup.py script.
 """
 
+__revision__ = "$%s$"
+
 import plugins
 
 import conf
@@ -151,7 +153,7 @@ def main():
 
     python = os.path.normpath(sys.executable)
     fd = file(name + '.py', 'w')
-    fd.write(template % (python, name, name, className, threaded, name))
+    fd.write(template % (python, 'Id', name, name, className, threaded, name))
     fd.close()
     print 'Your new plugin template is %s.py.' % name
 
