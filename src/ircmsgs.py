@@ -373,6 +373,14 @@ def join(channel, key=None, prefix=''):
     if key is None:
         return IrcMsg(prefix=prefix, command='JOIN', args=(channel,))
     else:
+        assert key.translate(string.ascii, string.ascii[128:]) == '' and \
+               '\x00' not in key and \
+               '\r' not in key and \
+               '\n' not in key and \
+               '\f' not in key and \
+               '\t' not in key and \
+               '\v' not in key and \
+               ' ' not in key
         return IrcMsg(prefix=prefix, command='JOIN', args=(channel, key))
 
 def joins(channels, keys=None, prefix=''):
@@ -386,6 +394,15 @@ def joins(channels, keys=None, prefix=''):
                       command='JOIN',
                       args=(','.join(channels),))
     else:
+        for key in keys:
+            assert key.translate(string.ascii, string.ascii[128:]) == '' and \
+                   '\x00' not in key and \
+                   '\r' not in key and \
+                   '\n' not in key and \
+                   '\f' not in key and \
+                   '\t' not in key and \
+                   '\v' not in key and \
+                   ' ' not in key
         return IrcMsg(prefix=prefix,
                       command='JOIN',
                       args=(','.join(channels), ','.join(keys)))
@@ -427,6 +444,11 @@ def nick(nick, prefix=''):
 
 def user(ident, user, prefix=''):
     """Returns a USER with ident ident and user user."""
+    assert '\x00' not in user and \
+           '\r' not in user and \
+           '\n' not in user and \
+           ' ' not in user and \
+           '@' not in user
     return IrcMsg(prefix=prefix, command='USER', args=(ident, '0', '*', user))
 
 def who(hostmaskOrChannel, prefix=''):
