@@ -288,9 +288,13 @@ class UserCommands(callbacks.Privmsg):
             irc.error(msg, conf.replyNoUser)
             return
         if user.checkPassword(password):
-            user.setAuth(msg.prefix)
-            ircdb.users.setUser(id, user)
-            irc.reply(msg, conf.replySuccess)
+            try:
+                user.setAuth(msg.prefix)
+                ircdb.users.setUser(id, user)
+                irc.reply(msg, conf.replySuccess)
+            except ValueError:
+                irc.error(msg, 'Your secure flag is true and your hostmask '
+                               'doesn\'t match any of your known hostmasks.')
         else:
             irc.error(msg, conf.replyIncorrectAuth)
 
