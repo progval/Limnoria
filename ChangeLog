@@ -1,3 +1,5 @@
+	* Updated WordStats to allow removing of tracked words.
+
 	* Updated Seen.seen to accept no arguments and return the last
 	message spoken by anyone.
 

@@ -142,6 +142,18 @@ if sqlite is not None:
         def testAddword(self):
             self.assertError('add lol!')
             self.assertNotError('add lolz0r')
+            self.assertRegexp('wordstats lolz0r', r'1 \'lolz0r\' seen')
+
+        def testRemoveword(self):
+            self.assertError('wordstats remove foo')
+            self.assertNotError('wordstats add foo')
+            self.assertRegexp('wordstats foo', r'1 \'foo\' seen')
+            self.assertRegexp('wordstats foo', r'2 \'foo\'s seen')
+            self.assertNotError('wordstats remove foo')
+            self.assertRegexp('wordstats foo', r'doesn\'t look like a word I')
+            # Verify that we aren't keeping results from before
+            self.assertNotError('add foo')
+            self.assertRegexp('wordstats foo', r'1 \'foo\' seen')
 
         def testWordStatsRankingDisplay(self):
             self.assertNotError('add lol')

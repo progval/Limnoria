@@ -133,6 +133,15 @@ class WordStatsDB(plugins.ChannelUserDB):
             if channel == chan:
                 if word not in d:
                     d[word] = 0
+
+    def delWord(self, channel, word):
+        word = word.lower()
+        if word in self.channelWords[channel]:
+            del self.channelWords[channel][word]
+        for ((chan, id), d) in self.iteritems():
+            if channel == chan:
+                if word in d:
+                    del d[word]
             
     def addMsg(self, msg):
         assert msg.command == 'PRIVMSG'
@@ -190,6 +199,27 @@ class WordStats(callbacks.Privmsg):
         word = word.lower()
         self.db.addWord(channel, word)
         irc.replySuccess()
+
+    def remove(self, irc, msg, args):
+        """[<channel>] <word>
+
+        Removes <word> from the list of words being tracked.  If <channel> is
+        not specified, uses current channel.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        word = privmsgs.getArgs(args)
+        words = self.db.getWords(channel)
+        if words:
+            if word in words:
+                self.db.delWord(channel, word)
+                irc.replySuccess()
+            else:
+                irc.error('%r doesn\'t look like a word I am keeping stats '
+                          'on.' % word)
+                return
+        else:
+            irc.error('I am not currently keeping any word stats.')
+            return
 
     def wordstats(self, irc, msg, args):
         """[<channel>] [<user>] [<word>]
@@ -280,10 +310,15 @@ class WordStats(callbacks.Privmsg):
             try:
                 L = ['%r: %s' % (word, count)
                      for (word,count) in self.db.getUserWordCounts(channel,id)]
-                L.sort()
-                irc.reply(utils.commaAndify(L))
+                if L:
+                    L.sort()
+                    irc.reply(utils.commaAndify(L))
+                else:
+                    irc.error('%r doesn\'t look like a word I\'m keeping stats'
+                              ' on or a user in my database.' % user)
+                    return
             except KeyError:
-                irc.reply('I have no word stats for that person.')
+                irc.error('I have no word stats for that person.')
 Class = WordStats
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
