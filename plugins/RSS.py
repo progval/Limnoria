@@ -101,6 +101,7 @@ class RSS(callbacks.Privmsg):
             self._registerFeed(name)
             url = self.registryValue('feeds.%s' % name)
             self.makeFeedCommand(name, url)
+            self.getFeed(url) # So announced feeds don't announce on startup.
 
     def _registerFeed(self, name, url=''):
         self.registryValue('feeds').add(name)
@@ -110,10 +111,9 @@ class RSS(callbacks.Privmsg):
     def __call__(self, irc, msg):
         callbacks.Privmsg.__call__(self, irc, msg)
         irc = callbacks.SimpleProxy(irc, msg)
-        L = conf.supybot.plugins.RSS.announce.getValues(fullNames=False)
         newFeeds = {}
-        for (channel, v) in L:
-            feeds = v()
+        for channel in irc.state.channels:
+            feeds = self.registryValue('announce', channel)
             for name in feeds:
                 commandName = callbacks.canonicalName(name)
                 if self.isCommand(commandName):
