@@ -38,8 +38,10 @@ from baseplugin import *
 
 import os
 import imp
+import sys
 import crypt
 import random
+import string
 
 # Stupid printing on import...
 from cStringIO import StringIO
