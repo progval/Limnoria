@@ -2,11 +2,11 @@ So here's a general *programming* introduction to what the different modules do
 and what services they provide.  It is, however, only an introduction.  Read
 the modules themselves for a much more detailed explanation :)
 
-fix.py: Just some stuff that needs to be done to make the bot work in some
-        older versions of Python (like 2.2 :))
+fix.py: Stuff that Python should (but doesn't) include by default.
 
 cdb.py: A constant database library, translated from C (and my O'Caml version)
-        More information available at http://cr.yp.to/cdb.html .
+        More information available at http://cr.yp.to/cdb.html.  Not
+        currently used since we switched to PySQLite.
 
 ansi.py: Contains different ANSI color sequences.
          Mostly used by the debug module.
@@ -22,13 +22,11 @@ world.py: Just a dropping off place for some globals that need to be shared
           among all the modules.  It's obviously not used *a lot*, but some
           things seem to fit better here than anywhere else.
 
-bot.py: The topmost module, the one that runs the bot.  It's also probably the
-        'dirtiest' module right now, but I'll add proper command line parsing
-        and clean it up a bit later.
+template.py: A template used by setup.py to create customized runnable
+             Python scripts for individual bots.
 
-privmsgs.py: The privmsg commands that are included by default in the bot.
-             It's probably most useful from a programming standpoint simply so
-             a new programmer can see what commands look like.
+privmsgs.py: Basic stuff relating to callbacks.Privmsg, the base class
+             for most plugins.
 
 callbacks.py: A few basic callbacks providing significant functionality.  
               You'll likely be inheriting from Privmsg quite a bit.
@@ -47,6 +45,12 @@ drivers.py: The baseclass (IrcDriver) for various drivers to drive irclib.Irc
             classes.  Also, the driving mechanism.
 
 asyncoreDrivers.py: The asyncore-based drivers for use with the bot.
+
+socketDrivers.py: The plain old socket-based drivers for use with the
+                  bot.
+
+twistedDrivers.py: The Twisted <http://www.twistedmatrix.com/> drivers
+                   for use with the bot.
 
 ircmsgs.py: The IrcMsg class (get to know it :)) and various functions for
             making the creation of IrcMsgs easier.
