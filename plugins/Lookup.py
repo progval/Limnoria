@@ -272,7 +272,7 @@ class Lookup(callbacks.Privmsg):
         #print 'sql: %s' % sql
         cursor.execute(sql, formats)
         if cursor.rowcount == 0:
-            irc.reply('No %s matched that query.' % utils.pluralize(name))
+            irc.reply('No entries in %s matched that query.' % name)
         else:
             lookups = ['%s: %s' % (item[0], self._shrink(item[1]))
                        for item in cursor.fetchall()]
@@ -297,7 +297,7 @@ class Lookup(callbacks.Privmsg):
                     irc.error(str(e))
                 return
             if cursor.rowcount == 0:
-                irc.error('I couldn\'t find %s in %s' % (key, name))
+                irc.error('I couldn\'t find %s in %s.' % (key, name))
             elif cursor.rowcount == 1:
                 irc.reply(cursor.fetchone()[0])
             else:
