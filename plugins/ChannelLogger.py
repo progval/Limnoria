@@ -61,11 +61,13 @@ class ChannelLogger(irclib.IrcCallback):
         world.flushers.remove(self.flush)
 
     def __call__(self, irc, msg):
-        super(self.__class__, self).__call__(irc, msg)
-        #self.__class__.__bases__[0].__call__(self, irc, msg)
-        if self.lastMsg:
-            self.laststate.addMsg(irc, self.lastMsg)
-        self.lastMsg = msg
+        try:
+            super(self.__class__, self).__call__(irc, msg)
+            if self.lastMsg:
+                self.laststate.addMsg(irc, self.lastMsg)
+        finally:
+            # We must make this always gets updated.
+            self.lastMsg = msg
 
     def reset(self):
         for log in self.logs.itervalues():
