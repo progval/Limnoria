@@ -1002,7 +1002,7 @@ class UserCommands(callbacks.Privmsg):
             return
         irc.reply(msg, '[%s]' % ', '.join(user.capabilities))
 
-    def auth(self, irc, msg, args):
+    def identify(self, irc, msg, args):
         """<name> <password>
 
         Identifies the user as <name>.
@@ -1023,9 +1023,7 @@ class UserCommands(callbacks.Privmsg):
             irc.error(msg, conf.replyIncorrectAuth)
             return
 
-    identify = auth
-
-    def unauth(self, irc, msg, args):
+    def unidentify(self, irc, msg, args):
         """<name> <password>
 
         Un-identifies the user as <name>.
@@ -1043,8 +1041,6 @@ class UserCommands(callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyIncorrectAuth)
-
-    unidentify = unauth
 
     def whoami(self, irc, msg, args):
         """takes no arguments.
