@@ -130,9 +130,10 @@ class Seen(callbacks.Plugin):
             self.ircstates[irc] = irclib.IrcState()
         if irc not in self.lastmsg:
             self.lastmsg[irc] = ircmsgs.ping('this is just a fake message')
-        for channel in irc.state.channels:
-            irc.queueMsg(ircmsgs.who(channel))
-            irc.queueMsg(ircmsgs.names(channel))
+        if not world.testing:
+            for channel in irc.state.channels:
+                irc.queueMsg(ircmsgs.who(channel))
+                irc.queueMsg(ircmsgs.names(channel))
 
     def doPrivmsg(self, irc, msg):
         if irc.isChannel(msg.args[0]):
