@@ -81,7 +81,7 @@ class FreshmeatException(Exception):
 class Http(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = ['geekSnarfer']
-    
+
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
@@ -464,20 +464,29 @@ class Http(callbacks.PrivmsgCommandAndRegexp):
         irc.reply('; '.join(resp))
 
     def futurama(self, irc, msg, args):
-        """takes no arguments
+        """[{bender|fry}]
 
         Returns a random Bender or Fry (from Futurama) quote from Slashdot's
-        HTTP headers.
+        HTTP headers.  If a name is specified, attempts to return a quote
+        specific to that character.
         """
+        name = privmsgs.getArgs(args, required=0, optional=1)
         fd = webutils.getUrlFd('http://slashdot.org/')
         try:
-            if 'X-Bender' in fd.headers:
-                irc.reply('<Bender> %s' % fd.headers['X-Bender'])
-            elif 'X-Fry' in fd.headers:
-                irc.reply('<Fry> %s' % fd.headers['X-Fry'])
+            if not name:
+                if 'X-Bender' in fd.headers:
+                    return '<Bender> %s' % fd.headers['X-Bender']
+                elif 'X-Fry' in fd.headers:
+                    return '<Fry> %s' % fd.headers['X-Fry']
+                else:
+                    return 'Slashdot seems to be running low on Futurama ' \
+                           'quotes.'
             else:
-                irc.reply(
-                        'Slashdot seems to be running low on Futurama quotes.')
+                try:
+                    return '<%s> %s' % (name, fd.headers['X-%s' % name])
+                except KeyError:
+                    return 'Slashdot seems to be running low on %s quotes' %\
+                           name
         finally:
             fd.close()
 
