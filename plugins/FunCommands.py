@@ -481,7 +481,11 @@ class FunCommands(callbacks.Privmsg):
         if n == '':
             n = 1
         else:
-            n = int(n)
+            try:
+                n = int(n)
+            except ValueError:
+                irc.error(msg, '<message number> must be an integer.')
+                return
         n += 1 # To remove the last question asked.
         for msg in reviter(irc.state.history):
             if msg.command == 'PRIVMSG' and msg.args[0] == channel and n == 1:
