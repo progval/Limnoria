@@ -102,5 +102,12 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('load FunDB')
         self.assertNotError('user stats')
 
+    def testUserPluginAndUserList(self):
+        self.prefix = self.prefix1
+        self.assertNotError('register Foo bar')
+        self.assertResponse('user list', 'Foo')
+        self.assertNotError('load Seen')
+        self.assertResponse('user list', 'Foo')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -142,4 +142,9 @@ if sqlite is not None:
             self.assertSnarfNoResponse('what?', 3)
             self.assertRegexp('roses?', 'roses are red')
 
+        def testAddressedQuestions(self):
+            self.assertNotError('hi is <reply>Hello, $who.')
+            self.assertSnarfRegexp('hi', 'Hello')
+            self.assertRegexp('hi', 'Hello')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
