@@ -92,13 +92,15 @@ class IrcCallback(object):
 class IrcMsgQueue(object):
     """Class for a queue of IrcMsgs.  Eventually, it should be smart.
     """
-    __slots__ = ('msgs', 'queue')
+    __slots__ = ('msgs', 'modes', 'kicks', 'lowpriority')
     def __init__(self):
         self.reset()
 
     def reset(self):
+        self.modes = queue()
+        self.kicks = queue()
+        self.lowpriority = queue()
         self.msgs = set()
-        self.queue = []
 
     def enqueueMsg(self, msg):
         if msg in self.msgs:
@@ -106,18 +108,28 @@ class IrcMsgQueue(object):
                 debug.debugMsg('Not adding msg %s to queue' % msg, 'normal')
         else:
             self.msgs.add(msg)
-            self.queue.append(msg)
+            if msg.command == 'MODE':
+                self.modes.enqueue(msg)
+            elif msg.command == 'KICK':
+                self.kicks.enqueue(msg)
+            else:
+                self.lowpriority.enqueue(msg)
 
     def dequeueMsg(self):
-        if self.queue:
-            msg = self.queue.pop(0)
-            self.msgs.remove(msg)
-            return msg
+        if self.modes:
+            msg = self.modes.dequeue()
+        elif self.kicks:
+            msg = self.kicks.dequeue()
+        elif self.lowpriority:
+            msg = self.lowpriority.dequeue()
         else:
-            return None
+            msg = None
+        if msg:
+            self.msgs.remove(msg)
+        return msg
 
     def empty(self):
-        return self.queue == []
+        return not (self.modes or self.kicks or self.lowpriority)
 
 
 ###
