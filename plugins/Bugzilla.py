@@ -168,7 +168,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
             irc.reply(msg, 'Defined bugzillae: %s' % ' '.join(results))
             return    
     def bzSnarfer(self, irc, msg, match):
-        r"(.*)/show_bug.cgi\?id=([0-9]+)"
+        r"(http://\S+)/show_bug.cgi\?id=([0-9]+)"
         if not self.toggles.get('bug', channel=msg.args[0]):
             return
         queryurl = '%s/xml.cgi?id=%s' % (match.group(1), match.group(2))
