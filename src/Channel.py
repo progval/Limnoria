@@ -434,7 +434,9 @@ class Channel(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         c = ircdb.channels.getChannel(channel)
-        irc.reply(msg, ', '.join(c.capabilities))
+        L = c.capabilities[:]
+        L.sort()
+        irc.reply(msg, '[%s]' % ', '.join(L))
 
     def lobotomies(self, irc, msg, args):
         """takes no arguments
