@@ -66,7 +66,7 @@ def getChannel(msg, args):
 def getArgs(args, needed=1, optional=0):
     """Take the needed arguments from args.
 
-    Always return a list of size needed + optional, filling it with however
+    Always returns a list of size needed + optional, filling it with however
     many empty strings is necessary to fill the tuple to the right size.
 
     If there aren't enough args even to satisfy needed, raise an error and
