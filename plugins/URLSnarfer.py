@@ -200,29 +200,35 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         """
         if '--nolimit' not in args:
             args.append('--nolimit')
+        while '--url' in args:
+            args.remove('--url')
         self.lasturl(irc, msg, args)
 
     def lasturl(self, irc, msg, args):
-        """[<channel>] [--{from,with,at,proto,near}=<value>] [--nolimit]
+        """[<channel>] [--{from,with,at,proto,near}=<value>] --{nolimit,url}
 
         Gives the last URL matching the given criteria.  --from is from whom
         the URL came; --at is the site of the URL; --proto is the protocol the
         URL used; --with is something inside the URL; --near is a string in the
         messages before and after the link.  If --nolimit is given, returns as
-        many URLs as can fit in the message. <channel> is only necessary if the
+        many URLs as can fit in the message. --url returns just the url.
+        <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'with=', 'at=',
                                                    'proto=', 'near=',
-                                                   'nolimit'])
+                                                   'nolimit', 'url'])
         criteria = ['1=1']
         formats = []
+        simple = False
         nolimit = False
         for (option, argument) in optlist:
-            option = option[2:] # Strip off the --.
+            option = option.lstrip('-') # Strip off the --.
             if option == 'nolimit':
                 nolimit = True
+            if option == 'url':
+                simple = True
             elif option == 'from':
                 criteria.append('added_by LIKE %s')
                 formats.append(argument)
@@ -262,6 +268,8 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
             if nolimit:
                 urls = ['<%s>' % t[0] for t in cursor.fetchall()]
                 s = ircutils.privmsgPayload(urls, ', ', 400)
+            elif simple:
+                s = cursor.fetchone()[0]
             else:
                 (url, added, added_by) = cursor.fetchone()
                 timestamp = time.strftime('%I:%M %p, %B %d, %Y',
