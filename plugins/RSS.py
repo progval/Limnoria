@@ -114,7 +114,7 @@ class RSS(callbacks.Privmsg):
 
     def __call__(self, irc, msg):
         callbacks.Privmsg.__call__(self, irc, msg)
-        irc = callbacks.IrcObjectProxyRegexp(irc, msg)
+        irc = callbacks.SimpleProxy(irc, msg)
         L = conf.supybot.plugins.RSS.announce.getValues(fullNames=False)
         newFeeds = {}
         for (channel, v) in L:

@@ -824,6 +824,7 @@ class Privmsg(irclib.IrcCallback):
                     del args[0]
                     method = getattr(self, name)
                     try:
+                        realname = '%s.%s' % (canonicalname, name)
                         method(irc, msg, args)
                     except (getopt.GetoptError, ArgumentError):
                         irc.reply(formatArgumentError(method, name))
@@ -939,7 +940,7 @@ class Privmsg(irclib.IrcCallback):
             group.set(value)
 
 
-class IrcObjectProxyRegexp(RichReplyMethods):
+class SimpleProxy(RichReplyMethods):
     def __init__(self, irc, msg):
         self.irc = irc
         self.msg = msg
@@ -959,6 +960,7 @@ class IrcObjectProxyRegexp(RichReplyMethods):
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
 
+IrcObjectProxyRegexp = SimpleProxy
 
 class PrivmsgRegexp(Privmsg):
     """A class to allow a person to create regular expression callbacks.
@@ -981,7 +983,7 @@ class PrivmsgRegexp(Privmsg):
     because it's much more easily coded and maintained.
     """
     flags = re.I
-    Proxy = IrcObjectProxyRegexp
+    Proxy = SimpleProxy
     commandArgs = ['self', 'irc', 'msg', 'match']
     def __init__(self):
         self.__parent = super(PrivmsgRegexp, self)
@@ -1035,7 +1037,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
     flags = re.I
     regexps = ()
     addressedRegexps = ()
-    Proxy = IrcObjectProxyRegexp
+    Proxy = SimpleProxy
     def __init__(self):
         self.__parent = super(PrivmsgCommandAndRegexp, self)
         self.__parent.__init__()
