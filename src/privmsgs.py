@@ -161,6 +161,15 @@ def channel(f):
         ff(irc, msg, args, *L)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
+class UrlSnarfThread(threading.Thread):
+    def __init__(self, *args, **kwargs):
+        assert 'url' in kwargs
+        kwargs['name'] = 'Thread #%s (for snarfing %s)' % \
+                         (world.threadsSpawned, kwargs.pop('url'))
+        world.threadsSpawned += 1
+        threading.Thread.__init__(self, *args, **kwargs)
+        self.setDaemon(True)
+        
 _snarfed = structures.smallqueue()
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
@@ -188,13 +197,10 @@ def urlSnarfer(f):
                 f(self, irc, msg, match, *L)
             else:
                 L = list(L)
-                world.threadsSpawned += 1
-                t = threading.Thread(target=f, args=[self,irc,msg,match]+L)
-                t.setDaemon(True)
+                t = UrlSnarfThread(target=f,args=[self,irc,msg,match]+L,url=url)
                 t.start()
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
     return newf
-
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
     """A small subclass of callbacks.Privmsg that checks self.capability
