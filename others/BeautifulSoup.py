@@ -99,6 +99,7 @@ Current release:
 
 1.0 "So rich and green": Initial release.
 
+Retreived from: http://www.crummy.com/software/BeautifulSoup/
 """
 
 __author__ = "Leonard Richardson (leonardr@segfault.org)"
