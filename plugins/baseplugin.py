@@ -138,6 +138,7 @@ class PeriodicFileDownloader(object):
             name = '%s #%s' % (filename, self.downloadedCounter[filename])
             t = threading.Thread(target=self._downloadFile, name=name,
                                  args=(filename, url, f))
+            t.setDaemon(True)
             t.start()
             world.threadsSpawned += 1
         
