@@ -509,11 +509,11 @@ class PrivmsgRegexp(Privmsg):
     threaded = False # Again, like Privmsg...
     flags = re.I
     onlyFirstMatch = False
+    commandArgs = ['self', 'irc', 'msg', 'match']
     def __init__(self):
         Privmsg.__init__(self)
         self.Proxy = IrcObjectProxyRegexp
         self.res = []
-        self.commandArgs = ['self', 'irc', 'msg', 'match']
         #for name, value in self.__class__.__dict__.iteritems():
         for name, value in self.__class__.__dict__.items():
             value = getattr(self, name)
