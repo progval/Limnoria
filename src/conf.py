@@ -491,6 +491,6 @@ supybot.register('plugins') # This will be used by plugins, but not here.
 ###############################
 ###############################
 ###############################
-version ='0.77.1+cvs'
+version ='0.77.2'
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

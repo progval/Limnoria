@@ -46,7 +46,6 @@ srcFiles = glob.glob(os.path.join('src', '*.py'))
 otherFiles = glob.glob(os.path.join('others', '*.py'))
 pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
 
-# This is a terrible hack.
 ## previousInstall = os.path.join(get_python_lib(), 'supybot')
 ## if os.path.exists(previousInstall):
 ##     try:
@@ -59,7 +58,7 @@ pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
 setup(
     # Metadata
     name='supybot',
-    version='0.77.1+cvs',
+    version='0.77.2',
     url='http://supybot.sf.net/',
     author='Jeremy Fincher',
     author_email='jemfinch@users.sf.net',
