@@ -44,6 +44,7 @@ import sys
 import supybot.log as supylog
 import supybot.conf as conf
 import supybot.ansi as ansi
+import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
 
 _drivers = {}
