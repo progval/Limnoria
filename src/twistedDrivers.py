@@ -79,10 +79,9 @@ class SupyIrcProtocol(LineReceiver):
         else:
             drivers.log.disconnect(self.factory.currentServer, errorMsg(r))
         if self.irc.zombie:
-            # Let's take and take and take until our IRC is DESTROYED!
-            x = 1
-            while x:
-                x = self.irc.takeMsg()
+            self.factory.continueTrying = False
+            while self.irc.takeMsg():
+                continue
         else:
             self.irc.reset()
 
