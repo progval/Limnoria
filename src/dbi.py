@@ -35,10 +35,10 @@ import csv
 import math
 import sets
 import random
-from itertools import ilen
 
 import supybot.cdb as cdb
 import supybot.utils as utils
+from supybot.utils.iter import ilen
 
 class Error(Exception):
     """General error for this module."""

@@ -40,6 +40,7 @@ import string
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.utils.iter import all
 import supybot.ircutils as ircutils
 
 ###
