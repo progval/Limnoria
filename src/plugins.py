@@ -41,7 +41,6 @@ import types
 import random
 import urllib2
 import threading
-import cPickle as pickle
 
 import fix
 import cdb
@@ -53,6 +52,7 @@ import ircdb
 import ircutils
 import privmsgs
 import callbacks
+import structures
 
 try:
     import sqlite
@@ -242,15 +242,18 @@ class ConfigurableDictionary(object):
         self.helps = {}
         self.types = {}
         self.defaults = {}
-        self.originalNames = []
+        self.originalNames = {}
+        self.unparsedValues = {}
         self.channels = ircutils.IrcDict()
         for (name, type, default, help) in seq:
-            self.originalNames.append(name)
+            if ',' in name:
+                raise ValueError, 'There can be no commas in the name.'
+            original = name
             name = callbacks.canonicalName(name)
+            self.originalNames[name] = original
             self.helps[name] = utils.normalizeWhitespace(help)
             self.types[name] = type
             self.defaults[name] = default
-        self.originalNames.sort()
 
     def get(self, name, channel=None):
         name = callbacks.canonicalName(name)
@@ -264,6 +267,11 @@ class ConfigurableDictionary(object):
 
     def set(self, name, value, channel=None):
         name = callbacks.canonicalName(name)
+        if name not in self.originalNames:
+            raise KeyError, name
+        if ',' in name:
+            raise ValueError, 'There can be no commas in the name.'
+        self.unparsedValues[(channel, name)] = value
         if channel is not None:
             d = self.channels.setdefault(channel, {})
             d[name] = self.types[name](value)
@@ -271,11 +279,12 @@ class ConfigurableDictionary(object):
             self.defaults[name] = self.types[name](value)
 
     def help(self, name):
-        name = callbacks.canonicalName(name)
-        return self.helps[name]
+        return self.helps[callbacks.canonicalName(name)]
 
     def names(self):
-        return self.originalNames
+        L = self.originalNames.values()
+        L.sort()
+        return L
 
 class ConfigurableTypeError(TypeError):
     pass
@@ -322,17 +331,33 @@ class Configurable(object):
     def __init__(self):
         className = self.__class__.__name__
         self.filename = os.path.join(conf.confDir,'%s-configurable'%className)
-        try:
-            if os.path.exists(self.filename):
-                configurables = pickle.load(file(self.filename, 'rb'))
-                if configurables.names() == self.configurables.names():
-                    self.configurables = configurables
-        except Exception, e:
-            debug.msg('%s raised when trying to unpickle %s configurables' %
-                      (debug.exnToString(e), className))
+        if os.path.exists(self.filename):
+            fd = file(self.filename)
+            for line in fd:
+                line = line.rstrip()
+                (channel, name, value) = line.split(',', 2)
+                if channel == 'default':
+                    channel = None
+                try:
+                    self.configurables.set(name, eval(value), channel)
+                except ConfigurableTypeError, e:
+                    name = '%s.%s' % (self.__class__.__name__, name)
+                    s = 'Couldn\'t read configurable %s from file: %s'%(name,e)
+                    debug.msg(s)
+                except KeyError, e:
+                    s = 'Configurable variable %s doesn\'t exist anymore'%name
+                    debug.msg(s)
 
     def die(self):
-        pickle.dump(self.configurables, file(self.filename, 'wb'), -1)
+        fd = file(self.filename, 'w')
+        L = self.configurables.unparsedValues.items()
+        L.sort()
+        for ((channel, name), value) in L:
+            if channel is None:
+                channel = 'default'
+            name = self.configurables.originalNames[name]
+            fd.write('%s,%s,%r\n' % (channel, name, value))
+        fd.close()
 
     def config(self, irc, msg, args):
         """[<channel>] [<name>] [<value>]
