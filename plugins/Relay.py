@@ -263,9 +263,10 @@ class Relay(callbacks.Privmsg):
         nicks, but not the angle brackets.  2 colors both.
         """
         try:
-            self.color = int(privmsgs.getArgs(args))
+            color = int(privmsgs.getArgs(args))
             if color != 0 and color != 1 and color != 2:
                 raise callbacks.ArgumentError
+            self.color = color
         except ValueError:
             raise callbacks.ArgumentError
         irc.reply(msg, conf.replySuccess)
@@ -297,7 +298,7 @@ class Relay(callbacks.Privmsg):
         if len(channels) == 1:
             channels = channels[0]
         else:
-            channels = ', and '.join([', '.join(channels[:-1]), channels[-1]])
+            channels = utils.commaAndify(channels)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
             signon = time.ctime(float(d['317'].args[3]))
