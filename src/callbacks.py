@@ -804,9 +804,6 @@ class PrivmsgCommandAndRegexp(Privmsg):
             method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
             self.addressedRes.append((r, method))
-        self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
-        self.addressedRes.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__,
-                                                              m2.__name__))
 
     def callCommand(self, f, irc, msg, *L, **kwargs):
         try:
