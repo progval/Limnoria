@@ -62,7 +62,6 @@ from baseplugin import *
 import os
 import gc
 import re
-import sys
 import new
 import md5
 import sha
@@ -383,7 +382,9 @@ class FunCommands(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
         for m in reviter(irc.state.history):
-            if m.command == 'PRIVMSG' and m.nick == nick:
+            if m.command == 'PRIVMSG' and \
+               m.nick == nick and \
+               m.args[0] == channel:
                 if ircmsgs.isAction(m):
                     irc.reply(msg, '* %s %s' % (nick, ircmsgs.unAction(m)))
                 else:
