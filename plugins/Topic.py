@@ -67,7 +67,7 @@ example = utils.wrapLines("""
 class Topic(callbacks.Privmsg):
     topicSeparator = ' || '
     topicFormatter = '%s (%s)'
-    topicUnformatter = re.compile('(.*) \((.*)\)')
+    topicUnformatter = re.compile('(.*) \((\S+)\)')
     def addtopic(self, irc, msg, args):
         """[<channel>] <topic>
 
@@ -106,9 +106,11 @@ class Topic(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         capability = ircdb.makeChannelCapability(channel, 'topic')
         if ircdb.checkCapability(msg.prefix, capability):
-            topics = irc.state.getTopic(channel).split(self.topicSeparator)
-            random.shuffle(topics)
-            newtopic = self.topicSeparator.join(topics)
+            newtopic = irc.state.getTopic(channel)
+            while newtopic = irc.state.getTopic(channel):
+                topics = irc.state.getTopic(channel).split(self.topicSeparator)
+                random.shuffle(topics)
+                newtopic = self.topicSeparator.join(topics)
             irc.queueMsg(ircmsgs.topic(channel, newtopic))
         else:
             irc.error(msg, conf.replyNoCapability % capability)
