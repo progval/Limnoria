@@ -64,28 +64,40 @@ def genHeader(title, meta=''):
     <body><div>
     ''' % (title, meta)
 
-def genNavbar(path):
+def genNavbar(path, cActive=True):
     download = 'http://sourceforge.net/project/showfiles.php?group_id=58965'
     bug = 'http://sourceforge.net/tracker/?func=add&amp;group_id=58965&amp;'\
           'atid=489447'
+    if cActive:
+        command = '<li>\n<a href="%scommands.html">Commands Index</a>\n</li>'\
+                  % path[3:]
+    else:
+        command = '<li class="plain">\nCommands Index\n</li>'
     return '''
         <div id="nav">
-          <div>
-            <a href="%s">Home Page</a>
-          </div>
-          <div>
+        <ul>
+          <li>
+            <a href="%s">Home</a>
+          </li>
+          <li>
+            <a href="http://sourceforge.net/projects/supybot/">Sourceforge Project</a>
+          </li>
+          <li>
             <a href="%s">
               Download
             </a>
-          </div>
-          <div>
+          </li>
+          <li>
             <a
             href="%s">
               Submit a Bug
             </a>
-          </div>
+          </li>
+          %s
+        </ul>
+        <p style="clear:both; margin:0; padding:0;"></p>
         </div>
-        ''' % (path, download, bug)
+        ''' % (path, download, bug, command)
 
 def genFooter():
     return '''
@@ -116,7 +128,7 @@ def prepIndex():
         %s
         <div class="maintitle">Supybot Plugin Documentation Index</div>
         %s
-        <div class="whitebox">
+        <div class="mainbody">
         ''' % (genHeader('Supybot Plugin Documentation'), genNavbar('../'))))
     fd.close()
 
@@ -153,6 +165,7 @@ def makePluginDocumentation(pluginWindow):
     %s
     <div class="plugintitle">%s</div>
     %s
+    <div class="mainbody" style="padding: 0;">
     <table>
     <tr id="headers"><td>Command</td><td>Args</td><td>
     Detailed Help</td></tr>
@@ -188,11 +201,12 @@ def makePluginDocumentation(pluginWindow):
     fd.write('</table>\n')
     fd.write(textwrap.dedent('''
     </div>
+    </div>
     <div style="text-align: center;">
     <br />
     <a href="%s.html">&lt;- %s</a> |
-    <a href="../plugins.html">Plugin Index</a> |
-    <a href="../commands.html">Command Index</a> |
+    <a href="../plugins.html">Plugins Index</a> |
+    <a href="../commands.html">Commands Index</a> |
     <a href="%s.html">%s -&gt;</a>
     %s
     ''' % (prev, cprev, next, cnext, genFooter())))
@@ -220,8 +234,10 @@ def makeCommandsIndex():
     %s
     <div class="maintitle">%s</div>
     %s
-    <div class="whitebox" style="text-align: center;">
-    ''' % (genHeader(title), title, genNavbar('../'))))
+    <div class="mainbody" style="text-align: center;">
+    ''' % (genHeader(title),
+           title,
+           genNavbar('../', cActive=False))))
     commands = [c for c in commandDict.iterkeys()]
     commands.sort()
     for i in ascii_lowercase:
