@@ -188,7 +188,6 @@ for (name, s) in registry._cache.iteritems():
 class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
     List = ircutils.IrcSet
     Value = ValidChannel
-
     def removeChannel(self, channel):
         removals = []
         for c in self.value:
@@ -521,6 +520,15 @@ registerGlobalValue(supybot.directories, 'plugins',
     'config supybot.directories.plugins [config supybot.directories.plugins],
     newPluginDirectory'."""))
 
+class DataFilename(registry.String):
+    def __call__(self):
+        v = registry.String.__call__(self)
+        dataDir = supybot.directories.data()
+        if not v.startswith(dataDir):
+            v = os.path.basename(v)
+            v = os.path.join(dataDir, v)
+        return v
+    
 registerGroup(supybot, 'plugins') # This will be used by plugins, but not here.
 
 ###
