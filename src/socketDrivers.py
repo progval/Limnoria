@@ -110,7 +110,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         except socket.error, e:
             self._handleSocketError(e)
             return
-        self._sendIfMsgs()
+        if not self.irc.zombie:
+            self._sendIfMsgs()
 
     def connect(self, **kwargs):
         self.reconnect(reset=False, **kwargs)
