@@ -44,11 +44,11 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
 
     def testBugs(self):
         self.assertHelp('bugs')
-        self.assertNotError('defaultproject supybot')
+        self.assertNotError('config defaultproject supybot')
         self.assertNotError('bugs')
         self.assertError('bugs alkjfi83fa8')
         self.assertNotError('bugs gaim')
-        self.assertNotError('defaultproject')
+        self.assertNotError('config defaultproject')
 
     def testRfe(self):
         m = self.getMsg('rfes gaim')
@@ -58,22 +58,22 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
 
     def testRfes(self):
         self.assertHelp('rfes')
-        self.assertNotError('defaultproject gaim')
+        self.assertNotError('config defaultproject gaim')
         self.assertNotError('rfes')
         self.assertError('rfes alkjfi83hfa8')
         self.assertNotError('rfes gaim')
-        self.assertNotError('defaultproject')
+        self.assertNotError('config defaultproject')
 
     def testDefaultproject(self):
         self.assertHelp('bugs')
-        self.assertNotError('defaultproject supybot')
+        self.assertNotError('config defaultproject supybot')
         self.assertNotError('bugs')
         m = self.getMsg('bugs')
         n = re.search('#(\d+)', m.args[1]).group(1)
         self.assertNotError('bug supybot %s' % n)
         # This should have the same effect as calling 'bug supybot %s'
         self.assertNotError('bug %s' % n)
-        self.assertNotError('defaultproject')
+        self.assertNotError('config defaultproject ""')
 
     def testSnarfer(self):
         s = r'.*Status.*: \w+'
@@ -106,17 +106,6 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNoResponse('https://sourceforge.net/tracker/?'\
             'group_id=58965&atid=489447')
 
-    def testToggle(self):
-        s = r'Status.*: \w+'
-        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235', s)
-        self.assertNotError('Sourceforge toggle tracker off')
-        self.failIf(self.irc.takeMsg())
-        self.assertNoResponse('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235')
-        self.assertNotError('Sourceforge toggle tracker on')
-        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235', s)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

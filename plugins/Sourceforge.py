@@ -61,7 +61,7 @@ def configure(onStart, afterConnect, advanced):
         print 'supybot sees such a URL, he will parse the web page for'
         print 'information and reply with the results.\n'
         if yn('Do you want the Sourceforge snarfer enabled by default?') =='n':
-            onStart.append('Sourceforge toggle tracker off')
+            onStart.append('Sourceforge config tracker-snarfer off')
 
     print 'The bugs and rfes commands of the Sourceforge plugin can be set'
     print 'to query a default project when no project is specified.  If this'
@@ -72,12 +72,12 @@ def configure(onStart, afterConnect, advanced):
     if yn('Do you want to specify a default project?') == 'y':
         project = anything('Project name:')
         if project:
-            onStart.append('Sourceforge defaultproject %s' % project)
+            onStart.append('Sourceforge config defaultproject %s' % project)
 
 class TrackerError(Exception):
     pass
 
-class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
+class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     """
     Module for Sourceforge stuff. Currently contains commands to query a
     project's most recent bugs and rfes.
@@ -97,13 +97,15 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     _status = re.compile(r'<b>(Status):</b> <a.+?<br>(.+?)</td>', _reopts)
     _res =(_resolution, _assigned, _submitted, _priority, _status)
 
-    toggles = plugins.ToggleDictionary({'tracker' : True})
-    project = None
+    configurables = plugins.ConfigurableDictionary(
+        [('tracker-snarfer', plugins.ConfigurableTypes.bool, True,
+          """Determines whether the bot will reply to SF.net Tracker URLs in
+          the channel with a nice summary of the tracker item."""),
+         ('default-project', plugins.ConfigurableTypes.str, '',
+          """Sets the default project (used by the bugs/rfes commands in the
+          case that no explicit project is given).""")]
+    )
     _projectURL = 'http://sourceforge.net/projects/'
-
-    def __init__(self):
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        plugins.Toggleable.__init__(self)
 
     def _formatResp(self, text, num=''):
         """
@@ -118,17 +120,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         else:
             for item in ifilter(None, self._infoRe.findall(text)):
                 yield (item[0], utils.htmlToText(item[2]))
-
-    def defaultproject(self, irc, msg, args):
-        """[<project>]
-
-        Sets the default project to be used with bugs and rfes. If a project
-        is not specified, clears the default project.
-        """
-        project = privmsgs.getArgs(args, needed=0, optional=1)
-        self.project = project
-        irc.reply(msg, conf.replySuccess)
-    defaultproject = privmsgs.checkCapability(defaultproject, 'admin')
 
     def _getTrackerURL(self, project, regex):
         try:
@@ -187,9 +178,10 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         Defaults to searching for bugs in the project set by defaultproject.
         """
         project = privmsgs.getArgs(args, needed=0, optional=1)
-        project = project or self.project
         if not project:
-            raise callbacks.ArgumentError
+            project = self.configurables.get('default-project', msg.args[0])
+            if not project:
+                raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._bugLink)
         except TrackerError:
@@ -210,8 +202,11 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                 int(project)
             except ValueError:
                 irc.error(msg, '"%s" is not a proper bugnumber.' % project)
+                return
             bugnum = project
-            project = self.project
+            project = self.configurables.get('default-project', msg.args[0])
+            if not project:
+                raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._bugLink)
         except TrackerError:
@@ -227,9 +222,10 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         Defaults to searching for RFEs in the project set by defaultproject.
         """
         project = privmsgs.getArgs(args, needed=0, optional=1)
-        project = project or self.project
         if not project:
-            raise callbacks.ArgumentError
+            project = self.configurables.get('default-project', msg.args[0])
+            if not project:
+                raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._rfeLink)
         except TrackerError, e:
@@ -250,8 +246,11 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                 int(project)
             except ValueError:
                 irc.error(msg, '"%s" is not a proper rfenumber.' % project)
-            rfenum = str(int(project))
-            project = self.project
+                return
+            rfenum = project
+            project = self.configurables.get('default-project', msg.args[0])
+            if not project:
+                raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._rfeLink)
         except TrackerError:
@@ -265,7 +264,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     def sfSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/" \
         r".*\?(?:&?func=detail|&?aid=\d+|&?group_id=\d+|&?atid=\d+){4}"
-        if not self.toggles.get('tracker', channel=msg.args[0]):
+        if not self.configurables.get('tracker-snarfer', channel=msg.args[0]):
             return
         try:
             url = match.group(0)
@@ -293,6 +292,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                 ircutils.bold(num), '; '.join(resp)), prefixName = False)
         except urllib2.HTTPError, e:
             debug.msg(e.msg())
+    sfSnarfer = privmsgs.urlSnarfer(sfSnarfer)
 
 Class = Sourceforge
 
