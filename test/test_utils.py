@@ -177,6 +177,9 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(L, ['z', 'AD', 'abc'])
         utils.sortBy(str.lower, L)
         self.assertEqual(L, ['abc', 'AD', 'z'])
+        L = ['supybot', 'Supybot']
+        utils.sortBy(str.lower, L)
+        self.assertEqual(L, ['supybot', 'Supybot'])
         
     def testNItems(self):
         self.assertEqual(utils.nItems(1, 'tool', 'crazy'), '1 crazy tool')

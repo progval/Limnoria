@@ -323,10 +323,10 @@ def be(i):
 def sortBy(f, L, cmp=cmp):
     """Uses the decorate-sort-undecorate pattern to sort L by function f."""
     for (i, elt) in enumerate(L):
-        L[i] = (f(elt), elt)
+        L[i] = (f(elt), i, elt)
     L.sort(cmp)
     for (i, elt) in enumerate(L):
-        L[i] = L[i][1]
+        L[i] = L[i][2]
 
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
