@@ -151,6 +151,8 @@ class Relay(callbacks.Privmsg):
     def do376(self, irc, msg):
         if self.channels:
             irc.queueMsg(ircmsgs.joins(self.channels))
+    do377 = do376
+    do422 = do376
 
     def startrelay(self, irc, msg, args):
         """<network abbreviation for current server>

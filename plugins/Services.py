@@ -94,6 +94,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             # JOIN messages also being sent on 376.
             irc.sendMsg(ircmsgs.privmsg(self.nickserv, identify))
     do377 = do376
+    do422 = do376
 
     _owned = re.compile('nick.*(?<!not)(?:registered|protected|owned)')
     def doNotice(self, irc, msg):
