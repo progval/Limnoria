@@ -49,6 +49,17 @@ import ircmsgs
 import privmsgs
 import callbacks
 
+def configure(onStart, afterConnect, advanced):
+    from questions import expect, anything, something, yn
+    onStart.append('load BadWords')
+    while yn('Would you like to add some bad words?') == 'y':
+        words = anything('What words? (separate individual words by spaces)')
+        onStart.append('addbadwords %s' % words)
+
+nastyChars = '!@#$' * 256
+def subber(m):
+    return nastyChars[:len(m.group(1))]
+
 class BadWords(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -57,13 +68,13 @@ class BadWords(callbacks.Privmsg):
     def outFilter(self, irc, msg):
         if hasattr(self, 'regexp') and msg.command == 'PRIVMSG':
             s = msg.args[1]
-            s = self.regexp.sub('!@#$', s)
+            s = self.regexp.sub(subber, s)
             return ircmsgs.privmsg(msg.args[0], s)
         else:
             return msg
 
     def makeRegexp(self):
-        self.regexp = re.compile(r'\b(?:'+'|'.join(self.badwords)+r')\b', re.I)
+        self.regexp = re.compile(r'\b('+'|'.join(self.badwords)+r')\b', re.I)
 
     def addbadword(self, irc, msg, args):
         "<word>"
