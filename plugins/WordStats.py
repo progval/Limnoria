@@ -33,7 +33,7 @@
 Keeps statistics on who says what words in a channel.
 """
 
-__revision__ = "$Id"
+__revision__ = "$Id$"
 
 import os
 import csv
