@@ -36,6 +36,7 @@ Allows 'aliases' for other commands.
 from baseplugin import *
 
 import re
+import new
 import sets
 
 import conf
@@ -144,6 +145,7 @@ def makeNewAlias(name, alias):
             args = args[biggestDollar:]
             alias_ = atRe.sub(replace, alias_)
         self.Proxy(irc.irc, msg, callbacks.tokenize(alias_))
+    #f = new.function(f.func_code, f.func_globals, alias)
     f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \
                 (utils.nItems(biggestDollar, 'argument'), alias)
     #f = new.function(f.func_code, f.func_globals, name)
