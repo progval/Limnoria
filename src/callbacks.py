@@ -32,6 +32,7 @@
 from fix import *
 
 import re
+import new
 import time
 import shlex
 import inspect
@@ -153,16 +154,15 @@ class ArgumentError(Error):
     pass
 
 class Tokenizer:
-    quotes = '"`'
-    nonbacktickquotes = '"'
+    _env = {'__builtins__': new.module('__builtins__')}
     validChars = string.ascii[33:].translate(string.ascii, '"`[]')
     def __init__(self, tokens=''):
         self.validChars = self.validChars.translate(string.ascii, tokens)
 
     def handleToken(self, token):
-        while token and token[0] in self.quotes and token[-1] == token[0]:
+        while token and token[0] == '"' and token[-1] == token[0]:
             if len(token) > 1:
-                token = eval('"%s"' % token[1:-1])
+                token = eval('"%s"' % token[1:-1], self._env, self._env)
             else:
                 break
         return token
@@ -184,7 +184,7 @@ class Tokenizer:
     def tokenize(self, s):
         lexer = shlex.shlex(StringIO(s))
         lexer.commenters = ''
-        lexer.quotes = self.quotes
+        lexer.quotes = '"'
         lexer.wordchars = self.validChars
         args = []
         while True:
