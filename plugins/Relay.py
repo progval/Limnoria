@@ -306,7 +306,6 @@ class Relay(callbacks.Privmsg):
         except ValueError:
             raise callbacks.ArgumentError
         irc.reply(msg, conf.replySuccess)
-
     relaycolor = privmsgs.checkCapability(relaycolor, 'admin')
 
     def do311(self, irc, msg):
