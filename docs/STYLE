@@ -74,7 +74,9 @@ SQL statements in code should put SQL words in ALL CAPS:
   SELECT quote FROM quotes ORDER BY random() LIMIT 1
 
 All plugins should have test cases written for them.  Even if it
-doesn't actually test anything but just subclasses
-test.PluginDocumentation, it's good to have the test there so there's
-a place to add more tests later (and so we can be sure that all
-plugins are adequately documented).
+doesn't actually test anything but just exists, it's good to have the
+test there so there's a place to add more tests later (and so we can
+be sure that all plugins are adequately documented.
+
+All uses of eval() that expect to get integrated in Supybot must be
+approved by jemfinch, no exceptions.
