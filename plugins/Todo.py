@@ -196,7 +196,7 @@ class Todo(callbacks.Privmsg):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args, user, optlist, globs):
-        """[--{regexp}=<value>] [<glob> <glob> ...]
+        """[--{regexp} <value>] [<glob> <glob> ...]
 
         Searches your todos for tasks matching <glob>.  If --regexp is given,
         its associated value is taken as a regexp and matched against the

@@ -332,7 +332,7 @@ class Lookup(callbacks.Privmsg):
         setattr(self.__class__, name, f)
 
     def search(self, irc, msg, args):
-        """[--{regexp}=<value>] [--values] <name> <glob>
+        """[--{regexp} <value>] [--values] <name> <glob>
 
         Searches the domain <name> for lookups matching <glob>.  If --regexp
         is given, its associated value is taken as a regexp and matched

@@ -397,7 +397,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args):
-        """[<channel>] [--values] [--{regexp}=<value>] [<glob>]
+        """[<channel>] [--values] [--{regexp} <value>] [<glob>]
 
         Searches the keyspace for keys matching <glob>.  If --regexp is given,
         it associated value is taken as a regexp and matched against the keys.

@@ -290,7 +290,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     lucky = wrap(lucky, [many('something')])
 
     def google(self, irc, msg, args, optlist, text):
-        """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
+        """<search> [--{language,restrict} <value>] [--{notsafe,similar}]
 
         Searches google.com for the given string.  As many results as can fit
         are included.  --language accepts a language abbreviation; --restrict

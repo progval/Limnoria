@@ -111,7 +111,7 @@ class Debian(callbacks.Privmsg,
         callbacks.Privmsg.die(self)
 
     def file(self, irc, msg, args, optlist, glob):
-        """[--{regexp,exact}=<value>] [<glob>]
+        """[--{regexp,exact} <value>] [<glob>]
 
         Returns packages in Debian that includes files matching <glob>. If
         --regexp is given, returns packages that include files matching the
@@ -242,7 +242,7 @@ class Debian(callbacks.Privmsg,
 
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
     def incoming(self, irc, msg, args, optlist, globs):
-        """[--{regexp,arch}=<value>] [<glob> ...]
+        """[--{regexp,arch} <value>] [<glob> ...]
 
         Checks debian incoming for a matching package name.  The arch
         parameter defaults to i386; --regexp returns only those package names

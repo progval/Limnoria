@@ -261,7 +261,7 @@ class Quotes(callbacks.Privmsg):
             irc.reply(utils.commaAndify(quotes))
 
     def search(self, irc, msg, args):
-        """[<channel>] --{id,regexp,from,with}=<value> ]
+        """[<channel>] --{id,regexp,from,with} <value> ]
 
         Returns quote(s) matching the given criteria.  --from is who added the
         quote; --id is the id number of the quote; --regexp is a regular
