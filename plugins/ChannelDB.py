@@ -40,6 +40,7 @@ from baseplugin import *
 import re
 import sets
 import time
+import getopt
 
 import sqlite
 
@@ -115,6 +116,11 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
                           modes INTEGER,
                           topics INTEGER
                           )""")
+        cursor.execute("""CREATE TABLE nick_seen (
+                          name TEXT UNIQUE ON CONFLICT REPLACE,
+                          last_seen TIMESTAMP,
+                          last_msg TEXT
+                          )""")
         cursor.execute("""INSERT INTO channel_stats
                           VALUES (0, 0, 0, 0, 0,
                                   0, 0, 0, 0, 0, 0)""")
@@ -139,6 +145,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
             isAction = ircmsgs.isAction(msg)
             frowns = len(frownre.findall(s))
             smileys = len(smileyre.findall(s))
+            s = ircmsgs.prettyPrint(msg)
             cursor.execute("""UPDATE channel_stats
                               SET smileys=smileys+%s,
                                   frowns=frowns+%s,
@@ -147,6 +154,8 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
                                   msgs=msgs+1,
                                   actions=actions+%s""",
                            smileys, frowns, chars, words, int(isAction))
+            cursor.execute("""INSERT INTO nick_seen VALUES (%s, %s, %s)""",
+                           msg.nick, int(time.time()), s)
             try:
                 name = ircdb.users.getUser(msg.prefix).name
             except KeyError:
@@ -160,7 +169,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
                                   NULL, %s, %s, %s, %s, %s,
                                   %s, %s, 1, %s,
                                   0, 0, 0, 0, 0, 0 )""",
-                               name, int(time.time()), msg.args[1],
+                               name, int(time.time()), s,
                                smileys, frowns, chars, words, int(isAction))
             else:
                 cursor.execute("""UPDATE user_stats SET
@@ -267,32 +276,37 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         db.commit()
 
     def seen(self, irc, msg, args):
-        """[<channel>] <nick>
+        """[<channel>] [--user] <name>
 
-        Returns the last time <nick> was seen and what <nick> was last seen
-        saying.  <channel> is only necessary if the message isn't sent on the
+        Returns the last time <name> was seen and what <name> was last seen
+        saying.  --user will look for user <name> instead of using <name> as
+        a nick (registered users, remember, can be recognized under any number
+        of names) <channel> is only necessary if the message isn't sent on the
         channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        name = privmsgs.getArgs(args)
-        if not ircdb.users.hasUser(name):
-            try:
-                hostmask = irc.state.nickToHostmask(name)
-                name = ircdb.users.getUser(hostmask).name
-            except KeyError:
-                irc.error(msg, conf.replyNoUser)
-                return
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT last_seen, last_msg FROM user_stats
-                          WHERE name=%s""", name)
+        (optlist, rest) = getopt.getopt(args, '', ['user'])
+        name = privmsgs.getArgs(rest)
+        if '--user' in optlist:
+            if not ircdb.users.hasUser(name):
+                try:
+                    hostmask = irc.state.nickToHostmask(name)
+                    name = ircdb.users.getUser(hostmask).name
+                    table = 'user_stats'
+                except KeyError:
+                    irc.error(msg, conf.replyNoUser)
+                    return
+        else:
+            table = 'nick_seen'
+        sql = """SELECT last_seen, last_msg FROM %s WHERE name=%%s""" % table
+        cursor.execute(sql, name)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'I have no stats for that user.')
+            irc.reply(msg, 'I have not seen %s.' % name)
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
-            if m.startswith('\x01ACTION') and m.endswith('\x01'):
-                m = '* %s%s' % (name, m[7:-1])
             s = '%s was last seen here %s ago saying %s' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
             irc.reply(msg, s)
