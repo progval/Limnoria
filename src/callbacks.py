@@ -71,13 +71,14 @@ def addressed(nick, msg, prefixChars=None, whenAddressedByNick=None):
     """
     assert msg.command == 'PRIVMSG'
     (target, payload) = msg.args
-    registryPrefixChars = conf.supybot.prefixChars
-    if ircutils.isChannel(target):
-        registryPrefixChars = conf.supybot.prefixChars.get(target)
+    def get(group):
+        if ircutils.isChannel(target):
+            group = group.get(target)
+        return group()
     if prefixChars is None:
-        prefixChars = registryPrefixChars()
+        prefixChars = get(conf.supybot.prefixChars)
     if whenAddressedByNick is None:
-        whenAddressedByNick = conf.supybot.reply.whenAddressedByNick()
+        whenAddressedByNick = get(conf.supybot.reply.whenAddressedByNick)
     nick = ircutils.toLower(nick)
     # Ok, let's see if it's a private message.
     if ircutils.nickEqual(target, nick):
