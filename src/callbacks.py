@@ -259,13 +259,16 @@ class IrcObjectProxy:
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args):
         #debug.printf('__init__: %s' % args)
-        self.irc = irc
-        self.msg = msg
-        self.args = args
-        self.counter = 0
-        self.finalEvaled = False
-        world.commandsProcessed += 1
-        self.evalArgs()
+        if not args:
+            irc.reply(msg, '[]')
+        else:
+            self.irc = irc
+            self.msg = msg
+            self.args = args
+            self.counter = 0
+            self.finalEvaled = False
+            world.commandsProcessed += 1
+            self.evalArgs()
 
     def findCallback(self, commandName):
         # Mostly for backwards compatibility now.
