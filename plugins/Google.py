@@ -44,7 +44,7 @@ import socket
 import urllib
 import xml.sax
 
-import SOAP
+import SOAPpy
 import google
 
 import supybot.registry as registry
@@ -116,17 +116,18 @@ def search(log, queries, **kwargs):
             raise callbacks.Error, 'Connection timed out to Google.com.'
         else:
             raise callbacks.Error, 'Error connecting to Google.com.'
-    except SOAP.HTTPError, e:
+    except SOAPpy.HTTPError, e:
         log.info('HTTP Error accessing Google: %s', e)
         raise callbacks.Error, 'Error connecting to Google.com.'
-    except SOAP.faultType, e:
-        log.exception('Uncaught SOAP error:')
+    except SOAPpy.faultType, e:
+        if 'Invalid authorization key' not in e.faultstring:
+            log.exception('Unexpected SOAPpy error:')
         raise callbacks.Error, 'Invalid Google license key.'
     except xml.sax.SAXException, e:
         log.exception('Uncaught SAX error:')
         raise callbacks.Error, 'Google returned an unparsable response.  ' \
                                'The full traceback has been logged.'
-    except SOAP.Error, e:
+    except SOAPpy.Error, e:
         log.exception('Uncaught SOAP exception in Google.search:')
         raise callbacks.Error, 'Error connecting to Google.com.'
 
