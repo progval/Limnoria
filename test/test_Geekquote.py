@@ -37,19 +37,18 @@ class GeekQuoteTestCase(ChannelPluginTestCase, PluginDocumentation):
         ChannelPluginTestCase.setUp(self)
         conf.supybot.plugins.Geekquote.geekSnarfer.setValue(False)
 
-    def testGeekquote(self):
-        self.assertNotError('geekquote')
-        self.assertNotError('geekquote 4848')
-        # It's not an error, it just truncates at the first non-number
-        #self.assertError('geekquote 48a8')
-        self.assertError('geekquote asdf')
-
-    def testQdb(self):
-        self.assertNotError('qdb')
-        self.assertNotError('qdb 13600')
-        self.assertError('qdb qwerty')
-
     if network:
+        def testGeekquote(self):
+            self.assertNotError('geekquote')
+            self.assertNotError('geekquote 4848')
+            # It's not an error, it just truncates at the first non-number
+            #self.assertError('geekquote 48a8')
+            self.assertError('geekquote asdf')
+
+        def testQdb(self):
+            self.assertNotError('qdb')
+            self.assertNotError('qdb 13600')
+            self.assertError('qdb qwerty')
 
         def testSnarfer(self):
             try:
