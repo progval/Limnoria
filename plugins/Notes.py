@@ -139,7 +139,7 @@ class Notes(callbacks.Privmsg):
         self.db.close()
         del self.db
 
-    def doJoin(self, irc, msg):
+    def doPrivmsg(self, irc, msg):
         try:
             name = ircdb.users.getUserName(msg.prefix)
         except KeyError:
@@ -157,18 +157,15 @@ class Notes(callbacks.Privmsg):
                                 notes.to_id=users.id AND
                                 read=0""", name)
         unread = int(cursor.fetchone()[0])
-        s = 'You have %s unread %s; ' \
+        s = 'You have %s; ' \
             '%s that I haven\'t told you about before now..' % \
-            (unread, utils.pluralize(unread, 'note'), unnotified)
+            (utils.nItems(unread, 'note', 'unread'), unnotified)
         irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
         cursor.execute("""UPDATE notes
                           SET notified=1
                           WHERE notes.to_id=(SELECT id
                                              FROM users
                                              WHERE name=%s)""", name)
-
-    def doPrivmsg(self, irc, msg):
-        self.doJoin(irc, msg)
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
 
     def sendnote(self, irc, msg, args):
