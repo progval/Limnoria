@@ -191,9 +191,11 @@ class Group(object):
 
 
 class Value(Group):
-    def __init__(self, default, help, showDefault=True, **kwargs):
+    def __init__(self, default, help,
+                 private=False, showDefault=True, **kwargs):
         Group.__init__(self, **kwargs)
         self.default = default
+        self.private = private 
         self.showDefault = showDefault
         self.help = utils.normalizeWhitespace(help.strip())
         self.setValue(default)

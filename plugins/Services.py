@@ -75,7 +75,7 @@ conf.registerChannelValue(conf.supybot.plugins.Services, 'nick',
     services."""))
 conf.registerChannelValue(conf.supybot.plugins.Services, 'password',
     registry.String('', """Determines what password the bot will use with
-    services."""))
+    services.""", private=True))
 conf.registerChannelValue(conf.supybot.plugins.Services, 'NickServ',
     ValidNickOrEmptyString('', """Determines what nick the 'NickServ' service
     has."""))

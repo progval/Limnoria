@@ -162,7 +162,14 @@ class Config(callbacks.Privmsg):
         name = self._canonicalizeName(name)
         wrapper = getWrapper(name)
         if hasattr(wrapper, 'value'):
-            irc.reply(str(wrapper))
+            if not wrapper.private:
+                irc.reply(str(wrapper))
+            else:
+                capability = getCapability(name)
+                if ircdb.checkCapability(msg.prefix, capability):
+                    irc.reply(str(wrapper))
+                else:
+                    irc.errorNoCapability(capability)
         else:
             irc.error('That registry variable has no value.  Use the list '
                       'command in this plugin to see what values are '
