@@ -174,7 +174,11 @@ class RSS(callbacks.Privmsg):
                 self.lastRequest[url] = time.time()
             finally:
                 self.currentlyDownloading.discard(url)
-        return self.cachedFeeds[url]
+        try:
+            return self.cachedFeeds[url]
+        except KeyError:
+            self.lastRequest[url] = 0
+            return {'items': {'title': 'Unable to download feed.'}}
 
     def getHeadlines(self, feed):
         return [utils.htmlToText(d['title'].strip()) for d in feed['items']]
