@@ -26,7 +26,7 @@ def system(sh, errmsg=None):
         errmsg = sh
     ret = os.system(sh)
     if not ret:
-        error(errmsg + '  (error code: %s)')
+        error(errmsg + '  (error code: %s)' % ret)
     
 if __name__ == '__main__':
     if len(sys.argv) < 2:
