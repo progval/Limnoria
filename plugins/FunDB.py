@@ -400,7 +400,8 @@ class FunDB(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
         try:
-            (nick, reason) = map(' '.join, itersplit(nick.split(' '), 'for'.__eq__))
+            (nick, reason) = map(' '.join,
+                             utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             nick = ' '.join(args)
             reason = ""
@@ -437,7 +438,8 @@ class FunDB(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
         try:
-            (nick, reason) = map(' '.join, itersplit(nick.split(' '), 'for'.__eq__))
+            (nick, reason) = map(' '.join,
+                             utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             nick = ' '.join(args)
             reason = ""
