@@ -33,13 +33,16 @@
 
 import textwrap
 
-def expect(prompt, possibilities, recursed=False):
+def expect(prompt, possibilities, recursed=False, doindent=True):
     """Prompt the user with prompt, allow them to choose from possibilities.
 
     If possibilities is empty, allow anything.
     """
     originalPrompt = prompt
-    indent = ' ' * ((len(originalPrompt)%68) + 2)
+    if doindent:
+        indent = ' ' * ((len(originalPrompt)%68) + 2)
+    else:
+        indent = ''
     if recursed:
         print 'Sorry, that response was not an option.'
     if possibilities:
@@ -57,7 +60,8 @@ def expect(prompt, possibilities, recursed=False):
         if s in possibilities:
             return s
         else:
-            return expect(originalPrompt, possibilities, recursed=True)
+            return expect(originalPrompt, possibilities, recursed=True,
+                          doindent=doindent)
     else:
         return s.strip()
 
@@ -91,7 +95,7 @@ def something(prompt):
 
 def yn(prompt):
     """Allow only 'y' or 'n' from the user."""
-    return expect(prompt, ['y', 'n'])
+    return expect(prompt, ['y', 'n'], doindent=False)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
