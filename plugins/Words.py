@@ -121,8 +121,8 @@ class HangmanGame:
         Returns a list containing the positions of letter in word.
         """
         lst = []
-        for i in xrange(len(word)):
-            if word[i] == letter:
+        for (i, c) in enumerate(word):
+            if c == letter:
                 lst.append(i)
         return lst
 
@@ -132,11 +132,11 @@ class HangmanGame:
         by letter.
         """
         newWord = []
-        for i in xrange(len(word)):
+        for (i, c) in enumerate(word):
             if i in pos:
                 newWord.append(letter)
             else:
-                newWord.append(word[i])
+                newWord.append(c)
         return ''.join(newWord)
 
     def triesLeft(self, n):
@@ -149,31 +149,29 @@ class HangmanGame:
         """
         Returns 'a' or 'an' to match the letter that will come after
         """
-        anLetter = 'aefhilmnorsx'
-        if letter in anLetter:
+        anLetters = 'aefhilmnorsx'
+        if letter in anLetters:
             return 'an'
         else:
             return 'a'
 
 conf.registerPlugin('Words')
 conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanMaxTries',
-    registry.Integer(6, """Number of tries to guess a word"""))
+    registry.Integer(6, """Determines how many oppurtunities users will have to
+    guess letters in the hangman game."""))
 conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanPrefix',
-    registry.String('{HM}', """Prefix string of the hangman plugin"""))
+    registry.StringWithSpaceOnRight('-= HANGMAN -= ', """Determines what prefix
+    string is placed in front of hangman-related messages sent to the
+    channel."""))
 conf.registerChannelValue(conf.supybot.plugins.Words, 'hangmanTimeout',
-    registry.Integer(300, """Time before a game times out"""))
+    registry.Integer(300, """Determines how long a game must be idle before it
+    will be replaced with a new game."""))
 
-class Words(callbacks.Privmsg, configurable.Mixin):
+class Words(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         dataDir = conf.supybot.directories.data()
         self.dbHandler = WordsDB(os.path.join(dataDir, 'Words'))
-        try:
-            dictfile = os.path.join(dataDir, 'dict')
-            self.wordList = file(dictfile).readlines() 
-            self.gotDictFile = True
-        except IOError:
-            self.gotDictFile = False
 
     def add(self, irc, msg, args):
         """<word> [<word>]
@@ -241,17 +239,19 @@ class Words(callbacks.Privmsg, configurable.Mixin):
     ###
     dicturl = 'http://www.unixhideout.com/freebsd/share/dict/words'
     games = ircutils.IrcDict()
-    validLetters = [chr(c) for c in range(ord('a'), ord('z')+1)]
+    validLetters = list(string.ascii_lowercase)
 
     def endGame(self, channel):
         self.games[channel] = None
 
     def letters(self, irc, msg, args):
-        """takes no arguments
+        """[<channel>]
 
-        Returns unused letters
+        Returns the unused letters that can be guessed in the hangman game
+        in <channel>.  <channel> is only necessary if the message isn't sent in
+        the channel itself.
         """
-        channel = msg.args[0]
+        channel = privmsgs.getChannel(msg, args)
         if channel in self.games:
             game = self.games[channel]
             if game is not None:
@@ -260,11 +260,12 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         irc.error('There is no hangman game going on right now.')
 
     def hangman(self, irc, msg, args):
-        """takes no arguments
+        """[<channel>]
 
-        Creates a new game of hangman
+        Creates a new game of hangman in <channel>.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
-        channel = msg.args[0]
+        channel = privmsgs.getChannel(msg, args)
         # Fill our dictionary of games
         if channel not in self.games:
             self.games[channel] = None
@@ -272,10 +273,10 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         if self.games[channel] is None:
             self.games[channel] = HangmanGame()
             game = self.games[channel]
-            game.timeout = conf.supybot.plugins.Words.hangmanTimeout()
+            game.timeout = self.registryValue('hangmanTimeout', channel)
             game.timeGuess = time.time()
-            game.tries = conf.supybot.plugins.Words.hangmanMaxTries()
-            game.prefix = conf.supybot.plugins.Words.hangmanPrefix() + ' '
+            game.tries = self.registryValue('hangmanMaxTries', channel)
+            game.prefix = self.registryValue('hangmanPrefix', channel)
             game.guessed = False
             game.unused = copy.copy(self.validLetters)
             game.hidden = game.getWord(self.dbHandler)
@@ -294,22 +295,22 @@ class Words(callbacks.Privmsg, configurable.Mixin):
                 self.hangman(irc, msg, args)
             else:
                 irc.error('Sorry, there is already a game going on.  '
-                        '%s left before timeout.' % utils.nItems('second',
-                            int(game.timeout - secondsEllapsed)))
+                          '%s left before timeout.' % \
+                          utils.nItems('second',
+                                       int(game.timeout - secondsEllapsed)))
 
     def guess(self, irc, msg, args):
-        """<single letter>|<whole word>
+        """[<channel>] <letter|word>
 
         Try to guess a single letter or the whole word.  If you try to guess
         the whole word and you are wrong, you automatically lose.
         """
-        channel = msg.args[0]
+        channel = privmsgs.getChannel(msg, args)
         try:
             game = self.games[channel]
+            if game is None:
+                raise KeyError
         except KeyError:
-            irc.error('There is no hangman game going on right now.')
-            return
-        if game is None:
             irc.error('There is no hangman game going on right now.')
             return
         letter = privmsgs.getArgs(args)
@@ -318,8 +319,8 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         if letter in game.unused:
             del game.unused[game.unused.index(letter)]
             if letter in game.hidden:
-                irc.reply('%sYes, there is %s %s' % (game.prefix,
-                    game.letterArticle(letter), `letter`), prefixName=False)
+                irc.reply('%sYes, there is %s %r' % (game.prefix,
+                    game.letterArticle(letter), letter), prefixName=False)
                 game.guess = game.addLetter(letter, game.guess,
                         game.letterPositions(letter, game.hidden))
                 if game.guess == game.hidden:
