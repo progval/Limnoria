@@ -44,15 +44,11 @@ import privmsgs
 import callbacks
 
 class Moobot(callbacks.Privmsg):
-    def __init__(self):
-        super(self.__class__, self).__init__()
-        #callbacks.Privmsg.__init__(self)
-        if not self._revcode:
-            for (k, v) in self._code.iteritems():
-                self._revcode[v.strip()] = k
-
     def cool(self, irc, msg, args):
-        "<something>"
+        """<something>
+
+        Says something's cool.  Yeah. :cool: Supybot :cool: :)
+        """
         something = privmsgs.getArgs(args)
         irc.reply(msg, ':cool: %s :cool:' % something)
 
@@ -99,10 +95,13 @@ class Moobot(callbacks.Privmsg):
         " " : " "
     }
 
-    _revcode = {}
+    _revcode = dict([(y.strip(), x) for (x, y) in _code.items()])
 
     def unmorse(self, irc, msg, args):
-        "<morse code text>"
+        """<morse code text>
+
+        Does the reverse of the morse/ditdaw command.
+        """
         text = privmsgs.getArgs(args)
         L = []
         for code in text.split():
@@ -113,7 +112,10 @@ class Moobot(callbacks.Privmsg):
         irc.reply(msg, ''.join(L))
 
     def morse(self, irc, msg, args):
-        "<text>"
+        """<text>
+
+        Gives the more code equivalent of a given string.
+        """
         text = privmsgs.getArgs(args)
         L = []
         for c in text.upper():
@@ -137,7 +139,11 @@ class Moobot(callbacks.Privmsg):
         irc.reply(msg, ''.join(L))
 
     def mime(self, irc, msg, args):
-        "<text>"
+        """<text>
+
+        Encodes text in base64.  Here for compatibility with Moobot; this and
+        other encodings are available in the FunCommands module.
+        """
         text = privmsgs.getArgs(args)
         s = base64.encodestring(text).strip()
         if ircutils.validArgument(s):
@@ -147,7 +153,11 @@ class Moobot(callbacks.Privmsg):
                        'Try a smaller string.')
 
     def unmime(self, irc, msg, args):
-        "<text>"
+        """<text>
+
+        Decodes base64 encoded text.  Here for compatibility with Moobot; this
+        and other encodings are available in the FunCommands module.
+        """
         text = privmsgs.getArgs(args)
         s = base64.decodestring(text)
         if ircutils.validArgument(s):
@@ -157,7 +167,12 @@ class Moobot(callbacks.Privmsg):
 
     _stack = []
     def stack(self, irc, msg, args):
-        "<'push'|'pop'|'size'|'xray'> <text>"
+        """<'push'|'pop'|'size'|'xray'> <text>
+
+        Maintains a stack of various strings; push pushes onto the stack,
+        pop pops off it, size gives its current size, and xray takes an
+        index into the stack and gives that element.
+        """
         (command, value) = privmsgs.getArgs(args, optional=1)
         if command == 'pop':
             if self._stack:
