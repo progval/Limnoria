@@ -487,7 +487,7 @@ class Factoids(callbacks.Privmsg):
         try:
             factoids = self.db.select(channel, values, predicates, L)
             if isinstance(factoids, basestring):
-                self.whatis(irc, msg, factoids)
+                self.whatis(irc, msg, [factoids])
             elif factoids is None:
                 irc.reply('More than 100 keys matched that query; '
                           'please narrow your query.')
