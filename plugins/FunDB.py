@@ -87,10 +87,6 @@ tableCreateStatements = {
                  word TEXT UNIQUE ON CONFLICT IGNORE
                  )""",
               """CREATE INDEX sorted_words_word ON sorted_words (word)"""),
-    'uptime': ("""CREATE TABLE uptime (
-                  started INTEGER UNIQUE ON CONFLICT IGNORE,
-                  ended INTEGER
-                  )""",)
     }
     
 def makeDb(dbfilename, replace=False):
@@ -107,15 +103,6 @@ def makeDb(dbfilename, replace=False):
                 cursor.execute(sql)
     db.commit()
     return db
-
-def uptimeEnder(started):
-    def endUptime():
-        db = makeDb(dbFilename)
-        cursor = db.cursor()
-        cursor.execute("""UPDATE uptime SET ended=%s WHERE started=%s""",
-                       int(time.time()), started)
-        db.commit()
-    return endUptime
 
 def addWord(db, word, commit=False):
     word = word.strip().lower()
@@ -142,41 +129,11 @@ class FunDB(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         self.db = makeDb(dbFilename)
         cursor = self.db.cursor()
-        started = int(world.startedAt)
-        cursor.execute("""INSERT INTO uptime VALUES (%s, NULL)""", started)
-        self.db.commit()
-        world.flushers.append(uptimeEnder(started))
 
     def die(self):
         self.db.commit()
         self.db.close()
         del self.db
-
-    def bestuptime(self, irc, msg, args):
-        """takes no arguments.
-
-        Returns the highest uptimes attained by the bot.
-        """
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT started, ended FROM uptime
-                          WHERE started <> 0 AND ended NOTNULL 
-                          ORDER BY ended-started DESC""")
-        L = []
-        lenSoFar = 0
-        counter = cursor.rowcount
-        if cursor.rowcount == 0:
-            irc.reply(msg, 'I don\'t have enough data to answer that.')
-            return
-        while counter and lenSoFar < 400:
-            (started, ended) = map(int, cursor.fetchone())
-            s = '%s; up for %s' % \
-                (time.strftime(conf.humanTimestampFormat,
-                               time.localtime(ended)),
-                 utils.timeElapsed(ended-started))
-            lenSoFar += len(s)
-            counter -= 1
-            L.append(s)
-        irc.reply(msg, '; '.join(L))
 
     def insult(self, irc, msg, args):
         """<nick>

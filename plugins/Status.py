@@ -36,10 +36,13 @@ current status and statistics.
 import plugins
 
 import os
+import sys
 import sets
 import time
 import threading
+from itertools import islice, ifilter
 
+import conf
 import utils
 import world
 import privmsgs
@@ -58,6 +61,49 @@ example = utils.wrapLines("""
 Add an example IRC session using this module here.
 """)
 
+class UptimeDB(object):
+    def __init__(self, filename='uptimes'):
+        self.filename = os.path.join(conf.dataDir, filename)
+        if os.path.exists(self.filename):
+            fd = file(self.filename)
+            s = fd.read()
+            fd.close()
+            s = s.replace('\n', ' ')
+            self.uptimes = eval(s)
+        else:
+            self.uptimes = []
+
+    def die(self):
+        fd = file(self.filename, 'w')
+        fd.write(repr(self.uptimes))
+        fd.write('\n')
+        fd.close()
+
+    def add(self):
+        if not any(lambda t: t[0] == world.startedAt, self.uptimes):
+            self.uptimes.append((world.startedAt, None))
+
+    def top(self, n=3):
+        def decorator(t):
+            if t[1] is None:
+                return 0.0
+            else:
+                t[1] - t[0]
+        def invertCmp(cmp):
+            def f(x, y):
+                return -cmp(x, y)
+            return f
+        def notNone(t):
+            return t[1] is not None
+        utils.sortBy(decorator, self.uptimes, cmp=invertCmp(cmp))
+        return list(islice(ifilter(notNone, self.uptimes), 3))
+
+    def update(self):
+        for (i, t) in enumerate(self.uptimes):
+            if t[0] == world.startedAt:
+                self.uptimes[i] = (t[0], time.time())
+        
+
 class Status(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -65,6 +111,8 @@ class Status(callbacks.Privmsg):
         self.recvdMsgs = 0
         self.sentBytes = 0
         self.recvdBytes = 0
+        self.uptimes = UptimeDB()
+        self.uptimes.add()
 
     def inFilter(self, irc, msg):
         self.recvdMsgs += 1
@@ -75,6 +123,29 @@ class Status(callbacks.Privmsg):
         self.sentMsgs += 1
         self.sentBytes += len(str(msg))
         return msg
+
+    def die(self):
+        self.uptimes.update()
+        self.uptimes.die()
+
+    def bestuptime(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the highest uptimes attained by the bot.
+        """
+        L = self.uptimes.top()
+        if not L:
+            irc.error(msg, 'I don\'t have enough data to answer that.')
+            return
+        def format((started, ended)):
+            return '%s until %s; up for %s' % \
+                   (time.strftime(conf.humanTimestampFormat,
+                                  time.localtime(started)),
+                    time.strftime(conf.humanTimestampFormat,
+                                  time.localtime(ended)),
+                    utils.timeElapsed(ended-started))
+        L = map(format, L)
+        irc.reply(msg, utils.commaAndify(L))
 
     def netstats(self, irc, msg, args):
         """takes no arguments

@@ -32,7 +32,13 @@
 from test import *
 
 class StatusTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Status',)
+    plugins = ('Status', 'OwnerCommands')
+    def testBestuptime(self):
+        self.assertError('bestuptime')
+        self.assertNotError('unload Status')
+        self.assertNotError('load Status')
+        self.assertNotError('bestuptime')
+
     def testNetstats(self):
         self.assertNotError('netstats')
 
