@@ -102,26 +102,11 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         """
         def normalize(s):
             return utils.normalizeWhitespace(s.replace('\n\n', '.'))
-        funcname = privmsgs.getArgs(args)
-        if funcname.translate(string.ascii, self.modulechars) != '':
-            irc.error('That\'s not a valid module or function name.')
-            return
-        if '.' in funcname:
-            parts = funcname.split('.')
-            if len(parts) == 2 and parts[0] in __builtins__:
-                (objectname, methodname) = parts
-                obj = __builtins__[objectname]
-                if hasattr(obj, methodname):
-                    obj = getattr(obj, methodname)
-                    if hasattr(obj, '__doc__'):
-                        irc.reply(msg, normalize(obj.__doc__))
-                    else:
-                        irc.reply(msg, '%s has no documentation' % funcname)
-                else:
-                    irc.reply(msg, '%s has no method %s' % (parts[0],parts[1]))
+        def getModule(name, path=pythonPath):
+            if name in sys.modules:
+                return sys.modules[name]
             else:
-                functionName = parts.pop()
-                path = pythonPath
+                parts = name.split('.')
                 for name in parts:
                     try:
                         info = imp.find_module(name, path)
@@ -131,31 +116,57 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                             info[0].close()
                     except ImportError:
                         if parts == ['os', 'path']:
-                            newmodule = os.path
+                            return os.path
                         else:
-                            irc.error(msg, 'No such module %s exists.' % name)
-                            return
-                if hasattr(newmodule, functionName):
-                    f = getattr(newmodule, functionName)
-                    if hasattr(f, '__doc__'):
-                        s = f.__doc__.replace('\n\n', '. ')
-                        s = utils.normalizeWhitespace(s)
-                        irc.reply(msg, s)
+                            return None
+                return newmodule
+        name = privmsgs.getArgs(args)
+        if name.translate(string.ascii, self.modulechars) != '':
+            irc.error('That\'s not a valid module or function name.')
+            return
+        if '.' in name:
+            (moduleName, funcName) = rsplit(name, '.', 1)
+            if moduleName in __builtins__:
+                obj = __builtins__[moduleName]
+                if hasattr(obj, funcName):
+                    obj = getattr(obj, funcName)
+                    if hasattr(obj, '__doc__'):
+                        irc.reply(msg, normalize(obj.__doc__))
                     else:
-                        irc.error(msg, 'That function has no documentation.')
+                        irc.reply(msg, '%s has no documentation' % name)
                 else:
-                    irc.error(msg, 'That function doesn\'t exist.')
+                    s = '%s has no method %s' % (moduleName, funcName)
+                    irc.reply(msg, s)
+            elif moduleName:
+                newmodule = getModule(moduleName)
+                if newmodule is None:
+                    irc.error(msg, 'No module %s exists.' % moduleName)
+                else: 
+                    if hasattr(newmodule, funcName):
+                        f = getattr(newmodule, funcName)
+                        if hasattr(f, '__doc__'):
+                            s = normalize(f.__doc__)
+                            irc.reply(msg, s)
+                        else:
+                            irc.error(msg, '%s has no documentation.' % name)
+                    else:
+                        s = '%s has no function %s' % (moduleName, funcName)
+                        irc.error(msg, s)
         else:
-            try:
-                f = __builtins__[funcname]
+            if name in sys.modules:
+                newmodule = sys.modules[name]
+                if hasattr(newmodule, '__doc__') and newmodule.__doc__:
+                    irc.reply(msg, normalize(newmodule.__doc__))
+                else:
+                    irc.reply(msg, 'Module %s has no documentation.' % name)
+            elif name in __builtins__:
+                f = __builtins__[name]
                 if hasattr(f, '__doc__'):
                     irc.reply(msg, normalize(f.__doc__))
                 else:
                     irc.error(msg, 'That function has no documentation.')
-            except SyntaxError:
-                irc.error(msg, 'That\'s not a function!')
-            except KeyError:
-                irc.error(msg, 'That function doesn\'t exist.')
+            else:
+                irc.error(msg, 'No function or module %s exists.' % name)
                 
     _these = [str(s) for s in this.s.decode('rot13').splitlines() if s]
     _these.pop(0) # Initial line (The Zen of Python...)

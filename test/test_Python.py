@@ -39,6 +39,7 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
         self.assertError('pydoc foobar')
         self.assertError('pydoc assert')
         self.assertNotError('pydoc str')
+        self.assertNotError('pydoc copy')
         self.assertNotError('pydoc list.reverse')
         if os.name == 'posix':
             self.assertNotRegexp('pydoc crypt.crypt', 'NameError')
