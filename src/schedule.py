@@ -79,6 +79,7 @@ class Schedule(drivers.IrcDriver):
         assert name not in self.events
         self.events[name] = f
         heapq.heappush(self.schedule, mytuple((t, name)))
+        return name
 
     def removeEvent(self, name):
         """Removes the event with the given name from the schedule."""
@@ -90,8 +91,8 @@ class Schedule(drivers.IrcDriver):
         """Adds a periodic event that is called every t seconds."""
         def wrapper():
             f()
-            self.addEvent(wrapper, time.time() + t, name)
-        wrapper()
+            return self.addEvent(wrapper, time.time() + t, name)
+        return wrapper()
 
     removePeriodicEvent = removeEvent
 
