@@ -52,9 +52,9 @@ class TopicTestCase(PluginTestCase, PluginDocumentation):
         _ = self.getMsg('addtopic #foo baz')
         self.assertRegexp('changetopic #foo -1 s/baz/biff/',
                           r'foo.*bar.*biff')
-        self.assertRegexp('changetopic #foo 1 s/bar/baz/',
+        self.assertRegexp('changetopic #foo 2 s/bar/baz/',
                           r'foo.*baz.*biff')
-        self.assertRegexp('changetopic #foo 0 s/foo/bar/',
+        self.assertRegexp('changetopic #foo 1 s/foo/bar/',
                           r'bar.*baz.*biff')
         self.assertRegexp('changetopic #foo -2 s/baz/bazz/',
                           r'bar.*bazz.*biff')

@@ -116,17 +116,19 @@ class Topic(callbacks.Privmsg):
         index into the topics.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
-        i = privmsgs.getArgs(args)
+        number = privmsgs.getArgs(args)
         try:
-            i = int(i)
+            number = int(number)
+            if number >= 0:
+                number -= 1
         except ValueError:
             irc.error(msg, 'The argument must be a valid integer.')
             return
         topics = irc.state.getTopic(channel).split(self.topicSeparator)
         try:
-            irc.reply(msg, topics[i])
+            irc.reply(msg, topics[number])
         except IndexError:
-            irc.error(msg, 'That\'s not a valid index.')
+            irc.error(msg, 'That\'s not a valid topic.')
             return
     gettopic = privmsgs.channel(gettopic)
 
@@ -142,6 +144,8 @@ class Topic(callbacks.Privmsg):
         (number, regexp) = privmsgs.getArgs(args, needed=2)
         try:
             number = int(number)
+            if number >= 0:
+                number -= 1
         except ValueError:
             irc.error(msg, 'The <number> argument must be a number.')
             return
@@ -187,6 +191,8 @@ class Topic(callbacks.Privmsg):
         """
         try:
             number = int(privmsgs.getArgs(args))
+            if number >= 0:
+                number -= 1
         except ValueError:
             irc.error(msg, 'The argument must be a number.')
             return
