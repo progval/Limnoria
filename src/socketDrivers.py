@@ -134,7 +134,7 @@ class SocketDriver(drivers.IrcDriver):
         self.reconnectWaitPeriodsIndex = 0
         
     def die(self):
-        log.info('Driver for %s dying.', irc)
+        log.info('Driver for %s dying.', self.irc)
         self.conn.close()
         self.irc.die()
 
