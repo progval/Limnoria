@@ -124,7 +124,7 @@ class Todo(callbacks.Privmsg):
                     priority = ", priority: %s" % pri
                 added_time = time.strftime(conf.humanTimestampFormat,
                                            time.localtime(int(added_at)))
-                s = "%s%s (Added at: %s)" % (task, priority, added_time)
+                s = "%s%s (Added at %s)" % (task, priority, added_time)
                 irc.reply(msg, s)
         else:
             cursor = self.db.cursor()

@@ -86,7 +86,7 @@ if sqlite is not None:
             self.assertRegexp('todo 1', 'moo, priority: 50 \(Added '
                               'at: .*?\)')
             self.assertNotError('setpriority 1 0')
-            self.assertRegexp('todo 1', 'moo \(Added at: .*?\)')
+            self.assertRegexp('todo 1', 'moo \(Added at .*?\)')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
