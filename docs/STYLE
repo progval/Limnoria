@@ -24,6 +24,10 @@ Imports should always happen at the top of the module, one import per
 line (so if imports need to be added or removed later, it can be done
 easily).
 
+Unless absolutely required by some external force, imports should be
+ordered by the string length of the module imported.  I just think it
+looks prettier.
+
 A blank line should be between all consecutive method declarations in
 a class definition.  Two blank lines should be between all consecutive
 class definitions in a file.  Comments are even better than blank
