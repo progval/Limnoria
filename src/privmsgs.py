@@ -66,7 +66,8 @@ def getArgs(args, required=1, optional=0):
     """Take the required/optional arguments from args.
 
     Always returns a list of size required + optional, filling it with however
-    many empty strings is necessary to fill the tuple to the right size.
+    many empty strings is necessary to fill the tuple to the right size.  If
+    there is only one argument, a string containing that argument is returned.
 
     If there aren't enough args even to satisfy required, raise an error and
     let the caller handle sending the help message.
