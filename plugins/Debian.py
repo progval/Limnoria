@@ -91,9 +91,11 @@ example = utils.wrapLines("""
 class Debian(callbacks.Privmsg, PeriodicFileDownloader):
     threaded = True
     periodicFiles = {
+        # This file is only updated once a week, so there's no sense in
+        # downloading a new one every day.
         'Contents-i386.gz': ('ftp://ftp.us.debian.org/'
                              'debian/dists/unstable/Contents-i386.gz',
-                             86400, None)
+                             604800, None)
         }
     contents = os.path.join(conf.dataDir, 'Contents-i386.gz')
     def __init__(self):
@@ -113,19 +115,33 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         irc.reply(msg, conf.replySuccess)
 
     def debfile(self, irc, msg, args):
-        """<file>
+        """[--{regexp,exact}=<value>] [<glob>]
 
-        Returns the packages in the Debian distribution that include <file>.
+        Returns packages in Debian that includes files matching <glob>. If
+        --regexp is given, returns packages that include files matching the
+        given regexp.  If --exact is given, returns packages that include files
+        matching exactly the string given.
         """
         self.getFile('Contents-i386.gz')
         # Make sure it's anchored, make sure it doesn't have a leading slash
         # (the filenames don't have leading slashes, and people may not know
         # that).
-        regexp = privmsgs.getArgs(args).lstrip('^/')
+        (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
+        if len(optlist) + len(rest) > 1:
+            irc.error(msg, 'Only one search option is allowed.')
+            return
+        for (option, arg) in optlist:
+            if option == '--exact':
+                regexp = arg.lstrip('/')
+            elif option == '--regexp':
+                regexp = arg
+        if rest:
+            glob = rest.pop()
+            regexp = fnmatch.translate(glob.lstrip('/'))
         try:
             re_obj = re.compile(regexp, re.I)
-        except:
-            irc.error(msg, "Error in filename: %s" % regexp)
+        except Exception, e:
+            irc.error(msg, "Error in regexp: %s" % e)
             return
         if self.usePythonZegrep:
             fd = gzip.open(self.contents)
@@ -133,10 +149,15 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
                      ifilter(lambda tup: tup[0], \
                              imap(lambda line: (re_obj.search(line), line),
                                   fd)))
-        (r, w) = popen2.popen4(['zegrep', regexp, self.contents])
+        else:
+            (r, w) = popen2.popen4(['zegrep', regexp, self.contents])
         packages = sets.Set()  # Make packages unique
         try:
             for line in r:
+                if len(packages) > 100:
+                    irc.error(msg, 'More than 100 packages matched, '
+                                   'please narrow your search.')
+                    return
                 try:
                     (filename, pkg_list) = line[:-1].split()
                     if filename == 'FILE':
@@ -145,10 +166,6 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
                 except ValueError: # Unpack list of wrong size.
                     continue       # We've not gotten to the files yet.
                 packages.update(pkg_list.split(','))
-                if len(packages) > 40:
-                    irc.error(msg, 'More than 40 results returned, ' \
-                                   'please be more specific.')
-                    return
         finally:
             r.close()
             w.close()
