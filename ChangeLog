@@ -1,3 +1,9 @@
+	* Added the to= keyword argument to the various reply functions to
+	you can specify a target to send the message to.
+	
+	* Changed socketDrivers to allow more time (10x more, to be exact)
+	for connecting to the network than for the normal read.
+	
 	* Fixed a bug in Http.weather that would cause an ugly error
 	message for a command like "weather hell".
 	

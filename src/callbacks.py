@@ -108,18 +108,19 @@ def canonicalName(command):
         command = command[:-1]
     return command.translate(string.ascii, special).lower() + reAppend
 
-def reply(msg, s, prefixName=True, private=False, notice=False):
+def reply(msg, s, prefixName=True, private=False, notice=False, to=None):
     """Makes a reply to msg with the payload s"""
     s = ircutils.safeArgument(s)
+    to = to or msg.nick
     if ircutils.isChannel(msg.args[0]) and not private:
         if notice or conf.replyWithPrivateNotice:
-            m = ircmsgs.notice(msg.nick, s)
+            m = ircmsgs.notice(to, s)
         elif prefixName:
-            m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (msg.nick, s))
+            m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (to, s))
         else:
             m = ircmsgs.privmsg(msg.args[0], s)
     else:
-        m = ircmsgs.privmsg(msg.nick, s)
+        m = ircmsgs.privmsg(to, s)
     return m
 
 def error(msg, s):
@@ -280,6 +281,7 @@ class IrcObjectProxy:
         self.msg = msg
         self.args = args
         self.counter = 0
+        self.to = None
         self.action = False
         self.notice = False
         self.private = False
@@ -335,10 +337,15 @@ class IrcObjectProxy:
             self._callInvalidCommands()
         else:
             try:
-                assert len(cbs) == 1, \
-                       'Got command that wasn\'t disambiguated: %s' % name
-                del self.args[0]
-                cb = cbs[0]
+                if len(cbs) > 1:
+                    for cb in cbs:
+                        if cb.name().lower() == name:
+                            break
+                    else:
+                        assert False, 'Non-disambiguated command.'
+                else:
+                    del self.args[0]
+                    cb = cbs[0]
                 anticap = ircdb.makeAntiCapability(name)
                 #debug.printf('Checking for %s' % anticap)
                 if ircdb.checkCapability(self.msg.prefix, anticap):
@@ -379,7 +386,7 @@ class IrcObjectProxy:
                 self.error(self.msg, debug.exnToString(e))
 
     def reply(self, msg, s, noLengthCheck=False, prefixName=True,
-              action=False, private=False, notice=False):
+              action=False, private=False, notice=False, to=None):
         """reply(msg, text) -> replies to msg with text
 
         Keyword arguments:
@@ -391,23 +398,33 @@ class IrcObjectProxy:
           private=False:       True if the reply should be in private.
           notice=False:        True if the reply should be noticed when the
                                bot is configured to do so.
+          to=<nick|channel>:   The nick or channel the reply should go to.
+                               Defaults to msg.args[0] (or msg.nick if private)
         """
         # These use |= or &= based on whether or not they default to True or
         # False.  Those that default to True use &=; those that default to
         # False use |=.
         self.action |= action
-        self.private |= private
         self.notice |= notice
+        self.private |= private
+        self.to = to or self.to
         self.prefixName &= prefixName
         self.noLengthCheck |= noLengthCheck
         if self.finalEvaled:
             if isinstance(self.irc, self.__class__):
                 self.irc.reply(msg, s, self.noLengthCheck, self.prefixName,
-                               self.action, self.private, self.notice)
+                               self.action, self.private, self.notice, self.to)
             elif self.noLengthCheck:
-                self.irc.queueMsg(reply(msg, s, self.prefixName))
+                self.irc.queueMsg(reply(msg, s, self.prefixName,
+                                        self.private, self.notice, self.to))
             elif self.action:
-                self.irc.queueMsg(ircmsgs.action(msg.args[0], s))
+                if self.private:
+                    target = msg.nick
+                else:
+                    target = msg.args[0]
+                if self.to:
+                    target = self.to
+                self.irc.queueMsg(ircmsgs.action(target, s))
             else:
                 s = ircutils.safeArgument(s)
                 allowedLength = 450 - len(self.irc.prefix)
@@ -421,11 +438,8 @@ class IrcObjectProxy:
                 Privmsg._mores[mask] = msgs
                 private = self.private or not ircutils.isChannel(msg.args[0])
                 Privmsg._mores[msg.nick] = (private, msgs)
-                if self.private:
-                    self.irc.queueMsg(ircmsgs.privmsg(msg.nick, response))
-                else:
-                    self.irc.queueMsg(reply(msg, response, self.prefixName,
-                                            notice=self.notice))
+                self.irc.queueMsg(reply(msg, response, self.prefixName,
+                                        self.private, self.notice, self.to))
             self.finished = True
         else:
             self.args[self.counter] = s

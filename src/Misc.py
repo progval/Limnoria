@@ -358,9 +358,11 @@ class Misc(callbacks.Privmsg):
         your benefit here.
         """
         (target, text) = privmsgs.getArgs(args, required=2)
+        if not ircutils.isNick(target) and not ircutils.isChannel(target):
+            irc.error(msg, '%s is not a valid nick or channel.' % target)
+            return
         s = '%s wants me to tell you: %s' % (msg.nick, text)
-        irc.queueMsg(ircmsgs.privmsg(target, s))
-        raise callbacks.CannotNest
+        irc.reply(msg, s, to=target, private=True)
 
     def private(self, irc, msg, args):
         """<text>

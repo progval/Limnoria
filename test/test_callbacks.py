@@ -168,6 +168,14 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(ircmsgs.notice(nonChannelMsg.nick, 'foo'),
                          callbacks.reply(channelMsg, 'foo', notice=True))
 
+    def testReplyTo(self):
+        prefix = 'foo!bar@baz'
+        msg = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)
+        self.assertEqual(callbacks.reply(msg, 'blah', to='blah'),
+                         ircmsgs.privmsg('#foo', 'blah: blah'))
+        self.assertEqual(callbacks.reply(msg, 'blah', to='blah', private=True),
+                         ircmsgs.privmsg('blah', 'blah'))
+
     def testGetCommands(self):
         self.assertEqual(callbacks.getCommands(['foo']), ['foo'])
         self.assertEqual(callbacks.getCommands(['foo', 'bar']), ['foo'])
