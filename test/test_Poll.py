@@ -58,12 +58,12 @@ if sqlite is not None:
             self.assertRegexp('poll 1', 'no options')
             self.assertRegexp('poll 1', 'open')
             self.assertNotError('poll add 1 moo')
-            self.assertRegexp('poll 1', '1: \'moo\'')
+            self.assertRegexp('poll 1', '1: [\'"]moo[\'"]')
             self.assertNotError('poll add 1 boo')
-            self.assertRegexp('poll 1', '2: \'boo\'')
+            self.assertRegexp('poll 1', '2: [\'"]boo[\'"]')
             self.assertNotError('poll open Moo?')
             self.assertNotError('poll add 2 moo')
-            self.assertRegexp('poll 2', '1: \'moo\'')
+            self.assertRegexp('poll 2', '1: [\'"]moo[\'"]')
             self.assertNotError('poll close 2')
             self.assertRegexp('poll 2', 'closed')
 
@@ -95,13 +95,14 @@ if sqlite is not None:
             self.assertNotError('poll add 1 moo')
             self.assertNotError('poll vote 1 1')
             self.assertError('poll results blah')
-            self.assertRegexp('poll results 1', '\'moo\': 1')
+            self.assertRegexp('poll results 1', r'[\'"]moo[\'"]: 1')
 
         def testList(self):
             self.assertNotError('poll open Foo?')
-            self.assertRegexp('poll list', '#1: \'Foo\?\'')
+            self.assertRegexp('poll list', r'#1: [\'"]Foo\?[\'"]')
             self.assertNotError('poll open Foo 2?')
-            self.assertRegexp('poll list', '#1: \'Foo\?\'.*#2: \'Foo 2\?\'')
+            self.assertRegexp('poll list',
+                              r'#1: [\'"]Foo\?[\'"].*#2: [\'"]Foo 2\?[\'"]')
 
         def testGetIDError(self):
             self.assertNotError('poll open Foo?')
