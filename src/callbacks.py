@@ -591,7 +591,7 @@ class IrcObjectProxy(RichReplyMethods):
 
     def evalArgs(self):
         while self.counter < len(self.args):
-            if type(self.args[self.counter]) == str:
+            if isinstance(self.args[self.counter], basestring):
                 self.counter += 1
             else:
                 self.__class__(self, self.msg,
