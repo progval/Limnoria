@@ -119,10 +119,14 @@ def addressed(nick, msg, prefixChars=None, nicks=None,
             if lowered.startswith(nick):
                 try:
                     (maybeNick, rest) = payload.split(None, 1)
+                    toContinue = False
                     while not ircutils.isNick(maybeNick, strictRfc=True):
                         if maybeNick[-1].isalnum():
-                            continue
+                            toContinue = True
+                            break
                         maybeNick = maybeNick[:-1]
+                    if toContinue:
+                        continue
                     if ircutils.nickEqual(maybeNick, nick):
                         return rest
                     else:
