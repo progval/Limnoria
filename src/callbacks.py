@@ -343,7 +343,7 @@ def checkCommandCapability(msg, cb, command):
 
 class RichReplyMethods(object):
     """This is a mixin so these replies need only be defined once.  It operates
-    under several assumptions, including the fact that "self" is an Irc object
+    under several assumptions, including the fact that 'self' is an Irc object
     of some sort and there is a self.msg that is an IrcMsg."""
     def __makeReply(self, prefix, s):
         if s:
