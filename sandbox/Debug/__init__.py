@@ -28,15 +28,16 @@
 ###
 
 """
-Add a description of the plugin (to be presented to the user inside the wizard)
-here.
+This is for developers debugging their plugins; it provides an eval command
+as well as some other useful commands.
 """
 
 import supybot
 import supybot.world as world
 
-# XXX Replace this with an appropriate author or supybot.Author instance.
-__author__ = supybot.authors.unknown
+__version__ = "%%VERSION%%"
+
+__author__ = supybot.authors.jemfinch
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.

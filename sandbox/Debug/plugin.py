@@ -42,6 +42,7 @@ import exceptions
 
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
@@ -53,13 +54,20 @@ def getTracer(fd):
             print >>fd, '%s: %s' % (code.co_filename, code.co_name)
     return tracer
 
-class Debug(privmsgs.CapabilityCheckingPrivmsg):
+class Debug(callbacks.Privmsg):
     capability = 'owner'
-    def __init__(self):
+    def __init__(self, irc):
         # Setup exec command.
+        self.__parent = super(Debug, self)
+        self.__parent.__init__(irc)
         setattr(self.__class__, 'exec', self.__class__._exec)
-        privmsgs.CapabilityCheckingPrivmsg.__init__(self)
 
+    def callCommand(self, name, irc, msg, *args, **kwargs):
+        if ircdb.checkCapability(msg.prefix, self.capability):
+            self.__parent.callCommand(name, irc, msg, *args, **kwargs)
+        else:
+            irc.errorNoCapability(self.capability)
+            
     _evalEnv = {'_': None,
                 '__': None,
                 '___': None,
