@@ -126,6 +126,14 @@ class ChannelLogger(callbacks.Privmsg):
             if e.args[0] != 'I/O operation on a closed file':
                 self.log.exception('Odd exception:')
 
+    def registryValue(self, name, channel=None, **kwargs):
+        if channel is not None:
+            # This handles the possible #channel@network channels we might be
+            # getting.  It's a hack, because we should know what we're doing,
+            # but apparently we don't.
+            channel = channel.split('@')[0]
+        return callbacks.Privmsg.registryValue(self, name, channel, **kwargs)
+
     def logNameTimestamp(self, channel):
         format = self.registryValue('filenameTimestamp', channel)
         return time.strftime(format)
@@ -169,7 +177,6 @@ class ChannelLogger(callbacks.Privmsg):
             log.write('  ')
 
     def normalizeChannel(self, irc, channel):
-        channel = channel.replace('.', ',')
         if self.registryValue('includeNetworkName', channel):
             channel = '%s@%s' % (channel, irc.network)
         return ircutils.toLower(channel)
@@ -186,10 +193,10 @@ class ChannelLogger(callbacks.Privmsg):
     def doPrivmsg(self, irc, msg):
         (recipients, text) = msg.args
         for channel in recipients.split(','):
-            noLogPrefix = self.registryValue('noLogPrefix', channel)
-            if noLogPrefix and text.startswith(noLogPrefix):
-                text = '-= THIS MESSAGE NOT LOGGED =-'
             if ircutils.isChannel(channel):
+                noLogPrefix = self.registryValue('noLogPrefix', channel)
+                if noLogPrefix and text.startswith(noLogPrefix):
+                    text = '-= THIS MESSAGE NOT LOGGED =-'
                 nick = msg.nick or irc.nick
                 if ircmsgs.isAction(msg):
                     self.doLog(irc, channel,
