@@ -53,6 +53,10 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('squish foo bar baz', 'foobarbaz')
         self.assertResponse('squish "foo bar baz"', 'foobarbaz')
 
+    def testUndup(self):
+        self.assertResponse('undup foo bar baz quux', 'fo bar baz qux')
+        self.assertResponse('undup aaaaaaaaaa', 'a')
+
     def testLithp(self):
         self.assertResponse('lithp jamessan', 'jamethan')
         self.assertResponse('lithp Shame', 'Thame')

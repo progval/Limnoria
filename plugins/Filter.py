@@ -97,7 +97,7 @@ class Filter(callbacks.Privmsg):
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'colorstrip', 'aol', 'rainbow', 'spellit',
-                       'hebrew']
+                       'hebrew', 'undup']
     def outfilter(self, irc, msg, args, channel, command):
         """[<channel>] [<command>]
 
@@ -137,6 +137,18 @@ class Filter(callbacks.Privmsg):
         text = ''.join(text.split())
         irc.reply(text)
     squish = wrap(squish, ['text'])
+
+    def undup(self, irc, msg, args, text):
+        """<text>
+
+        Returns <text>, with all consecutive duplicated letters removed.
+        """
+        L = [text[0]]
+        for c in text:
+            if c != L[-1]:
+                L.append(c)
+        irc.reply(''.join(L))
+    undup = wrap(undup, ['text'])
 
     def binary(self, irc, msg, args, text):
         """<text>
