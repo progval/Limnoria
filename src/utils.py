@@ -42,6 +42,7 @@ import re
 import md5
 import new
 import sha
+import sets
 import types
 import socket
 import string
@@ -49,6 +50,7 @@ import sgmllib
 import compiler
 import textwrap
 import UserDict
+import itertools
 import htmlentitydefs
 from itertools import imap, ifilter
 
@@ -639,6 +641,28 @@ class InsensitivePreservingDict(UserDict.DictMixin, object):
 
     def __reduce__(self):
         return (self.__class__, (dict(self.data.values()),))
+
+
+class NormalizingSet(sets.Set):
+    def __init__(self, iterable=()):
+        iterable = itertools.imap(self.normalize, iterable)
+        super(NormalizingSet, self).__init__(iterable)
+
+    def normalize(self, x):
+        return x
+
+    def add(self, x):
+        return super(NormalizingSet, self).add(self.normalize(x))
+
+    def remove(self, x):
+        return super(NormalizingSet, self).remove(self.normalize(x))
+
+    def discard(self, x):
+        return super(NormalizingSet, self).discard(self.normalize(x))
+
+    def __contains__(self, x):
+        return super(NormalizingSet, self).__contains__(self.normalize(x))
+    has_key = __contains__
 
 def mungeEmailForWeb(s):
     s = s.replace('@', ' AT ')

@@ -96,6 +96,17 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('load ALIAS')
         self.assertNotError('unload ALIAS')
 
+    def testDisable(self):
+        self.assertError('disable enable')
+        self.assertError('disable identify')
+
+    def testEnable(self):
+        self.assertError('enable enable')
+
+    def testEnableIsCaseInsensitive(self):
+        self.assertNotError('disable Foo')
+        self.assertNotError('enable foo')
+
 
 class FunctionsTestCase(SupyTestCase):
     def testLoadPluginModule(self):

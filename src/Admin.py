@@ -288,45 +288,6 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         if not inAtLeastOneChannel:
             irc.replySuccess()
 
-    def disable(self, irc, msg, args):
-        """<command>
-
-        Disables the command <command> for all non-owner users.
-        """
-        command = privmsgs.getArgs(args)
-        if command in ('enable', 'identify'):
-            irc.error('You can\'t disable %s!' % command)
-        else:
-            try:
-                capability = ircdb.makeAntiCapability(command)
-            except ValueError:
-                irc.error('%r is not a valid command.' % command)
-                return
-            if command in conf.supybot.defaultCapabilities():
-                conf.supybot.defaultCapabilities().remove(command)
-            conf.supybot.defaultCapabilities().add(capability)
-            irc.replySuccess()
-
-    def enable(self, irc, msg, args):
-        """<command>
-
-        Re-enables the command <command> for all non-owner users.
-        """
-        command = privmsgs.getArgs(args)
-        command = command.lower()
-        L = []
-        for capability in conf.supybot.defaultCapabilities():
-            if ircdb.isAntiCapability(capability):
-                nonAntiCapability = ircdb.unAntiCapability(capability)
-                if nonAntiCapability.lower() == command:
-                    L.append(capability)
-        if L:
-            for capability in L:
-                conf.supybot.defaultCapabilities().remove(capability)
-            irc.replySuccess()
-        else:
-            irc.error('That command wasn\'t disabled.')
-
     def addcapability(self, irc, msg, args):
         """<name|hostmask> <capability>
 

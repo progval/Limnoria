@@ -115,7 +115,11 @@ def loadPluginClass(irc, module, register=None):
 conf.registerPlugin('Owner', True)
 conf.supybot.plugins.Owner.register('public', registry.Boolean(True,
     """Determines whether this plugin is publically visible."""))
-conf.registerGroup(conf.supybot, 'commands')
+
+###
+# supybot.commands.
+###
+                         
 conf.registerGroup(conf.supybot.commands, 'defaultPlugins')
 conf.supybot.commands.defaultPlugins.help = utils.normalizeWhitespace("""
 Determines what commands have default plugins set, and which plugins are set to
@@ -554,6 +558,44 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         except AttributeError: # There's a cleaner way to do this, but I'm lazy.
             irc.error('I couldn\'t reconnect.  You should restart me instead.')
+
+    def disable(self, irc, msg, args):
+        """[<plugin>] <command>
+
+        Disables the command <command> for all non-owner users.  If <plugin>
+        is given, only disables the <command> from <plugin>.
+        """
+        (plugin, command) = privmsgs.getArgs(args, optional=1)
+        if not command:
+            (plugin, command) = (None, plugin)
+            conf.supybot.commands.disabled().add(command)
+        else:
+            conf.supybot.commands.disabled().add('%s.%s' % (plugin, command))
+        if command in ('enable', 'identify'):
+            irc.error('You can\'t disable %s.' % command)
+        else:
+            self._disabled.add(command, plugin)
+            irc.replySuccess()
+
+    def enable(self, irc, msg, args):
+        """[<plugin>] <command>
+
+        Enables the command <command> for all non-owner users.  If <plugin>
+        if given, only enables the <command> from <plugin>.
+        """
+        (plugin, command) = privmsgs.getArgs(args, optional=1)
+        try:
+            if not command:
+                (plugin, command) = (None, plugin)
+                conf.supybot.commands.disabled().remove(command)
+            else:
+                name = '%s.%s' % (plugin, command)
+                conf.supybot.commands.disabled().remove(name)
+            self._disabled.remove(command, plugin)
+            irc.replySuccess()
+        except KeyError:
+            raise
+            irc.error('That command wasn\'t disabled.')
 
 
 

@@ -716,6 +716,63 @@ class CommandThread(threading.Thread):
             self.cb.threaded = self.originalThreaded
 
 
+class CanonicalString(registry.NormalizedString):
+    def normalize(self, s):
+        return canonicalName(s)
+
+class CanonicalNameSet(utils.NormalizingSet):
+    def normalize(self, s):
+        return canonicalName(s)
+        
+class Disabled(registry.SpaceSeparatedListOf):
+    Value = CanonicalString
+    List = CanonicalNameSet
+    
+conf.registerGlobalValue(conf.supybot.commands, 'disabled',
+    Disabled([], """Determines what commands are currently disabled.  Such
+    commands will not appear in command lists, etc.  They will appear not even
+    to exist."""))
+    
+class DisabledCommands(object):
+    class CanonicalNameDict(utils.InsensitivePreservingDict):
+        def key(self, s):
+            return canonicalName(s)
+
+    def __init__(self):
+        self.d = self.CanonicalNameDict()
+        for name in conf.supybot.commands.disabled():
+            if '.' in name:
+                (plugin, command) = name.split('.', 1)
+                if command in self.d:
+                    if self.d[command] is not None:
+                        self.d[command].add(plugin)
+                else:
+                    self.d[command] = CanonicalNameSet([plugin])
+            else:
+                self.d[name] = None
+
+    def disabled(self, command, plugin=None):
+        if command in self.d:
+            if self.d[command] is None:
+                return True
+            elif plugin in self.d[command]:
+                return True
+        return False
+
+    def add(self, command, plugin=None):
+        if plugin is None:
+            self.d[command] = None
+        else:
+            if self.d[command] is not None:
+                self.d[command].add(plugin)
+
+    def remove(self, command, plugin=None):
+        if plugin is None:
+            del self.d[command]
+        else:
+            if self.d[command] is not None:
+                self.d[command].remove(plugin)
+
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     __metaclass__ = log.MetaFirewall
@@ -729,8 +786,9 @@ class Privmsg(irclib.IrcCallback):
     errored = False
     Proxy = IrcObjectProxy
     commandArgs = ['self', 'irc', 'msg', 'args']
-    # This must be class-scope, so all subclasses use the same one.
+    # This must be class-scope, so all plugins use the same one.
     _mores = ircutils.IrcDict()
+    _disabled = DisabledCommands()
     def __init__(self):
         self.__parent = super(Privmsg, self)
         myName = self.name()
@@ -795,6 +853,8 @@ class Privmsg(irclib.IrcCallback):
 
         # Don't canonicalize this name: consider outFilter(self, irc, msg).
         # methodName = canonicalName(methodName)
+        if self._disabled.disabled(methodName, plugin=self.name()):
+            return False
         if hasattr(self, methodName):
             method = getattr(self, methodName)
             if inspect.ismethod(method):

@@ -76,17 +76,6 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
     def testRemoveCapability(self):
         self.assertError('removecapability alsdfkjasd foo')
 
-    def testDisable(self):
-        self.assertError('disable enable')
-        self.assertError('disable identify')
-
-    def testEnable(self):
-        self.assertError('enable enable')
-
-    def testEnableIsCaseInsensitive(self):
-        self.assertNotError('disable Foo')
-        self.assertNotError('enable foo')
-
     def testJoin(self):
         m = self.getMsg('join #foo')
         self.assertEqual(m.command, 'JOIN')

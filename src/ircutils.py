@@ -500,27 +500,11 @@ class IrcDict(utils.InsensitivePreservingDict):
     key = staticmethod(toLower)
 
 
-class IrcSet(sets.Set):
+class IrcSet(utils.NormalizingSet):
     """A sets.Set using IrcStrings instead of regular strings."""
-    def __init__(self, seq=()):
-        self.__parent = super(IrcSet, self)
-        self.__parent.__init__()
-        for elt in seq:
-            self.add(elt)
-
-    def add(self, s):
-        return self.__parent.add(IrcString(s))
-
-    def remove(self, s):
-        return self.__parent.remove(IrcString(s))
-
-    def discard(self, s):
-        return self.__parent.discard(IrcString(s))
-
-    def __contains__(self, s):
-        return self.__parent.__contains__(IrcString(s))
-    has_key = __contains__
-
+    def normalize(self, s):
+        return IrcString(s)
+    
     def __reduce__(self):
         return (self.__class__, (list(self),))
 
