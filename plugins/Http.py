@@ -84,9 +84,9 @@ class Http(callbacks.PrivmsgCommandAndRegexp):
     
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
 
-    def callCommand(self, method, irc, msg, *L, **kwargs):
+    def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
-            super(Http, self).callCommand(method, irc, msg, *L, **kwargs)
+            super(Http, self).callCommand(name, irc, msg, *L, **kwargs)
         except webutils.WebError, e:
             irc.error(str(e))
 
