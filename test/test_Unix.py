@@ -32,21 +32,24 @@
 from testsupport import *
 
 import os
+import utils
 
 if os.name == 'posix':
     class UnixTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('Unix',)
-        def testSpell(self):
-            self.assertRegexp('spell Strike', 'correctly')
-            self.assertRegexp('spell asdlkjsdalfkjasdflkasjdflskdfjlsd',
-                              'not find')
-            self.assertNotError('spell Strizzike')
-            self.assertError('spell foo bar baz')
-            self.assertError('spell -')
-            self.assertError('spell .')
-            self.assertError('spell ?')
-            self.assertNotError('spell whereever')
-            self.assertNotRegexp('spell foo', 'whatever')
+        if utils.findBinaryInPath('aspell') is not None or \
+           utils.findBinaryInPath('ispell') is not None:
+            def testSpell(self):
+                self.assertRegexp('spell Strike', 'correctly')
+                self.assertRegexp('spell asdlkjsdalfkjasdflkasjdflskdfjlsd',
+                                  'not find')
+                self.assertNotError('spell Strizzike')
+                self.assertError('spell foo bar baz')
+                self.assertError('spell -')
+                self.assertError('spell .')
+                self.assertError('spell ?')
+                self.assertNotError('spell whereever')
+                self.assertNotRegexp('spell foo', 'whatever')
 
         def testErrno(self):
             self.assertRegexp('errno 12', '^ENOMEM')
@@ -58,8 +61,9 @@ if os.name == 'posix':
         def testCrypt(self):
             self.assertNotError('crypt jemfinch')
 
-        def testFortune(self):
-            self.assertNotError('fortune')
+        if utils.findBinaryInPath('fortune') is not None:
+            def testFortune(self):
+                self.assertNotError('fortune')
 
     
 
