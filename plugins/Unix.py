@@ -209,7 +209,7 @@ class Unix(callbacks.Privmsg):
         if line[0] in '*+':
             resp = '"%s" may be spelled correctly.' % word
         elif line[0] == '#':
-            resp = 'Could not find an alternate spelling for "%s"' % word
+            resp = 'I could not find an alternate spelling for "%s"' % word
         elif line[0] == '&':
             matches = line.split(':')[1].strip()
             resp = 'Possible spellings for %r: %s.' % \
