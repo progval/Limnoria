@@ -991,6 +991,12 @@ class Commands(object):
     commandArgs = ['self', 'irc', 'msg', 'args']
     # These must be class-scope, so all plugins use the same one.
     _disabled = DisabledCommands()
+    def name(self):
+        return self.__class__.__name__
+
+    def canonicalName(self):
+        return canonicalName(self.name())
+    
     def isDisabled(self, command):
         return self._disabled.disabled(command, self.name())
 
@@ -1141,6 +1147,9 @@ class PluginMixin(irclib.IrcCallback):
             dispatcher.isDispatcher = True
         setattr(self.__class__, canonicalname, dispatcher)
 
+    def canonicalName(self):
+        return canonicalName(self.name())
+    
     def __call__(self, irc, msg):
         # This is for later dynamic scoping.
         if msg.command == 'PRIVMSG':
