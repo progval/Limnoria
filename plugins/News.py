@@ -41,28 +41,66 @@ import supybot.plugins as plugins
 import os
 import time
 
+import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
+import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-class News(plugins.ChannelDBHandler, callbacks.Privmsg):
+class NewsRecord(object):
+    __metaclass__ = dbi.Record
+    __fields__ = [
+        'subject',
+        'text',
+        'at',
+        'expires',
+        'by'
+        ]
+    def __str__(self):
+        format = conf.supybot.humanTimestampFormat()
+        try:
+            user = ircdb.users.getUser(int(self.by)).name
+        except ValueError:
+            user = self.by
+        except KeyError:
+            user = 'a user that is no longer registered'
+        if int(self.expires) == 0:
+            s = '%s (Subject: "%s", added by %s on %s)' % \
+                (self.text, self.subject, self.by,
+                 time.strftime(format, time.localtime(int(self.at))))
+        else:
+            s = '%s (Subject: "%s", added by %s on %s, expires at %s)' % \
+                (self.text, self.subject, self.by,
+                 time.strftime(format, time.localtime(int(self.at))),
+                 time.strftime(format, time.localtime(int(self.expires))))
+        return s
+
+class SqliteNewsDB(object):
     def __init__(self):
-        plugins.ChannelDBHandler.__init__(self)
-        callbacks.Privmsg.__init__(self)
-        self.removeOld = False
+        self.dbs = ircutils.IrcDict()
 
-    def makeDb(self, filename):
+    def close(self):
+        for db in self.dbs.itervalues():
+            db.close()
+
+    def _getDb(self, channel):
+        try:
+            import sqlite
+        except ImportError:
+            raise callbacks.Error, 'You need to have PySQLite installed to ' \
+                                   'use this plugin.  Download it at ' \
+                                   '<http://pysqlite.sf.net/>'
+        filename = plugins.makeChannelFilename(channel, 'News.db')
+        if filename in self.dbs:
+            return self.dbs[filename]
         if os.path.exists(filename):
-            return sqlite.connect(filename)
+            self.dbs[filename] = sqlite.connect(filename)
+            return self.dbs[filename]
         db = sqlite.connect(filename)
+        self.dbs[filename] = db
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE news (
                           id INTEGER PRIMARY KEY,
@@ -75,6 +113,76 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         db.commit()
         return db
 
+    def add(self, channel, subject, text, added_at, expires, by):
+        db = self._getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("INSERT INTO news VALUES (NULL, %s, %s, %s, %s, %s)",
+                       subject, text, added_at, expires, by)
+        db.commit()
+
+    def get(self, channel, id=None, old=False):
+        db = self._getDb(channel)
+        cursor = db.cursor()
+        if id:
+            cursor.execute("""SELECT item, subject, added_at,
+                                     expires_at, added_by
+                              FROM news
+                              WHERE id=%s""", id)
+            if cursor.rowcount == 0:
+                raise dbi.NoRecordError, id
+            (text, subject, at, expires, by) = cursor.fetchone()
+            return NewsRecord(id, text=text, subject=subject, at=int(at),
+                              expires=int(expires), by=by)
+        else:
+            if old:
+                cursor.execute("""SELECT id, subject
+                                  FROM news
+                                  WHERE expires_at <> 0 AND expires_at < %s
+                                  ORDER BY id DESC""", int(time.time()))
+            else:
+                cursor.execute("""SELECT id, subject
+                                  FROM news
+                                  WHERE expires_at > %s OR expires_at=0""",
+                                  int(time.time()))
+            if cursor.rowcount == 0:
+                raise dbi.NoRecordError
+            else:
+                return cursor.fetchall()
+
+    def remove(self, channel, id):
+        db = self._getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""DELETE FROM news WHERE id = %s""", id)
+        db.commit()
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError, id
+
+    def change(self, channel, id, replacer):
+        db = self._getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT subject, item FROM news WHERE id=%s""", id)
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError, id
+        (subject, item) = cursor.fetchone()
+        s = '%s: %s' % (subject, item)
+        s = replacer(s)
+        (newSubject, newItem) = s.split(': ', 1)
+        cursor.execute("""UPDATE news SET subject=%s, item=%s WHERE id=%s""",
+                       newSubject, newItem, id)
+
+def NewsDB():
+    return SqliteNewsDB()
+
+class News(callbacks.Privmsg):
+    def __init__(self):
+        super(News, self).__init__()
+        self.db = NewsDB()
+        self.removeOld = False
+
+    def die(self):
+        super(News, self).die()
+        self.db.close()
+
     def add(self, irc, msg, args, channel):
         """[<channel>] <expires> <subject>: <text>
 
@@ -83,89 +191,47 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         now.  <channel> is only necessary if the message isn't sent in the
         channel itself.
         """
-        # Parse out the args
-        i = 0
-        for i, arg in enumerate(args):
-            if arg.endswith(':'):
-                i += 1
-                break
-        if not i:
+        (expire_interval, news) = privmsgs.getArgs(args, required=2)
+        try:
+            expire_interval = int(expire_interval)
+            (subject, text) = news.split(': ', 1)
+        except ValueError:
             raise callbacks.ArgumentError
         added_at = int(time.time())
-        expire_interval = int(args[0])
         expires = expire_interval and (added_at + expire_interval)
-        subject = ' '.join(args[1:i])
-        text = ' '.join(args[i:])
         # Set the other stuff needed for the insert.
-        if ircdb.users.hasUser(msg.prefix):
-            name = ircdb.users.getUser(msg.prefix).name
-        else:
-            name = msg.nick
-
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("INSERT INTO news VALUES (NULL, %s, %s, %s, %s, %s)",
-                       subject[:-1], text, added_at, expires, name)
-        db.commit()
+        try:
+            by = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            by = msg.nick
+        self.db.add(channel, subject, text, added_at, expires, by)
         irc.replySuccess()
     add = privmsgs.checkChannelCapability(add, 'news')
 
-    def _readnews(self, irc, msg, args):
-        """[<channel>] <number>
-
-        Display the text for news item with id <number> from <channel>.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        id = privmsgs.getArgs(args)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT news.item, news.subject, news.added_at,
-                          news.expires_at, news.added_by FROM news
-                          WHERE news.id=%s""", id)
-        if cursor.rowcount == 0:
-            irc.error('No news item matches that id.')
-        else:
-            item, subject, added_at, expires_at, added_by = cursor.fetchone()
-            if int(expires_at) == 0:
-                s = '%s (Subject: "%s", added by %s on %s)' % \
-                    (item, subject, added_by,
-                     time.strftime(conf.supybot.humanTimestampFormat(),
-                                   time.localtime(int(added_at))))
-            else:
-                s = '%s (Subject: "%s", added by %s on %s, expires at %s)' % \
-                    (item, subject, added_by,
-                     time.strftime(conf.supybot.humanTimestampFormat(),
-                                   time.localtime(int(added_at))),
-                     time.strftime(conf.supybot.humanTimestampFormat(),
-                                   time.localtime(int(expires_at))))
-            irc.reply(s)
-
     def news(self, irc, msg, args):
-        """[<channel>] [<number>]
+        """[<channel>] [<id>]
 
         Display the news items for <channel> in the format of '(#id) subject'.
-        If <number> is given, retrieve only that news item; otherwise retrieve
-        all news items.  <channel> is only necessary if the message isn't sent
-        in the channel itself.
+        If <id> is given, retrieve only that news item; otherwise retrieve all
+        news items.  <channel> is only necessary if the message isn't sent in
+        the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        number = privmsgs.getArgs(args, required=0, optional=1)
-        if number:
-            self._readnews(irc, msg, [channel, number])
-            return
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT news.id, news.subject FROM news
-                          WHERE news.expires_at > %s
-                          OR news.expires_at=0""", int(time.time()))
-        if cursor.rowcount == 0:
-            irc.reply('No news for %s.' % channel)
+        id = privmsgs.getArgs(args, required=0, optional=1)
+        if id:
+            try:
+                record = self.db.get(channel, int(id))
+                irc.reply(str(record))
+            except dbi.NoRecordError, id:
+                irc.errorInvalid('news item id', id)
         else:
-            items = ['(#%s) %s' % (id, s) for (id, s) in cursor.fetchall()]
-            s = 'News for %s: %s' % (channel, '; '.join(items))
-            irc.reply(s)
+            try:
+                records = self.db.get(channel)
+                items = ['(#%s) %s' % (id, s) for (id, s) in records]
+                s = 'News for %s: %s' % (channel, '; '.join(items))
+                irc.reply(s)
+            except dbi.NoRecordError:
+                irc.reply('No news for %s.' % channel)
 
     def remove(self, irc, msg, args, channel):
         """[<channel>] <number>
@@ -174,15 +240,11 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         only necessary if the message isn't sent in the channel itself.
         """
         id = privmsgs.getArgs(args)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT * FROM news WHERE id=%s""", id)
-        if cursor.rowcount == 0:
-            irc.error('No news item matches that id.')
-        else:
-            cursor.execute("""DELETE FROM news WHERE news.id = %s""", id)
-            db.commit()
+        try:
+            self.db.remove(channel, id)
             irc.replySuccess()
+        except dbi.NoRecordError:
+            irc.errorInvalid('news item id', id)
     remove = privmsgs.checkChannelCapability(remove, 'news')
 
     def change(self, irc, msg, args, channel):
@@ -199,19 +261,11 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         except ValueError, e:
             irc.error(str(e))
             return
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT subject, item FROM news WHERE id=%s""", id)
-        if cursor.rowcount == 0:
-            irc.error('No news item matches that id.')
-            return
-        (subject, item) = cursor.fetchone()
-        s = '%s: %s' % (subject, item)
-        s = replacer(s)
-        (newSubject, newItem) = s.split(': ')
-        cursor.execute("""UPDATE news SET subject=%s, item=%s WHERE id=%s""",
-                       newSubject, newItem, id)
-        irc.replySuccess()
+        try:
+            self.db.change(channel, id, replacer)
+            irc.replySuccess()
+        except dbi.NoRecordError:
+            irc.errorInvalid('news item id', id)
     change = privmsgs.checkChannelCapability(change, 'news')
 
     def old(self, irc, msg, args):
@@ -223,31 +277,20 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         id = privmsgs.getArgs(args, required=0, optional=1)
-        db = self.getDb(channel)
-        cursor = db.cursor()
         if id:
             try:
-                id = int(id)
-            except ValueError:
-                irc.error('%r isn\'t a valid id.' % id)
-                return
-            cursor.execute("""SELECT subject, item FROM news WHERE id=%s""",id)
-            if cursor.rowcount == 0:
-                irc.error('No news item matches that id.')
-            else:
-                (subject, item) = cursor.fetchone()
-                irc.reply('%s: %s' % (cursor, item))
+                record = self.db.get(channel, id, old=True)
+                irc.reply(str(record))
+            except dbi.NoRecordError, id:
+                irc.errorInvalid('news item id', id)
         else:
-            cursor.execute("""SELECT id, subject FROM news
-                              WHERE expires_at <> 0 AND expires_at < %s
-                              ORDER BY id DESC""", int(time.time()))
-            if cursor.rowcount == 0:
-                irc.error('I have no news for that channel.')
-                return
-            subjects = ['#%s: %s' % (id, s) for (id, s) in cursor.fetchall()]
-            irc.reply(utils.commaAndify(subjects))
-
-
+            try:
+                records = self.db.get(channel, old=True)
+                items = ['(#%s) %s' % (id, s) for (id, s) in records]
+                s = 'Old news for %s: %s' % (channel, '; '.join(items))
+                irc.reply(s)
+            except dbi.NoRecordError:
+                irc.reply('No old news for %s.' % channel)
 
 
 Class = News

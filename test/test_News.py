@@ -75,11 +75,11 @@ if sqlite is not None:
             self.assertRegexp('news 1', 'baz')
 
         def testOldnews(self):
-            self.assertError('old')
+            self.assertRegexp('old', 'No old news')
             self.assertNotError('add 0 a: b')
-            self.assertError('old')
+            self.assertRegexp('old', 'No old news')
             self.assertNotError('add 5 foo: bar')
-            self.assertError('old')
+            self.assertRegexp('old', 'No old news')
             print
             print 'Sleeping to expire the news item (testOldnews)'
             time.sleep(6)
