@@ -593,9 +593,9 @@ class Irc(IrcCommandDispatcher):
             if self.password:
                 log.info('Sending PASS command, not logging the password.')
                 self.queueMsg(ircmsgs.password(self.password))
-            log.info('Queuing NICK command, nick is %s.', self.nick)
+            log.debug('Queuing NICK command, nick is %s.', self.nick)
             self.queueMsg(ircmsgs.nick(self.nick))
-            log.info('Queuing USER command, ident is %s, user is %s.',
+            log.debug('Queuing USER command, ident is %s, user is %s.',
                      self.ident, self.user)
             self.queueMsg(ircmsgs.user(self.ident, self.user))
 
