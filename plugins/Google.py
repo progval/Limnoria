@@ -136,11 +136,9 @@ class LicenseKey(registry.String):
         if s and len(s) != 32:
             raise registry.InvalidRegistryValue, 'Invalid Google license key.'
         try:
+            s = s or ''
+            registry.String.setValue(self, s)
             if s:
-                registry.String.setValue(self, s)
-                google.setLicense(self.value)
-            if not s:
-                registry.String.setValue(self, '')
                 google.setLicense(self.value)
         except AttributeError:
             raise callbacks.Error, 'It appears that the initial import of ' \
