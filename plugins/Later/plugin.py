@@ -80,7 +80,7 @@ class Later(callbacks.Privmsg):
             return utils.timeElapsed(diff, seconds=False) + ' ago'
         except ValueError:
             return 'just now'
-        
+
     def _addNote(self, nick, whence, text, at=None, maximum=None):
         if at is None:
             at = time.time()
@@ -97,7 +97,7 @@ class Later(callbacks.Privmsg):
         if '?' in nick or '*' in nick and nick not in self.wildcards:
             self.wildcards.append(nick)
         self._flushNotes()
-        
+
     def tell(self, irc, msg, args, nick, text):
         """<nick> <text>
 
@@ -130,10 +130,14 @@ class Later(callbacks.Privmsg):
                 irc.error('I have no notes for that nick.')
         else:
             nicks = self._notes.keys()
-            utils.sortBy(ircutils.toLower, nicks)
-            irc.reply(format('I currently have notes waiting for %L.', nicks))
+            if nicks:
+                utils.sortBy(ircutils.toLower, nicks)
+                irc.reply(format('I currently have notes waiting for %L.',
+                                 nicks))
+            else:
+                irc.error('I have no notes waiting to be delivered.')
     notes = wrap(notes, [additional('something')])
-    
+
     def doPrivmsg(self, irc, msg):
         notes = self._notes.pop(msg.nick, [])
         # Let's try wildcards.
@@ -154,7 +158,7 @@ class Later(callbacks.Privmsg):
 
     def _formatNote(self, when, whence, note):
         return 'Sent %s: <%s> %s' % (self._timestamp(when), whence, note)
-            
+
 
 
 Class = Later
