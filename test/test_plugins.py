@@ -74,6 +74,8 @@ class FunctionsTestCase(unittest.TestCase):
                          self.irc.nick)
         self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$who'),
                          msg.nick)
+        self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$nick'),
+                         msg.nick)
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$randomdate'))
         q = plugins.standardSubstitute(self.irc,msg,'$randomdate\t$randomdate')
         dl = q.split('\t')
