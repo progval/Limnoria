@@ -237,7 +237,21 @@ class queue(object):
             if len(self.front) > idx:
                 self.front[-(idx+1)] = value
             else:
-                self.back[(idx-len(self.front))] = value
+                self.back[idx-len(self.front)] = value
+
+    def __delitem__(self, oidx):
+        if type(oidx) == types.SliceType:
+            range = xrange(*sliceIndices(oidx, len(self)))
+            for i in range:
+                del self[i]
+        else:
+            (m, idx) = divmod(oidx, len(self))
+            if m and m != -1:
+                raise IndexError, oidx
+            if len(self.front) > idx:
+                del self.front[-(idx+1)]
+            else:
+                del self.back[idx-len(self.front)]
 
     def __getstate__(self):
         return (list(self),)
