@@ -191,5 +191,16 @@ class WordStatsTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.plugins.WordStats.ignoreQueries.setValue(original)
 
+    def testWordStatsCaseInsensitive(self):
+        self.assertNotError('add lol')
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lOL',
+                                         prefix=self.prefix))
+        self.assertRegexp('wordstats foo', r'[\'"]lol[\'"]: 2')
+        self.assertNotError('add MOO')
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'mOo',
+                                         prefix=self.prefix))
+        self.assertRegexp('wordstats foo',
+                          r'(lol|MOO)[\'"]: 2 and [\'"](lol|MOO)[\'"]: 2')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

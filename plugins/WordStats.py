@@ -158,19 +158,19 @@ class WordStatsDB(plugins.ChannelUserDB):
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             return
-        msgwords = [s.strip(nonAlphaNumeric) for s in text.split()]
+        msgwords = [s.strip(nonAlphaNumeric).lower() for s in text.split()]
         if channel not in self.channelWords:
             self.channelWords[channel] = {}
         for word in self.channelWords[channel]:
-            word = word.lower()
-            for msgword in msgwords:
-                if msgword == word:
-                    self.channelWords[channel][word] += 1
-                    if (channel, id) not in self:
-                        self[channel, id] = {}
-                    if word not in self[channel, id]:
-                        self[channel, id][word] = 0
-                    self[channel, id][word] += 1
+            lword = word.lower()
+            count = msgwords.count(lword)
+            if count:
+                self.channelWords[channel][word] += count
+                if (channel, id) not in self:
+                    self[channel, id] = {}
+                if word not in self[channel, id]:
+                    self[channel, id][word] = 0
+                self[channel, id][word] += count
 
 
 filename = conf.supybot.directories.data.dirize('WordStats.db')
