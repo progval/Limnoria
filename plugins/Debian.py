@@ -130,7 +130,7 @@ class Debian(callbacks.Privmsg,
             glob = rest.pop()
             regexp = fnmatch.translate(glob.lstrip('/'))
             regexp = regexp.rstrip('$')
-            regexp += ".* "
+            regexp = ".*%s.* " % regexp
         try:
             re_obj = re.compile(regexp, re.I)
         except re.error, e:
@@ -138,12 +138,12 @@ class Debian(callbacks.Privmsg,
             return
         if self.registryValue('pythonZgrep'):
             fd = gzip.open(self.contents)
-            r = imap(lambda tup: tup[0], 
+            r = imap(lambda tup: tup[0],
                      ifilter(lambda tup: tup[0],
                              imap(lambda line:(re_obj.search(line), line),fd)))
         else:
             try:
-                (r, w) = popen2.popen4(['zgrep', '-e', regexp, self.contents])
+                (r, w) = popen2.popen4(['zgrep', '-ie', regexp, self.contents])
                 w.close()
             except TypeError:
                 # We're on Windows.
@@ -160,7 +160,9 @@ class Debian(callbacks.Privmsg,
                                    'please narrow your search.')
                     return
                 try:
-                    (filename, pkg_list) = line[:-1].split()
+                    if hasattr(line, 'group'): # we're actually using
+                        line = line.group(0)   # pythonZgrep  :(
+                    (filename, pkg_list) = line.split()
                     if filename == 'FILE':
                         # This is the last line before the actual files.
                         continue
@@ -174,32 +176,42 @@ class Debian(callbacks.Privmsg,
             irc.reply('I found no packages with that file.')
         else:
             irc.reply(utils.commaAndify(packages))
-                
+
     _debreflags = re.DOTALL | re.IGNORECASE
     _debbrre = re.compile(r'<li><a href[^>]+>(.*?)</a> \(', _debreflags)
     _debverre = re.compile(r'<br>(?:\d+:)?(\S+):', _debreflags)
     _deblistre = re.compile(r'<h3>Package ([^<]+)</h3>(.*?)</ul>', _debreflags)
     _debBranches = ('stable', 'testing', 'unstable', 'experimental')
     def version(self, irc, msg, args):
-        """[stable|testing|unstable|experimental] <package name>
+        """[--exact] [stable|testing|unstable|experimental] <package name>
 
         Returns the current version(s) of a Debian package in the given branch
-        (if any, otherwise all available ones are displayed).
+        (if any, otherwise all available ones are displayed).  If --exact is
+        specified, only packages whose name exactly matches <package name>
+        will be reported.
         """
+        url = 'http://packages.debian.org/cgi-bin/search_packages.pl?keywords'\
+              '=%s&searchon=names&version=%s&release=all&subword=1'
         if not args:
             raise callbacks.ArgumentError
-        if args and args[0] in self._debBranches:
-            branch = args.pop(0)
+        (optlist, rest) = getopt.getopt(args, '', ['exact'])
+        for (option, _) in optlist:
+            if option == '--exact':
+                url = url.replace('&subword=1','')
+        if rest and rest[0] in self._debBranches:
+            branch = rest.pop(0)
         else:
             branch = 'all'
-        if not args:
+        if not rest:
             irc.error('You must give a package name.')
             return
         responses = []
-        package = privmsgs.getArgs(args)
+        package = privmsgs.getArgs(rest)
+        if '*' in package:
+            irc.error('Wildcard characters can not be specified.')
+            return
         package = urllib.quote(package)
-        url = 'http://packages.debian.org/cgi-bin/search_packages.pl?keywords'\
-              '=%s&searchon=names&version=%s&release=all' % (package, branch)
+        url = url % (package, branch)
         try:
             html = webutils.getUrl(url)
         except webutils.WebError, e:
@@ -357,7 +369,7 @@ class Debian(callbacks.Privmsg,
             irc.reply(resp)
         else:
             irc.reply('I was unable to properly parse the BTS page.')
-        
+
 Class = Debian
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
