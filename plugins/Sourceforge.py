@@ -237,7 +237,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         just a wrapper for the tracker command; it won't even complain if the
         <id> you give isn't a bug.
         """
-        self.tracker(irc, msg, args, id)
+        self._tracker(irc, id)
     bug = wrap(bug, [('id', 'bug')])
 
     def patch(self, irc, msg, args, id):
@@ -247,7 +247,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         just a wrapper for the tracker command; it won't even complain if the
         <id> you give isn't a patch.
         """
-        self.tracker(irc, msg, args, id)
+        self._tracker(irc, id)
     patch = wrap(patch, [('id', 'patch')])
 
     def rfe(self, irc, msg, args, id):
@@ -257,7 +257,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         just a wrapper for the tracker command; it won't even complain if the
         <id> you give isn't an rfe.
         """
-        self.tracker(irc, msg, args, id)
+        self._tracker(irc, id)
     rfe = wrap(rfe, [('id', 'rfe')])
 
     def tracker(self, irc, msg, args, id):
@@ -266,6 +266,10 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         Returns a description of the tracker with id <id> and the corresponding
         url.
         """
+        self._tracker(irc, id)
+    tracker = wrap(tracker, [('id', 'tracker')])
+
+    def _tracker(self, irc, id):
         try:
             url = '%s%s' % (self._trackerURL, id)
             resp = self._getTrackerInfo(url)
@@ -275,7 +279,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply('%s <%s>' % (resp, url))
         except TrackerError, e:
             irc.error(str(e))
-    tracker = wrap(tracker, [('id', 'tracker')])
 
     _trackerLink = {'bugs': re.compile(r'"([^"]+)">Bugs'),
                     'rfes': re.compile(r'"([^"]+)">RFE'),
