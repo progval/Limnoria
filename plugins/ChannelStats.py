@@ -60,7 +60,6 @@ import privmsgs
 import registry
 import callbacks
 
-# I should write/copy a generalized proxy at some point.
 class Smileys(registry.Value):
     def set(self, s):
         L = s.split()
