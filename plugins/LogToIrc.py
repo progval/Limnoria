@@ -114,7 +114,7 @@ class IrcFormatter(log.Formatter):
 
 class ColorizedIrcFormatter(IrcFormatter):
     def formatException(self, (E, e, tb)):
-        if conf.supybot.plugins.LogToIrc.colorized():
+        if conf.supybot.plugins.LogToIrc.color():
             s = IrcFormatter.formatException(self, (E, e, tb))
             return ircutils.mircColor(s, fg='red')
         else:
@@ -122,7 +122,7 @@ class ColorizedIrcFormatter(IrcFormatter):
 
     def format(self, record, *args, **kwargs):
         s = IrcFormatter.format(self, record, *args, **kwargs)
-        if conf.supybot.plugins.LogToIrc.colorized():
+        if conf.supybot.plugins.LogToIrc.color():
             if record.levelno == logging.CRITICAL:
                 s = ircutils.bold(ircutils.bold(s))
             elif record.levelno == logging.ERROR:
@@ -171,9 +171,9 @@ conf.registerGlobalValue(conf.supybot.plugins.LogToIrc,
     'userCapabilityRequired', registry.String('owner', """Determines what
     capability is required for the bot to log to in private messages to the
     user.  If this is empty, there will be no capability that's checked."""))
-conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'colorized',
-    registry.Boolean(False, """Determines whether the bot's logs
-    to IRC will be colorized with mIRC colors."""))
+conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'color',
+    registry.Boolean(False, """Determines whether the bot's logs to IRC will be
+    colorized with mIRC colors."""))
 conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'notice',
     registry.Boolean(False, """Determines whether the bot's logs to IRC will be
     sent via NOTICE instead of PRIVMSG.  Channels will always be PRIVMSGed,
@@ -196,7 +196,7 @@ def configure(advanced):
             output(str(e))
             targets = ''
     colorized = yn('Would you like these messages to be colored?')
-    conf.supybot.plugins.LogToIrc.colorized.setValue(colorized)
+    conf.supybot.plugins.LogToIrc.color.setValue(colorized)
     if advanced:
         level = ''
         while not level:
