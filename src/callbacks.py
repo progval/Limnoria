@@ -539,6 +539,7 @@ _repr = repr
 
 class IrcObjectProxy(RichReplyMethods):
     "A proxy object to allow proper nested of commands (even threaded ones)."
+    _mores = ircutils.IrcDict()
     def __init__(self, irc, msg, args, nested=0):
         assert isinstance(args, list), 'Args should be a list, not a string.'
         self.irc = irc
@@ -858,10 +859,10 @@ class IrcObjectProxy(RichReplyMethods):
                         except KeyError:
                             pass # We'll leave it as it is.
                     mask = prefix.split('!', 1)[1]
-                    Privmsg._mores[mask] = msgs
+                    self._mores[mask] = msgs
                     public = ircutils.isChannel(msg.args[0])
                     private = self.private or not public
-                    Privmsg._mores[msg.nick] = (private, msgs)
+                    self._mores[msg.nick] = (private, msgs)
                     m = reply(msg, response, to=self.to,
                                             action=self.action,
                                             notice=self.notice,
@@ -1007,7 +1008,6 @@ class Privmsg(irclib.IrcCallback):
     Proxy = IrcObjectProxy
     commandArgs = ['self', 'irc', 'msg', 'args']
     # These must be class-scope, so all plugins use the same one.
-    _mores = ircutils.IrcDict()
     _disabled = DisabledCommands()
     def isDisabled(self, command):
         return self._disabled.disabled(command, self.name())

@@ -178,7 +178,7 @@ class Owner(callbacks.Privmsg):
 
     def reset(self):
         # This has to be done somewhere, I figure here is as good place as any.
-        callbacks.Privmsg._mores.clear()
+        callbacks.IrcObjectProxy._mores.clear()
         self.__parent.reset()
 
     def _connect(self, network, serverPort=None, password=''):

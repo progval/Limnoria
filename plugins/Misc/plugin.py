@@ -283,9 +283,9 @@ class Misc(callbacks.Privmsg):
         userHostmask = msg.prefix.split('!', 1)[1]
         if nick:
             try:
-                (private, L) = self._mores[nick]
+                (private, L) = irc._mores[nick]
                 if not private:
-                    self._mores[userHostmask] = L[:]
+                    irc._mores[userHostmask] = L[:]
                 else:
                     irc.error('%s has no public mores.' % nick)
                     return
@@ -293,7 +293,7 @@ class Misc(callbacks.Privmsg):
                 irc.error('Sorry, I can\'t find any mores for %s' % nick)
                 return
         try:
-            L = self._mores[userHostmask]
+            L = irc._mores[userHostmask]
             chunk = L.pop()
             if L:
                 chunk += format(' \x02(%n)\x0F', (len(L), 'message', 'more'))
