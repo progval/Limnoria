@@ -30,7 +30,7 @@
 ###
 
 """
-This module attempts to capture a specific nick, watching for an oppurtunity to
+This module attempts to capture the bot's nick, watching for an opportunity to
 switch to that nick.
 """
 
@@ -69,6 +69,9 @@ conf.registerGlobalValue(conf.supybot.plugins.NickCapture.ison, 'period',
     will check whether its nick ISON."""))
 
 class NickCapture(callbacks.Privmsg):
+    """This module constantly tries to take whatever nick is configured as
+    supybot.nick.  Just make sure that's set appropriately, and thus plugin
+    will do the rest."""
     public = False
     def __init__(self):
         callbacks.Privmsg.__init__(self)
