@@ -1,3 +1,7 @@
+2004-02-20  Jeremy Fincher  <jemfinch@supybot.org>
+
+	* Version 0.77.0!
+
 	* Changed the format of the user and channel databases to
 	something much more readable and user-editable.  Be sure, if
 	you're upgrading, to run tools/ircdbConvert.py on your user and
