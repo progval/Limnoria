@@ -37,12 +37,13 @@ to access the bot.
 from baseplugin import *
 
 import re
+import random
 
 import irclib
 import ircmsgs
 
 class FixRelayBot(irclib.IrcCallback):
-    _re = re.compile('<([^@]+)@([^>])+>\s+(.*)')
+    _re = re.compile(r'<([^@]+)@[^>]+>\s+(.*)')
     def inFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
             #debug.printf('Message command was PRIVMSG')
@@ -51,7 +52,8 @@ class FixRelayBot(irclib.IrcCallback):
                 #debug.printf('Regexp matched: %r, %r, %r' % m.groups())
                 nick = m.group(1)
                 network = m.group(2)
-                newprefix = '%s!%s@%s' % (nick, nick, network)
+                host = random.random()*100
+                newprefix = ircutils.joinHostmask(nick, nick, host)
                 msg = ircmsgs.IrcMsg(command='PRIVMSG', prefix=newprefix,
                                      args=(msg.args[0], m.group(3)))
         return msg
