@@ -105,20 +105,27 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                                       WHERE nick=%s
                                       ORDER BY id DESC LIMIT 1""", msg.nick)
                     if cursor.rowcount == 0:
-                        self._grab(msg, irc.prefix)
+                        self._grab(irc, msg, irc.prefix)
                         self._sendGrabMsg(irc, msg)
                     else:
                         last = int(cursor.fetchone()[0])
                         elapsed = int(time.time()) - last
                         if random.random()*elapsed > grabTime/2:
-                            self._grab(msg, irc.prefix)
+                            self._grab(irc, msg, irc.prefix)
                             self._sendGrabMsg(irc, msg)
 
-    def _grab(self, msg, addedBy):
+    def _grab(self, irc, msg, addedBy):
         channel = msg.args[0]
         db = self.getDb(channel)
         cursor = db.cursor()
         text = ircmsgs.prettyPrint(msg)
+        # Check to see if the latest quotegrab is identical
+        cursor.execute("""SELECT quote FROM quotegrabs
+                          WHERE nick=%s
+                          ORDER BY id DESC LIMIT 1""", msg.nick)
+        if cursor.rowcount != 0:
+            if text == cursor.fetchone()[0]:
+                return
         cursor.execute("""INSERT INTO quotegrabs
                           VALUES (NULL, %s, %s, %s, %s, %s)""",
                        msg.nick, msg.prefix, addedBy, int(time.time()), text)
@@ -142,7 +149,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
             return
         for m in reviter(irc.state.history):
             if m.command == 'PRIVMSG' and m.nick == nick:
-                self._grab(m, msg.prefix)
+                self._grab(irc, m, msg.prefix)
                 irc.reply(msg, conf.replySuccess)
                 return
         irc.error(msg, 'I couldn\'t find a proper message to grab.')
@@ -166,6 +173,33 @@ class QuoteGrabs(plugins.ChannelDBHandler,
             text = cursor.fetchone()[0]
             irc.reply(msg, text)
 
+    def list(self, irc, msg, args):
+        """<nick>
+
+        Returns a list of shortened quotes that have been grabbed for <nick>
+        as well as the id of each quote.  These ids can be used to get the
+        full quote.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        nick = privmsgs.getArgs(args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT id, quote FROM quotegrabs
+                          WHERE nick=%s
+                          ORDER BY id ASC""", nick)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'I couldn\'t find any quotegrabs for %s' % nick)
+        else:
+            l = []
+            for (id, quote) in cursor.fetchall():
+                # strip the nick from the quote
+                quote = quote.replace('<%s> ' % nick, '', 1)
+                item_str = utils.ellipsisify('#%s: %s' % (id, quote), 50)
+                l.append(item_str)
+            irc.reply(msg, utils.commaAndify(l))
+
+        
+             
 
 Class = QuoteGrabs
 

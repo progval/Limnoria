@@ -55,6 +55,25 @@ class QuoteGrabsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('grab foo')
         self.assertResponse('quote foo', '* foo moos')
 
+    def testList(self):
+        testPrefix = 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                         prefix=testPrefix))
+        self.assertNotError('grab foo')
+        self.assertResponse('quotegrabs list foo', '#1: test')
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'a' * 80,
+                                         prefix=testPrefix))
+        self.assertNotError('grab foo')
+        self.assertResponse('quotegrabs list foo', '#1: test and #2: %s...' %\
+                            ('a'*43)) # 50 - length of "#2: ..."
+
+    def testDuplicateGrabs(self):
+        testPrefix = 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                         prefix=testPrefix))
+        self.assertNotError('grab foo') 
+        self.assertNotError('grab foo') # note: NOT an error, still won't dupe
+        self.assertResponse('quotegrabs list foo', '#1: test')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
