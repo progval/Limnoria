@@ -56,6 +56,7 @@ import utils
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
+    onStart.append('load Unix')
     cmdLine = utils.findBinaryInPath('aspell')
     if not cmdLine:
         cmdLine = utils.findBinaryInPath('ispell')
