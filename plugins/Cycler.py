@@ -41,7 +41,7 @@ __contributors__ = {}
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.plugins as plugins
-import supybot..ircmsgs as ircmsgs
+import supybot.ircmsgs as ircmsgs
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
