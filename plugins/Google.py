@@ -31,14 +31,6 @@
 
 """
 Acceses Google for various things.
-
-Commands include:
-  google
-  googlelinux
-  googlebsd
-  googlemac
-  googlespell
-  googlelicensekey
 """
 
 from baseplugin import *
@@ -105,8 +97,8 @@ class Google(callbacks.Privmsg):
         if not results:
             return 'No matches found %s' % time
         else:
-            response = ircutils.privmsgPayload(results, ' :: ', 400)
-            return '%s %s' % (response, time)
+            s = ircutils.privmsgPayload(results, ' :: ', 375)
+            return '%s %s' % (s, time)
 
     def googlelicensekey(self, irc, msg, args):
         """<key>
