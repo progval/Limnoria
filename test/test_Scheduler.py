@@ -34,7 +34,9 @@ from testsupport import *
 class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Scheduler', 'Utilities')
     def testAddRemove(self):
-        self.assertNotError('scheduler add [seconds 5s] echo foo bar baz')
+        self.assertRegexp('scheduler list', 'no.*commands')
+        m = self.assertNotError('scheduler add [seconds 5s] echo foo bar baz')
+        self.assertNotRegexp('scheduler list', 'no.*commands')
         self.assertNoResponse(' ', 4)
         self.assertResponse(' ', 'foo bar baz')
         m = self.assertNotError('scheduler add 5 echo xyzzy')
@@ -52,11 +54,14 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testRepeat(self):
         self.assertNotError('scheduler repeat repeater 5 echo foo bar baz')
         self.assertNotError(' ') # First response.
+        self.assertResponse('scheduler list', 'repeater: "echo foo bar baz"')
         self.assertNoResponse(' ', 4)
         self.assertResponse(' ', 'foo bar baz')
+        self.assertResponse('scheduler list', 'repeater: "echo foo bar baz"')
         self.assertNoResponse(' ', 4)
         self.assertResponse(' ', 'foo bar baz')
         self.assertNotError('scheduler remove repeater')
+        self.assertNotRegexp('scheduler list', 'repeater')
         self.assertNoResponse(' ', 5)
 
     def testRepeatWorksWithNestedCommands(self):
