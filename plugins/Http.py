@@ -283,6 +283,8 @@ class Http(callbacks.Privmsg):
             html = m.group(1)
             s = utils.htmlToText(html, tagReplace='').strip('\xa0 ')
             irc.reply(msg, s[9:]) # Snip off "the site"
+        elif html.find('We could not get any results') != -1:
+            irc.reply('No results found for %s' % hostname)
         else:
             irc.error(msg, 'The format of the was odd.')
 
