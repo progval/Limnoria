@@ -104,7 +104,7 @@ class Math(callbacks.Privmsg):
             else:
                 digit = str(digit)
             valStr = digit + valStr
-            number = int(math.floor(number / base))
+            number = number // base
         if negative:
             return '-%s' % valStr
         else:
@@ -116,6 +116,8 @@ class Math(callbacks.Privmsg):
             base, 2 through 36. Returns a string.
         """
         number = long(str(number), fromBase)
+        if toBase == 10:
+            return str(number)
         return self._convertDecimalToBase(number, toBase)
         
     _mathEnv = {'__builtins__': types.ModuleType('__builtins__'), 'i': 1j}
