@@ -103,11 +103,14 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                 lines.append('###\n')
                 fd.writelines(lines)
         if hasattr(value, 'value'): # This lets us print help for non-valued.
-            fd.write('%s: %s\n' % (name, value))
+            fd.write('%s: %s\n' % (escape(name), value))
     fd.close()
 
 def isValidRegistryName(name):
     return '.' not in name and ':' not in name and len(name.split()) == 1
+
+def escape(name):
+    return name
 
 def split(name):
     # XXX: This should eventually handle escapes.
@@ -367,12 +370,15 @@ class OnlySomeStrings(String):
             self.error()
 
 class NormalizedString(String):
+    def normalize(self, s):
+        return utils.normalizeWhitespace(s.strip())
+    
     def set(self, s):
-        s = utils.normalizeWhitespace(s.strip())
+        s = self.normalize(s)
         String.set(self, s)
 
     def setValue(self, s):
-        s = utils.normalizeWhitespace(s.strip())
+        s = self.normalize(s)
         String.setValue(self, s)
 
 class StringSurroundedBySpaces(String):
