@@ -40,43 +40,15 @@ import sets
 import getopt
 import socket
 import urllib2
+import xml.dom.minidom
 
 import utils
 import debug
 import privmsgs
 import callbacks
 
-example = utils.wrapLines("""
-<jemfinch> @list Http
-<supybot> acronym, babelize, deepthought, freshmeat, geekquote, netcraft, randomlanguage, stockquote, title, translate, weather
-<jemfinch> @acronym ASAP
-<supybot> ASAP could be As Soon As Possible, or A Simplified Asset (disposal) Procedure, or A Stupid Acting Person (Dilbert comic strip), or Academic Strategic Alliances Program, or Accelerated Situational Awareness Prototype, or Accelerated Systems Applications and Products (data processing), or Acquisitions Strategies and Plans, or Administrative Services Automation Program, or Administrative Services Automation Project
-<jemfinch> @deepthought
-<supybot> #331: Probably one of the worst things about being a genie in a magic lamp is a little thing called "lamp stench."
-<jemfinch> @freshmeat supybot
-<supybot> SupyBot, last updated 2002-08-02 19:07:52, with a vitality percent of 0.00 and a popularity of 0.09, is in version 0.36.1.
-<jemfinch> (yeah, I haven't updated that in awhile :))
-<jemfinch> @geekquote
-<supybot> <Coco13> Girls are a waste of polygons.
-<jemfinch> @netcraft slashdot.org
-<supybot> slashdot.org is running Apache/1.3.26 (Unix) mod_gzip/1.3.19.1a mod_perl/1.27 mod_ssl/2.8.10 OpenSSL/0.9.7a on Linux.
-<jemfinch> @stockquote MSFT
-<supybot> The current price of MSFT is 26.39, as of 11:22am EST.  A change of -0.18 from the last business day.
-<jemfinch> @title slashdot.org
-<supybot> Slashdot: News for nerds, stuff that matters
-<jemfinch> @weather 43221
-<supybot> The current temperature in Columbus, Ohio is 77F.  Conditions are Mist.
-<jemfinch> @weather Paris, FR
-<supybot> The current temperature in Paris, France is 27C.  Conditions are Fair.
-<jemfinch> @randomlanguage
-<supybot> Portuguese
-<jemfinch> @babelize en [randomlanguage] [deepthought]
-<supybot> # 355: When he was a small boy, had always wanted to be one acrobat. It looked at as thus much amusement, turning through air, to launch itself, fulling it it it he himself with the land in the shoulders of the person. Little knew that when finally one was changedded acrobat, would seem irritating thus. Years later, later this that stopped finally, joined did not work to it for it is as one acrobat after everything. Weirdo of the stre
-""")
-
 class FreshmeatException(Exception):
     pass
-
 
 def getPage(url):
     """Gets a page.  Returns a string that is the page gotten."""
@@ -114,11 +86,6 @@ class Http(callbacks.Privmsg):
         except ValueError, e:
             irc.error(msg, str(e))
 
-    _fmProject = re.compile('<projectname_full>([^<]+)</projectname_full>')
-    _fmVersion = re.compile('<latest_version>([^<]+)</latest_version>')
-    _fmVitality = re.compile('<vitality_percent>([^<]+)</vitality_percent>')
-    _fmPopular = re.compile('<popularity_percent>([^<]+)</popularity_percent>')
-    _fmLastUpdated = re.compile('<date_updated>([^<]+)</date_updated>')
     def freshmeat(self, irc, msg, args):
         """<project name>
 
@@ -130,11 +97,12 @@ class Http(callbacks.Privmsg):
             text = getPage(url)
             if text.startswith('Error'):
                 raise FreshmeatException, text
-            project = self._fmProject.search(text).group(1)
-            version = self._fmVersion.search(text).group(1)
-            vitality = self._fmVitality.search(text).group(1)
-            popularity = self._fmPopular.search(text).group(1)
-            lastupdated = self._fmLastUpdated.search(text).group(1)
+            dom = xml.dom.minidom.parseString(text)
+            project = dom.getElementsByTagName('projectname_full')[0]
+            version = dom.getElementsByTagName('latest_release_version')[0]
+            vitality = dom.getElementsByTagName('vitality_percent')[0]
+            popularity = dom.getElementsByTagName('popularity_percent')[0]
+            lastupdated = dom.getElementsByTagName('date_updated')[0]
             irc.reply(msg,
                       '%s, last updated %s, with a vitality percent of %s '\
                       'and a popularity of %s, is in version %s.' % \
