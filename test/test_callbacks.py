@@ -318,6 +318,8 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertResponse('third foo bar baz', 'foo bar baz')
 
     def testConfigureHandlesNonCanonicalCommands(self):
+        # Note that this also ends up testing that the FakeIrc object in
+        # callbacks actually works.
         try:
             original = conf.commandsOnStart
             tokens = callbacks.tokenize('Admin setprefixchar $')
