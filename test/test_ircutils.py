@@ -95,8 +95,10 @@ class FunctionsTestCase(unittest.TestCase):
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'
         bolds = ircutils.bold(s)
+        colors = ircutils.mircColor(s, 'pink', 'orange')
         self.assertEqual(s, ircutils.safeArgument(s))
         self.assertEqual(bolds, ircutils.safeArgument(bolds))
+        self.assertEqual(colors, ircutils.safeArgument(colors))
 
     def testIsIP(self):
         self.failIf(ircutils.isIP('a.b.c'))

@@ -241,7 +241,7 @@ def isValidArgument(s):
     """Returns if s is strictly a valid argument for an IRC message."""
     return '\r' not in s and '\n' not in s and '\x00' not in s
 
-notFunky = string.ascii[32:]+'\x02'
+notFunky = string.ascii[32:]+'\x02'+'\x03'
 def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
     if isValidArgument(s) and s.translate(string.ascii, notFunky) == '':
