@@ -319,7 +319,7 @@ registerChannelValue(supybot.reply.mores, 'instant',
 
 registerGlobalValue(supybot.reply, 'oneToOne',
     registry.Boolean(True, """Determines whether the bot will send
-    multi-message replies in a single messsage or in multiple messages.  For
+    multi-message replies in a single message or in multiple messages.  For
     safety purposes (so the bot can't possibly flood) it will normally send
     everything in a single message."""))
 
@@ -730,7 +730,7 @@ registerGlobalValue(supybot, 'defaultIgnore',
 registerGlobalValue(supybot, 'humanTimestampFormat',
     registry.String('%I:%M %p, %B %d, %Y', """Determines how timestamps printed
     for human reading should be formatted. Refer to the Python documentation
-    for the time module to see valid formatting characteres for time
+    for the time module to see valid formatting characters for time
     formats."""))
 
 class IP(registry.String):

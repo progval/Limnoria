@@ -30,7 +30,7 @@
 ###
 
 """
-The Todo module allows registered users to keep their own personal list of
+The Todo plugin allows registered users to keep their own personal list of
 tasks to do, with an optional priority for each.
 """
 

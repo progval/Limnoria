@@ -248,7 +248,6 @@ class Tokenizer:
         return ret
 
     def tokenize(self, s):
-        """Tokenizes a string according to supybot's nested argument format."""
         lexer = shlex.shlex(StringIO(s))
         lexer.commenters = ''
         lexer.quotes = self.quotes

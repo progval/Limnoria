@@ -182,7 +182,7 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
                 utils.sortBy(ircutils.toLower, L)
                 irc.reply(utils.commaAndify(L))
             else:
-                irc.reply('I\'m not currently targetting anywhere.')
+                irc.reply('I\'m not currently targeting anywhere.')
         elif remove:
             pass #XXX
         

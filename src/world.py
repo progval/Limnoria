@@ -135,7 +135,7 @@ def upkeep(scheduleNext=True):
         schedule.addEvent(upkeep, time.time() + conf.supybot.upkeepInterval())
     collected = gc.collect()
     if gc.garbage:
-        log.warning('Uncollectable garbage (file this as a bug on SF.net): %s',
+        log.warning('Noncollectable garbage (file this as a bug on SF.net): %s',
                     gc.garbage)
     return collected
 

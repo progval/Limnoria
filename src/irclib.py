@@ -130,7 +130,7 @@ class IrcMsgQueue(object):
     Probably smarter than it is now, though it's gotten quite a bit smarter
     than it originally was.  A method to "score" methods, and a heapq to
     maintain a priority queue of the messages would be the ideal way to do
-    intelligent queueing.
+    intelligent queuing.
 
     As it stands, however, we simple keep track of 'high priority' messages,
     'low priority' messages, and normal messages, and just make sure to return
@@ -491,9 +491,9 @@ class Irc(IrcCommandDispatcher):
         if self.password:
             log.info('Sending PASS command, not logging the password.')
             self.queueMsg(ircmsgs.password(self.password))
-        log.info('Queueing NICK command, nick is %s.', self.nick)
+        log.info('Queuing NICK command, nick is %s.', self.nick)
         self.queueMsg(ircmsgs.nick(self.nick))
-        log.info('Queueing USER command, ident is %s, user is %s.',
+        log.info('Queuing USER command, ident is %s, user is %s.',
                  self.ident, self.user)
         self.queueMsg(ircmsgs.user(self.ident, self.user))
 

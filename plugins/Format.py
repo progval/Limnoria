@@ -153,8 +153,8 @@ class Format(callbacks.Privmsg):
         """<string 1> <string 2>
 
         Concatenates two strings.  Do keep in mind that this is *not* the same
-        thing as strjoin "", since if <string 2> contains spaces, they won't be
-        removed by strconcat.
+        thing as join "", since if <string 2> contains spaces, they won't be
+        removed by concat.
         """
         (first, second) = privmsgs.getArgs(args, required=2)
         irc.reply(first+second)

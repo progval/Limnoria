@@ -30,7 +30,7 @@
 ###
 
 """
-Allows people behind a relaybot (which uses <nick@network> to relay messages)
+Allows people behind a relay bot (which uses <nick@network> to relay messages)
 to access the bot.
 """
 

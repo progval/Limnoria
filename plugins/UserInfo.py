@@ -66,7 +66,7 @@ class UserInfo(callbacks.Privmsg):
     def userinfo(self, irc, msg, args):
         """[<name>]
 
-        Returns the arbitary data associated with the user <name>.  If <name>
+        Returns the arbitrary data associated with the user <name>.  If <name>
         is not given, returns the data associated with the user giving the
         command.
         """

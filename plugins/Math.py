@@ -169,7 +169,7 @@ class Math(callbacks.Privmsg):
     def calc(self, irc, msg, args):
         """<math expression>
 
-        Returns the value of the evaluted <math expression>.  The syntax is
+        Returns the value of the evaluated <math expression>.  The syntax is
         Python syntax; the type of arithmetic is floating point.  Floating
         point arithmetic is used in order to prevent a user from being able to
         crash to the bot with something like 10**10**10**10.  One consequence

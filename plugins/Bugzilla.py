@@ -98,7 +98,7 @@ class Bugzillae(registry.SpaceSeparatedListOfStrings):
     List = ircutils.IrcSet
     
 conf.registerGlobalValue(conf.supybot.plugins.Bugzilla, 'bugzillae',
-    Bugzillae([], """Determines what bugzillas will be added to the bot when it
+    Bugzillae([], """Determines what bugzillae will be added to the bot when it
     starts."""))
 
 def registerBugzilla(name, url='', description=''):
@@ -148,7 +148,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         """<name> <url> [<description>]
 
         Add a bugzilla <url> to the list of defined bugzillae. <name>
-        is the name that will be used to reference the zilla in all
+        is the name that will be used to reference the bugzilla in all
         commands. Unambiguous abbreviations of <name> will be accepted also.
         <description> is the common name for the bugzilla and will
         be listed with the bugzilla query; if not given, it defaults to <name>.
@@ -271,7 +271,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
 
         Look for bugs with <search string in the desc>, also matching
         <keywords>. <keywords> can be statuses, severities, priorities, or
-        resolutions, seperated by commas"""
+        resolutions, separated by commas"""
         keywords = None
         (optlist, rest) = getopt.getopt(args, '', ['keywords='])
         for (option, arguments) in optlist:

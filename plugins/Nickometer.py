@@ -47,7 +47,7 @@
 ###
 
 """
-Attempt to port blootbot's nickometer command from perl. This plugin
+Attempt to port Infobot's nickometer command from Perl. This plugin
 provides one command (called nickometer) which will tell you how 'lame'
 an IRC nick is. It's an elitist hacker thing, but quite fun.
 """
@@ -184,7 +184,7 @@ class Nickometer(callbacks.Privmsg):
             hits=re.findall(`i`, nick)
             if (hits and len(hits)>0):
                 score += self.punish(k3wlt0k_weights[i] * len(hits) * 30,
-                                    '%s occurences of %s ' % (len(hits), i))
+                                    '%s occurrences of %s ' % (len(hits), i))
 
         # An alpha caps is not lame in middle or at end, provided the first
         # alpha is caps.

@@ -619,7 +619,7 @@ class Channel(callbacks.Privmsg):
     setcapability = privmsgs.checkChannelCapability(setcapability, 'op')
 
     def unsetcapability(self, irc, msg, args, channel):
-        """[<chanel>] <capability>
+        """[<channel>] <capability>
 
         If you have the #channel,op capability, this will unset the channel
         capability <capability> so each user's specific capability or the

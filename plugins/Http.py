@@ -173,7 +173,7 @@ class Http(callbacks.Privmsg):
         """<company symbol>
 
         Gets the information about the current price and change from the
-        previous day of a given compny (represented by a stock symbol).
+        previous day of a given company (represented by a stock symbol).
         """
         symbol = privmsgs.getArgs(args)
         if ' ' in symbol:
@@ -336,7 +336,7 @@ class Http(callbacks.Privmsg):
     def extension(self, irc, msg, args):
         """<ext>
 
-        Returns the results of querying filext.com for file extenstions that
+        Returns the results of querying filext.com for file extensions that
         match <ext>.
         """
         ext = privmsgs.getArgs(args)
@@ -367,7 +367,7 @@ class Http(callbacks.Privmsg):
         if res:
             irc.reply(utils.commaAndify(res))
         else:
-            irc.error('No matching file extenstions were found.')
+            irc.error('No matching file extensions were found.')
 
     _zipinfore = re.compile(r'Latitude<BR>\(([^)]+)\)</th><th>Longitude<BR>'
                             r'\(([^)]+)\).*?<tr>(.*?)</tr>', re.I)

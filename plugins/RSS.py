@@ -215,7 +215,7 @@ class RSS(callbacks.Privmsg):
                     results = rssparser.parse(url)
                 except sgmllib.SGMLParseError:
                     self.log.exception('Uncaught exception from rssparser:')
-                    raise callbacks.Error, 'Invalid (unparseable) RSS feed.'
+                    raise callbacks.Error, 'Invalid (unparsable) RSS feed.'
                 except socket.timeout:
                     return error('Timeout downloading feed.')
                 self.cachedFeeds[url] = results

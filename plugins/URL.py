@@ -84,7 +84,7 @@ conf.registerChannelValue(conf.supybot.plugins.URL, 'titleSnarfer',
     title of URLs it sees in the channel."""))
 conf.registerChannelValue(conf.supybot.plugins.URL, 'nonSnarfingRegexp',
     registry.Regexp(None, """Determines what URLs are to be snarfed and stored
-    in the database in the channel; URLs matchin the regexp given will not be
+    in the database in the channel; URLs matching the regexp given will not be
     snarfed.  Give the empty string if you have no URLs that you'd like to
     exclude from being snarfed."""))
 

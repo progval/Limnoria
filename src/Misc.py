@@ -321,7 +321,7 @@ class Misc(callbacks.Privmsg):
     def source(self, irc, msg, args):
         """takes no arguments
 
-        Returns a URL saying where to get SupyBot.
+        Returns a URL saying where to get Supybot.
         """
         irc.reply('My source is at http://supybot.sf.net/')
 

@@ -60,7 +60,7 @@ conf.registerChannelValue(conf.supybot.plugins.Karma, 'simpleOutput',
     versions of the karma output when requesting a single thing's karma."""))
 conf.registerChannelValue(conf.supybot.plugins.Karma, 'response',
     registry.Boolean(False, """Determines whether the bot will reply with a
-    success message when something's karma is incrneased or decreased."""))
+    success message when something's karma is increased or decreased."""))
 conf.registerChannelValue(conf.supybot.plugins.Karma, 'rankingDisplay',
     registry.Integer(3, """Determines how many highest/lowest karma things are
     shown when karma is called with no arguments."""))

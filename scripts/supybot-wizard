@@ -392,8 +392,8 @@ def main():
     if yn('Do you want your bot to join some channels when he connects?',
           default=True):
         defaultChannels = ' '.join(conf.supybot.channels())
-        output("""Seperate channels with spaces.  If the channel is locked
-                  with a key, follow the channel name with the key seperated
+        output("""Separate channels with spaces.  If the channel is locked
+                  with a key, follow the channel name with the key separated
                   by a comma. For example:
                   #supybot #mychannel,mykey #otherchannel""");
         while True:
@@ -429,7 +429,7 @@ def main():
 
     output("""Now we're going to run you through plugin configuration. There's
            a variety of plugins in supybot by default, but you can create and
-           add your own, ofcourse. We'll allow you to take a look at the known
+           add your own, of course. We'll allow you to take a look at the known
            plugins' descriptions and configure them
            if you like what you see.""")
 
@@ -451,7 +451,7 @@ def main():
 
     # individual
     if yn('Would you like to look at plugins individually?'):
-        output("""Next comes your oppurtunity to learn more about the plugins
+        output("""Next comes your opportunity to learn more about the plugins
         that are available and select some (or all!) of them to run in your
         bot.  Before you have to make a decision, of course, you'll be able to
         see a short description of the plugin and, if you choose, an example
@@ -631,6 +631,6 @@ if __name__ == '__main__':
             print ansi.RESET
         print
         print
-        output("""Well, it looks like you cancelled out of the wizard before
+        output("""Well, it looks like you canceled out of the wizard before
         it was done.  Unfortunately, I didn't get to write anything to file.
         Please run the wizard again to completion.""")

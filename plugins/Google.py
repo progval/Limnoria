@@ -30,7 +30,7 @@
 ###
 
 """
-Acceses Google for various things.
+Accesses Google for various things.
 """
 
 __revision__ = "$Id$"
@@ -126,7 +126,7 @@ def search(log, queries, **kwargs):
         raise callbacks.Error, 'Invalid Google license key.'
     except xml.sax.SAXException, e:
         log.exception('Uncaught SAX error:')
-        raise callbacks.Error, 'Google returned an unparseable response.  ' \
+        raise callbacks.Error, 'Google returned an unparsable response.  ' \
                                'The full traceback has been logged.'
     except SOAP.Error, e:
         log.exception('Uncaught SOAP exception in Google.search:')

@@ -286,7 +286,7 @@ class IrcUser(object):
             raise ValueError, 'secure flag set, unmatched hostmask'
 
     def unsetAuth(self):
-        """Unsets a use's authenticated hostmask."""
+        """Unsets a user's authenticated hostmask."""
         if self.auth is not None:
             users.invalidateCache(hostmask=self.auth[1])
             self.auth = None
@@ -935,7 +935,7 @@ def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
         return _x(capability, conf.supybot.capabilities.default())
 
 def checkCapability(hostmask, capability, users=users, channels=channels):
-    """Checks that the user specified by name/hostmask has the capabilty given.
+    """Checks that the user specified by name/hostmask has the capability given.
     """
     if world.testing:
         return _x(capability, True)

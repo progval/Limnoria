@@ -60,7 +60,7 @@ class Ctcp(callbacks.PrivmsgRegexp):
     def version(self, irc, msg, match):
         "\x01VERSION\x01"
         self.log.info('Received CTCP VERSION from %s', msg.prefix)
-        s = '\x01VERSION SupyBot %s\x01' % conf.version
+        s = '\x01VERSION Supybot %s\x01' % conf.version
         irc.queueMsg(notice(msg.nick, s))
 
     def userinfo(self, irc, msg, match):
@@ -76,7 +76,7 @@ class Ctcp(callbacks.PrivmsgRegexp):
     def finger(self, irc, msg, match):
         "\x01FINGER\x01"
         self.log.info('Received CTCP FINGER from %s' % msg.prefix)
-        s = '\x01SupyBot, the best Python bot in existence!\x01'
+        s = '\x01Supybot, the best Python bot in existence!\x01'
         irc.queueMsg(notice(msg.nick, s))
 
     def source(self, irc, msg, match):

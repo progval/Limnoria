@@ -311,7 +311,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
     def removecapability(self, irc, msg, args):
         """<name|hostmask> <capability>
 
-        Takes from the user specified by <name> (or the uswer to whom
+        Takes from the user specified by <name> (or the user to whom
         <hostmask> currently maps) the specified capability <capability>
         """
         (name, capability) = privmsgs.getArgs(args, 2)

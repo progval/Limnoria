@@ -119,7 +119,7 @@ def loadPluginClass(irc, module, register=None):
 
 conf.registerPlugin('Owner', True)
 conf.supybot.plugins.Owner.register('public', registry.Boolean(True,
-    """Determines whether this plugin is publically visible."""))
+    """Determines whether this plugin is publicly visible."""))
 
 ###
 # supybot.commands.

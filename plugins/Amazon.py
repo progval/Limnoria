@@ -361,7 +361,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
         """[--url] <category>
 
         Returns a list of best selling items in <category>. The 'categories'
-        command will return a list of the available categores.  If --url
+        command will return a list of the available categories.  If --url
         is specified, a link to amazon.com's page for the item will also be
         returned.
         """

@@ -58,7 +58,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Words, 'file',
     will be used by this plugin as its list of words."""))
 conf.registerGroup(conf.supybot.plugins.Words, 'hangman')
 conf.registerChannelValue(conf.supybot.plugins.Words.hangman, 'maxTries',
-    registry.Integer(6, """Determines how many oppurtunities users will have to
+    registry.Integer(6, """Determines how many opportunities users will have to
     guess letters in the hangman game."""))
 conf.registerChannelValue(conf.supybot.plugins.Words.hangman, 'prefix',
     registry.StringWithSpaceOnRight('-= HANGMAN =- ', """Determines what prefix

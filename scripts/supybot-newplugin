@@ -131,7 +131,7 @@ def main():
 
         print textwrap.fill("""Sometimes you'll want a callback to be
         threaded.  If its methods (command or regexp-based, either one) will
-        take a signficant amount of time to run, you'll want to thread them so
+        take a significant amount of time to run, you'll want to thread them so
         they don't block the entire bot.""")
         print
         threaded = yn('Does your plugin need to be threaded?')
