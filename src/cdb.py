@@ -87,14 +87,14 @@ def open(filename, mode='r'):
     else:
         raise ValueError, 'Invalid flag: %s' % mode
 
-def shelf(filename):
+def shelf(filename, *args, **kwargs):
     """Opens a new shelf database object."""
     if os.path.exists(filename):
-        return Shelf(filename)
+        return Shelf(filename, *args, **kwargs)
     else:
         maker = Maker(filename)
         maker.finish()
-        return Shelf(filename)
+        return Shelf(filename, *args, **kwargs)
 
 def _readKeyValue(fd):
     klen = 0
