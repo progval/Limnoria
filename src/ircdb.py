@@ -100,31 +100,32 @@ def _normalize(s):
     return s.translate(_normal)
 
 
+_invert = invertCapability
 class CapabilitySet(sets.Set):
     """A subclass of set handling basic capability stuff."""
     def __init__(self, capabilities=()):
-        sets.Set.__init__(self)
+        super(CapabilitySet, self).__init__()
         for capability in capabilities:
             self.add(capability)
 
     def add(self, capability):
         """Adds a capability to the set."""
         capability = ircutils.toLower(capability)
-        inverted = invertCapability(capability)
-        if sets.Set.__contains__(self, inverted):
-            sets.Set.remove(self, inverted)
-        sets.Set.add(self, capability)
+        inverted = _invert(capability)
+        if super(CapabilitySet, self).__contains__(inverted):
+            super(CapabilitySet, self).remove(inverted)
+        super(CapabilitySet, self).add(capability)
 
     def remove(self, capability):
         """Removes a capability from the set."""
         capability = ircutils.toLower(capability)
-        sets.Set.remove(self, capability)
+        super(CapabilitySet, self).remove(capability)
 
     def __contains__(self, capability):
         capability = ircutils.toLower(capability)
-        if sets.Set.__contains__(self, capability):
+        if super(CapabilitySet, self).__contains__(capability):
             return True
-        if sets.Set.__contains__(self, invertCapability(capability)):
+        if super(CapabilitySet, self).__contains__(_invert(capability)):
             return True
         else:
             return False
@@ -134,9 +135,9 @@ class CapabilitySet(sets.Set):
         'allowed' given its (or its anticapability's) presence in the set.
         """
         capability = ircutils.toLower(capability)
-        if sets.Set.__contains__(self, capability):
+        if super(CapabilitySet, self).__contains__(capability):
             return True
-        elif sets.Set.__contains__(self, invertCapability(capability)):
+        elif super(CapabilitySet, self).__contains__(_invert(capability)):
             return False
         else:
             raise KeyError, capability
@@ -152,10 +153,10 @@ class UserCapabilitySet(CapabilitySet):
         capability = ircutils.toLower(capability)
         if capability == 'owner' or capability == antiOwner:
             return True
-        elif CapabilitySet.__contains__(self, 'owner'):
+        elif super(UserCapabilitySet, self).__contains__('owner'):
             return True
         else:
-            return CapabilitySet.__contains__(self, capability)
+            return super(UserCapabilitySet, self).__contains__(capability)
 
     def check(self, capability):
         """Returns the appropriate boolean for whether a given capability is
@@ -165,23 +166,23 @@ class UserCapabilitySet(CapabilitySet):
         """
         capability = ircutils.toLower(capability)
         if capability == 'owner' or capability == antiOwner:
-            if CapabilitySet.__contains__(self, 'owner'):
+            if super(UserCapabilitySet, self).__contains__('owner'):
                 return not isAntiCapability(capability)
             else:
                 return isAntiCapability(capability)
-        elif CapabilitySet.__contains__(self, 'owner'):
+        elif super(UserCapabilitySet, self).__contains__('owner'):
             if isAntiCapability(capability):
                 return False
             else:
                 return True
         else:
-            return CapabilitySet.check(self, capability)
+            return super(UserCapabilitySet, self).check(capability)
 
     def add(self, capability):
         """Adds a capability to the set.  Just make sure it's not -owner."""
         capability = ircutils.toLower(capability)
         assert capability != '-owner', '"-owner" disallowed.'
-        CapabilitySet.add(self, capability)
+        super(UserCapabilitySet, self).add(capability)
 
 class IrcUser(object):
     """This class holds the capabilities and authentications for a user."""
