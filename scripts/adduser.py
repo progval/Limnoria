@@ -38,8 +38,6 @@ from questions import *
 
 import ircdb
 
-
-
 if __name__ == '__main__':
     prompt = 'Would you like to add a user?'
     while yn(prompt) == 'y':
@@ -50,9 +48,10 @@ if __name__ == '__main__':
         while yn(prompt) == 'y':
             capabilities.append(anything('What capability?'))
             prompt = 'Would you like to give %s another capability?' % name
-        user = ircdb.IrcUser()
+        (id, user) = ircdb.users.newUser()
+        user.name = name
         user.setPassword(password)
         for capability in capabilities:
             user.addCapability(capability)
-        ircdb.users.setUser(name, user)
+        ircdb.users.setUser(id, user)
         prompt = 'Would you like to add another user?'
