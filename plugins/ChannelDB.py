@@ -539,7 +539,7 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
                                                   '%rer' % arg1)
                     l = []
                     for (count, id) in results:
-                        username = ircdb.users.users[id].name
+                        username = ircdb.users.getUser(id).name
                         l.append('%s: %s' % (username, count))
                     s += utils.commaAndify(l)
                     irc.reply(msg, s)
@@ -551,8 +551,8 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
                               AND word_stats.user_id=%s
                               ORDER BY words.word""", id)
             if cursor.rowcount == 0:
-                username = ircdb.users.users[id].name
-                irc.error('%r has no wordstats' % username)
+                username = ircdb.users.getUser(id).name
+                irc.error(msg, '%r has no wordstats' % username)
                 return
             l = [('%r: %s' % (word, count)) for \
                  (word, count) in cursor.fetchall()]
