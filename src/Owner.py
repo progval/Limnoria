@@ -549,7 +549,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     irc.addCallback(callback)
                 irc.error('No plugin %s exists.' % name)
         else:
-            irc.error('There was no callback %s.' % name)
+            irc.error('There was no plugin %s.' % name)
 
     def unload(self, irc, msg, args):
         """<plugin>
@@ -571,7 +571,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             conf.registerPlugin(name, False)
             irc.replySuccess()
         else:
-            irc.error('There was no callback %s.' % name)
+            irc.error('There was no plugin %s.' % name)
 
     def reconnect(self, irc, msg, args):
         """takes no arguments
