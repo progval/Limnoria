@@ -120,6 +120,7 @@ def configure(onStart, afterConnect, advanced):
 
 
 class Relay(callbacks.Privmsg, plugins.Toggleable):
+    noIgnore = True
     priority = sys.maxint
     toggles = plugins.ToggleDictionary({'color': True})
     def __init__(self):
