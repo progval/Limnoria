@@ -38,6 +38,7 @@ from baseplugin import *
 import re
 import gzip
 import sets
+import getopt
 import popen2
 import random
 import fnmatch
@@ -204,20 +205,41 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
             (numberOfPackages, len(responses), ', '.join(responses))
         irc.reply(msg, s)
 
-    _incomingRe = re.compile(r'<a href="(.*?)\.deb">', re.I)
+    _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
     def debincoming(self, irc, msg, args):
-        """<package name>
+        """[--{regexp,arch}=<value>] [<glob>]
         
-        checks debian incoming for specified package name"""
-        pkgname = privmsgs.getArgs(args) 
+        Checks debian incoming for a matching package name.  The arch
+        parameter defaults to i386; --regexp returns only those package names
+        that match a given regexp, and normal matches use standard *nix
+        globbing.
+        """
+        (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'arch='])
+        predicates = []
+        archPredicate = lambda s: ('_i386.' in s)
+        for (option, arg) in optlist:
+            if option == '--regexp':
+                try:
+                    r = utils.perlReToPythonRe(arg)
+                    predicates.append(r.search)
+                except ValueError:
+                    irc.error('%r is not a valid regexp.' % arg)
+                    return
+            elif option == '--arch':
+                arg = '_%s.' % arg
+                archPredicate = lambda s, arg=arg: (arg in s)
+        predicates.append(archPredicate)
+        for arg in rest:
+            predicates.append(lambda s: fnmatch.fnmatch(s, arg))
         packages = []
         fd = urllib2.urlopen('http://incoming.debian.org/')
         for line in fd:
             m = self._incomingRe.search(line)
             if m:
                 name = m.group(1)
-                if fnmatch.fnmatch(name, pkgname):
-                    packages.append(name)
+                if all(lambda p: p(name), predicates):
+                    realname = utils.rsplit(name, '_', 1)[0]
+                    packages.append(realname)
         if len(packages) == 0:
             irc.error(msg, 'No packages matched that search.')
         else:
