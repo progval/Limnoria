@@ -40,6 +40,7 @@ import conf
 import debug
 import ircdb
 import ircmsgs
+import plugins
 import privmsgs
 import ircutils
 import callbacks
@@ -58,7 +59,10 @@ def configure(onStart, afterConnect, advanced):
 # Enforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
 ###
 _chanCap = ircdb.makeChannelCapability
-class Enforcer(callbacks.Privmsg):
+class Enforcer(callbacks.Privmsg, plugins.Toggleable):
+    toggles = plugins.ToggleDictionary({'auto-op': False,
+                                        'auto-voice': False,
+                                        'auto-halfop': False})
     started = False
     def start(self, irc, msg, args):
         """[<CHANSERV> <revenge>]
@@ -95,11 +99,14 @@ class Enforcer(callbacks.Privmsg):
             irc.queueMsg(ircmsgs.ban(channel, ircutils.banmask(msg.prefix)))
             irc.queueMsg(ircmsgs.kick(channel, msg.nick))
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
-            irc.queueMsg(ircmsgs.op(channel, msg.nick))
+            if self.toggles.get('auto-op', channel):
+                irc.queueMsg(ircmsgs.op(channel, msg.nick))
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'halfop')):
-            irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
+            if self.toggles.get('auto-halfop', channel):
+                irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'voice')):
-            irc.queueMsg(ircmsgs.voice(channel, msg.nick))
+            if self.toggles.get('auto-voice', channel):
+                irc.queueMsg(ircmsgs.voice(channel, msg.nick))
 
     def doTopic(self, irc, msg):
         if not self.started:
