@@ -96,13 +96,18 @@ class AutoMode(callbacks.Privmsg):
             return
         fallthrough = self.registryValue('fallthrough', channel)
         def do(type):
-            if self.registryValue(type, channel):
-                cap = ircdb.makeChannelCapability(channel, type)
-                if ircdb.checkCapability(msg.prefix, cap):
+            cap = ircdb.makeChannelCapability(channel, type)
+            if ircdb.checkCapability(msg.prefix, cap):
+                if self.registryValue(type, channel):
+                    self.log.info('Sending auto-%s of %s in %s.',
+                                  type, msg.prefix, channel)
                     msgmaker = getattr(ircmsgs, type)
                     irc.queueMsg(msgmaker(channel, msg.nick))
                     raise Continue # Even if fallthrough, let's only do one.
             elif not fallthrough:
+                self.log.info('%s has %s, but supybot.plugins.AutoMode.%s is '
+                              'not enabled in %s, refusing to fall through.',
+                              msg.prefix, cap, type, channel)
                 raise Continue
         try:
             do('op')
