@@ -120,7 +120,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 return newmodule
         name = privmsgs.getArgs(args)
         if name.translate(string.ascii, self.modulechars) != '':
-            irc.error('That\'s not a valid module or function name.')
+            irc.error(msg, 'That\'s not a valid module or function name.')
             return
         if '.' in name:
             (moduleName, funcName) = rsplit(name, '.', 1)
