@@ -268,7 +268,7 @@ class Notes(callbacks.Privmsg):
                                 users.name=%s AND
                                 notes.read=1""", sender)
         if cursor.rowcount == 0:
-            irc.reply(msg, 'I could find no notes for your user.')
+            irc.reply(msg, 'I couldn\'t find any notes for your user.')
         else:
             ids = [str(t[0]) for t in cursor.fetchall()]
             ids.reverse()
