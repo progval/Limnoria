@@ -69,7 +69,10 @@ class FunCommandsTest(PluginTestCase, PluginDocumentation):
             self.assertResponse('unhexlify [hexlify %s]' % s, s)
 
     def testXor(self):
-        for s0, s1, s2, s3, s4, s5, s6, s7, s8, s9 in group(nicks, 10):
+        L = [nick for nick in nicks if '|' not in nick and
+                                       '[' not in nick and
+                                       ']' not in nick]
+        for s0, s1, s2, s3, s4, s5, s6, s7, s8, s9 in group(L, 10):
             data = '%s%s%s%s%s%s%s%s%s' % (s0, s1, s2, s3, s4, s5, s6, s7, s8)
             self.assertResponse('xor %s [xor %s %s]' % (s9, s9, data), data)
 
