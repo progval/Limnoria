@@ -254,7 +254,17 @@ class IrcStateTestCase(SupyTestCase):
                 pass
         self.assertEqual(state, state.copy())
 
+    def testCopyCopiesChannels(self):
         state = irclib.IrcState()
+        stateCopy = copy.copy(state)
+        state.channels['#foo'] = None
+        self.failIf('#foo' in stateCopy.channels)
+
+    def testCopyCopiesChannels2(self):
+        state = irclib.IrcState()
+        stateCopy = state.copy()
+        state.channels['#foo'] = None
+        self.failIf('#foo' in stateCopy.channels)
 
     def testJoin(self):
         st = irclib.IrcState()
