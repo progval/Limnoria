@@ -31,6 +31,7 @@
 
 __revision__ = "$Id$"
 
+import re
 import copy
 import sets
 import types
@@ -57,7 +58,7 @@ def open(filename):
     for (i, line) in enumerate(fd):
         line = line.rstrip('\r\n')
         try:
-            (key, value) = line.split(': ', 1)
+            (key, value) = re.split(r':\s*', line, 1)
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line #%s' % (i+1)
         _cache[key.lower()] = value
@@ -177,7 +178,7 @@ class StringSurroundedBySpaces(String):
 class CommaSeparatedListOfStrings(String):
     def set(self, s):
         String.set(self, s)
-        self.setValue(map(str.strip, self.value.split(',')))
+        self.setValue(map(str.strip, re.split(r'\s*,\s*', self.value)))
 
     def __str__(self):
         return ','.join(self.value)
