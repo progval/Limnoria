@@ -41,28 +41,32 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
         n = re.search('#(\d+)', m.args[1]).group(1)
         self.assertNotError('bug gaim %s' % n)
         self.assertError('bug gaim')
+        self.assertRegexp('bug lkadf 9', 'find the Bugs')
 
     def testBugs(self):
         self.assertHelp('bugs')
         self.assertNotError('config defaultproject supybot')
         self.assertNotError('bugs')
-        self.assertError('bugs alkjfi83fa8')
+        self.assertRegexp('bugs alkjfi83fa8', 'find the Bugs')
         self.assertNotError('bugs gaim')
         self.assertNotError('config defaultproject')
+        self.assertRegexp('bugs 83423', 'Use the bug command')
 
     def testRfe(self):
         m = self.getMsg('rfes gaim')
         n = re.search('#(\d+)', m.args[1]).group(1)
         self.assertNotError('rfe gaim %s' % n)
         self.assertError('rfe gaim')
+        self.assertRegexp('rfe lakdf 9', 'find the RFEs')
 
     def testRfes(self):
         self.assertHelp('rfes')
         self.assertNotError('config defaultproject gaim')
         self.assertNotError('rfes')
-        self.assertError('rfes alkjfi83hfa8')
+        self.assertRegexp('rfes alkjfi83hfa8', 'find the RFEs')
         self.assertNotError('rfes gaim')
         self.assertNotError('config defaultproject')
+        self.assertRegexp('rfes 83423', 'Use the rfe command')
 
     def testDefaultproject(self):
         self.assertHelp('bugs')

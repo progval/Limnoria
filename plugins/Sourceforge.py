@@ -141,8 +141,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                     m.group(1)), self._hrefOpts)
         except urllib2.HTTPError, e:
             raise callbacks.Error, e.msg()
-        except Exception, e:
-            raise callbacks.Error, debug.exnToString(e)
 
     def _getTrackerList(self, url):
         try:
@@ -157,8 +155,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 return '%s' % utils.commaAndify(resp)
             raise callbacks.Error, 'No Trackers were found. (%s)' %\
                 conf.replyPossibleBug
-        except Exception, e:
-            raise callbacks.Error, debug.exnToString(e)
+        except urllib2.HTTPError, e:
+            raise callbacks.Error, e.msg()
         
     def _getTrackerInfo(self, irc, msg, url, num):
         try:
@@ -172,27 +170,32 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 return
             irc.error(msg, 'No Trackers were found. (%s)' %
                 conf.replyPossibleBug)
-        except ValueError, e:
-            irc.error(msg, str(e))
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+        except urllib2.HTTPError, e:
+            irc.error(msg, e.msg())
 
     _bugLink = re.compile(r'"([^"]+)">Bugs')
     def bugs(self, irc, msg, args):
         """[<project>]
 
         Returns a list of the most recent bugs filed against <project>.
-        Defaults to searching for bugs in the project set by defaultproject.
+        <project> is not needed if there is a default project set.
         """
         project = privmsgs.getArgs(args, required=0, optional=1)
+        try:
+            int(project)
+            irc.error(msg, 'Use the bug command to get information about a '\
+                'specific bug.')
+            return
+        except ValueError:
+            pass
         if not project:
             project = self.configurables.get('default-project', msg.args[0])
             if not project:
                 raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._bugLink)
-        except TrackerError:
-            irc.error(msg, 'Can\'t find the Bugs link.')
+        except TrackerError, e:
+            irc.error(msg, '%s.  Can\'t find the Bugs link.' % e)
             return
         irc.reply(msg, self._getTrackerList(url))
 
@@ -200,8 +203,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         """[<project>] <num>
 
         Returns a description of the bug with Tracker id <num> and the 
-        corresponding Tracker URL.  Defaults to searching for bugs in the 
-        project set by defaultproject.
+        corresponding Tracker URL.  <project> is not needed if there is a
+        default project set.
         """
         (project, bugnum) = privmsgs.getArgs(args, optional=1)
         if not bugnum:
@@ -216,8 +219,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._bugLink)
-        except TrackerError:
-            irc.error(msg, 'Can\'t find the Bugs link.')
+        except TrackerError, e:
+            irc.error(msg, '%s.  Can\'t find the Bugs link.' % e)
             return
         self._getTrackerInfo(irc, msg, url, bugnum)
 
@@ -226,9 +229,16 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         """[<project>]
 
         Returns a list of the most recent RFEs filed against <project>.
-        Defaults to searching for RFEs in the project set by defaultproject.
+        <project> is not needed if there is a default project set.
         """
         project = privmsgs.getArgs(args, required=0, optional=1)
+        try:
+            int(project)
+            irc.error(msg, 'Use the rfe command to get information about a '\
+                'specific rfe.')
+            return
+        except ValueError:
+            pass
         if not project:
             project = self.configurables.get('default-project', msg.args[0])
             if not project:
@@ -236,7 +246,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         try:
             url = self._getTrackerURL(project, self._rfeLink)
         except TrackerError, e:
-            irc.error(msg, 'Can\'t find the RFEs link.')
+            irc.error(msg, '%s.  Can\'t find the RFEs link.' % e)
             return
         irc.reply(msg, self._getTrackerList(url))
 
@@ -244,8 +254,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         """[<project>] <num>
 
         Returns a description of the bug with Tracker id <num> and the 
-        corresponding Tracker URL.  Defaults to searching for bugs in the 
-        project set by defaultproject.
+        corresponding Tracker URL. <project> is not needed if there is a 
+        default project set.
         """
         (project, rfenum) = privmsgs.getArgs(args, optional=1)
         if not rfenum:
@@ -260,8 +270,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._rfeLink)
-        except TrackerError:
-            irc.error(msg, 'Can\'t find the RFE link.')
+        except TrackerError, e:
+            irc.error(msg, '%s.  Can\'t find the RFEs link.' % e)
             return
         self._getTrackerInfo(irc, msg, url, rfenum)
 
