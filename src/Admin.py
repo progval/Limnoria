@@ -263,6 +263,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             if c not in conf.validPrefixChars:
                 s = 'PrefixChars must be something in %r'%conf.validPrefixChars
                 irc.error(msg, s)
+                return
         else:
             conf.prefixChars = s
             irc.reply(msg, conf.replySuccess)
