@@ -85,7 +85,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
     _info = re.compile(r'<title>eBay item (\d+) \([^)]+\) - ([^<]+)</title>',
                        _reopts)
 
-    _bid = re.compile(r'((?:Current|Starting) bid):.+?<b>([^<]+?)<fo', _reopts)
+    _bid = re.compile(r'((?:Current|Starting) bid):.+?<b>([^<]+?)<', _reopts)
     _winningBid = re.compile(r'(Winning bid|Sold for):.+?<b>([^<]+?)<font',
                              _reopts)
     _time = re.compile(r'(Time left):.+?<b>([^<]+?)</b>', _reopts)
