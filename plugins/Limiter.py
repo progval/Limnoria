@@ -40,7 +40,9 @@ __contributors__ = {}
 
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
+import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -69,6 +71,10 @@ conf.registerChannelValue(conf.supybot.plugins.Limiter, 'maximumExcess',
     larger than supybot.plugins.Limiter.limit.minimumExcess."""))
 
 class Limiter(callbacks.Privmsg):
+    def _enforce(self, irc, limit):
+        irc.queueMsg(limit)
+        irc.noReply()
+
     def _enforceLimit(self, irc, channel):
         if self.registryValue('enable', channel):
             maximum = self.registryValue('maximumExcess', channel)
@@ -79,7 +85,7 @@ class Limiter(callbacks.Privmsg):
             if currentLimit - currentUsers < minimum:
                 self._enforce(irc, ircmsgs.limit(channel,currentUsers+maximum))
             elif currentLimit - currentUsers > maximum:
-                self._enforce(irc, ircmsgs.limit(channel,currentUsers+minimum))
+                self._enforce(irc, ircmsgs.limit(channel,currentUsers-minimum))
 
     def doJoin(self, irc, msg):
         if not ircutils.strEqual(msg.nick, irc.nick):
