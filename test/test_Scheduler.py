@@ -41,11 +41,11 @@ class SchedulerTestCase(ChannelPluginTestCase):
         
     def testAddRemove(self):
         self.assertRegexp('scheduler list', 'no.*commands')
-        m = self.assertNotError('scheduler add [seconds 5s] echo foo bar baz')
+        m = self.assertNotError('scheduler add 5 echo testAddRemove')
         self.assertNotRegexp('scheduler list', 'no.*commands')
-        self.assertNoResponse(' ', 4)
-        self.assertResponse(' ', 'foo bar baz')
-        m = self.assertNotError('scheduler add 5 echo xyzzy')
+        self.assertNoResponse(' ', 3)
+        self.assertResponse(' ', 'testAddRemove')
+        m = self.assertNotError('scheduler add 5 echo testAddRemove2')
         # Get id.
         id = None
         for s in m.args[1].split():
@@ -58,30 +58,25 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertNoResponse(' ', 5)
 
     def testRepeat(self):
-        self.assertNotError('scheduler repeat repeater 5 echo foo bar baz')
-        self.assertNotError(' ') # First response.
-        self.assertResponse('scheduler list', 'repeater: "echo foo bar baz"')
-        self.assertNoResponse(' ', 4)
-        self.assertResponse(' ', 'foo bar baz')
-        self.assertResponse('scheduler list', 'repeater: "echo foo bar baz"')
-        self.assertNoResponse(' ', 4)
-        self.assertResponse(' ', 'foo bar baz')
+        self.assertNotError('scheduler repeat repeater 5 echo testRepeat')
+        self.assertResponse(' ', 'testRepeat')
+        self.assertResponse('scheduler list', 'repeater: "echo testRepeat"')
+        self.assertNoResponse(' ', 3)
+        self.assertResponse(' ', 'testRepeat')
         self.assertNotError('scheduler remove repeater')
         self.assertNotRegexp('scheduler list', 'repeater')
         self.assertNoResponse(' ', 5)
 
     def testRepeatWorksWithNestedCommands(self):
-        self.assertNotError('scheduler repeat foo 5 "echo foo [echo bar]"')
-        self.assertNotError(' ') # First response.
-        self.assertNoResponse(' ', 4)
-        self.assertResponse(' ', 'foo bar')
-        self.assertNoResponse(' ', 4)
-        self.assertResponse(' ', 'foo bar')
+        self.assertNotError('scheduler repeat foo 5 "echo foo [echo nested]"')
+        self.assertResponse(' ', 'foo nested')
+        self.assertNoResponse(' ', 3)
+        self.assertResponse(' ', 'foo nested')
         self.assertNotError('scheduler remove foo')
         self.assertNoResponse(' ', 5)
 
     def testRepeatDisallowsIntegerNames(self):
-        self.assertError('scheduler repeat 1234 1234 "echo foo bar baz"')
+        self.assertError('scheduler repeat 1234 1234 "echo NoIntegerNames"')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

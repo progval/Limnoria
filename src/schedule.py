@@ -69,7 +69,6 @@ class Schedule(drivers.IrcDriver):
     def reset(self):
         self.events.clear()
         self.schedule[:] = []
-        self.counter = 0
 
     def addEvent(self, f, t, name=None):
         """Schedules an event f to run at time t.

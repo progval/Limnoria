@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2003, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -121,6 +121,7 @@ class Scheduler(callbacks.Privmsg):
         try:
             name = int(name)
             irc.error('Names must not be an integer.')
+            return
         except ValueError:
             pass
         self.events[name] = command 
