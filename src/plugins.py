@@ -45,6 +45,8 @@ import debug
 import utils
 import world
 import ircutils
+import privmsgs
+import callbacks
 
 __all__ = ['ChannelDBHandler', 'PeriodicFileDownloader', 'ToggleDictionary']
 
@@ -250,14 +252,16 @@ class Toggleable(object):
         self.toggle.__doc__ = s
 
     def _toggleNames(self):
-        return utils.commaAndify(map(repr, self.toggles.defaults.keys()))
+        names = self.toggles.defaults.keys()
+        names.sort()
+        return utils.commaAndify(map(repr, names))
         
     def toggle(self, irc, msg, args):
         try:
-            channel = getChannel(msg, args)
+            channel = privmsgs.getChannel(msg, args)
         except callbacks.Error:
             channel = None
-        (name, value) = getArgs(args, optional=1)
+        (name, value) = privmsgs.getArgs(args, optional=1)
         if not value:
             value = None
         elif value.lower() in ('enable', 'on', 'true'):
