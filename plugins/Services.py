@@ -295,6 +295,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                           channel)
         elif 'this channel has been registered' in s:
             self.log.debug('Got "Registered channel" from ChanServ.')
+        elif 'already opped' in s:
+            self.log.debug('Got "Already opped" from ChanServ.')
         else:
             self.log.warning('Got unexpected notice from ChanServ: %r.', msg)
 
