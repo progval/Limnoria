@@ -59,55 +59,8 @@ def makeDb(dbfilename, replace=False):
     if os.path.exists(dbfilename):
         if replace:
             os.remove(dbfilename)
-        else:
-            return sqlite.connect(dbfilename)
     db = sqlite.connect(dbfilename)
-    cursor = db.cursor()
-    cursor.execute("""CREATE TABLE insults (
-                      id INTEGER PRIMARY KEY,
-                      insult TEXT, added_by TEXT,
-                      requested_by TEXT,
-                      use_count INTEGER
-                      )""")
-    cursor.execute("""CREATE TABLE excuses (
-                      id INTEGER PRIMARY KEY,
-                      excuse TEXT, added_by TEXT,
-                      requested_by TEXT,
-                      use_count INTEGER
-                      )""")
-    cursor.execute("""CREATE TABLE larts (
-                      id INTEGER PRIMARY KEY,
-                      lart TEXT, added_by TEXT,
-                      requested_by TEXT,
-                      use_count INTEGER
-                      )""")
-    cursor.execute("""CREATE TABLE praises (
-                      id INTEGER PRIMARY KEY,
-                      praise TEXT, added_by TEXT,
-                      requested_by TEXT,
-                      use_count INTEGER
-                      )""")
-    cursor.execute("""CREATE TABLE words (
-                      id INTEGER PRIMARY KEY,
-                      word TEXT UNIQUE ON CONFLICT IGNORE,
-                      sorted_word_id INTEGER
-                      )""")
-    cursor.execute("""CREATE INDEX sorted_word_id ON words (sorted_word_id)""")
-    cursor.execute("""CREATE TABLE sorted_words (
-                      id INTEGER PRIMARY KEY,
-                      word TEXT UNIQUE ON CONFLICT IGNORE
-                      )""")
-    cursor.execute("""CREATE INDEX sorted_words_word ON sorted_words (word)""")
-    cursor.execute("""CREATE TABLE zipcodes (
-                      zipcode INTEGER PRIMARY KEY,
-                      city TEXT,
-                      state CHAR(2)
-                      )""")
-    cursor.execute("""CREATE TABLE uptime (
-                      started INTEGER UNIQUE ON CONFLICT IGNORE,
-                      ended INTEGER
-                      )""")
-    db.commit()
+    createTables(db, [x for x in tableDict.keys() if not tableExists(db, x)])
     return db
 
 def addWord(db, word, commit=False):
@@ -123,6 +76,70 @@ def addWord(db, word, commit=False):
     if commit:
         db.commit()
 
+def tableExists(db, table):
+    cursor = db.cursor()
+    sql = 
+    try:
+        cursor.execute("""SELECT * from %s LIMIT 1""" % table)
+        return True
+    except DatabaseError:
+        return False
+
+tableDict = {
+    'larts': ("""CREATE TABLE larts (
+                 id INTEGER PRIMARY KEY,
+                 lart TEXT, added_by TEXT,
+                 requested_by TEXT,
+                 use_count INTEGER
+                 )""",),
+    'praises': ("""CREATE TABLE praises (
+                   id INTEGER PRIMARY KEY,
+                   praise TEXT, added_by TEXT,
+                   requested_by TEXT,
+                   use_count INTEGER
+                   )""",),
+    'insults': ("""CREATE TABLE insults (
+                   id INTEGER PRIMARY KEY,
+                   insult TEXT, added_by TEXT,
+                   requested_by TEXT,
+                   use_count INTEGER
+                   )""",),
+    'excuses': ("""CREATE TABLE excuses (
+                   id INTEGER PRIMARY KEY,
+                   excuse TEXT, added_by TEXT,
+                   requested_by TEXT,
+                   use_count INTEGER
+                   )""",),
+    'words': ("""CREATE TABLE words (
+                 id INTEGER PRIMARY KEY,
+                 word TEXT UNIQUE ON CONFLICT IGNORE,
+                 sorted_word_id INTEGER
+                 )""",
+                """CREATE INDEX sorted_word_id ON words (sorted_word_id)"""),
+    'sorted_words': ("""CREATE TABLE sorted_words (
+                        id INTEGER PRIMARY KEY,
+                        word TEXT UNIQUE ON CONFLICT IGNORE
+                        )""",
+                     """CREATE INDEX sorted_words_word 
+                        ON sorted_words (word)"""),
+    'uptime': ("""CREATE TABLE uptime (
+                  started INTEGER UNIQUE ON CONFLICT IGNORE,
+                  ended INTEGER
+                  )""",)
+    }
+    
+def createTables(db, tables=tableDict.keys()):
+    if len(tables) < 1:
+        return db
+    else:
+        cursor = db.cursor()
+        tableList = [table for table in tableDict.keys() if table in
+            tables]
+        for table in tableList:
+            for command in tableDict[table]:
+                cursor.execute(command)
+        db.commit()
+        return db
 
 class FunDB(callbacks.Privmsg):
     """
