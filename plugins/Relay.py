@@ -258,7 +258,6 @@ class Relay(callbacks.Privmsg):
         Owner = irc.getCallback('Owner')
         Owner.disambiguate(irc, args)
         self.Proxy(otherIrc, msg, args)
-        irc.replySuccess()
     command = privmsgs.checkCapability(command, 'admin')
         
     def say(self, irc, msg, args):
