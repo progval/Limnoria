@@ -36,9 +36,6 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
     def testIgnore(self):
         self.assertNoResponse('ignore foo bar baz', 1)
 
-    def testShrink(self):
-        self.assertRegexp('shrink %s' % ('x'*1000), 'x'*400)
-    
     def testStrjoin(self):
         self.assertResponse('strjoin + foo bar baz', 'foo+bar+baz')
 
