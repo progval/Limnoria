@@ -125,7 +125,8 @@ class Todo(callbacks.Privmsg):
                 return
             cursor = self.db.cursor()
             cursor.execute("""SELECT id, task FROM todo
-                              WHERE userid = %s AND active = 1""", id)
+                              WHERE userid = %s AND active = 1
+                              ORDER BY priority, id""", id)
             if cursor.rowcount == 0:
                 irc.reply(msg, 'You have no tasks in your todo list.')
                 return
@@ -136,7 +137,8 @@ class Todo(callbacks.Privmsg):
             cursor = self.db.cursor() 
             if userid:
                 cursor.execute("""SELECT id, task FROM todo
-                                  WHERE userid = %s AND active = 1""", userid)
+                                  WHERE userid = %s AND active = 1
+                                  ORDER BY priority, id""", userid)
                 if cursor.rowcount == 0:
                     irc.reply(msg, 'That user has no todos.')
                     return

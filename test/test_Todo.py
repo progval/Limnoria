@@ -48,15 +48,15 @@ if sqlite is not None:
         def testTodo(self):
             # Should not error, but no tasks yet.
             self.assertNotError('todo')
-            self.assertRegexp('todo', 'You have no tasks in your todo list.')
+            self.assertResponse('todo', 'You have no tasks in your todo list.')
             # Add a task
             self.assertNotError('todo add wash my car')
-            self.assertRegexp('todo', '#1: wash my car')
+            self.assertResponse('todo', '#1: wash my car')
             # Check that task
             self.assertRegexp('todo 1',
                               'Todo for tester: wash my car \(Added .*?\)')
             # Check that it lists all my tasks when given my name
-            self.assertRegexp('todo tester', 'Todo for tester: '
+            self.assertResponse('todo tester', 'Todo for tester: '
                               '#1: wash my car')
             # Check pluralization
             self.assertNotError('todo add moo')
@@ -66,6 +66,10 @@ if sqlite is not None:
             self.assertError('todo asfas')
             self.assertResponse('todo asfas', 'Error: \'asfas\' is not a '
                                 'valid task id or username')
+            # Check priority sorting
+            self.assertNotError('todo setpriority 1 100')
+            self.assertNotError('todo setpriority 2 10')
+            self.assertResponse('todo', '#2: moo and #1: wash my car')
 
         def testAddtodo(self):
             self.assertNotError('todo add code a new plugin')
