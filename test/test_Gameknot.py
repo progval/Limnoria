@@ -41,6 +41,11 @@ class GameknotTestCase(PluginTestCase, PluginDocumentation):
 
     def testUrlSnarfer(self):
         self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
+        self.assertNotError('here\'s a link: '
+                            'http://gameknot.com/chess.pl?bd=1077350&r=394 '
+                            'and here\'s another one: '
+                            'http://gameknot.com/chess.pl?bd=1116828&r=250')
+        self.assertNotError(' ') # The next snarfed response.
         self.assertNotRegexp('http://gameknot.com/chess.pl?bd=1019508',
                              self.nick)
 
