@@ -78,7 +78,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
         if self.reconnect:
             when = time.time() + 60
             whenS = time.strftime(conf.timestampFormat, time.localtime(when))
-            debug.debugMsg('Scheduling reconnect at %s' % whenS, 'normal')
+            debug.msg('Scheduling reconnect at %s' % whenS, 'normal')
             def makeNewDriver():
                 self.irc.reset()
                 driver = self.__class__(self.server, reconnect=self.reconnect)
@@ -145,7 +145,7 @@ class ReplListener(asyncore.dispatcher, object):
 
     def handle_accept(self):
         (sock, addr) = self.accept()
-        debug.debugMsg('Connection made to telnet-REPL: ' + str(addr),'normal')
+        debug.msg('Connection made to telnet-REPL: ' + str(addr),'normal')
         Repl((sock, addr))
 
 
@@ -195,7 +195,7 @@ Name: """ % (world.version, sys.version.translate(string.ascii, '\r\n'))
                 self.tries += 1
                 self.prompt = 'Name: '
                 msg = 'Unknown user %s on telnet REPL.' % name
-                debug.debugMsg(msg,'high')
+                debug.msg(msg,'high')
             self.push(self.prompt)
         elif self.u is not None and not self.authed:
             password = self.buffer
@@ -208,16 +208,16 @@ Name: """ % (world.version, sys.version.translate(string.ascii, '\r\n'))
                     self.push('Only owners can use this feature.\n')
                     self.close()
                     msg = 'Attempted non-owner user %s on telnet REPL' % name
-                    debug.debugMsg(msg, 'high')
+                    debug.msg(msg, 'high')
             else:
                 self.push('Incorrect Password.\n')
                 self.prompt = 'Name: '
                 self.u = None
                 msg = 'Invalid password for user %s on telnet REPL.' % name
-                debug.debugMsg(msg, 'high')
+                debug.msg(msg, 'high')
             self.push(self.prompt)
         elif self.authed:
-            debug.debugMsg('Telnet REPL: %s' % self.buffer)
+            debug.msg('Telnet REPL: %s' % self.buffer)
             ret = self.repl.addLine(self.buffer+'\r\n')
             self.buffer = ''
             if ret is not repl.NotYet:

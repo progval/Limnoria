@@ -80,7 +80,7 @@ class Repl(object):
         line = line.rstrip()
         self.lines.append(line)
         if len(self.lines) > 100:
-            debug.debugMsg('too many lines in Repl.')
+            debug.msg('too many lines in Repl.', 'normal')
             self.lines = []
             return None
         if line == '' or line == '\n' or line == '\r\n':

@@ -140,7 +140,7 @@ class MiscCommands(callbacks.Privmsg):
         will be logged, so don't abuse this command or you'll have an upset
         admin to deal with.
         """
-        debug.debugMsg(pprint.pformat(irc.state.history), 'normal')
+        debug.msg(pprint.pformat(irc.state.history), 'normal')
         irc.reply(msg, conf.replySuccess)
 
     def version(self, irc, msg, args):

@@ -136,7 +136,7 @@ def recoverableException():
             raise
     lastTimes.append(time.time())
     if lastTimes[-1] - lastTimes[0] < 0.20:
-        debugMsg('Too many exceptions too quickly.  Bailing out.', 'high')
+        msg('Too many exceptions too quickly.  Bailing out.', 'high')
         exit()
     else:
         del lastTimes[0]
@@ -160,15 +160,15 @@ def unrecoverableException():
     recoverableException()
     exit(-1)
 
-def debugMsg(msg, priority='low'):
+def msg(s, priority='low'):
     if priorities[priority] >= priorities[minimumDebugPriority]:
         if stderr:
             if colorterm:
                 sys.stderr.write(priorityColors.get(priority))
-            _writeNewline(sys.stderr, msg)
+            _writeNewline(sys.stderr, s)
             if colorterm:
                 sys.stderr.write(ansi.RESET)
-        _writeNewline(_debugfd, msg)
+        _writeNewline(_debugfd, s)
         _debugfd.flush()
 
 def printf(msg):

@@ -236,15 +236,15 @@ class IrcObjectProxy:
             if callback is not None:
                 anticap = ircdb.makeAntiCapability(name)
                 if ircdb.checkCapability(self.msg.prefix, anticap):
-                    debug.debugMsg('Preventing %s from calling %s' % \
-                                   (self.msg.nick, name))
+                    debug.msg('Preventing %s from calling %s' % \
+                              (self.msg.nick, name))
                     return
                 recipient = self.msg.args[0]
                 if ircutils.isChannel(recipient):
                     chancap = ircdb.makeChannelCapability(recipient, anticap)
                     if ircdb.checkCapability(self.msg.prefix, chancap):
-                        debug.debugMsg('Preventing %s from calling %s' % \
-                                       (self.msg.nick, name))
+                        debug.msg('Preventing %s from calling %s' % \
+                                  (self.msg.nick, name))
                         return
                 command = getattr(callback, name)
                 callback.callCommand(command, self, self.msg, self.args)
@@ -418,7 +418,7 @@ class PrivmsgRegexp(Privmsg):
                     s = '%s.%s has an invalid regexp %s: %s' % \
                         (self.__class__.__name__, name,
                          value.__doc__, debug.exnToString(e))
-                    debug.debugMsg(s)
+                    debug.msg(s)
 
     def doPrivmsg(self, irc, msg):
         for (r, method) in self.res:

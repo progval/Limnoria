@@ -77,7 +77,7 @@ class IrcCallback(object):
                 debug.recoverableException()
                 s = 'Exception raised by %s.%s' % \
                     (self.__class__.__name__, method.im_func.func_name)
-                debug.debugMsg(s)
+                debug.msg(s)
 
     def reset(self):
         pass
@@ -105,7 +105,7 @@ class IrcMsgQueue(object):
     def enqueue(self, msg):
         if msg in self.msgs:
             if not world.startup:
-                debug.debugMsg('Not adding msg %s to queue' % msg, 'normal')
+                debug.msg('Not adding msg %s to queue' % msg, 'normal')
         else:
             self.msgs.add(msg)
             if msg.command in ('MODE', 'KICK', 'PONG'):
@@ -326,7 +326,7 @@ class Irc(object):
             msg = self.fastqueue.dequeue()
         elif self.queue:
             if now - self.lastTake <= conf.throttleTime:
-                debug.debugMsg('Irc.takeMsg throttling.', 'verbose')
+                debug.msg('Irc.takeMsg throttling.', 'verbose')
             else:
                 self.lastTake = now
                 msg = self.queue.dequeue()
@@ -337,7 +337,7 @@ class Irc(object):
             self.driver.die()
         elif now > (self.lastping + conf.pingInterval):
             if now - self.lastTake <= conf.throttleTime:
-                debug.debugMsg('Irc.takeMsg throttling.', 'verbose')
+                debug.msg('Irc.takeMsg throttling.', 'verbose')
             else:
                 self.lastping = now
                 msg = ircmsgs.ping(str(int(now)))
@@ -347,11 +347,11 @@ class Irc(object):
                 msg = callback.outFilter(self, msg)
                 if msg is None:
                     s = 'outFilter %s returned None' % callback.name()
-                    debug.debugMsg(s)
+                    debug.msg(s)
                     return None
             self.state.addMsg(self,ircmsgs.IrcMsg(msg=msg, prefix=self.prefix))
             s = '%s  %s' % (time.strftime(conf.timestampFormat), msg)
-            debug.debugMsg(s, 'low')
+            debug.msg(s, 'low')
             if msg.command == 'NICK':
                 # We don't want a race condition where the server's NICK
                 # back to us is lost and someone else steals our nick and uses
@@ -365,8 +365,7 @@ class Irc(object):
             return None
 
     def feedMsg(self, msg):
-        debug.debugMsg('%s  %s' % (time.strftime(conf.timestampFormat), msg),
-                       'low')
+        debug.msg('%s  %s' % (time.strftime(conf.timestampFormat), msg), 'low')
         # First, make sure self.nick is always consistent with the server.
         if msg.command == 'NICK' and msg.nick == self.nick:
             if ircdb.users.hasUser(self.nick):
@@ -418,7 +417,7 @@ class Irc(object):
                 m = callback.inFilter(self, msg)
                 if not m:
                     debugmsg = 'inFilter %s returned None' % callback.name()
-                    debug.debugMsg(debugmsg)
+                    debug.msg(debugmsg)
                 msg = m
             except:
                 debug.recoverableException()
