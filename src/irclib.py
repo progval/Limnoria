@@ -35,7 +35,6 @@ from structures import queue, RingBuffer
 import copy
 import sets
 import time
-import atexit
 
 import conf
 import debug
