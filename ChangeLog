@@ -6,7 +6,7 @@
 	for people using asyncoreDrivers, but those people should be few
 	and far between these days.
 	
-	* Added aol filter in the Filter plugin.
+	* Added aol and rainbow filters to the Filter plugin.
 	
 	* Added Nickometer plugin, a translation of Infobot's Nickometer.
 	
