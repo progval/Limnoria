@@ -177,6 +177,7 @@ class Note(callbacks.Privmsg):
             self._notify(irc, msg, repeatedly)
 
     def _notify(self, irc, msg, repeatedly=False):
+        irc = callbacks.SimpleProxy(irc, msg)
         try:
             to = ircdb.users.getUserId(msg.prefix)
         except KeyError:
@@ -198,8 +199,7 @@ class Note(callbacks.Privmsg):
                 (utils.nItems('note', unread, 'unread'), unnotified,
                  utils.commaAndify(unreadIds), utils.be(unread))
             # Later we'll have a user value for allowing this to be a NOTICE.
-            msgmaker = ircmsgs.privmsg
-            irc.queueMsg(msgmaker(msg.nick, s))
+            irc.reply(s, private=True)
             for nid in unnotifiedIds:
                 id = int(nid[1:])
                 self.db.setNotified(id)
