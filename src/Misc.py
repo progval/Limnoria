@@ -509,17 +509,18 @@ class Misc(callbacks.Privmsg):
         (target, text) = privmsgs.getArgs(args, required=2)
         if target.lower() == 'me':
             target = msg.nick
-        if ircutils.isChannel(target):
+        elif ircutils.isChannel(target):
             irc.error('Dude, just give the command.  No need for the tell.')
             return
-        if not ircutils.isNick(target):
+        elif not ircutils.isNick(target):
             irc.error('%s is not a valid nick or channel.' % target)
             return
-        if ircutils.isChannel(target):
-            c = ircdb.channels.getChannel(target)
-            if c.lobotomized:
-                irc.error('I\'m lobotomized in %s.' % target)
-                return
+        elif ircutils.nickEqual(target, irc.nick):
+            irc.error('You just told me, why should I tell myself?')
+            return
+        elif target not in irc.state.nicksToHostmasks:
+            irc.error('I haven\'t seen %s, I\'ll let you do the telling.')
+            return
         if irc.action:
             irc.action = False
             text = '* %s %s' % (irc.nick, text)
