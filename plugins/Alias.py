@@ -217,9 +217,10 @@ class Alias(callbacks.Privmsg):
             raise AliasError, s
         name = realName
         cbs = callbacks.findCallbackForCommand(irc, name)
-        if [cb for cb in cbs if cb != self]:
-            s = 'A command with the name %r already exists.' % name
-            raise AliasError, s
+        if self in cbs:
+            if hasattr(self, realName) and realName not in self.aliases:
+                s = 'You can\'t overwrite commands in this plugin.'
+                raise AliasError, s
         if name in self.aliases:
             (currentAlias, locked) = self.aliases[name]
             if locked and currentAlias != alias:

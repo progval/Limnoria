@@ -67,6 +67,13 @@ class FunctionsTest(unittest.TestCase):
 
 class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Alias', 'Fun', 'Utilities')
+    def testDoesNotOverwriteCommands(self):
+        self.assertError('alias add alias "echo foo bar baz"')
+        self.assertError('alias add add "echo foo bar baz"')
+        self.assertError('alias add remove "echo foo bar baz"')
+        self.assertError('alias add lock "echo foo bar baz"')
+        self.assertError('alias add unlock "echo foo bar baz"')
+        
     def testAliasHelp(self):
         self.assertNotError('alias add slashdot foo')
         self.assertRegexp('help slashdot', "Alias for 'foo'")
