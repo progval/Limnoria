@@ -807,7 +807,7 @@ class FunCommands(callbacks.Privmsg):
         conn = dictclient.Connection('dict.org')
         definitions = conn.define('*', word)
         if not definitions:
-            irc.reply(msg, 'No definition for %r could be found.')
+            irc.reply(msg, 'No definition for %r could be found.' % word)
             return
         L = []
         utils.sortBy(lambda d: len(d.getdefstr()), definitions)
