@@ -35,14 +35,17 @@ class ChannelDBHandler(object):
         self.suffix = suffix
 
     def makeFilename(self, channel):
+        """Override this to specialize the filenames of your databases."""
         channel = ircutils.toLower(channel)
         prefix = '%s-%s%s' % (channel, self.__class__.__name__, self.suffix)
         return os.path.join(conf.dataDir, prefix)
 
     def makeDb(self, filename):
+        """Override this to create your databases."""
         return cdb.shelf(filename)
 
     def getDb(self, channel):
+        """Use this to get a database for a specific channel."""
         try:
             if self.threaded:
                 return self.makeDb(self.makeFilename(channel))
