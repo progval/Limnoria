@@ -122,11 +122,11 @@ def getHelp(method, name=None):
     if name is None:
         name = method.__name__
     doclines = method.__doc__.splitlines()
-    s = '(%s %s)' % (name, doclines.pop(0))
+    s = '%s %s' % (name, doclines.pop(0))
     if doclines:
         doclines = imap(str.strip, ifilter(None, doclines))
         help = ' '.join(doclines)
-        s = '%s -- %s' % (ircutils.bold(s), help)
+        s = '(%s) -- %s' % (ircutils.bold(s), help)
     return s
 
 def getSyntax(method, name=None):
