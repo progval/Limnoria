@@ -543,7 +543,12 @@ class Irc(IrcCommandDispatcher):
             user = ircdb.users.getUser(0)
             user.unsetAuth()
             user.hostmasks = []
-            user.name = newNick
+            try:
+                ircdb.users.getUser(newNick)
+                s = 'User already registered with name %s' % newNick
+                debug.msg(s, 'high')
+            except KeyError:
+                user.name = newNick
             ircdb.users.setUser(0, user)
             self.nick = newNick
             (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
