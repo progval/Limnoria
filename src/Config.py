@@ -47,16 +47,12 @@ import supybot.world as world
 import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 ###
 # Now, to setup the registry.
 ###
-
-#class InvalidRegistryName(callbacks.Error):
-#    pass
 
 def getWrapper(name):
     parts = registry.split(name)
@@ -98,29 +94,28 @@ if os.name == 'posix':
     signal.signal(signal.SIGHUP, _hupHandler)
 
 
+def getConfigVar(irc, msg, args, state):
+    name = args[0]
+    if name.startswith('conf.'):
+        name = name[5:]
+    if not name.startswith('supybot') and not name.startswith('users'):
+        name = 'supybot.' + name
+    try:
+        group = getWrapper(name)
+        state.args.append(group)
+        del args[0]
+    except registry.InvalidRegistryName, e:
+        irc.errorInvalid('configuration variable', str(e))
+addConverter('configVar', getConfigVar)
+
 class Config(callbacks.Privmsg):
     def callCommand(self, name, irc, msg, *L, **kwargs):
-        #XXX For some reason, that confuses jamessan, InvalidRegistryName
-        #    is not really being caught here, but registry.InvalidRegistryName
-        #    is.  So, we'll just re-raise registry.InvalidRegsitryName instead
-        #    of using Config.InvalidRegistryName
         try:
             super(Config, self).callCommand(name, irc, msg, *L, **kwargs)
-        except registry.InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', str(e))
         except registry.InvalidRegistryValue, e:
             irc.error(str(e))
 
-    def _canonicalizeName(self, name):
-        if name.startswith('conf.'):
-            name = name[5:]
-        if not name.startswith('supybot') and not name.startswith('users'):
-            name = 'supybot.' + name
-        return name
-
-    def _list(self, name):
-        name = self._canonicalizeName(name)
-        group = getWrapper(name)
+    def _list(self, group):
         L = []
         for (vname, v) in group._children.iteritems():
             if hasattr(v, 'channelValue') and v.channelValue:
@@ -131,7 +126,7 @@ class Config(callbacks.Privmsg):
         utils.sortBy(str.lower, L)
         return L
 
-    def list(self, irc, msg, args):
+    def list(self, irc, msg, args, group):
         """<group>
 
         Returns the configuration variables available under the given
@@ -140,20 +135,18 @@ class Config(callbacks.Privmsg):
         it can be separately configured for each channel using the 'channel'
         command in this plugin, it is preceded by an '#' sign.
         """
-        name = privmsgs.getArgs(args)
-        L = self._list(name)
+        L = self._list(group)
         if L:
             irc.reply(utils.commaAndify(L))
         else:
             irc.error('There don\'t seem to be any values in %s.' % name)
+    list = wrap(list, ['configVar'])
 
-    def search(self, irc, msg, args):
+    def search(self, irc, msg, args, word):
         """<word>
 
         Searches for <word> in the current configuration variables.
         """
-        word = privmsgs.getArgs(args)
-        word = word.lower()
         L = []
         for (name, _) in conf.supybot.getValues(getChildren=True):
             if word in name.lower():
@@ -164,90 +157,73 @@ class Config(callbacks.Privmsg):
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('There were no matching configuration variables.')
+    search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?
 
-    def config(self, irc, msg, args):
-        """<name> [<value>]
-
-        If <value> is given, sets the value of <name> to <value>.  Otherwise,
-        returns the current value of <name>.  You may omit the leading
-        "supybot." in the name if you so choose.
-        """
-        if len(args) >= 2:
-            self._set(irc, msg, args)
+    def _getValue(self, irc, msg, group):
+        if hasattr(group, 'value'):
+            if not group._private:
+                irc.reply(str(group) or ' ')
+            else:
+                capability = getCapability(group._name)
+                if ircdb.checkCapability(msg.prefix, capability):
+                    irc.reply(str(group), private=True)
+                else:
+                    irc.errorNoCapability(capability)
         else:
-            self._get(irc, msg, args)
+            irc.error('That registry variable has no value.  Use the list '
+                      'command in this plugin to see what variables are '
+                      'available in this group.')
 
-    def channel(self, irc, msg, args):
+    def _setValue(self, irc, msg, group, value):
+        capability = getCapability(group._name)
+        if ircdb.checkCapability(msg.prefix, capability):
+            # I think callCommand catches exceptions here.  Should it?
+            group.set(value)
+            irc.replySuccess()
+        else:
+            irc.errorNoCapability(capability)
+        
+    def channel(self, irc, msg, args, channel, group, value):
         """[<channel>] <name> [<value>]
 
         If <value> is given, sets the channel configuration variable for <name>
         to <value> for <channel>.  Otherwise, returns the current channel
         configuration value of <name>.  <channel> is only necessary if the
         message isn't sent in the channel itself."""
-        channel = privmsgs.getChannel(msg, args)
-        if not args:
-            raise callbacks.ArgumentError
-        args[0] = self._canonicalizeName(args[0])
-        wrapper = getWrapper(args[0])
-        if not wrapper.channelValue:
+        if not group.channelValue:
             irc.error('That configuration variable is not a channel-specific '
                       'configuration variable.')
             return
-        components = registry.split(args[0])
-        components.append(channel)
-        args[0] = registry.join(components)
-        self.config(irc, msg, args)
-
-    def _get(self, irc, msg, args):
-        """<name>
-
-        Shows the current value of the configuration variable <name>.
-        """
-        name = privmsgs.getArgs(args)
-        name = self._canonicalizeName(name)
-        wrapper = getWrapper(name)
-        if hasattr(wrapper, 'value'):
-            if not wrapper._private:
-                irc.reply(str(wrapper) or ' ')
-            else:
-                capability = getCapability(name)
-                if ircdb.checkCapability(msg.prefix, capability):
-                    irc.reply(str(wrapper), private=True)
-                else:
-                    irc.errorNoCapability(capability)
+        group = group.get(channel)
+        if value is not None:
+            self._setValue(irc, msg, group, value)
         else:
-            irc.error('That registry variable has no value.  Use the list '
-                      'command in this plugin to see what values are '
-                      'available in this group.')
+            self._getValue(irc, msg, group)
+    channel = wrap(channel, ['channel', 'configVar', additional('text')])
 
-    def _set(self, irc, msg, args):
-        """<name> <value>
+    def config(self, irc, msg, args, group, value):
+        """<name> [<value>]
 
-        Sets the current value of the configuration variable <name> to <value>.
+        If <value> is given, sets the value of <name> to <value>.  Otherwise,
+        returns the current value of <name>.  You may omit the leading
+        "supybot." in the name if you so choose.
         """
-        (name, value) = privmsgs.getArgs(args, required=2)
-        name = self._canonicalizeName(name)
-        capability = getCapability(name)
-        if ircdb.checkCapability(msg.prefix, capability):
-            wrapper = getWrapper(name)
-            wrapper.set(value)
-            irc.replySuccess()
+        if value is not None:
+            self._setValue(irc, msg, group, value)
         else:
-            irc.errorNoCapability(capability)
+            self._getValue(irc, msg, group)
+    config = wrap(config, ['configVar', additional('text')])
 
-    def help(self, irc, msg, args):
+    def help(self, irc, msg, args, group):
         """<name>
 
         Returns the description of the configuration variable <name>.
         """
-        name = privmsgs.getArgs(args)
-        name = self._canonicalizeName(name)
-        wrapper = getWrapper(name)
-        if hasattr(wrapper, 'help'):
-            s = wrapper.help()
+        if hasattr(group, '_help'):
+            s = group.help()
             if s:
-                if hasattr(wrapper, 'value') and not wrapper._private:
-                    s += '  (Current value: %s)' % wrapper
+                if hasattr(group, 'value') and not group._private:
+                    s += '  (Current value: %s)' % group
                 irc.reply(s)
             else:
                 irc.reply('That configuration group exists, but seems to have '
@@ -255,17 +231,16 @@ class Config(callbacks.Privmsg):
                           'any children values.')
         else:
             irc.error('%s has no help.' % name)
+    help = wrap(help, ['configVar'])
 
-    def default(self, irc, msg, args):
+    def default(self, irc, msg, args, group):
         """<name>
 
         Returns the default value of the configuration variable <name>.
         """
-        name = privmsgs.getArgs(args)
-        name = self._canonicalizeName(name)
-        wrapper = getWrapper(name)
-        v = wrapper.__class__(wrapper._default, '')
+        v = group.__class__(group._default, '')
         irc.reply(str(v))
+    default = wrap(default, ['configVar'])
 
     def reload(self, irc, msg, args):
         """takes no arguments
@@ -275,7 +250,7 @@ class Config(callbacks.Privmsg):
         """
         _reload() # This was factored out for SIGHUP handling.
         irc.replySuccess()
-    reload = privmsgs.checkCapability(reload, 'owner')
+    reload = wrap(reload, [('checkCapability', 'owner')])
 
     def export(self, irc, msg, args, filename):
         """<filename>
