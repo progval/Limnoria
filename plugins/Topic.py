@@ -42,6 +42,7 @@ from baseplugin import *
 
 import re
 import random
+import sre_constants
 
 import debug
 import utils
