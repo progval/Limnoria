@@ -99,7 +99,7 @@ As a corrolary to the above, note that sometimes %f is used, but on
 when floats need to be formatted, e.g., %.2f.
 
 Use the log module to its fullest; when you need to print some values
-to debug, use self.log.debug to do so, and leave those print
+to debug, use log.info and log.debug to do so.  Leave those print
 statements in the code (commented out) so they can later be
 re-enabled.  Remember that once code is buggy, it tends to have more
 bugs, and you'll probably need those print statements again.
