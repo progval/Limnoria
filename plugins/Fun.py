@@ -558,7 +558,7 @@ class Fun(callbacks.Privmsg):
     def _color(self, c):
         if c == ' ':
             return c
-        fg = random.randint(2, 15)
+        fg = str(random.randint(2, 15)).zfill(2)
         return '\x03%s%s' % (fg, c)
 
     def colorize(self, irc, msg, args):
