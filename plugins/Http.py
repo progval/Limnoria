@@ -36,6 +36,7 @@ Provides several commands that go out to websites and get things.
 from baseplugin import *
 
 import re
+import sets
 import time
 import random
 import urllib
@@ -55,7 +56,7 @@ class Http(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.deepthoughtq = structures.queue()
-        self.deepthoughts = set()
+        self.deepthoughts = sets.Set()
 
     def deepthought(self, irc, msg, args):
         """takes no arguments
