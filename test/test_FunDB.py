@@ -32,7 +32,17 @@
 from test import *
 
 class TestFunDB(PluginTestCase):
-    pass
+    plugins = ('FunDB',)
+
+    def testAdddb(self):
+        self.assertError('adddb l4rt foo')
+        self.assertError('adddb lart foo')
+        self.assertNotError('adddb lart jabs $who')
+
+    def testRemovedb(self):
+        self.assertError('removedb l4rt foo')
+        self.assertError('removedb lart foo')
+        self.assertNotError('removedb lart 1')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -183,43 +183,6 @@ class FunDB(callbacks.Privmsg):
         else:
             irc.reply(msg, cursor.fetchone()[0])
 
-    def addinsult(self, irc, msg, args):
-        """<insult>
-
-        Adds an insult to the insult database.
-        """
-        insult = privmsgs.getArgs(args)
-        cursor = self.db.cursor()
-        cursor.execute("""INSERT INTO insults VALUES (NULL, %s)""", insult)
-        self.db.commit()
-        irc.reply(msg, conf.replySuccess)
-
-    def removeinsult(self, irc, msg, args):
-        """<id>
-
-        Removes the insult with id <id> from the insult database.
-        """
-        id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error(msg, 'You must give a numeric id.')
-            return
-        cursor = self.db.cursor()
-        cursor.execute("""DELETE FROM insults WHERE id=%s""", id)
-        self.db.commit()
-        irc.reply(msg, conf.replySuccess)
-
-    def numinsults(self, irc, msg, args):
-        """takes no arguments
-
-        Returns the number of insults currently in the database.
-        """
-        cursor = self.db.cursor()
-        cursor.execute('SELECT count(*) FROM insults')
-        total = cursor.fetchone()[0]
-        irc.reply(msg, 'There are currently %s insults in my database' % total)
-
     def crossword(self, irc, msg, args):
         """<word>
 
@@ -268,42 +231,92 @@ class FunDB(callbacks.Privmsg):
         else:
             irc.reply(msg, cursor.fetchone()[0])
 
-    def addexcuse(self, irc, msg, args):
-        """<excuse>
+    _tables = ['lart','excuse','insult','praise']
+    def adddb(self, irc, msg, args):
+        """<lart|excuse|insult|praise> <text>
 
-        Adds another excuse to the database.
+        Adds another record to the data referred to in the first argument.
         """
-        excuse = privmsgs.getArgs(args)
+        (table, s) = privmsgs.getArgs(args, needed=2)
+        table = str.lower(table)
+        if table == "lart" or table == "praise":
+            if '$who' not in s:
+                irc.error(msg, 'There must be an $who in the lart/praise '\
+                    'somewhere.')
+                return
+        elif table not in self._tables:
+            irc.error(msg, '\"%s\" is an invalid choice. Must be one of: '\
+                'lart, excuse, insult, praise.' % table)
+            return
         cursor = self.db.cursor()
-        cursor.execute("""INSERT INTO excuses VALUES (NULL, %s)""", excuse)
+        cursor.execute("""INSERT INTO %s VALUES (NULL, %s)""", table+'s', s)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
-    def removeexcuse(self, irc, msg, args):
-        """<id>
+    def removedb(self, irc, msg, args):
+        """<lart|excuse|insult|praise> <id>
 
-        Removes the excuse with the id number <id> from the database.
+        Removes the data, referred to in the first argument, with the id
+        number <id> from the database.
         """
-        id = privmsgs.getArgs(args)
+        (table, id) = privmsgs.getArgs(args, needed=2)
+        table = str.lower(table)
         try:
             id = int(id)
         except ValueError:
             irc.error(msg, 'You must give a numeric id.')
             return
+        if table not in self._tables:
+            irc.error(msg, '\"%s\" is an invalid choice. Must be one of: '\
+                'lart, excuse, insult, praise.' % table)
+            return
         cursor = self.db.cursor()
-        cursor.execute("""DELETE FROM excuses WHERE id=%s""", id)
+        cursor.execute("""DELETE FROM %s WHERE id=%s""", table+'s', id)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
-    def numexcuses(self, irc, msg, args):
-        """takes no arguments
+    def numdb(self, irc, msg, args):
+        """<lart|excuse|insult|praise>
 
-        Returns the number of excuses currently in the database.
+        Returns the number of records, of the type specified, currently in
+        the database.
         """
+        table = privmsgs.getArgs(args)
+        table = str.lower(table)
+        if table not in self._tables:
+            irc.error(msg, '\"%s\" is an invalid choice. Must be one of: '\
+                'lart, excuse, insult, praise.' % table)
+            return
         cursor = self.db.cursor()
-        cursor.execute('SELECT count(*) FROM excuses')
+        cursor.execute('SELECT count(*) FROM %s', table+'s')
         total = cursor.fetchone()[0]
-        irc.reply(msg, 'There are currently %s excuses in my database' % total)
+        irc.reply(msg, 'There are currently %s %s in my database' %\
+            (total,table+'s'))
+
+    def getdb(self, irc, msg, args):
+        """<lart|excuse|insult|praise> <id>
+
+        Gets the record, of the type specified, with the id number <id>.
+        """
+        (table, id) = privmsgs.getArgs(args, needed=2)
+        table = str.lower(table)
+        try:
+            id = int(id)
+        except ValueError:
+            irc.error(msg, 'The id must be an integer.')
+            return
+        if table not in self._tables:
+            irc.error(msg, '\"%s\" is an invalid choice. Must be one of: '\
+                'lart, excuse, insult, praise.' % table)
+            return
+        cursor = self.db.cursor()
+        print "%s %s" % (table, table+'s')
+        cursor.execute("""SELECT %s FROM %s WHERE id=%s""", table, table+'s',
+            id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There is no such %s.' % table)
+        else:
+            irc.reply(msg, cursor.fetchone()[0])
 
     def lart(self, irc, msg, args):
         """[<channel>] <nick>
@@ -325,65 +338,6 @@ class FunDB(callbacks.Privmsg):
             lartee = nick
         lart = lart.replace("$who", lartee)
         irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
-
-    def getlart(self, irc, msg, args):
-        """<id>
-
-        Gets the lart with the id number <id>.
-        """
-        id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error(msg, 'The id must be an integer.')
-            return
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT lart FROM larts WHERE id=%s""", id)
-        if cursor.rowcount == 0:
-            irc.error(msg, 'There is no such lart.')
-        else:
-            irc.reply(msg, cursor.fetchone()[0])
-
-    def addlart(self, irc, msg, args):
-        """<lart>
-
-        The target of the lart is represented with '$who'.  And example might
-        be "addlart chops $who in half with an AOL cd."
-        """
-        lart = privmsgs.getArgs(args)
-        if '$who' in lart:
-            irc.error(msg, 'There must be an $who in the lart somewhere.')
-            return
-        cursor = self.db.cursor()
-        cursor.execute("""INSERT INTO larts VALUES (NULL, %s)""", lart)
-        self.db.commit()
-        irc.reply(msg, conf.replySuccess)
-
-    def removelart(self, irc, msg, args):
-        """<id>
-
-        Removes the lart with id number <id> from the database.
-        """
-        id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error(msg, 'You must give a numeric id.')
-            return
-        cursor = self.db.cursor()
-        cursor.execute("""DELETE FROM larts WHERE id=%s""", id)
-        self.db.commit()
-        irc.reply(msg, conf.replySuccess)
-
-    def numlarts(self, irc, msg, args):
-        """takes no arguments
-
-        Returns the number of larts currently in the database.
-        """
-        cursor = self.db.cursor()
-        cursor.execute('SELECT count(*) FROM larts')
-        total = cursor.fetchone()[0]
-        irc.reply(msg, 'There are currently %s larts in my database' % total)
 
     def addword(self, irc, msg, args):
         """<word>
