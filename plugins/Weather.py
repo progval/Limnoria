@@ -459,7 +459,7 @@ class Weather(callbacks.Privmsg):
                 pass
             try:
                 resp.append('Wind: %s at %s %s.' % tuple(info['Wind'].split()))
-            except ValueError:
+            except (ValueError, TypeError):
                 pass
             resp.append('Pressure: %s.' % info['Pressure'])
             resp.append('Visibility: %s.' % info['Visibility'])
