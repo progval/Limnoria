@@ -148,7 +148,7 @@ class RSS(callbacks.Privmsg):
                 info.get('link', 'unavailable').strip(),
                 info.get('description', 'unavailable').strip(),
                 date)
-        irc.reply(msg, response)
+        irc.reply(msg, ' '.join(response.split()))
 
 
 Class = RSS
