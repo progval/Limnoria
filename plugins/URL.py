@@ -341,10 +341,10 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         Gives the last URL matching the given criteria.  --from is from whom
         the URL came; --at is the site of the URL; --proto is the protocol the
         URL used; --with is something inside the URL; --near is a string in the
-        messages before and after the link.  If --nolimit is given, returns as
-        many URLs as can fit in the message. --fancy returns information in
-        addition to just the URL. <channel> is only necessary if the
-        message isn't sent in the channel itself.
+        messages before and after the link.  If --nolimit is given, returns
+        all the URLs that are found. --fancy returns information in addition
+        to just the URL. <channel> is only necessary if the message isn't sent
+        in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'with=', 'at=',

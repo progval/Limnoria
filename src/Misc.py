@@ -397,13 +397,14 @@ class Misc(callbacks.Privmsg):
                ircutils.isChannel(msg.args[0])
 
     def last(self, irc, msg, args):
-        """[--{from,in,to,with,regexp}] <args>
+        """[--{from,in,to,with,regexp,nolimit}] <args>
 
         Returns the last message matching the given criteria.  --from requires
         a nick from whom the message came; --in and --to require a channel the
         message was sent to; --with requires some string that had to be in the
-        message; --regexp requires a regular expression the message must
-        match.  By default, the current channel is searched.
+        message; --regexp requires a regular expression the message must i
+        match; --nolimit returns all the messages that can be found.  By
+        default, the current channel is searched.
         """
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
                                                    'with=', 'regexp=',
