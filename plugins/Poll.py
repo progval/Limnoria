@@ -86,7 +86,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             db.commit()
         return db
 
-    def _getUserId(self, prefix):
+    def _getUserId(self, irc, prefix):
         try:
             return ircdb.users.getUserId(prefix)
         except KeyError:
@@ -148,7 +148,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         """
         channel = privmsgs.getChannel(msg, args)
         question = privmsgs.getArgs(args)
-        userId = self._getUserId(msg.prefix)
+        userId = self._getUserId(irc, msg.prefix)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""INSERT INTO polls VALUES (NULL, %s, %s, 1)""",
@@ -188,7 +188,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         channel = privmsgs.getChannel(msg, args)
         (poll_id, option) = privmsgs.getArgs(args, required=2)
         poll_id = self._getId(irc, poll_id)
-        userId = self._getUserId(msg.prefix)
+        userId = self._getUserId(irc, msg.prefix)
         db = self.getDb(channel)
         cursor = db.cursor()
         # Only the poll starter or an admin can add options
@@ -231,7 +231,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         (poll_id, option_id) = privmsgs.getArgs(args, required=2)
         poll_id = self._getId(irc, poll_id)
         option_id = self._getId(irc, option_id)
-        userId = self._getUserId(msg.prefix)
+        userId = self._getUserId(irc, msg.prefix)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT open
