@@ -179,7 +179,8 @@ class IrcMsg(object):
         return self._len
 
     def __eq__(self, other):
-        return hash(self) == hash(other) and \
+        return isinstance(other, self.__class__) and \
+               hash(self) == hash(other) and \
                self.command == other.command and \
                self.prefix == other.prefix and \
                self.args == other.args

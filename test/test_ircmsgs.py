@@ -59,6 +59,7 @@ class IrcMsgTestCase(SupyTestCase):
     def testEq(self):
         for msg in msgs:
             self.assertEqual(msg, msg)
+        self.failIf(msgs[0] == []) # Comparison to unhashable type.
 
     def testNe(self):
         for msg in msgs:
