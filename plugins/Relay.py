@@ -102,7 +102,7 @@ class Relay(callbacks.Privmsg):
         self._whois = {}
         self.lastmsg = {}
         self.ircstates = {}
-        self.queuedTopics = structures.MultiSet()
+        self.queuedTopics = MultiSet()
         self.last20Privmsgs = ircutils.IrcDict()
 
     def __call__(self, irc, msg):
