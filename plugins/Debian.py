@@ -265,7 +265,7 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
             irc.error(msg, 'No packages matched that search.')
         else:
             irc.reply(msg, utils.commaAndify(packages))
-    debincoming = privmsgs.thread(debincoming)
+    incoming = privmsgs.thread(incoming)
         
 Class = Debian
 
