@@ -1,11 +1,44 @@
+2004-08-30  Jeremy Fincher  <jemfinch@supybot.org>
+
+	* Version 0.79.99!  We're getting asymptotically closer to
+	0.80.0!
+	
 	* Added Anonymous.action, to anonymously perform actions in a
 	specified channel.
 
-	* Added a clear command to the Karma plugin, so channel ops can
-	clear the karma for a given name.
+	* Added a Karma.clear, so channel ops can clear the karma for a
+	given name.
 	
-	* Added a redo command to the Topic plugin, to redo the last
-	undo.
+	* Added a Topic.redo, to redo the last undo.
+
+	* Added supybot.protocols.irc.umodes, to allow the bot to set
+	user modes upon connecting to a network.
+	
+	* Fixed numerous bugs involved with disconnecting, reconnecting,
+	and using multiple networks.
+
+	* Fixed a bug that would prevent the bot from quitting except via
+	multiple Ctrl-Cs.
+
+	* Fixed RSS's announcements.
+
+	* Fixed bug in Later whereby no more than one message could be
+	queued for a nick.
+
+	* Fixed Services.configure, as well as several bugs in Services
+	which sometimes prevented the bot from identifying.
+
+	* Fixed bugs in the Poll module that caused the list and poll
+	commands not to work.
+
+	* Fixed the ebay snarfer.
+
+	* Fixed exception raised by some CTCP messages when the URL
+	plugin was loaded.
+
+	* Fixed Debian.version.
+
+	* Fixed Amazon's use of unicode.
 
 	
 2004-08-27  Jeremy Fincher  <jemfinch@supybot.org>

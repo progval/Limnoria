@@ -1,3 +1,12 @@
+Version 0.79.99
+
+Many bugs fixed, thanks to the users who reported them.  We're
+getting asymptotically closer to 0.80.0 -- maybe this'll be the last
+one, maybe we'll have to release an 0.79.999 -- either way, we're
+getting close :)  Check out the ChangeLog for the fixes and a few new
+features.
+
+
 Version 0.79.9
 
 We've changed so much stuff in this release that we've given up on
@@ -10,6 +19,7 @@ appending your new configuration at the end of your old configuration
 and running supybot with that new configuration file.  This, of
 course, comes with no warranty or guarantee of utility -- try it if
 you want, but backup your original configuration file!)
+
 
 Version 0.77.2
 
@@ -32,11 +42,13 @@ release tarballs.  If you're a developer and you want these, you
 should either check out CVS or download one of our weekly CVS
 snapshots, available at http://supybot.sourceforge.net/snapshots/ .
 
+
 Version 0.77.1
 
 This is a drop-in replacement for 0.77.0 -- no incompatibilities, to
 out knowledge.  Simply install over your old installation and restart
 your bot :)
+
 
 Version 0.77.0
 
@@ -68,11 +80,13 @@ Uh, we were just kidding about the upgrade script in 0.76.0 :)  It'll
 be a little while longer.  We do have several little upgrade scripts,
 though.
 
+
 Version 0.76.1
 
 Almost entirely bugfixes, just some minor (and some less minor) bugs
 that need to get in before we really start hacking on the next
 version.  Should be *entirely* compatible with 0.76.0.
+
 
 Version 0.76.0
 
