@@ -34,6 +34,7 @@ __revision__ = "$Id$"
 import fix
 
 import re
+import conf
 import socket
 import urllib2
 import urlparse
@@ -66,7 +67,7 @@ def strError(e):
         return FORBIDDEN
     else:
         return str(e)
-    
+
 def getUrlFd(url):
     """Gets a file-like object for a url."""
     try:
@@ -84,7 +85,7 @@ def getUrlFd(url):
         raise WebError, strError(e)
     except urllib2.HTTPError, e:
         raise WebError, strError(e)
-    
+
 def getUrl(url, size=None):
     """Gets a page.  Returns a string that is the page gotten."""
     fd = getUrlFd(url)
