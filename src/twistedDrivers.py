@@ -61,11 +61,8 @@ class SupyIrcProtocol(LineReceiver):
     def lineReceived(self, line):
         start = time.time()
         msg = ircmsgs.IrcMsg(line)
-        log.debug('Time to parse IrcMsg: %s', time.time()-start)
-        try:
-            self.irc.feedMsg(msg)
-        except:
-            log.exception('Uncaught exception outside Irc object:')
+        #log.debug('Time to parse IrcMsg: %s', time.time()-start)
+        self.irc.feedMsg(msg)
 
     def checkIrcForMsgs(self):
         if self.connected:

@@ -106,7 +106,7 @@ class SocketDriver(drivers.IrcDriver):
             for line in lines:
                 start = time.time()
                 msg = ircmsgs.IrcMsg(line)
-                log.debug('Time to parse IrcMsg: %s', time.time()-start)
+                #log.debug('Time to parse IrcMsg: %s', time.time()-start)
                 try:
                     self.irc.feedMsg(msg)
                 except:
