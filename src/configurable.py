@@ -62,6 +62,10 @@ class Dictionary(object):
             self.types[name] = type
             self.defaults[name] = default
 
+    def __contains__(self, name):
+        name = callbacks.canonicalName(name)
+        return name in self.defaults
+
     def get(self, name, channel=None):
         name = callbacks.canonicalName(name)
         if channel is not None:
@@ -117,11 +121,49 @@ def StrType(s):
         raise Error, 'Value must be a string.'
     return v
 
+def NoSpacesStrType(s):
+    try:
+        s = StrType(s)
+        if len(s.split(), 1) > 1:
+            raise Error
+        return s
+    except Error:
+        raise Error, 'Value must be a string with no space characters.'
+
+def RegexpStrType(s):
+    try:
+        s = StrType(s)
+        r = utils.perlReToPythonRe(s)
+        return r
+    except ValueError, e:
+        raise Error, 'Value must be a valid regular expression: %s' % e
+    except Error:
+        raise Error, 'Value must be a valid regular expression.'
+
+def RegexpOrNoneStrType(s):
+    try:
+        if not s:
+            return None
+        else:
+            return RegexpStrType(s)
+    except Error:
+        raise Error, 'Value must be a valid regular expression or the ' \
+                     'empty string, representing nothing.'
+        
 def IntType(s):
     try:
         return int(s)
     except ValueError:
         raise Error, 'Value must be an int.'
+
+def PositiveIntType(s):
+    try:
+        i = IntType(s)
+        if i <= 0:
+            raise Error
+        return i
+    except Error:
+        raise Error, 'Value must be a positive, non-zero integer.'
 
 class Mixin(object):
     """A mixin class to provide a "config" command that can be consistent
@@ -143,27 +185,46 @@ class Mixin(object):
             for line in fd:
                 line = line.rstrip()
                 (channel, name, value) = line.split(',', 2)
-                if channel == 'default':
-                    channel = None
                 try:
                     # The eval here is to turn from "'foo'" to 'foo'.
-                    self.configurables.set(name, eval(value), channel)
-                except Error, e:
-                    s = 'Couldn\'t read configurable from file: %s'
-                    self.log.warning(s, e)
+                    value = eval(value)
+                except Exception, e:
+                    self.log.error('Invalid configurable line: %r', line)
+                    continue
+                try:
+                    if channel == 'global':
+                        try:
+                            self.globalConfigurables.set(name, value)
+                        except AttributeError:
+                            s = 'Attempt to set non-existent global ' \
+                                'configurable %s' % value
+                            self.log.warning(s, name)
+                    else:
+                        if channel == 'default':
+                            channel = None
+                        else:
+                            assert ircutils.isChannel(channel)
+                        self.configurables.set(name, value, channel)
+                except Error, e: # Type error conversion.
+                    s = 'Couldn\'t type-convert configurable %s: %s'
+                    self.log.warning(s, name, e)
                 except KeyError, e:
                     s = 'Configurable variable %s doesn\'t exist anymore.'
                     self.log.warning(s, name)
 
     def die(self):
         fd = file(self.filename, 'w')
-        L = self.configurables.unparsedValues.items()
-        L.sort()
-        for ((channel, name), value) in L:
-            if channel is None:
-                channel = 'default'
-            name = self.configurables.originalNames[name]
-            fd.write('%s,%s,%r\n' % (channel, name, value))
+        def flushDictionary(d):
+            L = d.unparsedValues.items()
+            L.sort()
+            for ((channel, name), value) in L:
+                if channel is None:
+                    channel = 'default'
+                name = d.originalNames[name]
+                fd.write('%s,%s,%r\n' % (channel, name, value))
+        if hasattr(self, 'globalConfigurables'):
+            flushDictionary(self.globalConfigurables)
+        flushDictionary(self.configurables)
         fd.close()
 
     def config(self, irc, msg, args):
@@ -175,37 +236,49 @@ class Mixin(object):
         config variables for this plugin.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        try:
-            channel = privmsgs.getChannel(msg, args)
-            capability = ircdb.makeChannelCapability(channel, 'op')
-        except callbacks.ArgumentError:
-            raise
-        except callbacks.Error:
-            channel = None
-            capability = 'admin'
-        if not ircdb.checkCapability(msg.prefix, capability):
-            irc.error(msg, conf.replyNoCapability % capability)
-            return
-        (name, value) = privmsgs.getArgs(args, required=0, optional=2)
-        if not name:
-            irc.reply(msg, utils.commaAndify(self.configurables.names()))
-            return
-        try:
-            if not value:
-                help = self.configurables.help(name)
-                value = self.configurables.get(name, channel=channel)
-                s = '%s: %s  (Current value: %r)' % (name, help, value)
-                irc.reply(msg, s)
-                return
+        if not args: # They want a list of the configurables.
+            names = self.configurables.names()
+            if hasattr(self, 'globalConfigurables'):
+                names.extend(self.globalConfigurables.names())
+                names.sort()
+            irc.reply(msg, utils.commaAndify(names))
+        else:
             try:
-                self.configurables.set(name, value, channel)
-                irc.reply(msg, conf.replySuccess)
-            except Error, e:
-                irc.error(msg, str(e))
-        except KeyError:
-            irc.error(msg, 'There is no config variable %r' % name)
-        
-
+                channel = privmsgs.getChannel(msg, args)
+                capability = ircdb.makeChannelCapability(channel, 'op')
+            except callbacks.Error:
+                channel = None
+                capability = 'admin'
+            (name, value) = privmsgs.getArgs(args, required=1, optional=1)
+            if name in self.configurables:
+                if value:
+                    if ircdb.checkCapability(msg.prefix, capability):
+                        try:
+                            self.configurables.set(name, value, channel)
+                            irc.reply(msg, conf.replySuccess)
+                        except Error, e:
+                            irc.error(msg, str(e))
+                    else:
+                        irc.error(msg, conf.replyNoCapability % capability)
+                else:
+                    irc.reply(msg, self.configurables.help(name))
+            elif hasattr(self, 'globalConfigurables') and \
+                 name in self.globalConfigurables:
+                if value:
+                    if ircdb.checkCapability(msg.prefix, 'admin'):
+                        try:
+                            self.globalConfigurables.set(name, value, channel)
+                            irc.reply(msg, conf.replySuccess)
+                        except Error, e:
+                            irc.error(msg, str(e))
+                    else:
+                        s = '%s is a global capability, and requires ' \
+                            'the "admin" capability.'
+                        irc.error(msg, s)
+                else:
+                    irc.reply(msg, self.globalConfigurables.help(name))
+            else:
+                irc.error(msg, 'There is no config variable %r' % name)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
