@@ -45,14 +45,14 @@ __contributors__ = {}
 # Change the stack command to see another person's stack.
 # Keep a bankroll in the users registry.
 # Allow the "sit" command to have specified a stack size, subtracting it from
-#  the bankroll.
+#   the bankroll.
 # Write a command to allow Owner users to give a person money.
 # Re-expand the commands using forwarder so they can have better help.
-# Have tables in each channel be entirely configurable.
+# Have tables in each channel be entirely persistently configurable.
 # Have the bot automatically start the next hand if people are seated.
-# Improve the "you've bet X already" to say something cooler when X is 0.
 # Have a slight pause before sending the "foo, it's your turn to bet" message,
-#  and if the user replies before then, don't send it.
+#   and if the user replies before then, don't send it.
+# ??? Should we allow "to" in a raise command? raise to 100?
 ###
 
 import sets
@@ -273,9 +273,16 @@ class Table(object):
     def pot(self):
         return sum(self.buckets.values()) + sum(self.foldedBuckets)
 
+    def possibleBettors(self):
+        L = []
+        for player in self.hands:
+            if player.stack > 0:
+                L.append(player)
+        return L
+
     def startBettingRound(self):
         player = self.nextPlayer()
-        if player is None:
+        if player is None or len(self.possibleBettors()) <= 1:
             self.nextRound()
             return
         s = 'Betting begins with %s.' % self.waitingOn().nick()
@@ -321,10 +328,17 @@ class Table(object):
         else:
             player = self.nextPlayer()
             if player is not None:
-                self.public('%s, it\'s your turn.  The current bet is %s.  '
-                            'You\'ve bet %s already this round.' %
-                            (player.nick(), self.currentBet,
-                             self.currentBets[player]))
+                s = '%s, it\'s your turn.  ' % player.nick()
+                if self.currentBet:
+                    s += 'The current bet is %s.  ' % self.currentBet
+                    playerBet = self.currentBets[player]
+                    if playerBet:
+                        s += 'You\'ve already bet %s this round.' % playerBet
+                    else:
+                        s += 'You haven\'t yet bet this round.'
+                else:
+                    s += 'There have not yet been any bets this round.'
+                self.public(s)
             else:
                 self.nextRound()
 
@@ -351,7 +365,7 @@ class Table(object):
         if bucket:
             self.foldedBuckets.append(bucket)
         del self.hands[player]
-        self.public('%s folds.' % player.name())
+        self.public('%s folds.' % player.nick())
         self.checkEndOfRound()
 
     def check(self, player):
@@ -375,6 +389,10 @@ class Table(object):
     def call(self, player):
         if self.checkWrongPlayer(player):
             return
+        if not self.currentBet:
+            self.error('There isn\'t any bet to call.  '
+                       'Perhaps you should check.')
+            return
         toCall = self.currentBet - self.currentBets[player]
         bet = self.addCurrentBet(player, min(toCall, player.stack))
         self.public('%s calls %s.' % (player.nick(), bet))
@@ -383,7 +401,9 @@ class Table(object):
     def bet(self, player, amount):
         if self.checkWrongPlayer(player):
             return
-        if self.checkNoCurrentBet():
+        if self.currentBet and amount < self.currentBet:
+            self.error('The current bet is %s, you must bet at least that.' %
+                       self.currentBet)
             return
         if amount > player.stack:
             self.error('You only have %s in your stack, you can\'t '
