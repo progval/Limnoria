@@ -76,8 +76,7 @@ def close(registry, filename, annotated=True):
     for (name, value) in registry.getValues(getChildren=True):
         if annotated and \
            hasattr(value,'help') and \
-           value.help and \
-           value.help not in helpCache:
+           value.help and value.help not in helpCache:
             helpCache.add(value.help)
             lines = textwrap.wrap(value.help)
             for (i, line) in enumerate(lines):
@@ -394,7 +393,7 @@ if __name__ == '__main__':
     number of seconds the bot will wait between sending messages to the server.
     """))
     supybot.register('plugins')
-    supybot.plugins.register('topic')
+    supybot.plugins.register('Topic')
     supybot.plugins.topic.register('separator',
       StringSurroundedBySpaces(' || ', """Determines what separator the bot
       uses to separate topic entries.""", supplyDefault=True))
