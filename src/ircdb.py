@@ -43,7 +43,8 @@ import world
 import ircutils
 
 def fromChannelCapability(capability):
-    assert isChannelCapability(capability)
+    if not isChannelCapability(capability):
+        raise ValueError, '%s is not a channel capability' % capability
     return capability.split('.', 1)
 
 def isChannelCapability(capability):
@@ -69,7 +70,8 @@ def makeAntiCapability(capability):
         return '!' + capability
 
 def unAntiCapability(capability):
-    assert isAntiCapability(capability)
+    if not isAntiCapability(capability):
+        raise ValueError, '%s is not an anti capability' % capability
     if isChannelCapability(capability):
         (channel, capability) = fromChannelCapability(capability)
         return '.'.join((channel, capability[1:]))
