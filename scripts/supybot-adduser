@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+__revision__ = "$Id$"
+
 import supybot
 
 import supybot.fix as fix
@@ -42,8 +44,6 @@ def main():
     import supybot.log as log
     import supybot.conf as conf
     conf.supybot.log.stdout.setValue(False)
-    #conf.supybot.log.level.set('DEBUG')
-    
     parser = optparse.OptionParser(usage='Usage: %prog [options] <users.conf>',
                                    version='supybot %s' % conf.version)
     parser.add_option('-u', '--username', action='store', default='',
