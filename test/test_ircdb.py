@@ -223,6 +223,10 @@ class IrcUserTestCase(unittest.TestCase):
         self.failIf(u.checkCapability('foo'))
         self.failUnless(u.checkCapability('!foo'))
 
+    def testRemoveCapability(self):
+        u = ircdb.IrcUser(capabilities=('foo',))
+        self.assertRaises(KeyError, u.removeCapability, 'bar')
+
 class IrcChannelTestCase(unittest.TestCase):
     def testInit(self):
         c = ircdb.IrcChannel()

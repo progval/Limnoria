@@ -194,8 +194,7 @@ class IrcUser(object):
         self.capabilities.add(capability)
 
     def removeCapability(self, capability):
-        if capability in self.capabilities:
-            self.capabilities.remove(capability)
+        self.capabilities.remove(capability)
 
     def checkCapability(self, capability):
         if self.ignore:
