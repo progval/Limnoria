@@ -284,6 +284,8 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
         the channel itself.  Returns the nicks of the people in the channel on
         the various networks the bot is connected to.
         """
+        def comp(x, y):
+            return cmp(x.lower(), y.lower())
         if not self.started:
             irc.error(msg, 'You must use the start command first.')
             return
@@ -320,10 +322,10 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
                         voices.append('+%s' % s)
                     else:
                         usersS.append(s)
-                ops.sort()
-                voices.sort()
-                usersS.sort()
-                halfops.sort()
+                ops.sort(comp)
+                voices.sort(comp)
+                usersS.sort(comp)
+                halfops.sort(comp)
                 usersS = ', '.join(ifilter(None, imap(', '.join,
                                   (ops,halfops,voices,usersS))))
                 users.append('%s: %s' % (ircutils.bold(abbreviation), usersS))
