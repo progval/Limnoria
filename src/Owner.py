@@ -42,6 +42,7 @@ import supybot.fix as fix
 import gc
 import os
 import imp
+import sre
 import sys
 import getopt
 import logging
@@ -483,15 +484,44 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         irc.replySuccess()
 
     def upkeep(self, irc, msg, args):
-        """takes no arguments
+        """[<level>]
 
-        Runs the standard upkeep stuff (flushes and gc.collects()).
+        Runs the standard upkeep stuff (flushes and gc.collects()).  If given
+        a level, runs that level of upkeep (currently, the only supported
+        level is "high", which causes the bot to flush a lot of caches as well
+        as do normal upkeep stuff.
         """
+        level = privmsgs.getArgs(args, required=0, optional=1)
+        L = []
+        if level == 'high':
+            L.append('Regexp cache flushed: %s cleared.' %
+                     utils.nItems('regexp', len(sre._cache)))
+            sre.purge()
+            L.append('Pattern cache flushed: %s cleared.' %
+                     utils.nItems('compiled pattern',
+                                  len(ircutils._patternCache)))
+            ircutils._patternCache.clear()
+            L.append('hostmaskPatternEqual cache flushed: %s cleared.' %
+                     utils.nItems('hostmaskPatternEqual result',
+                                  len(ircutils._hostmaskPatternEqualCache)))
+            ircutils._hostmaskPatternEqualCache.clear()
+            L.append('ircdb username cache flushed: %s cleared.' %
+                     utils.nItems('username to id mapping',
+                                  len(ircdb.users._nameCache)))
+            ircdb.users._nameCache.clear()
+            L.append('ircdb hostmask cache flushed: %s cleared.' %
+                     utils.nItems('hostmask to id mapping',
+                                  len(ircdb.users._hostmaskCache)))
+            ircdb.users._hostmaskCache.clear()
+            L.append('linecache line cache flushed: %s cleared.' %
+                     utils.nItems('line', len(linecache.cache)))
+            linecache.clearcache()
+            sys.exc_clear()
         collected = world.upkeep(scheduleNext=False)
         if gc.garbage:
-            irc.reply('Garbage!  %r' % gc.garbage)
-        else:
-            irc.reply('%s collected.' % utils.nItems('object', collected))
+            L.append('Garbage!  %r.' % gc.garbage)
+        L.append('%s collected.' % utils.nItems('object', collected))
+        irc.reply('  '.join(L))
 
     def load(self, irc, msg, args):
         """[--deprecated] <plugin>
