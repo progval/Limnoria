@@ -94,16 +94,20 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
 
 def makeIrcsDie():
     """Kills Ircs."""
-    log.info('Assassinating the Irc object council.')
+    log.info('Killing Irc objects.')
     for irc in ircs[:]:
         irc.die()
 
 def startDying():
     """Starts dying."""
-    log.info('Beginning that long, slow walk into the night.')
+    log.info('Shutdown initiated.')
     global dying
     dying = True
 
+def finished():
+    log.info('Shutdown complete.')
+
+atexit.register(finished)
 atexit.register(upkeep)
 atexit.register(makeIrcsDie)
 atexit.register(startDying)
