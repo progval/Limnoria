@@ -146,6 +146,17 @@ class Channel(object):
         self.halfops = set()
         self.voices = set()
 
+    def addUser(self, user):
+        while user[0] in '@%+':
+            (marker, user) = (user[0], user[1:])
+            if marker == '@':
+                self.ops.add(user)
+            elif marker == '%':
+                self.halfops.add(user)
+            elif marker == '+':
+                self.voices.add(user)
+        self.users.add(user)
+
     def removeUser(self, user):
         self.users.discard(user)
         self.ops.discard(user)
@@ -153,15 +164,20 @@ class Channel(object):
         self.voices.discard(user)
 
     def __getstate__(self):
-        return (self.topic, self.users, self.ops, self.halfops, self.voices)
+        return map(lambda name: getattr(self, name), self.__slots__)
 
-    def __setstate__(self, (topic, users, ops, halfops, voices)):
-        self.topic = topic
-        self.users = users
-        self.ops = ops
-        self.halfops = halfops
-        self.voices = voices
+    def __setstate__(self, t):
+        for (name, value) in zip(self.__slots__, t):
+            setattr(self, name, value)
 
+    def __eq__(self, other):
+        ret = True
+        for name in self.__slots__:
+            ret = ret and getattr(self, name) == getattr(other, name)
+        return ret
+
+    def __ne__(self, other):
+        return not self == other
 
 class IrcState(object):
     """Maintains state of the Irc connection.  Should also become smarter.
@@ -176,13 +192,20 @@ class IrcState(object):
         self.channels = ircutils.IrcDict()
 
     def __getstate__(self):
-        d = {}
-        for s in self.__slots__:
-            d[s] = getattr(self, s)
+        return map(lambda name: getattr(self, name), self.__slots__)
 
-    def __setstate__(self, d):
-        for (name, value) in d.iteritems():
+    def __setstate__(self, t):
+        for (name, value) in zip(self.__slots__, t):
             setattr(self, name, value)
+
+    def __eq__(self, other):
+        ret = True
+        for name in self.__slots__:
+            ret = ret and getattr(self, name) == getattr(other, name)
+        return ret
+
+    def __ne__(self, other):
+        return not self == other
     
     def copy(self):
         ret = self.__class__()
@@ -214,15 +237,7 @@ class IrcState(object):
             chan = self.channels[channel.lower()]
             users = [ircutils.nick(user) for user in users.split()]
             for user in users:
-                if user[0] in '@%+':
-                    (marker, user) = (user[0], user[1:])
-                    if marker == '@':
-                        chan.ops.add(user)
-                    elif marker == '%':
-                        chan.halfops.add(user)
-                    elif marker == '+':
-                        chan.voices.add(user)
-                chan.users.add(user)
+                chan.addUser(user)
         elif msg.command == 'PART':
             for channel in msg.args[0].split(','):
                 channel = channel.lower()
