@@ -54,7 +54,6 @@ import ircutils
 dbfilename = os.path.join(conf.dataDir, 'Notes.db')
 
 class Notes(callbacks.Privmsg):
-    
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.makeDB(dbfilename)
@@ -88,7 +87,7 @@ class Notes(callbacks.Privmsg):
         self.cursor.execute('INSERT INTO users VALUES (NULL, %s)', username)
         self.db.commit()
         
-    def getUserID(self, username):
+    def getUserId(self, username):
         "Returns the user id matching the given username from the users table."
         self.cursor.execute('SELECT id FROM users where name=%s', username)
         if self.cursor.rowcount != 0:
@@ -157,15 +156,15 @@ class Notes(callbacks.Privmsg):
             recipient = ircdb.users.getUserName(n)
         self._addUser(sender)
         self._addUser(recipient)
-        senderID = self.getUserID(sender)
-        recipID = self.getUserID(recipient)
+        senderId = self.getUserId(sender)
+        recipId = self.getUserId(recipient)
         if ircutils.isChannel(msg.args[0]): 
             public = 1
         else: 
             public = 0 
         self.cursor.execute("""INSERT INTO notes VALUES 
                                (NULL, %s, %s, %s, 0, 0, %s, %s)""", 
-                               senderID, recipID, int(time.time()),
+                               senderId, recipId, int(time.time()),
                                public, note)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
@@ -178,10 +177,11 @@ class Notes(callbacks.Privmsg):
         noteid = privmsgs.getArgs(args)
         try:
             sender = ircdb.users.getUserName(msg.prefix)
+            senderId = self.getUserId(sender)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
-        self.cursor.execute("""SELECT notes.note, notes.from_id,
+        self.cursor.execute("""SELECT notes.note, notes.to_id, notes.from_id,
                                       notes.added_at, notes.public 
                                FROM users, notes
                                WHERE users.name=%s AND
@@ -193,7 +193,7 @@ class Notes(callbacks.Privmsg):
             return
         note, to_id, from_id, added_at, public = self.cursor.fetchone()
         author = self.getUserName(from_id)
-        if senderID != to_id:
+        if senderId != to_id:
             irc.error(msg, 'You are not the recipient of note %s.' % noteid)
             return
         public = int(public)
