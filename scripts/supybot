@@ -139,6 +139,9 @@ if __name__ == '__main__':
                            'as root.  You don\'t want this.  Don\'t do it.  '
                            'Even if you think you want it, you don\'t.  '
                            'You\'re probably dumb if you do this.')
+    parser.add_option('', '--debug', action='store_true', dest='debug',
+                      help='Determines whether some extra debugging stuff will'
+                           'be logged in this script.')
                       
     (options, args) = parser.parse_args()
 
@@ -335,6 +338,12 @@ if __name__ == '__main__':
     irc.addCallback(callback)
     driver = drivers.newDriver(server, irc)
     
+    if options.debug:
+        for (name, module) in sys.modules.iteritems():
+            if hasattr(module, '__file__') and hasattr(module, '__revision__'):
+                if module.__file__.startswith(supybot.installDir):
+                    print '%s: %s' % (name, module.__revision__.split()[2])
+
     if options.profile:
         import hotshot
         profiler = hotshot.Profile('%s-%i.prof' % (nick, time.time()))
