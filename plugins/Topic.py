@@ -144,7 +144,12 @@ class Topic(callbacks.Privmsg):
         topics = irc.state.getTopic(channel).split(self.topicSeparator)
         topic = topics.pop(number)
         (topic, name) = self.topicUnformatter.match(topic).groups()
-        if name != ircdb.users.getUserName(msg.prefix) and \
+        try:
+            senderName = ircdb.users.getUserName(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNoUser)
+            return
+        if name != senderName and \
            not ircdb.checkCapabilities(msg.prfix, ('op', 'admin')):
             irc.error(msg, 'You can only modify your own topics.')
             return
