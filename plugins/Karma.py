@@ -30,8 +30,10 @@
 ###
 
 """
-Plugin for handling basic Karma stuff for a channel.
+Plugin for handling Karma stuff for a channel.
 """
+
+__revision__ = "$Id$"
 
 import os
 import sets
@@ -40,7 +42,6 @@ from itertools import imap
 import sqlite
 
 import utils
-__revision__ = "$Id$"
 
 import plugins
 import privmsgs
@@ -169,7 +170,42 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                 s = 'Highest karma: %s.  Lowest karma: %s.' % \
                     (utils.commaAndify(highest), utils.commaAndify(lowest))
                 irc.reply(msg, s)
-            
+
+    _mostAbbrev = utils.abbrev(['increased', 'decreased', 'active'])
+    def most(self, irc, msg, args):
+        """[<channel>] {increased,decreased,active}
+
+        Returns the most increased, the most decreased, or the most active
+        (the sum of increased and decreased) karma things.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        kind = privmsgs.getArgs(args)
+        try:
+            kind = self._mostAbbrev[kind]
+            if kind == 'increased':
+                orderby = 'added'
+            elif kind == 'decreased':
+                orderby = 'subtracted'
+            elif kind == 'active':
+                orderby = 'added+subtracted'
+            else:
+                self.log.error('Impossible condition in most: kind=%s' % kind)
+                irc.error(msg, conf.replyPossibleBug)
+                return
+            sql = "SELECT name, %s FROM karma ORDER BY %s DESC LIMIT 50" % \
+                  (orderby, orderby)
+            db = self.getDb(channel)
+            cursor = db.cursor()
+            cursor.execute(sql)
+            L = ['%s: %s' % (name, i) for (name, i) in cursor.fetchall()]
+            if L:
+                irc.reply(msg, utils.commaAndify(L))
+            else:
+                irc.error(msg, 'I have no karma for this channel.')
+        except KeyError:
+            raise callbacks.ArgumentError
+        
     def increaseKarma(self, irc, msg, match):
         r"^(\S+)\+\+(|\s+)$"
         name = match.group(1)

@@ -68,6 +68,27 @@ if sqlite is not None:
             self.assertRegexp('karma MoO',
                               'Karma for \'MoO\'.*increased 1.*total.*1')
 
+        def testMost(self):
+            self.assertError('most increased')
+            self.assertError('most decreased')
+            self.assertError('most active')
+            self.assertHelp('most aldsfkj')
+            self.assertNoResponse('foo++', 1)
+            self.assertNoResponse('foo++', 1)
+            self.assertNoResponse('bar++', 1)
+            self.assertNoResponse('bar--', 1)
+            self.assertNoResponse('bar--', 1)
+            self.assertRegexp('karma most active', 'bar.*foo')
+            self.assertRegexp('karma most increased', 'foo.*bar')
+            self.assertRegexp('karma most decreased', 'bar.*foo')
+            self.assertNoResponse('foo--', 1)
+            self.assertNoResponse('foo--', 1)
+            self.assertNoResponse('foo--', 1)
+            self.assertNoResponse('foo--', 1)
+            self.assertRegexp('karma most active', 'foo.*bar')
+            self.assertRegexp('karma most increased', 'foo.*bar')
+            self.assertRegexp('karma most decreased', 'foo.*bar')
+
         def testSimpleOutput(self):
             self.assertNotError('karma config simple-output on')
             self.assertNoResponse('foo++', 2)
