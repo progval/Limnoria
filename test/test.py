@@ -40,6 +40,18 @@ import glob
 import os.path
 import unittest
 
+import ircmsgs
+
+fd = file(os.path.join('test', 'rfc2812.msgs'), 'r')
+rawmsgs = [line.strip() for line in fd]
+fd.close()
+
+msgs = [ircmsgs.IrcMsg(s) for s in rawmsgs]
+
+def getMsgs(command):
+    return [msg for msg in msgs if msg.command == command]
+    
+
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         files = sys.argv[1:]
