@@ -45,6 +45,9 @@ Commands include:
   insult
   addinsult
   removeinsult
+  numinsults
+  numexcuses
+  numlarts
 """
 
 from baseplugin import *
@@ -81,6 +84,10 @@ def makeDb(dbfilename, replace=False):
     cursor.execute("""CREATE TABLE larts (
                       id INTEGER PRIMARY KEY,
                       lart TEXT
+                      )""")
+    cursor.execute("""CREATE TABLE praises (
+                      id INTEGER PRIMARY KEY,
+                      praise TEXT
                       )""")
     cursor.execute("""CREATE TABLE words (
                       id INTEGER PRIMARY KEY,
@@ -122,13 +129,32 @@ class FunDB(callbacks.Privmsg):
 
     def die(self):
         self.db.close()
+    """
+    def praise(self, irc, msg, args):
+        """<something>
 
+        Praises <something> with a praise from my vast database of praises.
+        """
+        something = privmsgs.getArgs(args)
+        if something == 'me':
+            something = msg.nick
+        elif something == 'yourself':
+            something = irc.nick
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT id, praise FROM praises
+                          WHERE praise NOT NULL
+                          ORDER BY random()
+                          LIMIT 1""")
+        (id, insult) = cursor.fetchone()
+        s = insul
+        irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg),
+    """
     def insult(self, irc, msg, args):
         """<nick>"""
         nick = privmsgs.getArgs(args)
         cursor = self.db.cursor()
         cursor.execute("""SELECT id, insult FROM insults
-                          WHERE insult NOTNULL
+                          WHERE insult NOT NULL
                           ORDER BY random()
                           LIMIT 1""")
         (id, insult) = cursor.fetchone()
@@ -164,6 +190,15 @@ class FunDB(callbacks.Privmsg):
         cursor.execute("""DELETE FROM insults WHERE id=%s""", id)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
+
+    def numinsults(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the number of insults currently in the database"""
+        cursor = self.db.cursor()
+        cursor.execute('SELECT count(*) FROM insults')
+        total = cursor.fetchone()[0]
+        irc.reply(msg, 'There are currently %s insults in my database' % total)
 
     def crossword(self, irc, msg, args):
         """<word>
@@ -213,6 +248,15 @@ class FunDB(callbacks.Privmsg):
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
     
+    def numexcuses(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the number of excuses currently in the database"""
+        cursor = self.db.cursor()
+        cursor.execute('SELECT count(*) FROM excuses')
+        total = cursor.fetchone()[0]
+        irc.reply(msg, 'There are currently %s excuses in my database' % total)
+
     def lart(self, irc, msg, args):
         """[<channel>] <nick>
 
@@ -261,6 +305,15 @@ class FunDB(callbacks.Privmsg):
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
+    def numlarts(self, irc, msg, args):
+        """takes no arguments
+        
+        Returns the number of larts currently in the database"""
+        cursor = self.db.cursor()
+        cursor.execute('SELECT count(*) FROM larts')
+        total = cursor.fetchone()[0]
+        irc.reply(msg, 'There are currently %s larts in my database' % total)
+
     def addword(self, irc, msg, args):
         """<word>"""
         word = privmsgs.getArgs(args)
@@ -286,33 +339,6 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, ', '.join(words))
         else:
             irc.reply(msg, 'That word has no anagrams that I know of.')
-
-    def numlarts(self, irc, msg, args):
-        """<takes no arguments>
-        
-        Returns the number of 'larts' currently in the database"""
-        cursor = self.db.cursor()
-        cursor.execute('SELECT count(*) FROM larts')
-        total = cursor.fetchone()[0]
-        irc.reply(msg, 'There are currently %s larts in my database' % total)
-
-    def numinsults(self, irc, msg, args):
-        """<takes no arguments>
-
-        Returns the number of insults currently in the database"""
-        cursor = self.db.cursor()
-        cursor.execute('SELECT count(*) FROM insults')
-        total = cursor.fetchone()[0]
-        irc.reply(msg, 'There are currently %s insults in my database' % total)
-
-    def numexcuses(self, irc, msg, args):
-        """<takes no arguments
-
-        Returns the number of excuses currently in the database"""
-        cursor = self.db.cursor()
-        cursor.execute('SELECT count(*) FROM excuses')
-        total = cursor.fetchone()[0]
-        irc.reply(msg, 'There are currently %s excuses in my database' % total)
         
 Class = FunDB
 
