@@ -126,6 +126,9 @@ class AsyncoreDriver(asynchat.async_chat, object):
     def handle_close(self):
         #debug.methodNamePrintf(self, 'handle_close')
         self.scheduleReconnect()
+        self.die()
+
+    def die(self):
         self.close()
 
     

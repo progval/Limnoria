@@ -396,7 +396,7 @@ class Irc(object):
 
 #        elif msg.command == 'ERROR':
 #            if msg.args[0].startswith('Closing Link'):
-#                self.driver.close()
+#                self.driver.die()
         # Now update the IrcState object.
         try:
             self.state.addMsg(self, msg)
