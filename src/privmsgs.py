@@ -129,28 +129,16 @@ def checkChannelCapability(f, capability):
             irc.errorNoCapability(chancap)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
-def _threadedWrapMethod(f):
-    """A function to wrap methods that are to be run in a thread, so that the
-    callback's threaded attribute is set to True while the thread is running.
-    """
-    def newf(self, *args, **kwargs):
-        originalThreaded = self.threaded
-        try:
-            self.threaded = True
-            return f(self, *args, **kwargs)
-        finally:
-            self.threaded = originalThreaded
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
-
 def thread(f):
     """Makes sure a command spawns a thread when called."""
-    f = _threadedWrapMethod(f)
     def newf(self, irc, msg, args, *L, **kwargs):
-        ff = types.MethodType(f, self, self.__class__)
-        t = callbacks.CommandThread(target=irc._callCommand,
-                                    args=(f.func_name, self),
-                                    kwargs=kwargs)
-        t.start()
+        if threading.currentThread() is not world.mainThread:
+            t = callbacks.CommandThread(target=irc._callCommand,
+                                        args=(f.func_name, self),
+                                        kwargs=kwargs)
+            t.start()
+        else:
+            f(self, irc, msg, args, *L, **kwargs)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 def channel(f):
@@ -195,7 +183,6 @@ class SnarfIrc(object):
 
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
-    f = _threadedWrapMethod(f)
     def newf(self, irc, msg, match, *L, **kwargs):
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
