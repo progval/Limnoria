@@ -64,23 +64,53 @@ class Math(callbacks.Privmsg):
     # one can do list comprehensions or call __...__ functions.
     ###
     def base(self, irc, msg, args):
-        """<base> <number>
+        """<fromBase> [<toBase>] <number>
 
-        Converts from base <base> the number <number>
+        Converts from base <fromBase> to base <toBase>. If <toBase> is left
+        out, it converts to decimal.
         """
-        (base, number) = privmsgs.getArgs(args, required=2)
+        (frm, to, number) = privmsgs.getArgs(args, required=2, optional=1)
+        if number == '':
+            number = to
+            to = '10'
         try:
-            base = int(base)
-            if not (2 <= base <= 36):
+            frm = int(frm)
+            to = int(to)
+            if not ((2 <= frm <= 36) and (2 <= to <= 36)):
                 raise ValueError
         except ValueError:
-            irc.error('<base> must be a number between 2 and 36.')
+            irc.error('Bases must be numbers between 2 and 36.')
             return
         try:
-            irc.reply(str(long(number, int(base))))
+            irc.reply(self._convertBaseToBase(number, to, frm))
         except ValueError:
-            irc.error('Invalid <number> for base %s: %s' % (base, number))
+            irc.error('Invalid <number> for base %s: %s' % (frm, number))
 
+    def _convertDecimalToBase(self, number, base):
+        """
+            Convert a decimal number to another base; returns a string.
+        """
+        valStr = ''
+        if number == 0:
+            return '0'
+        while number != 0:
+            digit = number % base
+            if digit >= 10:
+                digit = string.uppercase[digit - 10]
+            else:
+                digit = str(digit)
+            valStr = digit + valStr
+            number = int(math.floor(number / base))
+        return valStr
+        
+    def _convertBaseToBase(self, number, toBase, fromBase):
+        """
+            Convert a number from any base, 2 through 36, to any other
+            base, 2 through 36. Returns a string.
+        """
+        number = long(str(number), fromBase)
+        return self._convertDecimalToBase(number, toBase)
+        
     _mathEnv = {'__builtins__': types.ModuleType('__builtins__'), 'i': 1j}
     _mathEnv.update(math.__dict__)
     _mathEnv.update(cmath.__dict__)
