@@ -341,6 +341,7 @@ class IrcState(IrcCommandDispatcher):
         'kicklen': int,
         'awaylen': int,
         'silence': int,
+        'watch': int, # DynastyNet.
         })
     def _prefixParser(s):
         if ')' in s:
@@ -358,7 +359,11 @@ class IrcState(IrcCommandDispatcher):
             if '=' in arg:
                 (name, value) = arg.split('=', 1)
                 converter = self._005converters.get(name, lambda x: x)
-                self.supported[name] = converter(value)
+                try:
+                    self.supported[name] = converter(value)
+                except Exception, e:
+                    log.exception('Uncaught exception in 005 converter:')
+                    log.error('Name: %s, Converter: %s', name, converter)
             else:
                 self.supported[arg] = None
         
