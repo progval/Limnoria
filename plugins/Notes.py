@@ -183,16 +183,21 @@ class Notes(callbacks.Privmsg):
         cursor = self.db.cursor()
         cursor.execute("""SELECT note, to_id, from_id, added_at, public
                           FROM notes
-                          WHERE notes.to_id=%s AND notes.id=%s""",
-                       id, noteid)
+                          WHERE (to_id=%s OR from_id=%s) AND id=%s""",
+                       id, id, noteid)
         if cursor.rowcount == 0:
-            irc.error(msg, 'That\'s not a valid note id for you.')
+            s = 'You may only retrieve notes you\'ve sent or received.'
+            irc.error(msg, s)
             return
         (note, toId, fromId, addedAt, public) = cursor.fetchone()
         (toId,fromId,addedAt,public) = map(int, (toId,fromId,addedAt,public))
-        author = ircdb.users.getUser(fromId).name
         elapsed = utils.timeElapsed(time.time() - addedAt)
-        newnote = "%s (Sent by %s %s ago)" % (note, author, elapsed)
+        if toId == id:
+            author = ircdb.users.getUser(fromId).name
+            newnote = '%s (Sent by %s %s ago)' % (note, author, elapsed)
+        elif fromid == id:
+            recipient = ircdb.users.getUser(toId).name
+            newnote = '%s (Sent to %s %s ago)' % (note, recipient, elapsed)
         irc.reply(msg, newnote, private=(not public))
         self.setAsRead(noteid)
 
