@@ -187,10 +187,9 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                       self._gkRating.search(bRating).groups()
             wStats = '%s; W-%s, L-%s, D-%s' % (wRating, wWins, wLosses, wDraws)
             bStats = '%s; W-%s, L-%s, D-%s' % (bRating, bWins, bLosses, bDraws)
-            irc.queueMsg(callbacks.reply(msg, 
-              '%s: %s (%s) vs. %s (%s);  %s' % \
-              (gameTitle, wName, wStats, bName, bStats, toMove),
-              prefixName=False))
+            s = '%s: %s (%s) vs. %s (%s);  %s' % \
+                (gameTitle, wName, wStats, bName, bStats, toMove)
+            irc.reply(msg, s, prefixName=False)
         except ValueError:
             irc.queueMsg(callbacks.reply(msg,
               'That doesn\'t appear to be a proper Gameknot game.'))
@@ -201,7 +200,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
         r"http://gameknot\.com/stats\.pl\?([^&]+)"
         name = match.group(1)
         s = self.getStats(name)
-        irc.queueMsg(callbacks.reply(msg, s))
+        irc.reply(msg, s, prefixName=False)
 
 Class = Gameknot
 
