@@ -120,7 +120,8 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                 else:
                     results['url'] = ' <%s>' % results['url']
                 s = reply % results
-                s.encode('utf-8')
+                s = u'%s' % s
+                s = s.encode('utf-8')
                 res.append(str(s))
             except amazon.AmazonError, e:
                 self.log.warning(str(e))

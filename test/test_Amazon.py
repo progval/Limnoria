@@ -40,6 +40,9 @@ if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY' and network:
             PluginTestCase.setUp(self)
             conf.supybot.plugins.amazon.licensekey.set(LICENSE_KEY)
 
+        def testUnicode(self):
+            self.assertNotError('artist husker du')
+
         def testIsbn(self):
             self.assertHelp('isbn')
             self.assertRegexp('isbn 0738203793',
