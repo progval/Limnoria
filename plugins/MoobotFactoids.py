@@ -124,19 +124,12 @@ def pick(L, recursed=False):
         return L
 
 class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
-    priority = 1000
+    priority = 999
     addressedRegexps = ['changeFactoid', 'augmentFactoid',
                         'replaceFactoid', 'addFactoid']
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.makeDb(dbfilename)
-        # Set up the "reply when not command" behavior
-        Misc = Owner.loadPluginModule('Misc')
-        # Gotta make sure we restore this when we unload
-        self.originalReplyWhenNotCommand = Misc.replyWhenNotCommand
-        self.originalConfReplyWhenNotCommand = conf.replyWhenNotCommand
-        conf.replyWhenNotCommand = True
-        Misc.replyWhenNotCommand = self._checkFactoids
 
     def makeDb(self, filename):
         """create MoobotFactoids database and tables"""
@@ -158,12 +151,6 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           fact TEXT,
                           requested_count INTEGER
                           )""")
-        cursor.execute("""CREATE TABLE dunnos (
-                          id INTEGER PRIMARY KEY,
-                          added_by INTEGER,
-                          added_at TIMESTAMP,
-                          dunno TEXT
-                          )""")
         self.db.commit()
 
     def die(self):
@@ -182,9 +169,11 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         newfact = ''.join(pick(tokenize(fact)))
         if newfact.startswith("<reply>"):
             newfact = newfact.replace("<reply>", "", 1)
+            newfact = newfact.strip()
             type = "reply"
         elif newfact.startswith("<action>"):
             newfact = newfact.replace("<action>", "", 1)
+            newfact = newfact.strip()
             type = "action"
         return (type, newfact)
 
@@ -199,17 +188,15 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           hostmask, int(time.time()), key)
         self.db.commit()
 
-    def _checkFactoids(self, irc, msg, _):
-        # Strip the bot name
-        key = callbacks.addressed(irc.nick, msg)
+    def invalidCommand(self, irc, msg, tokens):
+        key = ' '.join(tokens)
         if key.startswith('\x01'):
             return
         # Check the factoid db for an appropriate reply
         cursor = self.db.cursor()
         cursor.execute("""SELECT fact FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
-            text = self._getDunno(msg.nick)
-            irc.reply(msg, text, prefixName=False)
+            return False
         else:
             fact = cursor.fetchone()[0]
             # Update the requested count/requested by for this key
@@ -225,19 +212,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(msg, "%s is %s" % (key, text), prefixName=False)
             else:
                 irc.error(msg, "Spurious type from parseFactoid.")
-
-    def _getDunno(self, nick):
-        """Retrieves a "dunno" from the database."""
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT dunno
-                          FROM dunnos
-                          ORDER BY random()
-                          LIMIT 1""")
-        if cursor.rowcount == 0:
-            return "No dunno's available, add some with dunnoadd."
-        dunno = cursor.fetchone()[0]
-        dunno = dunno.replace('$who', nick)
-        return dunno
+            return True
 
     def addFactoid(self, irc, msg, match):
         r"^(?!no\s+)(.+)\s+is\s+(?!also)(.+)"
@@ -448,7 +423,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
            if locked_by is None:
                irc.error(msg, "Factoid '%r is not locked." % key)
                return
-        # Can only lock/unlock own factoids
+        # Can only lock/unlock own factoids unless you're an admin
         if not (ircdb.checkCapability(id, 'admin') or created_by == id):
             s = "unlock"
             if lock:
@@ -571,56 +546,6 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, "Factoid is locked, cannot remove.")
             return
         cursor.execute("""DELETE FROM factoids WHERE key = %s""", key)
-        self.db.commit()
-        irc.reply(msg, conf.replySuccess)
-
-    def dunnoadd(self, irc, msg, args):
-        """<text>
-
-        Adds <text> as a "dunno" to be used as a random response when no
-        command or factoid key matches.  Can optionally contain '$who', which
-        will be replaced by the user's name when the dunno is displayed.
-        """
-        # Must be registered to use this
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
-            return
-        text = privmsgs.getArgs(args, needed=1)
-        cursor = self.db.cursor()
-        cursor.execute("""INSERT INTO dunnos
-                          VALUES(NULL, %s, %s, %s)""",
-                          id, int(time.time()), text)
-        self.db.commit()
-        irc.reply(msg, conf.replySuccess)
-
-    def dunnoremove(self, irc, msg, args):
-        """<id>
-
-        Removes dunno with the given <id>.
-        """
-        # Must be registered to use this
-        try:
-            user_id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.error(msg, conf.replyNotRegistered)
-            return
-        dunno_id = privmsgs.getArgs(args, needed=1)
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT added_by, dunno
-                          FROM dunnos
-                          WHERE id = %s""" % dunno_id)
-        if cursor.rowcount == 0:
-            irc.error(msg, 'No dunno with id: %d' % dunno_id)
-            return
-        (added_by, dunno) = cursor.fetchone()
-        if not (ircdb.checkCapability(user_id, 'admin') or \
-                added_by == user_id):
-            irc.error(msg, 'Only admins and the dunno creator may delete a '
-                           'dunno.')
-            return
-        cursor.execute("""DELETE FROM dunnos WHERE id = %s""" % dunno_id)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
