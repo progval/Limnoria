@@ -51,6 +51,9 @@ class Error(Exception):
 class NoRecordError(KeyError):
     pass
 
+class InvalidDBError(Exception):
+    pass
+
 class MappingInterface(object):
     """This is a class to represent the underlying representation of a map
     from integer keys to strings."""

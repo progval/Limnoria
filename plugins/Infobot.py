@@ -43,6 +43,7 @@ import re
 import random
 import cPickle as pickle
 
+import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
@@ -106,7 +107,10 @@ class PickleInfobotDB(object):
             self._is = utils.InsensitivePreservingDict()
             self._are = utils.InsensitivePreservingDict()
         else:
-            (self._is, self._are) = pickle.load(fd)
+            try:
+                (self._is, self._are) = pickle.load(fd)
+            except cPickle.UnpicklingError, e:
+                raise dbi.InvalidDBError, str(e)
         self._changes = 0
         self._responses = 0
 
@@ -119,7 +123,10 @@ class PickleInfobotDB(object):
         self.flush()
 
     def changeIs(self, factoid, replacer):
-        old = self._is[factoid]
+        try:
+            old = self._is[factoid]
+        except KeyError:
+            raise dbi.NoRecordError
         if replacer is not None:
             self._is[factoid] = replacer(old)
             self.flush()
@@ -136,7 +143,10 @@ class PickleInfobotDB(object):
         self._changes += 1
 
     def delIs(self, factoid):
-        del self._is[factoid]
+        try:
+            del self._is[factoid]
+        except KeyError:
+            raise dbi.NoRecordError
         self.flush()
         self._changes += 1
 
@@ -144,7 +154,10 @@ class PickleInfobotDB(object):
         return factoid in self._is
 
     def changeAre(self, factoid, replacer):
-        old = self._are[factoid]
+        try:
+            old = self._are[factoid]
+        except KeyError:
+            raise dbi.NoRecordError
         if replacer is not None:
             self._are[factoid] = replacer(old)
             self._changes += 1
@@ -164,7 +177,10 @@ class PickleInfobotDB(object):
         self._changes += 1
 
     def delAre(self, factoid):
-        del self._are[factoid]
+        try:
+            del self._are[factoid]
+        except KeyError:
+            raise dbi.NoRecordError
         self.flush()
         self._changes += 1
 
@@ -186,21 +202,24 @@ class SqliteInfobotDB(object):
         self._responses = 0
 
     def _getDb(self):
-        if os.path.exists(filename):
-            return sqlite.connect(filename)
-        #else:
-        db = sqlite.connect(filename)
-        cursor = db.cursor()
-        cursor.execute("""CREATE TABLE isFacts (
-                          key TEXT PRIMARY KEY,
-                          value TEXT
-                          );""")
-        cursor.execute("""CREATE TABLE areFacts (
-                          key TEXT PRIMARY KEY,
-                          value TEXT
-                          );""")
-        db.commit()
-        return db
+        try:
+            if os.path.exists(filename):
+                return sqlite.connect(filename)
+            #else:
+            db = sqlite.connect(filename)
+            cursor = db.cursor()
+            cursor.execute("""CREATE TABLE isFacts (
+                              key TEXT UNIQUE ON CONFLICT REPLACE,
+                              value TEXT
+                              );""")
+            cursor.execute("""CREATE TABLE areFacts (
+                              key TEXT UNIQUE ON CONFLICT REPLACE,
+                              value TEXT
+                              );""")
+            db.commit()
+            return db
+        except sqlite.DatabaseError, e:
+            raise dbi.InvalidDBError, str(e)
 
     def close(self):
         pass
@@ -209,6 +228,8 @@ class SqliteInfobotDB(object):
         db = self._getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT value FROM isFacts WHERE key=%s""", factoid)
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError
         old = cursor.fetchone()[0]
         if replacer is not None:
             cursor.execute("""UPDATE isFacts SET value=%s WHERE key=%s""",
@@ -235,6 +256,8 @@ class SqliteInfobotDB(object):
         db = self._getDb()
         cursor = db.cursor()
         cursor.execute("""DELETE FROM isFacts WHERE key=%s""", factoid)
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError
         db.commit()
         self._changes += 1
 
@@ -248,6 +271,8 @@ class SqliteInfobotDB(object):
         db = self._getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT value FROM areFacts WHERE key=%s""", factoid)
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError
         old = cursor.fetchone()[0]
         if replacer is not None:
             cursor.execute("""UPDATE areFacts SET value=%s WHERE key=%s""",
@@ -274,6 +299,8 @@ class SqliteInfobotDB(object):
         db = self._getDb()
         cursor = db.cursor()
         cursor.execute("""DELETE FROM areFacts WHERE key=%s""", factoid)
+        if cursor.rowcount == 0:
+            raise dbi.NoRecordError
         db.commit()
         self._changes += 1
 
@@ -320,6 +347,12 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     def die(self):
         self.db.close()
 
+    def _error(self, s):
+        if self.addressed:
+            self.irc.error(s)
+        else:
+            self.log.warning(s)
+
     def reply(self, s, irc=None, msg=None, action=False):
         if self.replied:
             self.log.debug('Already replied, not replying again.')
@@ -355,12 +388,16 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             assert self.msg is not None
             msg = self.msg
         isAre = None
-        if self.db.hasIs(key):
-            isAre = 'is'
-            value = self.db.getIs(key)
-        elif self.db.hasAre(key):
-            isAre = 'are'
-            value = self.db.getAre(key)
+        try:
+            if self.db.hasIs(key):
+                isAre = 'is'
+                value = self.db.getIs(key)
+            elif self.db.hasAre(key):
+                isAre = 'are'
+                value = self.db.getAre(key)
+        except dbi.InvalidDBError:
+            self._error('Unable to access db: %s' % e)
+            return
         if isAre is None:
             if self.addressed:
                 if dunno:
@@ -388,7 +425,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         s = s.strip() # After stripFormatting for formatted spaces.
         s = utils.normalizeWhitespace(s)
         contractions = [('what\'s', 'what is'), ('where\'s', 'where is'),
-                        ('who\'s', 'who is'),]
+                        ('who\'s', 'who is'), ('wtf\'s', 'wtf is'),]
         for (contraction, replacement) in contractions:
             if s.startswith(contraction):
                 s = replacement + s[len(contraction):]
@@ -467,7 +504,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             try:
                 method(fact)
                 deleted = True
-            except KeyError:
+            except dbi.NoRecordError:
                 pass
         if deleted:
             self.confirm()
@@ -492,7 +529,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             try:
                 method(fact, r)
                 changed = True
-            except KeyError:
+            except dbi.NoRecordError:
                 pass
         if changed:
             self.confirm()
@@ -501,7 +538,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             irc.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
 
     def doUnknown(self, irc, msg, match):
-        r"^(.+?)\?[?!. ]*$"
+        r"^(.+?)\s*\?[?!. ]*$"
         key = match.group(1)
         if self.addressed or self.registryValue('answerUnaddressedQuestions'):
             self.factoid(key) # Does the dunno'ing for us itself.
@@ -513,7 +550,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         r"^(.+)\s+(?<!\\)(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
         (key, isAre, also, value) = match.groups()
         key = key.replace('\\', '')
-        if key.lower() in ('where', 'what', 'who'):
+        if key.lower() in ('where', 'what', 'who', 'wtf'):
             # It's a question.
             if self.addressed or \
                self.registryValue('answerUnaddressedQuestions'):

@@ -34,12 +34,12 @@ from testsupport import *
 import supybot.plugins.Infobot
 confirms = supybot.plugins.Infobot.confirms
 dunnos = supybot.plugins.Infobot.dunnos
+ibot = conf.supybot.plugins.Infobot
 
 class InfobotTestCase(ChannelPluginTestCase):
     plugins = ('Infobot',)
     _endRe = re.compile(r'!|, \S+\.|\.')
     def testIsSnarf(self):
-        ibot = conf.supybot.plugins.Infobot
         learn = ibot.snarfUnaddressedDefinitions()
         answer = ibot.answerUnaddressedQuestions()
         try:
@@ -57,7 +57,6 @@ class InfobotTestCase(ChannelPluginTestCase):
             ibot.answerUnaddressedQuestions.setValue(answer)
 
     def testAreSnarf(self):
-        ibot = conf.supybot.plugins.Infobot
         learn = ibot.snarfUnaddressedDefinitions()
         answer = ibot.answerUnaddressedQuestions()
         try:
@@ -72,7 +71,6 @@ class InfobotTestCase(ChannelPluginTestCase):
             ibot.answerUnaddressedQuestions.setValue(answer)
 
     def testIsResponses(self):
-        ibot = conf.supybot.plugins.Infobot
         learn = ibot.snarfUnaddressedDefinitions()
         answer = ibot.answerUnaddressedQuestions()
         try:
@@ -89,7 +87,6 @@ class InfobotTestCase(ChannelPluginTestCase):
             ibot.answerUnaddressedQuestions.setValue(answer)
 
     def testAnswerUnaddressed(self):
-        ibot = conf.supybot.plugins.Infobot
         answer = ibot.answerUnaddressedQuestions()
         try:
             ibot.answerUnaddressedQuestions.setValue(True)
@@ -99,5 +96,19 @@ class InfobotTestCase(ChannelPluginTestCase):
             self.assertSnarfNoResponse('foo?', 2)
         finally:
             ibot.answerUnaddressedQuestions.setValue(answer)
+
+    def testReplaceFactoid(self):
+        answer = ibot.answerUnaddressedQuestions()
+        learn = ibot.snarfUnaddressedDefinitions()
+        try:
+            ibot.answerUnaddressedQuestions.setValue(True)
+            ibot.snarfUnaddressedDefinitions.setValue(True)
+            self.assertSnarfNoResponse('forums are good')
+            self.assertSnarfRegexp('forums?', 'good')
+            self.assertNotError('no, forums are evil')
+            self.assertSnarfRegexp('forums?', 'evil')
+        finally:
+            ibot.answerUnaddressedQuestions.setValue(answer)
+            ibot.snarfUnaddressedDefinitions.setValue(learn)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
