@@ -50,6 +50,12 @@ class IrcUserTestCase(unittest.TestCase):
         self.failIf(u.checkCapability('!bar'))
         self.failIf(u.checkCapability('foo'))
 
+    def testOwner(self):
+        u = ircdb.IrcUser()
+        u.addCapability('owner')
+        self.failUnless(u.checkCapability('foo'))
+        self.failIf(u.checkCapability('!foo'))
+        
     def testInitCapabilities(self):
         u = ircdb.IrcUser(capabilities=['foo'])
         self.failUnless(u.checkCapability('foo'))
@@ -103,8 +109,10 @@ class IrcChannelTestCase(unittest.TestCase):
         c = ircdb.IrcChannel()
         c.setDefaultCapability(False)
         self.failIf(c.checkCapability('foo'))
+        self.failUnless(c.checkCapability('!foo'))
         c.setDefaultCapability(True)
         self.failUnless(c.checkCapability('foo'))
+        self.failIf(c.checkCapability('!foo'))
 
     def testLobotomized(self):
         c = ircdb.IrcChannel(lobotomized=True)
@@ -124,8 +132,18 @@ class IrcChannelTestCase(unittest.TestCase):
         c.removeBan(banmask)
         self.failIf(c.checkIgnored(prefix))
 
-    
-        
 
-                        
+class FunctionsTestCase(unittest.TestCase):
+    def testIsAntiCapability(self):
+        self.failIf(ircdb.isAntiCapability('foo'))
+        self.failIf(ircdb.isAntiCapability('#foo.bar'))
+        self.failUnless(ircdb.isAntiCapability('!foo'))
+        self.failUnless(ircdb.isAntiCapability('#foo.!bar'))
 
+    def testIsChannelCapability(self):
+        self.failIf(ircdb.isChannelCapability('foo'))
+        self.failUnless(ircdb.isChannelCapability('#foo.bar'))
+
+    def testMakeAntiCapability(self):
+        self.assertEqual(ircdb.makeAntiCapability('foo'), '!foo')
+        self.assertEqual(ircdb.makeAntiCapability('#foo.bar'), '#foo.!bar')

@@ -60,6 +60,9 @@ class FunctionsTestCase(unittest.TestCase):
         self.failUnless(ircutils.isChannel('&foo'))
         self.failUnless(ircutils.isChannel('+foo'))
         self.failUnless(ircutils.isChannel('!foo'))
+        self.failIf(ircutils.isChannel('#foo bar'))
+        self.failIf(ircutils.isChannel('#foo,bar'))
+        self.failIf(ircutils.isChannel('#foobar\x07'))
         self.failIf(ircutils.isChannel('foo'))
         self.failIf(ircutils.isChannel(''))
 
@@ -79,8 +82,11 @@ class FunctionsTestCase(unittest.TestCase):
         self.failUnless(ircutils.isIP('100.100.100.100'))
 
     def banmask(self):
-        self.failUnless(ircutils.hostmaskPatternEqual(\
-            ircutils.banmask(self.hostmask), self.hostmask))
+        for msg in msgs:
+            if ircutils.isUserHostmask(msg.prefix):
+                self.failUnless(ircutils.hostmaskPatternEqual
+                                (ircutils.banmask(msg.prefix),
+                                 msg.prefix))
 
     def testSeparateModes(self):
         self.assertEqual(ircutils.separateModes(['+ooo', 'x', 'y', 'z']),
@@ -109,3 +115,11 @@ class FunctionsTestCase(unittest.TestCase):
         private = ircmsgs.privmsg('jemfinch', 'bar baz', prefix=prefix)
         self.assertEqual(ircutils.replyTo(channel), channel.args[0])
         self.assertEqual(ircutils.replyTo(private), private.nick)
+
+    def testJoinModes(self):
+        plusE = ('+e', '*!*@*ohio-state.edu')
+        plusB = ('+b', '*!*@*umich.edu')
+        minusL = ('-l', None)
+        modes = [plusB, plusE, minusL]
+        self.assertEqual(ircutils.joinModes(modes),
+                         ['+be-l', plusB[1], plusE[1]])

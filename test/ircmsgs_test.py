@@ -35,6 +35,7 @@ import copy
 import pickle
 
 import ircmsgs
+import ircutils
 
 
 class IrcMsgTestCase(unittest.TestCase):
@@ -95,6 +96,7 @@ class IrcMsgTestCase(unittest.TestCase):
             self.assertEqual(msg, pickle.loads(pickle.dumps(msg)))
             self.assertEqual(msg, copy.copy(msg))
 
+class FunctionsTestCase(unittest.TestCase):
     def testIsAction(self):
         L = [':jemfinch!~jfincher@ts26-2.homenet.ohio-state.edu PRIVMSG'
              ' #sourcereview :ACTION does something',
@@ -112,3 +114,26 @@ class IrcMsgTestCase(unittest.TestCase):
         s = 'foo bar baz'
         msg = ircmsgs.action('#foo', s)
         self.assertEqual(ircmsgs.unAction(msg), s)
+
+    def testBan(self):
+        channel = '#osu'
+        ban = '*!*@*.edu'
+        exception = '*!*@*ohio-state.edu'
+        noException = ircmsgs.ban(channel, ban)
+        self.assertEqual(ircutils.separateModes(noException.args[1:]),
+                         [('+b', ban)])
+        withException = ircmsgs.ban(channel, ban, exception)
+        self.assertEqual(ircutils.separateModes(withException.args[1:]),
+                         [('+b', ban), ('+e', exception)])
+        
+    def testBans(self):
+        channel = '#osu'
+        bans = ['*!*@*', 'jemfinch!*@*']
+        exceptions = ['*!*@*ohio-state.edu']
+        noException = ircmsgs.bans(channel, bans)
+        self.assertEqual(ircutils.separateModes(noException.args[1:]),
+                         [('+b', bans[0]), ('+b', bans[1])])
+        withExceptions = ircmsgs.bans(channel, bans, exceptions)
+        self.assertEqual(ircutils.separateModes(withExceptions.args[1:]),
+                         [('+b', bans[0]), ('+b', bans[1]),
+                          ('+e', exceptions[0])])
