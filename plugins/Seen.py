@@ -110,44 +110,63 @@ class Seen(callbacks.Privmsg):
                 pass # Not in the database.
 
     def seen(self, irc, msg, args):
-        """[<channel>] [--user] [<name>]
+        """[<channel>] <nick>
 
-        Returns the last time <name> was seen and what <name> was last seen
-        saying.  --user will look for user <name> instead of using <name> as
-        a nick (registered users, remember, can be recognized under any number
-        of nicks) <channel> is only necessary if the message isn't sent on the
-        channel itself.  If <name> is not specified, the last person that was
-        seen and their message will be returned.
+        Returns the last time <nick> was seen and what <nick> was last seen
+        saying. <channel> is only necessary if the message isn't sent on the
+        channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (optlist, rest) = getopt.getopt(args, '', ['user'])
-        name = privmsgs.getArgs(rest, required=0, optional=1)
-        if name:
-            nickOrId = name
-            if ('--user', '') in optlist:
-                try:
-                    nickOrId = ircdb.users.getUserId(name)
-                except KeyError:
-                    try:
-                        hostmask = irc.state.nickToHostmask(name)
-                        nickOrId = ircdb.users.getUserId(hostmask)
-                    except KeyError:
-                        irc.errorNoUser()
-                        return
-            try:
-                (when, said) = self.db.seen(channel, nickOrId)
-                irc.reply('%s was last seen here %s ago saying: %s' %
-                          (name, utils.timeElapsed(time.time()-when), said))
-            except KeyError:
-                irc.reply('I have not seen %s.' % name)
-        else:
-            try:
-                (when, said) = self.db.seen(channel, '<last>')
-                irc.reply('Someone was last seen here %s ago saying: %s' %
-                          (utils.timeElapsed(time.time()-when), said))
-            except KeyError:
-                irc.reply('I have never seen anyone.')
+        name = privmsgs.getArgs(args)
+        try:
+            (when, said) = self.db.seen(channel, name)
+            irc.reply('%s was last seen here %s ago saying: %s' %
+                      (name, utils.timeElapsed(time.time()-when), said))
+        except KeyError:
+            irc.reply('I have not seen %s.' % name)
 
+    def last(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the last thing said in <channel>.  <channel> is only necessary
+        if the message isn't sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        try:
+            (when, said) = self.db.seen(channel, '<last>')
+            irc.reply('Someone was last seen here %s ago saying: %s' %
+                      (utils.timeElapsed(time.time()-when), said))
+        except KeyError:
+            irc.reply('I have never seen anyone.')
+
+
+    def user(self, irc, msg, args):
+        """[<channel>] <name>
+
+        Returns the last time <name> was seen and what <name> was last seen
+        saying.  This looks up <name> in the user seen database, which means
+        that it could be any nick recognized as user <name> that was seen.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        name = privmsgs.getArgs(args)
+        try:
+            id = ircdb.users.getUserId(name)
+        except KeyError:
+            try:
+                hostmask = irc.state.nickToHostmask(name)
+                id = ircdb.users.getUserId(hostmask)
+            except KeyError:
+                irc.errorNoUser()
+                return
+        try:
+            (when, said) = self.db.seen(channel, id)
+            irc.reply('%s was last seen here %s ago saying: %s' %
+                      (name, utils.timeElapsed(time.time()-when), said))
+        except KeyError:
+            irc.reply('I have not seen %s.' % name)
+            
 
 Class = Seen
 

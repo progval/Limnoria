@@ -51,16 +51,16 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
 
     def testSeen(self):
-        self.assertNotError('seen')
+        self.assertNotError('seen last')
         self.assertNotError('list')
         self.assertNotError('seen %s' % self.nick)
         m = self.assertNotError('seen %s' % self.nick.upper())
         self.failUnless(self.nick.upper() in m.args[1])
-        self.assertRegexp('seen --user %s' % self.nick,
+        self.assertRegexp('seen user %s' % self.nick,
                           '^%s was last seen' % self.nick)
 
     def testSeenNoUser(self):
-        self.assertNotRegexp('seen --user alsdkfjalsdfkj', 'KeyError')
+        self.assertNotRegexp('seen user alsdkfjalsdfkj', 'KeyError')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
