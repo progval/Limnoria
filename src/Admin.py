@@ -204,10 +204,14 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error('I\'m not currently in %s' % arg)
                 return
         for arg in args:
+            L = []
             for channelWithPass in conf.supybot.channels():
                 channel = channelWithPass.split(',')[0]
                 if arg == channel:
-                    conf.supybot.channels().remove(channelWithPass)
+                    L.append(channelWithPass)
+            # This is necessary so the set doesn't change size while iterating.
+            for channel in L:
+                conf.supybot.channels().remove(channel)
         irc.queueMsg(ircmsgs.parts(args, msg.nick))
 
     def disable(self, irc, msg, args):
