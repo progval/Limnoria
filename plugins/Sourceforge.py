@@ -242,7 +242,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def sfSnarfer(self, irc, msg, match):
-        r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/(?:index\.php)?\?(?:&?func=detail|&?aid=\d+|&?group_id=\d+|&?atid=\d+){4}"
+        r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/" \
+        r".*\?(?:&?func=detail|&?aid=\d+|&?group_id=\d+|&?atid=\d+){4}"
         if not self.toggles.get('tracker', channel=msg.args[0]):
             return
         url = match.group(0)
