@@ -58,6 +58,7 @@ plugins = [
     'Misc',
     'Owner',
     'Praise',
+    'Protector',
     'Quote',
     'QuoteGrabs',
     'Reply',
