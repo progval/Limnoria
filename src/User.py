@@ -37,6 +37,7 @@ __revision__ = "$Id$"
 
 import fix
 
+import re
 import getopt
 import string
 import fnmatch
@@ -66,8 +67,9 @@ class User(callbacks.Privmsg):
         if glob:
             if '*' not in glob and '?' not in glob:
                 glob = '*%s*' % glob
+            r = re.compile(fnmatch.translate(glob), re.I)
             def p(s):
-                return fnmatch.fnmatch(s, glob)
+                return r.match(s) is not None
         else:
             def p(s):
                 return True

@@ -59,6 +59,13 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('user list', 'foo')
         self.assertNotError('unregister foo bar')
         self.assertRegexp('user list', 'no registered users')
+        self.assertRegexp('user list asdlfkjasldkj', 'no matching registered')
+
+    def testListHandlesCaps(self):
+        self.prefix = self.prefix1
+        self.assertNotError('register Foo bar')
+        self.assertResponse('user list', 'Foo')
+        self.assertResponse('user list f*', 'Foo')
         
     def testChangeUsername(self):
         self.prefix = self.prefix1
