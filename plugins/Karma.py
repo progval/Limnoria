@@ -61,8 +61,8 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
     addressedRegexps = ['increaseKarma', 'decreaseKarma']
     configurables = plugins.ConfigurableDictionary(
         [('simple-output', plugins.ConfigurableBoolType, False,
-          """Determines whether the bot will output shorter versions of URLs
-          longer than the tinyurl-minimum-length config variable.""")]
+          """Determines whether the bot will output shorter versions of the
+          karma output when requesting a single thing's karma.""")]
     )
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
