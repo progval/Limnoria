@@ -57,7 +57,7 @@ finally:
 
 import supybot.conf as conf
 import supybot.utils as utils
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.webutils as webutils
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -87,7 +87,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
     callBefore = ['URL']
     regexps = ['aspnRecipes']
     modulechars = string.ascii_letters + string.digits + '_.'
-    def pydoc(self, irc, msg, args):
+    def pydoc(self, irc, msg, args, name):
         """<python function>
 
         Returns the __doc__ string for a given Python function.
@@ -112,7 +112,6 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
                         else:
                             return None
                 return newmodule
-        name = privmsgs.getArgs(args)
         if name.translate(string.ascii, self.modulechars) != '':
             irc.error('That\'s not a valid module or function name.')
             return
@@ -159,6 +158,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
                     irc.error('That function has no documentation.')
             else:
                 irc.error('No function or module %s exists.' % name)
+    pydoc = wrap(pydoc, ['somethingWithoutSpaces'])
 
     _these = [str(s) for s in this.s.decode('rot13').splitlines() if s]
     _these.pop(0) # Initial line (The Zen of Python...)
@@ -168,6 +168,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
         Returns one of the zen of Python statements.
         """
         irc.reply(random.choice(self._these))
+    zen = wrap(zen)
 
     _title = re.compile(r'<b>(Title):</b>&nbsp;(.*)', re.I)
     _submit = re.compile(r'<b>(Submitter):</b>&nbsp;(.*)', re.I)

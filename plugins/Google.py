@@ -51,7 +51,7 @@ import supybot.registry as registry
 
 import supybot.conf as conf
 import supybot.utils as utils
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
@@ -263,21 +263,20 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         else:
             return '%s: %s' % (t, '; '.join(results))
 
-    def lucky(self, irc, msg, args):
+    def lucky(self, irc, msg, args, text):
         """<search>
 
         Does a google search, but only returns the first result.
         """
-        if not args:
-            raise callbacks.ArgumentError
-        data = search(self.log, args)
+        data = search(self.log, text)
         if data.results:
             url = data.results[0].URL
             irc.reply(url)
         else:
             irc.reply('Google found nothing.')
+    lucky = wrap(lucky, [many('text')])
 
-    def google(self, irc, msg, args):
+    def google(self, irc, msg, args, optlist, text):
         """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
 
         Searches google.com for the given string.  As many results as can fit
@@ -286,8 +285,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         Google not to filter similar results. --notsafe allows possibly
         work-unsafe results.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['language=', 'restrict=',
-                                                   'notsafe', 'similar'])
         kwargs = {}
         if self.registryValue('safeSearch', channel=msg.args[0]):
             kwargs['safeSearch'] = 1
@@ -295,16 +292,14 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         if lang:
             kwargs['language'] = lang
         for (option, argument) in optlist:
-            if option == '--notsafe':
+            if option == 'notsafe':
                 kwargs['safeSearch'] = False
-            elif option == '--similar':
+            elif option == 'similar':
                 kwargs['filter'] = False
             else:
                 kwargs[option[2:]] = argument
-        if not rest:
-            raise callbacks.ArgumentError
         try:
-            data = search(self.log, rest, **kwargs)
+            data = search(self.log, text, **kwargs)
         except google.NoLicenseKey, e:
             irc.error('You must have a free Google web services license key '
                       'in order to use this command.  You can get one at '
@@ -315,25 +310,26 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         bold = self.registryValue('bold', msg.args[0])
         max = self.registryValue('maximumResults', msg.args[0])
         irc.reply(self.formatData(data, bold=bold, max=max))
+    google = wrap(google, [getopts({'language':'text', 'restrict':'text',
+                                    'notsafe':'', 'similar':''}),
+                           many('text')])
 
-    def metagoogle(self, irc, msg, args):
+    def metagoogle(self, irc, msg, args, optlist, text):
         """<search> [--(language,restrict)=<value>] [--{similar,notsafe}]
 
         Searches google and gives all the interesting meta information about
         the search.  See the help for the google command for a detailed
         description of the parameters.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['language=', 'restrict=',
-                                                   'notsafe', 'similar'])
         kwargs = {'language': 'lang_en', 'safeSearch': 1}
         for option, argument in optlist:
-            if option == '--notsafe':
+            if option == 'notsafe':
                 kwargs['safeSearch'] = False
-            elif option == '--similar':
+            elif option == 'similar':
                 kwargs['filter'] = False
             else:
                 kwargs[option[2:]] = argument
-        data = search(self.log, rest, **kwargs)
+        data = search(self.log, text, **kwargs)
         meta = data.meta
         categories = [d['fullViewableName'] for d in meta.directoryCategories]
         categories = [utils.dqrepr(s.replace('_', ' ')) for s in categories]
@@ -348,14 +344,17 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
              meta.searchTime,
              categories and '  Categories include %s.' % categories)
         irc.reply(s)
+    metagoogle = wrap(metagoogle, [getopts({'language':'text',
+                                            'restrict':'text',
+                                            'notsafe':'', 'similar':''}),
+                                   many('text')])
 
     _cacheUrlRe = re.compile('<code>([^<]+)</code>')
-    def cache(self, irc, msg, args):
+    def cache(self, irc, msg, args, url):
         """<url>
 
         Returns a link to the cached version of <url> if it is available.
         """
-        url = privmsgs.getArgs(args)
         html = google.doGetCachedPage(url)
         m = self._cacheUrlRe.search(html)
         if m is not None:
@@ -364,6 +363,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(url)
         else:
             irc.error('Google seems to have no cache for that site.')
+    cache = wrap(cache, ['url'])
 
     def fight(self, irc, msg, args):
         """<search string> <search string> [<search string> ...]
@@ -385,12 +385,11 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         s = ', '.join(['%s: %s' % (format(s), i) for (i, s) in results])
         irc.reply(s)
 
-    def spell(self, irc, msg, args):
+    def spell(self, irc, msg, args, word):
         """<word>
 
         Returns Google's spelling recommendation for <word>.
         """
-        word = privmsgs.getArgs(args)
         result = google.doSpellingSuggestion(word)
         if result:
             irc.reply(result)
@@ -399,6 +398,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                       'the word you gave is spelled right; it could also '
                       'mean that its spelling was too whacked out even for '
                       'Google to figure out.')
+    spell = wrap(spell, ['text'])
 
     def stats(self, irc, msg, args):
         """takes no arguments
@@ -413,6 +413,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                   '%s in the past 24 hours.  '
                   'Google has spent %s seconds searching for me.' %
                   (utils.nItems('search', searches), recent, time))
+    stats = wrap(stats)
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
@@ -465,12 +466,11 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)
     _calcFontRe = re.compile(r'<font size=-2>(.*?)</font>')
     _calcTimesRe = re.compile(r'&times;')
-    def calc(self, irc, msg, args):
+    def calc(self, irc, msg, args, expr):
         """<expression>
 
         Uses Google's calculator to calculate the value of <expression>.
         """
-        expr = privmsgs.getArgs(args)
         expr = expr.replace('+', '%2B')
         expr = expr.replace(' ', '+')
         url = r'http://google.com/search?q=%s' % expr
@@ -484,7 +484,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(s)
         else:
             irc.reply('Google\'s calculator didn\'t come up with anything.')
-        
+    calc = wrap(calc, ['text'])
 
 
 Class = Google

@@ -47,7 +47,7 @@ import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.webutils as webutils
 import supybot.ircutils as ircutils
 import supybot.registry as registry
@@ -223,8 +223,6 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
 
     _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
     def _getTinyUrl(self, url):
-        # XXX This should use a database, eventually, especially once we write
-        # the outFilter.
         try:
             return self.db.getTiny(url)
         except KeyError:
