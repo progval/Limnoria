@@ -113,7 +113,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     _submitted = re.compile(r'<b>(Submitted By):</b><br>([^<]+)</td>', _reopts)
     _priority = re.compile(r'<b>(Priority):</b> <a.+?<br>(.+?)</td>', _reopts)
     _status = re.compile(r'<b>(Status):</b> <a.+?<br>(.+?)</td>', _reopts)
-    _res =(_resolution, _assigned, _submitted, _priority, _status)
+    _regexps =(_resolution, _assigned, _submitted, _priority, _status)
 
     configurables = configurable.Dictionary(
         [('tracker-snarfer', configurable.BoolType, False,
@@ -311,7 +311,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 resp.append(desc)
             else:
                 self.log.warning('Invalid Tracker page snarfed: %s', url)
-            for r in self._res:
+            for r in self._regexps:
                 m = r.search(s)
                 if m:
                     resp.append('%s: %s' % self._bold(m.groups()))
