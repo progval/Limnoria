@@ -126,6 +126,8 @@ class Dict(callbacks.Privmsg):
                                   'dictionary: %s.', msg.args[0], default)
                 dictionary = '*'
         word = privmsgs.getArgs(args)
+        if not word:
+            irc.error('You must give a word to define.', Raise=True)
         definitions = conn.define(dictionary, word)
         dbs = sets.Set()
         if not definitions:

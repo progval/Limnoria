@@ -37,7 +37,7 @@ if network:
         def testDict(self):
             self.assertNotError('dict slash')
             self.assertNotRegexp('dict web1913 slash', 'foldoc')
-            self.assertNotError('dict ""')
+            self.assertError('dict ""')
 
         def testDictionaries(self):
             self.assertNotError('dictionaries')
