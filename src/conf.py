@@ -37,6 +37,7 @@ import time
 import socket
 import string
 
+import supybot.cdb as cdb
 import supybot.utils as utils
 import supybot.registry as registry
 import supybot.ircutils as ircutils
@@ -751,6 +752,22 @@ registerChannelValue(supybot.databases.plugins, 'channelSpecific',
     registry.Boolean(True, """Determines whether database-based plugins that
     can be channel-specific will be so.  This can be overridden by individual
     channels."""))
+
+class CDB(registry.Boolean):
+    def connect(self, filename):
+        journalName = supybot.directories.data.tmp.dirize(filename+'.journal')
+        return cdb.open(filename, 'c',
+                        journalName=journalName,
+                        maxmods=self.maximumModifications())
+
+registerGroup(supybot.databases, 'types')
+registerGlobalValue(supybot.databases.types, 'cdb', CDB(True, """Determines
+    whether CDB databases will be allowed as a database implementation."""))
+registerGlobalValue(supybot.databases.types.cdb, 'maximumModifications',
+    registry.Float(0.5, """Determines how often CDB databases will have their
+    modifications flushed to disk.  When the number of modified records is
+    greater than this part of the number of unmodified records, the database
+    will be entirely flushed to disk."""))
 
 # XXX Configuration variables for dbi, sqlite, flat, mysql, etc.
 
