@@ -64,6 +64,29 @@ def genHeader(title, meta=''):
     <body><div>
     ''' % (title, meta)
 
+def genNavbar(path):
+    download = 'http://sourceforge.net/project/showfiles.php?group_id=58965'
+    bug = 'http://sourceforge.net/tracker/?func=add&amp;group_id=58965&amp;'\
+          'atid=489447'
+    return '''
+        <div id="nav">
+          <div>
+            <a href="%s">Home Page</a>
+          </div>
+          <div>
+            <a href="%s">
+              Download
+            </a>
+          </div>
+          <div>
+            <a
+            href="%s">
+              Submit a Bug
+            </a>
+          </div>
+        </div>
+        ''' % (path, download, bug)
+
 def genFooter():
     return '''
     </div>
@@ -92,9 +115,9 @@ def prepIndex():
     fd.write(textwrap.dedent('''
         %s
         <div class="maintitle">Supybot Plugin Documentation Index</div>
-        <br />
+        %s
         <div class="whitebox">
-        ''' % genHeader('Supybot Plugin Documentation')))
+        ''' % (genHeader('Supybot Plugin Documentation'), genNavbar('../'))))
     fd.close()
 
 def makePluginDocumentation(pluginWindow):
@@ -128,10 +151,14 @@ def makePluginDocumentation(pluginWindow):
     ''' % (next, prev)
     fd.write(textwrap.dedent('''
     %s
-    <div class="plugintitle">%s</div><br /><table>
+    <div class="plugintitle">%s</div>
+    %s
+    <table>
     <tr id="headers"><td>Command</td><td>Args</td><td>
     Detailed Help</td></tr>
-    ''' % (genHeader(title, meta), cgi.escape(module.__doc__ or ""))))
+    ''' % (genHeader(title, meta),
+           cgi.escape(module.__doc__ or ""),
+           genNavbar('../../'))))
     attrs = [x for x in dir(plugin) if plugin.isCommand(x) and not
              x.startswith('_')]
     id.write('(%s)<br />\n' % ', '.join(attrs))
@@ -165,7 +192,6 @@ def makePluginDocumentation(pluginWindow):
     <br />
     <a href="%s.html">&lt;- %s</a> |
     <a href="../plugins.html">Plugin Index</a> |
-    <a href="../../index.html">Home</a> |
     <a href="../commands.html">Command Index</a> |
     <a href="%s.html">%s -&gt;</a>
     %s
@@ -192,9 +218,10 @@ def makeCommandsIndex():
     title = 'Supybot Commands Index'
     fd.write(textwrap.dedent('''
     %s
-    <div class="maintitle">%s</div><br />
+    <div class="maintitle">%s</div>
+    %s
     <div class="whitebox" style="text-align: center;">
-    ''' % (genHeader(title), title)))
+    ''' % (genHeader(title), title, genNavbar('../'))))
     commands = [c for c in commandDict.iterkeys()]
     commands.sort()
     for i in ascii_lowercase:
