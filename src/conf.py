@@ -544,10 +544,11 @@ class Directory(registry.String):
             filename = os.path.abspath(filename)
             selfAbs = os.path.abspath(myself)
             commonPrefix = os.path.commonprefix([selfAbs, filename])
-            filename = filename[len(commonPrefix)+1:] # +1 for extra /.
+            filename = filename[len(commonPrefix):]
         elif not os.path.isabs(myself):
             if filename.startswith(myself):
                 filename = filename[len(myself):]
+        filename = filename.lstrip(os.path.sep) # Stupid os.path.join!
         return os.path.join(myself, filename)
 
 class DataFilename(registry.String):
