@@ -61,7 +61,7 @@ class TestFunDB(ChannelPluginTestCase, PluginDocumentation):
         self.assertAction('lart jemfinch for being dumb',
                           'jabs jemfinch for being dumb (#1)')
         self.assertAction('lart jemfinch', 'jabs jemfinch (#1)')
-        self.assertRegexp('stats lart', 'currently 1 lart')
+        self.assertRegexp('fundb stats lart', 'currently 1 lart')
         self.assertNotError('add lart shoots $who')
         self.assertHelp('lart 1')
         self.assertAction('lart 1 jemfinch', 'jabs jemfinch (#1)')
@@ -69,10 +69,10 @@ class TestFunDB(ChannelPluginTestCase, PluginDocumentation):
                           'shoots jemfinch for being dumb (#2)')
         self.assertNotRegexp('lart %s' % self.irc.nick, self.irc.nick)
         self.assertNotError('remove lart 1')
-        self.assertRegexp('stats lart', 'currently 1 lart')
+        self.assertRegexp('fundb stats lart', 'currently 1 lart')
         self.assertAction('lart jemfinch', 'shoots jemfinch (#2)')
         self.assertNotError('remove lart 2')
-        self.assertRegexp('stats lart', 'currently 0')
+        self.assertRegexp('fundb stats lart', 'currently 0')
         self.assertError('lart jemfinch')
 
     def testLartAndPraiseRemoveTrailingPeriods(self):
@@ -115,9 +115,9 @@ class TestFunDB(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('add insult Fatty McFatty')
         self.assertResponse('insult jemfinch',
                             'jemfinch: Fatty McFatty (#1)')
-        self.assertRegexp('stats insult', r'currently 1')
+        self.assertRegexp('fundb stats insult', r'currently 1')
         self.assertNotError('remove insult 1')
-        self.assertRegexp('stats insult', 'currently 0')
+        self.assertRegexp('fundb stats insult', 'currently 0')
         self.assertError('insult jemfinch')
 
     def testChannelReplies(self):
@@ -141,17 +141,17 @@ class TestFunDB(ChannelPluginTestCase, PluginDocumentation):
         self.assertAction('praise jemfinch for being him',
                             'pets jemfinch for being him (#1)')
         self.assertAction('praise jemfinch', 'pets jemfinch (#1)')
-        self.assertRegexp('stats praise', r'currently 1')
+        self.assertRegexp('fundb stats praise', r'currently 1')
         self.assertNotError('add praise gives $who a cookie')
         self.assertHelp('praise 1')
         self.assertAction('praise 1 jemfinch', 'pets jemfinch (#1)')
         self.assertAction('praise 2 jemfinch for being him',
                             'gives jemfinch a cookie for being him (#2)')
         self.assertNotError('remove praise 1')
-        self.assertRegexp('stats praise', r'currently 1')
+        self.assertRegexp('fundb stats praise', r'currently 1')
         self.assertAction('praise jemfinch', 'gives jemfinch a cookie (#2)')
         self.assertNotError('remove praise 2')
-        self.assertRegexp('stats praise', r'currently 0')
+        self.assertRegexp('fundb stats praise', r'currently 0')
         self.assertError('praise jemfinch')
 
     def testInfo(self):
@@ -169,11 +169,11 @@ class TestFunDB(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('fundb get praise 1')
 
     def testStats(self):
-        self.assertError('stats fake')
-        self.assertError('stats 1')
-        self.assertRegexp('stats praise', r'currently 0')
-        self.assertRegexp('stats lart',   r'currently 0')
-        self.assertRegexp('stats insult', r'currently 0')
+        self.assertError('fundb stats fake')
+        self.assertError('fundb stats 1')
+        self.assertRegexp('fundb stats praise', r'currently 0')
+        self.assertRegexp('fundb stats lart',   r'currently 0')
+        self.assertRegexp('fundb stats insult', r'currently 0')
 
     def testChange(self):
         self.assertNotError('add praise teaches $who perl')
