@@ -66,6 +66,14 @@ daemonized = False
 allowEval = False
 
 ###
+# allowDefaultOwner: True if the defaultCapabilities are allowed not to include
+#                    '-owner' -- that is, if all users should be automatically
+#                    recognized as owners.  That would suck, hence we require a
+#                    command-line option to allow this stupidity.
+###
+allowDefaultOwner = False
+
+###
 # The standard registry.
 ###
 supybot = registry.Group()
@@ -156,8 +164,9 @@ class SpaceSeparatedSetOfChannels(registry.SeparatedListOf):
         for removal in removals:
             self.value.remove(discard)
 
-supybot.register('channels', SpaceSeparatedSetOfChannels(['#supybot'], """
-Determines what channels the bot will join when it connects to the server."""))
+registerGlobalValue(supybot, 'channels',
+    SpaceSeparatedSetOfChannels(['#supybot'], """Determines what channels the
+    bot will join when it connects to the server."""))
 
 class ValidPrefixChars(registry.String):
     """Value must contain only ~!@#$%^&*()_-+=[{}]\\|'\";:,<.>/?"""
@@ -166,37 +175,53 @@ class ValidPrefixChars(registry.String):
             self.error()
         registry.String.setValue(self, v)
 
-supybot.register('prefixChars', ValidPrefixChars('', """Determines what prefix
-characters the bot will reply to.  A prefix character is a single character
-that the bot will use to determine what messages are addressed to it; when
-there are no prefix characters set, it just uses its nick.  Each character in
-this string is interpreted individually; you can have multiple prefixChars
-simultaneously, and if any one of them is used as a prefix the bot will
-assume it is being addressed."""))
+registerChannelValue(supybot, 'prefixChars',
+    ValidPrefixChars('', """Determines what prefix characters the bot will
+    reply to.  A prefix character is a single character that the bot will use
+    to determine what messages are addressed to it; when there are no prefix
+    characters set, it just uses its nick.  Each character in this string is
+    interpreted individually; you can have multiple prefixChars simultaneously,
+    and if any one of them is used as a prefix the bot will assume it is being
+    addressed."""))
 
-supybot.register('defaultCapabilities',
-registry.CommaSeparatedSetOfStrings(['-owner', '-admin', '-trusted'], """
-These are the capabilities that are given to everyone by default.  If they are
-normal capabilities, then the user will have to have the appropriate
-anti-capability if you want to override these capabilities; if they are
-anti-capabilities, then the user will have to have the actual capability to
-override these capabilities.  See docs/CAPABILITIES if you don't understand
-why these default to what they do."""))
+class DefaultCapabilities(registry.SpaceSeparatedListOfStrings):
+    List = ircutils.IrcSet
+    def setValue(self, v):
+        registry.SpaceSeparatedListOfStrings.setValue(self, v)
+        if '-owner' not in self.value and not allowDefaultOwner:
+            print '*** You must run supybot with the --allow-default-owner'
+            print '*** option in order to allow a default capability of owner.'
+            print '*** Don\'t do that, it\'s dumb.  In all likelihood, you\'re'
+            print '*** getting this message because you didn\'t remove the'
+            print '*** commas from your supybot.defaultCapabilities value in'
+            print '*** in your configuration file before start the bot.'
+            self.value.add('-owner')
 
-supybot.register('defaultAllow', registry.Boolean(True, """Determines whether
-the bot by default will allow users to run commands.  If this is disabled, a
-user will have to have the capability for whatever command he wishes to run.
-"""))
+registerGlobalValue(supybot, 'defaultCapabilities',
+    DefaultCapabilities(['-owner', '-admin', '-trusted'], """These are the
+    capabilities that are given to everyone by default.  If they are normal
+    capabilities, then the user will have to have the appropriate
+    anti-capability if you want to override these capabilities; if they are
+    anti-capabilities, then the user will have to have the actual capability
+    to override these capabilities.  See docs/CAPABILITIES if you don't
+    understand why these default to what they do."""))
 
-supybot.register('defaultIgnore', registry.Boolean(False, """Determines
-whether the bot will ignore unregistered users by default.  Of course, that'll
-make it particularly hard for those users to register with the bot, but that's
-your problem to solve."""))
+registerGlobalValue(supybot, 'defaultAllow',
+    registry.Boolean(True, """Determines whether the bot by default will allow
+    users to run commands.  If this is disabled, a user will have to explicitly
+    have the capability for whatever command he wishes to run."""))
 
-supybot.register('humanTimestampFormat', registry.String('%I:%M %p, %B %d, %Y',
-"""Determines how timestamps printed for human reading should be formatted.
-Refer to the Python documentation for the time module to see valid formatting
-characteres for time formats."""))
+registerGlobalValue(supybot, 'defaultIgnore',
+    registry.Boolean(False, """Determines whether the bot will ignore
+    unregistered users by default.  Of course, that'll make it particularly
+    hard for those users to register with the bot, but that's your problem to
+    solve."""))
+
+registerGlobalValue(supybot, 'humanTimestampFormat',
+    registry.String('%I:%M %p, %B %d, %Y', """Determines how timestamps printed
+    for human reading should be formatted. Refer to the Python documentation
+    for the time module to see valid formatting characteres for time
+    formats."""))
 
 class IP(registry.String):
     """Value must be a valid IP."""
@@ -206,9 +231,10 @@ class IP(registry.String):
         else:
             registry.String.setValue(self, v)
         
-supybot.register('externalIP', IP('', """A string that is the external IP of
-the bot.  If this is the empty string, the bot will attempt to find out its IP
-dynamically (though sometimes that doesn't work, hence this variable)."""))
+registerGlobalValue(supybot, 'externalIP',
+   IP('', """A string that is the external IP of the bot.  If this is the empty
+   string, the bot will attempt to find out its IP dynamically (though
+   sometimes that doesn't work, hence this variable)."""))
 
 ###
 # Reply/error tweaking.

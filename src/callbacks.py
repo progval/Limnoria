@@ -52,8 +52,8 @@ import string
 import inspect
 import textwrap
 import threading
-from itertools import imap, ifilter
 from cStringIO import StringIO
+from itertools import imap, ifilter
 
 import log
 import conf
@@ -70,12 +70,15 @@ def addressed(nick, msg, prefixChars=None, whenAddressedByNick=None):
     Otherwise returns the empty string.
     """
     assert msg.command == 'PRIVMSG'
+    (target, payload) = msg.args
+    registryPrefixChars = conf.supybot.prefixChars
+    if ircutils.isChannel(target):
+        registryPrefixChars = conf.supybot.prefixChars.get(target)
     if prefixChars is None:
-        prefixChars = conf.supybot.prefixChars()
+        prefixChars = registryPrefixChars()
     if whenAddressedByNick is None:
         whenAddressedByNick = conf.supybot.reply.whenAddressedByNick()
     nick = ircutils.toLower(nick)
-    (target, payload) = msg.args
     # Ok, let's see if it's a private message.
     if ircutils.nickEqual(target, nick):
         if payload[0] in prefixChars:

@@ -1,3 +1,7 @@
+supybot.defaultCapabilities is space-separated now, not
+comma-separated.  You you should remove the commas from this value in
+your configuration file before loading the bot.
+
 Version 0.77.2
 
 This is a drop-in replacement for 0.77.1, with two exceptions.  The

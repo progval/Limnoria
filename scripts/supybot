@@ -143,6 +143,13 @@ if __name__ == '__main__':
                       dest='allowEval',
                       help='Determines whether the bot will '
                            'allow the evaluation of arbitrary Python code.')
+    parser.add_option('', '--allow-default-owner', action='store_true',
+                      dest='allowDefaultOwner',
+                      help='Determines whether the bot will allow its '
+                           'defaultCapabilities not to include "-owner", thus '
+                           'giving all users the owner capability by default. '
+                           'This is dumb, hence we require a command-line '
+                           'option.  Don\'t do this.')
     parser.add_option('', '--allow-root', action='store_true',
                       dest='allowRoot',
                       help='Determines whether the bot will be allowed to run'
@@ -327,6 +334,7 @@ if __name__ == '__main__':
                 log.warning('Psyco isn\'t installed, cannot -OO.')
 
     conf.allowEval = options.allowEval
+    conf.allowDefaultOwner = options.allowDefaultOwner
 
     if not os.path.exists(conf.supybot.directories.log()):
         os.mkdir(conf.supybot.directories.log())

@@ -1,3 +1,10 @@
+	* Added an Infobot plugin, to emulate Infobot.
+
+	* Changed supybot.defaultCapabilities to be a space-separated
+	list rather than a comma-separated list.  Also added a check to
+	make sure -owner was in supybot.defaultCapabilities, and to
+	require a command-line option to allow it not to be present.
+	
 	* Added Sourceforge.fight, which returns the list of specified
 	projects and their bug/rfe count in sorted order, least to most.
 
