@@ -401,21 +401,21 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         (command, plugin) = privmsgs.getArgs(rest, optional=1)
         command = callbacks.canonicalName(command)
         cbs = callbacks.findCallbackForCommand(irc, command)
-        def isDispatcher(cb):
-            name = callbacks.canonicalName(getattr(cb, 'name')())
-            return getattr(cb, name).isDispatcher
-        # Ensure someone isn't trying to use a plugin for their command
-        cbs = [cb for cb in cbs if not isDispatcher(cb)]
         if remove:
             try:
                 conf.supybot.commands.defaultPlugins.unregister(command)
                 irc.replySuccess()
             except registry.NonExistentRegistryEntry:
-                raise callbacks.ArgumentError
+                s = 'I don\'t have a default plugin set for that command.'
+                irc.error(s)
         elif not cbs:
             irc.error('That\'s not a valid command.')
             return
         elif plugin:
+            cb = irc.getCallback(plugin)
+            if cb is None:
+                irc.error('That\'s not a valid plugin.')
+                return
             registerDefaultPlugin(command, plugin)
             irc.replySuccess()
         else:
