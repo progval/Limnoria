@@ -89,7 +89,6 @@ def debugFlush(s=''):
 def upkeep(scheduleNext=True):
     """Does upkeep (like flushing, garbage collection, etc.)"""
     sys.exc_clear() # Just in case, let's clear the exception info.
-    collected = gc.collect()
     if os.name == 'nt':
         try:
             import msvcrt
@@ -98,9 +97,6 @@ def upkeep(scheduleNext=True):
             pass
         except IOError: # Win98 sux0rs!
             pass
-    if gc.garbage:
-        log.warning('Uncollectable garbage (file this as a bug on SF.net): %s',
-                    gc.garbage)
     if conf.daemonized:
         # If we're daemonized, sys.stdout has been replaced with a StringIO
         # object, so let's see if anything's been printed, and if so, let's
@@ -136,6 +132,10 @@ def upkeep(scheduleNext=True):
             log.info('%s Garbage collected.', timestamp)
     if scheduleNext:
         schedule.addEvent(upkeep, time.time() + conf.supybot.upkeepInterval())
+    collected = gc.collect()
+    if gc.garbage:
+        log.warning('Uncollectable garbage (file this as a bug on SF.net): %s',
+                    gc.garbage)
     return collected
 
 def makeDriversDie():
