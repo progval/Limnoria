@@ -204,7 +204,7 @@ class Markov(callbacks.Privmsg, ChannelDBHandler):
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT COUNT(*) FROM follows WHERE ISNULL(word)""")
+        cursor.execute("""SELECT COUNT(*) FROM follows WHERE word ISNULL""")
         n = cursor.fetchone()[0]
         s = 'There are %s lasts in my Markov database for %s' % (n, channel)
         irc.reply(msg, s)
