@@ -666,7 +666,7 @@ class Irc(IrcCommandDispatcher):
         if not self.zombie:
             return self.queue.enqueue(msg)
         else:
-            log.warning('Refusing to queue %r; %s is a zombie.', self, msg)
+            log.warning('Refusing to queue %r; %s is a zombie.', msg, self)
             return False
 
     def sendMsg(self, msg):
