@@ -89,9 +89,9 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
                          VALUES(NULL, %s, %s, %s)""",
                        msg.nick, quotetime, quote)
         db.commit()
-        criteria = ['added_by=%s' % msg.nick]
+        criteria = ['added_by="%s"' % msg.nick]
         criteria.append('added_at=%s' % quotetime)
-        criteria.append('quote=%s' % quote)
+        criteria.append('quote="%s"' % quote)
         sql = """SELECT id FROM quotes WHERE %s""" % ' AND '.join(criteria)
         cursor.execute(sql)
         quoteid = cursor.fetchone()[0]
