@@ -1,3 +1,6 @@
+        * Added Bugzilla.search, a new command for searching a bugzilla
+	installation
+	 
 2003-12-12 Jeremy Fincher <jemfinch@supybot.org>
 
 	* Version 0.76.1!  The birthday release!

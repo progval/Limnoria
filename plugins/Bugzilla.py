@@ -39,11 +39,13 @@ __revision__ = "$Id$"
 import os
 import re
 import string
+import urllib
 import urllib2
 import xml.dom.minidom as minidom
 from itertools import imap, ifilter
 from htmlentitydefs import entitydefs as entities
-
+import csv
+import getopt
 import conf
 import utils
 
@@ -54,6 +56,15 @@ import callbacks
 import structures
 import configurable
 
+statusKeys = ['unconfirmed', 'new', 'assigned', 'reopened', 'resolved', \
+ 'verified', 'closed']
+resolutionKeys = ['fixed', 'invalid', 'worksforme', 'needinfo', \
+ 'test-request', 'wontfix', 'cantfix', 'moved', 'duplicate', 'remind', 'later']
+resolutionKeys += ['notabug', 'notgnome', 'incomplete', 'gnome1.x', 'moved' ]
+priorityKeys = ['p1', 'p2', 'p3', 'p4', 'p5']
+priorityKeys += ['Low', 'Normal', 'High', 'Immediate', 'Urgent']
+severityKeys = ['enhancement', 'trivial', 'minor', 'normal', 'major', \
+ 'critical', 'blocker']
 dbfilename = os.path.join(conf.dataDir, 'Bugzilla.db')
 def makeDb(filename):
     if os.path.exists(filename):
@@ -102,6 +113,22 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         self.db = makeDb(dbfilename)
         self.shorthand = utils.abbrev(self.db.keys())
 
+    def keywords2query(self, keywords):
+        """Turn a list of keywords into a URL query string"""
+        query = []
+        for k in keywords:
+            k = k.lower()
+            if k in statusKeys:
+                query.append('bug_status=%s' % k.upper())
+            elif k in resolutionKeys:
+                query.append('resolution=%s' % k.upper())
+            elif k in priorityKeys:
+                query.append('priority=%s' % k.upper())
+            elif k in severityKeys:
+                query.append('bug_severity=%s' % k.upper())
+	    
+        query.append('ctype=csv')
+        return query
     def die(self):
         configurable.Mixin.die(self)
         self.db.close()
@@ -185,6 +212,67 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         s = '%(product)s bug #%(id)s: %(title)s %(summary)s' % report
         irc.reply(msg, s, prefixName=False)
     bzSnarfer = privmsgs.urlSnarfer(bzSnarfer)
+
+    def urlquery2bugslist(self, url, query):
+        """Given a URL and query list for a CSV bug list, it'll return
+        all the bugs in a dict """
+        u = urllib2.urlopen(url + '/buglist.cgi', string.join(query, '&'))
+        # actually read in the file
+        csvreader = csv.reader(u)
+        # read header
+        fields = csvreader.next()
+        # read the rest of the list
+        bugs = {}    
+        for bug in csvreader:
+            try:
+                bugid = int(bug[0])
+            except ValueError:
+                bugid = bug[0]
+            bugs[bugid] = {}
+            i = 1
+            for f in fields[1:]:
+                bugs[bugid][f] = bug[i]
+                i += 1
+            
+        u.close()
+        return bugs
+        
+    def search(self, irc, msg, args):
+        """[--keywords=<keyword>] <bugzilla name> <search string in desc>
+        
+        Look for bugs with <search string in the desc>, also matching 
+        <keywords>. <keywords> can be statuses, severities, priorities, or
+        resolutions, seperated by commas"""
+        keywords = None
+        (optlist, rest) = getopt.getopt(args, '', ['keywords='])
+        for (option, arguments) in optlist:
+            if option == '--keywords':
+                keywords = arguments.split(',')
+        (name,searchstr)= privmsgs.getArgs(rest, required=2)
+        if not keywords:
+            keywords = ['UNCONFIRMED', 'NEW', 'ASSIGNED', 'REOPENED'] 
+        query = self.keywords2query(keywords)
+        query.append('short_desc_type=allwordssubstr')
+        query.append('short_desc=%s' % urllib.quote(searchstr))
+        query.append('order=Bug+Number')
+        try:
+            name = self.shorthand[name]
+            (url, description) = self.db[name]
+        except KeyError:
+            irc.error(msg, replyNoBugzilla % name)
+            return
+        bugs = self.urlquery2bugslist(url, query)
+        bugids = bugs.keys()
+        bugids.sort()
+        
+        outputstr = '%d %s match \'%s\' (%s):' % (len(bugs), \
+        utils.pluralize(len(bugs), 'bug'), 
+        searchstr, utils.commaAndify(keywords, And='AND'))
+        
+        for b in bugids:
+            outputstr += ' %s' % (str(b))
+			
+        irc.reply(msg, outputstr)
         
     def bug(self, irc, msg, args):
         """<abbreviation> <number>

@@ -35,6 +35,8 @@ class BugzillaTest(PluginTestCase, PluginDocumentation):
     plugins = ('Bugzilla',)
     def test(self):
         self.assertNotError('bug gcc 5')
+        self.assertNotError('search --keywords=fixed gcc alpha')
+        self.assertNotError('search gcc alpha')
         self.assertNotError('add xiph http://bugs.xiph.org/ Xiph')
         self.assertNotError('bug xiph 413')
         self.assertNotError('remove xiph')
