@@ -370,7 +370,7 @@ class FunCommands(callbacks.Privmsg):
             else:
                 irc.reply(msg, '%s + %si' % (real, imag))
         except OverflowError:
-            irc.reply(msg, 'I don\'t have that many fingers and toes!')
+            irc.reply(msg, 'Go get scanez, this is a *real* math problem!')
         except Exception, e:
             irc.reply(msg, debug.exnToString(e))
 
