@@ -560,9 +560,11 @@ class FunCommands(callbacks.Privmsg):
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(msg, self._complexToString(x))
         except OverflowError:
-            irc.reply(msg, 'Go get scanez, this is a *real* math problem!')
+            irc.error(msg, 'Go get scanez, this is a *real* math problem!')
+        except TypeError:
+            irc.error(msg, 'Something in there wasn\'t a valid number.')
         except Exception, e:
-            irc.reply(msg, debug.exnToString(e))
+            irc.error(msg, debug.exnToString(e))
 
     _rpnEnv = {
         'dup': lambda s: s.extend([s.pop()]*2),
