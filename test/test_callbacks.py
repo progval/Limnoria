@@ -367,7 +367,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             
 
 class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
-    plugins = ('Utilities',) # Gotta put something.
+    plugins = ()
     class PCAR(callbacks.PrivmsgCommandAndRegexp):
         def test(self, irc, msg, args):
             "<foo>"
@@ -376,12 +376,13 @@ class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
         self.irc.addCallback(self.PCAR())
         self.assertResponse('test', 'test <foo>')
 
-class RichReplyMethodsTestCase(unittest.TestCase):
+class RichReplyMethodsTestCase(PluginTestCase):
+    plugins = ()
+    class NoCapability(callbacks.Privmsg):
+        def error(self, irc, msg, args):
+            irc.errorNoCapability('admin')
     def testErrorNoCapability(self):
-        class NoCapability(callbacks.RichReplyMethods):
-            def error(self, s, **kwargs):
-                assert 'admin' in s
-        x = NoCapability()
-        x.errorNoCapability('admin')
+        self.irc.addCallback(self.NoCapability())
+        self.assertRegexp('error', 'admin')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
