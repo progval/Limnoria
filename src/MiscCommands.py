@@ -165,7 +165,7 @@ class MiscCommands(callbacks.Privmsg):
         """
         filename = privmsgs.getArgs(args, needed=0, optional=1)
         if filename:
-            if not file.endswith('.log'):
+            if not filename.endswith('.log'):
                 irc.error(msg, 'That filename doesn\'t appear to be a log.')
                 return
             filenames = [filename]
