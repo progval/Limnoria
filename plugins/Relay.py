@@ -138,6 +138,8 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
 
     def doJoin(self, irc, msg):
         if self.started:
+            if not isinstance(irc, irclib.Irc):
+                irc = irc.getRealIrc()
             channels = msg.args[0].split(',')
             abbreviation = self.abbreviations[irc]
             s = '%s has joined on %s' % (msg.nick, abbreviation)
@@ -149,6 +151,8 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
 
     def doPart(self, irc, msg):
         if self.started:
+            if not isinstance(irc, irclib.Irc):
+                irc = irc.getRealIrc()
             channels = msg.args[0].split(',')
             abbreviation = self.abbreviations[irc]
             s = '%s has left on %s' % (msg.nick, abbreviation)
@@ -160,6 +164,8 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
                         otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
 
     def outFilter(self, irc, msg):
+        if not isinstance(irc, irclib.Irc):
+            irc = irc.getRealIrc()
         if msg.command == 'PRIVMSG':
             abbreviations = self.abbreviations.values()
             rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
