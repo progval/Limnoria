@@ -113,6 +113,12 @@ def upkeep():
         # log.warning it (things shouldn't be printed, and we're more likely
         # to get bug reports if we make it a warning).
         assert not type(sys.stdout) == file, 'Not a StringIO object!'
+        if not hasattr(sys.stdout, 'getvalue'):
+            # Stupid twisted sometimes replaces our stdout with theirs, because
+            # "The Twisted Way Is The Right Way" (ha!).  So we're stuck simply
+            # returning.
+            log.warning('Expected cStringIO as stdout, got %r.', sys.stdout)
+            return
         s = sys.stdout.getvalue()
         if s:
             log.warning('Printed to stdout after daemonization: %s', s)
