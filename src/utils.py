@@ -47,6 +47,7 @@ import sets
 import time
 import types
 import random
+import shutil
 import socket
 import string
 import sgmllib
@@ -672,6 +673,20 @@ def mungeEmailForWeb(s):
 
 def stackTrace():
     traceback.print_stack(sys._getframe())
+
+class AtomicFile(file):
+    """Used for files that need to be atomically written -- i.e., if there's a
+    failure, the original file remains, unmodified."""
+    def __init__(self, filename, flags='w'):
+        if flags not in ('a', 'w'):
+            raise ValueError, 'AtomicFile should only be used for writing.'
+        self.filename = filename
+        self.tempFilename = '%s.%s' % (filename, mktemp())
+        super(AtomicFile, self).__init__(self.tempFilename, flags)
+
+    def close(self):
+        super(AtomicFile, self).close()
+        shutil.move(self.tempFilename, self.filename)
 
 if __name__ == '__main__':
     import sys, doctest
