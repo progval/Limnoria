@@ -257,7 +257,7 @@ class Reader(utils.IterableMap):
             return self._getCurrentData()
         else:
             try:
-                return getattr(self, 'default') # For PyChecker.
+                return self.default
             except AttributeError:
                 raise KeyError, key
 
