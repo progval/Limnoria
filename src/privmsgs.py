@@ -94,7 +94,7 @@ def checkChannelCapability(f, capability):
     Do note that you need to add a "channel" argument to your argument list.
     """
     def newf(self, irc, msg, args, *L):
-        channel = getChannel(msg, args) # Make a copy, f might getChannel.
+        channel = getChannel(msg, args)
         chancap = ircdb.makeChannelCapability(channel, capability)
         if ircdb.checkCapability(msg.prefix, chancap):
             L += (channel,)
