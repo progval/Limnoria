@@ -151,7 +151,7 @@ class Babelfish(callbacks.Privmsg):
                                                                      And='or'))
                     return
             translations = babelfish.babelize(text, fromLang, toLang)
-            irc.reply(translations[-1])
+            irc.reply(utils.htmlToText(translations[-1]))
         except (KeyError, babelfish.LanguageNotAvailableError), e:
             irc.reply('%s is not a valid language.  Valid languages '
                       'include %s.' % (e,

@@ -9,18 +9,18 @@ Summary:
 
     import babelizer
 
-	print ' '.join(babelizer.available_languages)
+        print ' '.join(babelizer.available_languages)
 
     print babelizer.translate( 'How much is that doggie in the window?',
-		                       'English', 'French' )
+                                       'English', 'French' )
 
     def babel_callback(phrase):
-		print phrase
-		sys.stdout.flush()
+                print phrase
+                sys.stdout.flush()
 
-	babelizer.babelize( 'I love a reigning knight.',
-						'English', 'German',
-						callback = babel_callback )
+        babelizer.babelize( 'I love a reigning knight.',
+                                                'English', 'German',
+                                                callback = babel_callback )
 
 available_languages
     A list of languages available for use with babelfish.
@@ -151,7 +151,9 @@ def babelize(phrase, from_language, through_language, limit = 12, callback = Non
         else:
             results.append(phrase)
         next = flip[next]
-    if next != from_language:
+    # next is set to the language of the last entry.  this should be the same
+    # as the language we are translating to
+    if next != through_language:
         phrase = translate(phrase, next, flip[next])
         results.append(phrase)
     if not callback:
