@@ -56,6 +56,10 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load %s')
 
+example = """
+Add an example IRC session using this module here.
+"""
+
 class %s(%s):
     %s
 
