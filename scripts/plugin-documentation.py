@@ -51,14 +51,10 @@ if conf.pluginDir not in sys.path:
 def makePluginDocumentation(filename):
     pluginName = filename.split('.')[0]
     moduleInfo = imp.find_module(pluginName)
-##     try:
     module = imp.load_module(pluginName, *moduleInfo)
-##     except ImportError, e:
-##         print >>sys.stderr, "Plugin %s could not be imported:" % filename
-##         print >>sys.stderr, e
-##         return
-    if not os.path.exists('plugindocs'):
-        os.mkdir('plugindocs')
+    directory = os.path.join('docs', 'plugins')
+    if not os.path.exists(directory):
+        os.mkdir(directory)
     plugin = module.Class()
     if isinstance(plugin, callbacks.Privmsg) and not \
        isinstance(plugin, callbacks.PrivmsgRegexp):
@@ -88,6 +84,7 @@ def makePluginDocumentation(filename):
         if hasattr(module, 'example'):
             s = module.example.encode('string-escape')
             s = s.replace('\\n', '\n')
+            s = s.replace("\\'", "'")
             fd.write(textwrap.dedent("""
             <p>Here's an example session with this plugin:
             <pre>
