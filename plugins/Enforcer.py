@@ -222,6 +222,9 @@ class Enforcer(callbacks.Privmsg):
         chanserv = self.registryValue('ChanServ')
         if ircutils.strEqual(nick, chanserv):
             return True # It's ChanServ.
+        return False
+
+    def _isOp(self, irc, channel, hostmask):
         capability = _chanCap(channel, 'op')
         if ircdb.checkCapability(hostmask, capability):
             return True # It's a chanop.
@@ -230,7 +233,9 @@ class Enforcer(callbacks.Privmsg):
     def _revenge(self, irc, channel, hostmask):
         nick = ircutils.nickFromHostmask(hostmask)
         if self.registryValue('takeRevenge', channel):
-            if self._isPowerful(irc, channel, hostmask) and \
+            if self._isPowerful(irc, channel, hostmask):
+                return
+            if self._isOp(irc, channel, hostmask) and \
                not self.registryValue('takeRevenge.onOps', channel):
                 return
             if not ircutils.strEqual(irc.nick, nick):
@@ -263,8 +268,7 @@ class Enforcer(callbacks.Privmsg):
         if not ircutils.isChannel(channel):
             return
         if self._isPowerful(irc, channel, msg.prefix):
-            if not self.registryValue('takeRevenge.onOps', channel):
-                return
+            return
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
             if not isinstance(value, basestring):
                 continue
