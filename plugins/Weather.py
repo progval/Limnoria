@@ -78,7 +78,7 @@ class WeatherCommand(registry.String):
 # Registry variables moved to the bottom to use Weather.weatherCommands.
 
 class Weather(callbacks.Privmsg):
-    weatherCommands = ['ham', 'cnn']
+    weatherCommands = ['ham', 'cnn', 'wunder']
     threaded = True
     def callCommand(self, method, irc, msg, *L):
         try:
@@ -129,24 +129,24 @@ class Weather(callbacks.Privmsg):
             unit = 'F'
         return '%s%s%s' % (temp, deg, unit)
 
-    _cityregex = re.compile(
+    _hamLoc = re.compile(
         r'<td><font size="4" face="arial"><b>'
         r'(.*?), (.*?),(.*?)</b></font></td>', re.I)
     _interregex = re.compile(
         r'<td><font size="4" face="arial"><b>'
         r'([^,]+), ([^<]+)</b></font></td>', re.I)
-    _condregex = re.compile(
+    _hamCond = re.compile(
         r'<td width="100%" colspan="2" align="center"><strong>'
         r'<font face="arial">([^<]+)</font></strong></td>', re.I)
-    _tempregex = re.compile(
+    _hamTemp = re.compile(
         r'<td valign="top" align="right"><strong><font face="arial">'
         r'(-?\d+)(.*?)(F|C)</font></strong></td>', re.I)
     _temp = re.compile(r'(-?\d+)(.*?)(F|C)')
-    _chillregex = re.compile(
+    _hamChill = re.compile(
         r'Wind Chill</font></strong>:</small></td>\s+<td align="right">'
         r'<small><font face="arial">([^N][^<]+)</font></small></td>',
          re.I | re.S)
-    _heatregex = re.compile(
+    _hamHeat = re.compile(
         r'Heat Index</font></strong>:</small></td>\s+<td align="right">'
         r'<small><font face="arial">([^N][^<]+)</font></small></td>',
          re.I | re.S)
@@ -220,7 +220,7 @@ class Weather(callbacks.Privmsg):
                 irc.error('No such location could be found.')
                 return
                 
-        headData = self._cityregex.search(html)
+        headData = self._hamLoc.search(html)
         if headData is not None:
             (city, state, country) = headData.groups()
         else:
@@ -233,7 +233,7 @@ class Weather(callbacks.Privmsg):
 
         city = city.strip()
         state = state.strip()
-        temp = self._tempregex.search(html)
+        temp = self._hamTemp.search(html)
         convert = self.registryValue('convert', msg.args[0])
         if temp is not None:
             (temp, deg, unit) = temp.groups()
@@ -241,11 +241,11 @@ class Weather(callbacks.Privmsg):
                 temp = self._getTemp(int(temp), deg, unit, msg.args[0])
             else:
                 temp = deg.join((temp, unit))
-        conds = self._condregex.search(html)
+        conds = self._hamCond.search(html)
         if conds is not None:
             conds = conds.group(1)
         index = ''
-        chill = self._chillregex.search(html)
+        chill = self._hamChill.search(html)
         if chill is not None:
             chill = chill.group(1)
             chill = utils.htmlToText(chill)
@@ -256,7 +256,7 @@ class Weather(callbacks.Privmsg):
                     chill = self._getTemp(int(chill), deg, unit,msg.args[0])
             if float(chill[:-2]) < float(temp[:-2]):
                 index = ' (Wind Chill: %s)' % chill
-        heat = self._heatregex.search(html)
+        heat = self._hamHeat.search(html)
         if heat is not None:
             heat = heat.group(1)
             heat = utils.htmlToText(heat)
@@ -270,18 +270,19 @@ class Weather(callbacks.Privmsg):
                 index = ' (Heat Index: %s)' % heat
         if temp and conds and city and state:
             conds = conds.replace('Tsra', 'Thunderstorms')
-            s = 'The current temperature in %s, %s is %s%s. Conditions: %s.'% \
+            s = 'The current temperature at %s, %s is %s%s. Conditions: %s.'% \
                 (city, state, temp, index, conds)
             irc.reply(s)
         else:
             irc.error('The format of the page was odd.')
 
     _cnnUrl = 'http://weather.cnn.com/weather/search?wsearch='
-    _fTemp = re.compile(r'(-?\d+)(&deg;)(F)</span>', re.I | re.S)
-    _conds = re.compile(r'align="center"><b>([^<]+)</b></div></td>', re.I|re.S)
-    _humidity = re.compile(r'Rel. Humidity: <b>(\d+%)</b>', re.I | re.S)
-    _wind = re.compile(r'Wind: <b>([^<]+)</b>', re.I | re.S)
-    _location = re.compile(r'<title>([^<]+)</title>', re.I | re.S)
+    _cnnFTemp = re.compile(r'(-?\d+)(&deg;)(F)</span>', re.I | re.S)
+    _cnnCond = re.compile(r'align="center"><b>([^<]+)</b></div></td>',
+                          re.I | re.S)
+    _cnnHumid = re.compile(r'Rel. Humidity: <b>(\d+%)</b>', re.I | re.S)
+    _cnnWind = re.compile(r'Wind: <b>([^<]+)</b>', re.I | re.S)
+    _cnnLoc = re.compile(r'<title>([^<]+)</title>', re.I | re.S)
     # Certain countries are expected to use a standard abbreviation
     # The weather we pull uses weird codes.  Map obvious ones here.
     _cnnCountryMap = {'uk': 'en', 'de': 'ge'}
@@ -314,11 +315,11 @@ class Weather(callbacks.Privmsg):
         if "No search results" in text or "does not match a zip code" in text:
             irc.error('No such location could be found.')
             return
-        location = self._location.search(text)
-        temp = self._fTemp.search(text)
-        conds = self._conds.search(text)
-        humidity = self._humidity.search(text)
-        wind = self._wind.search(text)
+        location = self._cnnLoc.search(text)
+        temp = self._cnnFTemp.search(text)
+        conds = self._cnnCond.search(text)
+        humidity = self._cnnHumid.search(text)
+        wind = self._cnnWind.search(text)
         convert = self.registryValue('convert', msg.args[0])
         if location and temp:
             location = location.group(1)
@@ -328,8 +329,7 @@ class Weather(callbacks.Privmsg):
                 temp = self._getTemp(int(temp), deg, unit, msg.args[0])
             else:
                 temp = deg.join((temp, unit))
-            resp = 'The current temperature in %s is %s.' % (location, temp)
-            resp = [resp]
+            resp = ['The current temperature at %s is %s.' % (location, temp)]
             if conds is not None:
                 resp.append('Conditions: %s.' % conds.group(1))
             if humidity is not None:
@@ -337,7 +337,104 @@ class Weather(callbacks.Privmsg):
             if wind is not None:
                 resp.append('Wind: %s.' % wind.group(1))
             resp = map(utils.htmlToText, resp)
-            irc.reply('  '.join(resp))
+            irc.reply(' '.join(resp))
+        else:
+            irc.error('Could not find weather information.')
+
+    _wunderUrl = 'http://www.weatherunderground.com/cgi-bin/findweather/'\
+                 'getForecast?query='
+    _wunderLoc = re.compile(r'<title>[^:]+: ([^<]+)</title>', re.I | re.S)
+    _wunderFTemp = re.compile(
+        r'graphics/conds.*?<nobr><b>(-?\d+)</b>&nbsp;(&#176;)(F)</nobr>',
+        re.I | re.S)
+    _wunderCond = re.compile(r'</b></font><br>\s+<font size=-1><b>([^<]+)</b>',
+                             re.I | re.S)
+    _wunderHumid = re.compile(r'Humidity:</td><td[^>]+><b>(\d+%)</b>',
+                              re.I | re.S)
+    _wunderDew = re.compile(r'Dew Point:</td><td[^>]+><b>\s+<nobr><b>'
+                            r'(-?\d+)</b>&nbsp;(&#176;)(F)</nobr>',
+                            re.I | re.S)
+    _wunderWind = re.compile(
+        r'Wind:</td><td[^>]+>\s+<b>\s+<nobr><b>(\d+)</b>&nbsp;(mph)'
+        r'</nobr>\s+/\s+<nobr><b>(\d+)</b>&nbsp;(km/h)</nobr>\s+</b>'
+        r'\s+from the\s+<b>(\w{3})</b>', re.I | re.S)
+    _wunderPressure = re.compile(
+        r'Pressure:</td><td[^<]+><b>\s+<b>(\d+\.\d+)</b>&nbsp;(in)\s+/\s+'
+        r'<b>(\d+)</b>&nbsp;(hPa)', re.I | re.S)
+    _wunderVisible = re.compile(
+        r'Visibility:</td><td[^>]+><b>\s+<nobr><b>(\w+)</b>&nbsp;(miles)'
+        r'</nobr>\s+/\s+<nobr><b>(\w+)</b>&nbsp;(kilometers)</nobr>',
+        re.I | re.S)
+    _wunderUv = re.compile(r'UV:</td><td[^>]+><b>(\d\d?)</b>', re.I | re.S)
+    _wunderTime = re.compile(r'Updated:\s+<b>([\w\s:,]+)</b>', re.I | re.S)
+    def wunder(self, irc, msg, args):
+        """<US zip code | US/Canada city, state | Foreign city, country>
+
+        Returns the approximate weather conditions for a given city.
+        """
+        loc = ' '.join(args)
+        url = '%s%s' % (self._wunderUrl, urllib.quote(loc))
+        try:
+            text = webutils.getUrl(url)
+        except webutils.WebError, e:
+            irc.error(str(e))
+            return
+        if 'Search not found' in text:
+            irc.error('No such location could be found.')
+            return
+        if 'Search results for' in text:
+            irc.error('Multiple locations found.  Please be more specific.')
+            return
+        location = self._wunderLoc.search(text)
+        temp = self._wunderFTemp.search(text)
+        convert = self.registryValue('convert', msg.args[0])
+        if location and temp:
+            location = location.group(1)
+            location = location.replace(' Forecast', '')
+            (temp, deg, unit) = temp.groups()
+            if convert:
+                temp = self._getTemp(int(temp), deg, unit, msg.args[0])
+            else:
+                temp = deg.join((temp, unit))
+            time = self._wunderTime.search(text)
+            if time is not None:
+                time = ' (%s)' % time.group(1)
+            else:
+                time = ''
+            resp = ['The current temperature at %s is %s%s.' %\
+                    (location, temp, time)]
+            conds = self._wunderCond.search(text)
+            if conds is not None:
+                resp.append('Conditions: %s.' % conds.group(1))
+            humidity = self._wunderHumid.search(text)
+            if humidity is not None:
+                resp.append('Humidity: %s.' % humidity.group(1))
+            dewpt = self._wunderDew.search(text)
+            if dewpt is not None:
+                (dew, deg, unit) = dewpt.groups()
+                if convert:
+                    dew = self._getTemp(int(dew), deg, unit, msg.args[0])
+                else:
+                    dew = deg.join((dew, unit))
+                resp.append('Dew Point: %s.' % dew)
+            wind = self._wunderWind.search(text)
+            if wind is not None:
+                resp.append('Wind: %s at %s %s (%s %s).' % (wind.group(5),
+                                                            wind.group(1),
+                                                            wind.group(2),
+                                                            wind.group(3),
+                                                            wind.group(4)))
+            press = self._wunderPressure.search(text)
+            if press is not None:
+                resp.append('Pressure: %s %s (%s %s).' % press.groups())
+            vis = self._wunderVisible.search(text)
+            if vis is not None:
+                resp.append('Visibility: %s %s (%s %s).' % vis.groups())
+            uv = self._wunderUv.search(text)
+            if uv is not None:
+                resp.append('UV: %s' % uv.group(1))
+            resp = map(utils.htmlToText, resp)
+            irc.reply(' '.join(resp))
         else:
             irc.error('Could not find weather information.')
 
