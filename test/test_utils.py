@@ -162,6 +162,13 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(utils.normalizeWhitespace('foo   bar'), 'foo bar')
         self.assertEqual(utils.normalizeWhitespace('foo\nbar'), 'foo bar')
         self.assertEqual(utils.normalizeWhitespace('foo\tbar'), 'foo bar')
+
+    def testSortBy(self):
+        L = ['abc', 'z', 'AD']
+        utils.sortBy(len, L)
+        self.assertEqual(L, ['z', 'AD', 'abc'])
+        utils.sortBy(str.lower, L)
+        self.assertEqual(L, ['abc', 'AD', 'z'])
         
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

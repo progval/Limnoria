@@ -265,6 +265,10 @@ def findBinaryInPath(s):
     return cmdLine
 
 def commaAndify(seq):
+    """Given a a sequence, returns an english clause for that sequence.
+
+    I.e., given [1, 2, 3], returns '1, 2, and 3'
+    """
     L = list(seq)
     if len(L) == 0:
         return ''
@@ -278,6 +282,7 @@ def commaAndify(seq):
 
 _unCommaTheRe = re.compile(r'(.*),\s*(the)$', re.I)
 def unCommaThe(s):
+    """Takes a string of the form 'foo, the' and turns it into 'the foo'."""
     m = _unCommaTheRe.match(s)
     if m is not None:
         return '%s %s' % (m.group(2), m.group(1))
@@ -285,6 +290,7 @@ def unCommaThe(s):
         return s
 
 def wrapLines(s):
+    """Word wraps several paragraphs in a string s."""
     L = []
     for line in s.splitlines():
         L.append(textwrap.fill(line))
@@ -292,6 +298,9 @@ def wrapLines(s):
 
 plurals = {}
 def pluralize(i, s):
+    """Returns the plural of s based on its number i.  Put any exceptions to
+    the general English rule of appending 's' in the plurals dictionary.
+    """
     if i == 1:
         return s
     else:
@@ -301,10 +310,18 @@ def pluralize(i, s):
             return s + 's'
 
 def be(i):
+    """Returns the form of the verb 'to be' based on the number i."""
     if i == 1:
         return 'is'
     else:
         return 'are'
 
+def sortBy(f, L, cmp=cmp):
+    """Uses the decorate-sort-undecorate pattern to sort L by function f."""
+    for (i, elt) in enumerate(L):
+        L[i] = (f(elt), elt)
+    L.sort(cmp)
+    for (i, elt) in enumerate(L):
+        L[i] = L[i][1]
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
