@@ -298,12 +298,23 @@ if __name__ == '__main__':
     parser.add_option('-e', '--exclude', action='append',
                       dest='exclusions', metavar='TESTFILE',
                       help='Exclude this test from the test run.')
+    parser.add_option('-t', '--timeout', action='store', type='int',
+                      dest='timeout',
+                      help='Sets the timeout for tests to return responses.')
+    parser.add_option('-p', '--plugindir', action='append',
+                      metavar='plugindir', dest='plugindirs',
+                      help='Adds a directory to the list of directories in '
+                           'which to search for plugins.')
     (options, args) = parser.parse_args()
     if not args:
         args = glob.glob(os.path.join('test', 'test_*.py'))
     if options.exclusions:
         for name in options.exclusions:
             args = [s for s in args if s != name]
+    if options.timeout:
+        PluginTestCase.timeout = options.timeout
+    if options.plugindirs:
+        conf.pluginDirs.extend(options.plugindirs)
     
     world.testing = True
     names = [os.path.splitext(os.path.basename(name))[0] for name in args]
