@@ -309,9 +309,9 @@ class Value(Group):
         if self.__doc__:
             s = self.__doc__
         else:
-            s = """Invalid registry value.  If you're getting this message,
+            s = """%s has no docstring.  If you're getting this message,
             report it, because we forgot to put a proper help string here."""
-        e = InvalidRegistryValue(utils.normalizeWhitespace(s))
+        e = InvalidRegistryValue(utils.normalizeWhitespace(s % self._name))
         e.value = self
         raise e
 
