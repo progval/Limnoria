@@ -31,8 +31,8 @@
 
 from test import *
 
-class GoogleToolsTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('GoogleTools',)
+class GoogleTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('Google',)
     def testGroupsSnarfer(self):
         self.assertRegexp('http://groups.google.com/groups?dq=&hl=en&'
                           'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'

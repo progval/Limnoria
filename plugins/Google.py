@@ -114,7 +114,7 @@ def search(*args, **kwargs):
         last24hours.dequeue()
     return data
 
-class GoogleTools(callbacks.PrivmsgCommandAndRegexp):
+class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
     def __init__(self):
@@ -313,7 +313,7 @@ class GoogleTools(callbacks.PrivmsgCommandAndRegexp):
 
 
 
-Class = GoogleTools
+Class = Google
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
