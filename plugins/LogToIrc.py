@@ -133,6 +133,9 @@ _ircHandler.setFormatter(_ircFormatter)
 class IrcLogLevel(log.LogLevel):
     """Value must be one of INFO, WARNING, ERROR, or CRITICAL."""
     def set(self, s):
+        # FIXME: Overriding set() here because log.LogLevel.set() sets the
+        # default log level as well. log.LogLevel and this class should be
+        # refactored and use registry.OnlySomeStrings in the future.
         s = s.upper()
         try:
             self.setValue(getattr(logging, s))
