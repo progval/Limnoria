@@ -234,6 +234,13 @@ telnetPort = 31337
 poll = 1
 
 ###
+# pingServer: Determines whether the bot will send PINGs to the server it's
+#             connected to in order to keep the connection alive.  Sometimes
+#             this seems to result in instability.
+###
+pingServer = True
+
+###
 # maxHistory: Maximum number of messages kept in an Irc object's state.
 ###
 maxHistory = 1000
@@ -364,6 +371,7 @@ types = {
     'detailedTracebacks': mybool,
     'driverModule': mystr,
     'showOnlySyntax': mybool,
+    'pingServer': mybool,
     'followIdentificationThroughNickChanges': mybool
 }
 

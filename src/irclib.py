@@ -491,7 +491,8 @@ class Irc(IrcCommandDispatcher):
             else:
                 self.lastTake = now
                 msg = self.queue.dequeue()
-        elif now > (self.lastping + conf.pingInterval) and self.afterConnect:
+        elif conf.pingServer and \
+             now > (self.lastping + conf.pingInterval) and self.afterConnect:
             if self.outstandingPing:
                 s = 'Reconnecting to %s, ping not replied to.' % self.server
                 log.warning(s)
