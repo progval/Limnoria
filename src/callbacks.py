@@ -432,6 +432,7 @@ class IrcObjectProxy(RichReplyMethods):
         self.args = copy.deepcopy(args)
         self.counter = 0
         self.finished = False # Used in _callInvalidCommands.
+        self.commandMethod = None # Used in error.
         self._resetReplyAttributes()
         if not args:
             self.finalEvaled = True
@@ -473,21 +474,25 @@ class IrcObjectProxy(RichReplyMethods):
 
     def _callCommand(self, name, command, cb):
         try:
-            cb.callCommand(command, self, self.msg, self.args)
-        except (getopt.GetoptError, ArgumentError):
-            self.reply(formatArgumentError(command, name=name))
-        except CannotNest, e:
-            if not isinstance(self.irc, irclib.Irc):
-                self.error('Command %r cannot be nested.' % name)
-        except (SyntaxError, Error), e:
-            cb.log.info('Error return: %s', e)
-            self.error(str(e))
-        except Exception, e:
-            cb.log.exception('Uncaught exception:')
-            if conf.supybot.reply.detailedErrors():
-                self.error(utils.exnToString(e))
-            else:
-                self.replyError()
+            self.commandMethod = command
+            try:
+                cb.callCommand(command, self, self.msg, self.args)
+            except (getopt.GetoptError, ArgumentError):
+                self.reply(formatArgumentError(command, name=name))
+            except CannotNest, e:
+                if not isinstance(self.irc, irclib.Irc):
+                    self.error('Command %r cannot be nested.' % name)
+            except (SyntaxError, Error), e:
+                cb.log.info('Error return: %s', e)
+                self.error(str(e))
+            except Exception, e:
+                cb.log.exception('Uncaught exception:')
+                if conf.supybot.reply.detailedErrors():
+                    self.error(utils.exnToString(e))
+                else:
+                    self.replyError()
+        finally:
+            self.commandMethod = None
             
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
@@ -642,12 +647,19 @@ class IrcObjectProxy(RichReplyMethods):
             self.args[self.counter] = s
             self.evalArgs()
 
-    def error(self, s, private=None, notice=None, **kwargs):
-        if not isinstance(self.irc, irclib.Irc):
-            self.irc.error(s, private)
+    def error(self, s='', private=None, notice=None, **kwargs):
+        if s:
+            if not isinstance(self.irc, irclib.Irc):
+                self.irc.error(s, private)
+            else:
+                self.irc.queueMsg(error(self.msg, s, private=private,
+                                        notice=notice, **kwargs))
         else:
-            self.irc.queueMsg(error(self.msg, s, private=private,
-                                    notice=notice, **kwargs))
+            # No argument, let's raise ArgumentError.
+            if self.commandMethod is not None:
+                # We can recurse here because it only gets called once.
+                self.error(formatArgumentError(self.commandMethod),
+                           private=private, notice=notice, **kwargs)
         self.finished = True
 
     def getRealIrc(self):

@@ -266,6 +266,9 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.reply.errorInPrivate.setValue(original)
 
+    def testErrorNoArgumentIsArgumentError(self):
+        self.assertHelp('eval irc.error()')
+
     def testErrorWithNotice(self):
         try:
             original = conf.supybot.reply.errorWithNotice()
