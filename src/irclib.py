@@ -375,8 +375,9 @@ class Irc(object):
         self.callbacks.append(callback)
 
     def getCallback(self, name):
+        name = name.lower()
         for callback in self.callbacks:
-            if callback.name() == name:
+            if callback.name().lower() == name:
                 return callback
         else:
             return None
