@@ -176,7 +176,7 @@ class Herald(callbacks.Privmsg):
                              additional('text')])
 
     def get(self, irc, msg, args, channel, user):
-        """[<channel>] [<user|nick|hostmask>]
+        """[<channel>] [<user|nick>]
 
         Returns the current herald message for <user> (or the user
         <nick|hostmask> is currently identified or recognized as).  If <user>
@@ -190,11 +190,11 @@ class Herald(callbacks.Privmsg):
             irc.error('I have no herald for %s.' % user.name)
     get = wrap(get, ['channel', first('otherUser', 'user')])
 
-    # I chose not to make <user|nick|hostmask> optional in this command because
+    # I chose not to make <user|nick> optional in this command because
     # if it's not a valid username (e.g., if the user tyops and misspells a
     # username), it may be nice not to clobber the user's herald.
     def add(self, irc, msg, args, channel, user, herald):
-        """[<channel>] <user|nick|hostmask> <msg>
+        """[<channel>] <user|nick> <msg>
 
         Sets the herald message for <user> (or the user <nick|hostmask> is
         currently identified or recognized as) to <msg>.  <channel> is only
@@ -205,7 +205,7 @@ class Herald(callbacks.Privmsg):
     add = wrap(add, ['channel', 'otherUser', 'text'])
 
     def remove(self, irc, msg, args, channel, user):
-        """[<channel>] [<user|nick|hostmask>]
+        """[<channel>] [<user|nick>]
 
         Removes the herald message set for <user>, or the user
         <nick|hostmask> is currently identified or recognized as.  If <user>
@@ -221,7 +221,7 @@ class Herald(callbacks.Privmsg):
     remove = wrap(remove, ['channel', first('otherUser', 'user')])
 
     def change(self, irc, msg, args, channel, user, changer):
-        """[<channel>] [<user|nick|hostmask>] <regexp>
+        """[<channel>] [<user|nick>] <regexp>
 
         Changes the herald message for <user>, or the user <nick|hostmask> is
         currently identified or recognized as, according to <regexp>.  If
