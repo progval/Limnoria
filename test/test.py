@@ -106,6 +106,8 @@ class PluginTestCase(unittest.TestCase):
     timeout = 10
     plugins = ()
     def setUp(self, nick='test'):
+        for filename in os.listdir(conf.dataDir):
+            os.remove(os.path.join(conf.dataDir, filename))
         if not self.plugins:
             raise ValueError, 'PluginTestCase must have a "plugins" attribute.'
         self.nick = nick
@@ -113,7 +115,7 @@ class PluginTestCase(unittest.TestCase):
         self.irc = irclib.Irc(nick)
         while self.irc.takeMsg():
             pass
-        if isinstance(plugins, str):
+        if isinstance(self.plugins, str):
             module = __import__(name)
             plugin = module.Class()
             self.irc.addCallback(plugin)
@@ -205,6 +207,33 @@ class PluginTestCase(unittest.TestCase):
         self.assertEqual(len(expectedResponses), len(responses))
         for (m, expected) in zip(responses, expectedResponses):
             self.assertEqual(m.args[1], expected)
+
+class ChannelPluginTestCase(PluginTestCase):
+    channel = '#test'
+    def _feedMsg(self, query, timeout=None):
+        if timeout is None:
+            timeout = self.timeout
+        if query[0] not in conf.prefixChars:
+            query = conf.prefixChars[0] + query
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, query,
+                                         prefix=self.prefix))
+        fed = time.time()
+        response = self.irc.takeMsg()
+        while response is None and time.time() - fed < timeout:
+            drivers.run()
+            response = self.irc.takeMsg()
+        if response is not None:
+            args = list(response.args)
+            # Strip off nick: at beginning of response.
+            args[1] = args[1].split(None, 1)[1]
+            return ircmsgs.privmsg(*args)
+        else:
+            return None
+
+    def feedMsg(self, query):
+        """Just feeds it a message, that's all."""
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, query,
+                                         prefix=self.prefix))
 
 
 if __name__ == '__main__':
