@@ -69,6 +69,10 @@ conf.registerGlobalValue(conf.supybot.plugins.Later, 'private',
     first place in which they're seen, or in private."""))
 
 class Later(callbacks.Privmsg):
+    """Used to do things later; currently, it only allows the sending of
+    nick-based notes.  Do note (haha!) that these notes are *not* private
+    and don't even pretend to be; if you want such features, consider using the
+    Note plugin."""
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self._notes = ircutils.IrcDict()
@@ -140,16 +144,25 @@ class Later(callbacks.Privmsg):
             irc.error('That person\'s message queue is already full.')
     tell = wrap(tell, ['nick', 'text'])
 
-    def notes(self, irc, msg, args):
-        """takes no arguments
+    def notes(self, irc, msg, args, nick):
+        """[<nick>]
 
-        Tells which nicks have notes waiting for them.
+        If <nick> is given, replies with what notes are waiting on <nick>,
+        otherwise, replies with the nicks that have notes waiting for them.
         """
-        nicks = self._notes.keys()
-        utils.sortBy(ircutils.toLower, nicks)
-        irc.reply('I currently have notes waiting for %s.' %
-                  utils.commaAndify(nicks))
-    #notes = wrap(notes)
+        if nick:
+            if nick in self._notes:
+                notes = [self._formatNote(when, whence, note)
+                         for (when, whence, note) in self._notes[nick]]
+                irc.reply(utils.commaAndify(notes))
+            else:
+                irc.error('I have no notes for that nick.')
+        else:
+            nicks = self._notes.keys()
+            utils.sortBy(ircutils.toLower, nicks)
+            irc.reply('I currently have notes waiting for %s.' %
+                      utils.commaAndify(nicks))
+    notes = wrap(notes, [additional('something')])
     
     def doPrivmsg(self, irc, msg):
         notes = self._notes.pop(msg.nick, [])
@@ -165,9 +178,12 @@ class Later(callbacks.Privmsg):
             irc = callbacks.SimpleProxy(irc, msg)
             private = self.registryValue('private')
             for (when, whence, note) in notes:
-                s = 'Sent %s: <%s> %s' % (self._timestamp(when), whence, note)
+                s = self._formatNote(when, whence, note)
                 irc.reply(s, private=private)
             self._flushNotes()
+
+    def _formatNote(self, when, whence, note):
+        return 'Sent %s: <%s> %s' % (self._timestamp(when), whence, note)
             
 
 
