@@ -223,7 +223,7 @@ if __name__ == '__main__':
                     port = 0
         else:
             port = 6667
-        server = ':'.join((serverString, port))
+        server = ':'.join(map(str, [serverString, port]))
 
     # nick
     if nick:
