@@ -71,6 +71,9 @@ def strError(e):
 def getUrlFd(url):
     """Gets a file-like object for a url."""
     try:
+        if '#' in url:
+            i = url.index('#')
+            url = url[:i]
         request = urllib2.Request(url)
         httpProxy = conf.supybot.protocols.http.proxy()
         if httpProxy:
