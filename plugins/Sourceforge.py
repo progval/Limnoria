@@ -236,7 +236,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         try:
             int(project)
             s = 'Use the tracker command to get information about a specific'\
-                'tracker.'
+                ' tracker.'
             irc.error(s)
             return
         except ValueError:
