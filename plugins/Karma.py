@@ -209,6 +209,7 @@ def KarmaDB():
     return SqliteKarmaDB()
 
 class Karma(callbacks.Privmsg):
+    callBefore = ('Factoids', 'MoobotFactoids', 'Infobot')
     def __init__(self):
         self.db = KarmaDB()
         super(Karma, self).__init__()
