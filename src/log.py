@@ -66,7 +66,7 @@ class Logger(logging.Logger):
         tbinfo = traceback.extract_tb(tb)
         path = '[%s]' % '|'.join(map(operator.itemgetter(2), tbinfo))
         eStrId = '%s:%s' % (E, path)
-        eId = hash(eStrId) & 0xFFFF
+        eId = hex(hash(eStrId) & 0xFFFFF)
         logging.Logger.exception(self, *args)
         self.error('Exception id: %s', eId)
         self.error('Exception string: %s', eStrId)
