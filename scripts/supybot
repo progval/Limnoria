@@ -173,7 +173,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     if os.name == 'posix':
-        if os.getuid() == 0 or os.geteuid() == 0 and not options.allowRoot:
+        if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
             sys.stderr.write('Dude, don\'t even try to run this as root.\n')
             sys.exit(-1)
 
