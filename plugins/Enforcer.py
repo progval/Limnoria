@@ -95,7 +95,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
         """
         self.topics = {}
         chanserv = privmsgs.getArgs(args, required=0, optional=1)
-        self.chanserv = chanserv or 'ChanServ'
+        self.chanserv = ircutils.IrcString(chanserv or 'ChanServ')
         self.started = True
         for channel in irc.state.channels:
             irc.queueMsg(ircmsgs.topic(channel))
@@ -244,7 +244,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
     def __call__(self, irc, msg):
         if self.started:
             if ircutils.isUserHostmask(msg.prefix) and \
-               not ircutils.nickEqual(msg.nick, self.chanserv):
+               not msg.nick == self.chanserv:
                 return callbacks.Privmsg.__call__(self, irc, msg)
         else:
             debug.msg('Enforcer plugin not started.  '
