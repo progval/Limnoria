@@ -225,7 +225,6 @@ class Configurable(object):
     """
     def __init__(self):
         self.configurables = ConfigurableDictionary(self.configurables)
-        s =
 
     def config(self, irc, msg, args):
         """[<channel>] <name> [<value>]
