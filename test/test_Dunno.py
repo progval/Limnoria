@@ -31,51 +31,41 @@
 
 from testsupport import *
 
-try:
-    import sqlite
-except ImportError:
-    sqlite = None
+class DunnoTestCase(ChannelPluginTestCase, PluginDocumentation):
+    plugins = ('Dunno', 'User')
+    def setUp(self):
+        PluginTestCase.setUp(self)
+        self.prefix = 'foo!bar@baz'
+        self.assertNotError('register tester moo', private=True)
 
-if sqlite is not None:
-    class DunnoTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('Dunno', 'User')
-        def setUp(self):
-            PluginTestCase.setUp(self)
-            self.prefix = 'foo!bar@baz'
-            self.assertNotError('register tester moo')
+    def testDunnoAdd(self):
+        self.assertNotError('dunno add moo')
+        self.assertResponse('asdfagagfosdfk', 'moo')
 
-        def testDunnoAdd(self):
-            self.assertNotError('dunno add moo')
-            self.assertResponse('asdfagagfosdfk', 'moo')
+    def testDunnoRemove(self):
+        self.assertNotError('dunno add moo')
+        self.assertNotError('dunno remove 1')
 
-        def testDunnoRemove(self):
-            self.assertNotError('dunno add moo')
-            self.assertNotError('dunno remove 1')
+    def testDunnoSearch(self):
+        self.assertNotError('dunno add foo')
+        self.assertRegexp('dunno search moo', 'No dunnos found')
+        self.assertNotError('dunno add moo')
+        self.assertRegexp('dunno search moo', r'\(1 found\)')
+        self.assertRegexp('dunno search m', r'\(1 found\)')
+        # Test multiple adds
+        for i in range(5):
+            self.assertNotError('dunno add moo%s' % i)
+        self.assertRegexp('dunno search moo', r'\(6 found\)')
 
-        def testDunnoSearch(self):
-            self.assertNotError('dunno add foo')
-            self.assertError('dunno search moo')
-            self.assertNotError('dunno add moo')
-            self.assertResponse('dunno search moo', 'Dunno search for \'moo\' '
-                                '(1 found): 2.')
-            self.assertResponse('dunno search m', 'Dunno search for \'m\' '
-                                '(1 found): 2.')
-            # Test multiple adds
-            for i in range(5):
-                self.assertNotError('dunno add moo%s' % i)
-            self.assertResponse('dunno search moo',
-                                'Dunno search for \'moo\' (6 found): '
-                                '2, 3, 4, 5, 6, and 7.')
+    def testDunnoGet(self):
+        self.assertNotError('dunno add moo')
+        self.assertRegexp('dunno get 1', r'#1.*moo')
+        self.assertNotError('dunno add $who')
+        self.assertRegexp('dunno get 2', r'#2.*\$who')
+        self.assertError('dunno get 3')
+        self.assertError('dunno get a')
 
-        def testDunnoGet(self):
-            self.assertNotError('dunno add moo')
-            self.assertResponse('dunno get 1', 'Dunno #1: \'moo\'.')
-            self.assertNotError('dunno add $who')
-            self.assertResponse('dunno get 2', 'Dunno #2: \'$who\'.')
-            self.assertError('dunno get 3')
-            self.assertError('dunno get a')
-
-        def testDunnoChange(self):
-            self.assertNotError('dunno add moo')
-            self.assertNotError('dunno change 1 s/moo/bar/')
-            self.assertRegexp('dunno get 1', '.*?: \'bar\'')
+    def testDunnoChange(self):
+        self.assertNotError('dunno add moo')
+        self.assertNotError('dunno change 1 s/moo/bar/')
+        self.assertRegexp('dunno get 1', '.*?: \'bar\'')

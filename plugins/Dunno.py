@@ -45,6 +45,7 @@ import time
 import random
 import itertools
 
+import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
@@ -97,19 +98,18 @@ class DunnoDBInterface(object):
         raise NotImplementedError
 
 
-class FlatfileDunnoDB(DunnoDBInterface):
-    class DunnoDB(plugins.FlatfileDB):
-        def serialize(self, record):
-            return csv.join(map(str, record))
-
-        def deserialize(self, s):
-            L = csv.split(s)
-            L[0] = float(L[0])
-            L[1] = int(L[1])
-            return L
-
+class DbiDunnoDB(DunnoDBInterface):
+    class DunnoDB(dbi.DB):
+        class Record(object):
+            __metaclass__ = dbi.Record
+            __fields__ = [
+                'at',
+                'by',
+                ('text', (str, '')),
+                ]
     def __init__(self):
         self.filenames = sets.Set()
+
     def _getDb(self, channel):
         # Why cache?  It gains very little.
         filename = plugins.makeChannelFilename(channel, 'Dunno.db')
@@ -124,53 +124,41 @@ class FlatfileDunnoDB(DunnoDBInterface):
             except EnvironmentError:
                 pass
     
-    def add(self, channel, dunno, by, at):
+    def add(self, channel, text, by, at):
         db = self._getDb(channel)
-        return db.addRecord([at, by, dunno])
+        return db.add(db.Record(at=at, by=by, text=text))
 
     def remove(self, channel, id):
         db = self._getDb(channel)
-        db.delRecord(id)
+        db.remove(id)
 
     def get(self, channel, id):
         db = self._getDb(channel)
-        L = db.getRecord(id)
-        L.reverse()
-        return L # [dunno, by, at]
+        return db.get(id)
 
     def change(self, channel, id, f):
         db = self._getDb(channel)
-        (at, by, dunno) = db.getRecord(id)
-        newDunno = f(dunno)
-        db.setRecord(id, [at, by, newDunno])
+        dunno = db.get(id)
+        dunno.text = f(dunno.text)
+        db.set(id, dunno)
         
     def random(self, channel):
         db = self._getDb(channel)
-        x = random.choice(db.records())
-        if x:
-            (id, (at, by, dunno)) = x
-            return (id, dunno)
-        else:
-            return None
+        return random.choice(db)
 
     def search(self, channel, p):
-        L = []
         db = self._getDb(channel)
-        for (id, (at, by, dunno)) in db.records():
-            if p(dunno):
-                L.append((id, dunno))
-        return L
+        return db.select(p)
     
     def size(self, channel):
         try:
             db = self._getDb(channel)
-            return itertools.ilen(db.records())
+            return itertools.ilen(db)
         except EnvironmentError, e:
             return 0
     
-
-DunnoDB = FlatfileDunnoDB
-        
+def DunnoDB():
+    return DbiDunnoDB()
         
 class Dunno(callbacks.Privmsg):
     """This plugin was written initially to work with MoobotFactoids, the two
@@ -191,7 +179,7 @@ class Dunno(callbacks.Privmsg):
         if ircutils.isChannel(channel):
             dunno = self.db.random(channel)
             if dunno is not None:
-                dunno = dunno[1]
+                dunno = dunno.text
                 prefixName = self.registryValue('prefixNick', channel)
                 dunno = plugins.standardSubstitute(irc, msg, dunno)
                 irc.reply(dunno, prefixName=prefixName)
@@ -230,8 +218,13 @@ class Dunno(callbacks.Privmsg):
             irc.errorNotRegistered()
             return
         id = privmsgs.getArgs(args)
-        (dunno, dunnoBy, at) = self.db.get(channel, id)
-        if by != dunnoBy:
+        try:
+            id = int(id)
+        except ValueError:
+            irc.error('Invalid id: %r' % id)
+            return
+        dunno = self.db.get(channel, id)
+        if by != dunno.by:
             cap = ircdb.makeChannelCapability(channel, 'op')
             if not ircdb.users.checkCapability(cap):
                 irc.errorNoCapability(cap)
@@ -251,9 +244,9 @@ class Dunno(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         text = privmsgs.getArgs(args)
-        def p(s):
-            return text.lower() in s.lower()
-        ids = [str(id) for (id, _) in self.db.search(channel, p)]
+        def p(dunno):
+            return text.lower() in dunno.text.lower()
+        ids = [str(dunno.id) for dunno in self.db.search(channel, p)]
         if ids:
             s = 'Dunno search for %r (%s found): %s.' % \
                 (text, len(ids), utils.commaAndify(ids))
@@ -275,12 +268,12 @@ class Dunno(callbacks.Privmsg):
             irc.error('%r is not a valid dunno id.' % id)
             return
         try:
-            (dunno, by, at) = self.db.get(channel, id)
-            name = ircdb.users.getUser(by).name
-            at = time.localtime(at)
+            dunno = self.db.get(channel, id)
+            name = ircdb.users.getUser(dunno.by).name
+            at = time.localtime(dunno.at)
             timeStr = time.strftime(conf.supybot.humanTimestampFormat(), at)
             irc.reply("Dunno #%s: %r (added by %s at %s)" % \
-                      (id, dunno, name, timeStr))
+                      (id, dunno.text, name, timeStr))
         except KeyError:
             irc.error('No dunno found with that id.')
 
