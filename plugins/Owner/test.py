@@ -33,7 +33,7 @@ import supybot.conf as conf
 import supybot.plugin as plugin
 
 class OwnerTestCase(PluginTestCase):
-    plugins = ('Utilities', 'Relay', 'Network', 'Admin', 'Channel')
+    plugins = ('Owner', 'Config', 'Misc')  # Defaults, but hey, I'm cool.
     def testHelpLog(self):
         self.assertHelp('help log')
 
@@ -52,22 +52,22 @@ class OwnerTestCase(PluginTestCase):
     def testLoad(self):
         self.assertError('load Owner')
         self.assertError('load owner')
-        self.assertNotError('load Alias')
+        self.assertNotError('load Channel')
         self.assertNotError('list Owner')
 
     def testReload(self):
-        self.assertError('reload Alias')
-        self.assertNotError('load Alias')
-        self.assertNotError('reload ALIAS')
-        self.assertNotError('reload ALIAS')
+        self.assertError('reload Channel')
+        self.assertNotError('load Channel')
+        self.assertNotError('reload Channel')
+        self.assertNotError('reload Channel')
 
     def testUnload(self):
         self.assertError('unload Foobar')
-        self.assertNotError('load Alias')
-        self.assertNotError('unload Alias')
-        self.assertError('unload Alias')
-        self.assertNotError('load ALIAS')
-        self.assertNotError('unload ALIAS')
+        self.assertNotError('load Channel')
+        self.assertNotError('unload Channel')
+        self.assertError('unload Channel')
+        self.assertNotError('load CHANNEL')
+        self.assertNotError('unload CHANNEL')
 
     def testDisable(self):
         self.assertError('disable enable')
