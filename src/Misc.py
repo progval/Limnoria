@@ -506,12 +506,14 @@ class Misc(callbacks.Privmsg):
             irc.error('Dude, just give the command.  No need for the tell.')
             return
         elif not ircutils.isNick(target):
-            irc.error('%s is not a valid nick or channel.' % target)
+            irc.error('%s is not a valid nick.' % target)
             return
         elif ircutils.nickEqual(target, irc.nick):
             irc.error('You just told me, why should I tell myself?')
             return
-        elif target not in irc.state.nicksToHostmasks:
+        elif target not in irc.state.nicksToHostmasks and \
+             not ircdb.checkCapability(msg.prefix, 'owner'):
+            # We'll let owners do this.
             s = 'I haven\'t seen %s, I\'ll let you do the telling.' % target
             irc.error(s)
             return
@@ -533,7 +535,8 @@ class Misc(callbacks.Privmsg):
     def action(self, irc, msg, args):
         """<text>
 
-        Returns the arguments given it, but as an action.
+        Replies with <text> as an action.  use nested commands to your benefit
+        here.
         """
         text = privmsgs.getArgs(args)
         if text:
