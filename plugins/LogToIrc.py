@@ -60,7 +60,10 @@ class IrcHandler(logging.Handler):
         except:
             self.handleError(record)
         for target in config.targets():
-            msg = ircmsgs.privmsg(target, s)
+            msgmaker = ircmsgs.privmsg
+            if config.notice() and not ircutils.isChannel(target):
+                msgmaker = ircmsgs.notice
+            msg = msgmaker(target, s)
             for irc in world.ircs:
                 try:
                     if not irc.driver.connected:
@@ -166,6 +169,11 @@ conf.registerGlobalValue(conf.supybot.plugins.LogToIrc,
 conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'colorized',
     registry.Boolean(False, """Determines whether the bot's logs
     to IRC will be colorized with mIRC colors."""))
+conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'notice',
+    registry.Boolean(False, """Determines whether the bot's logs to IRC will be
+    sent via NOTICE instead of PRIVMSG.  Channels will always be PRIVMSGed,
+    regardless of this variable; NOTICEs will only be used if this variable is
+    True and the target is a nick, not a channel."""))
 
 def configure(advanced):
     from questions import something, anything, yn, output
