@@ -255,6 +255,28 @@ class Note(callbacks.Privmsg):
             sent.append(s)
         irc.reply(utils.commaAndify(sent).capitalize() + '.')
 
+    def reply(self, irc, msg, args):
+        """<id> <text>
+
+        Sends a note in reply to <id>.
+        """
+        if not args:
+            raise callbacks.ArgumentError
+        id = self._validId(irc, args[0])
+        if not id:
+            return
+        args.append('(in reply to #%s)' % id)
+        note = self.db.get(id)
+        to = self.db.get(id).frm
+        self.db.setRead(id)
+        try:
+            args[0] = ircdb.users.getUser(to).name
+        except KeyError:
+            irc.error('Odd, the user you\'re replying to is no longer in the '
+                      'database.  You should notify my owner about this.')
+            return
+        self.send(irc, msg, args)
+
     def unsend(self, irc, msg, args):
         """<id>
 
