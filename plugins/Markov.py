@@ -151,6 +151,7 @@ class MarkovWorkQueue(threading.Thread):
         self.db = MarkovDB(*args, **kwargs)
         self.q = Queue.Queue()
         self.killed = False
+        self.setDaemon(True)
         self.start()
 
     def die(self):
