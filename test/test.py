@@ -112,12 +112,16 @@ class PluginTestCase(unittest.TestCase):
     """
     timeout = 10
     plugins = ()
+    cleanConfDir = True
+    cleanDataDir = True
     def setUp(self, nick='test'):
         self.myVerbose = world.myVerbose
-        for filename in os.listdir(conf.confDir):
-            os.remove(os.path.join(conf.confDir, filename))
-        for filename in os.listdir(conf.dataDir):
-            os.remove(os.path.join(conf.dataDir, filename))
+        if self.cleanConfDir:
+            for filename in os.listdir(conf.confDir):
+                os.remove(os.path.join(conf.confDir, filename))
+        if self.cleanDataDir:
+            for filename in os.listdir(conf.dataDir):
+                os.remove(os.path.join(conf.dataDir, filename))
         debug.reset()
         ircdb.users.reload()
         ircdb.channels.reload()
@@ -308,6 +312,7 @@ class PluginDocumentation:
                     if cb.isCommand(attr):
                         self.failUnless(getattr(cb, attr).__doc__,
                                         '%s has no syntax' % attr)
+
     def testAllCommandsHaveMorehelp(self):
         for cb in self.irc.callbacks:
             if isinstance(cb, callbacks.PrivmsgRegexp):
