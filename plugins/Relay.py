@@ -389,11 +389,11 @@ class Relay(callbacks.Privmsg, plugins.Toggleable):
             halfops = []
             for channel in channels:
                 if channel.startswith('@'):
-                    ops.append(channel[:-1])
+                    ops.append(channel[1:])
                 elif channel.startswith('%'):
-                    halfops.append(channel[:-1])
+                    halfops.append(channel[1:])
                 elif channel.startswith('+'):
-                    voices.append(channel[:-1])
+                    voices.append(channel[1:])
                 else:
                     normal.append(channel)
             L = []
