@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2002-2005, Jeremiah Fincher
+# Copyright (c) 2004-2005, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,43 +27,24 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import sys
-import os.path
-import dynamicScope
-
-installDir = os.path.dirname(sys.modules[__name__].__file__)
-
-othersDir = os.path.join(installDir, 'others')
-
-sys.path.insert(0, othersDir)
-
-class Author(object):
-    def __init__(self, name=None, nick=None, email=None, **kwargs):
-        self.__dict__.update(kwargs)
-        self.name = name
-        self.nick = nick
-        self.email = email
-
-    def __str__(self):
-        return '%s (%s) <%s>' % (self.name, self.nick, self.email)
+class DynamicScope(object):
+    def _getLocals(self, name):
+        f = sys._getframe().f_back.f_back # _getLocals <- __[gs]etattr__ <- ...
+        while f:
+            if name in f.f_locals:
+                return f.f_locals
+            f = f.f_back
+        raise NameError, name
     
-class authors(object): # This is basically a bag.
-    jemfinch = Author('Jeremy Fincher', 'jemfinch', 'jemfinch@users.sf.net')
-    jamessan = Author('James Vega', 'jamessan', 'jamessan@users.sf.net')
-    strike = Author('Daniel DiPaolo', 'Strike', 'ddipaolo@users.sf.net')
-    baggins = Author('William Robinson', 'baggins', 'airbaggins@users.sf.net')
-    skorobeus = Author('Kevin Murphy', 'Skorobeus', 'skoro@skoroworld.com')
-    inkedmn = Author('Brett Kelly', 'inkedmn', 'inkedmn@users.sf.net')
-    bwp = Author('Brett Phipps', 'bwp', 'phippsb@gmail.com')
-    bear = Author('Mike Taylor', 'bear', 'bear@code-bear.com')
-    grantbow = Author('Grant Bowman', 'Grantbow', 'grantbow@grantbow.com')
-    unknown = Author('Unknown author', 'unknown', 'unknown@supybot.org')
-
-    # Let's be somewhat safe about this.
-    def __getattr__(self, attr):
+    def __getattr__(self, name):
         try:
-            return getattr(super(authors, self), attr.lower())
-        except AttributeError:
-            return self.unknown
+            return self._getLocals(name)[name]
+        except (NameError, KeyError):
+            return None
+            
+    def __setattr__(self, name, value):
+        self._getLocals(name)[name] = value
+
+__builtins__['dynamic'] = DynamicScope()
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
