@@ -35,6 +35,8 @@ Data structures for Python.
 
 ## from __future__ import generators
 
+__revision__ = "$Id$"
+
 import fix
 
 import types

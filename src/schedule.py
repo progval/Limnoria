@@ -34,6 +34,8 @@ Schedule plugin with a subclass of drivers.IrcDriver in order to be run as a
 Supybot driver.
 """
 
+__revision__ = "$Id$"
+
 import fix
 
 import time

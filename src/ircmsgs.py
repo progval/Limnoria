@@ -36,6 +36,8 @@ construct such messages in an easier way than the constructor for the IrcMsg
 object (which, as you'll read later, is quite...full-featured :))
 """
 
+__revision__ = "$Id$"
+
 import fix
 
 import re

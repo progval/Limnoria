@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+__revision__ = "$Id$"
+
 import fix
 
 import re

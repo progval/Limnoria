@@ -33,6 +33,8 @@
 Miscellaneous commands.
 """
 
+__revision__ = "$Id$"
+
 import fix
 
 import os

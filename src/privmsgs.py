@@ -33,6 +33,8 @@
 Includes various accessories for callbacks.Privmsg based callbacks.
 """
 
+__revision__ = "$Id$"
+
 import fix
 
 import time

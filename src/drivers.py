@@ -33,6 +33,8 @@
 Contains various drivers (network, file, and otherwise) for using IRC objects.
 """
 
+__revision__ = "$Id$"
+
 import fix
 
 import re

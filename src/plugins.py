@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+__revision__ = "$Id$"
+
 import fix
 
 import gc
@@ -41,6 +43,8 @@ import types
 import random
 import urllib2
 import threading
+
+__revision__ = "$Id$"
 
 import fix
 import cdb

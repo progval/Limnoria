@@ -38,6 +38,8 @@ PrivmsgRegexp class.  Read their respective docstrings for more information on
 how to use them.
 """
 
+__revision__ = "$Id$"
+
 import fix
 
 import re

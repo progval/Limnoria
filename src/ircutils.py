@@ -36,6 +36,8 @@ nick class to handle nicks (so comparisons and hashing and whatnot work in an
 IRC-case-insensitive fashion), and numerous other things.
 """
 
+__revision__ = "$Id$"
+
 import fix
 
 import re

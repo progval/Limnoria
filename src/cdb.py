@@ -34,6 +34,8 @@ Database module, similar to dbhash.  Uses a format similar to (if not entirely
 the same as) DJB's CDB <http://cr.yp.to/cdb.html>.
 """
 
+__revision__ = "$Id$"
+
 import fix
 
 import os

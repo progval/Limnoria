@@ -33,6 +33,8 @@
 Module for general worldly stuff, like global variables and whatnot.
 """
 
+__revision__ = "$Id$"
+
 import fix
 
 import gc

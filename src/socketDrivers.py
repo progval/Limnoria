@@ -35,6 +35,8 @@ Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 
 from __future__ import division
 
+__revision__ = "$Id$"
+
 import fix
 
 import time

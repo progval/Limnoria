@@ -35,6 +35,8 @@ Simple utility functions.
 
 ## from __future__ import generators
 
+__revision__ = "$Id$"
+
 import fix
 
 import os
