@@ -151,7 +151,7 @@ class Success(callbacks.Privmsg):
             irc.replySuccess()
         except KeyError:
             irc.error('No success has id #%s.' % id)
-    remove = wrap(remove, ['channeldb', 'id', 'user'])
+    remove = wrap(remove, ['channeldb', ('id', 'success'), 'user'])
 
     def search(self, irc, msg, args, channel, text):
         """[<channel>] <text>
@@ -186,9 +186,9 @@ class Success(callbacks.Privmsg):
                       (id, success.text, name, timeStr))
         except KeyError:
             irc.error('No success found with that id.')
-    get = wrap(get, ['channeldb', 'id'])
+    get = wrap(get, ['channeldb', ('id', 'success')])
 
-    def change(self, irc, msg, args, channel, id, replacer, user):
+    def change(self, irc, msg, args, user, channel, id, replacer):
         """[<channel>] <id> <regexp>
 
         Alters the success with the given id according to the provided regexp.
@@ -200,7 +200,8 @@ class Success(callbacks.Privmsg):
             irc.replySuccess()
         except KeyError:
             irc.error('There is no success #%s.' % id)
-    change = wrap(change, ['channeldb', 'id', 'regexpReplacer', 'user'])
+    change = wrap(change, ['user', 'channeldb',
+                           ('id', 'success'), 'regexpReplacer'])
                             
 
     def stats(self, irc, msg, args, channel):
