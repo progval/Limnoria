@@ -331,7 +331,7 @@ class RichReplyMethods(object):
         self.reply(s, **kwargs)
 
     def replies(self, L, prefixer=''.join,
-                joiner=utils.commaAndify, onlyPrefixFirst=False):
+                joiner=utils.commaAndify, onlyPrefixFirst=False, **kwargs):
         if prefixer is None:
             prefixer = ''
         if joiner is None:
@@ -341,18 +341,18 @@ class RichReplyMethods(object):
         if isinstance(joiner, basestring):
             joiner = joiner.join
         if conf.supybot.reply.oneToOne():
-            self.reply(prefixer(joiner(L)))
+            self.reply(prefixer(joiner(L)), **kwargs)
         else:
             first = True
             for s in L:
                 if onlyPrefixFirst:
                     if first:
-                        self.reply(prefixer(s))
+                        self.reply(prefixer(s), **kwargs)
                         first = False
                     else:
-                        self.reply(s)
+                        self.reply(s, **kwargs)
                 else:
-                    self.reply(prefixer(s))
+                    self.reply(prefixer(s), **kwargs)
 
     def errorNoCapability(self, capability, s='', **kwargs):
         if isinstance(capability, basestring): # checkCommandCapability!
