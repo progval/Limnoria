@@ -107,7 +107,7 @@ conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bugSnarfer',
     information reported into the channel."""))
 conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bold',
     registry.Boolean(True, """Determines whether results are bolded."""))
-conf.registerChannellValue(conf.supybot.plugins.Bugzilla, 'replyNoBugzilla',
+conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'replyNoBugzilla',
     registry.String('I don\'t have a bugzilla %r.', """Determines the phrase
     to use when notifying the user that there is no information about that
     bugzilla site."""))
