@@ -405,7 +405,8 @@ class Irc(IrcCommandDispatcher):
                              '333', '353', '332', '366', '005'])
     def __init__(self, nick, user='', ident='', password='', callbacks=None):
         world.ircs.append(self)
-        self.nick = intern(nick)
+        self.originalNick = intern(nick)
+        self.nick = self.originalNick
         self.password = password
         self.user = intern(user or nick)  # Default to nick
         self.ident = intern(ident or nick)  # Ditto.
@@ -430,6 +431,8 @@ class Irc(IrcCommandDispatcher):
 
     def reset(self):
         """Resets the Irc object.  Useful for handling reconnects."""
+        self.nick = self.originalNick
+        self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         self.state.reset()
         self.queue.reset()
         self.server = None

@@ -1,3 +1,6 @@
+	* Fixed bug in which the bot wouldn't rejoin channels after a
+	reconnect.  Thank the Lord for tcpkill :)
+	
 	* Fixed Http.freshmeat for projects with a space in their names.
 	
 	* Added Karma.most for determining various "mosts" in the Karma
