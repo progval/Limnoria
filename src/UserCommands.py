@@ -315,6 +315,39 @@ class UserCommands(callbacks.Privmsg):
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
 
+    def setsecure(self, irc, msg, args):
+        """<password> [<True|False>]
+
+        Sets the secure flag on the user of the person sending the message.
+        Requires that the person's hostmask be in the list of hostmasks for
+        that user in addition to the password being correct.  When the secure
+        flag is set, the user *must* identify before he can be recognized.
+        If a specific True/False value is not given, it inverts the current
+        value.
+        """
+        if not self._checkNotChannel(irc, msg, password):
+            return
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+            user = ircdb.users.getUser(id)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+        (password, value) = privmsgs.getArgs(args, optional=1)
+        if value == '':
+            value = not user.secure
+        elif value.lower() in ('true', 'false'):
+            value = eval(value.capitalize())
+        else:
+            irc.error(msg, '%s is not a valid boolean value.' % value)
+            return
+        if user.checkPassword(password) and \
+           user.checkHostmask(msg.prefix, useAuth=False):
+            user.secure = value
+            ircdb.users.setUser(id, user)
+            irc.reply(msg, 'Secure flag set to %s' % value)
+        else:
+            irc.error(msg, conf.replyIncorrectAuth)
+
 
 Class = UserCommands
 

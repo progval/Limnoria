@@ -307,6 +307,7 @@ class CheckCapabilityTestCase(unittest.TestCase):
     antifoo = 'antifoo!antifoo@antifoo'
     justchanfoo = 'justchanfoo!justchanfoo@justchanfoo'
     antichanfoo = 'antichanfoo!antichanfoo@antichanfoo'
+    securefoo = 'securefoo!securefoo@securefoo'
     channel = '#channel'
     cap = 'foo'
     anticap = ircdb.makeAntiCapability(cap)
@@ -325,35 +326,49 @@ class CheckCapabilityTestCase(unittest.TestCase):
             pass
         self.users = ircdb.UsersDB(self.filename)
         self.channels = ircdb.ChannelsDictionary(self.filename)
+
         (id, owner) = self.users.newUser()
         owner.name = 'owner'
         owner.addCapability('owner')
         owner.addHostmask(self.owner)
         self.users.setUser(id, owner)
+
         (id, nothing) = self.users.newUser()
         nothing.name = 'nothing'
         nothing.addHostmask(self.nothing)
         self.users.setUser(id, nothing)
+
         (id, justfoo) = self.users.newUser()
         justfoo.name = 'justfoo'
         justfoo.addCapability(self.cap)
         justfoo.addHostmask(self.justfoo)
         self.users.setUser(id, justfoo)
+
         (id, antifoo) = self.users.newUser()
         antifoo.name = 'antifoo'
         antifoo.addCapability(self.anticap)
         antifoo.addHostmask(self.antifoo)
         self.users.setUser(id, antifoo)
+
         (id, justchanfoo) = self.users.newUser()
         justchanfoo.name = 'justchanfoo'
         justchanfoo.addCapability(self.chancap)
         justchanfoo.addHostmask(self.justchanfoo)
         self.users.setUser(id, justchanfoo)
+
         (id, antichanfoo) = self.users.newUser()
         antichanfoo.name = 'antichanfoo'
         antichanfoo.addCapability(self.antichancap)
         antichanfoo.addHostmask(self.antichanfoo)
         self.users.setUser(id, antichanfoo)
+
+        (id, securefoo) = self.users.newUser()
+        securefoo.name = 'securefoo'
+        securefoo.addCapability(self.cap)
+        securefoo.secure = True
+        securefoo.addHostmask(self.securefoo)
+        self.users.setUser(id, securefoo)
+
         channel = ircdb.IrcChannel()
         self.channels.setChannel(self.channel, channel)
 
@@ -427,6 +442,19 @@ class CheckCapabilityTestCase(unittest.TestCase):
         self.failIf(self.checkCapability(self.antichanfoo, self.chancap))
         self.failUnless(self.checkCapability(self.antichanfoo,
                                              self.antichancap))
+
+    def testSecurefoo(self):
+        self.failUnless(self.checkCapability(self.securefoo, self.cap))
+        id = self.users.getUserId(self.securefoo)
+        u = self.users.getUser(id)
+        u.setAuth(self.securefoo)
+        self.users.setUser(id, u)
+        try:
+            originalConfDefaultAllow = conf.defaultAllow
+            conf.defaultAllow = False 
+            self.failIf(self.checkCapability('a' + self.securefoo, self.cap))
+        finally:
+            conf.defaultAllow = originalConfDefaultAllow
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

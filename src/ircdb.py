@@ -171,10 +171,11 @@ class IrcUser(object):
     """This class holds the capabilities and authentications for a user.
     """
     def __init__(self, ignore=False, password='', name='',
-                 capabilities=(), hostmasks=None):
+                 capabilities=(), hostmasks=None, secure=False):
         self.auth = None # The (time, hostmask) a user authenticated under
         self.name = name # The name of the user.
         self.ignore = ignore # A boolean deciding if the person is ignored.
+        self.secure = secure # A boolean describing if hostmasks *must* match.
         self.password = password # password (plaintext? hashed?)
         self.capabilities = UserCapabilitySet()
         for capability in capabilities:
@@ -186,9 +187,9 @@ class IrcUser(object):
 
     def __repr__(self):
         return '%s(ignore=%s, password=%r, name=%r, '\
-               'capabilities=%r, hostmasks=%r)\n' %\
+               'capabilities=%r, hostmasks=%r, secure=%r)\n' %\
                (self.__class__.__name__, self.ignore, self.password,
-                self.name, self.capabilities, self.hostmasks)
+                self.name, self.capabilities, self.hostmasks, self.secure)
 
     def addCapability(self, capability):
         self.capabilities.add(capability)
@@ -211,8 +212,8 @@ class IrcUser(object):
     def checkPassword(self, password):
         return (self.password == password)
 
-    def checkHostmask(self, hostmask):
-        if self.auth and (hostmask == self.auth[1]):
+    def checkHostmask(self, hostmask, useAuth=True):
+        if useAuth and self.auth and (hostmask == self.auth[1]):
             return True
         for pat in self.hostmasks:
             if ircutils.hostmaskPatternEqual(pat, hostmask):
@@ -558,6 +559,9 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
         return _x(capability, True)
     try:
         u = users.getUser(hostmask)
+        if u.secure and not u.checkHostmask(hostmask, useAuth=False):
+            debug.printf('Secure user with non-matching hostmask.')
+            raise KeyError
     except KeyError:
         #debug.printf('user could not be found.')
         if isChannelCapability(capability):
