@@ -115,7 +115,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        #plugins.Toggleable.__init__(self)
+        plugins.Toggleable.__init__(self)
 
     def _formatResp(self, num, text):
         """

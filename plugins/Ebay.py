@@ -79,7 +79,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        #plugins.Toggleable.__init__(self)
+        plugins.Toggleable.__init__(self)
 
     _reopts = re.I | re.S
     _info = re.compile(r'<title>eBay item (\d+) \([^)]+\) - ([^<]+)</title>',

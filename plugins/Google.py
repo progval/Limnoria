@@ -143,7 +143,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                                         'search' : False})
     def __init__(self):
         super(self.__class__, self).__init__()
-        #plugins.Toggleable.__init__(self)
+        plugins.Toggleable.__init__(self)
         self.total = 0
         self.totalTime = 0
         self.last24hours = structures.queue()

@@ -86,7 +86,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                                         'stat' : True})
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        #plugins.Toggleable.__init__(self)
+        plugins.Toggleable.__init__(self)
 
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
