@@ -108,8 +108,10 @@ class RateLimiter:
             return None
 
     def put(self, msg):
-        if self.limit(msg) and not world.testing:
-            debug.msg('Limiting message from %s' % msg.prefix, 'low')
+        t = self.limit(msg)
+        if t and not world.testing:
+            s = 'Limiting message from %s for %s seconds' % (msg.prefix, t)
+            debug.msg(s, 'normal')
             self.limited.append(msg)
         else:
             self.unlimited.append(msg)
@@ -120,7 +122,7 @@ class RateLimiter:
             key = '@'.join((user, host))
             now = time.time()
             if ircdb.checkCapabilities(msg.prefix, ('owner', 'admin')):
-                return False
+                return 0
             if key in self.lastRequest:
                 # Here's how we throttle requests.  We keep a dictionary of
                 # (lastRequest, wait period) tuples.  When a request arrives,
@@ -133,18 +135,19 @@ class RateLimiter:
                 (t, wait) = self.lastRequest[key]
                 if now - t <= wait:
                     if penalize:
-                        self.lastRequest[key] = (now, wait+conf.throttleTime)
+                        newWait = wait + conf.throttleTime
                     else:
-                        self.lastRequest[key] = (now, wait - (now - t))
-                    return True
+                        newWait = wait - (now - t)
+                    self.lastRequest[key] = (now, newWait)
+                    return newWait
                 else:
                     self.lastRequest[key] = (now, conf.throttleTime)
-                    return False
+                    return 0
             else:
                 self.lastRequest[key] = (now, conf.throttleTime)
-                return False
+                return 0
         else:
-            return False
+            return 0
 
 
 class Error(Exception):
