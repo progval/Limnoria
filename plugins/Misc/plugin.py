@@ -170,18 +170,17 @@ class Misc(callbacks.Plugin):
         """
         (maxL, cbs) = irc.findCallbacksForArgs(command)
         if maxL == command:
-            if not cbs:
-                irc.error(format('There is no command %q.',
-                                 callbacks.formatCommand(command)))
-            elif len(cbs) > 1:
+            if len(cbs) > 1:
                 names = sorted([cb.name() for cb in cbs])
                 irc.error(format('That command exists in the %L plugins.  '
                                  'Please specify exactly which plugin command '
                                  'you want help with.', names))
             else:
+                assert cbs, 'Odd, maxL == command, but no cbs.'
                 irc.reply(cbs[0].getCommandHelp(command))
         else:
-            irc.reply(cbs[0].getCommandHelp(command))
+            irc.reply('There is no command %q.',
+                      callbacks.formatCommand(command))
     help = wrap(help, [many('something')])
 
     def hostmask(self, irc, msg, args, nick):
