@@ -344,7 +344,7 @@ class FunDB(callbacks.Privmsg):
         be "addlart chops $who in half with an AOL cd."
         """
         lart = privmsgs.getArgs(args)
-        if lart.find('$who') == -1:
+        if '$who' in lart:
             irc.error(msg, 'There must be an $who in the lart somewhere.')
             return
         cursor = self.db.cursor()
@@ -431,7 +431,7 @@ if __name__ == '__main__':
             cursor.execute("""PRAGMA cache_size = 50000""")
             addWord(db, line)
         elif category == 'larts':
-            if line.find('$who') != -1:
+            if '$who' in line:
                 cursor.execute("""INSERT INTO larts VALUES (NULL, %s)""", line)
             else:
                 print 'Invalid lart: %s' % line

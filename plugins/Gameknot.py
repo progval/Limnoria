@@ -79,7 +79,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             games = self._gkgames.search(profile).group(1)
             (w, l, d) = self._gkrecord.search(profile).groups()
             seen = self._gkseen.search(utils.htmlToText(profile))
-            if seen.group(0).find("is hiding") != -1:
+            if 'is hiding' in seen.group(0):
                 seen = '%s is hiding his/her online status.' % name
             elif seen.group(2).startswith('0'):
                 seen = '%s is on gameknot right now.' % name
@@ -90,7 +90,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 games = '1 active game'
             else:
                 games = '%s active games' % games
-            if profile.find('Team:') >= 0:
+            if 'Team:' in profile:
                 team = self._gkteam.search(profile).group('name')
                 irc.reply(msg, '%s (team: %s) is rated %s and has %s ' \
                           'and a record of W-%s, L-%s, D-%s.  %s' % \
@@ -100,7 +100,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                           'and a record of W-%s, L-%s, D-%s.  %s' % \
                           (name, rating, games, w, l, d, seen))
         except AttributeError:
-            if profile.find('User %s not found!' % name) != -1:
+            if ('User %s not found!' % name) in profile:
                 irc.error(msg, 'No user %s exists.' % name)
             else:
                 irc.error(msg, 'The format of the page was odd.')

@@ -65,7 +65,7 @@ class Topic(callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'topic')
         topic = privmsgs.getArgs(args)
         if ircdb.checkCapability(msg.prefix, capability):
-            if topic.find(self.topicSeparator) != -1:
+            if self.topicSeparator in topic:
                 s = 'You can\'t have %s in your topic' % self.topicSeparator
                 irc.error(msg, s)
                 return

@@ -100,7 +100,7 @@ class IrcMsg(object):
                 self.prefix, s = s[1:].split(None, 1)
             else:
                 self.prefix = ''
-            if s.find(' :') != -1:
+            if ' :' in s:
                 s, last = s.split(' :', 1)
                 self.args = s.split()
                 self.args.append(last.rstrip('\r\n'))
@@ -185,6 +185,12 @@ class IrcMsg(object):
 
     def __setstate__(self, s):
         self.__init__(s)
+
+try:
+    import _ircmsg
+    IrcMsg = _ircmsg.IrcMsg
+except:
+    pass
 
 
 def isAction(msg):

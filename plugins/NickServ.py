@@ -81,7 +81,7 @@ class NickServ(privmsgs.CapabilityCheckingPrivmsg):
                     # NickServ told us the nick is registered.
                     identify = 'IDENTIFY %s' % self.password
                     irc.queueMsg(ircmsgs.privmsg(self.nickserv, identify))
-                elif msg.args[1].find('recognized') != -1:
+                elif 'recognized' in msg.args[1]:
                     self.sentGhost = False
                 elif self._ghosted.search(msg.args[1]):
                     # NickServ told us the nick has been ghost-killed.

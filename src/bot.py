@@ -104,7 +104,7 @@ def processConfigFile(filename):
         nick = d['nick']
         server = d['server']
         password = d['password']
-        if server.find(':') != -1:
+        if ':' in server:
             (server, port) = server.split(':', 1)
             try:
                 server = (server, int(port))

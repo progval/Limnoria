@@ -71,9 +71,9 @@ class ThreadedFunCommands(callbacks.Privmsg):
         text = conn.read_all()
         for line in text.splitlines():
             (name, version) = line.split(':')
-            if name.find('latest stable') != -1:
+            if 'latest stable' in name:
                 stable = version.strip()
-            elif name.find('latest beta') != -1:
+            elif 'latest beta' in name:
                 beta = version.strip()
         irc.reply(msg, 'The latest stable kernel is %s; ' \
                        'the latest beta kernel is %s.' % (stable, beta))

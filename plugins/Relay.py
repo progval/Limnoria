@@ -382,9 +382,9 @@ class Relay(callbacks.Privmsg):
             rAction = re.compile(r'\* [^/]+@(?:%s) ' % '|'.join(abbreviations))
             if not (rPrivmsg.match(msg.args[1]) or \
                     rAction.match(msg.args[1]) or \
-                    msg.args[1].find('has left on ') != -1 or \
-                    msg.args[1].find('has joined on ') != -1 or \
-                    msg.args[1].find('has quit') != -1 or \
+                    'has left on ' in msg.args[1] or \
+                    'has joined on ' in msg.args[1] or \
+                    'has quit' in msg.args[1] or \
                     msg.args[1].startswith('mode change') or \
                     msg.args[1].startswith('nick change')):
                 channel = msg.args[0]

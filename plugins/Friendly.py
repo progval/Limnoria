@@ -39,12 +39,12 @@ import callbacks
 class Friendly(callbacks.PrivmsgRegexp):
     def greet(self, irc, msg, match):
         "(?:heya?|(?:w(?:hat'?s\b|as)s?up)|howdy|hi|hello)"
-        if msg.args[1].find(irc.nick) != -1:
+        if irc.nick in msg.args[1]:
             irc.queueMsg(ircmsgs.privmsg(msg.args[0], 'howdy :)'))
 
     def goodbye(self, irc, msg, match):
         "(?:good)?bye|adios|vale|ciao|au revoir|seeya|night"
-        if msg.args[1].find(irc.nick) != -1:
+        if irc.nick in msg.args[1]:
             irc.queueMsg(ircmsgs.privmsg(msg.args[0], 'seeya, d00d!'))
 
     def exclaim(self, irc, msg, match):

@@ -54,7 +54,7 @@ def isUserHostmask(s):
 
 def isServerHostmask(s):
     """Returns True if s is a valid server hostmask."""
-    return (not isUserHostmask(s) and s.find('!') == -1 and s.find('@') == -1)
+    return not isUserHostmask(s)
 
 def nickFromHostmask(hostmask):
     """Returns the nick from a user hostmask."""

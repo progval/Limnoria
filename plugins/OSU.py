@@ -62,7 +62,7 @@ class OSU(callbacks.Privmsg):
             emails = []
             for line in data.splitlines():
                 line.strip()
-                if line.find('Published address') != -1:
+                if 'Published address' in line:
                     emails.append(line.split()[-1])
             if emails:
                 irc.reply(msg, 'Possible matches: %s' % ', '.join(emails))
