@@ -76,9 +76,9 @@ class Later(callbacks.Privmsg):
         self._openNotes()
 
     def die(self):
-        self._closeNotes()
+        self._flushNotes()
 
-    def _closeNotes(self):
+    def _flushNotes(self):
         fd = utils.transactionalFile(self.filename)
         writer = csv.writer(fd)
         for (nick, notes) in self.notes.iteritems():
@@ -118,6 +118,7 @@ class Later(callbacks.Privmsg):
                 notes.append[(at, whence, text)]
         except KeyError:
             self.notes[nick] = [(at, whence, text)]
+        self._flushNotes()
         
     def tell(self, irc, msg, args):
         """<nick> <text>
@@ -139,6 +140,7 @@ class Later(callbacks.Privmsg):
             for (when, whence, note) in notes:
                 s = 'Sent %s: <%s> %s' % (self._timestamp(when), whence, note)
                 irc.reply(s, private=private)
+            self._flushNotes()
         except KeyError:
             pass
             
