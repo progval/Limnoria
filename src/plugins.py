@@ -292,12 +292,12 @@ class PeriodicFileDownloader(object):
             self.getFile(filename)
 
     def _downloadFile(self, filename, url, f):
+        self.currentlyDownloading.add(filename)
         try:
             try:
-                infd = urllib2.urlopen(url)
+                infd = webutils.getUrlFd(url)
             except IOError, e:
-                self.log.warning('Error downloading %s', url)
-                self.log.exception('Exception:')
+                self.log.warning('Error downloading %s: %s', url, e)
                 return
             confDir = conf.supybot.directories.data()
             newFilename = os.path.join(confDir, utils.mktemp())
@@ -334,7 +334,6 @@ class PeriodicFileDownloader(object):
         if time.time() - self.lastDownloaded[filename] > timeLimit and \
            filename not in self.currentlyDownloading:
             self.log.info('Beginning download of %s', url)
-            self.currentlyDownloading.add(filename)
             args = (filename, url, f)
             name = '%s #%s' % (filename, self.downloadedCounter[filename])
             t = threading.Thread(target=self._downloadFile, name=name,
