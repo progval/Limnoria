@@ -137,15 +137,18 @@ class WordStatsTestCase(ChannelPluginTestCase):
         self.assertRegexp('wordstats lolz0r', r'1 \'lolz0r\' seen')
 
     def testRemoveword(self):
-        self.assertError('wordstats remove foo')
-        self.assertNotError('wordstats add foo')
-        self.assertRegexp('wordstats foo', r'1 \'foo\' seen')
-        self.assertRegexp('wordstats foo', r'2 \'foo\'s seen')
-        self.assertNotError('wordstats remove foo')
-        self.assertRegexp('wordstats foo', r'doesn\'t look like a word I')
+        # Using a word that's also the name of a user isn't smart since that
+        # exercises different behavior
+        #self.assertError('wordstats remove foo')
+        self.assertError('wordstats remove blarg')
+        self.assertNotError('wordstats add blarg')
+        self.assertRegexp('wordstats blarg', r'1 \'blarg\' seen')
+        self.assertRegexp('wordstats blarg', r'2 \'blarg\'s seen')
+        self.assertNotError('wordstats remove blarg')
+        self.assertRegexp('wordstats blarg', r'doesn\'t look like a word I')
         # Verify that we aren't keeping results from before
-        self.assertNotError('add foo')
-        self.assertRegexp('wordstats foo', r'1 \'foo\' seen')
+        self.assertNotError('add blarg')
+        self.assertRegexp('wordstats blarg', r'1 \'blarg\' seen')
 
     def testWordStatsRankingDisplay(self):
         self.assertNotError('add lol')
