@@ -576,7 +576,6 @@ registerGlobalValue(supybot.drivers, 'module',
 ###
 # supybot.directories, for stuff relating to directories.
 ###
-
 class Directory(registry.String):
     def __call__(self):
         # ??? Should we perhaps always return an absolute path here?
@@ -620,6 +619,9 @@ registerGlobalValue(supybot.directories, 'conf',
     put into."""))
 registerGlobalValue(supybot.directories, 'data',
     Directory('data', """Determines what directory data is put into."""))
+registerGlobalValue(supybot.directories, 'backup',
+    Directory('backup', """Determines what directory backup data is put
+    into."""))
 registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', """Determines what directory temporary files
     are put into."""))
@@ -627,7 +629,7 @@ registerGlobalValue(supybot.directories.data, 'tmp',
 # Remember, we're *meant* to replace this nice little wrapper.
 def transactionalFile(*args, **kwargs):
     kwargs['tmpDir'] = supybot.directories.data.tmp()
-    # ??? Should we offer an option not to makeBackupIfSmaller?
+    kwargs['backupDir'] = supybot.directories.backup()
     return utils.AtomicFile(*args, **kwargs)
 utils.transactionalFile = transactionalFile
 

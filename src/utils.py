@@ -714,13 +714,14 @@ class AtomicFile(file):
     """Used for files that need to be atomically written -- i.e., if there's a
     failure, the original file remains, unmodified.  mode must be 'w' or 'wb'"""
     def __init__(self, filename, mode='w', allowEmptyOverwrite=True,
-                 makeBackupIfSmaller=True, tmpDir=None):
+                 makeBackupIfSmaller=True, tmpDir=None, backupDir=None):
         if mode not in ('w', 'wb'):
             raise ValueError, 'Invalid mode: %r' % mode
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
         self.makeBackupIfSmaller = makeBackupIfSmaller
         self.filename = filename
+        self.backupDir = backupDir
         if tmpDir is None:
             # If not given a tmpDir, we'll just put a random token on the end
             # of our filename and put it in the same directory.
@@ -746,19 +747,24 @@ class AtomicFile(file):
             super(AtomicFile, self).close()
             # We don't mind writing an empty file if the file we're overwriting
             # doesn't exist.
-            size = os.path.getsize(self.tempFilename)
+            newSize = os.path.getsize(self.tempFilename)
             originalExists = os.path.exists(self.filename)
-            # We use shutil.move here instead of os.rename because
-            # the latter doesn't work on Windows when self.filename
-            # (the target) already exists.  shutil.move handles those
-            # intricacies for us.
-            if size or self.allowEmptyOverwrite or not originalExists:
+            if newSize or self.allowEmptyOverwrite or not originalExists:
                 if originalExists:
-                    currentSize = os.path.getsize(self.filename)
-                    if self.makeBackupIfSmaller and size < currentSize:
+                    oldSize = os.path.getsize(self.filename)
+                    if self.makeBackupIfSmaller and newSize < oldSize:
+                        print '*** newSize:', newSize, 'oldSize:', oldSize
                         now = int(time.time())
                         backupFilename = '%s.backup.%s' % (self.filename, now)
+                        if self.backupDir is not None:
+                            backupFilename = os.path.basename(backupFilename)
+                            backupFilename = os.path.join(self.backupDir,
+                                                          backupFilename)
                         shutil.copy(self.filename, backupFilename)
+                # We use shutil.move here instead of os.rename because
+                # the latter doesn't work on Windows when self.filename
+                # (the target) already exists.  shutil.move handles those
+                # intricacies for us.
                 shutil.move(self.tempFilename, self.filename)
         else:
             raise ValueError, 'AtomicFile.close called after rollback.'
