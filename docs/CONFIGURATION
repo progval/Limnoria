@@ -166,7 +166,9 @@ specific channel, do this in that channel:
 config channel supybot.reply.whenAddressedBy.chars !
 
 That'll set the prefix chars in the channel that message is sent in to
-!.  Voila, channel-specific values!
+!.  Voila, channel-specific values!  Also, note that when using the
+Config plugin's list command, channel-specific values are preceded by
+a '#' character to indicate such.
 
 Anyway, that's about it for configuration.  Have fun, and enjoy your
 configurable bot!

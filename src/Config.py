@@ -134,7 +134,10 @@ class Config(callbacks.Privmsg):
         """<group>
 
         Returns the configuration variables available under the given
-        configuration <group>.  Subgroups are indicated by a preceding @.
+        configuration <group>.  If a variable has values under it, it is
+        preceded by an '@' sign.  If a variable is a 'ChannelValue', that is,
+        it can be separately configured for each channel using the 'channel'
+        command in this plugin, it is preceded by an '#' sign.
         """
         name = privmsgs.getArgs(args)
         L = self._list(name)
