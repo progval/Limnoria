@@ -135,6 +135,7 @@ class LogProxy(object):
     Logs <text> to the global supybot log at critical priority.  Useful for
     marking logfiles for later searching.
     """
+    __name__ = 'log' # Necessary for help.
     def __init__(self, log):
         self.log = log
         self.im_func = holder()

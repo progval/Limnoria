@@ -36,6 +36,9 @@ import Owner
 
 class OwnerTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Utilities', 'Relay', 'Network', 'Admin', 'Channel')
+    def testHelpLog(self):
+        self.assertHelp('help log')
+
     def testEval(self):
         try:
             originalConfAllowEval = conf.allowEval
