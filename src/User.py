@@ -430,7 +430,7 @@ class User(callbacks.Privmsg):
             user = ircdb.users.getUser(msg.prefix)
             irc.reply(user.name)
         except KeyError:
-            irc.reply('I don\'t recognize you, %s.' % msg.nick)
+            irc.reply('I don\'t recognize you.')
 
     def setsecure(self, irc, msg, args):
         """<password> [<True|False>]
