@@ -59,7 +59,7 @@ class MiscCommands(callbacks.Privmsg):
         else:
             for cb in irc.callbacks:
                 cls = cb.__class__
-                if cls.name().lower().startswith(name) and \
+                if cb.name().lower().startswith(name) and \
                        not issubclass(cls, callbacks.PrivmsgRegexp) and \
                        issubclass(cls, callbacks.Privmsg):
                     commands = [x for x in cls.__dict__
