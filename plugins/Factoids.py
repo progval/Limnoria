@@ -107,13 +107,14 @@ class Factoids(plugins.ChannelDBHandler,
         db.commit()
         return db
 
-    def learn(self, irc, msg, args):
+    def learn(self, irc, msg, args, channel):
         """[<channel>] <key> as <value>
 
         Associates <key> with <value>.  <channel> is only necessary if the
-        message isn't sent on the channel itself.
+        message isn't sent on the channel itself.  The word "as" is necessary
+        to separate the key from the value.  It can be changed to another
+        word via the learn-separator configurable.
         """
-        channel = privmsgs.getChannel(msg, args)
         try:
             separator = self.configurables.get('learn-separator', channel)
             i = args.index(separator)
@@ -132,9 +133,6 @@ class Factoids(plugins.ChannelDBHandler,
         (id, locked) = imap(int, cursor.fetchone())
         capability = ircdb.makeChannelCapability(channel, 'factoids')
         if not locked:
-            if not ircdb.checkCapability(msg.prefix, capability):
-                irc.error(conf.replyNoCapability % capability)
-                return
             if ircdb.users.hasUser(msg.prefix):
                 name = ircdb.users.getUser(msg.prefix).name
             else:
@@ -191,45 +189,35 @@ class Factoids(plugins.ChannelDBHandler,
                     irc.error('That\'s not a valid number for this key.')
                     return
 
-    def lock(self, irc, msg, args):
+    def lock(self, irc, msg, args, channel):
         """[<channel>] <key>
 
         Locks the factoid(s) associated with <key> so that they cannot be
         removed or added to.  <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
-        capability = ircdb.makeChannelCapability(channel, 'factoids')
-        if ircdb.checkCapability(msg.prefix, capability):
-            cursor = db.cursor()
-            cursor.execute("UPDATE keys SET locked=1 WHERE key LIKE %s", key)
-            db.commit()
-            irc.replySuccess()
-        else:
-            irc.error(conf.replyNoCapability % capability)
+        cursor = db.cursor()
+        cursor.execute("UPDATE keys SET locked=1 WHERE key LIKE %s", key)
+        db.commit()
+        irc.replySuccess()
 
-    def unlock(self, irc, msg, args):
+    def unlock(self, irc, msg, args, channel):
         """[<channel>] <key>
 
         Unlocks the factoid(s) associated with <key> so that they can be
         removed or added to.  <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
-        capability = ircdb.makeChannelCapability(channel, 'factoids')
-        if ircdb.checkCapability(msg.prefix, capability):
-            cursor = db.cursor()
-            cursor.execute("UPDATE keys SET locked=0 WHERE key LIKE %s", key)
-            db.commit()
-            irc.replySuccess()
-        else:
-            irc.error(conf.replyNoCapability % capability)
+        cursor = db.cursor()
+        cursor.execute("UPDATE keys SET locked=0 WHERE key LIKE %s", key)
+        db.commit()
+        irc.replySuccess()
 
-    def forget(self, irc, msg, args):
+    def forget(self, irc, msg, args, channel):
         """[<channel>] <key> [<number>|*]
 
         Removes the factoid <key> from the factoids database.  If there are
@@ -238,7 +226,6 @@ class Factoids(plugins.ChannelDBHandler,
         factoids associated with a key.  <channel> is only necessary if
         the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         if args[-1].isdigit():
             number = int(args.pop())
             number -= 1
@@ -252,39 +239,35 @@ class Factoids(plugins.ChannelDBHandler,
             number = None
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
-        capability = ircdb.makeChannelCapability(channel, 'factoids')
-        if ircdb.checkCapability(msg.prefix, capability):
-            cursor = db.cursor()
-            cursor.execute("""SELECT keys.id, factoids.id
-                              FROM keys, factoids
-                              WHERE key LIKE %s AND
-                                    factoids.key_id=keys.id""", key)
-            if cursor.rowcount == 0:
-                irc.error('There is no such factoid.')
-            elif cursor.rowcount == 1 or number is True:
-                (id, _) = cursor.fetchone()
-                cursor.execute("""DELETE FROM factoids WHERE key_id=%s""", id)
-                cursor.execute("""DELETE FROM keys WHERE key LIKE %s""", key)
+        cursor = db.cursor()
+        cursor.execute("""SELECT keys.id, factoids.id
+                          FROM keys, factoids
+                          WHERE key LIKE %s AND
+                                factoids.key_id=keys.id""", key)
+        if cursor.rowcount == 0:
+            irc.error('There is no such factoid.')
+        elif cursor.rowcount == 1 or number is True:
+            (id, _) = cursor.fetchone()
+            cursor.execute("""DELETE FROM factoids WHERE key_id=%s""", id)
+            cursor.execute("""DELETE FROM keys WHERE key LIKE %s""", key)
+            db.commit()
+            irc.replySuccess()
+        else:
+            if number is not None:
+                results = cursor.fetchall()
+                try:
+                    (_, id) = results[number]
+                except IndexError:
+                    irc.error('Invalid factoid number.')
+                    return
+                cursor.execute("DELETE FROM factoids WHERE id=%s", id)
                 db.commit()
                 irc.replySuccess()
             else:
-                if number is not None:
-                    results = cursor.fetchall()
-                    try:
-                        (_, id) = results[number]
-                    except IndexError:
-                        irc.error('Invalid factoid number.')
-                        return
-                    cursor.execute("DELETE FROM factoids WHERE id=%s", id)
-                    db.commit()
-                    irc.replySuccess()
-                else:
-                    irc.error('%s factoids have that key.  ' \
-                                   'Please specify which one to remove, ' \
-                                   'or use * to designate all of them.' % \
-                                   cursor.rowcount)
-        else:
-            irc.error(conf.replyNoCapability % capability)
+                irc.error('%s factoids have that key.  ' \
+                               'Please specify which one to remove, ' \
+                               'or use * to designate all of them.' % \
+                               cursor.rowcount)
 
     def random(self, irc, msg, args):
         """[<channel>]
@@ -341,13 +324,12 @@ class Factoids(plugins.ChannelDBHandler,
              utils.nItems('factoid', counter), factoids)
         irc.reply(s)
 
-    def change(self, irc, msg, args):
+    def change(self, irc, msg, args, channel):
         """[<channel>] <key> <number> <regexp>
 
         Changes the factoid #<number> associated with <key> according to
         <regexp>.
         """
-        channel = privmsgs.getChannel(msg, args)
         (key, number, regexp) = privmsgs.getArgs(args, required=3)
         try:
             replacer = utils.perlReToReplacer(regexp)

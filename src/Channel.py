@@ -257,7 +257,7 @@ class Channel(callbacks.Privmsg):
         else:
             self.log.warning('%r attempted kban without %s',
                              msg.prefix, capability)
-            irc.error(conf.replyNoCapability % capability)
+            irc.errorNoCapability(capability)
 
     def unban(self, irc, msg, args, channel):
         """[<channel>] <hostmask>

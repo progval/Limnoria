@@ -227,25 +227,20 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error('There isn\'t a quote with that id.')
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, channel):
         """[<channel>] <id>
 
         Removes quote <id> from the quotes database for <channel>.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         id = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        capability = ircdb.makeChannelCapability(channel, 'op')
-        if ircdb.checkCapability(msg.prefix, capability):
-            cursor.execute("""DELETE FROM quotes WHERE id=%s""", id)
-            if cursor.rowcount == 0:
-                irc.error('There was no such quote.')
-            else:
-                irc.replySuccess()
+        cursor.execute("""DELETE FROM quotes WHERE id=%s""", id)
+        if cursor.rowcount == 0:
+            irc.error('There was no such quote.')
         else:
-            irc.error(conf.replyNoCapability % capability)
+            irc.replySuccess()
 
 
 Class = Quotes

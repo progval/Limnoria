@@ -98,7 +98,7 @@ def checkCapability(f, capability):
         else:
             self.log.warning('%r attempted %s without %s.',
                              msg.prefix, f.func_name, capability)
-            irc.error(conf.replyNoCapability % capability)
+            irc.errorNoCapability(capability)
     newf = types.FunctionType(newf.func_code, newf.func_globals,
                               f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
@@ -119,7 +119,7 @@ def checkChannelCapability(f, capability):
         else:
             self.log.warning('%r attempted %s without %s.',
                              msg.prefix, f.func_name, capability)
-            irc.error(conf.replyNoCapability % chancap)
+            irc.errorNoCapability(chancap)
     newf = types.FunctionType(newf.func_code, newf.func_globals,
                               f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
@@ -209,7 +209,7 @@ class CapabilityCheckingPrivmsg(callbacks.Privmsg):
         else:
             self.log.warning('%r tried to call %s without %s.',
                              msg.prefix, f.im_func.func_name, self.capability)
-            irc.error(conf.replyNoCapability % self.capability)
+            irc.errorNoCapability(self.capability)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

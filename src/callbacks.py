@@ -299,25 +299,23 @@ class RichReplyMethods(object):
     def replySuccess(self, s='', **kwargs):
         self.reply(self._makeReply(conf.replySuccess, s), **kwargs)
 
-    def replyNoCapability(self, capability, s='', **kwargs):
-        s = self._makeReply(conf.replyNoCapability % s, s)
-        self.reply(s, **kwargs)
-
-    def replyNotRegistered(self, s='', **kwargs):
-        self.reply(self._makeReply(conf.replyNotRegistered, s), **kwargs)
-
     def replyPossibleBug(self, s='', **kwargs):
         self.reply(self._makeReply(conf.replyPossibleBug, s), **kwargs)
 
-    def replyNoUser(self, s='', **kwargs):
-        self.reply(self._makeReply(conf.replyNoUser, s), **kwargs)
-
-    def replyRequiresPrivacy(self, s='', **kwargs):
-        s = self._makeReply(conf.replyRequiresPrivacy, s)
-        self.reply(s, **kwargs)
-
     def replyError(self, s='', **kwargs):
         self.reply(self._makeReply(conf.replyError, s), **kwargs)
+
+    def errorNoCapability(self, capability, s='', **kwargs):
+        self.error(self._makeReply(conf.replyNoCapability % s, s), **kwargs)
+
+    def errorNotRegistered(self, s='', **kwargs):
+        self.error(self._makeReply(conf.replyNotRegistered, s), **kwargs)
+
+    def errorNoUser(self, s='', **kwargs):
+        self.error(self._makeReply(conf.replyNoUser, s), **kwargs)
+
+    def errorRequiresPrivacy(self, s='', **kwargs):
+        self.error(self._makeReply(conf.replyRequiresPrivacy, s), **kwargs)
 
             
 class IrcObjectProxy(RichReplyMethods):

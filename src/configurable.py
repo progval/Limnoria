@@ -295,7 +295,7 @@ class Mixin(object):
                         except Error, e:
                             irc.error(str(e))
                     else:
-                        irc.error(conf.replyNoCapability % capability)
+                        irc.errorNoCapability(capability)
                 else:
                     help(self.configurables)
             elif hasattr(self, 'globalConfigurables') and \
