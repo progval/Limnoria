@@ -299,6 +299,7 @@ def op(channel, nick, prefix=''):
 def ops(channel, nicks, prefix=''):
     """Returns a MODE to op each of nicks on channel."""
     assert isChannel(channel), repr(channel)
+    assert nicks, 'Nicks must not be empty.'
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '+' + ('o'*len(nicks))) + tuple(nicks))
@@ -312,6 +313,7 @@ def deop(channel, nick, prefix=''):
 def deops(channel, nicks, prefix=''):
     """Returns a MODE to deop each of nicks on channel."""
     assert isChannel(channel), repr(channel)
+    assert nicks, 'Nicks must not be empty.'
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('o'*len(nicks))) + tuple(nicks))
@@ -325,6 +327,7 @@ def halfop(channel, nick, prefix=''):
 def halfops(channel, nicks, prefix=''):
     """Returns a MODE to halfop each of nicks on channel."""
     assert isChannel(channel), repr(channel)
+    assert nicks, 'Nicks must not be empty.'
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix,
                   command=MODE,
@@ -339,6 +342,7 @@ def dehalfop(channel, nick, prefix=''):
 def dehalfops(channel, nicks, prefix=''):
     """Returns a MODE to dehalfop each of nicks on channel."""
     assert isChannel(channel), repr(channel)
+    assert nicks, 'Nicks must not be empty.'
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('h'*len(nicks))) + tuple(nicks))
@@ -352,6 +356,7 @@ def voice(channel, nick, prefix=''):
 def voices(channel, nicks, prefix=''):
     """Returns a MODE to voice each of nicks on channel."""
     assert isChannel(channel), repr(channel)
+    assert nicks, 'Nicks must not be empty.'
     assert all(isNick, nicks)
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '+' + ('v'*len(nicks))) + tuple(nicks))
@@ -365,6 +370,7 @@ def devoice(channel, nick, prefix=''):
 def devoices(channel, nicks, prefix=''):
     """Returns a MODE to devoice each of nicks on channel."""
     assert isChannel(channel), repr(channel)
+    assert nicks, 'Nicks must not be empty.'
     assert all(isNick, nicks), nicks
     return IrcMsg(prefix=prefix, command=MODE,
                   args=(channel, '-' + ('v'*len(nicks))) + tuple(nicks))
