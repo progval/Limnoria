@@ -209,6 +209,33 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                 l.append(item_str)
             irc.reply(msg, utils.commaAndify(l))
 
+    def randomquote(self, irc, msg, args):
+        """[<nick>]
+
+        Returns a randomly grabbed quote, optionally choosing only from those
+        quotes grabbed for <nick>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        nick = privmsgs.getArgs(args, required=0, optional=1)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        if nick:
+            cursor.execute("""SELECT quote FROM quotegrabs
+                              WHERE nick LIKE %s ORDER BY random() LIMIT 1""",
+                              nick)
+        else:
+            cursor.execute("""SELECT quote FROM quotegrabs
+                              ORDER BY random() LIMIT 1""")
+        if cursor.rowcount == 0:
+            if nick:
+                irc.error(msg, 'Couldn\'t get a random quote for that nick.')
+            else:
+                irc.error(msg, 'Couldn\'t get a random quote.  Are there any'
+                               'grabbed quotes in the database?')
+            return
+        quote = cursor.fetchone()[0]
+        irc.reply(msg, quote)
+
     def get(self, irc, msg, args):
         """<id>
 

@@ -91,6 +91,17 @@ if sqlite:
             self.assertNotError('quote FoO')
             self.assertNotError('quote Foo')
 
+        def testRandomquote(self):
+            testPrefix = 'foo!bar@baz'
+            self.assertError('randomquote')
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                             prefix=testPrefix))
+            self.assertError('randomquote')  # still none in the db
+            self.assertNotError('grab foo')
+            self.assertResponse('randomquote', '<foo> test')
+            self.assertResponse('randomquote foo', '<foo> test')
+            self.assertResponse('randomquote FOO', '<foo> test')
+
         def testGet(self):
             testPrefix= 'foo!bar@baz'
             self.assertError('quotegrabs get asdf')
