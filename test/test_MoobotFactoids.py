@@ -186,7 +186,7 @@ if sqlite is not None:
             self.assertError('no moo is qux')
 
     class DunnoTestCase(PluginTestCase, PluginDocumentation):
-        plugins = ('MiscCommands', 'MoobotFactoids', 'UserCommands')
+        plugins = ('Misc', 'MoobotFactoids', 'User')
         def setUp(self):
             PluginTestCase.setUp(self)
             self.prefix = 'foo!bar@baz'
