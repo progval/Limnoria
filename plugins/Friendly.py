@@ -38,14 +38,15 @@ import plugins
 import callbacks
 
 class Friendly(callbacks.PrivmsgRegexp):
+    onlyFirstMatch = True
     def greet(self, irc, msg, match):
-        r"(?:heya?|(?:w(?:hat'?s\b|as)s?up)|howdy|hi|hello)"
+        r"(?:heya?|(?:w(?:hat'?s\b|as)s?up)|howdy|hi|hello)$"
         if irc.nick in msg.args[1]:
             s = 'howdy, %s :)' % msg.nick
             irc.queueMsg(callbacks.reply(msg, s, prefixName=False))
 
     def goodbye(self, irc, msg, match):
-        r"(?:good)?bye|adios|vale|ciao|au revoir|seeya|night"
+        r"(?:good)?bye|adios|vale|ciao|au revoir|seeya|night$"
         if irc.nick in msg.args[1]:
             s = 'seeya, %s!' % msg.nick
             irc.queueMsg(callbacks.reply(msg, s, prefixName=False))
