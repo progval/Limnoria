@@ -47,7 +47,9 @@ class TimeTestCase(PluginTestCase):
         self.assertResponse('seconds 1y 1s', '31536001')
         self.assertResponse('seconds 1w 1s', '604801')
 
-        
+    def testNoErrors(self):
+        self.assertNotError('ctime')
+        self.assertNotError('time %Y')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
