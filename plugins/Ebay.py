@@ -56,13 +56,12 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load Ebay')
-    if advanced:
-        print 'The Ebay plugin has the functionality to watch for URLs'
-        print 'that match a specific pattern (we call this a snarfer). When'
-        print 'supybot sees such a URL, he will parse the web page for'
-        print 'information and reply with the results.\n'
-        if yn('Do you want the Ebay snarfer enabled by default?') == 'y':
-            onStart.append('Ebay config auction-snarfer on')
+    print 'The Ebay plugin has the functionality to watch for URLs'
+    print 'that match a specific pattern (we call this a snarfer). When'
+    print 'supybot sees such a URL, he will parse the web page for'
+    print 'information and reply with the results.\n'
+    if yn('Do you want the Ebay snarfer enabled by default?') == 'y':
+        onStart.append('Ebay config auction-snarfer on')
 
 class EbayError(callbacks.Error):
     pass
