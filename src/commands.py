@@ -282,11 +282,12 @@ def getOtherUser(irc, msg, args, state):
         del args[0]
     except KeyError:
         try:
-            getHostmask(irc, msg, args, state)
+            getHostmask(irc, msg, [args[0]], state)
             hostmask = state.args.pop()
             state.args.append(ircdb.users.getUser(hostmask))
+            del args[0]
         except (KeyError, callbacks.Error):
-            irc.errorNoUser(name=hostmask)
+            irc.errorNoUser(name=args[0])
 
 def _getRe(f):
     def get(irc, msg, args, state, convert=True):
