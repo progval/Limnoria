@@ -49,19 +49,11 @@ import privmsgs
 import callbacks
 import configurable
 
-def ConfigurableTopicSeparator(s):
-    s = configurable.StrType(s)
-    if s.lstrip() == s:
-        s = ' ' + s
-    if s.rstrip() == s:
-        s += ' '
-    return s
-
 class Topic(callbacks.Privmsg, configurable.Mixin):
     topicFormatter = '%s (%s)'
     topicUnformatter = re.compile('(.*) \((\S+)\)')
     configurables = configurable.Dictionary(
-        [('separator', configurable.StrType, ' || ',
+        [('separator', configurable.SpaceSurroundedStrType, ' || ',
           "The separator between individual topics in the channel topic.")]
     )
     def __init__(self):
