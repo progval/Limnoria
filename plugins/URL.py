@@ -53,27 +53,6 @@ import ircmsgs
 import privmsgs
 import callbacks
 
-example = utils.wrapLines("""
-<supybot> lasturl, numurls, randomurl
-<jemfinch> @numurls
-<supybot> Error: Command must be sent in a channel or include a channel in its arguments.
-<jemfinch> (each channel has its own URL database, so these commands need to know which channel database to access)
-<jemfinch> @numurls #sourcereview
-<supybot> I have 93 URLs in my database.
-<jemfinch> @randomurl #sourcereview
-<supybot> <http://gameknot.com/chess.pl?bd=1022045&r=735> (added by Strike at 06:25 PM, August 17, 2003)
-<jemfinch> @lasturl
-<supybot> Error: Command must be sent in a channel or include a channel in its arguments.
-<jemfinch> @lasturl #sourcereview
-<supybot> <http://lambda.weblogs.com/xml/rss.xml>, added by Strike at 12:12 AM, August 26, 2003.
-<jemfinch> @lasturl #sourcereview --proto ftp
-<supybot> <ftp://ftp.us.debian.org/debian/dists/unstable/Contents-i386.gz>, added by Strike|work at 07:27 PM, August 21, 2003.
-<jemfinch> @lasturl #sourcereview --near Stuka
-<supybot> <http://slashdot.org/comments.pl?sid=75020&cid=6720123>, added by jemfinch at 03:16 PM, August 25, 2003.
-<jemfinch> @lasturl #sourcereview --at coderforums.com
-<supybot> <http://coderforums.com/showthread.php?s=&postid=15798#post15798>, added by Strike|work at 02:41 PM, August 25, 2003.
-""")
-
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
@@ -117,7 +96,7 @@ class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
         db.commit()
         return db
 
-    _urlRe = re.compile(r"([^\[<(\s]+://[^\])>\s]+)", re.I)
+    _urlRe = re.compile(r"([-a-z0-9+.]+://[-\w=#!*()',$;&/@:%?.~]+)", re.I)
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
         db = self.getDb(channel)
@@ -216,7 +195,7 @@ class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
         if self.toggles.get('tinysnarf', channel=msg.args[0]) and\
             self.toggles.get('tinyreply', channel=msg.args[0]):
             return
-        url = self._getTinyUrl(url)
+        url = self._getTinyUrl(url, cmd=True)
         if not url:
             irc.error(msg, 'Could not parse the TinyURL.com results page. '\
                 '(%s)' % conf.replyPossibleBug)
