@@ -46,7 +46,6 @@ import os.path
 import urllib2
 from itertools import imap, ifilter
 
-import fix
 import conf
 import utils
 import privmsgs
@@ -256,7 +255,7 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
             if m:
                 name = m.group(1)
                 if all(lambda p: p(name), predicates):
-                    realname = fix.rsplit(name, '_', 1)[0]
+                    realname = rsplit(name, '_', 1)[0]
                     packages.append(realname)
         if len(packages) == 0:
             irc.error(msg, 'No packages matched that search.')
