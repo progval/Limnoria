@@ -131,7 +131,7 @@ def main():
         take a signficant amount of time to run, you'll want to thread them so
         they don't block the entire bot.""")
         print
-        threaded = (yn('Does your plugin need to be threaded?') == 'y')
+        threaded = yn('Does your plugin need to be threaded?')
 
     if threaded:
         threaded = 'threaded = True'
