@@ -78,6 +78,13 @@ conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,
 conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,
     'throttleTime', registry.PositiveInteger(300, """Determines the minimum
     number of seconds between the bot randomly speaking."""))
+conf.registerChannelValue(conf.supybot.plugins.Markov, 'minChainLength',
+    registry.PositiveInteger(1, """Determines the length of the smallest chain
+    which the markov command will generate."""))
+conf.registerChannelValue(conf.supybot.plugins.Markov, 'maxAttempts',
+    registry.PositiveInteger(1, """Determines the maximum number of times the
+    bot will attempt to generate a chain that meets or exceeds the size set in
+    minChainLength."""))
 
 class MarkovDBInterface(object):
     def close(self):
@@ -323,35 +330,50 @@ class Markov(callbacks.Privmsg):
 
     def _markov(self, channel, irc, word1=None, word2=None, **kwargs):
         def f(db):
-            if word1 and word2:
-                givenArgs = True
-                words = [word1, word2]
-            else:
-                givenArgs = False
-                try:
-                    # words is of the form ['\r', word]
-                    words = list(db.getFirstPair(channel))
-                except KeyError:
-                    irc.error('I don\'t have any first pairs for %s.' %channel)
-                    return
-            follower = words[-1]
-            last = False
-            resp = []
-            while not last:
-                resp.append(follower)
-                try:
-                    (follower,last) = db.getFollower(channel, words[-2],
-                                                     words[-1])
-                except KeyError:
-                    irc.error('I found a broken link in the Markov chain.  '
-                              'Maybe I received two bad links to start the '
-                              'chain.')
-                    return
-                words.append(follower)
-            if givenArgs:
-                irc.reply(' '.join(words[:-1]), **kwargs)
-            else:
-                irc.reply(' '.join(resp), **kwargs)
+            minLength = self.registryValue('minChainLength', channel)
+            maxTries = self.registryValue('maxAttempts', channel)
+            while maxTries > 0:
+                maxTries -= 1;
+                if word1 and word2:
+                    givenArgs = True
+                    words = [word1, word2]
+                else:
+                    givenArgs = False
+                    try:
+                        # words is of the form ['\r', word]
+                        words = list(db.getFirstPair(channel))
+                    except KeyError:
+                        irc.error('I don\'t have any first pairs for %s.' %
+                                  channel)
+                        return
+                follower = words[-1]
+                last = False
+                resp = []
+                while not last:
+                    resp.append(follower)
+                    try:
+                        (follower,last) = db.getFollower(channel, words[-2],
+                                                         words[-1])
+                    except KeyError:
+                        irc.error('I found a broken link in the Markov chain. '
+                                  ' Maybe I received two bad links to start '
+                                  'the chain.')
+                        return
+                    words.append(follower)
+                if givenArgs:
+                    if len(words[:-1]) >= minLength:
+                        irc.reply(' '.join(words[:-1]), **kwargs)
+                        return
+                    else:
+                        continue
+                else:
+                    if len(resp) >= minLength:
+                        irc.reply(' '.join(resp), **kwargs)
+                        return
+                    else:
+                        continue
+            irc.error('I was unable to generate a Markov chain at least %s '
+                      'long.' % utils.nItems('word', minLength))
         return f
 
     def markov(self, irc, msg, args, channel, word1, word2):
