@@ -58,6 +58,9 @@ class DebianTestCase(PluginTestCase):
             except KeyboardInterrupt:
                 pass
 
+        def testDebBugNoHtml(self):
+            self.assertNotRegexp('debian bug 287792', r'\<em\>')
+
         def testDebversion(self):
             self.assertHelp('debian version')
             self.assertRegexp('debian version lakjdfad',

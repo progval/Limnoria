@@ -312,7 +312,7 @@ class Debian(callbacks.Privmsg,
                      additional('glob', '*')])
 
     _severity = re.compile(r'.*(?:severity set to `([^\']+)\'|'
-                           r'severity:\s+([^\s]+))', re.I)
+                           r'severity:\s+<em>([^<]+)</em>)', re.I)
     _package = re.compile(r'Package: <[^>]+>([^<]+)<', re.I | re.S)
     _reporter = re.compile(r'Reported by: <[^>]+>([^<]+)<', re.I | re.S)
     _subject = re.compile(r'<br>([^<]+)</h1>', re.I | re.S)
@@ -341,7 +341,8 @@ class Debian(callbacks.Privmsg,
             if sev:
                 sev = filter(None, sev.groups())
                 if sev:
-                    resp = '; '.join([resp, 'Severity: %s' % sev[0],
+                    sev = utils.htmlToText(sev[0])
+                    resp = '; '.join([resp, 'Severity: %s' % sev,
                                       '<%s>' % url])
             irc.reply(resp)
         else:
