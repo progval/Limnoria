@@ -88,6 +88,9 @@ def configure(advanced):
         onStart.append('lookup add %s %s' % (command, filename))
     
 
+conf.registerPlugin('Lookup')
+conf.registerGroup(conf.supybot.plugins.Lookup, 'lookups')
+
 class LookupDB(plugins.DBHandler):
     def makeDb(self, filename):
         return sqlite.connect(filename)
@@ -149,35 +152,38 @@ class Lookup(callbacks.Privmsg):
             self.addCommand(name)
             irc.replySuccess()
         except sqlite.DatabaseError:
-            # Good, there's no such database.
             try:
-                dataDir = conf.supybot.directories.data()
-                filename = os.path.join(dataDir, filename)
-                fd = file(filename)
+                self.addDatabase(name, filename)
             except EnvironmentError, e:
                 irc.error('Could not open %s: %s' % (filename, e.args[1]))
                 return
-            try:
-                cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
-            except sqlite.DatabaseError:
-                cursor.execute("CREATE TABLE %s (key TEXT, value TEXT)" % name)
-                sql = "INSERT INTO %s VALUES (%%s, %%s)" % name
-                for line in utils.nonCommentNonEmptyLines(fd):
-                    line = line.rstrip('\r\n')
-                    try:
-                        (key, value) = self._splitRe.split(line, 1)
-                        key = key.replace('\\:', ':')
-                    except ValueError:
-                        cursor.execute("""DROP TABLE %s""" % name)
-                        s = 'Invalid line in %s: %r' % (filename, line)
-                        irc.error(s)
-                        return
-                    cursor.execute(sql, key, value)
-                cursor.execute("CREATE INDEX %s_keys ON %s (key)" %(name,name))
-                db.commit()
             self.addCommand(name)
             irc.replySuccess('(lookup %s added)' % name)
     add = privmsgs.checkCapability(add, 'admin')
+
+    def addDatabase(self, name, filename):
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
+        dataDir = conf.supybot.directories.data()
+        filename = os.path.join(dataDir, filename)
+        fd = file(filename)
+        try:
+            cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
+        except sqlite.DatabaseError:
+            cursor.execute("CREATE TABLE %s (key TEXT, value TEXT)" % name)
+            sql = "INSERT INTO %s VALUES (%%s, %%s)" % name
+            for line in utils.nonCommentNonEmptyLines(fd):
+                line = line.rstrip('\r\n')
+                try:
+                    (key, value) = self._splitRe.split(line, 1)
+                    key = key.replace('\\:', ':')
+                except ValueError:
+                    cursor.execute("""DROP TABLE %s""" % name)
+                    s = 'Invalid line in %s: %r' % (filename, line)
+                    raise callbacks.Error, s
+                cursor.execute(sql, key, value)
+            cursor.execute("CREATE INDEX %s_keys ON %s (key)" % (name, name))
+            db.commit()
 
     def addCommand(self, name):
         def f(self, irc, msg, args):
