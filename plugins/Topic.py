@@ -49,7 +49,7 @@ import callbacks
 example = utils.wrapLines("""
 --- Topic for #sourcereview is If you notice *anything* that seems unintuitive about supybot, post it at http://tinyurl.com/nvct (jemfinch) || Supybot 0.72.1 released! (jemfinch) || If anyone is working on the .deb package for supybot please send me or jemfinch a note via the bot (Strike)
 --- Topic for #sourcereview set by supybot at Mon Sep 29 15:56:10
-<jemfinch> @list ChannelTopic
+<jemfinch> @list Topic
 <supybot> jemfinch: addtopic, changetopic, removetopic, shuffletopic, topic
 <jemfinch> @removetopic 2
 --- supybot has changed the topic to: If you notice *anything* that seems unintuitive about supybot, post it at http://tinyurl.com/nvct (jemfinch) || If anyone is working on the .deb package for supybot please send me or jemfinch a note via the bot (Strike)
@@ -63,7 +63,7 @@ example = utils.wrapLines("""
 --- supybot has changed the topic to: If anyone is working on the .deb package for supybot please send me or jemfinch a note via the bot (Strike) || If you notice *anything* that seems unintuitive about supybot, post it at http://tinyurl.com/nvct (jemfinch) || Tenative release for Supybot 0.73.0 is set for Sunday (jemfinch)
 """)
 
-class ChannelTopic(callbacks.Privmsg):
+class Topic(callbacks.Privmsg):
     topicSeparator = ' || '
     topicFormatter = '%s (%s)'
     topicUnformatter = re.compile('(.*) \((\S+)\)')
@@ -220,7 +220,7 @@ class ChannelTopic(callbacks.Privmsg):
     removetopic = privmsgs.checkChannelCapability(removetopic, 'topic')
 
 
-Class = ChannelTopic
+Class = Topic
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
