@@ -37,11 +37,13 @@ written in) somehow.
 import plugins
 
 import os
+import re
 import imp
 import sys
 import math
 import random
 import string
+import urllib2
 
 # Stupid printing on import...
 from cStringIO import StringIO
@@ -51,6 +53,7 @@ sys.stdout = sys.__stdout__
 
 import debug
 import utils
+import ircutils
 import privmsgs
 import callbacks
 
@@ -82,8 +85,16 @@ example = utils.wrapLines("""
 <supybot> jemfinch: list() -> new list list(sequence) -> new list initialized from sequence's items
 """)
 
-class Python(callbacks.Privmsg):
+class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
+    threaded = True
+    regexps = ['aspnRecipes']
+    toggles = plugins.ToggleDictionary({'ASPN' : True})
+
+    def __init__(self):
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        plugins.Toggleable.__init__(self)
+
     def pydoc(self, irc, msg, args):
         """<python function>
 
@@ -155,6 +166,33 @@ class Python(callbacks.Privmsg):
         """
         irc.reply(msg, random.choice(self._these))
 
+    _title = re.compile(r'<b>(Title):</b>&nbsp;(.*)', re.I)
+    _submit = re.compile(r'<b>(Submitter):</b>&nbsp;(.*)', re.I)
+    _update = re.compile(r'<b>Last (Updated):</b>&nbsp;(.*)', re.I)
+    _version = re.compile(r'<b>(Version) no:</b>&nbsp;(.*)', re.I)
+    _category = re.compile(r'<b>(Category):</b>.*?<a href[^>]+>(.*?)</a>',
+        re.I | re.S)
+    _description = re.compile(r'<p><b>(Description):</b></p>.+?<p>(.+?)</p>',
+        re.I | re.S)
+    _searches = (_title, _submit, _update, _version, _category, _description)
+    _bold = lambda self, g: (ircutils.bold(g[0]),) + g[1:]
+    def aspnRecipes(self, irc, msg, match):
+        r"http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/\d+"
+        if not self.toggles.get('ASPN', channel=msg.args[0]):
+            return
+        url = match.group(0)
+        fd = urllib2.urlopen(url)
+        s = fd.read()
+        fd.close()
+        resp = []
+        for r in self._searches:
+            m = r.search(s)
+            if m:
+                resp.append('%s: %s' % self._bold(m.groups()))
+        if resp:
+            #debug.printf('; '.join(resp))
+            irc.reply(msg, '; '.join(resp), prefixName = False)
+            
 
 Class = Python
 
