@@ -93,7 +93,9 @@ def main():
                          'without flushing its message queues.')
                 world.upkeep()
                 for irc in world.ircs:
-                    irc.queueMsg(ircmsgs.quit('Ctrl-C at console.'))
+                    quitmsg = conf.supybot.plugins.Owner.quitMsg() or \
+                              'Ctrl-C at console.'
+                    irc.queueMsg(ircmsgs.quit(quitmsg))
                     irc.die()
         except SystemExit, e:
             s = str(e)
