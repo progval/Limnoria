@@ -48,18 +48,18 @@ class AdminTestCase(PluginTestCase):
         getAfterJoinMessages()
         self.assertRegexp('channels', '#bar, #Baz, and #foo')
 
-    def testIgnoreUnignore(self):
-        self.assertNotError('admin ignore foo!bar@baz')
-        self.assertError('admin ignore alsdkfjlasd')
-        self.assertNotError('admin unignore foo!bar@baz')
-        self.assertError('admin unignore foo!bar@baz')
+    def testIgnoreAddRemove(self):
+        self.assertNotError('admin ignore add foo!bar@baz')
+        self.assertError('admin ignore add alsdkfjlasd')
+        self.assertNotError('admin ignore remove foo!bar@baz')
+        self.assertError('admin ignore remove foo!bar@baz')
 
-    def testIgnores(self):
-        self.assertNotError('admin ignores')
-        self.assertNotError('admin ignore foo!bar@baz')
-        self.assertNotError('admin ignores')
-        self.assertNotError('admin ignore foo!bar@baz')
-        self.assertNotError('admin ignores')
+    def testIgnoreList(self):
+        self.assertNotError('admin ignore list')
+        self.assertNotError('admin ignore add foo!bar@baz')
+        self.assertNotError('admin ignore list')
+        self.assertNotError('admin ignore add foo!bar@baz')
+        self.assertRegexp('admin ignore list', 'foo')
 
     def testCapabilityAdd(self):
         self.assertError('capability add foo bar')

@@ -291,44 +291,46 @@ class Admin(callbacks.Plugin):
                 irc.error(s)
         remove = wrap(remove, ['otherUser','lowered'])
 
-    def ignore(self, irc, msg, args, hostmask, expires):
-        """<hostmask|nick> [<expires>]
+    class ignore(callbacks.Commands):
 
-        Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
-        that nick is currently using.  <expires> is a "seconds from now" value
-        that determines when the ignore will expire; if, for instance, you wish
-        for the ignore to expire in an hour, you could give an <expires> of
-        3600.  If no <expires> is given, the ignore will never automatically
-        expire.
-        """
-        ircdb.ignores.add(hostmask, expires)
-        irc.replySuccess()
-    ignore = wrap(ignore, ['hostmask', additional('expiry', 0)])
+        def add(self, irc, msg, args, hostmask, expires):
+            """<hostmask|nick> [<expires>]
 
-    def unignore(self, irc, msg, args, hostmask):
-        """<hostmask|nick>
-
-        Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
-        that nick is currently using.
-        """
-        try:
-            ircdb.ignores.remove(hostmask)
+            Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
+            that nick is currently using.  <expires> is a "seconds from now" value
+            that determines when the ignore will expire; if, for instance, you wish
+            for the ignore to expire in an hour, you could give an <expires> of
+            3600.  If no <expires> is given, the ignore will never automatically
+            expire.
+            """
+            ircdb.ignores.add(hostmask, expires)
             irc.replySuccess()
-        except KeyError:
-            irc.error('%s wasn\'t in the ignores database.' % hostmask)
-    unignore = wrap(unignore, ['hostmask'])
+        add = wrap(add, ['hostmask', additional('expiry', 0)])
 
-    def ignores(self, irc, msg, args):
-        """takes no arguments
+        def remove(self, irc, msg, args, hostmask):
+            """<hostmask|nick>
 
-        Returns the hostmasks currently being globally ignored.
-        """
-        # XXX Add the expirations.
-        if ircdb.ignores.hostmasks:
-            irc.reply(format('%L', (map(repr,ircdb.ignores.hostmasks))))
-        else:
-            irc.reply('I\'m not currently globally ignoring anyone.')
-    ignores = wrap(ignores)
+            Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
+            that nick is currently using.
+            """
+            try:
+                ircdb.ignores.remove(hostmask)
+                irc.replySuccess()
+            except KeyError:
+                irc.error('%s wasn\'t in the ignores database.' % hostmask)
+        remove = wrap(remove, ['hostmask'])
+
+        def list(self, irc, msg, args):
+            """takes no arguments
+
+            Returns the hostmasks currently being globally ignored.
+            """
+            # XXX Add the expirations.
+            if ircdb.ignores.hostmasks:
+                irc.reply(format('%L', (map(repr,ircdb.ignores.hostmasks))))
+            else:
+                irc.reply('I\'m not currently globally ignoring anyone.')
+        list = wrap(list)
 
 
 Class = Admin
