@@ -126,13 +126,6 @@ class Utilities(callbacks.Privmsg):
             raise callbacks.ArgumentError
         irc.reply(msg, ' '.join(args), prefixName=False)
 
-    def action(self, irc, msg, args):
-        """takes any number of arguments
-
-        Returns the arguments given it, but as an action.
-        """
-        irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), ' '.join(args)))
-
     def re(self, irc, msg, args):
         """<regexp> <text>
 
