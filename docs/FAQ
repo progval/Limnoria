@@ -144,3 +144,12 @@ A: Submit it on Sourceforge through our Sourceforge project page:
    involved a datase, we'd love to see the database.  Remember, it's
    always worse to send us too much information in a bug report than
    too little.
+
+
+Q: Karma doesn't seem to work for me.
+
+A: Karma by default doesn't acknowledge karma updates.  If you check
+   the karma of whatever you increased/decreased, you'll note that
+   your increment or decrement still took place.  If you'd rather
+   Karma acknowledge karma updates, change the
+   supybot.plugins.Karma.response configuration variable to On.
