@@ -382,6 +382,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         self.replied = True
         self.badForce = False
         self.addressed = False
+        self.calledDoPrivmsg = False
 
     def die(self):
         self.__parent.die()
@@ -475,11 +476,16 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     _karmaRe = re.compile(r'^(?:\S+|\(.+\))(?:\+\+|--)(?:\s+)?$')
     def doPrivmsg(self, irc, msg):
         if msg.repliedTo:
-            self.log.debug('Returning early from doPrivmsg, msg.repliedTo.')
+            self.log.debug('Returning early from doPrivmsg: msg.repliedTo.')
+            return
+        if ircmsgs.isCtcp(msg):
+            self.log.debug('Returning early from doPrivmsg: isCtcp(msg).')
+            return
+        if self.calledDoPrivmsg:
+            self.log.debug('Returning early from doPrivmsg: calledDoPrivmsg.')
+            self.calledDoPrivmsg = False
             return
         try:
-            if ircmsgs.isCtcp(msg) or msg.repliedTo:
-                return
             maybeAddressed = callbacks.addressed(irc.nick, msg,
                                                  whenAddressedByNick=True)
             if maybeAddressed:
@@ -509,17 +515,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 payload = maybeForced
             # Let's make sure we dump out of Infobot if the privmsg is an
             # actual command otherwise we could get multiple responses.
-            if self.addressed:
-                try:
-                    tokens = callbacks.tokenize(payload)
-                    if callbacks.findCallbackForCommand(irc, tokens[0]):
-                        return
-                    elif '=~' not in payload:
-                        payload += '?'
-                    else:       # Looks like we have a doChange expression
-                        pass
-                except SyntaxError:
-                    pass
+            if self.addressed and '=~' not in payload:
+                payload += '?'
             if payload.endswith(irc.nick):
                 self.addressed = True
                 payload = payload[:-len(irc.nick)]
@@ -535,6 +532,10 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.replied = False
             self.badForce = False
             self.addressed = False
+
+    def tokenizedCommand(self, irc, msg, tokens):
+        self.doPrivmsg(irc, msg)
+        self.calledDoPrivmsg = True
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
         #print '***', name, utils.stackTrace()
