@@ -166,20 +166,18 @@ class Insult(callbacks.Privmsg):
             an, adj1, amount, adj2, noun)
 
     def insult(self, irc, msg, args):
-        """[<channel>] [<target>]
+        """[<target>]
 
         Reply optionally directed at a random string, person,
-        object, etc.  <channel> is only necessary if the message isn't sent
-        in the channel itself.
+        object, etc.
         """
         tempinsult = self._buildInsult()
-        channel = privmsgs.getChannel(msg, args)
         victim = privmsgs.getArgs(args, required=0, optional=1)
         if not victim:
-            irc.reply(tempinsult, to=channel, prefixName=False)
+            irc.reply(tempinsult, prefixName=False)
         else:
             irc.reply('%s - %s ' % (victim, tempinsult),
-                to=channel, prefixName=False)
+                prefixName=False)
 
 Class = Insult
 
