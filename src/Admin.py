@@ -163,8 +163,9 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         maxchannels = irc.state.supported.get('maxchannels', sys.maxint)
         if len(irc.state.channels) + len(channels) > maxchannels:
             irc.error('I\'m already too close to maximum number of '
-                      'channels for this network.')
+                      'channels for this network.', Raise=True)
         irc.queueMsg(ircmsgs.joins(channels, keys))
+        irc.noReply()
         for channel in channels:
             self.joins[channel] = (irc, msg)
 
