@@ -108,8 +108,9 @@ class Nickometer(callbacks.Privmsg):
         Tells you how lame said nick is.
         """
         score = 0L
-
-        nick = privmsgs.getArgs(args)
+        nick = privmsgs.getArgs(args, required=0, optional=1)
+        if not nick:
+            nick = msg.nick
         originalNick = nick
         if not nick:
             irc.error('Give me a nick to judge as the argument, please.')
