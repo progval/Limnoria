@@ -1,3 +1,7 @@
+Since we support multiple networks and multiple servers now, the
+--server option has been removed from scripts/supybot, as has the
+--password option.
+
 supybot.defaultCapabilities is space-separated now, not
 comma-separated.  You you should remove the commas from this value in
 your configuration file before loading the bot.
