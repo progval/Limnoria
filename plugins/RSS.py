@@ -276,7 +276,9 @@ class RSS(callbacks.Privmsg):
         if name not in self.feedNames:
             irc.error('That\'s not a valid RSS feed command name.')
             return
+        self.feedNames.remove(name)
         delattr(self.__class__, name)
+        conf.supybot.plugins.RSS.feeds.unregister(name)
         irc.replySuccess()
 
     def announce(self, irc, msg, args, channel):
