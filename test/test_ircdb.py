@@ -214,9 +214,9 @@ class IrcUserTestCase(unittest.TestCase):
         prefix = 'foo!bar@baz'
         u = ircdb.IrcUser()
         u.setAuth(prefix)
-        self.failUnless(u.checkAuth(prefix))
+        self.failUnless(u.auth)
         u.unsetAuth()
-        self.failIf(u.checkAuth(prefix))
+        self.failIf(u.auth)
 
     def testIgnore(self):
         u = ircdb.IrcUser(ignore=True)

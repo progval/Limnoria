@@ -107,6 +107,7 @@ class CapabilitySet(sets.Set):
             self.add(capability)
 
     def add(self, capability):
+        """Adds a capability to the set."""
         capability = ircutils.toLower(capability)
         inverted = invertCapability(capability)
         if sets.Set.__contains__(self, inverted):
@@ -114,6 +115,7 @@ class CapabilitySet(sets.Set):
         sets.Set.add(self, capability)
 
     def remove(self, capability):
+        """Removes a capability from the set."""
         capability = ircutils.toLower(capability)
         sets.Set.remove(self, capability)
 
@@ -127,6 +129,9 @@ class CapabilitySet(sets.Set):
             return False
 
     def check(self, capability):
+        """Returns the appropriate boolean for whether a given capability is
+        'allowed' given its (or its anticapability's) presence in the set.
+        """
         capability = ircutils.toLower(capability)
         if sets.Set.__contains__(self, capability):
             return True
@@ -135,7 +140,7 @@ class CapabilitySet(sets.Set):
         else:
             raise KeyError, capability
 
-    def repr(self):
+    def __repr__(self):
         return '%s([%r])' % (self.__class__.__name__, ', '.join(self))
 
 class UserCapabilitySet(CapabilitySet):
@@ -148,6 +153,11 @@ class UserCapabilitySet(CapabilitySet):
             return CapabilitySet.__contains__(self, capability)
 
     def check(self, capability):
+        """Returns the appropriate boolean for whether a given capability is
+        'allowed' given its (or its anticapability's) presence in the set.
+        Differs from CapabilitySet in that it handles the 'owner' capability
+        appropriately.
+        """
         capability = ircutils.toLower(capability)
         if capability == 'owner':
             if CapabilitySet.__contains__(self, 'owner'):
@@ -163,13 +173,13 @@ class UserCapabilitySet(CapabilitySet):
             return CapabilitySet.check(self, capability)
 
     def add(self, capability):
+        """Adds a capability to the set.  Just make sure it's not ~owner."""
         capability = ircutils.toLower(capability)
         assert capability != '!owner', '"!owner" disallowed.'
         CapabilitySet.add(self, capability)
 
 class IrcUser(object):
-    """This class holds the capabilities and authentications for a user.
-    """
+    """This class holds the capabilities and authentications for a user."""
     def __init__(self, ignore=False, password='', name='',
                  capabilities=(), hostmasks=None, secure=False):
         self.auth = None # The (time, hostmask) a user authenticated under
@@ -192,12 +202,15 @@ class IrcUser(object):
                 self.name, self.capabilities, self.hostmasks, self.secure)
 
     def addCapability(self, capability):
+        """Gives the user the given capability."""
         self.capabilities.add(capability)
 
     def removeCapability(self, capability):
+        """Takes from the user the given capability."""
         self.capabilities.remove(capability)
 
     def checkCapability(self, capability):
+        """Checks the user for a given capability."""
         if self.ignore:
             if isAntiCapability(capability):
                 return True
@@ -207,12 +220,18 @@ class IrcUser(object):
             return self.capabilities.check(capability)
 
     def setPassword(self, password):
+        """Sets the user's password."""
         self.password = password
 
     def checkPassword(self, password):
+        """Checks the user's password."""
         return (self.password == password)
 
     def checkHostmask(self, hostmask, useAuth=True):
+        """Checks a given hostmask against the user's hostmasks or current
+        authentication.  If useAuth is False, only checks against the user's
+        hostmasks.
+        """
         if useAuth and self.auth and (hostmask == self.auth[1]):
             return True
         for pat in self.hostmasks:
@@ -221,33 +240,20 @@ class IrcUser(object):
         return False
 
     def addHostmask(self, hostmask):
+        """Adds a hostmask to the user's hostmasks."""
         self.hostmasks.append(hostmask)
 
     def removeHostmask(self, hostmask):
+        """Removes a hostmask from the user's hostmasks."""
         self.hostmasks.remove(hostmask)
 
-    def hasHostmask(self, hostmask):
-        return hostmask in self.hostmasks
-
     def setAuth(self, hostmask):
+        """Sets a user's authenticated hostmask.  This times out in 1 hour."""
         self.auth = (time.time(), hostmask)
 
     def unsetAuth(self):
+        """Unsets a use's authenticated hostmask."""
         self.auth = None
-
-    def checkAuth(self, hostmask):
-        if self.auth is not None:
-            (timeSet, prefix) = self.auth
-            if time.time() - timeSet < 3600:
-                if hostmask == prefix:
-                    return True
-                else:
-                    return False
-            else:
-                self.unsetAuth()
-                return False
-        else:
-            return False
 
 
 class IrcChannel(object):
@@ -282,33 +288,42 @@ class IrcChannel(object):
                 self.defaultAllow)
 
     def addBan(self, hostmask):
+        """Adds a ban to the channel banlist."""
         self.bans.append(hostmask)
 
     def removeBan(self, hostmask):
+        """Removes a ban from the channel banlist."""
         self.bans = [s for s in self.bans if s != hostmask]
 
     def checkBan(self, hostmask):
+        """Checks whether a given hostmask is banned by the channel banlist."""
         for pat in self.bans:
             if ircutils.hostmaskPatternEqual(pat, hostmask):
                 return True
         return False
 
     def addIgnore(self, hostmask):
+        """Adds an ignore to the channel ignore list."""
         self.ignores.append(hostmask)
 
     def removeIgnore(self, hostmask):
+        """Removes an ignore from the channel ignore list."""
         self.ignores = [s for s in self.ignores if s != hostmask]
 
     def addCapability(self, capability):
+        """Adds a capability to the channel's default capabilities."""
         self.capabilities.add(capability)
 
     def removeCapability(self, capability):
+        """Removes a capability from the channel's default capabilities."""
         self.capabilities.remove(capability)
 
     def setDefaultCapability(self, b):
+        """Sets the default capability in the channel."""
         self.defaultAllow = b
 
     def checkCapability(self, capability):
+        """Checks whether a certain capability is allowed by the channel."""
         if capability in self.capabilities:
             return self.capabilities.check(capability)
         else:
@@ -318,6 +333,7 @@ class IrcChannel(object):
                 return self.defaultAllow
 
     def checkIgnored(self, hostmask):
+        """Checks whether a given hostmask is to be ignored by the channel."""
         if self.lobotomized:
             return True
         for mask in self.bans:
