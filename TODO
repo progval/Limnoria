@@ -1,11 +1,9 @@
 To do before next major release (0.8.0):
 
 Fix website.  It needs more and better documentation.
-Fix documentation -- docs/EXAMPLE needs updated.
 Write some more tests (but those are always useful :))
 Do some actual testing with Real Users.
 
 To do later:
 
 Fix Infobot plugin.
-Fix Enforcer plugin.
