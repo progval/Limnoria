@@ -66,14 +66,6 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
                           added_at TIMESTAMP,
                           quote TEXT
                           );""")
-        cursor.execute("""CREATE TABLE quotegrabs (
-                          id INTEGER PRIMARY KEY,
-                          nick TEXT,
-                          hostmask TEXT,
-                          added_by TEXT,
-                          added_at TIMESTAMP,
-                          quote TEXT
-                          );""")
         db.commit()
         return db
 
