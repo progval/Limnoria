@@ -119,23 +119,23 @@ class PluginTestCase(unittest.TestCase):
     # fixed, but not until then.
     def assertError(self, query):
         m = self._feedMsg(query)
-        self.failUnless(m, msg)
+        self.failUnless(m)
         self.failUnless(m.args[1].startswith('Error:'), '%r errored' % query)
 
     def assertNotError(self, query):
         m = self._feedMsg(query)
-        self.failUnless(m, msg)
+        self.failUnless(m)
         self.failIf(m.args[1].startswith('Error:'), '%r errored' % query)
 
     def assertResponse(self, query, expectedResponse):
         m = self._feedMsg(query)
-        self.failUnless(m, msg)
+        self.failUnless(m)
         self.assertEqual(m.args[1], expectedResponse,
                          '%r != %r' % (expectedResponse, m.args[1]))
 
     def assertRegexp(self, query, regexp):
         m = self._feedMsg(query)
-        self.failUnless(m, msg)
+        self.failUnless(m)
         self.failUnless(re.search(regexp, m.args[1]),
                         '%r does not match %r' % (m.args[1], regexp))
 
