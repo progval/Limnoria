@@ -134,6 +134,9 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 keys.insert(0, key)
             else:
                 channels.append(channel)
+            if not ircutils.isChannel(channel):
+                irc.error('%r is not a valid channel.' % channel)
+                return
         irc.queueMsg(ircmsgs.joins(channels, keys))
         for channel in channels:
             self.joins[channel] = (irc, msg)
