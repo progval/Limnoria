@@ -80,13 +80,15 @@ conf.registerChannelValue(conf.supybot.plugins.URL, 'tinyurlSnarfer',
     channel, and if they're sufficiently long (as determined by
     supybot.plugins.URL.tinyurlSnarfer.minimumLength) it will post a smaller
     from tinyurl.com."""))
-conf.registerChannelValue(conf.supybot.plugins.URL, 'tinyurlMaximumLength',
+conf.registerChannelValue(conf.supybot.plugins.URL.tinyurlSnarfer,
+    'maximumLength',
     registry.PositiveInteger(48, """The minimum length a URL must be before the
     tinyurl snarfer will snarf it."""))
 conf.registerChannelValue(conf.supybot.plugins.URL, 'titleSnarfer',
     registry.Boolean(False, """Determines whether the bot will output the HTML
     title of URLs it sees in the channel."""))
-conf.registerChannelValue(conf.supybot.plugins.URL, 'titleSnarferIncludesUrl',
+conf.registerChannelValue(conf.supybot.plugins.URL.titleSnarfer,
+    'includesUrl',
     registry.Boolean(True, """Determines whether the bot will include the
     snarfed URL in its message.  This is particularly useful when people have a
     habit of putting multiple URLs in a message."""))
@@ -177,7 +179,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         channel = msg.args[0]
         if self.registryValue('tinyurlSnarfer', channel):
             url = match.group(0)
-            minlen = self.registryValue('tinyurlMaximumLength', channel)
+            minlen = self.registryValue('tinyurlSnarfer.maximumLength',channel)
             if len(url) >= minlen:
                 db = self.getDb(channel)
                 cursor = db.cursor()
@@ -202,7 +204,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
             m = self._titleRe.search(text)
             if m is not None:
                 s = 'Title: %s' % utils.htmlToText(m.group(1).strip())
-                if self.registryValue('titleSnarferIncludesUrl', channel):
+                if self.registryValue('titleSnarfer.includesUrl', channel):
                     s += ' (<%s>)' % url
                 irc.reply(s, prefixName=False)
     titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
