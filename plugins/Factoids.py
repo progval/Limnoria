@@ -42,10 +42,47 @@ import os.path
 import sqlite
 
 import conf
+import utils
 import ircdb
 import ircutils
 import privmsgs
 import callbacks
+
+example = utils.wrapLines("""
+<jemfinch> @list Factoids
+<supybot> jemfinch: factoidinfo, learn, lock, randomfactoid, unlearn, unlock, whatis
+<jemfinch> @learn jemfinch as the primary author of supybot.
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @factoidinfo jemfinch
+<supybot> jemfinch: Key 'jemfinch' is not locked and has 1 factoids associated with it: #0 was added by jemfinch at 03:57 AM, August 29, 2003
+<jemfinch> @lock jemfinch
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @factoidinfo jemfinch
+<supybot> jemfinch: Key 'jemfinch' is locked and has 1 factoids associated with it: #0 was added by jemfinch at 03:57 AM, August 29, 2003
+<jemfinch> @learn jemfinch as a horrible assembly programmer
+<supybot> jemfinch: Error: That factoid is locked.
+<jemfinch> @unlock jemfinch
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @learn jemfinch as a horrible assembly programmer
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @whatis jemfinch
+<supybot> jemfinch: jemfinch could be (#0) the primary author of supybot., or (#1) a horrible assembly programmer.
+<jemfinch> @unlearn jemfinch
+<supybot> jemfinch: Error: 2 factoids have that key.  Please specify which one to remove.
+<jemfinch> @unlearn jemfinch 1
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @whatis jemfinch
+<supybot> jemfinch: jemfinch could be (#0) the primary author of supybot..
+<jemfinch> @unlearn jemfinch 0
+<supybot> jemfinch: The operation succeeded.
+<jemfinch> @whatis jemfinch
+<supybot> jemfinch: Error: No factoid matches that key.
+<jemfinch> @randomfactoid
+<supybot> jemfinch: "sf.net-website": https://sourceforge.net/docman/display_doc.php?docid=4297&group_id=1; "private-attributes": http://groups.google.com/groups?q=jp+calderone+private+attributes&hl=en&lr=&ie=UTF-8&oe=UTF-8&selm=mailman.1050275130.5456.python-list%40python.org&rnum=1; "CFnews": http://inkedmn.homelinux.org/~inkedmn/vbcustom1.html; "CFnews": something else
+<jemfinch> @whatis cfnews
+<supybot> jemfinch: cfnews could be (#0) http://inkedmn.homelinux.org/~inkedmn/vbcustom1.html, or (#1) something else.
+<jemfinch> @unlearn cfnews 1
+""")
 
 class Factoids(ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
