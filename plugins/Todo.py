@@ -109,7 +109,7 @@ class Todo(callbacks.Privmsg):
             try:
                 taskid = int(taskid)
             except ValueError, e:
-                irc.error(msg, 'Invalid task id: %s' % e)
+                irc.error(msg, '%r is an invalid task id' % taskid)
                 return
             cursor = self.db.cursor()
             cursor.execute("""SELECT priority, added_at, task FROM todo
@@ -156,7 +156,7 @@ class Todo(callbacks.Privmsg):
                 try:
                     priority = int(arg)
                 except ValueError, e:
-                    irc.error(msg, 'Invalid priority: %s' % e)
+                    irc.error(msg, '%r is an invalid priority' % arg)
                     return
         text = privmsgs.getArgs(rest, needed=1)
         cursor = self.db.cursor()
@@ -217,7 +217,8 @@ class Todo(callbacks.Privmsg):
                 try:
                     r = utils.perlReToPythonRe(arg)
                 except ValueError, e:
-                    irc.error(msg, 'Invalid regexp: %s' % e)
+                    irc.error(msg, '%r is not a valid regular expression' %
+                              arg)
                     return
                 def p(s, r=r):
                     return int(bool(r.search(s)))
