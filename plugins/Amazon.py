@@ -35,6 +35,7 @@ Amazon module, to use Amazon's Web Services.  Currently only does ISBN lookups.
 
 __revision__ = "$Id$"
 
+import getopt
 import plugins
 
 import amazon
@@ -64,6 +65,29 @@ def configure(onStart, afterConnect, advanced):
 
 class Amazon(callbacks.Privmsg):
     threaded = True
+
+    def _genResults(self, reply, attribs, items, url):
+        results = {}
+        res = []
+        for item in items:
+            try:
+                for k,v in attribs.iteritems():
+                    results[v] = getattr(item, k, 'unknown')
+                    if isinstance(results[v], amazon.Bag):
+                        results[v] = getattr(results[v], k[:-1], 'unknown')
+                    if not isinstance(results[v], basestring):
+                        results[v] = utils.commaAndify(results[v])
+                if not url:
+                    results['url'] = ''
+                else:
+                    results['url'] = ' <%s>' % results['url']
+                s = reply % results
+                s.encode('utf-8')
+                res.append(str(s))
+            except amazon.AmazonError, e:
+                self.log.warning(str(e))
+        return res
+
     def licensekey(self, irc, msg, args):
         """<key>
 
@@ -76,26 +100,188 @@ class Amazon(callbacks.Privmsg):
     licensekey = privmsgs.checkCapability(licensekey, 'admin')
 
     def isbn(self, irc, msg, args):
-        """<isbn>
+        """[--url] <isbn>
 
-        Returns the book matching the given ISBN number.
+        Returns the book matching the given ISBN number. If --url is
+        specified, a link to amazon.com's page for the book will also be
+        returned.
         """
-        isbn = privmsgs.getArgs(args)
+        opts = ['url']
+        (optlist, rest) = getopt.getopt(args, '', opts)
+        url = False
+        for (option, argument) in optlist:
+            option = option.lstrip('-')
+            if option == 'url':
+                url = True
+        isbn = privmsgs.getArgs(rest)
         isbn = isbn.replace('-', '').replace(' ', '')
+        attribs = {'ProductName' : 'title',
+                   'Manufacturer' : 'publisher',
+                   'Authors' : 'author',
+                   'URL' : 'url'
+                  }
+        s = '"%(title)s", written by %(author)s; published by '\
+            '%(publisher)s.%(url)s'
         try:
             book = amazon.searchByKeyword(isbn)
-            title = book.ProductName
-            publisher = book.Manufacturer
-            if isinstance(book.Authors.Author, basestring):
-                author = book.Authors.Author
-            else:
-                author = utils.commaAndify(book.Authors.Author)
-            s = '"%s", written by %s; published by %s.' % \
-                 (title,          author,          publisher)
-            irc.reply(msg, str(s))
+            res = self._genResults(s, attribs, book, url)
+            if res:
+                irc.reply(msg, utils.commaAndify(res))
+                return
         except amazon.AmazonError, e:
-            irc.reply(msg, 'No book was found with that ISBN.')
+            pass
+        irc.reply(msg, 'No book was found with that ISBN.')
 
+    def author(self, irc, msg, args):
+        """[--url] <author>
+
+        Returns a list of books written by the given author. If --url is
+        specified, a link to amazon.com's page for the book will also be
+        returned.
+        """
+        opts = ['url']
+        (optlist, rest) = getopt.getopt(args, '', opts)
+        url = False
+        for (option, argument) in optlist:
+            option = option.lstrip('-')
+            if option == 'url':
+                url = True
+        author = privmsgs.getArgs(rest)
+        self.log.info(author)
+        attribs = {'ProductName' : 'title',
+                   'Manufacturer' : 'publisher',
+                   'Authors' : 'author',
+                   'URL' : 'url'
+                  }
+        s = '"%(title)s", written by %(author)s; published by '\
+            '%(publisher)s.%(url)s'
+        try:
+            books = amazon.searchByAuthor(author)
+            res = self._genResults(s, attribs, books, url)
+            if res:
+                irc.reply(msg, utils.commaAndify(res))
+                return
+        except amazon.AmazonError, e:
+            pass
+        irc.reply(msg, 'No books were found by that author.')
+
+    def artist(self, irc, msg, args):
+        """[--url] [--{music,classical}] <artist>
+
+        Returns a list of items by the given artist. If --url is specified, a
+        link to amazon.com's page for the match will also be returned. The
+        search defaults to using --music.
+        """
+        products = ['music', 'classical']
+        opts = ['url']
+        (optlist, rest) = getopt.getopt(args, '', products + opts)
+        url = False
+        product = ''
+        for (option, argument) in optlist:
+            option = option.lstrip('-')
+            if option == 'url':
+                url = True
+            if option in products:
+                product = option
+        product = product or 'music'
+        artist = privmsgs.getArgs(rest)
+        attribs = {'ProductName' : 'title',
+                   'Manufacturer' : 'publisher',
+                   'Artists' : 'artist',
+                   'Media' : 'media',
+                   'URL' : 'url'
+                  }
+        s = '"%(title)s" (%(media)s), by %(artist)s; published by '\
+            '%(publisher)s.%(url)s'
+        try:
+            items = amazon.searchByArtist(artist, product_line=product)
+            res = self._genResults(s, attribs, items, url)
+            if res:
+                irc.reply(msg, utils.commaAndify(res))
+                return
+        except amazon.AmazonError, e:
+            pass
+        irc.reply(msg, 'No items were found by that artist.')
+
+    def actor(self, irc, msg, args):
+        """[--url] [--{dvd,vhs,video}] <actor>
+
+        Returns a list of items starring the given actor. If --url is
+        specified, a link to amazon.com's page for the match will also be
+        returned. The search defaults to using --dvd.
+        """
+        products = ['dvd', 'video', 'vhs']
+        opts = ['url']
+        (optlist, rest) = getopt.getopt(args, '', products + opts)
+        url = False
+        product = ''
+        for (option, argument) in optlist:
+            option = option.lstrip('-')
+            if option == 'url':
+                url = True
+            if option in products:
+                product = option
+        product = product or 'dvd'
+        actor = privmsgs.getArgs(rest)
+        attribs = {'ProductName' : 'title',
+                   'Manufacturer' : 'publisher',
+                   'MpaaRating' : 'mpaa',
+                   'Media' : 'media',
+                   'ReleaseDate' : 'date',
+                   'URL' : 'url'
+                  }
+        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released '\
+            '%(date)s; published by %(publisher)s.%(url)s'
+        try:
+            items = amazon.searchByActor(actor, product_line=product)
+            res = self._genResults(s, attribs, items, url)
+            if res:
+                irc.reply(msg, utils.commaAndify(res))
+                return
+        except amazon.AmazonError, e:
+            pass
+        irc.reply(msg, 'No items were found starring that actor.')
+
+    def manufacturer(self, irc, msg, args):
+        """ [--url] \
+        [--{pc-hardware,kitchen,electronics,videogames,software,photo}] \
+        <manufacturer>
+
+        Returns a list of items by the given manufacturer. If --url is
+        specified, a link to amazon.com's page for the match will also be
+        returned. The search defaults to using --pc-hardware.
+        """
+        products = ['electronics', 'kitchen', 'videogames', 'software',
+                    'photo', 'pc-hardware']
+        opts = ['url']
+        (optlist, rest) = getopt.getopt(args, '', products + opts)
+        self.log.info(rest)
+        url = False
+        product = ''
+        for (option, argument) in optlist:
+            option = option.lstrip('-')
+            if option == 'url':
+                url = True
+            if option in products:
+                product = option
+        product = product or 'pc-hardware'
+        manufacturer = privmsgs.getArgs(rest)
+        attribs = {'ProductName' : 'title',
+                   'Catalog' : 'catalog',
+                   'Manufacturer' : 'manufacturer',
+                   'URL' : 'url'
+                  }
+        s = '"%(title)s" (%(catalog)s), by %(manufacturer)s.%(url)s'
+        try:
+            items = amazon.searchByManufacturer(manufacturer,
+                                                product_line=product)
+            res = self._genResults(s, attribs, items, url)
+            if res:
+                irc.reply(msg, utils.commaAndify(res))
+                return
+        except amazon.AmazonError, e:
+            pass
+        irc.reply(msg, 'No items were found by that manufacturer.')
 
 Class = Amazon
 
