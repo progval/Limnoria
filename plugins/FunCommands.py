@@ -244,7 +244,7 @@ class FunCommands(callbacks.Privmsg):
         arg = privmsgs.getArgs(args)
         m = re.match(self._dicere, arg)
         if m:
-            (dice, sides) = [int(s) for s in m.groups()]
+            (dice, sides) = map(int, m.groups())
             if dice > 6:
                 irc.error(msg, 'You can\'t roll more than 6 dice.')
             elif sides > 100:
@@ -265,7 +265,9 @@ class FunCommands(callbacks.Privmsg):
         text = text.replace('ss', 'th')
         text = text.replace('SS', 'th')
         text = text.replace('s', 'th')
+        text = text.replace('z', 'th')
         text = text.replace('S', 'TH')
+        text = text.replace('Z', 'TH')
         text = text.replace('x', 'kth')
         text = text.replace('X', 'KTH')
         irc.reply(msg, text)
