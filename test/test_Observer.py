@@ -51,6 +51,10 @@ class ObserverTestCase(ChannelPluginTestCase):
         self.assertResponse('testing, 1 2 3' , '1')
         self.assertNotError('observer disable digits')
 
+    def testList(self):
+        self.assertNotError('add foo m/foo/i echo I saw foo.')
+        self.assertRegexp('observer list', 'foo')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

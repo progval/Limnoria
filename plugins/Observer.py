@@ -56,11 +56,15 @@ def configure(advanced):
 
 class Probability(registry.Float):
     """Value must be a floating point number in the range (0, 1]."""
+    def __init__(self, *args, **kwargs):
+        self.__parent = super(Probability, self)
+        self.__parent.__init__(*args, **kwargs)
+
     def setValue(self, v):
         if not 0 < v <= 1:
             self.error()
         else:
-            super(Probability, self).setValue(v)
+            self.__parent.setValue(v)
 
 class Observers(registry.SpaceSeparatedListOfStrings):
     List = callbacks.CanonicalNameSet
@@ -77,7 +81,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Observer, 'observers',
 conf.registerChannelValue(conf.supybot.plugins.Observer.observers, 'active',
     ActiveObservers([], """Determines what observers are
     active on a channel."""))
-                          
+
 
 def registerObserver(name, regexpString='',
                      commandString='', probability=1.0):
@@ -102,11 +106,15 @@ class Observer(callbacks.Privmsg):
     commandCalled = False
     def _isValidObserverName(self, name):
         return name != 'active' and registry.isValidRegistryName(name)
-    
+
+    def __init__(self):
+        self.__parent = super(Observer, self)
+        self.__parent.__init__()
+
     def callCommand(self, *args, **kwargs):
         self.commandCalled = True
-        super(Observer, self).callCommand(*args, **kwargs)
-            
+        self.__parent.callCommand(*args, **kwargs)
+
     def doPrivmsg(self, irc, msg):
         if self.commandCalled:
             self.commandCalled = False
@@ -134,7 +142,7 @@ class Observer(callbacks.Privmsg):
                     command = command.replace('$%s' % i, group)
                 tokens = callbacks.tokenize(command, channel=channel)
                 Owner.processTokens(irc, msg, tokens)
-                
+
     def list(self, irc, msg, args):
         """[<channel>]
 
@@ -152,7 +160,7 @@ class Observer(callbacks.Privmsg):
             # We don't sort because order matters.
         else:
             observers = self.registryValue('observers')
-            utils.sortBy(str.lower, observers)
+            observers = utils.sorted(observers, key=str.lower)
         if observers:
             irc.reply(utils.commaAndify(observers))
         else:
@@ -184,7 +192,7 @@ class Observer(callbacks.Privmsg):
         except (KeyError, ValueError):
             irc.error('The observer %s was not active on %s.' % (name,channel))
     disable = privmsgs.checkChannelCapability(disable, 'op')
-            
+
     def info(self, irc, msg, args):
         """<name>
 
@@ -200,7 +208,7 @@ class Observer(callbacks.Privmsg):
         irc.reply('%s matches the regular expression %s and '
                   'runs the command %s with a probability of %s' %
                   (name, regexp, command, probability))
-        
+
     def add(self, irc, msg, args):
         """<name> [<probability>] <regexp> <command>
 
@@ -232,7 +240,7 @@ class Observer(callbacks.Privmsg):
         """
         pass
 
-    
+
 
 
 Class = Observer

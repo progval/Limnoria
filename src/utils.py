@@ -427,7 +427,7 @@ def sortBy(f, L):
 def sorted(iterable, cmp=None, key=None, reversed=False):
     L = list(iterable)
     if key is not None:
-        assert cmp is not None, 'Can\'t use both cmp and key.'
+        assert cmp is None, 'Can\'t use both cmp and key.'
         sortBy(key, L)
     else:
         L.sort(cmp)
