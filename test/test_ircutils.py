@@ -211,6 +211,15 @@ class IrcSetTestCase(unittest.TestCase):
         self.failIf('foo' in s)
         self.failIf('FOo' in s)
 
+class IrcStringTestCase(unittest.TestCase):
+    def test(self):
+        self.assertEqual('#foo', ircutils.IrcString('#foo'))
+        self.assertEqual('#foo', ircutils.IrcString('#FOO'))
+        self.assertEqual('#FOO', ircutils.IrcString('#foo'))
+        self.assertEqual('#FOO', ircutils.IrcString('#FOO'))
+        self.assertEqual(hash(ircutils.IrcString('#FOO')),
+                         hash(ircutils.IrcString('#foo')))
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

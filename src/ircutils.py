@@ -317,15 +317,8 @@ def shrinkList(L, sep='', limit=425):
 class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""
     def __init__(self, s):
-        s = str(s)
-        self.original = s
+        str.__init__(self, s)
         self.lowered = toLower(s)
-
-    def __repr__(self):
-        return repr(self.original)
-
-    def __str__(self):
-        return str(self.original)
 
     def __eq__(self, s):
         try:
