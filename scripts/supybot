@@ -109,7 +109,7 @@ if __name__ == '__main__':
     # --connect (commands to run afterConnect)
     # --config (configuration values)
     parser = optparse.OptionParser(usage='Usage: %prog [options] configFile',
-                                   version='supybot 0.71.1')
+                                   version='supybot 0.71.1+cvs')
     parser.add_option('-P', '--profile', action='store_true', dest='profile',
                       help='enables profiling')
     parser.add_option('-O', action='count', dest='optimize',
