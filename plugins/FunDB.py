@@ -113,13 +113,13 @@ def makeDb(dbfilename, replace=False):
     return db
 
 def uptimeEnder(started):
-    def f():
+    def endUptime():
         db = makeDb(dbFilename)
         cursor = db.cursor()
         cursor.execute("""UPDATE uptime SET ended=%s WHERE started=%s""",
                        int(time.time()), started)
         db.commit()
-    return f
+    return endUptime
 
 def addWord(db, word, commit=False):
     word = word.strip().lower()
