@@ -42,6 +42,7 @@ def main():
     import log
     import conf
     conf.supybot.log.stdout.setValue(False)
+    #conf.supybot.log.level.set('DEBUG')
     
     parser = optparse.OptionParser(usage='Usage: %prog [options] <configFile>',
                                    version='supybot %s' % conf.version)
@@ -65,8 +66,9 @@ def main():
     if len(args) is not 1:
         parser.error('specify the configuration file you\'d like to use.')
 
-    conf.supybot.directories.conf.setValue('.')
-    conf.supybot.databases.users.filename.setValue(args[0])
+    filename = os.path.abspath(args[0])
+    conf.supybot.directories.conf.setValue('/')
+    conf.supybot.databases.users.filename.setValue(filename)
     import ircdb
 
     if not options.name:
@@ -120,6 +122,9 @@ def main():
     for capability in capabilities:
         user.addCapability(capability)
     ircdb.users.setUser(id, user)
+    ircdb.users.flush()
+    os.system('cat %s' % filename)
+    ircdb.users.close()
     print 'User %s added.' % name
 
 if __name__ == '__main__':

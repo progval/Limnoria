@@ -407,8 +407,9 @@ class Creator(object):
     
 class IrcUserCreator(Creator):
     id = None
-    def __init__(self):
+    def __init__(self, users):
         self.u = IrcUser()
+        self.users = users
 
     def user(self, rest, lineno):
         if self.id is not None:
@@ -452,13 +453,14 @@ class IrcUserCreator(Creator):
 
     def finish(self):
         if self.u.name:
-            users.setUser(self.id, self.u)
+            self.users.setUser(self.id, self.u)
             IrcUserCreator.id = None
 
 class IrcChannelCreator(Creator):
     name = None
-    def __init__(self):
+    def __init__(self, channels):
         self.c = IrcChannel()
+        self.channels = channels
         self.hadChannel = bool(self.name)
 
     def channel(self, rest, lineno):
@@ -493,7 +495,7 @@ class IrcChannelCreator(Creator):
 
     def finish(self):
         if self.hadChannel:
-            channels.setChannel(self.name, self.c)
+            self.channels.setChannel(self.name, self.c)
             IrcChannelCreator.name = None
     
 
@@ -502,14 +504,14 @@ class UsersDictionary(utils.IterableMap):
     def __init__(self):
         self.filename = None
         self.users = {}
-        self.nextId = 1
+        self.nextId = 0
         self._nameCache = {}
         self._hostmaskCache = {}
 
     # This is separate because the Creator has to access our instance.
     def open(self, filename):
         self.filename = filename
-        reader = unpreserve.Reader(IrcUserCreator)
+        reader = unpreserve.Reader(IrcUserCreator, self)
         reader.readFile(filename)
 
     def reload(self):
@@ -537,6 +539,12 @@ class UsersDictionary(utils.IterableMap):
             fd.close()
         else:
             log.warning('UsersDictionary.flush called with no filename.')
+
+    def close(self):
+        self.flush()
+        if self.flush in world.flushers:
+            world.flushers.remove(self.flush)
+        self.users.clear()
 
     def iteritems(self):
         return self.users.iteritems()
@@ -636,13 +644,12 @@ class UsersDictionary(utils.IterableMap):
     def newUser(self):
         """Allocates a new user in the database and returns it and its id."""
         user = IrcUser()
-        id = self.nextId
         self.nextId += 1
+        id = self.nextId
         self.users[id] = user
         self.flush()
         return (id, user)
     
-
 
 class ChannelsDictionary(utils.IterableMap):
     def __init__(self):
@@ -651,7 +658,7 @@ class ChannelsDictionary(utils.IterableMap):
 
     def open(self, filename):
         self.filename = filename
-        reader = unpreserve.Reader(IrcChannelCreator)
+        reader = unpreserve.Reader(IrcChannelCreator, self)
         reader.readFile(filename)
 
     def flush(self):
@@ -665,6 +672,12 @@ class ChannelsDictionary(utils.IterableMap):
             fd.close()
         else:
             log.warning('ChannelsDictionary.flush without self.filename.')
+
+    def close(self):
+        self.flush()
+        if self.flush in world.flushers:
+            world.flushers.remove(self.flush)
+        self.channels.clear()
 
     def reload(self):
         """Reloads the channel database from its file."""
