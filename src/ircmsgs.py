@@ -44,10 +44,15 @@ class IrcMsg(object):
     """Class to represent an IRC message.
     """
     __slots__ = ('_args', '_command', '_host', '_nick',
-                 '_prefix', '_user', '_hash')
+                 '_prefix', '_user',
+                 '_hash', '_str', '_repr', '_len')
     def __init__(self, s='', command='', args=None, prefix='', msg=None):
         if not s and not command and not msg:
             raise ValueError, 'IRC messages require a command.'
+        self._str = None
+        self._repr = None
+        self._hash = None
+        self._len = None
         if msg:
             prefix = msg.prefix
             command = msg.command
@@ -92,6 +97,8 @@ class IrcMsg(object):
     args = property(lambda self: self._args)
 
     def __str__(self):
+        if self._str is not None:
+            return self._str
         ret = ''
         if self.prefix:
             ret = ':%s %s' % (self.prefix, self.command)
@@ -105,11 +112,14 @@ class IrcMsg(object):
                 ret = '%s :%s\r\n' % (ret, self.args[0])
         else:
             ret = ret + '\r\n'
+        self._str = ret
         return ret
 
     def __len__(self):
         # This might not take into account the length of the prefix, but leaves
         # some room for variation.
+        if self._len is not None:
+            return self._len
         ret = 0
         if self.prefix:
             ret += len(self.prefix)
@@ -120,7 +130,9 @@ class IrcMsg(object):
             for arg in self.args:
                 ret += len(arg) + 1 # Remember the space prior to the arg.
         ret += 2 # For the colon before the prefix and before the last arg.
+        self._len = ret
         return ret
+    
 
     def __eq__(self, other):
         return hash(self) == hash(other) and \
@@ -132,17 +144,19 @@ class IrcMsg(object):
         return not (self == other)
 
     def __hash__(self):
-        try:
+        if self._hash is not None:
             return self._hash
-        except AttributeError:
-            self._hash = hash(self.command) & \
-                         hash(self.prefix) & \
-                         hash(self.args)
-            return self._hash
+        self._hash = hash(self.command) & \
+                     hash(self.prefix) & \
+                     hash(self.args)
+        return self._hash
 
     def __repr__(self):
-        return '%s(prefix=%r, command=%r, args=%r)' % \
-               (self.__class__.__name__, self.prefix, self.command, self.args)
+        if self._repr is not None:
+            return self._repr
+        self._repr = 'IrcMsg(prefix=%r, command=%r, args=%r)' % \
+                     (self.prefix, self.command, self.args)
+        return self._repr
 
     def __getstate__(self):
         return str(self)
