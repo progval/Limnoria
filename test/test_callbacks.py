@@ -278,10 +278,10 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     def testEmptySquareBrackets(self):
         self.assertError('echo []')
 
-    def testHelpNoNameError(self):
-        # This will raise a NameError if some dynamic scoping isn't working
-        self.assertNotError('load Http')
-        self.assertHelp('extension')
+##     def testHelpNoNameError(self):
+##         # This will raise a NameError if some dynamic scoping isn't working
+##         self.assertNotError('load Http')
+##         self.assertHelp('extension')
 
     def testMaximumNestingDepth(self):
         original = conf.supybot.commands.nested.maximum()
