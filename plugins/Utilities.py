@@ -87,38 +87,6 @@ class Utilities(callbacks.Privmsg):
         else:
             raise callbacks.Error
 
-    def strjoin(self, irc, msg, args):
-        """<separator> <string 1> [<string> ...]
-
-        Joins all the arguments together with <separator>.
-        """
-        sep = args.pop(0)
-        irc.reply(sep.join(args))
-
-    def strtranslate(self, irc, msg, args):
-        """<chars to translate> <chars to replace those with> <text>
-
-        Replaces <chars to translate> with <chars to replace those with> in
-        <text>.  The first and second arguments must necessarily be the same
-        length.
-        """
-        (bad, good, text) = privmsgs.getArgs(args, required=3)
-        irc.reply(text.translate(string.maketrans(bad, good)))
-
-    def strupper(self, irc, msg, args):
-        """<text>
-
-        Returns <text> uppercased.
-        """
-        irc.reply(privmsgs.getArgs(args).upper())
-
-    def strlower(self, irc, msg, args):
-        """<text>
-
-        Returns <text> lowercased.
-        """
-        irc.reply(privmsgs.getArgs(args).lower())
-
     def strlen(self, irc, msg, args):
         """<text>
 
@@ -129,24 +97,6 @@ class Utilities(callbacks.Privmsg):
             total += len(arg)
         total += len(args)-1 # spaces between the arguments.
         irc.reply(str(total))
-
-    def repr(self, irc, msg, args):
-        """<text>
-
-        Returns the text surrounded by double quotes.
-        """
-        text = privmsgs.getArgs(args)
-        irc.reply(utils.dqrepr(text))
-
-    def strconcat(self, irc, msg, args):
-        """<string 1> <string 2>
-
-        Concatenates two strings.  Do keep in mind that this is *not* the same
-        thing as strjoin "", since if <string 2> contains spaces, they won't be
-        removed by strconcat.
-        """
-        (first, second) = privmsgs.getArgs(args, required=2)
-        irc.reply(first+second)
 
     def echo(self, irc, msg, args):
         """takes any number of arguments

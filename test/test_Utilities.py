@@ -44,29 +44,9 @@ class UtilitiesTestCase(PluginTestCase):
     def testLast(self):
         self.assertResponse('utilities last foo bar baz', 'baz')
 
-    def testStrjoin(self):
-        self.assertResponse('strjoin + foo bar baz', 'foo+bar+baz')
-
-    def testStrtranslate(self):
-        self.assertResponse('strtranslate 123 456 1234567890', '4564567890')
-
-    def testStrupper(self):
-        self.assertResponse('strupper foo', 'FOO')
-        self.assertResponse('strupper FOO', 'FOO')
-
-    def testStrlower(self):
-        self.assertResponse('strlower foo', 'foo')
-        self.assertResponse('strlower FOO', 'foo')
-
     def testStrlen(self):
         self.assertResponse('strlen %s' % ('s'*10), '10')
         self.assertResponse('strlen a b', '3')
-
-    def testRepr(self):
-        self.assertResponse('repr foo bar baz', '"foo bar baz"')
-
-    def testStrconcat(self):
-        self.assertResponse('strconcat foo bar baz', 'foobar baz')
 
     def testEcho(self):
         self.assertHelp('echo')

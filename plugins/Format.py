@@ -38,6 +38,8 @@ __author__ = ''
 
 import plugins
 
+import string
+
 import conf
 import utils
 import ircutils
@@ -107,6 +109,56 @@ class Format(callbacks.Privmsg):
                 irc.error('%r is not a valid background color.' % bg)
                 return
         irc.reply(ircutils.mircColor(text, fg=fg, bg=bg))
+
+    def join(self, irc, msg, args):
+        """<separator> <string 1> [<string> ...]
+
+        Joins all the arguments together with <separator>.
+        """
+        sep = args.pop(0)
+        irc.reply(sep.join(args))
+
+    def translate(self, irc, msg, args):
+        """<chars to translate> <chars to replace those with> <text>
+
+        Replaces <chars to translate> with <chars to replace those with> in
+        <text>.  The first and second arguments must necessarily be the same
+        length.
+        """
+        (bad, good, text) = privmsgs.getArgs(args, required=3)
+        irc.reply(text.translate(string.maketrans(bad, good)))
+
+    def upper(self, irc, msg, args):
+        """<text>
+
+        Returns <text> uppercased.
+        """
+        irc.reply(privmsgs.getArgs(args).upper())
+
+    def lower(self, irc, msg, args):
+        """<text>
+
+        Returns <text> lowercased.
+        """
+        irc.reply(privmsgs.getArgs(args).lower())
+
+    def repr(self, irc, msg, args):
+        """<text>
+
+        Returns the text surrounded by double quotes.
+        """
+        text = privmsgs.getArgs(args)
+        irc.reply(utils.dqrepr(text))
+
+    def concat(self, irc, msg, args):
+        """<string 1> <string 2>
+
+        Concatenates two strings.  Do keep in mind that this is *not* the same
+        thing as strjoin "", since if <string 2> contains spaces, they won't be
+        removed by strconcat.
+        """
+        (first, second) = privmsgs.getArgs(args, required=2)
+        irc.reply(first+second)
 
     def format(self, irc, msg, args):
         """<format string> [<arg> ...]
