@@ -65,12 +65,13 @@ class ShrinkService(registry.OnlySomeStrings):
     validStrings = ('ln', 'tiny')
 
 conf.registerPlugin('ShrinkUrl')
-conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'tinyurlSnarfer',
+conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'shrinkSnarfer',
     registry.Boolean(False, """Determines whether the
-    tinyurl snarfer is enabled.  This snarfer will watch for URLs in the
+    shrink snarfer is enabled.  This snarfer will watch for URLs in the
     channel, and if they're sufficiently long (as determined by
     supybot.plugins.ShrinkUrl.minimumLength) it will post a
-    smaller URL from tinyurl.com."""))
+    smaller URL from either ln-s.net or tinyurl.com, as denoted in
+    supybot.plugins.ShrinkUrl.default."""))
 conf.registerChannelValue(conf.supybot.plugins.ShrinkUrl, 'minimumLength',
     registry.PositiveInteger(48, """The minimum length a URL must be before
     the bot will shrink it."""))
@@ -106,15 +107,17 @@ class CdbShrunkenUrlDB(object):
         self.lnDb[url] = lnurl
 
     def close(self):
-        self.db.close()
+        self.tinyDb.close()
+        self.lnDb.close()
 
     def flush(self):
-        self.db.flush()
+        self.tinyDb.flush()
+        self.lnDb.flush()
 
 ShrunkenUrlDB = plugins.DB('ShrinkUrl', {'cdb': CdbShrunkenUrlDB})
         
 class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
-    regexps = ['tinyurlSnarfer', 'lnSnarfer']
+    regexps = ['shrinkSnarfer']
     def __init__(self):
         self.db = ShrunkenUrlDB()
         self.__parent = super(ShrinkUrl, self)
@@ -183,7 +186,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
                 if m is None:
                     print irc, irc.__class__
                 m.tag('shrunken')
-    tinyurlSnarfer = wrap(tinyurlSnarfer, decorators=['urlSnarfer'])
+    shrinkSnarfer = wrap(shrinkSnarfer, decorators=['urlSnarfer'])
 
     def _getLnUrl(self, url):
         try:
@@ -192,11 +195,12 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
 	    url = webutils.urlquote(url)
 	    text = webutils.getUrl('http://ln-s.net/home/api.jsp?url=%s' % url)
 	    (code, lnurl) = text.split(None, 1)
+	    lnurl = lnurl.strip()
 	    if code == '200':
 		self.db.setLn(url, lnurl)
 	    else:
 		lnurl = None
-	    return lnurl
+	    return (lnurl, code)
 
     def ln(self, irc, msg, args, url):
         """<url>
@@ -208,9 +212,8 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
             return
         (lnurl, error) = self._getLnUrl(url)
 	if lnurl is not None:
-	    s = lnurl.strip()
 	    domain = webutils.getDomain(url)
-            m = irc.reply(s)
+            m = irc.reply(lnurl)
             m.tag('shrunken')
         else:
             irc.error(error)
