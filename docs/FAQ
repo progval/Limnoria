@@ -53,7 +53,6 @@ A: First, you'll have to make sure that your users register with the
    <jemfinch> cool, thanks :)
 
 
-
 Q: Can users with the "admin" capability change configuration
    variables?
 
@@ -126,6 +125,7 @@ A: Karma by default doesn't acknowledge karma updates.  If you check
    Karma acknowledge karma updates, change the
    supybot.plugins.Karma.response configuration variable to On.
 
+
 Q: I added an alias, but it doesn't work!
 
 A: Take a look at "help <alias you added>".  If the alias the bot has
@@ -176,7 +176,7 @@ A: Submit it on Sourceforge through our Sourceforge project page:
    email supybot-bugs@lists.sourceforge.net.  If that doesn't work,
    email jemfinch@supybot.org.  If that doesn't work, find yourself
    some carrier pigeons and ... hah!  You thought I was serious!
-   
+
    Anyway, when you submit your bug, we'll need several things.  If
    the bug involved an uncaught exception, we need the traceback
    (basically the stuff from "Uncaught exception in ..." to the next
