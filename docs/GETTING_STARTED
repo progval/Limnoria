@@ -143,12 +143,28 @@ Supybot wants to send a message that's longer than that.  What it
 does, then, is break it into "chunks" and send the first one,
 following it with "(X more messages)" where X is how many more chunks
 there are.  To get to these chunks, use the more command.  One way to
-try is to look at the help for the configuration variable
-"supybot.defaultCapabilities".  Last I checked, it'll overflow into a
-second chunk.  The command you'll need to do this is "config help
-supybot.defaultCapabilities".
+try is to look at the listing of configuration groups for the bot
+(more on this in the CONFIGURATION document) by giving the command
+"config list supybot".  Last I checked, it'll overflow into a second
+chunk.  When you invoke this command, you should see output like:
 
-Enjoy using Supybot!
+<supybot> nick, ident, user, server, password, channels, prefixChars,
+	defaultCapabilities, defaultAllow, defaultIgnore,
+	humanTimestampFormat, externalIP, bracketSyntax, pipeSyntax,
+	followIdentificationThroughNickChanges, alwaysJoinOnInvite,
+	showSimpleSyntax, maxHistoryLength, nickmods, throttleTime,
+	snarfThrottle, threadAllCommands, pingServer, pingInterval,
+	upkeepInterval, flush, (1 more message)
+
+Now, to see the rest of the output, simply give the command "more",
+and it will show you the rest:
+
+<jemfinch> more
+<supybot> httpPeekSize, and defaultSocketTimeout
+
+You should now have a solid foundation for using Supybot.  Be sure to
+check the help that is built-in to the bot itself if you have any
+questions, and enjoy using Supybot!
 
 
 ###
