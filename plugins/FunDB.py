@@ -55,8 +55,6 @@ import ircutils
 import privmsgs
 import callbacks
 
-dbFilename = os.path.join(conf.dataDir, 'FunDB.db')
-
 tableCreateStatements = {
     'larts': ("""CREATE TABLE larts (
                  id INTEGER PRIMARY KEY,
@@ -91,20 +89,21 @@ tableCreateStatements = {
               """CREATE INDEX sorted_words_word ON sorted_words (word)"""),
     }
     
-def makeDb(dbfilename, replace=False):
-    if os.path.exists(dbfilename):
-        if replace:
-            os.remove(dbfilename)
-    db = sqlite.connect(dbfilename)
-    cursor = db.cursor()
-    for table in tableCreateStatements:
-        try:
-            cursor.execute("""SELECT * FROM %s LIMIT 1""" % table)
-        except sqlite.DatabaseError: # The table doesn't exist.
-            for sql in tableCreateStatements[table]:
-                cursor.execute(sql)
-    db.commit()
-    return db
+class FunDBDB(plugins.DBHandler):
+    def makeDb(self, dbfilename, replace=False):
+        if os.path.exists(dbfilename):
+            if replace:
+                os.remove(dbfilename)
+        db = sqlite.connect(dbfilename)
+        cursor = db.cursor()
+        for table in tableCreateStatements:
+            try:
+                cursor.execute("""SELECT * FROM %s LIMIT 1""" % table)
+            except sqlite.DatabaseError: # The table doesn't exist.
+                for sql in tableCreateStatements[table]:
+                    cursor.execute(sql)
+        db.commit()
+        return db
 
 def addWord(db, word, commit=False):
     word = word.strip().lower()
@@ -129,13 +128,13 @@ class FunDB(callbacks.Privmsg):
     _tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.db = makeDb(dbFilename)
-        cursor = self.db.cursor()
+        self.dbHandler = FunDBDB(os.path.join(conf.dataDir, 'FunDB'))
 
     def die(self):
-        self.db.commit()
-        self.db.close()
-        del self.db
+        db = self.dbHandler.getDb()
+        db.commit()
+        db.close()
+        del db
 
     def insult(self, irc, msg, args):
         """<nick>
@@ -145,7 +144,8 @@ class FunDB(callbacks.Privmsg):
         nick = privmsgs.getArgs(args)
         if not nick:
             raise callbacks.ArgumentError
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT id, insult FROM insults
                           WHERE insult NOT NULL
                           ORDER BY random()
@@ -169,7 +169,8 @@ class FunDB(callbacks.Privmsg):
         ('_') to denote blank spaces.
         """
         word = privmsgs.getArgs(args).lower()
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         if '%' in word:
             irc.error(msg, '"%" isn\'t allowed in the word.')
             return
@@ -186,7 +187,8 @@ class FunDB(callbacks.Privmsg):
         <id>.
         """
         id = privmsgs.getArgs(args, required=0, optional=1)
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         if id:
             try:
                 id = int(id)
@@ -235,10 +237,11 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         sql = """INSERT INTO %ss VALUES (NULL, %%s, %%s)""" % table
         cursor.execute(sql, s, name)
-        self.db.commit()
+        db.commit()
         sql = """SELECT id FROM %ss WHERE %s=%%s""" % (table, table)
         cursor.execute(sql, s)
         id = cursor.fetchone()[0]
@@ -267,10 +270,11 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         sql = """DELETE FROM %ss WHERE id=%%s""" % table
         cursor.execute(sql, id)
-        self.db.commit()
+        db.commit()
         irc.reply(msg, conf.replySuccess)
 
     def change(self, irc, msg, args):
@@ -304,7 +308,8 @@ class FunDB(callbacks.Privmsg):
         except re.error, e:
             irc.error(msg, debug.exnToString(e))
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
         cursor.execute(sql, id)
         if cursor.rowcount == 0:
@@ -315,7 +320,7 @@ class FunDB(callbacks.Privmsg):
             sql = """UPDATE %ss SET %s=%%s, added_by=%%s WHERE id=%%s""" % \
                   (table, table)
             cursor.execute(sql, new_entry, name, id)
-            self.db.commit()
+            db.commit()
             irc.reply(msg, conf.replySuccess)
 
     def num(self, irc, msg, args):
@@ -330,7 +335,8 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, '%r is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         sql = """SELECT count(*) FROM %ss""" % table
         cursor.execute(sql)
         total = int(cursor.fetchone()[0])
@@ -353,7 +359,8 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
         cursor.execute(sql, id)
         if cursor.rowcount == 0:
@@ -378,7 +385,8 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         sql = """SELECT added_by FROM %ss WHERE id=%%s""" % table
         cursor.execute(sql, id)
         if cursor.rowcount == 0:
@@ -412,7 +420,8 @@ class FunDB(callbacks.Privmsg):
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         if id:
             cursor.execute("""SELECT id, lart FROM larts WHERE id=%s""", id)
             if cursor.rowcount == 0:
@@ -461,7 +470,8 @@ class FunDB(callbacks.Privmsg):
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         if id:
             cursor.execute("""SELECT id, praise FROM praises WHERE id=%s""",id)
             if cursor.rowcount == 0:
@@ -497,7 +507,7 @@ class FunDB(callbacks.Privmsg):
         word = privmsgs.getArgs(args)
         if word.translate(string.ascii, string.ascii_letters) != '':
             irc.error(msg, 'Word must contain only letters.')
-        addWord(self.db, word, commit=True)
+        addWord(self.dbHandler.getDb(), word, commit=True)
         irc.reply(msg, conf.replySuccess)
 
     def anagram(self, irc, msg, args):
@@ -506,7 +516,8 @@ class FunDB(callbacks.Privmsg):
         Using the words database, determines if a word has any anagrams.
         """
         word = privmsgs.getArgs(args).strip().lower()
-        cursor = self.db.cursor()
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
         cursor.execute("""SELECT words.word FROM words
                           WHERE sorted_word_id=(
                                 SELECT sorted_word_id FROM words
@@ -537,7 +548,8 @@ if __name__ == '__main__':
         added_by = sys.argv[3]
     else:
         added_by = '<console>'
-    db = makeDb(dbFilename)
+    dbHandler = FunDBDB(os.path.join(conf.dataDir, 'FunDB'))
+    db = dbHandler.getDb()
     cursor = db.cursor()
     for line in open(filename, 'r'):
         line = line.rstrip()
