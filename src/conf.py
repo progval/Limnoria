@@ -220,7 +220,7 @@ nested commands. If this option is enabled users can nest commands using a
 bracket syntax, for example: 'bot: bar [foo]'."""))
 
 class ValidBrackets(registry.OnlySomeStrings):
-    validStrings = ('[]', '<>', '{}', '()')
+    validStrings = ('', '[]', '<>', '{}', '()')
     
 supybot.register('brackets', ValidBrackets('[]', """Supybot allows you to
 specify what brackets are used for your nested commands.  Valid sets of
