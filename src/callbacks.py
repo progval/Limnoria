@@ -186,7 +186,7 @@ class Tokenizer:
         while True:
             token = lexer.get_token()
             if not token:
-                raise SyntaxError, 'Missing "]"'
+                raise SyntaxError, 'Missing "]".'
             elif token == ']':
                 return ret
             elif token == '[':
@@ -209,21 +209,21 @@ class Tokenizer:
                 break
             elif token == '|' and conf.supybot.pipeSyntax():
                 if not args:
-                    raise SyntaxError, '"|" with nothing preceding'
+                    raise SyntaxError, '"|" with nothing preceding.'
                 ends.append(args)
                 args = []
             elif conf.supybot.bracketSyntax():
                 if token == '[':
                     args.append(self._insideBrackets(lexer))
                 elif token == ']':
-                    raise SyntaxError, 'Spurious "["'
+                    raise SyntaxError, 'Spurious "]".'
                 else:
                     args.append(self._handleToken(token))
             else:
                 args.append(self._handleToken(token))
         if ends:
             if not args:
-                raise SyntaxError, '"|" with nothing following'
+                raise SyntaxError, '"|" with nothing following.'
             args.append(ends.pop())
             while ends:
                 args[-1].append(ends.pop())
