@@ -39,6 +39,7 @@ import re
 import os
 import sys
 
+import conf
 import ansi
 import debug
 import ircmsgs
@@ -120,7 +121,6 @@ def remove(name):
     _deadDrivers.append(name)
 
 def run():
-    #debug.printf(_drivers)
     for (name, driver) in _drivers.iteritems():
         try:
             if name not in _deadDrivers:
@@ -139,4 +139,10 @@ def run():
            _drivers[name].die()
            del _drivers[name]
        _drivers[name] = driver
+
+def newDriver(server, irc, moduleName=conf.driverModule):
+    driver = __import__(moduleName).Driver(server, irc)
+    irc.driver = driver
+    return driver
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
