@@ -37,6 +37,7 @@ available on demand via several commands.
 from baseplugin import *
 
 import time
+import getopt
 import os.path
 
 import sqlite
@@ -350,29 +351,41 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def searchfactoids(self, irc, msg, args):
-        """[<channel>] <regexp|string>
+        """[<channel>] [--{regexp,exact}=<value>] [<glob>]
 
-        Searches the keyspace for keys matching <regexp>.  If <regexp|string>
-        isn't a regexp (i.e, it's not of the form m/foo/ or /bar/) then the
-        literal string is searched for.
+        Searches the keyspace for keys matching <glob>.  If --regexp is given,
+        it associated value is taken as a regexp and matched against the keys;
+        if --exact is given, its associated value is taken as an exact string
+        to match against the key.
         """
         channel = privmsgs.getChannel(msg, args)
-        regexp = privmsgs.getArgs(args)
-        try:
-            r = utils.perlReToPythonRe(regexp)
-            def p(s):
-                return int(bool(r.search(s)))
-        except ValueError, e:
-            if not regexp.startswith('m/') or regexp[0] == '/' == regexp[-1]:
-                def p(s):
-                    return int(regexp in s)
-            else:
-                irc.error(msg, 'Invalid regular expression.')
-                return
+        (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
+        criteria = []
+        formats = []
+        predicateName = 'p'
         db = self.getDb(channel)
-        db.create_function('p', 1, p)
+        for (option, arg) in optlist:
+            if option == '--exact':
+                ### FIXME: no way to escape LIKE metacharacters in SQLite.
+                criteria.append('key LIKE %s')
+                formats.append('%' + arg + '%')
+            elif option == '--regexp':
+                criteria.append('%s(key)' % predicateName)
+                try:
+                    r = utils.perlReToPythonRe(arg)
+                except ValueError, e:
+                    irc.error(msg, 'Invalid regexp: %s' % e)
+                    return
+                def p(s, r=r):
+                    return int(bool(r.search(s)))
+                db.create_function(predicateName, 1, p)
+                predicateName += 'p'
+        for glob in rest:
+            criteria.append('key LIKE %s')
+            formats.append(glob.translate(self._sqlTrans))
         cursor = db.cursor()
-        cursor.execute("""SELECT key FROM keys WHERE p(key)""")
+        sql = """SELECT key FROM keys WHERE %s""" % ' AND '.join(criteria)
+        cursor.execute(sql, formats)
         if cursor.rowcount == 0:
             irc.reply(msg, 'No keys matched that query.')
         elif cursor.rowcount > 100:
@@ -381,12 +394,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         else:
             keys = [repr(t[0]) for t in cursor.fetchall()]
             s = utils.commaAndify(keys)
-            if len(s) > 450-len(irc.prefix):
-                irc.reply(msg, '%s matched that query; '
-                               'please narrow your query.' % \
-                               utils.nItems(cursor.rowcount, 'key'))
-            else:
-                irc.reply(msg, s)
+            irc.reply(msg, s)
 
         
 Class = Factoids
