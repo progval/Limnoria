@@ -136,7 +136,7 @@ class DbmMarkovDB(object):
     def getFollower(self, channel, first, second):
         db = self._getDb(channel)
         followers = db[self._combine(first, second)]
-        follower = random.choice(followers.split())
+        follower = random.choice(followers.split(' '))
         return (follower, follower == '\n')
 
     def firsts(self, channel):
