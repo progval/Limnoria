@@ -134,7 +134,8 @@ class GooglePrivmsg(callbacks.Privmsg):
 
         Searches Google on a specific site.
         """
-        searchString = 'site:%s %s' % privmsgs.getArgs(args, needed=2)
+        (site, s) = privmsgs.getArgs(args, needed=2)
+        searchString = 'site:%s %s' % (site, s)
         data = google.doGoogleSearch(searchString,
                                      language='lang_en',
                                      safeSearch=1)
