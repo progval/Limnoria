@@ -127,7 +127,7 @@ class Babelfish(callbacks.Privmsg):
         allowEnglish = privmsgs.getArgs(args, needed=0, optional=1)
         language = random.choice(babelfish.available_languages)
         while not allowEnglish and language == 'English':
-            language = random.choice(babelfish.available_languages, 1)
+            language = random.choice(babelfish.available_languages)
         irc.reply(msg, language)
 
     
