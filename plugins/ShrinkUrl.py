@@ -56,10 +56,10 @@ import supybot.callbacks as callbacks
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('ShrinkUrl', True)
-    if yn("""This plugin offers a snarfer that will go to tinyurl.com and get
-             a shorter version of long URLs that are sent to the channel.
-             Would you like this snarfer to be enabled?""", default=False):
-        conf.supybot.plugins.ShrinkUrl.tinyurlSnarfer.setValue(True)
+    if yn("""This plugin offers a snarfer that will go retrieve a shorter
+             version of long URLs that are sent to the channel.  Would you
+             like this snarfer to be enabled?""", default=False):
+        conf.supybot.plugins.ShrinkUrl.shrinkSnafer.setValue(True)
 
 class ShrinkService(registry.OnlySomeStrings):
     validStrings = ('ln', 'tiny')
