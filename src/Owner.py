@@ -158,9 +158,15 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             if name.startswith('supybot.plugins'):
                 try:
                     (_, _, name) = name.split('.')
-                except ValueError: #unpack list of wrong size.
+                except ValueError: # unpack list of wrong size.
                     continue
                 conf.registerPlugin(name)
+            if name.startswith('supybot.commands.defaultPlugins'):
+                try:
+                    (_, _, _, name) = name.split('.')
+                except ValueError: # unpack list of wrong size.
+                    continue
+                registerDefaultPlugin(name, s)
 
     def isCommand(self, methodName):
         return methodName == 'log' or \
