@@ -163,6 +163,10 @@ the bot will send multi-message replies in a single messsage or in multiple
 messages.  For safety purposes (so the bot can't possibly flood) it will
 normally send everything in a single message."""))
 
+supybot.reply.register('detailedErrors', registry.Boolean(True, """Determines
+whether error messages that result from bugs in the bot will show a detailed
+error message (the uncaught exception) or a generic error message."""))
+
 supybot.reply.register('errorInPrivate', registry.Boolean(False, """
 Determines whether the bot will send error messages to users in private."""))
 

@@ -423,10 +423,10 @@ class IrcObjectProxy(RichReplyMethods):
             self.error(str(e))
         except Exception, e:
             cb.log.exception('Uncaught exception:')
-            # TODO: Configuration variable for this detailed error.  Users
-            # should be able to specify that a plain error message get
-            # returned.
-            self.error(utils.exnToString(e))
+            if conf.supybot.reply.detailedErrors():
+                self.error(utils.exnToString(e))
+            else:
+                self.replyError()
             
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
@@ -815,7 +815,10 @@ class PrivmsgRegexp(Privmsg):
             # We catch exceptions here because IrcObjectProxy isn't doing our
             # dirty work for us anymore.
             self.log.exception('Uncaught exception from callCommand:')
-            irc.error(utils.exnToString(e))
+            if conf.supybot.reply.detailedErrors():
+                irc.error(utils.exnToString(e))
+            else:
+                irc.replyError()
 
     def doPrivmsg(self, irc, msg):
         if Privmsg.errored:
@@ -863,7 +866,10 @@ class PrivmsgCommandAndRegexp(Privmsg):
         except Exception, e:
             if 'catchErrors' in kwargs and kwargs['catchErrors']:
                 self.log.exception('Uncaught exception in callCommand:')
-                irc.error(utils.exnToString(e))
+                if conf.supybot.reply.detailedErrors():
+                    irc.error(utils.exnToString(e))
+                else:
+                    irc.replyError()
             else:
                 raise
 
