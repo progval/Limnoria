@@ -1,34 +1,41 @@
-#!/usr/bin/env python
-"""Ultra-liberal RSS parser
+#!/usr/bin/python
+"""Ultra-liberal feed parser
 
-Visit http://diveintomark.org/projects/rss_parser/ for the latest version
+Visit http://diveintomark.org/projects/feed_parser/ for the latest version
 
-Handles RSS 0.9x and RSS 1.0 feeds
+Handles RSS 0.9x, RSS 1.0, RSS 2.0, Pie/Atom/Echo feeds
 
-RSS 0.9x elements:
-- title, link, description, webMaster, managingEditor, language
+RSS 0.9x/common elements:
+- title, link, guid, description, webMaster, managingEditor, language
   copyright, lastBuildDate, pubDate
 
-RSS 1.0 elements:
+Additional RSS 1.0/2.0 elements:
 - dc:rights, dc:language, dc:creator, dc:date, dc:subject,
-  content:encoded
+  content:encoded, admin:generatorAgent, admin:errorReportsTo,
+  
+Addition Pie/Atom/Echo elements:
+- subtitle, created, issued, modified, summary, id, content
 
-Things it handles that choke other RSS parsers:
-- bastard combinations of RSS 0.9x and RSS 1.0 (most Movable Type feeds)
-- illegal XML characters (most Radio feeds)
-- naked and/or invalid HTML in description (The Register)
-- content:encoded in item element (Aaron Swartz)
-- guid in item element (Scripting News)
-- fullitem in item element (Jon Udell)
-- non-standard namespaces (BitWorking)
+Things it handles that choke other parsers:
+- bastard combinations of RSS 0.9x and RSS 1.0
+- illegal XML characters
+- naked and/or invalid HTML in description
+- content:encoded in item element
+- guid in item element
+- fullitem in item element
+- non-standard namespaces
+- inline XML in content (Pie/Atom/Echo)
+- multiple content items per entry (Pie/Atom/Echo)
 
 Requires Python 2.2 or later
 """
 
-__author__ = "Mark Pilgrim (f8dy@diveintomark.org)"
-__copyright__ = "Copyright 2002, Mark Pilgrim"
-__contributors__ = ["Jason Diamond (jason@injektilo.org)"]
-__license__ = "GPL"
+__version__ = "2.5.3"
+__author__ = "Mark Pilgrim <http://diveintomark.org/>"
+__copyright__ = "Copyright 2002-3, Mark Pilgrim"
+__contributors__ = ["Jason Diamond <http://injektilo.org/>",
+                    "John Beimler <http://john.beimler.org/>"]
+__license__ = "Python"
 __history__ = """
 1.0 - 9/27/2002 - MAP - fixed namespace processing on prefixed RSS 2.0 elements,
   added Simon Fell's test suite
@@ -52,6 +59,25 @@ __history__ = """
 2.2 - 1/27/2003 - MAP - added attribute support, admin:generatorAgent.
   start_admingeneratoragent is an example of how to handle elements with
   only attributes, no content.
+2.3 - 6/11/2003 - MAP - added USER_AGENT for default (if caller doesn't specify);
+  also, make sure we send the User-Agent even if urllib2 isn't available.
+  Match any variation of backend.userland.com/rss namespace.
+2.3.1 - 6/12/2003 - MAP - if item has both link and guid, return both as-is.
+2.4 - 7/9/2003 - MAP - added preliminary Pie/Atom/Echo support based on Sam Ruby's
+  snapshot of July 1 <http://www.intertwingly.net/blog/1506.html>; changed
+  project name
+2.5 - 7/25/2003 - MAP - changed to Python license (all contributors agree);
+  removed unnecessary urllib code -- urllib2 should always be available anyway;
+  return actual url, status, and full HTTP headers (as result['url'],
+  result['status'], and result['headers']) if parsing a remote feed over HTTP --
+  this should pass all the HTTP tests at <http://diveintomark.org/tests/client/http/>;
+  added the latest namespace-of-the-week for RSS 2.0
+2.5.1 - 7/26/2003 - RMK - clear opener.addheaders so we only send our custom
+  User-Agent (otherwise urllib2 sends two, which confuses some servers)
+2.5.2 - 7/28/2003 - MAP - entity-decode inline xml properly; added support for
+  inline <xhtml:body> and <xhtml:div> as used in some RSS 2.0 feeds
+2.5.3 - 8/6/2003 - TvdV - patch to track whether we're inside an image or
+  textInput, and also to return the character encoding (if specified)
 """
 
 try:
@@ -59,8 +85,10 @@ try:
     timeoutsocket.setDefaultSocketTimeout(10)
 except ImportError:
     pass
-import cgi, re, sgmllib, string, StringIO, urllib, gzip
+import cgi, re, sgmllib, string, StringIO, gzip, urllib2
 sgmllib.tagfind = re.compile('[a-zA-Z][-_.:a-zA-Z0-9]*')
+
+USER_AGENT = "UltraLiberalFeedParser/%s +http://diveintomark.org/projects/feed_parser/" % __version__
 
 def decodeEntities(data):
     data = data or ''
@@ -71,15 +99,21 @@ def decodeEntities(data):
     data = data.replace('&amp;', '&')
     return data
 
-class RSSParser(sgmllib.SGMLParser):
+class FeedParser(sgmllib.SGMLParser):
     namespaces = {"http://backend.userland.com/rss": "",
-                  "http://backend.userland.com/rss2": "",
+                  "http://blogs.law.harvard.edu/tech/rss": "",
                   "http://purl.org/rss/1.0/": "",
+                  "http://example.com/newformat#": "",
+                  "http://example.com/necho": "",
+                  "http://purl.org/echo/": "",
+                  "uri/of/echo/namespace#": "",
+                  "http://purl.org/pie/": "",
                   "http://purl.org/rss/1.0/modules/textinput/": "ti",
                   "http://purl.org/rss/1.0/modules/company/": "co",
                   "http://purl.org/rss/1.0/modules/syndication/": "sy",
                   "http://purl.org/dc/elements/1.1/": "dc",
-                  "http://webns.net/mvcb/": "admin"}
+                  "http://webns.net/mvcb/": "admin",
+                  "http://www.w3.org/1999/xhtml": "xhtml"}
 
     def reset(self):
         self.channel = {}
@@ -87,6 +121,12 @@ class RSSParser(sgmllib.SGMLParser):
         self.elementstack = []
         self.inchannel = 0
         self.initem = 0
+        self.incontent = 0
+        self.intextinput = 0
+        self.inimage = 0
+        self.contentmode = None
+        self.contenttype = None
+        self.contentlang = None
         self.namespacemap = {}
         sgmllib.SGMLParser.reset(self)
 
@@ -100,15 +140,22 @@ class RSSParser(sgmllib.SGMLParser):
         if not expectingText: return
         output = "".join(pieces)
         output = decodeEntities(output)
-        if self.initem:
+        if self.incontent and self.initem:
+            if not self.items[-1].has_key(element):
+                self.items[-1][element] = []
+            self.items[-1][element].append({"language":self.contentlang, "type":self.contenttype, "value":output})
+        elif self.initem:
             self.items[-1][element] = output
-        elif self.inchannel:
+        elif self.inchannel and (not self.intextinput) and (not self.inimage):
             self.channel[element] = output
 
     def _addNamespaces(self, attrs):
         for prefix, value in attrs:
             if not prefix.startswith("xmlns:"): continue
             prefix = prefix[6:]
+            if prefix.find('backend.userland.com/rss') <> -1:
+                # match any backend.userland.com namespace
+                prefix = 'http://backend.userland.com/rss'
             if self.namespaces.has_key(value):
                 self.namespacemap[prefix] = self.namespaces[value]
 
@@ -120,7 +167,7 @@ class RSSParser(sgmllib.SGMLParser):
             prefix = self.namespacemap.get(prefix, prefix)
             name = prefix + ':' + suffix
         return name
-
+        
     def _getAttribute(self, attrs, name):
         value = [v for k, v in attrs if self._mapToStandardPrefix(k) == name]
         if value:
@@ -128,7 +175,7 @@ class RSSParser(sgmllib.SGMLParser):
         else:
             value = None
         return value
-
+            
     def start_channel(self, attrs):
         self.push('channel', 0)
         self.inchannel = 1
@@ -136,6 +183,18 @@ class RSSParser(sgmllib.SGMLParser):
     def end_channel(self):
         self.pop('channel')
         self.inchannel = 0
+    
+    def start_image(self, attrs):
+        self.inimage = 1
+            
+    def end_image(self):
+        self.inimage = 0
+                
+    def start_textinput(self, attrs):
+        self.intextinput = 1
+        
+    def end_textinput(self):
+        self.intextinput = 0
 
     def start_item(self, attrs):
         self.items.append({})
@@ -201,7 +260,10 @@ class RSSParser(sgmllib.SGMLParser):
     def end_guid(self):
         self.pop('guid')
         if self.guidislink:
-            self.items[-1]['link'] = self.items[-1]['guid']
+            if not self.items[-1].has_key('link'):
+                # guid acts as link, but only if "ispermalink" is not present or is "true",
+                # and only if the item doesn't already have a link element
+                self.items[-1]['link'] = self.items[-1]['guid']
 
     def start_title(self, attrs):
         self.push('title', self.inchannel or self.initem)
@@ -224,7 +286,101 @@ class RSSParser(sgmllib.SGMLParser):
             self.elementstack[-1][2].append(value)
         self.pop('generator')
 
+    def start_feed(self, attrs):
+        self.inchannel = 1
+
+    def end_feed(self):
+        self.inchannel = 0
+
+    def start_entry(self, attrs):
+        self.items.append({})
+        self.push('item', 0)
+        self.initem = 1
+
+    def end_entry(self):
+        self.pop('item')
+        self.initem = 0
+        
+    def start_subtitle(self, attrs):
+        self.push('subtitle', 1)
+
+    def end_subtitle(self):
+        self.pop('subtitle')
+
+    def start_summary(self, attrs):
+        self.push('summary', 1)
+
+    def end_summary(self):
+        self.pop('summary')
+        
+    def start_modified(self, attrs):
+        self.push('modified', 1)
+
+    def end_modified(self):
+        self.pop('modified')
+
+    def start_created(self, attrs):
+        self.push('created', 1)
+
+    def end_created(self):
+        self.pop('created')
+
+    def start_issued(self, attrs):
+        self.push('issued', 1)
+
+    def end_issued(self):
+        self.pop('issued')
+
+    def start_id(self, attrs):
+        self.push('id', 1)
+
+    def end_id(self):
+        self.pop('id')
+
+    def start_content(self, attrs):
+        self.incontent = 1
+        if ('mode', 'escaped') in attrs:
+            self.contentmode = 'escaped'
+        elif ('mode', 'base64') in attrs:
+            self.contentmode = 'base64'
+        else:
+            self.contentmode = 'xml'
+        mimetype = [v for k, v in attrs if k=='type']
+        if mimetype:
+            self.contenttype = mimetype[0]
+        xmllang = [v for k, v in attrs if k=='xml:lang']
+        if xmllang:
+            self.contentlang = xmllang[0]
+        self.push('content', 1)
+
+    def end_content(self):
+        self.pop('content')
+        self.incontent = 0
+        self.contentmode = None
+        self.contenttype = None
+        self.contentlang = None
+
+    def start_body(self, attrs):
+        self.incontent = 1
+        self.contentmode = 'xml'
+        self.contenttype = 'application/xhtml+xml'
+        xmllang = [v for k, v in attrs if k=='xml:lang']
+        if xmllang:
+            self.contentlang = xmllang[0]
+        self.push('content', 1)
+
+    start_div = start_body
+    start_xhtml_body = start_body
+    start_xhtml_div = start_body
+    end_body = end_content
+    end_div = end_content
+    end_xhtml_body = end_content
+    end_xhtml_div = end_content
+        
     def unknown_starttag(self, tag, attrs):
+        if self.incontent and self.contentmode == 'xml':
+            self.handle_data("<%s%s>" % (tag, "".join([' %s="%s"' % t for t in attrs])))
+            return
         self._addNamespaces(attrs)
         colonpos = tag.find(':')
         if colonpos <> -1:
@@ -242,6 +398,9 @@ class RSSParser(sgmllib.SGMLParser):
         return self.push(tag, 0)
 
     def unknown_endtag(self, tag):
+        if self.incontent and self.contentmode == 'xml':
+            self.handle_data("</%s>" % tag)
+            return
         colonpos = tag.find(':')
         if colonpos <> -1:
             prefix = tag[:colonpos]
@@ -261,18 +420,26 @@ class RSSParser(sgmllib.SGMLParser):
         # called for each character reference, e.g. for "&#160;", ref will be "160"
         # Reconstruct the original character reference.
         if not self.elementstack: return
-        self.elementstack[-1][2].append("&#%(ref)s;" % locals())
+        text = "&#%s;" % ref
+        if self.incontent and self.contentmode == 'xml':
+            text = cgi.escape(text)
+        self.elementstack[-1][2].append(text)
 
     def handle_entityref(self, ref):
         # called for each entity reference, e.g. for "&copy;", ref will be "copy"
         # Reconstruct the original entity reference.
         if not self.elementstack: return
-        self.elementstack[-1][2].append("&%(ref)s;" % locals())
+        text = "&%s;" % ref
+        if self.incontent and self.contentmode == 'xml':
+            text = cgi.escape(text)
+        self.elementstack[-1][2].append(text)
 
     def handle_data(self, text):
         # called for each block of plain text, i.e. outside of any tag and
         # not containing any character or entity references
         if not self.elementstack: return
+        if self.incontent and self.contentmode == 'xml':
+            text = cgi.escape(text)
         self.elementstack[-1][2].append(text)
 
     def handle_comment(self, text):
@@ -315,6 +482,29 @@ class RSSParser(sgmllib.SGMLParser):
             return k+3
         return sgmllib.SGMLParser.parse_declaration(self, i)
 
+class FeedURLHandler(urllib2.HTTPRedirectHandler, urllib2.HTTPDefaultErrorHandler):
+    def http_error_default(self, req, fp, code, msg, headers):
+        if ((code / 100) == 3) and (code != 304):
+            return self.http_error_302(req, fp, code, msg, headers)
+        from urllib import addinfourl
+        infourl = addinfourl(fp, headers, req.get_full_url())
+        infourl.status = code
+        return infourl
+#        raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp)
+
+    def http_error_302(self, req, fp, code, msg, headers):
+        infourl = urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers)
+        infourl.status = code
+        return infourl
+
+    def http_error_301(self, req, fp, code, msg, headers):
+        infourl = urllib2.HTTPRedirectHandler.http_error_301(self, req, fp, code, msg, headers)
+        infourl.status = code
+        return infourl
+
+    http_error_300 = http_error_302
+    http_error_307 = http_error_302
+        
 def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
     """
     URI, filename, or string --> stream
@@ -338,10 +528,6 @@ def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
 
     If the referrer argument is supplied, it will be used as the value of a
     Referer[sic] request header.
-
-    The optional arguments are only used if the source argument is an HTTP
-    URL and the urllib2 module is importable (i.e., you must be using Python
-    version 2.0 or higher).
     """
 
     if hasattr(source, "read"):
@@ -350,37 +536,27 @@ def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
     if source == "-":
         return sys.stdin
 
+    if not agent:
+        agent = USER_AGENT
+        
     # try to open with urllib2 (to use optional headers)
-    try:
-        import urllib2
-        request = urllib2.Request(source)
-        if etag:
-            request.add_header("If-None-Match", etag)
-        if modified:
-            request.add_header("If-Modified-Since", format_http_date(modified))
-        if agent:
-            request.add_header("User-Agent", agent)
-        if referrer:
-            # http://www.dictionary.com/search?q=referer
-            request.add_header("Referer", referrer)
+    request = urllib2.Request(source)
+    if etag:
+        request.add_header("If-None-Match", etag)
+    if modified:
+        request.add_header("If-Modified-Since", format_http_date(modified))
+    request.add_header("User-Agent", agent)
+    if referrer:
+        request.add_header("Referer", referrer)
         request.add_header("Accept-encoding", "gzip")
-        try:
-            return urllib2.urlopen(request)
-        except urllib2.HTTPError:
-            # either the resource is not modified or some other HTTP
-            # error occurred so return an empty resource
-            return StringIO.StringIO("")
-        except:
-            # source must not be a valid URL but it might be a valid filename
-            pass
-    except ImportError:
-        # urllib2 isn't available so try to open with urllib
-        try:
-            return urllib.urlopen(source)
-        except:
-            # source still might be a filename
-            pass
-
+    opener = urllib2.build_opener(FeedURLHandler())
+    opener.addheaders = [] # RMK - must clear so we only send our custom User-Agent
+    try:
+        return opener.open(request)
+    except:
+        # source is not a valid URL, but it might be a valid filename
+        pass
+    
     # try to open with native open function (if source is a filename)
     try:
         return open(source)
@@ -392,7 +568,7 @@ def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
 
 def get_etag(resource):
     """
-    Get the ETag associated with a response returned from a call to
+    Get the ETag associated with a response returned from a call to 
     open_resource().
 
     If the resource was not returned from an HTTP server or the server did
@@ -478,12 +654,16 @@ def parse_http_date(date):
         return None
 
 def parse(uri, etag=None, modified=None, agent=None, referrer=None):
-    r = RSSParser()
+    r = FeedParser()
     f = open_resource(uri, etag=etag, modified=modified, agent=agent, referrer=referrer)
     data = f.read()
     if hasattr(f, "headers"):
-        if f.headers.get('content-encoding', None) == 'gzip':
-            data = gzip.GzipFile(fileobj=StringIO.StringIO(data)).read()
+        if f.headers.get('content-encoding', '') == 'gzip':
+            try:
+                data = gzip.GzipFile(fileobj=StringIO.StringIO(data)).read()
+            except:
+                # some feeds claim to be gzipped but they're not, so we get garbage
+                data = ''
     r.feed(data)
     result = {"channel": r.channel, "items": r.items}
     newEtag = get_etag(f)
@@ -492,6 +672,20 @@ def parse(uri, etag=None, modified=None, agent=None, referrer=None):
     newModified = get_modified(f)
     if newModified: result["modified"] = newModified
     elif modified: result["modified"] = modified
+    if hasattr(f, "url"):
+        result["url"] = f.url
+    if hasattr(f, "headers"):
+        result["headers"] = f.headers.dict
+    if hasattr(f, "status"):
+        result["status"] = f.status
+    elif hasattr(f, "url"):
+        result["status"] = 200
+    # get the xml encoding
+    if result.get('encoding', '') == '':
+        xmlheaderRe = re.compile('<\?.*encoding="(.*)".*\?>')
+        match = xmlheaderRe.match(data)
+        if match:
+            result['encoding'] = match.groups()[0].lower()
     f.close()
     return result
 
@@ -515,5 +709,14 @@ if __name__ == '__main__':
         print url
         print
         result = parse(url)
-        pprint(result['channel'])
+        pprint(result)
         print
+
+"""
+TODO
+- textinput/textInput
+- image
+- author
+- contributor
+- comments
+"""
