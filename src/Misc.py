@@ -407,8 +407,9 @@ class Misc(callbacks.Privmsg):
             if irc.nested:
                 irc.reply(utils.commaAndify(names))
             else:
-                irc.reply('The %s command is available in %s.' %
-                          (command, plugin))
+                irc.reply('The %r command is available in the %s %s.' %
+                          (command, plugin,
+                           utils.pluralize('plugin', len(names))))
         else:
             irc.error('There is no such command %s.' % command)
 
