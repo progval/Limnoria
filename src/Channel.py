@@ -432,7 +432,7 @@ class Channel(callbacks.Privmsg):
         irc.replySuccess()
     unlobotomize = privmsgs.checkChannelCapability(unlobotomize, 'op')
 
-    def ban(self, irc, msg, args, channel):
+    def permban(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
 
         If you have the #channel,op capability, this will effect a permanent
@@ -452,9 +452,9 @@ class Channel(callbacks.Privmsg):
         c.addBan(banmask)
         ircdb.channels.setChannel(channel, c)
         irc.replySuccess()
-    ban = privmsgs.checkChannelCapability(ban, 'op')
+    permban = privmsgs.checkChannelCapability(permban, 'op')
 
-    def unban(self, irc, msg, args, channel):
+    def unpermban(self, irc, msg, args, channel):
         """[<channel>] <hostmask>
 
         If you have the #channel,op capability, this will remove the permanent
@@ -465,10 +465,11 @@ class Channel(callbacks.Privmsg):
         c = ircdb.channels.getChannel(channel)
         c.removeBan(banmask)
         ircdb.channels.setChannel(channel, c)
+        irc.queueMsg(ircmsgs.unban(channel, banmask))
         irc.replySuccess()
-    unban = privmsgs.checkChannelCapability(unban, 'op')
+    unpermban = privmsgs.checkChannelCapability(unpermban, 'op')
 
-    def bans(self, irc, msg, args, channel):
+    def permbans(self, irc, msg, args, channel):
         """[<channel>]
 
         If you have the #channel,op capability, this will show you the
@@ -479,6 +480,7 @@ class Channel(callbacks.Privmsg):
             irc.reply(utils.commaAndify(map(utils.dqrepr, c.bans)))
         else:
             irc.reply('There are currently no permanent bans on %s' % channel)
+    permbans = privmsgs.checkChannelCapability(permbans, 'op')
 
     def ignore(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
@@ -533,7 +535,6 @@ class Channel(callbacks.Privmsg):
             L = sorted(c.ignores)
             irc.reply(utils.commaAndify(imap(repr, L)))
     ignores = privmsgs.checkChannelCapability(ignores, 'op')
-
 
     def addcapability(self, irc, msg, args, channel):
         """[<channel>] <name|hostmask> <capability>
@@ -673,7 +674,6 @@ class Channel(callbacks.Privmsg):
         L = list(irc.state.channels[channel].users)
         utils.sortBy(str.lower, L)
         irc.reply(utils.commaAndify(L))
-
 
 
 Class = Channel
