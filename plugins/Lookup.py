@@ -30,7 +30,7 @@
 ###
 
 """
-The FileLookup plugin handles looking up various values by their key.
+The Lookup plugin handles looking up various values by their key.
 """
 
 import plugins
@@ -52,7 +52,7 @@ def configure(onStart, afterConnect, advanced):
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load FileLookup')
+    onStart.append('load Lookup')
     print 'This module allows you to define commands that do a simple key'
     print 'lookup and return some simple value.  It has a command "add"'
     print 'that takes a command name and a file in conf.dataDir and adds a'
@@ -98,7 +98,7 @@ example = utils.wrapLines("""
 """)
 
 def getDb():
-    return sqlite.connect(os.path.join(conf.dataDir, 'FileLookup.db'))
+    return sqlite.connect(os.path.join(conf.dataDir, 'Lookup.db'))
 
 class Lookup(callbacks.Privmsg):
     def die(self):
