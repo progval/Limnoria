@@ -121,6 +121,10 @@ class Relay(callbacks.Privmsg):
                 irc.callbacks[:] = []
                 irc.die()
 
+    def do376(self, irc, msg):
+        if self.channels:
+            irc.queueMsg(ircmsgs.joins(self.channels))
+
     def startrelay(self, irc, msg, args):
         """<network abbreviation for current server>
 
@@ -258,6 +262,7 @@ class Relay(callbacks.Privmsg):
         nickAtNetwork = privmsgs.getArgs(args)
         try:
             (nick, network) = nickAtNetwork.split('@', 1)
+            nick = ircutils.toLower(nick)
         except ValueError:
             raise callbacks.ArgumentError
         if network not in self.ircs:
@@ -287,7 +292,7 @@ class Relay(callbacks.Privmsg):
     def do311(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
-        nick = msg.args[1]
+        nick = ircutils.toLower(msg.args[1])
         if (irc, nick) not in self.whois:
             return
         else:
@@ -300,7 +305,7 @@ class Relay(callbacks.Privmsg):
     def do318(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
-        nick = msg.args[1]
+        nick = ircutils.toLower(msg.args[1])
         if (irc, nick) not in self.whois:
             return
         (replyIrc, replyMsg, d) = self.whois[(irc, nick)]
@@ -320,7 +325,7 @@ class Relay(callbacks.Privmsg):
         s = '%s (%s) has been online since %s (idle for %s) and is on %s' % \
             (user, hostmask, signon, idle, channels)
         replyIrc.reply(replyMsg, s)
-        del self.whois[(replyIrc, nick)]
+        del self.whois[(irc, nick)]
 
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
