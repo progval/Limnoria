@@ -259,9 +259,9 @@ def main():
     try:
         confDir = registry._cache['supybot.directories.conf']
         confDir = utils.safeEval(confDir)
-        (confDir, _) = getDirectoryName(confDir, basedir=basedir)
+        (confDir, basedir) = getDirectoryName(confDir, basedir=basedir)
     except KeyError:
-        (confDir, _) = getDirectoryName('conf', basedir=basedir)
+        (confDir, basedir) = getDirectoryName('conf', basedir=basedir)
     conf.supybot.directories.conf.setValue(confDir)
 
     # pluginDirs
@@ -274,7 +274,7 @@ def main():
     output(utils.commaAndify(pluginDirs))
     while yn('Would you like to add another plugin directory?',
              default=False):
-        pluginDir = getDirectoryName('plugins', basedir=basedir)
+        (pluginDir, _) = getDirectoryName('plugins', basedir=basedir)
         if pluginDir not in pluginDirs:
             pluginDirs.append(pluginDir)
     conf.supybot.directories.plugins.setValue(pluginDirs)
