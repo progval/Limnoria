@@ -107,7 +107,7 @@ class HangmanGame:
         cur = db.cursor()
         cur.execute("""SELECT word FROM words ORDER BY random() LIMIT 1""")
         word = cur.fetchone()[0]
-        return word
+        return word.lower()
 
     def letterPositions(self, letter, word):
         """
