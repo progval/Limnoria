@@ -187,7 +187,10 @@ class Unix(callbacks.Privmsg):
             return
         try:
             (r, w) = popen2.popen4([self.spellCmd, '-a'])
-            r.readline() # Banner.
+            s = r.readline() # Banner, hopefully.
+            if 'sorry' in s.lower():
+                irc.error(msg, s)
+                return
             w.write(word)
             w.write('\n')
             w.flush()
