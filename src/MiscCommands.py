@@ -224,15 +224,16 @@ class MiscCommands(callbacks.Privmsg):
         <nick> instead of the person sending this message.
         """
         nick = privmsgs.getArgs(args, needed=0, optional=1)
+        userHostmask = msg.prefix.split('!', 1)[1]
         if nick:
             try:
                 hostmask = irc.state.nickToHostmask(nick)
-                userHostmask = hostmask.split('!', 1)[1]
+                otherUserHostmask = hostmask.split('!', 1)[1]
+                L = self._mores[otherUserHostmask][:]
+                self._mores[userHostmask] = L
             except KeyError:
                 irc.error(msg, 'Sorry, I can\'t find a hostmask for %s' % nick)
                 return
-        else:
-            userHostmask = msg.prefix.split('!', 1)[1]
         try:
             L = self._mores[userHostmask]
             chunk = L.pop()
