@@ -216,7 +216,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def sourceforgeSnarfer(self, irc, msg, match):
-        r"http://(?:www\.)?sourceforge.net/tracker/index.php\?func=detail&aid=\d+&group_id=\d+&atid=\d+"
+        r"https?://(?:www\.)?sourceforge.net/tracker/index.php\?func=detail&aid=\d+&group_id=\d+&atid=\d+"
         url = match.group(0)
         fd = urllib2.urlopen(url)
         s = fd.read()

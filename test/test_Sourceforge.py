@@ -37,7 +37,7 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
     plugins = ('Sourceforge',)
     def testBugs(self):
         self.assertNotError('bugs')
-        self.assertResponse('bugs alkjfi83hfa8', 'Can\'t find the "Bugs" link.')
+        self.assertResponse('bugs alkjfi83fa8', 'Can\'t find the "Bugs" link.')
         self.assertNotError('bugs gaim')
         m = self.getMsg('bugs gaim')
         n = re.search('#(\d+)', m.args[1]).group(1)
@@ -56,6 +56,12 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
             'func=detail&aid=589953&group_id=58965&atid=489447',
             'Bug #589953: Logger doesn\'t log QUITs.')
         self.assertResponse('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=712761&group_id=58965&atid=489450',
+            'Feature Request #712761: PyPI searching and announcements')
+        self.assertResponse('https://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=589953&group_id=58965&atid=489447',
+            'Bug #589953: Logger doesn\'t log QUITs.')
+        self.assertResponse('https://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=712761&group_id=58965&atid=489450',
             'Feature Request #712761: PyPI searching and announcements')
 
