@@ -217,7 +217,7 @@ class Http(callbacks.Privmsg):
             else:
                 seen = '%s was last seen on Gameknot %s.' % (name,
                 seen.group(2))
-            if games == 1:
+            if games == '1':
                 games = '1 active game'
             else:
                 games = '%s active games' % games
