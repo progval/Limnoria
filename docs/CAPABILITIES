@@ -66,3 +66,42 @@ can be set by the end-user for both individual channels and for the bot as a
 whole, letting an end-user set the policy he wants the bot to follow for users
 that haven't yet registered in his user database.
 It's really a revolution! 
+
+There are several default capabilities the bot uses.  The most important of
+these is the "owner" capability.  This capability allows the person having it
+to use *any* command.  It's best to keep this capability reserved to people
+who actually have access to the shell the bot is running on.
+
+There is also the "admin" capability for non-owners that are highly trusted
+to administer the bot appropriately.  They can do things such as change the
+bot's nick, globally enable/disable commands, cause the bot to ignore a given
+user, set the prefixchar, report bugs, etc.  They generally cannot do
+administration related to channels, which is reserved for people with the
+next capability.
+
+People who are to administer channels with the bot should have the #channel.op
+capability -- whatever channel they are to administrate, they should have that
+channel capability for "op".  For example, since I want inkedmn to be an
+administrator in #supybot, I'll give him the #supybot.op capability.  This is
+in addition to his admin capability, since admin capability doesn't give the
+person having it control over channels.  #channel.op is object used for such
+things as giving/receiving ops, kickbanning people, lobotomizing the bot,
+ignoring users in the channel, and managing the channel capabilities.  The
+#channel.op capability is also basically the equivalent of the owner capability
+for capabilities involving #channel -- basically anyone with the #channel.op
+capability is considered to have all positive capabilities and no negative
+capabilities for #channel.
+
+One other globally important capability exists: "trusted".  This is a command
+that basically says "This user can be trusted not to try and crash the bot."
+It allows users to call commands like Math.icalc, which potentially could
+cause the bot to begin a calculation that could potentially never return (a
+calculation like 10**10**10**10).  Another command that requires the trusted
+capability is Utilties.re, which (due to the regular expression implementation
+in Python (and any other language that uses NFA regular expressions, like
+Perl or Ruby or Lua or ...) which can allow a regular expression to take
+exponential time to process).  Consider what would happen if the someone gave
+the bot the command 're [strjoin "" s/./ [dict go] /] [dict go]'
+
+Other plugins may require different capabilities; the Factoids plugin requires
+#channel.capability, the Topic plugin requires #channel.topic, etc.
