@@ -44,9 +44,6 @@ import random
 import urllib2
 import threading
 
-__revision__ = "$Id$"
-
-import fix
 import cdb
 import conf
 import utils
