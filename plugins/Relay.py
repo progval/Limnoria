@@ -92,7 +92,7 @@ class Relay(callbacks.Privmsg):
         "<network>"
         network = privmsgs.getArgs(args)
         otherIrc = self.ircs[network]
-        otherIrc.driver.die()
+        otherIrc.driver.close()
         del self.ircs[network]
         world.ircs.remove(otherIrc)
         del self.abbreviations[otherIrc]
