@@ -82,7 +82,7 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Relay')
     startNetwork = anything('What is the name of the network you\'re ' \
                             'connecting to first?')
-    onStart.append('startrelay %s' % startNetwork)
+    onStart.append('relay start %s' % startNetwork)
     while yn('Do you want to connect to another network for relaying?') == 'y':
         network = anything('What is the name of the network you want to ' \
                            'connect to?')
@@ -107,14 +107,14 @@ def configure(onStart, afterConnect, advanced):
                     print 'Sorry, but that isn\'t a valid port.'
                     port = ''
             server = ':'.join((server, port))
-        onStart.append('relayconnect %s %s' % (network, server))
+        onStart.append('relay connect %s %s' % (network, server))
     channel = anything('What channel would you like to relay between?')
-    afterConnect.append('relayjoin %s' % channel)
+    afterConnect.append('relay join %s' % channel)
     while yn('Would like to relay between any more channels?') == 'y':
         channel = anything('What channel?')
-        afterConnect.append('relayjoin %s' % channel)
+        afterConnect.append('relay join %s' % channel)
     if yn('Would you like to use color to distinguish between nicks?') == 'y':
-        afterConnect.append('relaycolor 2')
+        afterConnect.append('relay color 2')
 
 
 class Relay(callbacks.Privmsg):
@@ -152,7 +152,7 @@ class Relay(callbacks.Privmsg):
     do377 = do376
     do422 = do376
 
-    def startrelay(self, irc, msg, args):
+    def start(self, irc, msg, args):
         """<network abbreviation for current server>
 
         This command is necessary to start the Relay plugin; the
@@ -174,9 +174,9 @@ class Relay(callbacks.Privmsg):
         self.lastmsg[realIrc] = ircmsgs.ping('this is just a fake message')
         self.started = True
         irc.reply(msg, conf.replySuccess)
-    startrelay = privmsgs.checkCapability(startrelay, 'owner')
+    start = privmsgs.checkCapability(start, 'owner')
 
-    def relayconnect(self, irc, msg, args):
+    def connect(self, irc, msg, args):
         """<network abbreviation> <domain:port> (port defaults to 6667)
 
         Connects to another network at <domain:port>.  The network
@@ -184,7 +184,7 @@ class Relay(callbacks.Privmsg):
         that network to other networks.
         """
         if not self.started:
-            irc.error(msg, 'You must use the startrelay command first.')
+            irc.error(msg, 'You must use the start command first.')
             return
         abbreviation, server = privmsgs.getArgs(args, needed=2)
         if isinstance(irc, irclib.Irc):
@@ -205,16 +205,16 @@ class Relay(callbacks.Privmsg):
         self.ircstates[newIrc] = irclib.IrcState()
         self.lastmsg[newIrc] = ircmsgs.ping('this is just a fake message')
         irc.reply(msg, conf.replySuccess)
-    relayconnect = privmsgs.checkCapability(relayconnect, 'owner')
+    connect = privmsgs.checkCapability(connect, 'owner')
 
-    def relaydisconnect(self, irc, msg, args):
+    def disconnect(self, irc, msg, args):
         """<network>
 
         Disconnects and ceases to relay to and from the network represented by
         the network abbreviation <network>.
         """
         if not self.started:
-            irc.error(msg, 'You must use the startrelay command first.')
+            irc.error(msg, 'You must use the start command first.')
             return
         network = privmsgs.getArgs(args)
         otherIrc = self.ircs[network]
@@ -222,19 +222,19 @@ class Relay(callbacks.Privmsg):
         del self.ircs[network]
         del self.abbreviations[otherIrc]
         irc.reply(msg, conf.replySuccess)
-    relaydisconnect = privmsgs.checkCapability(relaydisconnect, 'owner')
+    disconnect = privmsgs.checkCapability(disconnect, 'owner')
 
-    def relayjoin(self, irc, msg, args):
+    def join(self, irc, msg, args):
         """<channel>
 
         Starts relaying between the channel <channel> on all networks.  If on a
         network the bot isn't in <channel>, he'll join.  This commands is
         required even if the bot is in the channel on both networks; he won't
-        relay between those channels unless he's told to relayjoin both
+        relay between those channels unless he's told to oin both
         channels.
         """
         if not self.started:
-            irc.error(msg, 'You must use the startrelay command first.')
+            irc.error(msg, 'You must use the start command first.')
             return
         channel = privmsgs.getArgs(args)
         self.channels.add(ircutils.toLower(channel))
@@ -242,9 +242,9 @@ class Relay(callbacks.Privmsg):
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
         irc.reply(msg, conf.replySuccess)
-    relayjoin = privmsgs.checkCapability(relayjoin, 'owner')
+    join = privmsgs.checkCapability(join, 'owner')
 
-    def relaypart(self, irc, msg, args):
+    def part(self, irc, msg, args):
         """<channel>
 
         Ceases relaying between the channel <channel> on all networks.  The bot
@@ -252,7 +252,7 @@ class Relay(callbacks.Privmsg):
         channel.
         """
         if not self.started:
-            irc.error(msg, 'You must use the startrelay command first.')
+            irc.error(msg, 'You must use the start command first.')
             return
         channel = privmsgs.getArgs(args)
         self.channels.remove(ircutils.toLower(channel))
@@ -260,19 +260,19 @@ class Relay(callbacks.Privmsg):
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
         irc.reply(msg, conf.replySuccess)
-    relaypart = privmsgs.checkCapability(relaypart, 'owner')
+    part = privmsgs.checkCapability(part, 'owner')
 
-    def relaysay(self, irc, msg, args):
+    def say(self, irc, msg, args):
         """<network> [<channel>] <text>
 
         Says <text> on <channel> (using the current channel if unspecified)
         on <network>.
         """
         if not self.started:
-            irc.error(msg, 'You must use the startrelay command first.')
+            irc.error(msg, 'You must use the start command first.')
             return
         if not args:
-            raise callbacks.ArgumentError, 'relaysay'
+            raise callbacks.ArgumentError
         network = args.pop(0)
         channel = privmsgs.getChannel(msg, args)
         text = privmsgs.getArgs(args)
@@ -283,9 +283,9 @@ class Relay(callbacks.Privmsg):
             irc.error(msg, 'I\'m not currently relaying to %s.' % channel)
             return
         self.ircs[network].queueMsg(ircmsgs.privmsg(channel, text))
-    relaysay = privmsgs.checkCapability(relaysay, 'admin')
+    say = privmsgs.checkCapability(say, 'admin')
 
-    def relaynames(self, irc, msg, args):
+    def names(self, irc, msg, args):
         """[<channel>] (only if not sent in the channel itself.)
 
         The <channel> argument is only necessary if the message isn't sent on
@@ -293,7 +293,7 @@ class Relay(callbacks.Privmsg):
         the various networks the bot is connected to.
         """
         if not self.started:
-            irc.error(msg, 'You must use the startrelay command first.')
+            irc.error(msg, 'You must use the start command first.')
             return
         if isinstance(irc, irclib.Irc):
             realIrc = irc
@@ -311,13 +311,13 @@ class Relay(callbacks.Privmsg):
                 users.append('%s: %s' % (ircutils.bold(abbreviation), usersS))
         irc.reply(msg, '; '.join(users))
 
-    def relaywhois(self, irc, msg, args):
+    def whois(self, irc, msg, args):
         """<nick>@<network>
 
         Returns the WHOIS response <network> gives for <nick>.
         """
         if not self.started:
-            irc.error(msg, 'You must use the startrelay command first.')
+            irc.error(msg, 'You must use the start command first.')
             return
         nickAtNetwork = privmsgs.getArgs(args)
         if isinstance(irc, irclib.Irc):
@@ -347,14 +347,14 @@ class Relay(callbacks.Privmsg):
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))
         self.whois[(otherIrc, nick)] = (irc, msg, {})
 
-    def relaycolor(self, irc, msg, args):
+    def color(self, irc, msg, args):
         """<0,1,2>
 
         0 turns coloring of nicks/angle brackets off entirely.  1 colors the
         nicks, but not the angle brackets.  2 colors both.
         """
         if not self.started:
-            irc.error(msg, 'You must use the startrelay command first.')
+            irc.error(msg, 'You must use the start command first.')
             return
         try:
             color = int(privmsgs.getArgs(args))
@@ -364,7 +364,7 @@ class Relay(callbacks.Privmsg):
         except ValueError:
             raise callbacks.ArgumentError
         irc.reply(msg, conf.replySuccess)
-    relaycolor = privmsgs.checkCapability(relaycolor, 'admin')
+    color = privmsgs.checkCapability(color, 'admin')
 
     def do311(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
