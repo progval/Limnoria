@@ -32,7 +32,7 @@
 from testsupport import *
 
 if network:
-    class WeatherTest(PluginTestCase, PluginDocumentation):
+    class WeatherTest(PluginTestCase):
         plugins = ('Weather',)
         def testHam(self):
             self.assertNotError('ham Columbus, OH')
@@ -54,6 +54,21 @@ if network:
             self.assertNotError('cnn London, UK')
             self.assertNotError('cnn Munich, de')
             self.assertNotError('cnn Tucson, AZ')
+
+        def testTemperatureUnit(self):
+            try:
+                orig = conf.supybot.plugins.Weather.temperatureUnit()
+                conf.supybot.plugins.Weather.temperatureUnit.setValue('F')
+                self.assertRegexp('cnn Columbus, OH', r'is -?\d+.F')
+                self.assertRegexp('ham Columbus, OH', r'is -?\d+.F')
+                conf.supybot.plugins.Weather.temperatureUnit.setValue('C')
+                self.assertRegexp('cnn Columbus, OH', r'is -?\d+.C')
+                self.assertRegexp('ham Columbus, OH', r'is -?\d+.C')
+                conf.supybot.plugins.Weather.temperatureUnit.setValue('K')
+                self.assertRegexp('cnn Columbus, OH', r'is -?\d+\.15\sK')
+                self.assertRegexp('ham Columbus, OH', r'is -?\d+\.15\sK')
+            finally:
+                conf.supybot.plugins.Weather.temperatureUnit.setValue(orig)
 
         def testNoEscapingWebError(self):
             self.assertNotRegexp('ham "buenos aires"', 'WebError')
