@@ -30,8 +30,7 @@
 ###
 
 """
-Provides basic functionality for handling RSS/RDF feeds.  Depends on the Alias
-module for user-friendliness.
+Provides basic functionality for handling RSS/RDF feeds.
 """
 
 __revision__ = "$Id$"
@@ -49,8 +48,8 @@ import utils
 import ircmsgs
 import ircutils
 import privmsgs
+import registry
 import callbacks
-import configurable
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
@@ -61,53 +60,64 @@ def configure(onStart, afterConnect, advanced):
         name = something('What\'s the name of the website?')
         url = something('What\'s the URL of the RSS feed?')
         onStart.append('rss add %s %s' % (name, url))
-        #onStart.append('alias lock %s' % name)
 
-def SpaceOnRightStrType(s):
-    s = configurable.StrType(s)
-    if s.rstrip() == s:
-        s += ' '
-    return s
+class StringWithSpaceOnRight(registry.String):
+    def setValue(self, v):
+        if v.rstrip() == v:
+            v += ' '
+        registry.String.setValue(self, v)
+        
+conf.registerPlugin('RSS')
+conf.registerChannelValue(conf.supybot.plugins.RSS, 'bold', registry.Boolean(
+    True, """Determines whether the bot will bold the title of the feed when it
+    announces new news."""))
+conf.registerChannelValue(conf.supybot.plugins.RSS, 'headlineSeparator',
+    registry.StringSurroundedBySpaces(' || ', """Determines what string is used
+    to separate headlines in new feeds."""))
+conf.registerChannelValue(conf.supybot.plugins.RSS, 'announcementPrefix',
+    StringWithSpaceOnRight('New news from ', """Determines what prefix is
+    prepended (if any) to the new news item announcements made in the
+    channel."""))
+conf.registerChannelValue(conf.supybot.plugins.RSS, 'announce',
+    registry.SpaceSeparatedListOfStrings([], """Determines which RSS feeds
+    should be announced in the channel; valid input is a list of strings
+    (either registered RSS feeds or RSS feed URLs) separated by spaces."""))
+conf.registerGlobalValue(conf.supybot.plugins.RSS, 'waitPeriod',
+    registry.PositiveInteger(1800, """Indicates how many seconds the bot will
+    wait between retrieving RSS feeds; requests made within this period will
+    return cached results."""))
+conf.registerGroup(conf.supybot.plugins.RSS, 'feeds')
 
-class RSS(callbacks.Privmsg, configurable.Mixin):
+def registerFeed(name, url):
+    conf.supybot.plugins.RSS.feeds.register(name, registry.String(url, ''))
+    
+class RSS(callbacks.Privmsg):
     threaded = True
-    configurables = configurable.Dictionary(
-        [('announce-news-feeds', configurable.SpaceSeparatedStrListType,
-          [], """Gives the bot a space-separated list of feeds for which it
-          should announce updates to the channel.  The feeds should be
-          either URLs or names of feeds already added to this plugin."""),
-         ('announce-news-bold', configurable.BoolType, True,
-          """Determines whether the bot will bold the title of the feed when
-          it announces new additions."""),
-         ('headline-separator', configurable.SpaceSurroundedStrType, ' :: ',
-          """Determines what string is used to seperate headlines in
-          feeds."""),
-         ('announce-news-prefix', SpaceOnRightStrType,
-          'New news from ',
-          """Sets the prefix to be added (if any) to the new news item
-          announcements made to the channel."""),]
-    )
-    globalConfigurables = configurable.Dictionary(
-         [('wait-period', configurable.PositiveIntType, 1800,
-          """Indicates how many seconds the bot will wait between retrieving
-          RSS feeds; requests made within this period will return cached
-          results."""),]
-    )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.feedNames = sets.Set()
         self.lastRequest = {}
         self.cachedFeeds = {}
+        L = conf.supybot.plugins.RSS.feeds.getValues(fullNames=False)
+        for (name, url) in registry._cache.iteritems():
+            name = name.lower()
+            if name.startswith('supybot.plugins.rss.feeds.'):
+                name = rsplit(name, '.', 1)[-1]
+                v = registry.String('', 'help is not needed here')
+                v.set(url)
+                url = v()
+                self.makeFeedCommand(name, url)
 
     def __call__(self, irc, msg):
         callbacks.Privmsg.__call__(self, irc, msg)
         irc = callbacks.IrcObjectProxyRegexp(irc, msg)
-        feeds = self.configurables.getChannels('announce-news-feeds')
-        for (channel, d) in feeds.iteritems():
-            sep = self.configurables.get('headline-separator', channel)
-            bold = self.configurables.get('announce-news-bold', channel)
-            prefix = self.configurables.get('announce-news-prefix', channel)
-            for name in d:
+        L = conf.supybot.plugins.RSS.announce.getValues(fullNames=False)
+        for (channel, v) in L:
+            feeds = v() 
+            bold = self.registryValue('bold', channel)
+            sep = self.registryValue('headlineSeparator', channel)
+            prefix = self.registryValue('announcementPrefix', channel)
+            for name in feeds:
                 if self.isCommand(callbacks.canonicalName(name)):
                     url = self.getCommand(name).url
                 else:
@@ -132,7 +142,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
                 
     def getFeed(self, url):
         now = time.time()
-        wait = self.globalConfigurables.get('wait-period')
+        wait = self.registryValue('waitPeriod')
         if url not in self.lastRequest or now - self.lastRequest[url] > wait:
             try:
                 self.log.info('Downloading new feed from %s', url)
@@ -147,24 +157,17 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
     def getHeadlines(self, feed):
         return [utils.htmlToText(d['title'].strip()) for d in feed['items']]
 
-    def add(self, irc, msg, args):
-        """<name> <url>
-
-        Adds a command to this plugin that will look up the RSS feed at the
-        given URL.
-        """
-        (name, url) = privmsgs.getArgs(args, required=2)
+    def makeFeedCommand(self, name, url):
         docstring = """takes no arguments
 
         Reports the titles for %s at the RSS feed <%s>.  RSS feeds are only
-        looked up every half hour at the most (since that's how most
-        websites prefer it).
+        looked up every supybot.plugins.RSS.waitPeriod seconds, which defaults
+        to 1800 (30 minutes) since that's what most websites prefer.
         """ % (name, url)
         name = callbacks.canonicalName(name)
         if hasattr(self, name):
             s = 'I already have a command in this plugin named %s' % name
-            irc.error(s)
-            return
+            raise callbacks.Error, s
         def f(self, irc, msg, args):
             args.insert(0, url)
             self.rss(irc, msg, args)
@@ -172,6 +175,16 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         f.url = url # Used by __call__.
         self.feedNames.add(name)
         setattr(self.__class__, name, f)
+        registerFeed(name, url)
+        
+    def add(self, irc, msg, args):
+        """<name> <url>
+
+        Adds a command to this plugin that will look up the RSS feed at the
+        given URL.
+        """
+        (name, url) = privmsgs.getArgs(args, required=2)
+        self.makeFeedCommand(name, url)
         irc.replySuccess()
 
     def remove(self, irc, msg, args):
@@ -194,6 +207,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         Gets the title components of the given RSS feed.
         """
         url = privmsgs.getArgs(args)
+        self.log.debug('Fetching %s', url)
         feed = self.getFeed(url)
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
@@ -204,7 +218,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
             irc.error('Couldn\'t get RSS feed')
             return
         headlines = imap(utils.htmlToText, headlines)
-        sep = self.configurables.get('headline-separator', channel)
+        sep = self.registryValue('headlineSeparator', channel)
         irc.reply(sep.join(headlines))
 
     def info(self, irc, msg, args):
