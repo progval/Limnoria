@@ -294,7 +294,7 @@ class User(callbacks.Privmsg):
         Returns the username of the user specified by <hostmask> or <nick> if
         the user is registered.
         """
-        if ircutils.isNick(nickOrHostmask):
+        if ircutils.isNick(hostmask):
             try:
                 hostmask = irc.state.nickToHostmask(hostmask)
             except KeyError:
