@@ -40,6 +40,7 @@ import sets
 import time
 
 import conf
+import debug
 import utils
 import ircdb
 import irclib
@@ -298,8 +299,8 @@ class Relay(callbacks.Privmsg):
             s = '%s %s@%s %s' % (t, nick, abbreviation, ircmsgs.unAction(msg))
         else:
             lt = ircutils.mircColor('<', *colors)
-            gt = ircutils.mircColor('>', *colors)
-            s = '%s%s@%s%s %s' % (lt, nick, abbreviation, gt, msg.args[1])
+            gt = ircutils.mircColor('%s>' % abbreviation, *colors)
+            s = '%s%s@%s %s' % (lt, nick, gt, msg.args[1])
         return s
 
     def doPrivmsg(self, irc, msg):
