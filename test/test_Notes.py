@@ -34,7 +34,11 @@ from test import *
 import utils
 
 class NotesTestCase(PluginTestCase):
-    plugins = ('Notes',)
+    plugins = ('Notes', 'MiscCommands')
+    def testHelps(self):
+        self.assertNotError('help sendnote')
+        self.assertNotError('list Notes')
+        
     def testSendnote(self):
         self.assertNotError('sendnote inkedmn test')
         self.assertError('sendnote alsdkjfasldk foo')
