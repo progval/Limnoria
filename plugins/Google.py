@@ -364,7 +364,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             results.append((data.meta.estimatedTotalResultsCount, arg))
         results.sort()
         results.reverse()
-        if self.registryValue(bold, msg.args[0]):
+        if self.registryValue('bold', msg.args[0]):
             format = ircutils.bold
         else:
             format = repr
