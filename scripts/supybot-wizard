@@ -76,10 +76,10 @@ def describePlugin(module, showUsage):
 def clearLoadedPlugins(plugins, pluginRegistry):
     for plugin in plugins:
         try:
-            pluginKey = pluginRegistry.getChild(plugin)
+            pluginKey = pluginRegistry.get(plugin)
             if pluginKey():
                 plugins.remove(plugin)
-        except KeyError:
+        except registry.NonExistentRegistryEntry:
             continue
 
 _windowsVarRe = re.compile(r'%(\w+)%')
@@ -314,19 +314,20 @@ def main():
             output("""That's not a valid nick.  Go ahead and pick another.""")
 
     # conf.supybot.user
-    output("""If you've ever done a /whois on a person, you know that IRC
-    provides a way for users to show the world their full name.  What would
-    you like your bot's full name to be?  If you don't care, just press
-    enter and it'll be the same as your bot's nick.""")
-    user = ''
-    try:
-        defaultUser = registry._cache['supybot.user']
-        defaultUser = utils.safeEval(defaultUser)
-    except KeyError:
-        defaultUser = nick
-    user = something('What would you like your bot\'s full name to be?',
-                     default=defaultUser)
-    conf.supybot.user.set(user)
+    if advanced:
+        output("""If you've ever done a /whois on a person, you know that IRC
+        provides a way for users to show the world their full name.  What would
+        you like your bot's full name to be?  If you don't care, just press
+        enter and it'll be the same as your bot's nick.""")
+        user = ''
+        try:
+            defaultUser = registry._cache['supybot.user']
+            defaultUser = utils.safeEval(defaultUser)
+        except KeyError:
+            defaultUser = nick
+        user = something('What would you like your bot\'s full name to be?',
+                         default=defaultUser)
+        conf.supybot.user.set(user)
 
     # conf.supybot.ident (if advanced)
     try:
@@ -374,24 +375,25 @@ def main():
             except registry.InvalidRegistryValue:
                 # FIXME: say which ones weren't channels.
                 output("""Not all of those are valid IRC channels.  Be sure to
-                prefix the channel with # (or +, or !, or &, but no one uses those
-                channels, really).""")
+                prefix the channel with # (or +, or !, or &, but no one uses
+                those channels, really).""")
 
     ###
     # Plugins
     ###
     def configurePlugin(module, advanced):
         if hasattr(module, 'configure'):
-            output("""Beginning configuration for %s..."""%module.Class.__name__)
+            output("""Beginning configuration for %s...""" %
+                   module.Class.__name__)
             module.configure(advanced)
             print # Blank line :)
             output("""Done!""")
         else:
-            conf.registerPlugin(module, currentValue=True)
+            conf.registerPlugin(module.__name__, currentValue=True)
 
     plugins = getPlugins(pluginDirs)
     for s in ('Admin', 'User', 'Channel', 'Misc', 'Config'):
-        configurePlugin(s, advanced)
+        configurePlugin(loadPlugin(s), advanced)
     clearLoadedPlugins(plugins, conf.supybot.plugins)
 
     output("""Now we're going to run you through plugin configuration. There's
