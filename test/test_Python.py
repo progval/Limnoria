@@ -53,6 +53,7 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotRegexp('pydoc str.replace', r"^'")
         self.assertNotError('pydoc os.path.expanduser')
         self.assertNotRegexp('pydoc math.hypot', r'\)\.R')
+        self.assertNotRegexp('pydoc threading.Thread', 'NoneType')
 
     def testZen(self):
         self.assertNotError('zen')

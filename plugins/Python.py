@@ -72,7 +72,6 @@ def configure(onStart, afterConnect, advanced):
 
 class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
-    threaded = True
     regexps = ['aspnRecipes']
     configurables = plugins.ConfigurableDictionary(
         [('aspn-snarfer', plugins.ConfigurableBoolType, True,
@@ -138,7 +137,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 else: 
                     if hasattr(newmodule, funcName):
                         f = getattr(newmodule, funcName)
-                        if hasattr(f, '__doc__'):
+                        if hasattr(f, '__doc__') and f.__doc__:
                             s = normalize(f.__doc__)
                             irc.reply(msg, s)
                         else:
@@ -155,7 +154,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                     irc.reply(msg, 'Module %s has no documentation.' % name)
             elif name in __builtins__:
                 f = __builtins__[name]
-                if hasattr(f, '__doc__'):
+                if hasattr(f, '__doc__') and f.__doc__:
                     irc.reply(msg, normalize(f.__doc__))
                 else:
                     irc.error(msg, 'That function has no documentation.')
