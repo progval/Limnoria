@@ -50,9 +50,10 @@ import string
 import struct
 
 
+import conf
+import utils
 import privmsgs
 import callbacks
-import utils
 
 def configure(advanced):
     from questions import output, expect, anything, something, yn
