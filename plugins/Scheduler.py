@@ -55,39 +55,6 @@ def configure(onStart, afterConnect, advanced):
 
 
 class Scheduler(callbacks.Privmsg):
-    pass
-
-    def seconds(self, irc, msg, args):
-        """[<days>d] [<hours>h] [<minutes>m] [<seconds>s]
-
-        Returns the number of seconds in the number of <days>, <hours>,
-        <minutes>, and <seconds> given.  An example usage is
-        "seconds 2h 30m", which would return 9000, which is 3600*2 + 30*60.
-        Useful for scheduling events at a given number of seconds in the
-        future.
-        """
-        if not args:
-            raise callbacks.ArgumentError
-        seconds = 0
-        for arg in args:
-            if not arg or arg[-1] not in 'dhms':
-                raise callbacks.ArgumentError
-            (s, kind) = arg[:-1], arg[-1]
-            try:
-                i = int(s)
-            except ValueError:
-                irc.error(msg, 'Invalid argument: %s' % arg)
-                return
-            if kind == 'd':
-                seconds += i*86400
-            elif kind == 'h':
-                seconds += i*3600
-            elif kind == 'm':
-                seconds += i*60
-            elif kind == 's':
-                seconds += i
-        irc.reply(msg, str(seconds))
-
     def _makeCommandFunction(self, irc, msg, command):
         """Makes a function suitable for scheduling from command."""
         tokens = callbacks.tokenize(command)
