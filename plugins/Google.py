@@ -307,6 +307,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         fd = urllib2.urlopen(request)
         text = fd.read()
         fd.close()
+        mThread = None
+        mGroup = None
         if '&prev=/' in match.group(0):
             path = re.search('view the <a href=([^>]+)>no',text)
             if path is None:
