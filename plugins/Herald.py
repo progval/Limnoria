@@ -45,6 +45,7 @@ import utils
 import world
 import ircdb
 import ircmsgs
+import plugins
 import ircutils
 import privmsgs
 import registry
@@ -104,6 +105,7 @@ class Herald(callbacks.Privmsg):
                    if now - self.lastParts[channel, id] < i:
                        return
                 self.lastHerald[channel, id] = now
+                herald = plugins.standardSubstitute(irc, msg, herald)
                 irc.queueMsg(ircmsgs.privmsg(channel, herald))
 
     def doPart(self, irc, msg):

@@ -1,3 +1,7 @@
+	* Updated the Herald plugin to use the standard substitute until
+	we get it updated to use commands as heralds instead of plain
+	strings.
+	
 	* Updated echo to use the standard substitute on its reply.
 	
 	* Updated Network.whois so that it can now retrieve
