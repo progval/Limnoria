@@ -62,6 +62,10 @@ if sqlite is not None:
             self.assertNotError('todo add moo')
             self.assertRegexp('todo tester', 'Todos for tester: '
                               '#1: wash my car and #2: moo')
+            # Check error
+            self.assertError('todo asfas')
+            self.assertResponse('todo asfas', 'Error: \'asfas\' is not a '
+                                'valid task id or username')
 
         def testAddtodo(self):
             self.assertNotError('todo add code a new plugin')
