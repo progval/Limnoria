@@ -101,14 +101,19 @@ def getArgs(args, required=1, optional=0):
         return ret
 
 def checkCapability(f, capability):
-    """Makes sure a user has a certain capability before a command will run."""
+    """Makes sure a user has a certain capability before a command will run.
+    capability can be either a string or a callable object which will be called
+    in order to produce a string for ircdb.checkCapability."""
     def newf(self, irc, msg, args):
-        if ircdb.checkCapability(msg.prefix, capability):
+        cap = capability
+        if callable(cap):
+            cap = cap()
+        if ircdb.checkCapability(msg.prefix, cap):
             f(self, irc, msg, args)
         else:
-            self.log.warning('%r attempted %s without %s.',
-                             msg.prefix, f.func_name, capability)
-            irc.errorNoCapability(capability)
+            self.log.info('%s attempted %s without %s.',
+                          msg.prefix, f.func_name, cap)
+            irc.errorNoCapability(cap)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 def checkChannelCapability(f, capability):
@@ -118,14 +123,17 @@ def checkChannelCapability(f, capability):
     """
     def newf(self, irc, msg, args, *L, **kwargs):
         channel = getChannel(msg, args)
-        chancap = ircdb.makeChannelCapability(channel, capability)
+        cap = capability
+        if callable(cap):
+            cap = cap()
+        chancap = ircdb.makeChannelCapability(channel, cap)
         if ircdb.checkCapability(msg.prefix, chancap):
             L += (channel,)
             ff = types.MethodType(f, self, self.__class__)
             ff(irc, msg, args, *L, **kwargs)
         else:
-            self.log.warning('%r attempted %s without %s.',
-                             msg.prefix, f.func_name, capability)
+            self.log.info('%s attempted %s without %s.',
+                          msg.prefix, f.func_name, chancap)
             irc.errorNoCapability(chancap)
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
