@@ -244,6 +244,7 @@ class Tokenizer:
 
     def _insideBrackets(self, lexer):
         ret = []
+        firstToken = True
         while True:
             token = lexer.get_token()
             if not token:
@@ -255,9 +256,15 @@ class Tokenizer:
             elif token == self.right:
                 return ret
             elif token == self.left:
+                if firstToken:
+                    s = 'The command called may not be the result ' \
+                        'of a nested command.'
+                    raise SyntaxError, 'The command called may not be the ' \
+                                       'result or a nested command.'
                 ret.append(self._insideBrackets(lexer))
             else:
                 ret.append(self._handleToken(token))
+            firstToken = False
         return ret
 
     def tokenize(self, s):
