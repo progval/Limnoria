@@ -502,6 +502,22 @@ class Fun(callbacks.Privmsg):
         s = self._scrambleRe.sub(_subber, text)
         irc.reply(msg, s)
 
+    def roulette(self, irc, msg, args):
+        """takes no arguments.
+
+        Randomly picks a number from 1 to 6 and if it comes up 1, you get
+        kicked.  Otherwise -- *click*
+        """
+        nick = msg.nick
+        channel = msg.args[0]
+        if random.randint(1, 6) == 1:
+            irc.queueMsg(ircmsgs.kick(channel, nick))
+        else:
+            irc.reply(msg, '*click*')
+
+
+
+
     _code = {
         "A" : ".-",
         "B" : "-...",
