@@ -52,7 +52,7 @@ class CurrencyCommand(registry.String):
         m = Currency.currencyCommands
         if s not in m:
             raise registry.InvalidRegistryValue,\
-                  'Command must be one of %s' % utils.commaAndify(m)
+                  'Command must be one of %s.' % utils.commaAndify(m)
         else:
             method = getattr(Currency, s)
             Currency.convert.im_func.__doc__ = method.__doc__
@@ -62,7 +62,7 @@ class Currency(callbacks.Privmsg):
     currencyCommands = ['xe', 'yahoo']
     threaded = True
 
-    _symbolError = 'Currency must be denoted by it\'s 3-letter symbol.'
+    _symbolError = 'Currency must be denoted by its three-letter symbol.'
     def convert(self, irc, msg, args):
         # This specifically does not have a docstring.
         channel = None
