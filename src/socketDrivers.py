@@ -140,7 +140,7 @@ class SocketDriver(drivers.IrcDriver):
     def die(self):
         log.info('Driver for %s dying.', self.irc)
         self.conn.close()
-        self.irc.die()
+        # self.irc.die() Kill off the ircs yourself, jerk!
 
     def _scheduleReconnect(self):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
