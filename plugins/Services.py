@@ -406,15 +406,21 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             channel = msg.args[1] # nick is msg.args[0].
             self.checkPrivileges(irc, channel)
 
-    def _chanservCommand(self, irc, channel, command):
+    def _chanservCommand(self, irc, channel, command, log=False):
         chanserv = self.registryValue('ChanServ')
         if chanserv:
             msg = ircmsgs.privmsg(chanserv,
                                   ' '.join([command, channel, irc.nick]))
             irc.sendMsg(msg)
-            return True
         else:
-            return False
+            if log:
+                self.log.warning('Unable to send %s command to ChanServ, '
+                                 'you must set '
+                                 'supybot.plugins.Services.ChanServ before '
+                                 'I can send commands to ChanServ.', command)
+            else:
+                irc.error('You must set supybot.plugins.Services.ChanServ '
+                          'before I\'m able to do get voiced.', Raise=True)
 
     def op(self, irc, msg, args):
         """[<channel>]
@@ -427,9 +433,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             if irc.nick in irc.state.channels[channel].ops:
                 irc.error('I\'m already opped in %s.' % channel)
             else:
-                if not self._chanservCommand(irc, channel, 'op'):
-                    irc.error('You must set supybot.plugins.Services.ChanServ '
-                              'before I\'m able to do get opped.')
+                self._chanservCommand(irc, channel, 'op')
         except KeyError:
             irc.error('I\'m not in %s.' % channel)
 
@@ -444,18 +448,14 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             if irc.nick in irc.state.channels[channel].voices:
                 irc.error('I\'m already voiced in %s.' % channel)
             else:
-                if self._chanservCommand(irc, channel, 'voice'):
-                    irc.error('You must set supybot.plugins.Services.ChanServ '
-                              'before I\'m able to do get voiced.')
+                self._chanservCommand(irc, channel, 'voice')
         except KeyError:
             irc.error('I\'m not in %s.' % channel)
 
     def do474(self, irc, msg):
         channel = msg.args[1]
         self.log.info('Banned from %s, attempting ChanServ unban.', channel)
-        if not self._chanservCommand(irc, channel, 'unban'):
-            self.log.info('Unable to send unban command, '
-                          'ChanServ is not configured.')
+        self._chanservCommand(irc, channel, 'unban', log=True)
         # Success log in doChanservNotice.
 
     def unban(self, irc, msg, args):
@@ -468,20 +468,16 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         try:
-            if self._chanservCommand(irc, channel, 'unban'):
-                irc.replySuccess()
-            else:
-                irc.error('You must set supybot.plugins.Services.ChanServ '
-                          'before I\'m able to do get voiced.')
+            self._chanservCommand(irc, channel, 'unban')
+            irc.replySuccess()
         except KeyError:
             irc.error('I\'m not in %s.' % channel)
 
     def do473(self, irc, msg):
         channel = msg.args[1]
         self.log.info('%s is +i, attempting ChanServ invite.', channel)
-        if not self._chanservCommand(irc, channel, 'invite'):
-            self.log.info('Unable to send invite command, '
-                          'ChanServ is not configured.')
+        self._chanservCommand(irc, channel, 'invite', log=True)
+
     def invite(self, irc, msg, args):
         """[<channel>]
 
@@ -492,11 +488,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         try:
-            if self._chanservCommand(irc, channel, 'invite'):
-                irc.replySuccess()
-            else:
-                irc.error('You must set supybot.plugins.Services.ChanServ '
-                          'before I\'m able to do get voiced.')
+            self._chanservCommand(irc, channel, 'invite')
+            irc.replySuccess()
         except KeyError:
             irc.error('I\'m not in %s.' % channel)
 
