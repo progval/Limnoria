@@ -223,10 +223,9 @@ conf.registerGlobalValue(conf.supybot.plugins.Owner, 'quitMsg',
     this value is empty, the nick of the person giving the quit command will be
     used."""))
 
-class Owner(privmsgs.CapabilityCheckingPrivmsg):
+class Owner(callbacks.Privmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
-    capability = 'owner'
     def __init__(self, *args, **kwargs):
         self.__parent = super(Owner, self)
         self.__parent.__init__()

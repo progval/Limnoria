@@ -56,8 +56,7 @@ import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
 
-class Admin(privmsgs.CapabilityCheckingPrivmsg):
-    capability = 'admin'
+class Admin(privmsgs.Privmsg):
     def __init__(self):
         self.__parent = super(Admin, self)
         self.__parent.__init__()
