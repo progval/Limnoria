@@ -190,7 +190,11 @@ class Google(callbacks.Privmsg):
             irc.reply(msg, 'No spelling suggestion made.')
 
     def googleinfo(self, irc, msg, args):
-        """takes no arguments"""
+        """takes no arguments
+
+        Returns interesting information about this Google module.  Mostly
+        useful for making sure you don't go over your 1000 requests/day limit.
+        """
         last24hours = len(self.last24hours)
         irc.reply(msg, 'This google module has been called %s time%stotal; '\
                        '%s time%sin the past 24 hours.  ' \
