@@ -30,7 +30,7 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+Babelfish-related commands.
 """
 
 from baseplugin import *
