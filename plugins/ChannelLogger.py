@@ -135,7 +135,7 @@ class ChannelLogger(irclib.IrcCallback):
             log.write('*** %s was kicked by %s (%s)\n' % \
                       (target, msg.nick, kickmsg))
         else:
-            log.write('*** %s was kicked by %s\n' % (target, msg.nick)
+            log.write('*** %s was kicked by %s\n' % (target, msg.nick))
 
     def doPart(self, irc, msg):
         for channel in msg.args[0].split(','):
