@@ -80,14 +80,28 @@ class MiscCommands(callbacks.Privmsg):
                                 if r.search(s):
                                     return
                 notCommands = []
+                ambiguousCommands = {}
                 tokens = callbacks.tokenize(s)
                 for command in callbacks.getCommands(tokens):
                     command = callbacks.canonicalName(command)
-                    if not callbacks.findCallbackForCommand(irc, command):
+                    cbs = callbacks.findCallbackForCommand(irc, command)
+                    if not cbs:
                         notCommands.append(repr(command))
+                    elif len(cbs) > 1:
+                        ambiguousCommands[command] = [cb.name() for cb in cbs]
                 if notCommands:
                     irc = callbacks.IrcObjectProxyRegexp(irc)
                     replyWhenNotCommand(irc, msg, notCommands)
+                elif ambiguousCommands:
+                    L = []
+                    while ambiguousCommands:
+                        (command, cbs) = ambiguousCommands.popitem()
+                        L.append('%s is available in the %s plugins' % \
+                                 (command, utils.commaAndify(cbs)))
+                    s = '%s; please specify which plugins to call %s from.' % \
+                        ('; '.join(L),
+                         len(L) > 1 and 'these commands' or 'this command')
+                    irc.error(msg, s)
         
     def list(self, irc, msg, args):
         """[--private] [<module name>]
