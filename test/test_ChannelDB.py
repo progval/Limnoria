@@ -38,6 +38,10 @@ class ChannelDBTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('channelstats')
         self.assertNotError('channelstats')
 
+    def testNoKeyErrorEscapeFromSeen(self):
+        self.assertRegexp('seen asldfkjasdlfkj', conf.replyNoUser)
+        self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
