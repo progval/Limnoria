@@ -195,7 +195,7 @@ class Lookup(callbacks.Privmsg):
                     irc.error(msg, str(e))
                 return
             if cursor.rowcount == 0:
-                irc.reply(msg, 'I couldn\'t find %s in %s' % (key, name))
+                irc.error(msg, 'I couldn\'t find %s in %s' % (key, name))
             elif cursor.rowcount == 1:
                 irc.reply(msg, cursor.fetchone()[0])
             else:
