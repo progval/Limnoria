@@ -60,9 +60,6 @@ conf.registerChannelValue(conf.supybot.plugins.Channel, 'alwaysRejoin',
     registry.Boolean(True, """Determines whether the bot will always try to
     rejoin a channel whenever it's kicked from the channel."""))
 
-# XXX We need a lot of noReply calls in here; otherwise, we should add a
-#     wrapper of some sort to handle that for us.  Perhaps we can abstract out
-#     the very repetitive commands.wrap calls in here while we're at it.
 class Channel(callbacks.Privmsg):
     def doKick(self, irc, msg):
         channel = msg.args[0]
@@ -71,6 +68,10 @@ class Channel(callbacks.Privmsg):
                 networkGroup = conf.supybot.networks.get(irc.network)
                 irc.sendMsg(networkGroup.channels.join(channel))
 
+    def _sendMsg(self, irc, msg):
+        irc.queueMsg(msg)
+        irc.noReply()
+
     def mode(self, irc, msg, args, channel, modes):
         """[<channel>] <mode> [<arg> ...]
 
@@ -78,7 +79,7 @@ class Channel(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        irc.queueMsg(ircmsgs.mode(channel, modes))
+        self._sendMsg(ircmsgs.mode(channel, modes))
     mode = wrap(mode,
                 [('checkChannelCapability', 'op'),
                  ('haveOp', 'change the mode'),
@@ -92,10 +93,10 @@ class Channel(callbacks.Privmsg):
         isn't sent in the channel itself.
         """
         if limit:
-            irc.queueMsg(ircmsgs.mode(channel, ['+l', limit]))
+            self._sendMsg(ircmsgs.mode(channel, ['+l', limit]))
         else:
-            irc.queueMsg(ircmsgs.mode(channel, ['-l']))
-    limit = wrap(mode, [('checkChannelCapability', 'op'),
+            self._sendMsg(ircmsgs.mode(channel, ['-l']))
+    limit = wrap(limit, [('checkChannelCapability', 'op'),
                         ('haveOp', 'change the limit'),
                         additional('nonNegativeInt', 0)])
 
@@ -106,7 +107,7 @@ class Channel(callbacks.Privmsg):
         send messages to the channel.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        irc.queueMsg(ircmsgs.mode(channel, ['+m']))
+        self._sendMsg(ircmsgs.mode(channel, ['+m']))
     moderate = wrap(moderate, [('checkChannelCapability', 'op'),
                                ('haveOp', 'moderate the channel')])
 
@@ -117,7 +118,7 @@ class Channel(callbacks.Privmsg):
         send messages to the channel.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        irc.queueMsg(ircmsgs.mode(channel, ['-m']))
+        self._sendMsg(ircmsgs.mode(channel, ['-m']))
     unmoderate = wrap(unmoderate, [('checkChannelCapability', 'op'),
                                    ('haveOp', 'unmoderate the channel')])
 
@@ -128,13 +129,15 @@ class Channel(callbacks.Privmsg):
         the keyword requirement to join <channel>.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
+        networkGroup = conf.supybot.networks.get(irc.network)
+        networkGroup.channels.key.get(channel).setValue(key)
         if key:
-            irc.queueMsg(ircmsgs.mode(channel, ['+k', key]))
+            self._sendMsg(ircmsgs.mode(channel, ['+k', key]))
         else:
-            irc.queueMsg(ircmsgs.mode(channel, ['-k']))
+            self._sendMsg(ircmsgs.mode(channel, ['-k']))
     key = wrap(key, [('checkChannelCapability', 'op'),
                      ('haveOp', 'change the keyword'),
-                     additional('capability')])
+                     additional('somethingWithoutSpaces', '')])
 
     def op(self, irc, msg, args, channel, nicks):
         """[<channel>] [<nick> ...]
@@ -146,7 +149,7 @@ class Channel(callbacks.Privmsg):
         """
         if not nicks:
             nicks = [msg.nick]
-        irc.queueMsg(ircmsgs.ops(channel, nicks))
+        self._sendMsg(ircmsgs.ops(channel, nicks))
     op = wrap(op, [('checkChannelCapability', 'op'),
                    ('haveOp', 'op someone'),
                    any('nickInChannel')])
@@ -161,7 +164,7 @@ class Channel(callbacks.Privmsg):
         """
         if not nicks:
             nicks = [msg.nick]
-        irc.queueMsg(ircmsgs.halfops(channel, nicks))
+        self._sendMsg(ircmsgs.halfops(channel, nicks))
     halfop = wrap(halfop, [('checkChannelCapability', 'halfop'),
                            ('haveOp', 'halfop someone'),
                            any('nickInChannel')])
@@ -184,7 +187,7 @@ class Channel(callbacks.Privmsg):
             capability = 'voice'
         capability = ircdb.makeChannelCapability(channel, capability)
         if ircdb.checkCapability(msg.prefix, capability):
-            irc.queueMsg(ircmsgs.voices(channel, nicks))
+            self._sendMsg(ircmsgs.voices(channel, nicks))
         else:
             irc.errorNoCapability(capability)
     voice = wrap(voice, ['channel', ('haveOp', 'voice someone'),
@@ -203,7 +206,7 @@ class Channel(callbacks.Privmsg):
                       'yourself.', Raise=True)
         if not nicks:
             nicks = [msg.nick]
-        irc.queueMsg(ircmsgs.deops(channel, nicks))
+        self._sendMsg(ircmsgs.deops(channel, nicks))
     deop = wrap(deop, [('checkChannelCapability', 'op'),
                        ('haveOp', 'deop someone'),
                        any('nickInChannel')])
@@ -221,7 +224,7 @@ class Channel(callbacks.Privmsg):
                       'dehalfop me yourself.', Raise=True)
         if not nicks:
             nicks = [msg.nick]
-        irc.queueMsg(ircmsgs.dehalfops(channel, nicks))
+        self._sendMsg(ircmsgs.dehalfops(channel, nicks))
     dehalfop = wrap(dehalfop, [('checkChannelCapability', 'halfop'),
                                ('haveOp', 'dehalfop someone'),
                                any('nickInChannel')])
@@ -243,7 +246,7 @@ class Channel(callbacks.Privmsg):
                       'me yourself.', Raise=True)
         if not nicks:
             nicks = [msg.nick]
-        irc.queueMsg(ircmsgs.devoices(channel, nicks))
+        self._sendMsg(ircmsgs.devoices(channel, nicks))
     devoice = wrap(devoice, [('checkChannelCapability', 'voice'),
                              ('haveOp', 'devoice someone'),
                              any('nickInChannel')])
@@ -255,10 +258,9 @@ class Channel(callbacks.Privmsg):
         "cycle", or PART and then JOIN the channel. <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        irc.queueMsg(ircmsgs.part(channel, msg.nick))
+        self._sendMsg(ircmsgs.part(channel, msg.nick))
         networkGroup = conf.supybot.networks.get(irc.network)
-        irc.queueMsg(networkGroup.channels.join(channel))
-        irc.noReply()
+        self._sendMsg(networkGroup.channels.join(channel))
     cycle = wrap(cycle, [('checkChannelCapability','op')])
 
     def kick(self, irc, msg, args, channel, nick, reason):
@@ -279,8 +281,7 @@ class Channel(callbacks.Privmsg):
             irc.error('The reason you gave is longer than the allowed '
                       'length for a KICK reason on this server.')
             return
-        irc.queueMsg(ircmsgs.kick(channel, nick, reason))
-        irc.noReply()
+        self._sendMsg(ircmsgs.kick(channel, nick, reason))
     kick = wrap(kick, [('checkChannelCapability', 'op'),
                        ('haveOp', 'kick someone'),
                        'nickInChannel',
@@ -397,7 +398,7 @@ class Channel(callbacks.Privmsg):
         only necessary if the message isn't sent in the channel itself.
         """
         if hostmask:
-            irc.queueMsg(ircmsgs.unban(channel, hostmask))
+            self._sendMsg(ircmsgs.unban(channel, hostmask))
         else:
             bans = []
             for banmask in irc.state.channels[channel].bans:
@@ -421,7 +422,7 @@ class Channel(callbacks.Privmsg):
         to join <channel>. <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        irc.queueMsg(ircmsgs.invite(nick, channel))
+        self._sendMsg(ircmsgs.invite(nick, channel))
     invite = wrap(invite, [('checkChannelCapability', 'op'),
                            ('haveOp', 'invite someone'),
                            'nick'])
