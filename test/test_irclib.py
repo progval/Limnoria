@@ -213,6 +213,10 @@ class IrcTestCase(unittest.TestCase):
                                         self.irc.nick))
         msg = self.irc.takeMsg()
         self.failUnless(msg.command == 'NICK' and msg.args[0] != self.irc.nick)
+        self.irc.feedMsg(ircmsgs.IrcMsg('433 * %s :Nickname already in use.' %\
+                                        self.irc.nick))
+        msg = self.irc.takeMsg()
+        self.failUnless(msg.command == 'NICK' and msg.args[0] != self.irc.nick)
 
     def testSendBeforeQueue(self):
         self.irc.queueMsg(ircmsgs.IrcMsg('NOTICE #foo bar'))
