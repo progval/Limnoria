@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # All rights reserved.
@@ -53,7 +51,7 @@ import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
 def configure(advanced):
-    from supybot.questions import output, expect, anything, something, yn
+    from supybot.questions import expect, anything, something, yn, getpass
     conf.registerPlugin('Services', True)
     nick = something('What is your registered nick?')
     password = something('What is your password for that nick?')
