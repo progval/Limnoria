@@ -59,6 +59,14 @@ class Utilities(callbacks.Privmsg):
         if sep == '':
             sep = None
         irc.reply(msg, text.split(sep))
+
+    def echo(self, irc, msg, args):
+        """takes any number of arguments
+
+        Returns the arguments given it.
+        """
+        irc.reply(msg, ' '.join(args))
+        
         
 Class = Utilities
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
