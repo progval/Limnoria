@@ -368,3 +368,5 @@ class PersistentDictionary(dict):
         fd = file(self.filename, 'w')
         fd.write(repr(self))
         fd.close()
+
+    flush = close
