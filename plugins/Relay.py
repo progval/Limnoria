@@ -243,7 +243,10 @@ class Relay(callbacks.Privmsg):
         Returns the WHOIS response <network> gives for <nick>.
         """
         nickAtNetwork = privmsgs.getArgs(args)
-        (nick, network) = nickAtNetwork.split('@', 1)
+        try:
+            (nick, network) = nickAtNetwork.split('@', 1)
+        except ValueError:
+            raise callbacks.ArgumentError
         if network not in self.ircs:
             irc.error(msg, 'I\'m not on that network.')
             return
@@ -253,12 +256,12 @@ class Relay(callbacks.Privmsg):
 
     def do311(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
-            realIrc = irc.getRealIrc()
+            irc = irc.getRealIrc()
         nick = msg.args[1]
-        if (realIrc, nick) not in self.whois:
+        if (irc, nick) not in self.whois:
             return
         else:
-            self.whois[(realIrc, nick)][-1][msg.command] = msg
+            self.whois[(irc, nick)][-1][msg.command] = msg
 
     do312 = do311
     do317 = do311
@@ -271,22 +274,33 @@ class Relay(callbacks.Privmsg):
         if (irc, nick) not in self.whois:
             return
         (replyIrc, replyMsg, d) = self.whois[(irc, nick)]
-        hostmask = '@'.join(d['311'].args[2:])
+        hostmask = '@'.join(d['311'].args[2:4])
         channels = d['319'].args[-1].split()
-        channels = ', and '.join([', '.join(channels[:-1]), channels[-1]])
-        idle = utils.timeElapsed(d['317'].args[2])
-        signon = time.ctime(d['317'][3])
+        if len(channels) == 1:
+            channels = channels[0]
+        else:
+            channels = ', and '.join([', '.join(channels[:-1]), channels[-1]])
+        if '317' in d:
+            idle = utils.timeElapsed(d['317'].args[2])
+            signon = time.ctime(float(d['317'].args[3]))
+        else:
+            idle = signon = '<unknown>'
         s = '%s (%s) has been online since %s (idle for %s) and is on %s' % \
             (nick, hostmask, signon, idle, channels)
         replyIrc.reply(replyMsg, s)
             
     def _formatPrivmsg(self, nick, abbreviation, msg):
         # colorize nicks
-        nick = ircutils.canonicalColor(nick)
+        nick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
+        colors = ircutils.canonicalColor(nick, shift=4)
         if ircmsgs.isAction(msg):
-            return '* %s@%s %s' % (nick, abbreviation, ircmsgs.unAction(msg))
+            t = ircutils.mircColor('*', *colors)
+            s = '%s %s@%s %s' % (t, nick, abbreviation, ircmsgs.unAction(msg))
         else:
-            return '<%s@%s> %s' % (nick, abbreviation, msg.args[1])
+            lt = ircutils.mircColor('<', *colors)
+            gt = ircutils.mircColor('>', *colors)
+            s = '%s%s@%s%s %s' % (lt, nick, abbreviation, gt, msg.args[1])
+        return s
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
@@ -349,7 +363,8 @@ class Relay(callbacks.Privmsg):
             if not isinstance(irc, irclib.Irc):
                 irc = irc.getRealIrc()
             newNick = msg.args[0]
-            s = 'nick change by %s to %s' % (msg.nick, newNick)
+            network = self.abbreviations[irc]
+            s = 'nick change by %s to %s on %s' % (msg.nick, newNick, network)
             for channel in self.channels:
                 if newNick in irc.state.channels[channel].users:
                     for otherIrc in self.ircs.itervalues():
@@ -380,13 +395,14 @@ class Relay(callbacks.Privmsg):
             abbreviations = self.abbreviations.values()
             rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
             rAction = re.compile(r'\* [^/]+@(?:%s) ' % '|'.join(abbreviations))
-            if not (rPrivmsg.match(msg.args[1]) or \
-                    rAction.match(msg.args[1]) or \
-                    'has left on ' in msg.args[1] or \
-                    'has joined on ' in msg.args[1] or \
-                    'has quit' in msg.args[1] or \
-                    msg.args[1].startswith('mode change') or \
-                    msg.args[1].startswith('nick change')):
+            text = ircutils.unColor(msg.args[1])
+            if not (rPrivmsg.match(text) or \
+                    rAction.match(text) or \
+                    'has left on ' in text or \
+                    'has joined on ' in text or \
+                    'has quit' in text or \
+                    text.startswith('mode change') or \
+                    text.startswith('nick change')):
                 channel = msg.args[0]
                 if channel in self.channels:
                     abbreviation = self.abbreviations[irc]
