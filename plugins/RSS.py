@@ -322,12 +322,16 @@ class RSS(callbacks.Privmsg):
         irc.reply(sep.join(headlines))
 
     def info(self, irc, msg, args):
-        """<url>
+        """<url|feed>
 
         Returns information from the given RSS feed, namely the title,
         URL, description, and last update date, if available.
         """
         url = privmsgs.getArgs(args)
+        try:
+            url = self.registryValue('feeds.%s' % url)
+        except registry.NonExistentRegistryEntry:
+            pass
         feed = self.getFeed(url)
         info = feed['channel']
         if not info:

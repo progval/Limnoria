@@ -1,3 +1,5 @@
+	* Updated RSS.info to accept a feed name as well as a url.
+
 	* Added a signal handler for SIGTERM, so you folks killing your
 	bots uncleanly won't have as many bugs :)
 	
