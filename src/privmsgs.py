@@ -44,6 +44,7 @@ import threading
 import conf
 import ircdb
 import world
+import ircmsgs
 import ircutils
 import callbacks
 import structures
@@ -78,6 +79,7 @@ def getArgs(args, required=1, optional=0):
     let the caller handle sending the help message.
     """
     assert not isinstance(args, str), 'args should be a list.'
+    assert not isinstance(args, ircmsgs.IrcMsg), 'args should be a list.'
     if len(args) < required:
         raise callbacks.ArgumentError
     if len(args) < required + optional:

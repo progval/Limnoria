@@ -150,16 +150,16 @@ pluginFormatter = Formatter('%(levelname)s %(asctime)s %(name)s %(message)s')
 _logger = logging.getLogger('supybot')
 _handler = BetterFileHandler(os.path.join(conf.logDir, 'misc.log'))
 _handler.setFormatter(formatter)
-_handler.setLevel(conf.minimumLogPriority)
+_handler.setLevel(-1)
 _logger.addHandler(_handler)
-_logger.setLevel(-1)
+_logger.setLevel(conf.minimumLogPriority)
 
 if conf.stdoutLogging:
     _stdoutHandler = BetterStreamHandler(sys.stdout)
     _formatString = '%(name)s: %(levelname)s %(message)s'
     _stdoutFormatter = ColorizedFormatter(_formatString)
     _stdoutHandler.setFormatter(_stdoutFormatter)
-    _stdoutHandler.setLevel(conf.minimumLogPriority)
+    _stdoutHandler.setLevel(-1)
     _logger.addHandler(_stdoutHandler)
 
 debug = _logger.debug
@@ -168,6 +168,8 @@ warning = _logger.warning
 error = _logger.error
 critical = _logger.critical
 exception = _logger.exception
+
+setLevel = _logger.setLevel
 
 atexit.register(logging.shutdown)
 

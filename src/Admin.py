@@ -41,10 +41,12 @@ import fix
 import time
 import pprint
 import string
+import logging
 import smtplib
 import textwrap
 from itertools import imap
 
+import log
 import conf
 import ircdb
 import utils
@@ -368,6 +370,19 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         smtp.quit()
         irc.replySuccess()
     reportbug = privmsgs.thread(reportbug)
+
+    def loglevel(self, irc, msg, args):
+        """{DEBUG,INFO,WARNING,ERROR,CRITICAL}
+
+        Sets the logging level of the bot's logs.
+        """
+        level = privmsgs.getArgs(args)
+        try:
+            level = getattr(logging, level.upper())
+        except AttributeError:
+            raise callbacks.ArgumentError
+        log.setLevel(level)
+        irc.replySuccess()
 
 
 Class = Admin
