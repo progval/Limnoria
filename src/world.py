@@ -31,6 +31,7 @@
 
 from fix import *
 
+import os
 import gc
 import time
 import copy
@@ -38,6 +39,10 @@ import types
 import string
 import atexit
 import linecache
+try:
+    import msvcrt
+except ImportError:
+    pass
 
 import conf
 import debug
@@ -75,6 +80,8 @@ except NameError:
 
 def upkeep(): # Function to be run on occasion to do upkeep stuff.
     gc.collect()
+    if os.name == 'nt':
+        msvcrt.heapmin()
     if gc.garbage:
         debug.debugMsg('Uncollectable garbge: %s' % gc.garbage, 'normal')
     if 'noflush' not in tempvars:
