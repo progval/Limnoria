@@ -84,9 +84,9 @@ class Weather(callbacks.Privmsg):
     the name of 'weather' which should override this help."""
     weatherCommands = ['ham', 'cnn', 'wunder']
     threaded = True
-    def callCommand(self, method, irc, msg, *L):
+    def callCommand(self, method, irc, msg, *L, **kwargs):
         try:
-            callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
+            super(Weather, self).callCommand(method, irc, msg, *L, **kwargs)
         except webutils.WebError, e:
             irc.error(str(e))
 

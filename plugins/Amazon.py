@@ -89,7 +89,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
 
     def callCommand(self, method, irc, msg, *L, **kwargs):
         try:
-            callbacks.PrivmsgCommandAndRegexp.callCommand(self, method, irc, msg, *L, **kwargs)
+            super(Amazon, self).callCommand(method, irc, msg, *L, **kwargs)
         except amazon.NoLicenseKey, e:
             irc.error('You must have a free Amazon web services license key '
                       'in order to use this command.  You can get one at '

@@ -52,13 +52,14 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
+import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
+## try:
+##     import sqlite
+## except ImportError:
+##     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+##                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 conf.registerPlugin('Infobot')
 conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'personality',
@@ -133,9 +134,12 @@ class PickleInfobotDB(object):
             self._changes = 0
         else:
             try:
-                (self._is, self._are) = pickle.load(fd)
-            except cPickle.UnpicklingError, e:
-                raise dbi.InvalidDBError, str(e)
+                try:
+                    (self._is, self._are) = pickle.load(fd)
+                except cPickle.UnpicklingError, e:
+                    raise dbi.InvalidDBError, str(e)
+            finally:
+                fd.close()
 
     def flush(self):
         fd = utils.transactionalFile(filename, 'wb')
@@ -363,7 +367,7 @@ class SqliteInfobotDB(object):
         return areFacts + isFacts
 
 def InfobotDB():
-    return SqliteInfobotDB()
+    return PickleInfobotDB()
 
 class Dunno(Exception):
     pass
@@ -524,7 +528,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             if payload.endswith(irc.nick):
                 self.addressed = True
                 payload = payload[:-len(irc.nick)]
-                payload = payload.strip(', ') # Strip punctuation separating nick.
+                payload = payload.strip(', ') # Strip punctuation before nick.
                 payload += '?' # So doUnknown gets called.
             if not payload.strip():
                 self.log.debug('Bailing since we received an empty msg.')
@@ -541,8 +545,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         try:
             self.irc = irc
             self.msg = msg
-            callbacks.PrivmsgCommandAndRegexp.callCommand(self, f, irc, msg,
-                                                          *L, **kwargs)
+            super(Infobot, self).callCommand(f, irc, msg, *L, **kwargs)
         finally:
             self.irc = None
             self.msg = None
@@ -698,6 +701,52 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.factoid(factoid, msg=newmsg, prepend=prepend)
         except Dunno:
             self.dunno()
+
+    def update(self, irc, msg, args):
+        """{is,are} <url>
+
+        Updates the Infobot database using the dumped database at <url>.  The
+        first argument should be "is" or "are", and determines whether the is
+        or are database is updated.
+        """
+        (isAre, url) = privmsgs.getArgs(args, required=2)
+        isAre = isAre.lower()
+        if isAre == 'is':
+            add = self.db.setIs
+        elif isAre == 'are':
+            add = self.db.setAre
+        else:
+            raise callbacks.ArgumentError
+        count = 0
+        fd = webutils.getUrlFd(url)
+        for line in fd:
+            line = line.rstrip('\r\n')
+            try:
+                (key, value) = line.split(' => ', 1)
+            except ValueError: #unpack list of wrong size
+                self.log.debug('Invalid line: %r', line)
+                continue
+            else:
+                key = key.rstrip()
+                value = value.lstrip()
+                self.log.debug('Adding factoid %r with value %r.', key, value)
+                add(key, value)
+                count += 1
+        irc.replySuccess('%s added.' % utils.nItems('factoid', count))
+    update = privmsgs.checkCapability(update, 'owner')
+
+    def dump(self, irc, msg, args):
+        """<filename>
+
+        Dumps the current Infobot database into a flatfile named <filename>.
+        <filename> is put in the data directory if no directory is specified.
+        """
+        filename = privmsgs.getArgs(args)
+        if filename == os.path.basename(filename):
+            filename = conf.supybot.directories.data.dirize(filename)
+        fd = utils.transactionalFile(filename)
+        
+        
 
 
 Class = Infobot

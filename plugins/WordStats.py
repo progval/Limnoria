@@ -191,7 +191,7 @@ class WordStats(callbacks.Privmsg):
 
     def callCommand(self, *args, **kwargs):
         self.queried = True
-        return callbacks.Privmsg.callCommand(self, *args, **kwargs)
+        return super(WordStats, self).callCommand(*args, **kwargs)
 
     def doPrivmsg(self, irc, msg):
         # This depends on the fact that it's called after the command.
