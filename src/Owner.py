@@ -166,21 +166,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             options.sort()
             irc.reply(msg, ', '.join(options))
 
-    def listconf(self, irc, msg, args):
-        """takes no arguments
-        
-        Lists the variables in conf-module that can be adjusted with setconf.
-        """
-        options = []
-        for key in conf.types.keys():
-            otype = conf.types[key].__name__
-            if otype[:2] == 'my':
-                otype = otype[2:]
-            options.append('%s (%s)' % (key, otype))
-        
-        options.sort()
-        irc.reply(msg, ', '.join(options))
-
     def setdefaultcapability(self, irc, msg, args):
         """<capability>
 
