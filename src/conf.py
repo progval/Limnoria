@@ -240,7 +240,7 @@ def registerNetwork(name, password=''):
     registerGlobalValue(network, 'password', registry.String(password,
         """Determines what password will be used on %s.  Yes, we know that
         technically passwords are server-specific and not network-specific,
-        but this is the best we can do right now.""" % name))
+        but this is the best we can do right now.""" % name, private=True))
     registryServers = registerGlobalValue(network, 'servers', Servers([],
         """Determines what servers the bot will connect to for %s.  Each will
         be tried in order, wrapping back to the first when the cycle is
