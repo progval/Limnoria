@@ -43,8 +43,11 @@ import sets
 import time
 import getopt
 import os.path
+import operator
 from itertools import imap
 
+import supybot.dbi as dbi
+import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
@@ -76,84 +79,50 @@ class Ignores(registry.SpaceSeparatedListOfStrings):
 
 conf.registerUserValue(conf.users.plugins.Note, 'ignores', Ignores([], ''))
 
-class FlatfileNoteDB(plugins.FlatfileDB):
-    class Note(object):
-        def __init__(self, L=None, to=None, frm=None, text=None):
-            if L is not None:
-                self.frm = int(L[0])
-                self.to = int(L[1])
-                self.at = float(L[2])
-                self.notified = bool(int(L[3]))
-                self.read = bool(int(L[4]))
-                self.public = bool(int(L[5]))
-                self.text = L[6]
-            else:
-                self.to = to
-                self.frm = frm
-                self.text = text
-                self.read = False
-                self.public = True
-                self.at = time.time()
-                self.notified = False
-
-        def __str__(self):
-            return csv.join(map(str, [self.frm, self.to, self.at,
-                                      int(self.notified), int(self.read),
-                                      int(self.public), self.text]))
-
-    def serialize(self, n):
-        return str(n)
-
-    def deserialize(self, s):
-        return self.Note(csv.split(s))
+class DbiNoteDB(dbi.DB):
+    Mapping = 'flat'
+    class Record(object):
+        __metaclass__ = dbi.Record
+        __fields__ = [
+            'frm',
+            'to',
+            'at',
+            'notified',
+            'read',
+            'public',
+            ('text', str)
+            ]
 
     def setRead(self, id):
-        n = self.getRecord(id)
+        n = self.get(id)
         n.read = True
         n.notified = True
-        self.setRecord(id, n)
+        self.set(id, n)
 
     def setNotified(self, id):
-        n = self.getRecord(id)
+        n = self.get(id)
         n.notified = True
-        self.setRecord(id, n)
+        self.set(id, n)
 
     def getUnnotifiedIds(self, to):
-        L = []
-        for (id, note) in self.records():
-            if note.to == to and not note.notified:
-                L.append(id)
-        return L
+        def p(note):
+            return not note.notified and note.to == to
+        return [note.id for note in self.select(p)]
 
     def getUnreadIds(self, to):
-        L = []
-        for (id, note) in self.records():
-            if note.to == to and not note.read:
-                L.append(id)
-        return L
+        def p(note):
+            return not note.read and note.to == to
+        return [note.id for note in self.select(p)]
 
-    def send(self, frm, to, text):
-        n = self.Note(frm=frm, to=to, text=text)
-        return self.addRecord(n)
-
-    def get(self, id):
-        return self.getRecord(id)
-
-    def remove(self, id):
-        n = self.getRecord(id)
-        assert not n.read
-        self.delRecord(id)
-
-    def notes(self, p):
-        L = []
-        for (id, note) in self.records():
-            if p(note):
-                L.append((id, note))
-        return L
+    def send(self, frm, to, public, text):
+        n = self.Record(frm=frm, to=to, text=text,
+                        at=time.time(), public=public)
+        return self.add(n)
         
     
 def NoteDB():
-    return FlatfileNoteDB(conf.supybot.directories.data.dirize('Note.db'))
+    # XXX This should eventually be smarter.
+    return DbiNoteDB(conf.supybot.directories.data.dirize('Note.db'))
 
 
 class Note(callbacks.Privmsg):
@@ -249,7 +218,7 @@ class Note(callbacks.Privmsg):
             return
         sent = []
         for toId in ids:
-            id = self.db.send(fromId, toId, text)
+            id = self.db.send(fromId, toId, public, text)
             name = ircdb.users.getUser(toId).name
             s = 'note #%s sent to %s' % (id, name)
             sent.append(s)
@@ -362,15 +331,15 @@ class Note(callbacks.Privmsg):
         except KeyError:
             irc.errorNoUser()
 
-    def _formatNoteId(self, msg, id, frm, public, sent=False):
-        if public or not ircutils.isChannel(msg.args[0]):
-            sender = ircdb.users.getUser(frm).name
+    def _formatNoteId(self, msg, note, sent=False):
+        if note.public or not ircutils.isChannel(msg.args[0]):
+            sender = ircdb.users.getUser(note.frm).name
             if sent:
-                return '#%s to %s' % (id, sender)
+                return '#%s to %s' % (note.id, sender)
             else:
-                return '#%s from %s' % (id, sender)
+                return '#%s from %s' % (note.id, sender)
         else:
-            return '#%s (private)' % id
+            return '#%s (private)' % note.id
 
     def list(self, irc, msg, args):
         """[--{old,sent}] [--{from,to} <user>]
@@ -414,16 +383,14 @@ class Note(callbacks.Privmsg):
             except KeyError:
                 irc.errorNoUser()
                 return
-        notesAndIds = self.db.notes(p)
-        notesAndIds.sort()
-        #notesAndIds.reverse() # Newer notes, higher ids.
-        if not notesAndIds:
+        notes = list(self.db.select(p))
+        if not notes:
             irc.reply('You have no unread notes.')
         else:
-            L = [self._formatNoteId(msg, id, n.frm, n.public)
-                 for (id, n) in notesAndIds]
-            L = self._condense(L)
-            irc.reply(utils.commaAndify(L))
+            utils.sortBy(operator.attrgetter('id'), notes)
+            ids = [self._formatNoteId(msg, note) for note in notes]
+            ids = self._condense(ids)
+            irc.reply(utils.commaAndify(ids))
 
     def _condense(self, notes):
         temp = {}
@@ -455,14 +422,13 @@ class Note(callbacks.Privmsg):
             originalP = p
             def p(note):
                 return originalP(note) and note.to == receiver
-        notesAndIds = self.db.notes(p)
-        notesAndIds.sort()
-        notesAndIds.reverse()
-        if not notesAndIds:
+        notes = list(self.db.select(p))
+        if not notes:
             irc.error('I couldn\'t find any sent notes for your user.')
         else:
-            ids = [self._formatNoteId(msg, id, note.to, note.public,sent=True)
-                   for (id, note) in notesAndIds]
+            utils.sortBy(operator.attrgetter('id'), notes)
+            notes.reverse() # Most recently sent first.
+            ids = [self._formatNoteId(msg, note, sent=True) for note in notes]
             ids = self._condense(ids)
             irc.reply(utils.commaAndify(ids))
 
@@ -483,14 +449,13 @@ class Note(callbacks.Privmsg):
             originalP = p
             def p(note):
                 return originalP(note) and note.frm == sender
-        notesAndIds = self.db.notes(p)
-        notesAndIds.sort()
-        notesAndIds.reverse()
-        if not notesAndIds:
+        notes = list(self.db.select(p))
+        if not notes:
             irc.reply('I couldn\'t find any matching read notes for your user.')
         else:
-            ids = [self._formatNoteId(msg, id, note.frm, note.public)
-                   for (id, note) in notesAndIds]
+            utils.sortBy(operator.attrgetter('id'), notes)
+            notes.reverse()
+            ids = [self._formatNoteId(msg, note) for note in notes]
             ids = self._condense(ids)
             irc.reply(utils.commaAndify(ids))
 
