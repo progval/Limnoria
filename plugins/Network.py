@@ -189,7 +189,7 @@ class Network(callbacks.Privmsg):
         channels = utils.commaAndify(L)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
-            signon = time.strftime(conf.supybot.humanTimestampFormat(),
+            signon = time.strftime(conf.supybot.reply.format.time(),
                                    time.localtime(float(d['317'].args[3])))
         else:
             idle = '<unknown>'

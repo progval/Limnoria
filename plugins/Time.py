@@ -62,7 +62,7 @@ def configure(advanced):
 
 conf.registerPlugin('Time')
 conf.registerChannelValue(conf.supybot.plugins.Time, 'format',
-    registry.String(str(conf.supybot.humanTimestampFormat()), """Determines the
+    registry.String(str(conf.supybot.reply.format.time()), """Determines the
     format string for timestamps.  Refer to the Python documentation for the
     time module to see what formats are accepted. If you set this variable to
     the empty string, the timestamp will not be shown."""))

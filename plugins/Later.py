@@ -103,7 +103,7 @@ class Later(callbacks.Privmsg):
         fd.close()
 
     def _timestamp(self, when):
-        #format = conf.supybot.humanTimestampFormat()
+        #format = conf.supybot.reply.format.time()
         diff = time.time() - when
         try:
             return utils.timeElapsed(diff, seconds=False) + ' ago'

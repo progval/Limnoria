@@ -496,19 +496,19 @@ class MoobotFactoids(callbacks.Privmsg):
         # First, creation info.
         # Map the integer created_by to the username
         creat_by = ircdb.users.getUser(created_by).name
-        creat_at = time.strftime(conf.supybot.humanTimestampFormat(),
+        creat_at = time.strftime(conf.supybot.reply.format.time(),
                                  time.localtime(int(created_at)))
         s += "Created by %s on %s." % (creat_by, creat_at)
         # Next, modification info, if any.
         if modified_by is not None:
             mod_by = ircdb.users.getUser(modified_by).name
-            mod_at = time.strftime(conf.supybot.humanTimestampFormat(),
+            mod_at = time.strftime(conf.supybot.reply.format.time(),
                                    time.localtime(int(modified_at)))
             s += " Last modified by %s on %s." % (mod_by, mod_at)
         # Next, last requested info, if any
         if last_requested_by is not None:
             last_by = last_requested_by  # not an int user id
-            last_at = time.strftime(conf.supybot.humanTimestampFormat(),
+            last_at = time.strftime(conf.supybot.reply.format.time(),
                                     time.localtime(int(last_requested_at)))
             req_count = requested_count
             times_str = utils.nItems('time', requested_count)
@@ -516,7 +516,7 @@ class MoobotFactoids(callbacks.Privmsg):
                  (last_by, last_at, times_str)
         # Last, locked info
         if locked_at is not None:
-            lock_at = time.strftime(conf.supybot.humanTimestampFormat(),
+            lock_at = time.strftime(conf.supybot.reply.format.time(),
                                      time.localtime(int(locked_at)))
             lock_by = ircdb.users.getUser(locked_by).name
             s += " Locked by %s on %s." % (lock_by, lock_at)

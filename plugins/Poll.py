@@ -70,7 +70,7 @@ class PollRecord(dbi.Record):
         'status'
         ]
     def __str__(self):
-        format = conf.supybot.humanTimestampFormat()
+        format = conf.supybot.reply.format.time()
         user = plugins.getUserName(self.by)
         if self.options:
             options = 'Options: %s' % '; '.join(map(str, self.options))

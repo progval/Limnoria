@@ -62,7 +62,7 @@ class QuoteRecord(dbi.Record):
         'text'
         ]
     def __str__(self):
-        format = conf.supybot.humanTimestampFormat()
+        format = conf.supybot.reply.format.time()
         user = plugins.getUserName(self.by)
         return 'Quote %s added by %s at %s.' % \
                (utils.quoted(self.text), user,

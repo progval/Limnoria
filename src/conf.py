@@ -274,7 +274,12 @@ for (name, s) in registry._cache.iteritems():
 registerGroup(supybot, 'reply')
 
 registerGroup(supybot.reply, 'format')
-registerGroup(supybot.reply.format, 'time')
+registerChannelValue(supybot.reply.format, 'time',
+    registry.String('%I:%M %p, %B %d, %Y', """Determines how timestamps printed
+    for human reading should be formatted. Refer to the Python documentation
+    for the time module to see valid formatting characters for time
+    formats."""))
+
 registerGroup(supybot.reply.format.time, 'elapsed')
 registerChannelValue(supybot.reply.format.time.elapsed, 'short',
     registry.Boolean(False, """Determines whether elapsed times will be given
@@ -909,12 +914,6 @@ registerGlobalValue(supybot, 'defaultIgnore',
     unregistered users by default.  Of course, that'll make it particularly
     hard for those users to register or identify with the bot, but that's your
     problem to solve."""))
-
-registerChannelValue(supybot, 'humanTimestampFormat',
-    registry.String('%I:%M %p, %B %d, %Y', """Determines how timestamps printed
-    for human reading should be formatted. Refer to the Python documentation
-    for the time module to see valid formatting characters for time
-    formats."""))
 
 class IP(registry.String):
     """Value must be a valid IP."""

@@ -348,7 +348,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         counter = 0
         for (added_by, added_at) in factoids:
             counter += 1
-            added_at = time.strftime(conf.supybot.humanTimestampFormat(),
+            added_at = time.strftime(conf.supybot.reply.format.time(),
                                      time.localtime(int(added_at)))
             L.append('#%s was added by %s at %s' % (counter,added_by,added_at))
         factoids = '; '.join(L)

@@ -83,7 +83,7 @@ class QuoteGrabsRecord(dbi.Record):
         ]
 
     def __str__(self):
-        at = time.strftime(conf.supybot.humanTimestampFormat(),
+        at = time.strftime(conf.supybot.reply.format.time(),
                            time.localtime(float(self.at)))
         grabber = plugins.getUserName(self.grabber)
         return '%s (Said by: %s; grabbed by %s at %s)' % \

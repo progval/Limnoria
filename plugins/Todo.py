@@ -163,7 +163,7 @@ class Todo(callbacks.Privmsg):
                     active = 'Inactive'
                 if pri:
                     task += ', priority: %s' % pri
-                added_at = time.strftime(conf.supybot.humanTimestampFormat(),
+                added_at = time.strftime(conf.supybot.reply.format.time(),
                                          time.localtime(int(added_at)))
                 s = "%s todo for %s: %s (Added at %s)" % \
                     (active, name, task, added_at)

@@ -480,7 +480,7 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
     def showRecord(self, record):
         name = getUserName(record.by)
         at = time.localtime(record.at)
-        timeS = time.strftime(conf.supybot.humanTimestampFormat(), at)
+        timeS = time.strftime(conf.supybot.reply.format.time(), at)
         return '%s #%s: %s (added by %s at %s)' % \
                (self.name(), record.id, utils.quoted(record.text), name, timeS)
 

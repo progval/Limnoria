@@ -60,7 +60,7 @@ class DbiNewsDB(plugins.DbiChannelDB):
                 ]
 
             def __str__(self):
-                format = conf.supybot.humanTimestampFormat()
+                format = conf.supybot.reply.format.time()
                 user = plugins.getUserName(self.by)
                 if self.expires == 0:
                     s = '%s (Subject: "%s", added by %s on %s)' % \
