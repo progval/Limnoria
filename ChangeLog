@@ -1,3 +1,5 @@
+	* Changed Fun.roulette to use a 6-barrel revolver.
+	
 	* Changed Bugzilla to use the registry, rather than a custom
 	flatfile database format.
 	
