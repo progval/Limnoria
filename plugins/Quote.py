@@ -49,7 +49,7 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-class Quotes(plugins.ChannelIdDatabasePlugin):
+class Quote(plugins.ChannelIdDatabasePlugin):
     def random(self, irc, msg, args, channel):
         """[<channel>]
 
