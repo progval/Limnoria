@@ -210,11 +210,37 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         Identifies with NickServ.
         """
         if self.registryValue('NickServ', irc.network):
-            self._doIdentify(irc)
-            irc.replySuccess()
+            nick = self.registryValue('nick')
+            if nick != irc.nick:
+                irc.error('I can\'t identify without having my normal nick!')
+            elif not nick:
+                irc.error('You must set supybot.plugins.Services.nick before '
+                          'I\'m able to identify.')
+            else:
+                self._doIdentify(irc)
+                irc.replySuccess()
         else:
             irc.error('You must set supybot.plugins.Services.NickServ before '
                       'I\'m able to do identify.')
+
+    def ghost(self, irc, msg, args):
+        """takes no arguments
+
+        Ghosts the bot's configured nick and retakes it.
+        """
+        if self.registryValue('NickServ', irc.network):
+            nick = self.registryValue('nick')
+            if nick == irc.nick:
+                irc.error('I cowardly refuse to ghost myself.')
+            elif not nick:
+                irc.error('You must set supybot.plugins.Services.nick before '
+                          'I\'m able to ghost a nick.')
+            else:
+                self._doGhost(irc)
+                irc.replySuccess()
+        else:
+            irc.error('You must set supybot.plugins.Services.NickServ before '
+                      'I\'m able to ghost a nick.')
 
 
 
