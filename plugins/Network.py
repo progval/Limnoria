@@ -69,7 +69,7 @@ class Network(callbacks.Privmsg):
         if ircutils.isIP(host):
             hostname = socket.getfqdn(host)
             if hostname == host:
-                irc.error(msg, 'Host not found.')
+                irc.reply(msg, 'Host not found.')
             else:
                 irc.reply(msg, hostname)
         else:
