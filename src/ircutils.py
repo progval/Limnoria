@@ -49,6 +49,7 @@ import socket
 import string
 import fnmatch
 import operator
+import textwrap
 from itertools import imap
 from cStringIO import StringIO as sio
 
@@ -353,6 +354,105 @@ def stripFormatting(s):
     s = stripUnderline(s)
     return s.replace('\x0f', '').replace('\x0F', '')
 
+class FormatContext(object):
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.fg = None
+        self.bg = None
+        self.bold = False
+        self.reverse = False
+        self.underline = False
+
+    def start(self, s):
+        """Given a string, starts all the formatters in this context."""
+        if self.bold:
+            s = '\x02' + s
+        if self.reverse:
+            s = '\x16' + s
+        if self.underline:
+            s = '\x1f' + s
+        if self.fg is not None or self.bg is not None:
+            s = mircColor(s, fg=self.fg, bg=self.bg)[:-1] # Remove \x03.
+        return s
+
+    def end(self, s):
+        """Given a string, ends all the formatters in this context."""
+        if self.bold or self.reverse or \
+           self.fg or self.bg or self.underline:
+            # Should we individually end formatters?
+            s += '\x0f'
+        return s
+            
+class FormatParser(object):
+    def __init__(self, s):
+        self.fd = sio(s)
+        self.last = None
+
+    def getChar(self):
+        if self.last is not None:
+            c = self.last
+            self.last = None
+            return c
+        else:
+            return self.fd.read(1)
+
+    def ungetChar(self, c):
+        self.last = c
+
+    def parse(self):
+        context = FormatContext()
+        c = self.getChar()
+        while c:
+            if c == '\x02':
+                context.bold = not context.bold
+            elif c == '\x16':
+                context.reverse = not context.reverse
+            elif c == '\x1f':
+                context.underline = not context.underline
+            elif c == '\x0f':
+                context.reset()
+            elif c == '\x03':
+                self.getColor(context)
+            # XXX: Underline and reverse.
+            c = self.getChar()
+        return context
+
+    def getInt(self):
+        i = 0
+        setI = False
+        c = self.getChar()
+        while c.isdigit() and i < 100:
+            setI = True
+            i *= 10
+            i += int(c)
+            c = self.getChar()
+        self.ungetChar(c)
+        if setI:
+            return i
+        else:
+            return None
+
+    def getColor(self, context):
+        context.fg = self.getInt()
+        c = self.getChar()
+        if c == ',':
+            context.bg = self.getInt()
+
+def wrap(s, length):
+    if length < 100:
+        raise ValueError, 'Use with a length greater than 100, sucka.'
+    processed = []
+    chunks = textwrap.wrap(s, length)
+    context = None
+    for chunk in chunks:
+        if context is not None:
+            chunk = context.start(chunk)
+        context = FormatParser(chunk).parse()
+        processed.append(context.end(chunk))
+    return processed
+        
 def isValidArgument(s):
     """Returns whether s is strictly a valid argument for an IRC message."""
     return '\r' not in s and '\n' not in s and '\x00' not in s

@@ -50,7 +50,6 @@ import shlex
 import getopt
 import string
 import inspect
-import textwrap
 import threading
 from cStringIO import StringIO
 from itertools import imap, ifilter
@@ -631,7 +630,7 @@ class IrcObjectProxy(RichReplyMethods):
                                                 prefixName=self.prefixName))
                         self.finished = True
                         return
-                    msgs = textwrap.wrap(s,allowedLength-30) # -30 is for nick:
+                    msgs = ircutils.wrap(s, allowedLength-30) # -30 is for nick:
                     msgs.reverse()
                     response = msgs.pop()
                     if msgs:
