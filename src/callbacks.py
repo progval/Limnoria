@@ -197,6 +197,8 @@ class Tokenizer:
                 args.append(self.handleToken(token))
         return args
 
+def tokenize(s):
+    return Tokenizer.tokenize(s)
 
 class IrcObjectProxy:
     def __init__(self, irc, msg, args):
@@ -285,7 +287,7 @@ class Privmsg(irclib.IrcCallback):
         msg = self.rateLimiter.get()
         if msg:
             s = addressed(irc.nick, msg)
-            self.Proxy(irc, msg, Tokenizer().tokenize(s))
+            self.Proxy(irc, msg, tokenize(s))
 
     def isCommand(self, methodName):
         # This function is ugly, but I don't want users to call methods like
@@ -323,7 +325,7 @@ class Privmsg(irclib.IrcCallback):
             if m and self.isCommand(canonicalName(m.group(1))):
                 self.rateLimiter.put(msg)
                 msg = self.rateLimiter.get()
-                self.Proxy(irc, msg, Tokenizer().tokenize(s))
+                self.Proxy(irc, msg, tokenize(s))
 
 
 class IrcObjectProxyRegexp:
