@@ -295,8 +295,6 @@ class Value(Group):
         if _lastModified > self._lastModified:
             if self._name in _cache:
                 self.set(_cache[self._name])
-            else:
-                self.setValue(self._default)
         return self.value
 
 class Boolean(Value):
