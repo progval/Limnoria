@@ -64,6 +64,10 @@ class Enforcer(callbacks.Privmsg, plugins.Toggleable):
                                         'auto-voice': False,
                                         'auto-halfop': False})
     started = False
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        plugins.Toggleable.__init__(self)
+
     def start(self, irc, msg, args):
         """[<CHANSERV> <revenge>]
 

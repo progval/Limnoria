@@ -32,6 +32,7 @@
 import fix
 
 import os
+import new
 import sys
 import sets
 import time
@@ -250,7 +251,12 @@ class Toggleable(object):
         explicitly sets the value of <name> to <value>.  <channel> is only
         necessary if the message isn't sent in the channel itself.  Valid
         names are %s""" % (self._toggleNames())
-        self.toggle.__doc__ = s
+        code = self.toggle.im_func.func_code
+        globals = self.toggle.im_func.func_globals
+        closure = self.toggle.im_func.func_closure
+        newf = new.function(code, globals, None, closure=closure)
+        newf.__doc__ = s
+        self.toggle = new.instancemethod(newf, self, self.__class__)
 
     def _toggleNames(self):
         names = self.toggles.defaults.keys()
