@@ -173,18 +173,19 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
 
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
-        db = self.getDb(channel)
-        if ircmsgs.isAction(msg):
-            text = ircmsgs.unAction(msg)
-        else:
-            text = msg.args[1]
-        for url in webutils.urlRe.findall(text):
-            r = self.registryValue('nonSnarfingRegexp', channel)
-            if r and r.search(url):
-                self.log.debug('Skipping adding %r to db.', url)
-                continue
-            self.log.debug('Adding %r to db.', url)
-            db.addUrl(url, msg.nick)
+        if ircutils.isChannel(channel):
+            db = self.getDb(channel)
+            if ircmsgs.isAction(msg):
+                text = ircmsgs.unAction(msg)
+            else:
+                text = msg.args[1]
+            for url in webutils.urlRe.findall(text):
+                r = self.registryValue('nonSnarfingRegexp', channel)
+                if r and r.search(url):
+                    self.log.debug('Skipping adding %r to db.', url)
+                    continue
+                self.log.debug('Adding %r to db.', url)
+                db.addUrl(url, msg.nick)
         callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
 
     def tinyurlSnarfer(self, irc, msg, match):
