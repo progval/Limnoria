@@ -47,6 +47,7 @@ import os.path
 import threading
 
 import supybot.conf as conf
+import supybot.utils as utils
 import supybot.world as world
 from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
