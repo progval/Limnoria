@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
     if not foundBot:
         debug('Bot not found, starting.')
-        cmdline = '%s --daemon %s' % (options.supybot, options.conffile)
+        cmdline = 'sh -cl "%s --daemon %s"'%(options.supybot, options.conffile)
         ret = os.system(cmdline)
         debug('Bot started, command line %r returned %s.' % (cmdline, ret))
         sys.exit(ret)
