@@ -41,6 +41,7 @@ class BadWordsTestCase(PluginTestCase, PluginDocumentation):
     def _test(self):
         for word in self.badwords:
             self.assertRegexp('echo %s' % word, '(?!%s)' % word)
+            self.assertRegexp('echo [colorize %s]' % word, '(?!%s)' % word)
             self.assertRegexp('echo foo%sbar' % word, '(?!%s)' % word)
             self.assertRegexp('echo [strjoin "" %s]' % ' '.join(word),
                               '(?!%s)' % word)

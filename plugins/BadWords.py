@@ -47,6 +47,7 @@ import conf
 import utils
 import ircdb
 import ircmsgs
+import ircutils
 import privmsgs
 import registry
 import callbacks
@@ -122,6 +123,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
                 self.makeRegexp(self.words())
                 self.lastModified = time.time()
             s = msg.args[1]
+            s = ircutils.stripFormatting(s)
             s = self.regexp.sub(self.sub, s)
             return ircmsgs.privmsg(msg.args[0], s)
         else:

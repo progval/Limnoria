@@ -1,3 +1,5 @@
+	* Fixed bug #863601, plugin BadWords fails on color codes.
+
 	* Added ircutils.strip{Bold,Reverse,Underline,Formatting}, which
 	will remove the specified formatting or all forms of formatting
 	in the case of stripFormatting.
