@@ -339,4 +339,14 @@ def flatten(seq, strings=False):
             except TypeError:
                 yield elt
 
+def partition(p, L):
+    no = []
+    yes = []
+    for elt in L:
+        if p(elt):
+            yes.append(elt)
+        else:
+            no.append(elt)
+    return (yes, no)
+            
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
