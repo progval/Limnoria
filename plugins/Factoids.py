@@ -361,15 +361,13 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args):
-        """[<channel>] [--{regexp,exact}=<value>] [<glob>]
+        """[<channel>] [--{regexp}=<value>] [<glob>]
 
         Searches the keyspace for keys matching <glob>.  If --regexp is given,
-        it associated value is taken as a regexp and matched against the keys;
-        if --exact is given, its associated value is taken as an exact string
-        to match against the key.
+        it associated value is taken as a regexp and matched against the keys.
         """
         channel = privmsgs.getChannel(msg, args)
-        (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
+        (optlist, rest) = getopt.getopt(args, '', ['regexp='])
         if not optlist and not rest:
             raise callbacks.ArgumentError
         criteria = []
@@ -377,11 +375,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         predicateName = 'p'
         db = self.getDb(channel)
         for (option, arg) in optlist:
-            if option == '--exact':
-                ### FIXME: no way to escape LIKE metacharacters in SQLite.
-                criteria.append('key LIKE %s')
-                formats.append('%' + arg + '%')
-            elif option == '--regexp':
+            if option == '--regexp':
                 criteria.append('%s(key)' % predicateName)
                 try:
                     r = utils.perlReToPythonRe(arg)
@@ -414,5 +408,6 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
 
         
 Class = Factoids
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
