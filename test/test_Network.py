@@ -45,7 +45,7 @@ if network:
             self.assertNotError('network whois kuro5hin.org')
             self.assertError('network whois www.kuro5hin.org')
             self.assertNotError('network whois microsoft.com')
-            self.assertNotError('network whois goatse.cx')
+            self.assertNotError('network whois inria.fr')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
