@@ -96,7 +96,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         quoteid = cursor.fetchone()[0]
         irc.replySuccess('(Quote #%s added)' % quoteid)
 
-    def num(self, irc, msg, args):
+    def stats(self, irc, msg, args):
         """[<channel>]
 
         Returns the numbers of quotes in the quote database for <channel>.

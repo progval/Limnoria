@@ -308,7 +308,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
             irc.errorPossibleBug(s)
     tiny = privmsgs.thread(tiny)
 
-    def num(self, irc, msg, args):
+    def stats(self, irc, msg, args):
         """[<channel>]
 
         Returns the number of URLs in the URL database.  <channel> is only

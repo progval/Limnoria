@@ -237,7 +237,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
             db.commit()
             irc.replySuccess()
 
-    def num(self, irc, msg, args):
+    def stats(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise>
 
         Returns the number of records, of the type specified, currently in
