@@ -175,6 +175,12 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('units mass')
         self.assertNotError('units flux density')
 
+    def testAbs(self):
+        self.assertResponse('calc abs(2)', '2')
+        self.assertResponse('calc abs(-2)', '2')
+        self.assertResponse('calc abs(2.0)', '2')
+        self.assertResponse('calc abs(-2.0)', '2')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -129,6 +129,7 @@ class Math(callbacks.Privmsg):
         else:
             return math.sqrt(x)
     _mathEnv['sqrt'] = _sqrt
+    _mathEnv['abs'] = abs
     _mathRe = re.compile(r'((?:(?<![A-Fa-f\d)])-)?'
                          r'(?:0x[A-Fa-f\d]+|'
                          r'0[0-7]+|'
