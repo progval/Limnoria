@@ -48,9 +48,11 @@ import string
 
 # Stupid printing on import...
 from cStringIO import StringIO
-sys.stdout = StringIO()
-import this
-sys.stdout = sys.__stdout__
+try:
+    sys.stdout = StringIO()
+    import this
+finally:
+    sys.stdout = sys.__stdout__
 
 import conf
 import utils
