@@ -50,12 +50,21 @@ if sqlite is not None:
 
         def testLart(self):
             self.assertNotError('dbadd lart jabs $who')
-            self.assertResponse('lart jemfinch for being dumb', '\x01ACTION'\
-                ' jabs jemfinch for being dumb (#1)\x01')
-            self.assertResponse('lart jemfinch', '\x01ACTION jabs jemfinch'\
-                ' (#1)\x01')
+            self.assertResponse('lart jemfinch for being dumb',
+                '\x01ACTION jabs jemfinch for being dumb (#1)\x01')
+            self.assertResponse('lart jemfinch',
+                '\x01ACTION jabs jemfinch (#1)\x01')
             self.assertNotError('dbnum lart')
+            self.assertNotError('dbadd lart shoots $who')
+            self.assertResponse('lart --id=1 jemfinch',
+                '\x01ACTION jabs jemfinch (#1)\x01')
+            self.assertResponse('lart --id=2 jemfinch for being dumb',
+                '\x01ACTION shoots jemfinch for being dumb (#2)\x01')
             self.assertNotError('dbremove lart 1')
+            self.assertNotError('dbnum lart')
+            self.assertResponse('lart jemfinch',
+                '\x01ACTION shoots jemfinch (#2)\x01')
+            self.assertNotError('dbremove lart 2')
             self.assertNotError('dbnum lart')
             self.assertError('lart jemfinch')
 
@@ -78,13 +87,21 @@ if sqlite is not None:
 
         def testPraise(self):
             self.assertNotError('dbadd praise pets $who')
-            self.assertNotError('praise jemfinch')
-            self.assertResponse('praise jemfinch for being him', '\x01ACTION'\
-                ' pets jemfinch for being him (#1)\x01')
-            self.assertResponse('praise jemfinch', '\x01ACTION pets jemfinch'\
-                ' (#1)\x01')
+            self.assertResponse('praise jemfinch for being him',
+                '\x01ACTION pets jemfinch for being him (#1)\x01')
+            self.assertResponse('praise jemfinch',
+                '\x01ACTION pets jemfinch (#1)\x01')
             self.assertNotError('dbnum praise')
+            self.assertNotError('dbadd praise gives $who a cookie')
+            self.assertResponse('praise --id=1 jemfinch',
+                '\x01ACTION pets jemfinch (#1)\x01')
+            self.assertResponse('praise --id=2 jemfinch for being him',
+                '\x01ACTION gives jemfinch a cookie for being him (#2)\x01')
             self.assertNotError('dbremove praise 1')
+            self.assertNotError('dbnum praise')
+            self.assertResponse('praise jemfinch',
+                '\x01ACTION gives jemfinch a cookie (#2)\x01')
+            self.assertNotError('dbremove praise 2')
             self.assertNotError('dbnum praise')
             self.assertError('praise jemfinch')
 
