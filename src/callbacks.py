@@ -426,7 +426,7 @@ class RichReplyMethods(object):
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default)', self.msg.prefix)
-            v = conf.supybot.replies.genericNoCapability.get(msg.args[0])()
+            v = conf.supybot.replies.genericNoCapability.get(self.msg.args[0])()
             self.error(self.__makeReply(v, s), **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
@@ -751,7 +751,7 @@ class CanonicalString(registry.NormalizedString):
 class CanonicalNameSet(utils.NormalizingSet):
     def normalize(self, s):
         return canonicalName(s)
-        
+
 class CanonicalNameDict(utils.InsensitivePreservingDict):
     def key(self, s):
         return canonicalName(s)
@@ -759,12 +759,12 @@ class CanonicalNameDict(utils.InsensitivePreservingDict):
 class Disabled(registry.SpaceSeparatedListOf):
     Value = CanonicalString
     List = CanonicalNameSet
-    
+
 conf.registerGlobalValue(conf.supybot.commands, 'disabled',
     Disabled([], """Determines what commands are currently disabled.  Such
     commands will not appear in command lists, etc.  They will appear not even
     to exist."""))
-    
+
 class DisabledCommands(object):
     def __init__(self):
         self.d = CanonicalNameDict()

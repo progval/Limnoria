@@ -96,7 +96,7 @@ class Channel(callbacks.Privmsg):
         channel limit.  <channel> is only necessary if the message isn't sent
         in the channel itself.
         """
-        limit = privmsg.getArgs(args)
+        limit = privmsgs.getArgs(args)
         try:
             limit = int(limit)
             if limit < 0:
@@ -122,7 +122,7 @@ class Channel(callbacks.Privmsg):
         if self.haveOps(irc, channel, 'moderate the channel'):
             irc.queueMsg(ircmsgs.mode(channel, ['+m']))
     moderate = privmsgs.checkChannelCapability(moderate, 'op')
-                        
+
     def unmoderate(self, irc, msg, args, channel):
         """[<channel>]
 
@@ -149,7 +149,7 @@ class Channel(callbacks.Privmsg):
             if self.haveOps(irc, channel, 'unset the keyword'):
                 irc.queueMsg(ircmsgs.mode(channel, ['-k']))
     key = privmsgs.checkChannelCapability(key, 'op')
-                        
+
     def op(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
 

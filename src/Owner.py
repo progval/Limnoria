@@ -126,7 +126,7 @@ conf.supybot.plugins.Owner.register('public', registry.Boolean(True,
 ###
 # supybot.commands.
 ###
-                         
+
 conf.registerGroup(conf.supybot.commands, 'defaultPlugins')
 conf.supybot.commands.defaultPlugins.help = utils.normalizeWhitespace("""
 Determines what commands have default plugins set, and which plugins are set to
@@ -241,8 +241,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                 self.log.error('Error loading src/ plugin %s.  '
                                                'This is usually rather '
                                                'serious; these plugins are '
-                                               'almost always be loaded.', s)
-                                
+                                               'almost always be loaded.',
+                                               name)
+
                         except Exception, e:
                             log.exception('Failed to load %s:', name)
                 else:
@@ -650,7 +651,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         setattr(cb.__class__, name, method)
         delattr(cb.__class__, command)
         irc.replySuccess()
-            
+
 
 
 
