@@ -544,6 +544,8 @@ class context(object):
     def __repr__(self):
         return '<%s for %s>' % (self.__class__.__name__, self.spec)
 
+# additional means:  Look for this (and make sure it's of this type).  If
+# there are no arguments for us to check, then use our default.
 class additional(context):
     def __init__(self, spec, default=None):
         self.__parent = super(additional, self)
@@ -557,6 +559,8 @@ class additional(context):
             log.debug('Got IndexError, returning default.')
             setDefault(state, self.default)
 
+# optional means: Look for this, but if it's not the type I'm expecting or
+# there are no arguments for us to check, then use the default value.
 class optional(additional):
     def __call__(self, irc, msg, args, state):
         try:
