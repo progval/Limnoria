@@ -87,6 +87,12 @@ class Utilities(callbacks.Privmsg):
         """
         irc.reply(msg, privmsgs.getArgs(args).lower())
 
+    def strlen(self, irc, msg, args):
+        total = 0
+        for arg in args:
+            total += len(arg)
+        irc.reply(msg, str(total))
+
     def repr(self, irc, msg, args):
         """<text>
 
