@@ -45,7 +45,6 @@ import sys
 import math
 import random
 import string
-import urllib2
 
 # Stupid printing on import...
 from cStringIO import StringIO
@@ -54,6 +53,7 @@ import this
 sys.stdout = sys.__stdout__
 
 import utils
+import webutils
 import ircutils
 import privmsgs
 import callbacks
@@ -190,9 +190,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         if not self.configurables.get('aspn-snarfer', channel=msg.args[0]):
             return
         url = match.group(0)
-        fd = urllib2.urlopen(url)
-        s = fd.read()
-        fd.close()
+        s = webutils.getUrl(url)
         resp = []
         for r in self._searches:
             m = r.search(s)
