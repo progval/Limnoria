@@ -102,7 +102,6 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
           plugins.ChannelDBHandler):
     regexps = ['tinyurlSnarfer', 'titleSnarfer']
     _titleRe = re.compile('<title>(.*?)</title>', re.I)
-    maxSize = 4096
     def __init__(self):
         self.nextMsgs = {}
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
@@ -200,7 +199,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         channel = msg.args[0]
         if self.registryValue('titleSnarfer', channel):
             url = match.group(0)
-            text = webutils.getUrl(url, size=self.maxSize)
+            text = webutils.getUrl(url, size=conf.supybot.httpPeekSize())
             m = self._titleRe.search(text)
             if m is not None:
                 s = 'Title: %s' % utils.htmlToText(m.group(1).strip())

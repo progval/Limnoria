@@ -50,6 +50,7 @@ import conf
 import utils
 import webutils
 import privmsgs
+import registry
 import callbacks
 
 class FreshmeatException(Exception):
@@ -57,7 +58,6 @@ class FreshmeatException(Exception):
 
 class Http(callbacks.Privmsg):
     threaded = True
-    maxSize = 4096
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
     def callCommand(self, method, irc, msg, *L):
         try:
@@ -90,7 +90,7 @@ class Http(callbacks.Privmsg):
         if not url.startswith('http://'):
             irc.error('Only HTTP urls are valid.')
             return
-        s = webutils.getUrl(url, size=self.maxSize)
+        s = webutils.getUrl(url, size=conf.supybot.httpPeekSize())
         m = self._doctypeRe.search(s)
         if m:
             s = utils.normalizeWhitespace(m.group(0))
@@ -113,13 +113,13 @@ class Http(callbacks.Privmsg):
             size = fd.headers['Content-Length']
             irc.reply('%s is %s bytes long.' % (url, size))
         except KeyError:
-            s = fd.read(self.maxSize)
-            if len(s) != self.maxSize:
+            s = fd.read(conf.supybot.httpPeekSize())
+            if len(s) != conf.supybot.httpPeekSize():
                 irc.reply('%s is %s bytes long.' % (url, len(s)))
             else:
                 irc.reply('The server didn\'t tell me how long %s is '
-                               'but it\'s longer than %s bytes.' %
-                               (url,self.maxSize))
+                          'but it\'s longer than %s bytes.' %
+                          (url,conf.supybot.httpPeekSize()))
 
     def title(self, irc, msg, args):
         """<url>
@@ -129,13 +129,13 @@ class Http(callbacks.Privmsg):
         url = privmsgs.getArgs(args)
         if '://' not in url:
             url = 'http://%s' % url
-        text = webutils.getUrl(url, size=self.maxSize)
+        text = webutils.getUrl(url, size=conf.supybot.httpPeekSize())
         m = self._titleRe.search(text)
         if m is not None:
             irc.reply(utils.htmlToText(m.group(1).strip()))
         else:
             irc.reply('That URL appears to have no HTML title '
-                           'within the first %s bytes.' % self.maxSize)
+                      'within the first %s bytes.'%conf.supybot.httpPeekSize())
 
     def freshmeat(self, irc, msg, args):
         """<project name>

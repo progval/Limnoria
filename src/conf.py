@@ -168,6 +168,11 @@ whether the bot will automatically thread all commands.  At this point this
 option exists almost exclusively for debugging purposes; it can do very little
 except to take up more CPU."""))
 
+supybot.register('httpPeekSize', registry.PositiveInteger(4096, """Determines
+how many bytes the bot will 'peek' at when looking through a URL for a
+doctype or title or something similar.  It'll give up after it reads this many
+bytes."""))
+
 ###
 # Reply/error tweaking.
 ###
