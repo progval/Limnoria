@@ -158,6 +158,9 @@ class FlatfileMapping(MappingInterface):
         finally:
             fd.close()
 
+    # XXX This assumes it's not been given out.  We should make sure that our
+    #     maximum id remains accurate if this is some value we've never given
+    #     out -- i.e., self.maxid = max(self.maxid, id) or something.
     def set(self, id, s):
         strLine = self._joinLine(id, s)
         try:
@@ -236,6 +239,7 @@ class CdbMapping(MappingInterface):
     def get(self, id):
         return self.db[str(id)]
 
+    # XXX Same as above.
     def set(self, id, s):
         self.db[str(id)] = s
 

@@ -169,9 +169,11 @@ def makeChannelFilename(filename, channel=None, dirname=None):
         return conf.supybot.directories.data.dirize(filename)
 
 
-# XXX: This shouldn't be a mixin.  This should be contained by classes that
-#      want such behavior.  But at this point, it wouldn't gain much for us
-#      to refactor it.
+# XXX This shouldn't be a mixin.  This should be contained by classes that
+#     want such behavior.  But at this point, it wouldn't gain much for us
+#     to refactor it.
+# XXX We need to get rid of this, it's ugly and opposed to
+#     database-independence.
 class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.
     """
@@ -280,6 +282,10 @@ class ChannelUserDictionary(UserDict.DictMixin):
         return L
 
 
+# XXX The interface to this needs to be made *much* more like the dbi.DB
+#     interface.  This is just too odd and not extensible; any extension
+#     would very much feel like an extension, rather than part of the db
+#     itself.
 class ChannelUserDB(ChannelUserDictionary):
     def __init__(self, filename):
         ChannelUserDictionary.__init__(self)
