@@ -529,9 +529,9 @@ class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     threaded = False
     public = True
-    handled = False
     alwaysCall = ()
     noIgnore = False
+    handled = False
     commandArgs = ['self', 'irc', 'msg', 'args']
     _mores = {} # This must be class-scope, so all subclasses use the same one.
     def __init__(self):
@@ -617,7 +617,6 @@ class Privmsg(irclib.IrcCallback):
     def callCommand(self, f, irc, msg, *L):
         # Exceptions aren't caught here because IrcObjectProxy.finalEval
         # catches them and does The Right Thing.
-        Privmsg.handled = True
         start = time.time()
         f(irc, msg, *L)
         elapsed = time.time() - start
@@ -739,24 +738,26 @@ class PrivmsgCommandAndRegexp(Privmsg):
                 raise
 
     def doPrivmsg(self, irc, msg):
+        handled = False
         for (r, method) in self.res:
-            originalHandled = self.handled
             name = method.__name__
+            if handled and name not in self.alwaysCall:
+                continue
             for m in r.finditer(msg.args[1]):
-                if originalHandled and name not in self.alwaysCall:
-                    continue
                 proxy = IrcObjectProxyRegexp(irc)
                 self.callCommand(method, proxy, msg, m, catchErrors=True)
-        s = addressed(irc.nick, msg)
-        if s:
-            for (r, method) in self.addressedRes:
-                originalHandled = self.handled
-                name = method.__name__
-                for m in r.finditer(s):
-                    if originalHandled and name not in self.alwaysCall:
+                handled = True
+        if not Privmsg.handled:
+            s = addressed(irc.nick, msg)
+            if s:
+                for (r, method) in self.addressedRes:
+                    name = method.__name__
+                    if handled and name not in self.alwaysCall:
                         continue
-                    proxy = IrcObjectProxyRegexp(irc)
-                    self.callCommand(method,proxy,msg,m,catchErrors=True)
+                    for m in r.finditer(s):
+                        proxy = IrcObjectProxyRegexp(irc)
+                        self.callCommand(method,proxy,msg,m,catchErrors=True)
+                        handled = True
             
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
