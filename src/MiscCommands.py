@@ -172,7 +172,7 @@ class MiscCommands(callbacks.Privmsg):
         else:
             filenames = os.listdir(conf.logDir)
         result = []
-        for file in os.listdir(conf.logDir):
+        for file in filenames:
             if file.endswith('.log'):
                 stats = os.stat(os.path.join(conf.logDir, file))
                 result.append((file, str(stats.st_size)))
