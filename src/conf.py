@@ -882,11 +882,10 @@ registerGlobalValue(supybot.protocols.http, 'proxy',
 registerGlobalValue(supybot, 'defaultIgnore',
     registry.Boolean(False, """Determines whether the bot will ignore
     unregistered users by default.  Of course, that'll make it particularly
-    hard for those users to register with the bot, but that's your problem to
-    solve."""))
+    hard for those users to register or identify with the bot, but that's your
+    problem to solve."""))
 
-# XXX There's no reason this can't be channel-specific.
-registerGlobalValue(supybot, 'humanTimestampFormat',
+registerChannelValue(supybot, 'humanTimestampFormat',
     registry.String('%I:%M %p, %B %d, %Y', """Determines how timestamps printed
     for human reading should be formatted. Refer to the Python documentation
     for the time module to see valid formatting characters for time
