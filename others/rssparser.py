@@ -533,8 +533,11 @@ def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
     if hasattr(source, "read"):
         return source
 
-    if source == "-":
-        return sys.stdin
+## Not appropriate.  I wish this module advertised that it did this.
+## Hah!  Incidentally, even if it were appropriate, Mr. Pilgrim forgot to
+## import sys.  Double suckage!
+##     if source == "-":
+##         return sys.stdin
 
     if not agent:
         agent = USER_AGENT
@@ -555,16 +558,21 @@ def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
         return opener.open(request)
     except:
         # source is not a valid URL, but it might be a valid filename
+        # jemfinch: yeah, right.  Like we're going to allow that.  Eat
+        # this, Mark Pilgrim!
         pass
 
-    # try to open with native open function (if source is a filename)
-    try:
-        return open(source)
-    except:
-        pass
+##     # Dumb dumb dumb!
+##     # try to open with native open function (if source is a filename)
+##     try:
+##         return open(source)
+##     except:
+##         pass
 
-    # treat source as string
-    return StringIO.StringIO(str(source))
+# This just feels icky to me, I'm not allowing it.
+# treat source as string
+##     return StringIO.StringIO(str(source))
+    return StringIO.StringIO('')
 
 def get_etag(resource):
     """
