@@ -62,7 +62,9 @@ example = utils.wrapLines("""
 <jemfinch> @dict socket
 <supybot> jemfinch: foldoc, wn, and web1913 responded, 1 shown: wn: socket n 1: a bony hollow into which a structure fits 2: receptacle where something (a pipe or probe or end of a bone) is inserted 3: a receptacle into which an electric device can be inserted
 <jemfinch> @dict foldoc socket
-<supybot> jemfinch: Chopped: foldoc: socket <networking> The {Berkeley Unix} mechansim for creating a virtual connection between processes. Sockets interface {Unix}'s {standard I/O} with its {network} communication facilities. They can be of two types, stream (bi-directional) or {datagram} (fixed length destination-addressed messages). The socket library function socket() creates a communications end-point or socket and ret
+<supybot> jemfinch: foldoc: socket <networking> The {Berkeley Unix} mechansim for creating a virtual connection between processes. Sockets interface {Unix}'s {standard I/O} with its {network} communication facilities. They can be of two types, stream (bi-directional) or {datagram} (fixed length destination-addressed messages). The socket library function socket() creates a communications end-point or socket and ret <snip>
+<jemfinch> @randomdictionary
+<supybot> jemfinch: foldoc
 """)
 
 class Dict(callbacks.Privmsg):
@@ -119,7 +121,11 @@ class Dict(callbacks.Privmsg):
         definitions = conn.define(dictionary, word)
         dbs = sets.Set()
         if not definitions:
-            irc.reply(msg, 'No definition for %r could be found.' % word)
+            if dictionary == '*':
+                irc.reply(msg, 'No definition for %r could be found.' % word)
+            else:
+                irc.reply(msg, 'No definition for %r could be found in %s' % \
+                          dictionary)
             return
         L = []
         for d in definitions:
