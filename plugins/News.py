@@ -38,6 +38,7 @@ from baseplugin import *
 
 import sqlite
 
+import utils
 import privmsgs
 import callbacks
 
@@ -49,6 +50,10 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load News')
+
+example = utils.wrapLines("""
+
+""")
 
 class News(callbacks.Privmsg, ChannelDBHandler):
     def __init__(self):
