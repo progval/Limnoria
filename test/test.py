@@ -177,7 +177,7 @@ class PluginTestCase(unittest.TestCase):
             drivers.run()
             response = self.irc.takeMsg()
         if self.myVerbose:
-            print 'Response: %r' % msg
+            print 'Response: %r' % response
         return response
 
     def getMsg(self, query, timeout=None):
