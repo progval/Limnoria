@@ -153,5 +153,8 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
 
     def testGnu(self):
         self.assertResponse('gnu foo bar baz', 'GNU/foo GNU/bar GNU/baz')
+        self.assertNotError('outfilter gnu')
+        self.assertResponse('echo foo bar baz', 'GNU/foo GNU/bar GNU/baz')
+        self.assertNotError('outfilter')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

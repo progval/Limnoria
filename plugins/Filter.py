@@ -607,12 +607,13 @@ class Filter(callbacks.Privmsg):
         irc.reply(out.getvalue())
     spellit = wrap(spellit, ['text'])
 
-    def gnu(self, irc, msg, args):
+    def gnu(self, irc, msg, args, text):
         """<text>
 
-        Returns <text> as RMS would say it.
+        Returns <text> as GNU/RMS would say it.
         """
-        irc.reply(' '.join(['GNU/' + s for s in args]))
+        irc.reply(' '.join(['GNU/' + s for s in text.split()]))
+    gnu = wrap(gnu, ['text'])
 
 
 Class = Filter
