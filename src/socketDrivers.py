@@ -92,7 +92,8 @@ class SocketDriver(drivers.IrcDriver):
                 # (11, 'Resource temporarily unavailable') raised if connect
                 # hasn't finished yet.
                 if e.args[0] != 11 and self.eagains > 120:
-                    log.warning('Disconnect from %s: %s', self.server, e)
+                    server = '%s:%s' % self.server
+                    log.warning('Disconnect from %s: %s', server, e.args[1])
                     self.reconnect(wait=True)
                 else:
                     log.debug('Got EAGAIN, current count: %s', self.eagains)
@@ -128,26 +129,31 @@ class SocketDriver(drivers.IrcDriver):
             return
         self._sendIfMsgs()
 
-    def connect(self, wait=False):
-        self.reconnect(wait, reset=False)
+    def connect(self, **kwargs):
+        self.reconnect(reset=False, **kwargs)
         
     def reconnect(self, wait=False, reset=True):
+        server = '%s:%s' % self.server
+        self.irc.reset()
         if self.connected:
-            log.info('Reconnect called on driver for %s.' % self.irc)
+            log.info('Reconnect called on driver for %s.', self.irc)
             self.conn.close()
         elif not wait:
-            log.info('Connecting to %s.' % ':'.join(map(str, self.server)))
+            log.info('Connecting to %s.', server)
         self.connected = False
         if wait:
-            log.info('Reconnect waiting.')
+            log.info('Reconnect to %s waiting.', server)
             self._scheduleReconnect()
             return
         if reset:
+            log.debug('Resetting %s.', self.irc)
             self.irc.reset()
+        else:
+            log.debug('Not resetting %s.', self.irc)
         try:
             self.conn = utils.getSocket(self.server[0])
         except socket.error, e:
-            log.warning('Error connecting to %s: %s', self.server[0], e)
+            log.warning('Error connecting to %s: %s', server, e.args[1])
             self.reconnect(wait=True)
             return
         # We allow more time for the connect here, since it might take longer.
@@ -188,7 +194,8 @@ class SocketDriver(drivers.IrcDriver):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         if not world.dying:
             whenS = log.timestamp(when)
-            log.info('Scheduling reconnect to %s at %s', self.server, whenS)
+            server = '%s:%s' % self.server
+            log.info('Scheduling reconnect to %s at %s', server, whenS)
         schedule.addEvent(self.reconnect, when)
 
     def die(self):

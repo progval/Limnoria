@@ -152,7 +152,8 @@ class IrcMsgQueue(object):
     def enqueue(self, msg):
         """Enqueues a given message."""
         if msg in self.msgs:
-            log.warning('Not adding message %r to queue, already added.' % msg)
+            s = str(msg).strip()
+            log.warning('Not adding message %r to queue, already added.', s)
         else:
             self.msgs.add(msg)
             if msg.command in _high:
@@ -460,12 +461,12 @@ class Irc(IrcCommandDispatcher):
     def reset(self):
         """Resets the Irc object.  Called when the driver reconnects."""
         self._setNonResettingVariables()
-        self._queueConnectMessages()
         self.state.reset()
         self.queue.reset()
         self.fastqueue.reset()
         for callback in self.callbacks:
             callback.reset()
+        self._queueConnectMessages()
 
     def _setNonResettingVariables(self):
         # Configuration stuff.
@@ -486,9 +487,9 @@ class Irc(IrcCommandDispatcher):
         if self.password:
             log.info('Sending PASS command, not logging the password.')
             self.queueMsg(ircmsgs.password(self.password))
-        log.info('Sending NICK command, nick is %s.', self.nick)
+        log.info('Queueing NICK command, nick is %s.', self.nick)
         self.queueMsg(ircmsgs.nick(self.nick))
-        log.info('Sending USER command, ident is %s, user is %s.',
+        log.info('Queueing USER command, ident is %s, user is %s.',
                  self.ident, self.user)
         self.queueMsg(ircmsgs.user(self.ident, self.user))
 
