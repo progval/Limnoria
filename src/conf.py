@@ -95,6 +95,13 @@ logTimestampFormat = '[%d-%b-%Y %H:%M:%S]'
 humanTimestampFormat = '%I:%M %p, %B %d, %Y'
 
 ###
+# externalIP: A string that is the external IP of the bot.  If this is None,
+#             the bot will attempt to find out its IP dynamically (though
+#             sometimes this doesn't work.)
+###
+externalIP = None
+
+###
 # throttleTime: A floating point number of seconds to throttle queued messages.
 #               (i.e., messages will not be sent faster than once per
 #                throttleTime units.)
@@ -160,6 +167,19 @@ replyWhenNotAddressed = False
 requireRegistration = False
 
 ###
+# requireChannelCommandsToBeSentInChannel: Normally, you can send channel
+#                                          related commands in private or in
+#                                          another channel.  Sometimes this
+#                                          can be confusing, though, if the
+#                                          command changes the behavior of
+#                                          the bot in the channel.  Set this
+#                                          variable to True if you want to
+#                                          require such commands to be sent
+#                                          in the channel to which they apply.
+###
+requireChannelCommandsToBeSentInChannel = False
+
+###
 # followIdentificationThroughNickChanges: By default the bot will simply
 #                                         unidentify someone when he changes
 #                                         his nick.  Setting this to True will
@@ -194,12 +214,19 @@ defaultCapabilities = sets.Set(['-owner', '-admin', '-trusted'])
 ###
 # reply%s: Stock replies for various reasons.
 ###
-replyError = 'An error has occurred and has been logged.'
-replyNoCapability = 'You don\'t have the "%s" capability.'
+replyError = 'An error has occurred and has been logged.  ' \
+             'Please contact this bot\'s administrator for more information.'
+replyNoCapability = 'You don\'t have the "%s" capability.  If you think ' \
+                    'that you should have this capability, be sure that ' \
+                    'you are identified via the "whoami" command.'
 replySuccess = 'The operation succeeded.'
-replyIncorrectAuth = 'Your hostmasks don\'t match or your password is wrong.'
+replyIncorrectAuth = 'Your hostmask doesn\'t match or your password is wrong.'
 replyNoUser = 'I can\'t find that user in my database.'
-replyNotRegistered = 'You must be registered to use this command.'
+replyNotRegistered = 'You must be registered to use this command.  ' \
+                     'If you are already registered, you must either ' \
+                     'identify (using the identify command) or add a ' \
+                     'hostmask matching your current hostmask (using ' \
+                     'the addhostmask command).'
 replyInvalidArgument = 'I can\'t send \\r, \\n, or \\0 (\\x00).'
 replyRequiresPrivacy = 'That can\'t be done in a channel.'
 replyEvalNotAllowed = 'You must enable conf.allowEval for that to work.'
