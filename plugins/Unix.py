@@ -41,6 +41,7 @@ import pwd
 import crypt
 import errno
 import random
+import string
 import struct
 import popen2
 
