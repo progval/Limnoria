@@ -290,11 +290,10 @@ class ChannelState(object):
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
             (action, modeChar) = mode
             if modeChar in 'ovhbeq': # We don't handle e or q yet.
+                set = getSet(modeChar)
                 if action == '-':
-                    set = getSet(modeChar)
                     set.discard(value)
                 elif action == '+':
-                    set = getSet(modeChar)
                     set.add(value)
             else:
                 if action == '+':
@@ -729,7 +728,10 @@ class Irc(IrcCommandDispatcher):
                 # matter.  That's why we gotta go munging in private attributes
                 msg._str = msg._str[:500] + '\r\n'
                 msg._len =  len(str(msg))
-            self.state.addMsg(self, msg)
+            # I don't think we should do this.  Why should it matter?  If it's
+            # something important, then the server will send it back to us,
+            # and if it's just a privmsg/notice/etc., we don't care.
+            # self.state.addMsg(self, msg)
             log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
             if msg.command == 'JOIN':
                 channels = msg.args[0].split(',')
