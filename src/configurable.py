@@ -124,7 +124,7 @@ def StrType(s):
 def NoSpacesStrType(s):
     try:
         s = StrType(s)
-        if len(s.split(), 1) > 1:
+        if len(s.split(None, 1)) > 1:
             raise Error
         return s
     except Error:
@@ -154,16 +154,18 @@ def IntType(s):
     try:
         return int(s)
     except ValueError:
-        raise Error, 'Value must be an int.'
+        raise Error, 'Value must be an integer.'
 
 def PositiveIntType(s):
     try:
         i = IntType(s)
-        if i <= 0:
+        if i > 0:
+            return i
+        else:
             raise Error
-        return i
     except Error:
-        raise Error, 'Value must be a positive, non-zero integer.'
+        raise Error, 'Value must be a positive integer.'
+
 
 class Mixin(object):
     """A mixin class to provide a "config" command that can be consistent

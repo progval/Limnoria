@@ -217,7 +217,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                 s = 'Title: %s' % utils.htmlToText(m.group(1).strip())
                 if self.configurables.get('titlesnarferincludesurl', channel):
                     s += ' (<%s>)' % url
-                irc.reply(msg, 'Title: %s' % s, prefixName=False)
+                irc.reply(msg, s, prefixName=False)
     titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
                 
     def _updateTinyDb(self, url, tinyurl, channel):
