@@ -218,8 +218,14 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         for s in ('Admin', 'Channel', 'Config', 'Misc', 'User'):
             if irc.getCallback(s) is None:
                 self.log.info('Loading %s.' % s)
-                m = loadPluginModule(s)
-                loadPluginClass(irc, m)
+                try:
+                    m = loadPluginModule(s)
+                    loadPluginClass(irc, m)
+                except Exception, e:
+                    self.log.exception('Error loading %s:', s)
+                    self.log.error('Error loading src/ plugin %s.  '
+                                   'This is rather serious; these plugins '
+                                   'must always be loaded.', s)
         self.log.info('Loading plugins/ plugins.')
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):
             if name.lower() == 'owner':
