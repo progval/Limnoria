@@ -60,6 +60,16 @@ def configure(onStart, afterConnect, advanced):
         print 'You can apply for a key at http://www.amazon.com/webservices'
         
 
+example = utils.wrapLines("""
+<jemfinch> @list Amazon
+<supybot> amazonlicensekey, isbn
+<jemfinch> (amazonlicense key is used to set the license key to access Amazon's web services.  We won't show that here, for obvious reasons.)
+<jemfinch> @isbn 0-8050-3906-6
+<supybot> "Winning With the French (Openings)", written by Wolfgang Uhlmann; published by Henry Holt & Company, Inc..
+<jemfinch> @isbn 0805039066
+<supybot> "Winning With the French (Openings)", written by Wolfgang Uhlmann; published by Henry Holt & Company, Inc.. 
+""")
+
 class Amazon(callbacks.Privmsg):
     threaded = True
     def amazonlicensekey(self, irc, msg, args):

@@ -39,6 +39,7 @@ import re
 
 from twisted.protocols import dict
 
+import utils
 import ircutils
 import privmsgs
 import callbacks
@@ -50,7 +51,24 @@ def configure(onStart, afterConnect, advanced):
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load TwistedCommands')
+    try:
+        import twisted
+        onStart.append('load TwistedCommands')
+    except ImportError:
+        print 'Sorry, you don\'t seem to have Twisted installed.'
+        print 'You can\'t use this module without Twisted being installed.'
+        print 'Once you\'ve installed Twisted, change conf.driverModule to'
+        print '"twistedDrivers" and add "load TwistedCommands" to your config'
+        print 'file.'
+
+example = utils.wrapLines("""
+<jemfinch> @load TwistedCommands
+<supybot> The operation succeeded.
+<jemfinch> @list TwistedCommands
+<supybot> dict
+<jemfinch> @dict rose
+<supybot> adj : having a dusty purplish pink color; "the roseate glow of dawn" [syn: {roseate}, {rosaceous}] n 1: any of many plants of the genus Rosa, or pinkish table wine from red grapes whose skins were removed after fermentation began [syn: {blush wine}, {pink wine}, {rose wine}]
+""")
 
 class TwistedCommands(callbacks.Privmsg):
     def defaultErrback(self, irc, msg):

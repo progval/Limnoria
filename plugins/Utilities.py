@@ -45,6 +45,33 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, yn
     onStart.append('load Utilities')
 
+example = utils.wrapLines("""
+<jemfinch> @list Utilities
+<supybot> echo, ignore, re, repr, shrink, strconcat, strjoin, strlen, strlower, strtranslate, strupper
+<jemfinch> @echo foo bar baz
+<supybot> foo bar baz
+<jemfinch> @ignore foo bar baz
+<jemfinch> (he just ignores them; it's useful to run commands in sequence without caring about 'The operation succeeded' responses.)
+<jemfinch> @repr "\n"
+<supybot> "\n"
+<jemfinch> @eval 'x'*1000
+<supybot> My response would've been too long.
+<jemfinch> @shrink [eval 'x'*1000]
+<supybot> 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+<jemfinch> (it was shrunken to 400 characters)
+<jemfinch> @strlen [shrink [eval 'x'*1000]]
+<supybot> 400
+<jemfinch> @strjoin + foo bar baz
+<supybot> foo+bar+baz
+<jemfinch> @strlower FOO BAR BAZ
+<supybot> foo bar baz
+<jemfinch> @strupper FOO bar baz
+<supybot> FOO BAR BAZ
+<jemfinch> @strtranslate abc def "abc is easy as 123"
+<supybot> def is edsy ds 123
+<jemfinch> @strconcat foo bar
+""")
+
 class Utilities(callbacks.Privmsg):
     def ignore(self, irc, msg, args):
         """takes no arguments

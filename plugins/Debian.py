@@ -30,7 +30,7 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+This is a module to contain Debian-specific commands.
 """
 
 from baseplugin import *
@@ -74,6 +74,15 @@ def configure(onStart, afterConnect, advanced):
             else:
                 print 'I\'ll disable debfile now.'
                 onStart.append('disable debfile')
+
+example = utils.wrapLines("""
+<jemfinch> @list Debian
+<supybot> debfile, debversion, usepythonzegrep
+<jemfinch> @debversion python
+<supybot> Total matches: 3, shown: 3.   python 2.1.3-3.2 (stable),  python 2.2.3-3 (testing),  python 2.3-4 (unstable)
+<jemfinch> @debfile /usr/bin/python
+<supybot> python/python, devel/crystalspace-dev, python/python1.5, python/python2.1, python/python2.1-popy, python/python2.2, python/python2.2-popy, python/python2.3, python/python2.3-popy, devel/sloccount, graphics/pythoncad, mail/pms
+""")
 
 
 class Debian(callbacks.Privmsg, PeriodicFileDownloader):

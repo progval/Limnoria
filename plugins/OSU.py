@@ -39,6 +39,7 @@ from baseplugin import *
 import urllib2
 
 import debug
+import utils
 import privmsgs
 import callbacks
 
@@ -50,6 +51,17 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load OSU')
+
+example = utils.wrapLines("""
+<jemfinch> @list OSU
+<supybot> osubuilding, osuemail
+<jemfinch> @osuemail jeremiah fincher
+<supybot> fincher.8@osu.edu
+<jemfinch> @osubuilding DL
+<supybot> Dreese Laboratories, 2015 Neil Avenue, Columbus, Ohio, 43210
+<jemfinch> @osubuilding CE
+<supybot> Celeste Laboratory Of Chemistry, 120 W 18th Avenue, Columbus, Ohio, 43210
+""")
 
 buildings = {
     'AA': 'Agricultural Administration Building, ' \

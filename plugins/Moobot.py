@@ -42,10 +42,52 @@ from baseplugin import *
 import re
 import base64
 
-import ircmsgs
+smport ircmsgs
 import ircutils
 import privmsgs
 import callbacks
+
+example = utils.wrapLines("""
+<jemfinch> @list Moobot
+<supybot> cool, dawdit, ditdaw, give, hi, mime, morse, reverse, stack, unmime, unmorse
+<jemfinch> @cool supybot
+<supybot> :cool: supybot :cool:
+<jemfinch> @dawdit supybot
+<supybot> supybot
+<jemfinch> @ditdaw supybot
+<supybot> ... ..- .--. -.-- -... --- -
+<jemfinch> @dawdit [ditdaw supybot]
+<supybot> SUPYBOT
+<jemfinch> @give yourself a beer
+* supybot gives himself a beer
+<jemfinch> @hi
+<supybot> howdy, jemfinch!
+<jemfinch> @reverse supybot
+<supybot> tobypus
+<jemfinch> @mime supybot
+<supybot> c3VweWJvdA==
+<jemfinch> @unmime [mime supybot]
+<supybot> supybot
+<jemfinch> @unmorse [morse supybot]
+<supybot> SUPYBOT
+<jemfinch> @stack push 1
+<supybot> "1" pushed.
+<jemfinch> @stack push 2
+<supybot> "2" pushed.
+<jemfinch> @help stack
+<supybot> stack <'push'|'pop'|'size'|'xray'> <text> (for more help use the morehelp command)
+<jemfinch> @stack size
+<supybot> Stack size is 2.
+<jemfinch> @stack xray 1
+<supybot> 2
+<jemfinch> @stack pop
+<supybot> 2
+<jemfinch> @stack pop
+<supybot> 1
+<jemfinch> @stack pop
+<supybot> Error: Stack is empty.
+""")
+                          
 
 class Moobot(callbacks.Privmsg):
     def cool(self, irc, msg, args):
@@ -132,11 +174,17 @@ class Moobot(callbacks.Privmsg):
     dawdit = unmorse
 
     def hi(self, irc, msg, args):
-        "takes no arguments"
+        """takes no arguments
+
+        Says hi to you.
+        """
         irc.reply(msg, 'howdy, %s!' % msg.nick)
 
     def reverse(self, irc, msg, args):
-        "<text>"
+        """<text>
+
+        Reverses <text>.
+        """
         text = privmsgs.getArgs(args)
         irc.reply(msg, text[::-1])
 
@@ -190,7 +238,9 @@ class Moobot(callbacks.Privmsg):
             irc.error(msg, 'I don\'t recognize that stack command.')
 
     def give(self, irc, msg, args):
-        """<someone> <something>"""
+        """<someone> <something>
+
+        Um, gives <someone> <something>."""
         (someone, something) = privmsgs.getArgs(args, needed=2)
         if someone == 'me':
             someone = msg.nick
@@ -198,6 +248,7 @@ class Moobot(callbacks.Privmsg):
             someone = 'himself'
         response = 'gives %s %s' % (someone, something)
         irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), response))
+        raise callbacks.CannotNest
 
 
 Class = Moobot

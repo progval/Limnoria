@@ -53,6 +53,18 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Gameknot')
 
+
+example = utils.wrapLines("""
+<jemfinch> @list Gameknot
+<supybot> gkstats
+<jemfinch> @gkstats jemfinch
+<supybot> jemfinch (team: Grasshoppers) is rated 1526 and has 0 active games and a record of W-58, L-30, D-5 (win/loss/draw %: 62.37/32.26/5.38).  jemfinch was last seen on Gameknot 6 minutes ago.
+<jemfinch> blah blah blah I'm talking about http://gameknot.com/stats.pl?ddipaolo blah blah blah
+<supybot> ddipaolo blah blah blah (team: Grasshoppers) is rated 1159 and has 4 active games and a record of W-135, L-136, D-8 (win/loss/draw %: 48.39/48.75/2.87).  ddipaolo blah blah blah was last seen on Gameknot 3 hours 48 minutes ago.
+<jemfinch> hmm, I wonder what the game http://gameknot.com/chess.pl?bd=1038943 is all about.
+<supybot> Challenge from ddipaolo: inkedmn (901; W-69, L-84, D-4) vs. ddipaolo (1159; W-135, L-136, D-8);  inkedmn to move.  <http://gameknot.com/chess.pl?bd=1038943>
+""")
+
 class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = sets.Set(['gameknotSnarfer', 'gameknotStatsSnarfer'])
@@ -172,11 +184,11 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                       self._gkRating.search(bRating).groups()
             wStats = '%s; W-%s, L-%s, D-%s' % (wRating, wWins, wLosses, wDraws)
             bStats = '%s; W-%s, L-%s, D-%s' % (bRating, bWins, bLosses, bDraws)
-            irc.queueMsg(ircmsgs.privmsg(msg.args[0],
+            irc.queueMsg(callbacks.reply(msg, 
               '%s: %s (%s) vs. %s (%s);  %s  <%s>' % (
                 gameTitle, wName, wStats, bName, bStats, toMove, url)))
         except ValueError:
-            irc.queueMsg(ircmsgs.privmsg(msg.args[0],
+            irc.queueMsg(callbacks.reply(msg,
               'That doesn\'t appear to be a proper Gameknot game.'))
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
@@ -185,7 +197,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
         r"http://gameknot\.com/stats\.pl\?([^&]+)"
         name = match.group(1)
         s = self.getStats(name)
-        irc.queueMsg(ircmsgs.privmsg(msg.args[0], s))
+        irc.queueMsg(callbacks.reply(msg, s))
 
 Class = Gameknot
 

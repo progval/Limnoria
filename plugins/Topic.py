@@ -31,11 +31,6 @@
 
 """
 Provides commands for manipulating channel topics.
-
-Commands include:
-  addtopic
-  removetopic
-  shuffletopic
 """
 
 from baseplugin import *
@@ -49,6 +44,25 @@ import ircdb
 import ircmsgs
 import privmsgs
 import callbacks
+
+example = utils.wrapLines("""
+--- Topic for #sourcereview is Welcome to #sourcereview, home of cool people. (jemfinch) || supybot now has an IMDB module! (jemfinch) || jemfinch, make lasturl show more information about the url in quesiton. (jemfinch) || jemfinch, think about how you're going to have threads notify the main loop that data is ready. (jemfinch)
+--- Topic for #sourcereview set by supybot at Tue Aug 26 15:38:35
+<jemfinch> @list Topic
+<supybot> jemfinch: addtopic, changetopic, removetopic, shuffletopic, topic
+<jemfinch> @shuffletopic
+--- supybot has changed the topic to: supybot now has an IMDB module! (jemfinch) || jemfinch, make lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch) || jemfinch, think about how you're going to have threads notify the main loop that data is ready. (jemfinch)
+<jemfinch> @removetopic 0
+--- supybot has changed the topic to: jemfinch, make lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch) || jemfinch, think about how you're going to have threads notify the main loop that data is ready. (jemfinch)
+<jemfinch> @changetopic 0 s/make/MAKE/
+--- supybot has changed the topic to: jemfinch, MAKE lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch) || jemfinch, think about how you're going to have threads notify the main loop that data is ready. (jemfinch)
+<jemfinch> @removetopic -1
+--- supybot has changed the topic to: jemfinch, MAKE lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch)
+<jemfinch> @addtopic supybot will make a beta release soon!
+--- supybot has changed the topic to: jemfinch, MAKE lasturl show more information about the url in quesiton. (jemfinch) || Welcome to #sourcereview, home of cool people. (jemfinch) || supybot will make a beta release soon! (jemfinch)
+<jemfinch> @topic -1
+<supybot> jemfinch: supybot will make a beta release soon! (jemfinch)
+""")
 
 class Topic(callbacks.Privmsg):
     topicSeparator = ' || '

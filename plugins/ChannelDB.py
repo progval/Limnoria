@@ -51,6 +51,22 @@ import privmsgs
 import ircutils
 import callbacks
 
+example = utils.wrapLines("""
+<jemfinch> @list ChannelDB
+<supybot> channelstats, karma, seen, stats
+<jemfinch> @channelstats
+<supybot> Error: Command must be sent in a channel or include a channel in its arguments.
+<jemfinch> (Obviously, you gotta give it a channel :))
+<jemfinch> @channelstats #sourcereview
+<supybot> On #sourcereview there have been 46965 messages, containing 1801703 characters, 319510 words, 4663 smileys, and 657 frowns; 2262 of those messages were ACTIONs.  There have been 2404 joins, 139 parts, 1 kicks, 323 mode changes, and 129 topic changes.
+<jemfinch> @stats #sourcereview jemfinch
+<supybot> jemfinch has sent 16131 messages; a total of 687961 characters, 118915 words, 1482 smileys, and 226 frowns; 797 of those messages were ACTIONs.  jemfinch has joined 284 times, parted 25 times, kicked someone 0 times been kicked 0 times, changed the topic 2 times, and changed the mode 2 times.
+<jemfinch> @karma #sourcereview birthday_sex
+<supybot> Karma for 'birthday_sex' has been increased 1 time and decreased 0 times for a total karma of 1.
+<jemfinch> @seen #sourcereview inkedmn
+<supybot> inkedmn was last seen here 1 day, 18 hours, 42 minutes, and 23 seconds ago saying 'ah'
+""")
+
 smileys = (':)', ';)', ':]', ':-)', ':-D', ':D', ':P', ':p', '(=', '=)')
 frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 
