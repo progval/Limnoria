@@ -29,6 +29,7 @@
 
 import re
 
+import rssparser
 import BeautifulSoup
 
 import supybot.utils as utils
@@ -46,7 +47,7 @@ class NoLocation(callbacks.Error):
     pass
 
 class Weather(callbacks.Plugin):
-    weatherCommands = ['wunder', 'cnn', 'ham']
+    weatherCommands = ['wunder', 'rsswunder', 'cnn', 'ham']
     threaded = True
     def __init__(self, irc):
         self.__parent = super(Weather, self)
@@ -438,6 +439,37 @@ class Weather(callbacks.Plugin):
             irc.error('Could not find weather information.')
     wunder = wrap(wunder, ['text'])
 
+    _rsswunderUrl = 'http://www.wunderground.com/cgi-bin/findweather/' \
+                    'getForecast?query=%s'
+    _rsswunderfeed = re.compile(r'<link rel="alternate".*href="([^"]+)">',
+                                re.I)
+    _rsswunderSevere = re.compile(r'font color="?#ff0000"?><b>([^<]+)<', re.I)
+    def rsswunder(self, irc, msg, args, loc):
+        """<US zip code | US/Canada city, state | Foreign city, country>
+
+        Returns the approximate weather conditions for a given city.
+        """
+        url = self._rsswunderUrl % utils.web.urlquote(loc)
+        url = url.replace('%20', '+')
+        text = utils.web.getUrl(url)
+        severe = ''
+        m = self._rsswunderSevere.search(text)
+        if m:
+            severe = ircutils.bold(m.group(1))
+        if 'Search not found' in text or \
+           re.search(r'size="2"> Place </font>', text, re.I):
+            self._noLocation()
+        feed = self._rsswunderfeed.search(text)
+        if not feed:
+            irc._noLocation()
+        feed = feed.group(1)
+        rss = utils.web.getUrl(feed)
+        info = rssparser.parse(rss)
+        resp = [e['summary'] for e in info['entries']]
+        resp = [s.encode('utf-8') for s in resp]
+        resp.append(severe)
+        irc.reply(utils.web.htmlToText('; '.join(resp)))
+    rsswunder = wrap(rsswunder, ['text'])
 
 Class = Weather
 
