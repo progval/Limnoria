@@ -151,7 +151,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                 continue
             (protocol, site, filename, _, _, _) = urlparse.urlparse(url)
             previousMsg = ''
-            for oldMsg in reviter(irc.state.history):
+            for oldMsg in reversed(irc.state.history):
                 if oldMsg.command == 'PRIVMSG':
                     if oldMsg.nick == msg.nick and oldMsg.args[0] == channel:
                         previousMsg = oldMsg.args[1]

@@ -165,7 +165,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
         if nick == msg.nick:
             irc.error('You can\'t quote grab yourself.')
             return
-        for m in reviter(irc.state.history):
+        for m in reversed(irc.state.history):
             if m.command == 'PRIVMSG' and ircutils.nickEqual(m.nick, nick):
                 self._grab(irc, m, msg.prefix)
                 irc.replySuccess()
