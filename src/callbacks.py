@@ -708,6 +708,8 @@ class IrcObjectProxy(RichReplyMethods):
             self._callTokenizedCommands()
             # Return if we've replied.
             if self.msg.repliedTo:
+                log.debug('Not calling invalidCommands, '
+                          'tokenizedCommands replied.')
                 return
             # Now we check for regexp commands, which override invalidCommand.
             for cb in self.irc.callbacks:
