@@ -50,7 +50,7 @@ import callbacks
 
 example = utils.wrapLines("""
 <jemfinch> @list Factoids
-<supybot> jemfinch: factoidinfo, learn, lock, randomfactoid, unlearn, unlock, whatis
+<supybot> jemfinch: factoidinfo, learn, lock, randomfactoid, forget, unlock, whatis
 <jemfinch> @learn jemfinch as the primary author of supybot.
 <supybot> jemfinch: The operation succeeded.
 <jemfinch> @factoidinfo jemfinch
@@ -67,13 +67,13 @@ example = utils.wrapLines("""
 <supybot> jemfinch: The operation succeeded.
 <jemfinch> @whatis jemfinch
 <supybot> jemfinch: jemfinch could be (#0) the primary author of supybot., or (#1) a horrible assembly programmer.
-<jemfinch> @unlearn jemfinch
+<jemfinch> @forget jemfinch
 <supybot> jemfinch: Error: 2 factoids have that key.  Please specify which one to remove.
-<jemfinch> @unlearn jemfinch 1
+<jemfinch> @forget jemfinch 1
 <supybot> jemfinch: The operation succeeded.
 <jemfinch> @whatis jemfinch
 <supybot> jemfinch: jemfinch could be (#0) the primary author of supybot..
-<jemfinch> @unlearn jemfinch 0
+<jemfinch> @forget jemfinch 0
 <supybot> jemfinch: The operation succeeded.
 <jemfinch> @whatis jemfinch
 G<supybot> jemfinch: Error: No factoid matches that key.
@@ -218,7 +218,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
-    def unlearn(self, irc, msg, args):
+    def forget(self, irc, msg, args):
         """[<channel>] <key> [<number>|*]
 
         Removes the factoid <key> from the factoids database.  If there are
