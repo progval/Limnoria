@@ -225,7 +225,7 @@ class Network(callbacks.Privmsg):
             return
         (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
         del self._whois[(irc, loweredNick)]
-        s = 'There is no %s on %s.' % (nick, self._getIrcName(irc))
+        s = 'There is no %s on %s.' % (nick, irc.network)
         replyIrc.reply(s)
     do401 = do402
 
