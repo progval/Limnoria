@@ -77,7 +77,8 @@ class Filter(callbacks.Privmsg):
         return msg
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
-                       'scramble', 'morse', 'reverse', 'colorize', 'squish']
+                       'scramble', 'morse', 'reverse', 'colorize', 'squish',
+                       'supa1337']
     def outfilter(self, irc, msg, args, channel):
         """[<channel>] [<command>]
         
@@ -186,12 +187,12 @@ class Filter(callbacks.Privmsg):
         irc.reply(text)
 
     _leettrans = string.maketrans('oOaAeElBTiIts', '004433187!1+5')
-    _leetres = ((re.compile(r'\b(?:(?:[yY][o0O][oO0uU])|u)\b'), 'j00'),
+    _leetres = [(re.compile(r'\b(?:(?:[yY][o0O][oO0uU])|u)\b'), 'j00'),
                 (re.compile(r'fear'), 'ph33r'),
                 (re.compile(r'[aA][tT][eE]'), '8'),
                 (re.compile(r'[aA][tT]'), '@'),
                 (re.compile(r'[sS]\b'), 'z'),
-                (re.compile(r'x'), '><'),)
+                (re.compile(r'x'), '><'),]
     def leet(self, irc, msg, args):
         """<text>
 
@@ -201,6 +202,23 @@ class Filter(callbacks.Privmsg):
         for (r, sub) in self._leetres:
             s = re.sub(r, sub, s)
         s = s.translate(self._leettrans)
+        irc.reply(s)
+
+    _supaleetreplacers = [('xX', '><'), ('kK', '|<'), ('rR', '|2'),
+                          ('hH', '|-|'), ('L', '|_'), ('uU', '|_|'),
+                          ('O', '()'), ('nN', '|\\|'), ('mM', '/\\/\\'),
+                          ('G', '6'), ('Ss', '$'), ('i', ';'), ('aA', '/-\\'),
+                          ('eE', '3'), ('t', '+'), ('T', '7'), ('l', '1'),
+                          ('D', '|)'), ('B', '|3'), ('I', ']['), ('Vv', '\\/'),
+                          ('wW', '\\/\\/'), ('d', 'c|'), ('b', '|>'),
+                          ('c', '<'), ('h', '|n'),] 
+    def supa1337(self, irc, msg, args):
+        s = privmsgs.getArgs(args)
+        for (r, sub) in self._leetres:
+            s = re.sub(r, sub, s)
+        for (letters, replacement) in self._supaleetreplacers:
+            for letter in letters:
+                s = s.replace(letter, replacement)
         irc.reply(s)
 
     _scrambleRe = re.compile(r'(?:\b|(?![a-zA-Z]))([a-zA-Z])([a-zA-Z]*)'
