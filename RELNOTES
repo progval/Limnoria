@@ -1,5 +1,9 @@
 Version 0.77.0
 
+Since some old plugins have been removed, you'll do best to remove
+your previous installation (whether global or local) of Supybot
+before running the wizard.
+
 Configuration has been *entirely* redone.  Read the new
 GETTING_STARTED document to see how to work with configuration
 variables now.  Your old botscripts from earlier versions *will not*
@@ -15,8 +19,8 @@ tools/ircdbConvert.py should update this for you.
 
 The on-disk format of the user/channel databases has changed to be far
 more readable.  A conversion utility is included, as mentioned before:
-tools/ircdbConvert.py.  Run this *before* installing this version, or
-it won't work correctly.
+tools/ircdbConvert.py.  Run this with no arguments to see the
+directions for using it.
 
 Uh, we were just kidding about the upgrade script in 0.76.0 :)  It'll
 be a little while longer.  We do have several little upgrade scripts,
