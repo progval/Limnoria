@@ -65,6 +65,9 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
         m = self.getMsg('cpustats')
         self.assertResponse('echo "%s"' % m.args[1], m.args[1])
 
+    def testAction(self):
+        self.assertAction('action moos', 'moos')
+
     def testRe(self):
         self.assertResponse('re "m/My children/" [cpustats]', 'My children')
         self.assertResponse('re s/user/luser/g user user', 'luser luser')
