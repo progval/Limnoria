@@ -83,6 +83,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.lastmsg = None
         self.laststate = None
+        self.outFiltering = False
 
     def makeDb(self, filename):
         if os.path.exists(filename):
@@ -92,7 +93,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
             cursor = db.cursor()
             cursor.execute("""CREATE TABLE user_stats (
                               id INTEGER PRIMARY KEY,
-                              user_id INTEGER UNIQUE,
+                              user_id INTEGER UNIQUE ON CONFLICT IGNORE,
                               last_seen TIMESTAMP,
                               last_msg TEXT,
                               smileys INTEGER,
@@ -157,51 +158,62 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
     def doPrivmsg(self, irc, msg):
         callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
         if ircutils.isChannel(msg.args[0]):
-            (channel, s) = msg.args
-            db = self.getDb(channel)
-            cursor = db.cursor()
-            chars = len(s)
-            words = len(s.split())
-            isAction = ircmsgs.isAction(msg)
-            frowns = len(frownre.findall(s))
-            smileys = len(smileyre.findall(s))
-            s = ircmsgs.prettyPrint(msg)
-            cursor.execute("""UPDATE channel_stats
-                              SET smileys=smileys+%s,
-                                  frowns=frowns+%s,
-                                  chars=chars+%s,
-                                  words=words+%s,
-                                  msgs=msgs+1,
-                                  actions=actions+%s""",
-                           smileys, frowns, chars, words, int(isAction))
-            cursor.execute("""INSERT INTO nick_seen VALUES (%s, %s, %s)""",
-                           msg.nick, int(time.time()), s)
-            try:
-                id = ircdb.users.getUserId(msg.prefix)
-            except KeyError:
-                return
-            cursor.execute("""SELECT COUNT(*)
-                              FROM user_stats
-                              WHERE user_id=%s""", id)
-            count = int(cursor.fetchone()[0])
-            if count == 0: # User isn't in database.
-                cursor.execute("""INSERT INTO user_stats VALUES (
-                                  NULL, %s, %s, %s, %s, %s,
-                                  %s, %s, 1, %s,
-                                  0, 0, 0, 0, 0, 0, 0)""",
-                               id, int(time.time()), s,
-                               smileys, frowns, chars, words, int(isAction))
+            self._updatePrivmsgStats(msg)
+
+    def _updatePrivmsgStats(self, msg):
+        (channel, s) = msg.args
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        chars = len(s)
+        words = len(s.split())
+        isAction = ircmsgs.isAction(msg)
+        frowns = len(frownre.findall(s))
+        smileys = len(smileyre.findall(s))
+        s = ircmsgs.prettyPrint(msg)
+        cursor.execute("""UPDATE channel_stats
+                          SET smileys=smileys+%s,
+                              frowns=frowns+%s,
+                              chars=chars+%s,
+                              words=words+%s,
+                              msgs=msgs+1,
+                              actions=actions+%s""",
+                       smileys, frowns, chars, words, int(isAction))
+        cursor.execute("""INSERT INTO nick_seen VALUES (%s, %s, %s)""",
+                       msg.nick, int(time.time()), s)
+        try:
+            if self.outFiltering:
+                id = 0
             else:
-                cursor.execute("""UPDATE user_stats SET
-                                  last_seen=%s, last_msg=%s, chars=chars+%s,
-                                  words=words+%s, msgs=msgs+1,
-                                  actions=actions+%s, smileys=smileys+%s,
-                                  frowns=frowns+%s
-                                  WHERE user_id=%s""",
-                               int(time.time()), s,
-                               chars, words, int(isAction),
-                               smileys, frowns, id)
-            db.commit()
+                id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            return
+        cursor.execute("""INSERT INTO user_stats VALUES (
+                          NULL, %s, %s, %s, %s, %s,
+                          %s, %s, 1, %s,
+                          0, 0, 0, 0, 0, 0, 0)""",
+                       id, int(time.time()), s,
+                       smileys, frowns, chars, words, int(isAction))
+        cursor.execute("""UPDATE user_stats SET
+                          last_seen=%s, last_msg=%s, chars=chars+%s,
+                          words=words+%s, msgs=msgs+1,
+                          actions=actions+%s, smileys=smileys+%s,
+                          frowns=frowns+%s
+                          WHERE user_id=%s""",
+                       int(time.time()), s, chars, words, int(isAction),
+                       smileys, frowns, id)
+        db.commit()
+
+    def outFilter(self, irc, msg):
+        if msg.command == 'PRIVMSG':
+            if ircutils.isChannel(msg.args[0]):
+                db = self.getDb(msg.args[0])
+                cursor = db.cursor()
+                try:
+                    self.outFiltering = True
+                    self._updatePrivmsgStats(msg)
+                finally:
+                    self.outFiltering = False
+        return msg
 
     def doPart(self, irc, msg):
         channel = msg.args[0]
@@ -419,6 +431,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         if not name:
             try:
                 id = ircdb.users.getUserId(msg.prefix)
+                name = ircdb.users.getUser(id).name
             except KeyError:
                 irc.error(msg, 'I couldn\'t find you in my user database.')
                 return
