@@ -72,7 +72,7 @@ def configure(onStart, afterConnect, advanced):
     if yn('Do you want to specify a default project?') == 'y':
         project = anything('Project name:')
         if project:
-            onStart.append('Sourceforge setdefault %s' % project)
+            onStart.append('Sourceforge defaultproject %s' % project)
 
 example = utils.wrapLines("""
 <@jamessan|work> @bugs
@@ -133,15 +133,16 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                 matches.append((item[0], utils.htmlToText(item[2])))
         return matches
 
-    def setdefault(self, irc, msg, args):
-        """<project>
+    def defaultproject(self, irc, msg, args):
+        """[<project>]
 
-        Sets the default project to be used with bugs and rfes
+        Sets the default project to be used with bugs and rfes. If a project
+        is not specified, clears the default project.
         """
-        project = privmsgs.getArgs(args)
+        project = privmsgs.getArgs(args, needed=0, optional=1)
         self.project = project
         irc.reply(msg, conf.replySuccess)
-    setdefault = privmsgs.checkCapability(setdefault, 'admin')
+    defaultproject = privmsgs.checkCapability(defaultproject, 'admin')
         
     def _getTrackerInfo(self, irc, msg, url, regex, num):
         try:
@@ -167,7 +168,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
             text = fd.read()
             fd.close()
             resp = []
-            if num != '':
+            if num:
                 head = '%s <http://sourceforge.net%s>'
                 for match in self._formatResp(num, text):
                     resp.append(head % match)
@@ -183,7 +184,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
                         resp = map(lambda s: utils.ellipsisify(s, 50), resp)
                     irc.reply(msg, '%s' % utils.commaAndify(resp))
                     return
-            irc.reply(msg, 'No Trackers were found.')
+            irc.error(msg, 'No Trackers were found. (%s)' %
+                conf.replyPossibleBug)
         except ValueError, e:
             irc.error(msg, str(e))
         except Exception, e:
@@ -191,18 +193,16 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
     _bugLink = re.compile(r'"([^"]+)">Bugs')
     def bugs(self, irc, msg, args):
-        """[<project> [<num>]]
+        """[<project>] [<num>]
 
         Returns a list of the most recent bugs filed against <project>.
-        Defaults to searching for supybot bugs. If <num> is specified, the bug
-        description and link are retrieved.
+        Defaults to searching for bugs in the project set by defaultproject.
+        If <num> is specified, the bug description and link are retrieved.
         """
         (project, bugnum) = privmsgs.getArgs(args, needed=0, optional=2)
+        project = project or self.project
         if not project:
-            if self.project is None:
-                raise callbacks.ArgumentError
-            else:
-                project = self.project
+            raise callbacks.ArgumentError
         elif not bugnum:
             try:
                 bugnum = int(project)
@@ -214,18 +214,16 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
     _rfeLink = re.compile(r'"([^"]+)">RFE')
     def rfes(self, irc, msg, args):
-        """[<project> [<num>]]
+        """[<project>] [<num>]
 
         Returns a list of the most recent RFEs filed against <project>.
-        Defaults to searching for supybot RFEs. If <num> is specified, the rfe
-        description and link are retrieved.
+        Defaults to searching for RFEs in the project set by defaultproject.
+        If <num> is specified, the rfe description and link are retrieved.
         """
         (project, rfenum) = privmsgs.getArgs(args, needed=0, optional=2)
+        project = project or self.project
         if not project:
-            if self.project is None:
-                raise callbacks.ArgumentError
-            else:
-                project = self.project
+            raise callbacks.ArgumentError
         elif not rfenum:
             try:
                 rfenum = int(project)

@@ -53,9 +53,13 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
         n = re.search('#(\d+)', m.args[1]).group(1)
         self.assertNotError('rfes gaim %s' % n)
 
-    def testSetdefault(self):
-        self.assertNotError('setdefault supybot')
-        self.assertNotError('rfes')
+    def testDefaultproject(self):
+        self.assertHelp('bugs')
+        self.assertNotError('defaultproject supybot')
+        self.assertNotError('bugs')
+        m = self.getMsg('bugs')
+        n = re.search('#(\d+)', m.args[1]).group(1)
+        self.assertNotError('bugs %s' % n)
 
     def testSnarfer(self):
         s = r'.*Status.*: \w+'
