@@ -406,7 +406,7 @@ def standardSubstitute(irc, msg, text, env=None):
         'month': localtime[1],
         'monthname': time.strftime('%b', localtime),
         'date': localtime[2],
-        'day', time.strftime('%A', localtime),
+        'day': time.strftime('%A', localtime),
         'h': localtime[3], 'hr': localtime[3], 'hour': localtime[3],
         'm': localtime[4], 'min': localtime[4], 'minute': localtime[4],
         's': localtime[5], 'sec': localtime[5], 'second': localtime[5],
