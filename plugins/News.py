@@ -84,7 +84,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         channel itself.
         """
         # Parse out the args
-        i = None
+        i = 0
         for i, arg in enumerate(args):
             if arg.endswith(':'):
                 i += 1
