@@ -50,6 +50,7 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
 
         def testTinysnarf(self):
             try:
+                conf.supybot.snarfThrottle.setValue(1)
                 conf.supybot.plugins.ShrinkUrl.default.setValue('tiny')
                 conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
                 self.assertSnarfRegexp(
@@ -69,28 +70,29 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
                 self.assertRegexp(
                     'shrinkurl ln http://sourceforge.net/tracker/?'
                     'func=add&group_id=58965&atid=489447',
-                    r'http://ln-s.net/1Es')
+                    r'http://ln-s.net/25Z')
                 conf.supybot.plugins.ShrinkUrl.default.setValue('ln')
                 conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
                 self.assertRegexp(
                     'shrinkurl ln http://sourceforge.net/tracker/?'
                     'func=add&group_id=58965&atid=489447',
-                    r'http://ln-s.net/1Es')
+                    r'http://ln-s.net/25Z')
             finally:
                 conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(False)
 
         def testLnsnarf(self):
             try:
+                conf.supybot.snarfThrottle.setValue(1)
                 conf.supybot.plugins.ShrinkUrl.default.setValue('ln')
                 conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
                 self.assertSnarfRegexp(
                     'http://sourceforge.net/tracker/?func=add&'
                     'group_id=58965&atid=489447',
-                    r'http://ln-s.net/1Es.* \(at')
+                    r'http://ln-s.net/25Z.* \(at')
                 self.assertSnarfRegexp(
                     'http://www.urbandictionary.com/define.php?'
                     'term=all+your+base+are+belong+to+us',
-                    r'http://ln-s.net/1Eu.* \(at')
+                    r'http://ln-s.net/2\$K.* \(at')
             finally:
                 conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(False)
 
@@ -98,13 +100,15 @@ class ShrinkUrlTestCase(ChannelPluginTestCase):
             tiny = conf.supybot.plugins.ShrinkUrl.shrinkSnarfer()
             snarf = conf.supybot.plugins.ShrinkUrl.nonSnarfingRegexp()
             try:
+                conf.supybot.snarfThrottle.setValue(1)
                 conf.supybot.plugins.ShrinkUrl.default.setValue('tiny')
                 conf.supybot.plugins.ShrinkUrl.nonSnarfingRegexp.set('m/sf/')
+                conf.supybot.plugins.ShrinkUrl.minimumLength.setValue(10)
                 try:
                     conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(True)
                     self.assertSnarfNoResponse('http://sf.net/', 2)
-                    self.assertSnarfResponse('http://www.sourceforge.net/',
-                                             'http://tinyurl.com/2cnkf')
+                    self.assertSnarfRegexp('http://sourceforge.net/',
+                                             r'http://tinyurl.com/7vm7.* \(at')
                 finally:
                     conf.supybot.plugins.ShrinkUrl.shrinkSnarfer.setValue(tiny)
             finally:
