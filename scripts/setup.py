@@ -133,6 +133,11 @@ if __name__ == '__main__':
         if filename.endswith('.py') and filename[0].isupper():
             plugins.append(os.path.splitext(filename)[0])
         plugins.sort()
+    for s in onStart:
+        if s.startswith('load'):
+            (_, plugin) = s.split()
+            if plugin in plugins:
+                plugins.remove(plugin)
     if yn('Would you like to see a list of the available modules?') == 'y':
         print 'The available plugins are:\n  %s' % '\n  '.join(plugins)
     while yn('Would you like to add a plugin?') == 'y':
