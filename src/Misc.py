@@ -661,7 +661,7 @@ class Misc(callbacks.Privmsg):
             """
             L = module.__contributors__.items()
             def negativeSecondElement(x):
-                return -x[1]
+                return -len(x[1])
             utils.sortBy(negativeSecondElement, L)
             return [t[0] for t in L]
         def buildPeopleString(module):
