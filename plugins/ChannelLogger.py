@@ -166,6 +166,7 @@ class ChannelLogger(callbacks.Privmsg):
             log.write('  ')
 
     def normalizeChannel(self, irc, channel):
+        channel = channel.replace('.', ',')
         if self.registryValue('includeNetworkName', channel):
             channel = '%s@%s' % (channel, irc.network)
         return ircutils.toLower(channel)
