@@ -34,6 +34,8 @@ This is for jemfinch's debugging only.  If this somehow gets added and
 committed, remove it immediately.  It must not be released.
 """
 
+__revision__ = "$Id$"
+
 import supybot.plugins as plugins
 
 import sys
