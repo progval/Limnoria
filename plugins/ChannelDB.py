@@ -390,6 +390,7 @@ class ChannelDB(plugins.ChannelDBHandler,
         cursor = db.cursor()
         (optlist, rest) = getopt.getopt(args, '', ['user'])
         name = privmsgs.getArgs(rest)
+        originalName = name
         if ('--user', '') in optlist:
             table = 'user_stats'
             criterion = 'user_id=%s'
@@ -415,7 +416,7 @@ class ChannelDB(plugins.ChannelDBHandler,
             if isinstance(name, int):
                 name = ircdb.users.getUser(int(name)).name
             s = '%s was last seen here %s ago saying: %s' % \
-                (name, utils.timeElapsed(time.time() - seen), m)
+                (originalName, utils.timeElapsed(time.time() - seen), m)
             irc.reply(s)
 
     def stats(self, irc, msg, args):

@@ -86,7 +86,8 @@ if sqlite is not None:
         def testSeen(self):
             self.assertNotError('list')
             self.assertNotError('seen %s' % self.nick)
-            self.assertNotError('seen %s' % self.nick.upper())
+            m = self.assertNotError('seen %s' % self.nick.upper())
+            self.failUnless(self.nick.upper() in m.args[1])
             self.assertRegexp('seen --user %s' % self.nick,
                               '^%s was last seen' % self.nick)
 
