@@ -180,7 +180,7 @@ class FunDB(callbacks.Privmsg):
             lenSoFar += len(s)
             counter -= 1
             L.append(s)
-        irc.reply(msg, ircutils.privmsgPayload(L, '; '))
+        irc.reply(msg, '; '.join(L))
 
     def insult(self, irc, msg, args):
         """<nick>
@@ -551,11 +551,7 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, str(cursor.fetchone()[0]))
         else:
             zipcodes = [str(t[0]) for t in cursor.fetchall()]
-            ircutils.shrinkList(zipcodes, ', ', 400)
-            if len(zipcodes) < cursor.rowcount:
-                random.shuffle(zipcodes)
-            irc.reply(msg, '(%s shown of %s): %s' % \
-                      (len(zipcodes), cursor.rowcount, ', '.join(zipcodes)))
+            irc.reply(msg, utils.commaAndify(zipcodes))
 
 Class = FunDB
 

@@ -252,7 +252,6 @@ class Notes(callbacks.Privmsg):
         count = cursor.rowcount
         notes = cursor.fetchall()
         L = []
-        more = False
         if count == 0:
             irc.reply(msg, 'You have no unread notes.')
         else:
@@ -263,12 +262,7 @@ class Notes(callbacks.Privmsg):
                         L.append(r'#%s from %s' % (id, sender))
                     else:
                         L.append(r'#%s (private)' % id)
-            if more:
-                ircutils.shrinkList(L, ', ', 400)
-                L.append('and even more notes.')
-            else:
-                ircutils.shrinkList(L, ', ', 450)
-            irc.reply(msg, ', '.join(L))
+            irc.reply(msg, utils.commaAndify(L))
 
     def oldnotes(self, irc, msg, args):
         """takes no arguments
@@ -290,9 +284,7 @@ class Notes(callbacks.Privmsg):
         else:
             ids = [str(t[0]) for t in cursor.fetchall()]
             ids.reverse()
-            ircutils.shrinkList(ids, ', ', 425)
-            ids.reverse()
-            irc.reply(msg, ', '.join(ids))
+            irc.reply(msg, utils.commaAndify(ids))
 
 
 

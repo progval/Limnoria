@@ -105,10 +105,7 @@ class IMDB(callbacks.Privmsg):
             titles = ['%s (%s)' % \
                       (utils.unCommaThe(movie.title()), movie.year())
                       for movie in movies]
-            if ircutils.shrinkList(titles, ', ', 425):
-                irc.reply(msg, '%s movies matched, please narrow your search')
-            else:
-                irc.reply(msg, 'Matches: ' + utils.commaAndify(titles))
+            irc.reply(msg, 'Matches: ' + utils.commaAndify(titles))
 
 
 Class = IMDB

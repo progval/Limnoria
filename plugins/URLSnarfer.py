@@ -267,7 +267,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         else:
             if nolimit:
                 urls = ['<%s>' % t[0] for t in cursor.fetchall()]
-                s = ircutils.privmsgPayload(urls, ', ', 400)
+                s = ', '.join(urls)
             elif simple:
                 s = cursor.fetchone()[0]
             else:

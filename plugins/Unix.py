@@ -204,12 +204,8 @@ class Unix(callbacks.Privmsg):
             resp = 'Could not find an alternate spelling for "%s"' % word
         elif line[0] == '&':
             matches = line.split(':')[1].strip()
-            match_list = matches.split(', ')
-            total = len(match_list)
-            ircutils.shrinkList(match_list, ', ', 350)
-            shown = len(match_list)
-            resp = 'Possible spellings for "%s" (%d found, %d shown): %s.' % \
-                (word, total, shown, ', '.join(match_list))
+            resp = 'Possible spellings for %r: %s.' % \
+                   (word, utils.commaAndify(matches.split(', ')))
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
         irc.reply(msg, resp)

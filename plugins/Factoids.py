@@ -178,14 +178,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             for result in cursor.fetchall():
                 factoids.append('(#%s) %s' % (counter, result[0]))
                 counter += 1
-            totalResults = len(factoids)
-            if ircutils.shrinkList(factoids, ', or ', 400):
-                s = '%s could be %s (%s shown out of %s)' % \
-                    (key, ', or '.join(factoids),
-                     utils.nItems(len(factoids), 'result'), totalResults)
-            else:
-                s = '%s could be %s' % (key, ', or '.join(factoids))
-            irc.reply(msg, s)
+            irc.reply(msg, '%r could be %s' % (key, ', or '.join(factoids)))
 
     def lock(self, irc, msg, args):
         """[<channel>] <key>
@@ -289,14 +282,14 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         cursor = db.cursor()
         cursor.execute("""SELECT fact, key_id FROM factoids
                           ORDER BY random()
-                          LIMIT 10""")
+                          LIMIT 3""")
         if cursor.rowcount != 0:
             L = []
             for (factoid, id) in cursor.fetchall():
                 cursor.execute("""SELECT key FROM keys WHERE id=%s""", id)
                 (key,) = cursor.fetchone()
                 L.append('"%s": %s' % (ircutils.bold(key), factoid))
-            irc.reply(msg, ircutils.privmsgPayload(L, '; ', 400))
+            irc.reply(msg, '; '.join(L))
         else:
             irc.error(msg, 'I couldn\'t find a factoid.')
 

@@ -372,7 +372,7 @@ class Http(callbacks.Privmsg):
         if len(defs) == 0:
             irc.reply(msg, 'No definitions found.')
         else:
-            s = ircutils.privmsgPayload(defs, ', or ')
+            s = ', or '.join(defs)
             irc.reply(msg, '%s could be %s' % (acronym, s))
 
     _netcraftre = re.compile(r'whatos text -->(.*?)<a href="/up/acc', re.S)

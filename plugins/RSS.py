@@ -108,7 +108,7 @@ class RSS(callbacks.Privmsg):
         if not headlines:
             irc.error(msg, 'Error grabbing RSS feed')
             return
-        irc.reply(msg, ' :: '.join(headlines)
+        irc.reply(msg, ' :: '.join(headlines))
 
     def rssinfo(self, irc, msg, args):
         """<url>
