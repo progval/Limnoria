@@ -289,7 +289,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
 
     _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
     _ggPlainThread = re.compile(r'Subject: (.*)')
-    _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
+    _ggGroup = re.compile(r'Newsgroups: (?:<a[^>]+>)?([^<]+)(?:</a>)?')
     _ggPlainGroup = re.compile(r'Newsgroups: (.*)')
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
@@ -311,7 +311,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             fd = urllib2.urlopen(request)
             text = fd.read()
             fd.close()
-        if '&output=gplain' not in match.group(0):
+        elif '&output=gplain' not in match.group(0):
             mThread = self._ggThread.search(text)
             mGroup = self._ggGroup.search(text)
         else:

@@ -46,6 +46,15 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('http://groups.google.com/groups?selm=ExDm.'
                           '8bj.23%40gated-at.bofh.it&oe=UTF-8&output=gplain',
                           r'linux\.kernel.*NFS client freezes')
+        self.assertRegexp('http://groups.google.com/groups?'
+                          'q=kernel+hot-pants&hl=en&lr=&ie=UTF-8&oe=UTF-8&'
+                          'selm=1.5.4.32.19970313170853.00674d60%40'
+                          'adan.kingston.net&rnum=1',
+                          r'Madrid Bluegrass Ramble')
+        self.assertRegexp('http://groups.google.com/groups?'
+                          'selm=1.5.4.32.19970313170853.00674d60%40adan.'
+                          'kingston.net&oe=UTF-8&output=gplain',
+                          r'Madrid Bluegrass Ramble')
 
     def testConfig(self):
         self.assertNotError('google config groups-snarfer off')
