@@ -56,6 +56,9 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testCapabilities(self):
         self.assertNotError('channel capabilities')
+        self.assertNotError('channel setcapability -foo')
+        self.assertNotError('channel unsetcapability -foo')
+        self.assertError('channel unsetcapability -foo')
 
     def testUnban(self):
         self.assertError('unban foo!bar@baz')
@@ -64,7 +67,7 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertEqual(m.command, 'MODE')
         self.assertEqual(m.args, (self.channel, '-b', 'foo!bar@baz'))
         self.assertNoResponse(' ', 2)
-        
+
     def testErrorsWithoutOps(self):
         for s in 'op deop halfop dehalfop voice devoice kick invite'.split():
             self.assertError('%s foo' % s)
@@ -87,7 +90,7 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         m = self.getMsg('op foo bar')
         self.failUnless(m.command == 'MODE' and
                         m.args == (self.channel, '+oo', 'foo', 'bar'))
-        
+
     def testHalfOp(self):
         self.assertError('halfop')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
@@ -109,7 +112,7 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         m = self.getMsg('voice foo bar')
         self.failUnless(m.command == 'MODE' and
                         m.args == (self.channel, '+vv', 'foo', 'bar'))
-        
+
     def assertBan(self, query, hostmask, **kwargs):
         m = self.getMsg(query, **kwargs)
         self.assertEqual(m, ircmsgs.ban(self.channel, hostmask))

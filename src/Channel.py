@@ -131,7 +131,7 @@ class Channel(callbacks.Privmsg):
         else:
             irc.error('How can I deop someone?  I\'m not opped!')
     deop = privmsgs.checkChannelCapability(deop, 'op')
-    
+
     def dehalfop(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
 
@@ -150,7 +150,7 @@ class Channel(callbacks.Privmsg):
         else:
             irc.error('How can I dehalfop someone?  I\'m not opped!')
     dehalfop = privmsgs.checkChannelCapability(dehalfop, 'op')
-    
+
     def devoice(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
 
@@ -169,7 +169,7 @@ class Channel(callbacks.Privmsg):
         else:
             irc.error('How can I devoice someone?  I\'m not opped!')
     devoice = privmsgs.checkChannelCapability(devoice, 'op')
-    
+
     def cycle(self, irc, msg, args, channel):
         """[<channel>] [<key>]
 
@@ -319,10 +319,10 @@ class Channel(callbacks.Privmsg):
         else:
             irc.error('How can I unban someone?  I\'m not opped.')
     unban = privmsgs.checkChannelCapability(unban, 'op')
-    
+
     def invite(self, irc, msg, args, channel):
         """[<channel>] <nick>
-        
+
         If you have the #channel,op capability, this will invite <nick>
         to join <channel>. <channel> is only necessary if the message isn't
         sent in the channel itself.
@@ -362,6 +362,24 @@ class Channel(callbacks.Privmsg):
         irc.replySuccess()
     unlobotomize = privmsgs.checkChannelCapability(unlobotomize, 'op')
 
+    def _getBanmask(self, irc, arg):
+        if ircutils.isNick(arg):
+            if not conf.supybot.protocols.irc.strictRfc():
+                try:
+                    hostmask = irc.state.nickToHostmask(arg)
+                    banmask = ircutils.banmask(hostmask)
+                except KeyError:
+                    if ircutils.isUserHostmask(arg):
+                        banmask = arg
+            else:
+                hostmask = irc.state.nickToHostmask(arg)
+                banmask = ircutils.banmask(hostmask)
+        elif ircutils.isUserHostmask(arg):
+            banmask = arg
+        else:
+            banmask = None
+        return banmask
+
     def permban(self, irc, msg, args, channel):
         """[<channel>] <nick|hostmask>
 
@@ -371,11 +389,8 @@ class Channel(callbacks.Privmsg):
          necessary if the message isn't sent in the channel itself.
         """
         arg = privmsgs.getArgs(args)
-        if ircutils.isNick(arg):
-            banmask = ircutils.banmask(irc.state.nickToHostmask(arg))
-        elif ircutils.isUserHostmask(arg):
-            banmask = arg
-        else:
+        banmask = self._getBanmask(irc, arg)
+        if banmask is None:
             irc.error('That\'s not a valid nick or hostmask.')
             return
         c = ircdb.channels.getChannel(channel)
@@ -407,11 +422,8 @@ class Channel(callbacks.Privmsg):
         the channel itself.
         """
         arg = privmsgs.getArgs(args)
-        if ircutils.isNick(arg):
-            banmask = ircutils.banmask(irc.state.nickToHostmask(arg))
-        elif ircutils.isUserHostmask(arg):
-            banmask = arg
-        else:
+        banmask = self._getBanmask(irc, arg)
+        if banmask is None:
             irc.error('That\'s not a valid nick or hostmask.')
             return
         c = ircdb.channels.getChannel(channel)
@@ -541,9 +553,12 @@ class Channel(callbacks.Privmsg):
         """
         capability = privmsgs.getArgs(args)
         c = ircdb.channels.getChannel(channel)
-        c.removeCapability(capability)
-        ircdb.channels.setChannel(channel, c)
-        irc.replySuccess()
+        try:
+            c.removeCapability(capability)
+            ircdb.channels.setChannel(channel, c)
+            irc.replySuccess()
+        except KeyError:
+            irc.error('I do not know about that channel capability.')
     unsetcapability = privmsgs.checkChannelCapability(unsetcapability, 'op')
 
     def capabilities(self, irc, msg, args):
@@ -583,8 +598,8 @@ class Channel(callbacks.Privmsg):
         L = list(irc.state.channels[channel].users)
         utils.sortBy(str.lower, L)
         irc.reply(utils.commaAndify(L))
-        
-                        
+
+
 
 Class = Channel
 
