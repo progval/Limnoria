@@ -123,7 +123,7 @@ class Currency(callbacks.Privmsg):
     _yahooConvert = re.compile(r'\w{6}=X</a></td><td class[^>]+><b>([\d.]+)'
                                r'</b></td><td class[^>]+>\w{3} \d\d?</td><td'
                                r' class=[^>]+>[\d.]+</td><td class[^>]+><b>'
-                               r'([\d.]+)', re.I | re.S)
+                               r'([\d,]+(?:.0{2}))', re.I | re.S)
     def yahoo(self, irc, msg, args):
         """[<number>] <currency1> to <currency2>
 
@@ -155,7 +155,7 @@ class Currency(callbacks.Privmsg):
         conv = self._yahooConvert.search(text)
         if conv is not None:
             resp = [conv.group(1), curr1.upper(), '=',
-                    conv.group(2), curr2.upper()]
+                    conv.group(2).replace(',', ''), curr2.upper()]
             if '.' not in resp[0]:
                 resp[0] = '%s.00' % resp[0]
             elif resp[0].endswith('.0'):
