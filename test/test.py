@@ -33,6 +33,8 @@ __revision__ = "$Id$"
 
 import os
 
+print 'Testing begun, pid=%s' % os.getpid()
+
 import supybot
 import logging
 
