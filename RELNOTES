@@ -1,3 +1,9 @@
+Version 0.77.1
+
+This is a drop-in replacement for 0.77.0 -- no incompatibilities, to
+out knowledge.  Simply install over your old installation and restart
+your bot :)
+
 Version 0.77.0
 
 Setup.py will automatically remove your old installations for you, no

@@ -1,3 +1,5 @@
+2004-04-09  Jeremy Fincher  <jemfinch@supybot.org>
+	
 	* Added supybot.reply.errorWithNotice to make the bot give its
 	error messages in a notice.
 	
