@@ -83,13 +83,6 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
     def testUpkeep(self):
         self.assertNotError('upkeep')
 
-    def testSetUnset(self):
-        self.assertNotError('set foo bar')
-        self.failUnless(world.tempvars['foo'] == 'bar')
-        self.assertNotError('unset foo')
-        self.failIf('foo' in world.tempvars)
-        self.assertError('unset foo')
-
     def testLoad(self):
         self.assertError('load Owner')
         self.assertError('load owner')

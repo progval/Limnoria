@@ -1,3 +1,5 @@
+	* Removed Owner.{set,unset} since they matter not.
+	
 	* Made the smileys and frowns configurable in ChannelDB.
 
 	* Added an INVITE handler in Admin, allowing users with the admin

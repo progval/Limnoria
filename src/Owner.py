@@ -348,29 +348,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         else:
             irc.reply('%s collected.' % utils.nItems('object', collected))
 
-    def set(self, irc, msg, args):
-        """<name> <value>
-
-        Sets the runtime variable <name> to <value>.  Currently used variables
-        include "noflush" which, if set to true value, will prevent the
-        periodic flushing that normally occurs.
-        """
-        (name, value) = privmsgs.getArgs(args, optional=1)
-        world.tempvars[name] = value
-        irc.replySuccess()
-
-    def unset(self, irc, msg, args):
-        """<name>
-
-        Unsets the value of variables set via the 'set' command.
-        """
-        name = privmsgs.getArgs(args)
-        try:
-            del world.tempvars[name]
-            irc.replySuccess()
-        except KeyError:
-            irc.error('That variable wasn\'t set.')
-
     def load(self, irc, msg, args):
         """<plugin>
 
