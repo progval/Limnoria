@@ -233,7 +233,7 @@ class Misc(callbacks.Privmsg):
             newest = utils.web.getUrl('http://supybot.sf.net/version.txt')
             newest ='The newest version available online is %s.'%newest.strip()
         except utils.web.Error, e:
-            self.log.warning('Couldn\'t get website version: %r', e)
+            self.log.info('Couldn\'t get website version: %s', e)
             newest = 'I couldn\'t fetch the newest version ' \
                      'from the Supybot website.'
         s = 'The current (running) version of this Supybot is %s.  %s' % \
