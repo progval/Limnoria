@@ -1,3 +1,5 @@
+2003-11-18  Jeremy Fincher  <jemfinch@users.sf.net>
+
 	* Added QuoteGrabs module which allows people to grab interesting
 	quotes from other people and store them in the bot for later retrieval
 	(also optionally have the bot randomly snarf quotes).
@@ -115,6 +117,9 @@
 	* Added Bugzilla module for accessing various data in Bugzilla
 	pages.
 	
+	* Added the ability for users to specify that their passwords
+	should be hashed on disk.
+	
 	* Changed the name of the "bug" command in the AdminCommands
 	plugin to "reportbug" instead.
 	
@@ -130,7 +135,48 @@
 	* Changed the keyword parameter "needed" to privmsgs.getArgs to be
 	"required" instead.  It just sounds better, works with "optional"
 	better, and we won't get an oppurtunity later to change it.
-	
+
+	* Updated IrcObjectProxy.reply to allow a "notice" boolean keyword
+	to determine whether or not to reply via a notice.
+
+	* Added privmsgs.urlSnarfer, a wrapper around snarfer methods that
+	handles both the threading and the limiting of replies so loops
+	between two snarfing bots can't happen.
+
+	* Added structures.PersistentDictionary for dictionaries that
+	should be saved to a file in repr()ed form.
+
+	* Added structures.TwoWayDictionary for dictionaries that should
+	map keys to values and vice versa.
+
+	* Added a curry function to fix.py for doing currying (if you
+	don't know what it is, don't worry about it :))
+
+	* Added utils.depluralize to do the opposite of utils.pluralize.
+
+	* Added utils.safeEval for safe evaluation of Python data
+	structures (lists, dictionaries, tuples, numbers, strings, etc.,
+	but no operations on them).
+
+	* Added utils.saltHash for handling the hashing of passwords with
+	a salt.
+
+	* Added plugins.standardSubstitute to do standard substitutions
+	for things like $who, $nick, $channel, etc.
+
+	* Added plugins.Configurable, a plugin mixin that allows easy
+	specification and persistence of configurable data on a global and
+	per-channel basis.
+
+	* Fixed plugins.ChannelDBHandler (and added plugins.DBHandler) to
+	be threadsafe, so threaded plugins could still use a database, and
+	non-threaded database-using plugins could still receive the
+	results of a threaded command.
+
+	* Removed ircutils.privmsgPayload and ircutils.shrinkList, both of
+	which existed prior to the addition of more, and aren't needed
+	anymore.
+
 	
 2003-10-12  Jeremy Fincher  <jemfinch@users.sf.net>
 	
