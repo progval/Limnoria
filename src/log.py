@@ -283,6 +283,10 @@ error = _logger.error
 critical = _logger.critical
 exception = _logger.exception
 
+# These were just begging to be replaced.
+registry.error = error
+registry.exception = exception
+
 def stat(*args):
     level = conf.supybot.log.statistics()
     _logger.log(level, *args)
