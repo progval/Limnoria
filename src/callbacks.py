@@ -161,11 +161,6 @@ def reply(msg, s, prefixName=True, private=None,
             target = msg.nick
         else:
             target = to
-        # XXX: User value for reply.withNoticeWhenPrivate.
-        if conf.supybot.reply.withNoticeWhenPrivate(): # global, no getConfig.
-            if not ircutils.isChannel(target):
-                # to=channel, private=True (see RSS for an example)
-                notice = True
     if to is None:
         to = msg.nick
     # Ok, now let's make the payload:
@@ -176,6 +171,9 @@ def reply(msg, s, prefixName=True, private=None,
         # Let's may sure we don't do, "#channel: foo.".
         if not ircutils.isChannel(to):
             s = '%s: %s' % (to, s)
+    if not ircutils.isChannel(target):
+        if conf.supybot.reply.withNoticeWhenPrivate():
+            notice = True
     # And now, let's decide whether it's a PRIVMSG or a NOTICE.
     msgmaker = ircmsgs.privmsg
     if notice:
