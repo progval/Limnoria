@@ -100,7 +100,11 @@ class Channel(callbacks.Privmsg):
         """
         if not args:
             args.append(msg.nick)
-        if irc.nick in irc.state.channels[channel].ops:
+        if irc.nick in args:
+            irc.error('I cowardly refuse to deop myself.  If you really want '
+                      'me deopped, tell me to op you and then deop me '
+                      'yourself.')
+        elif irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.deops(channel, args))
         else:
             irc.error('How can I deop someone?  I\'m not opped!')
@@ -115,7 +119,11 @@ class Channel(callbacks.Privmsg):
         """
         if not args:
             args.append(msg.nick)
-        if irc.nick in irc.state.channels[channel].ops:
+        if irc.nick in args:
+            irc.error('I cowardly refuse to dehalfop myself.  If you really '
+                      'want me dehalfopped, tell me to op you and then '
+                      'dehalfop me yourself.')
+        elif irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.dehalfops(channel, args))
         else:
             irc.error('How can I dehalfop someone?  I\'m not opped!')
@@ -130,7 +138,11 @@ class Channel(callbacks.Privmsg):
         """
         if not args:
             args.append(msg.nick)
-        if irc.nick in irc.state.channels[channel].ops:
+        if irc.nick in args:
+            irc.error('I cowardly refuse to devoice myself.  If you really '
+                      'want me devoiced, tell me to op you and then devoice '
+                      'me yourself.')
+        elif irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.devoices(channel, args))
         else:
             irc.error('How can I devoice someone?  I\'m not opped!')

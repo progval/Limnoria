@@ -72,6 +72,11 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
             self.assertNotError('%s foo' % s)
             self.irc.feedMsg(ircmsgs.deop(self.channel, self.nick))
 
+    def testWontDeItself(self):
+        for s in 'deop dehalfop devoice'.split():
+            self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+            self.assertError('%s %s' % (s, self.nick))
+
     def testOp(self):
         self.assertError('op')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
@@ -113,10 +118,6 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotRegexp('kban adlkfajsdlfkjsd', 'KeyError')
         self.assertNotRegexp('kban foobar time', 'ValueError')
         self.assertError('kban %s' % self.irc.nick)
-
-    def testLobotomizers(self):
-        self.assertNotError('lobotomize')
-        self.assertNotError('unlobotomize')
 
     def testPermban(self):
         self.assertNotError('permban foo!bar@baz')
