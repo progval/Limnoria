@@ -349,9 +349,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     try:
                         _ = loadPluginModule(name)
                     except Exception, e:
-                        log.info('Attempted to load %s to preserve its '
-                                 'configuration, but load failed: %s',
-                                 name, e)
+                        log.debug('Attempted to load %s to preserve its '
+                                  'configuration, but load failed: %s',
+                                  name, e)
         world.starting = False
 
     def do376(self, irc, msg):
