@@ -156,7 +156,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             else:
                 results.append(url)
         if not results:
-            return format('No matches found (%s)', t)
+            return format('No matches found. (%s)', t)
         else:
             return format('%s: %s', t, '; '.join(results))
 
