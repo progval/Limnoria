@@ -543,10 +543,10 @@ def whois(nick, mask='', prefix=''):
     assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command='WHOIS', args=(nick, mask))
 
-def invite(channel, nick, prefix=''):
+def invite(nick, channel, prefix=''):
     """Returns an INVITE for nick."""
     assert isNick(nick), repr(nick)
-    return IrcMsg(prefix=prefix, command='INVITE', args=(channel, nick))
+    return IrcMsg(prefix=prefix, command='INVITE', args=(nick, channel))
 
 def password(password, prefix=''):
     """Returns a PASS command for accessing a server."""
