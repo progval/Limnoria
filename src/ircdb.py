@@ -60,10 +60,7 @@ def isAntiCapability(capability):
 def makeAntiCapability(capability):
     if '.' in capability:
         (channel, capability) = fromChannelCapability(capability)
-        if ircutils.isChannel(channel):
-            return '%s.!%s' % (channel, capability)
-        else:
-            return '!' + capability
+        return '%s.!%s' % (channel, capability)
     else:
         return '!' + capability
 
