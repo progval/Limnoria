@@ -200,8 +200,28 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                 l.append(item_str)
             irc.reply(msg, utils.commaAndify(l))
 
-        
-             
+    def get(self, irc, msg, args):
+        """<id>
+
+        Return the quotegrab with the given <id>.
+        """
+        id = privmsgs.getArgs(args)
+        try:
+            id = int(id)
+        except ValueError:
+            irc.error(msg, '%r does not appear to be a valid quotegrab id'%id)
+            return
+        channel = privmsgs.getChannel(msg, args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT quote FROM quotegrabs
+                          WHERE id = %s""", id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'No quotegrab for id %r' % id)
+            return
+        quote = cursor.fetchone()[0]
+        irc.reply(msg, quote)
+
 
 Class = QuoteGrabs
 

@@ -84,5 +84,14 @@ class QuoteGrabsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('quote FoO')
         self.assertNotError('quote Foo')
 
+    def testGet(self):
+        testPrefix= 'foo!bar@baz'
+        self.assertError('quotegrabs get asdf')
+        self.assertError('quotegrabs get 1')
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                         prefix=testPrefix))
+        self.assertNotError('grab foo')
+        self.assertResponse('quotegrabs get 1', '<foo> test')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
