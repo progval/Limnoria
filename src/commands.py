@@ -660,10 +660,10 @@ class first(context):
         else:
             raise e
 
-class reversed(context):
+class reverse(context):
     def __call__(self, irc, msg, args, state):
         args[:] = args[::-1]
-        super(reversed, self).__call__(irc, msg, args, state)
+        super(reverse, self).__call__(irc, msg, args, state)
         args[:] = args[::-1]
 
 class getopts(context):
@@ -780,7 +780,7 @@ def wrap(f, specList=[], **kw):
 
 
 __all__ = ['wrap', 'context', 'additional', 'optional', 'any', 'compose',
-           'Spec', 'first', 'urlSnarfer', 'thread', 'reversed',
+           'Spec', 'first', 'urlSnarfer', 'thread', 'reverse',
            'many', 'getopts', 'getConverter', 'addConverter', 'callConverter']
 
 if world.testing:

@@ -333,7 +333,7 @@ class Factoids(callbacks.Privmsg):
         """
         factoids = self.db.get(channel, key)
         self._replyFactoids(irc, channel, key, factoids, number)
-    whatis = wrap(whatis, ['channeldb', reversed(optional('positiveInt', 0)), 'text'],
+    whatis = wrap(whatis, ['channeldb', reverse(optional('positiveInt', 0)), 'text'],
                   allowExtra=True)
 
     def lock(self, irc, msg, args, channel, key):
@@ -382,7 +382,7 @@ class Factoids(callbacks.Privmsg):
                       'Please specify which one to remove, '
                       'or use * to designate all of them.' % str(e))
     forget = wrap(forget, ['channeldb',
-                           reversed(first('positiveInt', ('literal', '*'))),
+                           reverse(first('positiveInt', ('literal', '*'))),
                            'text'], allowExtra=True)
 
     def random(self, irc, msg, args, channel):

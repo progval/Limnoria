@@ -69,8 +69,8 @@ class CommandsTestCase(SupyTestCase):
         self.assertRaises(callbacks.Error,
                           self.assertState, spec, ['foo'], ['asdf'])
 
-    def testReversed(self):
-        spec = [reversed('positiveInt'), 'float', 'text']
+    def testReverse(self):
+        spec = [reverse('positiveInt'), 'float', 'text']
         self.assertState(spec, ['-1.0', 'foo', '1'], [1, -1.0, 'foo'])
 
     def testGetopts(self):
