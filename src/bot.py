@@ -72,9 +72,9 @@ def processConfigFile(filename):
     import debug
     import irclib
     import ircmsgs
+    import drivers
     import ircutils
     import privmsgs
-    import asyncoreDrivers
     def reportConfigError(filename, msg):
         debug.recoverableError('%s: %s' % (filename, msg))
     class ConfigAfter376(irclib.IrcCallback):
@@ -140,8 +140,7 @@ def processConfigFile(filename):
         irc.reset()
         world.startup = False
         irc.addCallback(ConfigAfter376(after376))
-        driver = asyncoreDrivers.AsyncoreDriver(server, irc)
-        driver.irc = irc
+        driver = drivers.newDriver(server, irc)
     except IOError, e:
         reportConfigError(filename, e)
     except email.Errors.HeaderParseError, e:

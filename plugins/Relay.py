@@ -45,14 +45,13 @@ from baseplugin import *
 import re
 import copy
 
+import conf
 import ircdb
-import debug
 import irclib
 import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
-import asyncoreDrivers
 
 def configure(onStart, afterConnect, advanced):
     import socket
@@ -146,8 +145,7 @@ class Relay(callbacks.Privmsg):
         else:
             port = 6667
         newIrc = irclib.Irc(irc.nick, callbacks=irc.callbacks)
-        driver = asyncoreDrivers.AsyncoreDriver((server, port), newIrc)
-        newIrc.driver = driver
+        driver = drivers.newDriver((server, port), newIrc)
         self.ircs[abbreviation] = newIrc
         self.abbreviations[newIrc] = abbreviation
         irc.reply(msg, conf.replySuccess)
@@ -235,19 +233,10 @@ class Relay(callbacks.Privmsg):
             channel = msg.args[0]
             if channel not in self.channels:
                 return
-            #debug.printf('self.abbreviations = %s' % self.abbreviations)
-            #debug.printf('self.ircs = %s' % self.ircs)
-            #debug.printf('irc = %s' % irc)
             abbreviation = self.abbreviations[irc]
             s = self._formatPrivmsg(msg.nick, abbreviation, msg)
             for otherIrc in self.ircs.itervalues():
-                #debug.printf('otherIrc = %s' % otherIrc)
                 if otherIrc != irc:
-                    #debug.printf('otherIrc != irc')
-                    #debug.printf('id(irc) = %s, id(otherIrc) = %s' % \
-                    #             (id(irc), id(otherIrc)))
-                    if channel in otherIrc.state.channels:
-                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
 
     def doJoin(self, irc, msg):
         if self.started:
@@ -312,8 +301,6 @@ class Relay(callbacks.Privmsg):
             else:
                 s = '%s/%s has quit.' % (msg.nick, network)
             for channel in self.channels:
-                #debug.printf(self.ircstates[irc])
-                #debug.printf(self.ircstates[irc].channels[channel].users)
                 if msg.nick in self.ircstates[irc].channels[channel].users:
                     for otherIrc in self.ircs.itervalues():
                         if otherIrc != irc:
