@@ -513,6 +513,12 @@ class IrcObjectProxy(RichReplyMethods):
             world.commandsProcessed += 1
             self.evalArgs()
 
+    def __eq__(self, other):
+        return other == self.getRealIrc()
+
+    def __hash__(self):
+        return hash(self.getRealIrc())
+
     def _resetReplyAttributes(self):
         self.to = None
         self.action = None
