@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2003, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,8 @@ import re
 
 from test import *
 
-class SourceforgeTest(PluginTestCase, PluginDocumentation):
-    plugins = ('Sourceforge',)
+class SfTest(PluginTestCase, PluginDocumentation):
+    plugins = ('Sf',)
     def testBugs(self):
         self.assertNotError('bugs')
         self.assertResponse('bugs alkjfi83fa8', 'Can\'t find the "Bugs" link.')
