@@ -32,11 +32,8 @@
 from fix import *
 
 import os
-import re
 import sys
 import imp
-import time
-import pprint
 
 import conf
 import debug
@@ -45,7 +42,6 @@ import ircdb
 import ircmsgs
 import drivers
 import ircutils
-import schedule
 import callbacks
 
 def getChannel(msg, args):
@@ -106,7 +102,7 @@ def getKeywordArgs(irc, msg, d=None):
             
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
-    self.capability = '' # To satisfy PyChecker
+    capability = '' # To satisfy PyChecker
     def callCommand(self, f, irc, msg, args):
         if ircdb.checkCapability(msg.prefix, self.capability):
             callbacks.Privmsg.callCommand(self, f, irc, msg, args)
