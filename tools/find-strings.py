@@ -29,7 +29,7 @@ def main():
         node = parser.ast2list(parser.suite(s), True)
         for (lineno, string) in strings(node):
             out.write('%s: %s: %s\n' % (filename, lineno, string))
-        out.close()
+    out.close()
 
 if __name__ == '__main__':
     main()
