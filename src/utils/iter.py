@@ -148,4 +148,14 @@ def ilen(iterable):
         i += 1
     return i
 
+def startswith(long, short):
+    longI = iter(long)
+    shortI = iter(short)
+    try:
+        while True:
+            if shortI.next() != longI.next():
+                return False
+    except StopIteration:
+        return True
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
