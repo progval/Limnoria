@@ -423,6 +423,7 @@ supybot.drivers.register('poll', registry.Float(1.0, """Determines the default
 length of time a driver should block waiting for input."""))
 
 class ValidDriverModule(registry.OnlySomeStrings):
+    validStrings = ('socketDrivers', 'twistedDrivers', 'asyncoreDrivers')
     def normalize(self, s):
         # We can't be case insensitive here.  At least not without work.
         return s 

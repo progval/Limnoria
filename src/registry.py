@@ -299,6 +299,11 @@ class String(Value):
 class OnlySomeStrings(String):
     normalize = staticmethod(str.lower)
     validStrings = ()
+    def __init__(self, *args, **kwargs):
+        assert self.validStrings, 'There must be some valid strings.  ' \
+                                  'This is a bug.'
+        String.__init__(self, *args, **kwargs)
+        
     def setValue(self, s):
         s = self.normalize(s)
         if s in self.validStrings:
