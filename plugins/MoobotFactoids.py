@@ -205,7 +205,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             return
         # Check the factoid db for an appropriate reply
         cursor = self.db.cursor()
-        cursor.execute("""SELECT fact FROM factoids WHERE key = %s""", key)
+        cursor.execute("""SELECT fact FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             text = self._getDunno(msg.nick)
             irc.reply(msg, text, prefixName=False)
@@ -249,7 +249,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         key, fact = match.groups()
         cursor = self.db.cursor()
         # Check and make sure it's not in the DB already
-        cursor.execute("""SELECT * FROM factoids WHERE key = %s""", key)
+        cursor.execute("""SELECT * FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount != 0:
             irc.error(msg, "Factoid '%s' already exists." % key)
             return
@@ -273,7 +273,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor = self.db.cursor()
         # Check and make sure it's in the DB 
         cursor.execute("""SELECT locked_at, fact FROM factoids
-                          WHERE key = %s""", key)
+                          WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "Factoid '%s' not found." % key)
             return
@@ -308,7 +308,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor = self.db.cursor()
         # Check and make sure it's in the DB 
         cursor.execute("""SELECT locked_at, fact FROM factoids
-                          WHERE key = %s""", key)
+                          WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "Factoid '%s' not found." % key)
             return
@@ -338,7 +338,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor = self.db.cursor()
         # Check and make sure it's in the DB 
         cursor.execute("""SELECT locked_at, fact FROM factoids
-                          WHERE key = %s""", key)
+                          WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "Factoid '%s' not found." % key)
             return
@@ -367,7 +367,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         """
         key = privmsgs.getArgs(args, needed=1)
         cursor = self.db.cursor()
-        cursor.execute("""SELECT fact FROM factoids WHERE key = %s""", key)
+        cursor.execute("""SELECT fact FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "No such factoid: %s" % key)
             return
@@ -388,7 +388,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""SELECT created_by, created_at, modified_by,
                           modified_at, last_requested_by, last_requested_at,
                           requested_count, locked_at FROM
-                          factoids WHERE key = %s""", key)
+                          factoids WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "No such factoid: %s" % key)
             return
@@ -432,7 +432,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         key = privmsgs.getArgs(args, needed=1)
         cursor = self.db.cursor()
         cursor.execute("""SELECT created_by, locked_at FROM factoids
-                          WHERE key = %s""", key)
+                          WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "No such factoid: %s" % key)
             return
@@ -559,7 +559,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         key = privmsgs.getArgs(args, needed=1)
         cursor = self.db.cursor()
         cursor.execute("""SELECT key, locked_at FROM factoids
-                          WHERE key = %s""", key)
+                          WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
             irc.error(msg, "No such factoid: %s" % key)
             return

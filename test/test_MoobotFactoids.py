@@ -66,6 +66,10 @@ if sqlite is not None:
             # Test and make sure it's parsing
             self.assertNotError('moo4 is <reply>(1|2|3)')
             self.assertRegexp('moo4', '^(1|2|3)$')
+            # Check case-insensitivity
+            self.assertResponse('MOO', 'foo')
+            self.assertResponse('mOo', 'foo')
+            self.assertResponse('MoO', 'foo')
 
         def testFactinfo(self):
             self.assertNotError('moo is <reply>foo')
@@ -206,7 +210,7 @@ if sqlite is not None:
 
         def testDunnoAdd(self):
             self.assertNotError('dunnoadd moo')
-            self.assertResponse('asdfagagfosdfk', 'moo (#1)')
+            self.assertResponse('asdfagagfosdfk', 'moo')
 
         def testDunnoRemove(self):
             self.assertNotError('dunnoadd moo')
