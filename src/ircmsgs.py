@@ -307,6 +307,8 @@ def prettyPrint(msg, addRecipients=False, timestampFormat=None, showNick=True):
         s = '*** %s has quit IRC%s' % (msg.nick, quitmsg)
     elif msg.command == 'TOPIC':
         s = '*** %s changes topic to %s' % (nickorprefix(), msg.args[1])
+    elif msg.command == 'NICK':
+        s = '*** %s is now known as %s' % (msg.nick, msg.args[0])
     at = getattr(msg, 'receivedAt', None)
     if timestampFormat and at:
         s = '%s %s' % (time.strftime(timestampFormat, time.localtime(at)), s)
