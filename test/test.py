@@ -93,6 +93,17 @@ for s in rawmsgs:
 
 nicks += [msg.nick for msg in msgs if msg.nick]
 
+class path(str):
+    """A class to represent platform-independent paths."""
+    _r = re.compile(r'[\\/]')
+    def __hash__(self):
+        return reduce(lambda h, s: h ^ hash(s), self._r.split(self), 0)
+    def __eq__(self, other):
+        return self._r.split(self) == self._r.split(other)
+
+class TimeoutError(AssertionError):
+    def __str__(self):
+        return '%r timed out' % self.args[0]
 
 class PluginTestCase(unittest.TestCase):
     """Subclass this to write a test case for a plugin.  See test_FunCommands
@@ -154,13 +165,15 @@ class PluginTestCase(unittest.TestCase):
     # fixed, but not until then.
     def assertError(self, query):
         m = self._feedMsg(query)
-        self.failUnless(m)
+        if m is None:
+            raise TimeoutError, query
         self.failUnless(m.args[1].startswith('Error:'),
                         '%r did not error: %s' % (query, m.args[1]))
 
     def assertNotError(self, query):
         m = self._feedMsg(query)
-        self.failUnless(m)
+        if m is None:
+            raise TimeoutError, query
         self.failIf(m.args[1].startswith('Error:'),
                     '%r errored: %s' % (query, m.args[1]))
 
@@ -170,19 +183,22 @@ class PluginTestCase(unittest.TestCase):
         
     def assertResponse(self, query, expectedResponse):
         m = self._feedMsg(query)
-        self.failUnless(m, 'query %r returned None.' % query)
+        if m is None:
+            raise TimeoutError, query
         self.assertEqual(m.args[1], expectedResponse,
                          '%r != %r' % (expectedResponse, m.args[1]))
 
     def assertRegexp(self, query, regexp, flags=re.I):
         m = self._feedMsg(query)
-        self.failUnless(m, 'query %r returned None.' % query)
+        if m is None:
+            raise TimeoutError, query
         self.failUnless(re.search(regexp, m.args[1], flags),
                         '%r does not match %r' % (m.args[1], regexp))
 
     def assertNotRegexp(self, query, regexp, flags=re.I):
         m = self._feedMsg(query)
-        self.failUnless(m, 'query %r returned None.' % query)
+        if m is None:
+            raise TimeoutError, query
         self.failUnless(re.search(regexp, m.args[1], flags) is None,
                         '%r matched %r' % (m.args[1], regexp))
 
@@ -191,7 +207,8 @@ class PluginTestCase(unittest.TestCase):
         total = len(regexps)*self.timeout
         while regexps and time.time() - started < total:
             m = self._feedMsg(query)
-            self.failUnless(m, 'query %r returned None' % query)
+            if m is None:
+                raise TimeoutError, query
             regexp = regexps.pop(0)
             self.failUnless(re.search(regexp, m.args[1]),
                             '%r does not match %r' % (m.args[1], regexp))
@@ -203,7 +220,8 @@ class PluginTestCase(unittest.TestCase):
         while len(responses) < len(expectedResponses) and \
                   time.time() - started > len(expectedResponses)*self.timeout:
             m = self._feedMsg(query)
-            self.failUnless(m, 'query %r returned None' % query)
+            if m is None:
+                raise TimeoutError, query
             responses.append(m)
         self.assertEqual(len(expectedResponses), len(responses))
         for (m, expected) in zip(responses, expectedResponses):
@@ -306,9 +324,9 @@ if __name__ == '__main__':
                            'which to search for plugins.')
     (options, args) = parser.parse_args()
     if not args:
-        args = glob.glob(os.path.join('test', 'test_*.py'))
+        args = map(path, glob.glob(os.path.join('test', 'test_*.py')))
     if options.exclusions:
-        for name in options.exclusions:
+        for name in map(path, options.exclusions):
             args = [s for s in args if s != name]
     if options.timeout:
         PluginTestCase.timeout = options.timeout
