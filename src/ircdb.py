@@ -490,7 +490,9 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
         return False
 
 def checkCapability(hostmask, capability, users=users, channels=channels):
+    #debug.printf('*** checking %s for %s' % (hostmask, capability))
     if world.startup:
+        #debug.printf('world.startup is active.')
         if isAntiCapability(capability):
             return False
         else:
@@ -498,45 +500,72 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
     try:
         u = users.getUser(hostmask)
     except KeyError:
+        #debug.printf('user could not be found.')
         if isChannelCapability(capability):
+            #debug.printf('isChannelCapability true.')
             (channel, capability) = fromChannelCapability(capability)
             try:
                 c = channels.getChannel(channel)
                 if capability in c.capabilities:
+                    #debug.printf('capability in c.capabilities')
                     return c.checkCapability(capability)
                 else:
-                    return c.defaultAllow
+                    #debug.printf('capability not in c.capabilities')
+                    if isAntiCapability(capability):
+                        return not c.defaultAllow
+                    else:
+                        return c.defaultAllow
             except KeyError:
+                #debug.printf('no such channel %s' % channel)
                 pass
         if capability in conf.defaultCapabilities:
+            #debug.printf('capability in conf.defaultCapability')
             return True
         elif invertCapability(capability) in conf.defaultCapabilities:
+            #debug.printf('inverse capability in conf.defaultCapability')
             return False
         else:
-            return conf.defaultAllow
+            #debug.printf('returning appropriate value given no good reason')
+            if isAntiCapability(capability):
+                return not conf.defaultAllow
+            else:
+                return conf.defaultAllow
+    #debug.printf('user found.')
     if capability in u.capabilities:
+        #debug.printf('found capability in u.capabilities.')
         return u.checkCapability(capability)
     else:
         if isChannelCapability(capability):
+            #debug.printf('isChannelCapability true, user found too.')
             (channel, capability) = fromChannelCapability(capability)
             try:
                 c = channels.getChannel(channel)
+                #debug.printf('channel found')
                 if capability in c.capabilities:
+                    #debug.printf('capability in c.capabilities')
                     return c.checkCapability(capability)
                 else:
-                    return c.defaultAllow
+                    #debug.printf('capability not in c.capabilities')
+                    if isAntiCapability(capability):
+                        return not c.defaultAllow
+                    else:
+                        return c.defaultAllow
             except KeyError:
+                #debug.printf('no such channel %s' % channel)
                 pass
         if capability in conf.defaultCapabilities:
+            #debug.printf('capability in conf.defaultCapabilities')
             return True
         elif invertCapability(capability) in conf.defaultCapabilities:
+            #debug.printf('inverse capability in conf.defaultCapabilities')
             return False
         else:
-            return conf.defaultAllow
+            #debug.printf('returning appropriate value given no good reason')
+            if isAntiCapability(capability):
+                return not conf.defaultAllow
+            else:
+                return conf.defaultAllow
         
-        
-        
-                
 
 def checkCapabilities(hostmask, capabilities, requireAll=False):
     """Checks that a user has capabilities in a list.
