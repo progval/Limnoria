@@ -94,7 +94,7 @@ class RingBuffer(object):
             oidx = idx
             if type(oidx) == types.SliceType:
                 L = []
-                for i in xrange(*sliceIndices(oidx, len(self))):
+                for i in xrange(*slice.indices(oidx, len(self))):
                     L.append(self[i])
                 return L
             else:
@@ -106,7 +106,7 @@ class RingBuffer(object):
         else:
             if type(idx) == types.SliceType:
                 L = []
-                for i in xrange(*sliceIndices(idx, len(self))):
+                for i in xrange(*slice.indices(idx, len(self))):
                     L.append(self[i])
                 return L
             else:
@@ -116,7 +116,7 @@ class RingBuffer(object):
         if self.full:
             oidx = idx
             if type(oidx) == types.SliceType:
-                range = xrange(*sliceIndices(oidx, len(self)))
+                range = xrange(*slice.indices(oidx, len(self)))
                 if len(range) != len(elt):
                     raise ValueError, 'seq must be the same length as slice.'
                 else:
@@ -130,7 +130,7 @@ class RingBuffer(object):
                 self.L[idx] = elt
         else:
             if type(idx) == types.SliceType:
-                range = xrange(*sliceIndices(idx, len(self)))
+                range = xrange(*slice.indices(idx, len(self)))
                 if len(range) != len(elt):
                     raise ValueError, 'seq must be the same length as slice.'
                 else:
@@ -215,7 +215,7 @@ class queue(object):
             raise IndexError, 'queue index out of range'
         if type(oidx) == types.SliceType:
             L = []
-            for i in xrange(*sliceIndices(oidx, len(self))):
+            for i in xrange(*slice.indices(oidx, len(self))):
                 L.append(self[i])
             return L
         else:
@@ -295,52 +295,3 @@ class MaxLengthQueue(queue):
 ##     enqueue = RingBuffer.append
 ##     def peek(self):
 ##         return self[0]
-
-
-def sliceIndices(slice, length):
-    if slice.step is None:
-        step = 1
-    else:
-        if slice.step == 0:
-            raise ValueError, 'slice step cannot be zero'
-        step = slice.step
-    if step < 0:
-        defstart = length - 1
-        defstop = -1
-    else:
-        defstart = 0
-        defstop = length
-    if slice.start is None:
-        start = defstart
-    else:
-        start = slice.start
-        if start < 0:
-            start += length
-        if start < 0:
-            if step < 0:
-                start = -1
-            else:
-                start = 0
-        if start >= length:
-            if step < 0:
-                start = length - 1
-            else:
-                start = length
-    if slice.stop is None:
-        stop = defstop
-    else:
-        stop = slice.stop
-        if stop < 0:
-            stop += length
-        if stop < 0:
-            stop = -1
-        if stop > length:
-            stop = length
-    if (step < 0 and stop >= start) or \
-       (step > 0 and start >= stop):
-        slicelength = 0
-    elif step < 0:
-        slicelength = (stop - start + 1)/step + 1
-    else:
-        slicelength = (stop - start - 1)/step + 1
-    return (start, stop, step)
