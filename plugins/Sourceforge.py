@@ -1,7 +1,7 @@
 #!/usr/bin/python2.3
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2003, James Vega
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,19 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+Accesses Sourceforge.net for various things
 """
 
 import re
 import urllib2
 
-import plugins
+from itertools import ifilter
 
 import debug
 import utils
+import ircutils
 import privmsgs
 import callbacks
-import itertools
 
 
 def configure(onStart, afterConnect, advanced):
@@ -68,13 +68,37 @@ in 0.71, Bug #820961: dock icon doesn't show up with..., Bug #820879: Cannot con
 """)
 
 class Sourceforge(callbacks.Privmsg):
+    """
+    Module for Sourceforge stuff. Currently contains commands to query a
+    project's most recent bugs and rfes.
+    """
+
     threaded = True
 
-    _bugRe = re.compile(r'<td NOWRAP>(\d+)</td><td><a HREF="([^"]+)">'\
+    _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href="([^"]+)">'\
         '([^<]+)</a>', re.I)
-    _bugLink = re.compile(r'"([^"]+)">Bugs')
-    _bugOpts = '&set=custom&_assigned_to=0&_status=1&_category=100&'\
+    _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category=100&'\
         '_group=100&order=artifact_id&sort=DESC'
+
+    def _formatResp(self, num, text):
+        """
+        Parses the Sourceforge query to return a list of tuples that
+        contain the bug/rfe information.
+        """
+
+        matches = []
+        try:
+            int(num)
+            for item in ifilter(lambda s, n=num: s is not None and n in s,
+                                self._infoRe.findall(text)):
+                matches.append((ircutils.bold(utils.htmlToText(item[2])),
+                                utils.htmlToText(item[1])))
+        except ValueError:
+            for item in ifilter(None, self._infoRe.findall(text)):
+                matches.append((item[0], utils.htmlToText(item[2])))
+        return matches
+
+    _bugLink = re.compile(r'"([^"]+)">Bugs')
     def bugs(self, irc, msg, args):
         """[<project> [<num>]]
 
@@ -96,10 +120,10 @@ class Sourceforge(callbacks.Privmsg):
                 return
             else:
                 url = 'http://sourceforge.net%s%s' %\
-                    (utils.htmlToText(m.group(1)), self._bugOpts)
+                    (utils.htmlToText(m.group(1)), self._hrefOpts)
         except ValueError, e:
             irc.error(msg, str(e))
-        except HTTPError, e:
+        except urllib2.HTTPError, e:
             irc.error(msg, e.msg())
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
@@ -108,18 +132,18 @@ class Sourceforge(callbacks.Privmsg):
             fd = urllib2.urlopen(url)
             text = fd.read()
             fd.close()
+            resp = []
             if bugnum != '':
-                resp = ['%s <http://sourceforge.net%s>' %\
-                    (utils.htmlToText(bug[2]), utils.htmlToText(bug[1]))\
-                    for bug in itertools.ifilter(\
-                     lambda s: s is not None and bugnum in s,\
-                     self._bugRe.findall(text))]
+                head = '%s <http://sourceforge.net%s>'
+                for bug in self._formatResp(bugnum, text):
+                    resp.append(head % bug)
                 if resp:
                     irc.reply(msg, resp[0])
                     return
             else:
-                resp = ['Bug #%s: %s' % (bug[0], utils.htmlToText(bug[2])) for\
-                    bug in itertools.ifilter(None, self._bugRe.findall(text))]
+                head = 'Bug #%s: %s'
+                for bug in self._formatResp(bugnum, text):
+                    resp.append(head % bug)
                 if resp:
                     if len(resp) > 10:
                         resp = map(lambda s: utils.ellipsisify(s, 50), resp)
@@ -131,16 +155,12 @@ class Sourceforge(callbacks.Privmsg):
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 
-    _rfeRe = re.compile(r'<td NOWRAP>(\d+)</td><td><a HREF="([^"]+)">'\
-        '([^<]+)</a>', re.I)
     _rfeLink = re.compile(r'"([^"]+)">RFE')
-    _rfeOpts = '&set=custom&_assigned_to=0&_status=1&_category=100&'\
-        '_group=100&order=artifact_id&sort=DESC'
     def rfes(self, irc, msg, args):
         """[<project> [<num>]]
 
-        Returns a list of the most recent rfes filed against <project>.
-        Defaults to searching for supybot rfes. If <num> is specified, the rfe
+        Returns a list of the most recent RFEs filed against <project>.
+        Defaults to searching for supybot RFEs. If <num> is specified, the rfe
         description and link are retrieved.
         """
         (project, rfenum) = privmsgs.getArgs(args, needed=0, optional=2)
@@ -157,10 +177,10 @@ class Sourceforge(callbacks.Privmsg):
                 return
             else:
                 url = 'http://sourceforge.net%s%s' %\
-                    (utils.htmlToText(m.group(1)), self._bugOpts)
+                    (utils.htmlToText(m.group(1)), self._hrefOpts)
         except ValueError, e:
             irc.error(msg, str(e))
-        except HTTPError, e:
+        except urllib2.HTTPError, e:
             irc.error(msg, e.msg())
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
@@ -169,18 +189,18 @@ class Sourceforge(callbacks.Privmsg):
             fd = urllib2.urlopen(url)
             text = fd.read()
             fd.close()
+            resp = []
             if rfenum != '':
-                resp = ['%s <http://sourceforge.net%s>' %\
-                    (utils.htmlToText(rfe[2]), utils.htmlToText(rfe[1]))\
-                    for rfe in itertools.ifilter(\
-                     lambda s: s is not None and rfenum in s,\
-                     self._rfeRe.findall(text))]
+                head = '%s <http://sourceforge.net%s>'
+                for rfe in self._formatResp(rfenum, text):
+                    resp.append(head % rfe)
                 if resp:
                     irc.reply(msg, resp[0])
                     return
             else:
-                resp = ['RFE #%s: %s' % (rfe[0], utils.htmlToText(rfe[2])) for\
-                    rfe in itertools.ifilter(None, self._rfeRe.findall(text))]
+                head = 'RFE #%s: %s'
+                for rfe in self._formatResp(rfenum, text):
+                    resp.append(head % rfe)
                 if resp:
                     if len(resp) > 10:
                         resp = map(lambda s: utils.ellipsisify(s, 50), resp)
