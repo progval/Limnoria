@@ -310,7 +310,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         return newIrc
 
     def do001(self, irc, msg):
-        self.log.info('Loading plugins.')
+        self.log.info('Loading plugins (connected to %s).', irc.network)
         alwaysLoadSrcPlugins = conf.supybot.plugins.alwaysLoadImportant()
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):
             if irc.getCallback(name) is None:
