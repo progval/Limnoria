@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2002-2004 Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -733,6 +733,11 @@ class Irc(IrcCommandDispatcher):
 
     def die(self):
         self.zombie = True
+
+    # This is useless because it's in world.ircs, so it won't be deleted until
+    # the program exits.  Just figured you might want to know.
+    #def __del__(self):
+    #    self._reallyDie()
 
     def _reallyDie(self):
         """Makes the Irc object die.  Dead."""
