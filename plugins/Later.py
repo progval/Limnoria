@@ -72,6 +72,7 @@ class Later(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.notes = ircutils.IrcDict()
+        self.wildcards = []
         self.filename = conf.supybot.directories.data.dirize('Later.db')
         self._openNotes()
 
@@ -118,6 +119,8 @@ class Later(callbacks.Privmsg):
                 notes.append[(at, whence, text)]
         except KeyError:
             self.notes[nick] = [(at, whence, text)]
+        if '?' in nick or '*' in nick and nick not in self.wildcards:
+            self.wildcards.append(nick)
         self._flushNotes()
         
     def tell(self, irc, msg, args):
@@ -138,14 +141,23 @@ class Later(callbacks.Privmsg):
     def doPrivmsg(self, irc, msg):
         try:
             notes = self.notes.pop(msg.nick)
+        except KeyError:
+            notes = []
+        # Let's try wildcards.
+        removals = []
+        for wildcard in self.wildcards:
+            if ircutils.hostmaskPatternEqual(wildcard, msg.nick):
+                removals.append(wildcard)
+                notes.extend(self.notes.pop(wildcard))
+            for removal in removals:
+                self.wildcards.remove(removal)
+        if notes:
             irc = callbacks.SimpleProxy(irc, msg)
             private = self.registryValue('private')
             for (when, whence, note) in notes:
                 s = 'Sent %s: <%s> %s' % (self._timestamp(when), whence, note)
                 irc.reply(s, private=private)
             self._flushNotes()
-        except KeyError:
-            pass
             
 
 
