@@ -68,10 +68,12 @@ class Babelfish(callbacks.Privmsg):
     for language in babelfish.available_languages:
         _abbrevs[language] = language
     def translate(self, irc, msg, args):
-        """<from-language> <to-language> <text>
+        """<from-language> [to] <to-language> <text>
 
         Returns <text> translated from <from-language> into <to-language>.
         """
+        if len(args) >= 2 and args[1] == 'to':
+            args.pop(1)
         (fromLang, toLang, text) = privmsgs.getArgs(args, required=3)
         try:
             fromLang = self._abbrevs[fromLang.lower()]

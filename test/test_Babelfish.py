@@ -37,6 +37,8 @@ if network:
         def testTranslate(self):
             self.assertResponse('translate en sp food',
                                 'alimento')
+            self.assertResponse('translate en to sp food',
+                                'alimento')
             self.assertError('translate foo en food')
             self.assertError('translate en foo food')
 
