@@ -2,6 +2,8 @@
 
 	* Version 0.73.0!
 
+	* Added the News plugin, news handling for channels.
+	
 	* Changed the initial character of anti capabilities to '-'
 	instead of '!'.  '!' can be the initial character in a channel
 	name, and so any command using getChannel and accepting a
@@ -22,7 +24,8 @@
 	recognized.  This flag may be set with the "setsecure" command.
 
 	* Added a convert command to the Math plugin.  More conversions
-	are necessary, if anyone's interested in doing it.
+	are necessary, if anyone's interested in doing it.  The available
+	units are available via the "units" command.
 
 	* Fixed the pydoc command to allow access to standard Python
 	modules that are shared libraries rather than pure Python code.
