@@ -49,7 +49,8 @@ if sqlite is not None:
                                              'register foo bar',
                                              prefix=self.prefix))
             _ = self.irc.takeMsg()
-            ircdb.users.getUser(self.nick).addCapability(self.channel + '.op')
+            chanop = ircdb.makeChannelCapability(self.channel, 'op')
+            ircdb.users.getUser(self.nick).addCapability(chanop)
             
         def test(self):
             self.assertNotError('channelstats')
