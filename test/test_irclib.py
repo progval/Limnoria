@@ -199,7 +199,11 @@ class IrcStateTestCase(unittest.TestCase):
     """
 
 class IrcTestCase(unittest.TestCase):
-    irc = irclib.Irc('nick')
+    def setUp(self):
+        self.irc = irclib.Irc('nick')
+        _ = self.irc.takeMsg() # NICK
+        _ = self.irc.takeMsg() # USER
+
     def testPingResponse(self):
         self.irc.feedMsg(ircmsgs.ping('123'))
         self.assertEqual(ircmsgs.pong('123'), self.irc.takeMsg())
@@ -209,6 +213,14 @@ class IrcTestCase(unittest.TestCase):
                                         self.irc.nick))
         msg = self.irc.takeMsg()
         self.failUnless(msg.command == 'NICK' and msg.args[0] != self.irc.nick)
+
+    def testSendBeforeQueue(self):
+        self.irc.queueMsg(ircmsgs.IrcMsg('NOTICE #foo bar'))
+        self.irc.sendMsg(ircmsgs.IrcMsg('PRIVMSG #foo yeah!'))
+        msg = self.irc.takeMsg()
+        self.failUnless(msg.command == 'PRIVMSG')
+        msg = self.irc.takeMsg()
+        self.failUnless(msg.command == 'NOTICE')
 
     def testReset(self):
         for msg in msgs:
