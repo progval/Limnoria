@@ -227,6 +227,7 @@ class Http(callbacks.Privmsg):
         conds = self._condregex.search(html).group(1)
 
         if temp and conds and city and state:
+            conds = conds.replace('Tsra', 'Thunder Storms')
             s = 'The current temperature in %s, %s is %s.  ' \
                 'Conditions: %s.' % \
                 (city.strip(), state.strip(), temp, conds)
