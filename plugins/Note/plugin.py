@@ -151,8 +151,7 @@ class Note(callbacks.Plugin):
         ids = self.db.getUnnotifiedIds(to)
         if len(ids) <= self.registryValue('notify.autoSend'):
             for id in ids:
-                s = '#%s: %s' % (id, self._formatNote(self.db.get(id), to))
-                irc.reply(s, private=True)
+                irc.reply(self._formatNote(self.db.get(id), to), private=True)
                 self.db.setRead(id)
             return
         unnotifiedIds = ['#%s' % nid for nid in ids]
@@ -244,13 +243,13 @@ class Note(callbacks.Plugin):
         elapsed = utils.timeElapsed(time.time() - note.at)
         if note.to == to:
             author = plugins.getUserName(note.frm)
-            return format('%s (Sent by %s %s ago)',
-                          note.text, author, elapsed)
+            return format('#%i: %s (Sent by %s %s ago)',
+                          note.id, note.text, author, elapsed)
         else:
             assert note.frm == to, 'Odd, userid isn\'t frm either.'
             recipient = plugins.getUserName(note.to)
-            return format('%s (Sent to %s %s ago)',
-                          note.text, recipient, elapsed)
+            return format('#%i: %s (Sent to %s %s ago)',
+                          note.id, note.text, recipient, elapsed)
 
     def note(self, irc, msg, args, user, id):
         """<id>
@@ -362,6 +361,30 @@ class Note(callbacks.Plugin):
     list = wrap(list, ['user', getopts({'old': '', 'sent': '',
                                         'from': 'otherUser',
                                         'to': 'otherUser'})])
+
+    def next(self, irc, msg, args, user):
+        """takes no arguments
+
+        Retrieves your next unread note, if any.
+        """
+        notes = self.db.getUnreadIds(user.id)
+        if not notes:
+            irc.reply('You have no unread notes.')
+        else:
+            found = False
+            for id in notes:
+                try:
+                    note = self.db.get(id)
+                except KeyError:
+                    continue
+                found = True
+                break
+            if not found:
+                irc.reply('You have no unread notes.')
+            else:
+                irc.reply(self._formatNote(note, user.id), private=(not note.public))
+                self.db.setRead(note.id)
+    next = wrap(next, ['user'])
 
     def _condense(self, notes):
         temp = {}
