@@ -50,6 +50,7 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertError('config help supybot.plugins')
         self.assertError('config help supybot.alsdkfj')
         self.assertNotError('config help supybot.replies.success')
+        self.assertNotError('config help replies.success')
 
     def testHelpDoesNotAssertionError(self):
         self.assertNotRegexp('config help ' # Cont'd.

@@ -87,6 +87,11 @@ class Config(callbacks.Privmsg):
         except registry.InvalidRegistryValue, e:
             irc.error(str(e))
 
+    def _canonicalizeName(self, name):
+        if not name.startswith('supybot.'):
+            name = 'supybot.' + name
+        return name
+
     def list(self, irc, msg, args):
         """[--groups] <group>
 
@@ -100,6 +105,7 @@ class Config(callbacks.Privmsg):
             if name == '--groups':
                 groups = True
         name = privmsgs.getArgs(rest)
+        name = self._canonicalizeName(name)
         group = getWrapper(name)
         if groups:
             L = group.children.keys()
@@ -151,6 +157,7 @@ class Config(callbacks.Privmsg):
         Shows the current value of the configuration variable <name>.
         """
         name = privmsgs.getArgs(args)
+        name = self._canonicalizeName(name)
         wrapper = getWrapper(name)
         if wrapper.__class__ is registry.Group:
             irc.error(msg, 'That\'s not a value, it\'s a group.  Use the list '
@@ -165,6 +172,7 @@ class Config(callbacks.Privmsg):
         Sets the current value of the configuration variable <name> to <value>.
         """
         (name, value) = privmsgs.getArgs(args, required=2)
+        name = self._canonicalizeName(name)
         capability = getCapability(name)
         if ircdb.checkCapability(msg.prefix, capability):
             wrapper = getWrapper(name)
@@ -179,6 +187,7 @@ class Config(callbacks.Privmsg):
         Returns the description of the configuration variable <name>.
         """
         name = privmsgs.getArgs(args)
+        name = self._canonicalizeName(name)
         wrapper = getWrapper(name)
         if wrapper.help:
             irc.reply(wrapper.help)
@@ -191,6 +200,7 @@ class Config(callbacks.Privmsg):
         Returns the default value of the configuration variable <name>.
         """
         name = privmsgs.getArgs(args)
+        name = self._canonicalizeName(name)
         wrapper = getWrapper(name)
         irc.reply(wrapper.default)
 
