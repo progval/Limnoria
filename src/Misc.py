@@ -191,12 +191,46 @@ class Misc(callbacks.Privmsg):
         """
         irc.reply(msg, conf.version)
 
+    def revision(self, irc, msg, args):
+        """[<module>]
+
+        Gives the latest revision of <module>.  If <module> isn't given, gives
+        the revision of all supybot modules.
+        """
+        name = privmsgs.getArgs(args, required=0, optional=1)
+        if name:
+            try:
+                module = sys.modules[name]
+            except KeyError:
+                irc.error(msg, 'I couldn\'t find a module named %s' % name)
+                return
+            if hasattr(module, '__revision__'):
+                irc.reply(msg, module.__revision__)
+            else:
+                irc.error(msg, 'Module %s has no __revision__.' % name)
+        else:
+            def getVersion(s):
+                return s.split(None, 3)[2]
+            names = {}
+            dirs = map(os.path.abspath, conf.pluginDirs)
+            for (name, module) in sys.modules.iteritems():
+                if hasattr(module, '__revision__'):
+                    if 'supybot' in module.__file__:
+                        names[name] = getVersion(module.__revision__)
+                    else:
+                        for dir in dirs:
+                            if dir in module.__file__:
+                                names[name] = getVersion(module.__revision__)
+                                break
+            L = ['%s: %s' % (k, v) for (k, v) in names.items()]
+            irc.reply(msg, utils.commaAndify(L))
+                        
     def source(self, irc, msg, args):
         """takes no arguments
 
         Returns a URL saying where to get SupyBot.
         """
-        irc.reply(msg, 'My source is at http://www.sf.net/projects/supybot/')
+        irc.reply(msg, 'My source is at http://supybot.sf.net/')
 
     def logfilesize(self, irc, msg, args):
         """[<logfile>]

@@ -150,6 +150,10 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testApropos(self):
         self.assertNotError('apropos f')
         self.assertError('apropos asldkfjasdlkfja')
+
+    def testRevision(self):
+        self.assertNotError('revision Misc')
+        self.assertNotError('revision')
         
 
 
