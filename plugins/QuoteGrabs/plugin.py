@@ -70,7 +70,7 @@ class SqliteQuoteGrabsDB(object):
             import sqlite
         except ImportError:
             raise callbacks.Error, 'You need to have PySQLite installed to ' \
-                                   'use this plugin.  Download it at ' \
+                                   'use QuoteGrabs.  Download it at ' \
                                    '<http://pysqlite.sf.net/>'
         filename = plugins.makeChannelFilename(self.filename, channel)
         def p(s1, s2):
