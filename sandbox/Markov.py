@@ -52,75 +52,86 @@ import privmsgs
 import callbacks
 
 
-class Markov(callbacks.Privmsg):
+class MarkovDB(object):
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        self.dbCache = ircutils.IrcDict()
+        self.dbs = {}
 
     def die(self):
-        for db in self.dbCache:
+        for db in self.dbs.values():
             try:
                 db.close()
             except:
                 continue
 
-    # FIXME: database independency? (All of these private functions)
     def _getDb(self, channel):
         channel = channel.lower()
-        if not channel in self.dbCache:
+        if channel not in self.dbs:
             filename = '%s-Markov.db' % channel
             filename = os.path.join(conf.supybot.directories.data(), filename)
-            self.dbCache[channel] = anydbm.open(filename, 'c')
-        return self.dbCache[channel]
+            self.dbs[channel] = anydbm.open(filename, 'c')
+        return self.dbs[channel]
 
-    def _getNumberOfPairs(self, db):
-        # Minus one, because we have a key storing the first pairs.
-        return len(db) - 1
+    def __getitem__(self, (channel, item)):
+        return self._getDb(channel)[item]
 
-    def _getNumberOfFirstPairs(self, db):
+    def __setitem__(self, (channel, item), value):
+        self._getDb(channel)[item] = value
+
+    def getNumberOfPairs(self, channel):
         try:
-            pairs = db[''].split()
+            # Minus one, because we have a key storing the first pairs.
+            return len(self[channel.lower()]) - 1
         except KeyError:
             return 0
-        return len(pairs)
 
-    def _getFirstPair(self, db):
+    def getNumberOfFirstPairs(self, channel):
         try:
-            pairs = db[''].split()
+            return len(self[channel, ''].split())
+        except KeyError:
+            return 0
+
+    def getFirstPair(self, channel):
+        try:
+            pairs = self[channel, ''].split()
         except KeyError:
             raise ValueError('No starting pairs in the database.')
         pair = random.choice(pairs)
         return pair.split('\x00', 1)
 
-    def _getFollower(self, db, first, second):
+    def getFollower(self, channel, first, second):
         pair = '%s %s' % (first, second)
         try:
-            followers = db[pair].split()
+            followers = self[channel, pair].split()
         except KeyError:
             return '\x00'
         return random.choice(followers)
 
-    def _addFirstPair(self, db, first, second):
+    def addFirstPair(self, channel, first, second):
         pair = '%s\x00%s' % (first, second)
         try:
-            startingPairs = db['']
+            startingPairs = self[channel, '']
         except KeyError:
             startingPairs = ''
-        db[''] = '%s%s ' % (startingPairs, pair)
+        self[channel, ''] = '%s%s ' % (startingPairs, pair)
 
-    def _addPair(self, db, first, second, follower):
+    def addPair(self, channel, first, second, follower):
         pair = '%s %s' % (first, second)
         try:
-            followers = db[pair]
+            followers = self[channel, pair]
         except KeyError:
             followers = ''
-        db[pair] = '%s%s ' % (followers, follower)
+        self[channel, pair] = '%s%s ' % (followers, follower)
+
+
+class Markov(callbacks.Privmsg):
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        self.db = MarkovDB()
 
     def doPrivmsg(self, irc, msg):
         if not ircutils.isChannel(msg.args[0]):
             return
         channel = msg.args[0]
-        db = self._getDb(channel)
         if ircmsgs.isAction(msg):
             words = ircmsgs.unAction(msg).split()
             words.insert(0, '\x00nick')
@@ -130,11 +141,11 @@ class Markov(callbacks.Privmsg):
         isFirst = True
         for (first, second, follower) in window(words, 3):
             if isFirst:
-                self._addFirstPair(db, first, second)
+                self.db.addFirstPair(channel, first, second)
                 isFirst = False
-            self._addPair(db, first, second, follower)
+            self.db.addPair(channel, first, second, follower)
         if not isFirst: # i.e., if the loop iterated at all.
-            self._addPair(db, second, follower, '\x00')
+            self.db.addPair(channel, second, follower, '\x00')
 
     _maxMarkovLength = 80
     _minMarkovLength = 7
@@ -146,18 +157,17 @@ class Markov(callbacks.Privmsg):
         channel itself).
         """
         channel = privmsgs.getChannel(msg, args)
-        db = self._getDb(channel)
         try:
-            pair = self._getFirstPair(db)
+            pair = self.db.getFirstPair(channel)
         except ValueError:
             irc.error('I have no records for this channel.')
             return
         words = [pair[0], pair[1]]
         while len(words) < self._maxMarkovLength:
-            follower = self._getFollower(db, words[-2], words[-1])
+            follower = self.db.getFollower(channel, words[-2], words[-1])
             if follower == '\x00':
                 if len(words) < self._minMarkovLength:
-                    pair = self._getFirstPair(db)
+                    pair = self.db.getFirstPair(channel)
                     words = [pair[0], pair[1]]
                 else:
                     break
@@ -174,8 +184,7 @@ class Markov(callbacks.Privmsg):
         <channel>.
         """
         channel = privmsgs.getChannel(msg, args)
-        db = self._getDb(channel)
-        n = self._getNumberOfPairs(db)
+        n = self.db.getNumberOfPairs(channel)
         s = 'There are %s pairs in my Markov database for %s' % (n, channel)
         irc.reply(s)
 
@@ -186,8 +195,7 @@ class Markov(callbacks.Privmsg):
         <channel>.
         """
         channel = privmsgs.getChannel(msg, args)
-        db = self._getDb(channel)
-        n = self._getNumberOfFirstPairs(db)
+        n = self.db.getNumberOfFirstPairs(channel)
         s = 'There are %s first pairs in my Markov database for %s'%(n,channel)
         irc.reply(s)
 
