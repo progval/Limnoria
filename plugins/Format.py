@@ -86,11 +86,27 @@ class Format(callbacks.Privmsg):
         <background> (if given)
         """
         # XXX: We need to fix ircutils.mircColors (note the s) to an IrcDict.
-        raise NotImplementedError
         try:
             fg = args.pop(0)
+            if args[0] in ircutils.mircColors:
+                bg = args.pop(0)
+            else:
+                bg = None
+        except IndexError:
+            raise callbacks.ArgumentError
+        text = privmsgs.getArgs(args)
+        try:
+            fg = ircutils.mircColors[fg]
         except KeyError:
-            pass
+            irc.error('%r is not a valid foreground color.' % fg)
+            return
+        if bg is not None:
+            try:
+                bg = ircutils.mircColors[bg]
+            except KeyError:
+                irc.error('%r is not a valid background color.' % bg)
+                return
+        irc.reply(ircutils.mircColor(text, fg=fg, bg=bg))
 
 
 
