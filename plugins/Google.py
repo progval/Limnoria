@@ -297,7 +297,10 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         if result:
             irc.reply(result)
         else:
-            irc.reply('No spelling suggestion made.')
+            irc.reply('No spelling suggestion made.  This could mean that '
+                      'the word you gave is spelled right; it could also '
+                      'mean that its spelling was too whacked out even for '
+                      'Google to figure out.')
 
     def info(self, irc, msg, args):
         """takes no arguments
