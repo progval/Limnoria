@@ -62,28 +62,28 @@ def configure(onStart, afterConnect, advanced):
     if not utils.findBinaryInPath('zegrep'):
         if not advanced:
             print 'I can\'t find zegrep in your path.  This is necessary '
-            print 'to run the debfile command.  I\'ll disable this command '
+            print 'to run the file command.  I\'ll disable this command '
             print 'now.  When you get zegrep in your path, use the command '
-            print '"enable debfile" to re-enable the command.'
-            onStart.append('disable debfile')
+            print '"enable file" to re-enable the command.'
+            onStart.append('disable file')
         else:
             print 'I can\'t find zegrep in your path.  If you want to run the '
-            print 'debfile command with any sort of expediency, you\'ll need '
+            print 'file command with any sort of expediency, you\'ll need '
             print 'it.  You can use a python equivalent, but it\'s about two '
             print 'orders of magnitude slower.  THIS MEANS IT WILL TAKE AGES '
             print 'TO RUN THIS COMMAND.  Don\'t do this.'
             if yn('Do you want to use a Python equivalent of zegrep?') == 'y':
                 onStart.append('usepythonzegrep')
             else:
-                print 'I\'ll disable debfile now.'
-                onStart.append('disable debfile')
+                print 'I\'ll disable file now.'
+                onStart.append('disable file')
 
 example = utils.wrapLines("""
 <jemfinch> @list Debian
-<supybot> debfile, debian, debincoming, debversion, usepythonzegrep
+<supybot> file, debian, debincoming, debversion, usepythonzegrep
 <jemfinch> @debversion python
 <supybot> Total matches: 3, shown: 3.   python 2.1.3-3.2 (stable),  python 2.2.3-3 (testing),  python 2.3-4 (unstable)
-<jemfinch> @debfile --exact /usr/bin/python
+<jemfinch> @file --exact /usr/bin/python
 <supybot> python/python, devel/crystalspace-dev, python/python1.5, python/python2.1, python/python2.1-popy, python/python2.2, python/python2.2-popy, python/python2.3, python/python2.3-popy, devel/sloccount, graphics/pythoncad, mail/pms
 """)
 
@@ -114,7 +114,7 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
         self.usePythonZegrep = not self.usePythonZegrep
         irc.reply(msg, conf.replySuccess)
 
-    def debfile(self, irc, msg, args):
+    def file(self, irc, msg, args):
         """[--{regexp,exact}=<value>] [<glob>]
 
         Returns packages in Debian that includes files matching <glob>. If
@@ -182,7 +182,7 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
     _debtablere = re.compile(r'<table[^>]*>(.*?)</table>', _debreflags)
     _debnumpkgsre = re.compile(r'out of total of (\d+)', _debreflags)
     _debBranches = ('stable', 'testing', 'unstable', 'experimental')
-    def debversion(self, irc, msg, args):
+    def version(self, irc, msg, args):
         """[stable|testing|unstable|experimental] <package name>
 
         Returns the current version(s) of a Debian package in the given branch
@@ -227,7 +227,7 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
             irc.reply(msg, resp)
 
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
-    def debincoming(self, irc, msg, args):
+    def incoming(self, irc, msg, args):
         """[--{regexp,arch}=<value>] [<glob>]
         
         Checks debian incoming for a matching package name.  The arch
