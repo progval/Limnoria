@@ -212,7 +212,7 @@ class Note(callbacks.Privmsg):
             cursor.execute("""SELECT id FROM notes WHERE
                               from_id=%s AND to_id=%s AND added_at=%s""",
                            fromId, toId, now)
-            s = 'note %s sent to %s' % (cursor.fetchone()[0], name)
+            s = 'note #%s sent to %s' % (cursor.fetchone()[0], name)
             sent.append(s)
         db.commit()
         irc.reply(utils.commaAndify(sent).capitalize() + '.')
