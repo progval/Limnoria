@@ -600,7 +600,7 @@ utils.transactionalFile = transactionalFile
 
 class PluginDirectories(registry.CommaSeparatedListOfStrings):
     def __call__(self):
-        v = registry.CommaSeparatedListOfStrings.__call__(self)[:] # Copy!
+        v = registry.CommaSeparatedListOfStrings.__call__(self)
         if _srcDir not in v:
             v.append(_srcDir)
         if _pluginsDir not in v:
