@@ -54,7 +54,7 @@ import random
 import supybot.plugins
 import supybot.conf as conf
 import supybot.utils as utils
-import supybot.privmsgs as privmsgs
+from supybot.commands import *
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -170,19 +170,19 @@ class Insult(callbacks.Privmsg):
         return 'You are nothing but %s %s %s of %s %s.' % (
             an, adj1, amount, adj2, noun)
 
-    def insult(self, irc, msg, args):
+    def insult(self, irc, msg, args, victim):
         """[<target>]
 
         Reply optionally directed at a random string, person,
         object, etc.
         """
         tempinsult = self._buildInsult()
-        victim = privmsgs.getArgs(args, required=0, optional=1)
         if not victim:
             irc.reply(tempinsult, prefixName=False)
         else:
             irc.reply('%s - %s ' % (victim, tempinsult),
-                prefixName=False)
+                      prefixName=False)
+    insult = wrap(insult, [additional('text')])
 
 Class = Insult
 

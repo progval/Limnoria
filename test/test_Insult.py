@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2004, Grant Bowman
+# Copyright (c) 2002-2004, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,13 @@
 
 from testsupport import *
 
-class InsultTest(ChannelPluginTestCase, PluginDocumentation):
+class InsultTestCase(PluginTestCase):
     plugins = ('Insult',)
-
     def testInsult(self):
         self.assertNotError('insult')
-        self.assertNotError('insult Osama bin Laden')
+        self.assertNotError('insult foo')
+        self.assertNotError('insult foo bar baz')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
