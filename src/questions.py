@@ -49,7 +49,8 @@ def output(s, unformatted=True):
     print
 
 # doindent is used in yn().
-def expect(prompt, possibilities, recursed=False, doindent=True, default=None):
+def expect(prompt, possibilities, recursed=False,
+           doindent=True, default=None, acceptEmpty=False):
     """Prompt the user with prompt, allow them to choose from possibilities.
 
     If possibilities is empty, allow anything.
@@ -82,6 +83,8 @@ def expect(prompt, possibilities, recursed=False, doindent=True, default=None):
             return s
         elif not s and default is not None:
             return default
+        elif not s and acceptEmpty:
+            return s
         else:
             return expect(originalPrompt, possibilities, recursed=True,
                           doindent=doindent, default=default)

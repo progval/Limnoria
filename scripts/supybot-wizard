@@ -430,7 +430,8 @@ def main():
         # until we get example strings again, this will default to false
         #showUsage =yn('Would you like the option of seeing usage examples?')
         showUsage = False
-        name = expect('What plugin would you like to look at?', plugins)
+        name = expect('What plugin would you like to look at?',
+                      plugins, acceptEmpty=True)
         while name:
             module = loadPlugin(name)
             if module is not None:
