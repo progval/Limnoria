@@ -103,6 +103,12 @@ class DbmMarkovDB(object):
             self.dbs[channel] = anydbm.open(filename, 'c')
         return self.dbs[channel]
 
+    def _flush(db):
+        if hasattr(db, 'sync'):
+            db.sync()
+        if hasattr(db, 'flush'):
+            db.flush()
+
     def addPair(self, channel, first, second, follower,
                 isFirst=False, isLast=False):
         db = self._getDb(channel)
@@ -116,7 +122,7 @@ class DbmMarkovDB(object):
                 db['\n'] = ' '.join([db['\n'], second])
             else:
                 db['\n'] = second
-        db.sync()
+        self._flush(db)
 
     def getFirstPair(self, channel):
         db = self._getDb(channel)
