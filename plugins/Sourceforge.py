@@ -96,6 +96,8 @@ conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'trackerSnarfer',
 conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'defaultProject',
     registry.String('', """Sets the default project to use in the case that no
     explicit project is given."""))
+conf.registerGlobalValue(conf.supybot.plugins.Sourceforge, 'bold',
+    registry.Boolean(True, """Determines whether the results are bolded."""))
 
 class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     """
@@ -135,11 +137,18 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         if num:
             for item in ifilter(lambda s, n=num: s and n in s,
                                 self._infoRe.findall(text)):
-                yield (ircutils.bold(utils.htmlToText(item[2])),
-                        utils.htmlToText(item[1]))
+                if self.registryValue('bold'):
+                    yield (ircutils.bold(utils.htmlToText(item[2])),
+                            utils.htmlToText(item[1]))
+                else:
+                    yield (utils.htmlToText(item[2]),
+                            utils.htmlToText(item[1]))
         else:
             for item in ifilter(None, self._infoRe.findall(text)):
-                yield (item[0], utils.htmlToText(item[2]))
+                if self.registryValue('bold'):
+                    yield (ircutils.bold(item[0]), utils.htmlToText(item[2]))
+                else:
+                    yield (item[0], utils.htmlToText(item[2]))
 
     def _getTrackerURL(self, project, regex, status):
         """
@@ -183,6 +192,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         Parses the specific tracker page, returning useful information.
         """
         try:
+            bold = self.registryValue('bold')
             s = webutils.getUrl(url)
             resp = []
             head = ''
@@ -192,14 +202,20 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 linktype = m.group(1)
                 linktype = utils.depluralize(linktype)
                 (num, desc) = n.groups()
-                head = '%s #%s: %s' % (ircutils.bold(linktype), num, desc)
+                if bold:
+                    head = '%s #%s: %s' % (ircutils.bold(linktype), num, desc)
+                else:
+                    head = '%s #%s: %s' % (linktype, num, desc)
                 resp.append(head)
             else:
                 return None
             for r in self._regexps:
                 m = r.search(s)
                 if m:
-                    resp.append('%s: %s' % self._bold(m.groups()))
+                    if bold:
+                        resp.append('%s: %s' % self._bold(m.groups()))
+                    else:
+                        resp.append('%s: %s' % m.groups())
             return '; '.join(resp)
         except webutils.WebError, e:
             raise TrackerError, str(e)
