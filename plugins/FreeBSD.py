@@ -38,7 +38,6 @@ from baseplugin import *
 import string
 import getopt
 import os.path
-import operator
 
 import sqlite
 
@@ -47,11 +46,12 @@ import utils
 import privmsgs
 import callbacks
 
-indexFile = '/usr/ports/INDEX'
+indexFile = 'INDEX'
 dbFile = os.path.join(conf.dataDir, 'FreeBSD.db')
 
 def getIndex():
     """Returns a file-like object that is the Ports index."""
+    # ftp://ftp.freebsd.org/pub/FreeBSD/ports/i386/packages-stable/INDEX
     return file(indexFile, 'r')
 
 def makeDb(dbfilename, indexfd, replace=False):
@@ -140,6 +140,7 @@ class FreeBSD(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.db = makeDb(dbFile, getIndex())
+        self.lastUpdated = time.time()
 
     _globtrans = string.maketrans('?*', '_%')
     def searchports(self, irc, msg, args):
@@ -199,7 +200,9 @@ class FreeBSD(callbacks.Privmsg):
             irc.reply(msg, 'No ports matched those constraints.')
             return
         names = [t[0] for t in cursor.fetchall()]
-        if reduce(operator.add, map((2).__add__, map(len, names))) > 450:
+        shrunkenNames = names[:]
+        ircutils.shrinkList(shrunkenNames)
+        if len(names) != len(shrunkenNames):
             irc.reply(msg, '%s ports matched those constraints.  ' \
                            'Please narrow your search.' % cursor.rowcount)
         else:
@@ -256,4 +259,5 @@ Class = FreeBSD
 
 if __name__ == '__main__':
     makeDb(dbFile, getIndex(), replace=True)
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
