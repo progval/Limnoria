@@ -153,7 +153,6 @@ class URLDB(object):
         out = file(filename, 'w')
         notAdded = 0
         urls = self.getUrlsAndNicks(lambda *args: True)
-        urls.reverse()
         seen = sets.Set()
         for (i, (url, nick)) in enumerate(urls):
             if url not in seen:
@@ -161,6 +160,7 @@ class URLDB(object):
             else:
                 urls[i] = None
                 notAdded += 1
+        urls.reverse()
         for urlNick in urls:
             if urlNick is not None:
                 out.write(self._formatRecord(*urlNick))
