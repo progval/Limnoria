@@ -152,9 +152,9 @@ class Relay(callbacks.Privmsg):
     start = privmsgs.checkCapability(start, 'owner')
 
     def connect(self, irc, msg, args):
-        """<network abbreviation> <domain:port> (port defaults to 6667)
+        """<network abbreviation> <host:port> (port defaults to 6667)
 
-        Connects to another network at <domain:port>.  The network
+        Connects to another network at <host:port>.  The network
         abbreviation <network abbreviation> is used when relaying messages from
         that network to other networks.
         """
