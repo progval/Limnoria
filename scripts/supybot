@@ -325,6 +325,7 @@ if __name__ == '__main__':
     conf.strictRfc = options.strictRfc
 
     irc = irclib.Irc(nick, user, ident, password)
+    log._ircHandler._irc = irc  # This is nasty
     callback = Owner.Class()
     irc.addCallback(callback)
     driver = drivers.newDriver(server, irc)

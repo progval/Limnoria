@@ -43,6 +43,7 @@ import logging
 import ansi
 import conf
 import utils
+import ircutils
 import registry
 
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
@@ -106,6 +107,28 @@ class BetterFileHandler(logging.FileHandler):
         self.flush()
 
 
+class IrcHandler(logging.Handler):
+    def __init__(self, irc=None):
+        logging.Handler.__init__(self)
+        self._irc = irc
+
+    def emit(self, record):
+        try:
+            if not self._irc.driver.connected:
+                return
+        except AttributeError:
+            return
+        if ircutils.isChannel(conf.supybot.log.channel()):
+            from ircmsgs import privmsg
+            try:
+                msg = self.format(record).split('\n')
+                msg = [line.strip() for line in msg]
+                msg = ' '.join(msg)
+                self._irc.queueMsg(privmsg(conf.supybot.log.channel(), msg))
+            except:
+                self.handleError(record)
+
+
 class ColorizedFormatter(Formatter):
     def formatException(self, (E, e, tb)):
         if conf.supybot.log.stdout.colorized():
@@ -129,6 +152,43 @@ class ColorizedFormatter(Formatter):
                             ansi.RESET])
         else:
             return Formatter.format(self, record, *args, **kwargs)
+
+
+class IrcFormatter(Formatter):
+    def formatException(self, ei):
+        import cStringIO
+        import traceback
+        sio = cStringIO.StringIO()
+        traceback.print_exception(ei[0], ei[1], None, None, sio)
+        s = sio.getvalue()
+        sio.close()
+        return s
+
+
+class ColorizedIrcFormatter(IrcFormatter):
+    def formatException(self, (E, e, tb)):
+        if conf.supybot.log.channel.colorized():
+            return ''.join(['\x02\x034',
+                            IrcFormatter.formatException(self, (E, e, tb)),
+                            '\x0F'])
+        else:
+            return IrcFormatter.formatException(self, (E, e, tb))
+
+    def format(self, record, *args, **kwargs):
+        if conf.supybot.log.channel.colorized():
+            color = ''
+            if record.levelno == logging.CRITICAL:
+                color = '\x02\x0304'
+            elif record.levelno == logging.ERROR:
+                color = '\x0304'
+            elif record.levelno == logging.WARNING:
+                color = '\x0307'
+            return ''.join([color,
+                            IrcFormatter.format(self, record, *args, **kwargs),
+                            '\x0F'])
+        else:
+            return IrcFormatter.format(self, record, *args, **kwargs)
+
 
 # These are public.
 formatter = Formatter('%(levelname)s %(asctime)s %(message)s')
@@ -217,11 +277,16 @@ class MetaFirewall(type):
 
 
 class LogLevel(registry.Value):
+    def __init__(self, target, default, help,
+                 private=False, showDefault=True, **kwargs):
+        registry.Value.__init__(self, default, help, private=private,
+                                showDefault=showDefault, **kwargs)
+        self.target = target
     def set(self, s):
         s = s.upper()
         try:
             self.value = getattr(logging, s)
-            _logger.setLevel(self.value) # _logger defined later.
+            self.target.setLevel(self.value) # _logger defined later.
         except AttributeError:
             s = 'Invalid log level: should be one of ' \
                 'DEBUG, INFO, WARNING, ERROR, or CRITICAL.'
@@ -233,13 +298,16 @@ conf.supybot.directories.register('log', registry.String('logs', """Determines
 what directory the bot will store its logfiles in."""))
 
 conf.supybot.register('log')
-conf.supybot.log.register('level', LogLevel(logging.INFO,
+conf.supybot.log.register('level', LogLevel(_logger, logging.INFO,
 """Determines what the minimum priority level logged will be.  Valid values are
 DEBUG, INFO, WARNING, ERROR, and CRITICAL, in order of increasing
 priority."""))
 conf.supybot.log.register('stdout',
     registry.Boolean(True, """Determines whether the bot will log to
     stdout."""))
+conf.supybot.log.register('channel',
+    registry.String('', """Determines which channel the bot should
+    log to or empty if none at all."""))
 
 class BooleanRequiredFalseOnWindows(registry.Boolean):
     def set(self, s):
@@ -250,6 +318,9 @@ class BooleanRequiredFalseOnWindows(registry.Boolean):
 conf.supybot.log.stdout.register('colorized',
 BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs to
 stdout (if enabled) will be colorized with ANSI color."""))
+conf.supybot.log.channel.register('colorized',
+BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs to
+irc (if enabled) will be colorized with mIRC colors."""))
 
 conf.supybot.log.register('timestampFormat',
 registry.String('[%d-%b-%Y %H:%M:%S]',
@@ -277,6 +348,20 @@ _stdoutHandler.setFormatter(_stdoutFormatter)
 _stdoutHandler.setLevel(-1)
 _logger.addHandler(_stdoutHandler)
 
+conf.supybot.log.stdout.register('level', LogLevel(_stdoutHandler,
+logging.DEBUG, """Determines what the minimum priority level logged will be to
+stdout. See supybot.log.level for possible values"""))
+
+_ircHandler = IrcHandler()
+_ircFormatter = ColorizedIrcFormatter(_formatString)
+_ircHandler.setFormatter(_ircFormatter)
+_ircHandler.setLevel(logging.WARNING)
+_logger.addHandler(_ircHandler)
+
+conf.supybot.log.channel.register('level', LogLevel(_ircHandler,
+logging.WARNING, """Determines what the minimum priority level logged will be
+to IRC. See supybot.log.level for possible values.
+(NEVER set this to DEBUG!)"""))
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
