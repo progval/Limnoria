@@ -1,0 +1,67 @@
+These are the developers of Supybot, in approximate order of ____.
+
+Jeremy Fincher (jemfinch) is a Computer Science (and possibly
+philosophy) student at The Ohio State University.  He spends most of
+his free time with his girlfriend Meg, but also...well, there's not
+much also :)  He hopes to graduate with good enough grades to go to
+law school or seminary at some point in the future.  He initially
+wrote the majority of the Supybot framework and standard plugins,
+though he's been trying to slowly phase himself out of plugin-writing
+and more into framework-enhancement.  Rather than list the specific
+things he's done, you can just assume that if someone else isn't
+claiming it, it was probably done by him.
+
+Daniel DiPaolo (Strike/ddipaolo) is a lazy Texan punk with a job as an IT
+monkey who spends his free time coding, playing ultimate frisbee, and arguing
+pointless things on the internet.  As far as the bot goes, he's mainly a
+plugin developer but he has helped here and there with various under-the-hood
+things and is one of the few people (other than jemfinch) who understands the
+inner workings of Supybot.  His biggest plugin contribution (in terms of sheer
+lines of code) has been the MoobotFactoids plugin and all the workd involved
+in getting that plugin to work, but he has also helped with a lot of testing,
+debugging, and brainstorming.  He also wrote the Dunno, News, and Todo plugins
+and is responsible for a significant amount of code in the Poll, Debian,
+QuoteGrabs, Karma, and ChannelDB plugins.
+
+James Vega (jamessan) is an Electrical Engineering/Computer Science student at
+Northeastern University.  He wrote the Sourceforge and Ebay plugins as well as
+the first incarnation of the Babelfish commands and most of Amazon.  He has
+also performed a significant amount of maintenance and refactoring of plugins
+in general.  Some of the plugins that were affected the most are Debian,
+FunDB, Gameknot, Http, Note, and Quote.  All of the link snarfers, save
+Bugzilla's, were also written by jamessan.  His meddlings have prompted the
+implementation of Toggleables, which eventually evolved to Configurables and
+then to the current registry system.  As well as being the current webmaster,
+he also overhauled the tool which is used to generate the site's HTML
+documentation for Supybot and setup the weekly creation of CVS snapshots.
+
+Brett Kelly (inkedmn) is a hobbyist (soon to be professional :)) coder
+from southern California who enjoys collecting tattoos (on his body) and
+drinking coffee with his wife.  He initially wrote the Note plugin as well
+as several commands in the Http plugin.
+
+Vincent Foley-Bourgon is a recently-graduated student from Quebec who
+enjoys anything pointless, unprofitable, and generally useless.  Recently
+returning to Supybot development (after writing the original freshmeat
+command for the Http plugin) he wrote the entire Hangman infrastructure
+for the Words plugin.
+
+Daniel Berlin is a soon to be lawyer with a background in computer science
+and compilers.  He enjoys selling crack to young homeless orphans, and works
+on Supybot when he's not lawyering or hacking on gcc.
+
+Keith Jones (kmj) dislikes talking about himself in the third person. He 
+has an MS in Computer Science, and has decided to see how long he can go
+without using that in any kind of professional capacity. To that end he 
+is currently taking some math classes and applying to math Ph.D programs
+so some day he can be a professor at a college near a snowy mountain where
+he will ski every morning. So far, he hasn't done much for the project 
+except squeeze Doug Bell's GPL'd unit conversion code into a supybot plugin. 
+
+Stéphan Kochen (G-LiTe) is a lazy (soon to be) computer science student.
+He's usually just freelancing and submitting patches here and there when he
+bumps into a bug that bothers him, but Supybot is one of the first projects
+he semi-actively tries to work on. ;) His biggest contribution has been the
+refactoring of the supybot-wizard script to use the registry, though he also
+likes to track down those nasty obscure bugs which haunt many of our fine
+applications these days.
