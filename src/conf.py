@@ -225,7 +225,7 @@ Determines whether the bot will reply with an error message when it is
 addressed but not given a valid command.  If this value is False, the bot
 will remain silent."""))
 
-supybot.reply.register('detailedErrors', registry.Boolean(True, """Determines
+supybot.reply.register('detailedErrors', registry.Boolean(False, """Determines
 whether error messages that result from bugs in the bot will show a detailed
 error message (the uncaught exception) or a generic error message."""))
 
