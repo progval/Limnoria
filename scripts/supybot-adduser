@@ -69,7 +69,7 @@ def main():
         name = options.name
 
     if not options.password:
-        password = something('What is %s\'s password?' % name)
+        password = getpass('What is %s\'s password? ' % name)
     else:
         password = options.password
 

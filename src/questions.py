@@ -32,6 +32,7 @@
 """Handles interactive questions; useful for wizards and whatnot."""
 
 import textwrap
+from getpass import getpass as getPass
 
 def expect(prompt, possibilities, recursed=False, doindent=True):
     """Prompt the user with prompt, allow them to choose from possibilities.
@@ -96,6 +97,21 @@ def something(prompt):
 def yn(prompt):
     """Allow only 'y' or 'n' from the user."""
     return expect(prompt, ['y', 'n'], doindent=False)
+
+def getpass(prompt='Enter password: '):
+    password = ''
+    password2 = ' '
+    assert prompt
+    if not prompt[-1].isspace():
+        prompt += ' '
+    while True:
+        password = getPass(prompt)
+        password2 = getPass('Re-enter password: ')
+        if password != password2:
+            print 'Passwords don\'t match.'
+        else:
+            break
+    return password
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
