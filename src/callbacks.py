@@ -607,7 +607,7 @@ class IrcObjectProxy(RichReplyMethods):
                 else:
                     # This should've been caught earlier, that's why we
                     # assert instead of raising a ValueError or something.
-                    assert False, 'Non-disambiguated command.'
+                    assert False,'Non-disambiguated command: args=%r'%self.args
             else:
                 del self.args[0]
                 cb = cbs[0]
