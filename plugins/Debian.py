@@ -175,9 +175,9 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
             irc.reply(msg, utils.commaAndify(packages))
                 
     _debreflags = re.DOTALL | re.IGNORECASE
-    _debpkgre = re.compile(r'<a.*>(.*?)</a>', _debreflags)
+    _debpkgre = re.compile(r'<a[^>]+>(.*?)</a>', _debreflags)
     _debbrre = re.compile(r'<td align="center">(\S+)\s*</?td>', _debreflags)
-    _debtablere = re.compile(r'<table\s*[^>]*>(.*?)</table>', _debreflags)
+    _debtablere = re.compile(r'<table[^>]*>(.*?)</table>', _debreflags)
     _debnumpkgsre = re.compile(r'out of total of (\d+)', _debreflags)
     _debBranches = ('stable', 'testing', 'unstable', 'experimental')
     def debversion(self, irc, msg, args):
