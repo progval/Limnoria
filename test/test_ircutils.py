@@ -30,7 +30,7 @@
 ###
 
 
-from test import *
+from testsupport import *
 
 import copy
 import random

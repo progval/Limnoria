@@ -31,7 +31,7 @@
 
 import re
 
-from test import *
+from testsupport import *
 
 class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Sourceforge',)

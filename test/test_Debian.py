@@ -32,7 +32,7 @@
 import os
 import time
 
-from test import *
+from testsupport import *
 
 class DebianTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Debian',)

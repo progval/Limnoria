@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from test import *
+from testsupport import *
 
 class ServicesTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Services',)

@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from test import *
+from testsupport import *
 
 urls = """
 http://www.ureg.ohio-state.edu/courses/book3.asp

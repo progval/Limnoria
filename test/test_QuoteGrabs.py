@@ -31,7 +31,7 @@
 
 import sets
 
-from test import *
+from testsupport import *
 
 try:
     import sqlite

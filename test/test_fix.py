@@ -31,7 +31,7 @@
 
 ## from __future__ import generators
 
-from test import *
+from testsupport import *
 
 import itertools
 
