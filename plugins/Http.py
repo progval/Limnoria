@@ -62,7 +62,8 @@ class Http(callbacks.Privmsg):
         """
         url = 'http://www.tremorseven.com/aim/deepaim.php?job=view'
         thought = ' ' * 512
-        while time.time() - self.deepthoughtq[0][0] > 86400:
+        now = time.time()
+        while self.deepthoughtq and now - self.deepthoughtq[0][0] > 86400:
             self.deepthoughtq.dequeue()
         while len(thought) > 450 or thought in self.deepthoughtq:
             fd = urllib2.urlopen(url)
