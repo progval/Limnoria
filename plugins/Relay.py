@@ -119,10 +119,12 @@ def configure(onStart, afterConnect, advanced):
         afterConnect.append('relay color 2')
 
 
-class Relay(callbacks.Privmsg):
+class Relay(callbacks.Privmsg, plugins.Toggleable):
     priority = sys.maxint
+    toggles = plugins.ToggleDictionary({'color': True})
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        plugins.Toggleable.__init__(self)
         self.ircs = {}
         self._color = 0
         self._whois = {}
@@ -351,25 +353,6 @@ class Relay(callbacks.Privmsg):
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))
         self._whois[(otherIrc, nick)] = (irc, msg, {})
 
-    def color(self, irc, msg, args):
-        """<0,1,2>
-
-        0 turns coloring of nicks/angle brackets off entirely.  1 colors the
-        nicks, but not the angle brackets.  2 colors both.
-        """
-        if not self.started:
-            irc.error(msg, 'You must use the start command first.')
-            return
-        try:
-            color = int(privmsgs.getArgs(args))
-            if color != 0 and color != 1 and color != 2:
-                raise callbacks.ArgumentError
-            self._color = color
-        except ValueError:
-            raise callbacks.ArgumentError
-        irc.reply(msg, conf.replySuccess)
-    color = privmsgs.checkCapability(color, 'admin')
-
     def do311(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
@@ -451,18 +434,18 @@ class Relay(callbacks.Privmsg):
 
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
-        if self._color >= 1:
+        color = self.toggles.get('color', msg.args[0])
+        if color:
             nick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
-        if self._color >= 2:
             colors = ircutils.canonicalColor(nick, shift=4)
         if ircmsgs.isAction(msg):
-            if self._color >= 2:
+            if color:
                 t = ircutils.mircColor('*', *colors)
             else:
                 t = '*'
             s = '%s %s@%s %s' % (t, nick, network, ircmsgs.unAction(msg))
         else:
-            if self._color >= 2:
+            if color:
                 lt = ircutils.mircColor('<', *colors)
                 gt = ircutils.mircColor('>', *colors)
             else:
