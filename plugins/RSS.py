@@ -98,6 +98,7 @@ class RSS(callbacks.Privmsg):
         self.locks = {}
         self.lastRequest = {}
         self.cachedFeeds = {}
+        self.gettingLockLock = threading.Lock()
         for (name, url) in registry._cache.iteritems():
             name = name.lower()
             if name.startswith('supybot.plugins.rss.feeds.'):
@@ -127,7 +128,7 @@ class RSS(callbacks.Privmsg):
             # the feed, because this thread may run for a number of bytecodes
             # before it switches to a thread that'll get the lock in
             # _newHeadlines.
-            if self.locks[url].acquire(blocking=False):
+            if self.acquireLock(url, blocking=False):
                 try:
                     t = threading.Thread(target=self._newHeadlines,
                                          name='Fetching <%s>' % url,
@@ -137,7 +138,7 @@ class RSS(callbacks.Privmsg):
                     t.setDaemon(True)
                     t.start()
                 finally:
-                    self.locks[url].release()
+                    self.releaseLock(url)
                     time.sleep(0.1) # So other threads can run.
 
     def _newHeadlines(self, irc, channels, name, url):
@@ -148,7 +149,7 @@ class RSS(callbacks.Privmsg):
             # want to sent their news messages to the appropriate channels.
             # Note that we're allowed to acquire this lock twice within the
             # same thread because it's an RLock and not just a normal Lock.
-            self.locks[url].acquire()
+            self.acquireLock(url)
             try:
                 oldresults = self.cachedFeeds[url]
                 oldheadlines = self.getHeadlines(oldresults)
@@ -172,7 +173,7 @@ class RSS(callbacks.Privmsg):
                     irc.replies(newheadlines, prefixer=pre, joiner=sep,
                                 to=channel, prefixName=False, private=True)
         finally:
-            self.locks[url].release()
+            self.releaseLock(url)
                 
     def willGetNewFeed(self, url):
         now = time.time()
@@ -182,12 +183,27 @@ class RSS(callbacks.Privmsg):
         else:
             return False
 
+    def acquireLock(self, url, blocking=True):
+        try:
+            self.gettingLockLock.acquire()
+            try:
+                lock = self.locks[url]
+            except KeyError:
+                lock = threading.RLock()
+                self.locks[url] = lock
+            return lock.acquire(blocking=blocking)
+        finally:
+            self.gettingLockLock.release()
+
+    def releaseLock(self, url):
+        self.locks[url].release()
+            
     def getFeed(self, url):
         try:
             # This is the most obvious place to acquire the lock, because a
             # malicious user could conceivably flood the bot with rss commands
             # and DoS the website in question.
-            self.locks[url].acquire()
+            self.acquireLock(url)
             if self.willGetNewFeed(url):
                 try:
                     self.log.info('Downloading new feed from <%s>', url)
@@ -203,7 +219,7 @@ class RSS(callbacks.Privmsg):
                 self.lastRequest[url] = 0
                 return {'items': [{'title': 'Unable to download feed.'}]}
         finally:
-            self.locks[url].release()
+            self.releaseLock(url)
 
     def getHeadlines(self, feed):
         return [utils.htmlToText(d['title'].strip()) for d in feed['items']]
@@ -216,7 +232,8 @@ class RSS(callbacks.Privmsg):
         to 1800 (30 minutes) since that's what most websites prefer.
         """ % (name, url)
         name = callbacks.canonicalName(name)
-        self.locks[url] = threading.RLock()
+        if url not in self.locks:
+            self.locks[url] = threading.RLock()
         if hasattr(self, name):
             s = 'I already have a command in this plugin named %s' % name
             raise callbacks.Error, s
