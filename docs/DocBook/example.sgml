@@ -25,6 +25,13 @@
 				<date>14 Sep 2003</date>
 				<revremark>Converted to DocBook</revremark>
 			</revision>
+			<revision>
+				<revnumber>0.3</revnumber>
+				<date>24 Nov 2003</date>
+				<revremark>
+					Updated to match EXAMPLE included with 0.75.0
+				</revremark>
+			</revision>
 		</revhistory>
 	</articleinfo>
 	<sect1>
@@ -141,10 +148,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Random')
 
-example = utils.wrapLines("""
-Add an example IRC session using this module here.
-""")
-
 class Random(callbacks.Privmsg):
     pass
 
@@ -153,6 +156,7 @@ Class = Random
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 			</programlisting>
+		</sect2>
 		<sect2>
 			<title>Customizing the boilerplate code</title>
 			<para>
@@ -173,10 +177,9 @@ Class = Random
 				numbers."</literal>
 			</para>
 			<para>
-				Then there are the imports.  The <varname>utils</varname>
-				module is used (in example, which we'll see later).  The
-				<varname>callbacks</varname> module is used (the class you're
-				given subclasses <varname>callbacks.Privmsg</varname>) but the
+				Then there are the imports.  The <varname>callbacks</varname>
+				module is used (the class you're given subclasses
+				<varname>callbacks.Privmsg</varname>) but the
 				<varname>privmsgs</varname> module isn't used.  That's
 				alright; we can almost guarantee you'll use it, so we go ahead
 				and add the import to the template.
@@ -193,16 +196,7 @@ Class = Random
 				might need to ask questions and add commands based on the
 				answers.
 			</para>
-			<para> 
-				Then there's an example string.  It's simply an example of
-				usage of the plugin in practice.
-				<application>scripts/setup.py</application> offers to show the
-				user an example of the module usage; this is what it shows
-				them.  You'll note that it's wrapped for you in
-				<varname>utils.wrapLines</varname> so you don't have to bother
-				with it; just paste a session directly out of your IRC client
-				and you'll be set.  
-			</para>
+		</sect2>
 		<sect2>
 			<title>Digging in: customizing the plugin class</title>
 			<para>
@@ -379,7 +373,7 @@ def __init__(self):
 				framework handles that entirely transparently to you.  Do make
 				sure, however, that you give <function>irc.reply</function> a
 				string.  It doesn't take anything else (sometimes even unicode
-				fails!).  That's why we have "str(self.rnd.random())" instead
+				fails!).  That's why we have "str(self.rng.random())" instead
 				of simply "self.rng.random()" -- we had to give
 				<function>irc.reply</function> a string.
 			</para>
@@ -485,7 +479,7 @@ def __init__(self):
         Returns a number between &lt;start&gt; and &lt;end&gt;, inclusive (i.e., the number
         can be either of the endpoints.
         """
-        (start, end) = privmsgs.getArgs(args, needed=2)
+        (start, end) = privmsgs.getArgs(args, required=2)
         try:
             end = int(end)
             start = int(start)
@@ -499,10 +493,11 @@ def __init__(self):
 				Pretty simple.  This is becoming old hat by now.  The only new
 				thing here is the call to
 				<function>privmsgs.getArgs</function>.  We have to make sure,
-				since we want two values, to pass a keyword parameter "needed"
-				into <function>privmsgs.getArgs</function>.  Of course,
-				<function>privmsgs.getArgs</function> handles all the checking
-				for missing arguments and whatnot so we don't have to.
+				since we want two values, to pass a keyword parameter
+				"required" into <function>privmsgs.getArgs</function>.  Of
+				course, <function>privmsgs.getArgs</function> handles all the
+				checking for missing arguments and whatnot so we don't have
+				to.
 			</para>
 			<para>
 				The <varname>Random</varname> object we're using offers us a
@@ -583,7 +578,7 @@ def __init__(self):
         of sides is 6.
         """
         try:
-            n = privmsgs.getArgs(args, needed=0, optional=1)
+            n = privmsgs.getArgs(args, required=0, optional=1)
             if not n:
                 n = 6
             n = int(n)
@@ -603,7 +598,7 @@ def __init__(self):
 				six-sided die :))  <function>privmsgs.getArgs</function>
 				supports that; we'll just tell it that we don't
 				<emphasis>need</emphasis> any arguments (via
-				<varname>needed=0</varname>) and that we <emphasis>might
+				<varname>required=0</varname>) and that we <emphasis>might
 				like</emphasis> one argument (<varname>optional=1</varname>).
 				If the user provides an argument, we'll get it -- if they
 				don't, we'll just get an empty string.  Hence the "if not n: n
@@ -702,42 +697,11 @@ def configure(onStart, afterConnect, advanced):
 				<application>scripts/setup.py</application> creates for the bot.
 			</para>
 			<para>
-				Now the only thing missing from our plugin is an example.
-				Here, I'll make one really quickly:
-			</para>
-			<screen>
-    &lt;jemfinch&gt; $list Random
-    &lt;angryman&gt; diceroll, random, range, sample, seed
-    &lt;jemfinch&gt; $random
-    &lt;angryman&gt; 0.478084042957
-    &lt;jemfinch&gt; $random
-    &lt;angryman&gt; 0.960634332773
-    &lt;jemfinch&gt; $seed 50
-    &lt;angryman&gt; The operation succeeded.
-    &lt;jemfinch&gt; $random
-    &lt;angryman&gt; 0.497536568759
-    &lt;jemfinch&gt; $seed 50
-    &lt;angryman&gt; The operation succeeded.
-    &lt;jemfinch&gt; $random
-    &lt;angryman&gt; 0.497536568759
-    &lt;jemfinch&gt; $range 1 10
-    &lt;angryman&gt; 3
-    &lt;jemfinch&gt; $range 1 10000000000000
-    &lt;angryman&gt; 6374111614437
-    &lt;jemfinch&gt; $diceroll
-    * angryman rolls a 2
-    &lt;jemfinch&gt; $diceroll
-    * angryman rolls a 3
-    &lt;jemfinch&gt; $diceroll 100
-    * angryman rolls a 97
-			</screen>
-			<para>
-				So we'll throw this into our example string (where the
-				template says to put it) and then we're done!  We've written
-				our own plugin from scratch (well, from the boilerplate that
-				we got from <application>scripts/newplugin.py</application>
-				:)) and survived!  Now go write more plugins for supybot, and
-				send them to me so I can use them too :) 
+				We've written our own plugin from scratch (well, from the
+				boilerplate that we got from
+				<application>scripts/newplugin.py</application> :)) and
+				survived!  Now go write more plugins for supybot, and send
+				them to me so I can use them too :)
 			</para>
 		</sect2>
 	</sect1>

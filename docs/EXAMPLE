@@ -342,7 +342,7 @@ function:
 
 Pretty simple.  This is becoming old hat by now.  The only new thing
 here is the call to privmsgs.getArgs.  We have to make sure, since we
-want two values, to pass a keyword parameter "needed" into
+want two values, to pass a keyword parameter "required" into
 privmsgs.getArgs.  Of course, privmsgs.getArgs handles all the
 checking for missing arguments and whatnot so we don't have to.
 
