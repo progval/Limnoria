@@ -85,7 +85,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         setattr(self.__class__, 'exec', self.__class__._exec)
-        self.defaultPlugins = {'join', 'admin'}
+        self.defaultPlugins = {'join': 'admin',
+                               'load': 'owner',
+                               'reload': 'owner',
+                               'unload': 'owner'}
 
     def _disambiguate(self, tokens):
         if tokens:
@@ -100,7 +103,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         callbacks.Privmsg.handled = False
         s = callbacks.addressed(irc.nick, msg)
         if s:
-            tokens = callbacks.tokenize(s)
+            try:
+                tokens = callbacks.tokenize(s)
+            except SyntaxError, e:
+                irc.queueMsg(callbacks.error(msg, str(e)))
+                return
             self._disambiguate(tokens)
             ambiguousCommands = {}
             commands = callbacks.getCommands(tokens)

@@ -296,7 +296,10 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             self.assertEqual(conf.prefixChars, '$')
         finally:
             conf.commandsOnStart = original
-            
+
+    def testSyntaxErrorNotEscaping(self):
+        self.assertError('load [foo')
+        self.assertError('load foo]')
 
 
 class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
