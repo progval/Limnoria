@@ -115,8 +115,8 @@ def _open():
     """Implementation details; needed because Windows sucks."""
     global _errorfd, _debugfd, _tracefd
     _errorfd = file(_errorfd.name, 'a')
-    _debugfd = file(_errorfd.name, 'a')
-    _tracefd = file(_errorfd.name, 'w')
+    _debugfd = file(_debugfd.name, 'a')
+    _tracefd = file(_tracefd.name, 'w')
     
 def reset():
     """Resets the various file descriptors kept open by this module."""
