@@ -63,6 +63,7 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
         asynchat.async_chat.__init__(self)
         drivers.ServersMixin.__init__(self, irc, servers=servers)
         self.irc = irc
+        self.irc.driver = self # Necessary because of the way we reconnect.
         self.buffer = ''
         self.set_terminator('\n')
         try:
@@ -81,8 +82,9 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
             drivers.log.reconnect(self.irc.network, when)
         def makeNewDriver():
             self.irc.reset()
+            self.scheduled = None
             driver = self.__class__(self.irc, servers=self.servers)
-        schedule.addEvent(makeNewDriver, when)
+        self.scheduled = schedule.addEvent(makeNewDriver, when)
 
     def writable(self):
         while self.connected:
@@ -119,6 +121,8 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
         pass
 
     def die(self):
+        if self.scheduled:
+            schedule.removeEvent(self.scheduled)
         drivers.log.die(self.irc)
         self.reconnect()
 
