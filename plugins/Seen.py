@@ -65,6 +65,8 @@ class IrcStringAndIntDict(utils.InsensitivePreservingDict):
         else:
             return ircutils.toLower(x)
 
+ANY = '<any>'
+
 class SeenDB(plugins.ChannelUserDB):
     IdDict = IrcStringAndIntDict
     def serialize(self, v):
@@ -127,25 +129,68 @@ class Seen(callbacks.Privmsg):
             said = ircmsgs.prettyPrint(msg)
             channel = plugins.getChannel(msg.args[0])
             self.db.update(channel, msg.nick, said)
+            self.db.update(ANY + channel, msg.nick, said)
+            try:
+                id = ircdb.users.getUserId(msg.prefix)
+                self.db.update(channel, id, said)
+                self.db.update(ANY + channel, id, said)
+            except KeyError:
+                pass # Not in the database.
+
+    # non-PRIVMSG which have a channel association
+    def doNonPrivmsgWithChannel(self, irc, msg):
+        if irc.isChannel(msg.args[0]):
+            said = ircmsgs.prettyPrint(msg)
+            channel = ANY + plugins.getChannel(msg.args[0])
+            self.db.update(channel, msg.nick, said)
             try:
                 id = ircdb.users.getUserId(msg.prefix)
                 self.db.update(channel, id, said)
             except KeyError:
                 pass # Not in the database.
+    doJoin = doNonPrivmsgWithChannel
+    doKick = doNonPrivmsgWithChannel
+    doMode = doNonPrivmsgWithChannel
+    doPart = doNonPrivmsgWithChannel
+    doTopic = doNonPrivmsgWithChannel
+    doNotice = doNonPrivmsgWithChannel
 
-    def seen(self, irc, msg, args, channel, name):
-        """[<channel>] <nick>
+    # non-PRIVMSG which don't have a channel association
+    def doNonPrivmsg(self, irc, msg):
+        said = ircmsgs.prettyPrint(msg)
+        self.db.update(ANY, msg.nick, said)
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+            self.db.update(ANY, id, said)
+        except KeyError:
+            pass # Not in the database.
+    doNick = doNonPrivmsg
+    doQuit = doNonPrivmsg
+
+    def seen(self, irc, msg, args, channel, optlist, name):
+        """[<channel>] [--any] <nick>
 
         Returns the last time <nick> was seen and what <nick> was last seen
-        saying. <channel> is only necessary if the message isn't sent on the
-        channel itself.
+        saying. * can be used as a wildcard in the nick.  If --any is
+        specified, also search for non-PRIVMSG activity.  <channel> is only
+        necessary if the message isn't sent on the channel itself.
         """
+        any = False
+        for (opt, _) in optlist:
+            if opt == 'any':
+                any = True
         try:
             results = []
             if '*' in name:
-                results = self.db.seenWildcard(channel, name)
+                if not any:
+                    results = self.db.seenWildcard(channel, name)
+                else:
+                    results = self.db.seenWildcard(ANY + channel, name)
             else:
-                results = [[name, self.db.seen(channel, name)]]
+                if not any:
+                    results = [[name, self.db.seen(channel, name)]]
+                else:
+                    results = [[name, self.db.seen(ANY + channel, name)]]
             if len(results) == 1:
                 (nick, info) = results[0]
                 (when, said) = info
@@ -164,7 +209,9 @@ class Seen(callbacks.Privmsg):
                 irc.reply('I haven\'t seen anyone matching %s.' % name)
         except KeyError:
             irc.reply('I have not seen %s.' % name)
-    seen = wrap(seen, ['channeldb', 'nick'])
+    # Have to use 'something' instead of 'nick' because * isn't necessarily a
+    # valid character in a nick
+    seen = wrap(seen, ['channeldb', getopts({'any': ''}), 'something'])
 
     def last(self, irc, msg, args, channel):
         """[<channel>]
@@ -180,24 +227,31 @@ class Seen(callbacks.Privmsg):
             irc.reply('I have never seen anyone.')
     last = wrap(last, ['channeldb'])
 
-
-    def user(self, irc, msg, args, channel, user):
-        """[<channel>] <name>
+    def user(self, irc, msg, args, channel, optlist, user):
+        """[<channel>] [--any] <name>
 
         Returns the last time <name> was seen and what <name> was last seen
         saying.  This looks up <name> in the user seen database, which means
-        that it could be any nick recognized as user <name> that was seen.
+        that it could be any nick recognized as user <name> that was seen.  If
+        --any is specified, also search for non-PRIVMSG activity by <name>.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        any = False
+        for (opt, arg) in optlist:
+            if opt == 'any':
+                any = True
         try:
-            (when, said) = self.db.seen(channel, user.id)
+            if not any:
+                (when, said) = self.db.seen(channel, user.id)
+            else:
+                (when, said) = self.db.seen(ANY + channel, user.id)
             irc.reply('%s was last seen in %s %s ago saying: %s' %
                       (user.name, channel, utils.timeElapsed(time.time()-when),
                        said))
         except KeyError:
             irc.reply('I have not seen %s.' % user.name)
-    user = wrap(user, ['channeldb', 'otherUser'])
+    user = wrap(user, ['channeldb', getopts({'any': ''}), 'otherUser'])
 
 
 Class = Seen
