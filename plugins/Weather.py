@@ -114,7 +114,7 @@ class Weather(callbacks.Privmsg):
             channel = msg.args[0]
         if not location:
             location = self.userValue('lastLocation', msg.prefix)
-        if location is None:
+        if not location:
             raise callbacks.ArgumentError
         self.setUserValue('lastLocation', msg.prefix,
                           location, ignoreNoUser=True)
