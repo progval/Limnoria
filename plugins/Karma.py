@@ -215,7 +215,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
         cursor.execute("""UPDATE karma
                           SET added=added+1
                           WHERE normalized=%s""", normalized)
-        if self.registryValue('karmaResponse', msg.args[0])
+        if self.registryValue('karmaResponse', msg.args[0]):
             irc.replySuccess()
 
     def decreaseKarma(self, irc, msg, match):

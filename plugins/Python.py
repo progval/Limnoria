@@ -52,6 +52,7 @@ sys.stdout = StringIO()
 import this
 sys.stdout = sys.__stdout__
 
+import conf
 import utils
 import webutils
 import ircutils
