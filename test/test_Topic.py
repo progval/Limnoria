@@ -154,8 +154,8 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
             conf.supybot.plugins.Topic.format.setValue(original)
 
     def testSwap(self):
+        original = conf.supybot.plugins.Topic.format()
         try:
-            original = conf.supybot.plugins.Topic.format()
             conf.supybot.plugins.Topic.format.setValue('$topic')
             self.assertResponse('topic set ""', '')
             self.assertResponse('topic add foo', 'foo')
@@ -179,6 +179,18 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
             self.assertResponse('topic default', 'foo bar baz')
         finally:
             conf.supybot.plugins.Topic.default.setValue(original)
+
+    def testTopic(self):
+        original = conf.supybot.plugins.Topic.format()
+        try:
+            conf.supybot.plugins.Topic.format.setValue('$topic')
+            self.assertError('topic addd') # Error to send too many args.
+            self.assertResponse('topic add foo', 'foo')
+            self.assertResponse('topic add bar', 'foo || bar')
+            self.assertResponse('topic', 'foo || bar')
+        finally:
+            conf.supybot.plugins.Topic.format.setValue(original)
+            
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -168,6 +168,21 @@ class Topic(callbacks.Privmsg):
         except (ValueError, IndexError):
             irc.error('That\'s not a valid topic number.', Raise=True)
 
+    def topic(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Returns the topic for <channel>.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
+        """
+        if args:
+            raise callbacks.ArgumentError
+        try:
+            topic = irc.state.channels[channel].topic
+            irc.reply(topic)
+        except KeyError:
+            irc.error('I\'m not current in %s.' % channel)
+    topic = privmsgs.channel(topic)
+            
     def add(self, irc, msg, args, channel, insert=False):
         """[<channel>] <topic>
 
