@@ -117,6 +117,9 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
         m = self.getMsg('nick foobar')
         self.assertEqual(m.command, 'NICK')
         self.assertEqual(m.args[0], 'foobar')
+
+    def testAddCapabilityOwner(self):
+        self.assertError('admin addcapability %s owner' % self.nick)
         
 
 

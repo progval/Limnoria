@@ -139,8 +139,13 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         Gives the user specified by <name> (or the user to whom <hostmask>
         currently maps) the specified capability <capability>
         """
-        (name, capability) = privmsgs.getArgs(args, 2)
-        # This next check to make sure 'admin's can't hand out 'owner'.
+        (name, capability) = privmsgs.getArgs(args, required=2)
+        if capability == 'owner':
+            irc.error(msg, 'The "owner" capability can\'t be added in the bot.'
+                           '  Use the supybot-adduser program (or edit the '
+                           'users.conf file yourself) to add an owner '
+                           'capability.')
+            return
         if ircdb.checkCapability(msg.prefix, capability) or \
            '!' in capability:
             try:
