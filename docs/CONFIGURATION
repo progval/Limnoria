@@ -184,5 +184,15 @@ but before you reload your changes, you could lose the changes you
 made.  To prevent this, set the supybot.flush value to Off, and no
 automatic flushing will occur.
 
+Many configuration variables can be specific to individual channels.
+The Config plugin provides an easy way to configure something for a
+specific channel; for instance, in order to set the prefixChar for a
+specific channel, do this in that channel:
+
+config channel supybot.prefixChars !
+
+That'll set the prefixChar in the channel that message is sent in to
+!.  Voila, channel-specific values!
+
 Anyway, that's about it for configuration.  Have fun, and enjoy your
 configurable bot!
