@@ -115,6 +115,7 @@ class Status(callbacks.Privmsg):
         self.uptimes.add()
 
     def inFilter(self, irc, msg):
+        self.uptimes.update()
         self.recvdMsgs += 1
         self.recvdBytes += len(msg)
         return msg
