@@ -327,9 +327,9 @@ class Irc(object):
         self.callbacks.append(callback)
 
     def removeCallback(self, name):
-        ret = filter(name.__eq__, self.callbacks)
-        self.callbacks[:] = [cb for cb in self.callbacks if name != cb.name()]
-        return ret
+        (bad, good) = partition(lambda cb: cb.name() == name, self.callbacks)
+        self.callbacks[:] = good
+        return bad
 
     def queueMsg(self, msg):
         self.queue.enqueue(msg)
@@ -348,7 +348,7 @@ class Irc(object):
             else:
                 self.lastTake = now
                 msg = self.queue.dequeue()
-        elif len(self.outstandingPongs) > 2:
+        elif len(self.outstandingPongs) >= 2:
             # Our pings hasn't be responded to.
             debug.msg('Reconnecting, 3 pings not replied to.', 'normal')
             if hasattr(self.driver, 'scheduleReconnect'):
