@@ -232,18 +232,31 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.error('That\'s not a valid nick.')
 
     def part(self, irc, msg, args):
-        """<channel> [<channel> ...]
+        """<channel> [<channel> ...] [<reason>]
 
         Tells the bot to part the whitespace-separated list of channels
-        you give it.
+        you give it.  If <reason> is specified, use it as the part message.
         """
         if not args:
             args = [msg.args[0]]
-        for arg in args:
-            if arg not in irc.state.channels:
-                irc.error('I\'m not currently in %s' % arg)
+        channels = []
+        reason = ''
+        for (i, arg) in enumerate(args):
+            if ircutils.isChannel(arg):
+                channels.append(args[i])
+                args[i] = None
+            else:
+                break
+        args = filter(None, args)
+        if not channels:
+            channels.append(msg.args[0])
+        if args:
+            reason = ' '.join(args)
+        for chan in channels:
+            if chan not in irc.state.channels:
+                irc.error('I\'m not currently in %s' % chan)
                 return
-        for arg in args:
+        for chan in channels:
             L = []
             for channelWithPass in conf.supybot.channels():
                 channel = channelWithPass.split(',')[0]
@@ -252,10 +265,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             # This is necessary so the set doesn't change size while iterating.
             for channel in L:
                 conf.supybot.channels().remove(channel)
-        irc.queueMsg(ircmsgs.parts(args, msg.nick))
+        irc.queueMsg(ircmsgs.parts(channels, reason or msg.nick))
         inAtLeastOneChannel = False
-        for channel in args:
-            if msg.nick in irc.state.channels[arg].users:
+        for chan in channels:
+            if msg.nick in irc.state.channels[chan].users:
                 inAtLeastOneChannel = True
         if not inAtLeastOneChannel:
             irc.replySuccess()
