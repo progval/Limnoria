@@ -50,10 +50,11 @@ import debug
 # version: The version of the bot.
 version = '0.70.0'
 
+startedAt = 0.0
+
 ###
 # End Global Values.
 ###
-
 
 try:
     ignore(ircs)
@@ -208,5 +209,6 @@ def superReload(module):
 #################################################
 #################################################
 startup = False
+testing = False
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
