@@ -5,6 +5,11 @@
 	* Fixed numerous bugs, high and low, big and small and
 	in-between.  Definitely worthy of a release.
 	
+	* Added a --capability option to User.list, to allow people to
+	list all the users possessing a certain capability.  The main
+	reason this was added is so jemfinch can tell who owns which
+	Supybots on #supybot :)
+	
 	* Added Utilities.success, mostly for making aliases such that
 	they can respond with success if no errors were encountered in
 	any nested commands.

@@ -56,27 +56,41 @@ class User(callbacks.Privmsg):
             raise callbacks.Error, conf.supybot.replies.requiresPrivacy()
 
     def list(self, irc, msg, args):
-        """[<glob>]
+        """[--capability <capability>] [<glob>]
 
         Returns the valid registered usernames matching <glob>.  If <glob> is
         not given, returns all registered usernames.
         """
-        glob = privmsgs.getArgs(args, required=0, optional=1)
+        (optlist, rest) = getopt.getopt(args, '', ['capability='])
+        predicates = []
+        for (option, arg) in optlist:
+            if option == '--capability':
+                def p(u, cap=arg):
+                    try:
+                        return u.checkCapability(cap)
+                    except KeyError:
+                        return False
+                predicates.append(p)
+        glob = privmsgs.getArgs(rest, required=0, optional=1)
         if glob:
             if '*' not in glob and '?' not in glob:
                 glob = '*%s*' % glob
             r = re.compile(fnmatch.translate(glob), re.I)
             def p(s):
                 return r.match(s) is not None
-        else:
-            def p(s):
-                return True
-        users = [u.name for u in ircdb.users.itervalues() if p(u.name)]
+            predicates.append(p)
+        users = []
+        for u in ircdb.users.itervalues():
+            for predicate in predicates:
+                if not predicate(u):
+                    break
+            else:
+                users.append(u.name)
         if users:
             utils.sortBy(str.lower, users)
             irc.reply(utils.commaAndify(users))
         else:
-            if glob:
+            if predicates:
                 irc.reply('There are no matching registered users.')
             else:
                 irc.reply('There are no registered users.')
