@@ -138,6 +138,13 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             irc.sendMsg(ircmsgs.privmsg(nickserv, ghost))
             self.sentGhost = True
 
+    def __call__(self, irc, msg):
+        callbacks.Privmsg.__call__(self, irc, msg)
+        nick = self.registryValue('nick')
+        if nick and irc.nick != nick:
+            if irc.afterConnect and not self.sentGhost:
+                self._doGhost(irc)
+            
     def do001(self, irc, msg):
         # New connection, make sure sentGhost is False.
         self.sentGhost = False
@@ -162,10 +169,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     def do433(self, irc, msg):
         if irc.afterConnect:
             nickserv = self.registryValue('NickServ')
-            if nickserv:
-                self._doGhost(irc)
-            else:
-                self.log.warning('do433 called without NickServ being set.')
+            self._doGhost(irc)
 
     def do515(self, irc, msg):
         # Can't join this channel, it's +r (we must be identified).
@@ -176,10 +180,10 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         if msg.args[0] == nick:
             self._doIdentify(irc)
 
-    def _ghosted(self, irc, s):
-        r = re.compile(r'(Ghost|%s).*killed' %
-                       self.registryValue('nick'))
-        return bool(r.search(s))
+    def _ghosted(self, s):
+        nick = self.registryValue('nick')
+        lowered = s.lower()
+        return bool('killed' in lowered and (nick in s or 'ghost' in lowered))
     
     def doNotice(self, irc, msg):
         if irc.afterConnect:
@@ -189,17 +193,20 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             nick = self.registryValue('nick')
             self.log.debug('Notice received from NickServ: %r', msg)
             s = msg.args[1].lower()
-            if self._ghosted(irc, s):
+            if self._ghosted(s):
                 self.log.info('Received "GHOST succeeded" from NickServ')
                 self.sentGhost = False
                 irc.queueMsg(ircmsgs.nick(nick))
-            if ('registered' in s or 'protected' in s) and \
+            elif ('registered' in s or 'protected' in s) and \
                ('not' not in s and 'isn\'t' not in s):
                 self.log.info('Received "Registered Nick" from NickServ')
                 if nick == irc.nick:
                     self._doIdentify(irc)
                 else:
                     irc.sendMsg(ircmsgs.nick(nick))
+            elif '/msg' in s and 'identify' in s and 'password' in s:
+                # Usage info for identify command; ignore.
+                self.log.debug('Got usage info for identify command.')
             elif 'now recognized' in s:
                 self.log.info('Received "Password accepted" from NickServ')
                 self.identified = True
