@@ -88,7 +88,10 @@ class Misc(callbacks.Privmsg):
                 irc.error('No such plugin %r exists.' % name)
             elif isinstance(cb, callbacks.PrivmsgRegexp) or \
                  not isinstance(cb, callbacks.Privmsg):
-                irc.error('That plugin exists, but it has no commands.')
+                irc.error('That plugin exists, but it has no commands.  '
+                          'You may wish to check if it has any useful '
+                          'configuration variables with the command '
+                          '"config list supybot.plugins.%s".' % name)
             else:
                 commands = []
                 for s in dir(cb):
@@ -171,8 +174,8 @@ class Misc(callbacks.Privmsg):
                 names = [cb.name() for cb in cbs]
                 names.sort()
                 irc.error('That command exists in the %s plugins.  '
-                               'Please specify exactly which plugin command '
-                               'you want help with.'% utils.commaAndify(names))
+                          'Please specify exactly which plugin command '
+                          'you want help with.'% utils.commaAndify(names))
                 return
             else:
                 assert len(tokens) == 2
