@@ -53,6 +53,45 @@ import privmsgs
 import callbacks
 import asyncoreDrivers
 
+def configure(onStart, afterConnect, advanced):
+    import socket
+    from questions import expect, anything, something, yn
+    onStart.append('load Relay')
+    startNetwork = anything('What is the name of the network you\'re ' \
+                            'connecting to first?')
+    onStart.append('startrelay %s' % startNetwork)
+    while yn('Do you want to connect to another network for relaying?') == 'y':
+        network = anything('What is the name of the network you want to ' \
+                           'connect to?')
+        server = ''
+        while not server:
+            server = anything('What server does that network use?')
+            try:
+                print 'Looking up %s' % server
+                ip = socket.gethostbyname(server)
+                print 'Found %s (%s)' % (server, ip)
+            except socket.error:
+                print 'Sorry, but I couldn\'t find that server.'
+                server = ''
+        if yn('Does that server require you to connect on a port other than '
+              'the default port for IRC (6667)?') == 'y':
+            port = ''
+            while not port:
+                port = anything('What port is that?')
+                try:
+                    int(port)
+                except ValueError:
+                    print 'Sorry, but that isn\'t a valid port.'
+                    port = ''
+            server = ':'.join((server, port))
+        onStart.append('relayconnect %s %s' % (network, server))
+    channel = anything('What channel would you like to relay between?')
+    afterConnect.append('relayjoin %s' % channel)
+    while yn('Would like to relay between any more channels?') == 'y':
+        channel = anything('What channel?')
+        afterConnect.append('relayjoin %s' % channel)
+    
+
 class Relay(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
