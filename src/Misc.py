@@ -270,8 +270,8 @@ class Misc(callbacks.Privmsg):
                     if 'supybot' in module.__file__:
                         names[name] = getVersion(module.__revision__)
                     else:
-                        for dir in dirs:
-                            if dir in module.__file__:
+                        for dir in conf.supybot.directories.plugins():
+                            if module.__file__.startswith(dir):
                                 names[name] = getVersion(module.__revision__)
                                 break
             L = ['%s: %s' % (k, v) for (k, v) in names.items() if v]
