@@ -217,6 +217,7 @@ class ChannelState(object):
             return
         while user and user[0] in '@%+':
             (marker, user) = (user[0], user[1:])
+            assert user, 'Looks like my caller is passing chars, not nicks.'
             if marker == '@':
                 self.ops.add(nick)
             elif marker == '%':
@@ -366,7 +367,7 @@ class IrcState(IrcCommandDispatcher):
         if channel not in self.channels:
             self.channels[channel] = Channel()
         c = self.channels[channel]
-        for name in names:
+        for name in names.split():
             c.addUser(name)
         if type == '@':
             c.modes['s'] = None
