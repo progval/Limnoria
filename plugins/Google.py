@@ -323,7 +323,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         bold = self.registryValue('bold', msg.args[0])
         max = self.registryValue('maximumResults', msg.args[0])
         irc.reply(self.formatData(data, bold=bold, max=max))
-    google = wrap(google, [getopts({'language':'text', 'restrict':'text',
+    google = wrap(google, [getopts({'language':'something',
+                                    'restrict':'something',
                                     'notsafe':'', 'similar':''}),
                            many('something')])
 
@@ -357,8 +358,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
              meta.searchTime,
              categories and '  Categories include %s.' % categories)
         irc.reply(s)
-    metagoogle = wrap(metagoogle, [getopts({'language':'text',
-                                            'restrict':'text',
+    metagoogle = wrap(metagoogle, [getopts({'language':'something',
+                                            'restrict':'something',
                                             'notsafe':'', 'similar':''}),
                                    many('something')])
 

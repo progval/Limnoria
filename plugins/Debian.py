@@ -284,7 +284,8 @@ class Debian(callbacks.Privmsg,
         else:
             irc.reply(utils.commaAndify(packages))
     incoming = thread(wrap(incoming,
-                           [getopts({'regexp':'regexpMatcher', 'arch':'text'}),
+                           [getopts({'regexp': 'regexpMatcher',
+                                     'arch': 'something'}),
                             any('glob')]))
 
     _newpkgre = re.compile(r'<li><a href[^>]+>([^<]+)</a>')

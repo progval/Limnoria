@@ -337,7 +337,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             (utils.nItems('bug', len(bugs)), utils.quoted(searchstr),
              ' AND '.join(keywords), utils.commaAndify(map(str, bugids)))
         irc.reply(s)
-    search = wrap(search, [getopts({'keywords':'text'}), 'something', 'text'])
+    search = wrap(search, [getopts({'keywords': 'something'}),
+                           'something', 'text'])
 
     def bug(self, irc, msg, args, name, number):
         """<abbreviation> <number>

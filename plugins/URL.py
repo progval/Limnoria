@@ -204,9 +204,9 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                 s = urls[0]
             irc.reply(s)
     last = wrap(last, ['channeldb',
-                       getopts({'from': 'text', 'with': 'text',
-                                'near': 'text', 'proto': 'text',
-                                'nolimit': '', 'without': 'text',})])
+                       getopts({'from': 'something', 'with': 'something',
+                                'near': 'something', 'proto': 'something',
+                                'nolimit': '', 'without': 'something',})])
 
 Class = URL
 
