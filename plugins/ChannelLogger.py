@@ -153,7 +153,7 @@ class ChannelLogger(irclib.IrcCallback):
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
-        if ircutils.isChannel(channel):
+        if ircutils.isChannel(channel) and msg.args[1:]:
             log = self.getLog(channel)
             self.timestamp(log)
             log.write('*** %s sets mode: %s %s\n' %
