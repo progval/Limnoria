@@ -40,7 +40,6 @@ import supybot.fix as fix
 
 import re
 import getopt
-import string
 import fnmatch
 from itertools import imap, ifilter
 
@@ -50,8 +49,6 @@ import supybot.ircdb as ircdb
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
-
-import supybot.Config as Config
 
 class User(callbacks.Privmsg):
     def _checkNotChannel(self, irc, msg, password=' '):
