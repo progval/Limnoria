@@ -638,10 +638,14 @@ class Privmsg(irclib.IrcCallback):
     def callCommand(self, f, irc, msg, *L):
         # Exceptions aren't caught here because IrcObjectProxy.finalEval
         # catches them and does The Right Thing.
+        name = f.im_func.func_name
+        assert L, 'Odd, nothing in L.  This can\'t happen.'
+        self.log.info('Command %s called with args %s by %s',
+                      name, L[0], msg.prefix)
         start = time.time()
         f(irc, msg, *L)
         elapsed = time.time() - start
-        self.log.info('%s took %s seconds', f.im_func.func_name, elapsed)
+        self.log.info('%s took %s seconds', name, elapsed)
 
 
 class IrcObjectProxyRegexp(object):
