@@ -1,3 +1,11 @@
+	* Updated ChannelLogger not to log messages starting with
+	[nolog], in order to allow private information to remain private.
+
+	* Added a configuration variable to ChannelLogger,
+	flushImmediately, to cause all channel logs to be flushed every
+	time they're modified, for those people who like to read the logs
+	through tail -f or something similar.
+	
 	* Updated WordStats to allow removing of tracked words.
 
 	* Updated Seen.seen to accept no arguments and return the last
