@@ -268,8 +268,8 @@ class FunDB(callbacks.Privmsg):
         sql = """SELECT id FROM %ss WHERE %s=%%s""" % (table, table)
         cursor.execute(sql, s)
         id = cursor.fetchone()[0]
-        response = [conf.replySuccess,'(%s #%s)' % (table,id)]
-        irc.reply(msg, ' '.join(response))
+        response = '%s (%s #%s)' % (conf.replySuccess, table, id)
+        irc.reply(msg, response)
 
     def dbremove(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
@@ -417,19 +417,17 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, reply)
 
     def lart(self, irc, msg, args):
-        """[<channel>] <text>
+        """<text> [for <reason>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  Uses a lart on <text>.
+        Uses a lart on <text> (giving the reason, if offered).
         """
-        channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
         try:
             (nick, reason) = map(' '.join,
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             nick = ' '.join(args)
-            reason = ""
+            reason = ''
         cursor = self.db.cursor()
         cursor.execute("""SELECT id, lart FROM larts
                           WHERE lart NOTNULL
@@ -445,26 +443,23 @@ class FunDB(callbacks.Privmsg):
                 lartee = nick
             lart = lart.replace("$who", lartee)
             if len(reason) > 0:
-                irc.queueMsg(ircmsgs.action(channel, '%s for %s (#%s)' %\
-                    (lart, reason, id)))
+                s = '%s for %s (#%s)' % (lart, reason, id)
             else:
-                irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
-        raise callbacks.CannotNest
+                s = '%s (#%s)' % (lart, id)
+            irc.reply(msg, s, action=True)
 
     def praise(self, irc, msg, args):
-        """[<channel>] <text>
+        """<text> [for <reason>]
 
-        The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.  Uses a praise on <text>.
+        Uses a praise on <text> (giving the reason, if offered).
         """
-        channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
         try:
             (nick, reason) = map(' '.join,
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             nick = ' '.join(args)
-            reason = ""
+            reason = ''
         cursor = self.db.cursor()
         cursor.execute("""SELECT id, praise FROM praises
                           WHERE praise NOTNULL
@@ -474,17 +469,16 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available praises.')
         else:
             (id, praise) = cursor.fetchone()
-            if nick == irc.nick or nick == 'me':
+            if nick == msg.nick or nick == 'me':
                 praisee = msg.nick
             else:
                 praisee = nick
             praise = praise.replace("$who", praisee)
             if len(reason) > 0:
-                irc.queueMsg(ircmsgs.action(channel, '%s for %s (#%s)' %\
-                    (praise, reason, id)))
+                s = '%s for %s (#%s)' % (praise, reason, id)
             else:
-                irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' %(praise, id)))
-        raise callbacks.CannotNest
+                s = '%s (#%s)' % (praise, id)
+            irc.reply(msg, s, action=True)
 
     def addword(self, irc, msg, args):
         """<word>

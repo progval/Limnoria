@@ -44,9 +44,9 @@ class TestFunDB(PluginTestCase, PluginDocumentation):
 
     def testLart(self):
         self.assertNotError('dbadd lart jabs $who')
-        self.assertResponse('lart #foo jemfinch for being dumb', '\x01ACTION'\
+        self.assertResponse('lart jemfinch for being dumb', '\x01ACTION'\
             ' jabs jemfinch for being dumb (#1)\x01')
-        self.assertResponse('lart #foo jemfinch', '\x01ACTION jabs jemfinch'\
+        self.assertResponse('lart jemfinch', '\x01ACTION jabs jemfinch'\
             ' (#1)\x01')
         self.assertNotError('dbnum lart')
         self.assertNotError('dbremove lart 1')
@@ -72,10 +72,10 @@ class TestFunDB(PluginTestCase, PluginDocumentation):
 
     def testPraise(self):
         self.assertNotError('dbadd praise pets $who')
-        self.assertNotError('praise #foo jemfinch')
-        self.assertResponse('praise #foo jemfinch for being him', '\x01ACTION'\
+        self.assertNotError('praise jemfinch')
+        self.assertResponse('praise jemfinch for being him', '\x01ACTION'\
             ' pets jemfinch for being him (#1)\x01')
-        self.assertResponse('praise #foo jemfinch', '\x01ACTION pets jemfinch'\
+        self.assertResponse('praise jemfinch', '\x01ACTION pets jemfinch'\
             ' (#1)\x01')
         self.assertNotError('dbnum praise')
         self.assertNotError('dbremove praise 1')
@@ -107,7 +107,7 @@ class TestFunDB(PluginTestCase, PluginDocumentation):
     def testDbChange(self):
         self.assertNotError('dbadd praise teaches $who perl')
         self.assertNotError('dbchange praise 1 s/perl/python/')
-        self.assertResponse('praise #foo jemfinch', '\x01ACTION teaches'\
+        self.assertResponse('praise jemfinch', '\x01ACTION teaches'\
             ' jemfinch python (#1)\x01')
         self.assertNotError('dbremove praise 1')
 

@@ -147,9 +147,18 @@ class FunctionsTestCase(unittest.TestCase):
                          ['foo', 'bar', 'baz'])
         
 
-class PrivmsgTestCase(PluginTestCase):
-    plugins = ('Utilities',)
+class PrivmsgTestCase(ChannelPluginTestCase):
+    plugins = ('Utilities', 'OwnerCommands')
+    conf.allowEval = True
     def testEmptySquareBrackets(self):
         self.assertResponse('echo []', '[]')
+
+    def testSimpleReply(self):
+        self.assertResponse("eval irc.reply(msg, 'foo')", 'foo')
+
+    def testSimpleReplyAction(self):
+        self.assertResponse("eval irc.reply(msg, 'foo', action=True)",
+                            '\x01ACTION foo\x01')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

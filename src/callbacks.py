@@ -297,6 +297,8 @@ class IrcObjectProxy:
             self.args = args
             self.counter = 0
             self.finalEvaled = False
+            self.action = False
+            self.private = False
             self.prefixName = True
             self.noLengthCheck = False
             world.commandsProcessed += 1
@@ -369,14 +371,22 @@ class IrcObjectProxy:
             debug.recoverableException()
             self.error(self.msg, debug.exnToString(e))
 
-    def reply(self, msg, s, noLengthCheck=False, prefixName=True):
-        self.noLengthCheck |= noLengthCheck
+    def reply(self, msg, s, noLengthCheck=False, prefixName=True,
+              action=False, private=False):
+        # These use |= or &= based on whether or not they default to True or
+        # False.  Those that default to True use &=; those that default to
+        # False use |=.
+        self.action |= action
+        self.private |= private
         self.prefixName &= prefixName
+        self.noLengthCheck |= noLengthCheck
         if self.finalEvaled:
             if isinstance(self.irc, self.__class__):
                 self.irc.reply(msg, s, self.noLengthCheck, self.prefixName)
             elif self.noLengthCheck:
                 self.irc.queueMsg(reply(msg, s, self.prefixName))
+            elif self.action:
+                self.irc.queueMsg(ircmsgs.action(msg.args[0], s))
             else:
                 # The size of a PRIVMSG is:
                 # 1 for the colon
@@ -404,8 +414,13 @@ class IrcObjectProxy:
                                 utils.nItems(len(msgs), 'message', 'more')
                 mask = msg.prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
-                Privmsg._mores[msg.nick]=(ircutils.isChannel(msg.args[0]),msgs)
-                self.irc.queueMsg(reply(msg, response, self.prefixName))
+                private = self.private or not ircutils.isChannel(msg.args[0])
+                Privmsg._mores[msg.nick] = (private, msgs)
+                if self.private:
+                    debug.printf('got here!')
+                    self.irc.queueMsg(ircmsgs.privmsg(msg.nick, response))
+                else:
+                    self.irc.queueMsg(reply(msg, response, self.prefixName))
         else:
             self.args[self.counter] = s
             self.evalArgs()
