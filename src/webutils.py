@@ -70,13 +70,16 @@ def strError(e):
     else:
         return str(e)
 
-def getUrlFd(url):
+_headers = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'}
+def getUrlFd(url, headers=None):
     """Gets a file-like object for a url."""
+    if headers is None:
+        headers = _headers
     try:
         if not isinstance(url, urllib2.Request):
             if '#' in url:
                 url = url[:url.index('#')]
-            request = urllib2.Request(url)
+            request = urllib2.Request(url, headers=headers)
         else:
             request = url
         httpProxy = conf.supybot.protocols.http.proxy()
@@ -88,14 +91,14 @@ def getUrlFd(url):
         raise WebError, TIMED_OUT
     except socket.error, e:
         raise WebError, strError(e)
-    except urllib2.URLError, e:
-        raise WebError, strError(e.reason[1])
     except urllib2.HTTPError, e:
         raise WebError, strError(e)
+    except urllib2.URLError, e:
+        raise WebError, strError(e.reason[1])
 
-def getUrl(url, size=None):
+def getUrl(url, size=None, headers=None):
     """Gets a page.  Returns a string that is the page gotten."""
-    fd = getUrlFd(url)
+    fd = getUrlFd(url, headers=headers)
     try:
         if size is None:
             text = fd.read()
