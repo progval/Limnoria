@@ -42,8 +42,8 @@ except ImportError:
 
 
 if sqlite is not None:
-    class NewsTestCase(ChannelPluginTestCase):
-        plugins = ('News',)
+    class ChannelNewsTestCase(ChannelPluginTestCase):
+        plugins = ('ChannelNews',)
         def testAddnews(self):
             self.assertNotError('addnews 0 subject: foo')
             self.assertRegexp('news', 'subject')
