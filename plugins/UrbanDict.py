@@ -72,7 +72,7 @@ class UrbanDict(callbacks.Privmsg):
     _defUsageRE = re.compile(r'<blockquote><p>(?P<definition>.*?)</p>'
                              r'<p><i>(?P<usage>.*?)</i></p>',
                              re.MULTILINE | re.DOTALL)
-    def ud(self, irc, msg, args):
+    def urbandict(self, irc, msg, args):
         """[<phrase>]
 
         Returns the definition and usage of a random word from 
