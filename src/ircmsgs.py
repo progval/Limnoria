@@ -43,7 +43,7 @@ import ircutils
 class IrcMsg(object):
     """Class to represent an IRC message.
     """
-    #__slots__ = ('_args', '_command', '_host', '_nick', '_prefix', '_user')
+    __slots__ = ('_args', '_command', '_host', '_nick', '_prefix', '_user')
     def __init__(self, s='', command='', args=None, prefix='', msg=None):
         if not s and not command and not msg:
             raise ValueError, 'IRC messages require a command.'
@@ -133,6 +133,12 @@ class IrcMsg(object):
     def __repr__(self):
         return '%s(prefix=%r, command=%r, args=%r)' % \
                (self.__class__.__name__, self.prefix, self.command, self.args)
+
+    def __getstate__(self):
+        return str(self)
+
+    def __setstate__(self, s):
+        self.__init__(s)
 
 
 def isAction(msg):
