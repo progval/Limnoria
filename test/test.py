@@ -74,8 +74,33 @@ nicks += [msg.nick for msg in msgs if msg.nick]
 
 def getMsgs(command):
     return [msg for msg in msgs if msg.command == command]
-    
 
+class Cmd(object):
+    def __init__(self, command, *args):
+        self.args = (command,) + args
+
+    def toString(self, recursed=False):
+        if recursed:
+            return '[%s]' % ' '.join(map(utils.dqrepr, args))
+        else:
+            L = [conf.prefixChars[0]]
+            for arg in args:
+                if isinstance(arg, self.__class__):
+                    L.append(utils.dqrepr(arg.toString(recursed=True)))
+                else:
+                    L.append(utils.dqrepr(arg))
+                L.append(' ')
+            L.pop()
+            return ''.join(L)
+
+    def __str__(self):
+        return self.toString()
+                    
+class PluginTestCase(unittest.TestCase):
+    callbacks = ()
+    channels = ()
+    
+    
 if __name__ == '__main__':
     world.testing = True
     if len(sys.argv) > 1:
