@@ -310,9 +310,9 @@ class Relay(callbacks.Privmsg):
                 s = '%s/%s has quit.' % (msg.nick, network)
             for channel in self.channels:
                 debug.printf(self.ircstates[irc])
-                debug.printf(self.ircstates[irc][1])
-                debug.printf(self.ircstates[irc][1].channels[channel].users)
-                if msg.nick in self.ircstates[irc][1].channels[channel].users:
+                debug.printf(self.ircstates[irc][0])
+                debug.printf(self.ircstates[irc][0].channels[channel].users)
+                if msg.nick in self.ircstates[irc][0].channels[channel].users:
                     for otherIrc in self.ircs.itervalues():
                         if otherIrc != irc:
                             otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
