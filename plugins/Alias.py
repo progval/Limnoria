@@ -100,7 +100,7 @@ def makeNewAlias(name, alias, aliasArgs):
     dollars = findDollars(aliasArgs)
     numDollars = len(dollars)
     def f(self, irc, msg, args):
-        debug.printf('%s being called' % name)
+        #debug.printf('%s being called' % name)
         realArgs = privmsgs.getArgs(args, needed=numDollars)
         myArgs = copy.deepcopy(aliasArgs)
         if dollars:
@@ -169,7 +169,7 @@ class Alias(callbacks.Privmsg):
                 f = makeNewAlias(name, alias, args)
             except RecursiveAlias:
                 irc.error(msg, 'You can\'t define a recursive alias.')
-            debug.printf('setting attribute')
+            #debug.printf('setting attribute')
             setattr(self.__class__, name, f)
             irc.reply(msg, conf.replySuccess)
         except Exception, e:
