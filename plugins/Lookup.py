@@ -40,6 +40,7 @@ import plugins
 import os
 import re
 import sys
+import sets
 import types
 
 import sqlite
@@ -90,6 +91,7 @@ class LookupDB(plugins.DBHandler):
 class Lookup(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        self.domains = sets.Set()
         self.dbHandler = LookupDB(name=os.path.join(conf.dataDir, 'Lookup'))
         
     def die(self):
@@ -101,6 +103,10 @@ class Lookup(callbacks.Privmsg):
         Removes the lookup for <name>.
         """
         name = privmsgs.getArgs(args)
+        name = callbacks.canonicalName(name)
+        if name not in self.domains:
+            irc.error(msg, 'That\'s not a valid lookup to remove.')
+            return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         try:
@@ -110,6 +116,7 @@ class Lookup(callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         except sqlite.DatabaseError:
             irc.error(msg, 'No such lookup exists.')
+    remove = privmsgs.checkCapability(remove, 'admin')
 
     _splitRe = re.compile(r'(?<!\\):')
     def add(self, irc, msg, args):
@@ -122,6 +129,7 @@ class Lookup(callbacks.Privmsg):
         """
         (name, filename) = privmsgs.getArgs(args, required=2)
         name = utils.depluralize(name)
+        name = callbacks.canonicalName(name)
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         try:
@@ -157,8 +165,8 @@ class Lookup(callbacks.Privmsg):
                 cursor.execute("CREATE INDEX %s_keys ON %s (key)" %(name,name))
                 db.commit()
             self.addCommand(name)
-            cb = irc.getCallback('Alias')
             irc.reply(msg, '%s (lookup %s added)' % (conf.replySuccess, name))
+    add = privmsgs.checkCapability(add, 'admin')
 
     def addCommand(self, name):
         def f(self, irc, msg, args):
@@ -177,6 +185,7 @@ class Lookup(callbacks.Privmsg):
         f = types.FunctionType(f.func_code, f.func_globals,
                                f.func_name, closure=f.func_closure)
         f.__doc__ = docstring
+        self.domains.add(name)
         setattr(self.__class__, name, f)
 
     def _lookup(self, irc, msg, args):
