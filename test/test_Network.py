@@ -42,7 +42,9 @@ if network:
         def testWhois(self):
             self.assertNotError('network whois ohio-state.edu')
             self.assertError('network whois www.ohio-state.edu')
-            self.assertError('network whois slashdot.org')
+            self.assertNotError('network whois kuro5hin.org')
+            self.assertError('network whois www.kuro5hin.org')
+            self.assertNotError('network whois microsoft.com')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

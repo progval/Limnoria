@@ -71,40 +71,72 @@ class Network(callbacks.Privmsg):
             except socket.error:
                 irc.reply('Host not found.')
 
-    _tlds = sets.Set(['com', 'net', 'edu'])
+    _tlds = sets.Set(['com', 'net', 'edu', 'org'])
     def whois(self, irc, msg, args):
         """<domain>
 
         Returns WHOIS information on the registration of <domain>.  <domain>
-        must be in tlds .com, .net, or .edu.
+        must be in tlds .com, .net, .edu, or .org.
         """
         domain = privmsgs.getArgs(args)
-        if '.' not in domain or domain.split('.')[-1] not in self._tlds:
-            irc.error('<domain> must be in .com, .net, or .edu.')
+        usertld = domain.split('.')[-1]
+        if '.' not in domain or usertld not in self._tlds:
+            irc.error('<domain> must be in .com, .net, .edu, or .org.')
             return
         elif len(domain.split('.')) != 2:
             irc.error('<domain> must be a domain, not a hostname.')
             return
-        t = telnetlib.Telnet('rs.internic.net', 43)
-        t.write(domain)
-        t.write('\n')
-        s = t.read_all()
-        for line in s.splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            if line.startswith('Registrar'):
-                registrar = line.split()[-1].capitalize()
-            elif line.startswith('Referral'):
-                url = line.split()[-1]
-            elif line.startswith('Updated'):
-                updated = line.split()[-1]
-            elif line.startswith('Creation'):
-                created = line.split()[-1]
-            elif line.startswith('Expiration'):
-                expires = line.split()[-1]
-            elif line.startswith('Status'):
-                status = line.split()[-1].lower()
+        if usertld == 'org':
+            t = telnetlib.Telnet('whois.pir.org', 43)
+            t.write(domain)
+            t.write('\n')
+            s = t.read_all()
+            for line in s.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith('Sponsoring Registrar'):
+                    registar = ':'.join(line.split(':')[1:])
+                elif line.startswith('Last Updated On'):
+                     updated = ':'.join(line.split(':')[1:])
+                elif line.startswith('Created On'):
+                     created = ':'.join(line.split(':')[1:])
+                elif line.startswith('Expiration Date'):
+                     expires = ':'.join(line.split(':')[1:])
+                elif line.startswith('Status'):
+                     status = ':'.join(line.split(':')[1:]).lower()
+            t = telnetlib.Telnet('whois.pir.org', 43)
+            t.write('registrar id ')
+            t.write(registar)
+            t.write('\n')
+            s = t.read_all()
+            for line in s.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith('Email'):
+                    url = 'registered at '
+                    url += line.split('@')[-1]
+        else:
+            t = telnetlib.Telnet('rs.internic.net', 43)
+            t.write('=')
+            t.write(domain)
+            t.write('\n')
+            s = t.read_all()
+            for line in s.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                elif line.startswith('Referral'):
+                    url = line.split()[-1]
+                elif line.startswith('Updated'):
+                    updated = line.split()[-1]
+                elif line.startswith('Creation'):
+                    created = line.split()[-1]
+                elif line.startswith('Expiration'):
+                    expires = line.split()[-1]
+                elif line.startswith('Status'):
+                    status = line.split()[-1].lower()
         try:
             s = '%s <%s> is %s; registered %s, updated %s, expires %s.' % \
                 (domain, url, status, created, updated, expires)
