@@ -56,7 +56,17 @@ starting = False
 mainThread = threading.currentThread()
 assert 'MainThread' in repr(mainThread)
 
+def isMainThread():
+    return mainThread is threading.currentThread()
+
 threadsSpawned = 1 # Starts at one for the initial "thread."
+
+class SupyThread(threading.Thread):
+    def __init__(self, *args, **kwargs):
+        global threadsSpawned
+        threadsSpawned += 1
+        super(SupyThread, self).__init__(*args, **kwargs)
+        
 commandsProcessed = 0
 
 ircs = [] # A list of all the IRCs.
@@ -145,7 +155,10 @@ def makeIrcsDie():
     """Kills Ircs."""
     log.info('Killing Irc objects.')
     for irc in ircs[:]:
-        irc.die()
+        if not irc.zombie:
+            irc.die()
+        else:
+            log.debug('Not killing %s, it\'s already a zombie.', irc)
 
 def startDying():
     """Starts dying."""

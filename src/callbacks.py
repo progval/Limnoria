@@ -51,7 +51,6 @@ import getopt
 import string
 import inspect
 import operator
-import threading
 from cStringIO import StringIO
 from itertools import imap, ifilter
 
@@ -706,7 +705,8 @@ class IrcObjectProxy(RichReplyMethods):
         else:
             cb = cbs[0]
             del self.args[0] # Remove the command.
-            if cb.threaded or conf.supybot.debug.threadAllCommands():
+            if world.isMainThread() and \
+               (cb.threaded or conf.supybot.debug.threadAllCommands()):
                 t = CommandThread(target=self._callCommand,
                                   args=(command, cb))
                 t.start()
@@ -789,21 +789,24 @@ class IrcObjectProxy(RichReplyMethods):
                         # action implies noLengthCheck, which has already been
                         # handled.  Let's stick an assert in here just in case.
                         assert not self.action
-                        self.irc.queueMsg(reply(msg, s, to=self.to,
-                                                notice=self.notice,
-                                                private=self.private,
-                                                prefixName=self.prefixName))
-                        return
+                        m = reply(msg, s, to=self.to,
+                                  notice=self.notice,
+                                  private=self.private,
+                                  prefixName=self.prefixName)
+                        self.irc.queueMsg(m)
+                        return m
                     msgs = ircutils.wrap(s, allowedLength-30) # -30 is for nick:
                     msgs.reverse()
                     instant = conf.supybot.reply.mores.instant()
                     while instant > 1 and msgs:
                         instant -= 1
                         response = msgs.pop()
-                        self.irc.queueMsg(reply(msg, response, to=self.to,
-                                                notice=self.notice,
-                                                private=self.private,
-                                                prefixName=self.prefixName))
+                        m = reply(msg, response, to=self.to,
+                                  notice=self.notice,
+                                  private=self.private,
+                                  prefixName=self.prefixName)
+                        self.irc.queueMsg(m)
+                        return m
                     if not msgs:
                         return
                     response = msgs.pop()
@@ -823,11 +826,13 @@ class IrcObjectProxy(RichReplyMethods):
                     public = ircutils.isChannel(msg.args[0])
                     private = self.private or not public
                     Privmsg._mores[msg.nick] = (private, msgs)
-                    self.irc.queueMsg(reply(msg, response, to=self.to,
+                    m = reply(msg, response, to=self.to,
                                             action=self.action,
                                             notice=self.notice,
                                             private=self.private,
-                                            prefixName=self.prefixName))
+                                            prefixName=self.prefixName)
+                    self.irc.queueMsg(m)
+                    return m
             finally:
                 self._resetReplyAttributes()
         else:
@@ -866,26 +871,26 @@ class IrcObjectProxy(RichReplyMethods):
         return getattr(self.irc, attr)
 
 
-class CommandThread(threading.Thread):
+class CommandThread(world.SupyThread):
     """Just does some extra logging and error-recovery for commands that need
     to run in threads.
     """
     def __init__(self, target=None, args=(), kwargs={}):
         (self.name, self.cb) = args
+        self.__parent = super(CommandThread, self)
         self.command = self.cb.getCommand(self.name)
-        world.threadsSpawned += 1
         threadName = 'Thread #%s (for %s.%s)' % (world.threadsSpawned,
                                                  self.cb.name(), self.name)
         log.debug('Spawning thread %s' % threadName)
-        threading.Thread.__init__(self, target=target,
-                                  name=threadName, args=args, kwargs=kwargs)
+        self.__parent.__init__(target=target, name=threadName,
+                               args=args, kwargs=kwargs)
         self.setDaemon(True)
         self.originalThreaded = self.cb.threaded
         self.cb.threaded = True
 
     def run(self):
         try:
-            threading.Thread.run(self)
+            self.__parent.run()
         finally:
             self.cb.threaded = self.originalThreaded
 
@@ -1145,14 +1150,18 @@ class SimpleProxy(RichReplyMethods):
     def error(self, s, msg=None, **kwargs):
         if msg is None:
             msg = self.msg
-        self.irc.queueMsg(error(msg, s, **kwargs))
+        m = error(msg, s, **kwargs)
+        self.irc.queueMsg(m)
+        return m
 
     def reply(self, s, msg=None, **kwargs):
         if msg is None:
             msg = self.msg
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
-        self.irc.queueMsg(reply(msg, s, **kwargs))
+        m = reply(msg, s, **kwargs)
+        self.irc.queueMsg(m)
+        return m
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
