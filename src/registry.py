@@ -136,7 +136,7 @@ class Group(object):
     def __init__(self, supplyDefault=False):
         self._name = 'unset'
         self.added = []
-        self.children = utils.InsensitivePreservingDict()
+        self._children = utils.InsensitivePreservingDict()
         self._lastModified = 0
         self.supplyDefault = supplyDefault
         OriginalClass = self.__class__
@@ -168,8 +168,8 @@ class Group(object):
         return v
 
     def __getattr__(self, attr):
-        if attr in self.children:
-            return self.children[attr]
+        if attr in self._children:
+            return self._children[attr]
         elif self.supplyDefault:
             return self.__makeChild(attr, str(self))
         else:
@@ -201,8 +201,8 @@ class Group(object):
             raise InvalidRegistryName, name
         if node is None:
             node = Group()
-        if name not in self.children: # XXX Is this right?
-            self.children[name] = node
+        if name not in self._children: # XXX Is this right?
+            self._children[name] = node
             self.added.append(name)
             names = split(self._name)
             names.append(name)
@@ -212,8 +212,8 @@ class Group(object):
 
     def unregister(self, name):
         try:
-            node = self.children[name]
-            del self.children[name]
+            node = self._children[name]
+            del self._children[name]
             self.added.remove(name)
             if node._name in _cache:
                 del _cache[node._name]
@@ -228,7 +228,7 @@ class Group(object):
     def getValues(self, getChildren=False, fullNames=True):
         L = []
         for name in self.added:
-            node = self.children[name]
+            node = self._children[name]
             if hasattr(node, 'value') or hasattr(node, 'help'):
                 if node.__class__ is not self.X:
                     L.append((node._name, node))
@@ -279,7 +279,7 @@ class Value(Group):
         self._lastModified = time.time()
         self.value = v
         if self.supplyDefault:
-            for (name, v) in self.children.items():
+            for (name, v) in self._children.items():
                 if v.__class__ is self.X:
                     self.unregister(name)
 

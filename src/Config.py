@@ -98,7 +98,7 @@ class Config(callbacks.Privmsg):
         group = getWrapper(name)
         if groups:
             L = []
-            for (vname, v) in group.children.iteritems():
+            for (vname, v) in group._children.iteritems():
                 if v.added:
                     L.append(vname)
             utils.sortBy(str.lower, L)
