@@ -247,7 +247,7 @@ class Misc(callbacks.Privmsg):
                           'you want help with.'% utils.commaAndify(names))
             else:
                 getHelp(cbs[0])
-    help = wrap(help, [optional(('plugin', False)), 'commandName'])
+    help = wrap(help, [optional(('plugin', False)), additional('commandName')])
 
     def hostmask(self, irc, msg, args, nick):
         """[<nick>]

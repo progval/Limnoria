@@ -1132,7 +1132,9 @@ class Privmsg(irclib.IrcCallback):
         log.stat('%s took %s seconds', name, elapsed)
 
     def getCommandHelp(self, name):
-        assert self.isCommand(name)
+        name = canonicalName(name)
+        assert self.isCommand(name), \
+               '%s is not a command in %s.' % (name, self.name())
         command = self.getCommand(name)
         if hasattr(command, 'isDispatcher') and \
            command.isDispatcher and self.__doc__:
