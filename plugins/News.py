@@ -190,25 +190,25 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
             s = 'News for %s: %s' % (channel, '; '.join(items))
             irc.reply(msg, s)
 
-    def removenews(self, irc, msg, args):
+    def removenews(self, irc, msg, args, channel):
         """[<channel>] <number>
 
         Removes the news item with id <number> from <channel>.  <channel> is
         only necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         id = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT news.id FROM news WHERE news.id = %s""", id)
+        cursor.execute("""SELECT * FROM news WHERE id=%s""", id)
         if cursor.rowcount == 0:
             irc.error(msg, 'No news item matches that id.')
         else:
             cursor.execute("""DELETE FROM news WHERE news.id = %s""", id)
             db.commit()
             irc.reply(msg, conf.replySuccess)
+    removenews = privmsgs.checkChannelCapability(removenews, 'news')
             
-    def changenews(self, irc, msg, args):
+    def changenews(self, irc, msg, args, channel):
         """[<channel>] <number> <regexp>
 
         Changes the news item with id <number> from <channel> according to the
@@ -216,7 +216,26 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         s/text/replacement/flags.  <channel> is only necessary if the message
         isn't sent on the channel itself.
         """
-        raise NotImplementedError
+        (id, regexp) = privmsgs.getArgs(args, needed=2)
+        try:
+            replacer = utils.perlReToReplacer(regexp)
+        except ValueError, e:
+            irc.error(msg, str(e))
+            return
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT subject, item FROM news WHERE id=%s""", id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'No news item matches that id.')
+            return
+        (subject, item) = cursor.fetchone()
+        s = '%s: %s' % (subject, item)
+        s = replacer(s)
+        (newSubject, newItem) = s.split(': ')
+        cursor.execute("""UPDATE news SET subject=%s, item=%s WHERE id=%s""",
+                       newSubject, newItem, id)
+        irc.reply(msg, conf.replySuccess)
+    changenews = privmsgs.checkChannelCapability(changenews, 'news')
 
     def oldnews(self, irc, msg, args):
         """[<channel>] [<number>]
@@ -225,7 +244,32 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
         is given, returns all the old news items in reverse order.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
-        raise NotImplementedError
+        channel = privmsgs.getChannel(msg, args)
+        id = privmsgs.getArgs(args, needed=0, optional=1)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        if id:
+            try:
+                id = int(id)
+            except ValueError:
+                irc.error(msg, '%r isn\'t a valid id.' % id)
+                return
+            cursor.execute("""SELECT subject, item FROM news WHERE id=%s""",id)
+            if cursor.rowcount == 0:
+                irc.error(msg, 'No news item matches that id.')
+            else:
+                (subject, item) = cursor.fetchone()
+                irc.reply(msg, '%s: %s' % (cursor, item))
+        else:
+            cursor.execute("""SELECT id, subject FROM news
+                              WHERE expires_at < %s
+                              ORDER BY id DESC""", int(time.time()))
+            if cursor.rowcount == 0:
+                irc.error(msg, 'I have no news for that channel.')
+                return
+            subjects = ['#%s: %s' % (id, s) for (id, s) in cursor.fetchall()]
+            irc.reply(msg, utils.commaAndify(subjects))
+            
 
 
                     
