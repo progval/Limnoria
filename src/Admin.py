@@ -66,7 +66,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             del self.joins[channel]
             irc.error(msg, 'Cannot join %s, it\'s full.' % channel)
         except KeyError:
-            self.log.warning('Got 471 without Admin.join being called.')
+            self.log.debug('Got 471 without Admin.join being called.')
 
     def do473(self, irc, msg):
         try:
@@ -75,7 +75,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             del self.joins[channel]
             irc.error(msg, 'Cannot join %s, I was not invited.' % channel)
         except KeyError:
-            self.log.warning('Got 473 without Admin.join being called.')
+            self.log.debug('Got 473 without Admin.join being called.')
 
     def do474(self, irc, msg):
         try:
@@ -84,7 +84,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             del self.joins[channel]
             irc.error(msg, 'Cannot join %s, it\'s banned me.' % channel)
         except KeyError:
-            self.log.warning('Got 474 without Admin.join being called.')
+            self.log.debug('Got 474 without Admin.join being called.')
             
     def do475(self, irc, msg):
         try:
@@ -93,7 +93,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             del self.joins[channel]
             irc.error(msg, 'Cannot join %s, my keyword was wrong.' % channel)
         except KeyError:
-            self.log.warning('Got 475 without Admin.join being called.')
+            self.log.debug('Got 475 without Admin.join being called.')
 
     def doJoin(self, irc, msg):
         if msg.prefix == irc.prefix:
@@ -101,7 +101,15 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 del self.joins[msg.args[0]]
             except KeyError:
                 s = 'Joined a channel without Admin.join being called'
-                self.log.warning(s)
+                self.log.debug(s)
+
+    def doInvite(self, irc, msg):
+        if msg.args[1] not in irc.state.channels:
+            if conf.alwaysJoinOnInvite:
+                irc.queueMsg(ircmsgs.join(msg.args[1]))
+            else:
+                if ircdb.checkCapability(msg.prefix, 'admin'):
+                    irc.queueMsg(ircmsgs.join(msg.args[1]))
     
     def join(self, irc, msg, args):
         """<channel>[,<key>] [<channel>[,<key>] ...]

@@ -188,6 +188,14 @@ requireChannelCommandsToBeSentInChannel = False
 followIdentificationThroughNickChanges = False
 
 ###
+# alwaysJoinOnInvite: Causes the bot to always join a channel when it's
+#                     invited.  Defaults to False, in which case the bot will
+#                     only join if the user inviting it has the 'admin'
+#                     capability.
+###
+alwaysJoinOnInvite = False
+
+###
 # enablePipeSyntax: Supybot allows nested commands; generally, commands are
 #                   nested via [square brackets].  Supybot can also use a
 #                   syntax more similar to Unix pipes.  What would be (and
