@@ -37,6 +37,9 @@ import supybot
 
 __revision__ = "$Id$"
 __author__ = supybot.authors.jemfinch
+__contributors__ = {
+    supybot.authors.skorobeus: ['contributors'],
+    }
 
 import supybot.fix as fix
 
@@ -636,6 +639,115 @@ class Misc(callbacks.Privmsg):
         utils.sortBy(str.lower, L)
         irc.reply(utils.commaAndify(L))
         
+    def contributors(self, irc, msg, args):
+        """<plugin> [<nickname>]
+
+        Replies with a list of people who made contributions to a given plugin.
+        If <nickname> is specified, that person's specific contributions will
+        be listed.  Note: The <nickname> is the part inside of the parentheses
+        in the people listing
+        """
+        (plugin, nickname) = privmsgs.getArgs(args, required=1, optional=1)
+        nickname = nickname.lower()
+        def getShortName(authorInfo):
+            """
+            Take an Authors object, and return only the name and nick values
+            in the format 'First Last (nickname)'
+            """
+            return '%(name)s (%(nick)s)' % authorInfo.__dict__
+        def buildContributorsString(longList):
+            """
+            Take a list of long names and turn it into :
+            shortname[, shortname and shortname]
+            """
+            outList = [getShortName(n) for n in longList]
+            return utils.commaAndify(outList)
+        def sortAuthors():
+            """
+            Sort the list of 'long names' based on the number of contributions
+            associated with each
+            """
+            L = module.__contributors__.items()
+            utils.sortBy(lambda elt: -len(elt[1]), L)
+            nameList = [pair[0] for pair in L]
+            return nameList
+        def buildPeopleString(module):
+            """
+            Build the list of author + contributors (if any) for the requested
+            plugin
+            """
+            head = 'The %s plugin' % plugin
+            author = 'has not been claimed by an author'
+            conjunction = 'and'
+            contrib = 'has no contributors listed'
+            hasAuthor = False
+            hasContribs = False
+            if getattr(module, '__author__', False):
+                author = 'was written by %s' % \
+                    utils.mungeEmailForWeb(str(module.__author__))
+                hasAuthor = True
+            if getattr(module, '__contributors__', False):
+                contribs = sortAuthors()
+                if hasAuthor:
+                    try:
+                        contribs.remove(module.__author__)
+                    except ValueError:
+                        pass
+                contrib = "%s %s contributed to it." % \
+                    (buildContributorsString(contribs),
+                    utils.has(len(contribs)))
+                hasContribs = True
+            if hasContribs and not hasAuthor:
+                conjunction = "but"
+            return '%s %s %s %s' % (head, author, conjunction, contrib)
+        def buildPersonString(module):
+            """
+            Build the list of contributions (if any) for the requested person
+            for the requested plugin
+            """
+            isAuthor = False
+            authorInfo = getattr(supybot.authors, nickname, False)
+            if not authorInfo:
+                return 'The nickname specified (%s) is not a registered ' \
+                       'contributor' % nickname
+            fullName = utils.mungeEmailForWeb(str(authorInfo))
+            contributions = []
+            if hasattr(module, '__contributors__'):
+                if authorInfo not in module.__contributors__:
+                    return 'The %s plugin does not have \'%s\' listed as a ' \
+                           'contributor' % (plugin, nickname)
+                contributions = module.__contributors__[authorInfo]
+            if getattr(module, '__author__', False) == authorInfo:
+                isAuthor = True
+            splitContribs = fix.partition(lambda s: ' ' in s, contributions)
+            results = []
+            if splitContribs[1]:
+                results.append(
+                    'the %s %s' %(utils.commaAndify(splitContribs[1]),
+                                  utils.pluralize('command',splitContribs[1])))
+            if splitContribs[0]:
+                results.append('the %s' % utils.commaAndify(splitContribs[0]))
+            if results and isAuthor:
+                return "%s wrote the %s plugin and also contributed %s" % \
+                    (fullName, plugin, utils.commaAndify(results))
+            elif results and not isAuthor:
+                return "%s contributed %s to the %s plugin" % \
+                    (fullName, utils.commaAndify(results), plugin)
+            elif isAuthor and not results:
+                return "%s wrote the %s plugin" % (fullName, plugin)
+            else:
+                return "%s has no listed contributions for the %s plugin %s" %\
+                    (fullName, plugin)
+        # First we need to check and see if the requested plugin is loaded
+        cb = irc.getCallback(plugin)
+        if cb is None:
+            irc.error('No such plugin %r exists.' % plugin)
+            return
+        module = sys.modules[cb.__class__.__module__]
+        if not nickname:
+            irc.reply(buildPeopleString(module))
+        else:
+            irc.reply(buildPersonString(module))
 
 Class = Misc
 
