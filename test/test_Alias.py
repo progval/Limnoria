@@ -96,6 +96,8 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
 
     def testNonCanonicalName(self):
         self.assertError('alias FOO foo')
+        self.assertError('alias [] foo')
+        self.assertError('alias "foo bar" foo')
 
     def testNotCannotNestRaised(self):
         self.assertNotError('alias mytell "tell $channel $1"')

@@ -185,7 +185,10 @@ class Alias(callbacks.Privmsg):
             irc.error(msg, 'There is no such alias.')
     unfreeze = privmsgs.checkCapability(unfreeze, 'admin')
 
+    _invalidCharsRe = re.compile(r'[\[\]\s]')
     def addAlias(self, irc, name, alias, freeze=False):
+        if self._invalidCharsRe.search(name):
+            raise AliasError, 'Names cannot contain spaces or square brackets.'
         realName = callbacks.canonicalName(name)
         if name != realName:
             raise AliasError,'That name isn\'t valid.  Try %r instead'%realName
