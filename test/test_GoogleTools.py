@@ -31,8 +31,13 @@
 
 from test import *
 
-class GoogleTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Google',)
+class GoogleToolsTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('GoogleTools',)
+    def testGroupsSnarfer(self):
+        self.assertRegexp('http://groups.google.com/groups?dq=&hl=en&'
+                          'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
+                          '0310132012.738e22fc%40posting.google.com',
+                          r'comp\.lang\.python.*question: usage of __slots__')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

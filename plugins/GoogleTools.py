@@ -83,7 +83,7 @@ def configure(onStart, afterConnect, advanced):
 
 
 example = utils.wrapLines("""
-<jemfinch> @list google
+<jemfinch> @list googletools
 <supybot> google, googlefight, googleinfo, googlelicensekey, googlesite, googlespell, metagoogle
 <jemfinch> @google jemfinch
 <supybot> [Twisted-commits] Like, you know, a bugfix. jemfinch reported.: http://twistedmatrix.com/pipermail/twisted-commits/2002-August/002956.html :: Character Analysis of JemFinch NetEssays.NET - Thousands of FREE ...: http://www.netessays.net/viewpaper/1379.html :: SourceForge.net: Developer Profile: http://sourceforge.net/users/jemfinch/ (search took 0.174663 seconds)
@@ -114,7 +114,7 @@ def search(*args, **kwargs):
         last24hours.dequeue()
     return data
 
-class Google(callbacks.PrivmsgCommandAndRegexp):
+class GoogleTools(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
     def __init__(self):
@@ -313,6 +313,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
 
 
 
-Class = Google
+Class = GoogleTools
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
