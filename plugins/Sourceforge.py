@@ -105,6 +105,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     project's most recent bugs and rfes.
     """
     threaded = True
+    callBefore = ['URL']
     regexps = ['sfSnarfer']
 
     _reopts = re.I

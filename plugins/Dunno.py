@@ -138,6 +138,8 @@ class Dunno(callbacks.Privmsg):
     messages with messages kept in a database, able to give more personable
     responses."""
     priority = 100
+    callBefore = ['Misc']
+    callAfter = ['MoobotFactoids']
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.db = DunnoDB()

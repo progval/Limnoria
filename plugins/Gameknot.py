@@ -78,6 +78,7 @@ conf.registerChannelValue(conf.supybot.plugins.Gameknot, 'statSnarfer',
 
 class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
+    callBefore = ['URL']
     regexps = ['gameknotSnarfer', 'gameknotStatsSnarfer']
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:</td><td class=sml>(\d+)</td></tr>')

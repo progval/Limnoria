@@ -310,7 +310,7 @@ def MoobotDB():
     return SqliteMoobotDB()
 
 class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
-    priority = 98
+    callBefore = ['Dunno']
     addressedRegexps = ['changeFactoid', 'augmentFactoid',
                         'replaceFactoid', 'addFactoid']
     def __init__(self):

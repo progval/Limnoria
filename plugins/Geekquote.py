@@ -74,6 +74,7 @@ conf.registerChannelValue(conf.supybot.plugins.Geekquote, 'geekSnarfer',
 
 class Geekquote(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
+    callBefore = ['URL']
     regexps = ['geekSnarfer']
 
     def callCommand(self, method, irc, msg, *L, **kwargs):

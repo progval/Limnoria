@@ -87,8 +87,8 @@ conf.registerChannelValue(conf.supybot.plugins.Amazon, 'linkSnarfer',
 
 class Amazon(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
+    callBefore = ['URL']
     regexps = ['amzSnarfer']
-
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
             super(Amazon, self).callCommand(name, irc, msg, *L, **kwargs)

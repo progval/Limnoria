@@ -118,6 +118,7 @@ def registerBugzilla(name, url='', description=''):
 class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
     """Show a link to a bug report with a brief description"""
     threaded = True
+    callBefore = ['URL']
     regexps = ['bzSnarfer', 'bugzSnarf']
 
     def __init__(self):

@@ -192,7 +192,8 @@ totalTime = conf.supybot.plugins.Google.state.time()
 
 class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
-    regexps = sets.Set(['googleSnarfer', 'googleGroups'])
+    callBefore = ['URL']
+    regexps = ['googleSnarfer', 'googleGroups']
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.last24hours = structures.TimeoutQueue(86400)
@@ -390,7 +391,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         if not self.registryValue('groupsSnarfer', msg.args[0]):
             return
         queries = cgi.parse_qsl(match.group(1))
-        queries = filter(lambda q: q[0] in ['threadm', 'selm'], queries)
+        queries = [q for q in queries if q[0] in ('threadm', 'selm')]
         if not queries:
             return
         queries.append(('hl', 'en'))

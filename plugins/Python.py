@@ -85,8 +85,9 @@ conf.registerChannelValue(conf.supybot.plugins.Python, 'aspnSnarfer',
     the recipe when it see an ASPN Python recipe link on the channel."""))
 
 class Python(callbacks.PrivmsgCommandAndRegexp):
-    modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
+    callBefore = ['URL']
     regexps = ['aspnRecipes']
+    modulechars = string.ascii_letters + string.digits + '_.'
     def pydoc(self, irc, msg, args):
         """<python function>
 

@@ -77,6 +77,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
     get info about an auction.
     """
     threaded = True
+    callBefore = ['URL']
     regexps = ['ebaySnarfer']
 
     _reopts = re.I | re.S
