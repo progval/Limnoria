@@ -106,13 +106,6 @@ class Utilities(callbacks.Privmsg):
         (first, second) = privmsgs.getArgs(args, needed=2)
         irc.reply(msg, first+second)
 
-    def strsplit(self, irc, msg, args):
-        "<separator> <text"
-        (sep, text) = privmsgs.getArgs(args, needed=2)
-        if sep == '':
-            sep = None
-        irc.reply(msg, ' '.join(map(repr, text.split(sep))))
-
     def echo(self, irc, msg, args):
         """takes any number of arguments
 
@@ -120,24 +113,27 @@ class Utilities(callbacks.Privmsg):
         """
         irc.reply(msg, ' '.join(args))
 
-    def arg(self, irc, msg, args):
-        (i, rest) = privmsgs.getArgs(args, needed=2)
-        i = int(i)
-        args = callbacks.tokenize(rest)
-        irc.reply(msg, args[i])
-
     def re(self, irc, msg, args):
         """<regexp> <text>
 
         Returns all matches to <regexp> (in the form /regexp/flags) in text.
         """
         (regexp, text) = privmsgs.getArgs(args, needed=2)
+        f = None
         try:
             r = utils.perlReToPythonRe(regexp)
+            f = lambda s: ' '.join(r.findall(text))
         except ValueError, e:
-            irc.error(msg, 'Invalid regexp: %s' % e.args[0])
-            return
-        irc.reply(msg, ' '.join(r.findall(text)))
+            try:
+                f = utils.perlReToReplacer(regexp)
+                substitution = True
+            except ValueError:
+                irc.error(msg, 'Invalid regexp: %s' % e.args[0])
+                return
+            if f is None:
+                irc.error(msg, 'Invalid regexp: %s' % e.args[0])
+                return
+        irc.reply(msg, f(text))
 
 
 Class = Utilities
