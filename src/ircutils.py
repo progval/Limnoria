@@ -250,15 +250,15 @@ def joinModes(modes):
 
 def bold(s):
     """Returns the string s, bolded."""
-    return '\x02%s\x0F' % s
+    return '\x02%s\x02' % s
 
 def reverse(s):
     """Returns the string s, reverse-videoed."""
-    return '\x16%s\x0F' % s
+    return '\x16%s\x16' % s
 
 def underline(s):
     """Returns the string s, underlined."""
-    return '\x1F%s\x0F' % s
+    return '\x1F%s\x1F' % s
 
 mircColors = {
     None: '',
@@ -292,11 +292,11 @@ def mircColor(s, fg=None, bg=None):
     if fg is None or isinstance(fg, str):
         fg = mircColors[fg]
     if bg is None:
-        return '\x03%s%s\x0F' % (fg, s)
+        return '\x03%s%s\x03' % (fg, s)
     else:
         if isinstance(bg, str):
             bg = mircColors[bg]
-        return '\x03%s,%s%s\x0F' % (fg, bg, s)
+        return '\x03%s,%s%s\x03' % (fg, bg, s)
 
 def canonicalColor(s, bg=False, shift=0):
     """Assigns an (fg, bg) canonical color pair to a string based on its hash

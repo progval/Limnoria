@@ -80,6 +80,8 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
     def testColorize(self):
         self.assertNotRegexp('colorize foobar', r'\s+')
         self.assertRegexp('colorize foobar', r'\x03')
+        # Make sure we're closing colorize with an 'end color' marker
+        self.assertRegexp('colorize foobar', r'\x03$')
 
     _strings = ('Supybot pwns!', '123456', 'A string with \x02bold\x15')
     def testColorstrip(self):

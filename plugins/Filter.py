@@ -342,7 +342,7 @@ class Filter(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         L = [self._color(c) for c in text]
-        irc.reply(''.join(L))
+        irc.reply('%s%s' % (''.join(L), '\x03'))
 
     def colorstrip(self, irc, msg, args):
         """<text>

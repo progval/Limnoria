@@ -91,20 +91,20 @@ class FunctionsTestCase(SupyTestCase):
     def testBold(self):
         s = ircutils.bold('foo')
         self.assertEqual(s[0], '\x02')
-        self.assertEqual(s[-1], '\x0F')
+        self.assertEqual(s[-1], '\x02')
 
     def testMircColor(self):
         # No colors provided should return the same string
         s = 'foo'
         self.assertEqual(s, ircutils.mircColor(s))
         # Test positional args
-        self.assertEqual('\x030foo\x0F', ircutils.mircColor(s, 'white'))
-        self.assertEqual('\x031,2foo\x0F',ircutils.mircColor(s,'black','blue'))
-        self.assertEqual('\x03,3foo\x0F', ircutils.mircColor(s, None, 'green'))
+        self.assertEqual('\x030foo\x03', ircutils.mircColor(s, 'white'))
+        self.assertEqual('\x031,2foo\x03',ircutils.mircColor(s,'black','blue'))
+        self.assertEqual('\x03,3foo\x03', ircutils.mircColor(s, None, 'green'))
         # Test keyword args
-        self.assertEqual('\x034foo\x0F', ircutils.mircColor(s, fg='red'))
-        self.assertEqual('\x03,5foo\x0F', ircutils.mircColor(s, bg='brown'))
-        self.assertEqual('\x036,7foo\x0F',
+        self.assertEqual('\x034foo\x03', ircutils.mircColor(s, fg='red'))
+        self.assertEqual('\x03,5foo\x03', ircutils.mircColor(s, bg='brown'))
+        self.assertEqual('\x036,7foo\x03',
                          ircutils.mircColor(s, bg='orange', fg='purple'))
 
     def testMircColors(self):
@@ -179,20 +179,15 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(ircutils.unColor('\x02bold\x0302,04foo\x03bar\x0f'),
                                           '\x02boldfoobar\x0f')
         self.assertEqual(ircutils.unColor('\x03foo\x03'), 'foo')
-        self.assertEqual(ircutils.unColor('\x03foo\x0F'), 'foo')
+        self.assertEqual(ircutils.unColor('\x03foo\x0F'), 'foo\x0F')
         self.assertEqual(ircutils.unColor('\x0312foo\x03'), 'foo')
         self.assertEqual(ircutils.unColor('\x0312,14foo\x03'), 'foo')
         self.assertEqual(ircutils.unColor('\x03,14foo\x03'), 'foo')
         self.assertEqual(ircutils.unColor('\x03,foo\x03'), ',foo')
-        # These tests aren't going to pass until I decide how to handle
-        # stripping of \x0f.  We don't want to just rampantly remove \x0f
-        # because it may be a clear code from some other formatting.  Leaving
-        # it in doesn't adversely affect anything, so for now I'm not removing
-        # it.
-        self.assertEqual(ircutils.unColor('\x0312foo\x0F'), 'foo')
-        self.assertEqual(ircutils.unColor('\x0312,14foo\x0F'), 'foo')
-        self.assertEqual(ircutils.unColor('\x03,14foo\x0F'), 'foo')
-        self.assertEqual(ircutils.unColor('\x03,foo\x0F'), ',foo')
+        self.assertEqual(ircutils.unColor('\x0312foo\x0F'), 'foo\x0F')
+        self.assertEqual(ircutils.unColor('\x0312,14foo\x0F'), 'foo\x0F')
+        self.assertEqual(ircutils.unColor('\x03,14foo\x0F'), 'foo\x0F')
+        self.assertEqual(ircutils.unColor('\x03,foo\x0F'), ',foo\x0F')
 
     def testDccIpStuff(self):
         def randomIP():
