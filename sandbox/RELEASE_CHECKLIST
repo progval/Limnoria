@@ -23,6 +23,7 @@ Add the release to the supybot package in SF.net.
   The version should be Supybot-MAJOR.MINOR.PATCHLEVEL
 Upload the archives to upload.sf.net, add to the release on SF.net.
 Announce the release in a News item on SF.net.
+  The subject should be MAJOR.MINOR.PATCHLEVEL Released!
 Announce the release on Freshmeat.net.
   The version should be MAJOR.MINOR.PATCHLEVEL
 Announce the release on PyPI via "python setup.py register".
