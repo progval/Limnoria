@@ -993,89 +993,19 @@ class DisabledCommands(object):
             if self.d[command] is not None:
                 self.d[command].remove(plugin)
 
-class Plugin(irclib.IrcCallback):
+
+class Commands(object):
     # For awhile, a comment stood here to say, "Eventually callCommand."  But
     # that's wrong, because we can't do generic error handling in this
     # callCommand -- plugins need to be able to override callCommand and do
     # error handling there (see the Http plugin for an example).
     __firewalled__ = {'isCommand': None,}
                       # 'invalidCommand': None} # Gotta raise callbacks.Error.
-    public = True
-    alwaysCall = ()
-    threaded = False
-    noIgnore = False
-    Proxy = IrcObjectProxy
     commandArgs = ['self', 'irc', 'msg', 'args']
     # These must be class-scope, so all plugins use the same one.
     _disabled = DisabledCommands()
     def isDisabled(self, command):
         return self._disabled.disabled(command, self.name())
-
-    def __init__(self, irc):
-        self.__parent = super(Plugin, self)
-        myName = self.name()
-        self.log = log.getPluginLogger(myName)
-        # We can't do this because of the specialness that Owner and Misc do.
-        # I guess plugin authors will have to get the capitalization right.
-        # self.callAfter = map(str.lower, self.callAfter)
-        # self.callBefore = map(str.lower, self.callBefore)
-        ### Setup the dispatcher command.
-        canonicalname = canonicalName(myName)
-        self._original = getattr(self, canonicalname, None)
-        docstring = """<command> [<args> ...]
-
-        Command dispatcher for the %s plugin.  Use 'list %s' to see the
-        commands provided by this plugin.  Use 'config list plugins.%s' to see
-        the configuration values for this plugin.  In most cases this dispatcher
-        command is unnecessary; in cases where more than one plugin defines a
-        given command, use this command to tell the bot which plugin's command
-        to use.""" % (myName, myName, myName)
-        def dispatcher(self, irc, msg, args):
-            def handleBadArgs():
-                if self._original:
-                    self._original(irc, msg, args)
-                else:
-                    if args:
-                        irc.error('%s is not a valid command in this plugin.' %
-                                  args[0])
-                    else:
-                        irc.error()
-            if args:
-                name = canonicalName(args[0])
-                if name == canonicalName(self.name()):
-                    handleBadArgs()
-                elif self.isCommand(name):
-                    cap = checkCommandCapability(msg, self, name)
-                    if cap:
-                        irc.errorNoCapability(cap)
-                        return
-                    del args[0]
-                    method = getattr(self, name)
-                    try:
-                        realname = '%s.%s' % (canonicalname, name)
-                        method(irc, msg, args)
-                    except (getopt.GetoptError, ArgumentError):
-                        irc.reply(formatArgumentError(method, name))
-                else:
-                    handleBadArgs()
-            else:
-                handleBadArgs()
-        dispatcher = utils.gen.changeFunctionName(dispatcher, canonicalname)
-        if self._original:
-            dispatcher.__doc__ = self._original.__doc__
-            dispatcher.isDispatcher = False
-        else:
-            dispatcher.__doc__ = docstring
-            dispatcher.isDispatcher = True
-        setattr(self.__class__, canonicalname, dispatcher)
-
-    def __call__(self, irc, msg):
-        # This is for later dynamic scoping.
-        if msg.command == 'PRIVMSG':
-            if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
-                self.__parent.__call__(irc, msg)
-        else:
-            self.__parent.__call__(irc, msg)
 
     def isCommand(self, name):
         """Returns whether a given method name is a command in this plugin."""
@@ -1150,6 +1080,79 @@ class Plugin(irclib.IrcCallback):
         else:
             return format('The %s command has no help.', name)
 
+
+class PluginMixin(irclib.IrcCallback):
+    public = True
+    alwaysCall = ()
+    threaded = False
+    noIgnore = False
+    Proxy = IrcObjectProxy
+    def __init__(self, irc):
+        self.__parent = super(PluginMixin, self)
+        myName = self.name()
+        self.log = log.getPluginLogger(myName)
+        # We can't do this because of the specialness that Owner and Misc do.
+        # I guess plugin authors will have to get the capitalization right.
+        # self.callAfter = map(str.lower, self.callAfter)
+        # self.callBefore = map(str.lower, self.callBefore)
+        ### Setup the dispatcher command.
+        canonicalname = canonicalName(myName)
+        self._original = getattr(self, canonicalname, None)
+        docstring = """<command> [<args> ...]
+
+        Command dispatcher for the %s plugin.  Use 'list %s' to see the
+        commands provided by this plugin.  Use 'config list plugins.%s' to see
+        the configuration values for this plugin.  In most cases this dispatcher
+        command is unnecessary; in cases where more than one plugin defines a
+        given command, use this command to tell the bot which plugin's command
+        to use.""" % (myName, myName, myName)
+        def dispatcher(self, irc, msg, args):
+            def handleBadArgs():
+                if self._original:
+                    self._original(irc, msg, args)
+                else:
+                    if args:
+                        irc.error('%s is not a valid command in this plugin.' %
+                                  args[0])
+                    else:
+                        irc.error()
+            if args:
+                name = canonicalName(args[0])
+                if name == canonicalName(self.name()):
+                    handleBadArgs()
+                elif self.isCommand(name):
+                    cap = checkCommandCapability(msg, self, name)
+                    if cap:
+                        irc.errorNoCapability(cap)
+                        return
+                    del args[0]
+                    method = getattr(self, name)
+                    try:
+                        realname = '%s.%s' % (canonicalname, name)
+                        method(irc, msg, args)
+                    except (getopt.GetoptError, ArgumentError):
+                        irc.reply(formatArgumentError(method, name))
+                else:
+                    handleBadArgs()
+            else:
+                handleBadArgs()
+        dispatcher = utils.gen.changeFunctionName(dispatcher, canonicalname)
+        if self._original:
+            dispatcher.__doc__ = self._original.__doc__
+            dispatcher.isDispatcher = False
+        else:
+            dispatcher.__doc__ = docstring
+            dispatcher.isDispatcher = True
+        setattr(self.__class__, canonicalname, dispatcher)
+
+    def __call__(self, irc, msg):
+        # This is for later dynamic scoping.
+        if msg.command == 'PRIVMSG':
+            if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
+                self.__parent.__call__(irc, msg)
+        else:
+            self.__parent.__call__(irc, msg)
+
     def registryValue(self, name, channel=None, value=True):
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
@@ -1208,6 +1211,10 @@ class Plugin(irclib.IrcCallback):
             group.setValue(value)
         else:
             group.set(value)
+
+
+class Plugin(PluginMixin, Commands):
+    pass
 
 
 class SimpleProxy(RichReplyMethods):
