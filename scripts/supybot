@@ -206,7 +206,16 @@ if __name__ == '__main__':
     
     # We could add an option for this, but we'll wait until it's requested.
     defaultNetwork = conf.supybot.networks.default()
-    network = conf.supybot.networks.get(defaultNetwork)
+    try:
+        network = conf.supybot.networks.get(defaultNetwork)
+    except registry.NonExistentRegistryEntry:
+        sys.stderr.write('No default network defined.  Add a line to your ')
+        sys.stderr.write('registry that says (without the quotes), "supybot.')
+        sys.stderr.write('networks.default: <name>" where <name> is the name ')
+        sys.stderr.write('of the network you\'d like to connect to by ')
+        sys.stderr.write('default when the bot starts.')
+        sys.exit(-1)
+
     server = network.server()
     if ':' in server:
         serverAndPort = server.split(':', 1)
