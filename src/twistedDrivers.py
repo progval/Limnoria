@@ -99,6 +99,9 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
         self.server = (server, port)
         reactor.connectTCP(server, port, self)
 
+    def die(self):
+        pass
+
 
 class MyShell(Shell):
     def checkUserAndPass(self, username, password):
