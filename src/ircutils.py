@@ -115,7 +115,7 @@ def isNick(s, strictRfc=True):
     if strictRfc:
         return bool(nickRe.match(s))
     else:
-        return not isChannel(s)
+        return not isChannel(s) and not isUserHostmask(s)
 
 def isChannel(s):
     """Returns True if s is a valid IRC channel name."""
