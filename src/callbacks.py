@@ -284,19 +284,19 @@ def tokenize(s):
     debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
     return _lastTokenizeResult
 
-def tokenize(s):
-    """A utility function to create a Tokenizer and tokenize a string."""
-    start = time.time()
-    try:
-        if conf.enablePipeSyntax:
-            tokens = '|'
-        else:
-            tokens = ''
-        args = Tokenizer(tokens).tokenize(s)
-    except ValueError, e:
-        raise SyntaxError, str(e)
-    #debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
-    return args
+## def tokenize(s):
+##     """A utility function to create a Tokenizer and tokenize a string."""
+##     start = time.time()
+##     try:
+##         if conf.enablePipeSyntax:
+##             tokens = '|'
+##         else:
+##             tokens = ''
+##         args = Tokenizer(tokens).tokenize(s)
+##     except ValueError, e:
+##         raise SyntaxError, str(e)
+##     #debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
+##     return args
 
 def getCommands(tokens):
     """Given tokens as output by tokenize, returns the command names."""
