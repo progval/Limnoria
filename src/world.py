@@ -84,20 +84,21 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
         log.warning('Uncollectable garbage: %s', gc.garbage)
     if 'noflush' not in tempvars:
         flush()
-    log.debug('Regexp cache size: %s', len(sre._cache))
-    log.debug('Hostmask pattern cache size: %s' % len(ircutils._patternCache))
-    log.info('%s upkeep ran.', time.strftime(conf.logTimestampFormat))
+    if not dying:
+        log.debug('Regexp cache size: %s', len(sre._cache))
+        log.debug('Pattern cache size: %s'%len(ircutils._patternCache))
+        log.info('%s upkeep ran.', time.strftime(conf.logTimestampFormat))
     return collected
 
 def makeIrcsDie():
     """Kills Ircs."""
-    log.info('Assassinating the Irc object council...')
+    log.info('Assassinating the Irc object council.')
     for irc in ircs[:]:
         irc.die()
 
 def startDying():
     """Starts dying."""
-    log.info('Begining that long, slow walk into the night...')
+    log.info('Beginning that long, slow walk into the night.')
     global dying
     dying = True
 
