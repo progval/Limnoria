@@ -1212,6 +1212,12 @@ class SimpleProxy(RichReplyMethods):
         self.irc = irc
         self.msg = msg
 
+    def getRealIrc(self):
+        if isinstance(self.irc, irclib.Irc):
+            return self.irc
+        else:
+            return self.irc.getRealIrc()
+        
     def error(self, s, msg=None, **kwargs):
         if 'Raise' in kwargs and kwargs['Raise']:
             if s:
@@ -1229,6 +1235,7 @@ class SimpleProxy(RichReplyMethods):
             msg = self.msg
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
+        kwargs.pop('noLengthCheck', None)
         m = reply(msg, s, **kwargs)
         self.irc.queueMsg(m)
         return m
