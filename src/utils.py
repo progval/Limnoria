@@ -236,7 +236,10 @@ def perlReToReplacer(s):
         (kind, regexp, replace, flags) = nonEscapedSlashes.split(s)
     except ValueError: # Unpack list of wrong size.
         raise ValueError, 'Must be of the form s/.../.../'
+    regexp = regexp.replace('\x08', r'\b')
     replace = replace.replace('\\/', '/')
+    for i in xrange(10):
+        replace = replace.replace(chr(i), r'\%s' % i)
     if kind != 's':
         raise ValueError, 'Invalid kind: must be "s"'
     g = False

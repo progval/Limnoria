@@ -76,6 +76,9 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
     def testReNotEmptyString(self):
         self.assertError('re s//foo/g blah')
 
+    def testReWorksWithJustCaret(self):
+        self.assertResponse('re s/^/foo/ bar', 'foobar')
+
     def testReNoEscapingUnpackListOfWrongSize(self):
         self.assertNotRegexp('re foo bar baz', 'unpack list of wrong size')
 

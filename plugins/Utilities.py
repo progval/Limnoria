@@ -144,14 +144,13 @@ class Utilities(callbacks.Privmsg):
         except ValueError, e:
             try:
                 f = utils.perlReToReplacer(regexp)
-                substitution = True
             except ValueError, e:
                 irc.error(msg, 'Invalid regexp: %s' % e.args[0])
                 return
             if f is None:
                 irc.error(msg, 'Invalid regexp: %s' % e.args[0])
                 return
-        if f(''): # It matches the empty string.
+        if f('') and len(f(' ')) > len(f(''))+1: # Matches the empty string.
             s = 'You probably don\'t want to match the empty string.'
             irc.error(msg, s)
         else:
