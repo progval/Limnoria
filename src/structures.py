@@ -184,6 +184,9 @@ class queue(object):
     def __len__(self):
         return len(self.front) + len(self.back)
 
+    def __nonzero__(self):
+        return bool(self.back or self.front)
+
     def __contains__(self, elt):
         return elt in self.front or elt in self.back
 

@@ -33,6 +33,7 @@ from fix import *
 from structures import queue, RingBuffer
 
 import copy
+import sets
 import time
 import atexit
 
@@ -110,7 +111,7 @@ class IrcMsgQueue(object):
         self.highpriority = queue()
         self.normal = queue()
         self.lowpriority = queue()
-        self.msgs = set()
+        self.msgs = sets.Set()
 
     def enqueue(self, msg):
         if msg in self.msgs:
@@ -139,7 +140,7 @@ class IrcMsgQueue(object):
         return msg
 
     def __nonzero__(self):
-        return (self.highpriority or self.normal or self.lowpriority)
+        return bool(self.highpriority or self.normal or self.lowpriority)
 
 
 ###
@@ -150,10 +151,10 @@ class Channel(object):
     __slots__ = ('users', 'ops', 'halfops', 'voices', 'topic')
     def __init__(self):
         self.topic = ''
-        self.users = set()
-        self.ops = set()
-        self.halfops = set()
-        self.voices = set()
+        self.users = sets.Set()
+        self.ops = sets.Set()
+        self.halfops = sets.Set()
+        self.voices = sets.Set()
 
     def addUser(self, user):
         nick = user.lstrip('@%+')
@@ -330,9 +331,9 @@ class Irc(object):
 
     Handles PING commands already.
     """
-    _nickSetters = set(['001', '002', '003', '004', '250', '251', '252', '254',
-                        '255', '265', '266', '372', '375', '376', '333', '353',
-                        '332', '366'])
+    _nickSetters = sets.Set(['001', '002', '003', '004', '250', '251', '252',
+                             '254', '255', '265', '266', '372', '375', '376',
+                             '333', '353', '332', '366'])
     def __init__(self, nick, user='', ident='', password='', callbacks=None):
         world.ircs.append(self)
         self.nick = nick

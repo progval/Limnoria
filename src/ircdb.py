@@ -32,6 +32,7 @@
 from fix import *
 
 import os
+import sets
 import time
 import atexit
 import string
@@ -86,37 +87,37 @@ def normalize(s):
     return s.translate(_normal)
 
 
-class CapabilitySet(set):
+class CapabilitySet(sets.Set):
     def __init__(self, capabilities=()):
-        set.__init__(self)
+        sets.Set.__init__(self)
         for capability in capabilities:
             self.add(capability)
 
     def add(self, capability):
         capability = ircutils.toLower(capability)
         inverted = invertCapability(capability)
-        if set.__contains__(self, inverted):
-            set.remove(self, inverted)
-        set.add(self, capability)
+        if sets.Set.__contains__(self, inverted):
+            sets.Set.remove(self, inverted)
+        sets.Set.add(self, capability)
 
     def remove(self, capability):
         capability = ircutils.toLower(capability)
-        set.remove(self, capability)
+        sets.Set.remove(self, capability)
 
     def __contains__(self, capability):
         capability = ircutils.toLower(capability)
-        if set.__contains__(self, capability):
+        if sets.Set.__contains__(self, capability):
             return True
-        if set.__contains__(self, invertCapability(capability)):
+        if sets.Set.__contains__(self, invertCapability(capability)):
             return True
         else:
             return False
 
     def check(self, capability):
         capability = ircutils.toLower(capability)
-        if set.__contains__(self, capability):
+        if sets.Set.__contains__(self, capability):
             return True
-        elif set.__contains__(self, invertCapability(capability)):
+        elif sets.Set.__contains__(self, invertCapability(capability)):
             return False
         else:
             raise KeyError, capability
@@ -319,6 +320,7 @@ class UsersDictionary(object):
         fd = file(filename, 'r')
         s = fd.read()
         fd.close()
+        Set = sets.Set
         self.dict = eval(normalize(s))
         self.cache = {} # hostmasks to nicks.
         self.revcache = ircutils.IrcDict() # nicks to hostmasks.
@@ -405,6 +407,7 @@ class ChannelsDictionary(object):
         fd = file(filename, 'r')
         s = fd.read()
         fd.close()
+        Set = sets.Set
         self.dict = eval(normalize(s))
 
     def getChannel(self, channel):

@@ -35,6 +35,7 @@ from fix import *
 
 import os
 import sys
+import sets
 import struct
 import os.path
 import cPickle as pickle
@@ -273,7 +274,7 @@ class ReaderWriter(IterableMap):
         self._readJournal()
         self._openFiles()
         self.adds = {}
-        self.removals = set()
+        self.removals = sets.Set()
 
     def _openFiles(self):
         self.cdb = Reader(self.filename)
@@ -294,7 +295,7 @@ class ReaderWriter(IterableMap):
         self.journal.flush()
 
     def _readJournal(self):
-        removals = set()
+        removals = sets.Set()
         adds = {}
         try:
             fd = file(self.journalName, 'r')
@@ -395,7 +396,7 @@ class ReaderWriter(IterableMap):
     has_key = __contains__
 
     def iteritems(self):
-        already = set()
+        already = sets.Set()
         for (key, value) in self.cdb.iteritems():
             if key in self.removals or key in already:
                 continue

@@ -31,6 +31,7 @@
 
 from fix import *
 
+import sets
 import os.path
 
 ###
@@ -79,7 +80,7 @@ allowEval = True
 # defaultCapabilities: Capabilities allowed to everyone by default.  You almost
 #                      certainly want to have !owner and !admin in here.
 ###
-defaultCapabilities = set(['!owner', '!admin'])
+defaultCapabilities = sets.Set(['!owner', '!admin'])
 
 ###
 # reply%s: Stock replies for various reasons.
@@ -177,7 +178,7 @@ detailedTracebacks = True
 #               bot will be found.
 ###
 driverModule = 'asyncoreDrivers'
-driverModule = 'twistedDrivers'
+#driverModule = 'twistedDrivers'
 
 ###############################
 ###############################

@@ -49,109 +49,109 @@ def catch(f, *args, **kwargs):
     except:
         return None
 
-class bool(int):
-    """Just a holdover until 2.3 comes out with its wonderful new bool type."""
-    def __new__(cls, val=0):
-        # This constructor always returns an existing instance
-        if val:
-            return True
-        else:
-            return False
+## class bool(int):
+##     """2.3 came out."""
+##     def __new__(cls, val=0):
+##         # This constructor always returns an existing instance
+##         if val:
+##             return True
+##         else:
+##             return False
 
-    def __repr__(self):
-        if self:
-            return "True"
-        else:
-            return "False"
+##     def __repr__(self):
+##         if self:
+##             return "True"
+##         else:
+##             return "False"
 
-    __str__ = __repr__
+##     __str__ = __repr__
 
-    def __and__(self, other):
-        if isinstance(other, bool):
-            return bool(int(self) & int(other))
-        else:
-            return int.__and__(self, other)
+##     def __and__(self, other):
+##         if isinstance(other, bool):
+##             return bool(int(self) & int(other))
+##         else:
+##             return int.__and__(self, other)
 
-    __rand__ = __and__
+##     __rand__ = __and__
 
-    def __or__(self, other):
-        if isinstance(other, bool):
-            return bool(int(self) | int(other))
-        else:
-            return int.__or__(self, other)
+##     def __or__(self, other):
+##         if isinstance(other, bool):
+##             return bool(int(self) | int(other))
+##         else:
+##             return int.__or__(self, other)
 
-    __ror__ = __or__
+##     __ror__ = __or__
 
-    def __xor__(self, other):
-        if isinstance(other, bool):
-            return bool(int(self) ^ int(other))
-        else:
-            return int.__xor__(self, other)
+##     def __xor__(self, other):
+##         if isinstance(other, bool):
+##             return bool(int(self) ^ int(other))
+##         else:
+##             return int.__xor__(self, other)
 
-    __rxor__ = __xor__
+##     __rxor__ = __xor__
 
-False = int.__new__(bool, 0)
-True = int.__new__(bool, 1)
+## False = int.__new__(bool, 0)
+## True = int.__new__(bool, 1)
 
 
-class set(object):
-    """Just a holdover until 2.3 comes out with its wonderful new set type."""
-    __slots__ = ('d',)
-    def __init__(self, seq=()):
-        self.d = {}
-        for x in seq:
-            self.d[x] = None
+## class set(object):
+##     """2.3 came out."""
+##     __slots__ = ('d',)
+##     def __init__(self, seq=()):
+##         self.d = {}
+##         for x in seq:
+##             self.d[x] = None
 
-    def __contains__(self, x):
-        return x in self.d
+##     def __contains__(self, x):
+##         return x in self.d
 
-    def __iter__(self):
-        return self.d.iterkeys()
+##     def __iter__(self):
+##         return self.d.iterkeys()
 
-    def __repr__(self):
-        return '%s([%s])' % (self.__class__.__name__,
-                             ', '.join(map(repr, self.d.iterkeys())))
+##     def __repr__(self):
+##         return '%s([%s])' % (self.__class__.__name__,
+##                              ', '.join(map(repr, self.d.iterkeys())))
 
-    def __nonzero__(self):
-        if self.d:
-            return True
-        else:
-            return False
-
-    def __getstate__(self):
-        return (self.d.keys(),)
-
-    def __setstate__(self, (L,)):
-        self.d = {}
-        for x in L:
-            self.d[x] = None
-
-    def __len__(self):
-        return len(self.d)
-
-    def add(self, x):
-        self.d[x] = None
-
-    def remove(self, x):
-        del self.d[x]
-
-    def discard(self, x):
-        try:
-            del self.d[x]
-        except KeyError:
-            pass
-
-    def __eq__(self, other):
-        return self.d == other.d
-
-    def __ne__(self, other):
-        return not self.d == other.d
+##     def __nonzero__(self):
+##         if self.d:
+##             return True
+##         else:
+##             return False
 
 ##     def __getstate__(self):
-##         return self.d
+##         return (self.d.keys(),)
 
-##     def __setstate__(self, d):
-##         self.d = d
+##     def __setstate__(self, (L,)):
+##         self.d = {}
+##         for x in L:
+##             self.d[x] = None
+
+##     def __len__(self):
+##         return len(self.d)
+
+##     def add(self, x):
+##         self.d[x] = None
+
+##     def remove(self, x):
+##         del self.d[x]
+
+##     def discard(self, x):
+##         try:
+##             del self.d[x]
+##         except KeyError:
+##             pass
+
+##     def __eq__(self, other):
+##         return self.d == other.d
+
+##     def __ne__(self, other):
+##         return not self.d == other.d
+
+## ##     def __getstate__(self):
+## ##         return self.d
+
+## ##     def __setstate__(self, d):
+## ##         self.d = d
 
 
 class IterableMap(object):
@@ -226,6 +226,22 @@ def window(L, size):
         raise ValueError, 'size <= 0 unallowed.'
     for i in xrange(len(L) - (size-1)):
         yield L[i:i+size]
+
+## def group(seq, groupSize):
+##     L = []
+##     LL = []
+##     i = groupSize
+##     for elt in seq:
+##         if i > 0:
+##             LL.append(elt)
+##             i -= 1
+##         else:
+##             L.append(LL)
+##             i = groupSize
+##             LL = []
+##     if LL:
+##         L.append(LL)
+##     return L
 
 def itersplit(iterable, isSeparator, yieldEmpty=False):
     acc = []

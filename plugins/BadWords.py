@@ -43,6 +43,7 @@ Commands include:
 from baseplugin import *
 
 import re
+import sets
 
 import ircdb
 import ircmsgs
@@ -63,7 +64,7 @@ def subber(m):
 class BadWords(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.badwords = set()
+        self.badwords = sets.Set()
 
     def outFilter(self, irc, msg):
         if hasattr(self, 'regexp') and msg.command == 'PRIVMSG':

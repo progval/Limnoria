@@ -31,17 +31,12 @@
 
 """
 Allows 'aliases' for other commands.
-
-Commands include:
-  alias
-  unalias
-  freeze
-  unfreeze
 """
 
 from baseplugin import *
 
 import re
+import sets
 
 import conf
 import debug
@@ -109,7 +104,7 @@ def makeNewAlias(name, alias):
 class Alias(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.frozen = set()
+        self.frozen = sets.Set()
         
     def freeze(self, irc, msg, args):
         """<alias>

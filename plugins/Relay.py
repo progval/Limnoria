@@ -36,6 +36,7 @@ Handles relaying between networks.
 from baseplugin import *
 
 import re
+import sets
 import time
 
 import conf
@@ -95,7 +96,7 @@ class Relay(callbacks.Privmsg):
         self.started = False
         self.ircstates = {}
         self.lastmsg = ircmsgs.ping('this is just a fake message')
-        self.channels = set()
+        self.channels = sets.Set()
         self.abbreviations = {}
         
     def inFilter(self, irc, msg):

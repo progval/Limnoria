@@ -121,7 +121,7 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                                   words=words+%s,
                                   msgs=msgs+1,
                                   actions=actions+%s""",
-                           smileys, frowns, chars, words, isAction)
+                           smileys, frowns, chars, words, int(isAction))
             try:
                 name = ircdb.users.getUserName(msg.prefix)
             except KeyError:
@@ -136,7 +136,7 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                                   %s, %s, 1, %s,
                                   0, 0, 0, 0, 0, 0 )""",
                                name, int(time.time()), msg.args[1],
-                               smileys, frowns, chars, words, isAction)
+                               smileys, frowns, chars, words, int(isAction))
             else:
                 cursor.execute("""UPDATE user_stats SET
                                   last_seen=%s, last_msg=%s, chars=chars+%s,
@@ -145,7 +145,8 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
                                   frowns=frowns+%s
                                   WHERE name=%s""",
                                int(time.time()), s,
-                               chars, words, isAction, smileys, frowns, name)
+                               chars, words, int(isAction),
+                               smileys, frowns, name)
             db.commit()
 
     def doJoin(self, irc, msg):
