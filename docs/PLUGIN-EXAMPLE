@@ -36,7 +36,7 @@ of time to run, you'll want to thread them so they don't block
 the entire bot.
 
 Does your plugin need to be threaded? [y/n] n
-Your new plugin template is in plugins/Random.py
+Your new plugin template is Random.py
 functor%
 -----
 
@@ -79,6 +79,9 @@ is available as examples/Random.py):
 """
 Add the module docstring here.  This will be used by the setup.py script.
 """
+
+__revision__ = "$Id$"
+__author__ = ''
 
 import supybot.plugins as plugins
 
@@ -158,9 +161,8 @@ were curious)
 Do be careful not to give your __init__ any arguments (other than
 self, of course).  There's no way anything will ever get to them!  If
 you have some sort of initial values you need to get to your plugin
-before it can do anything interesting, add a command that gets those
-values.  By convention, those commands begin with "start" -- check out
-the Relay plugin for an example of such a command.
+before it can do anything interesting, you should get those values
+from the registry.
 
 There's an easier way to get our plugin to have its own rng than to
 define an __init__.  Plugins are unique among classes because we're
@@ -199,7 +201,7 @@ uses).  The arguments are a bit less obvious.  Self is self-evident
 original IrcMsg object.  But you're really not going to have to deal
 with either of these too much (with the exception of calling irc.reply
 or irc.error).  What you're *really* interested in is the args arg.
-That if a list of all the arguments passed to your command, pre-parsed
+That is a list of all the arguments passed to your command, pre-parsed
 and already evaluated (i.e., you never have to worry about nested
 commands, or handling double quoted strings, or splitting on
 whitespace -- the work has already been done for you).  You can read
