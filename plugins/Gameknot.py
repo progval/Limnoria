@@ -188,8 +188,9 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             wStats = '%s; W-%s, L-%s, D-%s' % (wRating, wWins, wLosses, wDraws)
             bStats = '%s; W-%s, L-%s, D-%s' % (bRating, bWins, bLosses, bDraws)
             irc.queueMsg(callbacks.reply(msg, 
-              '%s: %s (%s) vs. %s (%s);  %s' % (
-                gameTitle, wName, wStats, bName, bStats, toMove)))
+              '%s: %s (%s) vs. %s (%s);  %s' % \
+              (gameTitle, wName, wStats, bName, bStats, toMove),
+              prefixName=False))
         except ValueError:
             irc.queueMsg(callbacks.reply(msg,
               'That doesn\'t appear to be a proper Gameknot game.'))

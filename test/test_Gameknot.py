@@ -41,6 +41,8 @@ class GameknotTestCase(PluginTestCase, PluginDocumentation):
 
     def testUrlSnarfer(self):
         self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
+        self.assertNotRegexp('http://gameknot.com/chess.pl?bd=1019508',
+                             self.nick)
 
     def testStatsUrlSnarfer(self):
         self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
