@@ -497,6 +497,49 @@ class RichReplyMethodsTestCase(PluginTestCase):
         self.assertRegexp('error', 'admin')
 
 
+class SourceNestedPluginTestCase(PluginTestCase):
+    plugins = ('Utilities',)
+    class E(callbacks.Plugin):
+        def f(self, irc, msg, args):
+            """takes no arguments
+
+            F
+            """
+            irc.reply('f')
+
+        class g(callbacks.Commands):
+            def h(self, irc, msg, args):
+                """takes no arguments
+
+                H
+                """
+                irc.reply('h')
+
+            class i(callbacks.Commands):
+                def j(self, irc, msg, args):
+                    """takes no arguments
+
+                    J
+                    """
+                    irc.reply('j')
+
+    def test(self):
+        cb = self.E(self.irc)
+        self.irc.addCallback(cb)
+        self.assertEqual(cb.getCommand(['f']), ['f'])
+        self.assertEqual(cb.getCommand(['e', 'f']), ['e', 'f'])
+        self.assertEqual(cb.getCommand(['e', 'g', 'h']), ['e', 'g', 'h'])
+        self.assertEqual(cb.getCommand(['e', 'g', 'i', 'j']),
+                                       ['e', 'g', 'i', 'j'])
+        self.assertResponse('e f', 'f')
+        self.assertResponse('e g h', 'h')
+        self.assertResponse('e g i j', 'j')
+        self.assertHelp('help f')
+        self.assertHelp('help e g h')
+        self.assertHelp('help e g i j')
+        self.assertRegexp('list e', 'f, g h, and g i j')
+
+                
 class WithPrivateNoticeTestCase(ChannelPluginTestCase):
     plugins = ('Utilities',)
     class WithPrivateNotice(callbacks.Plugin):
