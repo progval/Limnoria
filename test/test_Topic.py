@@ -61,6 +61,12 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertEqual(m.args[0], self.channel)
         self.assertEqual(m.args[1], 'foo (test) || bar (test)')
 
+    def testInsert(self):
+        m = self.getMsg('topic add foo')
+        self.assertEqual(m.args[1], 'foo (test)')
+        m = self.getMsg('topic insert bar')
+        self.assertEqual(m.args[1], 'bar (test) || foo (test)')
+
     def testChange(self):
         _ = self.getMsg('topic add foo')
         _ = self.getMsg('topic add bar')

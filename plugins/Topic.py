@@ -201,28 +201,28 @@ class Topic(callbacks.Privmsg):
         irc.reply(topic)
     topic = wrap(topic, ['inChannel'])
 
-    def add(self, irc, msg, args, channel, topic, insert=False):
+    def add(self, irc, msg, args, channel, topic):
         """[<channel>] <topic>
 
         Adds <topic> to the topics for <channel>.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
-        if insert:
-            topics.insert(0, topic)
-        else:
-            topics.append(topic)
+        topics.append(topic)
         self._sendTopics(irc, channel, topics)
     add = wrap(add, ['canChangeTopic', rest('topic')])
 
-    def insert(self, irc, msg, args):
+    def insert(self, irc, msg, args, channel, topic):
         """[<channel>] <topic>
 
         Adds <topic> to the topics for <channel> at the beginning of the topics
         currently on <channel>.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
-        self.add(irc, msg, args, insert=True)
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics.insert(0, topic)
+        self._sendTopics(irc, channel, topics)
+    insert = wrap(insert, ['canChangeTopic', rest('topic')])
 
     def shuffle(self, irc, msg, args, channel):
         """[<channel>]
