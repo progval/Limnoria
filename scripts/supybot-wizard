@@ -383,7 +383,8 @@ def main():
                 # FIXME: say which ones weren't channels.
                 output("""Not all of those are valid IRC channels.  Be sure to
                 prefix the channel with # (or +, or !, or &, but no one uses
-                those channels, really).""")
+                those channels, really).  Be sure the channel key (if you are
+                supplying one) does not contain a comma.""")
     else:
         conf.supybot.channels.setValue([])
 

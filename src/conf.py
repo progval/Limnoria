@@ -168,7 +168,13 @@ class ValidChannel(registry.String):
     """Value must be a valid IRC channel name."""
     def setValue(self, v):
         if ',' in v:
-            (channel, _) = v.split(',', 1)
+            # To prevent stupid users from: a) trying to add a channel key
+            # with a comma in it, b) trying to add channels separated by
+            # commas instead of spaces
+            try:
+                (channel, _) = v.split(',')
+            except ValueError:
+                self.error()
         else:
             channel = v
         if not ircutils.isChannel(channel):
