@@ -51,7 +51,7 @@ commandDict = {}
 firstChars = {}
 
 def genHeader(title, meta=''):
-    return """
+    return '''
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
                           "http://www.w3.org/TR/html4/strict.dtd">
     <html lang="en-us">
@@ -62,10 +62,10 @@ def genHeader(title, meta=''):
           href="http://supybot.sourceforge.net/css/supybot.css">
     %s
     <body><div>
-    """ % (title, meta)
+    ''' % (title, meta)
 
 def genFooter():
-    return """
+    return '''
     </div>
     <div style="text-align: center"><br /><!-- Buttons -->
       <a href="http://validator.w3.org/check/referer"><img
@@ -82,7 +82,7 @@ def genFooter():
     </div>
     </body>
     </html>
-    """
+    '''
 
 def prepIndex():
     directory = os.path.join('docs', 'plugins')
