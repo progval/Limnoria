@@ -177,7 +177,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     def die(self):
         self.db.close()
 
-    def reply(self, s, irc=None, msg=None):
+    def reply(self, s, irc=None, msg=None, action=False):
         if self.replied:
             self.log.debug('Already replied, not replying again.')
             return
@@ -188,7 +188,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             assert self.msg is not None
             msg = self.msg
         self.replied = True
-        irc.reply(plugins.standardSubstitute(irc, msg, s), prefixName=False)
+        irc.reply(plugins.standardSubstitute(irc, msg, s), prefixName=False,
+                  action=action)
 
     def confirm(self, irc=None, msg=None):
         if self.registryValue('personality'):
@@ -223,7 +224,15 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 self.dunno(irc=irc, msg=msg)
         else:
             # XXX
-            self.reply('%s %s %s, $who.' % (key,isAre,value), irc=irc, msg=msg)
+            if value.startswith('<or>'):
+                value = random.choice(value[4:].split('|'))
+            if value.startswith('<reply>'):
+                self.reply('%s' % value[7:].strip(), irc=irc, msg=msg)
+            elif value.startswith('<action>'):
+                self.reply('%s' % value[8:].strip(), irc=irc, msg=msg,
+                           action=True)
+            else:
+                self.reply('%s %s %s, $who.' % (key,isAre,value), irc=irc, msg=msg)
 
     def normalize(self, s):
         s = ircutils.stripFormatting(s)
@@ -298,8 +307,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     # TODO: Add invalidCommand.
 
     def doFactoid(self, irc, msg, match):
-        r"^(.+)\s+(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
+        r"^(.+)\s+(?<!\\)(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
         (key, isAre, also, value) = match.groups()
+        key = key.replace('\\', '')
         if key.lower() in ('where', 'what', 'who'):
             # It's a question.
             if self.addressed or \
@@ -312,6 +322,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         isAre = isAre.lower()
         key = plugins.standardSubstitute(irc, msg, key)
         value = plugins.standardSubstitute(irc, msg, value)
+        if '|' in value:
+            value = '<or>%s' % value
         if isAre in ('was', 'is', 'am'):
             if self.db.hasIs(key):
                 if also:
