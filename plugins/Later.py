@@ -35,8 +35,10 @@ nicks, it's an easy way to tell users who refuse to register notes when they
 arrive later.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = ''
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 

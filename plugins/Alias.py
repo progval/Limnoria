@@ -33,8 +33,10 @@
 Allows aliases for other commands.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 

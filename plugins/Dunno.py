@@ -35,8 +35,14 @@ random 'I dunno'-like responses.  If you want something spicier than '<x> is
 not a valid command'-like responses, use this plugin.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
+__author__ = supybot.authors.strike
+
+__contributors__ = {
+    supybot.authors.jemfinch: ['Flatfile DB implementation.'],
+    }
 
 import os
 import csv

@@ -33,8 +33,10 @@
 Accesses Sourceforge.net for various things
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
+__author__ = supybot.authors.jamessan
 
 import re
 import sets

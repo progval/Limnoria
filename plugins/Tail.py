@@ -34,8 +34,10 @@ Messages a list of targets when new lines are added to any of a list of files,
 much like "tail -f" does on UNIX.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = ''
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 

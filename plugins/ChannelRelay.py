@@ -35,8 +35,10 @@ another channel on the same network.  If you're interested in relaying messages
 between channels on different networks, check out the Relay plugin.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 

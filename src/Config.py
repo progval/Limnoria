@@ -33,8 +33,10 @@
 Handles configuration of the bot while it's running.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
+__author__ = supybot.authors.jemfinch
 
 import os
 import getopt

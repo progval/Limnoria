@@ -34,8 +34,11 @@ The Todo plugin allows registered users to keep their own personal list of
 tasks to do, with an optional priority for each.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
+__author__ = supybot.authors.strike
+
 import supybot.plugins as plugins
 
 import glob

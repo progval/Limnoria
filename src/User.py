@@ -33,8 +33,10 @@
 Provides commands useful to users in general. This plugin is loaded by default.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
+__author__ = supybot.authors.jemfinch
 
 import supybot.fix as fix
 

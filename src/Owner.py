@@ -34,8 +34,10 @@ Provides commands useful to the owner of the bot; the commands here require
 their caller to have the 'owner' capability.  This plugin is loaded by default.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
+__author__ = supybot.authors.jemfinch
 
 import supybot.fix as fix
 

@@ -34,8 +34,10 @@ Provides commands which interface with various websites to perform currency
 conversions.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = ''
+__author__ = supybot.authors.jamessan
 
 import re
 

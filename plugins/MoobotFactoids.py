@@ -36,8 +36,10 @@ command, it checks the factoid database for a key that matches what was said
 and if nothing is found, responds with an entry from the "dunno" database.
 """
 
+import supybot
+
 __revision__="$Id$"
-__author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
+__author__ = supybot.authors.strike
 
 import supybot.plugins as plugins
 

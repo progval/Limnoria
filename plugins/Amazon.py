@@ -33,8 +33,10 @@
 Amazon module, to use Amazon's Web Services.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
+__author__ = supybot.authors.jamessan
 
 import getopt
 import supybot.plugins as plugins

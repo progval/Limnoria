@@ -34,8 +34,11 @@
 A module for managing and voting on polls.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
+__author__ = supybot.authors.strike
+
 import supybot.plugins as plugins
 
 import os

@@ -36,8 +36,10 @@ auto-opping, auto-halfopping, or auto-voicing, as well as cycling an otherwise
 empty channel in order to get ops.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 

@@ -52,8 +52,10 @@ provides one command (called nickometer) which will tell you how 'lame'
 an IRC nick is. It's an elitist hacker thing, but quite fun.
 """
 
+import supybot
+
 __revision__ = '$Id$'
-__author__ = 'William Robinson (baggins) <airbaggins@users.sf.net>'
+__author__ = supybot.authors.baggins
 
 import supybot.plugins as plugins
 

@@ -33,7 +33,10 @@
 Services: Handles management of nicks with NickServ, and ops with ChanServ.
 """
 
+import supybot
+
 __revision__ = "$Id$"
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 

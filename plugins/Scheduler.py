@@ -34,8 +34,10 @@ Gives the user the ability to schedule commands to run at a particular time,
 or repeatedly run at a particular interval.
 """
 
+import supybot
+
 __revision__ = "$Id$"
-__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
+__author__ = supybot.authors.jemfinch
 
 import supybot.plugins as plugins
 

@@ -40,4 +40,13 @@ othersDir = os.path.join(installDir, 'others')
 sys.path.insert(0, srcDir)
 sys.path.insert(0, othersDir)
 
+class authors: # This is basically a bag.
+    jemfinch = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
+    jamessan = 'James Vega (jamessan) <jamessan@users.sf.net>'
+    strike = 'Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>'
+    baggins = 'William Robinson (baggins) <airbaggins@users.sf.net>'
+    skorobeus = 'Kevin Murphy (Skorobeus) <skoro@skoroworld.com>'
+    inkedmn = 'Brett Kelly (inkedmn) <inkedmn@users.sf.net>'
+    
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
