@@ -403,7 +403,8 @@ def sortBy(f, L):
 def sorted(iterable, cmp=None, key=None, reversed=False):
     L = list(iterable)
     if key is not None:
-        sortBy(key, L, cmp=cmp)
+        assert cmp is not None, 'Can\'t use both cmp and key.'
+        sortBy(key, L)
     else:
         L.sort(cmp)
     if reversed:
@@ -568,7 +569,6 @@ def getSocket(host):
     else:
         raise socket.error, 'Something wonky happened.'
 
-_ipchars = string.digits + '.'
 def isIP(s):
     """Returns whether or not a given string is an IPV4 address.
 
@@ -726,7 +726,7 @@ def transactionalFile(*args, **kwargs):
     return AtomicFile(*args, **kwargs)
 
 if __name__ == '__main__':
-    import sys, doctest
+    import doctest
     doctest.testmod(sys.modules['__main__'])
 
 

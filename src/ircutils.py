@@ -41,14 +41,7 @@ __revision__ = "$Id$"
 import supybot.fix as fix
 
 import re
-import copy
-import sets
-import time
-import random
-import socket
 import string
-import fnmatch
-import operator
 import textwrap
 from itertools import imap
 from cStringIO import StringIO as sio
@@ -216,7 +209,6 @@ def separateModes(args):
     assert modes[0] in '+-', 'Invalid args: %r' % args
     args = list(args[1:])
     ret = []
-    length = len(modes)
     for c in modes:
         if c in '+-':
             last = c
