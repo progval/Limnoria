@@ -60,7 +60,11 @@ def getChannel(msg, args):
         if conf.supybot.reply.requireChannelCommandsToBeSentInChannel():
             if args[0] != msg.args[0]:
                 s = 'Channel commands must be sent in the channel to which ' \
-                    'they apply.'
+                    'they apply; if this is not the behavior you desire, ' \
+                    'ask the bot\'s administrator to change the registry ' \
+                    'variable ' \
+                    'supybot.reply.requireChannelCommandsToBeSentInChannel ' \
+                    'to False.'
                 raise callbacks.Error, s
         return args.pop(0)
     elif ircutils.isChannel(msg.args[0]):
