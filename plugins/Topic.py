@@ -34,6 +34,7 @@ Provides commands for manipulating channel topics.
 """
 
 __revision__ = "$Id$"
+__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import plugins
 
