@@ -105,8 +105,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     _reopts = re.I
     _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href='\
         '"([^"]+)">([^<]+)</a>', _reopts)
-    _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category'\
-        '=100&_group=100&order=artifact_id&sort=DESC'
+    _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category=100'\
+        '&_group=100&order=artifact_id&sort=DESC'
     _resolution=re.compile(r'<b>(Resolution):</b> <a.+?<br>(.+?)</td>',_reopts)
     _assigned=re.compile(r'<b>(Assigned To):</b> <a.+?<br>(.+?)</td>', _reopts)
     _submitted = re.compile(r'<b>(Submitted By):</b><br>([^<]+)</td>', _reopts)
