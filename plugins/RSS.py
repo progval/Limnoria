@@ -61,12 +61,6 @@ def configure(onStart, afterConnect, advanced):
         url = something('What\'s the URL of the RSS feed?')
         onStart.append('rss add %s %s' % (name, url))
 
-class StringWithSpaceOnRight(registry.String):
-    def setValue(self, v):
-        if v.rstrip() == v:
-            v += ' '
-        registry.String.setValue(self, v)
-        
 conf.registerPlugin('RSS')
 conf.registerChannelValue(conf.supybot.plugins.RSS, 'bold', registry.Boolean(
     True, """Determines whether the bot will bold the title of the feed when it
@@ -75,8 +69,8 @@ conf.registerChannelValue(conf.supybot.plugins.RSS, 'headlineSeparator',
     registry.StringSurroundedBySpaces(' || ', """Determines what string is used
     to separate headlines in new feeds."""))
 conf.registerChannelValue(conf.supybot.plugins.RSS, 'announcementPrefix',
-    StringWithSpaceOnRight('New news from ', """Determines what prefix is
-    prepended (if any) to the new news item announcements made in the
+    registry.StringWithSpaceOnRight('New news from ', """Determines what prefix
+    is prepended (if any) to the new news item announcements made in the
     channel."""))
 conf.registerChannelValue(conf.supybot.plugins.RSS, 'announce',
     registry.SpaceSeparatedListOfStrings([], """Determines which RSS feeds

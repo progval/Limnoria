@@ -207,6 +207,12 @@ class StringSurroundedBySpaces(String):
             v += ' '
         String.setValue(self, v)
             
+class StringWithSpaceOnRight(String):
+    def setValue(self, v):
+        if v.rstrip() == v:
+            v += ' '
+        String.setValue(self, v)
+        
 class SeparatedListOf(Value):
     Value = Value
     def splitter(self, s):
