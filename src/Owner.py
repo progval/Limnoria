@@ -210,6 +210,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                         try:
                             m = loadPluginModule(name)
                             loadPluginClass(irc, m)
+                        except ImportError, e:
+                            log.warning('Failed to load %s: %s', name, e)
                         except Exception, e:
                             log.exception('Failed to load %s:', name)
                 else:
