@@ -41,6 +41,7 @@ import sys
 import atexit
 import shutil
 import signal
+import cStringIO as StringIO
 
 if sys.version_info < (2, 3, 0):
     sys.stderr.write('This program requires Python >= 2.3.0\n')
@@ -134,6 +135,9 @@ if __name__ == '__main__':
     parser.add_option('-p', '--password', action='store',
                       dest='password', default='',
                       help='server password the bot should use')
+    parser.add_option('-d', '--daemon', action='store_true',
+                      dest='daemon',
+                      help='Determines whether the bot will daemonize.')
     parser.add_option('', '--allow-eval', action='store_true',
                       dest='allowEval',
                       help='Determines whether the bot will '
@@ -292,20 +296,6 @@ if __name__ == '__main__':
     import world
     world.starting = True
 
-    # Let's write the PID file.
-    pidFile = conf.supybot.pidFile()
-    if pidFile:
-        try:
-            fd = file(pidFile, 'w')
-            pid = os.getpid()
-            fd.write('%s\n' % pid)
-            fd.close()
-            def removePidFile():
-                os.remove(pidFile)
-            atexit.register(removePidFile)
-        except EnvironmentError, e:
-            log.error('Error opening pid file %s: %s', pidFile, e)
-            
     def closeRegistry():
         # We only print if world.dying so we don't see these messages during
         # upkeep.
@@ -367,6 +357,50 @@ if __name__ == '__main__':
                 if module.__file__.startswith(supybot.installDir):
                     print '%s: %s' % (name, module.__revision__.split()[2])
 
+    if options.daemon:
+        def fork():
+            child = os.fork()
+            if child != 0:
+                if options.debug:
+                    print 'Parent exiting, child PID: %s' % child
+                # We must us os._exit instead of sys.exit so atexit handlers
+                # don't run.  They shouldn't be dangerous, but they're ugly.
+                os._exit(0)
+        fork()
+        os.setsid()
+        # What the heck does this do?  I wonder if it breaks anything...
+        os.umask(0)
+        # Let's not do this for now (at least until I can make sure it works):
+        # os.chdir('/')
+        fork()
+        # Since this is the indicator that no writing should be done to stdout,
+        # we'll set it to True before closing stdout et alii.
+        conf.daemonized = True
+        # Closing stdin shouldn't cause problems.  We'll let it raise an
+        # exception if it does.
+        sys.stdin.close()
+        # Closing these two might cause problems; we log writes to them as
+        # level WARNING on upkeep.
+        sys.stdout.close()
+        sys.stderr.close()
+        sys.stdout = StringIO.StringIO()
+        sys.stderr = StringIO.StringIO()
+        log.info('Completed daemonization.  Current PID: %s', os.getpid())
+
+    # Let's write the PID file.  This has to go after daemonization, obviously.
+    pidFile = conf.supybot.pidFile()
+    if pidFile:
+        try:
+            fd = file(pidFile, 'w')
+            pid = os.getpid()
+            fd.write('%s\n' % pid)
+            fd.close()
+            def removePidFile():
+                os.remove(pidFile)
+            atexit.register(removePidFile)
+        except EnvironmentError, e:
+            log.error('Error opening pid file %s: %s', pidFile, e)
+            
     if options.profile:
         import hotshot
         profiler = hotshot.Profile('%s-%i.prof' % (nick, time.time()))

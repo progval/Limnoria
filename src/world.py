@@ -100,8 +100,14 @@ def upkeep(scheduleNext=True):
         s = sys.stdout.getvalue()
         if s:
             log.warning('Printed to stdout after daemonization: %s', s)
-            sys.stdout.reset()
-            sys.stdout.truncate()
+            sys.stdout.reset() # Seeks to 0.
+            sys.stdout.truncate() # Truncates to current offset.
+        assert not type(sys.stderr) == file, 'Not a StringIO object!'
+        s = sys.stderr.getvalue()
+        if s:
+            log.error('Printed to stderr after daemonization: %s', s)
+            sys.stderr.reset() # Seeks to 0.
+            sys.stderr.truncate() # Truncates to current offset.
     flushed = conf.supybot.flush() and not starting
     if flushed:
         flush()
