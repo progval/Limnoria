@@ -42,7 +42,7 @@ import re
 import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.webutils as webutils
@@ -202,13 +202,10 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                 # We should optimize this with another URLDB method eventually.
                 s = urls[0]
             irc.reply(s)
-    last = wrap(last, ['channeldb'], getopts={'from': 'text',
-                                              'with': 'text',
-                                              'near': 'text',
-                                              'proto': 'text',
-                                              'nolimit': '',
-                                              'without': 'text',})
-
+    last = wrap(last, ['channeldb',
+                       getopts({'from': 'text', 'with': 'text',
+                                'near': 'text', 'proto': 'text',
+                                'nolimit': '', 'without': 'text',})])
 
 Class = URL
 
