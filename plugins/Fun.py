@@ -64,7 +64,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Fun.levenshtein, 'max',
     given to the levenhstein command.  The levenshtein command uses an O(n**3)
     algorithm, which means that with strings of length 256, it can take 1.5
     seconds to finish; with strings of length 384, though, it can take 4
-    seconds to finihs, and with strings of much larger lengths, it takes more
+    seconds to finish, and with strings of much larger lengths, it takes more
     and more time.  Using nested commands, strings can get quite large, hence
     this variable, to limit the size of arguments passed to the levenshtein
     command."""))
