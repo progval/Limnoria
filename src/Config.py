@@ -98,6 +98,9 @@ if os.name == 'posix':
 
 class Config(callbacks.Privmsg):
     def callCommand(self, name, irc, msg, *L, **kwargs):
+        #XXX For some reason, that confuses jamessan, InvalidRegistryName
+        #    is not really being caught here, but it is caught if we
+        #    attempt to catch it in the individual command methods.
         try:
             super(Config, self).callCommand(name, irc, msg, *L, **kwargs)
         except InvalidRegistryName, e:
@@ -122,7 +125,7 @@ class Config(callbacks.Privmsg):
             L.append(vname)
         utils.sortBy(str.lower, L)
         return L
-        
+
     def list(self, irc, msg, args):
         """<group>
 
@@ -130,7 +133,10 @@ class Config(callbacks.Privmsg):
         configuration <group>.  Subgroups are indicated by a preceding @.
         """
         name = privmsgs.getArgs(args)
-        L = self._list(name)
+        try:
+            L = self._list(name)
+        except InvalidRegistryName, e:
+            irc.errorInvalid('configuration variable', e.args[0])
         if L:
             irc.reply(utils.commaAndify(L))
         else:
@@ -161,10 +167,13 @@ class Config(callbacks.Privmsg):
         returns the current value of <name>.  You may omit the leading
         "supybot." in the name if you so choose.
         """
-        if len(args) >= 2:
-            self._set(irc, msg, args)
-        else:
-            self._get(irc, msg, args)
+        try:
+            if len(args) >= 2:
+                self._set(irc, msg, args)
+            else:
+                self._get(irc, msg, args)
+        except InvalidRegistryName, e:
+            irc.errorInvalid('configuration variable', e.args[0])
 
     def channel(self, irc, msg, args):
         """[<channel>] <name> [<value>]
@@ -177,7 +186,10 @@ class Config(callbacks.Privmsg):
         if not args:
             raise callbacks.ArgumentError
         args[0] = self._canonicalizeName(args[0])
-        wrapper = getWrapper(args[0])
+        try:
+            wrapper = getWrapper(args[0])
+        except InvalidRegistryName, e:
+            irc.errorInvalid('configuration variable', e.args[0])
         if not wrapper.channelValue:
             irc.error('That configuration variable is not a channel-specific '
                       'configuration variable.')
@@ -231,7 +243,10 @@ class Config(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args)
         name = self._canonicalizeName(name)
-        wrapper = getWrapper(name)
+        try:
+            wrapper = getWrapper(name)
+        except InvalidRegistryName, e:
+            irc.errorInvalid('configuration variable', e.args[0])
         if hasattr(wrapper, 'help'):
             s = wrapper.help
             if not wrapper._private:
@@ -247,7 +262,10 @@ class Config(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args)
         name = self._canonicalizeName(name)
-        wrapper = getWrapper(name)
+        try:
+            wrapper = getWrapper(name)
+        except InvalidRegistryName, e:
+            irc.errorInvalid('configuration variable', e.args[0])
         v = wrapper.__class__(wrapper._default, '')
         irc.reply(str(v))
 
@@ -260,7 +278,7 @@ class Config(callbacks.Privmsg):
         _reload() # This was factored out for SIGHUP handling.
         irc.replySuccess()
     reload = privmsgs.checkCapability(reload, 'owner')
-        
+
 
 Class = Config
 
