@@ -58,27 +58,19 @@ dbFilename = os.path.join(conf.dataDir, 'FunDB.db')
 tableCreateStatements = {
     'larts': ("""CREATE TABLE larts (
                  id INTEGER PRIMARY KEY,
-                 lart TEXT, added_by TEXT,
-                 requested_by TEXT,
-                 use_count INTEGER
+                 lart TEXT, added_by TEXT
                  )""",),
     'praises': ("""CREATE TABLE praises (
                    id INTEGER PRIMARY KEY,
-                   praise TEXT, added_by TEXT,
-                   requested_by TEXT,
-                   use_count INTEGER
+                   praise TEXT, added_by TEXT
                    )""",),
     'insults': ("""CREATE TABLE insults (
                    id INTEGER PRIMARY KEY,
-                   insult TEXT, added_by TEXT,
-                   requested_by TEXT,
-                   use_count INTEGER
+                   insult TEXT, added_by TEXT
                    )""",),
     'excuses': ("""CREATE TABLE excuses (
                    id INTEGER PRIMARY KEY,
-                   excuse TEXT, added_by TEXT,
-                   requested_by TEXT,
-                   use_count INTEGER
+                   excuse TEXT, added_by TEXT
                    )""",),
     'words': ("""CREATE TABLE words (
                  id INTEGER PRIMARY KEY,
@@ -197,9 +189,6 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available insults.')
             return
         (id, insult) = cursor.fetchone()
-        sql = """UPDATE insults SET use_count=use_count+1, requested_by=%s
-                 WHERE id=%s"""
-        cursor.execute(sql, msg.prefix, id)
         nick = nick.strip()
         if nick in (irc.nick, 'yourself', 'me'):
             insultee = msg.nick
@@ -244,9 +233,6 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available excuses.')
         else:
             (id, excuse) = cursor.fetchone()
-            sql = """UPDATE excuses SET use_count=use_count+1, requested_by=%s
-                     WHERE id=%s"""
-            cursor.execute(sql, msg.prefix, id)
             irc.reply(msg, '%s (#%s)' % (excuse, id))
 
     def dbadd(self, irc, msg, args):
@@ -276,8 +262,7 @@ class FunDB(callbacks.Privmsg):
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
-        sql = """INSERT INTO %ss VALUES (NULL, %%s, %%s, 'nobody',
-                 0)""" % table
+        sql = """INSERT INTO %ss VALUES (NULL, %%s, %%s)""" % table
         cursor.execute(sql, s, name)
         self.db.commit()
         sql = """SELECT id FROM %ss WHERE %s=%%s""" % (table, table)
@@ -422,16 +407,13 @@ class FunDB(callbacks.Privmsg):
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
-        sql = """SELECT added_by, requested_by, use_count FROM %ss WHERE
-                 id=%%s""" % table
+        sql = """SELECT added_by FROM %ss WHERE id=%%s""" % table
         cursor.execute(sql, id)
         if cursor.rowcount == 0:
             irc.error(msg, 'There is no such %s.' % table)
         else:
-            (add,req,count) = cursor.fetchone()
-            reply = '%s #%s: Created by %s. last requested by %s, requested'\
-                    ' a total of %s' % \
-                    (table, id, add, req, utils.nItems(count, 'time'))
+            add = cursor.fetchone()[0]
+            reply = '%s #%s: Created by %s.' % (table, id, add)
             irc.reply(msg, reply)
 
     def lart(self, irc, msg, args):
@@ -457,9 +439,6 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available larts.')
         else:
             (id, lart) = cursor.fetchone()
-            sql = """UPDATE larts SET use_count=use_count+1, requested_by=%s
-                     WHERE id=%s"""
-            cursor.execute(sql, msg.prefix, id)
             if nick == irc.nick or nick == 'me':
                 lartee = msg.nick
             else:
@@ -495,10 +474,6 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available praises.')
         else:
             (id, praise) = cursor.fetchone()
-            sql = """UPDATE praises SET use_count=use_count+1, requested_by=%s
-                     WHERE id=%s"""
-            cursor.execute(sql, msg.prefix, id)
-            self.db.commit()
             if nick == irc.nick or nick == 'me':
                 praisee = msg.nick
             else:
@@ -571,21 +546,21 @@ if __name__ == '__main__':
         elif category == 'larts':
             if '$who' in line:
                 cursor.execute("""INSERT INTO larts VALUES (NULL, %s,
-                                  %s, nobody, 0)""", line, added_by)
+                                  %s)""", line, added_by)
             else:
                 print 'Invalid lart: %s' % line
         elif category == 'praises':
             if '$who' in line:
                 cursor.execute("""INSERT INTO praises VALUES (NULL, %s,
-                                  %s, nobody, 0)""", line, added_by)
+                                  %s)""", line, added_by)
             else:
                 print 'Invalid praise: %s' % line
         elif category == 'insults':
-            cursor.execute("""INSERT INTO insults VALUES (NULL, %s, %s,
-                              nobody, 0)""", line, added_by)
+            cursor.execute("""INSERT INTO insults VALUES (NULL, %s, %s
+                              )""", line, added_by)
         elif category == 'excuses':
-            cursor.execute("""INSERT INTO excuses VALUES (NULL, %s, %s,
-                              nobody, 0)""", line, added_by)
+            cursor.execute("""INSERT INTO excuses VALUES (NULL, %s, %s
+                              )""", line, added_by)
     db.commit()
     db.close()
 
