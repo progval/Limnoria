@@ -381,8 +381,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         else:
             try:
                 port = int(port)
+                if not (0 < port < 65536):
+                    raise ValueError
             except ValueError:
-                irc.error(msg, '<port> must be an integer.')
+                irc.error(msg, '<port> must be an integer greater than 0 '
+                               'and less than 65536.')
                 return
         cbs = map(irc.getCallback, ['Owner', 'ConfigAfter376'])
         newIrc = irclib.Irc(irc.nick, irc.user, irc.ident,
