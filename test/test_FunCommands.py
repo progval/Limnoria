@@ -103,12 +103,6 @@ class FunCommandsTest(PluginTestCase):
         self.assertNotError('whois ohio-state.edu')
         self.assertError('whois slashdot.org')
 
-    def testDict(self):
-        self.assertNotError('dict slash')
-        self.assertNotRegexp('dict web1913 slash', 'foldoc')
-
-    def testDictionaries(self):
-        self.assertNotError('dictionaries')
 
     
 

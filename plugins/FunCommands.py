@@ -63,8 +63,6 @@ sys.stdout = StringIO()
 import this
 sys.stdout = sys.__stdout__
 
-import dictclient
-
 #import conf
 import debug
 import utils
@@ -153,25 +151,18 @@ example = utils.wrapLines("""
 <supybot> 204.152.189.116
 <jemfinch> @zen
 <supybot> jemfinch: Beautiful is better than ugly.
-<jemfinch> @dict socket
-<supybot> jemfinch: foldoc, wn, and web1913 responded, 1 shown: wn: socket n 1: a bony hollow into which a structure fits 2: receptacle where something (a pipe or probe or end of a bone) is inserted 3: a receptacle into which an electric device can be inserted
-<jemfinch> @dict foldoc socket
-<supybot> jemfinch: Chopped: foldoc: socket <networking> The {Berkeley Unix} mechansim for creating a virtual connection between processes. Sockets interface {Unix}'s {standard I/O} with its {network} communication facilities. They can be of two types, stream (bi-directional) or {datagram} (fixed length destination-addressed messages). The socket library function socket() creates a communications end-point or socket and ret
 <jemfinch> @whois ohio-state.edu
 <supybot> jemfinch: ohio-state.edu <http://www.educause.edu/edudomain> is active; registered 18-aug-1987, updated 19-aug-2003, expires 18-aug-2004.
 """)
 
 class FunCommands(callbacks.Privmsg):
     priority = 98 # Really just to test.
-    dictServer = 'dict.org'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.sentMsgs = 0
         self.recvdMsgs = 0
         self.sentBytes = 0
         self.recvdBytes = 0
-        conn = dictclient.Connection(self.dictServer)
-        self.dictdbs = sets.Set(conn.getdbdescs().iterkeys())
 
     def inFilter(self, irc, msg):
         self.recvdMsgs += 1
@@ -852,50 +843,6 @@ class FunCommands(callbacks.Privmsg):
             irc.error(msg, 'I couldn\'t find such a domain.')
     whois = privmsgs.thread(whois)
         
-    def dictionaries(self, irc, msg, args):
-        """takes no arguments.
-
-        Returns the dictionaries valid for the dict command.
-        """
-        irc.reply(msg, utils.commaAndify(self.dictdbs))
-
-    def dict(self, irc, msg, args):
-        """[<dictionary>] <word>
-
-        Looks up the definition of <word> on dict.org's dictd server.  If a
-        a dictionary is specified and the definition is too long, snips it to
-        an appropriate length.
-        """
-        if args[0] in self.dictdbs:
-            dictionary = args.pop(0)
-        else:
-            dictionary = '*'
-        word = privmsgs.getArgs(args)
-        conn = dictclient.Connection(self.dictServer)
-        definitions = conn.define(dictionary, word)
-        dbs = sets.Set()
-        if not definitions:
-            irc.reply(msg, 'No definition for %r could be found.' % word)
-            return
-        L = []
-        for d in definitions:
-            dbs.add(ircutils.bold(d.getdb().getname()))
-            (db, s) = (d.getdb().getname(), d.getdefstr())
-            db = ircutils.bold(db)
-            s = utils.normalizeWhitespace(s).rstrip(';.,')
-            L.append('%s: %s' % (db, s))
-        utils.sortBy(len, L)
-        originalFirst = L[0]
-        ircutils.shrinkList(L, '; ')
-        if not L:
-            irc.reply(msg, '%s \x02<snip>\x0f' % originalFirst[:400])
-        elif dictionary == '*':
-            s = '%s responded, %s shown: %s' % \
-                (utils.commaAndify(dbs), len(L), '; '.join(L))
-            irc.reply(msg, s)
-        else:
-            irc.reply('; '.join(L))
-    dict = privmsgs.thread(dict)
 
 
 Class = FunCommands
