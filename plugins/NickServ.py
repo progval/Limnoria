@@ -47,29 +47,27 @@ import privmsgs
 import ircutils
 import callbacks
 
-class NickServ(callbacks.Privmsg):
+class NickServ(privmsgs.CapabilityCheckingPrivmsg):
+    capability = 'owner'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.started = False
+        self.nickserv = ''
         
     def startnickserv(self, irc, msg, args):
         "<bot's nick> <password> <NickServ's nick (defaults to NickServ)>"
         if ircutils.isChannel(msg.args[0]):
             irc.error(msg, conf.replyRequiresPrivacy)
             return
-        if ircdb.checkCapability(msg.prefix, 'owner'):
-            (self.nick, self.password, nickserv) = privmsgs.getArgs(args, 
-                                                                    needed=2, 
-                                                                    optional=1)
-            self.nickserv = nickserv or 'NickServ'
-            self._ghosted = re.compile('%s.*killed' % self.nick)
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyNoCapability % 'owner')
+        (self.nick, self.password, nickserv) = privmsgs.getArgs(args, 
+                                                                needed=2, 
+                                                                optional=1)
+        self.nickserv = nickserv or 'NickServ'
+        self._ghosted = re.compile('%s.*killed' % self.nick)
+        irc.reply(msg, conf.replySuccess)
 
     _owned = re.compile('nick.*(?:(?<!not)(?:registered|protected|owned))')
     def doNotice(self, irc, msg):
-        if self.started:
+        if self.nickserv:
             if msg.nick == self.nickserv:
                 if self._owned.search(msg.args[1]):
                     # NickServ told us the nick is registered.
@@ -79,8 +77,9 @@ class NickServ(callbacks.Privmsg):
                     # NickServ told us the nick has been ghost-killed.
                     irc.queueMsg(ircmsgs.nick(self.nick))
 
-    def do376(self, irc, msg):
-        if self.started:
+    def __call__(self, irc, msg):
+        callbacks.Privmsg.__call__(self, irc, msg)
+        if self.nickserv:
             if irc.nick != self.nick:
                 ghost = 'GHOST %s %s' % (self.nick, self.password)
                 irc.queueMsg(ircmsgs.privmsg(self.nickserv, ghost))
