@@ -11,33 +11,10 @@ Depends: python (>= 2.3)
 Recommends: python-sqlite
 Suggests: python-twisted
 Description: A robust and user friendly Python IRC bot.
-    Supybot is an IRC bot written in Python; its goals are primarily
-    clarity, utility, and flexibility.
-
-    Clarity refers both to the code with which the bot is implemented
-    and the ease with which the users can discover how to use the bot.
-    One of the primary reasons Supybot was written was to give Python
-    programmers a better option for writing IRC bots -- the framework
-    since developed makes writing new plugins simple and easy.
-
-    Utility refers to the bot's ability to serve a useful
-    purpose. Including several useful plugins by default (and always
-    gladly accepting more :)), chances are, Supybot does what you
-    want. If it doesn't yet, chances are it will, if someone's
-    interested in writing the plugin.
-
-    Flexibility refers both to the ability of the user to customize
-    the way the bot behaves and the ability of the programmer to
-    achieve his goals when writing plugins for Supybot. We've written
-    a complete, highly flexible capability system, allowing those who
-    run bots to specify with the granularity of a single command
-    exactly how their users should be able to interact with the
-    bot. For programmers, we offer entry points at every level of the
-    framework for the utmost in flexibility with respect to the IRC
-    protocol. At the highest level, they can simply reply to messages,
-    but at the lowest level they can access the actual socket to the
-    IRC server.
-
-    We hope that you'll find that Supybot is an excellent and easy
-    replacement for a number of other bots, including Blootbot,
-    Mozbot, RBot, and Moobot.
+    Supybot is a robust (it doesn't crash), user friendly (it's easy
+    to configure) and programmer friendly (plugins are *extremely*
+    easy to write) Python IRC bot.  It aims to be an adequate
+    replacement for most existing IRC bots.  It includes a very
+    flexible and powerful ACL system for controlling access to
+    commands, as well as more than 50 builtin plugins providing
+    around 400 actual commands.
