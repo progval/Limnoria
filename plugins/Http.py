@@ -74,6 +74,8 @@ class Http(callbacks.Privmsg):
                 irc.reply(msg, m.group(1))
             else:
                 irc.reply(msg, 'That URL appears to have no HTML title.')
+        except ValueError, e:
+            irc.error(msg, str(e))
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 
