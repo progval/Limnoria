@@ -195,7 +195,7 @@ class Note(callbacks.Privmsg):
         if '--old' in args:
             while '--old' in args:
                 args.remove('--old')
-            self._oldnotes(irc, msg, args)
+            return self._oldnotes(irc, msg, args)
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
