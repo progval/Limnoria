@@ -53,3 +53,10 @@ argument list as their first line, and (if necessary) a blank line followed by
 a longer description of what the command does.  The argument list is used by
 the 'help' command, and the longer description is used by the 'morehelp'
 command.
+
+Whenever joining more than two strings, use string interpolation, not addition:
+  s = x + y + z # Bad.
+  s = '%s%s%s' % (x, y, z) # Good.
+  s = ''.join(x, y, z) # Best, but not as general.
+This has to do with efficiency; the intermediate string x+y is made (and thus
+copied) before x+y+z is made, so it's less efficient.
