@@ -1181,8 +1181,8 @@ class PrivmsgRegexp(Privmsg):
                     break
                 else:
                     spans.add(m.span())
-                proxy = self.Proxy(irc, msg)
-                self.callCommand(name, proxy, msg, m)
+                irc = self.Proxy(irc, msg)
+                self.callCommand(name, irc, msg, m)
 
 
 class PrivmsgCommandAndRegexp(Privmsg):
