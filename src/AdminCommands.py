@@ -98,9 +98,13 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         else:
             # This has to know that defaultCapabilties gets turned into a
             # dictionary.
+            try:
+                capability = ircdb.makeAntiCapability(command)
+            except ValueError:
+                irc.error(msg, '%r is not a valid command.' % command)
+                return
             if command in conf.defaultCapabilities:
                 conf.defaultCapabilities.remove(command)
-            capability = ircdb.makeAntiCapability(command)
             conf.defaultCapabilities.add(capability)
             irc.reply(msg, conf.replySuccess)
 
@@ -110,7 +114,11 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         Re-enables the command <command> for all non-owner users.
         """
         command = privmsgs.getArgs(args)
-        anticapability = ircdb.makeAntiCapability(command)
+        try:
+            anticapability = ircdb.makeAntiCapability(command)
+        except ValueError:
+            irc.error(msg, '%r is not a valid command.' % command)
+            return
         if anticapability in conf.defaultCapabilities:
             conf.defaultCapabilities.remove(anticapability)
             irc.reply(msg, conf.replySuccess)
