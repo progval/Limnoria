@@ -412,7 +412,7 @@ class Weather(callbacks.Plugin):
                 else:
                     dew = deg.join((dew, unit))
                 resp.append('Dew Point: %s.' % dew)
-            except ValueError:
+            except (ValueError, KeyError):
                 pass
             try:
                 resp.append('Wind: %s at %s %s.' % tuple(info['Wind'].split()))
@@ -425,7 +425,7 @@ class Weather(callbacks.Plugin):
                 else:
                     dew = deg.join((chill, unit))
                 resp.append('Windchill: %s.' % chill)
-            except (ValueError, TypeError):
+            except (ValueError, KeyError):
                 pass
             if info['Pressure']:
                 resp.append('Pressure: %s.' % info['Pressure'])
