@@ -75,6 +75,15 @@ class Value(object):
     def get(self):
         return self.value
 
+    def default(self):
+        return self.default
+
+    def reset(self):
+        self.value = self.default
+
+    def help(self):
+        return self.help
+
     def __str__(self):
         return repr(self.value)
 
