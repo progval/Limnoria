@@ -86,6 +86,14 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         m = self.getMsg('topic add bar')
         self.failUnless('<==>' in m.args[1])
 
+    def testReorder(self):
+        _ = self.getMsg('topic add foo')
+        _ = self.getMsg('topic add bar')
+        _ = self.getMsg('topic add baz')
+        self.assertHelp('topic reorder')
+        self.assertRegexp('topic reorder 2 1 3', r'bar.*foo.*baz')
+        self.assertRegexp('topic reorder 3 -2 1', r'baz.*foo.*bar')
+        self.assertError('topic reorder 0 1 2')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -124,6 +124,42 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         irc.queueMsg(ircmsgs.topic(channel, newtopic))
     shuffle = privmsgs.checkChannelCapability(shuffle, 'topic')
 
+    def reorder(self, irc, msg, args, channel):
+        """[<channel>] <number> [<number> ...]
+
+        Reorders the topics from <channel> in the order of the specified
+        <number> arguments.  <number> is a one-based index into the topics.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        if topics:
+            num = len(topics)
+            order = ('',)*num
+            order = privmsgs.getArgs(args, required=num)
+            for i,p in enumerate(order):
+                try:
+                    p = int(p)
+                    if p > 0:
+                        order[i] = p - 1
+                    elif p == 0:
+                        irc.error(msg, '0 is not a valid topic number.')
+                        return
+                    else:
+                        order[i] = num + p
+                except ValueError:
+                    irc.error(msg, 'The positions must be valid integers.')
+                    return
+            try:
+                newtopics = [topics[i] for i in order]
+                newtopic = self._joinTopic(newtopics, channel)
+                irc.queueMsg(ircmsgs.topic(channel, newtopic))
+            except IndexError:
+                irc.error(msg, 'An invalid topic number was specified.')
+        else:
+            irc.error(msg, 'There are no topics to reorder.')
+    reorder = privmsgs.checkChannelCapability(reorder, 'topic')
+
     def get(self, irc, msg, args, channel):
         """[<channel>] <number>
 
