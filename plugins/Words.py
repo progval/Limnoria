@@ -133,6 +133,16 @@ class HangmanGame:
 
 
 class Words(callbacks.Privmsg):
+    def callCommand(self, command, irc, msg, args):
+        # We'll catch the IOError here.
+        try:
+            callbacks.Privmsg.callCommand(self, command, irc, msg, args)
+        except EnvironmentError, e:
+            irc.error('I couldn\'t open the words file.  This plugin expects '
+                      'a words file (i.e., a file with one word per line, in '
+                      'sorted order) to be at %s.  Contact the owner of this '
+                      'bot to remedy this situation.' %
+                      self.registryValue('file'))
     def crossword(self, irc, msg, args):
         """<word>
 
@@ -219,10 +229,9 @@ class Words(callbacks.Privmsg):
             game.unused = copy.copy(self.validLetters)
             try:
                 game.hidden = game.getWord()
-            except IOError, e:
-                self.games[channel] = None
-                irc.error(str(e))
-                return
+            except EnvironmentError, e:
+                del self.games[channel]
+                raise
             game.guess = re.sub('[%s]' % string.ascii_lowercase, '_',
                                 game.hidden)
             self._hangmanReply(irc, channel,
@@ -314,8 +323,6 @@ class Words(callbacks.Privmsg):
 
 
 Class = Words
-
-### TODO: Write a script to make the database.
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
