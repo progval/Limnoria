@@ -62,6 +62,31 @@ class FunctionsTest(unittest.TestCase):
         self.assertEqual(privmsgs.getArgs(args, required=0, optional=1),
                          ' '.join(args))
 
+class UrlSnarferTestCase(PluginTestCase):
+    plugins = ()
+    class URL1(callbacks.PrivmsgCommandAndRegexp):
+        regexps = ['F', 'G']
+        def __init__(self):
+            self.FCalled = False
+            self.GCalled = False
+            callbacks.PrivmsgCommandAndRegexp.__init__(self)
+            
+        def F(self, irc, msg, match):
+            r"."
+            self.FCalled = True
+        F = privmsgs.urlSnarfer(F)
+
+        def G(self, irc, msg, match):
+            r"."
+            self.GCalled = True
+        G = privmsgs.urlSnarfer(G)
+
+    def test(self):
+        cb = self.URL1()
+        self.irc.addCallback(cb)
+        self.assertNoResponse('foo', 1)
+        self.failUnless(cb.FCalled and cb.GCalled)
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

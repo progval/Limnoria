@@ -164,13 +164,10 @@ def channel(f):
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
     f = _threadedWrapMethod(f)
+    q = structures.smallqueue()
     def newf(self, irc, msg, match, *L):
         now = time.time()
         cutoff = now - conf.supybot.snarfThrottle()
-        q = getattr(self, '_snarfedUrls', None)
-        if q is None:
-            q = structures.smallqueue()
-            self._snarfedUrls = q
         while q and q[0][2] < cutoff:
             q.dequeue()
         url = match.group(0)
