@@ -120,9 +120,13 @@ class Babelfish(callbacks.Privmsg):
             translation = babelfish.translate(text, fromLang, toLang)
             irc.reply(translation)
         except (KeyError, babelfish.LanguageNotAvailableError), e:
-            irc.error('%s is not a valid language.  Valid languages '
-                      'include %s.' %
-                      (e, self.registryValue('languages', chan)))
+            languages = self.registryValue('languages', chan)
+            if languages:
+                languages = 'Valid languages include %s' % \
+                        utils.commaAndify(sorted(languages))
+            else:
+                languages = 'I do not speak any other languages.'
+            irc.errorInvalid('language', str(e), languages)
         except babelfish.BabelizerIOError, e:
             irc.error(str(e))
         except babelfish.BabelfishChangedError, e:
@@ -155,9 +159,13 @@ class Babelfish(callbacks.Privmsg):
             translations = babelfish.babelize(text, fromLang, toLang)
             irc.reply(utils.htmlToText(translations[-1]))
         except (KeyError, babelfish.LanguageNotAvailableError), e:
-            irc.reply('%s is not a valid language.  Valid languages '
-                      'include %s.' % (e,
-                                       self.registryValue('languages', chan)))
+            languages = self.registryValue('languages', chan)
+            if languages:
+                languages = 'Valid languages include %s' % \
+                        utils.commaAndify(sorted(languages))
+            else:
+                languages = 'I do not speak any other languages.'
+            irc.errorInvalid('language', str(e), languages)
         except babelfish.BabelizerIOError, e:
             irc.reply(e)
         except babelfish.BabelfishChangedError, e:
