@@ -63,10 +63,10 @@ class MiscCommands(callbacks.Privmsg):
                 notCommands = []
                 for command in callbacks.getCommands(tokens):
                     if not callbacks.findCallbackForCommand(irc, command):
-                        notCommands.append(command)
+                        notCommands.append(repr(command))
                 if notCommands:
                     if len(notCommands) == 1:
-                        s = '%r is not a command.' % notCommands[0]
+                        s = '%s is not a command.' % notCommands[0]
                     else:
                         s = '%s are not commands' % \
                             utils.commaAndify(notCommands)
