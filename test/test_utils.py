@@ -238,6 +238,12 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(lflatten([1, [2, [3, 4], 5], 6]), [1, 2, 3, 4, 5, 6])
         self.assertRaises(TypeError, lflatten, 1)
 
+    def testEllipsisify(self):
+        f = utils.ellipsisify
+        self.assertEqual(f('x'*30, 30), 'x'*30)
+        self.failUnless(len(f('x'*35, 30)) <= 30)
+        self.failUnless(f(' '.join(['xxxx']*10), 30)[:-3].endswith('xxxx'))
+
 
 
 
