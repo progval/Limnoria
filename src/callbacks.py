@@ -299,6 +299,7 @@ class IrcObjectProxy:
 
 class CommandThread(threading.Thread):
     def __init__(self, command, irc, msg, args):
+        self.command = command
         self.commandName = command.im_func.func_name
         self.className = command.im_class.__name__
         name = '%s.%s with args %r' % (self.className, self.commandName, args)
@@ -316,7 +317,7 @@ class CommandThread(threading.Thread):
             debug.msg('%s took %s seconds.' % \
                       (self.commandName, elapsed), 'verbose')
         except ArgumentError:
-            self.reply(self.msg, command.__doc__.splitlines()[0])
+            self.irc.reply(self.msg, self.command.__doc__.splitlines()[0])
         except Error, e:
             self.irc.reply(self.msg, debug.exnToString(e))
         except Exception, e:
@@ -456,12 +457,15 @@ class PrivmsgRegexp(Privmsg):
 
 
 class Combine:
+    classes = [] # Override in a subclass.
     def __getattr__(self, attr):
-        for cls in self.classes:
-            if hasattr(cls, attr):
-                return getattr(cls, attr)
+        for instance in self.instances:
+            try:
+                return getattr(instance, attr)
+            except AttributeError:
+                pass
         raise AttributeError, attr
-
+    
     def __init__(self, *args, **kwargs):
         self.instances = []
         for cls in self.classes:
@@ -479,17 +483,30 @@ class Combine:
     def outFilter(self, irc, msg):
         for instance in self.instances:
             msg = instance.outFilter(irc, msg)
+        return msg
+
+    def isCommand(self, *args, **kwargs):
+        for instance in self.instances:
+            if instance.isCommand(*args, **kwargs):
+                return True
+        return False
+
+    def callCommand(self, f, *args, **kwargs):
+        for instance in self.instances:
+            if instance.__class__ == f.im_class:
+                return instance.callCommand(f, *args, **kwargs)
+                
+        assert False
             
     def name(self):
-        return 'Combine(%s)' % \
-               ','.join([cls.__name__ for cls in self.classes])
-
+        return self.__class__.__name__
+    
     def reset(self):
-        for instance in instances:
+        for instance in self.instances:
             instance.reset()
 
     def die(self):
-        for instance in instances:
+        for instance in self.instances:
             instance.die()
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
