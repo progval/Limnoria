@@ -516,7 +516,10 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
                           WHERE word LIKE %s
                           ORDER BY word""", word)
         words = [t[0] for t in cursor.fetchall()]
-        irc.reply(msg, utils.commaAndify(words))
+        if words:
+            irc.reply(msg, utils.commaAndify(words))
+        else:
+            irc.reply(msg, 'No matching words were found.')
 
     def anagram(self, irc, msg, args):
         """<word>
