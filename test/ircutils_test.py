@@ -32,6 +32,7 @@
 
 from test import *
 
+import ircmsgs
 import ircutils
 
 class FunctionsTestCase(unittest.TestCase):
@@ -80,4 +81,31 @@ class FunctionsTestCase(unittest.TestCase):
     def banmask(self):
         self.failUnless(ircutils.hostmaskPatternEqual(\
             ircutils.banmask(self.hostmask), self.hostmask))
-                   
+
+    def testSeparateModes(self):
+        self.assertEqual(ircutils.separateModes(['+ooo', 'x', 'y', 'z']),
+                         [('+o', 'x'), ('+o', 'y'), ('+o', 'z')])
+        self.assertEqual(ircutils.separateModes(['+o-o', 'x', 'y']),
+                         [('+o', 'x'), ('-o', 'y')])
+        self.assertEqual(ircutils.separateModes(['+s-o', 'x']),
+                         [('+s', None), ('-o', 'x')])
+        self.assertEqual(ircutils.separateModes(['+sntl', '100']),
+                        [('+s', None),('+n', None),('+t', None),('+l', '100')])
+
+    def testToLower(self):
+        self.assertEqual('jemfinch', ircutils.toLower('jemfinch'))
+        self.assertEqual('{}|^', ircutils.toLower('[]\\~'))
+
+    def testNick(self):
+        nicks = ['jemfinch', 'jemfinch\\[]~']
+        for nick in nicks:
+            self.assertEqual(str(ircutils.nick(nick)), str(nick))
+            self.assertEqual(ircutils.nick(nick), nick)
+            self.assertEqual(ircutils.nick(nick), ircutils.toLower(nick))
+
+    def testReplyTo(self):
+        prefix = 'foo!bar@baz'
+        channel = ircmsgs.privmsg('#foo', 'bar baz', prefix=prefix)
+        private = ircmsgs.privmsg('jemfinch', 'bar baz', prefix=prefix)
+        self.assertEqual(ircutils.replyTo(channel), channel.args[0])
+        self.assertEqual(ircutils.replyTo(private), private.nick)

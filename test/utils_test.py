@@ -37,6 +37,17 @@ import utils
 class UtilsTest(unittest.TestCase):
     def testTimeElapsed(self):
         self.assertRaises(ValueError, utils.timeElapsed, 0, 0, seconds=False)
+        then = 0
+        now = 0
+        for now, expected in [(0, '0 seconds'),
+                              (1, '1 second'),
+                              (60, '1 minute and 0 seconds'),
+                              (61, '1 minute and 1 second'),
+                              (62, '1 minute and 2 seconds'),
+                              (122, '2 minutes and 2 seconds'),
+                              (3722, '1 hour, 2 minutes and 2 seconds'),
+                              (7322, '2 hours, 2 minutes and 2 seconds')]:
+            self.assertEqual(utils.timeElapsed(now, then), expected)
 
     def testEachSubstring(self):
         s = 'foobar'
