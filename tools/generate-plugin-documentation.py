@@ -29,8 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot
-
 import os
 import cgi
 import imp
@@ -39,11 +37,24 @@ import os.path
 import textwrap
 import traceback
 
-import conf
-conf.dataDir = 'test-data'
-conf.confDir = 'test-conf'
-conf.logDir = 'test-log'
+import supybot
 
+if not os.path.exists('test-conf'):
+    os.mkdir('test-conf')
+    
+registryFilename = os.path.join('test-conf', 'test.conf')
+fd = file(registryFilename, 'w')
+fd.write("""
+supybot.directories.data: test-data
+supybot.directories.conf: test-conf
+supybot.directories.log: test-logs
+""")
+fd.close()
+
+import registry
+registry.open(registryFilename)
+
+import conf
 import utils
 import callbacks
 
@@ -141,6 +152,15 @@ def makePluginDocumentation(pluginWindow):
     trClasses = { 'even':'odd', 'odd':'even' }
     trClass = 'even'
     (pluginName, module, plugin) = pluginWindow[1]
+    if getattr(module, "deprecated", False):
+        deprecated = textwrap.dedent("""
+        <div class="deprecated">This plugin is deprecated.  That means that it
+        is probably broken and no one cares about it enought to fix it or the
+        3rd party module it may be using.  If you want this plugin to work,
+        adopt it or provide a patch in our patch tracker on Sourceforge.</div>
+        """)
+    else:
+        deprecated = ''
     print 'Generating documentation for %s.py' % pluginName
     prev = pluginWindow[0][0] or '../plugins'
     next = pluginWindow[2][0] or '../plugins'
@@ -169,11 +189,13 @@ def makePluginDocumentation(pluginWindow):
     <div class="plugintitle">%s</div>
     %s
     <div class="mainbody" style="padding: 0;">
+    %s
     <table>
     <tr id="trheader"><td>Command</td><td>Args</td><td>
     Detailed Help</td></tr>
     ''' % (genHeader(title, meta),
            cgi.escape(module.__doc__ or ""),
+           deprecated,
            genNavbar('../../'))))
     attrs = [x for x in dir(plugin) if plugin.isCommand(x) and not
              x.startswith('_')]
@@ -270,11 +292,13 @@ def makeCommandsIndex():
     fd.close()
 
 def genPlugins():
-    for directory in conf.pluginDirs:
+    for directory in conf.supybot.directories.plugins():
         for filename in os.listdir(directory):
             if filename.endswith('.py') and filename[0].isupper():
                 pluginName = filename.split('.')[0]
-                moduleInfo = imp.find_module(pluginName, conf.pluginDirs)
+                moduleInfo = imp.find_module(pluginName,
+                                             conf.supybot.directories.plugins()
+                                            )
                 module = imp.load_module(pluginName, *moduleInfo)
                 if not hasattr(module, 'Class'):
                     print '%s is not a plugin.' % filename
@@ -290,12 +314,12 @@ def genPlugins():
                     yield (pluginName, module, plugin)
 
 if __name__ == '__main__':
-    if not os.path.exists(conf.dataDir):
-        os.mkdir(conf.dataDir)
-    if not os.path.exists(conf.confDir):
-        os.mkdir(conf.confDir)
-    if not os.path.exists(conf.logDir):
-        os.mkdir(conf.logDir)
+    if not os.path.exists(conf.supybot.directories.data()):
+        os.mkdir(conf.supybot.directories.data())
+    if not os.path.exists(conf.supybot.directories.conf()):
+        os.mkdir(conf.supybot.directories.conf())
+    if not os.path.exists(conf.supybot.directories.log()):
+        os.mkdir(conf.supybot.directories.log())
     prepIndex()
     plugins = [p for p in genPlugins()]
     plugins.sort()
