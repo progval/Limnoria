@@ -384,7 +384,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
         Exits the bot.
         """
-        raise SystemExit, 'Quitting because I was told by %s' % msg.prefix
+        world.ircs[:] = []
 
     def flush(self, irc, msg, args):
         """takes no arguments

@@ -75,14 +75,9 @@ def main():
             drivers.run()
         except KeyboardInterrupt:
             log.info('Exiting due to Ctrl-C.')
-            now = time.time()
-            seconds = now - world.startedAt
-            log.info('Total uptime: %s.', utils.timeElapsed(seconds))
-            (user, system, _, _, _) = os.times()
-            log.info('Total CPU time taken: %s seconds.', user+system)
-            raise SystemExit
+            break
         except SystemExit:
-            raise
+            break
         except:
             try: # Ok, now we're *REALLY* paranoid!
                 log.exception('Exception raised out of drivers.run:')
@@ -96,6 +91,11 @@ def main():
                 print 'raise an exception, but freaking-a, it was a string'
                 print 'exception.  People who raise string exceptions should'
                 print 'die a slow, painful death.'
+    now = time.time()
+    seconds = now - world.startedAt
+    log.info('Total uptime: %s.', utils.timeElapsed(seconds))
+    (user, system, _, _, _) = os.times()
+    log.info('Total CPU time taken: %s seconds.', user+system)
     log.info('No more Irc objects, exiting.')
 
 if __name__ == '__main__':
