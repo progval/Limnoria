@@ -550,6 +550,31 @@ def _x(capability, ret):
     else:
         return ret
 
+def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
+    if isChannelCapability(capability):
+        #debug.printf('isChannelCapability true.')
+        (channel, capability) = fromChannelCapability(capability)
+        try:
+            c = channels.getChannel(channel)
+            if capability in c.capabilities:
+                #debug.printf('capability in c.capabilities')
+                return c.checkCapability(capability)
+            else:
+                #debug.printf('capability not in c.capabilities')
+                return _x(capability, c.defaultAllow)
+        except KeyError:
+            #debug.printf('no such channel %s' % channel)
+            pass
+    if capability in conf.defaultCapabilities:
+        #debug.printf('capability in conf.defaultCapability')
+        return True
+    elif invertCapability(capability) in conf.defaultCapabilities:
+        #debug.printf('inverse capability in conf.defaultCapability')
+        return False
+    else:
+        #debug.printf('returning appropriate value given no good reason')
+        return _x(capability, conf.defaultAllow)
+
 def checkCapability(hostmask, capability, users=users, channels=channels):
     """Checks that the user specified by name/hostmask has the capabilty given.
     """
@@ -563,30 +588,14 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
             debug.printf('Secure user with non-matching hostmask.')
             raise KeyError
     except KeyError:
-        #debug.printf('user could not be found.')
-        if isChannelCapability(capability):
-            #debug.printf('isChannelCapability true.')
-            (channel, capability) = fromChannelCapability(capability)
-            try:
-                c = channels.getChannel(channel)
-                if capability in c.capabilities:
-                    #debug.printf('capability in c.capabilities')
-                    return c.checkCapability(capability)
-                else:
-                    #debug.printf('capability not in c.capabilities')
-                    return _x(capability, c.defaultAllow)
-            except KeyError:
-                #debug.printf('no such channel %s' % channel)
-                pass
-        if capability in conf.defaultCapabilities:
-            #debug.printf('capability in conf.defaultCapability')
-            return True
-        elif invertCapability(capability) in conf.defaultCapabilities:
-            #debug.printf('inverse capability in conf.defaultCapability')
-            return False
-        else:
-            #debug.printf('returning appropriate value given no good reason')
-            return _x(capability, conf.defaultAllow)
+        # Raised when no hostmasks match.
+        return _checkCapabilityForUnknownUser(capability, users=users,
+                                              channels=channels)
+    except ValueError, e:
+        # Raised when multiple hostmasks match.
+        debug.msg('%s: %s' % (hostmask, e))
+        return _checkCapabilityForUnknownUser(capability, users=users,
+                                              channels=channels)
     #debug.printf('user found.')
     if capability in u.capabilities:
         #debug.printf('found capability in u.capabilities.')
