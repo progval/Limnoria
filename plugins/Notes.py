@@ -98,7 +98,7 @@ class Notes(callbacks.Privmsg):
 #    def setNoteUnread(self, irc, msg, args):
 #        "set a note as unread"
 #        noteid = privmsgs.getArgs(args) 
-#        self.cursor.execute('UPDATE notes SET read=False where id=%s'% noteid)
+#        self.cursor.execute('UPDATE notes SET read=0 where id=%s'% noteid)
 #        self.db.commit()
 #        irc.reply(msg, conf.replySuccess)    
     
@@ -116,12 +116,14 @@ class Notes(callbacks.Privmsg):
         self._addUser(recipient)
         senderID = self.getUserID(sender)
         recipID = self.getUserID(recipient)
-        if ircutils.isChannel(msg.args[0]): public = True
-        else: public = False
+        if ircutils.isChannel(msg.args[0]): 
+            public = 1
+        else: 
+            public = 0 
         self.cursor.execute("""INSERT INTO notes VALUES 
                                (NULL, %s, %s, %s, %s, %s, %s)""", 
                                senderID, recipID, int(time.time()),
-                               False, public, note)
+                               0, public, note)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
@@ -136,13 +138,13 @@ class Notes(callbacks.Privmsg):
         note, to_id, public = self.cursor.fetchone()
         debug.printf("senderID: %s" % senderID)
         if senderID == to_id:
-            if public == 'True':
+            if public:
                 irc.reply(msg, note)
             else:
                 msg.args[0] = msg.nick
                 irc.reply(msg, note)
             self.cursor.execute("""UPDATE notes SET read=%s 
-                                   WHERE id=%s""", ('True', noteid))
+                                   WHERE id=%s""", (1, noteid))
             self.db.commit()
         else:
             irc.error(msg, 'Error getting note')
@@ -153,7 +155,7 @@ class Notes(callbacks.Privmsg):
         senderID = self.getUserID(sender)
         self.cursor.execute("""SELECT id, from_id FROM notes
                                WHERE to_id=%d
-                               AND read='False'""", senderID)
+                               AND read=0""", senderID)
         notes = self.cursor.fetchall()
         L = []
         for (id, from_id) in notes:
