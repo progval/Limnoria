@@ -250,7 +250,10 @@ class IrcObjectProxy:
                                   (self.msg.nick, name))
                         return
                 command = getattr(callback, name)
+                start = time.time()
                 callback.callCommand(command, self, self.msg, self.args)
+                elapsed = time.time() - start
+                debug.msg('%s took %s seconds.' % (name, elapsed), 'verbose')
             else:
                 self.args.insert(0, name)
                 self.reply(self.msg, '[%s]' % ' '.join(self.args))
@@ -293,8 +296,9 @@ class IrcObjectProxy:
 
 class CommandThread(threading.Thread):
     def __init__(self, command, irc, msg, args):
-        name = '%s.%s with args %r' % (command.im_class.__name__,
-                                       command.im_func.func_name, args)
+        self.commandName = command.im_func.func_name
+        self.className = command.im_class.__name__
+        name = '%s.%s with args %r' % (self.className, self.commandName, args)
         threading.Thread.__init__(self, target=command, name=name,
                                   args=(irc, msg, args))
         self.irc = irc
@@ -303,7 +307,11 @@ class CommandThread(threading.Thread):
         
     def run(self):
         try:
+            start = time.time()
             threading.Thread.run(self)
+            elapsed = time.time() - start
+            debug.msg('%s took %s seconds.' % \
+                      (self.commandName, elapsed), 'verbose')
         except Error, e:
             self.irc.reply(self.msg, debug.exnToString(e))
         except Exception, e:
