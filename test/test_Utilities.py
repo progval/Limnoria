@@ -67,7 +67,7 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('echo "%s"' % m.args[1], m.args[1])
 
     def testRe(self):
-        self.assertResponse('re "m/My children/" [status cpu]', 'My children')
+        self.assertResponse('re "m/system time/" [status cpu]', 'system time')
         self.assertResponse('re s/user/luser/g user user', 'luser luser')
         self.assertResponse('re s/user/luser/ user user', 'luser user')
         self.assertNotRegexp('re m/foo/ bar', 'has no attribute')
