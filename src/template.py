@@ -91,7 +91,9 @@ def main():
     try:
         while world.ircs:
             drivers.run()
+        log.info('No more Irc objects, exiting.')
     except (SystemExit, KeyboardInterrupt):
+        log.info('Exiting due to Ctrl-C.')
         raise SystemExit, 'Goodbye!'
     except:
         log.exception('Exception raised out of drivers.run:')
