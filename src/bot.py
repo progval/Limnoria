@@ -179,10 +179,10 @@ def main():
 
 if __name__ == '__main__':
     import sys
-    if '-p' in sys.args:
+    if '-p' in sys.argv:
         import profile, time
         profile.run('main()', '%i.prof' % time.time())
-    if '-O' in sys.args:
+    if '-O' in sys.argv:
         import psyco
         psyco.full()
     else:
