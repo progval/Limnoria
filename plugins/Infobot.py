@@ -478,11 +478,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.log.debug('Returning early from doPrivmsg, msg.repliedTo.')
             return
         try:
-            if ircmsgs.isCtcp(msg):
-                return
-            # probably not necessary, but we'll see what the debug logs show
-            if getattr(irc, 'finished', False):
-                self.log.debug('Received a finished irc object. Bailing.')
+            if ircmsgs.isCtcp(msg) or msg.repliedTo:
                 return
             maybeAddressed = callbacks.addressed(irc.nick, msg,
                                                  whenAddressedByNick=True)
