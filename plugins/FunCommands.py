@@ -636,14 +636,14 @@ class FunCommands(callbacks.Privmsg):
         for (option, arg) in optlist:
             option = option.strip('-')
             if option == 'from':
-                predicates.append(lambda m: m.nick == arg)
+                predicates.append(lambda m, arg=arg: m.nick == arg)
             elif option == 'in' or option == 'to':
-                if not ircutils.isChannel(argument):
+                if not ircutils.isChannel(arg):
                     irc.error(msg, 'Argument to --%s must be a channel.' % arg)
                     return
-                predicates.append(lambda m: m.args[0] == arg)
+                predicates.append(lambda m, arg=arg: m.args[0] == arg)
             elif option == 'with':
-                predicates.append(lambda m: arg in m.args[1])
+                predicates.append(lambda m, arg=arg: arg in m.args[1])
             elif option == 'regexp':
                 try:
                     r = utils.perlReToPythonRe(arg)
@@ -656,9 +656,12 @@ class FunCommands(callbacks.Privmsg):
             if first:
                 first = False
                 continue
-            if m.command != 'PRIVMSG':
+            if not m.prefix or m.command != 'PRIVMSG':
                 continue
-            if all(bool, [f(m) for f in predicates]):
+            for predicate in predicates:
+                if not predicate(m):
+                    break
+            else:
                 if undecorated:
                     irc.reply(msg, m.args[1])
                 else:
