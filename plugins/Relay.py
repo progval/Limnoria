@@ -62,7 +62,15 @@ class Relay(callbacks.Privmsg):
         self.abbreviations = {}
         
     def startrelay(self, irc, msg, args):
-        "<network abbreviation for current server>"
+        """<network abbreviation for current server>
+
+        This command is necessary to start the Relay plugin; the
+        <network abbreviation> is the abbreviation that the network the
+        bot is currently connected to should be shown as to other networks.
+        For instance, if the network abbreviation is 'oftc', then when
+        relaying messages from that network to other networks, the users
+        will show up as 'user@oftc'.
+        """
         realIrc = irc.getRealIrc()
         abbreviation = privmsgs.getArgs(args)
         self.ircs[abbreviation] = realIrc
@@ -72,7 +80,12 @@ class Relay(callbacks.Privmsg):
     startrelay = privmsgs.checkCapability(startrelay, 'owner')
 
     def relayconnect(self, irc, msg, args):
-        "<network abbreviation> <domain:port> (port defaults to 6667)"
+        """<network abbreviation> <domain:port> (port defaults to 6667)
+        
+        Connects to another network at <domain:port>.  The network
+        abbreviation <network abbreviation> is used when relaying messages from
+        that network to other networks.
+        """
         abbreviation, server = privmsgs.getArgs(args, needed=2)
         if ':' in server:
             (server, port) = server.split(':')
@@ -89,7 +102,11 @@ class Relay(callbacks.Privmsg):
     relayconnect = privmsgs.checkCapability(relayconnect, 'owner')
 
     def relaydisconnect(self, irc, msg, args):
-        "<network>"
+        """<network>
+
+        Disconnects and ceases to relay to and from the network represented by
+        the network abbreviation <network>.
+        """
         network = privmsgs.getArgs(args)
         otherIrc = self.ircs[network]
         otherIrc.driver.die()
@@ -100,7 +117,14 @@ class Relay(callbacks.Privmsg):
     relaydisconnect = privmsgs.checkCapability(relaydisconnect, 'owner')
 
     def relayjoin(self, irc, msg, args):
-        "<channel>"
+        """<channel>
+
+        Starts relaying between the channel <channel> on all networks.  If on a
+        network the bot isn't in <channel>, he'll join.  This commands is
+        required even if the bot is in the channel on both networks; he won't
+        relay between those channels unless he's told to relayjoin both
+        channels.
+        """
         channel = privmsgs.getArgs(args)
         self.channels.add(channel)
         for otherIrc in self.ircs.itervalues():
@@ -110,7 +134,12 @@ class Relay(callbacks.Privmsg):
     relayjoin = privmsgs.checkCapability(relayjoin, 'owner')
 
     def relaypart(self, irc, msg, args):
-        "<channel>"
+        """<channel>
+
+        Ceases relaying between the channel <channel> on all networks.  The bot
+        will part from the channel on all networks in which it is on the
+        channel.
+        """
         channel = privmsgs.getArgs(args)
         self.channels.remove(channel)
         for otherIrc in self.ircs.itervalues():
@@ -120,7 +149,12 @@ class Relay(callbacks.Privmsg):
     relaypart = privmsgs.checkCapability(relaypart, 'owner')
 
     def relaynames(self, irc, msg, args):
-        "[<channel>] (only if not sent in the channel itself.)"
+        """[<channel>] (only if not sent in the channel itself.)
+
+        The <channel> argument is only necessary if the message isn't sent on
+        the channel itself.  Returns the nicks of the people in the channel on
+        the various networks the bot is connected to.
+        """
         if not isinstance(irc, irclib.Irc):
             realIrc = irc.getRealIrc()
         channel = privmsgs.getChannel(msg, args)
