@@ -71,7 +71,8 @@ class Network(callbacks.Privmsg):
     def connect(self, irc, msg, args):
         """<network> [<host[:port]>]
 
-        Connects to another network at <host:port>.  If port is not provided, it
+        Connects to another network (which will be represented by the name
+        provided in <network>) at <host:port>.  If port is not provided, it
         defaults to 6667, the default port for IRC.
         """
         (network, server) = privmsgs.getArgs(args, optional=1)
