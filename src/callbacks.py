@@ -646,7 +646,7 @@ class PrivmsgRegexp(Privmsg):
 
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
-            debug.msg('PrivmsgRegexp.doPrivmsg: ignoring %s' % msg.args[0])
+            debug.msg('PrivmsgRegexp.doPrivmsg: ignoring %s' % msg.prefix)
             return
         for (r, method) in self.res:
             m = r.search(msg.args[1])
