@@ -136,7 +136,8 @@ def join(names):
 
 class Group(object):
     """A group; it doesn't hold a value unless handled by a subclass."""
-    def __init__(self, supplyDefault=False, orderAlphabetically=False):
+    def __init__(self,help='', supplyDefault=False, orderAlphabetically=False):
+        self.help = help
         self._name = 'unset'
         self._added = []
         self._children = utils.InsensitivePreservingDict()
@@ -229,7 +230,11 @@ class Group(object):
         try:
             node = self._children[name]
             del self._children[name]
-            self._added.remove(name)
+            # We do this because we need to remove case-insensitively.
+            name = name.lower()
+            for elt in reversed(self._added):
+                if elt.lower() == name:
+                    self._added.remove(elt)
             if node._name in _cache:
                 del _cache[node._name]
             return node
@@ -262,7 +267,7 @@ class Value(Group):
     def __init__(self, default, help, setDefault=True,
                  private=False, showDefault=True, **kwargs):
         self.__parent = super(Value, self)
-        self.__parent.__init__(**kwargs)
+        self.__parent.__init__(help, **kwargs)
         self._default = default
         self._private = private
         self.showDefault = showDefault
