@@ -117,7 +117,7 @@ class Babelfish(callbacks.Privmsg):
                     irc.error('I only speak %s.' % utils.commaAndify(langs))
                     return
             translation = babelfish.translate(text, fromLang, toLang)
-            irc.reply(translation)
+            irc.reply(utils.htmlToText(translation))
         except (KeyError, babelfish.LanguageNotAvailableError), e:
             languages = self.registryValue('languages', chan)
             if languages:

@@ -71,6 +71,10 @@ if network:
             finally:
                 langs.setValue(orig)
 
+        def testHtmlToText(self):
+            self.assertNotRegexp('translate fr en Qu\'y', '&#39;')
+            self.assertNotRegexp('babelize fr en Qu\'y', '&#39;')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
