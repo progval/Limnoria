@@ -592,10 +592,13 @@ class Privmsg(irclib.IrcCallback):
                 if self._original:
                     self._original(irc, msg, args)
                 else:
-                    raise ArgumentError
+                    cb = irc.getCallback('Misc')
+                    cb.help(irc, msg, [self.name()])
             if args:
                 name = canonicalName(args[0])
-                if self.isCommand(name):
+                if name == canonicalName(self.name()):
+                    handleBadArgs()
+                elif self.isCommand(name):
                     del args[0]
                     method = getattr(self, name)
                     try:
