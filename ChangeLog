@@ -1,3 +1,6 @@
+	* Added Note.unsend command, to allow users to "unsend" notes
+	they've sent but whose recipient has not yet read.
+	
 	* Added Channel.{deop,devoice,dehalfop,kick}.
 	
 	* Added Http.size and Http.doctype and Http.headers to retrieve

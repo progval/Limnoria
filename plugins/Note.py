@@ -154,6 +154,36 @@ class Note(callbacks.Privmsg):
         id = cursor.fetchone()[0]
         irc.reply(msg, 'Note #%s sent to %s.' % (id, name))
 
+    def unsend(self, irc, msg, args):
+        """<id>
+
+        Unsends the note with the id given.  You must be the
+        author of the note, and it must be unread.
+        """
+        id = privmsgs.getArgs(args)
+        try:
+            userid = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT from_id, read FROM notes WHERE id=%s""", id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'That\'s not a valid note id.')
+            return
+        (from_id, read) = map(int, cursor.fetchone())
+        if from_id == userid:
+            if not read:
+                cursor.execute("""DELETE FROM notes WHERE id=%s""", id)
+                db.commit()
+                irc.reply(msg, conf.replySuccess)
+            else:
+                irc.error(msg, 'That note has been read already.')
+        else:
+            irc.error(msg, 'That note wasn\'t sent by you.')
+            
+
     def get(self, irc, msg, args):
         """<note id>
 
