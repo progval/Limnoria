@@ -52,7 +52,7 @@ def configure(onStart, afterConnect, advanced):
         revenge = True
     else:
         revenge = False
-    onStart.append('startenforcer %s %s' % (chanserv, revenge))
+    onStart.append('enforcer start %s %s' % (chanserv, revenge))
 
 ###
 # Enforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
@@ -60,7 +60,7 @@ def configure(onStart, afterConnect, advanced):
 _chanCap = ircdb.makeChannelCapability
 class Enforcer(callbacks.Privmsg):
     started = False
-    def startenforcer(self, irc, msg, args):
+    def start(self, irc, msg, args):
         """[<CHANSERV> <revenge>]
 
         Starts the Enforcer plugin.  <chanserv> is the nick for the chanserv
@@ -83,7 +83,7 @@ class Enforcer(callbacks.Privmsg):
         for channel in irc.state.channels:
             irc.queueMsg(ircmsgs.topic(channel))
         irc.reply(msg, conf.replySuccess)
-    startenforcer = privmsgs.checkCapability(startenforcer, 'admin')
+    start = privmsgs.checkCapability(start, 'admin')
 
     def doJoin(self, irc, msg):
         if not self.started:
@@ -228,7 +228,7 @@ class Enforcer(callbacks.Privmsg):
                 return callbacks.Privmsg.__call__(self, irc, msg)
         else:
             debug.msg('Enforcer plugin not started.  '
-                      'Give the bot the startenforcer command.', 'normal')
+                      'Give the bot the start command.', 'normal')
 
 
 Class = Enforcer
