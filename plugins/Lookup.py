@@ -47,6 +47,7 @@ import string
 import conf
 import utils
 import privmsgs
+import registry
 import callbacks
 
 try:
@@ -58,6 +59,7 @@ except ImportError:
 def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('Lookup', True)
+    lookups = conf.supybot.plugins.Lookup.lookups
     output("""This module allows you to define commands that do a simple key
               lookup and return some simple value.  It has a command "add"
               that takes a command name and a file from the data dir and adds a
@@ -85,6 +87,7 @@ def configure(advanced):
                    'line #%s is malformed.' % counter)
             continue
         command = something('What would you like the command to be?')
+        conf.registerGlobalValue(lookups,command, registry.String(filename,''))
         onStart.append('lookup add %s %s' % (command, filename))
     
 
@@ -101,6 +104,19 @@ class Lookup(callbacks.Privmsg):
         self.lookupDomains = sets.Set()
         dataDir = conf.supybot.directories.data()
         self.dbHandler = LookupDB(name=os.path.join(dataDir, 'Lookup'))
+        for (name, value) in registry._cache.iteritems():
+            name = name.lower()
+            if name.startswith('supybot.plugins.lookup.lookups.'):
+                name = name[len('supybot.plugins.lookup.lookups.'):]
+                if '.' in name:
+                    continue
+                self.addRegistryValue(name, value())
+        group = conf.supybot.plugins.Lookup.lookups
+        for (name, value) in group.getValues(fullNames=False):
+            name = name.lower() # Just in case.
+            filename = value()
+            self.addDatabase(name, filename)
+            self.addCommand(name)
         
     def _shrink(self, s):
         return utils.ellipsisify(s, 50)
@@ -150,7 +166,6 @@ class Lookup(callbacks.Privmsg):
         try:
             cursor.execute("""SELECT * FROM %s LIMIT 1""" % name)
             self.addCommand(name)
-            irc.replySuccess()
         except sqlite.DatabaseError:
             try:
                 self.addDatabase(name, filename)
@@ -158,9 +173,14 @@ class Lookup(callbacks.Privmsg):
                 irc.error('Could not open %s: %s' % (filename, e.args[1]))
                 return
             self.addCommand(name)
-            irc.replySuccess('(lookup %s added)' % name)
+        self.addRegistryValue(name, filename)
+        irc.replySuccess('Lookup %s added.' % name)
     add = privmsgs.checkCapability(add, 'admin')
 
+    def addRegistryValue(self, name, filename):
+        v = registry.String(filename, '')
+        conf.supybot.plugins.Lookup.lookups.register(name, v)
+        
     def addDatabase(self, name, filename):
         db = self.dbHandler.getDb()
         cursor = db.cursor()
