@@ -309,6 +309,10 @@ class Relay(callbacks.Privmsg):
             else:
                 s = '%s/%s has quit.' % (msg.nick, network)
             for channel in self.channels:
+                debug.printf(channel)
+                debug.printf(self.ircstates[irc])
+                debug.printf(self.ircstates[irc][0])
+                debug.printf(self.ircstates[irc][0].channels[channel].users)
                 if msg.nick in self.ircstates[irc][0].channels[channel].users:
                     for otherIrc in self.ircs.itervalues():
                         if otherIrc != irc:
@@ -327,6 +331,7 @@ class Relay(callbacks.Privmsg):
                     rAction.match(msg.args[1]) or \
                     msg.args[1].find('has left on ') != -1 or \
                     msg.args[1].find('has joined on ') != -1 or \
+                    msg.args[1].find('has quit') != -1 or \
                     msg.args[1].startswith('mode change') or \
                     msg.args[1].startswith('nick change')):
                 channel = msg.args[0]
