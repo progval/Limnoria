@@ -29,6 +29,11 @@
                 <date>26 Feb 2004</date>
                 <revremark>Conversion to Supybot DTD</revremark>
             </revision>
+            <revision>
+                <revnumber>0.3</revnumber>
+                <date>4 Sep 2004</date>
+                <revremark>Update Docbook translation</revremark>
+            </revision>
         </revhistory>
     </articleinfo>
     <sect1>
@@ -47,8 +52,8 @@
             <plugin>Config</plugin> plugin provides a way to get or set
             variables, to list the available variables, and even to get help
             for certain variables.  Take a moment now to read the help for
-            each of those commands: <botcommand>get</botcommand>,
-            <botcommand>set</botcommand>, <botcommand>list</botcommand>, and
+            each of those commands: <botcommand>config</botcommand>,
+            <botcommand>list</botcommand>, and
             <botcommand>help</botcommand>.  If you don't know how to get help on
             those commands, go ahead and read our
             <filename>GETTING_STARTED</filename> document before this one.
@@ -104,51 +109,26 @@
                 </para>
                 <ircsession>
 &lt;jemfinch|lambda&gt; @config list supybot
-&lt;supybot&gt; jemfinch|lambda: nick, ident, user, server, password,
-     channels, prefixChars, defaultCapabilities, defaultAllow, defaultIgnore,
-     humanTimestampFormat, externalIP, pipeSyntax,
-     followIdentificationThroughNickChanges, alwaysJoinOnInvite,
-     showSimpleSyntax, maxHistoryLength, nickmods, throttleTime,
-     snarfThrottle, threadAllCommands, pingServer, pingInterval,
-     upkeepInterval, flush, httpPeekSize, and defaultSocketTimeout
+&lt;supybot&gt; @capabilities, @commands, @databases, @debug, @directories, @drivers,
+          @log, @networks, @nick, @plugins, @protocols, @replies, @reply,
+          alwaysJoinOnInvite, channels, defaultIgnore, defaultSocketTimeout,
+          externalIP, flush, followIdentificationThroughNickChanges,
+          humanTimestampFormat, ident, pidFile, snarfThrottle, upkeepInterval,
+          and user
                 </ircsession>
                 <para>
-                    These are all the configuration values you can set which
+                    These are all the configuration groups and values which
                     are under the base <registrygroup>supybot</registrygroup>
                     group.  Actually, their full names would each have a
                     &ldquo;supybot.&rdquo; appended on to the front of them,
                     but it is omitted in the listing in order to shorten the
-                    output.
+                    output.  The first entries in the output are the groups
+                    (distinguished by the @ symbol in front of them), and the
+                    rest are the configuration values.
                 </para>
-                <para>
-                    Now, to see all of the available configuration groups
-                    under the base <registrygroup>supybot</registrygroup>
-                    group, we simply use the <flag>--groups</flag> flag to
-                    <botcommand>config list</botcommand>:
-                </para>
-                <ircsession>
-&lt;jemfinch|lambda&gt; @config list --groups supybot
-&lt;supybot&gt; jemfinch|lambda: commands, databases, directories, drivers,
-    log, plugins, replies, and reply
-                </ircsession>
-                <para>
-                    These are all the subgroups of
-                    <registrygroup>supybot</registrygroup>.  Again, the full
-                    name of these would have &ldquo;supybot.&rdquo; prepended
-                    to them.  So really, we have
-                    <registrygroup>supybot.commands</registrygroup>,
-                    <registrygroup>supybot.databases</registrygroup>, etc.
-                </para>
-                <note>
-                    <para>
-                        An item can show up in both lists if it is a group
-                        that itself has a value.  For example, all plugins
-                        fall under this category, as their value is a boolean
-                        value determining whether or not that plugin is to be
-                        loaded when the bot is started.  
-                    </para>
-                </note>
             </sect3>
+        <sect2>
+            <title>Supybot's registry</title>
             <sect3>
                 <title>Dealing with registry values</title>
                 <para>
@@ -167,15 +147,15 @@
                         help string for any value or group, simply use the
                         <botcommand>config help</botcommand> command.  For
                         example, to see what this
-                        <registrygroup>supybot.prefixChars</registrygroup>
+                        <registrygroup>supybot.snarfThrottle</registrygroup>
                         configuration variable is all about, we'd do this:
                     </para>
                     <ircsession>
-&lt;jemfinch|lambda&gt; @config help supybot.prefixChars
-&lt;supybot&gt; jemfinch|lambda: Determines what prefix characters the bot
-    will reply to. A prefix character is a single character that the bot will
-    use to determine what messages are addressed to it; when there are no
-    prefix characters set, it just uses its nick.
+&lt;jemfinch|lambda&gt; @config help supybot.snarfThrottle
+&lt;supybot&gt; jemfinch|lambda: A floating point number of seconds to throttle snarfed
+          URLs, in order to prevent loops between two bots snarfing the same URLs and
+          having the snarfed URL in the output of the snarf message.  (Current value:
+          10.0)
                     </ircsession>
                     <para>
                         Pretty simple, eh?
@@ -191,7 +171,7 @@
                         value of:
 					</para>
 					<ircsession>
-&lt;jemfinch|lambda&gt; @config supybot.prefixChars
+&lt;jemfinch|lambda&gt; @config supybot.reply.whenAddressedBy.chars
 &lt;supybot&gt; jemfinch|lambda: '@'
 					</ircsession>
 					<para>
@@ -199,14 +179,14 @@
 						the name:
 					</para>
 					<ircsession>
-&lt;jemfinch|lambda&gt; @config supybot.prefixChars @$
+&lt;jemfinch|lambda&gt; @config supybot.reply.whenAddressedBy.chars @$
 &lt;supybot&gt; jemfinch|lambda: The operation succeeded.
 					</ircsession>
 					<para>
 						Now, check this out:
 					</para>
 					<ircsession>
-&lt;jemfinch|lambda&gt; $config supybot.prefixChars
+&lt;jemfinch|lambda&gt; $config supybot.reply.whenAddressedBy.chars
 &lt;supybot&gt; jemfinch|lambda: '@$'
 					</ircsession>
 					<para>
@@ -225,7 +205,7 @@
                         I'll revert the change:
 					</para>
 					<ircsession>
-&lt;jemfinch|lambda&gt; $config supybot.prefixChars @
+&lt;jemfinch|lambda&gt; $config supybot.reply.whenAddressedBy.chars @
 &lt;supybot&gt; jemfinch|lambda: The operation succeeded.
 &lt;jemfinch|lambda&gt; $note that this makes no response.
 					</ircsession>
@@ -235,7 +215,7 @@
                         default</botcommand> command:
 					</para>
 					<ircsession>
-&lt;jemfinch|lambda&gt; @config default supybot.prefixChars
+&lt;jemfinch|lambda&gt; @config default supybot.reply.whenAddressedBy.chars
 &lt;supybot&gt; jemfinch|lambda: ''
 					</ircsession>
 					<para>
@@ -243,8 +223,8 @@
 						value, you can simply say: 
 					</para>
 					<ircsession>
-&lt;jemfinch|lambda&gt; @config supybot.prefixChars [config default
-	supybot.prefixChars]
+&lt;jemfinch|lambda&gt; @config supybot.reply.whenAddressedBy.chars [config default
+	supybot.reply.whenAddressedBy.chars]
 &lt;supybot&gt; jemfinch|lambda: The operation succeeded.
 &lt;jemfinch|lambda&gt; @note that this does nothing
 					</ircsession>
@@ -263,11 +243,18 @@
                 </para>
                 <ircsession>
 &lt;jemfinch|lambda&gt; @config search op
-&lt;supybot&gt; jemfinch|lambda: supybot.plugins.Enforcer.autoOp,
-    supybot.plugins.Enforcer.autoOp.#supybot,
-    supybot.plugins.Enforcer.autoHalfop,
-    supybot.plugins.Enforcer.cycleToGetOps, supybot.plugins.Topic,
-    supybot.plugins.Topic.separator, and supybot.plugins.Relay.topicSync
+&lt;supybot&gt; jemfinch|lambda:
+          supybot.plugins.Enforcer.autoOp,
+          supybot.plugins.Enforcer.autoHalfop,
+          supybot.plugins.Enforcer.takeRevenge.onOps,
+          supybot.plugins.Enforcer.cycleToGetOps,
+          supybot.plugins.Topic, supybot.plugins.Topic.public,
+          supybot.plugins.Topic.separator,
+          supybot.plugins.Topic.format,
+          supybot.plugins.Topic.recognizeTopiclen,
+          supybot.plugins.Topic.default,
+          supybot.plugins.Topic.undo.maz, and
+          supybot.plugins.Relay.topicSync
                 </ircsession>
                 <para>
                     Sure, it showed up all the topic-related stuff in there,
@@ -295,6 +282,24 @@
                     the <registrygroup>supybot.flush</registrygroup> value to
                     <literal>Off</literal>, and no automatic flushing will
                     occur.
+                </para>
+            </sect3>
+            <sect3>
+                <title>Channel-specific configuration</title>
+                <para>
+                    Many configuration variables can be specific to individual
+                    channels.  The <plugin>Config</plugin> plugin provides an
+                    easy way to configure something for a specific channel;
+                    for instance, in order to set the prefix chars for a
+                    specific channel, do this in that channel:
+                </para>
+                <ircsession>
+config channel supybot.reply.whenAddressedBy.chars !
+                </ircsession>
+                <para>
+                    That'll set the prefix chars in the channel that message
+                    is sent in to <literal>!</literal>.  Voila,
+                    channel-specific values!
                 </para>
             </sect3>
         </sect2>

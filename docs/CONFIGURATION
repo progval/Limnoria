@@ -44,33 +44,19 @@ under the "supybot" (the base group) hierarchy.  You would simply
 issue this command:
 
 <jemfinch|lambda> @config list supybot
-<supybot> jemfinch|lambda: alwaysJoinOnInvite, capabilities, channels,
-          defaultIgnore, defaultSocketTimeout, externalIP, flush,
-          followIdentificationThroughNickChanges,
-          humanTimestampFormat, ident, networks, nick, pidFile,
-          snarfThrottle, upkeepInterval, and user
+<supybot> @capabilities, @commands, @databases, @debug, @directories, @drivers,
+          @log, @networks, @nick, @plugins, @protocols, @replies, @reply,
+          alwaysJoinOnInvite, channels, defaultIgnore, defaultSocketTimeout,
+          externalIP, flush, followIdentificationThroughNickChanges,
+          humanTimestampFormat, ident, pidFile, snarfThrottle, upkeepInterval,
+          and user
 
-These are all the configuration values you can set which are under the
+These are all the configuration groups and values which are under the
 base "supybot" group.  Actually, their full names would each have a
 "supybot." appended on to the front of them, but it is omitted in the
-listing in order to shorten the output.
-
-Now, to see all of the available configuration groups under the base
-"supybot" group, we simply use the "--groups" flag to config list:
-
-<jemfinch|lambda> @config list --groups supybot
-<supybot> jemfinch|lambda: capabilities, commands, databases, debug,
-          directories, drivers, log, networks, nick, plugins,
-          protcols, replies, and reply
-
-These are all the subgroups of "supybot".  Again, the full name of
-these would have "supybot." prepended to them.  So really, we have
-supybot.commands, supybot.databases, etc.
-
-Note: an item can show up in both lists if it is a group that itself
-has a value.  For example, all plugins fall under this category, as
-their value is a boolean value determining whether or not that plugin
-is to be loaded when the bot is started.
+listing in order to shorten the output.  The first entries in the output are
+the groups (distinguished by the @ symbol in front of them), and the rest are
+the configuration values.
 
 Okay, now that you've used the Config plugin to list configuration
 variables, it's time that we start looking at individual variables and
@@ -81,20 +67,14 @@ each configuration variable is that they all have an associated help
 string to tell you what they represent.  So the first command we'll
 cover is "config help".  To see the help string for any value or
 group, simply use the "config help" command.  For example, to see what
-this "supybot.prefixChars" configuration variable is all about, we'd
+this "supybot.snarfThrottle" configuration variable is all about, we'd
 do this:
 
-<jemfinch|lambda> @config help supybot.reply.whenAddressedBy.chars
-
-<supybot> jemfinch|lambda: Determines what prefix characters the bot
-          will reply to. A prefix character is a single character that
-          the bot will use to determine what messages are addressed to
-          it; when there are no prefix characters set, it just uses
-          its nick. Each character in this string is interpreted
-          individually; you can have multiple prefix chars
-          simultaneously, and if any one of them is used as a prefix
-          the bot will assume it is being addressed.  (Current value:
-          @)
+<jemfinch|lambda> @config help supybot.snarfThrottle
+<supybot> jemfinch|lambda: A floating point number of seconds to throttle snarfed
+          URLs, in order to prevent loops between two bots snarfing the same URLs and
+          having the snarfed URL in the output of the snarf message.  (Current value:
+          10.0)
 
 Pretty simple, eh?
 
