@@ -133,7 +133,7 @@ if __name__ == '__main__':
     
     def closeRegistry():
         log.info('Writing registry file to %s', registryFilename)
-        registry.close(conf.supybot, registryFilename)
+        registry.close(conf.supybot, registryFilename, annotated=True)
         log.info('Finished writing registry file.')
     atexit.register(closeRegistry)
 
