@@ -1,258 +1,258 @@
-These are the interfaces of some of the objects you'll deal with if
+These are the interfaces for some of the objects you'll deal with if
 you code for Supybot.
 
 ircmsgs.IrcMsg:
-	This is the object that represents an IRC message.  It has
-	several methods and attributes.  The most important thing
-	about this class, however, is that it *is* hashable, and thus
-	*cannot* be modified.  Do not change any attributes; any code
-	that modifies an IRC message is *broken* and should not
-	exist.
+    This is the object that represents an IRC message.  It has
+    several methods and attributes.  The most important thing
+    about this class, however, is that it *is* hashable, and thus
+    *cannot* be modified.  Do not change any attributes; any code
+    that modifies an IRC message is *broken* and should not
+    exist.
 
-	Interesting Methods:
-		    __init__: One of the more complex initializers in 
-		    a class.  It can be used in three different ways:
+    Interesting Methods:
+            __init__: One of the more complex initializers in 
+            a class.  It can be used in three different ways:
 
-		    1) It can be given a string, as one received from
+            1) It can be given a string, as one received from
                        the server, which it will then parse into its
                        separate components and instantiate the class
                        with those components as attributes.
 
-		    2) It can be given a command, some (optional)
+            2) It can be given a command, some (optional)
                        arguments, and a (optional) prefix, and will
                        instantiate the class with those components as
                        attributes.
 
-		    3) It can be given, in addition to any of the
+            3) It can be given, in addition to any of the
                        above arguments, a 'msg' keyword argument that
                        will use the attributes of msg as defaults.
                        This exists to make it easier to copy
                        messages, since the class is immutable.
 
-		    __str__: This returns the message in a string form
-		    suitable for sending to a server.
+            __str__: This returns the message in a string form
+            suitable for sending to a server.
 
-		    __repr__: This returns the message in a form
-		    suitable for eval(), assuming the name "IrcMsg" is
-		    in your namespace and is bound to this class.
+            __repr__: This returns the message in a form
+            suitable for eval(), assuming the name "IrcMsg" is
+            in your namespace and is bound to this class.
 
-	Interesting Attributes:
-		    This is the meat of this class.  These are
-		    generally what you'll be looking at with IrcMsgs.
+    Interesting Attributes:
+            This is the meat of this class.  These are
+            generally what you'll be looking at with IrcMsgs.
 
-		    command: This is the command of the IrcMsg --
-		    PRIVMSG, NOTICE, WHOIS, etc.
+            command: This is the command of the IrcMsg --
+            PRIVMSG, NOTICE, WHOIS, etc.
 
-		    args: This is a tuple of the arguments to the
-		    IrcMsg.  Some messages have arguments, some don't,
-		    depending on what command they are.  You are, of
-		    course, always assured that args exists and is a
-		    tuple, though it might be empty.
+            args: This is a tuple of the arguments to the
+            IrcMsg.  Some messages have arguments, some don't,
+            depending on what command they are.  You are, of
+            course, always assured that args exists and is a
+            tuple, though it might be empty.
 
-		    prefix: This is the hostmask of the person/server
-		    the message is from.  In general, you won't be
-		    setting this on your outgoing messages, but
-		    incoming messages will always have one.  This is
-		    the whole hostmask; if the message was received
-		    from a server, it'll be the server's hostmask; if
-		    the message was received from a user, it'll be the
-		    whole user hostmask.  In that case, however, it's
-		    also parsed out into the nick/user/host
-		    attributes, which are probably more useful to
-		    check for many purposes.
+            prefix: This is the hostmask of the person/server
+            the message is from.  In general, you won't be
+            setting this on your outgoing messages, but
+            incoming messages will always have one.  This is
+            the whole hostmask; if the message was received
+            from a server, it'll be the server's hostmask; if
+            the message was received from a user, it'll be the
+            whole user hostmask.  In that case, however, it's
+            also parsed out into the nick/user/host
+            attributes, which are probably more useful to
+            check for many purposes.
 
-		    nick: If the message was sent by a user, this will
-		    be the nick of the user.  If it was sent by a
-		    server, this will be the server's name (something
-		    like calvino.freenode.net or similar).
+            nick: If the message was sent by a user, this will
+            be the nick of the user.  If it was sent by a
+            server, this will be the server's name (something
+            like calvino.freenode.net or similar).
 
-		    user: If the message was sent by a user, this will
-		    be the user string of the user -- what they put
-		    into their IRC client for their "full name."  If
-		    it was sent by a server, it'll be the server's
-		    name, again.
+            user: If the message was sent by a user, this will
+            be the user string of the user -- what they put
+            into their IRC client for their "full name."  If
+            it was sent by a server, it'll be the server's
+            name, again.
 
-		    host: If the message was sent by a user, this will
-		    be the host portion of their hostmask.  If it was
-		    sent by a server, it'll be the server's name (yet
-		    again :))
-		 
+            host: If the message was sent by a user, this will
+            be the host portion of their hostmask.  If it was
+            sent by a server, it'll be the server's name (yet
+            again :))
+         
                        
 irclib.Irc:
-	This is the object to handle everything about IRC except the
-	actual connection to the server itself.  (*NOTE* that the
-	object actually received by commands in subclasses of
-	callbacks.Privmsg is an IrcObjectProxy, which is described
-	later.  It augments the following interface with several
-	methods of its own to help plugin authors.)
+    This is the object to handle everything about IRC except the
+    actual connection to the server itself.  (*NOTE* that the
+    object actually received by commands in subclasses of
+    callbacks.Privmsg is an IrcObjectProxy, which is described
+    later.  It augments the following interface with several
+    methods of its own to help plugin authors.)
 
-	Interesting Methods:
-		    The two following messages (queueMsg and
-		    sendMsg) are the methods by far most commonly
-		    called by plugin authors.  They're generally
-		    the only methods you need to pay attention to
-		    if you're writing plugins.
-		    
-		    queueMsg: Queues a message for sending to the
-		    server.  The queue is generally FIFO, but it
-		    does prioritize messages based on their command.
+    Interesting Methods:
+            The two following messages (queueMsg and
+            sendMsg) are the methods by far most commonly
+            called by plugin authors.  They're generally
+            the only methods you need to pay attention to
+            if you're writing plugins.
+            
+            queueMsg: Queues a message for sending to the
+            server.  The queue is generally FIFO, but it
+            does prioritize messages based on their command.
 
-		    sendMsg: Queues a message for sneding to the
-		    server prior to any messages in the normal
-		    queue.  This is exactly a FIFO queue, no
-		    reordering is done at all.
+            sendMsg: Queues a message for sending to the
+            server prior to any messages in the normal
+            queue.  This is exactly a FIFO queue, no
+            reordering is done at all.
 
-		    The following two methods are the most important
-		    for people writing new IrcDrivers.  Otherwise,
-		    you really don't need to pay attention to them.
+            The following two methods are the most important
+            for people writing new IrcDrivers.  Otherwise,
+            you really don't need to pay attention to them.
 
-		    feedMsg: Feeds the Irc object a message for it
-		    handle appropriately, as well as passing it on
-		    to callbacks.
+            feedMsg: Feeds the Irc object a message for it
+            handle appropriately, as well as passing it on
+            to callbacks.
 
-		    takeMsg: If the Irc object has a message it's
-		    ready to send to the server, this will return
-		    it.  Otherwise, it will return None.
+            takeMsg: If the Irc object has a message it's
+            ready to send to the server, this will return
+            it.  Otherwise, it will return None.
 
-		    The next several methods are of far more marginal
-		    utility.  But someone may need them, so they're
-		    documented here.
+            The next several methods are of far more marginal
+            utility.  But someone may need them, so they're
+            documented here.
 
-		    addCallback: Takes a callback to add to the list
-		    of callbacks in the Irc object.  See the
-		    interface for IrcCallback for more information.
+            addCallback: Takes a callback to add to the list
+            of callbacks in the Irc object.  See the
+            interface for IrcCallback for more information.
 
-		    getCallback: Gets a callback by name, if it is
-                    in the Irc object's list of callbacks.  If it
-		    it isn't, returns None.
+            getCallback: Gets a callback by name, if it is
+            in the Irc object's list of callbacks.  If it
+            it isn't, returns None.
 
-		    removeCallback: Removes a callback by name.
-                    Returns a list of the callbacks removed (since
-                    it is technically possible to have multiple
-		    callbacks with the same name.  This list may
-		    be empty.
+            removeCallback: Removes a callback by name.
+            Returns a list of the callbacks removed (since
+            it is technically possible to have multiple
+            callbacks with the same name.  This list may
+            be empty.
 
-		    __init__: Requires a nick.  Optional arguments
-		    include user and ident, which default to the
-		    nick given, password, which defaults to the empty
-                    password, and callbacks, a list of callbacks
-                    (which defaults to nothing, an empty list).
+            __init__: Requires a nick.  Optional arguments
+            include user and ident, which default to the
+            nick given, password, which defaults to the empty
+            password, and callbacks, a list of callbacks
+            (which defaults to nothing, an empty list).
 
-		    reset: Resets the Irc object to its original
-		    state, as well as sends a reset() to every
-		    callbacks.
+            reset: Resets the Irc object to its original
+            state, as well as sends a reset() to every
+            callbacks.
 
-		    die: Kills the IRC object and all its callbacks.
+            die: Kills the IRC object and all its callbacks.
 
-	Interesting attributes:
-		    nick: The current nick of the bot.
+    Interesting attributes:
+            nick: The current nick of the bot.
 
-		    prefix: The current prefix of the bot.
+            prefix: The current prefix of the bot.
 
-		    server: The current server the bot is connected to.
+            server: The current server the bot is connected to.
                     Usually consists of a (host, port) pair.
 
-                    afterConnect: False until the bot has received a
-                    command sent after the connection is finished --
-                    376, 377, or 422.
+            afterConnect: False until the bot has received a
+                          command sent after the connection is finished --
+                          376, 377, or 422.
 
-		    state: An IrcState object for this particular
+            state: An IrcState object for this particular
                     connection.  See the interface for the IrcState
                     object for more information.
 
 
 irclib.IrcCallback:
-	Interesting Methods:
-		    name: Returns the name of the callback.  The
-		    default implementation simply returns the name
-		    of the class.
+    Interesting Methods:
+            name: Returns the name of the callback.  The
+            default implementation simply returns the name
+            of the class.
 
-		    __call__: Called by the Irc object with itself
-		    and the message whenever a message is fed to
-		    the Irc object.  Nothing is done with the return
-		    value.
+            __call__: Called by the Irc object with itself
+            and the message whenever a message is fed to
+            the Irc object.  Nothing is done with the return
+            value.
 
-		    inFilter: Called by the Irc object with itself
-		    and the message whenever a message is fed to
-		    the Irc object.  The return value should be an
-		    IrcMsg object to be passed to the next callback
-		    in the Irc's list of callbacks.  If None is
-		    returned, all processing stops.  This gives
-		    callbacks an oppurtunity to "filter" incoming
-		    messages before general callbacks are given
-		    them.
+            inFilter: Called by the Irc object with itself
+            and the message whenever a message is fed to
+            the Irc object.  The return value should be an
+            IrcMsg object to be passed to the next callback
+            in the Irc's list of callbacks.  If None is
+            returned, all processing stops.  This gives
+            callbacks an oppurtunity to "filter" incoming
+            messages before general callbacks are given
+            them.
 
-		    outFilter: Basically equivalent to inFilter,
-		    except instead of being called on messages
-		    as they enter the Irc object, it's called on
-		    messages as they leave the Irc object.
+            outFilter: Basically equivalent to inFilter,
+            except instead of being called on messages
+            as they enter the Irc object, it's called on
+            messages as they leave the Irc object.
 
-		    die: Called when the parent Irc is told to
-		    die.  This gives callbacks an oppurtunity to
-		    close open files, network connections, or
-		    databases before they're deleted.
+            die: Called when the parent Irc is told to
+            die.  This gives callbacks an oppurtunity to
+            close open files, network connections, or
+            databases before they're deleted.
 
-		    reset: Called when the parent Irc is told to
-		    reset (which is generally when reconnecting
-		    to the server).  Most callbacks don't need
-		    to define this.
+            reset: Called when the parent Irc is told to
+            reset (which is generally when reconnecting
+            to the server).  Most callbacks don't need
+            to define this.
 
-	Interesting attributes:
-		    priority: Determines the priority of the
-		    callback in the Irc object's list of
-		    callbacks.  Defaults to 99; the valid range
-		    includes 0 through sys.maxint-1 (don't use
-		    sys.maxint itself, that's reserved for the
-		    Misc plugin).  The lower the number, the
-		    higher the priority.  High priority
-		    callbacks are called earlier in the
-		    inFilter cycle, earlier in the __call__
-		    cycle, and later in the outFilter cycle --
-		    basically, they're given the first chances
-		    on the way in and the last chances on the
-		    way out.
+    Interesting attributes:
+            priority: Determines the priority of the
+            callback in the Irc object's list of
+            callbacks.  Defaults to 99; the valid range
+            includes 0 through sys.maxint-1 (don't use
+            sys.maxint itself, that's reserved for the
+            Misc plugin).  The lower the number, the
+            higher the priority.  High priority
+            callbacks are called earlier in the
+            inFilter cycle, earlier in the __call__
+            cycle, and later in the outFilter cycle --
+            basically, they're given the first chances
+            on the way in and the last chances on the
+            way out.
 
 
 callbacks.IrcObjectProxy:
-	IrcObjectProxy is a proxy for an irclib.Irc instance that
-	serves to provide a much fuller interface for handling
-	replies and errors as well as to handle the nesting of
-	commands.  This is what you'll be dealing with almost all the
-	time when writing commands; when writing doCommand methods
-	(the kind you read about in the interface description of
-	irclib.IrcCallback) you'll be dealing with plain old
-	irclib.Irc objects.
+    IrcObjectProxy is a proxy for an irclib.Irc instance that
+    serves to provide a much fuller interface for handling
+    replies and errors as well as to handle the nesting of
+    commands.  This is what you'll be dealing with almost all the
+    time when writing commands; when writing doCommand methods
+    (the kind you read about in the interface description of
+    irclib.IrcCallback) you'll be dealing with plain old
+    irclib.Irc objects.
 
-	Interesting methods:
-		    reply: Called to reply to the current message
-	            with a string that is to be the reply.
+    Interesting methods:
+            reply: Called to reply to the current message
+            with a string that is to be the reply.
 
-		    replySuccess, replyError: These reply with the
-		    configured responses for success and generic
-		    error, respectively.  If an additional argument
-		    is given, it's (intelligently) appended to the
-		    generic message to be more specific.
+            replySuccess, replyError: These reply with the
+            configured responses for success and generic
+            error, respectively.  If an additional argument
+            is given, it's (intelligently) appended to the
+            generic message to be more specific.
 
-		    error: Called to send an error reply to the
-		    current message; not only does the response
-		    indicate an error, but commands that error out
-		    break the nested-command chain, which is
-		    generally useful for not confusing the user :)
+            error: Called to send an error reply to the
+            current message; not only does the response
+            indicate an error, but commands that error out
+            break the nested-command chain, which is
+            generally useful for not confusing the user :)
 
-		    errorNoCapability: Like error, except it accepts
-		    the capability that's missing and integrates it
-		    into the configured error message for such
-		    things.  Also accepts an additional string for a
-		    more descriptive message, if that's what you
-		    want.
+            errorNoCapability: Like error, except it accepts
+            the capability that's missing and integrates it
+            into the configured error message for such
+            things.  Also accepts an additional string for a
+            more descriptive message, if that's what you
+            want.
 
-		    errorPossibleBug, errorNotRegistered,
-		    errorNoUser, errorRequiresPrivacy: These methods
-		    reply with the appropriate configured error
-		    message for the conditions in their names; they
-		    all take an additional arguments to be more
-		    specific about the conditions they indicate, but
-		    this argument is very rarely necessary.
+            errorPossibleBug, errorNotRegistered,
+            errorNoUser, errorRequiresPrivacy: These methods
+            reply with the appropriate configured error
+            message for the conditions in their names; they
+            all take an additional arguments to be more
+            specific about the conditions they indicate, but
+            this argument is very rarely necessary.
 
-		    getRealIrc: Returns the actual Irc object being
-		    proxied for.
+            getRealIrc: Returns the actual Irc object being
+            proxied for.
