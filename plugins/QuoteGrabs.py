@@ -183,6 +183,7 @@ class SqliteQuoteGrabsDB(object):
                           ORDER BY id DESC LIMIT 1""", nick)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
+        return cursor.fetchone()[0]
 
     def add(self, msg, by):
         channel = msg.args[0]
@@ -223,12 +224,11 @@ class QuoteGrabs(callbacks.Privmsg):
             if self.registryValue('randomGrabber', channel):
                 if len(payload) > length and len(payload.split()) > words:
                     try:
-                        self.db.select(channel, msg.nick)
+                        last = self.db.select(channel, msg.nick)
                     except dbi.NoRecordError:
                         self._grab(irc, msg, irc.prefix)
                         self._sendGrabMsg(irc, msg)
                     else:
-                        last = int(cursor.fetchone()[0])
                         elapsed = int(time.time()) - last
                         if random.random()*elapsed > grabTime/2:
                             self._grab(irc, msg, irc.prefix)
