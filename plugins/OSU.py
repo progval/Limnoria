@@ -37,7 +37,7 @@ __revision__ = "$Id$"
 import supybot.plugins as plugins
 
 import supybot.utils as utils
-import supybot.privmsgs as privmsgs
+from supybot.commands import *
 import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
@@ -248,19 +248,19 @@ class OSU(callbacks.Privmsg):
                 irc.reply('Possible matches: %s.' % ', '.join(emails))
         except Exception, e:
             irc.error(utils.exnToString(e))
-    email = privmsgs.thread(email)
+    email = thread(email)
 
-    def building(self, irc, msg, args):
+    def building(self, irc, msg, args, building):
         """<building abbreviation>
 
         Returns the address and full name of an OSU building based on its
         standard two-letter abbreviation.
         """
-        building = privmsgs.getArgs(args)
         try:
             irc.reply(buildings[building.upper()])
         except KeyError:
             irc.reply('I don\'t know of any such OSU building.')
+    building = wrap(building, ['something'])
 
 
 Class = OSU
