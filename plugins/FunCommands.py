@@ -885,7 +885,7 @@ class FunCommands(callbacks.Privmsg):
         originalFirst = L[0]
         ircutils.shrinkList(L, '; ')
         if not L:
-            irc.reply(msg, '%s <snip>' % originalFirst[:400])
+            irc.reply(msg, '%s \x02<snip>\x0f' % originalFirst[:400])
         elif dictionary == '*':
             s = '%s responded, %s shown: %s' % \
                 (utils.commaAndify(dbs), len(L), '; '.join(L))
