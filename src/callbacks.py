@@ -228,9 +228,8 @@ class Tokenizer(object):
     #
     # These are the characters valid in a token.  Everything printable except
     # double-quote, left-bracket, and right-bracket.
-    validChars = string.ascii.translate(string.ascii, '\x00\r\n \t"')
-    quotes = '"'
-    def __init__(self, brackets='', pipe=False):
+    validChars = string.ascii.translate(string.ascii, '\x00\r\n \t')
+    def __init__(self, brackets='', pipe=False, quotes='"'):
         if brackets:
             self.validChars = self.validChars.translate(string.ascii, brackets)
             self.left = brackets[0]
@@ -241,8 +240,9 @@ class Tokenizer(object):
         self.pipe = pipe
         if self.pipe:
             self.validChars = self.validChars.translate(string.ascii, '|')
-        else:
-            assert '|' in self.validChars
+        self.quotes = quotes
+        self.validChars = self.validChars.translate(string.ascii, quotes)
+        
 
     def _handleToken(self, token):
         if token[0] == token[-1] and token[0] in self.quotes:
@@ -319,9 +319,10 @@ def tokenize(s, channel=None):
         brackets = conf.get(nested.brackets, channel)
         if conf.get(nested.pipeSyntax, channel): # No nesting, no pipe.
             pipe = True
+    quotes = conf.get(conf.supybot.commands.quotes, channel)
     start = time.time()
     try:
-        ret = Tokenizer(brackets=brackets, pipe=pipe).tokenize(s)
+        ret = Tokenizer(brackets=brackets,pipe=pipe,quotes=quotes).tokenize(s)
         log.stat('tokenize took %s seconds.' % (time.time() - start))
         return ret
     except ValueError, e:

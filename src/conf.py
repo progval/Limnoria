@@ -502,6 +502,18 @@ registerGlobalValue(supybot, 'flush',
 # supybot.commands.  For stuff relating to commands.
 ###
 registerGroup(supybot, 'commands')
+
+class ValidQuotes(registry.Value):
+    """Value must consist solely of \", ', and ` characters."""
+    def setValue(self, v):
+        if [c for c in v if c not in '"`\'']:
+            self.error()
+        super(ValidQuotes, self).setValue(v)
+                    
+registerChannelValue(supybot.commands, 'quotes',
+    ValidQuotes('"', """Determines what characters are valid for quoting
+    arguments to commands in order to prevent them from being tokenized.
+    """))
 # This is a GlobalValue because bot owners should be able to say, "There will
 # be no nesting at all on this bot."  Individual channels can just set their
 # brackets to the empty string.

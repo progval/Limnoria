@@ -118,6 +118,26 @@ class TokenizerTestCase(SupyTestCase):
             self.assertEqual(tokenize('foo bar | baz'),
                              ['foo', 'bar', '|', 'baz'])
 
+    def testQuoteConfiguration(self):
+        f = callbacks.tokenize
+        self.assertEqual(f('[foo]'), [['foo']])
+        self.assertEqual(f('"[foo]"'), ['[foo]'])
+        try:
+            original = conf.supybot.commands.quotes()
+            conf.supybot.commands.quotes.setValue('`')
+            self.assertEqual(f('[foo]'), [['foo']])
+            self.assertEqual(f('`[foo]`'), ['[foo]'])
+            conf.supybot.commands.quotes.setValue('\'')
+            self.assertEqual(f('[foo]'), [['foo']])
+            self.assertEqual(f('\'[foo]\''), ['[foo]'])
+            conf.supybot.commands.quotes.setValue('`\'')
+            self.assertEqual(f('[foo]'), [['foo']])
+            self.assertEqual(f('`[foo]`'), ['[foo]'])
+            self.assertEqual(f('[foo]'), [['foo']])
+            self.assertEqual(f('\'[foo]\''), ['[foo]'])
+        finally:
+            conf.supybot.commands.quotes.setValue(original)
+
     def testBold(self):
         s = '\x02foo\x02'
         self.assertEqual(tokenize(s), [s])
