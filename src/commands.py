@@ -287,8 +287,6 @@ def getNick(irc, msg, args):
 def getChannel(irc, msg, args, cap=None):
     if ircutils.isChannel(args[0]):
         channel = args.pop(0)
-        print '*** channel? %s' % channel
-        print '*** args? %s' % args
     elif ircutils.isChannel(msg.args[0]):
         channel = msg.args[0]
     else:
@@ -406,13 +404,11 @@ def args(irc,msg,args, required=[], optional=[], getopts=None, noExtra=False):
             callConverter(converterName)
     except IndexError:
         if req:
-            print '*** commands.args IndexError'
             raise callbacks.ArgumentError
         while opt:
             del opt[-1]
             starArgs.append('')
     if noExtra and args:
-        print '*** commands.args noExtra and args'
         raise callbacks.ArgumentError
     return starArgs
 
