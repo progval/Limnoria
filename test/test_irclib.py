@@ -149,6 +149,7 @@ class ChannelTestCase(unittest.TestCase):
 class IrcStateTestCase(unittest.TestCase):
     class FakeIrc:
         nick = 'nick'
+        prefix = 'nick!user@host'
     irc = FakeIrc()
     def testHistory(self):
         oldconfmaxhistory = conf.maxHistory
@@ -190,6 +191,26 @@ class IrcStateTestCase(unittest.TestCase):
             except Exception:
                 pass
 
+    def testHandlesModes(self):
+        st = irclib.IrcState()
+        st.addMsg(self.irc, ircmsgs.join('#foo', prefix=self.irc.prefix))
+        self.failIf('bar' in st.channels['#foo'].ops)
+        st.addMsg(self.irc, ircmsgs.op('#foo', 'bar'))
+        self.failUnless('bar' in st.channels['#foo'].ops)
+        st.addMsg(self.irc, ircmsgs.deop('#foo', 'bar'))
+        self.failIf('bar' in st.channels['#foo'].ops)
+
+        self.failIf('bar' in st.channels['#foo'].voices)
+        st.addMsg(self.irc, ircmsgs.voice('#foo', 'bar'))
+        self.failUnless('bar' in st.channels['#foo'].voices)
+        st.addMsg(self.irc, ircmsgs.devoice('#foo', 'bar'))
+        self.failIf('bar' in st.channels['#foo'].voices)
+
+        self.failIf('bar' in st.channels['#foo'].halfops)
+        st.addMsg(self.irc, ircmsgs.halfop('#foo', 'bar'))
+        self.failUnless('bar' in st.channels['#foo'].halfops)
+        st.addMsg(self.irc, ircmsgs.dehalfop('#foo', 'bar'))
+        self.failIf('bar' in st.channels['#foo'].halfops)
 
     """
     def testChannels(self):
