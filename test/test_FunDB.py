@@ -69,6 +69,7 @@ if sqlite is not None:
             self.assertResponse('lart 2 jemfinch for being dumb',
                                 '\x01ACTION shoots jemfinch for being dumb '
                                 '(#2)\x01')
+            self.assertNotRegexp('lart %s' % self.irc.nick, self.irc.nick)
             self.assertNotError('remove lart 1')
             self.assertRegexp('num lart', 'currently 1 lart')
             self.assertResponse('lart jemfinch',

@@ -405,13 +405,13 @@ class FunDB(callbacks.Privmsg):
             id = 0
         if not nick:
             raise callbacks.ArgumentError
-        
+        if nick == irc.nick:
+            nick = msg.nick
         try:
             (nick, reason) = imap(' '.join,
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
-        
         cursor = self.db.cursor()
         if id:
             cursor.execute("""SELECT id, lart FROM larts WHERE id=%s""", id)
@@ -456,13 +456,11 @@ class FunDB(callbacks.Privmsg):
             id = 0
         if not nick:
             raise callbacks.ArgumentError
-        
         try:
             (nick, reason) = imap(' '.join,
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
-        
         cursor = self.db.cursor()
         if id:
             cursor.execute("""SELECT id, praise FROM praises WHERE id=%s""",id)
@@ -474,7 +472,6 @@ class FunDB(callbacks.Privmsg):
                               WHERE praise NOTNULL
                               ORDER BY random()
                               LIMIT 1""")
-        
         if cursor.rowcount == 0:
             irc.error(msg, 'There are currently no available praises.')
         else:
@@ -523,6 +520,7 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, ', '.join(words))
         else:
             irc.reply(msg, 'That word has no anagrams that I know of.')
+
 
 Class = FunDB
 
