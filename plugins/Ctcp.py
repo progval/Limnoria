@@ -104,9 +104,13 @@ class Ctcp(callbacks.PrivmsgCommandAndRegexp):
     regexps = ('ctcpPing', 'ctcpVersion', 'ctcpUserinfo',
                'ctcpTime', 'ctcpFinger', 'ctcpSource') 
     def ctcpPing(self, irc, msg, match):
-        "\x01PING (.*)\x01"
+        "\x01PING ?(.*)\x01"
         self.log.info('Received CTCP PING from %s', msg.prefix)
-        self._reply(irc, msg, 'PING %s' % match.group(1))
+        payload = match.group(1)
+        if payload:
+            self._reply(irc, msg, 'PING %s' % match.group(1))
+        else:
+            self._reply(irc, msg, 'PING')
 
     def ctcpVersion(self, irc, msg, match):
         "\x01VERSION\x01"
