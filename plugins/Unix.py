@@ -174,7 +174,7 @@ class Unix(callbacks.Privmsg):
         if not salt:
             salt = makeSalt()
         irc.reply(crypt.crypt(password, salt))
-    crypt = wrap(crypt, ['something', optional('something')])
+    crypt = wrap(crypt, ['something', additional('something')])
 
     def spell(self, irc, msg, args, word):
         """<word>
