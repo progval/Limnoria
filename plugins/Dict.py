@@ -60,14 +60,16 @@ def configure(advanced):
         server = something('What server?')
         conf.supybot.plugins.Dict.server.set(server)
 
-replyTimeout = 'Timeout on the dictd server.'
-
 conf.registerPlugin('Dict')
 # TODO: We should make this check to see if there's actually a dictd server
 # running on the host given.
 conf.registerGlobalValue(conf.supybot.plugins.Dict, 'server',
     registry.String('dict.org', """Determines what server the bot will
     retrieve definitions from."""))
+conf.registerChannelValue(conf.supybot.plugins.Dict, 'default',
+    registry.String('', """Determines the default dictionary the bot will
+    ask for definitions in.  If this value is '*' (without the quotes) the bot
+    will use all dictionaries to define words."""))
 
 class Dict(callbacks.Privmsg):
     threaded = True
@@ -82,8 +84,8 @@ class Dict(callbacks.Privmsg):
             dbs = conn.getdbdescs().keys()
             dbs.sort()
             irc.reply(utils.commaAndify(dbs))
-        except socket.timeout:
-            irc.error(replyTimeout)
+        except socket.error, e:
+            irc.error(webutils.strError(e))
 
     def random(self, irc, msg, args):
         """takes no arguments.
@@ -95,8 +97,8 @@ class Dict(callbacks.Privmsg):
             conn = dictclient.Connection(server)
             dbs = conn.getdbdescs().keys()
             irc.reply(random.choice(dbs))
-        except socket.timeout:
-            irc.error(replyTimeout)
+        except socket.error, e:
+            irc.error(webutils.strError(e))
 
     def dict(self, irc, msg, args):
         """[<dictionary>] <word>
@@ -108,14 +110,21 @@ class Dict(callbacks.Privmsg):
         try:
             server = conf.supybot.plugins.Dict.server()
             conn = dictclient.Connection(server)
-        except socket.timeout:
-            irc.error('Timeout on the dict server.')
+        except socket.error, e:
+            irc.error(webutils.strError(e))
             return
         dbs = sets.Set(conn.getdbdescs())
         if args[0] in dbs:
             dictionary = args.pop(0)
         else:
-            dictionary = '*'
+            default = self.registryValue('default', msg.args[0])
+            if default in dbs:
+                dictionary = default
+            else:
+                if default:
+                    self.log.info('Default dict for %s is not a supported '
+                                  'dictionary: %s.', msg.args[0], default)
+                dictionary = '*'
         word = privmsgs.getArgs(args)
         definitions = conn.define(dictionary, word)
         dbs = sets.Set()
