@@ -431,18 +431,19 @@ def sortBy(f, L):
     for (i, elt) in enumerate(L):
         L[i] = L[i][2]
 
-def sorted(iterable, cmp=None, key=None, reversed=False):
-    L = list(iterable)
-    if key is not None:
-        assert cmp is None, 'Can\'t use both cmp and key.'
-        sortBy(key, L)
-    else:
-        L.sort(cmp)
-    if reversed:
-        L.reverse()
-    return L
+if sys.version_info < (2, 4, 0):
+    def sorted(iterable, cmp=None, key=None, reversed=False):
+        L = list(iterable)
+        if key is not None:
+            assert cmp is None, 'Can\'t use both cmp and key.'
+            sortBy(key, L)
+        else:
+            L.sort(cmp)
+        if reversed:
+            L.reverse()
+        return L
 
-__builtins__['sorted'] = sorted
+    __builtins__['sorted'] = sorted
 
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
