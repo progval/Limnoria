@@ -461,6 +461,32 @@ class User(callbacks.Privmsg):
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
 
+    def stats(self, irc, msg, args):
+        """takes no arguments
+
+        Returns some statistics on the user database.
+        """
+        users = 0
+        owners = 0
+        admins = 0
+        hostmasks = 0
+        for user in ircdb.users.itervalues():
+            users += 1
+            hostmasks += len(user.hostmasks)
+            try:
+                if user.checkCapability('owner'):
+                    owners += 1
+                elif user.checkCapability('admin'):
+                    admins += 1
+            except KeyError:
+                pass
+        irc.reply('I have %s registered users '
+                  'with %s registered hostmasks; '
+                  '%s and %s.' % (users, hostmasks,
+                                  utils.nItems('owner', owners),
+                                  utils.nItems('admin', admins)))
+                                      
+
 ##     def config(self, irc, msg, args):
 ##         """[--list] <name> [<value>]
 
