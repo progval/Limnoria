@@ -169,7 +169,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
                           WHERE news.expires_at > %s
                           OR news.expires_at=0""", int(time.time()))
         if cursor.rowcount == 0:
-            irc.reply('No news for %s' % channel)
+            irc.reply('No news for %s.' % channel)
         else:
             items = ['(#%s) %s' % (id, s) for (id, s) in cursor.fetchall()]
             s = 'News for %s: %s' % (channel, '; '.join(items))
