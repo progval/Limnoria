@@ -377,7 +377,7 @@ class IrcState(IrcCommandDispatcher):
 # callbacks of the IrcCallback interface.  Public attributes include 'driver',
 # 'queue', and 'state', in addition to the standard nick/user/ident attributes.
 ###
-class Irc(object):
+class Irc(IrcCommandDispatcher):
     """The base class for an IRC connection.
 
     Handles PING commands already.
@@ -486,7 +486,7 @@ class Irc(object):
                     debug.recoverableException()
                     continue
                 if msg is None:
-                    s = 'outFilter %s returned None' % callback.name()
+                    s = '%s.outFilter returned None' % callback.name()
                     debug.msg(s)
                     return None
             self.state.addMsg(self, msg)
@@ -506,35 +506,57 @@ class Irc(object):
         else:
             return None
 
+    def doPing(self, msg):
+        """Handles PING messages."""
+        self.sendMsg(ircmsgs.pong(msg.args[0]))
+
+    def doPong(self, msg):
+        """Handles PONG messages."""
+        self.outstandingPing = False
+
+    def do433(self, msg):
+        """Handles 'nickname already in use' messages."""
+        self.sendMsg(ircmsgs.nick(self._nickmods.pop(0) % self.nick))
+    do432 = do433
+
+    def doError(self, msg):
+        """Handles ERROR messages."""
+        if msg.args[0].startswith('Closing Link'):
+            if hasattr(self.driver, 'scheduleReconnect'):
+                self.driver.scheduleReconnect()
+            self.driver.die()
+
+    def doNick(self, msg):
+        """Handles NICK messages."""
+        if msg.nick == self.nick:
+            newNick = msg.args[0]
+            user = ircdb.users.getUser(0)
+            user.unsetAuth()
+            user.hostmasks = []
+            user.name = newNick
+            ircdb.users.setUser(0, user)
+            self.nick = newNick
+            (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
+            self.prefix = ircutils.joinHostmask(self.nick, user, domain)
+
     def feedMsg(self, msg):
         """Called by the IrcDriver; feeds a message received."""
         debug.msg('%s  %s'%(time.strftime(conf.logTimestampFormat), msg),'low')
+
         # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
         # messages with our nick instead of our prefix.  We'll fix that here.
         if msg.prefix == self.nick:
             debug.msg('Got one of those odd nick-instead-of-prefix msgs.')
-            msg = ircmsgs.IrcMsg(prefix=self.prefix,
-                                 command=msg.command,
-                                 args=msg.args)
-        # First, make sure self.nick is always consistent with the server.
-        if msg.command == 'NICK' and msg.nick == self.nick:
-            user = ircdb.users.getUser(0)
-            user.unsetAuth()
-            user.hostmasks = []
-            ircdb.users.setUser(0, user)
-            self.nick = msg.args[0]
-            (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
-            self.prefix = '%s!%s@%s' % (self.nick, user, domain)
-        # Respond to PING requests.
-        if msg.command == 'PING':
-            self.sendMsg(ircmsgs.pong(msg.args[0]))
-        if msg.command == 'PONG':
-            self.outstandingPing = False
-        # Send new nicks on 433
-        if msg.command == '433' or msg.command == '432':
-            #debug.printf('In irclib.Irc 433 handler.')
-            self.sendMsg(ircmsgs.nick(self._nickmods.pop(0) % self.nick))
-        if msg.nick == self.nick:
+            msg = ircmsgs.IrcMsg(prefix=self.prefix, msg=msg)
+
+        # Dispatch to specific handlers for commands.
+        method = self.dispatchCommand(msg.command)
+        if method is not None:
+            method(msg)
+
+        # This catches cases where we know our own nick (from sending it to the
+        # server) but we don't yet know our prefix.
+        if msg.nick == self.nick and self.prefix != msg.prefix:
             self.prefix = msg.prefix
             user = ircdb.users.getUser(0)
             user.hostmasks = []
@@ -542,27 +564,22 @@ class Irc(object):
             user.addHostmask(msg.prefix)
             user.setPassword(utils.mktemp())
             ircdb.users.setUser(0, user)
-        if msg.command == 'ERROR':
-            if msg.args[0].startswith('Closing Link'):
-                if hasattr(self.driver, 'scheduleReconnect'):
-                    self.driver.scheduleReconnect()
-                if self.driver:
-                    self.driver.die()
-        if msg.command in self._nickSetters:
-            #debug.printf('msg.command in self._nickSetters')
-            newnick = msg.args[0]
-            self.nick = newnick
+            
+        if msg.command in self._nickSetters and msg.args[0] != self.nick:
+            self.nick = msg.args[0]
+
         # Now update the IrcState object.
         try:
             self.state.addMsg(self, msg)
         except:
             debug.recoverableException()
+
         # Now call the callbacks.
         for callback in self.callbacks:
             try:
                 m = callback.inFilter(self, msg)
                 if not m:
-                    debugmsg = 'inFilter %s returned None' % callback.name()
+                    debugmsg = '%s.inFilter returned None' % callback.name()
                     debug.msg(debugmsg)
                     return
                 msg = m
