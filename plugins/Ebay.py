@@ -38,6 +38,7 @@ import sets
 import getopt
 
 __revision__ = "$Id$"
+__author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
 
 import conf
 import utils

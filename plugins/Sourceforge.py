@@ -33,6 +33,9 @@
 Accesses Sourceforge.net for various things
 """
 
+__revision__ = "$Id$"
+__author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
+
 import re
 import sets
 import getopt
@@ -43,7 +46,6 @@ import registry
 
 import conf
 import utils
-__revision__ = "$Id$"
 
 import plugins
 import ircutils

@@ -34,6 +34,7 @@ Amazon module, to use Amazon's Web Services.
 """
 
 __revision__ = "$Id$"
+__author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
 
 import getopt
 import plugins

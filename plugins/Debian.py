@@ -34,6 +34,7 @@ This is a module to contain Debian-specific commands.
 """
 
 __revision__ = "$Id$"
+__author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
 
 import plugins
 

@@ -34,6 +34,7 @@ Babelfish-related commands.
 """
 
 __revision__ = "$Id$"
+__author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
 
 import sets
 import random
