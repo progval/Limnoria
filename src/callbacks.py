@@ -381,13 +381,16 @@ class RichReplyMethods(object):
             s = prefix
         return plugins.standardSubstitute(self, self.msg, s)
 
+    def _getConfig(self, wrapper):
+        return wrapper.get(self.msg.args[0])()
+    
     def replySuccess(self, s='', **kwargs):
-        v = conf.supybot.replies.success.get(self.msg.args[0])()
+        v = self._getConfig(conf.supybot.replies.success)
         s = self.__makeReply(v, s)
         self.reply(s, **kwargs)
 
     def replyError(self, s='', **kwargs):
-        v = conf.supybot.replies.error.get(self.msg.args[0])()
+        v = self._getConfig(conf.supybot.replies.error)
         s = self.__makeReply(v, s)
         self.reply(s, **kwargs)
 
@@ -415,43 +418,49 @@ class RichReplyMethods(object):
                 else:
                     self.reply(prefixer(s), **kwargs)
 
-    def errorNoCapability(self, capability, s='', **kwargs):
+    def _error(self, s, Raise, **kwargs):
+        if Raise:
+            raise callbacks.Error, s
+        else:
+            self.error(s, **kwargs)
+
+    def errorNoCapability(self, capability, s='', Raise=False, **kwargs):
         if isinstance(capability, basestring): # checkCommandCapability!
             log.warning('Denying %s for lacking %r capability',
                         self.msg.prefix, capability)
-            if not conf.supybot.reply.noCapabilityError():
-                v = conf.supybot.replies.noCapability.get(self.msg.args[0])()
+            if not self._getConfig(conf.supybot.reply.noCapabilityError):
+                v = self._getConfig(conf.supybot.replies.noCapability)
                 s = self.__makeReply(v % capability, s)
-                self.error(s, **kwargs)
+                self._error(s, Raise, **kwargs)
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default)', self.msg.prefix)
-            v = conf.supybot.replies.genericNoCapability.get(self.msg.args[0])()
-            self.error(self.__makeReply(v, s), **kwargs)
+            v = self._getConfig(conf.supybot.replies.genericNoCapability)
+            self._error(self.__makeReply(v, s), Raise, **kwargs)
 
-    def errorPossibleBug(self, s='', **kwargs):
-        v = conf.supybot.replies.possibleBug.get(self.msg.args[0])()
+    def errorPossibleBug(self, s='', Raise=False, **kwargs):
+        v = self._getConfig(conf.supybot.replies.possibleBug)
         if s:
             s += '  (%s)' % v
         else:
             s = v
-        self.error(s, **kwargs)
+        self._error(s, Raise, **kwargs)
 
-    def errorNotRegistered(self, s='', **kwargs):
-        v = conf.supybot.replies.notRegistered.get(self.msg.args[0])()
-        self.error(self.__makeReply(v, s), **kwargs)
+    def errorNotRegistered(self, s='', Raise=False, **kwargs):
+        v = self._getConfig(conf.supybot.replies.notRegistered)
+        self._error(self.__makeReply(v, s), Raise, **kwargs)
 
-    def errorNoUser(self, s='', name='that user', **kwargs):
-        v = conf.supybot.replies.noUser.get(self.msg.args[0])()
+    def errorNoUser(self, s='', name='that user', Raise=False, **kwargs):
+        v = self._getConfig(conf.supybot.replies.noUser)
         try:
             v = v % name
         except TypeError:
             log.warning('supybot.replies.noUser should have one "%s" in it.')
-        self.error(self.__makeReply(v, s), **kwargs)
+        self._error(self.__makeReply(v, s), Raise, **kwargs)
 
-    def errorRequiresPrivacy(self, s='', **kwargs):
-        v = conf.supybot.replies.requiresPrivacy.get(self.msg.args[0])()
-        self.error(self.__makeReply(v, s), **kwargs)
+    def errorRequiresPrivacy(self, s='', Raise=False, **kwargs):
+        v = self._getConfig(conf.supybot.replies.requiresPrivacy)
+        self._error(self.__makeReply(v, s), Raise, **kwargs)
 
 
 class IrcObjectProxy(RichReplyMethods):
@@ -728,8 +737,8 @@ class CommandThread(threading.Thread):
     def __init__(self, target=None, args=None):
         (self.name, self.command, self.cb) = args
         world.threadsSpawned += 1
-        threadName = 'Thread #%s for %s.%s' % (world.threadsSpawned,
-                                               self.cb.name(), self.name)
+        threadName = 'Thread #%s (for %s.%s)' % (world.threadsSpawned,
+                                                 self.cb.name(), self.name)
         log.debug('Spawning thread %s' % threadName)
         threading.Thread.__init__(self, target=target,
                                   name=threadName, args=args)
