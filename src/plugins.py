@@ -59,6 +59,7 @@ import structures
 
 try:
     import sqlite
+    sqlite.have_datetime = False
     Connection = sqlite.Connection
     class MyConnection(sqlite.Connection):
         def commit(self, *args, **kwargs):
