@@ -61,7 +61,7 @@ class SeenDB(plugins.ChannelUserDB):
     def serialize(self, v):
         return list(v)
 
-    def deserialize(self, L):
+    def deserialize(self, channel, id, L):
         (seen, saying) = L
         return (float(seen), saying)
     

@@ -209,7 +209,7 @@ class ChannelUserDB(ChannelUserDictionary):
                     except ValueError:
                         # We'll skip over this so, say, nicks can be kept here.
                         pass
-                    v = self.deserialize(t)
+                    v = self.deserialize(channel, id, t)
                     self[channel, id] = v
                 except Exception, e:
                     log.warning('Invalid line #%s in %s.',
@@ -236,7 +236,7 @@ class ChannelUserDB(ChannelUserDictionary):
         self.flush()
         self.clear()
 
-    def deserialize(self, L):
+    def deserialize(self, channel, id, L):
         """Should take a list of strings and return an object to be accessed
         via self.get(channel, id)."""
         raise NotImplementedError

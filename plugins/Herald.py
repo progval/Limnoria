@@ -56,7 +56,7 @@ class HeraldDB(plugins.ChannelUserDB):
     def serialize(self, v):
         return [v]
 
-    def deserialize(self, L):
+    def deserialize(self, channel, id, L):
         if len(L) != 1:
             raise ValueError
         return L[0]
