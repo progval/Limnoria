@@ -134,11 +134,11 @@ replyWithPrivateNotice = False
 replyWithNickPrefix = True
 
 ###
-# replyWhenAddressedByName: True if the bot should reply to messages of the
+# replyWhenAddressedByNick: True if the bot should reply to messages of the
 #                           form "botnick: foo" where "botnick" is the bot's
 #                           nick.
 ###
-replyWhenAddressedByName = True
+replyWhenAddressedByNick = True
 
 ###
 # requireRegistration: Oftentimes a plugin will want to record who added or
@@ -322,7 +322,7 @@ types = {
     'replyWhenNotCommand': mybool,
     'replyWithPrivateNotice': mybool,
     'replyWithNickPrefix': mybool,
-    'replyWhenAddressedByName': mybool,
+    'replyWhenAddressedByNick': mybool,
     'requireRegistration': mybool,
     'enablePipeSyntax': mybool,
     'replyError': mystr,
