@@ -33,7 +33,9 @@
 Provides a multitude of fun, useless commands.
 """
 
+__author__ = "jemfinch"
 __revision__ = "$Id$"
+__contributors__ = ["Grant Bowman <grantbow@grantbow.com>"]
 
 import supybot.plugins as plugins
 
@@ -42,6 +44,8 @@ import re
 import sys
 import md5
 import sha
+import time
+import string
 import random
 import urllib
 import inspect
@@ -329,33 +333,48 @@ class Fun(callbacks.Privmsg):
             length = 4
         irc.reply(utils.soundex(s, length))
 
-    _eightballs = (
-        'outlook not so good.',
-        'my reply is no.',
-        'don\'t count on it.',
-        'you may rely on it.',
-        'ask again later.',
-        'most likely.',
-        'cannot predict now.',
-        'yes.',
-        'yes, most definitely.',
-        'better not tell you now.',
-        'it is certain.',
-        'very doubtful.',
-        'it is decidedly so.',
-        'concentrate and ask again.',
-        'signs point to yes.',
-        'my sources say no.',
-        'without a doubt.',
-        'reply hazy, try again.',
-        'as I see it, yes.',
-        )
+
+
+    #
+    # The list of words and algorithm are pulled straight the mozbot
+    # MagicEightBall.bm module.
+    #
+    _responses = {'positive': ['It is possible.', 'Yes!', 'Of course.', 
+                               'Naturally.', 'Obviously.', 'It shall be.',
+                               'The outlook is good.', 'It is so.',
+                               'One would be wise to think so.', 
+                               'The answer is certainly yes.'],
+                  'negative': ['In your dreams.', 'I doubt it very much.',
+                               'No chance.', 'The outlook is poor.', 
+                               'Unlikely.', 'About as likely as pigs flying.',
+                               'You\'re kidding, right?', 'NO!', 'NO.', 'No.', 
+                               'The answer is a resounding no.', ],
+                  'unknown' : ['Maybe...', 'No clue.', '_I_ don\'t know.', 
+                               'The outlook is hazy, please ask again later.', 
+                               'What are you asking me for?', 'Come again?',
+                               'You know the answer better than I.', 
+                               'The answer is def-- oooh! shiny thing!'],
+                 }
+    
+    def _checkTheBall(self, questionLength):
+        if questionLength % 3 == 0:
+            category = 'positive'
+        elif questionLength % 3 == 1:
+            category = 'negative'
+        else:
+            category = 'unknown'
+        response = self._responses[category][ int(time.time()) % len(self._responses[category]) ]
+        return response
+
     def eightball(self, irc, msg, args):
         """[<question>]
 
-        Asks the magic eightball a question.
+        Ask a question and the answer shall be provided.
         """
-        irc.reply(random.choice(self._eightballs))
+        if len(args) == 0:
+            irc.reply(self._checkTheBall(2) )
+        else:
+            irc.reply(self._checkTheBall(len(string.join(args,' '))) )
 
     _rouletteChamber = random.randrange(0, 6)
     _rouletteBullet = random.randrange(0, 6)

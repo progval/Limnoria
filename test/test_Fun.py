@@ -58,6 +58,12 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
     def testPing(self):
         self.assertResponse('ping', 'pong')
 
+    def testEightball(self):
+        self.assertNotError('eightball')
+        self.assertNotError('eightball a')
+        self.assertNotError('eightball ab')
+        self.assertNotError('eightball abc')
+
     def testNoErrors(self):
         self.assertNotError('objects')
         self.assertNotError('levenshtein Python Perl')
