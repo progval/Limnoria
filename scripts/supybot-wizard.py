@@ -42,12 +42,12 @@ def getPlugins():
     filenames = []
     for dir in conf.pluginDirs:
         filenames.extend(os.listdir(dir))
-    plugins = []
+    plugins = sets.Set([])
     for filename in filenames:
         if filename.endswith('.py') and filename[0].isupper():
-            plugins.append(os.path.splitext(filename)[0])
-    if 'OwnerCommands' in plugins:
-        plugins.remove('OwnerCommands')
+            plugins.add(os.path.splitext(filename)[0])
+    plugins.discard('OwnerCommands')
+    plugins = list(plugins)
     plugins.sort()
     return plugins
 
