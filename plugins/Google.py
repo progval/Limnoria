@@ -42,6 +42,7 @@ import operator
 import google
 
 import utils
+import ircmsgs
 import privmsgs
 import callbacks
 
@@ -67,7 +68,7 @@ def configure(onStart, afterConnect, advanced):
         print 'You\'ll need to get a key before you can use this plugin.'
         print 'You can apply for a key from http://www.google.com/apis/'
         
-class Google(callbacks.Privmsg):
+class GooglePrivmsg(callbacks.Privmsg):
     threaded = True
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -161,6 +162,17 @@ class Google(callbacks.Privmsg):
                    last24hours, last24hours != 1 and 's ' or ' ',
                    self.totalTime))
 
+
+class GooglePrivmsgRegexp(callbacks.PrivmsgRegexp):
+    threaded = True
+    def googleSnarfer(self, irc, msg, match):
+        r"^google\s+(.*)$"
+        data = google.doGoogleSearch(match.group(1), safeSearch=1)
+        url = data.results[0].URL
+        irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg), url))
+
+class Google(callbacks.Combine):
+    classes = [GooglePrivmsg, GooglePrivmsgRegexp]
 
 Class = Google
 
