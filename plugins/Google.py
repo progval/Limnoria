@@ -119,6 +119,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.total = 0
         self.totalTime = 0
+        self.snarfer = True
         self.last24hours = structures.queue()
 
     def formatData(self, data):
@@ -146,6 +147,16 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         google.setLicense(key)
         irc.reply(msg, conf.replySuccess)
     googlelicensekey = privmsgs.checkCapability(googlelicensekey, 'admin')
+
+    def disablegooglesnarfer(self, irc, msg, args):
+        """takes no argument
+
+        Disables the snarfer that responds to all messages that begin with
+        'google'
+        """
+        self.snarfer = False
+        irc.reply(msg, conf.replySuccess)
+    disablegooglesnarfer=privmsgs.checkCapability(disablegooglesnarfer,'admin')
 
     def google(self, irc, msg, args):
         """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
@@ -258,6 +269,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
+        if not self.snarfer:
+            return
         searchString = match.group(1)
         data = search(searchString, safeSearch=1)
         if data.results:
