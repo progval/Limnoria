@@ -108,9 +108,10 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
             for url in webutils.urlRe.findall(text):
                 r = self.registryValue('nonSnarfingRegexp', channel)
                 if r and r.search(url):
-                    self.log.debug('Skipping adding %r to db.', url)
+                    self.log.debug('Skipping adding %s to db.',
+                                   utils.quoted(url))
                     continue
-                self.log.debug('Adding %r to db.', url)
+                self.log.debug('Adding %s to db.', utils.quoted(url))
                 self.db.add(channel, url, msg)
         self.__parent.doPrivmsg(irc, msg)
 
@@ -125,7 +126,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
             url = match.group(0)
             r = self.registryValue('nonSnarfingRegexp', channel)
             if r and r.search(url):
-                self.log.debug('Not titleSnarfing %r.', url)
+                self.log.debug('Not titleSnarfing %s.', utils.quoted(url))
                 return
             try:
                 size = conf.supybot.protocols.http.peekSize()

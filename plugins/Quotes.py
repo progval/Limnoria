@@ -67,8 +67,8 @@ class QuoteRecord(dbi.Record):
             user = self.by
         except KeyError:
             user = 'a user that is no longer registered'
-        return 'Quote %r added by %s at %s.' % \
-               (self.text, user,
+        return 'Quote %s added by %s at %s.' % \
+               (utils.quoted(self.text), user,
                 time.strftime(format, time.localtime(float(self.at))))
 
 class SqliteQuotesDB(object):
@@ -258,7 +258,8 @@ class Quotes(callbacks.Privmsg):
             irc.reply('More than 10 quotes matched your criteria.  '
                       'Please narrow your query.')
         else:
-            quotes = ['#%s: %r' % (q.id, utils.ellipsisify(q.text, 30))
+            quotes = ['#%s: %s' %
+                      (q.id, utils.quoted(utils.ellipsisify(q.text, 30)))
                       for q in quote]
             irc.reply(utils.commaAndify(quotes))
 
@@ -331,7 +332,7 @@ class Quotes(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error('Invalid id: %r' % id)
+            irc.errorInvalid('id' % id)
             return
         try:
             quote = self.db.get(channel, id)
@@ -350,7 +351,7 @@ class Quotes(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error('That\'s not a valid id: %r' % id)
+            irc.errorInvalid('id' % id)
         try:
             self.db.remove(channel, id)
             irc.replySuccess()

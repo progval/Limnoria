@@ -659,7 +659,12 @@ class first(context):
             state.args.append(self.default)
         else:
             raise e
-            
+
+class reversed(context):
+    def __call__(self, irc, msg, args, state):
+        args[:] = args[::-1]
+        super(reversed, self).__call__(irc, msg, args, state)
+        args[:] = args[::-1]
 
 class getopts(context):
     """The empty string indicates that no argument is taken; None indicates
@@ -775,7 +780,7 @@ def wrap(f, specList=[], **kw):
 
 
 __all__ = ['wrap', 'context', 'additional', 'optional', 'any', 'compose',
-           'Spec', 'first', 'urlSnarfer', 'thread',
+           'Spec', 'first', 'urlSnarfer', 'thread', 'reversed',
            'many', 'getopts', 'getConverter', 'addConverter', 'callConverter']
 
 if world.testing:

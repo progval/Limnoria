@@ -132,10 +132,12 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             optionstr = 'This poll has no options yet'
         else:
             options = cursor.fetchall()
-            optionstr = 'Options: %s' %\
-                    ' '.join(['%s: %r' % tuple(t) for t in options])
-        pollstr = 'Poll #%s: %r started by %s.  %s.  Poll is %s.' % \
-                  (poll_id, question, starter, optionstr, statusstr)
+            optionstr = 'Options: %s' % \
+                    ' '.join(['%s: %s' % (s, utils.quoted(t)) \
+                              for (s, t) in options])
+        pollstr = 'Poll #%s: %s started by %s.  %s.  Poll is %s.' % \
+                  (poll_id, utils.quoted(question), starter, optionstr,
+                   statusstr)
         irc.reply(pollstr)
 
     def open(self, irc, msg, args):
@@ -304,7 +306,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                                   WHERE id=%s AND poll_id=%s""",
                                   option_id, poll_id)
                 option = cursor.fetchone()[0]
-                results.append('%r: %s' % (option, int(count)))
+                results.append('%s: %s' % (utils.quoted(option), int(count)))
             s = utils.commaAndify(results)
         reply += ' - %s' % s
         irc.reply(reply)
@@ -322,7 +324,8 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         if cursor.rowcount == 0:
             irc.reply('This channel currently has no open polls.')
         else:
-            polls = ['#%s: %r' % tuple(t) for t in cursor.fetchall()]
+            polls = ['#%s: %s' % (s, utils.quoted(t))
+                     for (s, t) in cursor.fetchall()]
             irc.reply(utils.commaAndify(polls))
 
 Class = Poll

@@ -225,7 +225,8 @@ class Alias(callbacks.Privmsg):
             raise AliasError, 'Names cannot coincide with names of plugins.'
         realName = callbacks.canonicalName(name)
         if name != realName:
-            s = 'That name isn\'t valid.  Try %r instead.' % realName
+            s = 'That name isn\'t valid.  Try %s instead.' % \
+                utils.quoted(realName)
             raise AliasError, s
         name = realName
         cbs = callbacks.findCallbackForCommand(irc, name)
@@ -236,7 +237,7 @@ class Alias(callbacks.Privmsg):
         if name in self.aliases:
             (currentAlias, locked) = self.aliases[name]
             if locked and currentAlias != alias:
-                raise AliasError, 'Alias %r is locked.' % name
+                raise AliasError, 'Alias %s is locked.' % utils.quoted(name)
         try:
             f = makeNewAlias(name, alias)
         except RecursiveAlias:
@@ -280,8 +281,8 @@ class Alias(callbacks.Privmsg):
             alias += ' $*'
         try:
             self.addAlias(irc, name, alias)
-            self.log.info('Adding alias %r for %r (from %s)' %
-                          (name, alias, msg.prefix))
+            self.log.info('Adding alias %s for %s (from %s)' %
+                          (utils.quoted(name), utils.quoted(alias),msg.prefix))
             irc.replySuccess()
         except AliasError, e:
             irc.error(str(e))
@@ -294,7 +295,8 @@ class Alias(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         try:
             self.removeAlias(name)
-            self.log.info('Removing alias %r (from %s)' % (name, msg.prefix))
+            self.log.info('Removing alias %s (from %s)' % (utils.quoted(name),
+                                                           msg.prefix))
             irc.replySuccess()
         except AliasError, e:
             irc.error(str(e))

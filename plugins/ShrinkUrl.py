@@ -170,7 +170,8 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
             url = match.group(0)
             r = self.registryValue('nonSnarfingRegexp', channel)
             if r and r.search(url) is not None:
-                self.log.debug('Matched nonSnarfingRegexp: %r', url)
+                self.log.debug('Matched nonSnarfingRegexp: %s',
+                               utils.quoted(url))
                 return
             minlen = self.registryValue('minimumLength', channel)
             cmd = self.registryValue('default', channel)
@@ -181,7 +182,8 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
                 elif cmd == 'ln':
                     (shorturl, _) = self._getLnUrl(url)
                 if shorturl is None:
-                    self.log.info('Couldn\'t get shorturl for %r', url)
+                    self.log.info('Couldn\'t get shorturl for %s',
+                                  utils.quoted(url))
                     return
                 domain = webutils.getDomain(url)
                 s = '%s (at %s)' % (ircutils.bold(shorturl), domain)

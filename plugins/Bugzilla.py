@@ -89,7 +89,7 @@ conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bugSnarfer',
 conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bold',
     registry.Boolean(True, """Determines whether results are bolded."""))
 conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'replyNoBugzilla',
-    registry.String('I don\'t have a bugzilla %r.', """Determines the phrase
+    registry.String('I don\'t have a bugzilla %s.', """Determines the phrase
     to use when notifying the user that there is no information about that
     bugzilla site."""))
 conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'snarfTarget',
@@ -333,8 +333,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         if not bugs:
             irc.error('I could not find any bugs.')
             return
-        s = '%s match %r (%s): %s.' % \
-            (utils.nItems('bug', len(bugs)), searchstr,
+        s = '%s match %s (%s): %s.' % \
+            (utils.nItems('bug', len(bugs)), utils.quoted(searchstr),
              ' AND '.join(keywords), utils.commaAndify(map(str, bugids)))
         irc.reply(s)
     search = wrap(search, [getopts({'keywords':'text'}), 'text', 'text'])
@@ -349,7 +349,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             (url, description) = self.db[name]
         except KeyError:
             s = self.registryValue('replyNoBugzilla', msg.args[0])
-            irc.error(s % name)
+            irc.error(s % utils.quoted(name))
             return
         queryurl = '%s/xml.cgi?id=%s' % (url, number)
         try:

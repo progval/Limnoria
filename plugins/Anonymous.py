@@ -103,7 +103,8 @@ class Anonymous(callbacks.Privmsg):
         """
         (channel, text) = privmsgs.getArgs(args, required=2)
         self._preCheck(irc, msg, channel)
-        self.log.info('Saying %r in %s due to %s.', text, channel, msg.prefix)
+        self.log.info('Saying %s in %s due to %s.',
+                      utils.quoted(text), channel, msg.prefix)
         irc.queueMsg(ircmsgs.privmsg(channel, text))
 
     def do(self, irc, msg, args):
@@ -113,8 +114,8 @@ class Anonymous(callbacks.Privmsg):
         """
         (channel, action) = privmsgs.getArgs(args, required=2)
         self._preCheck(irc, msg, channel)
-        self.log.info('Performing %r in %s due to %s.',
-                      action, channel, msg.prefix)
+        self.log.info('Performing %s in %s due to %s.',
+                      utils.quoted(action), channel, msg.prefix)
         irc.queueMsg(ircmsgs.action(channel, action))
 
 

@@ -366,7 +366,8 @@ class Note(callbacks.Privmsg):
                 try:
                     L.remove(user)
                 except (KeyError, ValueError):
-                    irc.error('%r was not in your list of ignores.' % user)
+                    irc.error('%s was not in your list of ignores.' %
+                              utils.quoted(user))
                     return
             else:
                 L.add(user)

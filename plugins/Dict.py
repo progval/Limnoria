@@ -130,10 +130,11 @@ class Dict(callbacks.Privmsg):
         dbs = sets.Set()
         if not definitions:
             if dictionary == '*':
-                irc.reply('No definition for %r could be found.' % word)
+                irc.reply('No definition for %s could be found.' %
+                          utils.quoted(word))
             else:
-                irc.reply('No definition for %r could be found in %s' %
-                          (word, ircutils.bold(dictionary)))
+                irc.reply('No definition for %s could be found in %s' %
+                          (utils.quoted(word), ircutils.bold(dictionary)))
             return
         L = []
         for d in definitions:

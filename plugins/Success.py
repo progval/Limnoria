@@ -164,8 +164,8 @@ class Success(callbacks.Privmsg):
             return text.lower() in success.text.lower()
         ids = [str(success.id) for success in self.db.select(channel, p)]
         if ids:
-            s = 'Success search for %r (%s found): %s.' % \
-                (text, len(ids), utils.commaAndify(ids))
+            s = 'Success search for %s (%s found): %s.' % \
+                (utils.quoted(text), len(ids), utils.commaAndify(ids))
             irc.reply(s)
         else:
             irc.reply('No successes found matching that search criteria.')
@@ -182,8 +182,8 @@ class Success(callbacks.Privmsg):
             name = ircdb.users.getUser(success.by).name
             at = time.localtime(success.at)
             timeStr = time.strftime(conf.supybot.humanTimestampFormat(), at)
-            irc.reply("Success #%s: %r (added by %s at %s)" % \
-                      (id, success.text, name, timeStr))
+            irc.reply("Success #%s: %s (added by %s at %s)" % \
+                      (id, utils.quoted(success.text), name, timeStr))
         except KeyError:
             irc.error('No success found with that id.')
     get = wrap(get, ['channeldb', ('id', 'success')])

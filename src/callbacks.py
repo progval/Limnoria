@@ -1181,6 +1181,11 @@ class SimpleProxy(RichReplyMethods):
         self.msg = msg
 
     def error(self, s, msg=None, **kwargs):
+        if 'Raise' in kwargs and kwargs['Raise']:
+            if s:
+                raise Error, s
+            else:
+                raise ArgumentError
         if msg is None:
             msg = self.msg
         m = error(msg, s, **kwargs)

@@ -66,9 +66,8 @@ if sqlite is not None:
                               'Todos for tester: #1: wash my car and #2: moo')
             # Check error
             self.assertError('todo asfas')
-            self.assertResponse('todo asfas',
-                                'Error: \'asfas\' is not a valid task id or '
-                                'username')
+            self.assertRegexp('todo asfas',
+                                'Error: \'asfas\' is not a valid task')
             # Check priority sorting
             self.assertNotError('todo setpriority 1 100')
             self.assertNotError('todo setpriority 2 10')

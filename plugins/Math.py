@@ -193,7 +193,8 @@ class Math(callbacks.Privmsg):
             return str(x)
         text = self._mathRe.sub(handleMatch, text)
         try:
-            self.log.info('evaluating %r from %s' % (text, msg.prefix))
+            self.log.info('evaluating %s from %s' %
+                          (utils.quoted(text), msg.prefix))
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(self._complexToString(x))
         except OverflowError:
@@ -227,7 +228,8 @@ class Math(callbacks.Privmsg):
             return
         text = text.replace('lambda', '')
         try:
-            self.log.info('evaluating %r from %s' % (text, msg.prefix))
+            self.log.info('evaluating %s from %s' %
+                          (utils.quoted(text), msg.prefix))
             irc.reply(str(eval(text, self._mathEnv, self._mathEnv)))
         except OverflowError:
             maxFloat = math.ldexp(0.9999999999999999, 1024)
@@ -283,7 +285,8 @@ class Math(callbacks.Privmsg):
                     try:
                         stack.append(eval(s, self._mathEnv, self._mathEnv))
                     except SyntaxError:
-                        irc.error('%r is not a defined function.' % arg)
+                        irc.error('%s is not a defined function.' %
+                                  utils.quoted(arg))
                         return
         if len(stack) == 1:
             irc.reply(str(self._complexToString(complex(stack[0]))))

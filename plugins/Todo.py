@@ -110,8 +110,7 @@ class Todo(callbacks.Privmsg):
                 try:
                     userid = ircdb.users.getUserId(arg)
                 except KeyError:
-                    irc.error(
-                              '%r is not a valid task id or username' % arg)
+                    irc.errorInvalid('task id or username', arg)
                     return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -149,7 +148,7 @@ class Todo(callbacks.Privmsg):
                 cursor.execute("""SELECT userid,priority,added_at,task,active
                                   FROM todo WHERE id = %s""", taskid)
                 if cursor.rowcount == 0:
-                    irc.error('%r is not a valid task id' % taskid)
+                    irc.errorInvalid('task id', taskid)
                     return
                 (userid, pri, added_at, task, active) = cursor.fetchone()
                 # Construct and return the reply
@@ -189,7 +188,7 @@ class Todo(callbacks.Privmsg):
                 try:
                     priority = int(arg)
                 except ValueError, e:
-                    irc.error('%r is an invalid priority' % arg)
+                    irc.errorInvalid('priority', arg)
                     return
         text = privmsgs.getArgs(rest)
         db = self.dbHandler.getDb()
@@ -270,8 +269,7 @@ class Todo(callbacks.Privmsg):
                 try:
                     r = utils.perlReToPythonRe(arg)
                 except ValueError, e:
-                    irc.error('%r is not a valid regular expression' %
-                              arg)
+                    irc.errorInvalid('regular expression', arg)
                     return
                 def p(s, r=r):
                     return int(bool(r.search(s)))
@@ -335,7 +333,7 @@ class Todo(callbacks.Privmsg):
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError:
-            irc.error('%r is not a valid regexp' % regexp)
+            irc.errorInvalid('regexp', regexp)
             return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
@@ -343,7 +341,7 @@ class Todo(callbacks.Privmsg):
                           WHERE userid = %s AND id = %s
                           AND active = 1""", userid, taskid)
         if cursor.rowcount == 0:
-            irc.error('%r is not a valid task id' % taskid)
+            irc.errorInvalid('task id', taskid)
             return
         newtext = replacer(cursor.fetchone()[0])
         cursor.execute("""UPDATE todo SET task = %s

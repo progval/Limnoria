@@ -164,8 +164,9 @@ class Ctcp(callbacks.PrivmsgCommandAndRegexp):
                 L = []
                 for (reply, nicks) in self.versions.iteritems():
                     if nicks:
-                        L.append('%s responded with %r' %
-                                 (utils.commaAndify(nicks), reply))
+                        L.append('%s responded with %s' %
+                                 (utils.commaAndify(nicks),
+                                  utils.quoted(reply)))
                     else:
                         L.append(reply)
                 irc.reply(utils.commaAndify(L))

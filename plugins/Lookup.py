@@ -93,7 +93,7 @@ def configure(advanced):
         conf.registerGlobalValue(lookups,command, registry.String(filename,''))
         nokeyVal = yn('Would you like the key to be shown for random \
                         responses?')
-        conf.registerGlobalValue(lookups.get(command), 'nokey', 
+        conf.registerGlobalValue(lookups.get(command), 'nokey',
                                     registry.Boolean(nokeyVal, ''))
 
 conf.registerPlugin('Lookup')
@@ -115,7 +115,7 @@ class SqliteLookupDB(object):
 
     def close(self):
         self.db.close()
-        
+
     def getRecordCount(self, tableName):
         cursor = self.db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM %s""" % tableName)
@@ -123,7 +123,7 @@ class SqliteLookupDB(object):
         if rows == 0:
             raise dbi.NoRecordError
         return rows
-        
+
     def checkLookup(self, name):
         cursor = self.db.cursor()
         sql = "SELECT name FROM sqlite_master \
@@ -146,12 +146,12 @@ class SqliteLookupDB(object):
                 key = key.replace('\\:', ':')
             except ValueError:
                 cursor.execute("""DROP TABLE %s""" % name)
-                s = 'Invalid line in %s: %r' % (filename, line)
+                s = 'Invalid line in %s: %s' % (filename, utils.quoted(line))
                 raise callbacks.Error, s
             cursor.execute(sql, key, value)
         cursor.execute("CREATE INDEX %s_keys ON %s (key)" % (name, name))
         self.db.commit()
-    
+
     def dropLookup(self, name):
         cursor = self.db.cursor()
         if self.checkLookup(name):
@@ -159,7 +159,7 @@ class SqliteLookupDB(object):
             self.db.commit()
         else:
             raise dbi.NoRecordError
-            
+
     def getResults(self, name, key):
         cursor = self.db.cursor()
         sql = """SELECT value FROM %s WHERE key LIKE %%s""" % name
@@ -168,7 +168,7 @@ class SqliteLookupDB(object):
             raise dbi.NoRecordError
         else:
             return cursor.fetchall()
-            
+
     def getRandomResult(self, name, key):
         cursor = self.db.cursor()
         sql = """SELECT key, value FROM %s
@@ -191,8 +191,7 @@ class SqliteLookupDB(object):
                 try:
                     r = utils.perlReToPythonRe(arg)
                 except ValueError, e:
-                    irc.error('%r is not a valid regular expression' %
-                              arg)
+                    irc.errorInvalid('regular expression' % arg)
                     return
                 def p(s, r=r):
                     return int(bool(r.search(s)))
@@ -215,7 +214,7 @@ class SqliteLookupDB(object):
             raise dbi.NoRecordError
         else:
             return cursor.fetchall()
-        
+
 LookupDB = plugins.DB('Lookup', {'sqlite': SqliteLookupDB,})
 
 class Lookup(callbacks.Privmsg):
@@ -317,12 +316,12 @@ class Lookup(callbacks.Privmsg):
     def delRegistryValues(self, name):
         group = conf.supybot.plugins.Lookup.lookups
         group.unregister(name)
-        
+
     def addDatabase(self, name, filename):
         dataDir = conf.supybot.directories.data()
         filename = os.path.join(dataDir, filename)
         fd = file(filename)
-        self.db.addLookup(name, fd, self._splitRe)        
+        self.db.addLookup(name, fd, self._splitRe)
 
     def addCommand(self, name):
         def f(self, irc, msg, args):
@@ -363,7 +362,7 @@ class Lookup(callbacks.Privmsg):
                 irc.reply('No entries in %s matched that query.' % name)
         else:
             irc.error('I don\'t have a domain %s' % name)
-            
+
     def _lookup(self, irc, msg, args):
         """<name> <key>
 

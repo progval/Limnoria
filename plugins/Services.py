@@ -380,7 +380,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                              'NickServ.  Check email at %s and send the auth '
                              'command to NickServ.', email)
         else:
-            self.log.debug('Unexpected notice from NickServ: %r.', s)
+            self.log.debug('Unexpected notice from NickServ: %s.',
+                           utils.quoted(s))
 
     def checkPrivileges(self, irc, channel):
         chanserv = self.registryValue('ChanServ')

@@ -99,7 +99,7 @@ class IrcHandler(logging.Handler):
                     # baaaaaad.
                     irc.sendMsg(msg)
                 else:
-                    print '*** Not sending to %r' % target
+                    print '*** Not sending to %s' % utils.quoted(target)
 
 
 class IrcFormatter(log.Formatter):

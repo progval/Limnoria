@@ -89,7 +89,7 @@ def canChangeTopic(irc, msg, args, state):
     c = irc.state.channels[state.channel]
     if irc.nick not in c.ops and 't' in c.modes:
         irc.error('I can\'t change the topic, '
-                  'I\'m not opped and %s is +t.' % channel, Raise=True)
+                  'I\'m not opped and %s is +t.' % state.channel, Raise=True)
 
 def getTopic(irc, msg, args, state, format=True):
     separator = state.cb.registryValue('separator', state.channel)

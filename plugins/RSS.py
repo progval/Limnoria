@@ -304,9 +304,8 @@ class RSS(callbacks.Privmsg):
         try:
             name = self._validFeedName(name)
         except ValueError:
-            irc.error('%r is not a valid feed name.  Feed names must not '
-                      'include dots, colons, or spaces.' % name)
-            return
+            irc.errorInvalid('feed name', name, 'Feed names must not '
+                             'include dots, colons, or spaces.')
         self.makeFeedCommand(name, url)
         irc.replySuccess()
 

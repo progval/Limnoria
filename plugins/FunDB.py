@@ -144,8 +144,8 @@ class FunDB(callbacks.Privmsg):
         lowerTypes = [t.lower() for t in self._types]
         if type.lower() not in lowerTypes:
             if error:
-                irc.error('%r is not a valid type.  Valid types include %s.' %
-                          (type, utils.commaAndify(self._types)))
+                irc.error('%s is not a valid type.  Valid types include %s.' %
+                          (utils.quoted(type), utils.commaAndify(self._types)))
             return False
         else:
             return True
@@ -315,8 +315,8 @@ class FunDB(callbacks.Privmsg):
             return
         try:
             x = self.db.get(channel, type, id)
-            reply = '%s #%s: %r; Created by %s.' % (type, x.id, x.text,
-                                                    self._getBy(x.by))
+            reply = '%s #%s: %s; Created by %s.' % \
+                    (type, x.id, utils.quoted(x.text), self._getBy(x.by))
             irc.reply(reply)
         except KeyError:
             irc.error('There is no %s with that id.' % type)

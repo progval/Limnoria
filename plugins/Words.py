@@ -278,15 +278,18 @@ class Words(callbacks.Privmsg):
             del game.unused[game.unused.index(letter)]
             if letter in game.hidden:
                 self._hangmanReply(irc, channel,
-                                   'Yes, there is %s %r.' %
-                                   (game.letterArticle(letter), letter))
+                                   'Yes, there is %s %s.' %
+                                   (game.letterArticle(letter),
+                                    utils.quoted(letter)))
                 game.guess = game.addLetter(letter, game.guess,
                                             game.letterPositions(letter,
                                                                  game.hidden))
                 if game.guess == game.hidden:
                     game.guessed = True
             else:
-                self._hangmanReply(irc, channel, 'No, there is no %r.' % letter)
+                self._hangmanReply(irc, channel,
+                                   'No, there is no %s.' %
+                                   utils.quoted(letter))
                 game.tries -= 1
             self._hangmanReply(irc, channel,
                                '%s (%s left)' % (game.guess, game.triesLeft()))
@@ -316,12 +319,13 @@ class Words(callbacks.Privmsg):
         # Verify if the user won or lost
         if game.guessed and game.tries > 0:
             self._hangmanReply(irc, channel,
-                               'You win!  The word was indeed %r.' %
-                               game.hidden)
+                               'You win!  The word was indeed %s.' %
+                               utils.quoted(game.hidden))
             self.endGame(channel)
         elif not game.guessed and game.tries == 0:
             self._hangmanReply(irc, channel,
-                               'You lose!  The word was %r.' % game.hidden)
+                               'You lose!  The word was %s.' %
+                               utils.quoted(game.hidden))
             self.endGame(channel)
     guess = wrap(guess, ['channel', 'somethingWithoutSpaces'])
     ###

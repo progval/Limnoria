@@ -258,7 +258,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("""SELECT quote, hostmask, added_at, added_by
                           FROM quotegrabs WHERE id = %s""", id)
         if cursor.rowcount == 0:
-            irc.error('No quotegrab for id %r' % id)
+            irc.error('No quotegrab for id %s' % utils.quoted(id))
             return
         quote, hostmask, timestamp, grabber_mask = cursor.fetchone()
         time_str = time.strftime(conf.supybot.humanTimestampFormat(),

@@ -162,8 +162,8 @@ class Dunno(callbacks.Privmsg):
             return text.lower() in dunno.text.lower()
         ids = [str(dunno.id) for dunno in self.db.select(channel, p)]
         if ids:
-            s = 'Dunno search for %r (%s found): %s.' % \
-                (text, len(ids), utils.commaAndify(ids))
+            s = 'Dunno search for %s (%s found): %s.' % \
+                (utils.quoted(text), len(ids), utils.commaAndify(ids))
             irc.reply(s)
         else:
             irc.reply('No dunnos found matching that search criteria.')
@@ -180,8 +180,8 @@ class Dunno(callbacks.Privmsg):
             name = ircdb.users.getUser(dunno.by).name
             at = time.localtime(dunno.at)
             timeStr = time.strftime(conf.supybot.humanTimestampFormat(), at)
-            irc.reply("Dunno #%s: %r (added by %s at %s)" % \
-                      (id, dunno.text, name, timeStr))
+            irc.reply("Dunno #%s: %s (added by %s at %s)" % \
+                      (id, utils.quoted(dunno.text), name, timeStr))
         except KeyError:
             irc.error('No dunno found with that id.')
     get = wrap(get, ['channeldb', ('id', 'dunno')])

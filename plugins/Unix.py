@@ -223,8 +223,8 @@ class Unix(callbacks.Privmsg):
             resp = 'I could not find an alternate spelling for "%s"' % word
         elif line[0] == '&':
             matches = line.split(':')[1].strip()
-            resp = 'Possible spellings for %r: %s.' % \
-                   (word, utils.commaAndify(matches.split(', ')))
+            resp = 'Possible spellings for %s: %s.' % \
+                   (utils.quoted(word), utils.commaAndify(matches.split(', ')))
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
         irc.reply(resp)

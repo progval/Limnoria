@@ -238,7 +238,7 @@ class SqliteMoobotDB(object):
         cursor.execute("""UPDATE factoids
                           SET locked_by=%s, locked_at=%s
                           WHERE key LIKE %s""",
-                          locker_id, int(time.time()), key) 
+                          locker_id, int(time.time()), key)
         db.commit()
 
     def unlock(self, channel, key):
@@ -255,7 +255,7 @@ class SqliteMoobotDB(object):
         cursor.execute("""SELECT created_by, count(key) FROM factoids
                           GROUP BY created_by
                           ORDER BY count(key) DESC LIMIT %s""", limit)
-        return cursor.fetchall() 
+        return cursor.fetchall()
 
     def mostRecent(self, channel, limit):
         db = self._getDb(channel)
@@ -380,7 +380,7 @@ class MoobotFactoids(callbacks.Privmsg):
 
     def _sanitizeKey(self, key):
         return key.rstrip('!? ')
-    
+
     def _checkNotLocked(self, irc, channel, key):
         if self.db.locked(channel, key):
             irc.error('Factoid "%s" is locked.' % key, Raise=True)
@@ -398,12 +398,13 @@ class MoobotFactoids(callbacks.Privmsg):
         elif 'is' in tokens:
             p = 'is'.__eq__
         else:
-            s = 'Invalid tokens for {add,change}Factoid: %r' % tokens
+            s = 'Invalid tokens for {add,change}Factoid: %s' % \
+                utils.quoted(tokens)
             raise ValueError, s
         (key, newfact) = map(' '.join, utils.itersplit(p, tokens, maxsplit=1))
         key = self._sanitizeKey(key)
         return (key, newfact)
-        
+
     def addFactoid(self, irc, msg, tokens):
         # First, check and see if the entire message matches a factoid key
         channel = getChannel(irc, msg)

@@ -234,8 +234,8 @@ class WordStats(callbacks.Privmsg):
                 self.db.delWord(channel, word)
                 irc.replySuccess()
             else:
-                irc.error('%r doesn\'t look like a word I am keeping stats '
-                          'on.' % word)
+                irc.error('%s doesn\'t look like a word I am keeping stats '
+                          'on.' % utils.quoted(word))
                 return
         else:
             irc.error('I am not currently keeping any word stats.')
@@ -277,14 +277,16 @@ class WordStats(callbacks.Privmsg):
             try:
                 count = self.db.getWordCount(channel, id, word)
             except KeyError:
-                irc.error('I\'m not keeping stats on %r.' % word)
+                irc.error('I\'m not keeping stats on %s.' %
+                          utils.quoted(word))
                 return
             if count:
-                s = '%s has said %r %s.' % \
-                    (user, word, utils.nItems('time', count))
+                s = '%s has said %s %s.' % \
+                    (user, utils.quoted(word), utils.nItems('time', count))
                 irc.reply(s)
             else:
-                irc.error('%s has never said %r.' % (user, word))
+                irc.error('%s has never said %s.' %
+                          (user, utils.quoted(word)))
         elif arg1 in WordDict.fromkeys(self.db.getWords(channel)):
             word = arg1
             total = self.db.getTotalWordCount(channel, word)
@@ -300,7 +302,7 @@ class WordStats(callbacks.Privmsg):
                 id = None
                 rank = None
                 number = None
-            ers = '%rer' % word
+            ers = '%ser' % utils.quoted(word)
             L = []
             for (userid, count) in self.db.getTopUsers(channel, word, n):
                 if userid == id:
@@ -309,9 +311,7 @@ class WordStats(callbacks.Privmsg):
                     username = ircdb.users.getUser(userid).name
                     L.append('%s: %s' % (username, count))
                 except KeyError:
-                    self.log.warning('Odd, I have a user in my WordStats '
-                                     'database that doesn\'t exist in my '
-                                     'user database: #%s.', userid)
+                    L.append('%s: %s' % ('unregistered user', count))
             ret = 'Top %s (out of a total of %s seen):' % \
                   (utils.nItems(ers, len(L)), utils.nItems(repr(word), total))
             users = self.db.getNumUsers(channel)
@@ -328,18 +328,19 @@ class WordStats(callbacks.Privmsg):
             try:
                 id = ircdb.users.getUserId(user)
             except KeyError:
-                irc.error('%r doesn\'t look like a word I\'m keeping stats '
-                          'on or a user in my database.' % user)
+                irc.error('%s doesn\'t look like a word I\'m keeping stats '
+                          'on or a user in my database.' % utils.quoted(user))
                 return
             try:
-                L = ['%r: %s' % (word, count)
+                L = ['%s: %s' % (utils.quoted(word), count)
                      for (word,count) in self.db.getUserWordCounts(channel,id)]
                 if L:
                     L.sort()
                     irc.reply(utils.commaAndify(L))
                 else:
-                    irc.error('%r doesn\'t look like a word I\'m keeping stats'
-                              ' on or a user in my database.' % user)
+                    irc.error('%s doesn\'t look like a word I\'m keeping stats'
+                              ' on or a user in my database.' %
+                              utils.quoted(user))
                     return
             except KeyError:
                 irc.error('I have no word stats for that person.')

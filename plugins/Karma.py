@@ -297,9 +297,9 @@ class Karma(callbacks.Privmsg):
                 if self.registryValue('simpleOutput', channel):
                     s = '%s: %s' % (name, total)
                 else:
-                    s = 'Karma for %r has been increased %s ' \
+                    s = 'Karma for %s has been increased %s ' \
                         'and decreased %s for a total karma of %s.' % \
-                        (name, utils.nItems('time', added),
+                        (utils.quoted(name), utils.nItems('time', added),
                          utils.nItems('time', subtracted), total)
                 irc.reply(s)
         elif len(args) > 1:
@@ -317,8 +317,10 @@ class Karma(callbacks.Privmsg):
         else: # No name was given.  Return the top/bottom N karmas.
             limit = self.registryValue('rankingDisplay', channel)
             top = self.db.top(channel, limit)
-            highest = ['%r (%s)' % t for t in self.db.top(channel, limit)]
-            lowest = ['%r (%s)' % t for t in self.db.bottom(channel, limit)]
+            highest = ['%s (%s)' % (utils.quoted(s), t)
+                       for (s, t) in self.db.top(channel, limit)]
+            lowest = ['%s (%s)' % (utils.quoted(s), t)
+                      for (s, t) in self.db.bottom(channel, limit)]
             if not (highest and lowest):
                 irc.error('I have no karma for this channel.')
                 return
@@ -348,7 +350,7 @@ class Karma(callbacks.Privmsg):
             L = self.db.most(channel, kind,
                              self.registryValue('mostDisplay', channel))
             if L:
-                L = ['%r: %s' % (name, i) for (name, i) in L]
+                L = ['%s: %s' % (utils.quoted(name), i) for (name, i) in L]
                 irc.reply(utils.commaAndify(L))
             else:
                 irc.error('I have no karma for this channel.')

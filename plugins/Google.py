@@ -340,8 +340,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             categories = utils.commaAndify(categories)
         else:
             categories = ''
-        s = 'Search for %r returned %s %s results in %s seconds.%s' % \
-            (meta.searchQuery,
+        s = 'Search for %s returned %s %s results in %s seconds.%s' % \
+            (utils.quoted(meta.searchQuery),
              meta.estimateIsExact and 'exactly' or 'approximately',
              meta.estimatedTotalResultsCount,
              meta.searchTime,
