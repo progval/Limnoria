@@ -551,7 +551,7 @@ class Irc(IrcCommandDispatcher):
                 self.queueMsg(ircmsgs.ping(now))
         if msg:
             #log.debug(repr(msg)) # Useless!
-            for callback in reviter(self.callbacks):
+            for callback in reversed(self.callbacks):
                 msg = callback.outFilter(self, msg)
                 if msg is None:
                     log.debug('%s.outFilter returned None.' % callback.name())

@@ -411,7 +411,7 @@ class Misc(callbacks.Privmsg):
                 except ValueError, e:
                     irc.error(str(e))
                     return
-        iterable = ifilter(self._validLastMsg, reviter(irc.state.history))
+        iterable = ifilter(self._validLastMsg, reversed(irc.state.history))
         iterable.next() # Drop the first message.
         predicates = list(utils.flatten(predicates.itervalues()))
         for m in iterable:

@@ -39,7 +39,7 @@ __revision__ = "$Id$"
 
 __all__ = []
 
-exported = ['ignore', 'reviter', 'window', 'group', 'sorted',
+exported = ['ignore', 'reversed', 'window', 'group', 'sorted',
            'partition', 'any', 'all', 'rsplit']
 
 import new
@@ -65,8 +65,8 @@ def ignore(*args, **kwargs):
     """Simply ignore the arguments sent to it."""
     pass
 
-def reviter(L):
-    """Iterates through a list in reverse."""
+def reversed(L):
+    """Iterates through a sequence in reverse."""
     for i in xrange(len(L) - 1, -1, -1):
         yield L[i]
 

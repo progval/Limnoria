@@ -36,18 +36,13 @@ from testsupport import *
 import itertools
 
 class FunctionsTest(SupyTestCase):
-    def testCatch(self):
-        def f():
-            raise Exception
-        catch(f)
-
-    def testReviter(self):
+    def testReversed(self):
         L = range(10)
-        revL = list(reviter(L))
+        revL = list(reversed(L))
         L.reverse()
-        self.assertEqual(L, revL, 'reviter didn\'t return reversed list')
-        for _ in reviter([]):
-            self.fail('reviter caused iteration over empty sequence')
+        self.assertEqual(L, revL, 'reversed didn\'t return reversed list')
+        for _ in reversed([]):
+            self.fail('reversed caused iteration over empty sequence')
 
     def testGroup(self):
         s = '1. d4 d5 2. Nf3 Nc6 3. e3 Nf6 4. Nc3 e6 5. Bd3 a6'

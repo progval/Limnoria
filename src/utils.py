@@ -40,6 +40,7 @@ import fix
 import os
 import re
 import md5
+import new
 import sha
 import types
 import socket

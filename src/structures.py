@@ -205,7 +205,7 @@ class queue(object):
         return elt in self.front or elt in self.back
 
     def __iter__(self):
-        for elt in reviter(self.front):
+        for elt in reversed(self.front):
             yield elt
         for elt in self.back:
             yield elt
