@@ -213,10 +213,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         cursor.execute("""SELECT MAX(id)+1 FROM options
                           WHERE poll_id=%s""",
                           poll_id)
-        if cursor.rowcount == 0:
-            option_id = 1
-        else:
-            option_id = cursor.fetchone()[0]
+        option_id = cursor.fetchone()[0] or 1
         cursor.execute("""INSERT INTO options VALUES
                           (%s, %s, %s)""",
                           option_id, poll_id, option)
