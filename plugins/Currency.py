@@ -130,10 +130,7 @@ class Currency(callbacks.Privmsg):
             return
         conv = text.split(',')[1]
         conv = number * float(conv)
-        resp = [str(number), curr1.upper(), '=', str(conv), curr2.upper()]
-        if '.' not in resp[0] and 'e' not in resp[0]:
-            resp[0] = '%s.00' % resp[0]
-        irc.reply(' '.join(resp))
+        irc.reply('%.2f %s = %.2f %s' % (number, curr1, conv, curr2))
     yahoo = wrap(yahoo, [optional('float', 1.0), 'lowered', 'to', 'lowered'])
 
 conf.registerPlugin('Currency')
