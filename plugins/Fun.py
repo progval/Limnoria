@@ -54,7 +54,7 @@ import privmsgs
 import callbacks
 
 example = utils.wrapLines("""
-<jemfinch> @list FunCommands
+<jemfinch> @list Fun
 <supybot> base, binary, chr, coin, decode, dice, dns, encode, hexlify, kernel, last, lastfrom, leet, levenshtein, lithp, md5, mimetype, objects, ord, pydoc, rot13, sha, soundex, unhexlify, urlquote, urlunquote, xor
 <jemfinch> @ord A
 <supybot> 65
@@ -126,7 +126,7 @@ example = utils.wrapLines("""
 <supybot> jemfinch: ohio-state.edu <http://www.educause.edu/edudomain> is active; registered 18-aug-1987, updated 19-aug-2003, expires 18-aug-2004.
 """)
 
-class FunCommands(callbacks.Privmsg):
+class Fun(callbacks.Privmsg):
     def hexip(self, irc, msg, args):
         """<ip>
 
@@ -496,7 +496,7 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, s)
 
 
-Class = FunCommands
+Class = Fun
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

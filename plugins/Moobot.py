@@ -193,7 +193,7 @@ class Moobot(callbacks.Privmsg):
         """<text>
 
         Encodes text in base64.  Here for compatibility with Moobot; this and
-        other encodings are available in the FunCommands module.
+        other encodings are available in the Fun module.
         """
         text = privmsgs.getArgs(args)
         s = base64.encodestring(text).strip()
@@ -203,7 +203,7 @@ class Moobot(callbacks.Privmsg):
         """<text>
 
         Decodes base64 encoded text.  Here for compatibility with Moobot; this
-        and other encodings are available in the FunCommands module.
+        and other encodings are available in the Fun module.
         """
         text = privmsgs.getArgs(args)
         s = base64.decodestring(text)

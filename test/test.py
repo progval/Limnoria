@@ -106,7 +106,7 @@ class TimeoutError(AssertionError):
         return '%r timed out' % self.args[0]
 
 class PluginTestCase(unittest.TestCase):
-    """Subclass this to write a test case for a plugin.  See test_FunCommands
+    """Subclass this to write a test case for a plugin.  See test/test_Fun.py
     for an example.
     """
     timeout = 10
