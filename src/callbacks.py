@@ -426,8 +426,9 @@ class RichReplyMethods(object):
         v = conf.supybot.replies.notRegistered.get(self.msg.args[0])()
         self.error(self.__makeReply(v, s), **kwargs)
 
-    def errorNoUser(self, s='', **kwargs):
+    def errorNoUser(self, s='', name='that user', **kwargs):
         v = conf.supybot.replies.noUser.get(self.msg.args[0])()
+        v = v % name
         self.error(self.__makeReply(v, s), **kwargs)
 
     def errorRequiresPrivacy(self, s='', **kwargs):

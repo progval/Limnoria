@@ -396,7 +396,7 @@ registerChannelValue(supybot.replies, 'incorrectAuthentication',
     and neither credential is correct."""))
 
 registerChannelValue(supybot.replies, 'noUser',
-    registry.NormalizedString("""I can't find that user in my user
+    registry.NormalizedString("""I can't find %s in my user
     database.  If you didn't give a user name, then I might not know what your
     user is, and you'll need to identify before this command might work.""",
     """Determines what error message the bot replies with when someone tries
