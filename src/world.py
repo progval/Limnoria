@@ -127,11 +127,11 @@ def upkeep(scheduleNext=True):
         log.debug('Pattern cache size: %s'%len(ircutils._patternCache))
         log.debug('HostmaskPatternEqual cache size: %s' %
                   len(ircutils._hostmaskPatternEqualCache))
-        timestamp = log.timestamp()
+        #timestamp = log.timestamp()
         if flushed:
-            log.info('%s Flushers flushed and garbage collected.', timestamp)
+            log.info('Flushers flushed and garbage collected.')
         else:
-            log.info('%s Garbage collected.', timestamp)
+            log.info('Garbage collected.')
     if scheduleNext:
         schedule.addEvent(upkeep, time.time() + conf.supybot.upkeepInterval())
     collected = gc.collect()
