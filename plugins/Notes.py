@@ -210,7 +210,7 @@ class Notes(callbacks.Privmsg):
                         L.append(r'#%s from %s' % (id, sender))
                     else:
                         L.append(r'#%s (private)' % id)
-            while reduce(operator.add, L) + 2*len(L) > 400:
+            while reduce(operator.add, map(len, L)) + 2*len(L) > 400:
                 L.pop()
             irc.reply(msg, ', '.join(L))
 
