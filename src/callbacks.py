@@ -281,7 +281,8 @@ class IrcObjectProxy:
 
     def finalEval(self):
         self.finalEvaled = True
-        name = canonicalName(self.args.pop(0))
+        originalName = self.args.pop(0)
+        name = canonicalName(originalName)
         callback = self.findCallback(name)
         try:
             if callback is not None:
@@ -304,7 +305,7 @@ class IrcObjectProxy:
                 command = getattr(callback, name)
                 callback.callCommand(command, self, self.msg, self.args)
             else:
-                self.args.insert(0, name)
+                self.args.insert(0, originalName)
                 if not isinstance(self.irc, irclib.Irc):
                     # If self.irc is an actual irclib.Irc, then this is the
                     # first command given, and should be ignored as usual.

@@ -55,6 +55,8 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
             s = privmsgs.getArgs(args)
             try:
                 irc.reply(msg, repr(eval(s)))
+            except SyntaxError, e:
+                irc.reply(msg, '%s: %r' % (debug.exnToString(e), s))
             except Exception, e:
                 irc.reply(msg, debug.exnToString(e))
         else:
