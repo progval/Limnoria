@@ -233,6 +233,13 @@ class ChannelState(object):
         self.halfops = ircutils.IrcSet()
         self.modes = ircutils.IrcDict()
 
+    def isOp(self, nick):
+        return nick in self.ops
+    def isVoice(self, nick):
+        return nick in self.voices
+    def isHalfop(self, nick):
+        return nick in self.halfops
+    
     def addUser(self, user):
         "Adds a given user to the ChannelState.  Power prefixes are handled."
         nick = user.lstrip('@%+')
