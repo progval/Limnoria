@@ -83,13 +83,17 @@ class PluginTestCase(unittest.TestCase):
     for an example.
     """
     timeout = 10
+    plugins = ()
     def setUp(self, nick='test'):
         self.nick = nick
         self.prefix = ircutils.joinHostmask(nick, 'user', 'host.domain.tld')
         self.irc = irclib.Irc(nick)
         while self.irc.takeMsg():
             pass
-        self.irc.addCallback(self.plugin)
+        for name in self.plugins:
+            module = __import__(name)
+            plugin = module.Class()
+            self.irc.addCallback(plugin)
         
     def assertResponse(self, query, expectedResponse):
         self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))

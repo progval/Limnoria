@@ -31,10 +31,8 @@
 
 from test import *
 
-import FunCommands
-
 class FunCommandsTest(PluginTestCase):
-    plugin = FunCommands.Class()
+    plugins = ('FunCommands',)
     def testBinary(self):
         self.assertResponse('binary A', '01000001')
 
