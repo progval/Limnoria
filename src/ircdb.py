@@ -41,6 +41,7 @@ import debug
 import utils
 import world
 import ircutils
+from structures import PersistentDictionary
 
 def fromChannelCapability(capability):
     """Returns a (channel, capability) tuple from a channel capability."""
@@ -488,14 +489,8 @@ class UsersDB(object):
 class ChannelsDictionary(object):
     def __init__(self, filename):
         self.filename = filename
-        if os.path.exists(filename):
-            fd = file(filename, 'r')
-            s = fd.read()
-            fd.close()
-            Set = sets.Set
-            self.dict = eval(_normalize(s))
-        else:
-            self.dict = {}
+        Set = sets.Set
+        self.dict = PersistentDictionary(filename, globals(), locals())
 
     def getChannel(self, channel):
         """Returns an IrcChannel object for the given channel."""
@@ -514,9 +509,7 @@ class ChannelsDictionary(object):
 
     def flush(self):
         """Flushes the channel database to its file."""
-        fd = file(self.filename, 'w')
-        fd.write(repr(self.dict))
-        fd.close()
+        self.dict.flush()
 
     def reload(self):
         """Reloads the channel database from its file."""
