@@ -260,6 +260,17 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertError('first blah')
         self.assertResponse('third foo bar baz', 'foo bar baz')
 
+    def testConfigureHandlesNonCanonicalCommands(self):
+        try:
+            original = conf.commandsOnStart
+            tokens = callbacks.tokenize('Admin setprefixchar $')
+            conf.commandsOnStart = [tokens]
+            self.assertNotError('load Admin')
+            self.assertEqual(conf.prefixChars, '$')
+        finally:
+            conf.commandsOnStart = original
+            
+
 
 class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
     plugins = ('Utilities',) # Gotta put something.
@@ -269,7 +280,7 @@ class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
             raise callbacks.ArgumentError
     def testNoEscapingArgumentError(self):
         self.irc.addCallback(self.PCAR())
-        self.assertResponse('test', 'test <foo>')
+        self.assertResponse('test', 'PCAR test <foo>')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

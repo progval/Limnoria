@@ -640,7 +640,7 @@ class Privmsg(irclib.IrcCallback):
         fakeIrc = ConfigIrcProxy(irc)
         for args in conf.commandsOnStart:
             args = args[:]
-            command = args.pop(0)
+            command = canonicalName(args.pop(0))
             if self.isCommand(command):
                 #debug.printf('%s: %r' % (command, args))
                 method = getattr(self, command)
