@@ -143,7 +143,8 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertResponse('last', '<%s> foo bar baz' % self.nick)
         self.assertRegexp('last', '<%s> @last' % self.nick)
         self.assertResponse('last --with foo', '<%s> foo bar baz' % self.nick)
-        self.assertRegexp('last --regexp m/\s+/', 'last --with foo')
+        self.assertResponse('last --without foo', '<%s> @last' % self.nick)
+        self.assertRegexp('last --regexp m/\s+/', 'last --without foo')
         self.assertResponse('last --regexp m/bar/',
                             '<%s> foo bar baz' % self.nick)
         self.assertResponse('last --from %s' % self.nick.upper(),

@@ -415,7 +415,7 @@ class Misc(callbacks.Privmsg):
                ircutils.isChannel(msg.args[0])
 
     def last(self, irc, msg, args):
-        """[--{from,in,to,with,regexp,nolimit}] <args>
+        """[--{from,in,to,with,without,regexp,nolimit}] <args>
 
         Returns the last message matching the given criteria.  --from requires
         a nick from whom the message came; --in and --to require a channel the
@@ -426,7 +426,7 @@ class Misc(callbacks.Privmsg):
         """
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
                                                    'with=', 'regexp=',
-                                                   'nolimit'])
+                                                   'without=', 'nolimit'])
         predicates = {}
         nolimit = False
         if ircutils.isChannel(msg.args[0]):
@@ -444,6 +444,10 @@ class Misc(callbacks.Privmsg):
                 def f(m, arg=arg):
                     return arg.lower() in m.args[1].lower()
                 predicates.setdefault('with', []).append(f)
+            elif option == '--without':
+                def f(m, arg=arg):
+                    return arg.lower() not in m.args[1].lower()
+                predicates.setdefault('without', []).append(f)
             elif option == '--regexp':
                 try:
                     r = utils.perlReToPythonRe(arg)
