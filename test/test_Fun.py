@@ -114,7 +114,7 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotRegexp('decode asdflkj foobar', 'LookupError')
         self.assertResponse('decode zlib [encode zlib %s]' % s, s)
 
-    def testoutfilter(self):
+    def testOutfilter(self):
         s = self.nick.encode('rot13')
         self.assertNotError('outfilter rot13')
         self.assertResponse('rot13 foobar', '%s: foobar' % s)
@@ -126,6 +126,16 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('rot13 foobar', '%s: foobar' % s)
         self.assertNotError('outfilter')
         self.assertResponse('rot13 foobar', 'sbbone')
+
+    def testOutfilterAction(self):
+        s = self.nick.encode('rot13')
+        self.assertNotError('outfilter rot13')
+        self.assertResponse('rot13 foobar', '%s: foobar' % s)
+        m = self.getMsg('action foobar')
+        self.failUnless(ircmsgs.isAction(m))
+        s = ircmsgs.unAction(m)
+        self.assertEqual(s, 'sbbone')
+        
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -67,13 +67,19 @@ class Fun(callbacks.Privmsg):
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
             if msg.args[0] in self.outFilters:
-                s = msg.args[1]
+                if ircmsgs.isAction(msg):
+                    s = ircmsgs.unAction(msg)
+                else:
+                    s = msg.args[1]
                 methods = self.outFilters[msg.args[0]]
                 for filtercommand in methods:
                     myIrc = MyFunProxy()
                     filtercommand(myIrc, msg, [s])
                     s = myIrc.s
-                msg = ircmsgs.IrcMsg(msg=msg, args=(msg.args[0], s))
+                if ircmsgs.isAction(msg):
+                    msg = ircmsgs.action(msg.args[0], s)
+                else:
+                    msg = ircmsgs.IrcMsg(msg=msg, args=(msg.args[0], s))
         return msg
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
