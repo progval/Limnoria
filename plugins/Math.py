@@ -45,7 +45,7 @@ import string
 from itertools import imap
 
 import supybot.utils as utils
-from supybot.commands import wrap
+from supybot.commands import additional, optional, wrap
 import supybot.callbacks as callbacks
 
 import convertcore
@@ -67,8 +67,8 @@ class Math(callbacks.Privmsg):
         except ValueError:
             irc.error('Invalid <number> for base %s: %s' % (frm, number))
     base = wrap(base, [('int', 'base', lambda i: 2 <= i <= 36),
-                       ('int?', 10, 'base', lambda i: 2 <= i <= 36),
-                       '?something'])
+                       optional(('int', 'base', lambda i: 2 <= i <= 36), 10),
+                       optional('something')])
 
     def _convertDecimalToBase(self, number, base):
         """
@@ -307,8 +307,8 @@ class Math(callbacks.Privmsg):
             irc.reply(str(newNum))
         except convertcore.UnitDataError, ude:
             irc.error(str(ude))
-    convert = wrap(convert, [('float?', 1.0), 'something',
-                             ('literal?', '', 'to'), 'something'])
+    convert = wrap(convert, [optional('float', 1.0), 'something',
+                             additional(('literal', 'to'), ''), 'something'])
 
     def units(self, irc, msg, args, type):
         """ [<type>]
@@ -319,7 +319,7 @@ class Math(callbacks.Privmsg):
         """
 
         irc.reply(convertcore.units(type))
-    units = wrap(units, [('?something', None)])
+    units = wrap(units, [optional('something')])
 
 Class = Math
 

@@ -49,7 +49,7 @@ import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
-from supybot.commands import wrap
+from supybot.commands import additional, wrap
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.schedule as schedule
