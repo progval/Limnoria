@@ -38,6 +38,7 @@ from baseplugin import *
 
 import os
 import imp
+import crypt
 import random
 
 # Stupid printing on import...
@@ -50,6 +51,7 @@ import utils
 import privmsgs
 import callbacks
 
+pythonPath = map(os.path.dirname, [os.__file__, crypt.__file__])
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
@@ -77,15 +79,15 @@ class Python(callbacks.Privmsg):
         if '.' in funcname:
             parts = funcname.split('.')
             functionName = parts.pop()
-            path = os.path.dirname(os.__file__)
+            path = pythonPath
             for name in parts:
                 try:
-                    info = imp.find_module(name, [path])
+                    info = imp.find_module(name, path)
                     newmodule = imp.load_module(name, *info)
-                    path = os.path.dirname(newmodule.__file__)
+                    path = [os.path.dirname(newmodule.__file__)]
                     info[0].close()
                 except ImportError:
-                    irc.error(msg, 'No such module %s exists.' % module)
+                    irc.error(msg, 'No such module %s exists.' % name)
                     return
             if hasattr(newmodule, functionName):
                 f = getattr(newmodule, functionName)
