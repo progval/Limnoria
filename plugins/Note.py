@@ -274,11 +274,11 @@ class Note(callbacks.Privmsg):
     def _formatNote(self, note, to):
         elapsed = utils.timeElapsed(time.time() - note.at)
         if note.to == to:
-            author = ircdb.users.getUser(note.frm).name
+            author = plugins.getUserName(note.frm)
             return '%s (Sent by %s %s ago)' % (note.text, author, elapsed)
         else:
             assert note.frm == to, 'Odd, userid isn\'t frm either.'
-            recipient = ircdb.users.getUser(note.to).name
+            recipient = plugins.getUserName(note.to)
             return '%s (Sent to %s %s ago)' % (note.text, recipient, elapsed)
 
     def note(self, irc, msg, args, user, id):
@@ -304,10 +304,10 @@ class Note(callbacks.Privmsg):
     def _formatNoteId(self, msg, note, sent=False):
         if note.public or not ircutils.isChannel(msg.args[0]):
             if sent:
-                sender = ircdb.users.getUser(note.to).name
+                sender = plugins.getUserName(note.to)
                 return '#%s to %s' % (note.id, sender)
             else:
-                sender = ircdb.users.getUser(note.frm).name
+                sender = plugins.getUserName(note.frm)
                 return '#%s from %s' % (note.id, sender)
         else:
             return '#%s (private)' % note.id
