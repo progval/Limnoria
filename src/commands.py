@@ -299,10 +299,10 @@ def _getRe(f):
             if len(s) < 512:
                 state.args.append(f(s))
             else:
-                irc.errorInvalid('regular expression')
+                irc.errorInvalid('regular expression', s)
         except IndexError:
             args[:] = original
-            raise
+            irc.errorInvalid('regular expression', s)
     return get
 
 getMatcher = _getRe(utils.perlReToPythonRe)
