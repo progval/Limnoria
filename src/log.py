@@ -56,6 +56,8 @@ deadlyExceptions = [KeyboardInterrupt, SystemExit]
 ###
 testing = False
 
+logging.addLevelName(1, 'VERBOSE')
+
 class Formatter(logging.Formatter):
     _fmtConf = staticmethod(lambda : conf.supybot.log.format())
     def formatTime(self, record, datefmt=None):
@@ -89,6 +91,9 @@ class Logger(logging.Logger):
         self.error('Exception id: %s', eId)
         # The traceback should be sufficient if we want it.
         # self.error('Exception string: %s', eStrId)
+
+    def verbose(self, *args, **kwargs):
+        self.log('VERBOSE', *args, **kwargs)
 
 
 class StdoutStreamHandler(logging.StreamHandler):
@@ -168,8 +173,8 @@ class ColorizedFormatter(Formatter):
             return Formatter.format(self, record, *args, **kwargs)
 
 # These are public.
-formatter = Formatter('NEVER SEEN')
-pluginFormatter = PluginFormatter('NEVER SEEN')
+formatter = Formatter('NEVER SEEN; IF YOU SEE THIS, FILE A BUG!')
+pluginFormatter = PluginFormatter('NEVER SEEN; IF YOU SEE THIS, FILE A BUG!')
 
 # These are not.
 logging.setLoggerClass(Logger)
@@ -181,8 +186,8 @@ class ValidLogLevel(registry.String):
     def set(self, s):
         s = s.upper()
         try:
-            level = getattr(logging, s)
-        except AttributeError:
+            level = logging._levelNames[s]
+        except KeyError:
             try:
                 level = int(s)
             except ValueError:
@@ -219,7 +224,7 @@ conf.registerGlobalValue(conf.supybot.log, 'level',
     will be.  Valid values are DEBUG, INFO, WARNING, ERROR, and CRITICAL, in
     order of increasing priority."""))
 conf.registerGlobalValue(conf.supybot.log, 'statistics',
-    ValidLogLevel(logging.DEBUG, """Determines what level statistics reporting
+    ValidLogLevel('VERBOSE', """Determines what level statistics reporting
     is to be logged at.  Mostly, this just includes, for instance, the time it
     took to parse a message, process a command, etc.  You probably don't care
     about this."""))
@@ -264,6 +269,7 @@ conf.registerGlobalValue(conf.supybot.log.plugins, 'format',
 
 # These just make things easier.
 debug = _logger.debug
+verbose = _logger.verbose
 info = _logger.info
 warning = _logger.warning
 error = _logger.error
