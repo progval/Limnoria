@@ -39,7 +39,7 @@ except ImportError:
     sqlite = None
 
 if sqlite is not None:
-    class WordsTestCase(PluginTestCase, PluginDocumentation):
+    class WordsTestCase(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('Words',)
         # Putting in a comment to make this different.
         def testAddWord(self):
