@@ -184,6 +184,7 @@ registerGlobalValue(supybot, 'user',
     registry.String('Supybot %s' % version, """Determines the user the bot
     sends to the server."""))
 
+class Networks(registry.SpaceSeparatedSetOfStrings):
 registerGlobalValue(supybot, 'networks',
     registry.SpaceSeparatedSetOfStrings([], """Determines what networks the bot
     will connect to."""))
@@ -778,5 +779,9 @@ registerGlobalValue(supybot.debug, 'flushVeryOften',
     registry.Boolean(False, """Determines whether the bot will automatically
     flush all flushers *very* often.  Useful for debugging when you don't know
     what's breaking or when, but think that it might be logged."""))
+registerGlobalValue(supybot.debug, 'generated',
+    registry.String('$Id$; %s' % time.ctime(), """Determines when this
+    configuration file was generated; it should be modified by
+    supybot-wizard"""))
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+__revision__ = "$Id$"
+
 import os
 import sys
 
@@ -574,6 +576,8 @@ def main():
     ###
     # Write the registry
     ###
+    conf.supybot.debug.generated.setValue('%s; %s' %
+                                          (__revision__, time.ctime()))
     if not filename:
         filename = '%s.conf' % nick
     registry.close(conf.supybot, filename)
