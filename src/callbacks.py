@@ -308,6 +308,15 @@ def findCallbackForCommand(irc, commandName):
                     L.append(callback)
     return L
 
+def formatArgumentError(method, name=None):
+    if name is None:
+        name = method.__name__
+    if hasattr(method, '__doc__') and method.__doc__:
+        s = '%s %s' % (method.__name__, method.__doc__.splitlines()[0])
+    else:
+        s = 'Invalid arguments for %s.' % method.__name__
+    return s
+
 class IrcObjectProxy:
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args):
@@ -352,10 +361,7 @@ class IrcObjectProxy:
                 self.reply(self.msg, '[%s]' % ' '.join(self.args))
                 return
         elif len(cbs) > 1:
-            s = 'The command %s is available in plugins %s.  Please specify ' \
-                'the plugin whose command you wish to call.' % \
-                (originalName, utils.commaAndify([cb.name() for cb in cbs]))
-            self.error(self.msg, s)
+            return # Misc.doPrivmsg will handle this.
         else:
             try:
                 cb = cbs[0]
@@ -387,11 +393,7 @@ class IrcObjectProxy:
                 else:
                     cb.callCommand(command, self, self.msg, self.args)
             except (getopt.GetoptError, ArgumentError):
-                if hasattr(command, '__doc__'):
-                    s = '%s %s' % (name, command.__doc__.splitlines()[0])
-                else:
-                    s = 'Invalid arguments for %s.' % name
-                self.reply(self.msg, s)
+                self.reply(self.msg, formatArgumentError(command, name=name))
             except CannotNest, e:
                 if not isinstance(self.irc, irclib.Irc):
                     self.error(self.msg, 'Command %r cannot be nested.' % name)
@@ -528,12 +530,8 @@ class CommandThread(threading.Thread):
         try:
             threading.Thread.run(self)
         except (getopt.GetoptError, ArgumentError):
-            if hasattr(self.command, '__doc__'):
-                help = self.command.__doc__.splitlines()[0]
-                s = '%s %s' % (self.commandName, help)
-            else:
-                s = 'Invalid arguments for %s.' % self.commandName
-            self.irc.reply(self.msg, s)
+            name = self.commandName
+            self.irc.reply(self.msg, formatArgumentError(self.command, name))
         except CannotNest:
             if not isinstance(self.irc.irc, irclib.Irc):
                 s = 'Command %r cannot be nested.' % self.commandName
@@ -598,7 +596,10 @@ class Privmsg(irclib.IrcCallback):
                 if self.isCommand(name):
                     del args[0]
                     method = getattr(self, name)
-                    method(irc, msg, args)
+                    try:
+                        method(irc, msg, args)
+                    except (getopt.GetoptError, ArgumentError):
+                        irc.reply(msg, formatArgumentError(method, name))
                 else:
                     handleBadArgs()
             else:
