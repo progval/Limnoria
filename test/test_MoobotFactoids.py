@@ -58,7 +58,7 @@ if sqlite is not None:
             self._testOptions('(a|b)', ['a', 'b'])
             self._testOptions('a', ['a'])
             self._testOptions('(a|b (c|d))', ['a', 'b c', 'b d'])
-            self._testOptions('(a|(b|)c)', ['a', 'ab', 'cd', 'd'])
+            self._testOptions('(a|(b|)c)', ['a', 'bc', 'c'])
             self._testOptions('(a|(b|)|(c|)d)', ['a', 'ab', 'cd', 'd'])
             self._testOptions('(a|)', ['a', ''])
             self._testOptions('(|a)', ['a', ''])
