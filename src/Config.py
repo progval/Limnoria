@@ -135,20 +135,6 @@ class Config(callbacks.Privmsg):
         wrapper = getWrapper(name)
         irc.reply(wrapper.help)
 
-    def reset(self, irc, msg, args):
-        """<name>
-
-        Resets the configuration variable <name> to its original value.
-        """
-        name = privmsgs.getArgs(args)
-        capability = getCapability(name)
-        if ircdb.checkCapability(msg.prefix, capability):
-            wrapper = getWrapper(name)
-            wrapper.reset()
-            irc.replySuccess()
-        else:
-            irc.errorNoCapability(capability)
-
     def default(self, irc, msg, args):
         """<name>
 
