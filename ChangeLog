@@ -1,10 +1,11 @@
 	* Added QuoteGrabs module which allows people to grab interesting
 	quotes from other people and store them in the bot for later retrieval
-	(also optionally have the bot randomly snarf quotes)
+	(also optionally have the bot randomly snarf quotes).
 
 	* Renamed URLSnarfer plugin to just URL.
 	
-	* Moved TwistedCommands plugin to sandbox.	
+	* Removed TwistedCommands plugin to the sandbox; the one command
+	it provided (dict) is now better provided in the Dict plugin.
 
 	* Renamed Notes plugin to just Note.
 
@@ -17,49 +18,47 @@
 	info.
 
 	* Added Ebay plugin for snarfing eBay URLs as well as getting info on
-	certain auction numbers.
+	certain auctions.
 
 	* Added Dunno plugin as an optional replacement for the boring 'no
 	such command' response.
 
 	* Added MoobotFactoids plugin for moobot-style factoids (which are
-	meant to mimic blootbot-style factoids).
+	meant to mimic blootbot-style factoids).  People used to
+	traditional IRC bot factoids plugins will probably find this
+	plugin more to their taste than Factoids.
 	
 	* Removed all example strings from plugins.  To be replaced with an
 	automated process later.
 	
-	* Command names in a plugin no longer have to make sure that they are
-	unique and don't conflict with commands in another plugin.  Commands
-	that are ambiguous are greeted with an error message and instructions
-	to the user on how to disambiguate the command.  So any command that
-	used to have the plugin name in it or some shortened form of the
-	plugin name probably got changed, as it was done across all plugins
-	I'm not going to include each name change like this.
+	* Changed commands so that plugins no longer have to make sure
+	that their commands are unique within the bot.  Ambiguous commands
+	will reply with an error message and instruct the user to
+	disambiguate the command by prefixing with the appropriate plugin
+	name.. Many commands that formerly contained the plugin name (or a
+	portion thereof) have had it removed, and many plugins have had
+	their names changed so prefixing a command with the plugin name is
+	less bulky.  Rather than list each individual example, you can
+	read the plugin documentation posted at ***TODO***
 
-	* Made aliases persistent across reloads/bot restarts. 
-
-	* Fixed alias recursion detection from triggering on non-recursive
-	aliases.
-
-	* TODO: document all the changes in makeNewAlias
-
-	* Reworked the admin capability checking in BadWords.py to make it
-	require admin capability for any command in the plugin instead of
-	checking for that capability in each command in the plugin.
+	* Made aliases persistent across reloads/bot restarts.  You should
+	probably change your botscripts not to add the aliases onStart,
+	but (assuming those aliases don't change) it should still work
+	fine.
 
 	* Converted several plugins to the new Configurable plugin type
-	(ChannelDB, Dict, Enforcer, Gameknot, Google, Python, Relay)
+	Plugins modified include Bugzilla, ChannelDB, Dict, Ebay,
+	Enforcer, Gameknot, Google, Python, Relay, and URL (formerly
+	URLSnarfer).
 
-	* Switched ChannelDB databases to use integer user ids instead of text
-	nicks.
+	* Changed ChannelDB database to use integer user ids instead of text
+	usernames.
 
 	* Added monitoring of occurrences of certain words on a per-user
-	basis, adding 2 new databases and several new commands ("wordstats",
-	in ChannelDB).
+	basis, adding two new commands to ChannelDB (addword and
+	wordstats).
 
-	* Moved karma out of ChannelDB and into its own plugin.
-
-	* ChannelLogger.py: TODO: document what these changes are
+	* Moved karma out of ChannelDB and into its own Karma plugin.
 
 	* Removed "dictserver" command in favor of using the Configurable
 	framework with the Dict plugin instead.
@@ -67,74 +66,71 @@
 	* Added a "change" command to change factoid values in the Factoids
 	plugin.
 
-	* Added another greet command to the Friendly plugin.
-
 	* Moved uptime-related commands to from FunDB to the Status plugin.
 	
 	* Added substitutions for 'me' and 'my' in insult/praise/lart.
 
-	* Changed {excuse,lart,praise} to allow accessing
-	{excuse,lart,praise}s by id.
+	* Changed FundB to allow accessing excuses, larts, and praises by
+	id.
 	
 	* Removed the "googlesite" function.
-
-	* Fixed up the google groups snarfer to handle more display styles.
 
 	* Switched freshmeat searches from using regexps to using XML parsing
 	to obtain the needed info.
 
-	* Made all multiline geekquotes into one line, and remove the option
-	of choosing a multiline geekquote.
+	* Changed Http.geekquote to use multiline geekquotes (and removed
+	the option to do so, since it's now the default).
 	
-	* Added an --id switch to geekquote to pick a specific geekquote.
+	* Added a --id switch to geekquote to pick a specific geekquote.
 
-	* Renamed "internic" command to "whois".
+	* Renamed the Network.internic command to whois, since we can now fix
+	ambiguity by prefixing the plugin name.
 
 	* Changed most commands in News to require the 'news' capability.
 
 	* Actually implemented the 'change' and 'old' commands for News.
 
-	* Added ASPN Python Cookbook URL snarfer/parser.
+	* Added ASPN Python Cookbook URL snarfer.
 
-	* Moved quotegrabs out of Quotes to their own module.
-
-	* Made relay names output sorted by mode and then alphabetically.
+	* Changed Relay.names output to show (and sort by) status in the
+	channel.
 
 	* Removed 'relaycolor' command in favor of Configurable framework.
 
 	* Added total memory usage to 'cpustats' output for several *nix
 	platforms.
 
-	* Removed the total percentage of CPU time from 'cpustats'.
+	* Removed the total percentage of CPU time from 'cpustats'.  Not
+	only was it inaccurate, but we needed the room for memory stats.
 
-	* Made sure that shuffling the topic actually shuffles the topic.
+	* Changed Topic.shuffle to ensure that the topic is actually
+	shuffled.
 
-	* Made topic numbering 1-indexed instead of 0-indexed (but -1 is still
-	the last topic and -2 next to last and so on).
+	* Changed all commands which take an index (various Topic and
+	Factoids commands) to index from 0 instead of 1.
 
-	* Fixed a bug where special characters would lock up the spell command
-	(now accepts only alpha characters to being a word).
+	* Fixed several bugs in Unix.spell whereby the bot could be
+	frozen.
 
-	* Changed spell from keeping an open fd for the life of the plugin to
-	opening and closing fd's on the fly (if the fd got closed
-	unexpectedly, the spell command would block).
-	
-	* Added Bugzilla module
+	* Added Bugzilla module for accessing various data in Bugzilla
+	pages.
 	
 	* Changed the name of the "bug" command in the AdminCommands
 	plugin to "reportbug" instead.
 	
-	* Added QUIT stat-keeping to ChannelDB.  This added another column
-	to the database; you'll need to add a 'quits' column to both
-	user_stats and channel_stats.  Good luck.
+	* Added QUIT stat-keeping to ChannelDB.
 	
 	* Removed the OwnerCommands.say command; it wasn't useful enough,
 	and is so easily written that anyone can have it back if they want
 	it.
 	
-	* Changed OwnerCommands.load (and loadPluginModule) to be
-	case-insensitive, so "load funcommands" works just as well as
-	"load FunCommands".
+	* Changed OwnerCommands.load (and reload) to be case-insensitive,
+	so "load funcommands" works just as well as "load FunCommands".
+
+	* Changed the keyword parameter "needed" to privmsgs.getArgs to be
+	"required" instead.  It just sounds better, works with "optional"
+	better, and we won't get an oppurtunity later to change it.
+	
 	
 2003-10-12  Jeremy Fincher  <jemfinch@users.sf.net>
 	
