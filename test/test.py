@@ -116,7 +116,7 @@ class PluginTestCase(unittest.TestCase):
     cleanDataDir = True
     def setUp(self, nick='test'):
         # Set conf variables appropriately.
-        conf.prefixChar = '@'
+        conf.prefixChars = '@'
         conf.replyWhenNotCommand = False
         self.myVerbose = world.myVerbose
         if self.cleanConfDir:
