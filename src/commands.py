@@ -679,6 +679,7 @@ class Spec(object):
     def _state(self, types, attrs={}):
         st = State(types)
         st.__dict__.update(attrs)
+        st.allowExtra = self.allowExtra
         return st
 
     def __init__(self, types, allowExtra=False):
@@ -690,8 +691,11 @@ class Spec(object):
         state = self._state(self.types[:], stateAttrs)
         while state.types:
             context = state.types.pop(0)
-            context(irc, msg, args, state)
-        if args and not self.allowExtra:
+            try:
+                context(irc, msg, args, state)
+            except IndexError:
+                raise callbacks.ArgumentError
+        if args and not state.allowExtra:
             log.debug('args and not self.allowExtra: %r', args)
             raise callbacks.ArgumentError
         return state
