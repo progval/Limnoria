@@ -289,8 +289,11 @@ class IrcObjectProxy:
                 self.args.insert(0, name)
                 self.reply(self.msg, '[%s]' % ' '.join(self.args))
         except ArgumentError:
-            self.reply(self.msg, command.__doc__.splitlines()[0])
-        except Error, e:
+            if hasattr(command, '__doc__'):
+                self.reply(self.msg, command.__doc__.splitlines()[0])
+            else:
+                self.reply(self.msg, 'Invalid arguments.')
+        except (SyntaxError, Error), e:
             self.reply(self.msg, debug.exnToString(e))
         except Exception, e:
             debug.recoverableException()
@@ -347,7 +350,7 @@ class CommandThread(threading.Thread):
                       (self.commandName, elapsed), 'verbose')
         except ArgumentError:
             self.irc.reply(self.msg, self.command.__doc__.splitlines()[0])
-        except Error, e:
+        except (SyntaxError, Error), e:
             self.irc.reply(self.msg, debug.exnToString(e))
         except Exception, e:
             debug.recoverableException()
