@@ -97,7 +97,8 @@ class Weather(callbacks.Privmsg):
                 args = [s]
         else:
             location = privmsgs.getArgs(args)
-            self.setUserValue(msg.prefix, 'lastLocation', location)
+            self.setUserValue(msg.prefix, 'lastLocation',
+                    location, ignoreNoUser=True)
         realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)
         realCommand(irc, msg, args)
