@@ -30,9 +30,8 @@ privmsgs.py: The privmsg commands that are included by default in the bot.
              It's probably most useful from a programming standpoint simply so
              a new programmer can see what commands look like.
 
-callbacks.py: A few basic callbacks used by default in the bot.  You'll likely
-              be inheriting from Privmsg quite a bit, and using the reply
-              function a bit as well.
+callbacks.py: A few basic callbacks providing significant functionality.  
+              You'll likely be inheriting from Privmsg quite a bit.
 
 ircdb.py: The users and channels databases are here, as well as the
           IrcUser and IrcChannel classes.  Look here when you want to

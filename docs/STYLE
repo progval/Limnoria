@@ -1,13 +1,14 @@
-Maximum line length is 79 characters.
+Read PEP 8 (Guido's Style Guide) and know that we use almost all the same style
+guidelines.
+
+Maximum line length is 79 characters.  78 is a safer bet, though.
 
 Identation is 4 spaces per level.  No tabs.
 
 Single quotes are used for all string literals that aren't docstrings.
 They're just easier to type.
 
-Triple double quotes (""") are always used for docstrings, except for the
-docstrings on callbacks deriving from callbacks.Privmsg, which use just
-double quotes (").
+Triple double quotes (""") are always used for docstrings.
 
 Spaces go around all operators (except around '=' in default arguments to
 functions) and after all commas (unless doing so keeps a line within the 79
@@ -16,7 +17,8 @@ character limit).
 Class names are StudlyCaps.  Method and function names are camelCaps
 (StudlyCaps with an initial lowercase letter).  If variable and attribute
 names can maintain readability without being camelCaps, then they should be
-entirely in lowercase, otherwise they should also use camelCaps.
+entirely in lowercase, otherwise they should also use camelCaps.  Plugin names
+are StudlyCaps.
 
 Imports should always happen at the top of the module, one import per line
 (so if imports need to be added or removed later, it can be done easily).
@@ -26,7 +28,28 @@ class definition.  Two blank lines should be between all consecutive class
 definitions in a file.  Comments are even better than blank lines for
 separating classes.
 
-Code should pass PyChecker with no warnings.
+Code should pass PyChecker with no warnings.  The PyChecker config file is
+included in the tools/ subdirectory.
 
-Read PEP 8 (Guido's Style Guide) and know that we use almost all the same style
-guidelines.
+Database filenames should generally begin with the name of the plugin and the
+extension should be 'db'.  baseplugin.DBHandler does this already.
+
+Whenever creating a file descriptor or socket, keep a reference around and be
+sure to close it.  There should be no code like this:
+  s = urllib2.urlopen('url').read()
+Instead, do this:
+  fd = urllib2.urlopen('url')
+  s = fd.read()
+  fd.close()
+This is to be sure the bot doesn't leak file descriptors.
+
+All plugins should include a docstring decsribing what the plugin does.  After
+the decsription, the plugin should have a blank line followed by the line
+'Commands include:' followed by a list of commands, one per line, indented two
+spaces.  The setup script will depend on this format.
+
+Method docstrings in classes deriving from callbacks.Privmsg should include an
+argument list as their first line, and (if necessary) a blank line followed by
+a longer description of what the command does.  The argument list is used by
+the 'help' command, and the longer description is used by the 'morehelp'
+command.

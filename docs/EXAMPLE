@@ -15,9 +15,8 @@ class hierarchy.  irclib.IrcCallback does a lot of the basic stuff that call-
 backs have to do, and inheriting from it relieves the programmer from such
 pedantries.  All you have to do to start writing callbacks inheriting from
 irclib.IrcCallback is write functions of the form "doCommand", where "Command"
-is a valid ircCommand.  The "ChannelJoiner" function in the callbacks module
-is a good illustrative example of a callback being called on different
-commands.
+is a valid ircCommand.  The "ChannelLogger" plugin is a good illustrative
+example of a callback being called on different commands.
 
 The "irc" argument there is the irc object that is calling the callback.  To
 see what kind of interface it provides, read the class definition in irclib.
