@@ -125,7 +125,7 @@ def canonicalName(command):
 def reply(msg, s, prefixName=True, private=False,
           notice=False, to=None, action=False):
     # This is so we don't prefix a channel name.
-    
+
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
     if private:
@@ -140,11 +140,11 @@ def reply(msg, s, prefixName=True, private=False,
     if not s:
         s = 'Error: I tried to send you an empty message.'
     # Let's may sure we don't do, "#channel: foo.".
-    if to is None and prefixName and not ircutils.isChannel(to):
+    if prefixName and not ircutils.isChannel(to):
         s = '%s: %s' % (to, s)
     # And now, let's decide whether it's a PRIVMSG or a NOTICE.
     msgmaker = ircmsgs.privmsg
-    if notice: 
+    if notice:
         msgmaker = ircmsgs.notice
     if conf.supybot.reply.withPrivateNotice():
         target = msg.nick
@@ -434,7 +434,7 @@ class RichReplyMethods(object):
         v = conf.supybot.replies.requiresPrivacy.get(self.msg.args[0])()
         self.error(self.__makeReply(v, s), **kwargs)
 
-            
+
 class IrcObjectProxy(RichReplyMethods):
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args):
@@ -463,7 +463,7 @@ class IrcObjectProxy(RichReplyMethods):
         self.private = False
         self.noLengthCheck = False
         self.prefixName = conf.supybot.reply.withNickPrefix()
-        
+
     def evalArgs(self):
         while self.counter < len(self.args):
             if type(self.args[self.counter]) == str:
@@ -507,7 +507,7 @@ class IrcObjectProxy(RichReplyMethods):
                     self.replyError()
         finally:
             self.commandMethod = None
-            
+
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
@@ -731,7 +731,7 @@ class Privmsg(irclib.IrcCallback):
         canonicalname = canonicalName(myName)
         self._original = getattr(self, canonicalname, None)
         docstring = """<command> [<args> ...]
-        
+
         Command dispatcher for the %s plugin.  Use 'list %s' to see the
         commands provided by this plugin.  Use 'config list plugins.%s' to see
         the configuration values for this plugin.  In most cases this dispatcher
@@ -855,7 +855,7 @@ class Privmsg(irclib.IrcCallback):
             group.setValue(value)
         else:
             group.set(value)
-        
+
 
 class IrcObjectProxyRegexp(RichReplyMethods):
     def __init__(self, irc, msg):
@@ -998,6 +998,6 @@ class PrivmsgCommandAndRegexp(Privmsg):
                         proxy = self.Proxy(irc, msg)
                         self.callCommand(method,proxy,msg,m,catchErrors=True)
                         Privmsg.handled = True
-            
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
