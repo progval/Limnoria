@@ -391,7 +391,7 @@ class User(callbacks.Privmsg):
             return
         if user.checkPassword(password):
             try:
-                user.setAuth(msg.prefix)
+                user.addAuth(msg.prefix)
                 ircdb.users.setUser(id, user)
                 irc.replySuccess()
             except ValueError:
@@ -414,7 +414,7 @@ class User(callbacks.Privmsg):
         except KeyError:
             irc.errorNoUser()
             return
-        user.unsetAuth()
+        user.clearAuth()
         ircdb.users.setUser(id, user)
         irc.replySuccess('If you remain recognized after giving this command, '
                          'you\'re being recognized by hostmask, rather than '
