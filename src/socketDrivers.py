@@ -122,9 +122,11 @@ class SocketDriver(drivers.IrcDriver):
         self._sendIfMsgs()
         
     def reconnect(self, wait=False):
-        log.info('Reconnect called on driver for %s.' % self.irc)
         if self.connected:
+            log.info('Reconnect called on driver for %s.' % self.irc)
             self.conn.close()
+        else:
+            log.info('Connecting to %s.' % ':'.join(map(str, self.server)))
         self.connected = False
         if wait:
             log.info('Reconnect waiting.')
