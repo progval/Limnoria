@@ -524,7 +524,14 @@ class Irc(IrcCommandDispatcher):
                 # matter.  That's why we gotta go munging in private attributes
                 msg._str = msg._str[:500] + '\r\n'
                 msg._len =  len(str(msg))
-            self.state.addMsg(self, msg)
+            try:
+                self.state.addMsg(self, msg)
+            except Exception, e:
+                log.exception('Uncaught exception in IrcState.addMsg.  This '
+                              'could be a bug, but it could also be the '
+                              'result of an invalid message being sent via '
+                              'Owner.ircquote.')
+                return
             log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
             return msg
         else:
