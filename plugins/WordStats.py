@@ -122,6 +122,7 @@ class WordStatsDB(plugins.ChannelUserDB):
             n += 1
             if id == someId:
                 return (n, count)
+        raise KeyError
 
     def addWord(self, channel, word):
         word = word.lower()
