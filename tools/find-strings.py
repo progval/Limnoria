@@ -23,14 +23,13 @@ def getText(filename):
         fd.close()
                 
 def main():
-    os.mkdir('strings')
+    out = file('strings.txt', 'w')
     for filename in sys.argv[1:]:
         s = getText(filename)
         node = parser.ast2list(parser.suite(s), True)
-        fd = file(os.path.join('strings', os.path.basename(filename)), 'w')
         for (lineno, string) in strings(node):
-            fd.write('%s: %s\n' % (lineno, string))
-        fd.close()
+            out.write('%s: %s: %s\n' % (filename, lineno, string))
+        out.close()
 
 if __name__ == '__main__':
     main()
