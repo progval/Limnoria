@@ -83,6 +83,8 @@ try:
         def __del__(self):
             try:
                 Connection.__del__(self)
+            except AttributeError:
+                pass
             except Exception, e:
                 try:
                     log.exception('Uncaught exception in __del__:')
