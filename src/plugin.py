@@ -73,15 +73,16 @@ def loadPluginClass(irc, module, register=None):
     try:
         cb = module.Class(irc)
     except TypeError, e:
-        if '2 given' in str(e):
+        s = str(e)
+        if '2 given' in s and '__init__' in s:
             raise callbacks.Error, \
                   'In our switch from CVS to Darcs (after 0.80.1), we ' \
                   'changed the __init__ for callbacks.Privmsg* to also ' \
-                  'accept an irc argument.  This plugin is overriding ' \
+                  'accept an irc argument.  This plugin (%s) is overriding ' \
                   'its __init__ method and needs to update its prototype ' \
                   'to be \'def __init__(self, irc):\' as well as passing ' \
                   'that irc object on to any calls to the plugin\'s ' \
-                  'parent\'s __init__.'
+                  'parent\'s __init__.' % module.__name__
         else:
             raise
     except AttributeError, e:
