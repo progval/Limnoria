@@ -29,16 +29,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Module for general worldly stuff, like global variables and whatnot.
+"""
+
 from fix import *
 
 import os
 import gc
 import time
-import copy
 import types
-import string
 import atexit
-import linecache
 try:
     import msvcrt
 except ImportError:
@@ -66,6 +67,7 @@ except NameError:
     flushers = [] # A periodic function will flush all these.
 
 def flush():
+    """Flushes all the registered flushers."""
     for f in flushers:
         f()
 
@@ -77,6 +79,7 @@ except NameError:
 
 
 def upkeep(): # Function to be run on occasion to do upkeep stuff.
+    """Does upkeep (like flushing, garbage collection, etc.)"""
     collected = gc.collect()
     if os.name == 'nt':
         msvcrt.heapmin()
@@ -165,11 +168,11 @@ try:
 except NameError:
     oldobjects = {}
 def superReload(module):
+    """Reloads a module hardcore.  But kinda broken -- don't use it."""
     def updateFunction(old, new, attrs):
         """Update all attrs in old to the same attrs in new."""
         for name in attrs:
             setattr(old, name, getattr(new, name))
-
     for (name, object) in module.__dict__.iteritems():
         # For every attribute of the old module, keep the object.
         key = (module.__name__, name)
