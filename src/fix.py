@@ -33,6 +33,8 @@
 Fixes stuff that Python should have but doesn't.
 """
 
+__revision__ = "$Id$"
+
 __all__ = []
 
 exported = ['ignore', 'catch', 'reviter', 'window', 'group',

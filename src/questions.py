@@ -31,6 +31,8 @@
 
 """Handles interactive questions; useful for wizards and whatnot."""
 
+__revision__ = "$Id$"
+
 import textwrap
 from getpass import getpass as getPass
 

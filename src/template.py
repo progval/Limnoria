@@ -34,6 +34,8 @@ This is the template for bots.  supybot-wizard uses this file to make
 customized startup files for bots.
 """
 
+__revision__ = "$Id$"
+
 import re
 import os
 import sys

@@ -31,6 +31,10 @@
 
 """Old REPL from back in the day.  Deprecated."""
 
+__revision__ = "$Id$"
+
+import fix
+
 import sys
 import traceback
 from cStringIO import StringIO

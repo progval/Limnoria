@@ -33,6 +33,10 @@
 Provides commands useful to users in general. This plugin is loaded by default.
 """
 
+__revision__ = "$Id$"
+
+import fix
+
 import getopt
 import string
 
