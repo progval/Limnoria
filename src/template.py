@@ -73,14 +73,13 @@ if not isinstance(configVariables, basestring):
     for (name, value) in configVariables.iteritems():
         setattr(conf, name, value)
 
+import debug
+
+if not isinstance(debugVariables, basestring):
+    for (name, value) in debugVariables.iteritems():
+        setattr(debug, name, value)
 
 def main():
-    import debug
-
-    if not isinstance(debugVariables, basestring):
-        for (name, value) in debugVariables.iteritems():
-            setattr(debug, name, value)
-            
     import world
     import drivers
     import schedule
