@@ -256,7 +256,7 @@ class FlatfileMapping(MappingInterface):
 
     def vacuum(self):
         infd = file(self.filename)
-        outfd = utils.file.AstomicFile(self.filename,makeBackupIfSmaller=False)
+        outfd = utils.file.AtomicFile(self.filename,makeBackupIfSmaller=False)
         outfd.write(infd.readline()) # First line, nextId.
         for line in infd:
             if not line.startswith('-'):
