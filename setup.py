@@ -47,19 +47,19 @@ otherFiles = glob.glob(os.path.join('others', '*.py'))
 pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
 
 # This is a terrible hack.
-previousInstall = os.path.join(get_python_lib(), 'supybot')
-if os.path.exists(previousInstall):
-    try:
-        shutil.rmtree(previousInstall)
-    except Exception, e:
-        print 'Couldn\'t remove former installation: %s' % e
-        print 'Remove by hand and then run this script.'
-        sys.exit(-1)
+## previousInstall = os.path.join(get_python_lib(), 'supybot')
+## if os.path.exists(previousInstall):
+##     try:
+##         shutil.rmtree(previousInstall)
+##     except Exception, e:
+##         print 'Couldn\'t remove former installation: %s' % e
+##         print 'Remove by hand and then run this script.'
+##         sys.exit(-1)
 
 setup(
     # Metadata
     name='supybot',
-    version='0.77.0+cvs',
+    version='0.77.1',
     url='http://supybot.sf.net/',
     author='Jeremy Fincher',
     author_email='jemfinch@users.sf.net',
