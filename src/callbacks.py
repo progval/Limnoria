@@ -1154,8 +1154,11 @@ class Privmsg(irclib.IrcCallback):
         names = registry.split(name)
         for name in names:
             group = group.get(name)
-        if channel is not None and ircutils.isChannel(channel):
-            group = group.get(channel)
+        if channel is not None:
+            if ircutils.isChannel(channel):
+                group = group.get(channel)
+            else:
+                self.log.debug('registryValue got channel=%r', channel)
         if value:
             return group()
         else:
