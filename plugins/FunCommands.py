@@ -805,6 +805,7 @@ class FunCommands(callbacks.Privmsg):
             dictionary = '*'
         conn = dictclient.Connection('dict.org')
         definitions = conn.define(dictionary, word)
+        dbs = [ircutils.bold(d.getdb().getname()) for d in definitions]
         if not definitions:
             irc.reply(msg, 'No definition for %r could be found.' % word)
             return
@@ -818,13 +819,11 @@ class FunCommands(callbacks.Privmsg):
         originalFirst = L[0]
         ircutils.shrinkList(L, '; ')
         if not L:
-            irc.reply(msg, 'No definitions small enough to fit into an IRC ' \
-                           'message were found.  Here\'s a chopped version: ' \
-                      + originalFirst[:375])
-            return
-        s = '%s, %s shown: %s' % \
-            (utils.nItems(len(definitions), 'result'), len(L), '; '.join(L))
-        irc.reply(msg, s)
+            irc.reply(msg, 'Chopped: %s' % originalFirst[:400])
+        else:
+            s = '%s responded, %s shown: %s' % \
+                (utils.commaAndify(dbs), len(L), '; '.join(L))
+            irc.reply(msg, s)
     dict = privmsgs.thread(dict)
 
 
