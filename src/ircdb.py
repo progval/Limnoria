@@ -267,7 +267,7 @@ class IrcUser(object):
 
     def removeHostmask(self, hostmask):
         """Removes a hostmask from the user's hostmasks."""
-        self.hostmasks.remove(hostmask)
+        self.hostmasks = [s for s in self.hostmasks if s != hostmask]
 
     def setAuth(self, hostmask):
         """Sets a user's authenticated hostmask.  This times out in 1 hour."""

@@ -203,6 +203,14 @@ class IrcUserTestCase(unittest.TestCase):
         self.assertRaises(KeyError, u.checkCapability, 'foo')
         self.assertRaises(KeyError, u.checkCapability, '-bar')
 
+    def testRemoveHostmask(self):
+        u = ircdb.IrcUser()
+        u.addHostmask('foo!bar@baz')
+        self.failUnless(u.checkHostmask('foo!bar@baz'))
+        u.addHostmask('foo!bar@baz')
+        u.removeHostmask('foo!bar@baz')
+        self.failIf(u.checkHostmask('foo!bar@baz'))
+
     def testOwner(self):
         u = ircdb.IrcUser()
         u.addCapability('owner')
