@@ -374,7 +374,7 @@ def main():
         output("""Separate channels with spaces.  If the channel is locked
                   with a key, follow the channel name with the key separated
                   by a comma. For example:
-                  #supybot #mychannel,mykey #otherchannel""");
+                  #supybot-bots #mychannel,mykey #otherchannel""");
         while True:
             channels = something('What channels?', default=defaultChannels)
             try:
