@@ -273,7 +273,7 @@ class Weather(callbacks.Privmsg):
         if temp and conds and city and state:
             conds = conds.replace('Tsra', 'Thunderstorms')
             conds = conds.replace('Ts', 'Thunderstorms')
-            s = 'The current temperature at %s, %s is %s%s. Conditions: %s.'% \
+            s = 'The current temperature in %s, %s is %s%s. Conditions: %s.'% \
                 (city, state, temp, index, conds)
             irc.reply(s)
         else:
@@ -332,7 +332,7 @@ class Weather(callbacks.Privmsg):
                 temp = self._getTemp(int(temp), deg, unit, msg.args[0])
             else:
                 temp = deg.join((temp, unit))
-            resp = ['The current temperature at %s is %s.' % (location, temp)]
+            resp = ['The current temperature in %s is %s.' % (location, temp)]
             if conds is not None:
                 resp.append('Conditions: %s.' % conds.group(1))
             if humidity is not None:
@@ -407,7 +407,7 @@ class Weather(callbacks.Privmsg):
                 time = ' (%s)' % time.group(1)
             else:
                 time = ''
-            resp = ['The current temperature at %s is %s%s.' %\
+            resp = ['The current temperature in %s is %s%s.' %\
                     (location, temp, time)]
             heat = self._wunderHeat.search(text)
             if heat is not None:
