@@ -82,7 +82,7 @@ throttleTime = 1.0
 # allowEval: True if the owner (and only the owner) should be able to eval
 #            arbitrary Python code.
 ###
-allowEval = True
+allowEval = False
 
 ###
 # defaultCapabilities: Capabilities allowed to everyone by default.  You almost
