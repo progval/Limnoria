@@ -49,7 +49,6 @@ import supybot.utils as utils
 import supybot.world as world
 from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
 try:
@@ -578,11 +577,11 @@ class PeriodicFileDownloader(object):
         self.currentlyDownloading.add(filename)
         try:
             try:
-                infd = webutils.getUrlFd(url)
+                infd = utils.web.getUrlFd(url)
             except IOError, e:
                 self.log.warning('Error downloading %s: %s', url, e)
                 return
-            except webutils.WebError, e:
+            except utils.web.Error, e:
                 self.log.warning('Error downloading %s: %s', url, e)
                 return
             confDir = conf.supybot.directories.data()
