@@ -40,6 +40,7 @@ import gzip
 import sets
 import getopt
 import popen2
+#import urllib
 import fnmatch
 import os.path
 import urllib2
@@ -182,46 +183,45 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
     _debnumpkgsre = re.compile(r'out of total of (\d+)', _debreflags)
     _debBranches = ('stable', 'testing', 'unstable', 'experimental')
     def debversion(self, irc, msg, args):
-        """<package name> [stable|testing|unstable|experimental]
+        """[stable|testing|unstable|experimental] <package name>
 
         Returns the current version(s) of a Debian package in the given branch
         (if any, otherwise all available ones are displayed).
         """
-        if args and args[-1] in self._debBranches:
-            branch = args.pop()
+        if args and args[0] in self._debBranches:
+            branch = args.pop(0)
         else:
             branch = 'all'
         if not args:
             irc.error(msg, 'You must give a package name.')
         responses = []
         numberOfPackages = 0
-        for package in args:
-            fd = urllib2.urlopen('http://packages.debian.org/cgi-bin/' \
-                                 'search_packages.pl?' \
-                                 'keywords=%s&searchon=names&' \
-                                 'version=%s&release=all' % \
-                                 (package, branch))
-            html = fd.read()
-            fd.close()
-            m = self._debnumpkgsre.search(html)
-            if m:
-                numberOfPackages = m.group(1)
-            m = self._debtablere.search(html)
-            if m is None:
-                irc.reply(msg, 'No package found for: %s (%s)' % \
-                                 (package, branch))
-            else:
-                tableData = m.group(1)
-                rows = tableData.split('</TR>')
-                for row in rows:
-                    pkgMatch = self._debpkgre.search(row)
-                    brMatch = self._debbrre.search(row)
-                    if pkgMatch and brMatch:
-                        s = '%s (%s)' % (pkgMatch.group(1), brMatch.group(1))
-                        responses.append(s)
-                resp = 'Total matches: %s, shown: %s.  %s' % \
-                    (numberOfPackages, len(responses), ', '.join(responses))
-                irc.reply(msg, resp)
+        package = privmsgs.getArgs(args)
+        package = urllib.quote(package)
+        url = 'http://packages.debian.org/cgi-bin/search_packages.pl?keywords'\
+              '=%s&searchon=names&version=%s&release=all' % (package, branch)
+        fd = urllib2.urlopen(url)
+        html = fd.read()
+        fd.close()
+        m = self._debnumpkgsre.search(html)
+        if m:
+            numberOfPackages = m.group(1)
+        m = self._debtablere.search(html)
+        if m is None:
+            irc.reply(msg, 'No package found for %s (%s)' % \
+                             (urllib.unquote(package), branch))
+        else:
+            tableData = m.group(1)
+            rows = tableData.split('</TR>')
+            for row in rows:
+                pkgMatch = self._debpkgre.search(row)
+                brMatch = self._debbrre.search(row)
+                if pkgMatch and brMatch:
+                    s = '%s (%s)' % (pkgMatch.group(1), brMatch.group(1))
+                    responses.append(s)
+            resp = 'Total matches: %s, shown: %s.  %s' % \
+                (numberOfPackages, len(responses), ', '.join(responses))
+            irc.reply(msg, resp)
 
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
     def debincoming(self, irc, msg, args):
