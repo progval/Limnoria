@@ -54,8 +54,8 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 import supybot.plugins as plugins
+from supybot.commands import wrap
 import supybot.registry as registry
-import supybot.privmsgs as privmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
@@ -114,7 +114,7 @@ class Dunno(callbacks.Privmsg):
                 dunno = plugins.standardSubstitute(irc, msg, dunno)
                 irc.reply(dunno, prefixName=prefixName)
 
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, user, at, channel, dunno):
         """[<channel>] <text>
 
         Adds <text> as a "dunno" to be used as a random response when no
@@ -123,57 +123,36 @@ class Dunno(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        try:
-            by = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        dunno = privmsgs.getArgs(args)
-        at = int(time.time())
-        id = self.db.add(channel, dunno, by, at)
+        id = self.db.add(channel, dunno, user.id, at)
         irc.replySuccess('Dunno #%s added.' % id)
+    add = wrap(add, ['user', 'now', 'channeldb', 'text'])
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, user, channel, id):
         """[<channel>] <id>
 
         Removes dunno with the given <id>.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
         # Must be registered to use this
-        channel = privmsgs.getChannel(msg, args)
         try:
-            by = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error('Invalid id: %r' % id)
-            return
-        dunno = self.db.get(channel, id)
-        if by != dunno.by:
-            cap = ircdb.makeChannelCapability(channel, 'op')
-            if not ircdb.users.checkCapability(cap):
-                irc.errorNoCapability(cap)
-                return
-        try:
+            dunno = self.db.get(channel, id)
+            if user.id != dunno.by:
+                cap = ircdb.makeChannelCapability(channel, 'op')
+                if not ircdb.users.checkCapability(cap):
+                    irc.errorNoCapability(cap)
             self.db.remove(channel, id)
             irc.replySuccess()
         except KeyError:
             irc.error('No dunno has id #%s.' % id)
+    remove = wrap(remove, ['user', 'channeldb', ('id', 'dunno')])
 
-    def search(self, irc, msg, args):
+    def search(self, irc, msg, args, channel, text):
         """[<channel>] <text>
 
         Search for dunno containing the given text.  Returns the ids of the
         dunnos with the text in them.  <channel> is only necessary if the
         message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        text = privmsgs.getArgs(args)
         def p(dunno):
             return text.lower() in dunno.text.lower()
         ids = [str(dunno.id) for dunno in self.db.select(channel, p)]
@@ -183,20 +162,14 @@ class Dunno(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.reply('No dunnos found matching that search criteria.')
+    search = wrap(search, ['channeldb', 'text'])
 
-    def get(self, irc, msg, args):
+    def get(self, irc, msg, args, channel, id):
         """[<channel>] <id>
 
         Display the text of the dunno with the given id.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error('%r is not a valid dunno id.' % id)
-            return
         try:
             dunno = self.db.get(channel, id)
             name = ircdb.users.getUser(dunno.by).name
@@ -206,50 +179,33 @@ class Dunno(callbacks.Privmsg):
                       (id, dunno.text, name, timeStr))
         except KeyError:
             irc.error('No dunno found with that id.')
+    get = wrap(get, ['channeldb', ('id', 'dunno')])
 
-    def change(self, irc, msg, args):
+    def change(self, irc, msg, args, channel, id, replacer):
         """[<channel>] <id> <regexp>
 
         Alters the dunno with the given id according to the provided regexp.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        (id, regexp) = privmsgs.getArgs(args, required=2)
         try:
-            user_id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        # Check id arg
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error('%r is not a valid dunno id.' % id)
-            return
-        try:
-            _ = self.db.get(channel, id)
+            self.db.change(channel, id, replacer)
         except KeyError:
             irc.error('There is no dunno #%s.' % id)
             return
-        try:
-            replacer = utils.perlReToReplacer(regexp)
-        except:
-            irc.error('%r is not a valid regular expression.' % regexp)
-            return
-        self.db.change(channel, id, replacer)
         irc.replySuccess()
+    change = wrap(change, ['channeldb', ('id', 'dunno'), 'regexpReplacer'])
 
-    def stats(self, irc, msg, args):
+    def stats(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the number of dunnos in the dunno database.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         num = self.db.size(channel)
         irc.reply('There %s %s in my database.' %
                   (utils.be(num), utils.nItems('dunno', num)))
+    stats = wrap(stats, ['channeldb'])
 
 
 
