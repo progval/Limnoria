@@ -524,7 +524,15 @@ class IrcObjectProxy(RichReplyMethods):
                 log.debug('Finished calling invalidCommand: %s.', cb.name())
                 return
             if hasattr(cb, 'invalidCommand'):
-                cb.invalidCommand(self, self.msg, self.args)
+                try:
+                    # I think I took out this try/except block because we
+                    # firewalled invalidCommand, but we've no guarantee that
+                    # other classes won't have firewalled it.  Better safe
+                    # than sorry, I say.
+                    cb.invalidCommand(self, self.msg, self.args)
+                except Exception, e:
+                    log.exception('Uncaught exception in %s.invalidCommand',
+                                  cb.name())
 
     def _callCommand(self, name, command, cb):
         try:
@@ -833,8 +841,12 @@ class DisabledCommands(object):
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     __metaclass__ = log.MetaFirewall
+    # For awhile, a comment stood here to say, "Eventually callCommand."  But
+    # that's wrong, because we can't do generic error handling in this
+    # callCommand -- plugins need to be able to override callCommand and do
+    # error handling there (see the Http plugin for an example).
     __firewalled__ = {'isCommand': None,
-                      'invalidCommand': None} # Eventually callCommand.
+                      'invalidCommand': None}
     public = True
     handled = False
     errored = False
