@@ -53,6 +53,8 @@ from itertools import imap, ifilter
 
 from structures import TwoWayDictionary
 
+curry = new.instancemethod
+
 def normalizeWhitespace(s):
     """Normalizes the whitespace in a string; \s+ becomes one space."""
     return ' '.join(s.split())
@@ -618,7 +620,6 @@ class InsensitivePreservingDict(UserDict.DictMixin, object):
     
     def __reduce__(self):
         return (self.__class__, (dict(self.data.values()),))
-
 
 if __name__ == '__main__':
     import sys, doctest

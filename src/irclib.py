@@ -279,7 +279,7 @@ class IrcState(IrcCommandDispatcher):
         self.nicksToHostmasks = ircutils.IrcDict()
 
     def __getstate__(self):
-        return map(curry(getattr, self), self.__slots__)
+        return map(utils.curry(getattr, self), self.__slots__)
 
     def __setstate__(self, t):
         for (name, value) in zip(self.__slots__, t):

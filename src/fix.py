@@ -39,8 +39,8 @@ __revision__ = "$Id$"
 
 __all__ = []
 
-exported = ['ignore', 'catch', 'reviter', 'window', 'group',
-           'partition', 'any', 'all', 'rsplit', 'curry']
+exported = ['ignore', 'reviter', 'window', 'group', 'sorted',
+           'partition', 'any', 'all', 'rsplit']
 
 import new
 import string
@@ -61,18 +61,9 @@ def choice(iterable):
         return ret
 random.choice = choice
 
-curry = new.instancemethod
-
 def ignore(*args, **kwargs):
     """Simply ignore the arguments sent to it."""
     pass
-
-def catch(f, *args, **kwargs):
-    """Catches all exceptions raises by f."""
-    try:
-        return f(*args, **kwargs)
-    except:
-        return None
 
 def reviter(L):
     """Iterates through a list in reverse."""
@@ -176,6 +167,14 @@ def rsplit(s, sep=None, maxsplit=-1):
     L = s[::-1].split(sep, maxsplit)
     L.reverse()
     return [s[::-1] for s in L]
+
+def sorted(iterable, cmp=None, key=None, reverse=False):
+    L = list(iterable)
+##     if key is None:
+##         L.sort(cmp)
+##     else:
+##         # Oops, we don't have sortBy.  Let's come back to this.utils.
+##     utils.sortBy(key
 
 import operator
 def itemgetter(i):

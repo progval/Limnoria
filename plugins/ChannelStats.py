@@ -104,7 +104,7 @@ class ChannelStat(irclib.IrcCommandDispatcher):
         self._values = ['actions', 'chars', 'frowns', 'joins', 'kicks','modes',
                        'msgs', 'parts', 'quits', 'smileys', 'topics', 'words']
     def values(self):
-        return map(curry(getattr, self), self._values)
+        return map(utils.curry(getattr, self), self._values)
 
     def addMsg(self, msg):
         self.msgs += 1
