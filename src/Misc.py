@@ -403,7 +403,12 @@ class Misc(callbacks.Privmsg):
         if cbs:
             names = [cb.name() for cb in cbs]
             names.sort()
-            irc.reply(utils.commaAndify(names))
+            plugin = utils.commaAndify(names)
+            if irc.nested:
+                irc.reply(utils.commaAndify(names))
+            else:
+                irc.reply('The %s command is available in %s.' %
+                          (command, plugin))
         else:
             irc.error('There is no such command %s.' % command)
 

@@ -152,7 +152,8 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertNotError('source')
 
     def testPlugin(self):
-        self.assertResponse('plugin plugin', 'Misc')
+        self.assertRegexp('plugin plugin', 'available.*Misc')
+        self.assertResponse('echo [plugin plugin]', 'Misc')
 
     def testTell(self):
         m = self.getMsg('tell foo [plugin tell]')
