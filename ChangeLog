@@ -1,35 +1,5 @@
 2003-11-18  Jeremy Fincher  <jemfinch@users.sf.net>
 
-	* Renamed numerous plugins: OwnerCommands became Owner,
-	AdminCommands became Admin, ChannelCommands became Channel,
-	MiscCommands became Misc, UserCommands became User, URLSnarfer
-	became URL, Notes became Note, FunCommands became Fun, IMDB became
-	Movies, and Aliases became Alias.
-
-	* Added QuoteGrabs module which allows people to grab interesting
-	quotes from other people and store them in the bot for later retrieval
-	(also optionally have the bot randomly snarf quotes).
-
-	* Removed TwistedCommands plugin to the sandbox; the one command
-	it provided (dict) is now better provided in the Dict plugin.
-
-	* Removed the Moobot plugin (the commands were moved to the Fun
-	plugin or dropped entirely).
-	
-	* Added Ebay plugin for snarfing eBay URLs as well as getting info on
-	certain auctions.
-
-	* Added Dunno plugin as an optional replacement for the boring 'no
-	such command' response.
-
-	* Added MoobotFactoids plugin for moobot-style factoids (which are
-	meant to mimic blootbot-style factoids).  People used to
-	traditional IRC bot factoids plugins will probably find this
-	plugin more to their taste than Factoids.
-	
-	* Removed all example strings from plugins.  To be replaced with an
-	automated process later.
-	
 	* Changed commands so that plugins no longer have to make sure
 	that their commands are unique within the bot.  Ambiguous commands
 	will reply with an error message and instruct the user to
@@ -40,11 +10,74 @@
 	less bulky.  Rather than list each individual example, you can
 	read the plugin documentation posted at ***TODO***
 
-	* Made aliases persistent across reloads/bot restarts.  You should
-	probably change your botscripts not to add the aliases onStart,
-	but (assuming those aliases don't change) it should still work
-	fine.
+	* Renamed numerous plugins: OwnerCommands became Owner,
+	AdminCommands became Admin, ChannelCommands became Channel,
+	MiscCommands became Misc, UserCommands became User, URLSnarfer
+	became URL, Notes became Note, FunCommands became Fun, IMDB became
+	Movies, and Aliases became Alias.
 
+	* Made aliases persistent across reloads/bot restarts.  You should
+	probably change your botscripts not to add the aliases onStart, but
+	(assuming those aliases don't change) it should still work fine.
+
+	* Added the ability for users to specify that their passwords
+	should be hashed on disk.
+	
+	* Added MoobotFactoids plugin for moobot-style factoids (which are
+	meant to mimic blootbot-style factoids).  People used to
+	traditional IRC bot factoids plugins will probably find this
+	plugin more to their taste than Factoids.
+
+	* Added Ebay plugin for snarfing eBay URLs as well as getting info on
+	certain auctions.
+
+	* Added monitoring of occurrences of certain words on a per-user
+	basis, adding two new commands to ChannelDB (addword and
+	wordstats).
+
+	* Added Bugzilla module for accessing various data in Bugzilla
+	pages.
+	
+	* Added QuoteGrabs module which allows people to grab interesting
+	quotes from other people and store them in the bot for later retrieval
+	(also optionally have the bot randomly snarf quotes).
+
+	* Added a "change" command to change factoid values in the Factoids
+	plugin.
+
+	* Added Dunno plugin as an optional replacement for the boring 'no
+	such command' response.
+
+	* Changed FundB to allow accessing excuses, larts, and praises by
+	id.
+	
+	* Added substitutions for 'me' and 'my' in insult/praise/lart.
+
+	* Added 'change' and 'old' commands for News.
+
+	* Added ASPN Python Cookbook URL snarfer.
+
+	* Moved karma out of ChannelDB and into its own Karma plugin.
+
+	* Moved uptime-related commands to from FunDB to the Status plugin.
+
+	* Renamed the Network.internic command to whois, since we can now fix
+	ambiguity by prefixing the plugin name.
+
+	* Removed the "googlesite" function.
+
+	* Removed "dictserver" command in favor of using the Configurable
+	framework with the Dict plugin instead.
+
+	* Removed TwistedCommands plugin to the sandbox; the one command
+	it provided (dict) is now better provided in the Dict plugin.
+
+	* Removed the Moobot plugin (the commands were moved to the Fun
+	plugin or dropped entirely).
+	
+	* Removed all example strings from plugins.  To be replaced with an
+	automated process later.
+	
 	* Converted several plugins to the new Configurable plugin type
 	Plugins modified include Bugzilla, ChannelDB, Dict, Ebay,
 	Enforcer, Gameknot, Google, Python, Relay, and URL (formerly
@@ -53,43 +86,12 @@
 	* Changed ChannelDB database to use integer user ids instead of text
 	usernames.
 
-	* Added monitoring of occurrences of certain words on a per-user
-	basis, adding two new commands to ChannelDB (addword and
-	wordstats).
-
-	* Moved karma out of ChannelDB and into its own Karma plugin.
-
-	* Removed "dictserver" command in favor of using the Configurable
-	framework with the Dict plugin instead.
-
-	* Added a "change" command to change factoid values in the Factoids
-	plugin.
-
-	* Moved uptime-related commands to from FunDB to the Status plugin.
-	
-	* Added substitutions for 'me' and 'my' in insult/praise/lart.
-
-	* Changed FundB to allow accessing excuses, larts, and praises by
-	id.
-	
-	* Removed the "googlesite" function.
-
-	* Switched freshmeat searches from using regexps to using XML parsing
-	to obtain the needed info.
-
 	* Changed Http.geekquote to use multiline geekquotes (and removed
 	the option to do so, since it's now the default).
 	
 	* Added a --id switch to geekquote to pick a specific geekquote.
 
-	* Renamed the Network.internic command to whois, since we can now fix
-	ambiguity by prefixing the plugin name.
-
 	* Changed most commands in News to require the 'news' capability.
-
-	* Actually implemented the 'change' and 'old' commands for News.
-
-	* Added ASPN Python Cookbook URL snarfer.
 
 	* Changed Relay.names output to show (and sort by) status in the
 	channel.
@@ -106,17 +108,11 @@
 	shuffled.
 
 	* Changed all commands which take an index (various Topic and
-	Factoids commands) to index from 0 instead of 1.
+	Factoids commands) to index from 1 instead of 0.
 
 	* Fixed several bugs in Unix.spell whereby the bot could be
 	frozen.
 
-	* Added Bugzilla module for accessing various data in Bugzilla
-	pages.
-	
-	* Added the ability for users to specify that their passwords
-	should be hashed on disk.
-	
 	* Changed the name of the "bug" command in the AdminCommands
 	plugin to "reportbug" instead.
 	
