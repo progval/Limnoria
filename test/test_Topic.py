@@ -33,7 +33,7 @@ from testsupport import *
 
 class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Topic',)
-    def testTopicRemove(self):
+    def testRemove(self):
         self.assertError('topic remove 1')
         _ = self.getMsg('topic add foo')
         _ = self.getMsg('topic add bar')
@@ -44,20 +44,15 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('topic remove 1')
         self.assertError('topic remove 1')
 
-    def testTopicGet(self):
+    def testGet(self):
         self.assertError('topic get 1')
         _ = self.getMsg('topic add foo')
         _ = self.getMsg('topic add bar')
         _ = self.getMsg('topic add baz')
         self.assertRegexp('topic get 1', '^foo')
-        self.assertNotRegexp('topic get 1', self.nick)
-        self.assertRegexp('topic get 2', '^bar')
-        self.assertNotRegexp('topic get 2', self.nick)
-        self.assertRegexp('topic get 3', '^baz')
-        self.assertNotRegexp('topic get 3', self.nick)
         self.assertError('topic get 0')
 
-    def testTopicAdd(self):
+    def testAdd(self):
         m = self.getMsg('topic add foo')
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], self.channel)
@@ -66,7 +61,7 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], self.channel)
 
-    def testTopicChange(self):
+    def testChange(self):
         _ = self.getMsg('topic add foo')
         _ = self.getMsg('topic add bar')
         _ = self.getMsg('topic add baz')
@@ -110,11 +105,11 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testList(self):
         _ = self.getMsg('topic add foo')
-        self.assertResponse('topic list', '1: foo')
+        self.assertRegexp('topic list', '1: foo')
         _ = self.getMsg('topic add bar')
-        self.assertResponse('topic list', '1: foo and 2: bar')
+        self.assertRegexp('topic list', '1: foo .*2: bar')
         _ = self.getMsg('topic add baz')
-        self.assertResponse('topic list', '1: foo, 2: bar, and 3: baz')
+        self.assertRegexp('topic list', '1: foo .* 2: bar .* and 3: baz')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -55,10 +55,12 @@ conf.registerPlugin('Topic')
 conf.registerChannelValue(conf.supybot.plugins.Topic, 'separator',
     registry.StringSurroundedBySpaces(' || ', """Determines what separator is
     used between individually added topics in the channel topic."""))
+conf.registerChannelValue(conf.supybot.plugins.Topic, 'format',
+    registry.String('$topic ($nick)', """Determines what format is used to add
+    topics in the topic.  All the standard substitutes apply, in addiction to
+    "$topic" for the topic itself."""))
 
 class Topic(callbacks.Privmsg):
-    topicFormatter = '%s (%s)'
-    topicUnformatter = re.compile('(.*) \((\S+)\)')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.lastTopics = ircutils.IrcDict()
@@ -71,19 +73,10 @@ class Topic(callbacks.Privmsg):
         separator = self.registryValue('separator', channel)
         return separator.join(topics)
 
-    def _unformatTopic(self, channel, topic):
-        m = self.topicUnformatter.match(topic)
-        if m:
-            return (m.group(1), m.group(2))
-        else:
-            return (topic, '')
-
-    def _formatTopic(self, channel, msg, topic):
-        try:
-            name = ircdb.users.getUser(msg.prefix).name
-        except KeyError:
-            name = msg.nick
-        return self.topicFormatter % (topic, name)
+    def _formatTopic(self, irc, msg, channel, topic):
+        formatter = self.registryValue('format', channel)
+        env = {'topic': topic}
+        return plugins.standardSubstitute(irc, msg, formatter, env)
 
     def _sendTopic(self, irc, channel, topics):
         topics = [s for s in topics if s and not s.isspace()]
@@ -104,7 +97,7 @@ class Topic(callbacks.Privmsg):
             irc.error(s)
             return
         currentTopic = irc.state.getTopic(channel)
-        formattedTopic = self._formatTopic(channel, msg, topic)
+        formattedTopic = self._formatTopic(irc, msg, channel, topic)
         # Empties are removed by _sendTopic.
         self._sendTopic(irc, channel, [currentTopic, formattedTopic])
     add = privmsgs.channel(add)
@@ -182,7 +175,6 @@ class Topic(callbacks.Privmsg):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         L = []
         for (i, t) in enumerate(topics):
-            (t, _) = self._unformatTopic(channel, t)
             L.append('%s: %s' % (i+1, utils.ellipsisify(t, 30)))
         s = utils.commaAndify(L)
         irc.reply(s)
@@ -209,7 +201,7 @@ class Topic(callbacks.Privmsg):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if topics:
             try:
-                irc.reply(self._unformatTopic(channel, topics[number])[0])
+                irc.reply(topics[number])
             except IndexError:
                 irc.error('That\'s not a valid topic.')
         else:
@@ -249,16 +241,7 @@ class Topic(callbacks.Privmsg):
             irc.error('There are no topics to change.')
             return
         topic = topics.pop(number)
-        (topic, name) = self._unformatTopic(channel, topic)
-        try:
-            senderName = ircdb.users.getUser(msg.prefix).name
-        except KeyError:
-            senderName = msg.nick
-        if name and name != senderName and \
-           not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
-            irc.error('You can only modify your own topics.')
-            return
-        newTopic = self.topicFormatter % (replacer(topic), name)
+        newTopic = replacer(topic)
         if number < 0:
             number = len(topics)+1+number
         topics.insert(number, newTopic)
@@ -288,15 +271,6 @@ class Topic(callbacks.Privmsg):
             topic = topics.pop(number)
         except IndexError:
             irc.error('That\'s not a valid topic number.')
-            return
-        (topic, name) = self._unformatTopic(channel, topic)
-        try:
-            username = ircdb.users.getUser(msg.prefix).name
-        except KeyError:
-            username = msg.nick
-        if name and name != username and \
-           not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
-            irc.error('You can only remove your own topics.')
             return
         self._sendTopic(irc, channel, topics)
     remove = privmsgs.channel(remove)
