@@ -122,6 +122,7 @@ def all(p, seq):
     return True
 
 def rsplit(s, sep=None, maxsplit=-1):
+    """Equivalent to str.split, except splitting from the right."""
     if sep is not None:
         sep = sep[::-1]
     L = s[::-1].split(sep, maxsplit)
