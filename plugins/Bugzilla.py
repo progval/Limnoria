@@ -85,8 +85,8 @@ def configure(advanced):
 conf.registerPlugin('Bugzilla')
 conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bugSnarfer',
     registry.Boolean(False, """Determines whether the bug snarfer will be
-    enabled, such that any Bugzilla URLs seen in the channel will have their
-    information reported into the channel."""))
+    enabled, such that any Bugzilla URLs and bug ### seen in the channel
+    will have their information reported into the channel."""))
 conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bold',
     registry.Boolean(True, """Determines whether results are bolded."""))
 conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'replyNoBugzilla',
