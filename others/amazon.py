@@ -174,7 +174,7 @@ def unmarshal(element):
     return rc
 
 def buildURL(search_type, keyword, product_line, type, page, license_key):
-    url = "http://xml.amazon.com/onca/xml?v=1.0&f=xml&t=webservices-20"
+    url = "http://xml.amazon.com/onca/xml3?v=2.0&f=xml&t=webservices-20"
     url += "&dev-t=%s" % license_key.strip()
     url += "&type=%s" % type
     if page:
