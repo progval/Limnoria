@@ -50,8 +50,8 @@ import drivers
 import ircmsgs
 import ircutils
 import privmsgs
+import registry
 import callbacks
-import configurable
 
 def configure(advanced):
     import socket
@@ -108,20 +108,18 @@ def reload(x=None):
     else:
         (ircs, ircstates, lastmsg, channels, abbreviations, originalIrc) = x
 
-class Relay(callbacks.Privmsg, configurable.Mixin):
+conf.registerPlugin('Relay')
+conf.registerChannelValue(conf.supybot.plugins.Relay, 'color',
+    registry.Boolean(True, """Determines whether the bot will color relayed
+    PRIVMSGs so as to make the messages easier to read."""))
+conf.registerChannelValue(conf.supybot.plugins.Relay, 'topicSync',
+    registry.Boolean(True, """Determines whether the bot will synchronize
+    topics between networks in the channels it relays."""))
+class Relay(callbacks.Privmsg):
     noIgnore = True
     priority = sys.maxint
-    configurables = configurable.Dictionary(
-        [('color', configurable.BoolType, True,
-          """Determines whether the bot will color relayed PRIVMSGs so as to
-          make the messages easier to read."""),
-         ('topic-sync', configurable.BoolType, True,
-          """Determines whether the bot will synchronize topics between
-          networks in the channels it relays.""")]
-    )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
         self.ircs = ircs
         self.started = False
         self.ircstates = ircstates
@@ -138,11 +136,6 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
             finally:
                 self.lastmsg[irc] = msg
         callbacks.Privmsg.__call__(self, irc, msg)
-
-    def die(self):
-        callbacks.Privmsg.die(self)
-        configurable.Mixin.die(self)
-        # Let's not kill the ircs, so we can reload this plugin.
 
     def do376(self, irc, msg):
         if self.channels:
@@ -493,7 +486,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
 
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
-        color = self.configurables.get('color', msg.args[0])
+        color = self.registryValue('color', msg.args[0])
         if color:
             nick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
             colors = ircutils.canonicalColor(nick, shift=4)
@@ -603,7 +596,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
                 return
             (channel, newTopic) = msg.args
             network = self.abbreviations[irc]
-            if self.configurables.get('topic-sync', channel):
+            if self.registryValue('topicSync', channel):
                 m = ircmsgs.topic(channel, newTopic)
             else:
                 s = 'topic change by %s on %s: %s' %(msg.nick,network,newTopic)
@@ -650,7 +643,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
                             if channel in otherIrc.state.channels:
                                 otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
         elif msg.command == 'TOPIC' and len(msg.args) > 1 and \
-             self.configurables.get('topic-sync', msg.args[0]):
+             self.registryValue('topicSync', msg.args[0]):
             (channel, topic) = msg.args
             if channel in self.channels:
                 for otherIrc in self.ircs.itervalues():
