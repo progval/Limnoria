@@ -102,6 +102,24 @@ def getDirectoryName(default):
                 done = True
     return os.path.expandvars(os.path.expanduser(dir))
 
+def getRegistryValue(setting, prompt='', showHelp=True, showType=True):
+    if not prompt:
+        prompt = 'What would you like to set this option to?'
+    if showHelp:
+        help = ''
+        if showType:
+            help = '%s:   ' % type(setting).__name__
+        help = '%s%s' % (help, setting.help)
+        output(textwrap.fill(help), unformatted=False)
+    ret = None
+    while not ret:
+        try:
+            setting.set(expect(prompt, [], default=str(setting)))
+            ret = setting()
+        except registry.InvalidRegistryValue, reason:
+            output(str(reason))
+    return ret
+
 def main():
     from conf import version
     parser = optparse.OptionParser(usage='Usage: %prog [options] [configFile]',

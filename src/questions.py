@@ -38,21 +38,17 @@ import textwrap
 from getpass import getpass as getPass
 
 import ansi
-import conf
 import utils
 
-useColor = False
+useBold = False
 
-def output(s, unformatted=True, useBold=False):
+def output(s, unformatted=True):
     if unformatted:
         s = textwrap.fill(utils.normalizeWhitespace(s))
-    if useColor and useBold:
-        sys.stdout.write(ansi.BOLD)
     print s
-    if useColor and useBold:
-        print ansi.RESET
     print
 
+# doindent is used in yn().
 def expect(prompt, possibilities, recursed=False, doindent=True, default=None):
     """Prompt the user with prompt, allow them to choose from possibilities.
 
@@ -64,7 +60,7 @@ def expect(prompt, possibilities, recursed=False, doindent=True, default=None):
     else:
         indent = ''
     if recursed:
-        output('Sorry, that response was not an option.', unformatted=False)
+        output('Sorry, that response was not an option.')
     if possibilities:
         prompt = '%s [%s]' % (originalPrompt, '/'.join(possibilities))
         if len(prompt) > 70:
@@ -74,10 +70,10 @@ def expect(prompt, possibilities, recursed=False, doindent=True, default=None):
     prompt = textwrap.fill(prompt, subsequent_indent=indent)
     prompt = prompt.replace('/ ', '/')
     prompt = prompt.strip() + ' '
-    if useColor:
+    if useBold:
         sys.stdout.write(ansi.BOLD)
     s = raw_input(prompt)
-    if useColor:
+    if useBold:
         print ansi.RESET
     s = s.strip()
     if possibilities:
@@ -101,7 +97,7 @@ def something(prompt, default=None):
     """Allow anything *except* nothing from the user."""
     s = expect(prompt, [], default=default)
     while not s:
-        output('Sorry, you must enter a value.', unformatted=False)
+        output('Sorry, you must enter a value.')
         s = expect(prompt, [], default=default)
     return s
 
@@ -115,7 +111,8 @@ def yn(prompt, default=None):
     s = expect(prompt, ['y', 'n'], doindent=False, default=default)
     if s is 'y':
         return True
-    return False
+    else:
+        return False
 
 def getpass(prompt='Enter password: '):
     """Prompt the user for a password."""
@@ -125,36 +122,17 @@ def getpass(prompt='Enter password: '):
     if not prompt[-1].isspace():
         prompt += ' '
     while True:
-        if useColor:
+        if useBold:
             sys.stdout.write(ansi.BOLD)
         password = getPass(prompt)
         password2 = getPass('Re-enter password: ')
-        if useColor:
+        if useBold:
             print ansi.RESET
         if password != password2:
-            output('Passwords don\'t match.', unformatted=False)
+            output('Passwords don\'t match.')
         else:
             break
     return password
-
-def getRegistryValue(setting, prompt='', showHelp=True, showType=True):
-    from registry import InvalidRegistryValue
-    if not prompt:
-        prompt = 'What would you like to set this option to?'
-    if showHelp:
-        help = ''
-        if showType:
-            help = '%s:   ' % type(setting).__name__
-        help = '%s%s' % (help, setting.help)
-        output(textwrap.fill(help), unformatted=False)
-    ret = None
-    while not ret:
-        try:
-            setting.set(expect(prompt, [], default=str(setting)))
-            ret = setting()
-        except InvalidRegistryValue, reason:
-            output(str(reason))
-    return ret
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
