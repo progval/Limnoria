@@ -168,16 +168,17 @@ class Weather(callbacks.Privmsg):
         conds = self._condregex.search(html)
         if conds:
             conds = conds.group(1)
-        chill = self._chillregex.search(html)
+        self.log.warning(repr(self._chillregex))
         if chill:
+            #self.log.warning(chill.groups())
             chill = chill.group(1)
         heat = self._heatregex.search(html)
         if heat:
             heat = heat.group(1)
 
-        if heat[:-2] > temp[:-2]:
+        if int(heat[:-2]) > int(temp[:-2]):
             index = ' (Heat Index: %s)' % heat
-        elif chill[:-2] < temp[:-2]:
+        elif int(chill[:-2]) < int(temp[:-2]):
             index = ' (Wind Chill: %s)' % chill
         else:
             index = ''
@@ -186,7 +187,7 @@ class Weather(callbacks.Privmsg):
             conds = conds.replace('Tsra', 'Thunder Storms')
             s = 'The current temperature in %s, %s is %s%s. Conditions: %s' % \
                 (city, state, temp, index, conds)
-            irc.reply(s)
+            irc.reply(msg, s)
         else:
             irc.error('The format of the page was odd.')
 
