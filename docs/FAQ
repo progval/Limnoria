@@ -78,7 +78,7 @@ A: Supybot most certainly can!  In fact, we offer three full-fledged
    MoobotFactoids (written by Strike) is much more full-featured,
    offering users the ability to define factoids in a slightly more
    user-friendly way, as well as parsing factoids to handle <reply>,
-   <action>, "see", and altnerations (defining a factoid "test" as
+   <action>,  and alternations (defining a factoid "test" as
    "<reply>(foo|bar|baz)" will make the bot send "foo" or "bar" or
    "baz" to the channel (without the normal "test is " at the
    beginning)).  If you're accustomed to Moobot's factoids or
@@ -86,8 +86,7 @@ A: Supybot most certainly can!  In fact, we offer three full-fledged
    Unfortunately, due to the more natural definition syntax (required
    to be compatible with Moobot) you can't define Factoids with nested
    commands; you'll have to evaluate the command first and then copy
-   the result into your factoid definition.  MoobotFactoids uses a
-   global database, so the factoids are the same for all channels.
+   the result into your factoid definition.  
 
    Infobot (written by jamessan) is used for Infobot compatibility;
    if you still want the basic functionality of Infobot, this is the

@@ -36,7 +36,7 @@
 			</question>
 			<answer>
 				<para>
-                    Because you're not given it anything to recognize you
+                    Because you've not given it anything to recognize you
                     from!  You'll need to identify with the bot
                     (<botcommand>help identify</botcommand> to see how that
                     works) or add your hostmask to your user record
@@ -98,7 +98,7 @@
    &lt;dunk1&gt; ;]
    &lt;jemfinch|lambda&gt; @load Enforcer
    &lt;supybot&gt; jemfinch|lambda: The operation succeeded.
-   &lt;jemfinch|lambda&gt; @config supybot.plugins.Enforcer.autoOp.#supybot On
+   &lt;jemfinch|lambda&gt; @config channel supybot.plugins.Enforcer.autoOp On
    &lt;supybot&gt; jemfinch|lambda: The operation succeeded.
    &lt;jemfinch|lambda&gt; ok, now cycle the channel (part and then rejoin)
    &lt;&ndash; dunk1 (dunker@freebsd.nl) has left #supybot
@@ -130,6 +130,178 @@
 				</para>
 			</answer>
 		</qandaentry>
+        <qandaentry>
+            <question>
+                <para>
+                    Can Supybot do factoids?
+                </para>
+            </question>
+            <answer>
+                <para>
+                    Supybot most certainly can!  In fact, we offer three
+                    full-fledged factoids-related plugins!
+                </para>
+                <para>
+                    <plugin>Factoids</plugin> (written by
+                    <nick>jemfinch</nick>) is Supybot's original
+                    factoids-related plugin.  It offers full integration with
+                    Supybot's nested commands as well as a complete 1:n key to
+                    factoid ratio, with lookup by individual number.  Factoids
+                    also uses a channel-specific database instead of a global
+                    database though that's configurable with the
+                    <registrygroup>supybot.databases.plugins.channelSpecific</registrygroup>
+                    configuration variable.
+                </para>
+                <para>
+                    <plugin>MoobotFactoids</plugin> (written by
+                    <nick>Strike</nick>) is much more full-featured, offering
+                    users the ability to define factoids in a slightly more
+                    user-friendly way, as well as parsing factoids to handle
+                    &lt;reply&gt;, &lt;action&gt;, and alternations (defining
+                    a factoid &ldquo;test&rdquo; as
+                    &ldquo;&lt;reply&gt;(foo|bar|baz)&rdquo; will make the bot
+                    send &ldquo;foo&rdquo; or &ldquo;bar&rdquo; or
+                    &ldquo;baz&rdquo; to the channel (without the normal
+                    &ldquo;test is &rdquo; at the beginning)).  If you're
+                    accustomed to Moobot's factoids or Blootbot's factoids,
+                    then this is the Factoids plugin for you.  Unfortunately,
+                    due to the more natural definition syntax (required to be
+                    comaptible with Moobot) you can't define Factoids with
+                    nested commands; you'll have to evaluate the command first
+                    and then copy the result into your factoid definition.
+                </para>
+                <para>
+                    <plugin>Infobot</plugin> (written by
+                    <nick>jamessan</nick>) is used for Infobot compatibility;
+                    if you still want the basic functionality of Infobot, this
+                    is the plugin to use.
+                </para>
+            </answer>
+        </qandaentry>
+        <qandaentry>
+            <question>
+                <para>
+                    Can I import my Infobot/Blootbot/Moobot factoids into
+                    Supybot?
+                </para>
+            </question>
+            <answer>
+                <para>
+                    As of present, we have no automated way to do so.
+                    <nick>Strike</nick> has written a few scripts for
+                    importing a Moobot database into MoobotFactoids, however,
+                    so you'll want to talk to him about helping you with that.
+                    We're certainly happy to help you convert such databases;
+                    if you can provide us with such a database exported to a
+                    flat file, we can probably do the rest of the work to
+                    write a script that imports it into a database for one of
+                    our factoids-related plugins.
+                </para>
+            </answer>
+        </qandaentry>
+        <qandaentry>
+            <question>
+                <para>
+                    Do I really have to use separate databases for each
+                    channel?
+                </para>
+            </question>
+            <answer>
+                <para>
+                    Of course not!  We default to separate databases for each
+                    channel because, well, that's what <nick>jemfinch</nick>
+                    always thought was reasonable.  Anyway, if you change the
+                    configuration variable
+                    <registrygroup>supybot.databases.plugins.channelSpecific</registrygroup>
+                    to <literal>False</literal> instead of
+                    <literal>True</literal>, for <emphasis>most</emphasis>
+                    databases, each channel will share the same database (the
+                    exceptions are <plugin>ChannelStats</plugin>,
+                    <plugin>Herald</plugin>, <plugin>Seen</plugin>, and
+                    <plugin>WordStats</plugin>, which are inherently rather
+                    channel-based).
+                </para>
+            </answer>
+        </qandaentry>
+        <qandaentry>
+            <question>
+                <para>
+                    Karma doesn't seem to work for me.
+                </para>
+            </question>
+            <answer>
+                <para>
+                    <plugin>Karma</plugin> by default doesn't acknowledge
+                    karma updates.  If you check the karma of whatever you
+                    increased/decreased, you'll note that your increment or
+                    decrement still took place.  If you'd rather
+                    <plugin>Karma</plugin> acknowledge karma updates, change
+                    the
+                    <registrygroup>supybot.plugins.Karma.response</registrygroup>
+                    configuration variable to <literal>On</literal>.
+                </para>
+            </answer>
+        </qandaentry>
+        <qandaentry>
+            <question>
+                <para>
+                    I added an alias, but it doesn't work!
+                </para>
+            </question>
+            <answer>
+                <para>
+                    Take a look at <botcommand>help &lt;alias you
+                    added&gt;</botcommand>.  If the alias the bot has listed
+                    doesn't match what you're giving it, chances re you need
+                    to quote your alias in order for the brackets not to be
+                    evaluated.  For instance, if you're adding an alias to
+                    give you a link to your homepage, you need to say:
+                <para>
+                <ircsession>
+                    alias add mylink "format concat http://myhost.com/
+                    [urlquote $1]"
+                </ircsession>
+                <para>
+                    and not:
+                </para>
+                <ircsession>
+                    alias add mylink format concat http://myhost.com/
+                    [urlquote $1]
+                </ircsession>
+                <para>
+                    The first version works; the second version will always
+                    return the same url.
+                </para>
+            </answer>
+        </qandaentry>
+        <qandaentry>
+            <question>
+                <para>
+                    Is there a command that can tell me what capability
+                    another command requires?
+                </para>
+            </question>
+            <answer>
+                <para>
+                    No, there isn't, and there probably never will be.
+                    Commands have the flexibility to check any capabilities
+                    they wish to check; while this flexibility is useful, it
+                    also makes it hard to guess what capability a certain
+                    command requires.  We could make a solution that would
+                    work in a large majority of cases, but it wouldn't (and
+                    couldn't!) be absolutely correct in all circumstances, and
+                    since we're anal and we hate doing things halfway, we
+                    probably won't ever add this partial solution.
+                </para>
+                <para>
+                    Besides, is the error message so bad?  If we did have such
+                    a command, many users would call the command, see that
+                    they could perform it, and then run the command, thus
+                    doubling the activity in the channel.  Is that something
+                    you want?
+                </para>
+            </answer>
+        </qandaentry>
 		<qandaentry>
 			<question>
 				<para>
@@ -138,86 +310,8 @@
 			</question>
 			<answer>
 				<para>
-                    You'll need to use the <plugin>Relay</plugin> plugin.  As
-                    long as you don't call the <botcommand>relay
-                    join</botcommand> command, it won't actually do any
-                    relaying between channels (even if the bot is on the same
-                    channel on different networks).  In order to use the Relay
-                    plugin, you'll want to first call the <botcommand>relay
-                    start</botcommand> command, followed by the
-                    <botcommand>relay connect</botcommand> command.  These
-                    commands are (unfortunately) not persistent at this time,
-                    so you'll need to give them to the bot anytime you start
-                    it up.  We'll probably have this lack of persistence
-                    rectified before the next release.
-				</para>
-			</answer>
-		</qandaentry>
-		<qandaentry>
-			<question>
-				<para>
-					Can Supybot do factoids?
-				</para>
-			</question>
-			<answer>
-				<para>
-					Supybot most certainly can!  In fact, we offer two
-					full-fledged factoids-related plugins!
-				</para>
-				<para>
-                    <plugin>Factoids</plugin> (written by
-                    <nick>jemfinch</nick>) is Supybot's original
-                    factoids-related plugin.  It offers full integration with
-                    Supybot's nested commands as well as a complete 1:n key to
-                    factoid ratio, with lookup by individual number.
-                    <plugin>Factoids</plugin> also uses a channel-specific
-                    database instead of a global database, although in the
-                    future it will likely be a configuration option whether to
-                    use channel-specific or global databases for such plugins.
-				</para>
-				<para>
-                    <plugin>MoobotFactoids</plugin> (written by
-                    <nick>Strike</nick>) is much more full-featured, offering
-                    users the ability to define factoids in a slightly more
-                    user-friendly way, as well as parsing factoids to handle
-                    &lt;reply&gt;, &lt;action&gt;, "see", and alternations
-                    (defining a factoid "test" as "&lt;reply&gt;(foo|bar|baz)"
-                    will make the bot send "foo" or "bar" or "baz" to the
-                    channel (without the normal "test is " at the beginning)).
-                    If you're accustomed to Moobot's factoids or Blootbot's
-                    factoids, then this is the Factoids plugin for you.
-                    Unfortunately, due to the more natural definition syntax
-                    (required to be compatible with Moobot) you can't define
-                    Factoids with nested commands; you'll have to evaluate the
-                    command first and then copy the result into your factoid
-                    definition.  <plugin>MoobotFactoids</plugin> uses a global
-                    database, so the factoids are the same for all channels.
-				</para>
-				<para>
-					In the future, we plan to have a compatibility plugin for
-					Infobot, but as of present we've not yet written one.
-				</para>
-			</answer>
-		</qandaentry>
-		<qandaentry>
-			<question>
-				<para>
-					Can I import my Infobot/Blootbot/Moobot factoids into
-					Supybot?
-				</para>
-			</question>
-			<answer>
-				<para>
-                    As of present, we have no automated way to do so.
-                    <nick>Strike</nick> has written a few scripts for
-                    importing a Moobot database into
-                    <plugin>MoobotFactoids</plugin>, however, so you'll want
-                    to talk to him about helping you with that.  We're
-                    certainly happy to help you convert such databases; if you
-                    can provide us with such a database exported to a flat
-                    file, we can probably do the rest of the work to write a
-                    script that imports it into a database for one of our
-                    factoids-related plugins.
+                    Just use the <botcommand>connect</botcommand> command in
+                    the <plugin>Owner</plugin> plugin.  Easy as pie!
 				</para>
 			</answer>
 		</qandaentry>
@@ -254,27 +348,8 @@
 					log entry).  We'd also like to see the commands that
 					caused the bug, or happened around the time you saw the
 					bug.  If the bug involved a database, we'd love to see the
-					database.  Remember, it's always worse to send us too much
-					information in a bug report than too little.
-				</para>
-			</answer>
-		</qandaentry>
-		<qandaentry>
-			<question>
-				<para>
-					Karma doesn't seem to work for me.
-				</para>
-			</question>
-			<answer>
-				<para>
-                    <plugin>Karma</plugin> by default doesn't acknowledge
-                    karma updates.  If you check the karma of whatever you
-                    increased/decreased, you'll note that your increment or
-                    decrement still took place.  If you'd rather
-                    <plugin>Karma</plugin> acknowledge karma updates, change
-                    the
-                    <registrygroup>supybot.plugins.Karma.response</registrygroup>
-                    configuration variable to <literal>On</literal>.
+					database.  Remember, it's always worse to send us too
+                    little information in a bug report than too much.
 				</para>
 			</answer>
 		</qandaentry>
