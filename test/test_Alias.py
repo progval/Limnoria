@@ -98,6 +98,13 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
         self.assertError('alias FOO foo')
         self.assertError('alias [] foo')
         self.assertError('alias "foo bar" foo')
+        try:
+            conf.enablePipeSyntax = True
+            self.assertError('alias "foo|bar" foo')
+            conf.enablePipeSyntax = False
+            self.assertNotError('alias "foo|bar" foo')
+        finally:
+            conf.enablePipeSyntax = False
 
     def testNotCannotNestRaised(self):
         self.assertNotError('alias mytell "tell $channel $1"')

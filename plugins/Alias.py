@@ -189,6 +189,8 @@ class Alias(callbacks.Privmsg):
     def addAlias(self, irc, name, alias, freeze=False):
         if self._invalidCharsRe.search(name):
             raise AliasError, 'Names cannot contain spaces or square brackets.'
+        if conf.enablePipeSyntax and '|' in name:
+            raise AliasError, 'Names cannot contain pipes.'
         realName = callbacks.canonicalName(name)
         if name != realName:
             raise AliasError,'That name isn\'t valid.  Try %r instead'%realName
