@@ -302,7 +302,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         if ircdb.isAntiCapability(capability) or \
            ircdb.checkCapability(msg.prefix, capability):
             user.addCapability(capability)
-            ircdb.users.setUser(id, user)
+            ircdb.users.setUser(user.id, user)
             irc.replySuccess()
         else:
             irc.error('You can\'t add capabilities you don\'t have.')
