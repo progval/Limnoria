@@ -65,7 +65,7 @@ if __name__ == '__main__':
     while not server:
         server = anything('What server would you like to connect to?')
         try:
-            print 'Lookup up %s...' % server
+            print 'Looking up %s...' % server
             ip = socket.gethostbyname(server)
             print 'Found %s (%s).' % (server, ip)
         except:
