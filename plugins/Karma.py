@@ -277,7 +277,7 @@ class Karma(callbacks.Privmsg):
                     self._doKarma(irc, channel, thing)
 
     def karma(self, irc, msg, args, channel, things):
-        """[<channel>] [<thing> [<thing> ...]]
+        """[<channel>] [<thing> ...]
 
         Returns the karma of <text>.  If <thing> is not given, returns the top
         three and bottom three karmas.  If one <thing> is given, returns the
@@ -333,7 +333,7 @@ class Karma(callbacks.Privmsg):
             s = 'Highest karma: %s.  Lowest karma: %s.%s' % \
                 (utils.commaAndify(highest), utils.commaAndify(lowest), rankS)
             irc.reply(s)
-    karma = wrap(karma, ['channel', many('something')])
+    karma = wrap(karma, ['channel', any('something')])
 
     _mostAbbrev = utils.abbrev(['increased', 'decreased', 'active'])
     def most(self, irc, msg, args, channel, kind):
