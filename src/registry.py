@@ -305,7 +305,9 @@ class Value(Group):
     def __str__(self):
         return repr(self())
 
-    # This is simply prettier than naming this function get(self)
+    # We tried many, *many* different syntactic methods here, and this one was
+    # simply the best -- not very intrusive, easily overridden by subclasses,
+    # etc.
     def __call__(self):
         if _lastModified > self._lastModified:
             if self._name in _cache:
