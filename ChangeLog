@@ -1,6 +1,6 @@
 	* Added revision command for finding out the revision of the files
-	in a running bot; also added __revision__ strings with $Id$ values
-	so CVS would be happy to keep such information for us :)
+	in a running bot; also added __revision__ strings so CVS would be 
+	happy to keep such information for us :)
 	
 	* Fixed bug #848475 -- bad error message from regexp-expecting
 	commands.
