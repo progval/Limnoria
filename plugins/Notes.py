@@ -41,6 +41,7 @@ import ircdb
 import privmsgs
 import callbacks
 import ircutils
+import debug
 
 class Notes(callbacks.Privmsg):
     
@@ -75,11 +76,11 @@ class Notes(callbacks.Privmsg):
    
     def _addUser(self, username):
         "not callable from channel, used to add users to database"
-        self.cursor.execute('INSERT INTO users VALUES (NULL,%s)' % username)
+        self.cursor.execute('INSERT INTO users VALUES (NULL,%s)', username)
         self.db.commit()
         
     def getUserID(self, username):
-        self.cursor.execute('SELECT id FROM users where name=%s' % username)
+        self.cursor.execute('SELECT id FROM users where name=%s', username)
         if self.cursor.rowcount != 0:
             results = self.cursor.fetchall()
             return results[0]
@@ -87,38 +88,34 @@ class Notes(callbacks.Privmsg):
             assert False
 
     def getUserName(self, userid):
-        self.cursor.execute('SELECT name FROM users WHERE id=%s' % userid)
+        self.cursor.execute('SELECT name FROM users WHERE id=%s', userid)
         if self.cursor.rowcount != 0:
             results = self.cursor.fetchall()
             return results[0]
         else:
-            return "ERROR LOOKING UP USERNAME"
+            raise KeyError
 
-    def setNoteUnread(self, irc, msg, args):
-        "set a note as unread"
-        noteid = privmsgs.getArgs(args) 
-        self.cursor.execute('UPDATE notes SET read=False where id=%s'% noteid)
-        self.db.commit()
-        irc.reply(msg, conf.replySuccess)    
+#    def setNoteUnread(self, irc, msg, args):
+#        "set a note as unread"
+#        noteid = privmsgs.getArgs(args) 
+#        self.cursor.execute('UPDATE notes SET read=False where id=%s'% noteid)
+#        self.db.commit()
+#        irc.reply(msg, conf.replySuccess)    
     
     def sendnote(self, irc, msg, args):
         "sends a new note to an IRC user"
         # sendnote <user> <text>
         (name, note) = privmsgs.getArgs(args, needed=2)
-        sender = ircdb.users.getUserName(msg.prefix)
+        sender = ircutils.nickFromHostmask(msg.prefix)
         if ircdb.users.hasUser(name):
             recipient = name
         else:
             n = irc.state.nickToHostmask(name)
             recipient = ircdb.users.getUserName(n)
         self._addUser(sender)
-        print "added sender: %s" % sender
         self._addUser(recipient)
-        print "added recipient: %s" % recipient
         senderID = self.getUserID(sender)
-        print "senderID: %s" % senderID
         recipID = self.getUserID(recipient)
-        print "recipID: %s" % recipID
         if ircutils.isChannel(msg.args[0]): public = True
         else: public = False
         self.cursor.execute("""INSERT INTO notes VALUES 
@@ -130,21 +127,22 @@ class Notes(callbacks.Privmsg):
 
     def getnote(self, irc, msg, args):
         "retrieves a single note by unique note id"
-        # getnote 136  
+        #  BLOODY HELL, THIS ACTUALLY WORKS!!! 
         noteid = privmsgs.getArgs(args)
         sender = ircdb.users.getUserName(msg.prefix)
-        senderID = self.getUserID(sender)
+        senderID = self.getUserID(sender)[0]
         self.cursor.execute("""SELECT note, to_id, public FROM notes
-                               WHERE id=%d LIMIT 1""" % int(noteid))
-        note, to_id, public = self.cursor.fetchall()
+                               WHERE id=%s LIMIT 1""", noteid)
+        note, to_id, public = self.cursor.fetchone()
+        debug.printf("senderID: %s" % senderID)
         if senderID == to_id:
             if public == 'True':
                 irc.reply(msg, note)
             else:
                 msg.args[0] = msg.nick
                 irc.reply(msg, note)
-            self.cursor.execute("""UPDATE notes SET read='True' 
-                                   WHERE id=%d""" % noteid)
+            self.cursor.execute("""UPDATE notes SET read=%s 
+                                   WHERE id=%s""", ('True', noteid))
             self.db.commit()
         else:
             irc.error(msg, 'Error getting note')
@@ -155,28 +153,28 @@ class Notes(callbacks.Privmsg):
         senderID = self.getUserID(sender)
         self.cursor.execute("""SELECT id, from_id FROM notes
                                WHERE to_id=%d
-                               AND read='False'""" % senderID)
+                               AND read='False'""", senderID)
         notes = self.cursor.fetchall()
         L = []
         for (id, from_id) in notes:
             sender = self.getUserName(from_id)
             L.append(r'#%d from %s;;' % (id, sender))
 
-    def deletenote(self, irc, msg, args):
-        "removes single note using note id"
-        noteid = privmsgs.getArgs(args)
-        sender = ircdb.users.getUserName(msg.prefix)
-        senderID = self.getUserID(sender)
-        self.cursor.execute("""SELECT to_id FROM notes
-                               WHERE id=%d""" % int(noteid))
-        to_id = self.cursor.fetchall()
-        if senderID == to_id:
-            self.cursor.execute("""DELETE FROM notes
-                                   WHERE id=%d""" % noteid)
-            self.db.commit()
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, 'Unable to delete note')
+#    def deletenote(self, irc, msg, args):
+#        "removes single note using note id"
+#        noteid = privmsgs.getArgs(args)
+#        sender = ircdb.users.getUserName(msg.prefix)
+#        senderID = self.getUserID(sender)
+#        self.cursor.execute("""SELECT to_id FROM notes
+#                               WHERE id=%d""" % int(noteid))
+#        to_id = self.cursor.fetchall()
+#        if senderID == to_id:
+#            self.cursor.execute("""DELETE FROM notes
+#                                   WHERE id=%d""" % noteid)
+#            self.db.commit()
+#            irc.reply(msg, conf.replySuccess)
+#        else:
+#            irc.error(msg, 'Unable to delete note')
             
     def getnotes(self, irc, msg, args):
         "takes no arguments gets all notes for sender"
