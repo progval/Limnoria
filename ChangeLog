@@ -1,3 +1,17 @@
+	* Added an Infobot plugin, to emulate Infobot.
+
+	* Added Anonymous, a plugin for anonymously saying things to a
+	channel.
+
+	* Added a new plugin, Tail, which will tail logfiles and send the
+	new lines to a configurable list of targets.
+	
+	* Changed the behavior of "seen" with the --user switch instead to
+	be a separated command, Seen.user.
+	
+	* Changed the behavior of "seen" with no arguments instead to be
+	a separate command, Seen.last.
+	
 	* Moved the connect and disconnect commands from the Relay plugin
 	to the Owner plugin, so a Supybot can be on multiple networks
 	without ever loading the Relay plugin.
@@ -21,17 +35,22 @@
 	* Added supybot.log.stdout.wrap, to allow optional (defaulting to
 	True) wrapping of stdout logs.
 	
-	* Added supybot.databases.plugins.channelSpecific, a channel
-	value that determines whether the database used for channel-based
-	plugins will be a channel-specific database or a global database.
+	* Added supybot.databases.plugins.channelSpecific, a value that
+	determines whether the database used for channel-based plugins
+	will be a channel-specific database or a global database.  This
+	value, ironically enough, is channel-specific -- channels can
+	each individually decide to be "part of the Borg" or to "be their
+	own channel."  The default, of course, is for databases to be
+	channel-specific.
 	
 	* Changed the way channel databases are handled; instead of
-	generating numerous #channel-<name> files, instead we create a
-	subdirectory of the data directory named #channel, and then stick
-	all the files in there.
+	generating #channel-<name> files, instead we create a subdirectory
+	of the data directory named #channel, and then stick all the files
+	in there.  It's a much cleaner way to do things, in our opinion.
 	
 	* Added several configuration variables to the Status plugin to
-	determine how verbose the cpu command is.
+	determine how verbose the cpu command is.  These are, of course,
+	channel-specific.
 	
 	* Added a configuration variable to the Dunno plugin,
 	supybot.plugins.Dunno.prefixNick, which determines whether the
@@ -42,9 +61,6 @@
 	
 	* Added Owner.rename, a command for renaming commands in other
 	plugins.
-	
-	* Added a new plugin, Tail, which will tail logfiles and send the
-	new lines to a configurable list of targets.
 	
 	* Added Config.channel, for getting/setting channel configuration
 	variables.
@@ -149,8 +165,6 @@
 	* Added Weather.wunder, which uses wunderground.com to report the
 	current weather status.
 
-	* Added an Infobot plugin, to emulate Infobot.
-
 	* Changed supybot.defaultCapabilities to be a space-separated
 	list rather than a comma-separated list.  Also added a check to
 	make sure -owner was in supybot.defaultCapabilities, and to
@@ -162,7 +176,7 @@
 	* Added Utilities.reply for replying to a person with text.  Like
 	echo, but it prepends the nick like the bot normally does.
 	
-	* Changed Utilities.success to accept an option <text> argument
+	* Changed Utilities.success to accept an optional <text> argument
 	for text to be appended to the success message.
 	
 	* Changed User.{addhostmask,removehostmask,register,unregister}
@@ -192,26 +206,26 @@
 	string allowing full customization of the Topic items.
 
 	* Added Topic.lock and Topic.unlock, for locking and unlocking
-	the topic.
+	the topic (setting +t or -t, respectively)
 
 	* Added Topic.restore, for restoring the topic to the last-sent
 	topic.  Useful for when people change your carefully crafted
-	topic through means other than the bot.
+	topic by means other than the bot.
 
 	* Changed supybot.brackets so you can now provide the empty
-	string, which means you cannot do nesting with brackets.
-
-	* Added Anonymous, a plugin for anonymously saying things to a
-	channel.
+	string, which means you cannot do nesting of commands.
 
 	* Added Utilities.last, which replies with the last string
-	given.  This is useful for sequencing commands and then replying
-	with the output of the last commnad.
+	given to it.  This is useful for sequencing commands and then
+	replying with the output of the last commnad.
 
 	* Updated RSS.info to accept a feed name as well as a url.
 
 	* Added a signal handler for SIGTERM, so you folks killing your
 	bots uncleanly won't have as many bugs :)
+
+	* Added a signal handler for SIGHUP that reloads the bot's
+	various configuration files.
 
 	* Added a new configuration variable, supybot.pidFile, which
 	determines what file the bot should write its PID to.  The
@@ -759,7 +773,7 @@
 
 	* Changed the keyword parameter "needed" to privmsgs.getArgs to be
 	"required" instead.  It just sounds better, works with "optional"
-	better, and we won't get an oppurtunity later to change it.
+	better, and we won't get an opportunity later to change it.
 
 	* Updated IrcObjectProxy.reply to allow a "notice" boolean keyword
 	to determine whether or not to reply via a notice.
