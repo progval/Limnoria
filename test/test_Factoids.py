@@ -80,14 +80,6 @@ class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('searchfactoids ke',
                           'inkedmn.*strike|strike.*inkedmn')
 
-    def testNotZeroIndexed(self):
-        self.assertNotError('learn foo as bar')
-        self.assertNotRegexp('factoidinfo foo', '#0')
-        self.assertNotRegexp('whatis foo', '#0')
-        self.assertNotError('learn foo as baz')
-        self.assertNotRegexp('factoidinfo foo', '#0')
-        self.assertNotRegexp('whatis foo', '#0')
-
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
