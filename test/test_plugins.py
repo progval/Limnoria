@@ -36,6 +36,8 @@ import plugins
 class ToggleDictionaryTestCase(unittest.TestCase):
     def test(self):
         t = plugins.ToggleDictionary({'foo': True})
+##         self.assertEqual(t['foo'], True)
+##         self.assertEqual(t['#baz']['foo'], True)
         self.assertEqual(t.get('foo'), True)
         self.assertEqual(t.get('foo', '#baz'), True)
         t.toggle('foo', value=False, channel='#baz')
