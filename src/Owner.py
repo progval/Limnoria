@@ -172,6 +172,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         return methodName == 'log' or \
                privmsgs.CapabilityCheckingPrivmsg.isCommand(self, methodName)
 
+    def reset(self):
+        # This has to be done somewhere, I figure here is as good place as any.
+        callbacks.Privmsg._mores.clear()
+        privmsgs.CapabilityCheckingPrivmsg.reset(self)
+
     def do001(self, irc, msg):
         self.log.info('Loading other src/ plugins.')
         for s in ('Admin', 'Channel', 'Config', 'Misc', 'User'):
