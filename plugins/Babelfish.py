@@ -103,8 +103,9 @@ class Babelfish(callbacks.Privmsg):
         try:
             (fromLang, toLang) = self._getLang(fromLang, toLang)
             if not fromLang or not toLang:
-                irc.error('I do not speak %s.' % utils.commaAndify(
-                                self.registryValue('disabledLanguages')))
+                langs = self.registryValue('disabledLanguages')
+                irc.error('I do not speak %s.' % utils.commaAndify(langs,
+                                                                   And='or'))
                 return
             translation = babelfish.translate(text, fromLang, toLang)
             irc.reply(translation)
@@ -132,8 +133,9 @@ class Babelfish(callbacks.Privmsg):
                 irc.error('One language must be English.')
                 return
             if not fromLang or not toLang:
-                irc.error('I do not speak %s.' % utils.commaAndify(
-                                self.registryValue('disabledLanguages')))
+                langs = self.registryValue('disabledLanguages')
+                irc.error('I do not speak %s.' % utils.commaAndify(langs,
+                                                                   And='or'))
                 return
             translations = babelfish.babelize(text, fromLang, toLang)
             irc.reply(translations[-1])
