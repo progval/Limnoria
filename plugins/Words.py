@@ -104,10 +104,13 @@ class HangmanGame:
         
     def getWord(self, dbHandler):
         db = dbHandler.getDb()
-        cur = db.cursor()
-        cur.execute("""SELECT word FROM words ORDER BY random() LIMIT 1""")
-        word = cur.fetchone()[0]
-        return word.lower()
+        cursor = db.cursor()
+        cursor.execute("""SELECT word FROM words ORDER BY random() LIMIT 1""")
+        if cursor.rowcount != 0:
+            word = cursor.fetchone()[0]
+            return word.lower()
+        else:
+            raise callbacks.Error, 'My words database is currently empty.'
 
     def letterPositions(self, letter, word):
         """
