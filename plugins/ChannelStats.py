@@ -142,9 +142,8 @@ class ChannelStat(irclib.IrcCommandDispatcher):
 
 
 class UserStat(ChannelStat):
-    def __init__(self, id, kicked=0, *args):
+    def __init__(self, kicked=0, *args):
         ChannelStat.__init__(self, *args)
-        self.id = id
         self.kicked = kicked
         self._values.insert(0, 'kicked')
 
@@ -154,7 +153,6 @@ class UserStat(ChannelStat):
 
 class StatsDB(plugins.ChannelUserDB):
     def __init__(self, *args, **kwargs):
-        self.channelStats = ircutils.IrcDict()
         plugins.ChannelUserDB.__init__(self, *args, **kwargs)
     
     def serialize(self, v):
@@ -163,29 +161,27 @@ class StatsDB(plugins.ChannelUserDB):
     def deserialize(self, channel, id, L):
         L = map(int, L)
         if id == 'channelStats':
-            return ChannelStat(L)
+            return ChannelStat(*L)
         else:
-            return UserStat(L)
+            return UserStat(*L)
 
     def addMsg(self, msg, id=None):
         channel = msg.args[0]
         if ircutils.isChannel(channel):
-            if channel not in self.channelStats:
-                self.channelStats[channel] = ChannelStat()
-            self.channelStats[channel].addMsg(msg)
+            if (channel, 'channelStats') not in self:
+                self[channel, 'channelStats'] = ChannelStat()
+            self[channel, 'channelStats'].addMsg(msg)
             try:
                 if id is None:
                     id = ircdb.users.getUserId(msg.prefix)
             except KeyError:
                 return
-            if channel not in self.channels:
-                self.channels[channel] = {}
-            if id not in self.channels[channel]:
-                self.channels[channel][id] = UserStat(id)
-            self.channels[channel][id].addMsg(msg)
+            if (channel, id) not in self:
+                self[channel, id] = UserStat()
+            self[channel, id].addMsg(msg)
 
     def getChannelStats(self, channel):
-        return self[channel, -1]
+        return self[channel, 'channelStats']
         
     def getUserStats(self, channel, id):
         return self[channel, id]
@@ -238,15 +234,13 @@ class ChannelStats(callbacks.Privmsg):
             id = None
         for (channel, c) in self.laststate.channels.iteritems():
             if msg.nick in c.users:
-                if channel not in self.db.channelStats:
-                    self.db.channelStats[channel] = ChannelStat()
-                self.db.channelStats[channel].quits += 1
+                if (channel, 'channelStats') not in self.db:
+                    self.db[channel, 'channelStats'] = ChannelStat()
+                self.db[channel, 'channelStats'].quits += 1
                 if id is not None:
-                    if channel not in self.db.channels:
-                        self.db.channels[channel] = {}
-                    if id not in self.db.channels[channel]:
-                        self.db.channels[channel][id] = UserStat(id)
-                    self.db.channels[channel][id].quits += 1
+                    if (channel, id) not in self.db:
+                        self.db[channel, id] = UserStat()
+                    self.db[channel, id].quits += 1
 
     def doKick(self, irc, msg):
         (channel, nick, _) = msg.args
@@ -258,7 +252,7 @@ class ChannelStats(callbacks.Privmsg):
         if channel not in self.db.channels:
             self.db.channels[channel] = {}
         if id not in self.db.channels[channel]:
-            self.db.channels[channel][id] = UserStat(id)
+            self.db.channels[channel][id] = UserStat()
         self.db.channels[channel][id].kicked += 1
 
     def stats(self, irc, msg, args):
