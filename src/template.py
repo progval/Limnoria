@@ -60,6 +60,7 @@ conf.commandsOnStart = "%%onStart%%"
 
 afterConnect = "%%afterConnect%%"
 
+debugVariables = "%%debugVariables%%"
 configVariables = "%%configVariables%%"
 
 if not isinstance(configVariables, basestring):
@@ -69,6 +70,11 @@ if not isinstance(configVariables, basestring):
 
 def main():
     import debug
+
+    if not isinstance(debugVariables, basestring):
+        for (name, value) in debugVariables.iteritems():
+            setattr(debug, name, value)
+            
     import world
     import drivers
     import schedule
@@ -102,10 +108,10 @@ if __name__ == '__main__':
                            '-OO optimizes asserts and uses psyco.')
     parser.add_option('-n', '--nick', action='store',
                       dest='nick', default=defaultNick,
-                      help='nick the bot should use') # FIXME (quotes)
+                      help='nick the bot should use')
     parser.add_option('-s', '--server', action='store',
                       dest='server', default=defaultServer,
-                      help='server to connect to') # FIXME (quotes)
+                      help='server to connect to')
     parser.add_option('-u', '--user', action='store',
                       dest='user', default=defaultUser,
                       help='full username the bot should use')
