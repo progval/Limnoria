@@ -46,6 +46,7 @@ import conf
 import debug
 import utils
 import world
+import ircdb
 import ircmsgs
 import drivers
 import privmsgs
@@ -277,6 +278,16 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'There was no callback %s' % name)
+
+    def reconf(self, irc, msg, args):
+        """takes no arguments
+
+        Reloads the configuration files in conf.dataDir: conf/users.conf and
+        conf/channels.conf, by default.
+        """
+        ircdb.users.reload()
+        ircdb.channels.reload()
+        irc.reply(msg, conf.replySuccess)
 
     def cvsup(self, irc, msg, args):
         """takes no arguments
