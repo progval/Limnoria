@@ -200,7 +200,10 @@ class Tokenizer:
         return args
 
 def tokenize(s):
-    return Tokenizer().tokenize(s)
+    try:
+        return Tokenizer().tokenize(s)
+    except ValueError, e:
+        raise SyntaxError, str(e)
 
 class IrcObjectProxy:
     def __init__(self, irc, msg, args):
@@ -323,7 +326,11 @@ class Privmsg(irclib.IrcCallback):
         msg = self.rateLimiter.get()
         if msg:
             s = addressed(irc.nick, msg)
-            self.Proxy(irc, msg, tokenize(s))
+            try:
+                args = tokenize(s)
+            except SyntaxError, e:
+                irc.queueMsg(reply(msg, debug.exnToString(e)))
+            self.Proxy(irc, msg, args)
 
     def isCommand(self, methodName):
         # This function is ugly, but I don't want users to call methods like
