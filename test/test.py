@@ -48,20 +48,7 @@ import time
 import os.path
 import unittest
 
-if not os.path.exists(conf.dataDir):
-    os.mkdir(conf.dataDir)
-
-if not os.path.exists(conf.confDir):
-    os.mkdir(conf.confDir)
-
-if not os.path.exists(conf.logDir):
-    os.mkdir(conf.logDir)
-
-for filename in os.listdir(conf.logDir):
-    os.remove(os.path.join(conf.logDir, filename))
-
 import debug
-
 debug.stderr = False
 
 import world
@@ -72,17 +59,6 @@ import ircmsgs
 import ircutils
 import callbacks
 import OwnerCommands
-
-fd = file(os.path.join('test', 'rfc2812.msgs'), 'r')
-rawmsgs = [line.strip() for line in fd]
-fd.close()
-
-msgs = []
-for s in rawmsgs:
-    try:
-        msgs.append(ircmsgs.IrcMsg(s))
-    except:
-        print 'IrcMsg constructor failed: %r' % s
 
 nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
          'alb','d0rt','jemfinch','StyxAlso','fors','deltab','gd',
@@ -104,7 +80,19 @@ nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
          'EliasREC','lowks__','OldSmrf','Mad77','snibril','delta','psy',
          'skimpIzu','Kengur','MoonFallen','kotkis','Hyperi']
 
+fd = file(os.path.join('test', 'rfc2812.msgs'), 'r')
+rawmsgs = [line.strip() for line in fd]
+fd.close()
+
+msgs = []
+for s in rawmsgs:
+    try:
+        msgs.append(ircmsgs.IrcMsg(s))
+    except:
+        print 'IrcMsg constructor failed: %r' % s
+
 nicks += [msg.nick for msg in msgs if msg.nick]
+
 
 class PluginTestCase(unittest.TestCase):
     """Subclass this to write a test case for a plugin.  See test_FunCommands
@@ -288,6 +276,18 @@ class PluginDocumentation:
     
 
 if __name__ == '__main__':
+    if not os.path.exists(conf.dataDir):
+        os.mkdir(conf.dataDir)
+
+    if not os.path.exists(conf.confDir):
+        os.mkdir(conf.confDir)
+
+    if not os.path.exists(conf.logDir):
+        os.mkdir(conf.logDir)
+
+    for filename in os.listdir(conf.logDir):
+        os.remove(os.path.join(conf.logDir, filename))
+
     world.testing = True
     if len(sys.argv) > 1:
         files = sys.argv[1:]
