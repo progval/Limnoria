@@ -96,7 +96,8 @@ def upkeep(scheduleNext=True):
         except IOError: # Win98 sux0rs!
             pass
     if gc.garbage:
-        log.warning('Uncollectable garbage: %s', gc.garbage)
+        log.warning('Uncollectable garbage (file this as a bug on SF.net): %s',
+                    gc.garbage)
     if conf.daemonized:
         # If we're daemonized, sys.stdout has been replaced with a StringIO
         # object, so let's see if anything's been printed, and if so, let's
