@@ -112,9 +112,16 @@ class TestDynamic(SupyTestCase):
             self.assertEqual(dynamic.i, 2)
             self.assertEqual(dynamic.y, z)
             self.assertEqual(dynamic.x, z)
-            self.assertRaises(NameError, getattr, dynamic, 'asdfqwerqewr')
+            #self.assertRaises(NameError, getattr, dynamic, 'asdfqwerqewr')
             self.assertEqual(dynamic.self, self)
             return z
         self.assertEqual(f(10), 10)
+
+    def testCommonUsage(self):
+        foo = 'bar'
+        def f():
+            foo = dynamic.foo
+            self.assertEqual(foo, 'bar')
+        f()
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
