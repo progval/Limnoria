@@ -1,3 +1,6 @@
+	* Added Misc.author, a command for finding out which author
+	claims a particular plugin.
+	
 	* Added Topic.lock and Topic.unlock, for locking and unlocking
 	the topic.
 
