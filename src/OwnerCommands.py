@@ -36,7 +36,6 @@ their caller to have the 'owner' capability.  This plugin is loaded by default.
 
 from fix import *
 
-import os
 import gc
 import imp
 import sys
@@ -54,12 +53,14 @@ import privmsgs
 import callbacks
 
 def loadPluginModule(name):
+    """Loads (and returns) the module for the plugin with the given name."""
     moduleInfo = imp.find_module(name, conf.pluginDirs)
     module = imp.load_module(name, *moduleInfo)
     linecache.checkcache()
     return module
 
 def loadPluginClass(irc, module):
+    """Loads the plugin Class from the given module into the given irc."""
     callback = module.Class()
     irc.addCallback(callback)
     if hasattr(callback, 'configure'):
