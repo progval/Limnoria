@@ -66,7 +66,7 @@ class DunnoTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testDunnoChange(self):
         self.assertNotError('dunno add moo')
         self.assertNotError('dunno change 1 s/moo/bar/')
-        self.assertRegexp('dunno get 1', '.*?: \'bar\'')
+        self.assertRegexp('dunno get 1', '.*?: [\'"]bar[\'"]')
 
     def testDollarCommand(self):
         self.assertNotError("dunno add I can't $command.")
