@@ -624,6 +624,8 @@ class IrcObjectProxy(RichReplyMethods):
         cbs = []
         maxL = []
         for cb in self.irc.callbacks:
+            if not hasattr(cb, 'getCommand'):
+                continue
             L = cb.getCommand(args)
             log.debug('%s.getCommand(%r) returned %r', cb.name(), args, L)
             if L and L >= maxL:
