@@ -77,20 +77,30 @@ tableCreateStatements = {
                    excuse TEXT,
                    added_by TEXT
                    )""",),
-    'words': ("""CREATE TABLE words (
-                 id INTEGER PRIMARY KEY,
-                 word TEXT UNIQUE ON CONFLICT IGNORE,
-                 sorted_word_id INTEGER
-                 )""",
-              """CREATE INDEX sorted_word_id ON words (sorted_word_id)""",
-              """CREATE TABLE sorted_words (
-                 id INTEGER PRIMARY KEY,
-                 word TEXT UNIQUE ON CONFLICT IGNORE
-                 )""",
-              """CREATE INDEX sorted_words_word ON sorted_words (word)"""),
     }
     
-class FunDBDB(plugins.DBHandler):
+class FunDB(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
+    """
+    Contains the 'fun' commands that require a database.  Currently includes
+    database-backed commands for crossword puzzle solving, anagram searching,
+    larting, praising, excusing, and insulting.
+    """
+    configurables = plugins.ConfigurableDictionary(
+        [('show-ids', plugins.ConfigurableBoolType, False,
+          """Determines whether the bot will show the id of an
+          excuse/insult/praise/lart.""")]
+    )
+    _tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        plugins.Configurable.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
+
+    def die(self):
+        callbacks.Privmsg.die(self)
+        plugins.Configurable.die(self)
+        plugins.ChannelDBHandler.die(self)
+
     def makeDb(self, dbfilename, replace=False):
         if os.path.exists(dbfilename):
             if replace:
@@ -106,55 +116,18 @@ class FunDBDB(plugins.DBHandler):
         db.commit()
         return db
 
-def addWord(db, word, commit=False):
-    word = word.strip().lower()
-    L = list(word)
-    L.sort()
-    sorted = ''.join(L)
-    cursor = db.cursor()
-    cursor.execute("""INSERT INTO sorted_words VALUES (NULL, %s)""", sorted)
-    cursor.execute("""INSERT INTO words VALUES (NULL, %s,
-                      (SELECT id FROM sorted_words
-                       WHERE word=%s))""", word, sorted)
-    if commit:
-        db.commit()
-
-
-class FunDB(callbacks.Privmsg, plugins.Configurable):
-    """
-    Contains the 'fun' commands that require a database.  Currently includes
-    database-backed commands for crossword puzzle solving, anagram searching,
-    larting, praising, excusing, and insulting.
-    """
-    configurables = plugins.ConfigurableDictionary(
-        [('show-ids', plugins.ConfigurableBoolType, False,
-          """Determines whether the bot will show the id of an
-          excuse/insult/praise/lart.""")]
-    )
-    _tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        plugins.Configurable.__init__(self)
-        self.dbHandler = FunDBDB(os.path.join(conf.dataDir, 'FunDB'))
-
-    def die(self):
-        callbacks.Privmsg.die(self)
-        plugins.Configurable.die(self)
-        db = self.dbHandler.getDb()
-        db.commit()
-        db.close()
-        del db
-
     def add(self, irc, msg, args):
-        """<lart|excuse|insult|praise> <text>
+        """[<channel>] <lart|excuse|insult|praise> <text>
 
         Adds another record to the data referred to in the first argument.  For
         commands that will later respond with an ACTION (lart and praise), $who
         should be in the message to show who should be larted or praised.  I.e.
         'dbadd lart slices $who in half with a free AOL cd' would make the bot,
         when it used that lart against, say, jemfinch, to say '/me slices
-        jemfinch in half with a free AOL cd'
+        jemfinch in half with a free AOL cd'  <channel> is only necessary if
+        the message isn't sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         (table, s) = privmsgs.getArgs(args, required=2)
         table = table.lower()
         try:
@@ -171,7 +144,7 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         sql = """INSERT INTO %ss VALUES (NULL, %%s, %%s)""" % table
         cursor.execute(sql, s, name)
@@ -183,11 +156,13 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
         irc.reply(msg, response)
 
     def remove(self, irc, msg, args):
-        """<lart|excuse|insult|praise> <id>
+        """[<channel>] <lart|excuse|insult|praise> <id>
 
         Removes the data, referred to in the first argument, with the id
-        number <id> from the database.
+        number <id> from the database.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         (table, id) = privmsgs.getArgs(args, required=2)
         table = table.lower()
         try:
@@ -204,7 +179,7 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         sql = """DELETE FROM %ss WHERE id=%%s""" % table
         cursor.execute(sql, id)
@@ -212,13 +187,15 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
         irc.reply(msg, conf.replySuccess)
 
     def change(self, irc, msg, args):
-        """<lart|excuse|insult|praise> <id> <regexp>
+        """[<channel>] <lart|excuse|insult|praise> <id> <regexp>
 
         Changes the data, referred to in the first argument, with the id
         number <id> according to the regular expression <regexp>. <id> is the
         zero-based index into the db; <regexp> is a regular expression of the
-        form s/regexp/replacement/flags.
+        form s/regexp/replacement/flags.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         (table, id, regexp) = privmsgs.getArgs(args, required=3)
         table = table.lower()
         try:
@@ -242,7 +219,7 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
         except re.error, e:
             irc.error(msg, utils.exnToString(e))
             return
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
         cursor.execute(sql, id)
@@ -258,18 +235,20 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             irc.reply(msg, conf.replySuccess)
 
     def num(self, irc, msg, args):
-        """<lart|excuse|insult|praise>
+        """[<channel>] <lart|excuse|insult|praise>
 
         Returns the number of records, of the type specified, currently in
-        the database.
+        the database.  <channel> is only necessary if the message isn't sent
+        in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         table = privmsgs.getArgs(args)
         table = table.lower()
         if table not in self._tables:
             irc.error(msg, '%r is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         sql = """SELECT count(*) FROM %ss""" % table
         cursor.execute(sql)
@@ -278,10 +257,12 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
                   (utils.be(total), utils.nItems(total, table)))
 
     def get(self, irc, msg, args):
-        """<lart|excuse|insult|praise> <id>
+        """[<channel>] <lart|excuse|insult|praise> <id>
 
-        Gets the record with id <id> from the table specified.
+        Gets the record with id <id> from the table specified.  <channel> is
+        only necessary if the message isn't sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         (table, id) = privmsgs.getArgs(args, required=2)
         table = table.lower()
         try:
@@ -293,7 +274,7 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
         cursor.execute(sql, id)
@@ -304,10 +285,13 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             irc.reply(msg, reply)
 
     def info(self, irc, msg, args):
-        """<lart|excuse|insult|praise> <id>
+        """[<channel>] <lart|excuse|insult|praise> <id>
 
         Gets the info for the record with id <id> from the table specified.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         (table, id) = privmsgs.getArgs(args, required=2)
         table = table.lower()
         try:
@@ -319,7 +303,7 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             irc.error(msg, '"%s" is not valid. Valid values include %s.' %
                            (table, utils.commaAndify(self._tables)))
             return
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         sql = """SELECT added_by FROM %ss WHERE id=%%s""" % table
         cursor.execute(sql, id)
@@ -337,14 +321,16 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             return s
         
     def insult(self, irc, msg, args):
-        """<nick>
+        """[<channel>] <nick>
 
-        Insults <nick>.
+        Insults <nick>.  <channel> is only necessary if the message isn't
+        sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
         if not nick:
             raise callbacks.ArgumentError
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT id, insult FROM insults
                           WHERE insult NOT NULL
@@ -360,13 +346,15 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             irc.reply(msg, self._formatResponse(insult, id), to=nick)
 
     def excuse(self, irc, msg, args):
-        """[<id>]
+        """[<channel>] [<id>]
 
         Gives you a standard, random BOFH excuse or the excuse with the given 
-        <id>.
+        <id>.  <channel> is only necessary if the message isn't sent in the
+        channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         id = privmsgs.getArgs(args, required=0, optional=1)
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         if id:
             try:
@@ -391,11 +379,13 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             irc.reply(msg, self._formatResponse(excuse, id))
 
     def lart(self, irc, msg, args):
-        """[<id>] <text> [for <reason>]
+        """[<channel>] [<id>] <text> [for <reason>]
 
         Uses a lart on <text> (giving the reason, if offered). Will use lart
-        number <id> from the database when <id> is given.
+        number <id> from the database when <id> is given.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         (id, nick) = privmsgs.getArgs(args, optional=1)
         try:
             id = int(id)
@@ -414,7 +404,7 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         if id:
             cursor.execute("""SELECT id, lart FROM larts WHERE id=%s""", id)
@@ -442,11 +432,14 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             irc.reply(msg, self._formatResponse(s, id), action=True)
 
     def praise(self, irc, msg, args):
-        """[<id>] <text> [for <reason>]
+        """[<channel>] [<id>] <text> [for <reason>]
 
         Uses a praise on <text> (giving the reason, if offered). Will use
         praise number <id> from the database when <id> is given.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
+        channel = privmsgs.getChannel(msg, args)
         (id, nick) = privmsgs.getArgs(args, optional=1)
         try:
             id = int(id)
@@ -463,7 +456,7 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
                              utils.itersplit('for'.__eq__, nick.split(), 1))
         except ValueError:
             reason = ''
-        db = self.dbHandler.getDb()
+        db = self.getDb(channel)
         cursor = db.cursor()
         if id:
             cursor.execute("""SELECT id, praise FROM praises WHERE id=%s""",id)
@@ -490,87 +483,27 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             s = s.rstrip('.')
             irc.reply(msg, self._formatResponse(s, id), action=True)
 
-    def addword(self, irc, msg, args):
-        """<word>
-
-        Adds a word to the database of words.  This database is used for the
-        anagram and crossword commands.
-        """
-        word = privmsgs.getArgs(args)
-        if word.translate(string.ascii, string.ascii_letters) != '':
-            irc.error(msg, 'Word must contain only letters.')
-        addWord(self.dbHandler.getDb(), word, commit=True)
-        irc.reply(msg, conf.replySuccess)
-
-    def crossword(self, irc, msg, args):
-        """<word>
-
-        Gives the possible crossword completions for <word>; use underscores
-        ('_') to denote blank spaces.
-        """
-        word = privmsgs.getArgs(args).lower()
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        if '%' in word:
-            irc.error(msg, '"%" isn\'t allowed in the word.')
-            return
-        cursor.execute("""SELECT word FROM words
-                          WHERE word LIKE %s
-                          ORDER BY word""", word)
-        words = [t[0] for t in cursor.fetchall()]
-        if words:
-            irc.reply(msg, utils.commaAndify(words))
-        else:
-            irc.reply(msg, 'No matching words were found.')
-
-    def anagram(self, irc, msg, args):
-        """<word>
-
-        Using the words database, determines if a word has any anagrams.
-        """
-        word = privmsgs.getArgs(args).strip().lower()
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute("""SELECT words.word FROM words
-                          WHERE sorted_word_id=(
-                                SELECT sorted_word_id FROM words
-                                WHERE word=%s)""", word)
-        words = [t[0] for t in cursor.fetchall()]
-        try:
-            words.remove(word)
-        except ValueError:
-            pass
-        if words:
-            irc.reply(msg, utils.commaAndify(words))
-        else:
-            irc.reply(msg, 'That word has no anagrams that I know of.')
-
-
 Class = FunDB
 
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) < 3:
-        print 'Usage: %s <words|larts|excuses|insults|zipcodes> file'\
+    if len(sys.argv) < 3 or len(sys.argv) > 4:
+        print 'Usage: %s <channel> <larts|excuses|insults|zipcodes> file'\
               ' [<console>]' % sys.argv[0]
         sys.exit(-1)
-    category = sys.argv[1]
-    filename = sys.argv[2]
     if len(sys.argv) == 4:
-        added_by = sys.argv[3]
+        added_by = sys.argv.pop()
+    (channel, category, filename) = sys.argv[1:]
     else:
         added_by = '<console>'
-    dbHandler = FunDBDB(os.path.join(conf.dataDir, 'FunDB'))
-    db = dbHandler.getDb()
+    plugin = Class()
+    db = plugin.getDb(channel)
     cursor = db.cursor()
     for line in open(filename, 'r'):
         line = line.rstrip()
         if not line:
             continue
-        if category == 'words':
-            cursor.execute("""PRAGMA cache_size = 50000""")
-            addWord(db, line)
         elif category == 'larts':
             if '$who' in line:
                 cursor.execute("""INSERT INTO larts VALUES (NULL, %s, %s)""",
