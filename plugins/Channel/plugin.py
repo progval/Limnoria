@@ -28,7 +28,6 @@
 ###
 
 import sys
-import time
 
 import supybot.conf as conf
 import supybot.ircdb as ircdb

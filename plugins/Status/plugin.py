@@ -27,27 +27,22 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot.plugins as plugins
-
 import os
 import sys
-import sets
 import time
-import os.path
 import threading
-from itertools import islice, ifilter, imap
 
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 from supybot.commands import *
-import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 class Status(callbacks.Privmsg):
     def __init__(self, irc):
         self.__parent = super(Status, self)
         self.__parent.__init__(irc)
+        # XXX It'd be nice if these could be kept in the registry.
         self.sentMsgs = 0
         self.recvdMsgs = 0
         self.sentBytes = 0
@@ -77,9 +72,8 @@ class Status(callbacks.Privmsg):
             networks.setdefault(Irc.network, []).append(Irc.nick)
         networks = networks.items()
         networks.sort()
-        networks = ['%s as %s' % (net, utils.str.commaAndify(nicks))
-                    for (net, nicks) in networks]
-        L = ['I am connected to %s.' % utils.str.commaAndify(networks)]
+        networks = [format('%s as %L', net, nicks) for (net,nicks) in networks]
+        L = [format('I am connected to %L.', networks)]
         if world.profiling:
             L.append('I am currently in code profiling mode.')
         irc.reply('  '.join(L))
@@ -92,11 +86,9 @@ class Status(callbacks.Privmsg):
         """
         threads = [t.getName() for t in threading.enumerate()]
         threads.sort()
-        s = 'I have spawned %s; %s %s still currently active: %s.' % \
-            (utils.str.nItems('thread', world.threadsSpawned),
-             utils.str.nItems('thread', len(threads)),
-             utils.str.be(len(threads)),
-             utils.str.commaAndify(threads))
+        s = format('I have spawned %n; %n %b still currently active: %L.',
+                   (world.threadsSpawned, 'thread'),
+                   (len(threads), 'thread'), len(threads), threads)
         irc.reply(s)
     threads = wrap(threads)
 
@@ -139,9 +131,9 @@ class Status(callbacks.Privmsg):
                    'of system time, for a total of %.2f seconds of CPU ' \
                    'time.  %s' % (user, system, user + system, children)
         if self.registryValue('cpu.threads', target):
-            spawned = utils.str.nItems('thread', world.threadsSpawned)
-            response += 'I have spawned %s; I currently have %s still ' \
-                        'running.' % (spawned, activeThreads)
+            response += format('I have spawned %n; I currently have %i still '
+                               'running.',
+                               (world.threadsSpawned, 'thread'), activeThreads)
         if self.registryValue('cpu.memory', target):
             mem = 'an unknown amount'
             pid = os.getpid()
@@ -179,10 +171,10 @@ class Status(callbacks.Privmsg):
                     if cb.isCommand(attr) and \
                        attr == callbacks.canonicalName(attr):
                         commands += 1
-        s = 'I offer a total of %s in %s.  I have processed %s.' % \
-            (utils.str.nItems('command', commands),
-             utils.str.nItems('plugin', callbacksPrivmsg, 'command-based'),
-             utils.str.nItems('command', world.commandsProcessed))
+        s = format('I offer a total of %n in %n.  I have processed %n.',
+                   (commands, 'command'),
+                   (callbacksPrivmsg, 'command-based', 'plugin'),
+                   (world.commandsProcessed, 'command'))
         irc.reply(s)
     cmd = wrap(cmd)
 
@@ -191,7 +183,7 @@ class Status(callbacks.Privmsg):
 
         Returns a list of the commands offered by the bot.
         """
-        commands = sets.Set()
+        commands = set()
         for cb in irc.callbacks:
             if isinstance(cb, callbacks.Privmsg) and \
                not isinstance(cb, callbacks.PrivmsgRegexp) and cb.public:

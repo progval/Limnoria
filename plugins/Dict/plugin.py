@@ -27,7 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import sets
 import random
 import socket
 
@@ -37,7 +36,6 @@ import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 class Dict(callbacks.Privmsg):
@@ -81,7 +79,7 @@ class Dict(callbacks.Privmsg):
             conn = dictclient.Connection(server)
         except socket.error, e:
             irc.error(utils.web.strError(e), Raise=True)
-        dbs = sets.Set(conn.getdbdescs())
+        dbs = set(conn.getdbdescs())
         if words[0] in dbs:
             dictionary = words.pop(0)
         else:
@@ -97,7 +95,7 @@ class Dict(callbacks.Privmsg):
             irc.error('You must give a word to define.', Raise=True)
         word = ' '.join(words)
         definitions = conn.define(dictionary, word)
-        dbs = sets.Set()
+        dbs = set()
         if not definitions:
             if dictionary == '*':
                 irc.reply('No definition for %s could be found.' %

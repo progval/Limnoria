@@ -27,13 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot
-
-__revision__ = "$Id: Format.py,v 1.19 2004/11/30 04:49:21 jemfinch Exp $"
-__author__ = supybot.authors.jemfinch
-
-import supybot.plugins as plugins
-
 import string
 
 import supybot.conf as conf
@@ -42,7 +35,6 @@ from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
-
 def configure(advanced):
     # This will be called by setup.py to configure this module.  Advanced is
     # a bool that specifies whether the user identified himself as an advanced
@@ -50,7 +42,6 @@ def configure(advanced):
     # registry as appropriate.
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Format', True)
-
 
 class Format(callbacks.Privmsg):
     def bold(self, irc, msg, args, text):

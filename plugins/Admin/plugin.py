@@ -29,9 +29,7 @@
 
 import sys
 import time
-import pprint
 
-import supybot.log as log
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils

@@ -27,12 +27,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot.plugins as plugins
-
 import re
 import string
 import random
-import itertools
 from cStringIO import StringIO
 
 import supybot.conf as conf
@@ -40,7 +37,6 @@ import supybot.utils as utils
 from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 class MyFilterProxy(object):
@@ -377,7 +373,7 @@ class Filter(callbacks.Privmsg):
 
         Returns <text> colorized like a rainbow.
         """
-        colors = itertools.cycle([4, 7, 8, 3, 2, 12, 6])
+        colors = utils.iter.cycle([4, 7, 8, 3, 2, 12, 6])
         L = [self._color(c, fg=colors.next()) for c in text]
         irc.reply(''.join(L) + '\x03')
     rainbow = wrap(rainbow, ['text'])

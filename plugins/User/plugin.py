@@ -39,7 +39,7 @@ import supybot.callbacks as callbacks
 
 class User(callbacks.Privmsg):
     def _checkNotChannel(self, irc, msg, password=' '):
-        if password and ircutils.isChannel(msg.args[0]):
+        if password and irc.isChannel(msg.args[0]):
             raise callbacks.Error, conf.supybot.replies.requiresPrivacy()
 
     def list(self, irc, msg, args, optlist, glob):
@@ -411,11 +411,11 @@ class User(callbacks.Privmsg):
                     admins += 1
             except KeyError:
                 pass
-        irc.reply('I have %s registered users '
-                  'with %s registered hostmasks; '
-                  '%s and %s.' % (users, hostmasks,
-                                  utils.str.nItems('owner', owners),
-                                  utils.str.nItems('admin', admins)))
+        irc.reply(format('I have %s registered users '
+                         'with %s registered hostmasks; '
+                         '%n and %n.',
+                         users, hostmasks,
+                         (owners, 'owner'), (admins, 'admin')))
     stats = wrap(stats)
 
 

@@ -66,7 +66,7 @@ class OwnerTestCase(PluginTestCase):
         self.assertNotError('load Channel')
         self.assertNotError('unload Channel')
         self.assertError('unload Channel')
-        self.assertNotError('load CHANNEL')
+        self.assertNotError('load Channel')
         self.assertNotError('unload CHANNEL')
 
     def testDisable(self):

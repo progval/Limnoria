@@ -31,10 +31,8 @@ import os
 import sys
 import time
 
-import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
-import supybot.world as world
 from supybot.commands import *
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
@@ -70,8 +68,8 @@ class Misc(callbacks.Privmsg):
                           'invalid command flood.', banmask, punishment)
             if tokens and tokens[0] == 'Error:':
                 self.log.warning('Apparent error loop with another Supybot '
-                                 'observed at %s.  Consider ignoring this bot '
-                                 'permanently.', log.timestamp())
+                                 'observed.  Consider ignoring this bot '
+                                 'permanently.')
             ircdb.ignores.add(banmask, time.time() + punishment)
             irc.reply('You\'ve given me %s invalid commands within the last '
                       'minute; I\'m now ignoring you for %s.' %

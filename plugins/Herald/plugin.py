@@ -29,7 +29,6 @@
 
 import os
 import time
-import getopt
 
 import supybot.log as log
 import supybot.conf as conf
@@ -40,7 +39,6 @@ from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
-import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 filename = conf.supybot.directories.data.dirize('Herald.db')

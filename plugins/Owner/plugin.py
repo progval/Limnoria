@@ -29,7 +29,6 @@
 
 import gc
 import os
-import imp
 import sre
 import sys
 import socket
@@ -48,7 +47,6 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
-import supybot.structures as structures
 
 ###
 # supybot.commands.
@@ -365,33 +363,32 @@ class Owner(callbacks.Privmsg):
         """
         L = []
         if level == 'high':
-            L.append('Regexp cache flushed: %s cleared.' %
-                     utils.nItems('regexp', len(sre._cache)))
+            L.append(format('Regexp cache flushed: %n cleared.',
+                            (len(sre._cache), 'regexp')))
             sre.purge()
-            L.append('Pattern cache flushed: %s cleared.' %
-                     utils.nItems('compiled pattern',
-                                  len(ircutils._patternCache)))
+            L.append(format('Pattern cache flushed: %n cleared.',
+                            (len(ircutils._patternCache), 'compiled pattern')))
             ircutils._patternCache.clear()
-            L.append('hostmaskPatternEqual cache flushed: %s cleared.' %
-                     utils.nItems('result',
-                                  len(ircutils._hostmaskPatternEqualCache)))
+            L.append(format('hostmaskPatternEqual cache flushed: %n cleared.',
+                            (len(ircutils._hostmaskPatternEqualCache),
+                             'result')))
             ircutils._hostmaskPatternEqualCache.clear()
-            L.append('ircdb username cache flushed: %s cleared.' %
-                     utils.nItems('username to id mapping',
-                                  len(ircdb.users._nameCache)))
+            L.append(format('ircdb username cache flushed: %n cleared.',
+                            (len(ircdb.users._nameCache),
+                             'username to id mapping')))
             ircdb.users._nameCache.clear()
-            L.append('ircdb hostmask cache flushed: %s cleared.' %
-                     utils.nItems('hostmask to id mapping',
-                                  len(ircdb.users._hostmaskCache)))
+            L.append(format('ircdb hostmask cache flushed: %n cleared.',
+                            (len(ircdb.users._hostmaskCache),
+                            'hostmask to id mapping')))
             ircdb.users._hostmaskCache.clear()
-            L.append('linecache line cache flushed: %s cleared.' %
-                     utils.nItems('line', len(linecache.cache)))
+            L.append(format('linecache line cache flushed: %s cleared.',
+                            (len(linecache.cache, 'line'))))
             linecache.clearcache()
             sys.exc_clear()
         collected = world.upkeep()
         if gc.garbage:
             L.append('Garbage!  %r.' % gc.garbage)
-        L.append('%s collected.' % utils.nItems('object', collected))
+        L.append(format('%n collected.', (collected, 'object')))
         irc.reply('  '.join(L))
     upkeep = wrap(upkeep, [additional(('literal', ['high']))])
 

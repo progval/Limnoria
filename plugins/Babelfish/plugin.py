@@ -34,7 +34,6 @@ import babelfish
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 class Babelfish(callbacks.Privmsg):

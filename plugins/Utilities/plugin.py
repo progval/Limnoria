@@ -29,11 +29,8 @@
 
 import types
 import random
-import string
 
-import supybot.utils as utils
 from supybot.commands import *
-import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
