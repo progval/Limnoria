@@ -44,6 +44,8 @@ import sgmllib
 import textwrap
 import htmlentitydefs
 
+from structures import TwoWayDictionary
+
 def normalizeWhitespace(s):
     """Normalizes the whitespace in a string; \s+ becomes one space."""
     return ' '.join(s.split())
@@ -286,7 +288,16 @@ def ellipsisify(s, n):
     else:
         return (textwrap.wrap(s, n-3)[0] + '...')
 
-plurals = {'match': 'matches'}
+plurals = TwoWayDictionary({'match': 'matches',
+                            'patch': 'patches',})
+def _matchCase(s1, s2):
+    """Matches the case of s1 in s2"""
+    L = list(s2)
+    for (i, char) in enumerate(s1[:len(s2)]):
+        if char.isupper():
+            L[i] = char.upper()
+    return ''.join(L)
+
 def pluralize(i, s):
     """Returns the plural of s based on its number i.  Put any exceptions to
     the general English rule of appending 's' in the plurals dictionary.
@@ -294,10 +305,24 @@ def pluralize(i, s):
     if i == 1:
         return s
     else:
-        if s in plurals:
-            return plurals[s]
+        lowered = s.lower()
+        if lowered in plurals:
+            return _matchCase(s, plurals[lowered])
         else:
-            return s + 's'
+            if s.isupper():
+                return s + 'S'
+            else:
+                return s + 's'
+
+def depluralize(s):
+    lowered = s.lower()
+    if lowered in plurals:
+        return _matchCase(s, plurals[lowered])
+    else:
+        if s.endswith('s') or s.endswith('S'):
+            return s[:-1] # Chop off 's'.
+        else:
+            return s # Don't know what to do.
 
 def nItems(n, item, between=None):
     """Works like this:

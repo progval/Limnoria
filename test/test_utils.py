@@ -36,6 +36,25 @@ import utils
 
 
 class UtilsTest(unittest.TestCase):
+    def testPluralize(self):
+        f = utils.pluralize
+        self.assertEqual('bike', f(1, 'bike'))
+        self.assertEqual('bikes', f(2, 'bike'))
+        self.assertEqual('BIKE', f(1, 'BIKE'))
+        self.assertEqual('BIKES', f(2, 'BIKE'))
+        self.assertEqual('match', f(1, 'match'))
+        self.assertEqual('matches', f(2, 'match'))
+        self.assertEqual('Patch', f(1, 'Patch'))
+        self.assertEqual('Patches', f(2, 'Patch'))
+
+    def testDepluralize(self):
+        f = utils.depluralize
+        self.assertEqual('bike', f('bikes'))
+        self.assertEqual('Bike', f('Bikes'))
+        self.assertEqual('BIKE', f('BIKES'))
+        self.assertEqual('match', f('matches'))
+        self.assertEqual('Match', f('Matches'))
+        
     def testTimeElapsed(self):
         self.assertRaises(ValueError, utils.timeElapsed, 0, 0, seconds=False)
         then = 0
