@@ -285,8 +285,10 @@ if __name__ == '__main__':
     if not os.path.exists(conf.logDir):
         os.mkdir(conf.logDir)
 
+    debug._close()
     for filename in os.listdir(conf.logDir):
         os.remove(os.path.join(conf.logDir, filename))
+    debug._open()
 
     world.testing = True
     if len(sys.argv) > 1:
