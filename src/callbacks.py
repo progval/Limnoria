@@ -427,7 +427,10 @@ class RichReplyMethods(object):
 
     def errorNoUser(self, s='', name='that user', **kwargs):
         v = conf.supybot.replies.noUser.get(self.msg.args[0])()
-        v = v % name
+        try:
+            v = v % name
+        except TypeError:
+            log.warning('supybot.replies.noUser should have one "%s" in it.')
         self.error(self.__makeReply(v, s), **kwargs)
 
     def errorRequiresPrivacy(self, s='', **kwargs):
