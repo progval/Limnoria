@@ -262,6 +262,7 @@ def perlReToReplacer(s):
     else:
         return lambda s: r.sub(replace, s, 1)
 
+# XXX Should we find a way to allow $1, $2, etc.?
 _perlVarSubstituteRe = re.compile(r'\$\{([^}]+)\}|\$([a-zA-Z][a-zA-Z0-9]*)')
 def perlVariableSubstitute(vars, text):
     def replacer(m):
