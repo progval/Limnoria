@@ -36,6 +36,7 @@ import linecache
 import supybot.log as log
 import supybot.conf as conf
 import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 class Deprecated(ImportError):
     pass
@@ -50,16 +51,6 @@ def loadPluginModule(name, ignoreDeprecation=False):
         except EnvironmentError: # OSError, IOError superclass.
             log.warning('Invalid plugin directory: %s; removing.', dir)
             conf.supybot.directories.plugins().remove(dir)
-    loweredFiles = map(str.lower, files)
-    try:
-        index = loweredFiles.index(name.lower()+'.py')
-        name = os.path.splitext(files[index])[0]
-        if name in sys.modules:
-            m = sys.modules[name]
-            if not hasattr(m, 'Class'):
-                raise ImportError, 'Module is not a plugin.'
-    except ValueError: # We'd rather raise the ImportError, so we'll let go...
-        pass
     moduleInfo = imp.find_module(name, pluginDirs)
     try:
         module = imp.load_module(name, *moduleInfo)
