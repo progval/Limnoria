@@ -76,7 +76,7 @@ if sqlite is not None:
             self.assertNotError('poll close 1')
             self.assertError('poll close blah')
             self.assertError('poll close 2')
-            self.assertRegexp('poll 2', 'closed')
+            self.assertRegexp('poll 1', 'closed')
 
         def testAdd(self):
             self.assertNotError('poll open Foo?')
