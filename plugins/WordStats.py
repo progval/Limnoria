@@ -322,7 +322,7 @@ class WordStats(callbacks.Privmsg):
     wordstats = wrap(wordstats,
                      ['channeldb',
                       optional('otherUser'),
-                      additional('somethingWithoutSpaces')])
+                      additional('lowered')])
 
 
 Class = WordStats
