@@ -33,7 +33,8 @@ import supybot.conf as conf
 import supybot.plugin as plugin
 
 class OwnerTestCase(PluginTestCase):
-    plugins = ('Owner', 'Config', 'Misc')  # Defaults, but hey, I'm cool.
+    # Defaults, but hey, I'm cool.
+    plugins = ('Owner', 'Config', 'Misc', 'Admin')
     def testHelpLog(self):
         self.assertHelp('help log')
 
@@ -81,17 +82,17 @@ class OwnerTestCase(PluginTestCase):
         self.assertNotError('enable foo')
 
     def testRename(self):
-        self.assertError('rename admin ignore IGNORE')
-        self.assertError('rename admin ignore ig-nore')
-        self.assertNotError('rename admin removecapability rmcap')
-        self.assertNotRegexp('list admin', 'removecapability')
-        self.assertRegexp('list admin', 'rmcap')
-        self.assertNotError('reload admin')
-        self.assertNotRegexp('list admin', 'removecapability')
-        self.assertRegexp('list admin', 'rmcap')
-        self.assertNotError('unrename admin')
-        self.assertRegexp('list admin', 'removecapability')
-        self.assertNotRegexp('list admin', 'rmcap')
+        self.assertError('rename Admin ignore IGNORE')
+        self.assertError('rename Admin ignore ig-nore')
+        self.assertNotError('rename Admin removecapability rmcap')
+        self.assertNotRegexp('list Admin', 'removecapability')
+        self.assertRegexp('list Admin', 'rmcap')
+        self.assertNotError('reload Admin')
+        self.assertNotRegexp('list Admin', 'removecapability')
+        self.assertRegexp('list Admin', 'rmcap')
+        self.assertNotError('unrename Admin')
+        self.assertRegexp('list Admin', 'removecapability')
+        self.assertNotRegexp('list Admin', 'rmcap')
 
     def testDefaultPluginErrorsWhenCommandNotInPlugin(self):
         self.assertError('defaultplugin foobar owner')
