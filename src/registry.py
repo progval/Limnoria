@@ -136,7 +136,8 @@ def join(names):
 
 class Group(object):
     """A group; it doesn't hold a value unless handled by a subclass."""
-    def __init__(self,help='', supplyDefault=False, orderAlphabetically=False):
+    def __init__(self, help='',
+                 supplyDefault=False, orderAlphabetically=False):
         self.help = help
         self._name = 'unset'
         self._added = []
