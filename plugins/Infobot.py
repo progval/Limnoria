@@ -246,6 +246,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
 
     _forceRe = re.compile(r'^no[,: -]+', re.I)
     def doPrivmsg(self, irc, msg):
+        if ircmsgs.isAction(msg):
+            return
         maybeAddressed = callbacks.addressed(irc.nick, msg,
                                              whenAddressedByNick=True)
         if maybeAddressed:
@@ -258,6 +260,20 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         if maybeForced != payload:
             self.force = True
             payload = maybeForced
+        # Let's make sure we dump out of Infobot if the privmsg is an actual
+        # command otherwise we could get multiple responses.
+        if self.addressed:
+            try:
+                tokens = callbacks.tokenize(payload)
+                getCallback = callbacks.findCallbackForCommand
+                commands = filter(None, map(lambda c, i=irc: getCallback(i, c),
+                                            tokens))
+                if commands:
+                    return
+                else:
+                    payload += '?'
+            except SyntaxError:
+                pass
         if payload.endswith(irc.nick):
             self.addressed = True
             payload = payload[:-len(irc.nick)]
@@ -358,7 +374,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                   'to the database since this plugin was loaded.' %
                   (utils.nItems('request', self.db.getChangeCount()),
                    utils.nItems('change', self.db.getResponseCount())))
-
 
 
 Class = Infobot
