@@ -975,7 +975,12 @@ class Irc(IrcCommandDispatcher):
         return id(self)
 
     def __eq__(self, other):
-        return id(self) == id(other)
+        # We check isinstance here, so that if some proxy object (like those
+        # defined in callbacks.py) has overridden __eq__, it takes precedence.
+        if isinstance(other, self.__class__):
+            return id(self) == id(other)
+        else:
+            return other == self
 
     def __ne__(self, other):
         return not (self == other)

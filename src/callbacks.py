@@ -519,7 +519,59 @@ class RichReplyMethods(object):
 
 _repr = repr
 
-class IrcObjectProxy(RichReplyMethods):
+class IrcReplyProxy(RichReplyMethods):
+    """This class is a thin wrapper around an irclib.Irc object that gives it
+    the reply() and error() methods (as well as everything in RichReplyMethods,
+    based on those two)."""
+    def __init__(self, irc, msg):
+        self.irc = irc
+        self.msg = msg
+
+    def getRealIrc(self):
+        if isinstance(self.irc, irclib.Irc):
+            return self.irc
+        else:
+            return self.irc.getRealIrc()
+
+    # This should make us be considered equal to our irclib.Irc object for
+    # hashing; an important thing (no more "too many open files" exceptions :))
+    def __hash__(self):
+        return hash(self.getRealIrc())
+    def __eq__(self, other):
+        return self.getRealIrc() == other
+    __req__ = __eq__
+    def __ne__(self, other):
+        return not (self == other)
+    __rne__ = __ne__
+    
+    def error(self, s, msg=None, **kwargs):
+        if 'Raise' in kwargs and kwargs['Raise']:
+            if s:
+                raise Error, s
+            else:
+                raise ArgumentError
+        if msg is None:
+            msg = self.msg
+        m = error(msg, s, **kwargs)
+        self.irc.queueMsg(m)
+        return m
+
+    def reply(self, s, msg=None, **kwargs):
+        if msg is None:
+            msg = self.msg
+        assert not isinstance(s, ircmsgs.IrcMsg), \
+               'Old code alert: there is no longer a "msg" argument to reply.'
+        kwargs.pop('noLengthCheck', None)
+        m = reply(msg, s, **kwargs)
+        self.irc.queueMsg(m)
+        return m
+
+    def __getattr__(self, attr):
+        return getattr(self.irc, attr)
+
+SimpleProxy = IrcReplyProxy # Backwards-compatibility
+
+class IrcObjectProxy(IrcReplyProxy):
     "A proxy object to allow proper nested of commands (even threaded ones)."
     _mores = ircutils.IrcDict()
     def __init__(self, irc, msg, args, nested=0):
@@ -1203,45 +1255,6 @@ class Plugin(PluginMixin, Commands):
     pass
 Privmsg = Plugin # Backwards compatibility.
 
-
-class SimpleProxy(RichReplyMethods):
-    """This class is a thin wrapper around an irclib.Irc object that gives it
-    the reply() and error() methods (as well as everything in RichReplyMethods,
-    based on those two)."""
-    def __init__(self, irc, msg):
-        self.irc = irc
-        self.msg = msg
-
-    def getRealIrc(self):
-        if isinstance(self.irc, irclib.Irc):
-            return self.irc
-        else:
-            return self.irc.getRealIrc()
-        
-    def error(self, s, msg=None, **kwargs):
-        if 'Raise' in kwargs and kwargs['Raise']:
-            if s:
-                raise Error, s
-            else:
-                raise ArgumentError
-        if msg is None:
-            msg = self.msg
-        m = error(msg, s, **kwargs)
-        self.irc.queueMsg(m)
-        return m
-
-    def reply(self, s, msg=None, **kwargs):
-        if msg is None:
-            msg = self.msg
-        assert not isinstance(s, ircmsgs.IrcMsg), \
-               'Old code alert: there is no longer a "msg" argument to reply.'
-        kwargs.pop('noLengthCheck', None)
-        m = reply(msg, s, **kwargs)
-        self.irc.queueMsg(m)
-        return m
-
-    def __getattr__(self, attr):
-        return getattr(self.irc, attr)
 
 class PluginRegexp(Plugin):
     """Same as Plugin, except allows the user to also include regexp-based

@@ -613,6 +613,36 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.reply.withNoticeWhenPrivate.setValue(original)
 
+class ProxyTestCase(SupyTestCase):
+    def testHashing(self):
+        msg = ircmsgs.ping('0')
+        irc = irclib.Irc('test')
+        proxy = callbacks.SimpleProxy(irc, msg)
+        # First one way...
+        self.failIf(proxy != irc)
+        self.failUnless(proxy == irc)
+        self.assertEqual(hash(proxy), hash(irc))
+        # Then the other!
+        self.failIf(irc != proxy)
+        self.failUnless(irc == proxy)
+        self.assertEqual(hash(irc), hash(proxy))
+
+        # And now dictionaries...
+        d = {}
+        d[irc] = 'foo'
+        self.failUnless(len(d) == 1)
+        self.failUnless(d[irc] == 'foo')
+        self.failUnless(d[proxy] == 'foo')
+        d[proxy] = 'bar'
+        self.failUnless(len(d) == 1)
+        self.failUnless(d[irc] == 'bar')
+        self.failUnless(d[proxy] == 'bar')
+        d[irc] = 'foo'
+        self.failUnless(len(d) == 1)
+        self.failUnless(d[irc] == 'foo')
+        self.failUnless(d[proxy] == 'foo')
+        
+                         
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
