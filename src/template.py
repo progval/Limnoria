@@ -67,7 +67,6 @@ for (name, value) in configVariables.iteritems():
     setattr(conf, name, value)
 
 
-# BWAHAHA!
 def main():
     import debug
     import world
