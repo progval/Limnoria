@@ -124,7 +124,8 @@ class Http(callbacks.Privmsg):
 
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
-    _gkrecord = re.compile(r'"#FFFF00">[^"]+">(\d+)[^"]+">(\d+)[^"]+">(\d+)')
+    _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
+        '"#FFFF00">(\d+)')
     _gkteam = re.compile('Team:([^\s]+)')
     _gkseen = re.compile('seen on GK:  ([^\n]+)')
     def gkstats(self, irc, msg, args):
