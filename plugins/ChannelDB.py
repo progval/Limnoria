@@ -467,8 +467,8 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
         try:
             id = ircdb.users.getUserId(user)
         except KeyError: # Maybe it was a nick.  We'll look up by hostmask.
-            hostmask = irc.state.nickToHostmask(user)
             try:
+                hostmask = irc.state.nickToHostmask(user)
                 id = ircdb.users.getUserId(hostmask)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
