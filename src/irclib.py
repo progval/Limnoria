@@ -151,6 +151,17 @@ class Channel(object):
         self.halfops.discard(user)
         self.voices.discard(user)
 
+    def __getstate__(self):
+        return (self.topic, self.users, self.ops, self.halfops, self.voices)
+
+    def __setstate__(self, (topic, users, ops, halfops, voices)):
+        self.topic = topic
+        self.users = users
+        self.ops = ops
+        self.halfops = halfops
+        self.voices = voices
+
+
 class IrcState(object):
     """Maintains state of the Irc connection.  Should also become smarter.
     """

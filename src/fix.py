@@ -140,6 +140,12 @@ class set(object):
         except KeyError:
             pass
 
+    def __getstate__(self):
+        return self.d
+
+    def __setstate__(self, d):
+        self.d = d
+
 
 class queue(dict):
     """An FIFO Queue, O(1) for all operations."""
