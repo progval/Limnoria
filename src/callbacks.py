@@ -85,7 +85,7 @@ def reply(msg, s):
     else:
         m = ircmsgs.privmsg(msg.nick, s)
     if len(m) > 450:
-        m = reply(msg, 'My reponse would\'ve been too long.')
+        m = reply(msg, 'My response would\'ve been too long.')
     return m
         
 class RateLimiter:
