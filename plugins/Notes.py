@@ -33,6 +33,7 @@ from baseplugin import *
 
 import time
 import os.path
+import string
 
 import sqlite
 
@@ -96,6 +97,13 @@ class Notes(callbacks.Privmsg):
         else:
             raise KeyError
 
+    def isNote(self, noteid):
+        self.cursor.execute('SELECT * FROM notes WHERE id=%s', noteid)
+        if self.cursor.rowcount == 0:
+            return 0
+        else:
+            return 1
+    
     def makePrivate(self, msg):
         args = list(msg.args)
         args[0] = msg.nick
@@ -134,10 +142,13 @@ class Notes(callbacks.Privmsg):
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
-    def getnote(self, irc, msg, args):
+    def note(self, irc, msg, args):
         "retrieves a single note by unique note id"
         #  BLOODY HELL, THIS ACTUALLY WORKS!!! 
         noteid = privmsgs.getArgs(args)
+        if not self.isNote(noteid):
+            irc.error(msg, 'Not a valid note id')
+            return
         sender = ircdb.users.getUserName(msg.prefix)
         senderID = self.getUserID(sender)
         self.cursor.execute("""SELECT note, to_id, from_id, added_at, public 
@@ -159,7 +170,7 @@ class Notes(callbacks.Privmsg):
                                    WHERE id=%s""", (1, noteid[0]))
             self.db.commit()
         else:
-            irc.error(msg, 'Error getting note')
+            irc.error(msg, 'You are not the recipient of note %s' % noteid)
 
     def notes(self, irc, msg, args):
         "takes no arguments, retrieves all unread notes for the requesting user"
@@ -169,12 +180,21 @@ class Notes(callbacks.Privmsg):
                                WHERE to_id=%s
                                AND read=0""", senderID)
         notes = self.cursor.fetchall()
+        self.cursor.execute("""SELECT count(*) FROM notes 
+                               WHERE to_id=%s
+                               AND read=0""", senderID)
+        count = self.cursor.fetchone()[0]
         L = []
         for (id, from_id) in notes:
             sender = self.getUserName(from_id)
-            L.append(r'#%d from %s;;' % (id, sender))
+            L.append(r'#%d from %s;; ' % (id, sender))
+        if count > 5:
+            L = string.join(L[:5], '')
+            reply = "you have %s unread notes, 5 shown: %s" % (count, L)
+        else:
+            reply = "you have %s unread notes: %s" % (count, L)
         debug.printf(L)
-        irc.reply(msg, "lookup was successful")
+        irc.reply(msg, reply)
 
 #    def deletenote(self, irc, msg, args):
 #        "removes single note using note id"
@@ -203,5 +223,8 @@ class Notes(callbacks.Privmsg):
 #        for (id, from_id) in notes:
 #            sender = self.getUserName(from_id)
 #            L.append(r'#%d from %s;;' % (id, sender))
+    
+    def die(self):
+        self.db.close()
 
 Class = Notes
