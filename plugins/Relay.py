@@ -526,7 +526,9 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
             channel = msg.args[0]
             if channel not in self.channels:
                 return
-            if ircutils.isCtcp(msg) and not 'AWAY' in msg.args[1]:
+            if ircutils.isCtcp(msg) and \
+               not 'AWAY' in msg.args[1] and \
+               not 'ACTION' in msg.args[1]:
                 return
             abbreviation = self.abbreviations[irc]
             s = self._formatPrivmsg(msg.nick, abbreviation, msg)
