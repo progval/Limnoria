@@ -75,7 +75,8 @@ conf.registerChannelValue(conf.supybot.plugins.Amazon, 'bold',
     registry.Boolean(True, """Determines whether the results are bolded."""))
 conf.registerGlobalValue(conf.supybot.plugins.Amazon, 'licenseKey',
     LicenseKey('', """Sets the license key for using Amazon Web Services.
-    Must be set before any other commands in the plugin are used."""))
+    Must be set before any other commands in the plugin are used.""",
+    private=True))
 
 class Amazon(callbacks.Privmsg):
     threaded = True

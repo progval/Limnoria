@@ -152,7 +152,7 @@ conf.registerChannelValue(conf.supybot.plugins.Google, 'maximumResults',
 conf.registerGlobalValue(conf.supybot.plugins.Google, 'licenseKey',
     LicenseKey('', """Sets the Google license key for using Google's Web
     Services API.  This is necessary before you can do any searching with this
-    module."""))
+    module.""", private=True))
 
 class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
