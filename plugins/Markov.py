@@ -28,7 +28,7 @@
 ###
 
 """
-Silently listens to a channel, building an SQL database of Markov Chains for
+Silently listens to a channel, building a database of Markov Chains for
 later hijinks.  To read more about Markov Chains, check out
 <http://www.cs.bell-labs.com/cm/cs/pearls/sec153.html>.  When the database is
 large enough, you can have it make fun little random messages from it.
@@ -39,17 +39,45 @@ __revision__ = "$Id$"
 import supybot.plugins as plugins
 
 import sets
+import time
 import Queue
 import anydbm
 import random
 import os.path
 import threading
 
+import supybot.conf as conf
 import supybot.world as world
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.schedule as schedule
 import supybot.callbacks as callbacks
+
+class Probability(registry.Float):
+    """Value must be a floating-point number between 0 and 1."""
+    def setValue(self, v):
+        if v < 0 or v > 1:
+            self.error()
+        else:
+            registry.Float.setValue(self, float(v))
+
+conf.registerPlugin('Markov')
+conf.registerGroup(conf.supybot.plugins.Markov, 'randomSpeaking')
+conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,
+    'probability', Probability(0, """Determines the probability that will be
+    checked against to determine whether the bot should randomly say
+    something.  If 0, the bot will never say anything on it's own.  If 1, the
+    bot will speak every time we make a check."""))
+conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,
+    'maxDelay', registry.PositiveInteger(10, """Determines the upper bound for
+    how long the bot will wait before randomly speaking.  The delay is a
+    randomly generated number of seconds below the value of this config
+    variable."""))
+conf.registerChannelValue(conf.supybot.plugins.Markov.randomSpeaking,
+    'throttleTime', registry.PositiveInteger(300, """Determines the minimum
+    number of seconds between the bot randomly speaking."""))
 
 class MarkovDBInterface(object):
     def close(self):
@@ -249,10 +277,13 @@ class MarkovWorkQueue(threading.Thread):
 class Markov(callbacks.Privmsg):
     def __init__(self):
         self.q = MarkovWorkQueue()
-        callbacks.Privmsg.__init__(self)
+        self.__parent = super(Markov, self)
+        self.__parent.__init__()
+        self.lastSpoke = time.time()
 
     def die(self):
         self.q.die()
+        self.__parent.die()
 
     def tokenize(self, m):
         if ircmsgs.isAction(m):
@@ -264,7 +295,20 @@ class Markov(callbacks.Privmsg):
 
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
-        if ircutils.isChannel(channel):
+        if irc.isChannel(channel):
+            canSpeak = False
+            now = time.time()
+            throttle = self.registryValue('randomSpeaking.throttleTime',
+                                          channel)
+            prob = self.registryValue('randomSpeaking.probability', channel)
+            delay = self.registryValue('randomSpeaking.maxDelay', channel)
+            irc = callbacks.SimpleProxy(irc, msg)
+            if now > self.lastSpoke + throttle:
+                canSpeak = True
+            if canSpeak and random.random() < prob:
+                f = self._markov(channel, irc, private=True, to=channel)
+                schedule.addEvent(lambda: self.q.enqueue(f), now + delay)
+                self.lastSpoke = now + delay
             words = self.tokenize(msg)
             words.insert(0, '\n')
             words.insert(0, '\n')
@@ -277,17 +321,8 @@ class Markov(callbacks.Privmsg):
                     db.addPair(channel, first, second, follower)
             self.q.enqueue(doPrivmsg)
 
-    def markov(self, irc, msg, args):
-        """[<channel>] [word1 word2]
-
-        Returns a randomly-generated Markov Chain generated sentence from the
-        data kept on <channel> (which is only necessary if not sent in the
-        channel itself).  If word1 and word2 are specified, they will be used
-        to start the Markov chain.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        (word1, word2) = privmsgs.getArgs(args, required=0, optional=2)
-        def markov(db):
+    def _markov(self, channel, irc, word1=None, word2=None, **kwargs):
+        def f(db):
             if word1 and word2:
                 givenArgs = True
                 words = [word1, word2]
@@ -314,58 +349,71 @@ class Markov(callbacks.Privmsg):
                     return
                 words.append(follower)
             if givenArgs:
-                irc.reply(' '.join(words[:-1]))
+                irc.reply(' '.join(words[:-1]), **kwargs)
             else:
-                irc.reply(' '.join(resp))
-        self.q.enqueue(markov)
+                irc.reply(' '.join(resp), **kwargs)
+        return f
 
-    def firsts(self, irc, msg, args):
+    def markov(self, irc, msg, args, channel, word1, word2):
+        """[<channel>] [word1 word2]
+
+        Returns a randomly-generated Markov Chain generated sentence from the
+        data kept on <channel> (which is only necessary if not sent in the
+        channel itself).  If word1 and word2 are specified, they will be used
+        to start the Markov chain.
+        """
+        f = self._markov(channel, irc, word1, word2)
+        self.q.enqueue(f)
+    markov = wrap(markov, ['channel', optional('something'),
+                           additional('something')])
+
+    def firsts(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the number of Markov's first links in the database for
         <channel>.
         """
-        channel = privmsgs.getChannel(msg, args)
         def firsts(db):
             s = 'There are %s firsts in my Markov database for %s.'
             irc.reply(s % (db.firsts(channel), channel))
         self.q.enqueue(firsts)
+    firsts = wrap(firsts, ['channel'])
 
-    def lasts(self, irc, msg, args):
+    def lasts(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the number of Markov's last links in the database for
         <channel>.
         """
-        channel = privmsgs.getChannel(msg, args)
         def lasts(db):
             s = 'There are %s lasts in my Markov database for %s.'
             irc.reply(s % (db.lasts(channel), channel))
         self.q.enqueue(lasts)
+    lasts = wrap(lasts, ['channel'])
 
-    def pairs(self, irc, msg, args):
+    def pairs(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the number of Markov's chain links in the database for
         <channel>.
         """
-        channel = privmsgs.getChannel(msg, args)
         def pairs(db):
             s = 'There are %s pairs in my Markov database for %s.'
             irc.reply(s % (db.pairs(channel), channel))
         self.q.enqueue(pairs)
+    pairs = wrap(pairs, ['channel'])
 
-    def follows(self, irc, msg, args):
+    def follows(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the number of Markov's third links in the database for
         <channel>.
         """
-        channel = privmsgs.getChannel(msg, args)
         def follows(db):
             s = 'There are %s follows in my Markov database for %s.'
             irc.reply(s % (db.follows(channel), channel))
         self.q.enqueue(follows)
+    follows = wrap(follows, ['channel'])
 
 
 Class = Markov
