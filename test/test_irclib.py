@@ -102,10 +102,8 @@ class ChannelTestCase(unittest.TestCase):
     def testPickleCopy(self):
         c = irclib.Channel()
         for name in c.__slots__:
-            debug.printf('%s %s' % (name, getattr(c, name)))
         c1 = pickle.loads(pickle.dumps(c))
         for name in c1.__slots__:
-            debug.printf('%s %s' % (name, getattr(c1, name)))
         self.assertEqual(pickle.loads(pickle.dumps(c)), c)
 
     def testAddUser(self):
