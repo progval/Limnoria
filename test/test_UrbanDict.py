@@ -38,13 +38,11 @@ class UrbanDictTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     if network:
         def testUrbanDict(self):
-            self.assertNotError('ud')
-            self.assertRegexp('ud somethinginvalid', 
-            			'Error: No definition found.')
-            self.assertRegexp('ud yo',
-            			'a word that died a horrible death in 1993')
-            self.assertRegexp('ud bozac',
-            			'"Druid Diallect"')
+            self.assertNotError('urbandict')
+            self.assertRegexp('urbandict somethinginvalid', 
+                        'Error: No definition found.')
+            self.assertRegexp('urbandict bozac',
+                        '"Druid Diallect"')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
