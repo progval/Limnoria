@@ -410,16 +410,25 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
             irc.reply(msg, 'I have no stats for that user.')
             return
         values = cursor.fetchone()
-        s = '%s has sent %s messages; a total of %s characters, %s words, ' \
-            '%s smileys, and %s frowns; %s of those messages were ACTIONs.  ' \
-            '%s has joined %s times, parted %s times, kicked someone %s times'\
-            ' been kicked %s times, changed the topic %s times, ' \
-            'and changed the mode %s times.' % \
-            (name, values.msgs, values.chars, values.words,
-             values.smileys, values.frowns, values.actions,
-             name, values.joins, values.parts, values.kicks,
-             values.kicked, values.topics,
-             values.modes)
+        s = '%s has sent %s; a total of %s, %s, ' \
+            '%s, and %s; %s of those messages %s' \
+            '%s has joined %s, parted %s, kicked someone %s, '\
+            'been kicked %s, changed the topic %s, ' \
+            'and changed the mode %s.' % \
+            (name, utils.nItems(values.msgs, 'message'),
+             utils.nItems(values.chars, 'character'),
+             utils.nItems(values.words, 'word'),
+             utils.nItems(values.smileys, 'smiley'),
+             utils.nItems(values.frowns, 'frown'),
+             values.actions, values.actions == 1 and 'was an ACTION.  '
+                                                 or 'were ACTIONs.  ',
+             name,
+             utils.nItems(values.joins, 'time'),
+             utils.nItems(values.parts, 'time'),
+             utils.nItems(values.kicks, 'time'),
+             utils.nItems(values.kicked, 'time'),
+             utils.nItems(values.topics, 'time'),
+             utils.nItems(values.modes, 'time'))
         irc.reply(msg, s)
 
     def channelstats(self, irc, msg, args):
