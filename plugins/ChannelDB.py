@@ -260,11 +260,8 @@ class ChannelDB(plugins.ChannelDBHandler,
         except KeyError:
             return
         cursor.execute("""INSERT INTO user_stats VALUES (
-                          NULL, %s, %s, %s, %s, %s,
-                          %s, %s, 1, %s,
-                          0, 0, 0, 0, 0, 0, 0)""",
-                       id, int(time.time()), s,
-                       smileys, frowns, chars, words, int(isAction))
+                          NULL, %s, 0, 0, 0, 0, 0, 0, 0, 0,
+                          0, 0, 0, 0, 0, 0, 0)""", id)
         cursor.execute("""UPDATE user_stats SET
                           last_seen=%s, last_msg=%s, chars=chars+%s,
                           words=words+%s, msgs=msgs+1,
