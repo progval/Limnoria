@@ -78,6 +78,7 @@ class SupyIrcProtocol(LineReceiver):
 
     def connectionMade(self):
         self.irc.reset()
+        self.factory.resetDelay()
         self.irc.driver = self
 
     def die(self):
