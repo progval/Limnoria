@@ -1115,6 +1115,19 @@ class Privmsg(irclib.IrcCallback):
         assert self.isCommand(name), format('%s is not a command.', name)
         return getattr(self, name)
 
+    def listCommands(self):
+        commands = []
+        name = canonicalName(self.name())
+        for s in dir(self):
+            if self.isCommand(s) and \
+               (s != name or self._original) and \
+               s == canonicalName(s):
+                method = getattr(self, s)
+                if hasattr(method, '__doc__') and method.__doc__:
+                    commands.append(s)
+        commands.sort()
+        return commands
+    
     def callCommand(self, name, irc, msg, *L, **kwargs):
         checkCapabilities = kwargs.pop('checkCapabilities', True)
         if checkCapabilities:
@@ -1282,6 +1295,9 @@ class PrivmsgRegexp(Privmsg):
                     self.log.warning('Invalid regexp: %q (%s)',
                                      value.__doc__, e)
         utils.gen.sortBy(operator.itemgetter(1), self.res)
+
+    def isCommand(self):
+        return []
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:

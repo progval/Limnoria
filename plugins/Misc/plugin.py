@@ -125,28 +125,13 @@ class Misc(callbacks.Privmsg):
                 else:
                     irc.reply('There are no public plugins.')
         else:
-            if isinstance(cb, callbacks.PrivmsgRegexp) or \
-               not isinstance(cb, callbacks.Privmsg):
-                irc.error('That plugin exists, but it has no commands.  '
-                          'You may wish to check if it has any useful '
-                          'configuration variables with the command '
-                          '"config list supybot.plugins.%s".' % cb.name())
+            commands = cb.listCommands()
+            if commands:
+                commands.sort()
+                irc.reply(format('%L', commands))
             else:
-                name = callbacks.canonicalName(cb.name())
-                commands = []
-                for s in dir(cb):
-                    if cb.isCommand(s) and \
-                       (s != name or cb._original) and \
-                       s == callbacks.canonicalName(s):
-                        method = getattr(cb, s)
-                        if hasattr(method, '__doc__') and method.__doc__:
-                            commands.append(s)
-                if commands:
-                    commands.sort()
-                    irc.reply(format('%L', commands))
-                else:
-                    irc.error('That plugin exists, but it has no '
-                              'commands with help.')
+                irc.error('That plugin exists, but it has no '
+                          'commands with help.')
     list = wrap(list, [getopts({'private':''}), additional('plugin')])
 
     def apropos(self, irc, msg, args, s):
