@@ -160,6 +160,13 @@ class MiscCommands(callbacks.Privmsg):
                 result.append((file, str(stats.st_size)))
         irc.reply(msg, ', '.join(map(': '.join, result)))
 
+    def getprefixchar(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the prefix character(s) the bot is currently using.
+        """
+        irc.reply(msg, repr(conf.prefixChars))
+
 
 Class = MiscCommands
 
