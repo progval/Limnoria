@@ -414,7 +414,7 @@ class PositiveFloat(Float):
             super(PositiveFloat, self).setValue(v)
 
 class Probability(Float):
-    """Value must be a floating point number in the range (0, 1]."""
+    """Value must be a floating point number in the range [0, 1]."""
     def __init__(self, *args, **kwargs):
         self.__parent = super(Probability, self)
         self.__parent.__init__(*args, **kwargs)
