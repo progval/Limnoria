@@ -115,8 +115,8 @@ class IrcMsg(object):
         self._user = user
         self._host = host
         self._command = command
-        if self.command == 'NICK' and type(args) != tuple:
-            args[0] = ircutils.nick(args[0])
+##         if self.command == 'NICK' and type(args) != tuple:
+##             args[0] = ircutils.nick(args[0])
         self._args = tuple(args)
             
 
