@@ -454,8 +454,8 @@ class FunCommands(callbacks.Privmsg):
                         return
         try:
             s = eval(funcname + '.__doc__')
-            s = s.replace('\n\n', '.  ')
-            s = s.replace('\n', ' ')
+            s = s.replace('\n\n', '. ')
+            s = ' '.join(s.split())
         except NameError:
             s = 'No such function exists.'
         except AttributeError:
