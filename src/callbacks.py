@@ -706,7 +706,7 @@ class IrcObjectProxy(RichReplyMethods):
                     payload = addressed(self.irc.nick, self.msg)
                     for (r, name) in cb.addressedRes:
                         if r.search(payload):
-                            log.debug('Skipping invalidCommand: %s.%s',
+                            log.debug('Skipping tokenizedCommands: %s.%s',
                                       cb.name(), name)
                             return
             # Now we call tokenizedCommands.
@@ -787,7 +787,6 @@ class IrcObjectProxy(RichReplyMethods):
         # action=True implies noLengthCheck=True and prefixName=False
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         target = self.private and self.to or self.msg.args[0]
-        s = ircutils.safeArgument(s)
         if self.finalEvaled:
             try:
                 if not isinstance(self.irc, irclib.Irc):
@@ -809,6 +808,7 @@ class IrcObjectProxy(RichReplyMethods):
                     self.irc.queueMsg(m)
                     return m
                 else:
+                    s = ircutils.safeArgument(s)
                     allowedLength = conf.get(conf.supybot.reply.mores.length,
                                              target)
                     if not allowedLength: # 0 indicates this.
