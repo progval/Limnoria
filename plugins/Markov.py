@@ -199,14 +199,16 @@ class Markov(callbacks.Privmsg):
     def die(self):
         self.q.die()
 
-    def tokenize(self, s):
-        # XXX: Should this be smarter?
-        return s.split()
+    def tokenize(self, m):
+        if ircmsgs.isAction(m):
+            return ircmsgs.unAction(m).split()
+        else:
+            return m.args[1].split()
 
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
         if ircutils.isChannel(channel):
-            words = self.tokenize(msg.args[1])
+            words = self.tokenize(msg)
             words.insert(0, '\n')
             words.insert(0, '\n')
             words.append('\n')
