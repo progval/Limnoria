@@ -35,23 +35,27 @@ Add the module docstring here.  This will be used by the setup.py script.
 
 from baseplugin import *
 
+import re
 import os.path
 
 import sqlite
 
-import privmsgs
+import conf
+import debug
 import callbacks
+
+dbfilename = os.path.join(conf.dataDir, 'Infobot.db')
 
 def makeDb(filename):
     if os.path.exists(filename):
         return sqlite.connect(filename)
     db = sqlite.connect(filename)
     cursor = db.cursor()
-    cursor.execute("""CREATE TABLE is (
+    cursor.execute("""CREATE TABLE is_factoids (
                       key TEXT,
                       value TEXT
                       )""")
-    cursor.execute("""CREATE TABLE are (
+    cursor.execute("""CREATE TABLE are_factoids (
                       key TEXT,
                       value TEXT
                       )""")
@@ -64,14 +68,14 @@ def makeDb(filename):
     cursor.execute("""CREATE TABLE confirms (saying TEXT)""")
     for s in ('Gotcha', 'Ok', '10-4', 'I hear ya', 'Got it'):
         cursor.execute("""INSERT INTO confirms VALUES (%s)""", s)
-    cursor.execute("""CREATE INDEX is_key ON is (key)""")
-    cursor.execute("""CREATE INDEX are_key ON are (key)""")
-    db.commmit()
+    cursor.execute("""CREATE INDEX is_key ON is_factoids (key)""")
+    cursor.execute("""CREATE INDEX are_key ON are_factoids (key)""")
+    db.commit()
     return db
 
 class Infobot(callbacks.PrivmsgRegexp):
     def __init__(self):
-        self.db = makeDb(os.path.join(conf.dataDir, 'Infobot.db'))
+        self.db = makeDb(dbfilename)
         self.cursor = db.cursor()
 
     def getRandomSaying(self, table):
@@ -79,7 +83,56 @@ class Infobot(callbacks.PrivmsgRegexp):
         cursor.execute(sql)
         return cursor.fetchone()[0]
 
+    def forget(self, irc, msg, match):
+        r"^forget\s+(.+?)\s+about\s+(.+?)[?.! ]*$"
+        pass
+
+    def tell(self, irc, msg, match):
+        r"^tell\s+(.+?)\s+about\s+(.+?)[?.! ]*$"
+        pass
+
+    def factoid(self, irc, msg, match):
+        r"^(no[ :,-]+)?(.+?)\s+(was|is|am|were|are)\s+(also\s+)?(.+)$"
+        pass
+
+    def unknown(self, irc, msg, match):
+        r"^(.+?)[?.! ]*$"
+        pass
+
+    def info(self, irc, msg, match):
+        r"^info$"
+        pass
+
+    
 
 Class = Infobot
         
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) < 2 and sys.argv[1] not in ('is', 'are'):
+        print 'Usage: %s <is|are> <factpack> [<factpack> ...]' % sys.argv[0]
+        sys.exit(-1)
+    r = re.compile(r'\s+=>\s+')
+    db = makeDb(dbfilename)
+    cursor = db.cursor()
+    if sys.argv[1] == 'is':
+        table = 'is_factoids'
+    else:
+        table = 'are_factoids'
+    sql = 'INSERT INTO %s VALUES (%%s, %%s)' % table
+    for filename in sys.argv[2:]:
+        fd = file(filename)
+        for line in fd:
+            line = line.strip()
+            if not line or line[0] in ('*', '#'):
+                continue
+            else:
+                try:
+                    (key, value) = r.split(line, 1)
+                    cursor.execute(sql, key, value)
+                except Exception, e:
+                    print 'Invalid line (%s): %r' %(debug.exnToString(e),line)
+    db.commit()
+
+                    
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
