@@ -35,6 +35,7 @@ Main program file for running the bot.
 
 from fix import *
 
+import os
 import sys
 import email
 
@@ -76,6 +77,7 @@ class ConfigAfter376(irclib.IrcCallback):
         self.msgs = msgs
 
     def do376(self, irc, msg):
+        #debug.printf('Firing ConfigAfter376 messages')
         for msg in self.msgs:
             irc.queueMsg(msg)
 
@@ -109,21 +111,20 @@ def processConfigFile(filename):
         user = d['user'] or nick
         ident = d['ident'] or nick
         irc = irclib.Irc(nick, user, ident)
-        for cls in privmsgs.standardPrivmsgModules:
-            irc.addCallback(cls())
+        for Class in privmsgs.standardPrivmsgModules:
+            irc.addCallback(Class())
         ircdb.startup = True
-        lines = m.get_payload()
-        if lines.find('\n\n') != -1:
-            (startup, after376) = lines.split('\n\n')
-        else:
-            (startup, after376) = (lines, '')
-        for line in filter(None, startup.splitlines()):
+        lines = m.get_payload().splitlines()
+        (startup, after376) = tuple(itersplit(lines, lambda s: not s))
+        debug.printf('startup: %r' % startup)
+        debug.printf('after376: %r' % after376)
+        for line in filter(None, startup):
             if not line.startswith('#'):
                 irc.feedMsg(ircmsgs.privmsg(irc.nick, line))
         irc.reset()
         ircdb.startup = False
-        msgs = [ircmsgs.privmsg(irc.nick, s) for s in after376.splitlines()]
-        irc.addCallback(ConfigAfter376(filter(None, msgs)))
+        msgs = [ircmsgs.privmsg(irc.nick, line) for line in after376]
+        irc.addCallback(ConfigAfter376(msgs))
         driver = asyncoreDrivers.AsyncoreDriver(server)
         driver.irc = irc
     except IOError, e:
