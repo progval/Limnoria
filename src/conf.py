@@ -35,307 +35,308 @@ import fix
 
 import os
 import sys
+import string
 
-import sets
-import os.path
-import logging
+import utils
+import registry
+import ircutils
 
-###
-# Directions:
-#
-# Boolean values should be either True or False.
-###
-
-###
-# Directories.
-###
-logDir = 'logs'
-confDir = 'conf'
-dataDir = 'data'
 installDir = os.path.dirname(os.path.dirname(sys.modules[__name__].__file__))
-pluginDirs = [os.path.join(installDir, s) for s in ('src', 'plugins')]
-
-###
-# Files.
-###
-userfile = 'users.conf'
-channelfile = 'channels.conf'
-
-###
-# minimumLogPriority: The minimum priority that will be logged.  Defaults to
-#                     logging.INFO, which is probably a good value.  Can also
-#                     be usefully set to logging.{DEBUG,WARNING,ERROR,CRITICAL}
-###
-minimumLogPriority = logging.INFO
-
-###
-# stdoutLogging: Determines whether or not the bot logs to stdout.
-###
-stdoutLogging = True
-
-###
-# colorizedStdoutLogging: Determines whether or not the bot logs colored logs
-#                         to stdout.
-###
-colorizedStdoutLogging = True
-
-###
-# logTimestampFormat: A format string defining how timestamps should be.  Check
-#                     the Python library reference for the "time" module to see
-#                     what the various format specifiers mean.
-###
-logTimestampFormat = '[%d-%b-%Y %H:%M:%S]'
-
-###
-# humanTimestampFormat: A format string defining how timestamps should be
-#                       formatted for human consumption.  Check the Python
-#                       library reference for the "time" module to see what the
-#                       various format specifiers mean.
-###
-humanTimestampFormat = '%I:%M %p, %B %d, %Y'
-
-###
-# externalIP: A string that is the external IP of the bot.  If this is None,
-#             the bot will attempt to find out its IP dynamically (though
-#             sometimes this doesn't work.)
-###
-externalIP = None
-
-###
-# throttleTime: A floating point number of seconds to throttle queued messages.
-#               (i.e., messages will not be sent faster than once per
-#                throttleTime units.)
-###
-throttleTime = 1.0
-
-###
-# snarfThrottle: A floating point number of seconds to throttle snarfed URLs,
-#                in order to prevent loops between two bots.
-###
-snarfThrottle = 10.0
+_srcDir = os.path.join(installDir, 'src')
+_pluginsDir = os.path.join(installDir, 'plugins')
 
 ###
 # allowEval: True if the owner (and only the owner) should be able to eval
-#            arbitrary Python code.
+#            arbitrary Python code.  This is specifically *not* a registry
+#            variable because it shouldn't be modifiable in the bot.
 ###
 allowEval = False
 
-###
-# replyWhenNotCommand: True if you want the bot reply when someone apparently
-#                      addresses him but there is no command.  Otherwise he'll
-#                      just remain silent.
-###
-replyWhenNotCommand = True
+
+supybot = registry.Group()
+supybot.setName('supybot')
+supybot.registerGroup('plugins') # This will be used by plugins, but not here.
+
+class ValidNick(registry.String):
+    def set(self, s):
+        original = getattr(self, 'value', self.default)
+        registry.String.set(self, s)
+        if not ircutils.isNick(self.value):
+            self.value = original
+            raise registry.InvalidRegistryValue, 'Value must be a valid nick.'
+
+supybot.register('nick', ValidNick('supybot',
+"""Determines the bot's nick."""))
+
+supybot.register('ident', ValidNick('supybot',
+"""Determines the bot's ident."""))
+
+supybot.register('user', registry.String('supybot', """Determines the user
+the bot sends to the server."""))
+
+supybot.register('password', registry.String('', """Determines the password to
+be sent to the server if it requires one."""))
+
+# TODO: Make this check for validity.
+supybot.register('server', registry.String('irc.freenode.net', """Determines
+what server the bot connects to."""))
+
+supybot.register('channels', registry.CommaSeparatedListOfStrings('#supybot',
+"""Determines what channels the bot will join when it connects to the server.
+"""))
+
+supybot.registerGroup('databases')
+supybot.databases.registerGroup('users')
+supybot.databases.registerGroup('channels')
+supybot.databases.users.register('filename', registry.String('users.conf', """
+Determines what filename will be used for the users database.  This file will
+go into the directory specified by the supybot.directories.conf
+variable."""))
+supybot.databases.channels.register('filename',registry.String('channels.conf',
+"""Determines what filename will be used for the channels database.  This file
+will go into the directory specified by the supybot.directories.conf
+variable."""))
+                                                                
+supybot.registerGroup('directories')
+supybot.directories.register('conf', registry.String('conf', """
+Determines what directory configuration data is put into."""))
+supybot.directories.register('data', registry.String('data', """
+Determines what directory data is put into."""))
+supybot.directories.register('plugins',
+registry.CommaSeparatedListOfStrings(['plugins',_srcDir,_pluginsDir],
+"""Determines what directories the bot will look for plugins in."""))
+
+supybot.register('humanTimestampFormat', registry.String('%I:%M %p, %B %d, %Y',
+"""Determines how timestamps printed for human reading should be formatted.
+Refer to the Python documentation for the time module to see valid formatting
+characteres for time formats."""))
+
+class IP(registry.String):
+    def set(self, s):
+        original = getattr(self, 'value', self.default)
+        registry.String.set(self, s)
+        if self.value: # Empty string is alright.
+            if not (utils.isIP(self.value) or utils.isIPV6(self.value)):
+                raise registry.InvalidRegistryValue, \
+                      'Value must be a valid IP.'
+        
+supybot.register('externalIP', IP('', """A string that is the external IP of
+the bot.  If this is the empty string, the bot will attempt to find out its IP
+dynamically (though sometimes that doesn't work, hence this variable)."""))
+
+# XXX Should this (and a few others) be made into a group 'network' or
+# 'server' or something?
+supybot.register('throttleTime', registry.Float(1.0, """A floating point
+number of seconds to throttle queued messages -- that is, messages will not
+be sent faster than once per throttleTime seconds."""))
+
+supybot.register('snarfThrottle', registry.Float(10.0, """A floating point
+number of seconds to throttle snarfed URLs, in order to prevent loops between
+two bots snarfing the same URLs and having the snarfed URL in the output of
+the snarf message."""))
 
 ###
-# replyWithPrivateNotice: True if replies to a user in a channel should be
-#                         noticed to that user instead of sent to the channel
-#                         itself.
+# Reply/error tweaking.
 ###
-replyWithPrivateNotice = False
+
+# TODO: These should probably all be channel-specific.
+supybot.registerGroup('reply')
+supybot.reply.register('errorInPrivate', registry.Boolean(False, """
+Determines whether the bot will send error messages to users in private."""))
+
+supybot.reply.register('whenNotCommand', registry.Boolean(True, """
+Determines whether the bot will reply with an error message when it is
+addressed but not given a valid command.  If this value is False, the bot
+will remain silent."""))
+
+supybot.reply.register('withPrivateNotice', registry.Boolean(False, """
+Determines whether the bot will reply with a private notice to users rather
+than sending a message to a channel.  Private notices are particularly nice
+because they don't generally cause IRC clients to open a new query window."""))
+
+supybot.reply.register('withNickPrefix', registry.Boolean(True, """
+Determines whether the bot will always prefix the user's nick to its reply to
+that user's command."""))
+
+supybot.reply.register('whenAddressedByNick', registry.Boolean(True, """
+Determines whether the bot will reply when people address it by its nick,
+rather than with a prefix character."""))
+
+supybot.reply.register('whenNotAddressed', registry.Boolean(False, """
+Determines whether the bot should attempt to reply to all messages even if they
+don't address it (either via its nick or a prefix character).  If you set this
+to True, you almost certainly want to set supybot.reply.whenNotCommand to
+False."""))
+
+# XXX: Removed requireRegistration: it wasn't being used.
+
+supybot.reply.register('requireChannelCommandsToBeSentInChannel',
+registry.Boolean(False, """Determines whether the bot will allow you to send
+channel-related commands outside of that channel.  Sometimes people find it
+confusing if a channel-related command (like Filter.outfilter) changes the
+behavior of the channel but was sent outside the channel itself."""))
+
+supybot.register('followIdentificationThroughNickChanges',
+registry.Boolean(False, """Determines whether the bot will unidentify someone
+when that person changes his or her nick.  Setting this to True will cause the
+bot to track such changes.  It defaults to false for a little greater security.
+"""))
+
+supybot.register('alwaysJoinOnInvite', registry.Boolean(False, """Determines
+whether the bot will always join a channel when it's invited.  If this value
+is False, the bot will only join a channel if the user inviting it has the
+'admin' capability (or if it's explicitly told to join the channel using the
+Admin.join command)"""))
+
+supybot.register('pipeSyntax', registry.Boolean(False, """Supybot allows
+nested commands; generally, commands are nested via square brackets.  Supybot
+can also provide a syntax more similar to UNIX pipes.  The square bracket
+nesting syntax is always enabled, but when this value is True, users can also
+nest commands by saying 'bot: foo | bar' instead of 'bot: bar [foo]'."""))
+
+supybot.register('showSimpleSyntax', registry.Boolean(False, """Supybot
+normally replies with the full help whenever a user misuses a command.  If this
+value is set to True, the bot will only reply with the syntax of the command
+(the first line of the docstring) rather than the full help."""))
+
+supybot.register('defaultCapabilities',
+registry.CommaSeparatedSetOfStrings(['-owner', '-admin', '-trusted'], """
+These are the capabilities that are given to everyone by default.  If they are
+normal capabilities, then the user will have to have the appropriate
+anti-capability if you want to override these capabilities; if they are
+anti-capabilities, then the user will have to have the actual capability to
+override these capabilities.  See docs/CAPABILITIES if you don't understand
+why these default to what they do."""))
 
 ###
-# replyWithNickPrefix: True if the bot should always prefix the nick of the
-#                      person giving the command to its reply.
+# Replies
 ###
-replyWithNickPrefix = True
+# TODO: These should be channel-specific.
+supybot.registerGroup('replies')
+
+supybot.replies.register('error', registry.NormalizedString("""An error has
+occurred and has been logged.  Please contact this bot's administrator for more
+information.""", """Determines what error message the bot gives when it wants
+to be ambiguous."""))
+
+supybot.replies.register('noCapability', registry.NormalizedString("""You
+don\'t have the %r capability.  If you think that you should have this
+capability, be sure that you are identified before trying again.  The 'whoami'
+command can tell you if you're identified.""", """Determines what error message
+is given when the bot is telling someone they aren't cool enough to use the
+command they tried to use."""))
+
+supybot.replies.register('success', registry.NormalizedString("""The operation
+succeeded.""", """Determines what message the bot replies with when a command
+succeeded."""))
+
+supybot.replies.register('incorrectAuthentication',
+registry.NormalizedString("""Your hostmask doesn't match or your password is
+wrong.""", """Determines what message the bot replies wiwth when someone tries
+to use a command that requires being identified or having a password and
+neither credential is correct."""))
+
+supybot.replies.register('noUser', registry.NormalizedString("""I can't find
+that user in my user database.""", """Determines what error message the bot
+replies with when someone tries to accessing some information on a user the
+bot doesn't know about."""))
+
+supybot.replies.register('notRegistered', registry.NormalizedString("""
+You must be registered to use this command.  If you are already registered, you
+must either identify (using the identify command) or add a hostmask matching
+your current hostmask (using the addhostmask command).""", """Determines what
+error message the bot replies with when someone tries to do something that
+requires them to be registered but they're not currently recognized."""))
+
+# XXX: removed replyInvalidArgument.
+
+supybot.replies.register('requiresPrivacy', registry.NormalizedString("""
+That operation cannot be done in a channel.""", """Determines what error
+messages the bot sends to people who try to do things in a channel that really
+should be done in private."""))
+supybot.replies.register('possibleBug', registry.NormalizedString("""This may
+be a bug.  If you think it is, please file a bug report at
+<http://sourceforge.net/tracker/?func=add&group_id=58965&atid=489447>.""",
+"""Determines what message the bot sends when it thinks you've encountered a
+bug that the developers don't know about."""))
+
+supybot.register('pingServer', registry.Boolean(True, """Determines whether
+the bot will send PINGs to the server it's connected to in order to keep the
+connection alive and discover earlier when it breaks.  Really, this option
+only exists for debugging purposes: you always should make it True unless
+you're testing some strange server issues."""))
+
+supybot.register('pingInterval', registry.Integer(120, """Determines the
+number of seconds between sending pings to the server, if pings are being sent
+to the server."""))
+
+supybot.register('maxHistoryLength', registry.Integer(1000, """Determines
+how many old messages the bot will keep around in its history.  Changing this
+variable will not take effect until the bot is restarted."""))
+
+supybot.register('nickmods', registry.CommaSeparatedListOfStrings(
+    '__%s__,%s^,%s`,%s_,%s__,_%s,__%s,[%s]'.split(','),
+    """A list of modifications to be made to a nick when the nick the bot tries
+    to get from the server is in use.  There should be one %s in each string;
+    this will get replaced with the original nick."""))
+
+supybot.register('defaultAllow', registry.Boolean(True, """Determines whether
+the bot by default will allow users to run commands.  If this is disabled, a
+user will have to have the capability for whatever command he wishes to run.
+"""))
+
+supybot.register('defaultIgnore', registry.Boolean(False, """Determines
+whether the bot will ignore unregistered users by default.  Of course, that'll
+make it particularly hard for those users to register with the bot, but that's
+your problem to solve."""))
+
+supybot.register('ignores', registry.CommaSeparatedListOfStrings('', """
+A list of hostmasks ignored by the bot.  Add people you don't like to here.
+"""))
+
+class ValidPrefixChars(registry.String):
+    def set(self, s):
+        registry.String.set(self, s)
+        if self.value.translate(string.ascii,
+                                '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
+            raise registry.InvalidRegistryValue, \
+                  'Value must contain only ~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'
+
+supybot.register('prefixChars', ValidPrefixChars('@', """Determines what prefix
+characters the bot will reply to.  A prefix character is a single character
+that the bot will use to determine what messages are addressed to it; when
+there are no prefix characters set, it just uses its nick."""))
 
 ###
-# replyWhenAddressedByNick: True if the bot should reply to messages of the
-#                           form "botnick: foo" where "botnick" is the bot's
-#                           nick.
+# Driver stuff.
 ###
-replyWhenAddressedByNick = True
+supybot.registerGroup('drivers')
+supybot.drivers.register('poll', registry.Float(1.0, """Determines the default
+length of time a driver should block waiting for input."""))
 
-###
-# replyWhenNotAddressed: True if the bot should reply to messages even if they
-#                        don't address it at all.  If you have this on, you'll
-#                        almost certainly want to make sure replyWhenNotCommand
-#                        is turned off.
-###
-replyWhenNotAddressed = False
+class ValidDriverModule(registry.String):
+    def set(self, s):
+        original = getattr(self, 'value', self.default)
+        registry.String.set(self, s)
+        if self.value not in ('socketDrivers',
+                              'twistedDrivers',
+                              'asyncoreDrivers'):
+            self.value = original
+            raise registry.InvalidRegistryValue, \
+                  'Value must be one of "socketDrivers", "asyncoreDrivers", ' \
+                  'or twistedDrivers.'
+        else:
+            # TODO: check to make sure Twisted is available if it's set to
+            # twistedDrivers.
+            pass
 
-###
-# requireRegistration: Oftentimes a plugin will want to record who added or
-#                      changed or messed with it last.  Supybot's user database
-#                      is an excellent way to determine who exactly someone is.
-#                      You may, however, want something a little less
-#                      "intrustive," so you can set this variable to False to
-#                      tell such plugins that they should use the hostmask when
-#                      the user isn't registered with the user database.
-###
-requireRegistration = False
-
-###
-# requireChannelCommandsToBeSentInChannel: Normally, you can send channel
-#                                          related commands in private or in
-#                                          another channel.  Sometimes this
-#                                          can be confusing, though, if the
-#                                          command changes the behavior of
-#                                          the bot in the channel.  Set this
-#                                          variable to True if you want to
-#                                          require such commands to be sent
-#                                          in the channel to which they apply.
-###
-requireChannelCommandsToBeSentInChannel = False
-
-###
-# followIdentificationThroughNickChanges: By default the bot will simply
-#                                         unidentify someone when he changes
-#                                         his nick.  Setting this to True will
-#                                         cause the bot to track such changes.
-###
-followIdentificationThroughNickChanges = False
-
-###
-# alwaysJoinOnInvite: Causes the bot to always join a channel when it's
-#                     invited.  Defaults to False, in which case the bot will
-#                     only join if the user inviting it has the 'admin'
-#                     capability.
-###
-alwaysJoinOnInvite = False
-
-###
-# enablePipeSyntax: Supybot allows nested commands; generally, commands are
-#                   nested via [square brackets].  Supybot can also use a
-#                   syntax more similar to Unix pipes.  What would be (and
-#                   still can be; the pipe syntax doesn't disable the bracket
-#                   syntax) "bot: bar [foo]" can now by "bot: foo | bar"
-#                   This variable enables such syntax.
-###
-enablePipeSyntax = False
-
-###
-# showOnlySyntax : Supybot normally returns the full help whenever a user
-#                  misuses a command.  If this option is set to True, the bot
-#                  will only return the syntax of the command (the first line
-#                  of the docstring) rather than the full help.
-###
-showOnlySyntax = False
-
-###
-# defaultCapabilities: Capabilities allowed to everyone by default.  You almost
-#                      certainly want to have !owner and !admin in here.
-###
-defaultCapabilities = sets.Set(['-owner', '-admin', '-trusted'])
-
-###
-# reply%s: Stock replies for various reasons.
-###
-replyError = 'An error has occurred and has been logged.  ' \
-             'Please contact this bot\'s administrator for more information.'
-replyNoCapability = 'You don\'t have the "%s" capability.  If you think ' \
-                    'that you should have this capability, be sure that ' \
-                    'you are identified via the "whoami" command.'
-replySuccess = 'The operation succeeded.'
-replyIncorrectAuth = 'Your hostmask doesn\'t match or your password is wrong.'
-replyNoUser = 'I can\'t find that user in my database.'
-replyNotRegistered = 'You must be registered to use this command.  ' \
-                     'If you are already registered, you must either ' \
-                     'identify (using the identify command) or add a ' \
-                     'hostmask matching your current hostmask (using ' \
-                     'the addhostmask command).'
-replyInvalidArgument = 'I can\'t send \\r, \\n, or \\0 (\\x00).'
-replyRequiresPrivacy = 'That can\'t be done in a channel.'
-replyEvalNotAllowed = 'You must enable conf.allowEval for that to work.'
-replyPossibleBug = 'This may be a bug. If you think it is, please file a bug '\
-                   'report at <http://sourceforge.net/tracker/?' \
-                   'func=add&group_id=58965&atid=489447>'
-
-###
-# errorReplyPrivate: True if errors should be reported privately so as not to
-#                    bother the channel.
-###
-errorReplyPrivate = False
-
-###
-# telnetEnable: A boolean saying whether or not to enable the telnet REPL.
-#               This will allow a user with the 'owner' capability to telnet
-#               into the bot and see how it's working internally.  A lifesaver
-#               for development.
-###
-telnetEnable = False
-telnetPort = 31337
-
-###
-# poll: the length of a polling term.
-#       If asyncore drivers are all you're using, feel free to make
-#       this arbitrarily large -- be warned, however, that all other
-#       drivers are just sitting around while asyncore waits during
-#       this poll period (including the schedule).  It'll take more
-#       CPU, but you probably don't want to set this more than 0.01
-#       when you've got non-asyncore drivers to worry about.
-###
-poll = 1
-
-###
-# pingServer: Determines whether the bot will send PINGs to the server it's
-#             connected to in order to keep the connection alive.  Sometimes
-#             this seems to result in instability.
-###
-pingServer = True
-
-###
-# maxHistory: Maximum number of messages kept in an Irc object's state.
-###
-maxHistory = 1000
-
-###
-# pingInterval: Number of seconds between PINGs to the server.
-#               0 means not to ping the server.
-###
-pingInterval = 120
-
-###
-# nickmods: List of ways to 'spice up' a nick so the bot doesn't run out of
-#           nicks if all his normal ones are taken.
-###
-nickmods = ['%s^', '^%s^', '__%s__', '%s_', '%s__', '__%s', '^^%s^^', '{%s}',
-            '[%s]', '][%s][', '}{%s}{', '}{}%s', '^_^%s', '%s^_^', '^_^%s^_^']
-
-###
-# defaultAllow: Are commands allowed by default?
-###
-defaultAllow = True
-
-###
-# defaultIgnore: True if users should be ignored by default.
-#                It's a really easy way to make sure that people who want to
-#                talk to the bot register first.  (Of course, they can't
-#                register if they're ignored.  We'll work on that.)
-###
-defaultIgnore = False
-
-###
-# ignores: Hostmasks to ignore.
-###
-ignores = []
-
-###
-# prefixChars: A string of chars that are valid prefixes to address the bot.
-###
-prefixChars = '@'
-
-###
-# validPrefixChars: A string of chars that are allowed to be used as
-#                   prefixChars.
-###
-validPrefixChars = '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'
-
-###
-# detailedTracebacks: A boolean describing whether or not the bot will give
-#                     *extremely* detailed tracebacks.  Be cautioned, this eats
-#                     a lot of log file space.
-###
-detailedTracebacks = True
-
-###
-# driverModule: A string that is the module where the default driver for the
-#               bot will be found.
-###
-driverModule = 'socketDrivers'
-#driverModule = 'asyncoreDrivers'
-#driverModule = 'twistedDrivers'
+supybot.drivers.register('module', ValidDriverModule('socketDrivers', """
+Determines what driver module the bot will use.  socketDrivers, a simple
+driver based on timeout sockets, is used by default because it's simple and
+stable.  asyncoreDrivers is a bit older (and less well-maintained) but allows
+you to integrate with asyncore-based applications.  twistedDrivers is very
+stable and simple, and if you've got Twisted installed, is probably your best
+bet."""))
 
 ###############################
 ###############################
@@ -345,72 +346,5 @@ driverModule = 'socketDrivers'
 ###############################
 ###############################
 version ='0.76.1'
-
-commandsOnStart = []
-
-# This is a dictionary mapping names to converter functions for use in the
-# Owner.setconf command.
-def mybool(s):
-    """Converts a string read from the user into a bool, fuzzily."""
-    if s.capitalize() == 'False' or s == '0':
-        return False
-    elif s.capitalize() == 'True' or s == '1':
-        return True
-    else:
-        raise ValueError, 'invalid literal for mybool()'
-
-def mystr(s):
-    """Converts a string read from the user into a real string."""
-    while s and s[0] in "'\"" and s[0] == s[-1]:
-        s = s[1:-1]
-    return s
-
-types = {
-    'logDir': mystr,
-    'confDir': mystr,
-    'dataDir': mystr,
-    #'pluginDirs': (list, str),
-    'userfile': mystr,
-    'channelfile': mystr,
-    'logTimestampFormat': mystr,
-    'humanTimestampFormat': mystr,
-    'throttleTime': float,
-    'snarfThrottle': float,
-    #'allowEval': mybool,
-    'replyWhenNotCommand': mybool,
-    'replyWithPrivateNotice': mybool,
-    'replyWithNickPrefix': mybool,
-    'replyWhenAddressedByNick': mybool,
-    'requireRegistration': mybool,
-    'enablePipeSyntax': mybool,
-    'replyError': mystr,
-    'replyNoCapability': mystr,
-    'replySuccess': mystr,
-    'replyIncorrectAuth': mystr,
-    'replyNoUser': mystr,
-    'replyNotRegistered': mystr,
-    'replyInvalidArgument': mystr,
-    'replyRequiresPrivacy': mystr,
-    'replyEvalNotAllowed': mystr,
-    'errorReplyPrivate': mybool,
-    #'telnetEnable': mybool,
-    #'telnetPort': int,
-    'poll': float,
-    #'maxHistory': int,
-    'pingInterval': float,
-    #'nickmods': (list, str),
-    'defaultAllow': mybool,
-    'defaultIgnore': mybool,
-    #'ignores': (list, str),
-    'prefixChars': mystr,
-    'detailedTracebacks': mybool,
-    'driverModule': mystr,
-    'showOnlySyntax': mybool,
-    'pingServer': mybool,
-    'followIdentificationThroughNickChanges': mybool
-}
-
-if os.name == 'nt':
-    colorizedStdoutLogging = False
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

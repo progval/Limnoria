@@ -44,13 +44,14 @@ if network:
         def setUp(self, nick='test'):
             PluginTestCase.setUp(self)
             try:
-                if os.path.exists(os.path.join(conf.dataDir,
+                dataDir = conf.supybot.directories.data()
+                if os.path.exists(os.path.join(dataDir,
                                   'Contents-i386.gz')):
                     pass
                 else:
                     print
                     print "Downloading files, this may take awhile"
-                    filename = os.path.join(conf.dataDir, 'Contents-i386.gz')
+                    filename = os.path.join(dataDir, 'Contents-i386.gz')
                     while not os.path.exists(filename):
                         time.sleep(1)
                     print "Download complete"

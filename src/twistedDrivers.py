@@ -42,14 +42,13 @@ import drivers
 import ircmsgs
 
 from twisted.internet import reactor
-from twisted.manhole.telnet import Shell, ShellFactory
 from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import ReconnectingClientFactory
 
 class TwistedRunnerDriver(drivers.IrcDriver):
     def run(self):
         try:
-            reactor.iterate(conf.poll)
+            reactor.iterate(conf.supybot.drivers.poll())
         except:
             log.exception('Uncaught exception outside reactor:')
 
@@ -103,26 +102,6 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
 
     def die(self):
         pass
-
-
-class MyShell(Shell):
-    def checkUserAndPass(self, username, password):
-        try:
-            id = ircdb.users.getUserId(username)
-            u = ircdb.users.getUser(id)
-            if u.checkPassword(password) and u.checkCapability('owner'):
-                return True
-            else:
-                return False
-        except KeyError:
-            return False
-
-class MyShellFactory(ShellFactory):
-    protocol = MyShell
-
-if conf.telnetEnable and __name__ != '__main__':
-    reactor.listenTCP(conf.telnetPort, MyShellFactory())
-
 
 Driver = SupyReconnectingFactory
 

@@ -57,8 +57,6 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-dbfilename = os.path.join(conf.dataDir, 'Notes.db')
-
 class NoteDb(plugins.DBHandler):
     def makeDb(self, filename):
         "create Notes database and tables"
@@ -85,7 +83,8 @@ class NoteDb(plugins.DBHandler):
 class Note(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.dbHandler = NoteDb(name=os.path.join(conf.dataDir, 'Notes'))
+        dataDir = conf.supybot.directories.data()
+        self.dbHandler = NoteDb(name=os.path.join(dataDir, 'Notes'))
 
     def setAsRead(self, id):
         db = self.dbHandler.getDb()

@@ -319,7 +319,7 @@ class Factoids(plugins.ChannelDBHandler,
         counter = 0
         for (added_by, added_at) in factoids:
             counter += 1
-            added_at = time.strftime(conf.humanTimestampFormat,
+            added_at = time.strftime(conf.supybot.humanTimestampFormat(),
                                      time.localtime(int(added_at)))
             L.append('#%s was added by %s at %s' % (counter,added_by,added_at))
         factoids = '; '.join(L)

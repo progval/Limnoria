@@ -260,7 +260,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         return (tinyurl, updateDb)
 
     def _formatUrl(self, url, added, addedBy):
-        when = time.strftime(conf.humanTimestampFormat,
+        when = time.strftime(conf.supybot.supybot.humanTimestampFormat(),
                              time.localtime(int(added)))
         return '<%s> (added by %s at %s)' % (url, addedBy, when)
 

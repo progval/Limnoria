@@ -30,7 +30,7 @@
 ###
 
 """
-Logs raw IRC messages to a file, conf.dataDir/raw.log
+Logs raw IRC messages to a file.
 """
 
 __revision__ = "$Id$"
@@ -47,7 +47,8 @@ import irclib
 ###
 class RawLogger(irclib.IrcCallback):
     def __init__(self):
-        self.fd = file(os.path.join(conf.logDir, 'raw.log'), 'a')
+        logDir = conf.supybot.directories.log()
+        self.fd = file(os.path.join(logDir, 'raw.log'), 'a')
         world.flushers.append(self.fd.flush)
 
     def inFilter(self, irc, msg):

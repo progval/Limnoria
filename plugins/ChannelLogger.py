@@ -91,7 +91,8 @@ class ChannelLogger(irclib.IrcCallback):
             return self.logs[channel]
         else:
             try:
-                log = file(os.path.join(conf.logDir, '%s.log' % channel), 'a')
+                logDir = conf.supybot.directories.log()
+                log = file(os.path.join(logDir, '%s.log' % channel), 'a')
                 self.logs[channel] = log
                 return log
             except IOError:
@@ -99,7 +100,7 @@ class ChannelLogger(irclib.IrcCallback):
                 return StringIO()
 
     def timestamp(self, log):
-        log.write(time.strftime(conf.logTimestampFormat))
+        log.write(time.strftime(conf.supybot.log.timestampFormat()))
         log.write('  ')
 
     def doPrivmsg(self, irc, msg):

@@ -38,6 +38,7 @@ __revision__ = "$Id$"
 import re
 import os
 import sys
+import atexit
 
 if sys.version_info < (2, 3, 0):
     sys.stderr.write('This program requires Python >= 2.3.0\n')
@@ -105,6 +106,10 @@ if __name__ == '__main__':
     parser.add_option('-p', '--password', action='store',
                       dest='password', default='',
                       help='server password the bot should use')
+    parser.add_option('', '--enable-eval', action='store_true',
+                      dest='allowEval',
+                      help='Determines whether the bot will '
+                           'allow the evaluation of arbitrary Python code.')
 
     (options, args) = parser.parse_args()
 
@@ -128,12 +133,12 @@ if __name__ == '__main__':
         log.info('Finished writing registry file.')
     atexit.register(closeRegistry)
 
-    nick = options.nick or conf.supybot.nick.get()
-    user = options.user or conf.supybot.user.get()
-    ident = options.ident or conf.supybot.ident.get()
-    password = options.password or conf.supybot.password.get()
+    nick = options.nick or conf.supybot.nick()
+    user = options.user or conf.supybot.user()
+    ident = options.ident or conf.supybot.ident()
+    password = options.password or conf.supybot.password()
 
-    server = options.server or conf.supybot.server.get()
+    server = options.server or conf.supybot.server()
     if ':' in server:
         serverAndPort = server.split(':', 1)
         serverAndPort[1] = int(serverAndPort[1])
@@ -150,12 +155,15 @@ if __name__ == '__main__':
             except ImportError:
                 log.warning('Psyco isn\'t installed, cannot -OO.')
 
-    if not os.path.exists(conf.supybot.directories.log.get()):
-        os.mkdir(conf.supybot.directories.log.get())
-    if not os.path.exists(conf.supybot.directories.conf.get()):
-        os.mkdir(conf.supybot.directories.conf.get())
-    if not os.path.exists(conf.supybot.directories.data.get()):
-        os.mkdir(conf.supybot.directories.data.get())
+    if options.allowEval:
+        conf.allowEval = True
+
+    if not os.path.exists(conf.supybot.directories.log()):
+        os.mkdir(conf.supybot.directories.log())
+    if not os.path.exists(conf.supybot.directories.conf()):
+        os.mkdir(conf.supybot.directories.conf())
+    if not os.path.exists(conf.supybot.directories.data()):
+        os.mkdir(conf.supybot.directories.data())
 
     import irclib
     import ircmsgs

@@ -107,12 +107,12 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('alias add [] foo')
         self.assertError('alias add "foo bar" foo')
         try:
-            conf.enablePipeSyntax = True
+            conf.supybot.pipeSyntax.setValue(True)
             self.assertError('alias add "foo|bar" foo')
-            conf.enablePipeSyntax = False
+            conf.supybot.pipeSyntax.setValue(False)
             self.assertNotError('alias add "foo|bar" foo')
         finally:
-            conf.enablePipeSyntax = False
+            conf.supybot.pipeSyntax.setValue(False)
 
     def testNotCannotNestRaised(self):
         self.assertNotError('alias add mytell "tell $channel $1"')

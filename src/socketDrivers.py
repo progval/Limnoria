@@ -40,6 +40,7 @@ __revision__ ="$Id$"
 import fix
 
 import time
+import atexit
 import socket
 from itertools import imap
 
@@ -51,13 +52,17 @@ import ircmsgs
 import schedule
 
 instances = 0
-originalPoll = conf.poll
+originalPoll = conf.supybot.drivers.poll()
+def resetPoll():
+    log.info('Resetting supybot.drivers.poll to %s', originalPoll)
+    conf.supybot.drivers.poll.setValue(originalPoll)
+atexit.register(resetPoll)
 
 class SocketDriver(drivers.IrcDriver):
     def __init__(self, (server, port), irc, reconnectWaits=(0, 60, 300)):
         global instances
         instances += 1
-        conf.poll = originalPoll / instances
+        conf.supybot.drivers.poll.setValue(originalPoll / instances)
         self.server = (server, port)
         drivers.IrcDriver.__init__(self) # Must come after server is set.
         self.irc = irc
@@ -88,7 +93,9 @@ class SocketDriver(drivers.IrcDriver):
         
     def run(self):
         if not self.connected:
-            time.sleep(conf.poll) # Otherwise we might spin.
+            # We sleep here because otherwise, if we're the only driver, we'll
+            # spin at 100% CPU while we're disconnected.
+            time.sleep(conf.supybot.drivers.poll())
             return
         self._sendIfMsgs()
         try:
@@ -124,12 +131,13 @@ class SocketDriver(drivers.IrcDriver):
             return
         self.irc.reset()
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.conn.settimeout(conf.poll*10) # Allow more time for connect.
+        # We allow more time for the connect here, since it might take longer.
+        self.conn.settimeout(conf.supybot.drivers.poll()*10)
         if self.reconnectWaitsIndex < len(self.reconnectWaits)-1:
             self.reconnectWaitsIndex += 1
         try:
             self.conn.connect(self.server)
-            self.conn.settimeout(conf.poll)
+            self.conn.settimeout(conf.supybot.drivers.poll())
         except socket.error, e:
             if e.args[0] != 115:
                 log.warning('Error connecting to %s: %s', self.server, e)
@@ -144,7 +152,8 @@ class SocketDriver(drivers.IrcDriver):
 
     def _scheduleReconnect(self):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
-        whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
+        whenS = time.strftime(conf.supybot.log.timestampFormat(),
+                              time.localtime(when))
         if not world.dying:
             log.info('Scheduling reconnect to %s at %s', self.server, whenS)
         schedule.addEvent(self.reconnect, when)

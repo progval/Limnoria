@@ -42,7 +42,6 @@ import asynchat
 
 import log
 import conf
-import repl
 import ircdb
 import world
 import drivers
@@ -53,7 +52,7 @@ class AsyncoreRunnerDriver(drivers.IrcDriver):
     def run(self):
         log.debug(repr(asyncore.socket_map))
         try:
-            asyncore.poll(conf.poll)
+            asyncore.poll(conf.supybot.drivers.poll())
         except:
             log.exception('Uncaught exception:')
 
@@ -75,7 +74,8 @@ class AsyncoreDriver(asynchat.async_chat, object):
 
     def scheduleReconnect(self):
         when = time.time() + 60
-        whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
+        whenS = time.strftime(conf.supybot.log.timestampFormat(),
+                              time.localtime(when))
         if not world.dying:
             log.info('Scheduling reconnect to %s at %s', self.server, whenS)
         def makeNewDriver():
@@ -121,116 +121,12 @@ class AsyncoreDriver(asynchat.async_chat, object):
         log.info('Driver for %s dying.', self.irc)
         self.close()
 
-
-class ReplListener(asyncore.dispatcher, object):
-    def __init__(self, port=conf.telnetPort):
-        asyncore.dispatcher.__init__(self)
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.set_reuse_addr()
-        self.bind(('', port))
-        self.listen(5)
-
-    def handle_accept(self):
-        (sock, addr) = self.accept()
-        log.info('Connection made to telnet-REPL: %s', addr)
-        Repl((sock, addr))
-
-
-class Repl(asynchat.async_chat, object):
-    filename = 'repl'
-    def __init__(self, (sock, addr)):
-        asynchat.async_chat.__init__(self, sock)
-        self.buffer = ''
-        self.prompt = """SupyBot version %s.
-Python %s
-Type disconnect() to disconnect.
-Name: """ % (world.version, sys.version.translate(string.ascii, '\r\n'))
-        self.u = None
-        self.authed = False
-        self.set_terminator('\r\n')
-        self.repl = repl.Repl(addr[0])
-        self.repl.namespace['disconnect'] = self.close
-        self.push(self.prompt)
-        self.tries = 0
-
-    _re = re.compile(r'(?<!\r)\n')
-    def push(self, data):
-        asynchat.async_chat.push(self, self._re.sub('\r\n', data))
-
-    def collect_incoming_data(self, data):
-        if self.tries >= 3:
-            self.close()
-        self.buffer += data
-        if len(self.buffer) > 1024:
-            self.close()
-
-    def handle_close(self):
-        self.close()
-
-    def handle_error(self):
-        self.close()
-
-    def found_terminator(self):
-        if self.u is None:
-            try:
-                name = self.buffer
-                self.buffer = ''
-                id = ircdb.users.getUserId(name)
-                self.u = ircdb.users.getUser(id)
-                self.prompt = 'Password: '
-            except KeyError:
-                self.push('Unknown user.\n')
-                self.tries += 1
-                self.prompt = 'Name: '
-                log.warning('Unknown user %s on telnet REPL.', name)
-            self.push(self.prompt)
-        elif self.u is not None and not self.authed:
-            password = self.buffer
-            self.buffer = ''
-            if self.u.checkPassword(password):
-                if self.u.checkCapability('owner'):
-                    self.authed = True
-                    self.prompt = '>>> '
-                else:
-                    self.push('Only owners can use this feature.\n')
-                    self.close()
-                    msg = 'Attempted non-owner user %s on telnet REPL' % name
-                    log.warning(msg)
-            else:
-                self.push('Incorrect Password.\n')
-                self.prompt = 'Name: '
-                self.u = None
-                msg = 'Invalid password for user %s on telnet REPL.' % name
-                log.warning(msg)
-            self.push(self.prompt)
-        elif self.authed:
-            log.info('Telnet REPL: %s', self.buffer)
-            ret = self.repl.addLine(self.buffer+'\r\n')
-            self.buffer = ''
-            if ret is not repl.NotYet:
-                if ret is not None:
-                    s = self._re.sub('\r\n', str(ret))
-                    self.push(s)
-                    self.push('\r\n')
-                self.prompt = '>>> '
-            else:
-                self.prompt = '... '
-            self.push(self.prompt)
-
 try:
     ignore(poller)
 except NameError:
     poller = AsyncoreRunnerDriver()
 
-if conf.telnetEnable and __name__ != '__main__':
-    try:
-        ignore(_listener)
-    except NameError:
-        _listener = ReplListener()
-
 Driver = AsyncoreDriver
 
-if __name__ == '__main__':
-    ReplListener()
-    asyncore.loop()
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

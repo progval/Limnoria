@@ -63,11 +63,13 @@ class HeraldDB(object):
     def __init__(self):
         self.heralds = {}
         self.open()
+        dataDir = conf.supybot.directories.data()
+        self.filename = os.path.join(dataDir, 'Herald.db')
 
     def open(self):
-        filename = os.path.join(conf.dataDir, 'Herald.db')
-        if os.path.exists(filename):
-            fd = file(filename)
+        dataDir = conf.supybot.directories.data()
+        if os.path.exists(self.filename):
+            fd = file(self.filename)
             for line in fd:
                 line = line.rstrip()
                 try:
@@ -81,7 +83,7 @@ class HeraldDB(object):
             fd.close()
 
     def close(self):
-        fd = file(os.path.join(conf.dataDir, 'Herald.db'), 'w')
+        fd = file(self.filename, 'w')
         L = self.heralds.items()
         L.sort()
         for ((id, channel), msg) in L:

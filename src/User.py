@@ -53,7 +53,7 @@ import callbacks
 class User(callbacks.Privmsg):
     def _checkNotChannel(self, irc, msg, password=' '):
         if password and ircutils.isChannel(msg.args[0]):
-            raise callbacks.Error, conf.replyRequiresPrivacy
+            raise callbacks.Error, conf.supybot.replies.requiresPrivacy()
 
     def list(self, irc, msg, args):
         """[<glob>]
@@ -136,7 +136,7 @@ class User(callbacks.Privmsg):
             ircdb.users.delUser(id)
             irc.replySuccess()
         else:
-            irc.error(conf.replyIncorrectAuth)
+            irc.error(conf.supybot.replies.incorrectAuthentication())
 
     def changename(self, irc, msg, args):
         """<name> <new name> [<password>]
@@ -201,7 +201,7 @@ class User(callbacks.Privmsg):
             ircdb.users.setUser(id, user)
             irc.replySuccess()
         else:
-            irc.error(conf.replyIncorrectAuth)
+            irc.error(conf.supybot.replies.incorrectAuthentication())
             return
 
     def removehostmask(self, irc, msg, args):
@@ -229,7 +229,7 @@ class User(callbacks.Privmsg):
             ircdb.users.setUser(id, user)
             irc.replySuccess()
         else:
-            irc.error(conf.replyIncorrectAuth)
+            irc.error(conf.supybot.replies.incorrectAuthentication())
             return
 
     def setpassword(self, irc, msg, args):
@@ -258,7 +258,7 @@ class User(callbacks.Privmsg):
             ircdb.users.setUser(id, user)
             irc.replySuccess()
         else:
-            irc.error(conf.replyIncorrectAuth)
+            irc.error(conf.supybot.replies.incorrectAuthentication())
 
     def username(self, irc, msg, args):
         """<hostmask|nick>
@@ -345,7 +345,7 @@ class User(callbacks.Privmsg):
                 irc.error('Your secure flag is true and your hostmask '
                                'doesn\'t match any of your known hostmasks.')
         else:
-            irc.error(conf.replyIncorrectAuth)
+            irc.error(conf.supybot.replies.incorrectAuthentication())
 
     def unidentify(self, irc, msg, args):
         """takes no arguments
@@ -403,7 +403,7 @@ class User(callbacks.Privmsg):
             ircdb.users.setUser(id, user)
             irc.reply('Secure flag set to %s' % value)
         else:
-            irc.error(conf.replyIncorrectAuth)
+            irc.error(conf.supybot.replies.incorrectAuthentication())
 
 
 Class = User

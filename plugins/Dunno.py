@@ -51,7 +51,7 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-dbfilename = os.path.join(conf.dataDir, 'Dunno.db')
+dbfilename = os.path.join(conf.supybot.directories.data(), 'Dunno.db')
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and

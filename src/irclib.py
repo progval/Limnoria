@@ -148,8 +148,7 @@ class IrcMsgQueue(object):
     def enqueue(self, msg):
         """Enqueues a given message."""
         if msg in self.msgs:
-            if not world.startup:
-                log.info('Not adding msg %s to queue' % msg)
+            log.info('Not adding msg %s to queue' % msg)
         else:
             self.msgs.add(msg)
             if msg.command in _high:
@@ -257,7 +256,7 @@ class IrcState(IrcCommandDispatcher):
     """
     __slots__ = ('history', 'nicksToHostmasks', 'channels')
     def __init__(self):
-        self.history = RingBuffer(conf.maxHistory)
+        self.history = RingBuffer(conf.supybot.maxHistoryLength())
         self.reset()
 
     def reset(self):
@@ -407,7 +406,7 @@ class Irc(IrcCommandDispatcher):
         world.ircs.append(self)
         self.originalNick = intern(nick)
         self.nick = self.originalNick
-        self.nickmods = cycle(conf.nickmods)
+        self.nickmods = cycle(conf.supybot.nickmods())
         self.password = password
         self.user = intern(user or nick)  # Default to nick
         self.ident = intern(ident or nick)  # Ditto.
@@ -486,13 +485,15 @@ class Irc(IrcCommandDispatcher):
         if self.fastqueue:
             msg = self.fastqueue.dequeue()
         elif self.queue:
-            if not world.testing and now - self.lastTake <= conf.throttleTime:
+            if not world.testing and now - self.lastTake <= \
+                                           conf.supybot.throttleTime():
                 log.debug('Irc.takeMsg throttling.')
             else:
                 self.lastTake = now
                 msg = self.queue.dequeue()
-        elif conf.pingServer and \
-             now > (self.lastping + conf.pingInterval) and self.afterConnect:
+        elif conf.supybot.pingServer() and \
+             now > (self.lastping + conf.supybot.pingInterval()) and \
+             self.afterConnect:
             if self.outstandingPing:
                 s = 'Reconnecting to %s, ping not replied to.' % self.server
                 log.warning(s)
@@ -525,16 +526,6 @@ class Irc(IrcCommandDispatcher):
                 msg._len =  len(str(msg))
             self.state.addMsg(self, msg)
             log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
-            if msg.command == 'NICK':
-                # We don't want a race condition where the server's NICK
-                # back to us is lost and someone else steals our nick and uses
-                # it to abuse our 'owner' power we give to ourselves.  Ergo, on
-                # outgoing messages that change our nick, we pre-emptively
-                # delete the 'owner' user we setup for ourselves.
-                user = ircdb.users.getUser(0)
-                user.unsetAuth()
-                user.hostmasks = []
-                ircdb.users.setUser(0, user)
             return msg
         else:
             return None
@@ -542,7 +533,6 @@ class Irc(IrcCommandDispatcher):
     def do001(self, msg):
         """Does some logging."""
         log.info('Received 001 from the server.')
-        log.info('Hostmasks of user 0: %r', ircdb.users.getUser(0).hostmasks)
 
     def do002(self, msg):
         """Logs the ircd version."""
@@ -577,21 +567,11 @@ class Irc(IrcCommandDispatcher):
         """Handles NICK messages."""
         if msg.nick == self.nick:
             newNick = intern(msg.args[0])
-            user = ircdb.users.getUser(0)
-            user.unsetAuth()
-            user.hostmasks = []
-            try:
-                ircdb.users.getUser(newNick)
-                log.error('User already registered with name %s' % newNick)
-            except KeyError:
-                user.name = newNick
-            ircdb.users.setUser(0, user)
             self.nick = newNick
             (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
             self.prefix = ircutils.joinHostmask(self.nick, user, domain)
             self.prefix = intern(self.prefix)
-            log.info('Changing user 0 hostmask to %r' % self.prefix)
-        elif conf.followIdentificationThroughNickChanges:
+        elif conf.supybot.followIdentificationThroughNickChanges():
             # We use elif here because this means it's someone else's nick
             # change, not our own.
             try:
@@ -620,13 +600,7 @@ class Irc(IrcCommandDispatcher):
         # This catches cases where we know our own nick (from sending it to the
         # server) but we don't yet know our prefix.
         if msg.nick == self.nick and self.prefix != msg.prefix:
-            log.info('Updating user 0 prefix: %r' % msg.prefix)
             self.prefix = msg.prefix
-            user = ircdb.users.getUser(0)
-            user.hostmasks = []
-            user.name = self.nick
-            user.addHostmask(msg.prefix)
-            ircdb.users.setUser(0, user)
 
         # This keeps our nick and server attributes updated.
         if msg.command in self._nickSetters:

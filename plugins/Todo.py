@@ -87,7 +87,8 @@ class TodoDB(plugins.DBHandler):
 class Todo(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.dbHandler = TodoDB(os.path.join(conf.dataDir, 'Todo'))
+        dataDir = conf.supybot.directories.data()
+        self.dbHandler = TodoDB(os.path.join(dataDir, 'Todo'))
 
     def die(self):
         self.dbHandler.die()
@@ -170,7 +171,7 @@ class Todo(callbacks.Privmsg):
                     active = 'Inactive'
                 if pri:
                     task += ', priority: %s' % pri
-                added_at = time.strftime(conf.humanTimestampFormat,
+                added_at = time.strftime(conf.supybot.humanTimestampFormat(),
                                          time.localtime(int(added_at)))
                 s = "%s todo for %s: %s (Added at %s)" % \
                     (active, name, task, added_at)

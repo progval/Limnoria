@@ -89,7 +89,8 @@ setup(
                  'supybot.others.unum': os.path.join('others', 'unum'),
                  'supybot.others.unum.units': 
 		     os.path.join(os.path.join('others', 'unum'), 'units')},
-    scripts=['scripts/supybot-wizard',
+    scripts=['scripts/supybot',
+             'scripts/supybot-wizard',
              'scripts/supybot-adduser',
              'scripts/supybot-newplugin']
     )

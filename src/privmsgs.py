@@ -57,7 +57,7 @@ def getChannel(msg, args):
     removed).
     """
     if args and ircutils.isChannel(args[0]):
-        if conf.requireChannelCommandsToBeSentInChannel:
+        if conf.supybot.reply.requireChannelCommandsToBeSentInChannel():
             if args[0] != msg.args[0]:
                 s = 'Channel commands must be sent in the channel to which ' \
                     'they apply.'
@@ -145,22 +145,6 @@ def thread(f):
         t.start()
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
-def name(f):
-    """Makes sure a name is available based on conf.requireRegistration."""
-    def newf(self, irc, msg, args, *L):
-        try:
-            name = ircdb.users.getUser(msg.prefix).name
-        except KeyError:
-            if conf.requireRegistration:
-                irc.errorNotRegistered()
-                return
-            else:
-                name = msg.prefix
-        L = (name,) + L
-        ff = types.MethodType(f, self, self.__class__)
-        ff(irc, msg, args, *L)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
-
 def channel(f):
     """Gives the command an extra channel arg as if it had called getChannel"""
     def newf(self, irc, msg, args, *L):
@@ -175,7 +159,7 @@ def urlSnarfer(f):
     f = _threadedWrapMethod(f)
     def newf(self, irc, msg, match, *L):
         now = time.time()
-        cutoff = now - conf.snarfThrottle
+        cutoff = now - conf.supybot.snarfThrottle()
         q = getattr(self, '_snarfedUrls', None)
         if q is None:
             q = structures.smallqueue()

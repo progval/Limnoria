@@ -52,7 +52,7 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-dbfilename = os.path.join(conf.dataDir, 'Infobot.db')
+dbfilename = os.path.join(conf.supybot.directories.data(), 'Infobot.db')
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn

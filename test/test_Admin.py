@@ -51,7 +51,7 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
             self.assertNotError('admin unignore foo!bar@baz')
             self.assertError('admin unignore foo!bar@baz')
         finally:
-            conf.ignores = []
+            conf.supybot.ignores.set('')
 
     def testIgnores(self):
         try:
@@ -61,13 +61,7 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
             self.assertNotError('admin ignore foo!bar@baz')
             self.assertNotError('admin ignores')
         finally:
-            conf.ignores = []
-
-    def testSetprefixchar(self):
-        self.assertNotError('setprefixchar $')
-        self.assertResponse('getprefixchar', "'$'")
-        self.assertError('setprefixchar p')
-        self.assertNoResponse(' ', 2)  # make sure we return
+            conf.supybot.ignores.set('')
 
     def testAddcapability(self):
         self.assertError('addcapability sdlkfj foo')

@@ -92,7 +92,8 @@ def upkeep():
         log.debug('Pattern cache size: %s'%len(ircutils._patternCache))
         log.debug('HostmaskPatternEqual cache size: %s' %
                   len(ircutils._hostmaskPatternEqualCache))
-        log.info('%s upkeep ran.', time.strftime(conf.logTimestampFormat))
+        log.info('%s upkeep ran.',
+                 time.strftime(conf.supybot.log.timestampFormat()))
     return collected
 
 def makeDriversDie():
@@ -129,7 +130,6 @@ atexit.register(startDying)
 ##################################################
 ##################################################
 ##################################################
-startup = False
 testing = False
 dying = False
 

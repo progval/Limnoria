@@ -61,7 +61,8 @@ def configure(onStart, afterConnect, advanced):
 
 class UptimeDB(object):
     def __init__(self, filename='uptimes'):
-        self.filename = os.path.join(conf.dataDir, filename)
+        dataDir = conf.supybot.directories.data()
+        self.filename = os.path.join(dataDir, filename)
         if os.path.exists(self.filename):
             fd = file(self.filename)
             s = fd.read()
@@ -137,9 +138,9 @@ class Status(callbacks.Privmsg):
             return
         def format((started, ended)):
             return '%s until %s; up for %s' % \
-                   (time.strftime(conf.humanTimestampFormat,
+                   (time.strftime(conf.supybot.humanTimestampFormat(),
                                   time.localtime(started)),
-                    time.strftime(conf.humanTimestampFormat,
+                    time.strftime(conf.supybot.humanTimestampFormat(),
                                   time.localtime(ended)),
                     utils.timeElapsed(ended-started))
         irc.reply(utils.commaAndify(imap(format, L)))
@@ -186,7 +187,7 @@ class Status(callbacks.Privmsg):
                 try:
                     r = os.popen('ps -o rss -p %s' % pid)
                     r.readline() # VSZ Header.
-                    mem = r.readline().strip() + ' kB'
+                    mem = r.readline().strip()
                 finally:
                     r.close()
             elif sys.platform.startswith('netbsd'):

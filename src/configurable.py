@@ -210,7 +210,8 @@ class Mixin(object):
     """
     def __init__(self):
         className = self.__class__.__name__
-        self.filename = os.path.join(conf.confDir, '%s-configurable'%className)
+        self.filename = os.path.join(conf.supybot.directories.conf(),
+                                     '%s-configurable'%className)
         if os.path.exists(self.filename):
             fd = file(self.filename)
             for line in fd:
@@ -258,7 +259,7 @@ class Mixin(object):
         flushDictionary(self.configurables)
         fd.close()
 
-    def config(self, irc, msg, args):
+    def configurableishnessify(self, irc, msg, args):
         """[<channel>] [<name>] [<value>]
 
         Sets the value of config variable <name> to <value> on <channel>.  If

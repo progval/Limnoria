@@ -67,7 +67,7 @@ priorityKeys = ['p1', 'p2', 'p3', 'p4', 'p5', 'Low', 'Normal', 'High',
 severityKeys = ['enhancement', 'trivial', 'minor', 'normal', 'major',
                 'critical', 'blocker']
 
-dbfilename = os.path.join(conf.dataDir, 'Bugzilla.db')
+dbfilename = os.path.join(conf.supybot.directories.data(), 'Bugzilla.db')
 
 def makeDb(filename):
     if os.path.exists(filename):

@@ -139,14 +139,14 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
             if int(expires_at) == 0:
                 s = '%s (Subject: "%s", added by %s on %s)' % \
                     (item, subject, added_by,
-                     time.strftime(conf.humanTimestampFormat,
+                     time.strftime(conf.supybot.humanTimestampFormat(),
                                    time.localtime(int(added_at))))
             else:
                 s = '%s (Subject: "%s", added by %s on %s, expires at %s)' % \
                     (item, subject, added_by,
-                     time.strftime(conf.humanTimestampFormat,
+                     time.strftime(conf.supybot.humanTimestampFormat(),
                                    time.localtime(int(added_at))),
-                     time.strftime(conf.humanTimestampFormat,
+                     time.strftime(conf.supybot.humanTimestampFormat(),
                                    time.localtime(int(expires_at))))
             irc.reply(s)
 

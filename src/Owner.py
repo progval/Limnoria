@@ -55,6 +55,7 @@ import irclib
 import ircmsgs
 import drivers
 import privmsgs
+import registry
 import callbacks
 
 class Deprecated(ImportError):
@@ -63,7 +64,8 @@ class Deprecated(ImportError):
 def loadPluginModule(name, ignoreDeprecation=False):
     """Loads (and returns) the module for the plugin with the given name."""
     files = []
-    for dir in conf.pluginDirs:
+    pluginDirs = conf.supybot.directories.plugins()
+    for dir in pluginDirs:
         try:
             files.extend(os.listdir(dir))
         except EnvironmentError: # OSError, IOError superclass.
@@ -74,7 +76,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
         name = os.path.splitext(files[index])[0]
     except ValueError: # We'd rather raise the ImportError, so we'll let go...
         pass
-    moduleInfo = imp.find_module(name, conf.pluginDirs)
+    moduleInfo = imp.find_module(name, pluginDirs)
     module = imp.load_module(name, *moduleInfo)
     if 'deprecated' in module.__dict__ and module.deprecated:
         if ignoreDeprecation:
@@ -91,8 +93,14 @@ def loadPluginClass(irc, module):
     callback = module.Class()
     assert not irc.getCallback(callback.name())
     irc.addCallback(callback)
-    if hasattr(callback, 'configure'):
-        callback.configure(irc)
+
+def registerPlugin(name, currentValue=None):
+    conf.supybot.plugins.registerGroup(name,
+        registry.GroupWithValue(registry.Boolean(False, """Determines
+        whether this plugin is loaded by default.""")))
+    if currentValue is not None:
+        conf.supybot.plugins.getChild(name).setValue(currentValue)
+    
 
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
@@ -107,6 +115,27 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                'capabilities': 'User',
                                'addcapability': 'Admin',
                                'removecapability': 'Admin'}
+        for (name, s) in registry.cache.iteritems():
+            if name.startswith('supybot.plugins'):
+                try:
+                    (_, _, name) = name.split('.')
+                except ValueError: #unpack list of wrong size.
+                    continue
+                registerPlugin(name)
+
+    def do001(self, irc, msg):
+        self.log.info('Loading other src/ plugins.')
+        for s in ('Admin', 'Channel', 'Config', 'Misc', 'User'):
+            self.log.info('Loading %s.' % s)
+            m = loadPluginModule(s)
+            loadPluginClass(irc, m)
+        for (name, value) in conf.supybot.plugins.getValues():
+            if value():
+                s = rsplit(name, '.', 1)[-1]
+                if not irc.getCallback(s):
+                    self.log.info('Loading %s.' % s)
+                    m = loadPluginModule(s)
+                    loadPluginClass(irc, m)
 
     def disambiguate(self, irc, tokens, ambiguousCommands=None):
         """Disambiguates the given tokens based on the plugins loaded and
@@ -227,7 +256,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             except Exception, e:
                 irc.reply(utils.exnToString(e))
         else:
-            irc.error(conf.replyEvalNotAllowed)
+            irc.error('You must enable conf.allowEval for that to work.')
 
     def _exec(self, irc, msg, args):
         """<statement>
@@ -242,77 +271,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             except Exception, e:
                 irc.reply(utils.exnToString(e))
         else:
-            irc.error(conf.replyEvalNotAllowed)
-
-    def setconf(self, irc, msg, args):
-        """[<name> [<value>]]
-
-        Lists adjustable variables in the conf-module by default, shows the
-        variable type with only the <name> argument and sets the value of the
-        variable to <value> when both arguments are given.
-        """
-        (name, value) = privmsgs.getArgs(args, required=0, optional=2)
-        if name and value:
-            if conf.allowEval:
-                try:
-                    value = eval(value)
-                except Exception, e:
-                    irc.error(utils.exnToString(e))
-                    return
-                setattr(conf, name, value)
-                irc.replySuccess()
-            else:
-                if name == 'allowEval':
-                    irc.error('You can\'t set the value of allowEval.')
-                    return
-                elif name not in conf.types:
-                    irc.error('I can\'t set that conf variable.')
-                    return
-                else:
-                    converter = conf.types[name]
-                    try:
-                        value = converter(value)
-                    except ValueError, e:
-                        irc.error(str(e))
-                        return
-                    setattr(conf, name, value)
-                    irc.replySuccess()
-        elif name:
-            typeNames = {conf.mystr: 'string',
-                         conf.mybool: 'boolean',
-                         float: 'float'}
-            try:
-                type = typeNames[conf.types[name]]
-            except KeyError:
-                irc.error('That configuration variable doesn\'t exist.')
-                return
-            try:
-                value = getattr(conf, name)
-                irc.reply('%s is a %s (%s).' % (name, type, value))
-            except KeyError:
-                irc.error('%s is of an unknown type.' % name)
-        else:
-            options = conf.types.keys()
-            options.sort()
-            irc.reply(', '.join(options))
-
-    def setdefaultcapability(self, irc, msg, args):
-        """<capability>
-
-        Sets the default capability to be allowed for any command.
-        """
-        capability = callbacks.canonicalName(privmsgs.getArgs(args))
-        conf.defaultCapabilities.add(capability)
-        irc.replySuccess()
-
-    def unsetdefaultcapability(self, irc, msg, args):
-        """<capability>
-
-        Unsets the default capability for any command.
-        """
-        capability = callbacks.canonicalName(privmsgs.getArgs(args))
-        conf.defaultCapabilities.remove(capability)
-        irc.replySuccess()
+            irc.error('You must enable conf.allowEval for that to work.')
 
     def ircquote(self, irc, msg, args):
         """<string to be sent to the server>
@@ -357,9 +316,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         """[--deprecated] <plugin>
 
         Loads the plugin <plugin> from any of the directories in
-        conf.pluginDirs; usually this includes the main installed directory
-        and 'plugins' in the current directory.  --deprecated is necessary
-        if you wish to load deprecated plugins.
+        conf.supybot.directories.plugins; usually this includes the main
+        installed directory and 'plugins' in the current directory.
+        --deprecated is necessary if you wish to load deprecated plugins.
         """
         (optlist, args) = getopt.getopt(args, '', ['deprecated'])
         ignoreDeprecation = False
@@ -385,6 +344,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error(utils.exnToString(e))
             return
         loadPluginClass(irc, module)
+        registerPlugin(name, True)
         irc.replySuccess()
 
     def reload(self, irc, msg, args):
@@ -429,6 +389,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 callback.die()
                 del callback
             gc.collect()
+            registerPlugin(name, False)
             irc.replySuccess()
         else:
             irc.error('There was no callback %s' % name)
@@ -436,8 +397,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def reconf(self, irc, msg, args):
         """takes no arguments
 
-        Reloads the configuration files in conf.dataDir: conf/users.conf and
-        conf/channels.conf, by default.
+        Reloads the configuration files for the user and channel databases:
+        conf/users.conf and conf/channels.conf, by default.
         """
         ircdb.users.reload()
         ircdb.channels.reload()

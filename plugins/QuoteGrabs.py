@@ -256,7 +256,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
             irc.error('No quotegrab for id %r' % id)
             return
         quote, hostmask, timestamp = cursor.fetchone()
-        time_str = time.strftime(conf.humanTimestampFormat,
+        time_str = time.strftime(conf.supybot.humanTimestampFormat(),
                                  time.localtime(float(timestamp)))
         irc.reply('%s (Said by: %s on %s)' % (quote, hostmask, time_str))
 

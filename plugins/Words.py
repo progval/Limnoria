@@ -160,9 +160,10 @@ class Words(callbacks.Privmsg, configurable.Mixin):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         configurable.Mixin.__init__(self)
-        self.dbHandler = WordsDB(os.path.join(conf.dataDir, 'Words'))
+        dataDir = conf.supybot.directories.data()
+        self.dbHandler = WordsDB(os.path.join(dataDir, 'Words'))
         try:
-            dictfile = os.path.join(conf.dataDir, 'dict')
+            dictfile = os.path.join(dataDir, 'dict')
             self.wordList = file(dictfile).readlines() 
             self.gotDictFile = True
         except IOError:
@@ -367,31 +368,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
 
 Class = Words
 
-
-if __name__ == '__main__':
-    import sys, log
-    if len(sys.argv) < 2:
-        fd = sys.stdin
-    else:
-        try:
-            fd = file(sys.argv[1])
-        except EnvironmentError, e:
-            sys.stderr.write(str(e) + '\n')
-            sys.exit(-1)
-    db = WordsDB(os.path.join(conf.dataDir, 'Words')).getDb()
-    cursor = db.cursor()
-    cursor.execute("""PRAGMA cache_size=20000""")
-    lineno = 0
-    for line in fd:
-        lineno += 1
-        line = line.rstrip()
-        try:
-            addWord(db, line)
-        except KeyboardInterrupt:
-            sys.exit(-1)
-        except Exception, e:
-            sys.stderr.write('Error on line %s: %s\n' % (lineno, e))
-    db.commit()
+### TODO: Write a script to make the database.
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

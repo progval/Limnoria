@@ -220,7 +220,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         cursor.execute("""SELECT * FROM quotes WHERE id=%s""", id)
         if cursor.rowcount == 1:
             (id, added_by, added_at, quote) = cursor.fetchone()
-            timestamp = time.strftime(conf.humanTimestampFormat,
+            timestamp = time.strftime(conf.supybot.humanTimestampFormat(),
                                       time.localtime(int(added_at)))
             irc.reply('Quote %r added by %s at %s.' %
                       (quote, added_by, timestamp))

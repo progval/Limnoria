@@ -172,7 +172,8 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             return '; '.join(resp)
         else:
             raise EbayError, 'That doesn\'t appear to be a proper eBay ' \
-                             'auction page.  (%s)' % conf.replyPossibleBug
+                             'auction page.  (%s)' % \
+                             conf.supybot.replies.possibleBug()
 
 Class = Ebay
 

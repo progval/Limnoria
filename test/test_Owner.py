@@ -103,43 +103,6 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('load ALIAS')
         self.assertNotError('unload ALIAS')
 
-    def testSetconf(self):
-        self.assertRegexp('setconf', 'confDir')
-        self.assertNotRegexp('setconf', 'allowEval')
-        self.assertResponse('setconf confDir',
-                            'confDir is a string (%s).' % conf.confDir)
-        self.assertError('setconf whackyConfOption')
-        try:
-            originalConfAllowEval = conf.allowEval
-            conf.allowEval = False
-            self.assertError('setconf alsdkfj 100')
-            self.assertError('setconf poll "foo"')
-            try:
-                originalReplySuccess = conf.replySuccess
-                self.assertResponse('setconf replySuccess foo', 'foo')
-                self.assertResponse('setconf replySuccess "foo"', 'foo')
-                self.assertResponse('setconf replySuccess \'foo\'', 'foo')
-            finally:
-                conf.replySuccess = originalReplySuccess
-            try:
-                originalReplyWhenNotCommand = conf.replyWhenNotCommand
-                self.assertNotError('setconf replyWhenNotCommand True')
-                self.failUnless(conf.replyWhenNotCommand)
-                self.assertNotError('setconf replyWhenNotCommand False')
-                self.failIf(conf.replyWhenNotCommand)
-                self.assertNotError('setconf replyWhenNotCommand true')
-                self.failUnless(conf.replyWhenNotCommand)
-                self.assertNotError('setconf replyWhenNotCommand false')
-                self.failIf(conf.replyWhenNotCommand)
-                self.assertNotError('setconf replyWhenNotCommand 1')
-                self.failUnless(conf.replyWhenNotCommand)
-                self.assertNotError('setconf replyWhenNotCommand 0')
-                self.failIf(conf.replyWhenNotCommand)
-            finally:
-                conf.replyWhenNotCommand = originalReplyWhenNotCommand
-        finally:
-            conf.allowEval = originalConfAllowEval
-
 
 class FunctionsTestCase(unittest.TestCase):
     def testLoadPluginModule(self):

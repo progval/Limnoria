@@ -156,7 +156,7 @@ def makeNewAlias(name, alias):
 class Alias(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        filename = os.path.join(conf.dataDir, 'Aliases.db')
+        filename = os.path.join(conf.supybot.directories.data(), 'Aliases.db')
         # Schema: {name: [alias, locked]}
         self.aliases = structures.PersistentDictionary(filename)
 
@@ -207,7 +207,7 @@ class Alias(callbacks.Privmsg):
     def addAlias(self, irc, name, alias, lock=False):
         if self._invalidCharsRe.search(name):
             raise AliasError, 'Names cannot contain spaces or square brackets.'
-        if conf.enablePipeSyntax and '|' in name:
+        if conf.supybot.pipeSyntax() and '|' in name:
             raise AliasError, 'Names cannot contain pipes.'
         realName = callbacks.canonicalName(name)
         if name != realName:

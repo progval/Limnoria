@@ -556,8 +556,11 @@ class ChannelsDictionary(utils.IterableMap):
 ###
 # Later, I might add some special handling for botnet.
 ###
-users = UsersDB(os.path.join(conf.confDir, conf.userfile))
-channels = ChannelsDictionary(os.path.join(conf.confDir, conf.channelfile))
+confDir = conf.supybot.directories.conf()
+users = UsersDB(os.path.join(confDir,
+                             conf.supybot.databases.users.filename()))
+channels = ChannelsDictionary(os.path.join(confDir,
+                              conf.supybot.databases.channels.filename()))
 
 ###
 # Useful functions for checking credentials.
@@ -567,9 +570,9 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
 
     Checks if the user is ignored by the recipient of the message.
     """
-    for ignore in conf.ignores:
+    for ignore in conf.supybot.ignores():
         if ircutils.hostmaskPatternEqual(ignore, hostmask):
-            log.info('Ignoring %s due to conf.ignores.', hostmask)
+            log.info('Ignoring %s due to conf.supybot.ignores.', hostmask)
             return True
     try:
         id = users.getUserId(hostmask)
@@ -584,8 +587,9 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
             else:
                 return False
         else:
-            if conf.defaultIgnore:
-                log.info('Ignoring %s due to conf.defaultIgnore', hostmask)
+            if conf.supybot.defaultIgnore():
+                log.info('Ignoring %s due to conf.supybot.defaultIgnore',
+                         hostmask)
                 return True
             else:
                 return False
@@ -625,17 +629,17 @@ def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
                 return _x(capability, c.defaultAllow)
         except KeyError:
             pass
-    if capability in conf.defaultCapabilities:
+    if capability in conf.supybot.defaultCapabilities():
         return True
-    elif invertCapability(capability) in conf.defaultCapabilities:
+    elif invertCapability(capability) in conf.supybot.defaultCapabilities():
         return False
     else:
-        return _x(capability, conf.defaultAllow)
+        return _x(capability, conf.supybot.defaultAllow())
 
 def checkCapability(hostmask, capability, users=users, channels=channels):
     """Checks that the user specified by name/hostmask has the capabilty given.
     """
-    if world.startup:
+    if world.testing:
         return _x(capability, True)
     try:
         u = users.getUser(hostmask)
@@ -666,12 +670,13 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
                 return c.checkCapability(capability)
             else:
                 return _x(capability, c.defaultAllow)
-        if capability in conf.defaultCapabilities:
+        defaultCapabilities = conf.supybot.defaultCapabilities()
+        if capability in defaultCapabilities:
             return True
-        elif invertCapability(capability) in conf.defaultCapabilities:
+        elif invertCapability(capability) in defaultCapabilities:
             return False
         else:
-            return _x(capability, conf.defaultAllow)
+            return _x(capability, conf.supybot.defaultAllow())
 
 
 def checkCapabilities(hostmask, capabilities, requireAll=False):

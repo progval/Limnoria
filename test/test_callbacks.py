@@ -86,7 +86,7 @@ class TokenizerTestCase(unittest.TestCase):
 
     def testPipe(self):
         try:
-            conf.enablePipeSyntax = True
+            conf.supybot.pipeSyntax.set('True')
             self.assertRaises(SyntaxError, tokenize, '| foo')
             self.assertRaises(SyntaxError, tokenize, 'foo ||bar')
             self.assertRaises(SyntaxError, tokenize, 'bar |')
@@ -100,7 +100,7 @@ class TokenizerTestCase(unittest.TestCase):
             self.assertEqual(tokenize('foo bar | baz quux'),
                              ['baz', 'quux', ['foo', 'bar']])
         finally:
-            conf.enablePipeSyntax = False
+            conf.supybot.pipeSyntax.set('False')
 
     def testBold(self):
         s = '\x02foo\x02'
@@ -127,9 +127,9 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual('foobar--', callbacks.canonicalName('foobar--'))
 
     def testAddressed(self):
-        oldprefixchars = conf.prefixChars
+        oldprefixchars = str(conf.supybot.prefixChars)
         nick = 'supybot'
-        conf.prefixChars = '~!@'
+        conf.supybot.prefixChars.set('~!@')
         inChannel = ['~foo', '@foo', '!foo',
                      '%s: foo' % nick, '%s foo' % nick,
                      '%s: foo' % nick.capitalize(), '%s: foo' % nick.upper()]
@@ -142,7 +142,7 @@ class FunctionsTestCase(unittest.TestCase):
             self.assertEqual('foo', callbacks.addressed(nick, msg), msg)
         msg = ircmsgs.privmsg(nick, 'foo')
         self.assertEqual('foo', callbacks.addressed(nick, msg))
-        conf.prefixChars = oldprefixchars
+        conf.supybot.prefixChars.set(oldprefixchars)
         msg = ircmsgs.privmsg('#foo', '%s::::: bar' % nick)
         self.assertEqual('bar', callbacks.addressed(nick, msg))
         msg = ircmsgs.privmsg('#foo', '%s: foo' % nick.upper())
@@ -155,12 +155,12 @@ class FunctionsTestCase(unittest.TestCase):
         msg2 = ircmsgs.privmsg('#foo', 'bar')
         self.assertEqual(callbacks.addressed('blah', msg1), 'bar')
         try:
-            original = conf.replyWhenNotAddressed
-            conf.replyWhenNotAddressed = True
+            original = str(conf.supybot.reply.whenNotAddressed)
+            conf.supybot.reply.whenNotAddressed.set('True')
             self.assertEqual(callbacks.addressed('blah', msg1), 'bar')
             self.assertEqual(callbacks.addressed('blah', msg2), 'bar')
         finally:
-            conf.replyWhenNotAddressed = original
+            conf.supybot.reply.whenNotAddressed.set(original)
 
     def testReply(self):
         prefix = 'foo!bar@baz'
@@ -220,17 +220,17 @@ class PrivmsgTestCase(ChannelPluginTestCase):
 
     def testErrorPrivateKwarg(self):
         try:
-            originalConfErrorReplyPrivate = conf.errorReplyPrivate
-            conf.errorReplyPrivate = False
+            original = str(conf.supybot.reply.errorInPrivate)
+            conf.supybot.reply.errorInPrivate.set('False')
             m = self.getMsg("eval irc.error('foo', private=True)")
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:
-            conf.errorReplyPrivate = originalConfErrorReplyPrivate
+            conf.supybot.reply.errorInPrivate.set(original)
 
     def testErrorReplyPrivate(self):
         try:
-            originalConfErrorReplyPrivate = conf.errorReplyPrivate
-            conf.errorReplyPrivate = False
+            original = str(conf.supybot.reply.errorInPrivate)
+            conf.supybot.reply.errorInPrivate.set('False')
             # If this doesn't raise an error, we've got a problem, so the next
             # two assertions shouldn't run.  So we first check that what we
             # expect to error actually does so we don't go on a wild goose
@@ -239,11 +239,11 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             self.assertError(s)
             m = self.getMsg(s)
             self.failUnless(ircutils.isChannel(m.args[0]))
-            conf.errorReplyPrivate = True
+            conf.supybot.reply.errorInPrivate.set('True')
             m = self.getMsg(s)
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:
-            conf.errorReplyPrivate = originalConfErrorReplyPrivate
+            conf.supybot.reply.errorInPrivate.set(original)
             
     # Now for stuff not based on the plugins.
     class First(callbacks.Privmsg):
@@ -300,12 +300,12 @@ class PrivmsgTestCase(ChannelPluginTestCase):
 
     def testEmptyNest(self):
         try:
-            conf.replyWhenNotCommand = True
+            conf.supybot.reply.whenNotCommand.set('True')
             self.assertError('echo []')
-            conf.replyWhenNotCommand = False
+            conf.supybot.reply.whenNotCommand.set('False')
             self.assertResponse('echo []', '[]')
         finally:
-            conf.replyWhenNotCommand = False
+            conf.supybot.reply.whenNotCommand.set('False')
 
     def testDispatcherHelp(self):
         self.assertNotRegexp('help first', r'\(dispatcher')
@@ -316,18 +316,6 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.irc.addCallback(self.Third())
         self.assertError('first blah')
         self.assertResponse('third foo bar baz', 'foo bar baz')
-
-    def testConfigureHandlesNonCanonicalCommands(self):
-        # Note that this also ends up testing that the FakeIrc object in
-        # callbacks actually works.
-        try:
-            original = conf.commandsOnStart
-            tokens = callbacks.tokenize('Admin setprefixchar $')
-            conf.commandsOnStart = [tokens]
-            self.assertNotError('load Admin')
-            self.assertEqual(conf.prefixChars, '$')
-        finally:
-            conf.commandsOnStart = original
 
     def testSyntaxErrorNotEscaping(self):
         self.assertError('load [foo')
@@ -342,14 +330,14 @@ class PrivmsgTestCase(ChannelPluginTestCase):
 
     def testInvalidCommandOneReplyOnly(self):
         try:
-            original = conf.replyWhenNotCommand
-            conf.replyWhenNotCommand = True
+            original = str(conf.supybot.reply.whenNotCommand)
+            conf.supybot.reply.whenNotCommand.set('True')
             self.assertRegexp('asdfjkl', 'not a valid command')
             self.irc.addCallback(self.InvalidCommand())
             self.assertResponse('asdfjkl', 'foo')
             self.assertNoResponse(' ', 2)
         finally:
-            conf.replyWhenNotCommand = original
+            conf.supybot.reply.whenNotCommand.set(original)
 
     class BadInvalidCommand(callbacks.Privmsg):
         def invalidCommand(self, irc, msg, tokens):
@@ -358,12 +346,12 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         
     def testBadInvalidCommandDoesNotKillAll(self):
         try:
-            original = conf.replyWhenNotCommand
-            conf.replyWhenNotCommand = True
+            original = str(conf.supybot.reply.whenNotCommand)
+            conf.supybot.reply.whenNotCommand.set('True')
             self.irc.addCallback(self.BadInvalidCommand())
             self.assertRegexp('asdfjkl', 'not a valid command')
         finally:
-            conf.replyWhenNotCommand = original
+            conf.supybot.reply.whenNotCommand.set(original)
             
 
 class PrivmsgCommandAndRegexpTestCase(PluginTestCase):

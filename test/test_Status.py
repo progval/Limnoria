@@ -48,6 +48,7 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
 
     def testCpustats(self):
         m = self.assertNotError('status cpu')
+        self.failIf('kB kB' in m.args[1])
         self.failIf('None' in m.args[1], 'None in cpu output: %r.' % m)
         for s in ['linux', 'freebsd', 'openbsd', 'netbsd', 'darwin']:
             if sys.platform.startswith(s):

@@ -208,18 +208,20 @@ class IrcStateTestCase(unittest.TestCase):
         prefix = 'nick!user@host'
     irc = FakeIrc()
     def testHistory(self):
-        oldconfmaxhistory = conf.maxHistory
-        conf.maxHistory = 10
+        oldconfmaxhistory = str(conf.supybot.maxHistoryLength)
+        conf.supybot.maxHistoryLength.set('10')
         state = irclib.IrcState()
         for msg in msgs:
             try:
                 state.addMsg(self.irc, msg)
             except Exception:
                 pass
-            self.failIf(len(state.history) > conf.maxHistory)
-        self.assertEqual(len(state.history), conf.maxHistory)
-        self.assertEqual(list(state.history), msgs[len(msgs)-conf.maxHistory:])
-        conf.maxHistory = oldconfmaxhistory
+            self.failIf(len(state.history)>conf.supybot.maxHistoryLength())
+        self.assertEqual(len(state.history),
+                         conf.supybot.maxHistoryLength())
+        self.assertEqual(list(state.history),
+                         msgs[len(msgs)-conf.supybot.maxHistoryLength():])
+        conf.supybot.maxHistoryLength.set(oldconfmaxhistory)
 
     def testEmptyTopic(self):
         state = irclib.IrcState()
@@ -392,8 +394,6 @@ class IrcCallbackTestCase(unittest.TestCase):
         self.assertEqual(doCommandCatcher.L, commands)
 
     def testFirstCommands(self):
-        oldconfthrottle = conf.throttleTime
-        conf.throttleTime = 0
         nick = 'nick'
         user = 'user any user'
         password = 'password'
@@ -411,7 +411,6 @@ class IrcCallbackTestCase(unittest.TestCase):
         msgs.pop()
         expected.insert(0, ircmsgs.password(password))
         self.assertEqual(msgs, expected)
-        conf.throttleTime = oldconfthrottle
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

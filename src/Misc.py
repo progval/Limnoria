@@ -54,7 +54,7 @@ class Misc(callbacks.Privmsg):
     priority = sys.maxint
     def invalidCommand(self, irc, msg, tokens):
         self.log.debug('Misc.invalidCommand called (tokens %s)', tokens)
-        if conf.replyWhenNotCommand:
+        if conf.supybot.reply.whenNotCommand():
             command = tokens and tokens[0] or ''
             irc.error('%r is not a valid command.' % command)
         else:
@@ -146,7 +146,7 @@ class Misc(callbacks.Privmsg):
             cb = irc.getCallback(args[0])
             if cb is not None:
                 command = callbacks.canonicalName(privmsgs.getArgs(args[1:]))
-                command = command.lstrip(conf.prefixChars)
+                command = command.lstrip(conf.supybot.prefixChars())
                 name = ' '.join(args)
                 if hasattr(cb, 'isCommand') and cb.isCommand(command):
                     method = getattr(cb, command)
@@ -158,7 +158,7 @@ class Misc(callbacks.Privmsg):
             return
         command = callbacks.canonicalName(privmsgs.getArgs(args))
         # Users might expect "@help @list" to work.
-        command = command.lstrip(conf.prefixChars) 
+        command = command.lstrip(conf.supybot.prefixChars()) 
         cbs = callbacks.findCallbackForCommand(irc, command)
         if len(cbs) > 1:
             tokens = [command]
@@ -235,7 +235,7 @@ class Misc(callbacks.Privmsg):
                 except:
                     self.log.exception('Couldn\'t get id string: %r', s)
             names = {}
-            dirs = map(os.path.abspath, conf.pluginDirs)
+            dirs = map(os.path.abspath, conf.supybot.directories.plugins())
             for (name, module) in sys.modules.items(): # Don't use iteritems.
                 if hasattr(module, '__revision__'):
                     if 'supybot' in module.__file__:
@@ -268,7 +268,8 @@ class Misc(callbacks.Privmsg):
                 return
             filenameArg = os.path.basename(filenameArg)
         ret = []
-        for (dirname, _, filenames) in os.walk(conf.logDir):
+        dirname = conf.supybot.directories.log()
+        for (dirname,_,filenames) in os.walk(dirname):
             if filenameArg:
                 if filenameArg in filenames:
                     filename = os.path.join(dirname, filenameArg)
@@ -283,13 +284,6 @@ class Misc(callbacks.Privmsg):
             irc.reply(utils.commaAndify(ret))
         else:
             irc.error('I couldn\'t find any logfiles.')
-
-    def getprefixchar(self, irc, msg, args):
-        """takes no arguments
-
-        Returns the prefix character(s) the bot is currently using.
-        """
-        irc.reply(repr(conf.prefixChars))
 
     def plugin(self, irc, msg, args):
         """<command>

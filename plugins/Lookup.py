@@ -64,13 +64,16 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Lookup')
     print 'This module allows you to define commands that do a simple key'
     print 'lookup and return some simple value.  It has a command "add"'
+    ### TODO: fix conf.dataDir here.  I'm waiting until we rewrite this with
+    ### a proper question.py print statement.
     print 'that takes a command name and a file in conf.dataDir and adds a'
     print 'command with that name that responds with mapping from that file.'
     print 'The file itself should be composed of lines of the form key:value.'
     while yn('Would you like to add a file?') == 'y':
         filename = something('What\'s the filename?')
         try:
-            fd = file(os.path.join(conf.dataDir, filename))
+            dataDir = conf.supybot.directories.data()
+            fd = file(os.path.join(dataDir, filename))
         except EnvironmentError, e:
             print 'I couldn\'t open that file: %s' % e
             continue
@@ -97,7 +100,8 @@ class Lookup(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.lookupDomains = sets.Set()
-        self.dbHandler = LookupDB(name=os.path.join(conf.dataDir, 'Lookup'))
+        dataDir = conf.supybot.directories.data()
+        self.dbHandler = LookupDB(name=os.path.join(dataDir, 'Lookup'))
         
     def _shrink(self, s):
         return utils.ellipsisify(s, 50)
@@ -132,8 +136,8 @@ class Lookup(callbacks.Privmsg):
 
         Adds a lookup for <name> with the key/value pairs specified in the
         colon-delimited file specified by <filename>.  <filename> is searched
-        for in conf.dataDir.  If <name> is not singular, we try to make it
-        singular before creating the command.
+        for in conf.supybot.directories.data.  If <name> is not singular, we
+        try to make it singular before creating the command.
         """
         (name, filename) = privmsgs.getArgs(args, required=2)
         name = utils.depluralize(name)
@@ -151,7 +155,8 @@ class Lookup(callbacks.Privmsg):
         except sqlite.DatabaseError:
             # Good, there's no such database.
             try:
-                filename = os.path.join(conf.dataDir, filename)
+                dataDir = conf.supybot.directories.data()
+                filename = os.path.join(dataDir, filename)
                 fd = file(filename)
             except EnvironmentError, e:
                 irc.error('Could not open %s: %s' % (filename, e.args[1]))

@@ -148,8 +148,11 @@ def run():
             del _drivers[name]
         _drivers[name] = driver
 
-def newDriver(server, irc, moduleName=conf.driverModule):
-    """Returns a new driver for the given server using conf.driverModule."""
+def newDriver(server, irc, moduleName=None):
+    """Returns a new driver for the given server using the irc given and using
+    conf.supybot.driverModule to determine what driver to pick."""
+    if moduleName is None:
+        moduleName = conf.supybot.drivers.module()
     driver = __import__(moduleName).Driver(server, irc)
     irc.driver = driver
     return driver

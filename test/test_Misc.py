@@ -42,29 +42,32 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testReplyWhenNotCommand(self):
         try:
-            conf.replyWhenNotCommand = True
+            original = str(conf.supybot.reply.whenNotCommand)
+            conf.supybot.reply.whenNotCommand.set('True')
             self.prefix = 'somethingElse!user@host.domain.tld'
             self.assertRegexp('foo bar baz', 'not.*command')
         finally:
-            conf.replyWhenNotCommand = False
+            conf.supybot.reply.whenNotCommand.set(original)
 
     if network:
         def testNotReplyWhenRegexpsMatch(self):
             try:
-                conf.replyWhenNotCommand = True
+                original = str(conf.supybot.reply.whenNotCommand)
+                conf.supybot.reply.whenNotCommand.set('True')
                 self.prefix = 'somethingElse!user@host.domain.tld'
                 self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
             finally:
-                conf.replyWhenNotCommand = False
+                conf.supybot.reply.whenNotCommand.set(original)
 
     def testNotReplyWhenNotCanonicalName(self):
         try:
-            conf.replyWhenNotCommand = True
+            original = str(conf.supybot.reply.whenNotCommand)
+            conf.supybot.reply.whenNotCommand.set('True')
             self.prefix = 'somethingElse!user@host.domain.tld'
             self.assertNotRegexp('STrLeN foobar', 'command')
             self.assertResponse('StRlEn foobar', '6')
         finally:
-            conf.repylWhenNotCommand = False
+            conf.supybot.reply.whenNotCommand.set(original)
         
     def testHelp(self):
         self.assertHelp('help list')
@@ -78,11 +81,11 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testHelpStripsPrefixChars(self):
         try:
-            original = conf.prefixChars
-            conf.prefixChars = '@'
+            original = str(conf.supybot.prefixChars)
+            conf.supybot.prefixChars.set('@')
             self.assertHelp('help @list')
         finally:
-            conf.prefixChars = original
+            conf.supybot.prefixChars.set(original)
 
     def testHelpIsCaseInsensitive(self):
         self.assertHelp('help LIST')
@@ -121,9 +124,6 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.feedMsg('bar baz quux')
         self.assertNotError('upkeep')
         self.assertNotError('logfilesize')
-
-    def testGetprefixchar(self):
-        self.assertNotError('getprefixchar')
 
     def testPlugin(self):
         self.assertResponse('plugin plugin', 'Misc')

@@ -93,7 +93,7 @@ class Debian(callbacks.Privmsg,
                              'debian/dists/unstable/Contents-i386.gz',
                              604800, None)
         }
-    contents = os.path.join(conf.dataDir, 'Contents-i386.gz')
+    contents = os.path.join(conf.supybot.directories.data(),'Contents-i386.gz')
     configurables = configurable.Dictionary(
         [('python-zegrep', configurable.BoolType, False,
           """An advanced option, mostly just for testing; uses a Python-coded

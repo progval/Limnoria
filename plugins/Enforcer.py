@@ -134,7 +134,7 @@ class Enforcer(callbacks.Privmsg, configurable.Mixin):
             irc.queueMsg(ircmsgs.topic(channel, self.topics[channel]))
             if self.configurables.get('revenge', channel):
                 irc.queueMsg(ircmsgs.kick(channel, msg.nick,
-                                          conf.replyNoCapability %
+                                          conf.supybot.replies.noCapability() %
                                           _chanCap(channel, 'topic')))
         else:
             self.topics[channel] = msg.args[1]

@@ -71,8 +71,8 @@ class DCC(callbacks.Privmsg):
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.settimeout(60)
                 host = ircutils.hostFromHostmask(irc.prefix)
-                if conf.externalIP is not None:
-                    ip = conf.externalIP
+                if conf.supybot.externalIP():
+                    ip = conf.supybot.externalIP()
                 else:
                     try:
                         ip = socket.gethostbyname(host)

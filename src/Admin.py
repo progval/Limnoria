@@ -60,6 +60,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
     def __init__(self):
         privmsgs.CapabilityCheckingPrivmsg.__init__(self)
         self.joins = {}
+
+    def do376(self, irc, msg):
+        irc.queueMsg(ircmsgs.joins(conf.supybot.channels()))
+    do422 = do377 = do376
         
     def do471(self, irc, msg):
         try:
@@ -107,7 +111,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
 
     def doInvite(self, irc, msg):
         if msg.args[1] not in irc.state.channels:
-            if conf.alwaysJoinOnInvite:
+            if conf.supybot.alwaysJoinOnInvite():
                 irc.queueMsg(ircmsgs.join(msg.args[1]))
             else:
                 if ircdb.checkCapability(msg.prefix, 'admin'):
@@ -182,16 +186,14 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         if command in ('enable', 'identify'):
             irc.error('You can\'t disable %s!' % command)
         else:
-            # This has to know that defaultCapabilties gets turned into a
-            # dictionary.
             try:
                 capability = ircdb.makeAntiCapability(command)
             except ValueError:
                 irc.error('%r is not a valid command.' % command)
                 return
-            if command in conf.defaultCapabilities:
-                conf.defaultCapabilities.remove(command)
-            conf.defaultCapabilities.add(capability)
+            if command in conf.supybot.defaultCapabilities():
+                conf.supybot.defaultCapabilities().remove(command)
+            conf.supybot.defaultCapabilities().add(capability)
             irc.replySuccess()
 
     def enable(self, irc, msg, args):
@@ -205,8 +207,8 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         except ValueError:
             irc.error('%r is not a valid command.' % command)
             return
-        if anticapability in conf.defaultCapabilities:
-            conf.defaultCapabilities.remove(anticapability)
+        if anticapability in conf.supybot.defaultCapabilities():
+            conf.supybot.defaultCapabilities().remove(anticapability)
             irc.replySuccess()
         else:
             irc.error('That command wasn\'t disabled.')
@@ -228,14 +230,14 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
 
         # Thus, the owner capability can't be given in the bot.  Admin users
         # can only give out capabilities they have themselves (which will
-        # depend on both conf.defaultAllow and conf.defaultCapabilities), but
-        # generally means they can't mess with channel capabilities.
+        # depend on both conf.supybot.defaultAllow and
+        # conf.supybot.defaultCapabilities), but generally means they can't
+        # mess with channel capabilities.
         (name, capability) = privmsgs.getArgs(args, required=2)
         if capability == 'owner':
-            irc.error('The "owner" capability can\'t be added in the bot.'
-                           '  Use the supybot-adduser program (or edit the '
-                           'users.conf file yourself) to add an owner '
-                           'capability.')
+            irc.error('The "owner" capability can\'t be added in the bot.  '
+                      'Use the supybot-adduser program (or edit the '
+                      'users.conf file yourself) to add an owner capability.')
             return
         if ircdb.checkCapability(msg.prefix, capability) or \
            '-' in capability:
@@ -292,7 +294,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             except KeyError:
                 irc.error('I can\'t find a hostmask for %s' % arg)
                 return
-        conf.ignores.append(hostmask)
+        conf.supybot.ignores().append(hostmask)
         irc.replySuccess()
 
     def unignore(self, irc, msg, args):
@@ -311,37 +313,22 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error('I can\'t find a hostmask for %s' % arg)
                 return
         try:
-            conf.ignores.remove(hostmask)
-            while hostmask in conf.ignores:
-                conf.ignores.remove(hostmask)
+            conf.supybot.ignores().remove(hostmask)
+            while hostmask in conf.supybot.ignores():
+                conf.supybot.ignores().remove(hostmask)
             irc.replySuccess()
         except ValueError:
-            irc.error('%s wasn\'t in conf.ignores.' % hostmask)
+            irc.error('%s wasn\'t in conf.supybot.ignores.' % hostmask)
             
     def ignores(self, irc, msg, args):
         """takes no arguments
 
         Returns the hostmasks currently being globally ignored.
         """
-        if conf.ignores:
-            irc.reply(utils.commaAndify(imap(repr, conf.ignores)))
+        if conf.supybot.ignores():
+            irc.reply(utils.commaAndify(imap(repr, conf.supybot.ignores())))
         else:
             irc.reply('I\'m not currently globally ignoring anyone.')
-
-    def setprefixchar(self, irc, msg, args):
-        """<prefixchars>
-
-        Sets the prefix chars by which the bot can be addressed.
-        """
-        s = privmsgs.getArgs(args)
-        for c in s:
-            if c not in conf.validPrefixChars:
-                s = 'PrefixChars must be something in %r'%conf.validPrefixChars
-                irc.error(s)
-                return
-        else:
-            conf.prefixChars = s
-            irc.replySuccess()
 
     def reportbug(self, irc, msg, args):
         """<description>

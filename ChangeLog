@@ -1,3 +1,6 @@
+	* Removed Admin.setprefixchar, since it's unneeded with the new
+	configuration.
+	
 	* Changed the reply method of the irc object given to plugins not
 	to require a msg object.
 	

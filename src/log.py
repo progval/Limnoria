@@ -42,13 +42,57 @@ import logging
 
 import ansi
 import conf
+import registry
 
+class LogLevel(registry.Value):
+    def set(self, s):
+        s = s.upper()
+        try:
+            self.value = getattr(logging, s)
+        except AttributeError:
+            s = 'Invalid log level: should be one of ' \
+                'DEBUG, INFO, WARNING, ERROR, or CRITICAL.'
+            raise registry.InvalidRegistryValue, s
+    def __str__(self):
+        return logging.getLevelName(self.value)
+    
+conf.supybot.directories.register('log', registry.String('logs', """Determines
+what directory the bot will store its logfiles in."""))
+
+conf.supybot.registerGroup('log')
+conf.supybot.log.register('minimumPriority', LogLevel(logging.INFO,
+"""Determines what the minimum priority logged will be.  Valid values are
+DEBUG, INFO, WARNING, ERROR, and CRITICAL, in order of increasing
+priority."""))
+conf.supybot.log.register('timestampFormat',
+registry.String('[%d-%b-%Y %H:%M:%S]',
+"""Determines the format string for timestamps in logfiles.  Refer to the
+Python documentation for the time module to see what formats are accepted."""))
+conf.supybot.log.register('detailedTracebacks', registry.Boolean(True, """
+Determines whether highly detailed tracebacks will be logged.  While more
+informative (and thus more useful for debugging) they also take a significantly
+greater amount of space in the logs.  Hopefully, however, such uncaught
+exceptions aren't very common."""))
+conf.supybot.log.registerGroup('stdout',
+registry.GroupWithValue(registry.Boolean(True, """Determines whether the bot
+will log to stdout.""")))
+
+class BooleanRequiredFalseOnWindows(registry.Boolean):
+    def set(self, s):
+        registry.Boolean.set(self, s)
+        if self.value and os.name == 'nt':
+            raise InvalidRegistryValue, 'Value cannot be true on Windows.'
+        
+conf.supybot.log.stdout.register('colorized',
+BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs to
+stdout (if enabled) will be colorized with ANSI color."""))
+                          
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
 
-if not os.path.exists(conf.logDir):
-    os.mkdir(conf.logDir, 0755)
+if not os.path.exists(conf.supybot.directories.log()):
+    os.mkdir(conf.supybot.directories.log(), 0755)
 
-pluginLogDir = os.path.join(conf.logDir, 'plugins')
+pluginLogDir = os.path.join(conf.supybot.directories.log(), 'plugins')
 
 if not os.path.exists(pluginLogDir):
     os.mkdir(pluginLogDir, 0755)
@@ -56,14 +100,14 @@ if not os.path.exists(pluginLogDir):
 class Formatter(logging.Formatter):
     def formatTime(self, record, datefmt=None):
         if datefmt is None:
-            datefmt = conf.logTimestampFormat
+            datefmt = conf.supybot.log.timestampFormat()
         return logging.Formatter.formatTime(self, record, datefmt)
 
     def formatException(self, (E, e, tb)):
         for exn in deadlyExceptions:
             if issubclass(e.__class__, exn):
                 raise
-        if conf.detailedTracebacks:
+        if conf.supybot.log.detailedTracebacks():
             try:
                 return cgitb.text((E, e, tb)).rstrip('\r\n')
             except:
@@ -120,7 +164,7 @@ class DailyRotatingHandler(BetterFileHandler):
 
 class ColorizedFormatter(Formatter):
     def formatException(self, (E, e, tb)):
-        if conf.colorizedStdoutLogging:
+        if conf.supybot.log.stdout.colorized():
             return ''.join([ansi.BOLD, ansi.RED,
                             Formatter.formatException(self, (E, e, tb)),
                             ansi.RESET])
@@ -128,7 +172,7 @@ class ColorizedFormatter(Formatter):
             return Formatter.formatException(self, (E, e, tb))
 
     def format(self, record, *args, **kwargs):
-        if conf.colorizedStdoutLogging:
+        if conf.supybot.log.stdout.colorized():
             color = ''
             if record.levelno == logging.CRITICAL:
                 color = ansi.WHITE + ansi.BOLD
@@ -148,13 +192,14 @@ pluginFormatter = Formatter('%(levelname)s %(asctime)s %(name)s %(message)s')
 
 # These are not.
 _logger = logging.getLogger('supybot')
-_handler = BetterFileHandler(os.path.join(conf.logDir, 'misc.log'))
+_handler = BetterFileHandler(os.path.join(conf.supybot.directories.log(),
+                                          'misc.log'))
 _handler.setFormatter(formatter)
 _handler.setLevel(-1)
 _logger.addHandler(_handler)
-_logger.setLevel(conf.minimumLogPriority)
+_logger.setLevel(conf.supybot.log.minimumPriority())
 
-if conf.stdoutLogging:
+if conf.supybot.log.stdout():
     _stdoutHandler = BetterStreamHandler(sys.stdout)
     _formatString = '%(name)s: %(levelname)s %(message)s'
     _stdoutFormatter = ColorizedFormatter(_formatString)
@@ -178,7 +223,7 @@ def getPluginLogger(name):
     if not log.handlers:
         filename = os.path.join(pluginLogDir, '%s.log' % name)
         handler = BetterFileHandler(filename)
-        handler.setLevel(conf.minimumLogPriority)
+        handler.setLevel(conf.supybot.log.minimumPriority())
         handler.setFormatter(pluginFormatter)
         log.addHandler(handler)
     return log

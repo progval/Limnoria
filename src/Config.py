@@ -37,6 +37,8 @@ import plugins
 
 import conf
 import utils
+import ircdb
+import ircutils
 import registry
 import privmsgs
 import callbacks
@@ -50,7 +52,7 @@ class InvalidRegistryName(callbacks.Error):
     pass
 
 def getWrapper(name):
-    parts = name.split()
+    parts = name.split('.')
     if not parts or parts[0] != 'supybot':
         raise InvalidRegistryName, name
     group = conf.supybot
@@ -62,13 +64,25 @@ def getWrapper(name):
             raise InvalidRegistryName, name
     return group
 
+def getCapability(name):
+    capability = 'owner' # Default to requiring the owner capability.
+    parts = name.split('.')
+    while parts:
+        part = parts.pop()
+        if ircutils.isChannel(part):
+            # If a registry value has a channel in it, it requires a channel.op
+            # capability, or so we assume.  We'll see if we're proven wrong.
+            capability = ircdb.makeChannelCapability(part, 'op')
+        ### Do more later, for specific capabilities/sections.
+    return capability
+
 
 class Config(callbacks.Privmsg):
     def callCommand(self, method, irc, msg, *L):
         try:
-            callbacks.Privmsg.callCommand(method, irc, msg, *L)
+            callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
         except InvalidRegistryName, e:
-            irc.error('%r is not a valid configuration variable.' % e)
+            irc.error('%r is not a valid configuration variable.' % e.args[0])
         except registry.InvalidRegistryValue, e:
             irc.error(str(e))
 
@@ -81,8 +95,11 @@ class Config(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         group = getWrapper(name)
         if hasattr(group, 'getValues'):
-            L = zip(*group.getValues())[0]
-            irc.reply(utils.commaAndify(L))
+            try:
+                L = zip(*group.getValues())[0]
+                irc.reply(utils.commaAndify(L))
+            except TypeError:
+                irc.error('There don\'t seem to be any values in %r' % name)
         else:
             irc.error('%r is not a valid configuration group.' % name)
 
@@ -101,9 +118,13 @@ class Config(callbacks.Privmsg):
         Sets the current value of the configuration variable <name> to <value>.
         """
         (name, value) = privmsgs.getArgs(args, required=2)
-        wrapper = getWrapper(name)
-        wrapper.set(value)
-        irc.replySuccess()
+        capability = getCapability(name)
+        if ircdb.checkCapability(msg.prefix, capability):
+            wrapper = getWrapper(name)
+            wrapper.set(value)
+            irc.replySuccess()
+        else:
+            irc.errorNoCapability(capability)
 
     def help(self, irc, msg, args):
         """<name>
@@ -112,7 +133,7 @@ class Config(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args)
         wrapper = getWrapper(name)
-        irc.reply(msg, wrapper.help)
+        irc.reply(wrapper.help)
 
     def reset(self, irc, msg, args):
         """<name>
@@ -120,9 +141,13 @@ class Config(callbacks.Privmsg):
         Resets the configuration variable <name> to its original value.
         """
         name = privmsgs.getArgs(args)
-        wrapper = getWrapper(name)
-        wrapper.reset()
-        irc.replySuccess()
+        capability = getCapability(name)
+        if ircdb.checkCapability(msg.prefix, capability):
+            wrapper = getWrapper(name)
+            wrapper.reset()
+            irc.replySuccess()
+        else:
+            irc.errorNoCapability(capability)
 
     def default(self, irc, msg, args):
         """<name>

@@ -29,17 +29,30 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import os
+
 import supybot
 import logging
 
+registryFilename = os.path.join('test-conf', 'test.conf')
+fd = file(registryFilename, 'w')
+fd.write("""
+supybot.directories.data: test-data
+supybot.directories.conf: test-conf
+supybot.directories.log: test-log
+supybot.reply.whenNotCommand: False
+supybot.log.stdout: False
+supybot.log.minimumPriority: DEBUG
+supybot.log.detailedTracebacks: False
+supybot.throttleTime: 0
+""")
+fd.close()
+
+import registry
+registry.open(registryFilename)
+
+import log
 import conf
-conf.dataDir = 'test-data'
-conf.confDir = 'test-conf'
-conf.logDir = 'test-log'
-conf.replyWhenNotCommand = False
-conf.stdoutLogging = False
-conf.minimumLogPriority = logging.DEBUG
-conf.detailedTracebacks = False # Bugs in cgitb can be bad.
 
 import fix
 
@@ -62,16 +75,19 @@ if __name__ == '__main__':
     import testsupport
     import optparse
 
-    if not os.path.exists(conf.dataDir):
-        os.mkdir(conf.dataDir)
+    if not os.path.exists(conf.supybot.directories.data()):
+        os.mkdir(conf.supybot.directories.data())
 
-    if not os.path.exists(conf.confDir):
-        os.mkdir(conf.confDir)
+    if not os.path.exists(conf.supybot.directories.conf()):
+        os.mkdir(conf.supybot.directories.conf())
 
-    if not os.path.exists(conf.logDir):
-        os.mkdir(conf.logDir)
+    if not os.path.exists(conf.supybot.directories.log()):
+        os.mkdir(conf.supybot.directories.log())
 
-    pluginLogDir = os.path.join(conf.logDir, 'plugins')
+    pluginLogDir = os.path.join(conf.supybot.directories.log(), 'plugins')
+    if not os.path.exists(pluginLogDir):
+        os.mkdir(pluginLogDir)
+        
     for filename in os.listdir(pluginLogDir):
         os.remove(os.path.join(pluginLogDir, filename))
 

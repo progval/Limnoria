@@ -452,7 +452,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
         channels = utils.commaAndify(L)
         if '317' in d:
             idle = utils.timeElapsed(d['317'].args[2])
-            signon = time.strftime(conf.humanTimestampFormat,
+            signon = time.strftime(conf.supybot.humanTimestampFormat(),
                                    time.localtime(float(d['317'].args[3])))
         else:
             idle = '<unknown>'

@@ -70,11 +70,11 @@ def addressed(nick, msg):
     """
     nick = ircutils.toLower(nick)
     if ircutils.nickEqual(msg.args[0], nick):
-        if msg.args[1][0] in conf.prefixChars:
+        if msg.args[1][0] in conf.supybot.prefixChars():
             return msg.args[1][1:].strip()
         else:
             return msg.args[1].strip()
-    elif conf.replyWhenAddressedByNick and \
+    elif conf.supybot.reply.whenAddressedByNick() and \
          ircutils.toLower(msg.args[1]).startswith(nick):
         try:
             (maybeNick, rest) = msg.args[1].split(None, 1)
@@ -86,9 +86,9 @@ def addressed(nick, msg):
                 return ''
         except ValueError: # split didn't work.
             return ''
-    elif msg.args[1] and msg.args[1][0] in conf.prefixChars:
+    elif msg.args[1] and msg.args[1][0] in conf.supybot.prefixChars():
         return msg.args[1][1:].strip()
-    elif conf.replyWhenNotAddressed:
+    elif conf.supybot.reply.whenNotAddressed():
         return msg.args[1]
     else:
         return ''
@@ -112,7 +112,7 @@ def reply(msg, s, prefixName=True, private=False, notice=False, to=None):
     s = ircutils.safeArgument(s)
     to = to or msg.nick
     if ircutils.isChannel(msg.args[0]) and not private:
-        if notice or conf.replyWithPrivateNotice:
+        if notice or conf.supybot.reply.withPrivateNotice():
             m = ircmsgs.notice(to, s)
         elif prefixName:
             m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (to, s))
@@ -227,7 +227,7 @@ def tokenize(s):
     try:
         if s != _lastTokenized:
             _lastTokenized = s
-            if conf.enablePipeSyntax:
+            if conf.supybot.pipeSyntax():
                 tokens = '|'
             else:
                 tokens = ''
@@ -263,7 +263,7 @@ def formatArgumentError(method, name=None):
     if name is None:
         name = method.__name__
     if hasattr(method, '__doc__') and method.__doc__:
-        if conf.showOnlySyntax:
+        if conf.supybot.showSimpleSyntax():
             return getSyntax(method, name=name)
         else:
             return getHelp(method, name=name)
@@ -281,7 +281,7 @@ def checkCommandCapability(msg, cb, command):
         if ircdb.checkCapability(msg.prefix, antichancap):
             log.info('Preventing because of antichancap: %s', msg.prefix)
             return False
-    return conf.defaultAllow or \
+    return conf.supybot.defaultAllow() or \
            ircdb.checkCapability(msg.prefix, command) or \
            ircdb.checkCapability(msg.prefix, chancap)
 
@@ -296,30 +296,38 @@ class RichReplyMethods(object):
         return s
 
     def replySuccess(self, s='', **kwargs):
-        self.reply(self.__makeReply(conf.replySuccess, s), **kwargs)
+        self.reply(self.__makeReply(conf.supybot.replies.success(), s),
+                   **kwargs)
 
     def replyError(self, s='', **kwargs):
-        self.reply(self.__makeReply(conf.replyError, s), **kwargs)
+        self.reply(self.__makeReply(conf.supybot.replies.error(), s),
+                   **kwargs)
 
     def errorNoCapability(self, capability, s='', **kwargs):
         log.warning('Denying %s for lacking %r capability',
                     self.msg.prefix, capability)
-        s = self.__makeReply(conf.replyNoCapability % capability, s)
+        noCapability = conf.supybot.replies.noCapability()
+        s = self.__makeReply(noCapability % capability, s)
         self.error(s, **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
         if s:
-            s += '  (%s)' % conf.replyPossibleBug
+            s += '  (%s)' % conf.supybot.replies.possibleBug()
+        else:
+            s = conf.supybot.replies.possibleBug()
         self.error(s, **kwargs)
 
     def errorNotRegistered(self, s='', **kwargs):
-        self.error(self.__makeReply(conf.replyNotRegistered, s), **kwargs)
+        notRegistered = conf.supybot.replies.notRegistered()
+        self.error(self.__makeReply(notRegistered, s), **kwargs)
 
     def errorNoUser(self, s='', **kwargs):
-        self.error(self.__makeReply(conf.replyNoUser, s), **kwargs)
+        noUser = conf.supybot.replies.noUser()
+        self.error(self.__makeReply(noUser, s), **kwargs)
 
     def errorRequiresPrivacy(self, s='', **kwargs):
-        self.error(self.__makeReply(conf.replyRequiresPrivacy, s), **kwargs)
+        requiresPrivacy = conf.supybot.replies.requiresPrivacy()
+        self.error(self.__makeReply(requiresPrivacy, s), **kwargs)
 
             
 class IrcObjectProxy(RichReplyMethods):
@@ -337,7 +345,7 @@ class IrcObjectProxy(RichReplyMethods):
         self.notice = False
         self.private = False
         self.finished = False
-        self.prefixName = conf.replyWithNickPrefix
+        self.prefixName = conf.supybot.reply.withNickPrefix()
         self.noLengthCheck = False
         if not args:
             self.finalEvaled = True
@@ -462,18 +470,18 @@ class IrcObjectProxy(RichReplyMethods):
           to=<nick|channel>:   The nick or channel the reply should go to.
                                Defaults to msg.args[0] (or msg.nick if private)
         """
-        # These use |= or &= based on whether or not they default to True or
-        # False.  Those that default to True use &=; those that default to
-        # False use |=.
+        # These use and or or based on whether or not they default to True or
+        # False.  Those that default to True use and; those that default to
+        # False use or.
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
         msg = self.msg
-        self.action |= action
-        self.notice |= notice
-        self.private |= private
+        self.action = action or self.action
+        self.notice = notice or self.notice
+        self.private = private or self.private
         self.to = to or self.to
-        self.prefixName &= prefixName
-        self.noLengthCheck |= noLengthCheck
+        self.prefixName = prefixName or self.prefixName
+        self.noLengthCheck = noLengthCheck or self.noLengthCheck
         if self.finalEvaled:
             if isinstance(self.irc, self.__class__):
                 self.irc.reply(s, self.noLengthCheck, self.prefixName,
@@ -532,7 +540,7 @@ class IrcObjectProxy(RichReplyMethods):
             self.irc.error(s, private)
         else:
             s = 'Error: ' + s
-            if private or conf.errorReplyPrivate:
+            if private or conf.supybot.reply.errorInPrivate():
                 self.irc.queueMsg(ircmsgs.privmsg(self.msg.nick, s))
             else:
                 self.irc.queueMsg(reply(self.msg, s))
@@ -654,22 +662,6 @@ class Privmsg(irclib.IrcCallback):
         else:
             dispatcher.__doc__ = docstring
         setattr(self.__class__, canonicalname, dispatcher)
-
-    def configure(self, irc):
-        fakeIrc = ConfigIrcProxy(irc)
-        for args in conf.commandsOnStart:
-            args = args[:]
-            command = canonicalName(args.pop(0))
-            if self.isCommand(command):
-                self.log.debug('%s: %r', command, args)
-                method = getattr(self, command)
-                line = '%s %s' % (command, ' '.join(imap(utils.dqrepr, args)))
-                msg = ircmsgs.privmsg(fakeIrc.nick, line, fakeIrc.prefix)
-                try:
-                    world.startup = True
-                    method(fakeIrc, msg, args)
-                finally:
-                    world.startup = False
 
     def __call__(self, irc, msg):
         if msg.command == 'PRIVMSG':

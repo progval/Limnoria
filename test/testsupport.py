@@ -112,15 +112,17 @@ class PluginTestCase(unittest.TestCase):
         if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
             # Necessary because there's a test in here that shouldn\'t run.
             return
-        conf.prefixChars = '@'
-        conf.replyWhenNotCommand = False
+        conf.supybot.prefixChars.set('@')
+        conf.supybot.reply.whenNotCommand.setValue(False)
         self.myVerbose = world.myVerbose
         if self.cleanConfDir:
-            for filename in os.listdir(conf.confDir):
-                os.remove(os.path.join(conf.confDir, filename))
+            for filename in os.listdir(conf.supybot.directories.conf()):
+                os.remove(os.path.join(conf.supybot.directories.conf(),
+                                       filename))
         if self.cleanDataDir:
-            for filename in os.listdir(conf.dataDir):
-                os.remove(os.path.join(conf.dataDir, filename))
+            for filename in os.listdir(conf.supybot.directories.data()):
+                os.remove(os.path.join(conf.supybot.directories.data(),
+                                       filename))
         ircdb.users.reload()
         ircdb.channels.reload()
         if self.plugins is None:
@@ -130,10 +132,10 @@ class PluginTestCase(unittest.TestCase):
         self.irc = irclib.Irc(nick)
         while self.irc.takeMsg():
             pass
-        OwnerModule = Owner.loadPluginModule('Owner')
-        MiscModule = OwnerModule.loadPluginModule('Misc')
-        _ = OwnerModule.loadPluginClass(self.irc, OwnerModule)
-        _ = OwnerModule.loadPluginClass(self.irc, MiscModule)
+        #OwnerModule = Owner.loadPluginModule('Owner')
+        MiscModule = Owner.loadPluginModule('Misc')
+        _ = Owner.loadPluginClass(self.irc, Owner)
+        _ = Owner.loadPluginClass(self.irc, MiscModule)
         if isinstance(self.plugins, str):
             self.plugins = [self.plugins]
         else:
@@ -300,8 +302,8 @@ class ChannelPluginTestCase(PluginTestCase):
             timeout = self.timeout
         if self.myVerbose:
             print # Newline, just like PluginTestCase.
-        if query[0] not in conf.prefixChars:
-            query = conf.prefixChars[0] + query
+        if query[0] not in conf.supybot.prefixChars():
+            query = conf.supybot.prefixChars()[0] + query
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose:
             print 'Feeding: %r' % msg

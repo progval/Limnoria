@@ -159,7 +159,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 raise callbacks.Error, 'No user %s exists.' % name
             else:
                 raise callbacks.Error,'The format of the page was odd.  %s' % \
-                      conf.replyPossibleBug
+                      conf.supybot.replies.possibleBug()
         except urllib2.URLError:
             raise callbacks.Error, 'Couldn\'t connect to gameknot.com'
 

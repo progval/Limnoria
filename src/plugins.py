@@ -118,7 +118,7 @@ class ChannelDBHandler(object):
         """Override this to specialize the filenames of your databases."""
         channel = ircutils.toLower(channel)
         prefix = '%s-%s%s' % (channel, self.__class__.__name__, self.suffix)
-        return os.path.join(conf.dataDir, prefix)
+        return os.path.join(conf.supybot.directories.data(), prefix)
 
     def makeDb(self, filename):
         """Override this to create your databases."""
@@ -174,7 +174,7 @@ class PeriodicFileDownloader(object):
     you want with this; you may want to build a database, take some stats,
     or simply rename the file.  You can pass None as your function and the
     file with automatically be renamed to match the filename you have it listed
-    under.  It'll be in conf.dataDir, of course.
+    under.  It'll be in conf.supybot.directories.data, of course.
 
     Aside from that dictionary, simply use self.getFile(filename) in any method
     that makes use of a periodically downloaded file, and you'll be set.
@@ -187,7 +187,8 @@ class PeriodicFileDownloader(object):
         self.downloadedCounter = {}
         for filename in self.periodicFiles:
             if self.periodicFiles[filename][-1] is None:
-                fullname = os.path.join(conf.dataDir, filename)
+                fullname = os.path.join(conf.supybot.directories.data(),
+                                        filename)
                 if os.path.exists(fullname):
                     self.lastDownloaded[filename] = os.stat(fullname).st_ctime
                 else:
@@ -206,7 +207,8 @@ class PeriodicFileDownloader(object):
                 self.log.warning('Error downloading %s', url)
                 self.log.exception('Exception:')
                 return
-            newFilename = os.path.join(conf.dataDir, utils.mktemp())
+            confDir = conf.supybot.directories.data()
+            newFilename = os.path.join(confDir, utils.mktemp())
             outfd = file(newFilename, 'wb')
             start = time.time()
             s = infd.read(4096)
@@ -220,7 +222,7 @@ class PeriodicFileDownloader(object):
             self.downloadedCounter[filename] += 1
             self.lastDownloaded[filename] = time.time()
             if f is None:
-                toFilename = os.path.join(conf.dataDir, filename)
+                toFilename = os.path.join(confDir, filename)
                 if os.name == 'nt':
                     # Windows, grrr...
                     if os.path.exists(toFilename):

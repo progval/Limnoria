@@ -35,10 +35,20 @@ import os
 import unittest
 
 import conf
+import world
 import ircdb
 import ircutils
 
-class FunctionsTestCase(unittest.TestCase):
+class IrcdbTestCase(unittest.TestCase):
+    def setUp(self):
+        world.testing = False
+        unittest.TestCase.setUp(self)
+
+    def tearDown(self):
+        world.testing = True
+        unittest.TestCase.tearDown(self)
+
+class FunctionsTestCase(IrcdbTestCase):
     def testIsAntiCapability(self):
         self.failIf(ircdb.isAntiCapability('foo'))
         self.failIf(ircdb.isAntiCapability('#foo.bar'))
@@ -188,7 +198,7 @@ class UserCapabilitySetTestCase(unittest.TestCase):
 ##         self.failUnless(s.check('owner'))
 
 
-class IrcUserTestCase(unittest.TestCase):
+class IrcUserTestCase(IrcdbTestCase):
     def testCapabilities(self):
         u = ircdb.IrcUser()
         u.addCapability('foo')
@@ -259,7 +269,7 @@ class IrcUserTestCase(unittest.TestCase):
         u = ircdb.IrcUser(capabilities=('foo',))
         self.assertRaises(KeyError, u.removeCapability, 'bar')
 
-class IrcChannelTestCase(unittest.TestCase):
+class IrcChannelTestCase(IrcdbTestCase):
     def testInit(self):
         c = ircdb.IrcChannel()
         self.failIf(c.checkCapability('op'))
@@ -302,8 +312,9 @@ class IrcChannelTestCase(unittest.TestCase):
         c.removeBan(banmask)
         self.failIf(c.checkIgnored(prefix))
 
-class UsersDBTestCase(unittest.TestCase):
-    filename = os.path.join(conf.confDir, 'UsersDBTestCase.conf')
+class UsersDBTestCase(IrcdbTestCase):
+    filename = os.path.join(conf.supybot.directories.conf(),
+                            'UsersDBTestCase.conf')
     def setUp(self):
         try:
             os.remove(self.filename)
@@ -352,8 +363,9 @@ class UsersDBTestCase(unittest.TestCase):
         self.assertRaises(ValueError, self.users.setUser, id, u2)
 
 
-class CheckCapabilityTestCase(unittest.TestCase):
-    filename = os.path.join(conf.confDir, 'CheckCapabilityTestCase.conf')
+class CheckCapabilityTestCase(IrcdbTestCase):
+    filename = os.path.join(conf.supybot.directories.conf(),
+                            'CheckCapabilityTestCase.conf')
     owner = 'owner!owner@owner'
     nothing = 'nothing!nothing@nothing'
     justfoo = 'justfoo!justfoo@justfoo'
@@ -455,9 +467,9 @@ class CheckCapabilityTestCase(unittest.TestCase):
 
     def testNothing(self):
         self.assertEqual(self.checkCapability(self.nothing, self.cap),
-                         conf.defaultAllow)
+                         conf.supybot.defaultAllow())
         self.assertEqual(self.checkCapability(self.nothing, self.anticap),
-                         not conf.defaultAllow)
+                         not conf.supybot.defaultAllow())
 
     def testJustFoo(self):
         self.failUnless(self.checkCapability(self.justfoo, self.cap))
@@ -503,11 +515,11 @@ class CheckCapabilityTestCase(unittest.TestCase):
         u.setAuth(self.securefoo)
         self.users.setUser(id, u)
         try:
-            originalConfDefaultAllow = conf.defaultAllow
-            conf.defaultAllow = False 
+            originalConfDefaultAllow = conf.supybot.defaultAllow()
+            conf.supybot.defaultAllow.set('False')
             self.failIf(self.checkCapability('a' + self.securefoo, self.cap))
         finally:
-            conf.defaultAllow = originalConfDefaultAllow
+            conf.supybot.defaultAllow.set(str(originalConfDefaultAllow))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

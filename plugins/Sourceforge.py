@@ -170,7 +170,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                     resp = imap(lambda s: utils.ellipsisify(s, 50), resp)
                 return '%s' % utils.commaAndify(resp)
             raise callbacks.Error, 'No Trackers were found.  (%s)' % \
-                  conf.replyPossibleBug
+                  conf.supybot.replies.possibleBug()
         except webutils.WebError, e:
             raise callbacks.Error, str(e)
         
