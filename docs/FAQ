@@ -215,3 +215,13 @@ A: Submit it on Sourceforge through our Sourceforge project page:
    too much.
 
 
+Q: Is there a way just to load *all* the plugins Supybot has?
+
+A: No, there isn't.  Even if there were, some plugins conflict with
+   other plugins, so it wouldn't make much sense to load them.  For
+   instance, what would a bot do with Factoids, MoobotFactoids, and
+   Infobot all loaded?  Probably just annoy people :)
+
+   If you want to know more about the plugins that are available,
+   check out our "Plugin index" at our website.
+
