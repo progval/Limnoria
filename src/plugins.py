@@ -256,7 +256,26 @@ class _ConfigurableTypes(object):
         else:
             s = 'Value must be one of on/off/true/false/enable/disable.'
             raise ConfigurableTypeError, s
+
+    def str(self, s):
+        if s and s[0] not in '\'"' and s[-1] not in '\'"':
+            s = repr(s)
+        try:
+            v = utils.safeEval(s)
+            if type(v) is not str:
+                raise ValueError
+        except ValueError:
+            raise ConfigurableTypeError, 'Value must be a string.'
+        return v
+
+    def int(self, s):
+        try:
+            return int(s)
+        except ValueError:
+            raise ConfigurableTypeError, 'Value must be an int.'
 ConfigurableTypes = _ConfigurableTypes()
+
+foobar = 'baz'
 
 class Configurable(object):
     """A mixin class to provide a "config" command that can be consistent
