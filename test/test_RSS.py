@@ -30,7 +30,7 @@
 from testsupport import *
 
 url = 'http://www.advogato.org/rss/articles.xml'
-class RSSTestCase(PluginTestCase, PluginDocumentation):
+class RSSTestCase(ChannelPluginTestCase):
     plugins = ('RSS',)
     def testRssAddBadName(self):
         self.assertError('rss add "foo bar" %s' % url)
@@ -45,6 +45,9 @@ class RSSTestCase(PluginTestCase, PluginDocumentation):
         def testRssinfo(self):
             self.assertNotError('rss info %s' % url)
             self.assertNotError('rss add advogato %s' % url)
+            # For some reason conf.supybot.plugins.RSS.feeds.advogato is
+            # empty, which is why this test is failing.  Works in practice,
+            # but not here.  :(
             self.assertNotError('rss info advogato')
             self.assertNotError('rss info AdVogATo')
             self.assertNotError('rss remove advogato')

@@ -94,6 +94,14 @@ conf.registerChannelValue(conf.supybot.plugins.RSS.announce, 'showLinks',
     along with the title of the feed when a feed is automatically
     announced."""))
 
+def getFeedName(irc, msg, args, state):
+    if not registry.isValidRegistryName(args[0]):
+        irc.errorInvalid('feed name', name,
+                         'Feed names must not include spaces.')
+    state.args.append(callbacks.canonicalName(args.pop(0)))
+
+addConverter('feedName', getFeedName)
+
 class RSS(callbacks.Privmsg):
     """This plugin is useful both for announcing updates to RSS feeds in a
     channel, and for retrieving the headlines of RSS feeds via command.  Use
@@ -270,11 +278,6 @@ class RSS(callbacks.Privmsg):
                     headlines.append((title, None))
         return headlines
 
-    def _validFeedName(self, name):
-        if not registry.isValidRegistryName(name):
-            raise ValueError, name
-        return callbacks.canonicalName(name)
-
     def makeFeedCommand(self, name, url):
         docstring = """[<number of headlines>]
 
@@ -284,7 +287,6 @@ class RSS(callbacks.Privmsg):
         seconds, which defaults to 1800 (30 minutes) since that's what most
         websites prefer.
         """ % (name, url)
-        assert name == self._validFeedName(name)
         if url not in self.locks:
             self.locks[url] = threading.RLock()
         if hasattr(self.__class__, name) and \
@@ -306,14 +308,9 @@ class RSS(callbacks.Privmsg):
         Adds a command to this plugin that will look up the RSS feed at the
         given URL.
         """
-        try:
-            name = self._validFeedName(name)
-        except ValueError:
-            irc.errorInvalid('feed name', name, 'Feed names must not '
-                             'include dots, colons, or spaces.')
         self.makeFeedCommand(name, url)
         irc.replySuccess()
-    add = wrap(add, ['something', 'url'])
+    add = wrap(add, ['feedName', 'url'])
 
     def remove(self, irc, msg, args, name):
         """<name>
@@ -328,7 +325,7 @@ class RSS(callbacks.Privmsg):
         delattr(self.__class__, name)
         conf.supybot.plugins.RSS.feeds.unregister(name)
         irc.replySuccess()
-    remove = wrap(remove, ['commandName'])
+    remove = wrap(remove, ['feedName'])
 
     def announce(self, irc, msg, args, channel, optlist, rest):
         """[<channel>] [--remove] [<name|url> ...]
@@ -369,7 +366,8 @@ class RSS(callbacks.Privmsg):
             irc.reply(feeds or 'I am currently not announcing any feeds.')
             return
     announce = wrap(announce, [('checkChannelCapability', 'op'),
-                               getopts({'remove':''}), any('something')])
+                               getopts({'remove':''}),
+                               any(first('url', 'feedName'))])
 
     def rss(self, irc, msg, args, url, n):
         """<url> [<number of headlines>]
@@ -417,7 +415,7 @@ class RSS(callbacks.Privmsg):
             now = time.mktime(time.gmtime())
             when = utils.timeElapsed(now - seconds) + ' ago'
         else:
-            when = "time unavailable"
+            when = 'time unavailable'
         # The rest of the entries are all available in the channel key
         response = 'Title: %s;  URL: <%s>;  ' \
                    'Description: %s;  Last updated %s.' % (
@@ -426,7 +424,7 @@ class RSS(callbacks.Privmsg):
                        info.get('description', 'unavailable').strip(),
                        when)
         irc.reply(' '.join(response.split()))
-    info = wrap(info, ['something'])
+    info = wrap(info, [first('url', 'feedName')])
 
 
 Class = RSS
