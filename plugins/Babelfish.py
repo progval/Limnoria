@@ -99,6 +99,8 @@ class Babelfish(callbacks.Privmsg):
         """<from-language> [to] <to-language> <text>
 
         Returns <text> translated from <from-language> into <to-language>.
+        Beware that translating to or from languages that use multi-byte
+        characters may result in some very odd results.
         """
         if len(args) >= 2 and args[1] == 'to':
             args.pop(1)
@@ -112,8 +114,7 @@ class Babelfish(callbacks.Privmsg):
                     irc.error('I do not speak any other languages.')
                     return
                 else:
-                    irc.error('I only speak %s.' % utils.commaAndify(langs,
-                                                                     And='or'))
+                    irc.error('I only speak %s.' % utils.commaAndify(langs))
                     return
             translation = babelfish.translate(text, fromLang, toLang)
             irc.reply(translation)
