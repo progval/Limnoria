@@ -458,7 +458,7 @@ class Misc(callbacks.Privmsg):
 
         Returns the last message matching the given criteria.  --from requires
         a nick from whom the message came; --in requires a channel the message
-        was sent to; --on requires a netowkr the message was sent on; --with
+        was sent to; --on requires a network the message was sent on; --with
         requires some string that had to be in the message; --regexp requires
         a regular expression the message must i match; --nolimit returns all
         the messages that can be found.  By default, the current channel is
