@@ -231,7 +231,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
            self.registryValue('colorfulFilter', msg.args[0]):
             s = msg.args[1]
             s = re.sub(self._googleRe, self._getColorGoogle, s)
-            msg = ircmsgs.privmsg(msg.args[0], s, prefix=msg.prefix)
+            msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
 
     def formatData(self, data, bold=True, max=0):
