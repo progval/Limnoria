@@ -30,7 +30,7 @@
 ###
 
 from fix import *
-from structures import queue, MaxLengthQueue
+from structures import queue, RingBuffer
 
 import copy
 import time
@@ -171,7 +171,7 @@ class IrcState(object):
         self.reset()
 
     def reset(self):
-        self.history = MaxLengthQueue(conf.maxHistory)
+        self.history = RingBuffer(conf.maxHistory)
         self.nicksToHostmasks = ircutils.IrcDict()
         self.channels = ircutils.IrcDict()
 
@@ -192,7 +192,7 @@ class IrcState(object):
         return ret
 
     def addMsg(self, irc, msg):
-        self.history.enqueue(msg)
+        self.history.append(msg)
         if ircutils.isUserHostmask(msg.prefix) and not msg.command == 'NICK':
             self.nicksToHostmasks[msg.nick] = msg.prefix
         if msg.command == '352': # Response to a WHO command.
