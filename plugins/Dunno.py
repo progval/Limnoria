@@ -106,19 +106,22 @@ class FlatfileDunnoDB(DunnoDBInterface):
             L[0] = float(L[0])
             L[1] = int(L[1])
             return L
-        
-    def __init__(self):
-        self.dbs = ircutils.IrcDict()
 
+    def __init__(self):
+        self.filenames = sets.Set()
     def _getDb(self, channel):
-        if channel not in self.dbs:
-            filename = plugins.makeChannelFilename(channel, 'Dunno.db')
-            self.dbs[channel] = self.DunnoDB(filename)
-        return self.dbs[channel]
+        # Why cache?  It gains very little.
+        filename = plugins.makeChannelFilename(channel, 'Dunno.db')
+        self.filenames.add(filename)
+        return self.DunnoDB(filename)
 
     def close(self):
-        for db in self.dbs.values():
-            db.close()
+        for filename in self.filenames:
+            try:
+                db = self.DunnoDB(filename)
+                db.close()
+            except EnvironmentError:
+                pass
     
     def add(self, channel, dunno, by, at):
         db = self._getDb(channel)
@@ -142,8 +145,12 @@ class FlatfileDunnoDB(DunnoDBInterface):
         
     def random(self, channel):
         db = self._getDb(channel)
-        (id, (at, by, dunno)) = random.choice(db.records())
-        return (id, dunno)
+        x = random.choice(db.records())
+        if x:
+            (id, (at, by, dunno)) = x
+            return (id, dunno)
+        else:
+            return None
 
     def search(self, channel, p):
         L = []
@@ -154,8 +161,11 @@ class FlatfileDunnoDB(DunnoDBInterface):
         return L
     
     def size(self, channel):
-        db = self._getDb(channel)
-        return itertools.ilen(db.records())
+        try:
+            db = self._getDb(channel)
+            return itertools.ilen(db.records())
+        except EnvironmentError, e:
+            return 0
     
 
 DunnoDB = FlatfileDunnoDB
@@ -178,8 +188,9 @@ class Dunno(callbacks.Privmsg):
     def invalidCommand(self, irc, msg, tokens):
         channel = msg.args[0]
         if ircutils.isChannel(channel):
-            dunno = self.db.random(channel)[1]
+            dunno = self.db.random(channel)
             if dunno is not None:
+                dunno = dunno[1]
                 prefixName = self.registryValue('prefixNick', channel)
                 dunno = plugins.standardSubstitute(irc, msg, dunno)
                 irc.reply(dunno, prefixName=prefixName)
