@@ -61,6 +61,14 @@ import ircutils
 import callbacks
 import Owner
 
+originalCallbacksGetHelp = callbacks.getHelp
+lastGetHelp = 'x'*1000
+def cachingGetHelp(method, name=None):
+    global lastGetHelp
+    lastGetHelp = originalCallbacksGetHelp(method, name)
+    return lastGetHelp
+callbacks.getHelp = cachingGetHelp
+
 nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
          'alb','d0rt','jemfinch','StyxAlso','fors','deltab','gd',
          'hellz_hunter','are_j|pub_comp','jason_','dreid','sayke_','winjer',
@@ -186,8 +194,9 @@ class PluginTestCase(unittest.TestCase):
         m = self._feedMsg(query)
         if m is None:
             raise TimeoutError, query
-        self.failUnless(m.args[1].startswith('Error:'),
-                        '%r did not error: %s' % (query, m.args[1]))
+        if lastGetHelp not in m.args[1]:
+            self.failUnless(m.args[1].startswith('Error:'),
+                            '%r did not error: %s' % (query, m.args[1]))
 
     def assertNotError(self, query):
         m = self._feedMsg(query)
@@ -195,6 +204,8 @@ class PluginTestCase(unittest.TestCase):
             raise TimeoutError, query
         self.failIf(m.args[1].startswith('Error:'),
                     '%r errored: %s' % (query, m.args[1]))
+        self.failIf(lastGetHelp in m.args[1],
+                    '%r returned the help string.' % query)
 
     def assertNoResponse(self, query, timeout=None):
         m = self._feedMsg(query, timeout)
@@ -408,5 +419,6 @@ if __name__ == '__main__':
     runner.run(suite)
     print 'Total asserts: %s' % unittest.asserts
     world.testing = False
+    debug._close()
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
