@@ -112,8 +112,9 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
         ReconnectingClientFactory.clientConnectionFailed(self, connector, r)
 
     def clientConnectionLost(self, connector, r):
-        drivers.log.disconnect(self.currentServer, errorMsg(r))
         (connector.host, connector.port) = self._getNextServer()
+        if self.irc.zombie:
+            self.continueTrying = False
         ReconnectingClientFactory.clientConnectionLost(self, connector, r)
 
     def startedConnecting(self, connector):
