@@ -185,7 +185,7 @@ class Misc(callbacks.Privmsg):
                 else:
                     irc.error('That plugin exists, but it has no '
                               'commands with help.')
-    list = wrap(list, [getopts({'private':''}), optional('plugin')])
+    list = wrap(list, [getopts({'private':''}), additional('plugin')])
 
     def apropos(self, irc, msg, args, s):
         """<string>
