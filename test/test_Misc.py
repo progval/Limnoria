@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
+class MiscTestCase(ChannelPluginTestCase):
     plugins = ('Misc', 'Utilities', 'Gameknot', 'Ctcp', 'Dict', 'User')
     def testAction(self):
         self.assertAction('action moos', 'moos')
@@ -218,6 +218,13 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('seconds 1w 1s', '604801')
 
 
+class MiscNonChannelTestCase(PluginTestCase):
+    plugins = ('Misc',)
+    def testAction(self):
+        self.prefix = 'something!else@somewhere.else'
+        self.nick = 'something'
+        m = self.assertAction('action foo', 'foo')
+        self.failIf(m.args[0] == self.irc.nick)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

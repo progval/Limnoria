@@ -550,12 +550,11 @@ class IrcObjectProxy(RichReplyMethods):
                 self.irc.queueMsg(reply(msg, s, self.prefixName,
                                         self.private, self.notice, self.to))
             elif self.action:
-                if self.private:
-                    target = msg.nick
-                else:
-                    target = msg.args[0]
+                target = ircutils.replyTo(msg)
                 if self.to:
                     target = self.to
+                elif self.private:
+                    target = msg.nick
                 self.irc.queueMsg(ircmsgs.action(target, s))
             else:
                 s = ircutils.safeArgument(s)
@@ -789,13 +788,18 @@ class IrcObjectProxyRegexp(RichReplyMethods):
     def error(self, s, **kwargs):
         self.reply('Error: ' + s, **kwargs)
 
-    def reply(self, s, action=False, **kwargs): 
+    def reply(self, s, action=False, to=None, private=False, **kwargs): 
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
         if action:
-            self.irc.queueMsg(ircmsgs.action(ircutils.replyTo(self.msg), s))
+            target = ircutils.replyTo(self.msg)
+            if to:
+                target = to
+            elif private:
+                target = msg.nick
+            self.irc.queueMsg(ircmsgs.action(target, s))
         else:
-            self.irc.queueMsg(reply(self.msg, s, **kwargs))
+            self.irc.queueMsg(reply(self.msg,s,to=to,private=private,**kwargs))
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
