@@ -42,18 +42,24 @@ class WebError(Exception):
 
 urlRe = re.compile(r"(\w+://[^\])>\s]+)", re.I)
 
+REFUSED = 'Connection refused.'
+TIMED_OUT = 'Connection timed out.'
+RESET_BY_PEER = 'Connection reset by peer.'
+
 def getUrlFd(url):
     """Gets a file-like object for a url."""
     try:
         fd = urllib2.urlopen(url)
         return fd
+    except socket.timeout, e:
+        raise WebError, TIMED_OUT
     except socket.error, e:
         if e.args[0] == 111:
-            raise WebError, 'Connection refused.'
+            raise WebError, REFUSED
         elif e.args[0] in (110, 10060):
-            raise WebError, 'Connection timed out.'
+            raise WebError, TIMED_OUT
         elif e.args[0] == 104:
-            raise WebError, 'Connection reset by peer.'
+            raise WebError, RESET_BY_PEER
         else:
             raise WebError, str(e)
     except (urllib2.HTTPError, urllib2.URLError), e:
