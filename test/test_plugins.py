@@ -48,6 +48,23 @@ class ToggleDictionaryTestCase(unittest.TestCase):
         self.assertEqual(t.get('foo', '#baz'), False)
         #self.assertRaises(TypeError, t.toggle, 'foo', value='lak')
 
+    def testCanonicalization(self):
+        t = plugins.ToggleDictionary({'foo': True})
+        self.assertEqual(t.get('foo'), True)
+        self.assertEqual(t.get('fOO'), True)
+        self.assertEqual(t.get('Foo'), True)
+        self.assertEqual(t.get('-fo-o'), True)
+        t = plugins.ToggleDictionary({'FOO': True})
+        self.assertEqual(t.get('foo'), True)
+        self.assertEqual(t.get('fOO'), True)
+        self.assertEqual(t.get('Foo'), True)
+        self.assertEqual(t.get('-fo-o'), True)
+        t = plugins.ToggleDictionary({'f-o-o': True})
+        self.assertEqual(t.get('foo'), True)
+        self.assertEqual(t.get('fOO'), True)
+        self.assertEqual(t.get('Foo'), True)
+        self.assertEqual(t.get('-fo-o'), True)
+
     def test__init__(self):
         self.assertRaises(TypeError, plugins.ToggleDictionary.__init__)
         self.assertRaises(ValueError, plugins.ToggleDictionary, {})

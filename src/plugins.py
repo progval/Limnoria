@@ -200,7 +200,9 @@ class ToggleDictionary(object):
         if not toggles:
             raise ValueError, 'At least one toggle must be provided.'
         self.channels = ircutils.IrcDict()
-        self.defaults = toggles
+        self.defaults = {}
+        for (k, v) in toggles.iteritems():
+            self.defaults[callbacks.canonicalName(k)] = v
 
     def _getDict(self, channel):
         #debug.printf('_getDict(%s)' % channel)
@@ -212,11 +214,13 @@ class ToggleDictionary(object):
             return self.channels[channel]
 
     def get(self, key, channel=None):
+        key = callbacks.canonicalName(key)
         return self._getDict(channel)[key]
 
     def toggle(self, key, value=None, channel=None):
         #debug.printf('inside toggle: %s %s %s' % (key, value, channel))
         d = self._getDict(channel)
+        key = callbacks.canonicalName(key)
         if value is None:
             d[key] = not d[key] # Raises KeyError, we want this.
         else:
