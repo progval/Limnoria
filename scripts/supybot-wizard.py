@@ -141,7 +141,7 @@ def main():
     nick = ''
     user = ''
     ident = ''
-    password = ''
+    serverpassword = ''
     server = None
     onStart = []
     afterConnect = []
@@ -312,17 +312,17 @@ def main():
         ident = nick
 
     # password
-    if password:
+    if serverpassword:
         if yn('You\'ve already got a default password of %s.  '
               'Do you want to change this?' % password) == 'y':
-            password = ''
+            serverpassword = ''
     if not password:
         myPrint("""Some servers require a password to connect to them.  Most
         public servers don't.  If you try to connect to a server and for some
         reason it just won't work, it might be that you need to set a
         password.""")
-        password = anything('What password?  If you decided not to use a '
-                            'password, just press enter.')
+        serverpassword = anything('What password?  If you decided not to use '
+                                  'a password, just press enter.')
 
     myPrint("""Of course, having an IRC bot isn't the most useful thing in the
     world unless you can make that bot join some channels.""")
@@ -582,7 +582,7 @@ def main():
     template = template.replace('"%%nick%%"', repr(nick))
     template = template.replace('"%%user%%"', repr(user))
     template = template.replace('"%%ident%%"', repr(ident))
-    template = template.replace('"%%password%%"', repr(password))
+    template = template.replace('"%%password%%"', repr(serverpassword))
     template = template.replace('"%%server%%"', repr(server))
     template = template.replace('"%%onStart%%"', format(onStart))
     template = template.replace('"%%afterConnect%%"', format(afterConnect))
