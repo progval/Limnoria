@@ -117,8 +117,18 @@ class Math(callbacks.Privmsg):
         is that large values such as 10**24 might not be exact.
         """
         text = privmsgs.getArgs(args)
+        if text != text.translate(string.ascii, '_[]'):
+            irc.error(msg, 'There\'s really no reason why you should have '
+                           'underscores or brackets in your mathematical '
+                           'expression.  Please remove them.')
+            return
+        # This removes spaces, too, but we'll leave the removal of _[] for
+        # safety's sake.
         text = text.translate(string.ascii, '_[] \t')
-        text = text.replace('lambda', '')
+        if 'lambda' in text:
+            irc.error(msg, 'You can\'t use lambda in this command.')
+            return
+        text = text.replace('lambda', '') # Let's leave it in for safety.
         def handleMatch(m):
             s = m.group(1)
             if s.startswith('0x'):
@@ -157,7 +167,17 @@ class Math(callbacks.Privmsg):
         the 'trusted' capability to use.
         """
         text = privmsgs.getArgs(args)
+        if text != text.translate(string.ascii, '_[]'):
+            irc.error(msg, 'There\'s really no reason why you should have '
+                           'underscores or brackets in your mathematical '
+                           'expression.  Please remove them.')
+            return
+        # This removes spaces, too, but we'll leave the removal of _[] for
+        # safety's sake.
         text = text.translate(string.ascii, '_[] \t')
+        if 'lambda' in text:
+            irc.error(msg, 'You can\'t use lambda in this command.')
+            return
         text = text.replace('lambda', '')
         try:
             self.log.info('evaluating %r from %s' % (text, msg.prefix))
