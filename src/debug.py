@@ -31,6 +31,8 @@
 
 from fix import *
 
+import sys
+
 import os
 import os.path
 import sys
@@ -61,7 +63,10 @@ tracefile = os.path.join(conf.logDir, 'trace.log')
 stderr = True
 
 # colorterm: True if the terminal run on is color.
-colorterm = True
+if sys.platform == 'win32':
+    colorterm = False
+else:
+    colorterm = True
 
 # printf: True if printf debugging messages should be printed.
 printf = True
