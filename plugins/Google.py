@@ -121,9 +121,19 @@ def search(log, queries, **kwargs):
         log.info('HTTP Error accessing Google: %s', e)
         raise callbacks.Error, 'Error connecting to Google.com.'
     except SOAPpy.faultType, e:
-        if 'Invalid authorization key' not in e.faultstring:
+        if 'Invalid authorization key' in e.faultstring:
+            raise callbacks.Error, 'Invalid Google license key.'
+        elif 'Problem looking up user record' in e.faultstring:
+            raise callbacks.Error, \
+                  'Google seems to be having trouble looking up the user for '\
+                  'your license key.  This probably isn\'t a problem on your '\
+                  'side; it\'s probably a bug on Google\'s side.  It seems '\
+                  'to happen intermittently.'
+        else:
             log.exception('Unexpected SOAPpy error:')
-        raise callbacks.Error, 'Invalid Google license key.'
+            raise callbacks.Error, \
+                  'Unexpected error from Google; please report this to the ' \
+                  'Supybot developers.'
     except xml.sax.SAXException, e:
         log.exception('Uncaught SAX error:')
         raise callbacks.Error, 'Google returned an unparsable response.  ' \
@@ -277,7 +287,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(url)
         else:
             irc.reply('Google found nothing.')
-    lucky = wrap(lucky, [many('text')])
+    lucky = wrap(lucky, [many('something')])
 
     def google(self, irc, msg, args, optlist, text):
         """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
@@ -315,7 +325,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(self.formatData(data, bold=bold, max=max))
     google = wrap(google, [getopts({'language':'text', 'restrict':'text',
                                     'notsafe':'', 'similar':''}),
-                           many('text')])
+                           many('something')])
 
     def metagoogle(self, irc, msg, args, optlist, text):
         """<search> [--(language,restrict)=<value>] [--{similar,notsafe}]
@@ -350,7 +360,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     metagoogle = wrap(metagoogle, [getopts({'language':'text',
                                             'restrict':'text',
                                             'notsafe':'', 'similar':''}),
-                                   many('text')])
+                                   many('something')])
 
     _cacheUrlRe = re.compile('<code>([^<]+)</code>')
     def cache(self, irc, msg, args, url):
