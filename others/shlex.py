@@ -28,6 +28,7 @@ class shlex:
         self.lineno = 1
         self.debug = 0
         self.token = ''
+        self.backslash = False
         self.filestack = []
         self.source = None
         if self.debug:
@@ -134,14 +135,19 @@ class shlex:
                         continue
             elif self.state in self.quotes:
                 self.token = self.token + nextchar
-                if nextchar == self.state:
-                    self.state = ' '
-                    break
-                elif not nextchar:      # end of file
-                    if self.debug >= 2:
-                        print "shlex: I see EOF in quotes state"
-                    # XXX what error should be raised here?
-                    raise ValueError, "No closing quotation"
+                if nextchar == '\\':
+                    self.backslash = True
+                else:
+                    if not self.backslash and nextchar == self.state:
+                        self.state = ' '
+                        break
+                    elif self.backslash:
+                        self.backslash = False
+                    elif not nextchar:      # end of file
+                        if self.debug >= 2:
+                            print "shlex: I see EOF in quotes state"
+                        # XXX what error should be raised here?
+                        raise ValueError, "No closing quotation"
             elif self.state == 'a':
                 if not nextchar:
                     self.state = None   # end of file
@@ -157,11 +163,8 @@ class shlex:
                 elif nextchar in self.commenters:
                     self.instream.readline()
                     self.lineno = self.lineno + 1
-                elif nextchar in self.wordchars:
+                elif nextchar in self.wordchars or nextchar in self.quotes:
                     self.token = self.token + nextchar
-                elif nextchar in self.quotes:
-                    self.state = nextchar
-                    break
                 else:
                     self.pushback = [nextchar] + self.pushback
                     if self.debug >= 2:
@@ -210,4 +213,3 @@ if __name__ == '__main__':
             print "Token: " + repr(tt)
         else:
             break
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
