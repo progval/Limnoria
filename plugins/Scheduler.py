@@ -36,6 +36,7 @@ or repeatedly run at a particular interval.
 
 import plugins
 
+import sets
 import time
 
 import conf
@@ -55,6 +56,10 @@ def configure(onStart, afterConnect, advanced):
 
 
 class Scheduler(callbacks.Privmsg):
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        self.events = {}
+
     def _makeCommandFunction(self, irc, msg, command):
         """Makes a function suitable for scheduling from command."""
         tokens = callbacks.tokenize(command)
@@ -83,6 +88,7 @@ class Scheduler(callbacks.Privmsg):
             return
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addEvent(f, time.time() + seconds)
+        self.events[str(id)] = command
         irc.reply(msg, '%s  Event #%s added.' % (conf.replySuccess, id))
 
     def remove(self, irc, msg, args):
@@ -91,14 +97,19 @@ class Scheduler(callbacks.Privmsg):
         Removes the event scheduled with id <id> from the schedule.
         """
         id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            pass
-        try:
-            schedule.removeEvent(id)
-            irc.replySuccess(msg)
-        except KeyError:
+        id = id.lower()
+        if id in self.events:
+            del self.events[id]
+            try:
+                id = int(id)
+            except ValueError:
+                pass
+            try:
+                schedule.removeEvent(id)
+                irc.reply(msg, conf.replySuccess)
+            except KeyError:
+                irc.error(msg, 'Invalid event id.')
+        else:
             irc.error(msg, 'Invalid event id.')
 
     def repeat(self, irc, msg, args):
@@ -110,15 +121,32 @@ class Scheduler(callbacks.Privmsg):
         unscheduled.
         """
         (name, seconds, command) = privmsgs.getArgs(args, required=3)
+        name = name.lower()
         try:
             seconds = int(seconds)
         except ValueError:
             irc.error(msg, 'Invalid seconds: %r' % seconds)
             return
+        self.events[name] = command 
         f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addPeriodicEvent(f, seconds, name)
+        assert id == name
         # We don't reply because the command runs immediately.
         # irc.replySuccess(msg)
+
+    def list(self, irc, msg, args):
+        """takes no arguments.
+
+        Lists the currently scheduled events.
+        """
+        L = self.events.items()
+        if L:
+            L.sort()
+            for (i, (name, command)) in enumerate(L):
+                L[i] = '%s: %s' % (name, utils.dqrepr(command))
+            irc.reply(msg, utils.commaAndify(L))
+        else:
+            irc.reply(msg, 'There are currently no scheduled commands.')
 
 
 Class = Scheduler
