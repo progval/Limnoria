@@ -48,8 +48,8 @@ class DebianTestCase(PluginTestCase, PluginDocumentation):
             else:
                 print
                 print "Dowloading files, this may take awhile"
-                while not os.path.exists(os.path.join(conf.dataDir,
-                    'Contents-i386.gz')):
+                filename = os.path.join(conf.dataDir, 'Contents-i386.gz')
+                while not os.path.exists(filename):
                     time.sleep(1)
                 print "Download complete"
                 print "Starting test ..."
@@ -58,11 +58,12 @@ class DebianTestCase(PluginTestCase, PluginDocumentation):
             pass
 
     def testDebversion(self):
-        self.assertRegexp('version lakjdfad', r'^No package.*\(all\)')
-        self.assertRegexp('version unstable alkdjfad',
+        self.assertRegexp('debian version lakjdfad', r'^No package.*\(all\)')
+        self.assertRegexp('debian version unstable alkdjfad',
             r'^No package.*\(unstable\)')
-        self.assertRegexp('version gaim', r'Total matches:.*gaim.*\(stable\)')
-        self.assertError('version unstable')
+        self.assertRegexp('debian version gaim',
+                          r'Total matches:.*gaim.*\(stable\)')
+        self.assertError('debian version unstable')
 
     def testDebfile(self):
         if not self.fileDownloaded:
