@@ -124,14 +124,14 @@ def search(log, queries, **kwargs):
                                'The full traceback has been logged.'
 
 class LicenseKey(registry.String):
-    def set(self, s):
-        original = getattr(self, 'value', self.default)
-        registry.String.set(self, s)
-        if self.value and len(self.value) != 32:
-            setattr(self, 'value', original)
-            google.setLicense(self.value)
+    def setValue(self, s):
+        if s and len(s) != 32:
             raise registry.InvalidRegistryValue, 'Invalid Google license key.'
-        if self.value:
+        if s:
+            registry.String.setValue(self, s)
+            google.setLicense(self.value)
+        if not s:
+            registry.String.setValue(self, '')
             google.setLicense(self.value)
         
 conf.registerPlugin('Google')
