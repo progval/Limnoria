@@ -1046,8 +1046,8 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
 def checkCapabilities(hostmask, capabilities, requireAll=False):
     """Checks that a user has capabilities in a list.
 
-    requireAll is the True if *all* capabilities in the list must be had, False
-    if *any* of the capabilities in the list must be had.
+    requireAll is True if *all* capabilities in the list must be had, False if
+    *any* of the capabilities in the list must be had.
     """
     for capability in capabilities:
         if requireAll:
