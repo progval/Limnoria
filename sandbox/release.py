@@ -48,7 +48,7 @@ if __name__ == '__main__':
     
     versionFiles = ('src/conf.py', 'scripts/supybot', 'setup.py')
     for fn in versionFiles:
-        sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'" %s' % (v, fn)
+        sh = 'perl -pi -e "s/^version\s*=.*/version = \'%s\'/" %s' % (v, fn)
         system(sh, 'Error changing version in %s' % fn)
     system('cvs commit -m "Updated to %s." %s' % (v, ' '.join(versionFiles)))
 
