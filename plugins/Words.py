@@ -45,8 +45,8 @@ import string
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -143,13 +143,12 @@ class Words(callbacks.Privmsg):
                       'sorted order) to be at %s.  Contact the owner of this '
                       'bot to remedy this situation.' %
                       self.registryValue('file'))
-    def crossword(self, irc, msg, args):
+    def crossword(self, irc, msg, args, word):
         """<word>
 
         Gives the possible crossword completions for <word>; use underscores
         ('_') to denote blank spaces.
         """
-        word = privmsgs.getArgs(args).lower()
         word = re.escape(word)
         word = word.replace('\\_', '_') # Stupid re.escape escapes underscores!
         word = word.replace('_', '.')
@@ -197,32 +196,31 @@ class Words(callbacks.Privmsg):
     def endGame(self, channel):
         del self.games[channel]
 
-    def letters(self, irc, msg, args):
+    def letters(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the unused letters that can be guessed in the hangman game
         in <channel>.  <channel> is only necessary if the message isn't sent in
         the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         if channel in self.games:
             game = self.games[channel]
             if game is not None:
                 self._hangmanReply(irc, channel, ' '.join(game.unused))
                 return
         irc.error('There is currently no hangman game in %s.' % channel)
+    letters = wrap(letters, ['channel'])
 
     def _hangmanReply(self, irc, channel, s):
         s = self.registryValue('hangman.prefix', channel=channel) + s
         irc.reply(s, prefixName=False)
 
-    def hangman(self, irc, msg, args):
+    def hangman(self, irc, msg, args, channel):
         """[<channel>]
 
         Creates a new game of hangman in <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         # Fill our dictionary of games
         if channel not in self.games:
             self.games[channel] = None
@@ -259,14 +257,14 @@ class Words(callbacks.Privmsg):
                 irc.reply('Sorry, there is already a game going on.  '
                           '%s left before the game times out.' %
                           utils.timeElapsed(game.timeout - secondsElapsed))
+    hangman = wrap(hangman, ['channel'])
 
-    def guess(self, irc, msg, args):
+    def guess(self, irc, msg, args, channel, letter):
         """[<channel>] <letter|word>
 
         Try to guess a single letter or the whole word.  If you try to guess
         the whole word and you are wrong, you automatically lose.
         """
-        channel = privmsgs.getChannel(msg, args)
         try:
             game = self.games[channel]
             if game is None:
@@ -274,7 +272,6 @@ class Words(callbacks.Privmsg):
         except KeyError:
             irc.error('There is no hangman game going on right now.')
             return
-        letter = privmsgs.getArgs(args)
         game.timeGuess = time.time()
         # User input a valid letter that hasn't been already tried
         if letter in game.unused:
@@ -326,6 +323,7 @@ class Words(callbacks.Privmsg):
             self._hangmanReply(irc, channel,
                                'You lose!  The word was %r.' % game.hidden)
             self.endGame(channel)
+    guess = wrap(guess, ['channel', 'somethingWithoutSpaces'])
     ###
     # END HANGMAN
     ###

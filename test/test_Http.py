@@ -65,8 +65,6 @@ class HttpTest(PluginTestCase):
             self.failIf(m.args[1].count('Error') > 1)
 
         def testTitle(self):
-            self.assertResponse('title slashdot.org',
-                                'Slashdot: News for nerds, stuff that matters')
             self.assertResponse('title http://www.slashdot.org/',
                                 'Slashdot: News for nerds, stuff that matters')
             self.assertNotRegexp('title '

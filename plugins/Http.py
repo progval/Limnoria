@@ -53,8 +53,8 @@ from itertools import imap
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.webutils as webutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -76,34 +76,27 @@ class Http(callbacks.Privmsg):
         except webutils.WebError, e:
             irc.error(str(e))
 
-    def headers(self, irc, msg, args):
+    def headers(self, irc, msg, args, url):
         """<url>
 
         Returns the HTTP headers of <url>.  Only HTTP urls are valid, of
         course.
         """
-        url = privmsgs.getArgs(args)
-        if not url.startswith('http://'):
-            irc.error('Only HTTP urls are valid.')
-            return
         fd = webutils.getUrlFd(url)
         try:
             s = ', '.join(['%s: %s' % (k, v) for (k, v) in fd.headers.items()])
             irc.reply(s)
         finally:
             fd.close()
+    headers = wrap(headers, ['httpUrl'])
 
     _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
-    def doctype(self, irc, msg, args):
+    def doctype(self, irc, msg, args, url):
         """<url>
 
         Returns the DOCTYPE string of <url>.  Only HTTP urls are valid, of
         course.
         """
-        url = privmsgs.getArgs(args)
-        if not url.startswith('http://'):
-            irc.error('Only HTTP urls are valid.')
-            return
         size = conf.supybot.protocols.http.peekSize()
         s = webutils.getUrl(url, size=size)
         m = self._doctypeRe.search(s)
@@ -112,17 +105,14 @@ class Http(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.reply('That URL has no specified doctype.')
+    doctype = wrap(doctype, ['httpUrl'])
 
-    def size(self, irc, msg, args):
+    def size(self, irc, msg, args, url):
         """<url>
 
         Returns the Content-Length header of <url>.  Only HTTP urls are valid,
         of course.
         """
-        url = privmsgs.getArgs(args)
-        if not url.startswith('http://'):
-            irc.error('Only HTTP urls are valid.')
-            return
         fd = webutils.getUrlFd(url)
         try:
             try:
@@ -138,15 +128,13 @@ class Http(callbacks.Privmsg):
                               'but it\'s longer than %s bytes.' % (url, size))
         finally:
             fd.close()
+    size = wrap(size, ['httpUrl'])
 
-    def title(self, irc, msg, args):
+    def title(self, irc, msg, args, url):
         """<url>
 
         Returns the HTML <title>...</title> of a URL.
         """
-        url = privmsgs.getArgs(args)
-        if '://' not in url:
-            url = 'http://%s' % url
         size = conf.supybot.protocols.http.peekSize()
         text = webutils.getUrl(url, size=size)
         m = self._titleRe.search(text)
@@ -155,13 +143,13 @@ class Http(callbacks.Privmsg):
         else:
             irc.reply('That URL appears to have no HTML title '
                       'within the first %s bytes.' % size)
+    title = wrap(title, ['httpUrl'])
 
-    def freshmeat(self, irc, msg, args):
+    def freshmeat(self, irc, msg, args, project):
         """<project name>
 
         Returns Freshmeat data about a given project.
         """
-        project = privmsgs.getArgs(args)
         project = ''.join(project.split())
         url = 'http://www.freshmeat.net/projects-xml/%s' % project
         try:
@@ -183,14 +171,14 @@ class Http(callbacks.Privmsg):
                       (project, lastupdated, vitality, popularity, version))
         except FreshmeatException, e:
             irc.error(str(e))
+    freshmeat = wrap(freshmeat, ['something'])
 
-    def stockquote(self, irc, msg, args):
+    def stockquote(self, irc, msg, args, symbol):
         """<company symbol>
 
         Gets the information about the current price and change from the
         previous day of a given company (represented by a stock symbol).
         """
-        symbol = privmsgs.getArgs(args)
         if ' ' in symbol:
             irc.error('Only one stockquote can be looked up at a time.')
             return
@@ -205,15 +193,15 @@ class Http(callbacks.Privmsg):
         else:
             m = 'I couldn\'t find a listing for %s' % symbol
             irc.error(m)
+    stockquote = wrap(stockquote, ['something'])
 
     _cyborgRe = re.compile(r'<p class="mediumheader">(.*?)</p>', re.I)
-    def cyborg(self, irc, msg, args):
+    def cyborg(self, irc, msg, args, name):
         """[<name>]
 
         Returns a cyborg acronym for <name> from <http://www.cyborgname.com/>.
         If <name> is not specified, uses that of the user.
         """
-        name = privmsgs.getArgs(args, required=0, optional=1)
         if not name:
             name = msg.nick
         name = urllib.quote(name)
@@ -226,15 +214,15 @@ class Http(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.errorPossibleBug('No cyborg name returned.')
+    cyborg = wrap(cyborg, [additional('somethingWithoutSpaces')])
 
     _acronymre = re.compile(r'valign="middle" width="7\d%" bgcolor="[^"]+">'
                             r'(?:<b>)?([^<]+)')
-    def acronym(self, irc, msg, args):
+    def acronym(self, irc, msg, args, acronym):
         """<acronym>
 
         Displays acronym matches from acronymfinder.com
         """
-        acronym = privmsgs.getArgs(args)
         url = 'http://www.acronymfinder.com/' \
               'af-query.asp?String=exact&Acronym=%s' % urllib.quote(acronym)
         html = webutils.getUrl(url)
@@ -253,16 +241,16 @@ class Http(callbacks.Privmsg):
         else:
             s = ', or '.join(defs)
             irc.reply('%s could be %s' % (acronym, s))
+    acronym = wrap(acronym, ['text'])
 
     _netcraftre = re.compile(r'td align="left">\s+<a[^>]+>(.*?)<a href',
                              re.S | re.I)
-    def netcraft(self, irc, msg, args):
+    def netcraft(self, irc, msg, args, hostname):
         """<hostname|ip>
 
         Returns Netcraft.com's determination of what operating system and
         webserver is running on the host given.
         """
-        hostname = privmsgs.getArgs(args)
         url = 'http://uptime.netcraft.com/up/graph/?host=%s' % hostname
         html = webutils.getUrl(url)
         m = self._netcraftre.search(html)
@@ -275,6 +263,7 @@ class Http(callbacks.Privmsg):
             irc.reply('No results found for %s.' % hostname)
         else:
             irc.error('The format of page the was odd.')
+    netcraft = wrap(netcraft, ['text'])
 
     def kernel(self, irc, msg, args):
         """takes no arguments
@@ -299,16 +288,16 @@ class Http(callbacks.Privmsg):
         irc.reply('The latest stable kernel is %s; '
                   'the latest snapshot of the stable kernel is %s; '
                   'the latest beta kernel is %s.' % (stable, snapshot, mm))
+    kernel = wrap(kernel)
 
     _pgpkeyre = re.compile(r'pub\s+\d{4}\w/<a href="([^"]+)">'
                            r'([^<]+)</a>[^>]+>([^<]+)</a>')
-    def pgpkey(self, irc, msg, args):
+    def pgpkey(self, irc, msg, args, search):
         """<search words>
 
         Returns the results of querying pgp.mit.edu for keys that match
         the <search words>.
         """
-        search = privmsgs.getArgs(args)
         urlClean = search.replace(' ', '+')
         host = 'http://pgp.mit.edu:11371'
         url = '%s/pks/lookup?op=index&search=%s' % (host, urlClean)
@@ -326,19 +315,20 @@ class Http(callbacks.Privmsg):
                 irc.reply(s)
         finally:
             fd.close()
+    pgpkey = wrap(pgpkey, ['text'])
 
     _filextre = re.compile(
         r'<strong>Extension:</strong>.*?<tr>.*?</tr>\s+<tr>\s+<td colspan='
         r'"2">(?:<a href[^>]+>([^<]+)</a>\s+|([^<]+))</td>\s+<td>'
         r'(?:<a href[^>]+>([^<]+)</a>|<img src="images/spacer.gif"(.))',
         re.I|re.S)
-    def extension(self, irc, msg, args):
+    def extension(self, irc, msg, args, ext):
         """<ext>
 
         Returns the results of querying filext.com for file extensions that
         match <ext>.
         """
-        ext = privmsgs.getArgs(args)
+        # XXX This probably ought to be handled in a converter from commands.py
         invalid = '|<>\^=?/[]";,*'
         for c in invalid:
             if c in ext:
@@ -367,16 +357,16 @@ class Http(callbacks.Privmsg):
             irc.reply(utils.commaAndify(res))
         else:
             irc.error('No matching file extensions were found.')
+    extension = wrap(extension, ['text'])
 
     _zipinfore = re.compile(r'Latitude<BR>\(([^)]+)\)</th><th>Longitude<BR>'
                             r'\(([^)]+)\).*?<tr>(.*?)</tr>', re.I)
     _zipstatre = re.compile(r'(Only about \d+,\d{3} of.*?in use.)')
-    def zipinfo(self, irc, msg, args):
+    def zipinfo(self, irc, msg, args, zipcode):
         """<zip code>
 
         Returns a plethora of information for the given <zip code>.
         """
-        zipcode = privmsgs.getArgs(args)
         try:
             int(zipcode)
         except ValueError:
@@ -416,6 +406,7 @@ class Http(callbacks.Privmsg):
                 'Longitude: %s (%s)' % (info[-1], longdir),
                ]
         irc.reply('; '.join(resp))
+    zipinfo = wrap(zipinfo, ['text'])
 
 
 Class = Http

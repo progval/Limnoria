@@ -40,7 +40,7 @@ __contributors__ = {}
 import supybot.plugins as plugins
 
 import time
-TIME = time
+TIME = time # For later use.
 
 import dateutil.parser
 
@@ -117,7 +117,7 @@ class Time(callbacks.Privmsg):
                 seconds += i
         irc.reply(str(seconds))
 
-    def at(self, irc, msg, args):
+    def at(self, irc, msg, args, s):
         """<time string>
 
         Returns the number of seconds since epoch <time string> is.
@@ -125,20 +125,19 @@ class Time(callbacks.Privmsg):
         and see if it will work.
         """
         now = int(time.time())
-        s = privmsgs.getArgs(args)
         new = parse(s)
         if new != now:
             irc.reply(new)
         else:
             irc.error('That\'s right now!')
+    at = wrap(at, ['text'])
 
-    def until(self, irc, msg, args):
+    def until(self, irc, msg, args, s):
         """<time string>
 
         Returns the number of seconds until <time string>.
         """
         now = int(time.time())
-        s = privmsgs.getArgs(args)
         new = parse(s)
         if new != now:
             if new - now < 0:
@@ -146,6 +145,7 @@ class Time(callbacks.Privmsg):
             irc.reply(new-now)
         else:
             irc.error('That\'s right now!')
+    until = wrap(until, ['text'])
 
     def ctime(self, irc, msg, args, seconds):
         """[<seconds since epoch>]

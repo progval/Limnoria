@@ -48,10 +48,10 @@ import supybot.registry as registry
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 try:
@@ -154,33 +154,32 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
         s = 'jots down a new quote for %s' % msg.nick
         irc.reply(s, action=True, prefixName=False)
 
-    def grab(self, irc, msg, args):
+    def grab(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
 
         Grabs a quote from <channel> by <nick> for the quotegrabs table.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        nick = privmsgs.getArgs(args)
         if ircutils.strEqual(nick, msg.nick):
             irc.error('You can\'t quote grab yourself.')
             return
         for m in reversed(irc.state.history):
+            # XXX Note that the channel isn't used here.  Also note that
+            #     channel might be None since we use channeldb
             if m.command == 'PRIVMSG' and ircutils.strEqual(m.nick, nick):
                 self._grab(irc, m, msg.prefix)
                 irc.replySuccess()
                 return
         irc.error('I couldn\'t find a proper message to grab.')
+    grab = wrap(grab, ['channeldb', 'nick'])
 
-    def quote(self, irc, msg, args):
+    def quote(self, irc, msg, args, channel, nick):
         """[<channel>] <nick>
 
         Returns <nick>'s latest quote grab in <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        nick = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT quote FROM quotegrabs
@@ -191,16 +190,17 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
         else:
             text = cursor.fetchone()[0]
             irc.reply(text)
+    quote = wrap(quote, ['channeldb', 'nick'])
 
-    def list(self, irc, msg, args):
-        """<nick>
+    def list(self, irc, msg, args, channel, nick):
+        """[<channel>] <nick>
 
         Returns a list of shortened quotes that have been grabbed for <nick>
         as well as the id of each quote.  These ids can be used to get the
-        full quote.
+        full quote.  <channel> is only necessary if the message isn't sent in
+        the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        nick = privmsgs.getArgs(args)
+        # XXX This doesn't seem to be channel-specific in practice.
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT id, quote FROM quotegrabs
@@ -216,15 +216,17 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
                 item_str = utils.ellipsisify('#%s: %s' % (id, quote), 50)
                 l.append(item_str)
             irc.reply(utils.commaAndify(l))
+    list = wrap(list, ['channeldb', 'nick'])
 
-    def randomquote(self, irc, msg, args):
-        """[<nick>]
+    # XXX Could we rename this "random", to fit in more with the rest of
+    #     our plugins?
+    def randomquote(self, irc, msg, args, channel, nick):
+        """[<channel>] [<nick>]
 
         Returns a randomly grabbed quote, optionally choosing only from those
-        quotes grabbed for <nick>.
+        quotes grabbed for <nick>.  <channel> is only necessary if the message
+        isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        nick = privmsgs.getArgs(args, required=0, optional=1)
         db = self.getDb(channel)
         cursor = db.cursor()
         if nick:
@@ -243,19 +245,14 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
             return
         quote = cursor.fetchone()[0]
         irc.reply(quote)
+    randomquote = wrap(randomquote, ['channeldb', additional('nick')])
 
-    def get(self, irc, msg, args):
-        """<id>
+    def get(self, irc, msg, args, channel, id):
+        """[<channel>] <id>
 
-        Return the quotegrab with the given <id>.
+        Return the quotegrab with the given <id>.  <channel> is only necessary
+        if the message isn't sent in the channel itself.
         """
-        id = privmsgs.getArgs(args)
-        try:
-            id = int(id)
-        except ValueError:
-            irc.error('%r does not appear to be a valid quotegrab id' % id)
-            return
-        channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT quote, hostmask, added_at, added_by
@@ -272,6 +269,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
             grabber = grabber_mask
         irc.reply('%s (Said by: %s; grabbed by %s at %s)' % \
                   (quote, hostmask, grabber, time_str))
+    get = wrap(get, ['channeldb', 'id'])
 
 
 Class = QuoteGrabs
