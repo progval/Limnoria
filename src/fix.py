@@ -140,89 +140,91 @@ class set(object):
         except KeyError:
             pass
 
-    def __getstate__(self):
-        return self.d
+##     def __getstate__(self):
+##         return self.d
 
-    def __setstate__(self, d):
-        self.d = d
+##     def __setstate__(self, d):
+##         self.d = d
 
 
-class queue(dict):
-    """An FIFO Queue, O(1) for all operations."""
-    __slots__ = ('first', 'last')
+class queue(object):
+    __slots__ = ('front', 'back')
     def __init__(self, seq=()):
-        self.first = 0
-        self.last = 0
+        self.back = []
+        self.front = []
         for elt in seq:
             self.enqueue(elt)
 
     def enqueue(self, elt):
-        dict.__setitem__(self, self.last, elt)
-        self.last += 1
-
-    def peek(self):
-        try:
-            return dict.__getitem__(self, self.first)
-        except KeyError:
-            raise IndexError, 'peek into empty queue'
+        self.back.append(elt)
 
     def dequeue(self):
         try:
-            ret = dict.__getitem__(self, self.first)
-            dict.__delitem__(self, self.first)
-            self.first += 1
-            return ret
-        except KeyError:
-            raise IndexError, 'dequeue from empty queue'
+            return self.front.pop()
+        except IndexError:
+            self.back.reverse()
+            self.front = self.back
+            self.back = []
+            return self.front.pop()
+
+    def peek(self):
+        if self.front:
+            return self.front[-1]
+        else:
+            return self.back[0]
 
     def __len__(self):
-        return self.last - self.first
+        return len(self.front) + len(self.back)
 
     def __contains__(self, elt):
-        return elt in self.itervalues()
+        return elt in self.front or elt in self.back
 
     def __iter__(self):
-        for i in xrange(self.first, self.last):
-            yield dict.__getitem__(self, i)
-            
+        for elt in reviter(self.front):
+            yield elt
+        for elt in self.back:
+            yield elt
+
     def __eq__(self, other):
         if len(self) == len(other):
-            for (x, y) in zip(self, other):
-                if x != y:
+            otheriter = iter(other)
+            for elt in self:
+                otherelt = otheriter.next()
+                if not (elt == otherelt):
                     return False
             return True
         else:
             return False
 
     def __repr__(self):
-        return 'queue([%s])' % ', '.join(map(repr, self.itervalues()))
+        return 'queue([%s])' % ', '.join(map(repr, self))
 
-    def __getitem__(self, i):
-        try:
-            if i >= 0:
-                return dict.__getitem__(self, i+self.first)
-            else:
-                return dict.__getitem__(self, i+self.last)
-        except KeyError:
-            raise IndexError, i
-
-    def __setitem__(self, i, v):
-        try:
-            if i >= 0:
-                dict.__setitem__(self, i+self.first, v)
-            else:
-                dict.__setitem__(self, i+self.last, v)
-        except KeyError:
-            raise IndexError, i
+    def __getitem__(self, oidx):
+        (m, idx) = divmod(oidx, len(self))
+        if m and m != -1:
+            raise IndexError, oidx
+        if len(self.front) > idx:
+            return self.front[-(idx+1)]
+        else:
+            return self.back[(idx-len(self.front))]
+        
+    def __setitem__(self, oidx, value):
+        (m, idx) = divmod(oidx, len(self))
+        if m and m != -1:
+            raise IndexError, oidx
+        if len(self.front) > idx:
+            self.front[-(idx+1)] = value
+        else:
+            self.back[(idx-len(self.front))] = value
 
     def __getstate__(self):
-        return (self.first, self.last, dict(self))
+        return (list(self),)
 
-    def __setstate__(self, (first, last, d)):
-        self.first = first
-        self.last = last
-        for (k, v) in d.iteritems():
-            dict.__setitem__(self, k, v)
+    def __setstate__(self, (L,)):
+        L.reverse()
+        self.front = L
+        self.back = []
+
             
 class MaxLengthQueue(queue):
     __slots__ = ('length',)
