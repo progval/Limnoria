@@ -95,7 +95,7 @@ class Relay(callbacks.Privmsg):
         otherIrc.driver.die()
         del self.ircs[network]
         world.ircs.remove(otherIrc)
-        del self.abbreviations[network]
+        del self.abbreviations[otherIrc]
         irc.reply(msg, conf.replySuccess)
     relaydisconnect = privmsgs.checkCapability(relaydisconnect, 'owner')
 
@@ -201,21 +201,24 @@ class Relay(callbacks.Privmsg):
                 s = 'mode change on %s/%s %s' % \
                     (channel, abbreviation, ' '.join(msg.args[1:]))
                 for otherIrc in self.ircs.itervalues():
-                    otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                    if otherIrc != irc:
+                        otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
                     
     def doNick(self, irc, msg):
         if self.started:
             if not isinstance(irc, irclib.Irc):
                 irc = irc.getRealIrc()
-            s = 'nick change by %s to %s' % (msg.prefix, msg.args[0])
-            for otherIrc in self.ircs.itervalues():
-                for channel in self.channels:
-                    if channel in otherIrc.state.channels:
-                        chan = otherIrc.state.channels[channel]
-                        if msg.nick in chan.users:
+            newNick = msg.args[0]
+            s = 'nick change by %s to %s' % (msg.nick, newNick)
+            for channel in self.channels:
+                if newNick in irc.state.channels[channel].users:
+                    for otherIrc in self.ircs.itervalues():
+                        if otherIrc != irc:
                             otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
                             
     def outFilter(self, irc, msg):
+        if not self.started:
+            return msg
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
         if msg.command == 'PRIVMSG':
@@ -225,7 +228,9 @@ class Relay(callbacks.Privmsg):
             if not (rPrivmsg.match(msg.args[1]) or \
                     rAction.match(msg.args[1]) or \
                     msg.args[1].find('has left on ') != -1 or \
-                    msg.args[1].find('has joined on ') != -1):
+                    msg.args[1].find('has joined on ') != -1 or \
+                    msg.args[1].startswith('mode change') or \
+                    msg.args[1].startswith('nick change')):
                 channel = msg.args[0]
                 if channel in self.channels:
                     abbreviation = self.abbreviations[irc]
