@@ -14,7 +14,7 @@ then you need to run this:
 python setup.py install
 
 from the untarred directory to install the source files.  Then just
-run supybot-wizard.py (it's been installed in your path somewhere) to
+run supybot-wizard (it's been installed in your path somewhere) to
 create a script that will run your bot as you answered the questions
 in the wizard.
 
@@ -28,10 +28,10 @@ post it on Sourceforge.net so we can improve the bot!
 
 WINDOWS USERS:
 --------------
-The wizards (supybot-wizard.py, supybot-newplugin.py, and
-supybot-adduser.py) are all installed to your Python directory's
+The wizards (supybot-wizard, supybot-newplugin, and
+supybot-adduser) are all installed to your Python directory's
 \Scripts.  What that *probably* means is that you'll run them like
-this: C:\Python23\Scripts\supybot-wizard.py .
+this: C:\Python23\python C:\Python23\Scripts\supybot-wizard
 
 
 DEVELOPERS:

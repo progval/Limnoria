@@ -30,7 +30,7 @@
 ###
 
 """
-This is the template for bots.  supybot-wizard.py uses this file to make
+This is the template for bots.  supybot-wizard uses this file to make
 customized startup files for bots.
 """
 
