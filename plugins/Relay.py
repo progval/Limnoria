@@ -135,7 +135,11 @@ class Relay(callbacks.Privmsg):
             debug.printf('self.ircs = %s' % self.ircs)
             debug.printf('irc = %s' % irc)
             abbreviation = self.abbreviations[irc]
-            s = '<%s@%s> %s' % (msg.nick, abbreviation, msg.args[1])
+            if ircmsgs.isAction(msg):
+                _args1 = '* %s %s' % (msg.nick, ircmsgs.unAction(msg))
+            else:
+                _args1 = msg.args[1]
+            s = '<%s@%s> %s' % (msg.nick, abbreviation, _args1)
             for otherIrc in self.ircs:
                 debug.printf('otherIrc = %s' % otherIrc)
                 if otherIrc != irc:
