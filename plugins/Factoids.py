@@ -179,10 +179,10 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
                 counter += 1
             totalResults = len(factoids)
             if ircutils.shrinkList(factoids, ', or ', 400):
-                s = '%s could be %s. (%s results shown out of %s)' % \
+                s = '%s could be %s (%s results shown out of %s)' % \
                     (key, ', or '.join(factoids), counter-1, totalResults)
             else:
-                s = '%s could be %s.' % (key, ', or '.join(factoids))
+                s = '%s could be %s' % (key, ', or '.join(factoids))
             irc.reply(msg, s)
 
     def lock(self, irc, msg, args):
