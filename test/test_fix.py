@@ -49,6 +49,13 @@ class FunctionsTest(unittest.TestCase):
         for elt in reviter([]):
             self.fail('reviter caused iteration over empty sequence')
 
+    def testGroup(self):
+        s = '1. d4 d5 2. Nf3 Nc6 3. e3 Nf6 4. Nc3 e6 5. Bd3 a6'
+        self.assertEqual(group(s.split(), 3)[:3],
+                         [['1.', 'd4', 'd5'],
+                          ['2.', 'Nf3', 'Nc6'],
+                          ['3.', 'e3', 'Nf6']])
+
     def testWindow(self):
         L = range(10)
         def wwindow(*args):

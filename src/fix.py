@@ -233,21 +233,22 @@ def ilen(iterator):
         i += 1
     return i
 
-## def group(seq, groupSize):
-##     L = []
-##     LL = []
-##     i = groupSize
-##     for elt in seq:
-##         if i > 0:
-##             LL.append(elt)
-##             i -= 1
-##         else:
-##             L.append(LL)
-##             i = groupSize
-##             LL = []
-##     if LL:
-##         L.append(LL)
-##     return L
+def group(seq, groupSize):
+    ret = []
+    L = []
+    i = groupSize
+    for elt in seq:
+        if i > 0:
+            L.append(elt)
+        else:
+            ret.append(L)
+            i = groupSize
+            L = []
+            L.append(elt)
+        i -= 1
+    if L:
+        ret.append(L)
+    return ret
 
 def itersplit(iterable, isSeparator, yieldEmpty=False):
     acc = []
