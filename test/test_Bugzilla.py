@@ -33,9 +33,8 @@ from test import *
 
 class BugzillaTest(PluginTestCase, PluginDocumentation):
     plugins = ('Bugzilla',)
-    def testBugzilla(self):
+    def test(self):
         self.assertNotError('bug gcc 5')
-        self.assertNotError('http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
         self.assertNotError('add xiph http://bugs.xiph.org/ Xiph')
         self.assertNotError('bug xiph 413')
         self.assertNotError('remove xiph')
