@@ -173,6 +173,7 @@ class IrcMsgQueue(object):
            not conf.supybot.protocols.irc.queueDuplicateMessages():
             s = str(msg).strip()
             log.warning('Not adding message %r to queue, already added.', s)
+            return False
         else:
             self.msgs.add(msg)
             if msg.command in _high:
@@ -181,6 +182,7 @@ class IrcMsgQueue(object):
                 self.lowpriority.enqueue(msg)
             else:
                 self.normal.enqueue(msg)
+            return True
 
     def dequeue(self):
         """Dequeues a given message."""
@@ -659,9 +661,10 @@ class Irc(IrcCommandDispatcher):
     def queueMsg(self, msg):
         """Queues a message to be sent to the server."""
         if not self.zombie:
-            self.queue.enqueue(msg)
+            return self.queue.enqueue(msg)
         else:
             log.warning('Refusing to queue %r; %s is a zombie.', self, msg)
+            return False
 
     def sendMsg(self, msg):
         """Queues a message to be sent to the server *immediately*"""
