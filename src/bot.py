@@ -35,14 +35,12 @@ Main program file for running the bot.
 
 from fix import *
 
-import os
 import sys
 import email
 
 import conf
 import world
 import debug
-import ircdb
 import irclib
 import ircmsgs
 import drivers
