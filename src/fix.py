@@ -177,8 +177,24 @@ def attrgetter(attr):
 operator.itemgetter = itemgetter
 operator.attrgetter = attrgetter
 
+import csv
+import cStringIO as StringIO
+def join(L):
+    fd = StringIO.StringIO()
+    writer = csv.writer(fd)
+    writer.writerow(L)
+    return fd.getvalue().rstrip('\r\n')
+
+def split(s):
+    fd = StringIO.StringIO(s)
+    reader = csv.reader(fd)
+    return reader.next()
+csv.join = join
+csv.split = split
+
 for name in exported:
     __builtins__[name] = globals()[name]
+
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

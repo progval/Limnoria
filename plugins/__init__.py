@@ -42,6 +42,7 @@ import math
 import sets
 import time
 import random
+import os.path
 import urllib2
 import UserDict
 import threading
@@ -109,6 +110,12 @@ class DBHandler(object):
             self.cachedDb.die()
             del self.cachedDb
 
+def makeChannelFilename(channel, filename):
+    # XXX We should put channel stuff in its own directory.
+    assert filename == os.path.basename(filename)
+    channel = ircutils.toLower(channel)
+    filename = '%s-%s' % (channel, filename)
+    return conf.supybot.directories.data.dirize(filename)
 
 # XXX: This shouldn't be a mixin.  This should be contained by classes that
 #      want such behavior.  But at this point, it wouldn't gain much for us
@@ -127,7 +134,8 @@ class ChannelDBHandler(object):
     def makeFilename(self, channel):
         """Override this to specialize the filenames of your databases."""
         channel = ircutils.toLower(channel)
-        prefix = '%s-%s%s' % (channel, self.__class__.__name__, self.suffix)
+        prefix = makeChannelFilename(channel,
+                                     self.__class__.__name__ + self.suffix)
         return os.path.join(conf.supybot.directories.data(), prefix)
 
     def makeDb(self, filename):
@@ -222,7 +230,7 @@ class ChannelUserDB(ChannelUserDictionary):
             log.debug('Exception: %s', utils.exnToString(e))
 
     def flush(self):
-        fd = utils.AtomicFile(self.filename)
+        fd = utils.transactionalFile(self.filename)
         writer = csv.writer(fd)
         items = self.items()
         if not items:
@@ -375,7 +383,7 @@ class FlatfileDB(object):
     def serialize(self, record):
         raise NotImplementedError
 
-    def unserialize(self, s):
+    def deserialize(self, s):
         raise NotImplementedError
 
     def _canonicalId(self, id):
@@ -409,8 +417,9 @@ class FlatfileDB(object):
             fd = file(self.filename, 'r+')
             fd.seek(0, 2) # End.
             fd.write(line)
-            self._incrementCurrentId(fd)
+            return self.currentId
         finally:
+            self._incrementCurrentId(fd)
             fd.close()
 
     def getRecord(self, id):
@@ -421,7 +430,7 @@ class FlatfileDB(object):
             for line in fd:
                 (lineId, strRecord) = self._splitLine(line)
                 if lineId == strId:
-                    return self.unserialize(strRecord)
+                    return self.deserialize(strRecord)
             raise KeyError, id
         finally:
             fd.close()
@@ -466,7 +475,7 @@ class FlatfileDB(object):
         for line in fd:
             (strId, strRecord) = self._splitLine(line)
             if not strId.startswith('-'):
-                yield (int(strId), self.unserialize(strRecord))
+                yield (int(strId), self.deserialize(strRecord))
         fd.close()
 
     def vacuum(self):
