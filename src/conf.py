@@ -159,7 +159,7 @@ showOnlySyntax = False
 # defaultCapabilities: Capabilities allowed to everyone by default.  You almost
 #                      certainly want to have !owner and !admin in here.
 ###
-defaultCapabilities = sets.Set(['-owner', '-admin'])
+defaultCapabilities = sets.Set(['-owner', '-admin', '-trusted'])
 
 ###
 # reply%s: Stock replies for various reasons.

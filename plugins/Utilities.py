@@ -160,6 +160,7 @@ class Utilities(callbacks.Privmsg):
             irc.error(msg, s)
         else:
             irc.reply(msg, f(text))
+    re = privmsgs.checkCapability(re, 'trusted')
 
 
 Class = Utilities
