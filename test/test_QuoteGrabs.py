@@ -75,5 +75,14 @@ class QuoteGrabsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('grab foo') # note: NOT an error, still won't dupe
         self.assertResponse('quotegrabs list foo', '#1: test')
 
+    def testCaseInsensitivity(self):
+        testPrefix = 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                         prefix=testPrefix))
+        self.assertNotError('grab FOO')
+        self.assertNotError('quote foo')
+        self.assertNotError('quote FoO')
+        self.assertNotError('quote Foo')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

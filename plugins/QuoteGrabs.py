@@ -77,19 +77,21 @@ class QuoteGrabs(plugins.ChannelDBHandler,
 
     def makeDb(self, filename):
         if os.path.exists(filename):
-            return sqlite.connect(db=filename, mode=0755,
-                                  converters={'bool': bool})
-        #else:
-        db = sqlite.connect(db=filename, mode=0755, coverters={'bool': bool})
-        cursor = db.cursor()
-        cursor.execute("""CREATE TABLE quotegrabs (
-                          id INTEGER PRIMARY KEY,
-                          nick TEXT,
-                          hostmask TEXT,
-                          added_by TEXT,
-                          added_at TIMESTAMP,
-                          quote TEXT
-                          );""")
+            db = sqlite.connect(filename, converters={'bool': bool})
+        else:
+            db = sqlite.connect(filename, coverters={'bool': bool})
+            cursor = db.cursor()
+            cursor.execute("""CREATE TABLE quotegrabs (
+                              id INTEGER PRIMARY KEY,
+                              nick TEXT,
+                              hostmask TEXT,
+                              added_by TEXT,
+                              added_at TIMESTAMP,
+                              quote TEXT
+                              );""")
+        def p(s1, s2):
+            return int(ircutils.nickEqual(s1, s2))
+        db.create_function('nickeq', 2, p)
         db.commit()
         return db
         
@@ -148,7 +150,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
             irc.error(msg, 'You can\'t quote grab yourself.')
             return
         for m in reviter(irc.state.history):
-            if m.command == 'PRIVMSG' and m.nick == nick:
+            if m.command == 'PRIVMSG' and ircutils.nickEqual(m.nick, nick):
                 self._grab(irc, m, msg.prefix)
                 irc.reply(msg, conf.replySuccess)
                 return
@@ -165,7 +167,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT quote FROM quotegrabs
-                          WHERE nick=%s
+                          WHERE nickeq(nick, %s)
                           ORDER BY id DESC LIMIT 1""", nick)
         if cursor.rowcount == 0:
             irc.error(msg,'I couldn\'t find a matching quotegrab for %s'%nick)
