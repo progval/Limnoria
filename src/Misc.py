@@ -693,12 +693,15 @@ class Misc(callbacks.Privmsg):
                         contribs.remove(module.__author__)
                     except ValueError:
                         pass
-                contrib = "%s %s contributed to it." % \
-                    (buildContributorsString(contribs),
-                    utils.has(len(contribs)))
-                hasContribs = True
+                if contribs:
+                    contrib = '%s %s contributed to it.' % \
+                        (buildContributorsString(contribs),
+                        utils.has(len(contribs)))
+                    hasContribs = True
+                elif hasAuthor:
+                    contrib = 'has no additional contributors listed'
             if hasContribs and not hasAuthor:
-                conjunction = "but"
+                conjunction = 'but'
             return '%s %s %s %s' % (head, author, conjunction, contrib)
         def buildPersonString(module):
             """
@@ -728,15 +731,15 @@ class Misc(callbacks.Privmsg):
             if splitContribs[0]:
                 results.append('the %s' % utils.commaAndify(splitContribs[0]))
             if results and isAuthor:
-                return "%s wrote the %s plugin and also contributed %s" % \
+                return '%s wrote the %s plugin and also contributed %s' % \
                     (fullName, plugin, utils.commaAndify(results))
             elif results and not isAuthor:
-                return "%s contributed %s to the %s plugin" % \
+                return '%s contributed %s to the %s plugin' % \
                     (fullName, utils.commaAndify(results), plugin)
             elif isAuthor and not results:
-                return "%s wrote the %s plugin" % (fullName, plugin)
+                return '%s wrote the %s plugin' % (fullName, plugin)
             else:
-                return "%s has no listed contributions for the %s plugin %s" %\
+                return '%s has no listed contributions for the %s plugin %s' %\
                     (fullName, plugin)
         # First we need to check and see if the requested plugin is loaded
         cb = irc.getCallback(plugin)
