@@ -134,11 +134,17 @@ class UtilsTest(unittest.TestCase):
 
     def testCommaAndify(self):
         L = ['foo']
+        original = L[:]
         self.assertEqual(utils.commaAndify(L), 'foo')
+        self.assertEqual(L, original)
         L.append('bar')
+        original = L[:]
         self.assertEqual(utils.commaAndify(L), 'foo and bar')
+        self.assertEqual(L, original)
         L.append('baz')
+        original = L[:]
         self.assertEqual(utils.commaAndify(L), 'foo, bar, and baz')
+        self.assertEqual(L, original)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

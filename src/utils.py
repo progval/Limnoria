@@ -267,7 +267,11 @@ def commaAndify(L):
     elif len(L) == 2:
         return '%s and %s' % (L[0], L[1])
     else:
+        # Not technically threadsafe.  But we'll see if that matters.
+        originalLastElement = L[-1]
         L[-1] = 'and %s' % L[-1]
-        return ', '.join(L)
+        s = ', '.join(L)
+        L[-1] = originalLastElement
+        return s
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
