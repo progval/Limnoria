@@ -60,7 +60,7 @@ def configure(advanced):
 
 conf.registerPlugin('Later')
 conf.registerGlobalValue(conf.supybot.plugins.Later, 'maximum',
-    registry.NonNegativeInteger(5, """Determines the maximum number of messages
+    registry.NonNegativeInteger(0, """Determines the maximum number of messages
     to be queued for a user.  If it's 0, there is no maximum."""))
 
 class Later(callbacks.Privmsg):
