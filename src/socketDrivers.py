@@ -144,7 +144,8 @@ class SocketDriver(drivers.IrcDriver):
             self.conn.settimeout(conf.supybot.drivers.poll())
         except socket.error, e:
             if e.args[0] != 115:
-                log.warning('Error connecting to %s: %s', self.server, e)
+                log.warning('Error connecting to %s: %s',
+                            self.irc.server, e.args[1])
                 self.reconnect(wait=True)
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
