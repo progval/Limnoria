@@ -178,11 +178,6 @@ class User(callbacks.Privmsg):
         if not ircutils.isUserHostmask(hostmask):
             irc.error('That\'s not a valid hostmask.')
             return
-        s = hostmask.translate(string.ascii, '!@*?')
-        if len(s) < 10:
-            s = 'Hostmask must contain more than 10 non-wildcard characters.'
-            irc.error(s)
-            return
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
@@ -197,7 +192,11 @@ class User(callbacks.Privmsg):
         except KeyError:
             pass
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
-            user.addHostmask(hostmask)
+            try:
+                user.addHostmask(hostmask)
+            except ValueError, e:
+                irc.error(str(e))
+                return
             ircdb.users.setUser(id, user)
             irc.replySuccess()
         else:
