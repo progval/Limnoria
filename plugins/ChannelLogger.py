@@ -33,6 +33,8 @@
 Logs each channel to its own individual logfile.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import time

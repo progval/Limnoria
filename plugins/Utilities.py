@@ -33,6 +33,8 @@
 Various utility commands, mostly useful for manipulating nested commands.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import string

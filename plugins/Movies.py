@@ -34,6 +34,8 @@ Does various (well, only one at the moment :)) things with the Internet Movie
 Database.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 from itertools import imap

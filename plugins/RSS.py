@@ -34,6 +34,8 @@ Provides basic functionality for handling RSS/RDF feeds.  Depends on the Alias
 module for user-friendliness.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import time

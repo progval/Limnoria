@@ -33,6 +33,8 @@
 Warns people when they join a channel if their ident is root.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import irclib

@@ -38,6 +38,8 @@ import sets
 import getopt
 import urllib2
 
+__revision__ = "$Id$"
+
 import plugins
 
 import conf

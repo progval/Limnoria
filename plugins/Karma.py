@@ -40,6 +40,8 @@ from itertools import imap
 import sqlite
 
 import utils
+__revision__ = "$Id$"
+
 import plugins
 import privmsgs
 import callbacks

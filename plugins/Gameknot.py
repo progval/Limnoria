@@ -33,7 +33,7 @@
 Handles URL snarfing for Gameknot.com and the gkstats command.
 """
 
-__revision__ = "$id$"
+__revision__ = "$Id$"
 
 import plugins
 

@@ -33,6 +33,8 @@
 Acceses Google for various things.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

@@ -33,6 +33,8 @@
 Provides commands available only on Unix.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

@@ -34,6 +34,8 @@
 A module for managing and voting on polls.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import utils

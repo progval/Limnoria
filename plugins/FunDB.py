@@ -33,6 +33,8 @@
 Provides fun commands that require a database to operate.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

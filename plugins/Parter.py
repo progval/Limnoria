@@ -43,6 +43,8 @@ import utils
 import ircdb
 import ircmsgs
 import ircutils
+__revision__ = "$Id$"
+
 import plugins
 import privmsgs
 import callbacks

@@ -38,6 +38,8 @@ import conf
 import time
 import ircdb
 import sqlite
+__revision__ = "$Id$"
+
 import plugins
 
 import utils

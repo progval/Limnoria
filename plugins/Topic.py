@@ -33,6 +33,8 @@
 Provides commands for manipulating channel topics.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

@@ -35,6 +35,8 @@ searching for URLs and returning random URLs.  Also provides statistics on the
 URLs in the database.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

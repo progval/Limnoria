@@ -34,6 +34,8 @@ Handles standard CTCP responses to PING, TIME, SOURCE, VERSION, USERINFO,
 and FINGER.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

@@ -33,6 +33,8 @@
 Maintains a Quotes database for each channel.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

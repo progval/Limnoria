@@ -33,6 +33,8 @@
 Services: Handles management of nicks with NickServ, and ops with ChanServ.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

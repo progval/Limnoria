@@ -33,6 +33,8 @@
 Logs raw IRC messages to a file, conf.dataDir/raw.log
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

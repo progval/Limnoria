@@ -33,6 +33,8 @@
 A plugin that tries to emulate Infobot somewhat faithfully.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

@@ -33,6 +33,8 @@
 This is a module to contain Debian-specific commands.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

@@ -34,6 +34,8 @@ Allows people behind a relaybot (which uses <nick@network> to relay messages)
 to access the bot.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

@@ -37,6 +37,8 @@ can store many quotes per person and display their most recent quote, as well
 as see who "grabbed" the quote in the first place.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

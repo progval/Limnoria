@@ -36,6 +36,8 @@ later hijinks.  To read more about Markov Chains, check out
 large enough, you can have it make fun little random messages from it.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os.path

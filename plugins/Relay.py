@@ -33,6 +33,8 @@
 Handles relaying between networks.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

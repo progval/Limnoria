@@ -33,6 +33,8 @@
 Babelfish-related commands.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import random

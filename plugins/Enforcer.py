@@ -34,6 +34,8 @@ Enforcer: Enforces capabilities on a channel, watching MODEs, KICKs,
                  JOINs, etc. to make sure they match the channel's config.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import conf

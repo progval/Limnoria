@@ -33,6 +33,8 @@
 Various network-related commands.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import sets

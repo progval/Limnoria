@@ -43,6 +43,8 @@ from itertools import ifilter, imap
 import conf
 import debug
 import utils
+__revision__ = "$Id$"
+
 import plugins
 import ircutils
 import privmsgs

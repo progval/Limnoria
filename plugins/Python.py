@@ -34,6 +34,8 @@ Various commands relating to Python (the programming language supybot is
 written in) somehow.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

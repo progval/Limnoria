@@ -33,6 +33,8 @@
 Allows 'aliases' for other commands.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

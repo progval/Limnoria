@@ -34,6 +34,8 @@ The Todo module allows registered users to keep their own personal list of
 tasks to do, with an optional priority for each.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import glob

@@ -36,6 +36,8 @@ command, it checks the factoid database for a key that matches what was said
 and if nothing is found, responds with an entry from the "dunno" database.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

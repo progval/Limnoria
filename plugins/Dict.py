@@ -33,6 +33,8 @@
 Commands that use the dictd protocol to snag stuff off a server.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import sets

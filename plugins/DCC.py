@@ -33,6 +33,8 @@
 Supports various DCC things.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import socket

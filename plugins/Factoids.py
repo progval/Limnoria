@@ -34,6 +34,8 @@ Handles "factoids," little tidbits of information held in a database and
 available on demand via several commands.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import time

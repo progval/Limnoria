@@ -33,6 +33,8 @@
 Removes all bold output by the bot.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

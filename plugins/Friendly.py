@@ -33,6 +33,8 @@
 Just a regexp module to make the bot a wee bit friendlier.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import debug

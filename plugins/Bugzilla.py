@@ -45,6 +45,8 @@ from htmlentitydefs import entitydefs as entities
 import conf
 import debug
 import utils
+__revision__ = "$Id$"
+
 import plugins
 import ircutils
 import privmsgs

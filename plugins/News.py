@@ -34,6 +34,8 @@ A module to allow each channel to have "news" which people will be notified of
 when they join the channel.  News items may have expiration dates.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

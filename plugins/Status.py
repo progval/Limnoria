@@ -33,6 +33,8 @@
 A simple module to handle various informational commands querying the bot's
 current status and statistics.
 """
+__revision__ = "$Id$"
+
 import plugins
 
 import os

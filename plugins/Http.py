@@ -33,6 +33,8 @@
 Provides several commands that go out to websites and get things.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

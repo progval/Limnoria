@@ -33,6 +33,8 @@
 Various math-related commands.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import re

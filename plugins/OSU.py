@@ -34,6 +34,8 @@ Commands specific to OSU;
 (The Ohio State University, <http://www.ohio-state.edu/>)
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import urllib2

@@ -35,6 +35,8 @@ concerning joins, parts, and various other commands in addition to tracking
 statistics about smileys, actions, characters, and words.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os

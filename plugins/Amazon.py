@@ -33,6 +33,8 @@
 Amazon module, to use Amazon's Web Services.  Currently only does ISBN lookups.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import amazon

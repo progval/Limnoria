@@ -33,6 +33,8 @@
 The Lookup plugin handles looking up various values by their key.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import os
