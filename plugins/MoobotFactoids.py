@@ -155,10 +155,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
 
     def die(self):
         # Handle DB stuff
-        db = self.dbHandler.getDb()
-        db.commit()
-        db.close()
-        del db
+        self.dbHandler.die()
 
     def _parseFactoid(self, irc, msg, fact):
         type = "define"  # Default is to just spit the factoid back as a

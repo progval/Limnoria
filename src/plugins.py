@@ -99,6 +99,12 @@ class DBHandler(object):
             db = self.cachedDb
         db.autocommit = 1
         return db
+
+    def die(self):
+        if self.cachedDb is not None:
+            self.cachedDb.die()
+            del self.cachedDb
+        
         
 class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.

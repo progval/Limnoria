@@ -92,10 +92,7 @@ class Note(callbacks.Privmsg):
         db.commit()
 
     def die(self):
-        db = self.dbHandler.getDb()
-        db.commit()
-        db.close()
-        del db
+        self.dbHandler.die()
 
     def doPrivmsg(self, irc, msg):
         try:
