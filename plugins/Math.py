@@ -97,33 +97,35 @@ class Math(callbacks.Privmsg):
                          r'\.\d+|'
                          r'\d+\.|'
                          r'\d+))')
-    def _complexToString(self, x):
-        real = x.real
-        imag = x.imag
-        if -1e-12 < real < 1e-12 and -1e-12 < imag < 1e-12:
+    def _floatToString(self, x):
+        if -1e-12 < x < 1e-12:
             return '0'
-        if int(real) == real:
-            real = int(real)
-        if int(imag) == imag:
-            imag = int(imag)
-        if -1e-12 < real < 1e-12:
-            real = 0
-        if -1e-12 < imag < 1e-12:
-            imag = 0
-        if imag == 0:
-            return str(real)
-        elif imag == 1:
-            imag = '+i'
-        elif imag == -1:
-            imag = '-i'
-        elif imag < 0:
-            imag = '%si' % imag
-        elif imag > 0:
-            imag = '+%si' % imag
-        if real == 0:
-            return imag.lstrip('+')
+        elif int(x) == x:
+            return str(int(x))
         else:
-            return '%s%s' % (real, imag)
+            return str(x)
+
+    def _complexToString(self, x):
+        realS = self._floatToString(x.real)
+        imagS = self._floatToString(x.imag)
+        if imagS == '0':
+            return realS
+        elif imagS == '1':
+            imagS = '+i'
+        elif imagS == '-1':
+            imagS = '-i'
+        elif x.imag < 0:
+            imagS = '%si' % imagS
+        else:
+            imagS = '+%si' % imagS
+        if realS == '0' and imagS == '0':
+            return '0'
+        elif realS == '0':
+            return imagS.lstrip('+')
+        elif imagS == '0':
+            return realS
+        else:
+            return '%s%s' % (realS, imagS)
 
     def calc(self, irc, msg, args):
         """<math expression>
