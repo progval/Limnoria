@@ -42,6 +42,7 @@ import urllib2
 import conf
 import debug
 import utils
+import plugins
 import ircutils
 import privmsgs
 import callbacks
@@ -54,12 +55,17 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load Gameknot')
-    print 'The Gameknot plugin has the functionality to watch for URLs'
-    print 'that match a specific pattern (we call this a snarfer). When'
-    print 'supybot sees such a URL, he will parse the web page for information'
-    print 'and reply with the results.\n'
-    if yn('Do you want the Gameknot snarfer enabled by default?') == 'n':
-        onStart.append('Gameknot togglesnarfer')
+    if advanced:
+        print 'The Gameknot plugin has the functionality to watch for URLs'
+        print 'that match a specific pattern (we call this a snarfer). When'
+        print 'supybot sees such a URL, he will parse the web page for'
+        print 'information and reply with the results.\n'
+        if yn('Do you want the Gameknot stats snarfer enabled by default?') ==\
+               'n':
+            onStart.append('Gameknot toggle stat off')
+        if yn('Do you want the Gameknot Game links snarfer enabled by '\
+              'default?') == 'n':
+            onStart.append('Gameknot toggle stat off')
 
 
 example = utils.wrapLines("""
@@ -73,13 +79,14 @@ example = utils.wrapLines("""
 <supybot> Challenge from ddipaolo: inkedmn (901; W-69, L-84, D-4) vs. ddipaolo (1159; W-135, L-136, D-8);  inkedmn to move.  <http://gameknot.com/chess.pl?bd=1038943>
 """)
 
-class Gameknot(callbacks.PrivmsgCommandAndRegexp):
+class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     threaded = True
     regexps = ['gameknotSnarfer', 'gameknotStatsSnarfer']
+    toggles = plugins.ToggleDictionary({'game' : True,
+                                        'stat' : True})
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        self.snarfers = {'game' : True,
-                         'stat' : True}
+        #plugins.Toggleable.__init__(self)
 
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
@@ -164,43 +171,6 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
         name = privmsgs.getArgs(args)
         irc.reply(msg, self.getStats(name))
 
-    def _toggleHelper(self, irc, msg, state, snarfer):
-        if not state:
-            self.snarfers[snarfer] = not self.snarfers[snarfer] 
-        elif state in self._enable:
-            self.snarfers[snarfer] = True
-        elif state in self._disable:
-            self.snarfers[snarfer] = False
-        resp = []
-        for k in self.snarfers:
-            if self.snarfers[k]:
-                resp.append('%s%s: On' % (k[0].upper(), k[1:]))
-            else:
-                resp.append('%s%s: Off' % (k[0].upper(), k[1:]))
-        irc.reply(msg, '%s (%s)' % (conf.replySuccess, '; '.join(resp)))
-
-    _enable = ('on', 'enable')
-    _disable = ('off', 'disable')
-    def togglesnarfer(self, irc, msg, args):
-        """<game|stat> [<on|off>]
-
-        Toggles the snarfer that responds to Gameknot game links or stat links.
-        If nothing is specified, all snarfers will have their states
-        toggled (on -> off, off -> on).  If only a state is specified, all
-        snarfers will have their state set to the specified state.  If a
-        specific snarfer is specified, the changes will apply only to that
-        snarfer.
-        """
-        (snarfer, state) = privmsgs.getArgs(args, optional=1)
-        snarfer = snarfer.lower()
-        state = state.lower()
-        if snarfer not in self.snarfers:
-            raise callbacks.ArgumentError
-        if state and state not in self._enable and state not in self._disable:
-            raise callbacks.ArgumentError
-        self._toggleHelper(irc, msg, state, snarfer)
-    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
-
     _gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
     _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
     _gkGameTitle = re.compile(r"<p><b>(.*?)\s*</b>&nbsp;\s*<span.*?>\(started")
@@ -208,7 +178,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     _gkReason = re.compile(r'won\s+\(\S+\s+(\S+)\)')
     def gameknotSnarfer(self, irc, msg, match):
         r"http://(?:www\.)?gameknot\.com/chess\.pl\?bd=\d+(&r=\d+)?"
-        if not self.snarfers['stat']:
+        if not self.toggles.get('game', channel=msg.args[0]):
             return
         #debug.printf('Got a GK URL from %s' % msg.prefix)
         url = match.group(0)
@@ -261,7 +231,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
 
     def gameknotStatsSnarfer(self, irc, msg, match):
         r"http://gameknot\.com/stats\.pl\?([^&]+)"
-        if not self.snarfers['game']:
+        if not self.toggles.get('stat', channel=msg.args[0]):
             return
         name = match.group(1)
         s = self.getStats(name)

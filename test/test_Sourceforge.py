@@ -88,14 +88,14 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
         self.assertNoResponse('https://sourceforge.net/tracker/?'\
             'group_id=58965&atid=489447')
 
-    def testDisablesfsnarfer(self):
+    def testToggle(self):
         s = r'.*Status.*: \w+'
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235', s)
-        self.assertNotError('togglesnarfer tracker off')
+        self.assertNotError('Sourceforge toggle tracker off')
         self.assertNoResponse('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235')
-        self.assertNotError('togglesnarfer tracker on')
+        self.assertNotError('Sourceforge toggle tracker on')
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235', s)
 

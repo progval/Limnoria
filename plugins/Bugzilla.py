@@ -91,59 +91,24 @@ def configure(onStart, afterConnect, advanced):
         print 'supybot sees such a URL, he will parse the web page for'
         print 'information and reply with the results.\n'
         if yn('Do you want the Bugzilla snarfer enabled by default?') == 'n':
-            onStart.append('Bugzilla togglesnarfer bug off')
+            onStart.append('Bugzilla toggle bug off')
 
-class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
+class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     """Show a link to a bug report with a brief description"""
     threaded = True
     regexps = ['bzSnarfer']
+    toggles = plugins.ToggleDictionary({'bug' : True})
+
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        #plugins.Toggleabel.__init__(self)
         self.entre = re.compile('&(\S*?);')
         self.db = makeDb(dbfilename)
-        self.snarfers = {'bug' : True}
 
     def die(self):
         self.db.close()
         del self.db
     
-    def _toggleHelper(self, irc, msg, state, snarfer):
-        if not state:
-            self.snarfers[snarfer] = not self.snarfers[snarfer] 
-        elif state in self._enable:
-            self.snarfers[snarfer] = True
-        elif state in self._disable:
-            self.snarfers[snarfer] = False
-        resp = []
-        for k in self.snarfers:
-            if self.snarfers[k]:
-                resp.append('%s%s: On' % (k[0].upper(), k[1:]))
-            else:
-                resp.append('%s%s: Off' % (k[0].upper(), k[1:]))
-        irc.reply(msg, '%s (%s)' % (conf.replySuccess, '; '.join(resp)))
-
-    _enable = ('on', 'enable')
-    _disable = ('off', 'disable')
-    def togglesnarfer(self, irc, msg, args):
-        """<bug> [<on|off>]
-
-        Toggles the snarfer that responds to Bugzilla-style bug links.  If
-        nothing is specified, all snarfers will have their states
-        toggled (on -> off, off -> on).  If only a state is specified, all
-        snarfers will have their state set to the specified state.  If a
-        specific snarfer is specified, the changes will apply only to that
-        snarfer.
-        """
-        (snarfer, state) = privmsgs.getArgs(args, optional=1)
-        snarfer = snarfer.lower()
-        state = state.lower()
-        if snarfer not in self.snarfers:
-            raise callbacks.ArgumentError
-        if state and state not in self._enable and state not in self._disable:
-            raise callbacks.ArgumentError
-        self._toggleHelper(irc, msg, state, snarfer)
-    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
-
     def addzilla(self, irc, msg, args):
         """shorthand url description
         Add a bugzilla to the list of defined bugzillae.
@@ -204,7 +169,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             return    
     def bzSnarfer(self, irc, msg, match):
         r"(.*)/show_bug.cgi\?id=([0-9]+)"
-        if not self.snarfers['bug']:
+        if not self.toggles.get('bug', channel=msg.args[0]):
             return
         queryurl = '%s/xml.cgi?id=%s' % (match.group(1), match.group(2))
         try:

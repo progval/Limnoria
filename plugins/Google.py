@@ -48,6 +48,7 @@ import conf
 import debug
 import utils
 import ircmsgs
+import plugins
 import ircutils
 import privmsgs
 import callbacks
@@ -88,10 +89,10 @@ def configure(onStart, afterConnect, advanced):
             print 'snarfing and a google search snarfer.\n'
             if yn('Do you want the Google Groups link snarfer enabled by '\
                 'default?') == 'n':
-                onStart.append('Google togglesnarfer groups off')
+                onStart.append('Google toggle groups off')
             if yn('Do you want the Google search snarfer enabled by default?')\
                 == 'y':
-                onStart.append('Google togglesnarfer search on')
+                onStart.append('Google toggle search on')
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
         print 'You can apply for a key at http://www.google.com/apis/'
@@ -135,15 +136,16 @@ def search(*args, **kwargs):
         else:
             raise
 
-class Google(callbacks.PrivmsgCommandAndRegexp):
+class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     threaded = True
     regexps = sets.Set(['googleSnarfer', 'googleGroups'])
+    toggles = plugins.ToggleDictionary({'groups' : True,
+                                        'search' : False})
     def __init__(self):
         super(self.__class__, self).__init__()
+        #plugins.Toggleable.__init__(self)
         self.total = 0
         self.totalTime = 0
-        self.snarfers = {'groups' : True,
-                         'search' : False}
         self.last24hours = structures.queue()
 
     def formatData(self, data):
@@ -173,43 +175,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         google.setLicense(key)
         irc.reply(msg, conf.replySuccess)
     licensekey = privmsgs.checkCapability(licensekey, 'admin')
-
-    def _toggleHelper(self, irc, msg, state, snarfer):
-        if not state:
-            self.snarfers[snarfer] = not self.snarfers[snarfer]
-        elif state in self._enable:
-            self.snarfers[snarfer] = True
-        elif state in self._disable:
-            self.snarfers[snarfer] = False
-        resp = []
-        for k in self.snarfers:
-            if self.snarfers[k]:
-                resp.append('%s%s: On' % (k[0].upper(), k[1:]))
-            else:
-                resp.append('%s%s: Off' % (k[0].upper(), k[1:]))
-        irc.reply(msg, '%s (%s)' % (conf.replySuccess, '; '.join(resp)))
-
-    _enable = ('on', 'enable')
-    _disable = ('off', 'disable')
-    def togglesnarfer(self, irc, msg, args):
-        """<groups|search> [<on|off>]
-
-        Toggles the snarfer that responds to Google Groups links or Google
-        searches. If nothing is specified, all snarfers will have their states
-        toggled (on -> off, off -> on).  If only a state is specified, all
-        snarfers will have their state set to the specified state.  If a
-        specific snarfer is specified, the changes will apply only to that
-        snarfer.
-        """
-        (snarfer, state) = privmsgs.getArgs(args, optional=1)
-        snarfer = snarfer.lower()
-        state = state.lower()
-        if snarfer not in self.snarfers:
-            raise callbacks.ArgumentError
-        if state and state not in self._enable and state not in self._disable:
-            raise callbacks.ArgumentError
-        self._toggleHelper(irc, msg, state, snarfer)
-    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
 
     def google(self, irc, msg, args):
         """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
@@ -312,7 +277,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
-        if not self.snarfers['search']:
+        if not self.toggles.get('search', channel=msg.args[0]):
             return
         searchString = match.group(1)
         try:
@@ -329,7 +294,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
-        if not self.snarfers['groups']:
+        if not self.toggles.get('groups', channel=msg.args[0]):
             return
         request = urllib2.Request(match.group(0), headers=\
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})

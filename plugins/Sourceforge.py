@@ -42,6 +42,7 @@ from itertools import ifilter
 import conf
 import debug
 import utils
+import plugins
 import ircutils
 import privmsgs
 import callbacks
@@ -60,7 +61,7 @@ def configure(onStart, afterConnect, advanced):
         print 'supybot sees such a URL, he will parse the web page for'
         print 'information and reply with the results.\n'
         if yn('Do you want the Sourceforge snarfer enabled by default?') =='n':
-            onStart.append('Sourceforge togglesnarfer tracker off')
+            onStart.append('Sourceforge toggle tracker off')
 
     print 'The bugs and rfes commands of the Sourceforge plugin can be set'
     print 'to query a default project when no project is specified.  If this'
@@ -87,7 +88,7 @@ in 0.71, Bug #820961: dock icon doesn't show up with..., Bug #820879: Cannot con
 < supybot> jamessan|work: Improve CLI interface <http://sourceforge.net/tracker/index.php?func=detail&aid=720757&group_id=75946&atid=545548>
 """)
 
-class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
+class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     """
     Module for Sourceforge stuff. Currently contains commands to query a
     project's most recent bugs and rfes.
@@ -109,10 +110,12 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         'Submitted by':_submitted, 'Priority':_priority,
         'Status':_status}
 
+    toggles = plugins.ToggleDictionary({'tracker' : True})
+    project = None
+
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        self.snarfers = {'tracker' : True}
-        self.project = None
+        #plugins.Toggleable.__init__(self)
 
     def _formatResp(self, num, text):
         """
@@ -142,43 +145,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(msg, conf.replySuccess)
     setdefault = privmsgs.checkCapability(setdefault, 'admin')
         
-    def _toggleHelper(self, irc, msg, state, snarfer):
-        if not state:
-            self.snarfers[snarfer] = not self.snarfers[snarfer] 
-        elif state in self._enable:
-            self.snarfers[snarfer] = True
-        elif state in self._disable:
-            self.snarfers[snarfer] = False
-        resp = []
-        for k in self.snarfers:
-            if self.snarfers[k]:
-                resp.append('%s%s: On' % (k[0].upper(), k[1:]))
-            else:
-                resp.append('%s%s: Off' % (k[0].upper(), k[1:]))
-        irc.reply(msg, '%s (%s)' % (conf.replySuccess, '; '.join(resp)))
-
-    _enable = ('on', 'enable')
-    _disable = ('off', 'disable')
-    def togglesnarfer(self, irc, msg, args):
-        """<tracker> [<on|off>]
-
-        Toggles the snarfer that responds to Sourceforge Tracker links.  If
-        nothing is specified, all snarfers will have their states
-        toggled (on -> off, off -> on).  If only a state is specified, all
-        snarfers will have their state set to the specified state.  If a
-        specific snarfer is specified, the changes will apply only to that
-        snarfer.
-        """
-        (snarfer, state) = privmsgs.getArgs(args, optional=1)
-        snarfer = snarfer.lower()
-        state = state.lower()
-        if snarfer not in self.snarfers:
-            raise callbacks.ArgumentError
-        if state and state not in self._enable and state not in self._disable:
-            raise callbacks.ArgumentError
-        self._toggleHelper(irc, msg, state, snarfer)
-    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
-
     def _getTrackerInfo(self, irc, msg, url, regex, num):
         try:
             fd = urllib2.urlopen(url)
@@ -277,7 +243,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def sfSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/(?:index\.php)?\?(?:&?func=detail|&?aid=\d+|&?group_id=\d+|&?atid=\d+){4}"
-        if not self.snarfers['tracker']:
+        if not self.toggles.get('tracker', channel=msg.args[0]):
             return
         url = match.group(0)
         fd = urllib2.urlopen(url)

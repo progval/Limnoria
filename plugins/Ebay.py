@@ -43,6 +43,7 @@ import plugins
 import conf
 import debug
 import utils
+import plugins
 import ircutils
 import privmsgs
 import callbacks
@@ -61,22 +62,24 @@ def configure(onStart, afterConnect, advanced):
         print 'supybot sees such a URL, he will parse the web page for'
         print 'information and reply with the results.\n'
         if yn('Do you want the Ebay snarfer enabled by default?') == 'n':
-            onStart.append('Ebay togglesnarfer auction off')
+            onStart.append('Ebay toggle auction off')
 
 example = utils.wrapLines("""
 Add an example IRC session using this module here.
 """)
 
-class Ebay(callbacks.PrivmsgCommandAndRegexp):
+class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     """
     Module for eBay stuff. Currently contains a URL snarfer and a command to
     get info about an auction.
     """
     threaded = True
     regexps = ['ebaySnarfer']
+    toggles = plugins.ToggleDictionary({'auction' : True})
+
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        self.snarfers = {'auction' : True}
+        #plugins.Toggleable.__init__(self)
 
     _reopts = re.I | re.S
     _info = re.compile(r'<title>eBay item (\d+) \([^)]+\) - ([^<]+)</title>',
@@ -115,43 +118,6 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
     _getSeller = lambda self, s: '%s: %s (%s)' % (ircutils.bold('Seller'),
         self._seller.search(s).group(1), self._seller.search(s).group(2))
 
-    def _toggleHelper(self, irc, msg, state, snarfer):
-        if not state:
-            self.snarfers[snarfer] = not self.snarfers[snarfer] 
-        elif state in self._enable:
-            self.snarfers[snarfer] = True
-        elif state in self._disable:
-            self.snarfers[snarfer] = False
-        resp = []
-        for k in self.snarfers:
-            if self.snarfers[k]:
-                resp.append('%s%s: On' % (k[0].upper(), k[1:]))
-            else:
-                resp.append('%s%s: Off' % (k[0].upper(), k[1:]))
-        irc.reply(msg, '%s (%s)' % (conf.replySuccess, '; '.join(resp)))
-
-    _enable = ('on', 'enable')
-    _disable = ('off', 'disable')
-    def togglesnarfer(self, irc, msg, args):
-        """<auction> [<on|off>]
-
-        Toggles the snarfer that responds to eBay auction links.  If
-        nothing is specified, all snarfers will have their states
-        toggled (on -> off, off -> on).  If only a state is specified, all
-        snarfers will have their state set to the specified state.  If a
-        specific snarfer is specified, the changes will apply only to that
-        snarfer.
-        """
-        (snarfer, state) = privmsgs.getArgs(args, optional=1)
-        snarfer = snarfer.lower()
-        state = state.lower()
-        if snarfer not in self.snarfers:
-            raise callbacks.ArgumentError
-        if state and state not in self._enable and state not in self._disable:
-            raise callbacks.ArgumentError
-        self._toggleHelper(irc, msg, state, snarfer)
-    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
-
     def ebay(self, irc, msg, args):
         """[--link] <item>
 
@@ -174,7 +140,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
     def ebaySnarfer(self, irc, msg, match):
         r"http://cgi\.ebay\.com/ws/eBayISAPI\.dll\?ViewItem(?:&item=\d+|"\
             "&category=\d+)+"
-        if not self.snarfers['auction']:
+        if not self.toggles.get('auction', channel=msg.args[0]):
             return
         url = match.group(0)
         self._getResponse(irc, msg, url, snarf = True)
