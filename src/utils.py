@@ -360,7 +360,7 @@ def pluralize(s, i=2):
             return matchCase(s, plurals[lowered])
         # Words ending with 'ch', 'sh' or 'ss' such as 'punch(es)', 'fish(es)
         # and miss(es)
-        elif any(lowered.endswith, ['ch', 'sh', 'ss']):
+        elif any(lowered.endswith, ['x', 'ch', 'sh', 'ss']):
             return matchCase(s, s+'es')
         # Words ending with a consonant followed by a 'y' such as
         # 'try (tries)' or 'spy (spies)'
