@@ -273,7 +273,7 @@ class SqliteMoobotDB(object):
                           WHERE requested_count > 0
                           ORDER BY requested_count DESC LIMIT %s""", limit)
         if cursor.rowcount == 0:
-            return None
+            return []
         else:
             return cursor.fetchall()
 
@@ -283,7 +283,7 @@ class SqliteMoobotDB(object):
         cursor.execute("""SELECT key FROM factoids WHERE created_by=%s
                           ORDER BY key""", authorId)
         if cursor.rowcount == 0:
-            return None
+            return []
         else:
             return cursor.fetchall()
 
@@ -293,7 +293,7 @@ class SqliteMoobotDB(object):
         cursor.execute("""SELECT key FROM factoids WHERE key LIKE %s
                           ORDER BY key""", glob)
         if cursor.rowcount == 0:
-            return None
+            return []
         else:
             return cursor.fetchall()
 
@@ -303,7 +303,7 @@ class SqliteMoobotDB(object):
         cursor.execute("""SELECT key FROM factoids WHERE fact LIKE %s
                           ORDER BY key""", glob)
         if cursor.rowcount == 0:
-            return None
+            return []
         else:
             return cursor.fetchall()
 
@@ -381,7 +381,7 @@ class MoobotFactoids(callbacks.Privmsg):
         if self.db.locked(channel, key):
             irc.error('Factoid "%s" is locked.' % key, Raise=True)
 
-    def _getFactoid(self, channel, key):
+    def _getFactoid(self, irc, channel, key):
         fact = self.db.getFactoid(channel, key)
         if fact is not None:
             return fact
@@ -417,7 +417,7 @@ class MoobotFactoids(callbacks.Privmsg):
                             utils.itersplit('=~'.__eq__, tokens, maxsplit=1))
         channel = getChannel(msg)
         # Check and make sure it's in the DB
-        fact = self._getFactoid(channel, key)
+        fact = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         # It's fair game if we get to here
         try:
@@ -437,7 +437,7 @@ class MoobotFactoids(callbacks.Privmsg):
         key = ' '.join(tokens[:isAlso])
         new_text = ' '.join(tokens[isAlso+2:])
         channel = getChannel(msg)
-        fact = self._getFactoid(channel, key)
+        fact = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         # It's fair game if we get to here
         fact = fact[0]
@@ -451,7 +451,7 @@ class MoobotFactoids(callbacks.Privmsg):
         id = self._getUserId(irc, msg.prefix)
         del tokens[0] # remove the "no,"
         (key, fact) = self._getKeyAndFactoid(tokens)
-        _ = self._getFactoid(channel, key) # Complains if not already in db.
+        _ = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         self.db.removeFactoid(channel, key)
         self.db.addFactoid(channel, key, fact, id)
@@ -466,7 +466,7 @@ class MoobotFactoids(callbacks.Privmsg):
         """
         channel = getChannel(msg, args)
         key = privmsgs.getArgs(args)
-        fact = self._getFactoid(channel, key)
+        fact = self._getFactoid(irc, channel, key)
         fact = fact[0]
         irc.reply(fact)
 
@@ -697,7 +697,7 @@ class MoobotFactoids(callbacks.Privmsg):
         channel = getChannel(msg, args)
         key = privmsgs.getArgs(args)
         _ = self._getUserId(irc, msg.prefix)
-        _ = self._getFactoid(channel, key)
+        _ = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         self.db.removeFactoid(channel, key)
         irc.replySuccess()
