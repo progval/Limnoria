@@ -259,7 +259,7 @@ class Group(object):
 class Value(Group):
     """Invalid registry value.  If you're getting this message, report it,
     because we forgot to put a proper help string here."""
-    def __init__(self, default, help,
+    def __init__(self, default, help, setDefault=True,
                  private=False, showDefault=True, **kwargs):
         self.__parent = super(Value, self)
         self.__parent.__init__(**kwargs)
@@ -267,7 +267,8 @@ class Value(Group):
         self._private = private
         self.showDefault = showDefault
         self.help = utils.normalizeWhitespace(help.strip())
-        self.setValue(default)
+        if setDefault:
+            self.setValue(default)
 
     def error(self):
         if self.__doc__:
@@ -459,6 +460,10 @@ class StringWithSpaceOnRight(String):
 
 class Regexp(Value):
     """Value must be a valid regular expression."""
+    def __init__(self, *args, **kwargs):
+        kwargs['setDefault'] = False
+        super(Regexp, self).__init__(*args, **kwargs)
+        
     def error(self, e):
         raise InvalidRegistryValue, 'Value must be a regexp of the form %s' % e
 
