@@ -429,8 +429,14 @@ def main():
         on accident).  You can even have more than one.  I (jemfinch) am quite
         partial to @, but that's because I've been using it since my ocamlbot
         days.""")
+        import callbacks
         conf.prefixChars = anything('What would you like your bot\'s '
                                     'prefix character(s) to be?')
+        while callbacks.canonicalName(conf.prefixChars) != conf.prefixChars:
+            conf.prefixChars = anything('That includes one or more invalid '
+                                        'prefix characters.  What would you'
+                                        'like your bot\'s prefix character(s)'
+                                        'to be?')
         configVariables['prefixChars'] = conf.prefixChars
     else:
         configVariables['prefixChars'] = ''
