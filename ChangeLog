@@ -1,3 +1,15 @@
+2005-01-18 James Vega <jamessan@supybot.com>
+
+	* Version 0.80.1!
+
+	* Updated Weather.wunder to report windchill and severe weather
+	advisories.
+
+	* Updated Math.convert to understand b and kb as data units.
+
+	* Fixed a bug in supybot-wizard when adding the Owner user.
+
+
 2005-01-16 James Vega <jamessan@supybot.com>
 
 	* Version 0.80.0!
@@ -104,52 +116,52 @@
 
 
 2004-12-22 Jeremy Fincher <jemfinch@supybot.com>
-	
+
 	* Version 0.80.0pre6!
-	
+
 	* Added a Topic.separator command, which replaces the current
 	separator with a new separator, changing the topic to reflect the
 	change.
-	
+
 	* Changed the supybot.user configuration variable so that if it
 	isn't configured, the user will stay up-to-date with the current
 	version of the bot.  To take advantage of this, set your
 	supybot.user configuration variable to ""
-	
+
 	* Removed the supybot.databases.users.hash configuration
 	variable, so all bots hash by default.
-	
+
 	* Fixed a bug with AutoMode's auto-banning feature; a variable
 	was misspelled.
-	
+
 	* Fixed a bug with ChannelValues picking up children that aren't
 	channels.
-	
+
 	* Fixed Misc.apropos not to be case-sensitive.
-	
+
 	* Fixed bug in User.register; it works now.
 
 
 2004-12-20 Jeremy Fincher <jemfinch@supybot.com>
 
 	* Version 0.80.0pre5!
-	
+
 	* Added a "shuffle" command to the Utilities plugin, which
 	shuffles its arguments.  Useful in combination with
 	Utilities.last, which returns the last argument it's given, in
 	combination with Utilities.apply, in order to pick a random
 	string (think aliases).
-	
+
 	* Added supybot.plugins.Relay.noticeNonPrivmsgs, for making the
 	relay plugin use NOTICEs rather than PRIVMSGs to relay
 	non-PRIVMSG messages to a channel.  This often affects tab
 	coloring in IRC clients and thus makes it so that relay messages
 	color the tabs like the actual messages would have.
-	
+
 	* Numerous bug fixes.  Many, many bugs fixed.  Oodles and oodles
 	of bugs have been fixed.  Myriad bugs fixed.  Get the idea? :)
 
-	
+
 2004-12-17 James Vega <jamessan@supybot.org>
 
 	* Version 0.80.0pre4!
@@ -164,7 +176,7 @@
 	* Moved {eval,exec} from Owner.py to Debug.py in the sandbox.
 
 	* Numerous bug fixes.
-	
+
 
 2004-09-30 Jeremy Fincher <jemfinch@supybot.org>
 
@@ -180,33 +192,33 @@
 	* Deprecated the Quotes plugin, since we don't know anyone who
 	seriously uses it.  Let us know if you do use it, because it may
 	be removed in a future version.
-	
+
 	* Added Karma.{dump,load} for dumping and subsequently loading
 	the Karma database.
 
 	* Changed the News database implementation to a flatfile
 	database.
-	
+
 	* Removed the tinyurl shrinking code from the URL plugin and put
 	it in the ShrinkUrl plugin, and added the ability to use ln-s.net
 	as different URL shrinker as well.
 
 	* Added an outFilter to the ShrinkUrl plugin that will shrink any
 	outgoing URL that is longer than the minimum length.
-	
+
 	* Added a Freenode plugin as proof-of-concept; the bot can now
 	use CAPAB IDENTIFY-MSG to ignore users that aren't identified.
-	
+
 	* Added the ability for the Seen plugin to match nicks with
 	wildcards.
-	
+
 	* Added a showLinks configuration option to the RSS plugin to
 	show links during announcements (and another such variable for
 	non-announcements).
-	
+
 	* Added the spellit, hebrew, and shrink filters to the Filter
 	plugin.
-	
+
 	* Added the ability to log to separate directories to
 	ChannelLogger.
 
@@ -216,7 +228,7 @@
 	* Added "at" and "until" commands to the Time plugin; they're not
 	perfect, and they don't parse nearly enough times, but they're
 	somewhat tolerable for now.
-	
+
 	* Added a Sourceforge.stats command.
 
 	* Added single-letter commands to the Words plugin when a hangman
@@ -237,7 +249,7 @@
 	* Added supybot.databases.plugins.channelSpecific.channel,
 	specifying the "default channel" for non-channel-specific
 	databases to use.
-	
+
 	* Moved the supybot.humanTimestampFormat configuration variable
 	to supybot.reply.format.time.
 
@@ -257,28 +269,28 @@
 
 	* Added support for line-wrapping the registry configuration
 	file.
-	
+
 	* Moved supybot.reply.{brackets,pipeSyntax} to
 	supybot.commands.nested.
 
 	* Fixed a longstanding bug with the bot "forgetting"
 	channel-specific configuration variables if they weren't
 	exercised during the duration of the bot's uptime.
-	
+
 	* Fixed renames so they're finally persistent.
-	
+
 	* Fixed a bug having to do with Note and unsent notes.
-	
+
 	* Fixed several bugs in the interaction of Infobot with other
 	plugins.
-	
+
 	* Added commands.wrap, the new method for wrapping commands and
 	handling type validation errors consistently throughout the bot.
-	
+
 	* Upgraded many of the outside projects we include to their
 	newest versions.
 
-	
+
 2004-09-17 James Vega <jamessan@users.sf.net>
 
 	* Version 0.80.0pre2!
@@ -290,7 +302,7 @@
 	* Added the Time plugin, to hold all of our Time related commands.
 
 	* Added max() and min() to Math.calc.
-	
+
 	* Added Unix.pid, which allows the Owner to retrieve the pid of the
 	bot's process.
 
@@ -308,7 +320,7 @@
 2004-09-12 Jeremy Fincher <jemfinch@supybot.org>
 
 	* Version 0.80.0pre1!
-	
+
 	* Added the facility to supporting several different database
 	implementations in a plugin, allowing the user to specify which
 	databases are supported as well as in what order of preference.
@@ -331,7 +343,7 @@
 
 	* Added a new Network plugin, and moved some commands from Owner,
 	Misc, and Relay to it.
-	
+
 	* Added CTCP flood protection.
 
 	* Added a supybot.plugins.Karma.allowUnaddressedKarma
@@ -344,27 +356,27 @@
 
 	* Added the ability to support multiple-word karma
 	increments/decrements.
-	
+
 	* Changed Owner.rename to be handled persistently; now renames
 	work across restarts of the bot or reloads of a plugin.
-	
+
 	* Changed Misc.last to include a timestamp for when the message
 	was sent.
-	
+
 	* Added the Channel.alert command, to send all currently
 	connected ops on a channel a message.
-	
+
 	* Changed the MoobotFactoids plugin to allow commands to be
 	nested in factoids definitions and searches.
-	
+
 	* Removed the futurama command in favor of adding a
 	futurama.supyfact file to supybot-data.
-	
+
 	* Improved the Http.kernel command, showing more kernel types.
-	
+
 	* Added a new contributors command and a way of storing
 	contributors and their contributions in a plugin.
-	
+
 	* Changed the name of Anonymous.action to Anonymous.do, to be
 	more consistent with "say" and other bots (MozBot, iirc).
 
@@ -377,28 +389,28 @@
 	to make it easier to distinguish the headlines.
 
 	* Added a --no-network option to supybot-wizard.
-	
+
 	* Added several attributes to IrcMsg objects as they pass through
 	the bot; currently we tag them with receivedAt, receivedBy, and
 	receivedOn.
-	
+
 	* Added RichReplyMethods.errorInvalid, a nice helper method for
 	sending errors about invalid values.
-	
+
 	* Changed the --nonetwork and --noplugins options to test/test.py
 	to --no-network and --no-plugins.
-	
+
 	* Changed plugins.makeChannelFilename, swapping the order of the
 	channel and filename arguments and making the channel optional.
-	
+
 	* Changed the first argument to callbacks.Privmsg.callCommand to
 	be a name rather than a method, for greater justice.
-	
+
 	* Added a new mechanism for ordering plugins (subclasses of
 	callbacks.Privmsg) which is much more flexible than a simple
 	priority system.
 
-	
+
 2004-09-06 James Vega <jamessan@users.sf.net>
 
 	* Version 0.79.9999!
