@@ -32,8 +32,10 @@
 from test import *
 
 import copy
+import pickle
 
 import conf
+import debug
 import irclib
 import ircmsgs
 
@@ -95,7 +97,41 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         q.enqueue(self.msg)
         self.assertEqual(self.msg, q.dequeue())
         self.failIf(q)
-        
+
+
+class ChannelTestCase(unittest.TestCase):
+    def testPickleCopy(self):
+        c = irclib.Channel()
+        for name in c.__slots__:
+            debug.printf(getattr(c, name))
+        c1 = pickle.loads(pickle.dumps(c))
+        for name in c1.__slots__:
+            debug.printf(getattr(c1, name))
+        self.assertEqual(pickle.loads(pickle.dumps(c)), c)
+
+    def testAddUser(self):
+        c = irclib.Channel()
+        c.addUser('foo')
+        self.failUnless('foo' in c.users)
+        self.failIf('foo' in c.ops)
+        self.failIf('foo' in c.voices)
+        self.failIf('foo' in c.halfops)
+        c.addUser('+bar')
+        self.failUnless('bar' in c.users)
+        self.failUnless('bar' in c.voices)
+        self.failIf('bar' in c.ops)
+        self.failIf('bar' in c.halfops)
+        c.addUser('%baz')
+        self.failUnless('baz' in c.users)
+        self.failUnless('baz' in c.halfops)
+        self.failIf('baz' in c.voices)
+        self.failIf('baz' in c.ops)
+        c.addUser('@quuz')
+        self.failUnless('quuz' in c.users)
+        self.failUnless('quuz' in c.ops)
+        self.failIf('quuz' in c.halfops)
+        self.failIf('quuz' in c.voices)
+
         
 class IrcStateTestCase(unittest.TestCase):
     class FakeIrc:
@@ -114,6 +150,29 @@ class IrcStateTestCase(unittest.TestCase):
         self.assertEqual(len(state.history), conf.maxHistory)
         self.assertEqual(list(state.history), msgs[len(msgs)-conf.maxHistory:])
         conf.maxHistory = oldconfmaxhistory
+
+    def testPickleCopy(self):
+        state = irclib.IrcState()
+        self.assertEqual(state, pickle.loads(pickle.dumps(state)))
+        for msg in msgs:
+            try:
+                state.addMsg(self.irc, msg)
+            except Exception:
+                pass
+        self.assertEqual(state, pickle.loads(pickle.dumps(state)))
+
+    def testEq(self):
+        state1 = irclib.IrcState()
+        state2 = irclib.IrcState()
+        self.assertEqual(state1, state2)
+        for msg in msgs:
+            try:
+                state1.addMsg(self.irc, msg)
+                state2.addMsg(self.irc, msg)
+                self.assertEqual(state1, state2)
+            except Exception:
+                pass
+            
 
     """
     def testChannels(self):
