@@ -155,13 +155,16 @@ def urlSnarfer(f):
     def newf(self, irc, msg, match, *L):
         now = time.time()
         cutoff = now - conf.snarfThrottle
-        while self._snarfedUrls and self._snarfedUrls[0][2] < cutoff:
-            self._snarfedUrls.dequeue()
+        q = getattr(self, '_snarfedUrls', None)
+        if q is None:
+            q = structures.fastqueue()
+        while q and q[0][2] < cutoff:
+            q.dequeue()
         url = match.group(0)
-        if any(lambda t: t[0]==url and t[1]==msg.args[0], self._snarfedUrls):
+        if any(lambda t: t[0] == url and t[1] == msg.args[0], q):
             debug.msg('Refusing to snarf %s.')
         else:
-            self._snarfedUrls.enqueue((url, msg.args[0], now))
+            q.enqueue((url, msg.args[0], now))
             f(self, irc, msg, match, *L)
     newf = types.FunctionType(newf.func_code, newf.func_globals,
                               f.func_name, closure=newf.func_closure)
