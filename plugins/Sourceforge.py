@@ -83,21 +83,31 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     regexps = ['sfSnarfer']
 
+    _reopts = re.I
+
     _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href="([^"]+)">'\
-        '([^<]+)</a>', re.I)
+        '([^<]+)</a>', _reopts)
     _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category=100&'\
         '_group=100&order=artifact_id&sort=DESC'
 
-    _resolution = re.compile(r'<b>Resolution:</b> <a.+?<br>(.+?)</td>', re.I)
+    _resolution = re.compile(r'<b>Resolution:</b> <a.+?<br>(.+?)</td>',
+        _reopts)
     _getRes = lambda self, s: '%s: %s' % (ircutils.bold('Resolution'),
         self._resolution.search(s).group(1))
-    _assigned = re.compile(r'<b>Assigned To:</b> <a.+?<br>(.+?)</td>', re.I)
+
+    _assigned = re.compile(r'<b>Assigned To:</b> <a.+?<br>(.+?)</td>', _reopts)
     _getAssign = lambda self, s: '%s: %s' % (ircutils.bold('Assigned to'), 
         self._assigned.search(s).group(1))
-    _priority = re.compile(r'<b>Priority:</b> <a.+?<br>(.+?)</td>', re.I)
+
+    _submitted = re.compile(r'<b>Submitted By:</b><br>([^<]+)</td>', _reopts)
+    _getSubmit = lambda self, s: '%s: %s' % (ircutils.bold('Submmited by'),
+        self._submitted.search(s).group(1))
+
+    _priority = re.compile(r'<b>Priority:</b> <a.+?<br>(.+?)</td>', _reopts)
     _getPri = lambda self, s: '%s: %s' % (ircutils.bold('Priority'),
         self._priority.search(s).group(1))
-    _status = re.compile(r'<b>Status:</b> <a.+?<br>(.+?)</td>', re.I)
+
+    _status = re.compile(r'<b>Status:</b> <a.+?<br>(.+?)</td>', _reopts)
     _getStatus = lambda self, s: '%s: %s' % (ircutils.bold('Status'), 
         self._status.search(s).group(1))
 
@@ -259,8 +269,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         fd = urllib2.urlopen(url)
         s = fd.read()
         fd.close()
-        searches = (self._getStatus, self._getRes, self._getPri,
-            self._getAssign)
+        searches = (self._getSubmit, self._getStatus, self._getRes,
+            self._getPri, self._getAssign)
         try:
             (num, desc) = self._sfTitle.search(s).groups()
             resp = [desc]
