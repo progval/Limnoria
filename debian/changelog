@@ -1,4 +1,4 @@
-supybot (0.80.0pre2-1) unstable; urgency=high
+supybot (0.79.9999+0.80.0pre2-1) unstable; urgency=high
 
   * New upstream
   * Urgency high because it still fixes previous bugs.
