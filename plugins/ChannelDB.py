@@ -410,7 +410,7 @@ class ChannelDB(plugins.ChannelDBHandler,
         sql = "SELECT last_seen,last_msg FROM %s WHERE %s" % (table,criterion)
         cursor.execute(sql, name)
         if cursor.rowcount == 0:
-            irc.reply('I have not seen %s.' % name)
+            irc.reply('I have not seen %s.' % originalName)
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
