@@ -79,7 +79,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                               started_by INTEGER,
                               open INTEGER)""")
             cursor.execute("""CREATE TABLE options (
-                              id INTEGER PRIMARY KEY,
+                              id INTEGER,
                               poll_id INTEGER,
                               option TEXT,
                               UNIQUE (poll_id, id) ON CONFLICT IGNORE)""")
@@ -91,6 +91,41 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                               ON CONFLICT IGNORE)""")
             db.commit()
         return db
+
+    def poll(self, irc, msg, args):
+        """<id>
+
+        Displays the poll question and options for the given poll id.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        poll_id = privmsgs.getArgs(args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT id, question, started_by, open
+                          FROM polls WHERE id=%s""",
+                          poll_id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There is no poll with id %s' % poll_id)
+            return
+        _, question, started_by, open = cursor.fetchone()
+        starter = ircdb.users.getUser(started_by).name
+        if open:
+            statusstr = 'open'
+        else:
+            statusstr = 'closed'
+        cursor.execute("""SELECT id, option FROM options
+                          WHERE poll_id=%s""",
+                          poll_id)
+        if cursor.rowcount == 0:
+            optionstr = 'This poll has no options yet'
+        else:
+            options = cursor.fetchall()
+            optionstr = 'Options:'
+            optionstr += ''.join([' %s: %r' % (id, option) \
+                                 for id, option in options])
+        pollstr = 'Poll #%s: %r started by %s. %s. Poll is %s.' % \
+                  (poll_id, question, starter, optionstr, statusstr)
+        irc.reply(msg, pollstr)
 
     def open(self, irc, msg, args):
         """[<channel>] <question>
@@ -156,6 +191,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             return
         db = self.getDb(channel)
         cursor = db.cursor()
+        # Only the poll starter or an admin can add options
         cursor.execute("""SELECT started_by FROM polls
                           WHERE id=%s""",
                           poll_id)
@@ -166,9 +202,24 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                 (ircdb.checkCapability(userId, 'admin'))):
             irc.error(msg, 'That poll isn\'t yours and you aren\'t an admin.')
             return
+        # and NOBODY can add options once a poll has votes
+        cursor.execute("""SELECT COUNT(user_id) FROM votes
+                          WHERE poll_id=%s""",
+                          poll_id)
+        if cursor.fetchone()[0] != 0:
+            irc.error(msg, 'Cannot add options to a poll with votes.')
+            return
+        # Get the next highest id
+        cursor.execute("""SELECT MAX(id)+1 FROM options
+                          WHERE poll_id=%s""",
+                          poll_id)
+        if cursor.rowcount == 0:
+            option_id = 1
+        else:
+            option_id = cursor.fetchone()[0]
         cursor.execute("""INSERT INTO options VALUES
-                          (NULL, %s, %s)""",
-                          poll_id, option)
+                          (%s, %s, %s)""",
+                          option_id, poll_id, option)
         irc.reply(msg, conf.replySuccess)
 
     def vote(self, irc, msg, args):
@@ -243,7 +294,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             return
         (id, question, startedBy, open) = cursor.fetchone()
         try:
-            startedBy = ircdb.users.getUser(msg.prefix).name
+            startedBy = ircdb.users.getUser(startedBy).name
         except KeyError:
             startedBy = 'an unknown user'
             return
@@ -253,17 +304,26 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                           FROM votes
                           WHERE poll_id=%s 
                           GROUP BY option_id
+                          UNION
+                          SELECT 0, id AS option_id
+                          FROM options
+                          WHERE poll_id=%s
+                          AND id NOT IN (
+                                SELECT option_id FROM votes
+                                WHERE poll_id=%s)
+                          GROUP BY option_id
                           ORDER BY count(user_id) DESC""",
-                          poll_id)
+                          poll_id, poll_id, poll_id)
         if cursor.rowcount == 0:
             s = 'This poll has no votes yet.'
         else:
             results = []
             for count, option_id in cursor.fetchall():
                 cursor.execute("""SELECT option FROM options
-                                  WHERE id=%s""", option_id)
+                                  WHERE id=%s AND poll_id=%s""",
+                                  option_id, poll_id)
                 option = cursor.fetchone()[0]
-                results.append('%s: %s' % (option, count))
+                results.append('%r: %s' % (option, int(count)))
             s = utils.commaAndify(results)
         reply += ' - %s' % s
         irc.reply(msg, reply)
@@ -282,26 +342,6 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             return
         polls = ['#%s: %r' % (id, q) for id, q in cursor.fetchall()]
         irc.reply(msg, utils.commaAndify(polls))
-
-    def options(self, irc, msg, args):
-        """<id>
-
-        Lists the options for the poll with the given id.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        poll_id = privmsgs.getArgs(args)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT id, option FROM options
-                          WHERE poll_id=%s""",
-                          poll_id)
-        if cursor.rowcount == 0:
-            irc.reply(msg, 'This poll has no options yet '
-                           'or no such poll exists.')
-            return
-        options = ['%s: %r' % (id, o) for id, o in cursor.fetchall()]
-        irc.reply(msg, utils.commaAndify(options))
-
 
 Class = Poll
 
