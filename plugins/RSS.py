@@ -50,6 +50,7 @@ import rssparser
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -100,7 +101,8 @@ class RSS(callbacks.Privmsg):
     command to determine what feeds should be announced in a given channel."""
     threaded = True
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
+        self.__parent = super(RSS, self)
+        self.__parent.__init__()
         self.feedNames = callbacks.CanonicalNameSet()
         self.locks = {}
         self.lastRequest = {}
@@ -118,7 +120,7 @@ class RSS(callbacks.Privmsg):
         group.register(name, registry.String(url, ''))
 
     def __call__(self, irc, msg):
-        callbacks.Privmsg.__call__(self, irc, msg)
+        self.__parent.__call__(irc, msg)
         irc = callbacks.SimpleProxy(irc, msg)
         newFeeds = {}
         for channel in irc.state.channels:
@@ -270,7 +272,7 @@ class RSS(callbacks.Privmsg):
         return callbacks.canonicalName(name)
 
     def makeFeedCommand(self, name, url):
-        docstring = """<number of headlines>
+        docstring = """[<number of headlines>]
 
         Reports the titles for %s at the RSS feed <%s>.  If
         <number of headlines> is given, returns only that many headlines.
@@ -294,13 +296,12 @@ class RSS(callbacks.Privmsg):
         setattr(self.__class__, name, f)
         self._registerFeed(name, url)
 
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, name, url):
         """<name> <url>
 
         Adds a command to this plugin that will look up the RSS feed at the
         given URL.
         """
-        (name, url) = privmsgs.getArgs(args, required=2)
         try:
             name = self._validFeedName(name)
         except ValueError:
@@ -308,15 +309,14 @@ class RSS(callbacks.Privmsg):
                              'include dots, colons, or spaces.')
         self.makeFeedCommand(name, url)
         irc.replySuccess()
+    add = wrap(add, ['something', 'url'])
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, name):
         """<name>
 
         Removes the command for looking up RSS feeds at <name> from
         this plugin.
         """
-        name = privmsgs.getArgs(args)
-        name = callbacks.canonicalName(name)
         if name not in self.feedNames:
             irc.error('That\'s not a valid RSS feed command name.')
             return
@@ -324,8 +324,9 @@ class RSS(callbacks.Privmsg):
         delattr(self.__class__, name)
         conf.supybot.plugins.RSS.feeds.unregister(name)
         irc.replySuccess()
+    remove = wrap(remove, ['commandName'])
 
-    def announce(self, irc, msg, args, channel):
+    def announce(self, irc, msg, args, channel, optlist, rest):
         """[<channel>] [--remove] [<name|url> ...]
 
         Sets the current list of announced feeds in the channel to the feeds
@@ -335,11 +336,10 @@ class RSS(callbacks.Privmsg):
         with the current list of feeds to announce.  If --remove is given,
         the specified feeds will be removed from the list of feeds to announce.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['remove'])
         remove = False
         announce = conf.supybot.plugins.RSS.announce
         for (option, _) in optlist:
-            if option == '--remove':
+            if option == 'remove':
                 remove = True
         if remove:
             if rest:
@@ -360,15 +360,15 @@ class RSS(callbacks.Privmsg):
             announce.get(channel).setValue(rest)
             irc.replySuccess()
             return
-    announce = privmsgs.checkChannelCapability(announce, 'op')
+    announce = wrap(announce, [('checkChannelCapability', 'op'),
+                               getopts({'remove':''}), any('something')])
 
-    def rss(self, irc, msg, args):
+    def rss(self, irc, msg, args, url, n):
         """<url> [<number of headlines>]
 
         Gets the title components of the given RSS feed.
         If <number of headlines> is given, return only that many headlines.
         """
-        (url, n) = privmsgs.getArgs(args, optional=1)
         self.log.debug('Fetching %s', url)
         feed = self.getFeed(url)
         if ircutils.isChannel(msg.args[0]):
@@ -381,23 +381,19 @@ class RSS(callbacks.Privmsg):
             return
         headlines = self.buildHeadlines(headlines, channel, 'showLinks')
         if n:
-            try:
-                n = int(n)
-            except ValueError:
-                raise callbacks.ArgumentError
             headlines = headlines[:n]
         sep = self.registryValue('headlineSeparator', channel)
         if self.registryValue('bold', channel):
             sep = ircutils.bold(sep)
         irc.reply(sep.join(headlines))
+    rss = wrap(rss, ['url', additional('int')])
 
-    def info(self, irc, msg, args):
+    def info(self, irc, msg, args, url):
         """<url|feed>
 
         Returns information from the given RSS feed, namely the title,
         URL, description, and last update date, if available.
         """
-        url = privmsgs.getArgs(args)
         try:
             url = self.registryValue('feeds.%s' % url)
         except registry.NonExistentRegistryEntry:
@@ -422,6 +418,7 @@ class RSS(callbacks.Privmsg):
                        info.get('description', 'unavailable').strip(),
                        when)
         irc.reply(' '.join(response.split()))
+    info = wrap(info, ['something'])
 
 
 Class = RSS
