@@ -37,7 +37,9 @@ __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import getopt
+import signal
 
+import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
@@ -77,6 +79,17 @@ def getCapability(name):
             capability = ircdb.makeChannelCapability(part, 'op')
         ### Do more later, for specific capabilities/sections.
     return capability
+
+def _reload():
+    ircdb.users.reload()
+    ircdb.channels.reload()
+    registry.open(world.registryFilename)
+
+def _hupHandler(sig, frame):
+    log.info('Received SIGHUP, reloading configuration.')
+    _reload()
+
+signal.signal(signal.SIGHUP, _hupHandler)
 
 
 class Config(callbacks.Privmsg):
@@ -253,13 +266,10 @@ class Config(callbacks.Privmsg):
         Reloads the various configuration files (user database, channel
         database, registry, etc.).
         """
-        ircdb.users.reload()
-        ircdb.channels.reload()
-        registry.open(world.registryFilename)
+        _reload() # This was factored out for SIGHUP handling.
         irc.replySuccess()
     reload = privmsgs.checkCapability(reload, 'owner')
         
-
 
 Class = Config
 
