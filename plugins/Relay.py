@@ -516,11 +516,11 @@ class Relay(callbacks.Privmsg):
                 return
             abbrev = self.abbreviations[irc]
             if len(msg.args) == 3:
-                s = '%s@%s was kicked by %s@%s (%s)' % \
-                    (msg.args[1], abbrev, msg.nick, abbrev, msg.args[2])
+                s = '%s was kicked by %s on %s (%s)' % \
+                    (msg.args[1], msg.nick, abbrev, msg.args[2])
             else:
-                s = '%s@%s was kicked by %s@%s' % \
-                    (msg.args[1], abbrev, msg.nick, abbrev)
+                s = '%s was kicked by %s on %s' % \
+                    (msg.args[1], msg.nick, abbrev)
             m = ircmsgs.privmsg(channel, s)
             self._sendToOthers(irc, m)
 
@@ -577,6 +577,7 @@ class Relay(callbacks.Privmsg):
                     'has left on ' in text or \
                     'has joined on ' in text or \
                     'has quit' in text or \
+                    'was kicked by' in text \
                     text.startswith('mode change') or \
                     text.startswith('nick change') or \
                     text.startswith('topic change')):
