@@ -123,11 +123,12 @@ def getRegistryValue(setting, prompt='', showHelp=True, showType=True):
     return ret
 
 def main():
-    from conf import version
+    import log
+    import conf
+    log._stdoutHandler.setLevel(100) # *Nothing* gets through this!
     parser = optparse.OptionParser(usage='Usage: %prog [options] [configFile]',
-                                   version='Supybot %s' % version)
+                                   version='Supybot %s' % conf.version)
     (options, args) = parser.parse_args()
-    
     filename = ''
     if len(args) > 1:
         parser.error('the wizard takes one argument at most.')
@@ -193,8 +194,7 @@ def main():
         logDir = getDirectoryName(logDir)
     except KeyError:
         logDir = getDirectoryName('logs')
-    registry._cache['supybot.directories.log'] = logDir
-    
+    conf.supybot.directories.log.setValue(logDir)
 
     # conf.supybot.directories.data
     output("""Your bot will need to put various data somewhere.  Things like
@@ -207,7 +207,7 @@ def main():
         dataDir = getDirectoryName(dataDir)
     except KeyError:
         dataDir = getDirectoryName('data')
-    registry._cache['supybot.directories.data'] = dataDir
+    conf.supybot.directories.data.setValue(dataDir)
 
     # conf.supybot.directories.conf
     output("""Your bot must know where to find his configuration files.  It'll
@@ -220,22 +220,8 @@ def main():
         confDir = getDirectoryName(confDir)
     except KeyError:
         confDir = getDirectoryName('conf')
-    registry._cache['supybot.directories.conf'] = confDir
+    conf.supybot.directories.conf.setValue(confDir)
     
-    # Store the minimum log priority if set, because we set it to a temporary
-    # value during the wizard
-    try:
-        priority = registry._cache['supybot.log.level']
-    except KeyError:
-        priority = 'INFO'
-    registry._cache['supybot.log.level'] = 'CRITICAL'
-    registry._cache['supybot.log.stdout'] = 'False'
-    
-    # Now that we're all set, import conf and log
-    import conf
-    import log
-    log._stdoutHandler.setLevel(100)
-
     # pluginDirs
     output("""Your bot will also need to know where to find his plugins at.
     Of course, he already knows where the plugins that he came with are, but
@@ -454,6 +440,7 @@ def main():
     output("""Although supybot offers a supybot-adduser.py script, with which
     you can add users to your bot's user database, it's *very* important that
     you have an owner user for you bot.""")
+    print '***', conf.supybot.directories.conf()
     if yn('Would you like to add an owner user for your bot?', default=True):
         import ircdb
         name = something('What should the owner\'s username be?')
@@ -537,6 +524,7 @@ def main():
     By default, your bot will log all of these priorities except DEBUG.  You
     can, however, specify that it only log messages above a certain priority
     level.""")
+    priority = str(conf.supybot.log.level)
     logLevel = something('What would you like the minimum priority to be?  '
                          'Just press enter to accept the default.',
                          default=priority).lower()
