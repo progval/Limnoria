@@ -114,7 +114,7 @@ if __name__ == '__main__':
         debug('Bot not found, starting.')
         home = os.environ['HOME']
         inst = popen2.Popen4('sh')
-        for filename in ('.login', '.bash_profile', '.profile'):
+        for filename in ('.login', '.bash_profile', '.profile', '.bashrc'):
             filename = os.path.join(home, filename)
             if os.path.exists(filename):
                 debug('Found %s, sourcing.' % filename)
