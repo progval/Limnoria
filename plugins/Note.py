@@ -39,6 +39,7 @@ __revision__ = "$Id$"
 import plugins
 
 import time
+import getopt
 import os.path
 from itertools import imap
 
@@ -228,24 +229,31 @@ class Note(callbacks.Privmsg):
         irc.reply(newnote, private=(not public))
         self.setAsRead(noteid)
 
-    def _formatNoteData(self, msg, id, fromId, public):
+    def _formatNoteData(self, msg, id, fromId, public, sent=False):
         (id, fromId, public) = imap(int, (id, fromId, public))
         if public or not ircutils.isChannel(msg.args[0]):
             sender = ircdb.users.getUser(fromId).name
-            return '#%s from %s' % (id, sender)
+            if sent:
+                return '#%s to %s' % (id, sender)
+            else:
+                return '#%s from %s' % (id, sender)
         else:
             return '#%s (private)' % id
 
     def list(self, irc, msg, args):
-        """[--old]
+        """[--{old,sent}]
 
         Retrieves the ids of all your unread notes.  If --old is given, list
-        read notes.
+        read notes.  If --sent is given, list notes that you have sent.
         """
-        if '--old' in args:
-            while '--old' in args:
-                args.remove('--old')
-            return self._oldnotes(irc, msg, args)
+        options = ['old', 'sent']
+        (optlist, rest) = getopt.getopt(args, '', options)
+        for (option, _) in optlist:
+            option = option.lstrip('-')
+            if option == 'old':
+                return self._oldnotes(irc, msg)
+            if option == 'sent':
+                return self._sentnotes(irc, msg)
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
@@ -264,7 +272,30 @@ class Note(callbacks.Privmsg):
             L = [self._formatNoteData(msg, *t) for t in cursor.fetchall()]
             irc.reply(utils.commaAndify(L))
 
-    def _oldnotes(self, irc, msg, args):
+    def _sentnotes(self, irc, msg):
+        """takes no arguments
+
+        Returns a list of your most recent old notes.
+        """
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.errorNotRegistered()
+            return
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT id, to_id, public
+                          FROM notes
+                          WHERE notes.from_id=%s
+                          ORDER BY id DESC""", id)
+        if cursor.rowcount == 0:
+            irc.reply('I couldn\'t find any sent notes for your user.')
+        else:
+            ids = [self._formatNoteData(msg, sent=True, *t) for t in
+                   cursor.fetchall()]
+            irc.reply(utils.commaAndify(ids))
+
+    def _oldnotes(self, irc, msg):
         """takes no arguments
 
         Returns a list of your most recent old notes.
@@ -278,12 +309,12 @@ class Note(callbacks.Privmsg):
         cursor = db.cursor()
         cursor.execute("""SELECT id, from_id, public
                           FROM notes
-                          WHERE notes.to_id=%s AND notes.read=1""", id)
+                          WHERE notes.to_id=%s AND notes.read=1
+                          ORDER BY id DESC""", id)
         if cursor.rowcount == 0:
             irc.reply('I couldn\'t find any read notes for your user.')
         else:
             ids = [self._formatNoteData(msg, *t) for t in cursor.fetchall()]
-            ids.reverse()
             irc.reply(utils.commaAndify(ids))
 
 

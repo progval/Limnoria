@@ -42,26 +42,39 @@ except ImportError:
 if sqlite is not None:
     class NoteTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('Note', 'Misc', 'User')
+        def setUp(self):
+            PluginTestCase.setUp(self)
+            # setup a user
+            self.prefix = 'foo!bar@baz'
+            self.assertNotError('register inkedmn bar')
+
         def testSendnote(self):
             #print repr(ircdb.users.getUser(self.prefix))
-            self.prefix = 'foo!bar@baz'
-            self.assertNotError('register foo bar')
-            (id, u) = ircdb.users.newUser()
-            u.name = 'inkedmn'
-            ircdb.users.setUser(id, u)
             self.assertRegexp('note send inkedmn test', '#1')
+            # have to getMsg(' ') after each Note.send to absorb supybot's
+            # automatic "You have an unread note" message
+            _ = self.getMsg(' ')
             self.assertError('note send alsdkjfasldk foo')
-            self.assertNotRegexp('note send inkedmn test2', 'the operation')
+            self.assertNotError('note send inkedmn test2')
+            _ = self.getMsg(' ')
 
         def testNote(self):
-            # self.assertNotError('note 1')
+            self.assertNotError('note send inkedmn test')
+            _ = self.getMsg(' ')
+            self.assertRegexp('note 1', 'test')
             self.assertError('note blah')
 
-        def testNotes(self):
-            self.assertNotError('note list')
+        def testList(self):
+            self.assertResponse('note list', 'You have no unread notes.')
+            self.assertNotError('note send inkedmn testing')
+            _ = self.getMsg(' ')
+            self.assertNotError('note send inkedmn 1,2,3')
+            _ = self.getMsg(' ')
+            self.assertRegexp('note list --sent', r'#2.*#1')
+            self.assertRegexp('note list', r'#1.*#2')
+            self.assertRegexp('note 1', 'testing')
+            self.assertResponse('note list --old', '#1 from inkedmn')
 
-        def testOldNotes(self):
-            self.assertNotError('note list --old')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
