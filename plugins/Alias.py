@@ -81,20 +81,13 @@ def makeNewAlias(name, alias):
             channel = privmsgs.getChannel(msg, args)
             alias_ = alias.replace('$channel', channel)
         if doDollars:
-            debug.printf(args)
             args = privmsgs.getArgs(args, needed=biggestDollar)
             if biggestDollar == 1:
                 args = (args,)
-            debug.printf(args)
             def replace(m):
-                debug.printf(m.group(1))
                 idx = int(m.group(1))
-                debug.printf(args[idx-1])
                 return args[idx-1]
-            debug.printf(alias_)
             alias_ = dollarRe.sub(replace, alias_)
-            debug.printf(alias_)
-        debug.printf(alias_)
         self.Proxy(irc, msg, callbacks.tokenize(alias_))
     f.__doc__ ='<an alias, %s arguments>\n\nAlias for %r'%(biggestDollar,alias)
     #f = new.function(f.func_code, f.func_globals, name)
@@ -156,7 +149,6 @@ class Alias(callbacks.Privmsg):
                 f = makeNewAlias(name, alias)
             except RecursiveAlias:
                 irc.error(msg, 'You can\'t define a recursive alias.')
-            #debug.printf('setting attribute')
             setattr(self.__class__, name, f)
             irc.reply(msg, conf.replySuccess)
         except Exception, e:
