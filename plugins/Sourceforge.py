@@ -215,7 +215,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._bugLink, status)
-            self.log.warning(url)
         except TrackerError, e:
             irc.error('%s.  Can\'t find the Bugs link.' % e)
             return
@@ -247,7 +246,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._bugLink, status)
-            self.log.warning(url)
+            #self.log.warning(url)
         except TrackerError, e:
             irc.error('%s.  Can\'t find the Bugs link.' % e)
             return
@@ -282,7 +281,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._rfeLink, status)
-            self.log.warning(url)
         except TrackerError, e:
             irc.error('%s.  Can\'t find the RFEs link.' % e)
             return
@@ -314,7 +312,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 raise callbacks.ArgumentError
         try:
             url = self._getTrackerURL(project, self._rfeLink, status)
-            self.log.warning(url)
         except TrackerError, e:
             irc.error('%s.  Can\'t find the RFEs link.' % e)
             return
