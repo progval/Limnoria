@@ -40,11 +40,8 @@ __contributors__ = {
     supybot.authors.skorobeus: ['enable', 'disable'],
     }
 
-import supybot.fix as fix
-
 import sys
 import time
-import getopt
 
 from itertools import imap
 
@@ -292,7 +289,7 @@ class Channel(callbacks.Privmsg):
                        additional('text')])
 
     def kban(self, irc, msg, args,
-             channel, optlist, bannedNick, length, reason):
+             channel, optlist, bannedNick, expiry, reason):
         """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]
 
         If you have the #channel,op capability, this will kickban <nick> for
@@ -307,7 +304,7 @@ class Channel(callbacks.Privmsg):
         """
         # Check that they're not trying to make us kickban ourself.
         self.log.debug('In kban')
-        if not ircutils.isNick(bannedNick):
+        if not irc.isNick(bannedNick):
             self.log.warning('%s tried to kban a non nick: %s',
                              utils.quoted(msg.prefix),
                              utils.quoted(bannedNick))
@@ -358,16 +355,16 @@ class Channel(callbacks.Privmsg):
         # #channel,op and the bannee doesn't have #channel,op; or that the
         # bannee and the banner are both the same person.
         def doBan():
-            if bannedNick in irc.state.channels[channel].ops:
+            if irc.state.channels[channel].isOp(bannedNick):
                 irc.queueMsg(ircmsgs.deop(channel, bannedNick))
             irc.queueMsg(ircmsgs.ban(channel, banmask))
             irc.queueMsg(ircmsgs.kick(channel, bannedNick, reason))
-            if length > 0:
+            if expiry > 0:
                 def f():
                     if channel in irc.state.channels and \
                        banmask in irc.state.channels[channel].bans:
                         irc.queueMsg(ircmsgs.unban(channel, banmask))
-                schedule.addEvent(f, time.time() + length)
+                schedule.addEvent(f, expiry)
         if bannedNick == msg.nick:
             doBan()
         elif ircdb.checkCapability(msg.prefix, capability):
@@ -386,7 +383,7 @@ class Channel(callbacks.Privmsg):
             exact,nick,user,host
     kban = wrap(kban,
                 [('checkChannelCapability', 'op'),
-                 getopts({'exact':None,'nick':None,'user':None,'host':None}),
+                 getopts({'exact':'', 'nick':'', 'user':'', 'host':''}),
                  ('haveOp', 'kick or ban someone'),
                  'nickInChannel',
                  optional('expiry', 0),
