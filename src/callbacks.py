@@ -342,8 +342,14 @@ class CommandThread(threading.Thread):
     def __init__(self, command, irc, msg, args):
         self.command = command
         world.threadsSpawned += 1
-        self.commandName = command.im_func.func_name
-        self.className = command.im_class.__name__
+        try:
+            self.commandName = command.im_func.func_name
+        except AttributeError:
+            self.commandName = command.__name__
+        try:
+            self.className = command.im_class.__name__
+        except AttributeError:
+            self.className = '<unknown>'
         name = '%s.%s with args %r' % (self.className, self.commandName, args)
         threading.Thread.__init__(self, target=command, name=name,
                                   args=(irc, msg, args))
