@@ -126,17 +126,18 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         self._getResponse(irc, msg, url)
 
     def ebaySnarfer(self, irc, msg, match):
-        r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?"\
+        r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?" \
         r"eBayISAPI\.dll\?ViewItem(?:&item=\d+|&category=\d+)+"
         if not self.configurables.get('snarfer', channel=msg.args[0]):
             return
         url = match.group(0)
-        #debug.printf(url)
-        self._getResponse(irc, msg, url, snarf = True)
+        debug.printf(url)
+        self._getResponse(irc, msg, url, snarf=True)
     ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)
 
-    _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
-    def _getResponse(self, irc, msg, url, snarf = False):
+    def _getResponse(self, irc, msg, url, snarf=False):
+        def bold(m):
+            return (ircutils.bold(m[0]),) + m[1:]
         fd = urllib2.urlopen(url)
         s = fd.read()
         fd.close()
@@ -161,12 +162,12 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                     # [:3] is to make sure that we don't pass a tuple with
                     # more than 3 items. this allows self._bidder to work
                     # since self._bidder returns a 5 item tuple
-                    resp.append('%s: %s (%s)' % self._bold(m.groups()[:3]))
+                    resp.append('%s: %s (%s)' % bold(m.groups()[:3]))
                 else:
-                    resp.append('%s: %s' % self._bold(m.groups()))
+                    resp.append('%s: %s' % bold(m.groups()))
         if resp:
             if snarf:
-                irc.reply(msg, '%s' % '; '.join(resp), prefixName = False)
+                irc.reply(msg, '%s' % '; '.join(resp), prefixName=False)
             else:
                 irc.reply(msg, '%s' % '; '.join(resp))
         else:
