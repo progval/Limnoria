@@ -381,8 +381,7 @@ class UsersDB(object):
             (self.nextId, self.users) = eval(_normalize(s))
         else:
             self.nextId = 1
-            self.users = [IrcUser(capabilities=['owner'],
-                                  password=utils.mktemp())]
+            self.users = [None]
         self._nameCache = {}
         self._hostmaskCache = {}
 
