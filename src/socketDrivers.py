@@ -45,6 +45,7 @@ from itertools import imap
 
 import log
 import conf
+import world
 import drivers
 import ircmsgs
 import schedule
@@ -134,7 +135,8 @@ class SocketDriver(drivers.IrcDriver):
         self.connected = False
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
-        log.info('Scheduling reconnect to %s at %s', self.server, whenS)
+        if not world.dying:
+            log.info('Scheduling reconnect to %s at %s', self.server, whenS)
         schedule.addEvent(self.reconnect, when)
 
     def name(self):

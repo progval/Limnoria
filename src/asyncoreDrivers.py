@@ -76,7 +76,8 @@ class AsyncoreDriver(asynchat.async_chat, object):
     def scheduleReconnect(self):
         when = time.time() + 60
         whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
-        log.info('Scheduling reconnect to %s at %s', self.server, whenS)
+        if not world.dying:
+            log.info('Scheduling reconnect to %s at %s', self.server, whenS)
         def makeNewDriver():
             self.irc.reset()
             driver = self.__class__(self.server, self.irc)
