@@ -748,6 +748,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         defaults to 6667, the default port for IRC.
         """
         (network, server) = privmsgs.getArgs(args, optional=1)
+        for otherIrc in world.ircs:
+            if otherIrc.network == network:
+                irc.error('I\'m already connected to %s.' % network,Raise=True)
         if server:
             if ':' in server:
                 (server, port) = server.split(':')
