@@ -254,6 +254,9 @@ class Words(callbacks.Privmsg, configurable.Mixin):
         """
         channel = msg.args[0]
         game = self.games[channel]
+        if not game.gameOn:
+            irc.error(msg, 'There is no hangman game going on right now.')
+            return
         irc.reply(msg, '%s %s' % (game.prefix, ' '.join(game.unused)))
 
     def hangman(self, irc, msg, args):
@@ -290,7 +293,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
                 self.hangman(irc, msg, args)
             else:
                 irc.error(msg, 'Sorry, there is already a game going on.  '
-                        '%s left before timeout.' % utils.nItems('seconds',
+                        '%s left before timeout.' % utils.nItems('second',
                             int(game.timeout - secondsEllapsed)))
 
     def guess(self, irc, msg, args):
