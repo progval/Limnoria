@@ -109,7 +109,7 @@ class Herald(callbacks.Privmsg):
     def doPart(self, irc, msg):
         try:
             id = self._getId(irc, msg.prefix)
-            self.lastParts[(id, msg.args[0])] = time.time()
+            self.lastParts[msg.args[0], id] = time.time()
         except KeyError:
             pass
 
