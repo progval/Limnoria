@@ -132,7 +132,7 @@ class Lookup(callbacks.Privmsg):
                 filename = os.path.join(conf.dataDir, filename)
                 fd = file(filename)
             except EnvironmentError, e:
-                irc.error('Could not open %s: %s' % (filename, e))
+                irc.error(msg, 'Could not open %s: %s' % (filename, e.args[1]))
                 return
             cursor.execute("""CREATE TABLE %s (key TEXT, value TEXT)""" % name)
             sql = """INSERT INTO %s VALUES (%%s, %%s)""" % name
