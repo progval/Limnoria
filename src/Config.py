@@ -45,6 +45,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -275,6 +276,19 @@ class Config(callbacks.Privmsg):
         _reload() # This was factored out for SIGHUP handling.
         irc.replySuccess()
     reload = privmsgs.checkCapability(reload, 'owner')
+
+    def export(self, irc, msg, args, filename):
+        """<filename>
+
+        Exports the public variables of your configuration to <filename>.
+        If you want to show someone your configuration file, but you don't
+        want that person to be able to see things like passwords, etc., this
+        command will export a "sanitized" configuration file suitable for
+        showing publicly.
+        """
+        registry.close(conf.supybot, filename, private=False)
+        irc.replySuccess()
+    export = wrap(export, [('checkCapability', 'owner'), 'filename'])
 
 
 Class = Config
