@@ -136,9 +136,9 @@ class RSS(callbacks.Privmsg):
                     world.threadsSpawned += 1
                     t.setDaemon(True)
                     t.start()
-                    time.sleep(0.1) # So other threads can run.
                 finally:
                     self.locks[url].release()
+                    time.sleep(0.1) # So other threads can run.
 
     def _newHeadlines(self, irc, channels, name, url):
         try:
@@ -146,6 +146,8 @@ class RSS(callbacks.Privmsg):
             # in this code at any given time.  Otherwise, several announcement
             # threads will getFeed (all blocking, in turn); then they'll all
             # want to sent their news messages to the appropriate channels.
+            # Note that we're allowed to acquire this lock twice within the
+            # same thread because it's an RLock and not just a normal Lock.
             self.locks[url].acquire()
             try:
                 oldresults = self.cachedFeeds[url]
