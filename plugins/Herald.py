@@ -102,6 +102,7 @@ class Herald(callbacks.Privmsg):
 
     def doJoin(self, irc, msg):
         channel = msg.args[0]
+        irc = callbacks.SimpleIrc(irc, msg)
         if self.registryValue('heralding', channel):
             try:
                 id = ircdb.users.getUserId(msg.prefix)
@@ -127,7 +128,7 @@ class Herald(callbacks.Privmsg):
                        return
                 self.lastHerald[channel, id] = now
                 herald = plugins.standardSubstitute(irc, msg, herald)
-                irc.queueMsg(ircmsgs.privmsg(channel, herald))
+                irc.reply(herald)
 
     def doPart(self, irc, msg):
         try:

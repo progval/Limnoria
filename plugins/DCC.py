@@ -88,9 +88,9 @@ class DCC(callbacks.Privmsg):
                 port = sock.getsockname()[1]
                 self.log.info('DCC CHAT port opened at (%s, %s)', host, port)
                 sock.listen(1)
-                irc.queueMsg(ircmsgs.privmsg(msg.nick,
-                                             '\x01DCC CHAT chat %s %s\x01' % \
-                                             (i, port)))
+                m = ircmsgs.privmsg(msg.nick,
+                                    '\x01DCC CHAT chat %s %s\x01' % (i, port))
+                irc.queueMsg(m)
                 try:
                     (realSock, addr) = sock.accept()
                 except socket.timeout:

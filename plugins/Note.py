@@ -186,7 +186,7 @@ class Note(callbacks.Privmsg):
         if len(ids) <= self.registryValue('notify.autoSend'):
             for id in ids:
                 s = '#%s: %s' % (id, self._formatNote(self.db.get(id), to))
-                irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
+                irc.reply(s, private=True)
                 self.db.setRead(id)
             return
         unnotifiedIds = ['#%s' % nid for nid in ids]

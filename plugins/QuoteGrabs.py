@@ -108,6 +108,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
         return db
 
     def doPrivmsg(self, irc, msg):
+        irc = callbacks.SimpleProxy(irc, msg)
         if ircutils.isChannel(msg.args[0]):
             (channel, payload) = msg.args
             words = self.registryValue('randomGrabber.minimumWords',
@@ -153,7 +154,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
 
     def _sendGrabMsg(self, irc, msg):
         s = 'jots down a new quote for %s' % msg.nick
-        irc.queueMsg(ircmsgs.action(msg.args[0], s))
+        irc.reply(s, action=True)
 
     def grab(self, irc, msg, args):
         """[<channel>] <nick>
