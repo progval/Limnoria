@@ -37,6 +37,7 @@ import plugins
 
 import os
 import time
+import random
 
 import sqlite
 
@@ -102,13 +103,13 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                                       ORDER BY id DESC LIMIT 1""", msg.nick)
                     if cursor.rowcount == 0:
                         self._grab(msg, irc.prefix)
+                        self._sendGrabMsg(irc, msg)
                     else:
                         last = int(cursor.fetchone()[0])
                         elapsed = int(time.time()) - last
                         if random.random()*elapsed > grabTime/2:
                             self._grab(msg, irc.prefix)
-                            s = 'jots down a new quote for %s' % msg.nick
-                            irc.queueMsg(ircmsgs.action(msg.args[0], s))
+                            self._sendGrabMsg(irc, msg)
 
     def _grab(self, msg, addedBy):
         channel = msg.args[0]
@@ -119,6 +120,10 @@ class QuoteGrabs(plugins.ChannelDBHandler,
                           VALUES (NULL, %s, %s, %s, %s, %s)""",
                        msg.nick, msg.prefix, addedBy, int(time.time()), text)
         db.commit()
+
+    def _sendGrabMsg(self, irc, msg):
+        s = 'jots down a new quote for %s' % msg.nick 
+        irc.queueMsg(ircmsgs.action(msg.args[0], s))
 
     def grab(self, irc, msg, args):
         """[<channel>] <nick>
