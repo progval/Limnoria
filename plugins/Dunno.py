@@ -53,8 +53,8 @@ import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.plugins as plugins
-from supybot.commands import wrap
 import supybot.registry as registry
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -137,6 +137,11 @@ class Dunno(callbacks.Privmsg):
         try:
             dunno = self.db.get(channel, id)
             if user.id != dunno.by:
+                # XXX We need to come up with a way to handle this capability
+                # checking when channel is None.  It'll probably involve
+                # something along the lines of using admin instead of
+                # #channel,op.  The function should be added to
+                # plugins/__init__.py
                 cap = ircdb.makeChannelCapability(channel, 'op')
                 if not ircdb.users.checkCapability(cap):
                     irc.errorNoCapability(cap)
@@ -189,6 +194,8 @@ class Dunno(callbacks.Privmsg):
         itself.
         """
         try:
+            # Should this check that Record.by == user.id ||
+            # checkChannelCapability like remove() does?
             self.db.change(channel, id, replacer)
         except KeyError:
             irc.error('There is no dunno #%s.' % id)

@@ -43,7 +43,7 @@ import getopt
 
 import supybot.conf as conf
 import supybot.utils as utils
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -101,21 +101,18 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
                  _winningBidder, _buyNow, _seller)
     _multiField = (_bidder, _winningBidder, _seller)
 
-    def auction(self, irc, msg, args):
+    def auction(self, irc, msg, args, item):
         """<item>
 
         Return useful information about the eBay auction with item number
         <item>.
         """
-        item = privmsgs.getArgs(args)
-        if not item.isdigit():
-            irc.error('<item> must be an integer value.')
-            return
         url = 'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=%s' % item
         try:
             irc.reply('%s <%s>' % (self._getResponse(url), url))
         except EbayError, e:
             irc.reply(str(e))
+    auction = wrap(auction, [('id', 'auction')])
 
     def ebaySnarfer(self, irc, msg, match):
         r'http://cgi\.ebay\.(?:com(?:\.au)?|co\.uk|ca)/.*' \
