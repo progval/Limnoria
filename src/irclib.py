@@ -420,6 +420,7 @@ class Irc(IrcCommandDispatcher):
         self._nickmods = copy.copy(conf.nickmods)
         self.lastTake = 0
         self.server = None
+        self.got376 = False
         self.fastqueue = smallqueue()
         self.lastping = time.time()
         self.outstandingPing = False
@@ -436,6 +437,7 @@ class Irc(IrcCommandDispatcher):
         self.state.reset()
         self.queue.reset()
         self.server = None
+        self.got376 = False
         self.lastping = time.time()
         self.outstandingPing = False
         self.fastqueue = queue()
@@ -489,7 +491,7 @@ class Irc(IrcCommandDispatcher):
             else:
                 self.lastTake = now
                 msg = self.queue.dequeue()
-        elif now > (self.lastping + conf.pingInterval):
+        elif now > (self.lastping + conf.pingInterval) and self.got376:
             if self.outstandingPing:
                 s = 'Reconnecting to %s, ping not replied to.' % self.server
                 log.warning(s)
@@ -548,6 +550,9 @@ class Irc(IrcCommandDispatcher):
     def doPong(self, msg):
         """Handles PONG messages."""
         self.outstandingPing = False
+
+    def do376(self, msg):
+        self.got376 = True
 
     def do433(self, msg):
         """Handles 'nickname already in use' messages."""
