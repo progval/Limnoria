@@ -191,7 +191,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 s = replacement + s[len(contraction):]
         return s
         
-    _forceRe = re.compile(r'no[,: -]+', re.I)
+    _forceRe = re.compile(r'^no[,: -]+', re.I)
     def doPrivmsg(self, irc, msg):
         maybeAddressed = callbacks.addressed(irc.nick, msg,
                                              whenAddressedByNick=True)
