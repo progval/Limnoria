@@ -100,7 +100,7 @@ class Status(callbacks.Privmsg):
                     for (net, nicks) in networks]
         L = ['I am connected to %s.' % utils.commaAndify(networks)]
         if world.profiling:
-            L.append('I am current in code profiling mode.')
+            L.append('I am currently in code profiling mode.')
         irc.reply('  '.join(L))
 
     def threads(self, irc, msg, args):
