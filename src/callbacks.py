@@ -28,12 +28,7 @@
 ###
 
 """
-This module contains the basic callbacks for handling PRIVMSGs.  Both Privmsg
-and PrivmsgRegexp classes are provided; for offering callbacks based on
-commands and their arguments (much like *nix command line programs) use the
-Privmsg class; for offering callbacks based on regular expressions, use the
-PrivmsgRegexp class.  Read their respective docstrings for more information on
-how to use them.
+This module contains the basic callbacks for handling PRIVMSGs.
 """
 
 import supybot
@@ -365,10 +360,9 @@ def findCallbackForCommand(irc, name):
     L = []
     name = canonicalName(name)
     for callback in irc.callbacks:
-        if not isinstance(callback, PrivmsgRegexp):
-            if hasattr(callback, 'isCommand'):
-                if callback.isCommand(name):
-                    L.append(callback)
+        if hasattr(callback, 'isCommand'):
+            if callback.isCommand(name):
+                L.append(callback)
     return L
 
 def formatArgumentError(method, name=None):
@@ -720,13 +714,7 @@ class IrcObjectProxy(RichReplyMethods):
                 return
             # Now we check for regexp commands, which override invalidCommand.
             for cb in self.irc.callbacks:
-                if isinstance(cb, PrivmsgRegexp):
-                    for (r, name) in cb.res:
-                        if r.search(self.msg.args[1]):
-                            log.debug('Skipping invalidCommand: %s.%s',
-                                      cb.name(), name)
-                            return
-                elif isinstance(cb, PrivmsgCommandAndRegexp):
+                if isinstance(cb, PrivmsgCommandAndRegexp):
                     for (r, name) in cb.res:
                         if r.search(self.msg.args[1]):
                             log.debug('Skipping invalidCommand: %s.%s',
@@ -1254,78 +1242,6 @@ class SimpleProxy(RichReplyMethods):
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
-
-IrcObjectProxyRegexp = SimpleProxy
-
-class PrivmsgRegexp(Privmsg):
-    """A class to allow a person to create regular expression callbacks.
-
-    Much more primitive, but more flexible than the 'normal' method of using
-    the Privmsg class and its lexer, PrivmsgRegexp allows you to write
-    callbacks that aren't addressed to the bot, for instance.  There are, of
-    course, several other possibilities.  Callbacks are registered with a
-    string (the regular expression) and a function to be called (with the Irc
-    object, the IrcMsg object, and the match object) when the regular
-    expression matches.  Callbacks must have the signature (self, irc, msg,
-    match) to be counted as such.
-
-    A class-level flags attribute is used to determine what regexp flags to
-    compile the regular expressions with.  By default, it's re.I, which means
-    regular expressions are by default case-insensitive.
-
-    If you have a standard command-type callback, though, Privmsg is a much
-    better class to use, at the very least for consistency's sake, but also
-    because it's much more easily coded and maintained.
-    """
-    flags = re.I
-    Proxy = SimpleProxy
-    commandArgs = ['self', 'irc', 'msg', 'match']
-    def __init__(self, irc):
-        self.__parent = super(PrivmsgRegexp, self)
-        self.__parent.__init__(irc)
-        self.res = []
-        #for name, value in self.__class__.__dict__.iteritems():
-        for name, value in self.__class__.__dict__.items():
-            value = getattr(self, name)
-            if self.isCommand(name):
-                try:
-                    r = re.compile(value.__doc__, self.flags)
-                    self.res.append((r, name))
-                except re.error, e:
-                    self.log.warning('Invalid regexp: %q (%s)',
-                                     value.__doc__, e)
-        utils.gen.sortBy(operator.itemgetter(1), self.res)
-
-    def isCommand(self):
-        return []
-
-    def callCommand(self, name, irc, msg, *L, **kwargs):
-        try:
-            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
-        except Exception, e:
-            # We catch exceptions here because IrcObjectProxy isn't doing our
-            # dirty work for us anymore.
-            self.log.exception('Uncaught exception in %s.%s:',
-                               self.name(), name)
-            if conf.supybot.reply.error.detailed():
-                irc.error(utils.gen.exnToString(e))
-            else:
-                irc.replyError()
-
-    def doPrivmsg(self, irc, msg):
-        if msg.isError:
-            self.log.info('%s not running due to msg.isError.', self.name())
-            return
-        for (r, name) in self.res:
-            spans = set()
-            for m in r.finditer(msg.args[1]):
-                # There's a bug in finditer: http://www.python.org/sf/817234
-                if m.span() in spans:
-                    break
-                else:
-                    spans.add(m.span())
-                irc = self.Proxy(irc, msg)
-                self.callCommand(name, irc, msg, m)
 
 
 class PrivmsgCommandAndRegexp(Privmsg):

@@ -143,8 +143,7 @@ class Misc(callbacks.Privmsg):
         commands = {}
         L = []
         for cb in irc.callbacks:
-            if isinstance(cb, callbacks.Privmsg) and \
-               not isinstance(cb, callbacks.PrivmsgRegexp):
+            if isinstance(cb, callbacks.Privmsg):
                 for attr in dir(cb):
                     if s in attr and cb.isCommand(attr):
                         if attr == callbacks.canonicalName(attr):

@@ -165,8 +165,7 @@ class Status(callbacks.Privmsg):
         callbacksPrivmsg = 0
         for cb in irc.callbacks:
             if isinstance(cb, callbacks.Privmsg) and cb.public:
-                if not isinstance(cb, callbacks.PrivmsgRegexp):
-                    callbacksPrivmsg += 1
+                callbacksPrivmsg += 1
                 for attr in dir(cb):
                     if cb.isCommand(attr) and \
                        attr == callbacks.canonicalName(attr):
@@ -185,8 +184,7 @@ class Status(callbacks.Privmsg):
         """
         commands = set()
         for cb in irc.callbacks:
-            if isinstance(cb, callbacks.Privmsg) and \
-               not isinstance(cb, callbacks.PrivmsgRegexp) and cb.public:
+            if isinstance(cb, callbacks.Privmsg) and cb.public:
                 for attr in dir(cb):
                     if cb.isCommand(attr) and \
                        attr == callbacks.canonicalName(attr):
