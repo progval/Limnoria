@@ -192,6 +192,7 @@ setup(
              'scripts/supybot-wizard',
              'scripts/supybot-adduser',
              'scripts/supybot-newplugin',
+             'scripts/supybot-plugin-doc',
              'scripts/supybot-plugin-package',
              ]
     )

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 ###
 # Copyright (c) 2005, Ali Afshar
 # All rights reserved.
@@ -28,138 +30,202 @@
 ###
 
 import os
-import cgi
-import sys
-import imp
+
+import supybot
+
+# We need to do this before we import conf.
+if not os.path.exists('doc-conf'):
+    os.mkdir('doc-conf')
+
+registryFilename = os.path.join('doc-conf', 'doc.conf')
+fd = file(registryFilename, 'w')
+fd.write("""
+supybot.directories.data: doc-data
+supybot.directories.conf: doc-conf
+supybot.directories.log: doc-logs
+supybot.log.stdout: False
+supybot.log.level: DEBUG
+supybot.log.format: %(levelname)s %(message)s
+supybot.log.plugins.individualLogfiles: False
+supybot.databases: sqlite anydbm cdb flat pickle
+""")
+fd.close()
+
+import supybot.registry as registry
+registry.open(registryFilename)
+
 import supybot.log as log
 import supybot.conf as conf
-import supybot.registry as registry
+conf.supybot.flush.setValue(False)
+
+import cgi
+import sys
+import textwrap
+
 import supybot.utils as utils
+import supybot.world as world
+import supybot.plugin as plugin
+import supybot.registry as registry
 
-log.setLevel(10)
+world.documenting = True
 
-def genModules(*dirs):
-    log.info('Generating plugin modules.')
-    for plugindir in dirs:
-        log.info('Analysing %s', plugindir)
-        # strip the trailing separator
-        path, plugin = os.path.split(plugindir.rstrip(os.sep))
-        # len(plugin) will ? always be true
-        if len(plugin) and plugin[0].isupper():
-            try:
-                fm = imp.find_module(plugin, [path])
-            except ImportError:
-                log.warning('Failed find_module, skipping %s', plugin)
-                continue
-            if fm[0]:
-                log.warning('Module is not a directory, skipping %s', plugin)
-                continue
-            try:
-                mod = imp.load_module(plugin, *fm)
-                log.info('Successfully loaded %s', plugin)
-                yield mod
-            except ImportError:
-                log.warning('Failed load_module, skipping %s', plugin)
-                continue
-        else:
-            log.warning('Does not start with an uppercase, skipping %s', plugin)
-            continue
-       
 class PluginDoc(object):
-    def __init__(self, mod):
+    def __init__(self, mod, escape):
         self.mod = mod
+        self.inst = self.mod.Class(None)
+        self.name = self.mod.Class.__name__
+        self.escape = escape
         self.lines = []
-        
-    def appendLine(self, line, indent=0):
-        self.lines.append('%s%s' % (' ' * indent * 2, cgi.escape(line)))
-        
+
+    def appendLine(self, line, indent=0, escaped=False):
+        line = line.strip()
+        if escaped and self.escape:
+            line = cgi.escape(line)
+        if self.escape:
+            line = line.replace('[', '&#91;').replace(']', '&#93;')
+        indent = '  ' * indent
+        lines = textwrap.wrap(line, 79,
+                              initial_indent=indent,
+                              subsequent_indent=indent)
+        self.lines.extend(lines)
+        self.lines.append('')
+
     def renderSTX(self):
-        inst = self.mod.Class(None)
-        self.appendLine('Documentation for the %s plugin for'
-                        'supybot' % self.mod.Class.__name__)
-        self.appendLine('')
-        commands = inst.listCommands()
+        self.appendLine('Documentation for the %s plugin for '
+                        'Supybot' % self.name)
+        self.appendLine('Purpose', 1)
+        pdoc = getattr(self.mod, '__doc__',
+                       'My author didn\'t give me a purpose.')
+        self.appendLine(pdoc, 2, escaped=True)
+        cdoc = getattr(self.mod.Class, '__doc__', None)
+        if cdoc is not None:
+            self.appendLine('Usage', 1)
+            self.appendLine(cdoc, 2, escaped=True)
+        commands = self.inst.listCommands()
         if len(commands):
             self.appendLine('Commands', 1)
-            self.appendLine('')
-        for command in inst.listCommands():
-            log.debug('command: %s', command)
-            self.appendLine(command, 2)
-            self.appendLine('')
-            com = getattr(self.mod.Class, command, False)
-            doc = None
-            if com:
-                doc = com.__doc__.splitlines()
-            else:
-                # this is a nested plugin
-                nclass = None
-                try:
-                    nroot, nname = command.split()
-                except ValueError:
-                    log.warning('Failed to find command, skipping %s', command)
-                    break
-                nclass = getattr(self.mod.Class, nroot, False)
-                if nclass:
-                    ncom = getattr(nclass, nname, False)
-                    doc = ncom.__doc__.splitlines()
+            for command in commands:
+                log.debug('command: %s', command)
+                if self.escape:
+                    line = '* **%s** ' % command
                 else:
-                    log.warning('Failed to find nested pligun command, skipping %s',
-                        command)
-                    break
-            if doc:
-                args = doc.pop(0)
-                doc = [l.strip() for l in doc]
-                self.appendLine('Arguments: **%s**' % args, 3)
-                self.appendLine('')
-                self.appendLine('Description: %s' % ''.join(doc), 3)
-                self.appendLine('')
-            else:
-                self.appendLine('No help Associated with this command', 3)
-                self.appendLine('')
-            # now the config
-        self.appendLine('')
+                    line = '* %s ' % command
+                command = command.split()
+                doc = self.inst.getCommandHelp(command)
+                if doc:
+                    doc = doc.replace('\x02', '')
+                    (args, help) = doc.split(')', 1)
+                    args = args.split('(', 1)[1]
+                    args = args[len(' '.join(command)):].strip()
+                    help = help.split('--', 1)[1].strip()
+                    self.appendLine(line + args, 2, escaped=True)
+                    self.appendLine(help, 3, escaped=True)
+                else:
+                    self.appendLine('No help associated with this command', 3)
+        # now the config
         self.appendLine('Configuration', 1)
-        self.appendLine('')
         try:
-            confs = conf.supybot.plugins.get(self.mod.Class.__name__)
+            confs = conf.supybot.plugins.get(self.name)
         except registry.NonExistentRegistryEntry:
             log.info('No configuration for plugin %s', plugin)
             self.appendLine('No help configuration with this plugin', 2)
-            self.appendLine('')
-            confs = None
-        confVars = None
-        if confs:
-            confVars = confs.getValues(getChildren=True)
-        if confVars:
-            for (c, v) in confVars:
-                try:
-                    self.appendLine(c, 2)
-                    self.appendLine('')
-                    default = str(v)
-                    #if isinstance(v._default, basestring):
-                        #default = utils.dqrepr(default)
-                    help = v.help()
-                    channelValue = v.channelValue
-                    self.appendLine('Default: %s' % default, 3)
-                    self.appendLine('')
-                    self.appendLine('Channel Specific: %s' % channelValue, 3)
-                    self.appendLine('')
-                    self.appendLine('Help: %s' % help, 3)
-                    self.appendLine('')
-                except registry.NonExistentRegistryEntry:
-                    self.appendLine('')
-                    pass
-        self.appendLine('')
-        return '\n'.join(self.lines)
+        else:
+            self.genConfig(confs, 2)
+        return '\n'.join(self.lines) + '\n'
 
+    def genConfig(self, item, origindent):
+        confVars = item.getValues(getChildren=False, fullNames=False)
+        if not confVars:
+            return
+        for (c, v) in confVars:
+            name = '* %s' % v._name
+            self.appendLine(name, origindent)
+            indent = origindent + 1
+            try:
+                default = str(v)
+                if isinstance(v._default, basestring):
+                    default = utils.str.dqrepr(default)
+                help = v.help()
+                channelValue = v.channelValue
+            except registry.NonExistentRegistryEntry:
+                pass
+            else:
+                if channelValue:
+                    cv = 'is'
+                else:
+                    cv = 'is not'
+                if self.escape:
+                    default = '**%s**' % default
+                self.appendLine('This config variable defaults to %s and %s '
+                                'channel specific.' % (default, cv), indent)
+                if self.escape:
+                    help = cgi.escape(help)
+                self.appendLine(help, indent)
+            self.genConfig(v, indent)
 
-def main(*args):
-    for m in genModules(*args):
-        f.write(PluginDoc(m).renderSTX())
+def genDoc(m, escape):
+    Plugin = PluginDoc(m, escape)
+    print 'Generating documentation for %s...' % Plugin.name
+    try:
+        fd = file('%s.stx' % Plugin.name, 'w')
+    except EnvironmentError, e:
+        sys.stderr.write('Unable to open %s.stx for writing.' % Plugin.name)
+        sys.exit(-1)
+    try:
+        fd.write(Plugin.renderSTX())
+    finally:
+        fd.close()
 
 if __name__ == '__main__':
-    f = open('f.stx', 'w')
-    main(*sys.argv[1:])
-    f.close()
+    import glob
+    import os.path
+    import optparse
+    import supybot.plugin as plugin
+
+    parser = optparse.OptionParser(usage='Usage: %prog [options] [plugins]',
+                                   version='Supybot %s' % conf.version)
+    parser.add_option('-c', '--clean', action='store_true', default=False,
+                      dest='clean', help='Cleans the various data/conf/logs'
+                      'directories before running tests.')
+    parser.add_option('--no-escape',
+                      action='store_false', default=True, dest='escape',
+                      help='Disables escaping of html entities e.g., < as '
+                      '&lt;. This is useful for making offline documentation.')
+    parser.add_option('--plugins-dir',
+                      action='append', dest='pluginsDirs', default=[],
+                      help='Looks in in the given directory for plugins and '
+                      'loads the tests from all of them.')
+    (options, args) = parser.parse_args()
+
+    # This must go before checking for args, of course.
+    for pluginDir in options.pluginsDirs:
+        for name in glob.glob(os.path.join(pluginDir, '*')):
+            #print '***', name
+            if os.path.isdir(name):
+                args.append(name)
+
+    if not args:
+        parser.print_help()
+        sys.exit(-1)
+
+    args = [s.rstrip('\\/') for s in args]
+    pluginDirs = set([os.path.dirname(s) or '.' for s in args])
+    conf.supybot.directories.plugins.setValue(list(pluginDirs))
+    pluginNames = set([os.path.basename(s) for s in args])
+    plugins = set([])
+    for pluginName in pluginNames:
+        if pluginName.endswith('.py'):
+            pluginName = pluginName[:-3]
+        try:
+            pluginModule = plugin.loadPluginModule(pluginName)
+        except ImportError, e:
+            sys.stderr.write('Failed to load plugin %s: %s\n' % (pluginName,e))
+            sys.stderr.write('(pluginDirs: %s)' %
+                             conf.supybot.directories.plugins())
+            sys.exit(-1)
+        plugins.add(pluginModule)
+
+    for Plugin in plugins:
+        genDoc(Plugin, options.escape)
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=78:
