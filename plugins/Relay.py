@@ -110,7 +110,7 @@ def configure(onStart, afterConnect, advanced):
             server = ':'.join((server, port))
         onStart.append('relay connect %s %s' % (network, server))
     channel = anything('What channel would you like to relay between?')
-    afterConnect.append('relay join %s' % channel)
+    afterConnect.append('relay join %s' % utils.dqrepr(channel))
     while yn('Would like to relay between any more channels?') == 'y':
         channel = anything('What channel?')
         afterConnect.append('relay join %s' % channel)

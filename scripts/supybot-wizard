@@ -334,7 +334,7 @@ def main():
             prefix the channel with # (or +, or !, or &, but no one uses those
             channels, really).""")
             channels = something('What channels?')
-        afterConnect.append('admin join %s' % channels)
+        afterConnect.append('admin join %s' % utils.dqrepr(channels))
 
     ###
     # Plugins
