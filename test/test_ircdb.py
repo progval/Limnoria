@@ -324,6 +324,7 @@ class UsersDBTestCase(IrcdbTestCase):
         except:
             pass
         self.users = ircdb.UsersDB(self.filename)
+        IrcdbTestCase.setUp(self)
 
     def testIterAndNumUsers(self):
         self.assertEqual(self.users.numUsers(), 0)
@@ -388,6 +389,7 @@ class CheckCapabilityTestCase(IrcdbTestCase):
     channelanticap = ircdb.IrcChannel()
     channelanticap.addCapability(anticap)
     def setUp(self):
+        IrcdbTestCase.setUp(self)
         try:
             os.remove(self.filename)
         except:
