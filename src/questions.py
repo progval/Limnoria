@@ -61,4 +61,4 @@ def ny(prompt):
     return expect(prompt, ['n', 'y'])
 
 def quit(prompt):
-    return anything(prompt) not in ('q', 'quit')
+    return anything(prompt) in ('q', 'quit')
