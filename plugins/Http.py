@@ -37,7 +37,7 @@ from baseplugin import *
 
 import re
 import time
-import httplib
+import random
 import urllib
 import urllib2
 
@@ -356,73 +356,54 @@ class Http(callbacks.Privmsg):
         else:
             irc.error(msg, 'The format of the was odd.')
 
-    def deblookup(self, irc, msg, args):
-        """[stable|testing|unstable|experimental] <packagename>
+    _debreflags = re.DOTALL | re.IGNORECASE
+    _debpkgre = re.compile(r'<a.*>(.*?)</a>', _debreflags)
+    _debbrre = re.compile(r'<td align="center">(\S+)\s*</?td>', _debreflags)
+    _debtablere = re.compile(r'<table\s*[^>]*>(.*?)</table>', _debreflags)
+    _debnumpkgsre = re.compile(r'out of total of (\d+)', _debreflags)
+    _debBranches = ('stable', 'testing', 'unstable', 'experimental')
+    def debversion(self, irc, msg, args):
+        """<package name> [stable|testing|unstable|experimental]
+        
         Returns the current version(s) of a Debian package in the given branch
         (if any, otherwise all available ones are displayed).
         """
-        branches = ['stable', 'testing', 'unstable', 'experimental']
-        host = "packages.debian.org"
-        page = "/cgi-bin/search_packages.pl"
-        max_packages = 10
-
-        if args[0] in branches:
-            branch = args[0]
-            del args[0]	# Chop this part off, we don't need it
+        if args and args[-1] in self._debBranches:
+            branch = args.pop()
         else:
-            branch = None
-
-        # Barf if we don't get a package
-        if len(args) == 0:
-            irc.error(msg, 'Please supply a package name.')
-
-        s = ""  # The reply string (to-be)
+            branch = 'all'
+        if not args:
+            irc.error(msg, 'You must give a package name.')
+        responses = []
+        numberOfPackages = 0
         for package in args:
-            cgi_params = \
-                "?keywords=%s&searchon=names&version=%s&release=all" % \
-                    (package, branch or "all")
-            conn = httplib.HTTPConnection(host)
-            conn.request("GET", page + cgi_params)
-            response = conn.getresponse()
-
-            if response.status != 200:
-                irc.error(msg, "Bad response from debian.org: %d" % \
-                                response.status)
+            fd = urllib2.urlopen('http://packages.debian.org/cgi-bin/' \
+                                 'search_packages.pl?' \
+                                 'keywords=%s&searchon=names&' \
+                                 'version=%s&release=all' % \
+                                 (package, branch))
+            html = fd.read()
+            fd.close()
+            m = self._debtablere.search(html)
+            if m is None:
+                responses.append('No package found for: %s (%s)' % \
+                                 (package, branch))
             else:
-                data = response.read()
-                match = re.search('<TABLE .*?>.*?</TABLE>', \
-                                  data, re.DOTALL | re.I)
-                if match is None:
-                    s += "No package found for: %s (%s)" % \
-                         (package, branch or "all")
-                else:
-                    table_data = match.group()
-                    ## Now run through each of the rows, building up the reply
-                    rows = table_data.split("</TR>")
-
-                    # Check for greater than max_packages (note that the first
-                    # and last row don't have pkgs)
-                    num_pkgs_match = re.search('out of total of (?P<num>\d+)', \
-                                               data, re.DOTALL | re.I)
-                    num_pkgs = int(num_pkgs_match.group('num'))
-                                                                                
-                    if num_pkgs > max_packages:
-                        s += "%d packages found, displaying %d: " % \
-                             (num_pkgs, max_packages)
-                        last_row = max_packages
-                    else:
-                        last_row = -1
-                                                                                
-                    for row in rows[1:last_row]:
-                        pkg_match = re.search("<a.*>(?P<pkg_ver>.*?)</a>", \
-                                              row, re.DOTALL | re.I)
-                        br_match = re.search(
-                            "<td ALIGN=\"center\">(?P<pkg_br>.*?)</?td>", \
-                            row, re.DOTALL | re.I)
-                        s += "%s (%s) ;; " % \
-                              (pkg_match.group('pkg_ver').strip(),
-                               br_match.group('pkg_br').strip())
-        
+                tableData = m.group(1)
+                rows = tableData.split('</TR>')
+                m = self._debnumpkgsre.search(tableData)
+                if m:
+                    numberOfPackages += int(m.group(1))
+                for row in rows:
+                    pkgMatch = self._debpkgre.search(row)
+                    brMatch = self._debbrre.search(row)
+                    if pkgMatch and brMatch:
+                        s = '%s (%s)' % (pkgMatch.group(1), brMatch.group(1))
+                        responses.append(s)
+        random.shuffle(responses)
+        ircutils.shrinkList(responses, ', ', 400)
+        s = 'Total matches: %s, shown: %s.  %s' % \
+            (numberOfPackages, len(responses), ', '.join(responses))
         irc.reply(msg, s)
 
             
