@@ -116,8 +116,9 @@ conf.registerChannelValue(conf.supybot.plugins.Relay, 'color',
 conf.registerChannelValue(conf.supybot.plugins.Relay, 'topicSync',
     registry.Boolean(True, """Determines whether the bot will synchronize
     topics between networks in the channels it relays."""))
-
-conf.registerGroup(conf.supybot.plugins.Relay, 'networks')
+conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
+    conf.SpaceSeparatedListOfChannels([], """Determines which channels the bot
+    will relay in."""))
 
 class Relay(callbacks.Privmsg):
     noIgnore = True
@@ -128,7 +129,7 @@ class Relay(callbacks.Privmsg):
         self.started = False
         self.ircstates = ircstates
         self.lastmsg = lastmsg
-        self.channels = channels
+        self.channels = self.registryValue('channels')
         self._whois = {}
         self.abbreviations = abbreviations
 
@@ -142,11 +143,12 @@ class Relay(callbacks.Privmsg):
         callbacks.Privmsg.__call__(self, irc, msg)
 
     def do376(self, irc, msg):
-#        channels = []
-#        networks = conf.supybot.plugins.Relay.networks
-#        networked = [irc.network for irc in world.ircs]
-        if self.channels:
-            irc.queueMsg(ircmsgs.joins(self.channels))
+        L = []
+        for channel in self.channels:
+            if channel not in irc.state.channels:
+                L.append(channel)
+        if L:
+            irc.queueMsg(ircmsgs.joins(L))
     do377 = do422 = do376
 
     def _getRealIrc(self, irc):
