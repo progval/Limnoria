@@ -58,6 +58,20 @@ class ChannelCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         self.assertNotError('kban foobar')
 
+    def testLobotomizers(self):
+        self.assertNotError('lobotomize')
+        self.assertNotError('unlobotomize')
+
+    def testPermban(self):
+        self.assertNotError('permban foo!bar@baz')
+        self.assertNotError('unpermban foo!bar@baz')
+        self.assertError('permban not!a.hostmask')
+
+    def testChanignore(self):
+        self.assertNotError('chanignore foo!bar@baz')
+        self.assertNotError('unchanignore foo!bar@baz')
+        self.assertError('permban not!a.hostmask')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
