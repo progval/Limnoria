@@ -250,8 +250,11 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
                 return
         try:
             module = loadPluginModule(name)
-        except ImportError:
-            irc.error(msg, 'No plugin %s exists.' % name)
+        except ImportError, e:
+            if name in str(e):
+                irc.error(msg, 'No plugin %s exists.' % name)
+            else:
+                irc.error(msg, debug.exnToString(e))
             return
         loadPluginClass(irc, module)
         irc.reply(msg, conf.replySuccess)
