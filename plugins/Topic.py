@@ -44,6 +44,7 @@ import re
 import random
 
 import debug
+import utils
 import ircdb
 import ircmsgs
 import privmsgs
