@@ -40,7 +40,8 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
         self.assertError('whois osu.edu')
         self.assertNotError('defaultplugin whois network')
         self.assertNotError('whois osu.edu')
-        self.assertNotError('defaultplugin whois')
+        self.assertResponse('defaultplugin whois', 'network')
+        self.assertNotError('defaultplugin --remove whois')
         self.assertError('whois osu.edu')
         self.assertError('defaultplugin asdlfkjasdflkjsad Owner')
         

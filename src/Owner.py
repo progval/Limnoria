@@ -157,12 +157,19 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 callbacks.IrcObjectProxy(irc, msg, tokens)
 
     def defaultplugin(self, irc, msg, args):
-        """<command> [<plugin>]
+        """<command> [<plugin>] [--remove]
 
         Calls <command> from <plugin> by default, rather than complaining about
-        multiple plugins providing it.  If <plugin> is not provided, remove the
-        currently used default plugin.
+        multiple plugins providing it.  If <plugin> is not provided, shows the
+        current default plugin for <command>.  If --remove is given, removes
+        the current default plugin for <command>.
         """
+        if '--remove' in args:
+            while '--remove' in args:
+                args.remove('--remove')
+            remove = True
+        else:
+            remove = False
         (command, plugin) = privmsgs.getArgs(args, optional=1)
         command = callbacks.canonicalName(command)
         cbs = callbacks.findCallbackForCommand(irc, command)
@@ -173,9 +180,12 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             self.defaultPlugins[command] = plugin
         else:
             try:
-                del self.defaultPlugins[command]
+                if remove:
+                    del self.defaultPlugins[command]
+                else:
+                    irc.reply(msg, self.defaultPlugins[command])
             except KeyError:
-                irc.error(msg, 'I have no default for that command.')
+                irc.error(msg,'I have no default plugin for that command.')
                 return
         irc.reply(msg, conf.replySuccess)
                                 
