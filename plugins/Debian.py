@@ -105,11 +105,18 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         (fd, _) = popen2.popen2(['zegrep', regexp, 'Contents-i386.gz'])
         packages = []
         for line in fd:
-            (filename, package) = line[:-1].split()
+            try:
+                (filename, package) = line[:-1].split()
+                if filename == 'FILE':
+                    # This is the last line before the actual files.
+                    continue
+            except ValueError: # Unpack list of wrong size.
+                continue       # We've not gotten to the files yet.
             if r.search(filename):
                 packages.extend(package.split(','))
             if len(packages) > 40:
-                irc.error(msg, '>40 results returned, be more specific.')
+                irc.error(msg, 'More than 40 results returned, ' \
+                               'please be more specific.')
                 return
         if len(packages) == 0:
             irc.reply(msg, 'I found no packages with that file.')
