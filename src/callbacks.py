@@ -122,12 +122,17 @@ def reply(msg, s, prefixName=True, private=False, notice=False, to=None):
         else:
             m = ircmsgs.privmsg(msg.args[0], s)
     else:
-        m = ircmsgs.privmsg(to, s)
+        if s:
+            m = ircmsgs.privmsg(to, s)
+        else:
+            return error(msg, 'I tried to send you an empty message.',
+                         prefixName=prefixName, private=private,
+                         notice=notice, to=to)
     return m
 
-def error(msg, s):
+def error(msg, s, **kwargs):
     """Makes an error reply to msg with the appropriate error payload."""
-    return reply(msg, 'Error: ' + s)
+    return reply(msg, 'Error: ' + s, **kwargs)
 
 def getHelp(method, name=None):
     if name is None:
