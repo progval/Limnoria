@@ -373,8 +373,10 @@ def main():
         bot.  Before you have to make a decision, of course, you'll be able to
         see a short description of the plugin and, if you choose, an example
         session with the plugin.  Let's begin.""")
-        showUsage = yn('Would you like the option of seeing usage examples?') \
-                    =='y'
+        # until we get example strings again, this will default to false
+        #showUsage =yn('Would you like the option of seeing usage examples?') \
+        #            =='y'
+        showUsage = False
         name = expect('What plugin would you like to look at?', plugins)
         while name:
             module = loadPlugin(name)
