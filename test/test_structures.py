@@ -199,6 +199,13 @@ class RingBufferTestCase(unittest.TestCase):
 
 
 class QueueTest(unittest.TestCase):
+    def testReset(self):
+        q = queue()
+        q.enqueue(1)
+        self.assertEqual(len(q), 1)
+        q.reset()
+        self.assertEqual(len(q), 0)
+        
     def testGetitem(self):
         q = queue()
         n = 10
@@ -357,6 +364,13 @@ class QueueTest(unittest.TestCase):
 queue = smallqueue
 
 class SmallQueueTest(unittest.TestCase):
+    def testReset(self):
+        q = queue()
+        q.enqueue(1)
+        self.assertEqual(len(q), 1)
+        q.reset()
+        self.assertEqual(len(q), 0)
+        
     def testGetitem(self):
         q = queue()
         n = 10

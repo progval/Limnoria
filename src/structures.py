@@ -294,6 +294,12 @@ class smallqueue(list):
     def peek(self):
         return self[0]
 
+    def __repr__(self):
+        return 'smallqueue([%s])' % ', '.join(map(repr, self))
+
+    def reset(self):
+        self[:] = []
+
 
 class MaxLengthQueue(queue):
     __slots__ = ('length',)
