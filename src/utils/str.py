@@ -173,7 +173,7 @@ def perlReToReplacer(s):
     if 'g' in flags:
         g = True
         flags = filter('g'.__ne__, flags)
-    r = perlReToPythonRe('/'.join(('', regexp, flags)))
+    r = perlReToPythonRe(sep.join(('', regexp, flags)))
     if g:
         return curry(r.sub, replace)
     else:
