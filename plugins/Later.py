@@ -126,7 +126,9 @@ class Later(callbacks.Privmsg):
     def tell(self, irc, msg, args):
         """<nick> <text>
 
-        Tells <nick> <text> the next time <nick> is in seen.
+        Tells <nick> <text> the next time <nick> is in seen.  <nick> can
+        contain wildcard characters, and the first matching nick will be
+        given the note.
         """
         (nick, text) = privmsgs.getArgs(args, required=2)
         if ircutils.strEqual(nick, irc.nick):
