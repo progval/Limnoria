@@ -108,7 +108,8 @@ class ChannelLogger(callbacks.Privmsg):
         for log in self.logs.itervalues():
             log.close()
         world.flushers = [x for x in world.flushers
-                          if hasattr(x, 'im_class') and x.im_class == self]
+                          if hasattr(x, 'im_class') and
+                          x.im_class is not self.__class__]
 
     def __call__(self, irc, msg):
         try:
