@@ -688,10 +688,9 @@ class Irc(IrcCommandDispatcher):
              conf.supybot.protocols.irc.ping() and \
              now > self.lastping + conf.supybot.protocols.irc.ping.interval():
             if self.outstandingPing:
-                s = 'Reconnecting to %s, ping not replied to.' % self.server
-                log.warning(s)
+                log.warning('Ping sent at %s not replied to.',
+                            log.timestamp(self.lastping))
                 self.driver.reconnect()
-                self.reset()
             else:
                 self.lastping = now
                 now = str(int(now))
