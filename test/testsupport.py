@@ -41,6 +41,7 @@ import time
 started = time.time()
 import shutil
 import unittest
+import threading
 
 import supybot.log as log
 import supybot.conf as conf
@@ -108,6 +109,8 @@ class TimeoutError(AssertionError):
 class SupyTestCase(unittest.TestCase):
     def setUp(self):
         log.critical('Beginning test case %s', self.id())
+        threads = [t.getName() for t in threading.enumerate()]
+        log.critical('Threads: %s' % utils.commaAndify(threads))
         unittest.TestCase.setUp(self)
 
     def tearDown(self):
