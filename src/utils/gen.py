@@ -153,7 +153,7 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
             raise ValueError, format('Unsafe string: %q', s)
     node = nodes[0]
     if node.__class__ is not compiler.ast.Discard:
-        raise ValueError, 'Invalid expression: %s' % quoted(s)
+        raise ValueError, format('Invalid expression: %q', s)
     node = node.getChildNodes()[0]
     def checkNode(node):
         if node.__class__ is compiler.ast.Const:
@@ -172,7 +172,7 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     if checkNode(node):
         return eval(s, namespace, namespace)
     else:
-        raise ValueError, 'Unsafe string: %s' % quoted(s)
+        raise ValueError, format('Unsafe string: %q', s)
 
 def exnToString(e):
     """Turns a simple exception instance into a string (better than str(e))"""

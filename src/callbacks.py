@@ -742,11 +742,11 @@ class IrcObjectProxy(RichReplyMethods):
             self._callInvalidCommands()
         elif len(cbs) > 1:
             names = sorted([cb.name() for cb in cbs])
-            return self.error('The command %s is available in the %s plugins.  '
-                              'Please specify the plugin whose command you '
-                              'wish to call by using its name as a command '
-                              'before %s.' %
-                              (command, utils.str.commaAndify(names), command))
+            return self.error(format('The command %s is available in the %L '
+                                     'plugins.  Please specify the plugin '
+                                     'whose command you wish to call by using '
+                                     'its name as a command before %s.',
+                                     command, names, command))
         else:
             cb = cbs[0]
             del self.args[0] # Remove the command.

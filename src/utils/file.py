@@ -80,7 +80,7 @@ class AtomicFile(file):
         if allowEmptyOverwrite is None:
             allowEmptyOverwrite = force(self.default.allowEmptyOverwrite)
         if mode not in ('w', 'wb'):
-            raise ValueError, 'Invalid mode: %s' % quoted(mode)
+            raise ValueError, format('Invalid mode: %q', mode)
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
         self.makeBackupIfSmaller = makeBackupIfSmaller
