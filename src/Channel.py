@@ -658,6 +658,89 @@ class Channel(callbacks.Privmsg):
         L = sorted(c.capabilities)
         irc.reply(' '.join(L))
     capabilities = wrap(capabilities, ['channel'])
+    
+    def disable(self, irc, msg, args, channel, plugin, command):
+        """[<channel>] [<plugin>] [<command>]
+
+        If you have the #channel,op capability, this will disable the <command> 
+        in <channel>.  If <plugin> is provided, <command> will be disabled only 
+        for that plugin.  If only <plugin> is provided, all commands in the 
+        given plugin will be disabled.  <channel> is only necessary if the 
+        message isn't sent in the channel itself.
+        """
+        chan = ircdb.channels.getChannel(channel)
+        failMsg = ''
+        if plugin:
+            s = '-%s' % plugin.name()
+            if command:
+                if plugin.isCommand(command):
+                    s = '-%s.%s' % (plugin.name(), command)
+                else:
+                    failMsg = 'The %s plugin does not have a command called %s.'\
+                                % (plugin.name(), command)
+        elif command:
+            # findCallbackForCommand
+            if irc.findCallbackForCommand(command):
+                s = '-%s' % command
+            else:
+                failMsg = 'No plugin or command named %s could be found.'\
+                            % (command)
+        else:
+            raise callbacks.ArgumentError
+        if failMsg:
+            irc.error(failMsg)
+        else:
+            chan.addCapability(s)
+            ircdb.channels.setChannel(channel, chan)
+            irc.replySuccess()
+    disable = wrap(disable, [('checkChannelCapability', 'op'),
+                                optional(('plugin', False)), 
+                                additional('commandName')])
+                                
+    def enable(self, irc, msg, args, channel, plugin, command):
+        """[<channel>] [<plugin>] [<command>]
+
+        If you have the #channel,op capability, this will enable the <command> 
+        in <channel> if it has been disabled.  If <plugin> is provided, 
+        <command> will be enabled only for that plugin.  If only <plugin> is 
+        provided, all commands in the given plugin will be enabled.  <channel> 
+        is only necessary if the message isn't sent in the channel itself.
+        """
+        chan = ircdb.channels.getChannel(channel)
+        failMsg = ''
+        if plugin:
+            s = '-%s' % plugin.name()
+            if command:
+                if plugin.isCommand(command):
+                    s = '-%s.%s' % (plugin.name(), command)
+                else:
+                    failMsg = 'The %s plugin does not have a command called %s.'\
+                                % (plugin.name(), command)
+        elif command:
+            # findCallbackForCommand
+            if irc.findCallbackForCommand(command):
+                s = '-%s' % command
+            else:
+                failMsg = 'No plugin or command named %s could be found.'\
+                            % (command)
+        else:
+            raise callbacks.ArgumentError
+        if failMsg:
+            irc.error(failMsg)
+        else:
+            fail = []
+            try:
+                chan.removeCapability(s)
+            except KeyError:
+                fail.append(s)
+            ircdb.channels.setChannel(channel, chan)
+            if fail:
+                irc.error('%s was not disabled.' % s[1:])
+            else:
+                irc.replySuccess()
+    enable = wrap(enable, [('checkChannelCapability', 'op'),
+                                optional(('plugin', False)), 
+                                additional('commandName')])
 
     def lobotomies(self, irc, msg, args):
         """takes no arguments

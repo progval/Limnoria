@@ -67,6 +67,24 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertRegexp('channel capabilities', 'baz')
         self.assertNotError('channel unsetcapability -foo baz')
         self.assertError('channel unsetcapability baz')
+        
+    def testEnableDisable(self):
+        self.assertNotRegexp('channel capabilities', '-Channel')
+        self.assertError('channel enable channel')
+        self.assertNotError('channel disable channel')
+        self.assertRegexp('channel capabilities', '-Channel')
+        self.assertNotError('channel enable channel')
+        self.assertNotRegexp('channel capabilities', '-Channel')
+        self.assertNotError('channel disable channel nicks')
+        self.assertRegexp('channel capabilities', '-Channel.nicks')
+        self.assertNotError('channel enable channel nicks')
+        self.assertNotRegexp('channel capabilities', '-Channel.nicks')
+        self.assertNotRegexp('channel capabilities', 'nicks')
+        self.assertNotError('channel disable nicks')
+        self.assertRegexp('channel capabilities', 'nicks')
+        self.assertNotError('channel enable nicks')
+        self.assertError('channel disable invalidPlugin')
+        self.assertError('channel disable channel invalidCommand')
 
     def testUnban(self):
         self.assertError('unban foo!bar@baz')
