@@ -270,7 +270,8 @@ class FunCommands(callbacks.Privmsg):
         """<encoding> <text>
 
         Returns an encoded form of the given text; the valid encodings are
-        available in the documentation of the Python codecs module.
+        available in the documentation of the Python codecs module:
+        <http://www.python.org/doc/lib/node126.html>.
         """
         encoding, text = privmsgs.getArgs(args, needed=2)
         irc.reply(msg, text.encode(encoding))
@@ -279,7 +280,8 @@ class FunCommands(callbacks.Privmsg):
         """<encoding> <text>
 
         Returns an un-encoded form of the given text; the valid encodings are
-        available in the documentation of the Python codecs module.
+        available in the documentation of the Python codecs module:
+        <http://www.python.org/doc/lib/node126.html>.
         """
         encoding, text = privmsgs.getArgs(args, needed=2)
         irc.reply(msg, text.decode(encoding).encode('utf-8'))
