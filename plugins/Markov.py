@@ -30,7 +30,10 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+Silently listens to a channel, building an SQL database of Markov Chains for
+later hijinks.  To read more about Markov Chains, check out
+<http://www.cs.bell-labs.com/cm/cs/pearls/sec153.html>.  When the database is
+large enough, you can have it make fun little random messages from it.
 """
 
 from baseplugin import *
