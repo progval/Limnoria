@@ -61,14 +61,14 @@ def configure(advanced):
 conf.registerPlugin('Enforcer')
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoOp',
     registry.Boolean(False, """Determines whether the bot will automatically op
-    people with the <channel>.op capability when they join the channel."""))
+    people with the <channel>,op capability when they join the channel."""))
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoHalfop',
     registry.Boolean(False, """Determines whether the bot will automatically
-    halfop people with the <channel>.halfop capability when they join the
+    halfop people with the <channel>,halfop capability when they join the
     channel."""))
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'autoVoice',
     registry.Boolean(False, """Determines whether the bot will automatically
-    voice people with the <channel>.voice capability when they join the
+    voice people with the <channel>,voice capability when they join the
     channel."""))
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'takeRevenge',
     registry.Boolean(False, """Determines whether the bot will take revenge on
