@@ -206,15 +206,15 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             if not nickserv or msg.nick != nickserv:
                 return
             nick = self.registryValue('nick')
-            self.log.debug('Notice received from NickServ: %r', msg)
+            self.log.debug('Notice received from NickServ: %r.', msg)
             s = msg.args[1].lower()
             if self._ghosted(s):
-                self.log.info('Received "GHOST succeeded" from NickServ')
+                self.log.info('Received "GHOST succeeded" from NickServ.')
                 self.sentGhost = False
                 irc.queueMsg(ircmsgs.nick(nick))
             elif ('registered' in s or 'protected' in s) and \
                ('not' not in s and 'isn\'t' not in s):
-                self.log.info('Received "Registered Nick" from NickServ')
+                self.log.info('Received "Registered Nick" from NickServ.')
                 if nick == irc.nick:
                     self._doIdentify(irc)
                 else:
@@ -223,7 +223,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 # Usage info for identify command; ignore.
                 self.log.debug('Got usage info for identify command.')
             elif 'now recognized' in s:
-                self.log.info('Received "Password accepted" from NickServ')
+                self.log.info('Received "Password accepted" from NickServ.')
                 self.identified = True
                 for channel in irc.state.channels.keys():
                     self.checkPrivileges(irc, channel)
@@ -233,24 +233,39 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 log = 'Received "Password Incorrect" from NickServ.'
                 self.log.warning(log)
             else:
-                self.log.debug('Unexpected notice from NickServ: %r', s)
+                self.log.debug('Unexpected notice from NickServ: %r.', s)
 
     def checkPrivileges(self, irc, channel):
         chanserv = self.registryValue('ChanServ')
         if chanserv and self.registryValue('ChanServ.op', channel):
             if irc.nick not in irc.state.channels[channel].ops:
-                self.log.info('Requesting op from %s in %s', chanserv, channel)
+                self.log.info('Requesting op from %s in %s.', chanserv, channel)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'op %s' % channel))
         if chanserv and self.registryValue('ChanServ.halfop', channel):
             if irc.nick not in irc.state.channels[channel].halfops:
-                self.log.info('Requesting halfop from %s in %s',
+                self.log.info('Requesting halfop from %s in %s.',
                               chanserv, channel)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'halfop %s' % channel))
         if chanserv and self.registryValue('ChanServ.voice', channel):
             if irc.nick not in irc.state.channels[channel].voices:
-                self.log.info('Requesting voice from %s in %s',
+                self.log.info('Requesting voice from %s in %s.',
                               chanserv, channel)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'voice %s' % channel))
+
+    def doMode(self, irc, msg):
+        chanserv = self.registryValue('ChanServ')
+        if msg.nick == chanserv:
+            channel = msg.args[0]
+            if len(msg.args) == 3:
+                if msg.args[2] == irc.nick:
+                    mode = msg.args[1]
+                    info = self.log.info
+                    if mode == '+o':
+                        info('Received op from ChanServ in %s.', channel)
+                    elif mode == '+h':
+                        info('Received halfop from ChanServ in %s.', channel)
+                    elif mode == '+v':
+                        info('Received voice from ChanServ in %s.', channel)
 
     def do366(self, irc, msg): # End of /NAMES list; finished joining a channel
         if self.identified:
