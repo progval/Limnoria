@@ -15,13 +15,13 @@ import logging
 import optparse
 from itertools import imap
 
-import ansi
-import registry
-import conf
 import log
+import ansi
+import conf
 import utils
-import ircutils
 import Owner
+import ircutils
+import registry
 
 import questions
 from questions import output, yn, anything, something, expect, getpass
