@@ -139,7 +139,7 @@ class FunctionsTestCase(unittest.TestCase):
     def testLoadPluginModule(self):
         self.assertRaises(ImportError, Owner.loadPluginModule, 'asldj')
         self.failUnless(Owner.loadPluginModule('Owner'))
-        self.failUnless(Owner.loadPluginModule('ownercommands'))
+        self.failUnless(Owner.loadPluginModule('owner'))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
