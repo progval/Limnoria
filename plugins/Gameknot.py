@@ -226,7 +226,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     gameknotSnarfer = urlSnarfer(gameknotSnarfer)
 
     def gameknotStatsSnarfer(self, irc, msg, match):
-        r"http://gameknot\.com/stats\.pl\?([^&]+)"
+        r"http://gameknot\.com/stats\.pl\?([^& ]+)"
         if not self.registryValue('statSnarfer', msg.args[0]):
             return
         name = match.group(1)
