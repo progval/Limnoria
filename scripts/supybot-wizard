@@ -234,6 +234,7 @@ def main():
     # Now that we're all set, import conf and log
     import conf
     import log
+    log._stdoutHandler.setLevel(100)
 
     # pluginDirs
     output("""Your bot will also need to know where to find his plugins at.
@@ -651,8 +652,6 @@ def main():
     if not filename:
         filename = '%s.conf' % nick
     registry.close(conf.supybot, filename)
-    
-    # FIXME: Prevent some INFO messages from being printed when exiting
     
     # Done!
     output("""All done!  Your new bot configuration is %s.  If you're running 
