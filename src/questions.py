@@ -42,14 +42,14 @@ import supybot.utils as utils
 
 useBold = False
 
-def output(s, unformatted=True):
+def output(s, unformatted=True, fd=sys.stdout):
     if unformatted:
         s = textwrap.fill(utils.normalizeWhitespace(s), width=65)
-    print s
-    print
+    print >>fd, s
+    print >>fd
 
 def expect(prompt, possibilities, recursed=False, default=None,
-           acceptEmpty=False):
+           acceptEmpty=False, fd=sys.stdout):
     """Prompt the user with prompt, allow them to choose from possibilities.
 
     If possibilities is empty, allow anything.
@@ -72,12 +72,12 @@ def expect(prompt, possibilities, recursed=False, default=None,
     prompt = prompt.replace('/ ', '/')
     prompt = prompt.strip() + ' '
     if useBold:
-        print ansi.BOLD,
+        print >>fd, ansi.BOLD,
     s = raw_input(prompt)
     if useBold:
-        print ansi.RESET
+        print >>fd, ansi.RESET
     s = s.strip()
-    print
+    print >>fd
     if possibilities:
         if s in possibilities:
             return s
