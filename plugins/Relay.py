@@ -83,6 +83,10 @@ conf.registerChannelValue(conf.supybot.plugins.Relay, 'hostmasks',
     registry.Boolean(False, """Determines whether the bot will relay the
     hostmask of the person joining or parting the channel when he or she joins
     or parts."""))
+conf.registerChannelValue(conf.supybot.plugins.Relay, 'includeNetwork',
+    registry.Boolean(True, """Determines whether the bot will include the
+    network in relayed PRIVMSGs; if you're only relaying between two networks,
+    it's somewhat redundant, and you may wish to save the space."""))
 conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
     conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
     will relay in."""))
@@ -348,6 +352,15 @@ class Relay(callbacks.Privmsg):
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))
         self._whois[(otherIrc, nick)] = (irc, msg, {})
 
+    def ignore(self, irc, msg, args):
+        """[<channel>] <nick|hostmask>
+
+        Ignores everything said or done by <nick|hostmask> in <channel>.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        pass
+
     def do311(self, irc, msg):
         irc = self._getRealIrc(irc)
         nick = ircutils.toLower(msg.args[1])
@@ -443,9 +456,13 @@ class Relay(callbacks.Privmsg):
     do401 = do402
 
     def _formatPrivmsg(self, nick, network, msg):
+        channel = msg.args[0]
+        if self.registryValue('includeNetwork', channel):
+            network = '@' + network
+        else:
+            network = ''
         # colorize nicks
-        color = self.registryValue('color', msg.args[0])
-        if color:
+        if self.registryValue('color', channel):
             nick = ircutils.IrcString(nick)
             newnick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
             colors = ircutils.canonicalColor(nick, shift=4)
@@ -455,7 +472,7 @@ class Relay(callbacks.Privmsg):
                 t = ircutils.mircColor('*', *colors)
             else:
                 t = '*'
-            s = '%s %s@%s %s' % (t, nick, network, ircmsgs.unAction(msg))
+            s = '%s %s%s %s' % (t, nick, network, ircmsgs.unAction(msg))
         else:
             if color:
                 lt = ircutils.mircColor('<', *colors)
@@ -463,7 +480,7 @@ class Relay(callbacks.Privmsg):
             else:
                 lt = '<'
                 gt = '>'
-            s = '%s%s@%s%s %s' % (lt, nick, network, gt, msg.args[1])
+            s = '%s%s%s%s %s' % (lt, nick, network, gt, msg.args[1])
         return s
 
     def _addRelayedMsg(self, msg):
