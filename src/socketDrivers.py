@@ -44,8 +44,14 @@ import drivers
 import ircmsgs
 import schedule
 
+instances = 0
+originalPoll = conf.poll
+
 class SocketDriver(drivers.IrcDriver):
     def __init__(self, (server, port), irc):
+        global instances
+        instances += 1
+        conf.poll = originalPoll / instances
         drivers.IrcDriver.__init__(self)
         self.server = (server, port)
         self.irc = irc
