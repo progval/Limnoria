@@ -390,7 +390,6 @@ class FormatParser(object):
                 context.reset()
             elif c == '\x03':
                 self.getColor(context)
-            # XXX: Underline and reverse.
             c = self.getChar()
         return context
 

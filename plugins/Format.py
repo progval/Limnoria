@@ -87,7 +87,6 @@ class Format(callbacks.Privmsg):
         Returns <text> with foreground color <foreground> and background color
         <background> (if given)
         """
-        # XXX: We need to fix ircutils.mircColors (note the s) to an IrcDict.
         try:
             fg = args.pop(0)
             if args[0] in ircutils.mircColors:

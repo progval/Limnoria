@@ -139,7 +139,6 @@ class Words(callbacks.Privmsg):
         Gives the possible crossword completions for <word>; use underscores
         ('_') to denote blank spaces.
         """
-        # XXX: Should we somehow disable this during a hangman game?
         word = privmsgs.getArgs(args).lower()
         word = re.escape(word)
         word = word.replace('\\_', '_') # Stupid re.escape escapes underscores!

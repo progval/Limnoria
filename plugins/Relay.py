@@ -176,10 +176,9 @@ class Relay(callbacks.Privmsg):
             group = conf.supybot.networks.get(network)
             (server, port) = group.servers()[0]
         except (registry.NonExistentRegistryEntry, IndexError):
-            # XXX: This should be a real error.
             if serverPort is None:
-                raise ValueError, '_connect requires a (server, port) if ' \
-                                  'the network is not registered.'
+                raise callbacks.Error, '_connect requires a (server, port) ' \
+                                       'if the network is not registered.'
             conf.registerNetwork(network, servers=('%s:%s' % serverPort,))
         if makeNew:
             self.log.info('Creating new Irc for relaying to %s.', network)
@@ -192,7 +191,6 @@ class Relay(callbacks.Privmsg):
         self._addIrc(newIrc)
         networks = self.registryValue('networks')
         networks.add(network)
-        # XXX: Should set the value here, but I'm lazy, this'll work for now.
 
     def disconnect(self, irc, msg, args):
         """<network>

@@ -70,10 +70,10 @@ class AsyncoreDriver(asynchat.async_chat, object):
         self.servers = servers 
         self.networkGroup = conf.supybot.networks.get(self.irc.network)
         self.set_terminator('\n')
-        # XXX: Use utils.getSocket.
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             server = self._getNextServer()
+            sock = utils.getSocket(server[0])
+            self.set_socket(sock)
             log.info('Connecting to %s.', self.currentServer)
             self.connect(server)
         except socket.error, e:
