@@ -78,7 +78,7 @@ allowEval = True
 ###
 # defaultCapabilities: Capabilities allowed to everyone by default.
 ###
-defaultCapabilities = []
+defaultCapabilities = set()
 
 ###
 # reply%s: Stock replies for various reasons.
