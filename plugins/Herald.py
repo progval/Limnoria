@@ -229,8 +229,11 @@ class Herald(callbacks.Privmsg):
         except KeyError:
             irc.errorNoUser()
             return
-        del self.db[channel, id]
-        irc.replySuccess()
+        try:
+            del self.db[channel, id]
+            irc.replySuccess()
+        except KeyError:
+            irc.error('I have no herald for that user.')
 
     def change(self, irc, msg, args):
         """[<channel>] <user|nick|hostmask> <regexp>
