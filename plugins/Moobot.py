@@ -117,6 +117,7 @@ class Moobot(callbacks.Privmsg):
         Does the reverse of the morse/ditdaw command.
         """
         text = privmsgs.getArgs(args)
+        text = text.replace('_', '-')
         L = []
         def morseToLetter(m):
             s = m.group(1)
