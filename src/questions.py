@@ -47,6 +47,13 @@ def expect(prompt, possibilities, recursed=False):
 def anything(prompt):
     return expect(prompt, [])
 
+def something(prompt):
+    s = expect(prompt, [])
+    while not s:
+        print 'Sorry, you must enter a value.'
+        s = expect(prompt, [])
+    return s
+
 def yn(prompt):
     return expect(prompt, ['y', 'n'])
 
