@@ -37,42 +37,37 @@ __revision__ = "$Id$"
 
 import plugins
 
+import conf
 import ircmsgs
 import ircutils
+import registry
 import callbacks
 import configurable
 
-###
-# RootWarner: Warns users who join a channel as root.
-###
-class RootWarner(callbacks.Privmsg, configurable.Mixin):
-    configurables = configurable.Dictionary(
-        [('warn', configurable.BoolType, True,
-          """Determines whether the bot will warn people who join the channel
-          with an ident of 'root' or '~root'."""),
-         ('warning', configurable.StrType,
-          'Don\'t IRC as root -- it\'s very possible that there is a '
-          'security flaw latent in your irc client (remember the BitchX '
-          'format string vulnerabilities of days past?) and if you\'re '
-          'IRCing as root, your entire box could be compromised.',
-          """The message that is to be sent to users joining the channel with
-          an ident of 'root' or '~root'."""),
-         ('kick', configurable.BoolType, False,
-          """Determines whether the bot will kick people who join the channel
-          with an ident of 'root' or '~root'.""")]
-    )
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
 
+conf.registerPlugin('RootWarner')
+conf.registerChannelValue(conf.supybot.plugins.RootWarner, 'warn',
+    registry.Boolean(True, """Determines whether the bot will warn people who
+    join the channel with an ident of 'root' or '~root'."""))
+conf.registerChannelValue(conf.supybot.plugins.RootWarner, 'warning',
+    registry.NormalizedString("""Don't IRC as root -- it's very possible that
+    there's a security flaw latent in your IRC client (remember the BitchX
+    format string vulnerabilities of days past?) and if you're IRCing as root,
+    your entire box could be compromised.""", """Determines the message that is
+    to be sent to users joining the channel with an ident of 'root' or '~root'.
+    """))
+conf.registerChannelValue(conf.supybot.plugins.RootWarner, 'kick',
+    registry.Boolean(False, """Determines whether the bot will kick people who
+    join the channel with an ident of 'root' or '~root'."""))
+class RootWarner(callbacks.Privmsg):
     def doJoin(self, irc, msg):
         user = ircutils.userFromHostmask(msg.prefix)
         if user == 'root' or user == '~root':
             channel = msg.args[0]
-            s = self.configurables.get('warning', channel)
-            if self.configurables.get('warn', channel):
+            s = self.registryValue('warning', channel)
+            if self.registryValue('warn', channel):
                 irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
-            if self.configurables.get('kick', channel):
+            if self.registryValue('kick', channel):
                 irc.queueMsg(ircmsgs.kick(channel, msg.nick, s))
 
 Class = RootWarner

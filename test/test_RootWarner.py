@@ -44,18 +44,26 @@ class RootWarnerTestCase(PluginTestCase):
     def testConfigWarn(self):
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
         self.assertNotError(' ')
-        self.assertNotError('config #foo warn off')
-        self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
-        self.assertNoResponse(' ', 1)
+        try:
+            conf.supybot.plugins.RootWarner.warn.setValue(False)
+            self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
+            self.assertNoResponse(' ', 1)
+        finally:
+            conf.supybot.plugins.RootWarner.warn.setValue(True)
 
     def testConfigKick(self):
         self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
         self.assertNotError(' ')
-        self.assertNotError('config #foo warn off')
-        self.assertNotError('config #foo kick on')
-        self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
-        m = self.getMsg(' ')
-        self.assertEqual(m.command, 'KICK')
+        try:
+            conf.supybot.plugins.RootWarner.warn.setValue(False)
+            conf.supybot.plugins.RootWarner.kick.setValue(True)
+            self.irc.feedMsg(ircmsgs.join('#foo', prefix='foo!root@host'))
+            m = self.getMsg(' ')
+            self.assertEqual(m.command, 'KICK')
+        finally:
+            conf.supybot.plugins.RootWarner.warn.setValue(True)
+            conf.supybot.plugins.RootWarner.kick.setValue(False)
+            
         
         
         
