@@ -69,8 +69,9 @@ class IMDB(callbacks.Privmsg):
             title = utils.unCommaThe(movie.title())
             genres = utils.commaAndify(map(str.lower, movie.genres()))
             s = '"%s" (%s) belongs to the %s genres.  ' \
-                'More information at <%s>' % \
-                (title, movie.year(), genres, movie.url)
+                'It\'s been rated %s out of 10.  ' \
+                'More information is available at <%s>' % \
+                (title, movie.year(), genres, movie.rating(), movie.url)
             irc.reply(msg, s)
         elif len(movies) > 20:
             s = 'More than 20 movies matched, please narrow your search.'
