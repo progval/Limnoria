@@ -120,8 +120,8 @@ class RSS(callbacks.Privmsg):
                 else:
                     url = name
                 if self.willGetNewFeed(url):
-                    newFeeds.setdefault(url, []).append(channel)
-        for (url, channels) in newFeeds.iteritems():
+                    newFeeds.setdefault((url, name), []).append(channel)
+        for ((url, name), channels) in newFeeds.iteritems():
             # We check if we can acquire the lock right here because if we
             # don't, we'll possibly end up spawning a lot of threads to get
             # the feed, because this thread may run for a number of bytecodes
