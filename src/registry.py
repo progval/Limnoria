@@ -117,9 +117,6 @@ class Group(object):
         s = '%s is not a valid entry in %s' % (attr, self.name)
         raise NonExistentRegistryEntry, s
 
-    def __normalizeAttr(self, attr):
-        return attr.lower()
-
     def __makeChild(self, attr, s):
         v = self.__class__(self.default, self.help)
         v.set(s)
@@ -130,7 +127,7 @@ class Group(object):
 
     def __getattr__(self, attr):
         original = attr
-        attr = self.__normalizeAttr(attr)
+        attr = attr.lower()
         if attr in self.children:
             return self.children[attr]
         elif self.supplyDefault:
@@ -145,8 +142,9 @@ class Group(object):
 
     def setName(self, name):
         self.name = name
-        if name in _cache and self._lastModified < _lastModified:
-            self.set(_cache[name.lower()])
+        lowered = name.lower()
+        if lowered in _cache and self._lastModified < _lastModified:
+            self.set(_cache[lowered])
         if self.supplyDefault:
             for (k, v) in _cache.iteritems():
                 if k.startswith(self.name):
@@ -155,7 +153,7 @@ class Group(object):
     
     def register(self, name, node=None):
         original = name
-        name = self.__normalizeAttr(name)
+        name = name.lower()
         if node is None:
             node = Group()
         if name not in self.children: # XXX Is this right?
@@ -167,7 +165,7 @@ class Group(object):
 
     def unregister(self, name):
         original = name
-        name = self.__normalizeAttr(name)
+        name = name.lower()
         try:
             del self.children[name]
             self.added.remove(original)
@@ -176,7 +174,7 @@ class Group(object):
 
     def getValues(self, getChildren=False, fullNames=True):
         L = []
-        for name in map(self.__normalizeAttr, self.added):
+        for name in map(str.lower, self.added):
             node = self.children[name]
             if hasattr(node, 'value'):
                 if node.__class__ is not self.X:
@@ -221,7 +219,7 @@ class Value(Group):
     # This is simply prettier than naming this function get(self)
     def __call__(self):
         if _lastModified > self._lastModified:
-            if self.name in _cache:
+            if self.name.lower() in _cache:
                 self.set(_cache[self.name.lower()])
         return self.value
 
