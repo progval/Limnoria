@@ -112,6 +112,9 @@ class Channel(callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         (bannedNick, length) = privmsgs.getArgs(args, optional=1)
+        if bannedNick == irc.nick:
+            irc.error(msg, 'I cowardly refuse to kickban myself.')
+            return
         length = int(length or 0)
         try:
             bannedHostmask = irc.state.nickToHostmask(bannedNick)
@@ -120,6 +123,8 @@ class Channel(callbacks.Privmsg):
             return
         capability = ircdb.makeChannelCapability(channel, 'op')
         banmask = ircutils.banmask(bannedHostmask)
+        if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
+            banmask = bannedHostmask
         if bannedNick == msg.nick or \
            (ircdb.checkCapability(msg.prefix, capability) \
            and not ircdb.checkCapability(bannedHostmask, capability)):
