@@ -227,8 +227,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
     # things will happen when adding callbacks.
     capability = 'owner'
-    _srcPlugins = ircutils.IrcSet(('Admin', 'Channel', 'Config',
-                                   'Misc', 'Owner', 'User'))
     def __init__(self, *args, **kwargs):
         self.__parent = super(Owner, self)
         self.__parent.__init__()
@@ -310,14 +308,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
     def do001(self, irc, msg):
         self.log.info('Loading plugins (connected to %s).', irc.network)
-        alwaysLoadSrcPlugins = conf.supybot.plugins.alwaysLoadImportant()
+        alwaysLoadImportant = conf.supybot.plugins.alwaysLoadImportant()
+        important = conf.supybot.commands.defaultPlugins.importantPlugins()
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):
             if irc.getCallback(name) is None:
                 load = value()
-                # XXX This (_srcPlugins) should be changed to the configurable
-                #     importantPlugins.
-                if not load and name in self._srcPlugins:
-                    if alwaysLoadSrcPlugins:
+                if not load and name in important:
+                    if alwaysLoadImportant:
                         s = '%s is configured not to be loaded, but is being '\
                             'loaded anyway because ' \
                             'supybot.plugins.alwaysLoadImportant is True.'
@@ -335,12 +332,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                             log.warning(str(e))
                         except ImportError, e:
                             log.warning('Failed to load %s: %s.', name, e)
-                            if name in self._srcPlugins:
-                                self.log.exception('Error loading %s:', name)
-                                self.log.error('Error loading src/ plugin %s.  '
-                                               'This is usually rather '
-                                               'serious; these plugins are '
-                                               'almost always be loaded.',name)
                         except Exception, e:
                             log.exception('Failed to load %s:', name)
                 else:

@@ -670,7 +670,6 @@ class rest(context):
 # additional means:  Look for this (and make sure it's of this type).  If
 # there are no arguments for us to check, then use our default.
 class additional(context):
-    # XXX We should allow contexts as well as specs.
     def __init__(self, spec, default=None):
         self.__parent = super(additional, self)
         self.__parent.__init__(spec)

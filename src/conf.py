@@ -141,7 +141,6 @@ class ValidNick(registry.String):
 
 class ValidNicks(registry.SpaceSeparatedListOf):
     Value = ValidNick
-    # XXX: Duplicates?
 
 class ValidNickAllowingPercentS(ValidNick):
     """Value must be a valid IRC nick, with the possible exception of a %s
