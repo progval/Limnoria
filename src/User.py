@@ -260,7 +260,7 @@ class User(callbacks.Privmsg):
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
 
-    def username(self, irc, msg, args):
+    def name(self, irc, msg, args):
         """<hostmask|nick>
 
         Returns the username of the user specified by <hostmask> or <nick> if
