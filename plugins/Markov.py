@@ -118,7 +118,7 @@ class DbmMarkovDB(object):
         else:
             db[combined] = follower
         if follower == '\n':
-            if '\n' in db:
+            if db.has_key('\n'):
                 db['\n'] = ' '.join([db['\n'], second])
             else:
                 db['\n'] = second
@@ -146,14 +146,14 @@ class DbmMarkovDB(object):
 
     def firsts(self, channel):
         db = self._getDb(channel)
-        if '\n \n' in db:
+        if db.has_key('\n \n'):
             return len(sets.Set(db['\n \n'].split()))
         else:
             return 0
 
     def lasts(self, channel):
         db = self._getDb(channel)
-        if '\n' in db:
+        if db.has_key('\n'):
             return len(sets.Set(db['\n'].split()))
         else:
             return 0
