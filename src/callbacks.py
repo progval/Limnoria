@@ -1055,7 +1055,6 @@ class Commands(object):
         except (getopt.GetoptError, ArgumentError), e:
             self.log.debug('Got %s, giving argument error.',
                            utils.exnToString(e))
-            self.log.exception('Wow, really difficulties here:')
             method = self.getCommandMethod(command)
             irc.reply(formatArgumentError(method, name=formatCommand(command)))
         except (SyntaxError, Error), e:
