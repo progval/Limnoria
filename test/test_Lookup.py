@@ -42,27 +42,28 @@ class LookupTestCase(PluginTestCase, PluginDocumentation):
         'bar': 'baz',
         'your mom': 'my mom',
         }
-    def setUp(self):
-        PluginTestCase.setUp(self)
-        fd = file(os.path.join(conf.dataDir, 'foo.supyfact'), 'w')
-        for k, v in self.d.iteritems():
-            fd.write('%s:%s\n' % (k, v))
-        fd.close()
+    if sqlite:
+        def setUp(self):
+            PluginTestCase.setUp(self)
+            fd = file(os.path.join(conf.dataDir, 'foo.supyfact'), 'w')
+            for k, v in self.d.iteritems():
+                fd.write('%s:%s\n' % (k, v))
+            fd.close()
 
-    def test(self):
-        self.assertNotError('lookup add test foo.supyfact')
-        self.assertRegexp('test', r"(foo|bar|your mom): (bar|baz|my mom)")
-        self.assertResponse('test foo', 'bar')
-        self.assertResponse('test bar', 'baz')
-        self.assertResponse('test your mom', 'my mom')
-        self.assertError('test something not in there')
-        self.assertNotError('lookup remove test')
-        try:
-            original = conf.replyWhenNotCommand
-            conf.replyWhenNotCommand = True
-            self.assertError('test foo')
-        finally:
-            conf.replyWhenNotCommand = original
+        def test(self):
+            self.assertNotError('lookup add test foo.supyfact')
+            self.assertRegexp('test', r"(foo|bar|your mom): (bar|baz|my mom)")
+            self.assertResponse('test foo', 'bar')
+            self.assertResponse('test bar', 'baz')
+            self.assertResponse('test your mom', 'my mom')
+            self.assertError('test something not in there')
+            self.assertNotError('lookup remove test')
+            try:
+                original = conf.replyWhenNotCommand
+                conf.replyWhenNotCommand = True
+                self.assertError('test foo')
+            finally:
+                conf.replyWhenNotCommand = original
         
 
 
