@@ -170,5 +170,26 @@ class Http(callbacks.Privmsg):
         except urllib2.URLError:
             irc.error(msg, 'Couldn\'t open search page.')
 
+    
+    _tempregex = re.compile('CLASS=obsTempTextA>(\d+)&deg;F</b></td>',\
+                         re.IGNORECASE)
+    _cityregex = re.compile(r'Local Forecast for (.*), (.*?) ')
+    _condregex = re.compile('CLASS=obsInfo2><b CLASS=obsTextA>(.*)</b></td>',\
+                         re.IGNORECASE)
+    def weather(self, irc, msg, args):
+        "<US zip code>"
+        zip = privmsgs.getArgs(args)
+        url = "http://www.weather.com/weather/local/%s?lswe=%s" % (zip, zip)
+        try:
+            html = urllib2.urlopen(url).read()
+            city, state = _cityregex.search(html).groups()
+            temp = _tempregex.search(html).group(1)
+            conds = _condregex.search(html).group(1)
+            irc.reply(msg, 'The current temperature in %s, %s is %dF with %s\
+                            conditions' % (city, state, int(temp), conds))
+        except AttributeError:
+            irc.error(msg, 'the format of the page was odd.')
+        except urllib2.URLError:
+            irc.error(msg, 'Couldn\'t open the search page.')
 
 Class = Http
