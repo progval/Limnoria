@@ -229,5 +229,10 @@ class FunctionsTestCase(SupyTestCase):
         m = ircmsgs.dehalfops('#foo', ['foo', 'bar', 'baz'])
         self.assertEqual(str(m), 'MODE #foo -hhh foo bar :baz\r\n')
 
+    def testMode(self):
+        m = ircmsgs.mode('#foo', ('-b', 'foo!bar@baz'))
+        s = str(m)
+        self.assertEqual(s, 'MODE #foo -b :foo!bar@baz\r\n')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
