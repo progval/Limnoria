@@ -84,7 +84,7 @@ class Herald(callbacks.Plugin):
     def doJoin(self, irc, msg):
         if ircutils.strEqual(irc.nick, msg.nick):
             return # It's us.
-        if msg.nick in splitters:
+        if msg.nick in self.splitters:
             self.log.debug('Not heralding %s, recent split.', msg.nick)
             return # Recently split.
         channel = msg.args[0]
@@ -92,7 +92,7 @@ class Herald(callbacks.Plugin):
         if self.registryValue('heralding', channel):
             try:
                 id = ircdb.users.getUserId(msg.prefix)
-                if id in splitters:
+                if id in self.splitters:
                     self.log.debug('Not heralding id #%s, recent split.', id)
                     return
                 herald = self.db[channel, id]
