@@ -45,6 +45,12 @@ if sqlite is not None:
         def testNoBarParens(self):
             self.assertEqual(MoobotFactoids.tokenize('(foo)'), ['(foo)'])
 
+        def testDanglingParens(self):
+            self.assertEqual(MoobotFactoids.tokenize('(foo'), ['(foo'])
+            self.assertEqual(MoobotFactoids.tokenize('(foo|bar'),['(foo|bar'])
+            self.assertEqual(MoobotFactoids.tokenize('foo)'), ['foo)'])
+            self.assertEqual(MoobotFactoids.tokenize('foo|bar)'),['foo|bar)'])
+
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('MoobotFactoids', 'User', 'Utilities')
         def setUp(self):
