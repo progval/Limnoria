@@ -653,7 +653,9 @@ class Privmsg(irclib.IrcCallback):
         """Returns whether a given method name is a command in this plugin."""
         # This function is ugly, but I don't want users to call methods like
         # doPrivmsg or __init__ or whatever, and this is good to stop them.
-        methodName = canonicalName(methodName)
+
+        # Don't canonicalize this name: consider outFilter(self, irc, msg).
+        # methodName = canonicalName(methodName)
         if hasattr(self, methodName):
             method = getattr(self, methodName)
             if inspect.ismethod(method):
