@@ -17,11 +17,11 @@ from itertools import imap
 
 import log
 import ansi
+import registry
 import conf
 import utils
 import Owner
 import ircutils
-import registry
 
 import questions
 from questions import output, yn, anything, something, expect, getpass
