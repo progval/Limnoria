@@ -117,10 +117,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             else:
                 seen = '%s was last seen on Gameknot %s.' % (name,
                 seen.group(2))
-            if games == '1':
-                games = '1 active game'
-            else:
-                games = '%s active games' % games
+            games = utils.nItems('game', int(games), between='active')
             if 'Team:' in profile:
                 team = self._gkteam.search(profile).group('name')
                 team = utils.htmlToText(team)
