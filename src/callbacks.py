@@ -128,6 +128,7 @@ def reply(msg, s, prefixName=True, private=False,
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
     if private:
+        prefixName = False
         if to is not None:
             target = to
         else:
