@@ -41,6 +41,9 @@ if network:
             self.assertError('gkstats %s' % utils.mktemp())
             self.assertNotError('gkstats Strike')
 
+        def testNoHtmlInTeam(self):
+            self.assertNotRegexp('gkstats jeffuk', '9608')
+
         def testUrlSnarfer(self):
             conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)
             self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')

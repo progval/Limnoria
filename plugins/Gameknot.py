@@ -125,6 +125,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 games = '%s active games' % games
             if 'Team:' in profile:
                 team = self._gkteam.search(profile).group('name')
+                team = utils.htmlToText(team)
                 s = '%s (team: %s) is rated %s and has %s ' \
                     'and a record of %s, %s, and %s ' \
                     '(win/loss/draw percentage: %.2f%%/%.2f%%/%.2f%%).  %s' % \
