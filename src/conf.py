@@ -288,22 +288,6 @@ registerGlobalValue(supybot.reply, 'oneToOne',
     safety purposes (so the bot is less likely to flood) it will normally send
     everything in a single message, using mores if necessary."""))
 
-class ValidBrackets(registry.OnlySomeStrings):
-    validStrings = ('', '[]', '<>', '{}', '()')
-
-registerChannelValue(supybot.reply, 'brackets',
-    ValidBrackets('[]', """Supybot allows you to specify what brackets are used
-    for your nested commands.  Valid sets of brackets include [], <>, and {}
-    ().  [] has strong historical motivation, as well as being the brackets
-    that don't require shift.  <> or () might be slightly superior because they
-    cannot occur in a nick.  If this value is set to the empty string, no
-    nesting will be allowed."""))
-
-registerChannelValue(supybot.reply, 'pipeSyntax',
-    registry.Boolean(False, """Supybot allows nested commands. Enabling this
-    option will allow nested commands with a syntax similar to UNIX pipes, for
-    example: 'bot: foo | bar'."""))
-
 registerChannelValue(supybot.reply, 'whenNotCommand',
     registry.Boolean(True, """Determines whether the bot will reply with an
     error message when it is addressed but not given a valid command.  If this
@@ -518,6 +502,32 @@ registerGlobalValue(supybot, 'flush',
 # supybot.commands.  For stuff relating to commands.
 ###
 registerGroup(supybot, 'commands')
+# This is a GlobalValue because bot owners should be able to say, "There will
+# be no nesting at all on this bot."  Individual channels can just set their
+# brackets to the empty string.
+registerGlobalValue(supybot.commands, 'nested',
+    registry.Boolean(True, """Determines whether the bot will allow nested
+    commands, which rule.  You definitely should keep this on."""))
+registerGlobalValue(supybot.commands.nested, 'maximum',
+    registry.PositiveInteger(10, """Determines what the maximum number of
+    nested commands will be; users will receive an error if they attempt
+    commands more nested than this."""))
+
+class ValidBrackets(registry.OnlySomeStrings):
+    validStrings = ('', '[]', '<>', '{}', '()')
+
+registerChannelValue(supybot.commands.nested, 'brackets',
+    ValidBrackets('[]', """Supybot allows you to specify what brackets are used
+    for your nested commands.  Valid sets of brackets include [], <>, and {}
+    ().  [] has strong historical motivation, as well as being the brackets
+    that don't require shift.  <> or () might be slightly superior because they
+    cannot occur in a nick.  If this string is empty, nested commands will
+    not be allowed in this channel."""))
+registerChannelValue(supybot.commands.nested, 'pipeSyntax',
+    registry.Boolean(False, """Supybot allows nested commands. Enabling this
+    option will allow nested commands with a syntax similar to UNIX pipes, for
+    example: 'bot: foo | bar'."""))
+
 registerGroup(supybot.commands, 'defaultPlugins',
     orderAlphabetically=True, help=utils.normalizeWhitespace("""Determines
     what commands have default plugins set, and which plugins are set to

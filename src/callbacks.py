@@ -230,15 +230,19 @@ class Tokenizer(object):
     # double-quote, left-bracket, and right-bracket.
     validChars = string.ascii.translate(string.ascii, '\x00\r\n \t"')
     quotes = '"'
-    def __init__(self, tokens=''):
-        # Add a '|' to tokens to have the pipe syntax.
-        self.validChars = self.validChars.translate(string.ascii, tokens)
-        if len(tokens) >= 2:
-            self.left = tokens[0]
-            self.right = tokens[1]
+    def __init__(self, brackets='', pipe=False):
+        if brackets:
+            self.validChars = self.validChars.translate(string.ascii, brackets)
+            self.left = brackets[0]
+            self.right = brackets[1]
         else:
             self.left = ''
             self.right = ''
+        self.pipe = pipe
+        if self.pipe:
+            self.validChars = self.validChars.translate(string.ascii, '|')
+        else:
+            assert '|' in self.validChars
 
     def _handleToken(self, token):
         if token[0] == token[-1] and token[0] in self.quotes:
@@ -276,7 +280,10 @@ class Tokenizer(object):
             token = lexer.get_token()
             if not token:
                 break
-            elif token == '|' and conf.supybot.reply.pipeSyntax():
+            elif token == '|' and self.pipe:
+                # The "and self.pipe" might seem redundant here, but it's there
+                # for strings like 'foo | bar', where a pipe stands alone as a
+                # token, but shouldn't be treated specially.
                 if not args:
                     raise SyntaxError, '"|" with nothing preceding.  I ' \
                                        'obviously can\'t do a pipe with ' \
@@ -303,18 +310,20 @@ class Tokenizer(object):
                 args[-1].append(ends.pop())
         return args
 
-def tokenize(s, brackets=None, channel=None):
+def tokenize(s, channel=None):
     """A utility function to create a Tokenizer and tokenize a string."""
+    pipe = False
+    brackets = ''
+    nested = conf.supybot.commands.nested
+    if nested():
+        brackets = conf.get(nested.brackets, channel)
+        if conf.get(nested.pipeSyntax, channel): # No nesting, no pipe.
+            pipe = True
     start = time.time()
     try:
-        if brackets is None:
-            tokens = conf.get(conf.supybot.reply.brackets, channel)
-        else:
-            tokens = brackets
-        if conf.get(conf.supybot.reply.pipeSyntax, channel):
-            tokens = '%s|' % tokens
+        ret = Tokenizer(brackets=brackets, pipe=pipe).tokenize(s)
         log.stat('tokenize took %s seconds.' % (time.time() - start))
-        return Tokenizer(tokens).tokenize(s)
+        return ret
     except ValueError, e:
         raise SyntaxError, str(e)
 
@@ -496,11 +505,21 @@ _repr = repr
 
 class IrcObjectProxy(RichReplyMethods):
     "A proxy object to allow proper nested of commands (even threaded ones)."
-    def __init__(self, irc, msg, args, nested=False):
+    def __init__(self, irc, msg, args, nested=0):
         log.debug('IrcObjectProxy.__init__: %s' % args)
         self.irc = irc
         self.msg = msg
         self.nested = nested
+        if not self.nested and isinstance(irc, self.__class__):
+            # This is for plugins that indirectly spawn a Proxy, like Alias.
+            self.nested += irc.nested
+        maxNesting = conf.supybot.commands.nested.maximum()
+        if maxNesting and self.nested > maxNesting:
+            log.warning('%s attempted more than %s levels of nesting.',
+                        self.msg.prefix, maxNesting)
+            self.error('You\'ve attempted more nesting than is currently '
+                       'allowed on this bot.')
+            return
         # The deepcopy here is necessary for Scheduler; it re-runs already
         # tokenized commands.
         self.args = copy.deepcopy(args)
@@ -539,7 +558,7 @@ class IrcObjectProxy(RichReplyMethods):
                 self.counter += 1
             else:
                 self.__class__(self, self.msg,
-                               self.args[self.counter], nested=True)
+                               self.args[self.counter], nested=self.nested+1)
                 return
         self.finalEval()
 

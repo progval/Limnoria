@@ -115,7 +115,8 @@ class Misc(callbacks.Privmsg):
                 # to log this in that case anyway, it being a nested command.
                 self.log.info('Not replying to %s, not a command.' % tokens[0])
             if not isinstance(irc.irc, irclib.Irc):
-                brackets = conf.get(conf.supybot.reply.brackets, channel)
+                bracketConfig = conf.supybot.commands.nested.brackets
+                brackets = conf.get(bracketConfig, channel)
                 if brackets:
                     (left, right) = brackets
                     irc.reply(left + ' '.join(tokens) + right)

@@ -79,15 +79,15 @@ class TokenizerTestCase(SupyTestCase):
         self.assertEqual(tokenize('foo bar [baz quux]'),
                          ['foo', 'bar', ['baz', 'quux']])
         try:
-            orig = conf.supybot.reply.brackets()
-            conf.supybot.reply.brackets.setValue('')
+            orig = conf.supybot.commands.nested()
+            conf.supybot.commands.nested.setValue(False)
             self.assertEqual(tokenize('[]'), ['[]'])
             self.assertEqual(tokenize('[foo]'), ['[foo]'])
             self.assertEqual(tokenize('foo [bar]'), ['foo', '[bar]'])
             self.assertEqual(tokenize('foo bar [baz quux]'),
                              ['foo', 'bar', '[baz', 'quux]'])
         finally:
-            conf.supybot.reply.brackets.setValue(orig)
+            conf.supybot.commands.nested.setValue(orig)
 
     def testError(self):
         self.assertRaises(SyntaxError, tokenize, '[foo') #]
@@ -95,7 +95,7 @@ class TokenizerTestCase(SupyTestCase):
 
     def testPipe(self):
         try:
-            conf.supybot.reply.pipeSyntax.set('True')
+            conf.supybot.commands.nested.pipeSyntax.setValue(True)
             self.assertRaises(SyntaxError, tokenize, '| foo')
             self.assertRaises(SyntaxError, tokenize, 'foo ||bar')
             self.assertRaises(SyntaxError, tokenize, 'bar |')
@@ -110,7 +110,7 @@ class TokenizerTestCase(SupyTestCase):
             self.assertEqual(tokenize('foo bar | baz quux'),
                              ['baz', 'quux', ['foo', 'bar']])
         finally:
-            conf.supybot.reply.pipeSyntax.set('False')
+            conf.supybot.commands.nested.pipeSyntax.setValue(False)
             self.assertEqual(tokenize('foo|bar'), ['foo|bar'])
             self.assertEqual(tokenize('foo | bar'), ['foo', '|', 'bar'])
             self.assertEqual(tokenize('foo | bar | baz'),

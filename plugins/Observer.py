@@ -120,7 +120,6 @@ class Observer(callbacks.Privmsg):
             self.commandCalled = False
             return
         channel = msg.args[0]
-        Owner = irc.getCallback('Owner')
         observers = self.registryValue('observers')
         active = self.registryValue('observers.active', channel)
         for name in active:
@@ -141,7 +140,7 @@ class Observer(callbacks.Privmsg):
                 for (i, group) in enumerate(groups):
                     command = command.replace('$%s' % i, group)
                 tokens = callbacks.tokenize(command, channel=channel)
-                Owner.processTokens(irc, msg, tokens)
+                self.Proxy(irc, msg, tokens)
 
     def list(self, irc, msg, args):
         """[<channel>]

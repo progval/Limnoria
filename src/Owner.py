@@ -338,9 +338,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                  name, e)
         world.starting = False
 
-    def processTokens(self, irc, msg, tokens):
-        callbacks.IrcObjectProxy(irc, msg, tokens)
-
     def do376(self, irc, msg):
         channels = ircutils.IrcSet(conf.supybot.channels())
         channels |= conf.supybot.networks.get(irc.network).channels()
@@ -370,10 +367,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             if ignored:
                 self.log.info('Ignoring command from %s.' % msg.prefix)
                 return
-            brackets = conf.get(conf.supybot.reply.brackets, msg.args[0])
             try:
-                tokens = callbacks.tokenize(s, brackets=brackets)
-                self.processTokens(irc, msg, tokens)
+                tokens = callbacks.tokenize(s, channel=msg.args[0])
+                self.Proxy(irc, msg, tokens)
             except SyntaxError, e:
                 irc.queueMsg(callbacks.error(msg, str(e)))
 
