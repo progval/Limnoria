@@ -64,7 +64,7 @@ class Logger(logging.Logger):
     def exception(self, *args):
         (E, e, tb) = sys.exc_info()
         tbinfo = traceback.extract_tb(tb)
-        path = '/'.join(map(operator.itemgetter(2), tbinfo))
+        path = '[%s]' % '|'.join(map(operator.itemgetter(2), tbinfo))
         eStrId = '%s:%s' % (E, path)
         eId = hash(eStrId) & 0xFFFF
         logging.Logger.exception(self, *args)
@@ -75,12 +75,12 @@ class BetterStreamHandler(logging.StreamHandler):
     def emit(self, record):
         msg = self.format(record)
         if not hasattr(types, "UnicodeType"): #if no unicode support...
-            self.stream.write("%s\n" % msg)
+            self.stream.write("%s%s" % (msg, os.linesep))
         else:
             try:
-                self.stream.write("%s\n" % msg)
+                self.stream.write("%s%s" % (msg, os.linesep))
             except UnicodeError:
-                self.stream.write("%s\n" % msg.encode("UTF-8"))
+                self.stream.write("%s%s" % (msg.encode("UTF-8"), os.linesep))
         self.flush()
 
 
