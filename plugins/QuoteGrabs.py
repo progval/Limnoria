@@ -106,14 +106,18 @@ class SqliteQuoteGrabsDB(object):
                                    'use this plugin.  Download it at ' \
                                    '<http://pysqlite.sf.net/>'
         filename = plugins.makeChannelFilename(self.filename, channel)
+        def p(s1, s2):
+            return int(ircutils.nickEqual(s1, s2))
         if filename in self.dbs:
             return self.dbs[filename]
         if os.path.exists(filename):
             self.dbs[filename] = sqlite.connect(filename,
                                                 converters={'bool': bool})
+            self.dbs[filename].create_function('nickeq', 2, p)
             return self.dbs[filename]
         db = sqlite.connect(filename, converters={'bool': bool})
         self.dbs[filename] = db
+        self.dbs[filename].create_function('nickeq', 2, p)
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE quotegrabs (
                           id INTEGER PRIMARY KEY,
@@ -123,9 +127,6 @@ class SqliteQuoteGrabsDB(object):
                           added_at TIMESTAMP,
                           quote TEXT
                           );""")
-        def p(s1, s2):
-            return int(ircutils.nickEqual(s1, s2))
-        db.create_function('nickeq', 2, p)
         db.commit()
         return db
 
