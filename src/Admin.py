@@ -137,6 +137,11 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 networkGroup = conf.supybot.networks.get(irc.network)
                 irc.queueMsg(networkGroup.channels.join(channel))
                 conf.supybot.networks.get(irc.network).channels().add(channel)
+            else:
+                self.log.warning('Invited to %s by %s, but '
+                                 'supybot.alwaysJoinOnInvite was False and '
+                                 'the user lacked the "admin" capability.',
+                                 channel, msg.prefix)
 
     def join(self, irc, msg, args, channel, key):
         """<channel> [<key>]
