@@ -142,7 +142,10 @@ class Topic(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
 
     def _canChangeTopic(self, irc, channel):
-        c = irc.state.channels[channel]
+        try:
+            c = irc.state.channels[channel]
+        except KeyError:
+            irc.error('I\'m not currently in %s.' % channel, Raise=True)
         if irc.nick not in c.ops and 't' in c.modes:
             irc.error('I can\'t change the topic, I\'m not opped and %s '
                       'is +t.' % channel, Raise=True)
