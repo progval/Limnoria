@@ -41,6 +41,7 @@ import plugins
 import re
 import string
 import random
+import itertools
 
 import conf
 import utils
@@ -335,10 +336,11 @@ class Filter(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         irc.reply(text[::-1])
 
-    def _color(self, c):
+    def _color(self, c, fg=None):
         if c == ' ':
             return c
-        fg = str(random.randint(2, 15)).zfill(2)
+        if fg is None:
+            fg = str(random.randint(2, 15)).zfill(2)
         return '\x03%s%s' % (fg, c)
 
     def colorize(self, irc, msg, args):
@@ -349,6 +351,16 @@ class Filter(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         L = [self._color(c) for c in text]
         irc.reply('%s%s' % (''.join(L), '\x03'))
+
+    def rainbow(self, irc, msg, args):
+        """<text>
+
+        Returns <text> colorized like a rainbow.
+        """
+        colors = itertools.cycle([4, 7, 8, 3, 2, 12, 6])
+        text = privmsgs.getArgs(args)
+        L = [self._color(c, fg=colors.next()) for c in text]
+        irc.reply(''.join(L) + '\x03')
 
     def stripcolor(self, irc, msg, args):
         """<text>
@@ -363,7 +375,7 @@ class Filter(callbacks.Privmsg):
 
         Returns <text> as if an AOLuser had said it.
         """
-        text = privmsg.getArgs(args)
+        text = privmsgs.getArgs(args)
         text = text.replace(' you ', ' u ')
         text = text.replace(' are ', ' r ')
         text = text.replace(' love ', ' <3 ')
@@ -371,15 +383,18 @@ class Filter(callbacks.Privmsg):
         text = text.replace(' too ', ' 2 ')
         text = text.replace(' to ', ' 2 ')
         text = text.replace(' two ', ' 2 ')
+        text = text.replace('fore', '4')
         text = text.replace(' for ', ' 4 ')
-        text = text.replace(' be ', ' b ')
-        text = text.replace(' four ', ' 4 ')
+        text = text.replace('be', 'b')
+        text = text.replace('four', ' 4 ')
+        text = text.replace(' their ', ' there ')
         text = text.replace(', ', ' ')
         text = text.replace(',', ' ')
         text = text.replace("'", '')
-        text = text.replace(' their ', ' there ')
+        text = text.replace('one', '1')
         smiley = random.choice(['<3', ':)', ':-)', ':D', ':-D'])
         text += smiley*3
+        irc.reply(text)
 
     def jeffk(self, irc, msg, args):
         """<text>
