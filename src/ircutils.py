@@ -181,6 +181,20 @@ def isIPV6(s):
     try:
         return bool(socket.inet_pton(socket.AF_INET6, s))
     except socket.error:
+        try:
+            socket.inet_pton(socket.AF_INET6, '::')
+        except socket.error:
+            # We gotta fake it.
+            if s.count('::') <= 1:
+                L = s.split(':')
+                if len(L) <= 8:
+                    for x in L:
+                        if x:
+                            try:
+                                int(x, 16)
+                            except ValueError:
+                                return False
+                    return True
         return False
 
 def banmask(hostmask):
