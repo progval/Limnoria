@@ -30,7 +30,7 @@
 ###
 
 """
-ChannelEnforcer: Enforces capabilities on a channel, watching MODEs, KICKs,
+Enforcer: Enforces capabilities on a channel, watching MODEs, KICKs,
                  JOINs, etc. to make sure they match the channel's config.
 """
 
@@ -44,20 +44,30 @@ import ircutils
 import callbacks
 
 ###
-# ChannelEnforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
+# Enforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
 ###
 _chanCap = ircdb.makeChannelCapability
-class ChannelEnforcer(callbacks.Privmsg):
+class Enforcer(callbacks.Privmsg):
+    started = False
     def startenforcer(self, irc, msg, args):
         """[<CHANSERV> <revenge> <topicPrefix>]"""
         self.topics = {}
         (chanserv, revenge) = privmsgs.getArgs(args, needed=0, optional=2)
         self.chanserv = chanserv or 'ChanServ'
         self.started = True
-        self.reply(irc, msg, conf.replySuccess)
+        if revenge == 'True' or revenge == '':
+            self.revenge = True
+        elif revenge == 'False':
+            self.revenge = False
+        else:
+            irc.error(msg,'Possible values for revenge are "True" and "False"')
+            return
+        irc.reply(msg, conf.replySuccess)
     startenforcer = privmsgs.checkCapability(startenforcer, 'admin')
 
     def doJoin(self, irc, msg):
+        if not self.started:
+            return
         channel = msg.args[0]
         c = ircdb.channels.getChannel(channel)
         if c.checkBan(msg.prefix):
@@ -71,6 +81,8 @@ class ChannelEnforcer(callbacks.Privmsg):
             irc.queueMsg(ircmsgs.voice(channel, msg.nick))
 
     def doTopic(self, irc, msg):
+        if not self.started:
+            return
         channel = msg.args[0]
         topic = msg.args[1]
         if msg.nick != irc.nick and \
@@ -104,6 +116,8 @@ class ChannelEnforcer(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.kick(channel,ircutils.nickFromHostmask(hostmask)))
 
     def doKick(self, irc, msg):
+        if not self.started:
+            return
         channel = msg.args[0]
         kicked = msg.args[1].split(',')
         deop = False
@@ -122,6 +136,8 @@ class ChannelEnforcer(callbacks.Privmsg):
                     irc.queueMsg(ircmsgs.deop(channel, msg.nick))
 
     def doMode(self, irc, msg):
+        if not self.started:
+            return
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
@@ -180,11 +196,11 @@ class ChannelEnforcer(callbacks.Privmsg):
                             irc.queueMsg(ircmsgs.deop(channel, msg.nick))
 
     def __call__(self, irc, msg):
-        if msg.prefix == self.chanserv:
+        if self.started and msg.prefix == self.chanserv:
             return
         else:
             return callbacks.Privmsg.__call__(self, irc, msg)
 
 
-Class = ChannelEnforcer
+Class = Enforcer
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
