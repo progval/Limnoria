@@ -190,6 +190,7 @@ class Topic(callbacks.Privmsg):
         if not isDo and channel in self.redos:
             del self.redos[channel]
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
+        irc.noReply()
 
     def topic(self, irc, msg, args, channel):
         """[<channel>]
@@ -341,6 +342,7 @@ class Topic(callbacks.Privmsg):
         necessary if the message isn't sent in the channel itself.
         """
         irc.queueMsg(ircmsgs.mode(channel, '+t'))
+        irc.noReply()
     lock = wrap(lock, ['channel', ('haveOp', 'lock the topic')])
 
     def unlock(self, irc, msg, args, channel):
@@ -350,6 +352,7 @@ class Topic(callbacks.Privmsg):
         necessary if the message isn't sent in the channel itself.
         """
         irc.queueMsg(ircmsgs.mode(channel, '-t'))
+        irc.noReply()
     unlock = wrap(unlock, ['channel', ('haveOp', 'unlock the topic')])
 
     def restore(self, irc, msg, args, channel):
