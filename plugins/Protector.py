@@ -166,8 +166,8 @@ class Protector(callbacks.Privmsg):
         protected = []
         for nick in kicked:
             if ircutils.strEqual(nick, irc.nick):
-                irc.queueMsg(ircmsgs.join(channel))
-                return # We can't revenge because we won't have ops on rejoin.
+                return # Channel will handle the rejoin.
+        for nick in kicked:
             hostmask = irc.state.nickToHostmask(nick)
             if self.isProtected(irc, channel, hostmask):
                 self.log.info('%s was kicked from %s and is protected; '

@@ -68,7 +68,8 @@ class Cycler(callbacks.Privmsg):
                 # XXX We should pull these keywords from the registry.
                 self.log.info('Cycling %s: I\'m the only one left.', channel)
                 irc.queueMsg(ircmsgs.part(channel))
-                irc.queueMsg(ircmsgs.join(channel))
+                networkGroup = conf.supybot.networks.get(irc.network)
+                irc.queueMsg(networkGroup.channels.join(channel))
             else:
                 self.log.info('Not cycling %s: it\'s +i or +k.', channel)
 

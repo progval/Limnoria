@@ -120,13 +120,11 @@ class Relay(callbacks.Privmsg):
         callbacks.Privmsg.__call__(self, irc, msg)
 
     def do376(self, irc, msg):
-        L = []
+        networkGroup = conf.supybot.networks.get(irc.network)
         for channel in self.registryValue('channels'):
             if self.registryValue('channels.joinOnAllNetworks', channel):
                 if channel not in irc.state.channels:
-                    L.append(channel)
-        if L:
-            irc.queueMsg(ircmsgs.joins(L))
+                    irc.queueMsg(networkGroup.channels.join(channel))
     do377 = do422 = do376
 
     def _getRealIrc(self, irc):
@@ -163,9 +161,10 @@ class Relay(callbacks.Privmsg):
         the message was sent in.
         """
         self.registryValue('channels').add(channel)
-        for otherIrc in world.ircs: # Should we abstract this?
+        for otherIrc in world.ircs:
             if channel not in otherIrc.state.channels:
-                otherIrc.queueMsg(ircmsgs.join(channel))
+                networkGroup = conf.supybot.networks.get(otherIrc.network)
+                otherIrc.queueMsg(networkGroup.channels.join(channel))
         irc.replySuccess()
     join = wrap(join, ['channel'])
 

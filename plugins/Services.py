@@ -303,12 +303,13 @@ class Services(callbacks.Privmsg):
         s = msg.args[1].lower()
         channel = None
         m = self._chanRe.search(s)
+        networkGroup = conf.supybot.networks.get(irc.network)
         if m is not None:
             channel = m.group(1)
         if 'all bans' in s or 'unbanned from' in s:
             # All bans removed (freenode)
             # You have been unbanned from (oftc)
-            irc.sendMsg(ircmsgs.join(channel))
+            irc.sendMsg(networkGroup.channels.join(channel))
         elif 'isn\'t registered' in s:
             # XXX We should notify the user that this happened as well.
             self.log.info('Received "%s isn\'t registered" from ChanServ',
@@ -328,8 +329,9 @@ class Services(callbacks.Privmsg):
             self.log.warning('Got unexpected notice from ChanServ: %r.', msg)
 
     def doNickservNotice(self, irc, msg):
-        s = ircutils.stripFormatting(msg.args[1].lower())
         nick = self._getNick()
+        s = ircutils.stripFormatting(msg.args[1].lower())
+        networkGroup = conf.supybot.networks.get(irc.network)
         if 'incorrect' in s or 'denied' in s:
             log = 'Received "Password Incorrect" from NickServ.  ' \
                   'Resetting password to empty.'
@@ -366,8 +368,8 @@ class Services(callbacks.Privmsg):
             self.identified = True
             for channel in irc.state.channels.keys():
                 self.checkPrivileges(irc, channel)
-            if self.channels:
-                irc.queueMsg(ircmsgs.joins(self.channels))
+            for channel in self.channels:
+                irc.queueMsg(networkGroup.channels.join(channel))
             if self.waitingJoins:
                 for m in self.waitingJoins:
                     irc.sendMsg(m)
@@ -497,8 +499,9 @@ class Services(callbacks.Privmsg):
     def doInvite(self, irc, msg):
         if ircutils.strEqual(msg.nick, self.registryValue('ChanServ')):
             channel = msg.args[1]
+            networkGroup = conf.supybot.networks.get(irc.network)
             self.log.info('Joining %s, invited by ChanServ.' % channel)
-            irc.queueMsg(ircmsgs.join(channel))
+            irc.queueMsg(networkGroup.channels.join(channel))
 
     def identify(self, irc, msg, args):
         """takes no arguments

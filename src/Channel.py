@@ -68,7 +68,8 @@ class Channel(callbacks.Privmsg):
         channel = msg.args[0]
         if msg.args[1] == irc.nick:
             if self.registryValue('alwaysRejoin', channel):
-                irc.sendMsg(ircmsgs.join(channel)) # Fix for keys.
+                networkGroup = conf.supybot.networks.get(irc.network)
+                irc.sendMsg(networkGroup.channels.join(channel))
 
     def mode(self, irc, msg, args, channel, modes):
         """[<channel>] <mode> [<arg> ...]
@@ -247,21 +248,18 @@ class Channel(callbacks.Privmsg):
                              ('haveOp', 'devoice someone'),
                              any('nickInChannel')])
 
-    def cycle(self, irc, msg, args, channel, key):
-        """[<channel>] [<key>]
+    def cycle(self, irc, msg, args, channel):
+        """[<channel>]
 
         If you have the #channel,op capability, this will cause the bot to
-        "cycle", or PART and then JOIN the channel. If <key> is given, join
-        the channel using that key. <channel> is only necessary if the message
-        isn't sent in the channel itself.
+        "cycle", or PART and then JOIN the channel. <channel> is only necessary
+        if the message isn't sent in the channel itself.
         """
-        if not key:
-            key = None
-        irc.queueMsg(ircmsgs.part(channel))
-        irc.queueMsg(ircmsgs.join(channel, key))
+        irc.queueMsg(ircmsgs.part(channel, msg.nick))
+        networkGroup = conf.supybot.networks.get(irc.network)
+        irc.queueMsg(networkGroup.channels.join(channel))
         irc.noReply()
-    cycle = wrap(cycle, [('checkChannelCapability','op'),
-                         additional('anything')])
+    cycle = wrap(cycle, [('checkChannelCapability','op')])
 
     def kick(self, irc, msg, args, channel, nick, reason):
         """[<channel>] <nick> [<reason>]

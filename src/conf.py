@@ -111,6 +111,7 @@ def registerPlugin(name, currentValue=None, public=True):
     group = registerGlobalValue(supybot.plugins, name,
         registry.Boolean(False, """Determines whether this plugin is loaded by
         default.""", showDefault=False))
+    supybot.plugins().add(name)
     registerGlobalValue(group, 'public',
         registry.Boolean(public, """Determines whether this plugin is
         publicly visible."""))
@@ -234,16 +235,13 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
     sorted = True
     List = ircutils.IrcSet
     Value = ValidChannel
-    def removeChannel(self, channel):
-        removals = []
-        for c in self.value:
-            chan = c
-            if ',' in c:
-                (chan, _) = c.split(',')
-            if chan == channel:
-                removals.append(c)
-        for removal in removals:
-            self.value.remove(removal)
+    def join(self, channel):
+        import ircmsgs # Don't put this globally!  It's recursive.
+        key = self.key.get(channel)()
+        if key:
+            return ircmsgs.join(channel, key)
+        else:
+            return ircmsgs.join(channel)
 
 def registerNetwork(name, password=''):
     network = registerGroup(supybot.networks, name)
@@ -257,6 +255,8 @@ def registerNetwork(name, password=''):
         completed.""" % name))
     registerGlobalValue(network, 'channels', SpaceSeparatedSetOfChannels([],
         """Determines what channels the bot will join only on %s.""" % name))
+    registerChannelValue(network.channels, 'key', registry.String('',
+        """Determines what key (if any) will be used to join the channel."""))
     return network
 
 # Let's fill our networks.
@@ -567,13 +567,13 @@ registerGroup(supybot.commands, 'defaultPlugins',
     what commands have default plugins set, and which plugins are set to
     be the default for each of those commands."""))
 registerGlobalValue(supybot.commands.defaultPlugins, 'importantPlugins',
-    registry.SpaceSeparatedSetOfStrings(['Admin', 'Channel', 'Config', 'Misc',
-                                         'Owner', 'User'], """Determines what
-    plugins automatically get precedence over all other plugins when selecting
-    a default plugin for a command.  By default, this includes the standard
-    loaded plugins.  You probably shouldn't change this if you don't know what
-    you're doing; if you do know what you're doing, then also know that this
-    set is case-sensitive."""))
+    registry.SpaceSeparatedSetOfStrings(
+        ['Admin', 'Channel', 'Config', 'Misc', 'Owner', 'User'],
+        """Determines what plugins automatically get precedence over all other
+        plugins when selecting a default plugin for a command.  By default,
+        this includes the standard loaded plugins.  You probably shouldn't
+        change this if you don't know what you're doing; if you do know what
+        you're doing, then also know that this set is case-sensitive."""))
 
 # supybot.commands.disabled moved to callbacks for canonicalName.
 
@@ -712,7 +712,9 @@ registerGlobalValue(supybot.directories, 'plugins',
     a new one.  E.g. you can say: bot: 'config supybot.directories.plugins
     [config supybot.directories.plugins], newPluginDirectory'."""))
 
-registerGroup(supybot, 'plugins', orderAlphabetically=True)
+registerGlobalValue(supybot, 'plugins',
+    registry.SpaceSeparatedSetOfStrings([], """Determines what plugins will
+    be loaded.""", orderAlphabetically=True))
 registerGlobalValue(supybot.plugins, 'alwaysLoadImportant',
     registry.Boolean(True, """Determines whether the bot will always load
     important plugins (Admin, Channel, Config, Misc, Owner, and User)

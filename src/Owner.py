@@ -357,20 +357,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         world.starting = False
 
     def do376(self, irc, msg):
-        channels = list(conf.supybot.networks.get(irc.network).channels())
-        if not channels:
-            return
-        utils.sortBy(lambda s: ',' not in s, channels)
-        keys = []
-        chans = []
-        for channel in channels:
-            if ',' in channel:
-                (channel, key) = channel.split(',', 1)
-                chans.append(channel)
-                keys.append(key)
-            else:
-                chans.append(channel)
-        irc.queueMsg(ircmsgs.joins(chans, keys))
+        networkGroup = conf.supybot.networks.get(irc.network)
+        for channel in networkGroup.channels():
+            irc.queueMsg(networkGroup.channels.join(channel))
     do422 = do377 = do376
 
     def doPrivmsg(self, irc, msg):

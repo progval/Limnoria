@@ -227,7 +227,8 @@ class LogToIrc(callbacks.Privmsg):
         targets = self.registryValue('targets')
         for target in targets:
             if ircutils.isChannel(target):
-                irc.queueMsg(ircmsgs.join(target))
+                networkGroup = conf.supybot.networks.get(irc.network)
+                irc.queueMsg(networkGroup.channels.join(target))
     do377 = do422 = do376
 
 

@@ -119,7 +119,9 @@ class ChannelRelay(callbacks.Privmsg):
         source = self.registryValue('source')
         target = self.registryValue('target')
         if source and target:
-            irc.queueMsg(ircmsgs.joins([source, target]))
+            networkGroup = conf.supybot.networks.get(irc.network)
+            irc.queueMsg(networkGroup.channels.join(target))
+            irc.queueMsg(networkGroup.channels.join(source))
 
 
 Class = ChannelRelay

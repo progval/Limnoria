@@ -70,8 +70,9 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         if irc.isChannel(target): # We don't care about nicks.
             t = time.time() + 30
             # Let's schedule a rejoin.
+            networkGroup = conf.supybot.networks.get(irc.network)
             def rejoin():
-                irc.queueMsg(ircmsgs.join(target))
+                irc.queueMsg(networkGroup.channels.join(target))
                 # We don't need to schedule something because we'll get another
                 # 437 when we try to join later.
             schedule.addEvent(rejoin, t)
@@ -133,7 +134,8 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             if conf.supybot.alwaysJoinOnInvite() or \
                ircdb.checkCapability(msg.prefix, 'admin'):
                 self.log.info('Invited to %s by %s.', channel, msg.prefix)
-                irc.queueMsg(ircmsgs.join(channel))
+                networkGroup = conf.supybot.networks.get(irc.network)
+                irc.queueMsg(networkGroup.channels.join(channel))
                 conf.supybot.networks.get(irc.network).channels().add(channel)
 
     def join(self, irc, msg, args, channel, key):
@@ -144,12 +146,15 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         """
         if not irc.isChannel(channel):
             irc.errorInvalid('channel', channel, Raise=True)
-        conf.supybot.networks.get(irc.network).channels().add(channel)
+        networkGroup = conf.supybot.networks.get(irc.network)
+        networkGroup.channels().add(channel)
+        if key:
+            networkGroup.channels.key.get(channel).setValue(key)
         maxchannels = irc.state.supported.get('maxchannels', sys.maxint)
         if len(irc.state.channels) + 1 > maxchannels:
             irc.error('I\'m already too close to maximum number of '
                       'channels for this network.', Raise=True)
-        irc.queueMsg(ircmsgs.join(channel, key))
+        irc.queueMsg(networkGroup.channels.join(channel))
         irc.noReply()
         self.joins[channel] = (irc, msg)
     join = wrap(join, ['validChannel', additional('something')])
@@ -225,36 +230,32 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(irc.nick)
     nick = wrap(nick, [additional('nick')])
 
-    def part(self, irc, msg, args, channels, reason):
-        """[<channel> ...] [<reason>]
+    def part(self, irc, msg, args, channel, reason):
+        """[<channel>] [<reason>]
 
         Tells the bot to part the list of channels you give it.  <channel> is
         only necessary if you want the bot to part a channel other than the
         current channel.  If <reason> is specified, use it as the part
         message.
         """
-        if not channels:
-            channels.append(msg.args[0])
-        for chan in channels:
-            try:
-                network = conf.supybot.networks.get(irc.network)
-                network.channels.removeChannel(chan)
-            except KeyError:
-                pass # It might be in the network thingy.
-        for chan in channels:
-            if chan not in irc.state.channels:
-                irc.error('I\'m not in %s.' % chan, Raise=True)
-        irc.queueMsg(ircmsgs.parts(channels, reason or msg.nick))
-        inAtLeastOneChannel = False
-        for chan in channels:
-            if msg.nick in irc.state.channels[chan].users:
-                inAtLeastOneChannel = True
-        if not inAtLeastOneChannel:
-            irc.replySuccess()
-        else:
+        if channel is None:
+            if irc.isChannel(msg.args[0]):
+                channel = msg.args[0]
+            else:
+                irc.error(Raise=True)
+        try:
+            network = conf.supybot.networks.get(irc.network)
+            network.channels().remove(channel)
+        except KeyError:
+            pass
+        if channel not in irc.state.channels:
+            irc.error('I\'m not in %s.' % channel, Raise=True)
+        irc.queueMsg(ircmsgs.part(channel, reason or msg.nick))
+        if msg.nick in irc.state.channels[channel].users:
             irc.noReply()
-    part = wrap(part, [any('validChannel', continueOnError=True),
-                       additional('text','')])
+        else:
+            irc.replySuccess()
+    part = wrap(part, [optional('validChannel'), additional('text')])
 
     def addcapability(self, irc, msg, args, user, capability):
         """<name|hostmask> <capability>
