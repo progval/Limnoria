@@ -370,43 +370,48 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(url, prefixName=False)
     googleSnarfer = privmsgs.urlSnarfer(googleSnarfer)
 
-    _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
-    _ggPlainThread = re.compile(r'Subject: (.*)')
-    _ggGroup = re.compile(r'Newsgroups: (?:<a[^>]+>)?([^<]+)(?:</a>)?')
-    _ggPlainGroup = re.compile(r'Newsgroups: (.*)')
+    _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>', re.I)
+    _ggGroup = re.compile(r'Newsgroups: (?:<a[^>]+>)?([^<]+)(?:</a>)?', re.I)
+    _ggThreadm = re.compile(r'view the <a href=([^>]+)>no', re.I)
+    _ggSelm = re.compile(r'selm=[^&]+', re.I)
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
         if not self.registryValue('groupsSnarfer', msg.args[0]):
             return
-        request = urllib2.Request(match.group(0), headers= \
-          {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
+        m = match.group(0)
+        header = {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; '
+                                'Windows NT 4.0)'}
+        request = urllib2.Request(m, headers=header)
         fd = urllib2.urlopen(request)
         text = fd.read()
         fd.close()
         mThread = None
         mGroup = None
-        if '&prev=/' in match.group(0):
-            path = re.search('view the <a href=([^>]+)>no',text)
+        if 'threadm=' in m:
+            path = self._ggThreadm.search(text)
             if path is None:
                 return
-            url = 'http://groups.google.com'
-            request = urllib2.Request('%s%s' % (url,path.group(1)),
-              headers={'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5;'
-              'Windows NT 4.0)'})
+            url = 'http://groups.google.com%s' % path.group(1)
+            request = urllib2.Request(url, headers=header)
             fd = urllib2.urlopen(request)
             text = fd.read()
             fd.close()
-            mThread = self._ggThread.search(text)
-            mGroup = self._ggGroup.search(text)
-        elif '&output=gplain' in match.group(0):
-            mThread = self._ggPlainThread.search(text)
-            mGroup = self._ggPlainGroup.search(text)
+        elif 'selm=' in m:
+            path = self._ggSelm.search(m)
+            if m is None:
+                return
+            url = 'http://groups.google.com/groups?%s' % path.group(0)
+            request = urllib2.Request(url, headers=header)
+            fd = urllib2.urlopen(request)
+            text = fd.read()
+            fd.close()
         else:
-            mThread = self._ggThread.search(text)
-            mGroup = self._ggGroup.search(text)
+            pass
+        mThread = self._ggThread.search(text)
+        mGroup = self._ggGroup.search(text)
         if mThread and mGroup:
             irc.reply('Google Groups: %s, %s' % (mGroup.group(1),
-                mThread.group(1)), prefixName = False)
+                      mThread.group(1)), prefixName=False)
         else:
             irc.errorPossibleBug('That doesn\'t appear to be a proper '
                                  'Google Groups page.')

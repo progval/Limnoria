@@ -41,28 +41,37 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
 
         def testGroupsSnarfer(self):
             conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
-            self.assertRegexp('http://groups.google.com/groups?dq=&hl=en&'
-                              'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
-                              '0310132012.738e22fc%40posting.google.com',
-                              r'comp\.lang\.python.*question: usage of __slots__')
-            self.assertRegexp('http://groups.google.com/groups?selm=ExDm.'
-                              '8bj.23%40gated-at.bofh.it&oe=UTF-8&output=gplain',
-                              r'linux\.kernel.*NFS client freezes')
-            self.assertRegexp('http://groups.google.com/groups?'
-                              'q=kernel+hot-pants&hl=en&lr=&ie=UTF-8&oe=UTF-8&'
-                              'selm=1.5.4.32.19970313170853.00674d60%40'
-                              'adan.kingston.net&rnum=1',
-                              r'Madrid Bluegrass Ramble')
-            self.assertRegexp('http://groups.google.com/groups?'
-                              'selm=1.5.4.32.19970313170853.00674d60%40adan.'
-                              'kingston.net&oe=UTF-8&output=gplain',
-                              r'Madrid Bluegrass Ramble')
-            self.assertRegexp('http://groups.google.com/groups?'
-                              'dq=&hl=en&lr=&ie=UTF-8&threadm=mailman.1010.'
-                              '1069645289.702.python-list%40python.org'
-                              '&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8'
-                              '%26group%3Dcomp.lang.python',
-                              r'comp\.lang\.python.*What exactly are bound')
+            self.assertSnarfRegexp(
+                'http://groups.google.com/groups?dq=&hl=en&lr=lang_en&'
+                'ie=UTF-8&oe=UTF-8&selm=698f09f8.0310132012.738e22fc'
+                '%40posting.google.com',
+                r'comp\.lang\.python.*question: usage of __slots__')
+            self.assertSnarfRegexp(
+                'http://groups.google.com/groups?selm=ExDm.8bj.23'
+                '%40gated-at.bofh.it&oe=UTF-8&output=gplain',
+                r'linux\.kernel.*NFS client freezes')
+            self.assertSnarfRegexp(
+                'http://groups.google.com/groups?q=kernel+hot-pants&'
+                'hl=en&lr=&ie=UTF-8&oe=UTF-8&selm=1.5.4.32.199703131'
+                '70853.00674d60%40adan.kingston.net&rnum=1',
+                r'Madrid Bluegrass Ramble')
+            self.assertSnarfRegexp(
+                'http://groups.google.com/groups?selm=1.5.4.32.19970'
+                '313170853.00674d60%40adan.kingston.net&oe=UTF-8&'
+                'output=gplain',
+                r'Madrid Bluegrass Ramble')
+            self.assertSnarfRegexp(
+                'http://groups.google.com/groups?dq=&hl=en&lr=&'
+                'ie=UTF-8&threadm=mailman.1010.1069645289.702.'
+                'python-list%40python.org&prev=/groups%3Fhl%3Den'
+                '%26lr%3D%26ie%3DUTF-8%26group%3Dcomp.lang.python',
+                r'comp\.lang\.python.*What exactly are bound')
+            # Test for Bug #1002547
+            self.assertSnarfRegexp(
+                'http://groups.google.com/groups?q=supybot+is+the&'
+                'hl=en&lr=&ie=UTF-8&c2coff=1&selm=1028329672'
+                '%40freshmeat.net&rnum=9',
+                r'fm\.announce.*SupyBot')
 
         def testConfig(self):
             conf.supybot.plugins.Google.groupsSnarfer.setValue(False)
