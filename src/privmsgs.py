@@ -148,7 +148,7 @@ def thread(f):
     def newf(self, irc, msg, args, *L, **kwargs):
         ff = types.MethodType(f, self, self.__class__)
         t = callbacks.CommandThread(target=irc._callCommand,
-                                    args=(f.func_name, ff, self),
+                                    args=(f.func_name, self),
                                     kwargs=kwargs)
         t.start()
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
@@ -171,35 +171,47 @@ class UrlSnarfThread(threading.Thread):
         threading.Thread.__init__(self, *args, **kwargs)
         self.setDaemon(True)
         
-_snarfed = structures.smallqueue()
+class SnarfQueue(ircutils.FloodQueue):
+    def key(self, channel):
+        return channel
+
+    def getTimeout(self):
+        return conf.supybot.snarfThrottle()
+            
+_snarfed = SnarfQueue()
+
+class SnarfIrc(object):
+    def __init__(self, irc, channel, url):
+        self.irc = irc
+        self.url = url
+        self.channel = channel
+
+    def reply(self, *args, **kwargs):
+        _snarfed.enqueue(self.channel, self.url)
+        self.irc.reply(*args, **kwargs)
+
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
     f = _threadedWrapMethod(f)
     def newf(self, irc, msg, match, *L, **kwargs):
         channel = msg.args[0]
-        if ircutils.isChannel(channel):
-            c = ircdb.channels.getChannel(channel)
-            if c.lobotomized:
-                self.log.info('Refusing to snarf in %s: lobotomized.', channel)
-                return
-        now = time.time()
-        cutoff = now - conf.supybot.snarfThrottle()
-        while _snarfed and _snarfed[0][2] < cutoff:
-            _snarfed.dequeue()
+        if not ircutils.isChannel(channel):
+            return
+        c = ircdb.channels.getChannel(channel)
+        if c.lobotomized:
+            self.log.info('Refusing to snarf in %s: lobotomized.', channel)
+            return
         url = match.group(0)
-        for (qUrl, target, when) in _snarfed:
-            if url == qUrl and target == channel and not world.testing:
-                self.log.debug('Not snarfing %s from %r: in queue.',
-                               url, msg.prefix)
-                return
+        if _snarfed.has(channel, url):
+            self.log.info('Refusing to snarf %s, already snarfed.', url)
+            return
+        irc = SnarfIrc(irc, channel, url)
+        if self.threaded:
+            f(self, irc, msg, match, *L, **kwargs)
         else:
-            _snarfed.enqueue((url, channel, now))
-            if self.threaded:
-                f(self, irc, msg, match, *L, **kwargs)
-            else:
-                L = list(L)
-                t = UrlSnarfThread(target=f,args=[self,irc,msg,match]+L,url=url)
-                t.start()
+            L = list(L)
+            t = UrlSnarfThread(target=f,args=[self,irc,msg,match]+L,url=url)
+            t.start()
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
     return newf
 
@@ -208,12 +220,16 @@ class CapabilityCheckingPrivmsg(callbacks.Privmsg):
     before allowing any command to be called.
     """
     capability = '' # To satisfy PyChecker
-    def callCommand(self, f, irc, msg, args):
+    def __init__(self, *args, **kwargs):
+        self.__parent = super(CapabilityCheckingPrivmsg, self)
+        self.__parent.__init__(*args, **kwargs)
+        
+    def callCommand(self, name, irc, msg, args, *L, **kwargs):
         if ircdb.checkCapability(msg.prefix, self.capability):
-            callbacks.Privmsg.callCommand(self, f, irc, msg, args)
+            self.__parent.callCommand(name, irc, msg, args, *L, **kwargs)
         else:
-            self.log.warning('%r tried to call %s without %s.',
-                             msg.prefix, f.im_func.func_name, self.capability)
+            self.log.warning('%s tried to call %s without %s.',
+                             msg.prefix, name, self.capability)
             irc.errorNoCapability(self.capability)
 
 
