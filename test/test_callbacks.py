@@ -255,6 +255,14 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertRegexp('help first firstcmd', 'First', 0) # no re.I flag.
         self.assertRegexp('help firstrepeat firstcmd', 'FirstRepeat', 0)
 
+    def testEmptyNest(self):
+        self.assertError('echo []')
+        try:
+            conf.replyWhenNotCommand = True
+            self.assertResponse('echo []', '[]')
+        finally:
+            conf.replyWhenNotCommand = False
+
     def testDispatcherHelp(self):
         self.assertNotRegexp('help first', r'\(dispatcher')
         self.assertNotRegexp('help first', r'%s')
