@@ -377,7 +377,7 @@ class RSS(callbacks.Privmsg):
             channel = None
         headlines = self.getHeadlines(feed)
         if not headlines:
-            irc.error('Couldn\'t get RSS feed')
+            irc.error('Couldn\'t get RSS feed.')
             return
         headlines = self.buildHeadlines(headlines, channel, 'showLinks')
         if n:
