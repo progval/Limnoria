@@ -36,6 +36,8 @@ PrivmsgRegexp class.  Read their respective docstrings for more information on
 how to use them.
 """
 
+import supybot
+
 __revision__ = "$Id$"
 
 import supybot.fix as fix
@@ -722,7 +724,7 @@ class IrcObjectProxy(RichReplyMethods):
             try:
                 if not isinstance(self.irc, irclib.Irc):
                     s = s[:conf.supybot.reply.maximumLength()]
-                    if conf.get(supybot.reply.truncate, self.msg.args[0]):
+                    if conf.get(conf.supybot.reply.truncate, self.msg.args[0]):
                         s = s[:512]
                     self.irc.reply(s, to=self.to,
                                    notice=self.notice,
