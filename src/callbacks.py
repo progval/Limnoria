@@ -933,7 +933,7 @@ class Privmsg(irclib.IrcCallback):
     # attributes which are lists of plugin names which the plugin should be
     # called before and after, respectively.  We may, at some future point,
     # remove priority entirely.
-    def __cmp__(self, other, doAssert=True):
+    def __cmp__(self, other):
         selfName = self.name()
         otherName = other.name()
         # We can't be certain of the order the callbacks list is in, so we
@@ -941,24 +941,10 @@ class Privmsg(irclib.IrcCallback):
         # we basically run the other callback's as well.
         if isinstance(other, Privmsg):
             if otherName in self.callAfter or selfName in other.callBefore:
-                ret = 1
+                return 1
             elif otherName in self.callBefore or selfName in other.callAfter:
-                ret = -1
-            else:
-                ret = self.__parent.__cmp__(other)
-        else:
-            ret = self.__parent.__cmp__(other)
-        if doAssert:
-            try:
-                otherRet = other.__cmp__(self, doAssert=False)
-            except TypeError, e:
-                if 'doAssert' in str(e): # unexpected keyword argument.
-                    otherRet = cmp(other, self)
-                else:
-                    otherRet = ret
-            assert ret+otherRet==0, 'callbacks\' __cmp__ disagree: %s, %s' % \
-                                    (selfName, otherName)
-        return ret
+                return -1
+        return self.__parent.__cmp__(other)
             
     def __call__(self, irc, msg):
         if msg.command == 'PRIVMSG':
