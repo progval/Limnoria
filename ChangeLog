@@ -1,3 +1,6 @@
+	* Added Sourceforge.fight, which returns the list of specified
+	projects and their bug/rfe count in sorted order, least to most.
+
 	* Added Utilities.reply for replying to a person with text.  Like
 	echo, but it prepends the nick like the bot normally does.
 	
