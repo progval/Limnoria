@@ -36,6 +36,43 @@ import re
 import supybot.conf as conf
 import supybot.registry as registry
 
+join = registry.join
+split = registry.split
+escape = registry.escape
+unescape = registry.unescape
+class FunctionsTestCase(SupyTestCase):
+    def testEscape(self):
+        self.assertEqual('foo', escape('foo'))
+        self.assertEqual('foo\\.bar', escape('foo.bar'))
+        self.assertEqual('foo\\:bar', escape('foo:bar'))
+
+    def testUnescape(self):
+        self.assertEqual('foo', unescape('foo'))
+        self.assertEqual('foo.bar', unescape('foo\\.bar'))
+        self.assertEqual('foo:bar', unescape('foo\\:bar'))
+
+    def testEscapeAndUnescapeAreInverses(self):
+        for s in ['foo', 'foo.bar']:
+            self.assertEqual(s, unescape(escape(s)))
+            self.assertEqual(escape(s), escape(unescape(escape(s))))
+
+    def testSplit(self):
+        self.assertEqual(['foo'], split('foo'))
+        self.assertEqual(['foo', 'bar'], split('foo.bar'))
+        self.assertEqual(['foo.bar'], split('foo\\.bar'))
+
+    def testJoin(self):
+        self.assertEqual('foo', join(['foo']))
+        self.assertEqual('foo.bar', join(['foo', 'bar']))
+        self.assertEqual('foo\\.bar', join(['foo.bar']))
+        
+    def testJoinAndSplitAreInverses(self):
+        for s in ['foo', 'foo.bar', 'foo\\.bar']:
+            self.assertEqual(s, join(split(s)))
+            self.assertEqual(split(s), split(join(split(s))))
+        
+
+
 class ValuesTestCase(SupyTestCase):
     def testBoolean(self):
         v = registry.Boolean(True, """Help""")

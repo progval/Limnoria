@@ -68,7 +68,9 @@ def open(filename, clear=False):
     for (i, line) in enumerate(fd):
         line = line.rstrip('\r\n')
         try:
-            (key, value) = re.split(r':\s*', line, 1)
+            (key, value) = re.split(r'(?<!\\):', line, 1)
+            key = key.strip()
+            value = value.strip()
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line #%s' % (i+1)
         _cache[key] = value
@@ -103,21 +105,34 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                 lines.append('###\n')
                 fd.writelines(lines)
         if hasattr(value, 'value'): # This lets us print help for non-valued.
-            fd.write('%s: %s\n' % (escape(name), value))
+            fd.write('%s: %s\n' % (name, value))
     fd.close()
 
 def isValidRegistryName(name):
-    return '.' not in name and ':' not in name and len(name.split()) == 1
+    # Now we can have . and : in names.  I'm still gonna call shenanigans on
+    # anyone who tries to have spaces (though technically I can't see any
+    # reason why it wouldn't work).
+    return len(name.split()) == 1
 
 def escape(name):
+    name = name.replace('\\', '\\\\')
+    name = name.replace(':', '\\:')
+    name = name.replace('.', '\\.')
     return name
 
+def unescape(name):
+    name = name.replace('\\.', '.')
+    name = name.replace('\\:', ':')
+    name = name.replace('\\\\', '\\')
+    return name
+
+_splitRe = re.compile(r'(?<!\\)\.')
 def split(name):
     # XXX: This should eventually handle escapes.
-    return name.split('.')
+    return map(unescape, _splitRe.split(name))
 
 def join(names):
-    return '.'.join(names)
+    return '.'.join(map(escape, names))
 
 class Group(object):
     def __init__(self, supplyDefault=False):
@@ -168,8 +183,10 @@ class Group(object):
         return self.__getattr__(attr)
 
     def setName(self, name):
+        #print '***', name
         self._name = name
         if name in _cache and self._lastModified < _lastModified:
+            #print '***>', _cache[name]
             self.set(_cache[name])
         if self.supplyDefault:
             for (k, v) in _cache.iteritems():
@@ -189,7 +206,9 @@ class Group(object):
         if name not in self.children: # XXX Is this right?
             self.children[name] = node
             self.added.append(name)
-            fullname = join([self._name, name])
+            names = split(self._name)
+            names.append(name)
+            fullname = join(names)
             node.setName(fullname)
         return node
 
