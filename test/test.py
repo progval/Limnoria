@@ -112,6 +112,7 @@ class PluginTestCase(unittest.TestCase):
     timeout = 10
     plugins = ()
     def setUp(self, nick='test'):
+        self.myVerbose = world.myVerbose
         for filename in os.listdir(conf.confDir):
             os.remove(os.path.join(conf.confDir, filename))
         for filename in os.listdir(conf.dataDir):
@@ -141,8 +142,12 @@ class PluginTestCase(unittest.TestCase):
     def _feedMsg(self, query, timeout=None):
         if timeout is None:
             timeout = self.timeout
+        if self.myVerbose:
+            print # Extra newline, so it's pretty.
         msg = ircmsgs.privmsg(self.irc.nick, query, prefix=self.prefix)
         #debug.printf(msg)
+        if self.myVerbose:
+            print 'Feeding: %r' % msg
         self.irc.feedMsg(msg)
         fed = time.time()
         response = self.irc.takeMsg()
@@ -150,6 +155,8 @@ class PluginTestCase(unittest.TestCase):
             time.sleep(0.1) # So it doesn't suck up 100% cpu.
             drivers.run()
             response = self.irc.takeMsg()
+        if self.myVerbose:
+            print 'Response: %r' % msg
         return response
 
     def getMsg(self, query, timeout=None):
@@ -247,10 +254,14 @@ class ChannelPluginTestCase(PluginTestCase):
     def _feedMsg(self, query, timeout=None):
         if timeout is None:
             timeout = self.timeout
+        if self.myVerbose:
+            print # Newline, just like PluginTestCase.
         if query[0] not in conf.prefixChars:
             query = conf.prefixChars[0] + query
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, query,
-                                         prefix=self.prefix))
+        msg = ircmsgs.privmsg(self.channel, query, prefix=self.prefix)
+        if self.myVerbose:
+            print 'Feeding: %r' % msg
+        self.irc.feedMsg(msg)
         fed = time.time()
         response = self.irc.takeMsg()
         while response is None and time.time() - fed < timeout:
@@ -262,9 +273,12 @@ class ChannelPluginTestCase(PluginTestCase):
             if args[1].startswith(self.nick) or \
                args[1].startswith(ircutils.nickFromHostmask(self.prefix)):
                 args[1] = args[1].split(None, 1)[1]
-            return ircmsgs.privmsg(*args)
+            ret = ircmsgs.privmsg(*args)
         else:
-            return None
+            ret = None
+        if self.myVerbose:
+            print 'Returning: %r' % ret
+        return ret
 
     def feedMsg(self, query):
         """Just feeds it a message, that's all."""
@@ -332,6 +346,9 @@ if __name__ == '__main__':
                       metavar='plugindir', dest='plugindirs',
                       help='Adds a directory to the list of directories in '
                            'which to search for plugins.')
+    parser.add_option('-v', '--verbose', action='store_true', default=False,
+                      help='Sets the verbose flag, printing extra information '
+                           'about each test that runs.')
     (options, args) = parser.parse_args()
     if not args:
         args = map(path, glob.glob(os.path.join('test', 'test_*.py')))
@@ -342,6 +359,10 @@ if __name__ == '__main__':
         PluginTestCase.timeout = options.timeout
     if options.plugindirs:
         conf.pluginDirs.extend(options.plugindirs)
+    if options.verbose:
+        world.myVerbose = True
+    else:
+        world.myVerbose = False
     
     world.testing = True
     names = [os.path.splitext(os.path.basename(name))[0] for name in args]
