@@ -147,6 +147,7 @@ class FunctionsTestCase(SupyTestCase):
     def testIsCtcp(self):
         self.failUnless(ircmsgs.isCtcp(ircmsgs.privmsg('foo',
                                                        '\x01VERSION\x01')))
+        self.failIf(ircmsgs.isCtcp(ircmsgs.privmsg('foo', '\x01')))
 
     def testIsActionFalseWhenNoSpaces(self):
         msg = ircmsgs.IrcMsg('PRIVMSG #foo :\x01ACTIONfoobar\x01')

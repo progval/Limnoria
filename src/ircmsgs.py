@@ -213,7 +213,8 @@ def isCtcp(msg):
     """Returns whether or not msg is a CTCP message."""
     return msg.command in ('PRIVMSG', 'NOTICE') and \
            msg.args[1].startswith('\x01') and \
-           msg.args[1].endswith('\x01')
+           msg.args[1].endswith('\x01') and \
+           len(msg.args[1]) >= 2
 
 def isAction(msg):
     """A predicate returning true if the PRIVMSG in question is an ACTION"""
