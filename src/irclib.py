@@ -809,10 +809,12 @@ class Irc(IrcCommandDispatcher):
             if u.auth:
                 (_, user, host) = ircutils.splitHostmask(msg.prefix)
                 newhostmask = ircutils.joinHostmask(msg.args[0], user, host)
-                log.info('Following identification for %s: %s -> %s',
-                         u.name, u.auth[1], newhostmask)
-                u.auth = (u.auth[0], newhostmask)
-                ircdb.users.setUser(id, u)
+                for (i, (when, authmask)) in enumerate(u.auth[:]):
+                    if ircutils.strEqual(msg.prefix, authmask):
+                        log.info('Following identification for %s: %s -> %s',
+                                 u.name, authmask, newhostmask)
+                        u.auth[i] = (u.auth[i][0], newhostmask)
+                        ircdb.users.setUser(id, u)
 
     def feedMsg(self, msg):
         """Called by the IrcDriver; feeds a message received."""
