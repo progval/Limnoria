@@ -88,7 +88,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         setattr(self.__class__, 'exec', self.__class__._exec)
         self.defaultPlugins = {}
 
-    def _disambiguate(self, irc, tokens, ambiguousCommands):
+    def disambiguate(self, irc, tokens, ambiguousCommands=None):
+        if ambiguousCommands is None:
+            ambiguousCommands = {}
         if tokens:
             command = callbacks.canonicalName(tokens[0])
             if command in self.defaultPlugins:
@@ -104,7 +106,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                         ambiguousCommands[command] = names
             for elt in tokens:
                 if isinstance(elt, list):
-                    self._disambiguate(irc, elt, ambiguousCommands)
+                    self.disambiguate(irc, elt, ambiguousCommands)
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
@@ -118,7 +120,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 irc.queueMsg(callbacks.error(msg, str(e)))
                 return
             ambiguousCommands = {}
-            self._disambiguate(irc, tokens, ambiguousCommands)
+            self.disambiguate(irc, tokens, ambiguousCommands)
             if ambiguousCommands:
                 if len(ambiguousCommands) == 1: # Common case.
                     (command, names) = ambiguousCommands.popitem()

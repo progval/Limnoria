@@ -231,7 +231,7 @@ def tokenize(s):
         _lastTokenized = None
         _lastTokenizedResult = None
         raise SyntaxError, str(e)
-    #debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
+    debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
     return copy.deepcopy(_lastTokenizeResult)
 
 def getCommands(tokens):
@@ -328,7 +328,8 @@ class IrcObjectProxy:
             self._callInvalidCommands()
         else:
             try:
-                assert len(cbs) == 1
+                assert len(cbs) == 1, \
+                       'Got command that wasn\'t disambiguated: %s' % name
                 del self.args[0]
                 cb = cbs[0]
                 anticap = ircdb.makeAntiCapability(name)

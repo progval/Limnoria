@@ -144,6 +144,8 @@ def makeNewAlias(name, alias):
                         return True
                 return False
             everythingReplace(tokens)
+        Owner = irc.getCallback('Owner')
+        Owner.disambiguate(irc, tokens)
         self.Proxy(irc.irc, msg, tokens)
     f = types.FunctionType(f.func_code, f.func_globals,
                            name, closure=f.func_closure)
