@@ -42,7 +42,10 @@ __contributors__ = {}
 
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.ircdb as ircdb
 import supybot.plugins as plugins
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -98,11 +101,12 @@ class AutoMode(callbacks.Privmsg):
                 if ircdb.checkCapability(msg.prefix, cap):
                     msgmaker = getattr(ircmsgs, type)
                     irc.queueMsg(msgmaker(channel, msg.nick))
-                    if fallthrough:
-                        raise Return
+                    if not fallthrough:
+                        raise Continue
         try:
             do('op')
-            do('halfop')
+            if 'h' in irc.state.supported['prefix']:
+                do('halfop')
             do('voice')
         except Continue:
             return
