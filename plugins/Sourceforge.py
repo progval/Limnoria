@@ -209,7 +209,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         except ValueError:
             pass
         if not project:
-            project = conf.supybot.plugins.Sourceforge.project()
+            project = self.registryValue('project', msg.args[0])
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -227,7 +227,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         default project is set.
         """
         project = privmsgs.getArgs(args, required=0, optional=1)
-        project = project or conf.supybot.plugins.Sourceforge.project()
+        project = project or self.registryValue('project', msg.args[0])
         if not project:
             raise callbacks.ArgumentError
         text = webutils.getUrl(''.join([self._projectURL, project]))
@@ -258,7 +258,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 irc.error('"%s" is not a proper bugnumber.' % project)
                 return
             bugnum = project
-            project = conf.supybot.plugins.Sourceforge.project()
+            project = self.registryValue('project', msg.args[0])
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -293,7 +293,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         except ValueError:
             pass
         if not project:
-            project = conf.supybot.plugins.Sourceforge.project()
+            project = self.registryValue('project', msg.args[0])
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -312,7 +312,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         default project is set.
         """
         project = privmsgs.getArgs(args, required=0, optional=1)
-        project = project or conf.supybot.plugins.Sourceforge.project()
+        project = project or self.registryValue('project', msg.args[0])
         if not project:
             raise callbacks.ArgumentError
         text = webutils.getUrl(''.join([self._projectURL, project]))
@@ -343,7 +343,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 irc.error('"%s" is not a proper rfenumber.' % project)
                 return
             rfenum = project
-            project = conf.supybot.plugins.Sourceforge.project()
+            project = self.registryValue('project', msg.args[0])
             if not project:
                 raise callbacks.ArgumentError
         try:
@@ -359,7 +359,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     def sfSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/" \
         r".*\?(?:&?func=detail|&?aid=\d+|&?group_id=\d+|&?atid=\d+){4}"
-        if not conf.supybot.plugins.Sourceforge.trackerSnarfer():
+        if not self.registryValue('trackerSnarfer', msg.args[0]):
             return
         try:
             url = match.group(0)
