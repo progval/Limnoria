@@ -444,13 +444,22 @@ class Weather(callbacks.Privmsg):
             resp.append('Conditions: %s.' % info['Conditions'])
             humidity = info['Humidity']
             resp.append('Humidity: %s.' % info['Humidity'])
-            (dew, deg, unit) = info['Dew Point'].split()
-            if convert:
-                dew = self._getTemp(int(dew), deg, unit, msg.args[0])
-            else:
-                dew = deg.join((dew, unit))
-            resp.append('Dew Point: %s.' % dew)
-            resp.append('Wind: %s at %s %s.' % tuple(info['Wind'].split()))
+            # Apparently, the "Dew Point" and "Wind" categories are occasionally
+            # set to "-" instead of an actual reading. So, we'll just catch
+            # the ValueError from trying to unpack a tuple of the wrong size.
+            try:
+                (dew, deg, unit) = info['Dew Point'].split()
+                if convert:
+                    dew = self._getTemp(int(dew), deg, unit, msg.args[0])
+                else:
+                    dew = deg.join((dew, unit))
+                resp.append('Dew Point: %s.' % dew)
+            except ValueError:
+                pass
+            try:
+                resp.append('Wind: %s at %s %s.' % tuple(info['Wind'].split()))
+            except ValueError:
+                pass
             resp.append('Pressure: %s.' % info['Pressure'])
             resp.append('Visibility: %s.' % info['Visibility'])
             resp = map(utils.htmlToText, resp)
