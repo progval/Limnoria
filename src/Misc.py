@@ -86,7 +86,7 @@ class Misc(callbacks.Privmsg):
             if ambiguousCommands:
                 if len(ambiguousCommands) == 1: # Common case.
                     (command, cbs) = ambiguousCommands.popitem()
-                    s = 'The command %r is available in the plugins %s.  '\
+                    s = 'The command %r is available in the %s plugins.  '\
                         'Please specify the plugin whose command you ' \
                         'wish to call by using its name as a command ' \
                         'before %r' % \
@@ -95,7 +95,7 @@ class Misc(callbacks.Privmsg):
                     L = []
                     while ambiguousCommands:
                         (command, cbs) = ambiguousCommands.popitem()
-                        L.append('%r is available in the plugins %s' % \
+                        L.append('%r is available in the %s plugins' % \
                              (command, utils.commaAndify(cbs)))
                     s = '%s; please specify from which plugins to ' \
                         'call these commands.' % '; '.join(L)
