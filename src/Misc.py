@@ -403,7 +403,10 @@ class Misc(callbacks.Privmsg):
                 try:
                     r = utils.perlReToPythonRe(arg)
                     def f(m, r=r):
-                        return r.search(m.args[1])
+                        if ircmsgs.isAction(m):
+                            return r.search(ircmsgs.unAction(m))
+                        else:
+                            return r.search(m.args[1])
                     predicates.setdefault('regexp', []).append(f)
                 except ValueError, e:
                     irc.error(str(e))
