@@ -318,20 +318,16 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.queueMsg(m)
 
     def quit(self, irc, msg, args):
-        """[<int return value>]
+        """takes no arguments
 
-        Exits the program with the given return value (the default is 0)
+        Exits the bot.
         """
-        try:
-            i = int(args[0])
-        except (ValueError, IndexError):
-            i = 0
         world.dying = True
         for driver in drivers._drivers.itervalues():
             driver.die()
         for irc in world.ircs[:]:
             irc.die()
-        raise SystemExit
+        raise SystemExit, 'Quitting because I was told by %s' % msg.prefix
 
     def flush(self, irc, msg, args):
         """takes no arguments
