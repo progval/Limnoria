@@ -52,6 +52,7 @@ version = '0.70.0'
 
 startedAt = 0.0
 
+threadsSpawned = 0
 ###
 # End Global Values.
 ###

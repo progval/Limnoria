@@ -300,6 +300,7 @@ class IrcObjectProxy:
 class CommandThread(threading.Thread):
     def __init__(self, command, irc, msg, args):
         self.command = command
+        world.threadsSpawned += 1
         self.commandName = command.im_func.func_name
         self.className = command.im_class.__name__
         name = '%s.%s with args %r' % (self.className, self.commandName, args)
