@@ -75,6 +75,10 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
     def testEnable(self):
         self.assertError('enable enable')
 
+    def testEnableIsCaseInsensitive(self):
+        self.assertNotError('disable Foo')
+        self.assertNotError('enable foo')
+
     def testJoin(self):
         m = self.getMsg('join #foo')
         self.assertEqual(m.command, 'JOIN')

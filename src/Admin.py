@@ -226,13 +226,16 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         Re-enables the command <command> for all non-owner users.
         """
         command = privmsgs.getArgs(args)
-        try:
-            anticapability = ircdb.makeAntiCapability(command)
-        except ValueError:
-            irc.error('%r is not a valid command.' % command)
-            return
-        if anticapability in conf.supybot.defaultCapabilities():
-            conf.supybot.defaultCapabilities().remove(anticapability)
+        command = command.lower()
+        L = []
+        for capability in conf.supybot.defaultCapabilities():
+            if ircdb.isAntiCapability(capability):
+                nonAntiCapability = ircdb.unAntiCapability(capability)
+                if nonAntiCapability.lower() == command:
+                    L.append(capability)
+        if L:
+            for capability in L:
+                conf.supybot.defaultCapabilities().remove(capability)
             irc.replySuccess()
         else:
             irc.error('That command wasn\'t disabled.')
