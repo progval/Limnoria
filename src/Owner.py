@@ -105,9 +105,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         callbacks.Privmsg.__init__(self)
         setattr(self.__class__, 'exec', self.__class__._exec)
         self.defaultPlugins = {'list': 'Misc',
+                               'help': 'Misc',
                                'capabilities': 'User',
                                'addcapability': 'Admin',
-                               'removecapability': 'Admin'}
+                               'removecapability': 'Admin',}
         for (name, s) in registry._cache.iteritems():
             if name.startswith('supybot.plugins'):
                 try:
