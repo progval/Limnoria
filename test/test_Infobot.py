@@ -32,8 +32,8 @@
 from testsupport import *
 
 import supybot.plugins.Infobot
-confirms = supybot.plugins.Infobot.InfobotDB._confirms
-dunnos = supybot.plugins.Infobot.InfobotDB._dunnos
+confirms = supybot.plugins.Infobot.confirms
+dunnos = supybot.plugins.Infobot.dunnos
 
 class InfobotTestCase(ChannelPluginTestCase):
     plugins = ('Infobot',)
@@ -93,7 +93,7 @@ class InfobotTestCase(ChannelPluginTestCase):
         answer = ibot.answerUnaddressedQuestions()
         try:
             ibot.answerUnaddressedQuestions.setValue(True)
-            self.assertNotError('foo is bar')
+            self.assertSnarfNoResponse('foo is bar')
             self.assertSnarfRegexp('foo?', 'bar')
             ibot.answerUnaddressedQuestions.setValue(False)
             self.assertSnarfNoResponse('foo?', 2)

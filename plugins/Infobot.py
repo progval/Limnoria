@@ -51,6 +51,12 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
+
 conf.registerPlugin('Infobot')
 conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'personality',
     registry.Boolean(True, """Determines whether the bot will respond with
@@ -76,22 +82,23 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Infobot', True)
 
-filename = os.path.join(conf.supybot.directories.data(), 'Infobot.db')
+filename = conf.supybot.directories.data.dirize('Infobot.db')
 
-class InfobotDB(object):
-    _ends = ['!',
-             '.',
-             ', $who.',]
-    _dunnos = ['Dunno',
-               'No idea',
-               'I don\'t know',
-               'I have no idea',
-               'I don\'t have a clue',]
-    _confirms = ['10-4',
-                 'Okay',
-                 'Got it',
-                 'Gotcha',
-                 'I hear ya']
+ends = ['!',
+        '.',
+        ', $who.',]
+dunnos = ['Dunno',
+          'No idea',
+          'I don\'t know',
+          'I have no idea',
+          'I don\'t have a clue',]
+confirms = ['10-4',
+            'Okay',
+            'Got it',
+            'Gotcha',
+            'I hear ya']
+
+class PickleInfobotDB(object):
     def __init__(self):
         try:
             fd = file(filename)
@@ -115,8 +122,8 @@ class InfobotDB(object):
         old = self._is[factoid]
         if replacer is not None:
             self._is[factoid] = replacer(old)
-            self._changes += 1
             self.flush()
+            self._changes += 1
 
     def getIs(self, factoid):
         ret = self._is[factoid]
@@ -124,14 +131,14 @@ class InfobotDB(object):
         return ret
 
     def setIs(self, fact, oid):
-        self._changes += 1
         self._is[fact] = oid
         self.flush()
+        self._changes += 1
 
     def delIs(self, factoid):
         del self._is[factoid]
-        self._changes += 1
         self.flush()
+        self._changes += 1
 
     def hasIs(self, factoid):
         return factoid in self._is
@@ -152,26 +159,144 @@ class InfobotDB(object):
         return factoid in self._are
 
     def setAre(self, fact, oid):
-        self._changes += 1
         self._are[fact] = oid
         self.flush()
+        self._changes += 1
 
     def delAre(self, factoid):
         del self._are[factoid]
-        self._changes += 1
         self.flush()
+        self._changes += 1
 
     def getDunno(self):
-        return random.choice(self._dunnos) + random.choice(self._ends)
+        return random.choice(dunnos) + random.choice(ends)
 
     def getConfirm(self):
-        return random.choice(self._confirms) + random.choice(self._ends)
+        return random.choice(confirms) + random.choice(ends)
 
     def getChangeCount(self):
         return self._changes
 
     def getResponseCount(self):
         return self._responses
+
+class SqliteInfobotDB(object):
+    def __init__(self):
+        self._changes = 0
+        self._responses = 0
+
+    def _getDb(self):
+        if os.path.exists(filename):
+            return sqlite.connect(filename)
+        #else:
+        db = sqlite.connect(filename)
+        cursor = db.cursor()
+        cursor.execute("""CREATE TABLE isFacts (
+                          key TEXT PRIMARY KEY,
+                          value TEXT
+                          );""")
+        cursor.execute("""CREATE TABLE areFacts (
+                          key TEXT PRIMARY KEY,
+                          value TEXT
+                          );""")
+        db.commit()
+        return db
+
+    def close(self):
+        pass
+
+    def changeIs(self, factoid, replacer):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT value FROM isFacts WHERE key=%s""", factoid)
+        old = cursor.fetchone()[0]
+        if replacer is not None:
+            cursor.execute("""UPDATE isFacts SET value=%s WHERE key=%s""",
+                           replacer(old), factoid)
+            db.commit()
+            self._changes += 1
+
+    def getIs(self, factoid):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT value FROM isFacts WHERE key=%s""", factoid)
+        ret = cursor.fetchone()[0]
+        self._responses += 1
+        return ret
+
+    def setIs(self, fact, oid):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""INSERT INTO isFacts VALUES (%s, %s)""", fact, oid)
+        db.commit()
+        self._changes += 1
+
+    def delIs(self, factoid):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""DELETE FROM isFacts WHERE key=%s""", factoid)
+        db.commit()
+        self._changes += 1
+
+    def hasIs(self, factoid):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT * FROM isFacts WHERE key=%s""", factoid)
+        return cursor.rowcount == 1
+
+    def changeAre(self, factoid, replacer):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT value FROM areFacts WHERE key=%s""", factoid)
+        old = cursor.fetchone()[0]
+        if replacer is not None:
+            cursor.execute("""UPDATE areFacts SET value=%s WHERE key=%s""",
+                           replacer(old), factoid)
+            db.commit()
+            self._changes += 1
+
+    def getAre(self, factoid):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT value FROM areFacts WHERE key=%s""", factoid)
+        ret = cursor.fetchone()[0]
+        self._responses += 1
+        return ret
+
+    def setAre(self, fact, oid):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""INSERT INTO areFacts VALUES (%s, %s)""", fact, oid)
+        db.commit()
+        self._changes += 1
+
+    def delAre(self, factoid):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""DELETE FROM areFacts WHERE key=%s""", factoid)
+        db.commit()
+        self._changes += 1
+
+    def hasAre(self, factoid):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT * FROM areFacts WHERE key=%s""", factoid)
+        return cursor.rowcount == 1
+
+    def getDunno(self):
+        return random.choice(dunnos) + random.choice(ends)
+
+    def getConfirm(self):
+        return random.choice(confirms) + random.choice(ends)
+
+    def getChangeCount(self):
+        return self._changes
+
+    def getResponseCount(self):
+        return self._responses
+
+def InfobotDB():
+    return SqliteInfobotDB()
 
 class Dunno(Exception):
     pass
