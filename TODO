@@ -3,12 +3,22 @@ the more likely it'll be done before next release):
 
 * Update the database infrastructure to allow other RDBMSes.
 
-Improved (and perhaps integrated) Services and Enforcer plugins.
+* Improved (and perhaps integrated) Services and Enforcer plugins.
 
-To be done as soon as someone with the necessary expertise is found to
-help us:
+* Filters need to be added to the logs during testing so many logs
+  (useless during testing) won't occur.
 
-* Finish the Infobot plugin.
+* We should probably add a "hello" command to make things more
+  compatible with Eggdrop, since we've been replacing many eggdrop
+  bots lately.
+
+Problems that involve a lot of tedious minutiae, but really need to
+be done at some point:
+
+* ircutils.{isChannel,isNick,toLower} should be static methods on
+  each Irc object, since they can vary per-network.  That's not the
+  tedious part; the tedious part is having every other place that
+  uses them use those methods instead.
 
 Hard problems that won't get done until someone really wants to have
 some fun:
