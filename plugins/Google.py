@@ -95,6 +95,8 @@ totalSearches = 0
 totalTime = 0
 last24hours = structures.queue()
 
+
+
 def search(log, queries, **kwargs):
     assert not isinstance(queries, basestring), 'Old code: queries is a list.'
     try:
@@ -139,6 +141,20 @@ class LicenseKey(registry.String):
         if not s:
             registry.String.setValue(self, '')
             google.setLicense(self.value)
+
+class Language(registry.OnlySomeStrings):
+    validStrings = ['lang_' + s for s in 'ar zh-CN zh-TW cs da nl en et fi fr '
+                                         'de el iw hu is it ja ko lv lt no pt '
+                                         'pl ro ru es sv tr'.split()]
+    validStrings.append('')
+    def normalize(self, s):
+        if not s.startswith('lang_'):
+            s = 'lang_' + s
+        if not s.endswith('CN') or s.endswith('TW'):
+            s = s.lower()
+        else:
+            s = s.lower()[:-2] + s[-2:]
+        return s
         
 conf.registerPlugin('Google')
 conf.registerChannelValue(conf.supybot.plugins.Google, 'groupsSnarfer',
@@ -155,6 +171,11 @@ conf.registerChannelValue(conf.supybot.plugins.Google, 'bold',
 conf.registerChannelValue(conf.supybot.plugins.Google, 'maximumResults',
     registry.PositiveInteger(10, """Determines the maximum number of results
     returned from the google command."""))
+conf.registerChannelValue(conf.supybot.plugins.Google, 'defaultLanguage',
+    Language('lang_en', """Determines what default language is used in
+    searches.  If left empty, no specific language will be requested."""))
+conf.registerChannelValue(conf.supybot.plugins.Google, 'safeSearch',
+    registry.Boolean(True, "Determines whether safeSearch is on by default."))
 conf.registerGlobalValue(conf.supybot.plugins.Google, 'licenseKey',
     LicenseKey('', """Sets the Google license key for using Google's Web
     Services API.  This is necessary before you can do any searching with this
@@ -201,7 +222,12 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         """
         (optlist, rest) = getopt.getopt(args, '', ['language=', 'restrict=',
                                                    'notsafe', 'similar'])
-        kwargs = {'language': 'lang_en', 'safeSearch': 1}
+        kwargs = {}
+        if self.registryValue('safeSearch', channel=msg.args[0]):
+            kwargs['safeSearch'] = 1
+        lang = self.registryValue('defaultLanguage', channel=msg.args[0])
+        if lang:
+            kwargs['language'] = lang
         for (option, argument) in optlist:
             if option == '--notsafe':
                 kwargs['safeSearch'] = False
