@@ -112,9 +112,12 @@ def search(log, queries, **kwargs):
         return data
     except socket.error, e:
         if e.args[0] == 110:
-            return 'Connection timed out to Google.com.'
+            raise callbacks.Error, 'Connection timed out to Google.com.'
         else:
-            raise
+            raise callbacks.Error, 'Error connecting to Google.com.'
+    except SOAP.HTTPError, e:
+        log.warning('HTTP Error accessing Google: %s', e)
+        raise callbacks.Error, 'Error connecting to Google.com.'
     except SOAP.faultType, e:
         log.exception('Uncaught SOAP error:')
         raise callbacks.Error, 'Invalid Google license key.'
@@ -122,6 +125,9 @@ def search(log, queries, **kwargs):
         log.exception('Uncaught SAX error:')
         raise callbacks.Error, 'Google returned an unparseable response.  ' \
                                'The full traceback has been logged.'
+    except SOAP.Error, e:
+        log.exception('Uncaught SOAP exception in Google.search:')
+        raise callbacks.Error, 'Error connecting to Google.com.'
 
 class LicenseKey(registry.String):
     def setValue(self, s):
