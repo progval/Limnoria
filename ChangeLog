@@ -1,3 +1,7 @@
+	* Removed the OwnerCommands.say command; it wasn't useful enough,
+	and is so easily written that anyone can have it back if they want
+	it.
+	
 	* Moved bestuptime command from FunDB to Status.
 	
 	* Changed OwnerCommands.load (and loadPluginModule) to be
