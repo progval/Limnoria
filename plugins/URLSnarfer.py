@@ -184,6 +184,8 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
                 criteria.append('url LIKE %s')
                 formats.append(argument)
             elif option == 'at':
+                if '%' not in argument and '_' not in argument:
+                    argument = '%' + argument
                 criteria.append('site LIKE %s')
                 formats.append(argument)
             elif option == 'proto':
