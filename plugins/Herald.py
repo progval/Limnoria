@@ -218,6 +218,30 @@ class Herald(callbacks.Privmsg):
         del self.db[channel, id]
         irc.replySuccess()
 
+    def change(self, irc, msg, args):
+        """[<channel>] <user|nick|hostmask> <regexp>
+
+        Changes the herald message for <user>, or the user <nick|hostmask> is
+        currently identified or recognized as, according to <regexp>.  <channel>
+        is only necessary if the message isn't sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        (userNickHostmask, regexp) = privmsg.getArgs(args, required=2)
+        try:
+            id = self._getId(irc, userNickHostmask)
+        except KeyError:
+            irc.errorNoUser()
+            return
+        try:
+            changer = utils.perlRegexpToReplacer(regexp)
+        except ValueError, e:
+            irc.error('That\'s not a valid regexp: %s.' % e)
+            return
+        s = self.db[channel, id]
+        newS = changer(s)
+        self.db[channel, id] = s
+        irc.replySuccess()
+
 
 Class = Herald
 
