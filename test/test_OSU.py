@@ -39,6 +39,9 @@ class OSUTestCase(PluginTestCase):
 
     def testOsubuilding(self):
         self.assertRegexp('osubuilding DL', '^Dreese Lab')
+        self.assertRegexp('osubuilding Dl', '^Dreese Lab')
+        self.assertRegexp('osubuilding dL', '^Dreese Lab')
+        self.assertRegexp('osubuilding dl', '^Dreese Lab')
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
