@@ -62,6 +62,7 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         
     def testConvert(self):
         self.assertResponse('convert 1 m to cm', '100.0 cm')
+        self.assertResponse('convert m to cm', '100.0 cm')
         self.assertResponse('convert 1 M to cm', '100.0 cm')
         self.assertResponse('convert 1 m to CM', '100.0 cm')
         self.assertResponse('convert 1 m to cM', '100.0 cm')

@@ -212,13 +212,17 @@ class Math(callbacks.Privmsg):
         if isinstance(v, unum.Unum):
             _convertEnv[k.lower()] = v
     def convert(self, irc, msg, args):
-        """<number> <units> to <other units>
+        """[<number>] <units> to <other units>
 
         Converts the first number of <units> to the <other units>.  Valid units
         expressions include the standard Python math operators applied to valid
-        units.
+        units.  If <number> isn't given, it defaults to 1.
         """
-        (n, unit1, to, unit2) = privmsgs.getArgs(args, needed=4)
+        if args and args[0].isdigit():
+            n = args.pop(0)
+        else:
+            n = 1
+        (unit1, to, unit2) = privmsgs.getArgs(args, needed=3)
         if to != 'to':
             raise callbacks.ArgumentError
         try:
