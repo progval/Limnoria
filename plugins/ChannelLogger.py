@@ -66,7 +66,7 @@ class ChannelLogger(irclib.IrcCallback):
             if self.lastMsg:
                 self.laststate.addMsg(irc, self.lastMsg)
         finally:
-            # We must make this always gets updated.
+            # We must make this always gets updatedm
             self.lastMsg = msg
 
     def reset(self):
