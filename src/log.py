@@ -189,8 +189,8 @@ conf.supybot.directories.register('log', registry.String('logs', """Determines
 what directory the bot will store its logfiles in."""))
 
 conf.supybot.registerGroup('log')
-conf.supybot.log.register('minimumPriority', LogLevel(logging.INFO,
-"""Determines what the minimum priority logged will be.  Valid values are
+conf.supybot.log.register('level', LogLevel(logging.INFO,
+"""Determines what the minimum priority level logged will be.  Valid values are
 DEBUG, INFO, WARNING, ERROR, and CRITICAL, in order of increasing
 priority."""))
 conf.supybot.log.register('timestampFormat',
@@ -229,7 +229,7 @@ _handler = BetterFileHandler(os.path.join(conf.supybot.directories.log(),
 _handler.setFormatter(formatter)
 _handler.setLevel(-1)
 _logger.addHandler(_handler)
-_logger.setLevel(conf.supybot.log.minimumPriority())
+_logger.setLevel(conf.supybot.log.level())
 
 if conf.supybot.log.stdout():
     _stdoutHandler = BetterStreamHandler(sys.stdout)
