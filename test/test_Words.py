@@ -48,13 +48,14 @@ if sqlite is not None:
                 self.assertNotError('add %s' % word)
 
         def testHangman(self):
+            self.assertNotError('add hello')
             self.assertError('guess j')
             self.assertError('letters')
             self.assertNotError('hangman')
+            self.assertNotError('guess hello')
+            self.assertNotError('hangman')
             self.assertNotError('guess j')
             self.assertNotError('letters')
-            self.assertError('guess j')
-            self.assertError('hangman')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
