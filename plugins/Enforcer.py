@@ -82,6 +82,10 @@ conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'takeRevenge',
     registry.Boolean(False, """Determines whether the bot will take revenge on
     people who do things it doesn't like (somewhat like 'bitch mode' in other
     IRC bots)."""))
+conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'takeRevengeOnOps',
+    registry.Boolean(False, """Determines whether the bot will even take
+    revenge on ops (people with the #channel,op capability) who violate the
+    channel configuration."""))
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'cycleToGetOps',
     registry.Boolean(True, """Determines whether the bot will cycle the channel
     if it doesn't have ops and there's no one else in the channel."""))
@@ -165,7 +169,8 @@ class Enforcer(callbacks.Privmsg):
         channel = msg.args[0]
         kicked = msg.args[1].split(',')
         deop = False
-        if not self._isPowerful(irc, msg):
+        if not self._isPowerful(irc, msg) or \
+           self.registryValue('takeRevengeOnOps', channel):
             for nick in kicked:
                 hostmask = irc.state.nickToHostmask(nick)
                 if nick == irc.nick:
@@ -185,7 +190,9 @@ class Enforcer(callbacks.Privmsg):
     def doMode(self, irc, msg):
         channel = msg.args[0]
         chanserv = self.registryValue('ChanServ', channel)
-        if not ircutils.isChannel(channel) or self._isPowerful(irc, msg):
+        if not ircutils.isChannel(channel) or \
+           (self._isPowerful(irc, msg) and \
+            not self.registryValue('takeRevengeOnOps', channel):
             return
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
             if value == msg.nick:

@@ -1,3 +1,9 @@
+	* Added supybot.plugins.Enforcer.takeRevengeOnOps, which makes
+	the bot even take revenge on #channel,ops who try to violate the
+	channel configuration.  Of course, such people can change the
+	channel configuration to their bidding, but it's a decent
+	protection against errant botscripts or something.
+	
 	* Added supybot.plugins.Channels.alwaysRejoin, to make the bot
 	always rejoin when it's kicked.
 	
