@@ -30,9 +30,7 @@
 from __future__ import division
 
 import os
-import sets
 import time
-import string
 import operator
 
 import supybot.log as log
@@ -113,7 +111,7 @@ def unWildcardHostmask(hostmask):
     return hostmask.translate(utils.str.chars, '!@*?')
 
 _invert = invertCapability
-class CapabilitySet(sets.Set):
+class CapabilitySet(set):
     """A subclass of set handling basic capability stuff."""
     def __init__(self, capabilities=()):
         self.__parent = super(CapabilitySet, self)
@@ -643,7 +641,7 @@ class UsersDictionary(utils.IterableMap):
                     try:
                         self._hostmaskCache[id].add(s)
                     except KeyError:
-                        self._hostmaskCache[id] = sets.Set([s])
+                        self._hostmaskCache[id] = set([s])
                     return id
                 elif len(ids) == 0:
                     raise KeyError, s

@@ -31,7 +31,6 @@ import os
 import sys
 import time
 import socket
-import string
 
 import supybot.cdb as cdb
 import supybot.utils as utils

@@ -34,7 +34,6 @@ the same as) DJB's CDB <http://cr.yp.to/cdb.html>.
 
 import os
 import sys
-import sets
 import struct
 import os.path
 import cPickle as pickle
@@ -289,7 +288,7 @@ class ReaderWriter(utils.IterableMap):
         self._readJournal()
         self._openFiles()
         self.adds = {}
-        self.removals = sets.Set()
+        self.removals = set()
 
     def _openFiles(self):
         self.cdb = Reader(self.filename)
@@ -310,7 +309,7 @@ class ReaderWriter(utils.IterableMap):
         self.journal.flush()
 
     def _readJournal(self):
-        removals = sets.Set()
+        removals = set()
         adds = {}
         try:
             fd = file(self.journalName, 'r')
@@ -415,7 +414,7 @@ class ReaderWriter(utils.IterableMap):
     has_key = __contains__
 
     def iteritems(self):
-        already = sets.Set()
+        already = set()
         for (key, value) in self.cdb.iteritems():
             if key in self.removals or key in already:
                 continue

@@ -36,7 +36,6 @@ object (which, as you'll read later, is quite...full-featured :))
 
 import re
 import time
-import string
 
 import supybot.conf as conf
 import supybot.utils as utils

@@ -27,7 +27,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import sets
 import time
 
 import supybot.conf as conf

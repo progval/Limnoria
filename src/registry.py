@@ -29,7 +29,6 @@
 
 import re
 import os
-import sets
 import time
 import string
 import textwrap
@@ -607,7 +606,7 @@ class SpaceSeparatedListOfStrings(SpaceSeparatedListOf):
     Value = String
 
 class SpaceSeparatedSetOfStrings(SpaceSeparatedListOfStrings):
-    List = sets.Set
+    List = set
 
 class CommaSeparatedListOfStrings(SeparatedListOf):
     Value = String

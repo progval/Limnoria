@@ -40,11 +40,9 @@ import supybot
 
 import re
 import copy
-import sets
 import time
 import shlex
 import getopt
-import string
 import inspect
 import operator
 from cStringIO import StringIO
@@ -1307,7 +1305,7 @@ class PrivmsgRegexp(Privmsg):
             self.log.info('%s not running due to msg.isError.', self.name())
             return
         for (r, name) in self.res:
-            spans = sets.Set()
+            spans = set()
             for m in r.finditer(msg.args[1]):
                 # There's a bug in finditer: http://www.python.org/sf/817234
                 if m.span() in spans:
@@ -1320,7 +1318,7 @@ class PrivmsgRegexp(Privmsg):
 
 class PrivmsgCommandAndRegexp(Privmsg):
     """Same as Privmsg, except allows the user to also include regexp-based
-    callbacks.  All regexp-based callbacks must be specified in a sets.Set
+    callbacks.  All regexp-based callbacks must be specified in a set
     (or list) attribute "regexps".
     """
     flags = re.I
