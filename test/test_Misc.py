@@ -252,6 +252,9 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertNotError('apropos f')
         self.assertRegexp('apropos asldkfjasdlkfja', 'No appropriate commands')
 
+    def testAproposIsNotCaseSensitive(self):
+        self.assertNotRegexp('apropos LIST', 'No appropriate commands')
+
     def testAproposDoesntReturnNonCanonicalNames(self):
         self.assertNotRegexp('apropos exec', '_exec')
 

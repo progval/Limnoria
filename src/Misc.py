@@ -213,7 +213,7 @@ class Misc(callbacks.Privmsg):
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('No appropriate commands were found.')
-    apropos = wrap(apropos, ['something'])
+    apropos = wrap(apropos, ['lowered'])
 
     def help(self, irc, msg, args, cb, command):
         """[<plugin>] [<command>]

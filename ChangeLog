@@ -1,3 +1,8 @@
+	* Fixed Misc.apropos not to be case-sensitive.
+	
+	* Fixed bug in User.register; it works now.
+
+	
 2004-12-20 Jeremy Fincher <jemfinch@supybot.com>
 
 	* Version 0.80.0pre5!
