@@ -468,7 +468,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                return
         else:
            if locked_by is None:
-               irc.error(msg, "Factoid '%r is not locked." % key)
+               irc.error(msg, "Factoid %r is not locked." % key)
                return
         # Can only lock/unlock own factoids unless you're an admin
         if not (ircdb.checkCapability(id, 'admin') or created_by == id):
