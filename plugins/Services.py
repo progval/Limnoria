@@ -50,8 +50,15 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     nick = anything('What is your registered nick?')
     password = anything('What is your password for that nick?')
+    chanserv = 'ChanServ'
+    if yn('Is your ChanServ named something other than ChanServ?') == 'y':
+        chanserv = anything('What is your ChanServ named?')
+    nickserv = 'NickServ'
+    if yn('Is your NickServ named something other than NickServ?') == 'y':
+        nickserv = anything('What is your NickServ named?')
     onStart.append('load Services')
-    onStart.append('startnickserv %s %s' % (nick, password))
+    onStart.append('startservices %s %s %s %s' % \
+                   (nick, password, nickserv, chanserv))
 
 class Services(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
