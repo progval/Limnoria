@@ -6,10 +6,12 @@ import time
 
 import conf
 import debug
+import ircdb
 import drivers
 import ircmsgs
 
 from twisted.internet import reactor
+from twisted.manhole.telnet import Shell, ShellFactory
 from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import ReconnectingClientFactory
 
@@ -43,7 +45,13 @@ class SupyIrcProtocol(LineReceiver):
             while msg:
                 self.transport.write(str(msg))
                 msg = self.factory.irc.takeMsg()
-        reactor.callLater(1, self.checkIrcForMsgs)
+        self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
+
+    def connectionLost(self):
+        self.mostRecentCall.cancel()
+
+    def die(self):
+        self.transport.loseConnection()
 
 class SupyReconnectingFactory(ReconnectingClientFactory):
     maxDelay = 600
@@ -51,6 +59,28 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
     def __init__(self, (server, port), irc):
         self.irc = irc
         reactor.connectTCP(server, port, self)
+        
+
+class MyShell(Shell):
+    def checkUserAndPass(self, username, password):
+        debug.printf(repr(username))
+        debug.printf(repr(password))
+        try:
+            u = ircdb.users.getUser(username)
+            debug.printf(u)
+            if u.checkPassword(password) and u.checkCapability('owner'):
+                debug.printf('returning True')
+                return True
+            else:
+                return False
+        except KeyError:
+            return False
+            
+class MyShellFactory(ShellFactory):
+    protocol = MyShell
+
+if conf.telnetEnable and __name__ != '__main__':
+    reactor.listenTCP(conf.telnetPort, MyShellFactory())
         
 
 try:
