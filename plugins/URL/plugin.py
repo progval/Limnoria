@@ -78,7 +78,6 @@ class URL(callbacks.Privmsg):
                     continue
                 self.log.debug('Adding %u to db.', url)
                 self.db.add(channel, url, msg)
-        self.__parent.doPrivmsg(irc, msg)
 
     def stats(self, irc, msg, args, channel):
         """[<channel>]
