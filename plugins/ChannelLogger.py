@@ -153,6 +153,8 @@ class ChannelLogger(irclib.IrcCallback):
                        ' '.join(msg.args[2:])))
 
     def doTopic(self, irc, msg):
+        if len(msg.args) == 1:
+            return # It's an empty TOPIC just to get the current topic.
         channel = msg.args[0]
         log = self.getLog(channel)
         self.timestamp(log)
