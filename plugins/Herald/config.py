@@ -44,9 +44,13 @@ conf.registerChannelValue(Herald, 'heralding',
     registry.Boolean(True, """Determines whether messages will be sent to the
     channel when a recognized user joins; basically enables or disables the
     plugin."""))
-conf.registerChannelValue(Herald, 'throttleTime',
+conf.registerChannelValue(Herald, 'throttle',
     registry.PositiveInteger(600, """Determines the minimum number of seconds
     between heralds."""))
+conf.registerChannelValue(Herald.throttle, 'afterPart',
+    registry.NonNegativeInteger(0, """Determines the minimum number of seconds
+    after parting that the bot will not herald the person when he or she
+    rejoins."""))
 conf.registerChannelValue(Herald, 'default',
     registry.String('', """Sets the default herald to use.  If a user has a
     personal herald specified, that will be used instead.  If set to the empty
@@ -57,9 +61,5 @@ conf.registerChannelValue(Herald.default, 'notice',
 conf.registerChannelValue(Herald.default, 'public',
     registry.Boolean(False, """Determines whether the default herald will be
     sent publicly."""))
-conf.registerChannelValue(Herald, 'throttleTimeAfterPart',
-    registry.PositiveInteger(60, """Determines the minimum number of seconds
-    after parting that the bot will not herald the person when he or she
-    rejoins."""))
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78

@@ -89,10 +89,10 @@ class Herald(callbacks.Privmsg):
                     irc.queueMsg(msgmaker(target, default))
                 return
             now = time.time()
-            throttle = self.registryValue('throttleTime', channel)
+            throttle = self.registryValue('throttle', channel)
             if now - self.lastHerald.get((channel, id), 0) > throttle:
                 if (channel, id) in self.lastParts:
-                   i = self.registryValue('throttleTimeAfterPart', channel)
+                   i = self.registryValue('throttle.afterPart', channel)
                    if now - self.lastParts[channel, id] < i:
                        return
                 self.lastHerald[channel, id] = now
