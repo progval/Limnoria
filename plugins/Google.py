@@ -221,8 +221,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         except google.NoLicenseKey, e:
             irc.error(str(e))
             return
-        bold = conf.supybot.plugins.Google.bold()
-        max = conf.supybot.plugins.Google.maximumResults()
+        bold = self.registryValue('bold', msg.args[0])
+        max = self.registryValue('maximumResults', msg.args[0])
         irc.reply(self.formatData(data, bold=bold, max=max))
 
     def metagoogle(self, irc, msg, args):
@@ -302,7 +302,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
 
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
-        if not conf.supybot.plugins.Google.searchSnarfer():
+        if not self.registryValue('searchSnarfer', msg.args[0]):
             return
         searchString = match.group(1)
         try:
@@ -322,7 +322,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     _ggPlainGroup = re.compile(r'Newsgroups: (.*)')
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
-        if not conf.supybot.plugins.Google.groupsSnarfer():
+        if not self.registryValue('groupsSnarfer', msg.args[0]):
             return
         request = urllib2.Request(match.group(0), headers= \
           {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})

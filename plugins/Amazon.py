@@ -139,7 +139,7 @@ class Amazon(callbacks.Privmsg):
             '%(publisher)s%(url)s'
         try:
             book = amazon.searchByKeyword(isbn)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, book, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -172,7 +172,7 @@ class Amazon(callbacks.Privmsg):
             '%(publisher)s%(url)s'
         try:
             books = amazon.searchByKeyword(keyword)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -211,7 +211,7 @@ class Amazon(callbacks.Privmsg):
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             videos = amazon.searchByKeyword(keyword, product_line=product)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, videos, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -242,7 +242,7 @@ class Amazon(callbacks.Privmsg):
         s = '"%(title)s"%(url)s'
         try:
             item = amazon.searchByASIN(asin)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -276,7 +276,7 @@ class Amazon(callbacks.Privmsg):
         s = '"%(title)s" %(manufacturer)s%(url)s'
         try:
             item = amazon.searchByUPC(upc)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, item, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -309,7 +309,7 @@ class Amazon(callbacks.Privmsg):
             '%(publisher)s%(url)s'
         try:
             books = amazon.searchByAuthor(author)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, books, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -407,7 +407,7 @@ class Amazon(callbacks.Privmsg):
             '%(publisher)s%(url)s'
         try:
             items = amazon.searchByArtist(artist, product_line=product)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -447,7 +447,7 @@ class Amazon(callbacks.Privmsg):
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             items = amazon.searchByActor(actor, product_line=product)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -487,7 +487,7 @@ class Amazon(callbacks.Privmsg):
             '%(date)s; published by %(publisher)s%(url)s'
         try:
             items = amazon.searchByDirector(director, product_line=product)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
@@ -526,7 +526,7 @@ class Amazon(callbacks.Privmsg):
         try:
             items = amazon.searchByManufacturer(manufacturer,
                                                 product_line=product)
-            bold = conf.supybot.plugins.Amazon.bold()
+            bold = self.registryValue('bold', msg.args[0])
             res = self._genResults(s, attribs, items, url, bold, 'title')
             if res:
                 irc.reply(utils.commaAndify(res))
