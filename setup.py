@@ -185,6 +185,7 @@ setup(
 
     scripts=['scripts/supybot',
              'scripts/supybot-test',
+             'scripts/supybot-botchk',
              'scripts/supybot-wizard',
              'scripts/supybot-adduser',
              'scripts/supybot-newplugin']
