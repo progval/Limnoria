@@ -67,6 +67,7 @@ conf.registerGlobalValue(conf.supybot.plugins.NickCapture.ison, 'period',
     will check whether its nick ISON."""))
 
 class NickCapture(callbacks.Privmsg):
+    public = False
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.lastIson = 0
