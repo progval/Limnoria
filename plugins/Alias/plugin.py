@@ -79,11 +79,6 @@ class AliasError(Exception):
 class RecursiveAlias(AliasError):
     pass
 
-def findAliasCommand(s, alias):
-    s = re.escape(s)
-    r = re.compile(r'(?:(^|\[)\s*\b%s\b|\|\s*\b%s\b)' % (s, s))
-    return bool(r.search(alias))
-
 dollarRe = re.compile(r'\$(\d+)')
 def findBiggestDollar(alias):
     dollars = dollarRe.findall(alias)
@@ -106,8 +101,6 @@ def findBiggestAt(alias):
 
 def makeNewAlias(name, alias):
     original = alias
-    if findAliasCommand(name, alias):
-        raise RecursiveAlias
     biggestDollar = findBiggestDollar(original)
     biggestAt = findBiggestAt(original)
     wildcard = '$*' in original

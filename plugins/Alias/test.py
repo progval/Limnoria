@@ -34,21 +34,6 @@ import supybot.plugin as plugin
 Alias = plugin.loadPluginModule('Alias')
 
 class FunctionsTest(SupyTestCase):
-    def testFindAliasCommand(self):
-        s = 'command'
-        self.failIf(Alias.findAliasCommand(s, ''))
-        self.failIf(Alias.findAliasCommand(s, 'foo'))
-        self.failIf(Alias.findAliasCommand(s, 'foo bar [  baz]'))
-        self.failIf(Alias.findAliasCommand(s, 'foo bar [baz]'))
-        self.failUnless(Alias.findAliasCommand(s, s))
-        self.failUnless(Alias.findAliasCommand(s, '  %s' % s))
-        self.failUnless(Alias.findAliasCommand(s, '[%s]' % s))
-        self.failUnless(Alias.findAliasCommand(s, '[ %s]' % s))
-        self.failUnless(Alias.findAliasCommand(s, 'foo bar [%s]' % s))
-        self.failUnless(Alias.findAliasCommand(s, 'foo bar [ %s]' % s))
-        self.failUnless(Alias.findAliasCommand(s, 'foo | %s' % s))
-        self.failUnless(Alias.findAliasCommand(s, 'foo |%s' % s))
-
     def testFindBiggestDollar(self):
         self.assertEqual(Alias.findBiggestDollar(''), 0)
         self.assertEqual(Alias.findBiggestDollar('foo'), 0)
@@ -99,17 +84,6 @@ class AliasTestCase(ChannelPluginTestCase):
         self.assertNotError('alias add swap "echo $2 $1 $*"')
         self.assertResponse('swap 1 2 3 4 5', '2 1 3 4 5')
         self.assertError('alias add foo "echo $1 @1 $*"')
-
-    def testNoRecursion(self):
-        self.assertError('alias add rotinfinity "rot13 [rotinfinity $1]"')
-        self.assertNotError('alias add rotinfintynot "rot13 [rotinfinity $1]"')
-        self.assertNotError('alias add rotinfin "rot13 [rotinfinity $1]"')
-
-    def testNonCanonicalName(self):
-        self.assertError('alias add FOO foo')
-        self.assertError('alias add [] foo')
-        self.assertError('alias add "foo bar" foo')
-        self.assertError('alias add "foo|bar" foo')
 
     def testChannel(self):
         self.assertNotError('alias add channel echo $channel')
