@@ -427,6 +427,9 @@ class IrcObjectProxy:
             else:
                 s = ircutils.safeArgument(s)
                 allowedLength = 450 - len(self.irc.prefix)
+                if len(s) > allowedLength*50:
+                    log.warning('Cowardly refusing to "more" %s bytes.'%len(s))
+                    s = s[:allowedLength*50]
                 msgs = textwrap.wrap(s, allowedLength-30) # -30 is for "nick:"
                 msgs.reverse()
                 response = msgs.pop()
