@@ -41,6 +41,7 @@ import sre_constants
 from cStringIO import StringIO
 
 import conf
+import world
 import ircdb
 import irclib
 import ircmsgs
