@@ -38,6 +38,7 @@ __revision__ = "$Id$"
 
 import plugins
 
+import sets
 import time
 import getopt
 import os.path
@@ -71,6 +72,11 @@ conf.registerGlobalValue(conf.supybot.plugins.Note, 'notifyOnJoinRepeatedly',
     notify people of their new messages when they join the channel.  That means
     when they join the channel, the bot will tell them they have unread
     messages, even if it's told them before."""))
+
+class Ignores(registry.SpaceSeparatedListOfStrings):
+    List = ircutils.IrcSet
+    
+conf.registerUserValue(conf.users.plugins.Note, 'ignores', Ignores([], ''))
 
 class NoteDb(plugins.DBHandler):
     def makeDb(self, filename):
@@ -158,8 +164,12 @@ class Note(callbacks.Privmsg):
                 return
         try:
             fromId = ircdb.users.getUserId(msg.prefix)
+            senderName = ircdb.users.getUser(fromId).name
         except KeyError:
             irc.errorNotRegistered()
+            return
+        if senderName in self.userValue('ignores', name):
+            irc.error('That user has ignored messages from you.')
             return
         if ircutils.isChannel(msg.args[0]):
             public = 1
@@ -260,6 +270,32 @@ class Note(callbacks.Privmsg):
         else:
             return '#%s (private)' % id
 
+    def ignore(self, irc, msg, args):
+        """[--remove] <user>
+
+        Ignores all messages from <user>.  If --remove is listed, remove <user>
+        from the list of users being ignored.
+        """
+        remove = False
+        while '--remove' in args:
+            remove = True
+            args.remove('--remove')
+        user = privmsgs.getArgs(args)
+        try:
+            L = self.userValue('ignores', msg.prefix)
+            if remove:
+                try:
+                    L.remove(user)
+                except (KeyError, ValueError):
+                    irc.error('%r was not in your list of ignores.' % user)
+                    return
+            else:
+                L.add(user)
+            self.setUserValue(msg.prefix, 'ignores', L, setValue=True)
+            irc.replySuccess()
+        except KeyError:
+            irc.errorNoUser()
+            
     def list(self, irc, msg, args):
         """[--{old,sent}] [--{from,to} <user>]
 
