@@ -81,6 +81,11 @@ if __name__ == '__main__':
     configfd.write('Server: %s\n' % server)
     nick = anything('What nick would you like the bot to use?')
     configfd.write('Nick: %s\n' % nick)
+    if ny('Would you like to set a user/ident?') == 'y':
+        user = anything('What user would you like the bot to use?')
+        configfd.write('User: %s\n' % user)
+        ident = anything('What ident would you like the bot to use?')
+        configfd.write('Ident: %s\n' % ident)
     configfd.write('\n')
     configfd.write('load AdminCommands\n')
     configfd.write('load UserCommands\n')
