@@ -64,7 +64,7 @@ def close(registry, filename):
 class Value(object):
     def __init__(self, default, help):
         self.help = utils.normalizeWhitespace(help)
-        self.value = default
+        self.value = self.default = default
 
     def set(self, s):
         """Override this with a function to convert a string to whatever type
@@ -159,6 +159,16 @@ class Group(object):
             return self.children[attr].help
         else:
             self.__nonExistentEntry(original)
+
+    def default(self, attr):
+        original = attr
+        attr = attr.lower()
+        if attr in self.values:
+            return self.values[attr].default
+        elif attr in self.children and hasattr(self.children[attr], 'default'):
+            return self.children[attr].default
+        else:
+            self.__nonExistentEntry(original)
     
     def setName(self, name):
         self.__dict__['name'] = name
@@ -210,8 +220,8 @@ class Group(object):
 class GroupWithDefault(Group):
     def __init__(self, value):
         Group.__init__(self)
-        self.__dict__['value'] = value
         self.__dict__['help'] = value.help
+        self.__dict__['value'] = self.__dict__['default'] = value
         
     def __makeChild(self, attr, s):
         v = copy.copy(self.value)
