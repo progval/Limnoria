@@ -137,6 +137,8 @@ class FunctionsTestCase(unittest.TestCase):
         modes = [plusB, plusE, minusL]
         self.assertEqual(ircutils.joinModes(modes),
                          ['+be-l', plusB[1], plusE[1]])
+
+
 class IrcDictTestCase(unittest.TestCase):
     def test(self):
         d = ircutils.IrcDict()
