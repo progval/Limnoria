@@ -732,7 +732,7 @@ class Irc(IrcCommandDispatcher):
 
     def doError(self, msg):
         """Handles ERROR messages."""
-        log.info('Error message from %s: %s', self.server, msg.args[0])
+        log.info('Error message from %s: %s', self.network, msg.args[0])
         if not self.zombie:
            if msg.args[0].startswith('Closing Link'):
               self.driver.reconnect()
