@@ -184,10 +184,9 @@ registerGlobalValue(supybot, 'user',
     registry.String('Supybot %s' % version, """Determines the user the bot
     sends to the server."""))
 
-registerGroup(supybot, 'networks')
-registerGlobalValue(supybot.networks, 'default',
-    registry.String('', """Determines what the default network joined by the
-    bot will be."""))
+registerGlobalValue(supybot, 'networks',
+    registry.SpaceSeparatedSetOfStrings([], """Determines what networks the bot
+    will connect to."""))
 
 class Servers(registry.SpaceSeparatedListOfStrings):
     def normalize(self, s):
@@ -207,6 +206,10 @@ class Servers(registry.SpaceSeparatedListOfStrings):
 
     def __str__(self):
         return ' '.join(registry.SpaceSeparatedListOfStrings.__call__(self))
+
+    def append(self, s):
+        L = registry.SpaceSeparatedListOfStrings.__call__(self)
+        L.append(s)
         
 class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
     List = ircutils.IrcSet
@@ -222,13 +225,13 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
         for removal in removals:
             self.value.remove(removal)
 
-def registerNetwork(name, password='', servers=()):
+def registerNetwork(name, password=''):
     network = registerGroup(supybot.networks, name)
     registerGlobalValue(network, 'password', registry.String(password,
         """Determines what password will be used on %s.  Yes, we know that
         technically passwords are server-specific and not network-specific,
         but this is the best we can do right now.""" % name))
-    registerGlobalValue(network, 'servers', Servers(servers,
+    registryServers = registerGlobalValue(network, 'servers', Servers([],
         """Determines what servers the bot will connect to for %s.  Each will
         be tried in order, wrapping back to the first when the cycle is
         completed.""" % name))
