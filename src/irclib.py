@@ -387,4 +387,11 @@ class Irc(object):
         for callback in self.callbacks:
             callback.die()
         world.ircs.remove(self)
+
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return id(self) == id(other)
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
