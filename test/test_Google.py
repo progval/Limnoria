@@ -38,6 +38,7 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNoResponse(' ')
         
     def testGroupsSnarfer(self):
+        self.assertNotError('google config groups-snarfer on')
         self.assertRegexp('http://groups.google.com/groups?dq=&hl=en&'
                           'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
                           '0310132012.738e22fc%40posting.google.com',
