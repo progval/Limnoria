@@ -32,9 +32,15 @@ Randomly mixed insults.  @config list supybot.plugins.Insult values are
 available for customizing.
 """
 
-__author__       = "Mike Taylor <bear@code-bear.com>"
+import supybot
+
+__author__       = supybot.authors.bear
 __revision__     = "$Id$"
-#__contributors  = ['Grant Bowman <grantbow@grantbow.com>', supybot.authors.jemfinch]
+__contributors__  = {
+    supybot.authors.grantbow: ['dirty word configuration option',
+                               'cleanup and style fixes']
+}
+
 
 # The list of words came from the mozbot Insult.bm module
 # The header of that module has the following credit:
