@@ -1,3 +1,7 @@
+	* Added supybot.plugins.Weather.convert, which determines whether
+	or not Weather.{weather,cnn,ham} will convert temperature to the
+	configured temperatureUnit.
+
 	* Changed User.setpassword not to require the <old password> to
 	be correct if the requesting user has the owner capability (and
 	isn't the owner himself).
