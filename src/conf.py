@@ -273,6 +273,19 @@ for (name, s) in registry._cache.iteritems():
 ###
 registerGroup(supybot, 'reply')
 
+registerGroup(supybot.reply, 'format')
+registerGroup(supybot.reply.format, 'time')
+registerGroup(supybot.reply.format.time, 'elapsed')
+registerChannelValue(supybot.reply.format.time.elapsed, 'short',
+    registry.Boolean(False, """Determines whether elapsed times will be given
+    as "1 day, 2 hours, 3 minutes, and 15 seconds" or as "1d 2h 3m 15s"."""))
+
+originalTimeElapsed = utils.timeElapsed
+def timeElapsed(*args, **kwargs):
+    kwargs['short'] = supybot.reply.format.time.elapsed.short()
+    return originalTimeElapsed(*args, **kwargs)
+utils.timeElapsed = timeElapsed
+
 registerGlobalValue(supybot.reply, 'maximumLength',
     registry.Integer(512*256, """Determines the absolute maximum length of the
     bot's reply -- no reply will be passed through the bot with a length

@@ -118,13 +118,18 @@ def abbrev(strings, d=None):
         del d[key]
     return d
 
-def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
-                days=True, hours=True, minutes=True, seconds=True):
+def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
+                weeks=True, days=True, hours=True, minutes=True, seconds=True):
     """Given <elapsed> seconds, returns a string with an English description of
     how much time as passed.  leadingZeroes determines whether 0 days, 0 hours,
     etc. will be printed; the others determine what larger time periods should
     be used.
     """
+    def format(s, i):
+        if short:
+            return '%s%s' % (i, s[0])
+        else:
+            return nItems(s, i)
     elapsed = int(elapsed)
     assert years or weeks or days or \
            hours or minutes or seconds, 'One flag must be True'
@@ -134,34 +139,37 @@ def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
         if leadingZeroes or yrs:
             if yrs:
                 leadingZeroes = True
-            ret.append(nItems('year', yrs))
+            ret.append(format('year', yrs))
     if weeks:
         wks, elapsed = elapsed // 604800, elapsed % 604800
         if leadingZeroes or wks:
             if wks:
                 leadingZeroes = True
-            ret.append(nItems('week', wks))
+            ret.append(format('week', wks))
     if days:
         ds, elapsed = elapsed // 86400, elapsed % 86400
         if leadingZeroes or ds:
             if ds:
                 leadingZeroes = True
-            ret.append(nItems('day', ds))
+            ret.append(format('day', ds))
     if hours:
         hrs, elapsed = elapsed // 3600, elapsed % 3600
         if leadingZeroes or hrs:
             if hrs:
                 leadingZeroes = True
-            ret.append(nItems('hour', hrs))
+            ret.append(format('hour', hrs))
     if minutes or seconds:
         mins, secs = elapsed // 60, elapsed % 60
         if leadingZeroes or mins:
-            ret.append(nItems('minute', mins))
+            ret.append(format('minute', mins))
         if seconds:
-            ret.append(nItems('second', secs))
+            ret.append(format('second', secs))
     if len(ret) == 0:
         raise ValueError, 'Time difference not great enough to be noted.'
-    return commaAndify(ret)
+    if short:
+        return ' '.join(ret)
+    else:
+        return commaAndify(ret)
 
 def distance(s, t):
     """Returns the levenshtein edit distance between two strings."""
