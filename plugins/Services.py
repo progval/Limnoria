@@ -173,7 +173,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 return
             nick = self.registryValue('nick', irc.network)
             self.log.debug('Notice received from NickServ: %r', msg)
-            s = msg.args[1]
+            s = msg.args[1].lower()
             if self._ghosted(irc, s):
                 self.log.info('Received "GHOST succeeded" from NickServ')
                 self.sentGhost = False
@@ -190,6 +190,9 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 self.identified = True
                 if self.channels:
                     irc.queueMsg(ircmsgs.joins(self.channels))
+            elif 'incorrect' in s:
+                log = 'Received "Password Incorrect" from NickServ.'
+                self.log.warning(log)
 
     def getops(self, irc, msg, args):
         """[<channel>]

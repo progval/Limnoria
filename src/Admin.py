@@ -80,8 +80,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
     def do471(self, irc, msg):
         try:
             channel = msg.args[1]
-            (irc, msg) = self.joins[channel]
-            del self.joins[channel]
+            (irc, msg) = self.joins.pop(channel)
             irc.error('Cannot join %s, it\'s full.' % channel)
         except KeyError:
             self.log.debug('Got 471 without Admin.join being called.')
@@ -89,8 +88,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
     def do473(self, irc, msg):
         try:
             channel = msg.args[1]
-            (irc, msg) = self.joins[channel]
-            del self.joins[channel]
+            (irc, msg) = self.joins.pop(channel)
             irc.error('Cannot join %s, I was not invited.' % channel)
         except KeyError:
             self.log.debug('Got 473 without Admin.join being called.')
@@ -98,8 +96,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
     def do474(self, irc, msg):
         try:
             channel = msg.args[1]
-            (irc, msg) = self.joins[channel]
-            del self.joins[channel]
+            (irc, msg) = self.joins.pop(channel)
             irc.error('Cannot join %s, it\'s banned me.' % channel)
         except KeyError:
             self.log.debug('Got 474 without Admin.join being called.')
@@ -107,11 +104,19 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
     def do475(self, irc, msg):
         try:
             channel = msg.args[1]
-            (irc, msg) = self.joins[channel]
-            del self.joins[channel]
+            (irc, msg) = self.joins.pop(channel)
             irc.error('Cannot join %s, my keyword was wrong.' % channel)
         except KeyError:
             self.log.debug('Got 475 without Admin.join being called.')
+
+    def do515(self, irc, msg):
+        try:
+            channel = msg.args[1]
+            (irc, msg) = self.joins.pop(channel)
+            irc.error('Cannot join %s, I\'m not identified with the nickserv.'
+                      % channel)
+        except KeyError:
+            self.log.debug('Got 515 without Admin.join being called.')
 
     def doJoin(self, irc, msg):
         if msg.prefix == irc.prefix:
