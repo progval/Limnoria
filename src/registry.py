@@ -306,7 +306,7 @@ class OnlySomeStrings(String):
         else:
             raise InvalidRegistryValue, \
                   '%r is not a valid value.  Valid values include %s.' % \
-                  (utils.commaAndify(map(repr, self.validStrings)))
+                  (s, utils.commaAndify(map(repr, self.validStrings)))
 
 class NormalizedString(String):
     def set(self, s):
