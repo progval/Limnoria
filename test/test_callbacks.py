@@ -140,6 +140,12 @@ class FunctionsTestCase(unittest.TestCase):
         msg = ircmsgs.privmsg(nick, 'foo')
         self.assertEqual('foo', callbacks.addressed(nick, msg))
         conf.prefixChars = oldprefixchars
+        msg = ircmsgs.privmsg('#foo', '%s::::: bar' % nick)
+        self.assertEqual('bar', callbacks.addressed(nick, msg))
+        msg = ircmsgs.privmsg('#foo', '%s: foo' % nick.upper())
+        self.assertEqual('foo', callbacks.addressed(nick, msg))
+        badmsg = ircmsgs.privmsg('#foo', '%s`: foo' % nick)
+        self.failIf(callbacks.addressed(nick, badmsg))
 
     def testReply(self):
         prefix = 'foo!bar@baz'
