@@ -58,8 +58,8 @@ frownre = re.compile('|'.join(map(re.escape, frowns)))
 
 class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
         ChannelDBHandler.__init__(self)
+        callbacks.Privmsg.__init__(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):
