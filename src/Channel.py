@@ -39,6 +39,7 @@ import time
 import conf
 import debug
 import ircdb
+import utils
 import ircmsgs
 import schedule
 import ircutils
@@ -240,6 +241,24 @@ class Channel(callbacks.Privmsg):
         ircdb.channels.setChannel(channel, c)
         irc.reply(msg, conf.replySuccess)
     unchanignore = privmsgs.checkChannelCapability(unchanignore, 'op')
+
+    def chanignores(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Lists the hostmasks that the bot is ignoring on the given channel.
+        The <channel> argument is only necessary if the message isn't being
+        sent in the channel itself.
+        """
+        channelarg = privmsgs.getArgs(args, needed=0, optional=1)
+        channel = channelarg or channel
+        c = ircdb.channels.getChannel(channel)
+        if len(c.ignores) == 0:
+            irc.reply(msg, 'I\'m not currently ignoring any hostmasks '
+                           'in %r' % channel)
+            return
+        irc.reply(msg, utils.commaAndify(map(repr,c.ignores)))
+    chanignores = privmsgs.checkChannelCapability(chanignores, 'op')
+
 
     def addchancapability(self, irc, msg, args, channel):
         """[<channel>] <name|hostmask> <capability>
