@@ -67,7 +67,7 @@ class Formatter(logging.Formatter):
             try:
                 return cgitb.text((E, e, tb)).rstrip('\r\n')
             except:
-                log.error('Cgitb.text raised an exception.')
+                error('Cgitb.text raised an exception.')
                 return logging.Formatter.formatException(self, (E, e, tb))
         else:
             return logging.Formatter.formatException(self, (E, e, tb))
