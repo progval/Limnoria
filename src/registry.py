@@ -164,7 +164,7 @@ class Group(object):
         v = self.__class__(self._default, self.help)
         v.set(s)
         v.__class__ = self.X
-        v._supplyDefault = False
+        #v._supplyDefault = False
         v.help = '' # Clear this so it doesn't print a bazillion times.
         self.register(attr, v)
         return v
