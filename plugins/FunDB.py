@@ -112,6 +112,15 @@ def makeDb(dbfilename, replace=False):
     db.commit()
     return db
 
+def uptimeEnder(started):
+    def f():
+        db = makeDb(dbFilename)
+        cursor = db.cursor()
+        cursor.execute("""UPDATE uptime SET ended=%s WHERE started=%s""",
+                       int(time.time()), started)
+        db.commit()
+    return f
+
 def addWord(db, word, commit=False):
     word = word.strip().lower()
     L = list(word)
@@ -137,16 +146,9 @@ class FunDB(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         self.db = makeDb(dbFilename)
         cursor = self.db.cursor()
-        started = int(world.startedAt)
         cursor.execute("""INSERT INTO uptime VALUES (%s, NULL)""", started)
         self.db.commit()
-        def f():
-            db = makeDb(dbFilename)
-            cursor = db.cursor()
-            cursor.execute("""UPDATE uptime SET ended=%s WHERE started=%s""",
-                           int(time.time()), started)
-            db.commit()
-        atexit.register(f)
+        atexit.register(uptimeEnder(int(world.startedAt)))
 
     def die(self):
         self.db.commit()
