@@ -259,7 +259,8 @@ class SqliteInfobotDB(object):
             raise dbi.InvalidDBError, str(e)
 
     def close(self):
-        self.db.close()
+        if self.db is not None:
+            self.db.close()
 
     def changeIs(self, factoid, replacer):
         db = self._getDb()
@@ -377,7 +378,7 @@ class Dunno(Exception):
 class Infobot(callbacks.PrivmsgCommandAndRegexp):
     regexps = ['doForget', 'doChange', 'doFactoid', 'doUnknown']
     def __init__(self):
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        super(Infobot, self).__init__()
         try:
             self.db = InfobotDB()
         except Exception:
@@ -536,7 +537,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 self.log.debug('Bailing since we received an empty msg.')
                 return
             msg = ircmsgs.privmsg(msg.args[0], payload, prefix=msg.prefix)
-            callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
+            super(Infobot, self).doPrivmsg(irc, msg)
         finally:
             self.force = False
             self.replied = False
