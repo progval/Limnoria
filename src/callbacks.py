@@ -332,9 +332,10 @@ class RichReplyMethods(object):
     def errorNoCapability(self, capability, s='', **kwargs):
         log.warning('Denying %s for lacking %r capability',
                     self.msg.prefix, capability)
-        v = conf.supybot.replies.noCapability.get(self.msg.args[0])()
-        s = self.__makeReply(v % capability, s)
-        self.error(s, **kwargs)
+        if not conf.supybot.reply.noCapabilityError():
+            v = conf.supybot.replies.noCapability.get(self.msg.args[0])()
+            s = self.__makeReply(v % capability, s)
+            self.error(s, **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
         v = conf.supybot.replies.possibleBug.get(self.msg.args[0])()
