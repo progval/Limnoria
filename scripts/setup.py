@@ -39,6 +39,7 @@
 import os
 import imp
 import sys
+import pydoc
 import socket
 import pprint
 sys.path.insert(0, 'src')
@@ -147,10 +148,11 @@ if __name__ == '__main__':
         else:
             print 'This plugin has no documentation.'
         if hasattr(module, 'example'):
-            print
-            print 'Here\'s an example of usage of this module:'
-            print
-            print module.example
+            if yn('Would you like to see a usage example?') == 'y':
+                print
+                print 'Here\'s an example of usage of this module:'
+                print
+                pydoc.pager(module.example)
         if yn('Would you like to add this plugin?') == 'y':
             if hasattr(module, 'configure'):
                 module.configure(onStart, afterConnect, advanced)
@@ -231,6 +233,13 @@ if __name__ == '__main__':
     print '"supybot: cpustats".'
     s = anything('What would you like supybot\'s prefixChar(s) to be?')
     configVariables['prefixChars'] = s
+
+    if not advanced:
+        try:
+            import twistedDrivers
+            configVariables['driverModule'] = 'twistedDrivers'
+        except ImportError:
+            pass
                 
                 
     template = template.replace('%%configVariables%%',
