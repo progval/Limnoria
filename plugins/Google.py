@@ -391,7 +391,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         Returns interesting information about this Google module.  Mostly
         useful for making sure you don't go over your 1000 requests/day limit.
         """
-        recent = len(self.last24hours)
+        recent = len(last24hours)
         time = self.registryValue('state.time')
         searches = self.registryValue('state.searches')
         irc.reply('This google module has made %s total; '

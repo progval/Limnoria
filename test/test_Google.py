@@ -113,5 +113,8 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotRegexp('google foobar', 'faultType')
         self.assertNotRegexp('google foobar', 'SOAP')
 
+    def testStats(self):
+        self.assertNotError('google stats')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
