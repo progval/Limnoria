@@ -31,6 +31,8 @@
 
 from test import *
 
+import world
+
 class StatusTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Status', 'OwnerCommands')
     def testBestuptime(self):
@@ -44,7 +46,14 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
 
     def testCpustats(self):
         self.assertNotError('cpustats')
-
+        try:
+            original = world.startedAt
+            world.startedAt = time.time()
+            self.assertError('cpustats')
+            world.startedAt = 0
+            self.assertNotError('cpustats')
+        finally:
+            world.startedAt = original
     def testUptime(self):
         self.assertNotError('uptime')
 
