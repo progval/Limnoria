@@ -89,7 +89,7 @@ if sqlite is not None:
         def testLartAndPraiseRemoveTrailingPeriods(self):
             for s in ['lart', 'praise']:
                 self.assertNotError('add %s $who foo!' % s)
-                self.assertAction('%s bar.' % s, 'bar foo!')
+                self.assertAction('%s bar.' % s, 'bar foo! (#1)')
 
         def testMyMeReplacement(self):
             self.assertNotError('add lart jabs $who')

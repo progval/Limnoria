@@ -128,6 +128,7 @@ if sqlite is not None:
                                   r'http://tinyurl.com/u479.* \(was')
 
             def testTitleSnarfer(self):
+                self.assertNotError('url config titlesnarferincludesurl off')
                 self.assertNoResponse('http://microsoft.com/')
                 self.assertNotError('url config title-snarfer on')
                 self.assertResponse('http://microsoft.com/',
