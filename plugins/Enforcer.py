@@ -268,6 +268,8 @@ class Enforcer(callbacks.Privmsg):
             if not self.registryValue('takeRevenge.onOps', channel):
                 return
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
+            if not isinstance(value, basestring):
+                continue
             if ircutils.strEqual(value, msg.nick):
                 continue
             elif mode == '+o':
