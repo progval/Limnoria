@@ -35,38 +35,28 @@ import Alias
 
 
 class FunctionsTest(unittest.TestCase):
-    def testFindString(self):
-        L = []
-        self.assertEqual(0, Alias.findString('foo', L))
-        L.append('bar')
-        self.assertEqual(0, Alias.findString('foo', L))
-        L.append('foo')
-        self.assertEqual(1, Alias.findString('foo', L))
-        L.append([])
-        self.assertEqual(1, Alias.findString('foo', L))
-        L.append(['bar'])
-        self.assertEqual(1, Alias.findString('foo', L))
-        L.append(['foo'])
-        self.assertEqual(2, Alias.findString('foo', L))
-        L.append(['bar', 'foo'])
-        self.assertEqual(3, Alias.findString('foo', L))
-        L.append(['foo', 'foo', 'foo'])
-        self.assertEqual(6, Alias.findString('foo', L))
+    def testFindAliasCommand(self):
+        s = 'command'
+        self.failIf(Alias.findAliasCommand(s, ''))
+        self.failIf(Alias.findAliasCommand(s, 'foo'))
+        self.failIf(Alias.findAliasCommand(s, 'foo bar [  baz]'))
+        self.failIf(Alias.findAliasCommand(s, 'foo bar [baz]'))
+        self.failUnless(Alias.findAliasCommand(s, s))
+        self.failUnless(Alias.findAliasCommand(s, '  %s' % s))
+        self.failUnless(Alias.findAliasCommand(s, '[%s]' % s))
+        self.failUnless(Alias.findAliasCommand(s, '[ %s]' % s))
+        self.failUnless(Alias.findAliasCommand(s, 'foo bar [%s]' % s))
+        self.failUnless(Alias.findAliasCommand(s, 'foo bar [ %s]' % s))
 
-    def testFindDollars(self):
-        L = []
-        self.assertEqual([], Alias.findDollars(L))
-        L.append('foo')
-        self.assertEqual([], Alias.findDollars(L))
-        L.append('$1')
-        self.assertEqual([([1], '$1')], Alias.findDollars(L))
-        L.append('$1 foo bar')
-        self.assertEqual([([1], '$1')], Alias.findDollars(L))
-        L.append('$2')
-        self.assertEqual([([1], '$1'), ([3], '$2')], Alias.findDollars(L))
-        L.append(['foo'])
-        self.assertEqual([([1], '$1'), ([3], '$2')], Alias.findDollars(L))
-        L.append(['foo', 'bar', '$1'])
-        self.assertEqual([([1], '$1'), ([3], '$2'), ([5, 2], '$1')],
-                         Alias.findDollars(L))
-        L.append([[[['$3']]]])
+    def testFindBiggestDollar(self):
+        self.assertEqual(Alias.findBiggestDollar(''), None)
+        self.assertEqual(Alias.findBiggestDollar('foo'), None)
+        self.assertEqual(Alias.findBiggestDollar('$0'), 0)
+        self.assertEqual(Alias.findBiggestDollar('$1'), 1)
+        self.assertEqual(Alias.findBiggestDollar('$2'), 2)
+        self.assertEqual(Alias.findBiggestDollar('$3'), 3)
+        self.assertEqual(Alias.findBiggestDollar('foo bar $1'), 1)
+        self.assertEqual(Alias.findBiggestDollar('foo $2 $1'), 2)
+        self.assertEqual(Alias.findBiggestDollar('foo $0 $1'), 1)
+        self.assertEqual(Alias.findBiggestDollar('foo $1 $3'), 3)
+        self.assertEqual(Alias.findBiggestDollar('$10 bar $1'), 10)
