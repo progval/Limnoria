@@ -440,11 +440,13 @@ class Irc(IrcCommandDispatcher):
     _nickSetters = sets.Set(['001', '002', '003', '004', '250', '251', '252',
                              '254', '255', '265', '266', '372', '375', '376',
                              '333', '353', '332', '366', '005'])
-    def __init__(self, nick, user='', ident='', password='', callbacks=None):
+    def __init__(self, nick, user='', ident='',
+                 network='unset', password='', callbacks=None):
         world.ircs.append(self)
         self.originalNick = intern(nick)
+        self.originalNetwork = intern(network)
         self.nick = self.originalNick
-        self.network = 'unset'
+        self.network = self.originalNetwork
         self.nickmods = cycle(conf.supybot.nickmods())
         self.password = password
         self.user = intern(user or nick)  # Default to nick
@@ -474,6 +476,7 @@ class Irc(IrcCommandDispatcher):
     def reset(self):
         """Resets the Irc object.  Called when the driver reconnects."""
         self.nick = self.originalNick
+        self.network = self.originalNetwork
         self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
         self.state.reset()
         self.queue.reset()
@@ -570,13 +573,14 @@ class Irc(IrcCommandDispatcher):
     def do001(self, msg):
         """Logs (and stores) the name of the network."""
         welcome = msg.args[1]
-        if not welcome.startswith('Welcome to the '):
-            log.info('Unexpected 001 welcome, guessing at network name.')
-            self.network = msg.prefix
-        else:
-            words = welcome.split()
-            # We assume there is one more word after "Welcome to the ".
-            self.network = words[3].lower()
+        if self.network == 'unset':
+            if not welcome.startswith('Welcome to the '):
+                log.info('Unexpected 001 welcome, guessing at network name.')
+                self.network = msg.prefix
+            else:
+                words = welcome.split()
+                # We assume there is one more word after "Welcome to the ".
+                self.network = words[3].lower()
         log.info('Setting network to %s.', self.network)
 
     def do002(self, msg):

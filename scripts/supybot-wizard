@@ -257,14 +257,27 @@ def main():
     output("""Now we're going to ask you things that actually relate to the
     bot you'll be running.""")
 
-    # conf.supybot.server
-    # Force the user into specifying a server if he didn't have one already
-    try:
-        defaultServer = registry._cache['supybot.server']
-        defaultServer = utils.safeEval(defaultServer)
-        defaultServer = defaultServer.split(':')[0]
-    except KeyError:
-        defaultServer = None
+    network = None
+    while not network:
+        output("""First, we need to know the name of the network you'd like to
+        connect to.  Not the server host, mind you, but the name of the
+        network.  If you plan to connect to irc.freenode.net, for instance, you
+        should answer this question with 'freenode' (without the quotes).""")
+        network = something('What IRC network will you be connecting to?')
+        if '.' in network:
+            output("""There shouldn't be a '.' in the network name.  Remember,
+            this is the network name, not the actual server you plan to connect
+            to.""")
+            network = None
+        elif not isValidRegistryName:
+            output("""That's not a valid name for one reason or another.  Please
+            pick a simpler name, one more likely to be valid.""")
+            network = None
+
+    conf.supybot.networks.default.set(network)
+    network = conf.registerNetwork(network)
+        
+    defaultServer = None
     server = None
     while not server:
         serverString = something('What server would you like to connect to?',
@@ -274,28 +287,29 @@ def main():
             ip = socket.gethostbyname(serverString)
         except:
             output("""Sorry, I couldn't find that server.  Perhaps you
-            misspelled it?""")
-            continue
-        output("""Found %s (%s).""" % (serverString, ip))
-        output("""IRC Servers almost always accept connections on port
-        6667.  They can, however, accept connections anywhere their admin
-        feels like he wants to accept connections from.""")
-        if yn('Does this server require connection on a non-standard port?',
-              default=False):
-            port = 0
-            while not port:
-                port = something('What port is that?')
-                try:
-                    i = int(port)
-                    if not (0 < i < 65536):
-                        raise ValueError
-                except ValueError:
-                    output("""That's not a valid port.""")
-                    port = 0
-        else:
-            port = 6667
-        server = ':'.join(map(str, [serverString, port]))
-    conf.supybot.server.set(server)
+            misspelled it?  Also, be sure not to put the port in the server's
+            name -- we'll ask you about that later.""")
+
+    output("""Found %s (%s).""" % (serverString, ip))
+    output("""IRC Servers almost always accept connections on port
+    6667.  They can, however, accept connections anywhere their admin
+    feels like he wants to accept connections from.""")
+    if yn('Does this server require connection on a non-standard port?',
+          default=False):
+        port = 0
+        while not port:
+            port = something('What port is that?')
+            try:
+                i = int(port)
+                if not (0 < i < 65536):
+                    raise ValueError
+            except ValueError:
+                output("""That's not a valid port.""")
+                port = 0
+    else:
+        port = 6667
+    server = ':'.join([serverString, str(port)])
+    network.server.setValue(server)
 
     # conf.supybot.nick
     # Force the user into specifying a nick if he didn't have one already

@@ -52,9 +52,15 @@ _pluginsDir = os.path.join(installDir, 'plugins')
 version ='0.77.2+cvs'
 
 ###
+# *** The following variables are affected by command-line options.  They are
+#     not registry variables for a specific reason.  Do *not* change these to
+#     registry variables without first consulting people smarter than yourself.
+###
+
+###
 # daemonized: This determines whether or not the bot has been daemonized
 #             (i.e., set to run in the background).  Obviously, this defaults
-#             to False.
+#             to False.  A command-line option for obvious reasons.
 ###
 daemonized = False
 
@@ -80,14 +86,14 @@ supybot = registry.Group()
 supybot.setName('supybot')
 
 def registerGroup(Group, name, group=None):
-    Group.register(name, group)
+    return Group.register(name, group)
 
 def registerGlobalValue(group, name, value):
-    group.register(name, value)
+    return group.register(name, value)
 
 def registerChannelValue(group, name, value):
     value.supplyDefault = True
-    group.register(name, value)
+    return group.register(name, value)
 
 def registerPlugin(name, currentValue=None):
     registerGlobalValue(supybot.plugins, name,
@@ -95,7 +101,7 @@ def registerPlugin(name, currentValue=None):
         default.""", showDefault=False))
     if currentValue is not None:
         supybot.plugins.get(name).setValue(currentValue)
-    registerGroup(users.plugins, name)
+    return registerGroup(users.plugins, name)
 
 ###
 # The user info registry.
@@ -130,8 +136,8 @@ class ValidChannel(registry.String):
         else:
             registry.String.setValue(self, v)
 
-supybot.register('nick', ValidNick('supybot',
-"""Determines the bot's nick."""))
+registerGlobalValue(supybot, 'nick',
+   ValidNick('supybot', """Determines the bot's nick."""))
 
 registerGlobalValue(supybot, 'ident',
     ValidNick('supybot', """Determines the bot's ident string, if the server
@@ -142,11 +148,30 @@ registerGlobalValue(supybot, 'user',
     sends to the server."""))
 
 # TODO: Make this check for validity.
-supybot.register('server', registry.String('irc.freenode.net', """Determines
-what server the bot connects to."""))
+registerGroup(supybot, 'networks')
+registerGlobalValue(supybot.networks, 'default', registry.String('',
+    """Determines what the default network joined by the bot will be."""))
 
-supybot.register('password', registry.String('', """Determines the password to
-be sent to the server if it requires one."""))
+def registerNetwork(name, password='', server=''):
+    name = intern(name)
+    network = registerGroup(supybot.networks, name)
+    registerGlobalValue(network, 'password', registry.String(password,
+        """Determines what password will be used on %s.  Yes, we know that
+        technically passwords are server-specific and not network-specific,
+        but this is the best we can do right now.""" % name))
+    registerGlobalValue(network, 'server', registry.String(server,
+        """Determines what server the bot will connect to for %s.""" % name))
+    return network
+
+# Let's fill our networks.
+for (name, s) in registry._cache.iteritems():
+    if name.startswith('supybot.networks.'):
+        parts = name.split('.')
+        print parts
+        name = parts[2]
+        if name != 'default':
+            registerNetwork(name)
+
 
 class SpaceSeparatedSetOfChannels(registry.SeparatedListOf):
     List = ircutils.IrcSet

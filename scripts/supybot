@@ -123,18 +123,12 @@ if __name__ == '__main__':
     parser.add_option('-n', '--nick', action='store',
                       dest='nick', default='',
                       help='nick the bot should use')
-    parser.add_option('-s', '--server', action='store',
-                      dest='server', default='',
-                      help='server to connect to')
     parser.add_option('-u', '--user', action='store',
                       dest='user', default='',
                       help='full username the bot should use')
     parser.add_option('-i', '--ident', action='store',
                       dest='ident', default='',
                       help='ident the bot should use')
-    parser.add_option('-p', '--password', action='store',
-                      dest='password', default='',
-                      help='server password the bot should use')
     parser.add_option('-d', '--daemon', action='store_true',
                       dest='daemon',
                       help='Determines whether the bot will daemonize.  '
@@ -209,9 +203,12 @@ if __name__ == '__main__':
     nick = options.nick or conf.supybot.nick()
     user = options.user or conf.supybot.user()
     ident = options.ident or conf.supybot.ident()
-    password = options.password or conf.supybot.password()
-
-    server = options.server or conf.supybot.server()
+    
+    # We could add an option for this, but we'll wait until it's requested.
+    defaultNetwork = conf.supybot.networks.default()
+    network = conf.supybot.networks.get(defaultNetwork)
+    server = network.server()
+    password = network.password()
     if ':' in server:
         serverAndPort = server.split(':', 1)
         serverAndPort[1] = int(serverAndPort[1])
@@ -220,6 +217,7 @@ if __name__ == '__main__':
         server = (server, 6667)
 
     if options.optimize:
+        # This doesn't work anymore.
         __builtins__.__debug__ = False
         if options.optimize > 1:
             try:
@@ -253,7 +251,8 @@ if __name__ == '__main__':
     import callbacks
     import Owner
 
-    irc = irclib.Irc(nick, user=user, ident=ident, password=password)
+    irc = irclib.Irc(nick, user=user, ident=ident,
+                     network=defaultNetwork, password=password)
     callback = Owner.Class()
     irc.addCallback(callback)
     driver = drivers.newDriver(server, irc)
