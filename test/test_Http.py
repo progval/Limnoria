@@ -54,6 +54,7 @@ class HttpTest(PluginTestCase, PluginDocumentation):
 
     def testAcronym(self):
         self.assertNotError('acronym PERL')
+        self.assertNotRegexp('acronym UNIX', 'not an acronym')
 
     def testNetcraft(self):
         self.assertNotError('netcraft slashdot.org')

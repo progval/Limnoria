@@ -332,6 +332,10 @@ class Http(callbacks.Privmsg):
         fd.close()
         # The following definitions are stripped and empties are removed.
         defs = filter(None, map(str.strip, self._acronymre.findall(html)))
+        utils.sortBy(lambda s: not s.startswith('[not an acronym]'), defs)
+        for (i, s) in enumerate(defs):
+            if s.startswith('[not an acronym]'):
+                defs[i] = s.split('is ', 1)[1]
         #debug.printf(defs)
         if len(defs) == 0:
             irc.reply(msg, 'No definitions found.')
