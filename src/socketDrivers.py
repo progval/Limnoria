@@ -175,8 +175,8 @@ class SocketDriver(drivers.IrcDriver):
             
     def _scheduleReconnect(self):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
-        whenS = log.timestamp(when)
         if not world.dying:
+            whenS = log.timestamp(when)
             log.info('Scheduling reconnect to %s at %s', self.server, whenS)
         schedule.addEvent(self.reconnect, when)
 
