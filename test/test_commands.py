@@ -30,20 +30,20 @@
 from testsupport import *
 
 from supybot.commands import *
+import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.callbacks as callbacks
 
 
 class CommandsTestCase(SupyTestCase):
-    msg = ircmsgs.privmsg('test', 'foo')
-    class irc:
-        nick = 'test'
-        def error(self, s):
-            raise self.failureException, s
-    def assertState(self, spec, given, expected, **kwargs):
-        irc = callbacks.SimpleProxy(self.irc(), self.msg)
+    def assertState(self, spec, given, expected, target='test', **kwargs):
+        msg = ircmsgs.privmsg(target, 'foo')
+        realIrc = getTestIrc()
+        realIrc.nick = 'test'
+        realIrc.state.supported['chantypes'] = '#'
+        irc = callbacks.SimpleProxy(realIrc, msg)
         myspec = Spec(spec, **kwargs)
-        state = myspec(irc, self.msg, given)
+        state = myspec(irc, msg, given)
         self.assertEqual(state.args, expected,
                          'Expected %r, got %r' % (expected, state.args))
 
@@ -95,8 +95,11 @@ class CommandsTestCase(SupyTestCase):
         self.assertState(spec, ['1', '2', '3'], [[1, 2, 3]])
         self.assertRaises(callbacks.Error,
                           self.assertState, spec, [], ['asdf'])
-
-
+    def testChannelRespectsNetwork(self):
+        spec = ['channel', 'text']
+        self.assertState(spec, ['#foo', '+s'], ['#foo', '+s'])
+        self.assertState(spec, ['+s'], ['#foo', '+s'], target='#foo')
+        
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

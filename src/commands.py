@@ -108,7 +108,7 @@ def urlSnarfer(f):
     def newf(self, irc, msg, match, *L, **kwargs):
         url = match.group(0)
         channel = msg.args[0]
-        if not ircutils.isChannel(channel):
+        if not irc.isChannel(channel):
             return
         if ircdb.channels.getChannel(channel).lobotomized:
             self.log.info('Not snarfing in %s: lobotomized.', channel)
@@ -234,7 +234,7 @@ def getHaveOp(irc, msg, args, state, action='do that'):
         irc.error('I need to be opped to %s.' % action, Raise=True)
 
 def validChannel(irc, msg, args, state):
-    if ircutils.isChannel(args[0]):
+    if irc.isChannel(args[0]):
         # XXX Check maxlength in irc.state.supported.
         state.args.append(args.pop(0))
     else:
@@ -317,9 +317,9 @@ def getSeenNick(irc, msg, args, state, errmsg=None):
 
 
 def getChannel(irc, msg, args, state):
-    if args and ircutils.isChannel(args[0]):
+    if args and irc.isChannel(args[0]):
         channel = args.pop(0)
-    elif ircutils.isChannel(msg.args[0]):
+    elif irc.isChannel(msg.args[0]):
         channel = msg.args[0]
     else:
         state.log.debug('Raising ArgumentError because there is no channel.')
@@ -333,9 +333,17 @@ def inChannel(irc, msg, args, state):
     if state.channel not in irc.state.channels:
         irc.error('I\'m not in %s.' % state.channel, Raise=True)
 
+def onlyInChannel(irc, msg, args, state):
+    if not (irc.isChannel(msg.args[0]) and msg.args[0] in irc.state.channels):
+        irc.error('This command may only be given in a channel that I am in.',
+                  Raise=True)
+    else:
+        state.channel = msg.args[0]
+        state.args.append(state.channel)
+
 def callerInChannel(irc, msg, args, state):
     channel = args[0]
-    if ircutils.isChannel(channel):
+    if irc.isChannel(channel):
         if channel in irc.state.channels:
             if msg.nick in irc.state.channels[channel].users:
                 state.args.append(args.pop(0))
@@ -379,11 +387,11 @@ def getSomethingNoSpaces(irc, msg, args, state, *L):
     getSomething(irc, msg, args, state, p=p, *L)
 
 def private(irc, msg, args, state):
-    if ircutils.isChannel(msg.args[0]):
+    if irc.isChannel(msg.args[0]):
         irc.errorRequiresPrivacy(Raise=True)
 
 def public(irc, msg, args, state, errmsg=None):
-    if not ircutils.isChannel(msg.args[0]):
+    if not irc.isChannel(msg.args[0]):
         if errmsg is None:
             errmsg = 'This message must be sent in a channel.'
         irc.error(errmsg, Raise=True)
@@ -468,6 +476,7 @@ wrappers = ircutils.IrcDict({
     'seenNick': getSeenNick,
     'channel': getChannel,
     'inChannel': inChannel,
+    'onlyInChannel': onlyInChannel,
     'callerInChannel': callerInChannel,
     'plugin': getPlugin,
     'boolean': getBoolean,
@@ -678,11 +687,10 @@ class Spec(object):
         utils.mapinto(contextify, self.types)
 
     def __call__(self, irc, msg, args, stateAttrs={}):
-        if self.types:
-            state = self._state(self.types[:], stateAttrs)
-            while state.types:
-                context = state.types.pop(0)
-                context(irc, msg, args, state)
+        state = self._state(self.types[:], stateAttrs)
+        while state.types:
+            context = state.types.pop(0)
+            context(irc, msg, args, state)
         if args and not self.allowExtra:
             log.debug('args and not self.allowExtra: %r', args)
             raise callbacks.ArgumentError
