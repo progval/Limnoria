@@ -107,7 +107,7 @@ class StdoutStreamHandler(logging.StreamHandler):
             if not isinstance(record.levelname, basestring):
                 print record
                 print record.levelname
-                print utils.gen.stackTrace()
+                print utils.stackTrace()
             prefixLen = len(record.levelname) + 1 # ' '
             s = textwrap.fill(s, width=78, subsequent_indent=' '*prefixLen)
             s.rstrip('\r\n')

@@ -70,7 +70,7 @@ class User(callbacks.Plugin):
             else:
                 users.append(u.name)
         if users:
-            utils.gen.sortBy(str.lower, users)
+            utils.sortBy(str.lower, users)
             irc.reply(format('%L', users))
         else:
             if predicates:

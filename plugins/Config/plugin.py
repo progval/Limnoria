@@ -117,7 +117,7 @@ class Config(callbacks.Plugin):
             if v._added and not all(ircutils.isChannel, v._added):
                 vname = '@' + vname
             L.append(vname)
-        utils.gen.sortBy(str.lower, L)
+        utils.sortBy(str.lower, L)
         return L
 
     def list(self, irc, msg, args, group):

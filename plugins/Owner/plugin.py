@@ -323,7 +323,7 @@ class Owner(callbacks.Plugin):
         try:
             m = ircmsgs.IrcMsg(s)
         except Exception, e:
-            irc.error(utils.gen.exnToString(e))
+            irc.error(utils.exnToString(e))
         else:
             irc.queueMsg(m)
             irc.noReply()

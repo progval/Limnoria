@@ -647,7 +647,7 @@ class IrcObjectProxy(RichReplyMethods):
                 cb.log.exception('Uncaught exception in %s.%s:',
                                  cb.name(), name)
                 if conf.supybot.reply.error.detailed():
-                    return self.error(utils.gen.exnToString(e))
+                    return self.error(utils.exnToString(e))
                 else:
                     return self.replyError()
         finally:
@@ -1055,7 +1055,7 @@ class Commands(object):
         except (getopt.GetoptError, ArgumentError):
             irc.reply(formatArgumentError(method, name=name))
         except (SyntaxError, Error), e:
-            self.log.debug('Error return: %s', utils.gen.exnToString(e))
+            self.log.debug('Error return: %s', utils.exnToString(e))
             irc.error(str(e))
         elapsed = time.time() - start
 
@@ -1128,7 +1128,7 @@ class PluginMixin(irclib.IrcCallback):
                     handleBadArgs()
             else:
                 handleBadArgs()
-        dispatcher = utils.gen.changeFunctionName(dispatcher, canonicalname)
+        dispatcher = utils.changeFunctionName(dispatcher, canonicalname)
         if self._original:
             dispatcher.__doc__ = self._original.__doc__
             dispatcher.isDispatcher = False
@@ -1287,7 +1287,7 @@ class PluginRegexp(Plugin):
             if catchErrors:
                 self.log.exception('Uncaught exception in callCommand:')
                 if conf.supybot.reply.error.detailed():
-                    irc.error(utils.gen.exnToString(e))
+                    irc.error(utils.exnToString(e))
                 else:
                     irc.replyError()
             else:

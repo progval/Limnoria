@@ -327,7 +327,7 @@ class Karma(callbacks.Plugin):
             irc.reply(s)
     karma = wrap(karma, ['channel', any('something')])
 
-    _mostAbbrev = utils.gen.abbrev(['increased', 'decreased', 'active'])
+    _mostAbbrev = utils.abbrev(['increased', 'decreased', 'active'])
     def most(self, irc, msg, args, channel, kind):
         """[<channel>] {increased,decreased,active}
 

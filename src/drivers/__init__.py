@@ -138,13 +138,13 @@ class Log(object):
             if isinstance(e, socket.gaierror):
                 e = e.args[1]
             else:
-                e = utils.gen.exnToString(e)
+                e = utils.exnToString(e)
         self.warning('Error connecting to %s: %s', server, e)
 
     def disconnect(self, server, e=None):
         if e:
             if isinstance(e, Exception):
-                e = utils.gen.exnToString(e)
+                e = utils.exnToString(e)
             else:
                 e = str(e)
             if not e.endswith('.'):

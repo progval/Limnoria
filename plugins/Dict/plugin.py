@@ -109,7 +109,7 @@ class Dict(callbacks.Plugin):
             db = ircutils.bold(db)
             s = utils.str.normalizeWhitespace(s).rstrip(';.,')
             L.append('%s: %s' % (db, s))
-        utils.gen.sortBy(len, L)
+        utils.sortBy(len, L)
         if dictionary == '*' and len(dbs) > 1:
             s = format('%L responded: %s', list(dbs), '; '.join(L))
         else:

@@ -36,7 +36,7 @@ import supybot.callbacks as callbacks
 
 class Babelfish(callbacks.Plugin):
     threaded = True
-    _abbrevs = utils.gen.abbrev(map(str.lower, babelfish.available_languages))
+    _abbrevs = utils.abbrev(map(str.lower, babelfish.available_languages))
     _abbrevs['de'] = 'german'
     _abbrevs['jp'] = 'japanese'
     _abbrevs['kr'] = 'korean'

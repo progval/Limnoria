@@ -89,7 +89,7 @@ class Debug(callbacks.Privmsg):
             self._evalEnv['_'] = x
             irc.reply(repr(x))
         except SyntaxError, e:
-            irc.reply(format('%s: %q', utils.gen.exnToString(e), s))
+            irc.reply(format('%s: %q', utils.exnToString(e), s))
     eval = wrap(eval, ['text'])
 
     def _exec(self, irc, msg, args, s):

@@ -76,7 +76,7 @@ class Misc(callbacks.Plugin):
             irc.reply('You\'ve given me %s invalid commands within the last '
                       'minute; I\'m now ignoring you for %s.' %
                       (maximum,
-                       utils.gen.timeElapsed(punishment, seconds=False)))
+                       utils.timeElapsed(punishment, seconds=False)))
             return
         # Now, for normal handling.
         channel = msg.args[0]
@@ -456,7 +456,7 @@ class Misc(callbacks.Plugin):
             L = module.__contributors__.items()
             def negativeSecondElement(x):
                 return -len(x[1])
-            utils.gen.sortBy(negativeSecondElement, L)
+            utils.sortBy(negativeSecondElement, L)
             return [t[0] for t in L]
         def buildPeopleString(module):
             """

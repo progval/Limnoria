@@ -966,7 +966,7 @@ class Irc(IrcCommandDispatcher):
                 log.debug('Last Irc, clearing callbacks.')
                 self.callbacks[:] = []
         else:
-            log.warning('Irc object killed twice: %s', utils.gen.stackTrace())
+            log.warning('Irc object killed twice: %s', utils.stackTrace())
 
     def __hash__(self):
         return id(self)

@@ -182,7 +182,7 @@ class Network(callbacks.Plugin):
             L = ['isn\'t on any non-secret channels']
         channels = format('%L', L)
         if '317' in d:
-            idle = utils.gen.timeElapsed(d['317'].args[2])
+            idle = utils.timeElapsed(d['317'].args[2])
             signon = time.strftime(conf.supybot.reply.format.time(),
                                    time.localtime(float(d['317'].args[3])))
         else:
@@ -241,7 +241,7 @@ class Network(callbacks.Plugin):
         Returns the networks to which the bot is currently connected.
         """
         L = ['%s: %s' % (ircd.network, ircd.server) for ircd in world.ircs]
-        utils.gen.sortBy(str.lower, L)
+        utils.sortBy(str.lower, L)
         irc.reply(format('%L', L))
     networks = wrap(networks)
 

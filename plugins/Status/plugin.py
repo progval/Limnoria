@@ -99,7 +99,7 @@ class Status(callbacks.Plugin):
         """
         try:
             elapsed = time.time() - self.connected[irc.getRealIrc()]
-            timeElapsed = utils.gen.timeElapsed(elapsed)
+            timeElapsed = utils.timeElapsed(elapsed)
         except KeyError:
             timeElapsed = 'an indeterminate amount of time'
         irc.reply('I have received %s messages for a total of %s bytes.  '
@@ -200,7 +200,7 @@ class Status(callbacks.Plugin):
         Returns the amount of time the bot has been running.
         """
         response = 'I have been running for %s.' % \
-                   utils.gen.timeElapsed(time.time() - world.startedAt)
+                   utils.timeElapsed(time.time() - world.startedAt)
         irc.reply(response)
     uptime = wrap(uptime)
 

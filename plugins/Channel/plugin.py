@@ -784,7 +784,7 @@ class Channel(callbacks.Plugin):
         message isn't sent in the channel itself.
         """
         L = list(irc.state.channels[channel].users)
-        utils.gen.sortBy(str.lower, L)
+        utils.sortBy(str.lower, L)
         irc.reply(utils.str.commaAndify(L))
     nicks = wrap(nicks, ['inChannel']) # XXX Check that the caller is in chan.
 

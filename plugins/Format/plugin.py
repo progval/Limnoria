@@ -184,7 +184,7 @@ class Format(callbacks.Plugin):
             s %= tuple(args)
             irc.reply(s)
         except TypeError, e:
-            self.log.debug(utils.gen.exnToString(e))
+            self.log.debug(utils.exnToString(e))
             irc.error('Not enough arguments for the format string.',Raise=True)
 
 

@@ -154,7 +154,7 @@ class Admin(callbacks.Plugin):
         """
         L = irc.state.channels.keys()
         if L:
-            utils.gen.sortBy(ircutils.toLower, L)
+            utils.sortBy(ircutils.toLower, L)
             irc.reply(format('%L', L))
         else:
             irc.reply('I\'m not currently in any channels.')

@@ -249,7 +249,7 @@ class IrcUser(object):
         """Sets the user's password."""
         if hashed or self.hashed:
             self.hashed = True
-            self.password = utils.gen.saltHash(password)
+            self.password = utils.saltHash(password)
         else:
             self.password = password
 
@@ -257,7 +257,7 @@ class IrcUser(object):
         """Checks the user's password."""
         if self.hashed:
             (salt, _) = self.password.split('|')
-            return (self.password == utils.gen.saltHash(password, salt=salt))
+            return (self.password == utils.saltHash(password, salt=salt))
         else:
             return (self.password == password)
 
@@ -437,11 +437,11 @@ class IrcChannel(object):
         for capability in self.capabilities:
             write('capability ' + capability)
         bans = self.bans.items()
-        utils.gen.sortBy(operator.itemgetter(1), bans)
+        utils.sortBy(operator.itemgetter(1), bans)
         for (ban, expiration) in bans:
             write('ban %s %d' % (ban, expiration))
         ignores = self.ignores.items()
-        utils.gen.sortBy(operator.itemgetter(1), ignores)
+        utils.sortBy(operator.itemgetter(1), ignores)
         for (ignore, expiration) in ignores:
             write('ignore %s %d' % (ignore, expiration))
         fd.write(os.linesep)
@@ -578,7 +578,7 @@ class UsersDictionary(utils.IterableMap):
                 self.flush()
             except EnvironmentError, e:
                 log.error('Invalid user dictionary file, resetting to empty.')
-                log.error('Exact error: %s', utils.gen.exnToString(e))
+                log.error('Exact error: %s', utils.exnToString(e))
             except Exception, e:
                 log.exception('Exact error:')
         finally:
@@ -773,7 +773,7 @@ class ChannelsDictionary(utils.IterableMap):
                 self.flush()
             except Exception, e:
                 log.error('Invalid channel database, resetting to empty.')
-                log.error('Exact error: %s', utils.gen.exnToString(e))
+                log.error('Exact error: %s', utils.exnToString(e))
         finally:
             self.noFlush = False
 
