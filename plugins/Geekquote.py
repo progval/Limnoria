@@ -79,7 +79,7 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     callBefore = ['URL']
     regexps = ['geekSnarfer']
-    
+
     def __init__(self):
         self.__parent = super(Geekquote, self)
         self.__parent.__init__()
@@ -95,9 +95,10 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         except webutils.WebError, e:
             irc.error(str(e))
 
+    _joiner = ' // '
     _qdbReString = r'<tr><td bgcolor="#(?:ffffff|e8e8e8)"><a href="/\d*?">'\
                     r'#\d*?</a>.*?<p>(?P<text>.*?)</p></td></tr>'
-    _gkREDict = {'bash.org':re.compile(r'<p class="qt">(?P<text>.*?)</p>', 
+    _gkREDict = {'bash.org':re.compile(r'<p class="qt">(?P<text>.*?)</p>',
                     re.M | re.DOTALL),
                 'qdb.us':re.compile(_qdbReString, re.M | re.DOTALL)}
     def _gkBackend(self, irc, msg, site, id):
@@ -116,13 +117,13 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
             if self.randomData[site]:
                 quote = self.randomData[site].pop()
             else:
-                if (site == 'qdb.us' and 
+                if (site == 'qdb.us' and
                             int(time.time()) - self.lastqdbRandomTime <= 90):
                     id = 'browse=%s' % fix.choice(range(self.maxqdbPages))
                 quote = self._gkFetchData(site, id, random=True)
         else:
             quote = self._gkFetchData(site, id)
-        irc.reply(quote)
+        irc.replies(quote.split(self._joiner), joiner=self._joiner)
 
     def _gkFetchData(self, site, id, random=False):
         html = ''
@@ -131,10 +132,9 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         except webutils.WebError, e:
             self.log.info('%s server returned the error: %s' % \
                     (site, webutils.strError(e)))
-        s = ''
         for item in self._gkREDict[site].finditer(html):
             s = item.groupdict()['text']
-            s = ' // '.join(s.splitlines())
+            s = self._joiner.join(s.splitlines())
             s = utils.htmlToText(s)
             if random and s:
                 if s not in self.randomData[site]:
