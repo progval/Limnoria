@@ -310,7 +310,7 @@ def main():
     else:
         port = 6667
     server = ':'.join([serverString, str(port)])
-    network.server.setValue(server)
+    network.servers.setValue([server])
 
     # conf.supybot.nick
     # Force the user into specifying a nick if he didn't have one already
