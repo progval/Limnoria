@@ -162,8 +162,14 @@ class Enforcer(callbacks.Privmsg):
         return False    # Default.
 
     def _revenge(self, irc, channel, hostmask):
-        irc.queueMsg(ircmsgs.ban(channel, ircutils.banmask(hostmask)))
-        irc.queueMsg(ircmsgs.kick(channel,ircutils.nickFromHostmask(hostmask)))
+        nick = ircutils.nickFromHostmask(hostmask)
+        if irc.nick != nick:
+            irc.queueMsg(ircmsgs.ban(channel, ircutils.banmask(hostmask)))
+            irc.queueMsg(ircmsgs.kick(channel, nick))
+        else:
+            # This can happen if takeRevengeOnOps is True.
+            self.log.info('Tried to take revenge on myself.  '
+                          'Are you sure you want takeRevengeOnOps to be True?')
 
     def doKick(self, irc, msg):
         channel = msg.args[0]
