@@ -70,12 +70,23 @@ def window(L, size):
         yield L[i:i+size]
 
 import itertools
-def ilen(iterator):
+def ilen(iterable):
     """Returns the length of an iterator."""
     i = 0
-    for _ in iterator:
+    for _ in iterable:
         i += 1
     return i
+
+def trueCycle(iterable):
+    while 1:
+        yielded = False
+        for x in iterable:
+            yield x
+            yielded = True
+        if not yielded:
+            raise StopIteration
+
+itertools.trueCycle = trueCycle
 itertools.ilen = ilen
 
 def groupby(key, iterable):
