@@ -119,6 +119,12 @@ if sqlite is not None:
                               'term=all+your+base+are+belong+to+us',
                               r'http://tinyurl.com/u479.* \(was')
 
+        def testTitleSnarfer(self):
+            self.assertNoResponse('http://microsoft.com/')
+            self.assertNotError('url config title-snarfer on')
+            self.assertResponse('http://microsoft.com/',
+                                'Title: Microsoft Corporation')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -49,6 +49,7 @@ import urlparse
 import conf
 import utils
 import ircmsgs
+import webutils
 import ircutils
 import privmsgs
 import callbacks
@@ -89,15 +90,20 @@ def configure(onStart, afterConnect, advanced):
 class URL(callbacks.PrivmsgCommandAndRegexp,
           configurable.Mixin,
           plugins.ChannelDBHandler):
-    regexps = ['tinyurlSnarfer']
+    regexps = ['tinyurlSnarfer', 'titleSnarfer']
     configurables = configurable.Dictionary(
         [('tinyurl-snarfer', configurable.BoolType, False,
           """Determines whether the bot will output shorter versions of URLs
           longer than the tinyurl-minimum-length config variable."""),
          ('tinyurl-minimum-length', configurable.IntType, 46,
           """The minimum length a URL must be before the tinyurl-snarfer will
-          snarf it and offer a tinyurl replacement."""),]
+          snarf it and offer a tinyurl replacement."""),
+         ('title-snarfer', configurable.BoolType, False,
+          """Determines whether the bot will output the HTML title of URLs it
+          sees in the channel."""),]
     )
+    _titleRe = re.compile('<title>(.*?)</title>', re.I)
+    maxSize = 4096
     def __init__(self):
         self.nextMsgs = {}
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
@@ -172,8 +178,8 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         if not ircutils.isChannel(msg.args[0]):
             return
         channel = msg.args[0]
-        url = match.group(0)
         if self.configurables.get('tinyurl-snarfer', channel):
+            url = match.group(0)
             minlen = self.configurables.get('tinyurl-minimum-length', channel)
             if len(url) >= minlen:
                 db = self.getDb(channel)
@@ -187,6 +193,20 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                 s = '%s (was <%s>)' % (ircutils.bold(tinyurl), url)
                 irc.reply(msg, s, prefixName=False)
     tinyurlSnarfer = privmsgs.urlSnarfer(tinyurlSnarfer)
+
+    def titleSnarfer(self, irc, msg, match):
+        r"https?://[^\])>\s]+"
+        if not ircutils.isChannel(msg.args[0]):
+            return
+        channel = msg.args[0]
+        if self.configurables.get('title-snarfer', channel):
+            url = match.group(0)
+            text = webutils.getUrl(url, size=self.maxSize)
+            m = self._titleRe.search(text)
+            if m is not None:
+                s = utils.htmlToText(m.group(1).strip())
+                irc.reply(msg, 'Title: %s' % s, prefixName=False)
+    titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
                 
     def _updateTinyDb(self, url, tinyurl, channel):
         db = self.getDb(channel)
