@@ -62,11 +62,11 @@ class IrcDriver(object):
 
     def die(self):
         # The end of any overrided die method should be
-        # "super(Class, obj).die()", in order to make
+        # "super(Class, self).die()", in order to make
         # sure this (and anything else later added) is done.
         _deadDrivers.append(self.name())
 
-    def reconnect(self):
+    def reconnect(self, wait=False):
         raise NotImplementedError
 
     def name(self):
