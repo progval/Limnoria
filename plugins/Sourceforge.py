@@ -74,11 +74,15 @@ def configure(onStart, afterConnect, advanced):
         if project:
             onStart.append('Sourceforge config defaultproject %s' % project)
 
-    if yn('Would you like to setup sf as an alias to Sourceforge?') == 'y':
+    if yn('Would you like to add sf as an alias to Sourceforge?') == 'y':
         if 'load Alias' not in onStart:
             print 'This depends on the Alias module.'
             if yn('Would you like to load the Alias plugin now?') == 'y':
                 onStart.append('load Alias')
+            else:
+                print 'Then I can\'t add such an alias.'
+                return
+        onStart.append('alias add sf sourceforge $*')
 
 class TrackerError(Exception):
     pass
