@@ -124,14 +124,22 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             if 'Team:' in profile:
                 team = self._gkteam.search(profile).group('name')
                 s = '%s (team: %s) is rated %s and has %s ' \
-                    'and a record of W-%s, L-%s, D-%s (win/loss/draw %%: ' \
-                    '%.2f/%.2f/%.2f).  %s' % \
-                    (name, team, rating, games, w, l, d, wp, lp, dp, seen)
+                    'and a record of %s, %s, and %s ' \
+                    '(win/loss/draw percentage: %.2f%%/%.2f%%/%.2f%%).  %s' % \
+                    (name, team, rating, games,
+                     utils.nItems(w, 'win'),
+                     utils.nItems(l, 'loss'),
+                     utils.nItems(d, 'draw'),
+                     wp, lp, dp, seen)
             else:
                 s = '%s is rated %s and has %s ' \
-                    'and a record of W-%s, L-%s, D-%s (win/loss/draw %%: ' \
-                    '%.2f/%.2f/%.2f).  %s' % \
-                    (name, rating, games, w, l, d, wp, lp, dp, seen)
+                    'and a record of %s, %s, and %s ' \
+                    '(win/loss/draw percentage: %.2f%%/%.2f%%/%.2f%%).  %s' % \
+                    (name, rating, games,
+                     utils.nItems(w, 'win'),
+                     utils.nItems(l, 'loss'),
+                     utils.nItems(d, 'draw'),
+                     wp, lp, dp, seen)
             return s
         except AttributeError:
             if ('User %s not found!' % name) in profile:
