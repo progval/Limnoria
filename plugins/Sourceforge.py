@@ -75,7 +75,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     project's most recent bugs and rfes.
     """
     threaded = True
-    regexps = sets.Set(['sfSnarfer'])
+    regexps = ['sfSnarfer']
 
     _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href="([^"]+)">'\
         '([^<]+)</a>', re.I)

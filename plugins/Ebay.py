@@ -66,8 +66,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
     get info about an auction.
     """
     threaded = True
-    regexps = sets.Set(['ebaySnarfer'])
-
+    regexps = ['ebaySnarfer']
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.snarfer = True

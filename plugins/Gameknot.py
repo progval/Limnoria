@@ -68,8 +68,7 @@ example = utils.wrapLines("""
 
 class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
-    regexps = sets.Set(['gameknotSnarfer', 'gameknotStatsSnarfer'])
-
+    regexps = ['gameknotSnarfer', 'gameknotStatsSnarfer']
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.snarfer = True

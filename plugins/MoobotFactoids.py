@@ -125,8 +125,8 @@ def pick(L, recursed=False):
 
 class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     priority = 1000
-    addressedRegexps = sets.Set(['addFactoid', 'changeFactoid',
-                                 'augmentFactoid', 'replaceFactoid'])
+    addressedRegexps = ['changeFactoid', 'augmentFactoid',
+                        'replaceFactoid', 'addFactoid']
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.makeDB(dbfilename)
