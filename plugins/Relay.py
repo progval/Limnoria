@@ -309,10 +309,12 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
                     s = 'Somehow I\'m not in %s on %s.'% (channel,abbreviation)
                     irc.error(msg, s)
                     return
+                numUsers = 0
                 for s in Channel.users:
                     s = s.strip()
                     if not s:
                         continue
+                    numUsers += 1
                     elif s in Channel.ops:
                         ops.append('@%s' % s)
                     elif s in Channel.halfops:
@@ -327,7 +329,9 @@ class Relay(callbacks.Privmsg, plugins.Configurable):
                 utils.sortBy(ircutils.toLower, usersS)
                 usersS = ', '.join(ifilter(None, imap(', '.join,
                                   (ops,halfops,voices,usersS))))
-                users.append('%s: %s' % (ircutils.bold(abbreviation), usersS))
+                users.append('%s (%s): %s' % 
+                             (ircutils.bold(abbreviation), numUsers, usersS))
+        users.sort()
         irc.reply(msg, '; '.join(users))
 
     def whois(self, irc, msg, args):
