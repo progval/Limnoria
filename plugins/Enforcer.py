@@ -237,8 +237,10 @@ class Enforcer(callbacks.Privmsg):
     def doPart(self, irc, msg):
         if msg.prefix != irc.prefix:
             channel = msg.args[0]
-            if len(irc.state.channels[channel].users) == 1:
-                self._cycle(irc, channel)
+            c = irc.state.channels[channel]
+            if len(c.users) == 1:
+                if irc.nick not in c.ops:
+                    self._cycle(irc, channel)
 
     def doQuit(self, irc, msg):
         for (channel, c) in irc.state.channels.iteritems():
