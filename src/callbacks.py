@@ -41,7 +41,6 @@ how to use them.
 from fix import *
 
 import re
-import new
 import sets
 import time
 import shlex
@@ -127,19 +126,22 @@ class RateLimiter:
         self.unlimited = []
 
     def get(self):
+        """Returns the next un-ratelimited message, or the next rate-limited
+        message whose time has come up."""
         if self.unlimited:
             return self.unlimited.pop(0)
         elif self.limited:
             for i in range(len(self.limited)):
                 msg = self.limited[i]
-                if not self.limit(msg, penalize=False):
+                if not self._limit(msg, penalize=False):
                     return self.limited.pop(i)
             return None
         else:
             return None
 
     def put(self, msg):
-        t = self.limit(msg)
+        """Puts a message in for possible ratelimiting."""
+        t = self._limit(msg)
         if t and not world.testing:
             s = 'Limiting message from %s for %s seconds' % (msg.prefix, t)
             debug.msg(s, 'normal')
@@ -147,7 +149,7 @@ class RateLimiter:
         else:
             self.unlimited.append(msg)
 
-    def limit(self, msg, penalize=True):
+    def _limit(self, msg, penalize=True):
         if msg.prefix and ircutils.isUserHostmask(msg.prefix):
             (nick, user, host) = ircutils.splitHostmask(msg.prefix)
             key = '@'.join((user, host))
@@ -205,7 +207,7 @@ class Tokenizer:
         # Add a '|' to tokens to have the pipe syntax.
         self.validChars = self.validChars.translate(string.ascii, tokens)
 
-    def handleToken(self, token):
+    def _handleToken(self, token):
         while token and token[0] == '"' and token[-1] == token[0]:
             if len(token) > 1:
                 token = token[1:-1].decode('string_escape') # 2.3+
@@ -213,7 +215,7 @@ class Tokenizer:
                 break
         return token
 
-    def insideBrackets(self, lexer):
+    def _insideBrackets(self, lexer):
         ret = []
         while True:
             token = lexer.get_token()
@@ -222,9 +224,9 @@ class Tokenizer:
             elif token == ']':
                 return ret
             elif token == '[':
-                ret.append(self.insideBrackets(lexer))
+                ret.append(self._insideBrackets(lexer))
             else:
-                ret.append(self.handleToken(token))
+                ret.append(self._handleToken(token))
         return ret
 
     def tokenize(self, s):
@@ -245,11 +247,11 @@ class Tokenizer:
                 ends.append(args)
                 args = []
             elif token == '[':
-                args.append(self.insideBrackets(lexer))
+                args.append(self._insideBrackets(lexer))
             elif token == ']':
                 raise SyntaxError, 'Spurious "["'
             else:
-                args.append(self.handleToken(token))
+                args.append(self._handleToken(token))
         if ends:
             if not args:
                 raise SyntaxError, '"|" with nothing following'
@@ -273,6 +275,7 @@ def tokenize(s):
     return args
 
 def getCommands(tokens):
+    """Given tokens as output by tokenize, returns the command names."""
     L = []
     if tokens and isinstance(tokens, list):
         L.append(tokens[0])
@@ -309,10 +312,6 @@ class IrcObjectProxy:
             world.commandsProcessed += 1
             self.evalArgs()
 
-    def findCallback(self, commandName):
-        # Mostly for backwards compatibility now.
-        return findCallbackForCommand(self.irc, commandName)
-
     def evalArgs(self):
         while self.counter < len(self.args):
             if type(self.args[self.counter]) == str:
@@ -328,7 +327,7 @@ class IrcObjectProxy:
         self.finalEvaled = True
         originalName = self.args.pop(0)
         name = canonicalName(originalName)
-        cb = self.findCallback(name)
+        cb = findCallbackForCommand(self, name)
         try:
             if cb is not None:
                 anticap = ircdb.makeAntiCapability(name)
@@ -381,6 +380,16 @@ class IrcObjectProxy:
 
     def reply(self, msg, s, noLengthCheck=False, prefixName=True,
               action=False, private=False):
+        """reply(msg, text) -> replies to msg with text
+
+        Keyword arguments:
+          noLengthCheck=False: True if the length shouldn't be checked
+                               (used for 'more' handling)
+          prefixName=True:     False if the nick shouldn't be prefixed to the
+                               reply.
+          action=False:        True if the reply should be an action.
+          private=False:       True if the reply should be in private.
+        """
         # These use |= or &= based on whether or not they default to True or
         # False.  Those that default to True use &=; those that default to
         # False use |=.
@@ -435,6 +444,11 @@ class IrcObjectProxy:
             self.evalArgs()
 
     def error(self, msg, s, private=False):
+        """error(msg, text) -> replies to msg with an error message of text.
+
+        Keyword arguments:
+          private=False: True if the error should be given in private.
+        """
         if isinstance(self.irc, self.__class__):
             self.irc.error(msg, s, private)
         else:
@@ -445,18 +459,19 @@ class IrcObjectProxy:
                 self.irc.queueMsg(reply(msg, s))
 
     def killProxy(self):
+        """Kills this proxy object and all its parents."""
         if not isinstance(self.irc, irclib.Irc):
             self.irc.killProxy()
         self.__dict__ = {}
 
     def getRealIrc(self):
+        """Returns the real irclib.Irc object underlying this proxy chain."""
         if isinstance(self.irc, irclib.Irc):
             return self.irc
         else:
             return self.irc.getRealIrc()
 
     def __getattr__(self, attr):
-        #return getattr(self.getRealIrc(), attr)
         return getattr(self.irc, attr)
 
 
@@ -514,8 +529,6 @@ class ConfigIrcProxy(object):
 
     def error(self, msg, s, *args):
         debug.msg('ConfigIrcProxy saw an error: %s' % s, 'normal')
-
-    findCallback = IrcObjectProxy.findCallback.im_func
 
     def getRealIrc(self):
         irc = self.__dict__['irc']
