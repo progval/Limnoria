@@ -50,7 +50,7 @@ import callbacks
 
 conf.registerPlugin('WordStats')
 conf.registerChannelValue(conf.supybot.plugins.WordStats,
-    'wordstatsRankingDisplay',
+    'rankingDisplay',
     registry.PositiveInteger(3, """Determines the maximum number of top users
     to show for a given wordstat when someone requests the wordstats for a
     particular word."""))
@@ -220,7 +220,7 @@ class WordStats(callbacks.Privmsg, plugins.ChannelDBHandler):
             else:
                 # It's a word, not a user
                 word = arg1
-                numUsers = self.registryValue('wordstatsRankingDisplay',
+                numUsers = self.registryValue('rankingDisplay',
                                               msg.args[0])
                 cursor.execute("""SELECT word_stats.count,
                                          word_stats.user_id
