@@ -33,7 +33,7 @@ from test import *
 
 try:
     import twistedDrivers
-    class TwistedCommandsTestCase(PluginTestCase):
+    class TwistedCommandsTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('TwistedCommands',)
         def testDict(self):
             self.assertNotError('dict strike')
