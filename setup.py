@@ -30,6 +30,7 @@
 ###
 
 import sys
+import textwrap
 
 if sys.version_info < (2, 3, 0):
     sys.stderr.write("Supybot requires Python 2.3 or newer.\n")
@@ -39,8 +40,25 @@ import glob
 import shutil
 import os.path
 
-from distutils.core import setup
-from distutils.sysconfig import get_python_lib
+try:
+    from distutils.core import setup
+    from distutils.sysconfig import get_python_lib
+except ImportError, e:
+    s = ' '.join("""Supybot requires the distutils package to install. This
+    package is normally included with Python, but for some unfathomable reason,
+    many distributions to take it out of standard Python and put it in another
+    package, usually caled 'python-dev' or python-devel' or something similar.
+    This is one of the dumbest things a distribution can do, because it means
+    that developers cannot rely on *STANDARD* Python modules to be present on
+    systems of that distribution. Complain to your distribution, and loudly.
+    If you how much of our time we've wasted telling people to install what
+    should be included by default with Python you'd understand why we're
+    unhappy about this.  Anyway, to reiterate, install the development package
+    for Python that your distribution supplies.""".split())
+    sys.stderr.write(textwrap.fill(s))
+    sys.exit(-1)
+    
+    
 
 srcFiles = glob.glob(os.path.join('src', '*.py'))
 otherFiles = glob.glob(os.path.join('others', '*.py'))
