@@ -56,16 +56,19 @@ import callbacks
 import structures
 import configurable
 
-statusKeys = ['unconfirmed', 'new', 'assigned', 'reopened', 'resolved', \
- 'verified', 'closed']
-resolutionKeys = ['fixed', 'invalid', 'worksforme', 'needinfo', \
- 'test-request', 'wontfix', 'cantfix', 'moved', 'duplicate', 'remind', 'later']
-resolutionKeys += ['notabug', 'notgnome', 'incomplete', 'gnome1.x', 'moved' ]
-priorityKeys = ['p1', 'p2', 'p3', 'p4', 'p5']
-priorityKeys += ['Low', 'Normal', 'High', 'Immediate', 'Urgent']
-severityKeys = ['enhancement', 'trivial', 'minor', 'normal', 'major', \
- 'critical', 'blocker']
+statusKeys = ['unconfirmed', 'new', 'assigned', 'reopened', 'resolved',
+              'verified', 'closed']
+resolutionKeys = ['fixed', 'invalid', 'worksforme', 'needinfo',
+                  'test-request', 'wontfix', 'cantfix', 'moved', 'duplicate',
+                  'remind', 'later', 'notabug', 'notgnome', 'incomplete',
+                  'gnome1.x', 'moved']
+priorityKeys = ['p1', 'p2', 'p3', 'p4', 'p5', 'Low', 'Normal', 'High',
+                'Immediate', 'Urgent']
+severityKeys = ['enhancement', 'trivial', 'minor', 'normal', 'major',
+                'critical', 'blocker']
+
 dbfilename = os.path.join(conf.dataDir, 'Bugzilla.db')
+
 def makeDb(filename):
     if os.path.exists(filename):
         d = structures.PersistentDictionary(filename)
@@ -79,9 +82,11 @@ def makeDb(filename):
         d.flush()
     return d
 
+
 class BugzillaError(Exception):
     """A bugzilla error"""
     pass
+
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, yn
@@ -94,6 +99,7 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('Bugzilla config bug-snarfer on')
 
 replyNoBugzilla = 'I don\'t have a bugzilla %r'
+
 
 class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     """Show a link to a bug report with a brief description"""
@@ -130,9 +136,8 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
         query.append('ctype=csv')
         return query
     def die(self):
-        configurable.Mixin.die(self)
         self.db.close()
-        del self.db
+        configurable.Mixin.die(self)
     
     def add(self, irc, msg, args):
         """<name> <url> <description>
