@@ -86,4 +86,7 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('re s/\b(\w+)\b/\1./g foo bar baz',
                             'foo. bar. baz.')
 
+    def testNotOverlongRe(self):
+        self.assertError('re [strjoin "" s/./ [eval \'xxx\'*400]] blah blah')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
