@@ -48,6 +48,7 @@ import sgmllib
 import compiler
 import textwrap
 import htmlentitydefs
+from itertools import imap, ifilter
 
 from structures import TwoWayDictionary
 
@@ -304,16 +305,17 @@ def ellipsisify(s, n):
     else:
         return (textwrap.wrap(s, n-3)[0] + '...')
 
-plurals = TwoWayDictionary({'match': 'matches',
-                            'patch': 'patches',
-                            'loss': 'losses'})
+plurals = TwoWayDictionary({})
 def _matchCase(s1, s2):
     """Matches the case of s1 in s2"""
-    L = list(s2)
-    for (i, char) in enumerate(s1[:len(s2)]):
-        if char.isupper():
-            L[i] = char.upper()
-    return ''.join(L)
+    if s1.isupper():
+        return s2.upper()
+    else:
+        L = list(s2)
+        for (i, char) in enumerate(s1[:len(s2)]):
+            if char.isupper():
+                L[i] = char.upper()
+        return ''.join(L)
 
 def pluralize(i, s):
     """Returns the plural of s based on its number i.  Put any exceptions to
@@ -325,17 +327,18 @@ def pluralize(i, s):
         lowered = s.lower()
         if lowered in plurals:
             return _matchCase(s, plurals[lowered])
+        elif any(lowered.endswith, ['ch', 'ss']):
+            return _matchCase(s, s+'es')
         else:
-            if s.isupper():
-                return s + 'S'
-            else:
-                return s + 's'
+            return _matchCase(s, s+'s')
 
 def depluralize(s):
     """Returns the singular of s."""
     lowered = s.lower()
     if lowered in plurals:
         return _matchCase(s, plurals[lowered])
+    elif any(lowered.endswith, ['ches', 'sses']):
+        return s[:-2]
     else:
         if s.endswith('s') or s.endswith('S'):
             return s[:-1] # Chop off 's'.
