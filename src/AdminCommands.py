@@ -78,6 +78,8 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         Tells the bot to part the whitespace-separated list of channels
         you give it.
         """
+        if not args:
+            args.append(msg.args[0])
         irc.queueMsg(ircmsgs.parts(args, msg.nick))
 
     def disable(self, irc, msg, args):
