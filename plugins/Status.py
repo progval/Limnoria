@@ -58,24 +58,16 @@ class Status(callbacks.Privmsg):
         self.recvdMsgs = 0
         self.sentBytes = 0
         self.recvdBytes = 0
-        self.uptimes = UptimeDB()
-        self.uptimes.add()
-        self.uptimes.update()
 
-    def inFilter(self, irc, msg):
-        self.uptimes.update()
+    def __call__(self, irc, msg):
         self.recvdMsgs += 1
         self.recvdBytes += len(msg)
-        return msg
+        callbacks.Privmsg.__call__(self, irc, msg)
 
     def outFilter(self, irc, msg):
         self.sentMsgs += 1
         self.sentBytes += len(msg)
         return msg
-
-    def die(self):
-        self.uptimes.update()
-        self.uptimes.die()
 
     def net(self, irc, msg, args):
         """takes no arguments

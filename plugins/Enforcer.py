@@ -42,8 +42,9 @@ import conf
 import ircdb
 import ircmsgs
 import plugins
-import privmsgs
 import ircutils
+import privmsgs
+import registry
 import callbacks
 
 def configure(advanced):
