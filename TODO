@@ -1,8 +1,6 @@
 Roughly in order of precedence (the closer to the front of the file,
 the more likely it'll be done before next release):
 
-Change logging infrastructure to use the new logging module in 2.3.
-
 Update the database infrastructure to allow other RDBMSes.
 
 Improved (and perhaps integrated Services and Enforcer plugins.
