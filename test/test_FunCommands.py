@@ -99,6 +99,10 @@ class FunCommandsTest(PluginTestCase):
     def testDns(self):
         self.assertNotError('dns slashdot.org')
 
+    def testWhois(self):
+        self.assertNotError('whois ohio-state.edu')
+        self.assertError('whois slashdot.org')
+
     def testDict(self):
         self.assertNotError('dict slash')
         self.assertNotRegexp('dict web1913 slash', 'foldoc')
