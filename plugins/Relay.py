@@ -500,11 +500,11 @@ class Relay(callbacks.Privmsg):
         if channel not in self.registryValue('channels'):
             return
         network = self._getIrcName(irc)
-        if not self.registryValue('hostmasks', channel):
-            hostmask = ' '
+        if self.registryValue('hostmasks', channel):
+            hostmask = ' (%s)' % msg.prefix
         else:
-            hostmask = ' (%s) ' % msg.prefix
-        s = '%s%shas joined on %s' % (msg.nick, hostmask, network)
+            hostmask = ''
+        s = '%s%s has joined on %s' % (msg.nick, hostmask, network)
         m = ircmsgs.privmsg(channel, s)
         self._sendToOthers(irc, m)
 
@@ -514,10 +514,10 @@ class Relay(callbacks.Privmsg):
         if channel not in self.registryValue('channels'):
             return
         network = self._getIrcName(irc)
-        if not self.registryValue('hostmasks', channel):
-            hostmask = ' '
-        else:
+        if self.registryValue('hostmasks', channel):
             hostmask = ' (%s)' % msg.prefix
+        else:
+            hostmask = ''
         s = '%s%s has left on %s' % (msg.nick, hostmask, network)
         m = ircmsgs.privmsg(channel, s)
         self._sendToOthers(irc, m)
