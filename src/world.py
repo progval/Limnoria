@@ -82,7 +82,10 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
     """Does upkeep (like flushing, garbage collection, etc.)"""
     collected = gc.collect()
     if os.name == 'nt':
-        msvcrt.heapmin()
+        try:
+            msvcrt.heapmin()
+        except IOError: # Win98 sux0rs!
+            pass
     if gc.garbage:
         debug.msg('Uncollectable garbage: %s' % gc.garbage, 'normal')
     if 'noflush' not in tempvars:
