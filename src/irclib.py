@@ -667,8 +667,11 @@ class Irc(IrcCommandDispatcher):
         """Makes the Irc object die.  Dead."""
         log.info('Irc object for %s dying.' % self.server)
         if self in world.ircs:
-            for callback in self.callbacks:
-                callback.die()
+            for cb in self.callbacks:
+                try:
+                    cb.die()
+                except Exception, e:
+                    log.exception('Uncaught exception in %s.die:', cb.name())
             world.ircs.remove(self)
         else:
             log.warning('Irc object killed twice.')
