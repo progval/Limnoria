@@ -85,38 +85,20 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     _info = re.compile(r'<title>eBay item (\d+) \([^)]+\) - ([^<]+)</title>',
         _reopts)
 
-    _bid = re.compile(r'Current bid:.+?<b>([^<]+?)<font', _reopts)
-    _getBid = lambda self, s: '%s: %s' % (ircutils.bold('Bid'),
-        self._bid.search(s).group(1))
-
-    _winningBid = re.compile(r'(?:Winning bid|Sold for):.+?<b>([^<]+?)<font',
+    _bid = re.compile(r'Current (bid):.+?<b>([^<]+?)<font', _reopts)
+    _winningBid = re.compile(r'(Winning bid|Sold for):.+?<b>([^<]+?)<font',
         _reopts)
-    _getWinningbid = lambda self, s: '%s: %s' % (ircutils.bold('Winning bid'),
-        self._winningBid.search(s).group(1))
-
-    _time = re.compile(r'Time left:.+?<b>([^<]+?)</b>', _reopts)
-    _getTime = lambda self, s: '%s: %s' % (ircutils.bold('Time left'),
-        self._time.search(s).group(1))
-
-    _bidder = re.compile(r'High bidder:.+?<a href[^>]+>([^<]+)</a>.+?<a '\
+    _time = re.compile(r'(Time left):.+?<b>([^<]+?)</b>', _reopts)
+    _bidder = re.compile(r'(High bidder):.+?<a href[^>]+>([^<]+)</a>.+?<a '\
         'href[^>]+>(\d+)</a>', _reopts)
-    _getBidder = lambda self, s: '%s: %s (%s)' % (ircutils.bold('Bidder'),
-        self._bidder.search(s).group(1), self._bidder.search(s).group(2))
-
-    _winningBidder = re.compile(r'(?:Winning bidder|Buyer):.+?<a href[^>]+>'\
+    _winningBidder = re.compile(r'(Winning bidder|Buyer):.+?<a href[^>]+>'\
         '([^<]+)</a>.+?<a href[^>]+>(\d+)</a>', _reopts)
-    _getWinningbidder = lambda self, s: '%s: %s (%s)' % (ircutils.bold(
-        'Winning bidder'), self._winningBidder.search(s).group(1),
-        self._winningBidder.search(s).group(2))
-
-    _buyNow = re.compile(r'alt="Buy It Now">.*?<b>([^<]+)</b>')
-    _getBuynow = lambda self, s: '%s: %s' % (ircutils.bold('Buy It Now'),
-        self._buyNow.search(s).group(1))
-
-    _seller = re.compile(r'Seller information.+?<a href[^>]+>([^<]+)</a>'\
+    _buyNow = re.compile(r'alt="(Buy It Now)">.*?<b>([^<]+)</b>')
+    _seller = re.compile(r'(Seller information).+?<a href[^>]+>([^<]+)</a>'\
         '.+ViewFeedback.+">(\d+)</a>', _reopts)
-    _getSeller = lambda self, s: '%s: %s (%s)' % (ircutils.bold('Seller'),
-        self._seller.search(s).group(1), self._seller.search(s).group(2))
+    _searches = (_bid, _winningBid, _time, _bidder, _winningBidder, _buyNow,
+        _seller)
+    _multiField = (_bidder, _winningBidder, _seller)
 
     def ebay(self, irc, msg, args):
         """[--link] <item>
@@ -143,33 +125,39 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         if not self.toggles.get('auction', channel=msg.args[0]):
             return
         url = match.group(0)
+        #debug.printf(url)
         self._getResponse(irc, msg, url, snarf = True)
 
+    _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
     def _getResponse(self, irc, msg, url, snarf = False):
         fd = urllib2.urlopen(url)
         s = fd.read()
         fd.close()
-        searches = (self._getBid, self._getBuynow, self._getWinningbid,
-            self._getTime, self._getBidder, self._getWinningbidder,
-            self._getSeller)
-        try:
-            (num, desc) = self._info.search(s).groups()
-            resp = ['%s%s: %s' % (ircutils.bold('Item #'), ircutils.bold(num),
-                utils.htmlToText(desc))]
-            for i in searches:
-                try:
-                    resp.append('%s' % i(s))
-                except AttributeError:
-                    pass
+        resp = []
+        m = self._info.search(s)
+        if m:
+            (num, desc) = m.groups()
+            resp.append('%s%s: %s' % (ircutils.bold('Item #'), ircutils.bold(num),
+                utils.htmlToText(desc)))
+        for r in self._searches:
+            m = r.search(s)
+            if m:
+                if r in self._multiField:
+                    resp.append('%s: %s (%s)' % self._bold(m.groups()))
+                else:
+                    resp.append('%s: %s' % self._bold(m.groups()))
+        if resp:
             if snarf:
                 irc.reply(msg, '%s' % '; '.join(resp), prefixName = False)
             else:
                 irc.reply(msg, '%s' % '; '.join(resp))
-        except AttributeError:
-            irc.error(msg, 'That doesn\'t appear to be a proper eBay Auction '\
-                'page. (%s)' % conf.replyPossibleBug)
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+        else:
+            if snarf:
+                irc.error(msg, '%s doesn\'t appear to be a proper eBay '\
+                    'Auction page. (%s)' % (url, conf.replyPossibleBug))
+            else:
+                irc.error(msg, 'That doesn\'t appear to be a proper eBay '\
+                    'Auction page. (%s)' % conf.replyPossibleBug)
 
 Class = Ebay
 

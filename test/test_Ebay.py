@@ -45,6 +45,11 @@ class EbayTest(PluginTestCase, PluginDocumentation):
             'category=28033&item=3053353651', '.*Cisco 2524 Router - NO '\
             'RESERVE.*izontech \(.*')
 
+    def testToggle(self):
+        self.assertHelp('ebay toggle')
+        self.assertRegexp('ebay toggle auction', '\(auction: (?:On|Off)\)')
+        self.assertRegexp('ebay toggle auction off', '\(auction: Off\)')
+        self.assertRegexp('ebay toggle auction off', '\(auction: Off\)')
+        self.assertRegexp('ebay toggle auction on', '\(auction: On\)')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
-
-
