@@ -114,10 +114,10 @@ def yn(prompt, default=None):
     else:
         return False
 
-def getpass(prompt='Enter password: '):
+def getpass(prompt='Enter password: ', secondPrompt='Re-enter password: '):
     """Prompt the user for a password."""
     password = ''
-    password2 = ' '
+    secondPassword = ' ' # Note that this should be different than password.
     assert prompt
     if not prompt[-1].isspace():
         prompt += ' '
@@ -125,10 +125,10 @@ def getpass(prompt='Enter password: '):
         if useBold:
             sys.stdout.write(ansi.BOLD)
         password = getPass(prompt)
-        password2 = getPass('Re-enter password: ')
+        secondPassword = getPass(secondPrompt)
         if useBold:
             print ansi.RESET
-        if password != password2:
+        if password != secondPassword:
             output('Passwords don\'t match.')
         else:
             break
