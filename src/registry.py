@@ -123,6 +123,8 @@ class Group(object):
         attr = attr.lower()
         if attr in self.values:
             self.values[attr].set(s)
+        elif attr in self.children and hasattr(self.children[attr], 'set'):
+            self.children[attr].set(s)
         else:
             s = '%s is not a valid attribute of %s' % (original, self.name)
             raise NonExistentRegistryEntry, s
@@ -187,8 +189,13 @@ class GroupWithDefault(Group):
             self.values[attr] = copy.copy(self.value)
             self.values[attr].set(s)
 
-    def set(self, attr, s):
-        self.__setattr__(attr, s)
+    def set(self, *args):
+        if len(args) == 1:
+            self.value.set(args[0])
+        else:
+            assert len(args) == 2
+            (attr, s) = args
+            self.__setattr__(attr, s)
 
     def getValues(self):
         L = Group.getValues(self)
@@ -209,6 +216,7 @@ if __name__ == '__main__':
       GroupWithDefault(StringSurroundedBySpaces(' || ',
       'Determines what separator the bot uses to separate topic entries.')))
     supybot.plugins.topic.separator.set('#supybot', ' |||| ')
+    supybot.plugins.topic.separator.set(' <> ')
 
     for (k, v) in supybot.getValues():
         print '%s: %s' % (k, v)
