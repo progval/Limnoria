@@ -99,6 +99,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                'removecapability': 'Admin'}
 
     def disambiguate(self, irc, tokens, ambiguousCommands=None):
+        """Disambiguates the given tokens based on the plugins loaded and
+           commands available in the given irc.  Returns a dictionary of
+           ambiguous commands, mapping the command to the plugins it's
+           available in."""
         if ambiguousCommands is None:
             ambiguousCommands = {}
         if tokens:
@@ -117,9 +121,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             for elt in tokens:
                 if isinstance(elt, list):
                     self.disambiguate(irc, elt, ambiguousCommands)
+        return ambiguousCommands
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
+        callbacks.Privmsg.errored = False
         if ircdb.checkIgnored(msg.prefix):
             return
         s = callbacks.addressed(irc.nick, msg)
@@ -132,6 +138,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     irc.queueMsg(callbacks.error(msg, s))
                     return
             except SyntaxError, e:
+                callbacks.Privmsg.errored = True
                 irc.queueMsg(callbacks.error(msg, str(e)))
                 return
             ambiguousCommands = {}
@@ -185,7 +192,12 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 if remove:
                     del self.defaultPlugins[command]
                 else:
-                    irc.reply(msg, self.defaultPlugins[command])
+                    L = [command]
+                    d = self.disambiguate(irc, L)
+                    if d:
+                        raise KeyError
+                    assert len(L) == 2, 'Not disambiguated!'
+                    irc.reply(msg, L[0])
             except KeyError:
                 irc.error(msg,'I have no default plugin for that command.')
                 return
