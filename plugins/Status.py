@@ -97,15 +97,36 @@ class Status(callbacks.Privmsg):
                   'children have taken %s seconds of user time and %s seconds'\
                   ' of system time for a total of %s seconds of CPU time.  ' \
                   'I\'ve taken a total of %s%% of this computer\'s time.  ' \
-                  'Out of %s I have %s active.  ' \
-                  'I have processed %s.' %\
+                  'Out of %s I have %s active.  ' % \
                     (user, system, user + system,
                      childUser, childSystem, childUser + childSystem,
                      (user+system+childUser+childSystem)/timeRunning,
                      utils.nItems(world.threadsSpawned, 'thread', 'spawned'),
-                     activeThreads,
-                     utils.nItems(world.commandsProcessed, 'command'))
+                     activeThreads)
         irc.reply(msg, response)
+
+    def cmdstats(self, irc, msg, args):
+        """takes no arguments
+
+        Returns some interesting command-related statistics.
+        """
+        commands = sets.Set()
+        callbacksPrivmsgs = 0
+        for cb in irc.callbacks:
+            if isinstance(cb, callbacks.Privmsg) and cb.public:
+                callbacksPrivmsgs += 1
+                for attr in dir(cb):
+                    if cb.isCommand(attr):
+                        commands.add(attr)
+        commands = list(commands)
+        commands.sort()
+        s = 'I offer a total of %s in %s.  ' \
+            'I have processed %s.  My public commands include %s.' % \
+            (utils.nItems(len(commands), 'command'),
+             utils.nItems(callbacksPrivmsgs, 'plugin', 'command-based'),
+             utils.nItems(world.commandsProcessed, 'command'),
+             utils.commaAndify(commands))
+        irc.reply(msg, s)
 
     def uptime(self, irc, msg, args):
         """takes no arguments.
@@ -115,8 +136,6 @@ class Status(callbacks.Privmsg):
         response = 'I have been running for %s.' % \
                    utils.timeElapsed(time.time() - world.startedAt)
         irc.reply(msg, response)
-
-
 
 
 Class = Status
