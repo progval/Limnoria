@@ -49,7 +49,7 @@ _pluginsDir = os.path.join(installDir, 'plugins')
 ###
 # version: This should be pretty obvious.
 ###
-version = '0.80.0rc3+cvs'
+version = '0.80.0'
 
 ###
 # *** The following variables are affected by command-line options.  They are
