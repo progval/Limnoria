@@ -95,7 +95,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             schedule.addEvent(rejoin, t)
             self.log.info('Scheduling a rejoin to %s at %s; '
                           'Channel temporarily unavailable.', target, t)
-            
+
     def do471(self, irc, msg):
         try:
             channel = msg.args[1]
@@ -212,6 +212,15 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         else:
             self.log.debug('Got 433 without Admin.nick being called.')
 
+    def do438(self, irc, msg):
+        """Can't change nick while in +m channel.  Could just be freenode."""
+        irc = self.pendingNickChanges.get(irc, None)
+        if irc is not None:
+            channel = msg.args[-1].strip().split()[-1][1:-1]
+            irc.error('I can\'t change nicks, %s is +m and I\'m -v.' % channel)
+        else:
+            self.log.debug('Got 438 without Admin.nick being called.')
+            
     def doNick(self, irc, msg):
         if msg.nick == irc.nick or msg.args[0] == irc.nick:
             try:
