@@ -411,7 +411,6 @@ class Irc(IrcCommandDispatcher):
 
     def reset(self):
         """Resets the Irc object.  Useful for handling reconnects."""
-        self._nickmods = copy.copy(conf.nickmods)
         self.state.reset()
         self.queue.reset()
         self.lastping = time.time()
