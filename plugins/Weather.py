@@ -43,6 +43,7 @@ import urllib
 import conf
 import utils
 import webutils
+import ircutils
 import privmsgs
 import registry
 import callbacks
@@ -53,6 +54,7 @@ unitAbbrevs['ce'] = 'celsius'
 
 class WeatherUnit(registry.String):
     def setValue(self, s):
+        print '***', repr(s)
         s = s.lower()
         if s not in unitAbbrevs:
             raise registry.InvalidRegistryValue,\
@@ -68,16 +70,8 @@ class WeatherCommand(registry.String):
                 'Command must be one of %s' % utils.commaAndify(m)
         else:
             method = getattr(Weather, s)
-            Weather.weather.__doc__ = method.__doc__
+            Weather.weather.im_func.__doc__ = method.__doc__
         registry.String.setValue(self, s)
-
-conf.registerPlugin('Weather')
-conf.registerChannelValue(conf.supybot.plugins.Weather, 'preferredUnit',
-    WeatherUnit('Fahrenheit', """Sets the default temperature unit to use when
-    reporting the weather."""))
-conf.registerChannelValue(conf.supybot.plugins.Weather, 'weatherCommand',
-    WeatherCommand('cnn', """Sets the default command to use when retrieving 
-    the weather."""))
 
 class Weather(callbacks.Privmsg):
     weatherCommands = ['ham', 'cnn']
@@ -98,29 +92,30 @@ class Weather(callbacks.Privmsg):
         realCommand(irc, msg, args)
         
     def _getTemp(self, temp, deg, unit, chan):
-        default = self.registryValue('preferredUnit', chan).lower()
-        default = unitAbbrevs[default]
+        default = self.registryValue('preferredUnit', chan)
         unit = unit.lower()
         if unitAbbrevs[unit] == default:
+            # Short circuit if we're the same unit as the default.
             return deg.join([temp, unit.upper()])
         try:
             temp = int(temp)
         except ValueError:
+            # Bail out if we can't even int the temp.
             return deg.join([temp, unit.upper()])
         if unit == 'f':
             temp = (temp - 32) * 5 / 9
-            if default == 'kelvin':
+            if default == 'Kelvin':
                 temp = temp + 273.15
                 unit = 'K'
                 deg = ' '
             else:
                 unit = 'C'
         elif unit == 'c':
-            if default == 'kelvin':
+            if default == 'Kelvin':
                 temp = temp + 273.15
                 unit = 'K'
                 deg = ' '
-            elif default == 'fahrenheit':
+            elif default == 'Fahrenheit':
                 temp = temp * 9 / 5 + 32
                 unit = 'F'
         return deg.join([str(temp), unit.upper()])
@@ -316,6 +311,14 @@ class Weather(callbacks.Privmsg):
             irc.reply('  '.join(resp))
         else:
             irc.error('Could not find weather information.')
+
+conf.registerPlugin('Weather')
+conf.registerChannelValue(conf.supybot.plugins.Weather, 'preferredUnit',
+    WeatherUnit('Fahrenheit', """Sets the default temperature unit to use when
+    reporting the weather."""))
+conf.registerChannelValue(conf.supybot.plugins.Weather, 'weatherCommand',
+    WeatherCommand('cnn', """Sets the default command to use when retrieving 
+    the weather."""))
 
 Class = Weather
 
