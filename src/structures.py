@@ -231,7 +231,7 @@ class queue(object):
         if len(self) == 0:
             raise IndexError, 'queue index out of range'
         if type(oidx) == types.SliceType:
-            range = xrange(*sliceIndices(oidx, len(self)))
+            range = xrange(*slice.indices(oidx, len(self)))
             if len(range) != len(value):
                 raise ValueError, 'seq must be the same length as slice.'
             else:
@@ -252,7 +252,7 @@ class queue(object):
 
     def __delitem__(self, oidx):
         if type(oidx) == types.SliceType:
-            range = xrange(*sliceIndices(oidx, len(self)))
+            range = xrange(*slice.indices(oidx, len(self)))
             for i in range:
                 del self[i]
         else:
