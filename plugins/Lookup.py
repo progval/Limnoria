@@ -60,7 +60,11 @@ def configure(onStart, afterConnect, advanced):
     print 'The file itself should be composed of lines of the form key:value.'
     while yn('Would you like to add a file?') == 'y':
         filename = something('What\'s the filename?')
-        fd = file(os.path.join(conf.dataDir, filename))
+        try:
+            fd = file(os.path.join(conf.dataDir, filename))
+        except OSError, e:
+            print 'I couldn\'t open that file: %s' % e
+            continue
         counter = 1
         try:
             for line in fd:
