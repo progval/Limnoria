@@ -42,8 +42,8 @@ import string
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 
@@ -57,137 +57,131 @@ def configure(advanced):
 
 
 class Format(callbacks.Privmsg):
-    def bold(self, irc, msg, args):
+    def bold(self, irc, msg, args, text):
         """<text>
 
         Returns <text> bolded.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(ircutils.bold(text))
+    bold = wrap(bold, ['text'])
 
-    def reverse(self, irc, msg, args):
+    def reverse(self, irc, msg, args, text):
         """<text>
 
         Returns <text> in reverse-video.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(ircutils.reverse(text))
+    reverse = wrap(reverse, ['text'])
 
-    def underline(self, irc, msg, args):
+    def underline(self, irc, msg, args, text):
         """<text>
 
         Returns <text> underlined.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(ircutils.underline(text))
+    underline = wrap(underline, ['text'])
 
-    def color(self, irc, msg, args):
+    def color(self, irc, msg, args, fg, bg, text):
         """<foreground> [<background>] <text>
 
         Returns <text> with foreground color <foreground> and background color
         <background> (if given)
         """
-        try:
-            fg = args.pop(0)
-            if args[0] in ircutils.mircColors:
-                bg = args.pop(0)
-            else:
-                bg = None
-        except IndexError:
-            raise callbacks.ArgumentError
-        text = privmsgs.getArgs(args)
-        try:
-            fg = ircutils.mircColors[fg]
-        except KeyError:
-            irc.errorInvalid('foreground color', fg, Raise=True)
-        if bg is not None:
-            try:
-                bg = ircutils.mircColors[bg]
-            except KeyError:
-                irc.errorInvalid('background color', bg, Raise=True)
         irc.reply(ircutils.mircColor(text, fg=fg, bg=bg))
+    color = wrap(color, ['color', optional('color'), 'text'])
 
-    def join(self, irc, msg, args):
+    def join(self, irc, msg, args, sep):
         """<separator> <string 1> [<string> ...]
 
         Joins all the arguments together with <separator>.
         """
-        sep = args.pop(0)
         irc.reply(sep.join(args))
+    join = wrap(join, ['something'], allowExtra=True)
 
-    def translate(self, irc, msg, args):
+    def translate(self, irc, msg, args, bad, good, text):
         """<chars to translate> <chars to replace those with> <text>
 
         Replaces <chars to translate> with <chars to replace those with> in
         <text>.  The first and second arguments must necessarily be the same
         length.
         """
-        (bad, good, text) = privmsgs.getArgs(args, required=3)
+        if len(bad) != len(good):
+            irc.error('<chars to translate> must be the same length as '
+                      '<chars to replace those with>.', Raise=True)
         irc.reply(text.translate(string.maketrans(bad, good)))
+    translate = wrap(translate, ['something', 'something', 'text'])
 
-    def upper(self, irc, msg, args):
+    def upper(self, irc, msg, args, text):
         """<text>
 
         Returns <text> uppercased.
         """
-        irc.reply(privmsgs.getArgs(args).upper())
+        irc.reply(text.upper())
+    upper = wrap(upper, ['text'])
 
-    def lower(self, irc, msg, args):
+    def lower(self, irc, msg, args, text):
         """<text>
 
         Returns <text> lowercased.
         """
-        irc.reply(privmsgs.getArgs(args).lower())
+        irc.reply(text.lower())
+    lower = wrap(lower, ['text'])
 
-    def repr(self, irc, msg, args):
+    def capitalize(self, irc, msg, args, text):
+        """<text>
+
+        Returns <text> lowercased.
+        """
+        irc.reply(text.capitalize())
+    capitalize = wrap(capitalize, ['text'])
+
+    def title(self, irc, msg, args, text):
+        """<text>
+
+        Returns <text> lowercased.
+        """
+        irc.reply(text.title())
+    title = wrap(title, ['text'])
+
+    def repr(self, irc, msg, args, text):
         """<text>
 
         Returns the text surrounded by double quotes.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(utils.dqrepr(text))
+    repr = wrap(repr, ['text'])
 
-    def concat(self, irc, msg, args):
+    def concat(self, irc, msg, args, first, second):
         """<string 1> <string 2>
 
         Concatenates two strings.  Do keep in mind that this is *not* the same
         thing as join "", since if <string 2> contains spaces, they won't be
         removed by concat.
         """
-        (first, second) = privmsgs.getArgs(args, required=2)
         irc.reply(first+second)
+    concat = wrap(concat, ['text', 'text'])
 
-    def cut(self, irc, msg, args):
+    def cut(self, irc, msg, args, size, text):
         """<size> <text>
 
         Cuts <text> down to <size> by chopping off the rightmost characters in
         excess of <size>.  If <size> is a negative number, it chops that many
         characters off the end of <text>.
         """
-        (size, text) = privmsgs.getArgs(args, required=2)
-        try:
-            size = int(size)
-        except ValueError:
-            irc.errorInvalid('integer', size, Raise=True)
         irc.reply(text[:size])
+    cut = wrap(cut, ['int', 'text'])
 
-    def field(self, irc, msg, args):
+    def field(self, irc, msg, args, index, text):
         """<number> <text>
 
         Returns the <number>th space-separated field of <text>.  I.e., if text
         is "foo bar baz" and <number> is 2, "bar" is returned.
         """
-        (number, text) = privmsgs.getArgs(args, required=2)
-        try:
-            index = int(number)
-            if index > 0:
-                index -= 1
-        except ValueError:
-            irc.errorInvalid('integer', number, Raise=True)
         try:
             irc.reply(text.split()[index])
         except IndexError:
             irc.errorInvalid('field')
+    field = wrap(field, ['index', 'text'])
                      
     def format(self, irc, msg, args):
         """<format string> [<arg> ...]
@@ -196,16 +190,15 @@ class Format(callbacks.Privmsg):
         sure always to use %s, not %d or %f or whatever, because all the args
         are strings.
         """
-        try:
-            s = args.pop(0)
-        except IndexError:
+        if not args:
             raise callbacks.ArgumentError
+        s = args.pop(0)
         try:
             s %= tuple(args)
-        except TypeError:
-            irc.error('Not enough arguments for the format string.')
-            return
-        irc.reply(s)
+            irc.reply(s)
+        except TypeError, e:
+            self.log.debug(utils.exnToString(e))
+            irc.error('Not enough arguments for the format string.',Raise=True)
 
 
 Class = Format

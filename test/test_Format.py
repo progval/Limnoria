@@ -62,6 +62,14 @@ class UtilitiesTestCase(PluginTestCase):
         self.assertResponse('lower foo', 'foo')
         self.assertResponse('lower FOO', 'foo')
 
+    def testCapitalize(self):
+        self.assertResponse('capitalize foo', 'Foo')
+        self.assertResponse('capitalize foo bar', 'Foo bar')
+
+    def testTitle(self):
+        self.assertResponse('title foo', 'Foo')
+        self.assertResponse('title foo bar', 'Foo Bar')
+
     def testRepr(self):
         self.assertResponse('repr foo bar baz', '"foo bar baz"')
 
