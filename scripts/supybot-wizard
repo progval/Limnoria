@@ -379,12 +379,11 @@ def main():
             try:
                 network.channels.set(channels)
                 break
-            except registry.InvalidRegistryValue:
-                # FIXME: say which ones weren't channels.
-                output("""Not all of those are valid IRC channels.  Be sure to
-                prefix the channel with # (or +, or !, or &, but no one uses
-                those channels, really).  Be sure the channel key (if you are
-                supplying one) does not contain a comma.""")
+            except registry.InvalidRegistryValue, e:
+                output("""%s is an invalid IRC channel.  Be sure to prefix the
+                channel with # (or +, or !, or &, but no one uses those
+                channels, really).  Be sure the channel key (if you are
+                supplying one) does not contain a comma.""" % e.channel)
     else:
         network.channels.setValue([])
 

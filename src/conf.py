@@ -161,6 +161,7 @@ class ValidNicksAllowingPercentS(ValidNicks):
 class ValidChannel(registry.String):
     """Value must be a valid IRC channel name."""
     def setValue(self, v):
+        self.channel = v
         if ',' in v:
             # To prevent stupid users from: a) trying to add a channel key
             # with a comma in it, b) trying to add channels separated by
@@ -175,6 +176,13 @@ class ValidChannel(registry.String):
             self.error()
         else:
             registry.String.setValue(self, v)
+
+    def error(self):
+        try:
+            super(ValidChannel, self).error()
+        except registry.InvalidRegistryValue, e:
+            e.channel = self.channel
+            raise e
 
 class ValidHostmask(registry.String):
     """Value must be a valid user hostmask."""
