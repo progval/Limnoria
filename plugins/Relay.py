@@ -149,15 +149,16 @@ class Relay(callbacks.Privmsg):
         """
         realIrc = self._getRealIrc(irc)
         (network, server) = privmsgs.getArgs(args, optional=1)
-        if not server:
-            server = None
-        else:
+        if server:
             if ':' in server:
                 (server, port) = server.split(':')
                 port = int(port)
             else:
                 port = 6667
-        self._connect(network, realIrc, serverPort=(server, port))
+            serverPort = (server, port)
+        else:
+            serverPort = None
+        self._connect(network, realIrc, serverPort=serverPort)
         irc.replySuccess()
     connect = privmsgs.checkCapability(connect, 'owner')
 
@@ -173,12 +174,8 @@ class Relay(callbacks.Privmsg):
     def _connect(self, network, realIrc, serverPort=None, makeNew=True):
         try:
             group = conf.supybot.networks.get(network)
-            try:
-                (server, port) = group.server().split(':')
-                serverPort = (server, int(port))
-            except ValueError: # Unpack list of wrong size.
-                serverPort = (group.server(), 6667)
-        except registry.NonExistentRegistryEntry:
+            (server, port) = group.servers()[0]
+        except (registry.NonExistentRegistryEntry, IndexError):
             # XXX: This should be a real error.
             if serverPort is None:
                 raise ValueError, '_connect requires a (server, port) if ' \
