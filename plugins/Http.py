@@ -394,18 +394,19 @@ class Http(callbacks.Privmsg):
         host = 'http://pgp.mit.edu:11371'
         url = '%s/pks/lookup?op=index&search=%s' % (host, urlClean)
         fd = urllib2.urlopen(url)
-        html = fd.read().split('\n')
-        fd.close()
         pgpkeys = ''
-        for line in html:
+        line = fd.readline()
+        while len(line) != 0:
             info = self._pgpkeyre.search(line)
             if info:
                 pgpkeys += '%s <%s> :: ' % (info.group(3), '%s%s' % (host,
                     info.group(1)))
+            line = fd.readline()
         if len(pgpkeys) == 0:
             irc.reply(msg, 'No results found for %s.' % search)
         else:
             irc.reply(msg, 'Matches found for %s: %s' % (search, pgpkeys[:-4]))
+        fd.close()
 
 Class = Http
 
