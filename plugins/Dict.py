@@ -113,6 +113,8 @@ class Dict(callbacks.Privmsg):
         a dictionary is specified and the definition is too long, snips it to
         an appropriate length.
         """
+        if not args:
+            raise callbacks.ArgumentError
         if args[0] in self.dictdbs:
             dictionary = args.pop(0)
         else:
