@@ -301,10 +301,11 @@ class Note(callbacks.Privmsg):
 
     def _formatNoteId(self, msg, note, sent=False):
         if note.public or not ircutils.isChannel(msg.args[0]):
-            sender = ircdb.users.getUser(note.frm).name
             if sent:
+                sender = ircdb.users.getUser(note.to).name
                 return '#%s to %s' % (note.id, sender)
             else:
+                sender = ircdb.users.getUser(note.frm).name
                 return '#%s from %s' % (note.id, sender)
         else:
             return '#%s (private)' % note.id
