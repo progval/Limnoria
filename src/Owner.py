@@ -216,7 +216,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             if irc.getCallback(name) is None:
                 if value():
                     if not irc.getCallback(name):
-                        self.log.info('Loading %s.' % name)
+                        # This is debug because each log logs its beginning.
+                        self.log.debug('Loading %s.' % name)
                         try:
                             m = loadPluginModule(name)
                             loadPluginClass(irc, m)
