@@ -66,7 +66,7 @@ class IrcMsg(object):
             if s.find(' :') != -1:
                 s, last = s.split(' :', 1)
                 args = s.split()
-                args.append(last.rstrip())
+                args.append(last.rstrip('\r\n'))
             else:
                 args = s.split()
             command = args.pop(0)
