@@ -231,6 +231,7 @@ class Servers(registry.SpaceSeparatedListOfStrings):
         L.append(s)
         
 class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
+    sorted = True
     List = ircutils.IrcSet
     Value = ValidChannel
     def removeChannel(self, channel):

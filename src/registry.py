@@ -571,6 +571,7 @@ class Regexp(Value):
 class SeparatedListOf(Value):
     List = list
     Value = Value
+    sorted = False
     def splitter(self, s):
         """Override this with a function that takes a string and returns a list
         of strings."""
@@ -592,6 +593,8 @@ class SeparatedListOf(Value):
 
     def __str__(self):
         values = self()
+        if self.sorted:
+            values = sorted(values)
         if values:
             return self.joiner(values)
         else:

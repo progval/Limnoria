@@ -954,6 +954,7 @@ class CanonicalNameDict(utils.InsensitivePreservingDict):
         return canonicalName(s)
 
 class Disabled(registry.SpaceSeparatedListOf):
+    sorted = True
     Value = CanonicalString
     List = CanonicalNameSet
 
