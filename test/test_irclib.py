@@ -127,11 +127,17 @@ class IrcMsgQueueTestCase(SupyTestCase):
         self.assertEqual(self.msgs[1], q.dequeue())
 
     def testNoIdenticals(self):
-        q = irclib.IrcMsgQueue()
-        q.enqueue(self.msg)
-        q.enqueue(self.msg)
-        self.assertEqual(self.msg, q.dequeue())
-        self.failIf(q)
+        configVar = conf.supybot.protocols.irc.refuseToQueueDuplicateMessages
+        original = configVar()
+        try:
+            configVar.setValue(True)
+            q = irclib.IrcMsgQueue()
+            q.enqueue(self.msg)
+            q.enqueue(self.msg)
+            self.assertEqual(self.msg, q.dequeue())
+            self.failIf(q)
+        finally:
+            configVar.setValue(original)
 
     def testJoinBeforeWho(self):
         q = irclib.IrcMsgQueue()
