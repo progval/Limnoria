@@ -148,7 +148,30 @@ if sqlite is not None:
                                         ' (at microsoft.com)')
                 finally:
                     conf.supybot.plugins.URL.titleSnarfer.setValue(False)
-                    
+
+            def testNonSnarfing(self):
+                tiny = conf.supybot.plugins.URL.tinyurlSnarfer()
+                snarf = conf.supybot.plugins.URL.nonSnarfingRegexp()
+                title = conf.supybot.plugins.URL.titleSnarfer()
+                try:
+                    conf.supybot.plugins.URL.nonSnarfingRegexp.set('m/sf/')
+                    try:
+                        conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
+                        self.assertNoResponse('http://sf.net/', 2)
+                        self.assertResponse('http://www.sourceforge.net/',
+                                            'http://tinyurl.com/2cnkf')
+                    finally:
+                        conf.supybot.plugins.URL.tinyurlSnarfer.setValue(tiny)
+                    try:
+                        conf.supybot.plugins.URL.titleSnarfer.setValue(True)
+                        self.assertNoResponse('http://sf.net/', 2)
+                        self.assertRegexp('http://www.sourceforge.net/',
+                                          r'Sourceforge\.net')
+                    finally:
+                        conf.supybot.plugins.URL.titleSnarfer.setValue(title)
+                finally:
+                    conf.supybot.plugins.URL.nonSnarfingRegexp.setValue(snarf)
+
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

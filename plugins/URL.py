@@ -147,8 +147,11 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
             text = msg.args[1]
         for url in webutils.urlRe.findall(text):
             r = self.registryValue('nonSnarfingRegexp', channel)
+            #self.log.warning(repr(r))
             if r and r.search(url):
+                #self.log.warning('Skipping addition of URL to db.')
                 continue
+            #self.log.warning('Adding URL to db.')
             (protocol, site, filename, _, _, _) = urlparse.urlparse(url)
             previousMsg = ''
             for oldMsg in reversed(irc.state.history):
@@ -171,8 +174,11 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         if not ircutils.isChannel(msg.args[0]):
             return
         channel = msg.args[0]
+        r = self.registryValue('nonSnarfingRegexp', channel)
         if self.registryValue('tinyurlSnarfer', channel):
             url = match.group(0)
+            if r and r.search(url):
+                return
             minlen = self.registryValue('tinyurlSnarfer.minimumLength',channel)
             if len(url) >= minlen:
                 db = self.getDb(channel)
@@ -195,8 +201,12 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         if callbacks.addressed(irc.nick, msg):
             return
         channel = msg.args[0]
+        r = self.registryValue('nonSnarfingRegexp', channel)
+        #self.log.warning('Title: %r' % r)
         if self.registryValue('titleSnarfer', channel):
             url = match.group(0)
+            if r and r.search(url):
+                return
             try:
                 size = conf.supybot.protocols.http.peekSize()
                 text = webutils.getUrl(url, size=size)
@@ -222,7 +232,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                           WHERE tinyurl=%s""", id, tinyurl)
         db.commit()
 
-    _tinyRe = re.compile(r'(http://tinyurl\.com/\w+)</blockquote>')
+    _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
     def _getTinyUrl(self, url, channel, cmd=False):
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -280,14 +290,14 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         Returns a TinyURL.com version of <url>
         """
         url = privmsgs.getArgs(args)
-        if len(url) < 24:
-            irc.error(
-                      'Stop being a lazy-biotch and type the URL yourself.')
+        if len(url) < 20:
+            irc.error('Stop being a lazy-biotch and type the URL yourself.')
             return
         channel = msg.args[0]
         snarf = self.registryValue('tinyurlSnarfer', channel)
         minlen = self.registryValue('tinyurlSnarfer.minimumLength', channel)
-        if snarf and len(url) >= minlen:
+        r = self.registryValue('nonSnarfingRegexp', channel)
+        if snarf and len(url) >= minlen and not r.search(url):
             return
         (tinyurl, updateDb) = self._getTinyUrl(url, channel, cmd=True)
         if tinyurl:
