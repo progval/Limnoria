@@ -53,9 +53,6 @@ import conf
 import ircdb
 import ircutils
 
-if conf.pluginDir not in sys.path:
-    sys.path.insert(0, conf.pluginDir)
-
 if __name__ == '__main__':
     fd = file('src/template.py')
     template = fd.read()
@@ -128,7 +125,9 @@ if __name__ == '__main__':
     ###
     # Modules.
     ###
-    filenames = os.listdir(conf.pluginDir)
+    filenames = []
+    for dir in conf.pluginDirs:
+        filenames.extend(os.listdir(dir))
     plugins = []
     for filename in filenames:
         if filename.endswith('.py') and \
@@ -139,7 +138,7 @@ if __name__ == '__main__':
         print 'The available plugins are:\n  %s' % '\n  '.join(plugins)
     while yn('Would you like to add a plugin?') == 'y':
         plugin = expect('What plugin?', plugins)
-        moduleInfo = imp.find_module(plugin)
+        moduleInfo = imp.find_module(plugin, conf.pluginDirs)
         try:
             module = imp.load_module(plugin, *moduleInfo)
         except ImportError, e:

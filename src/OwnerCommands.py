@@ -205,7 +205,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error(msg, 'That module is already loaded.')
                 return
         try:
-            moduleInfo = imp.find_module(name)
+            moduleInfo = imp.find_module(name, conf.pluginDirs)
         except ImportError:
             irc.error(msg, 'No plugin %s exists.' % name)
             return
@@ -240,7 +240,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
 
         if callbacks:
             try:
-                moduleInfo = imp.find_module(name)
+                moduleInfo = imp.find_module(name, conf.pluginDirs)
                 module = imp.load_module(name, *moduleInfo)
                 linecache.checkcache()
                 for callback in callbacks:

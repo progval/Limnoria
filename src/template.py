@@ -151,8 +151,6 @@ if __name__ == '__main__':
                                      valueString)
                     sys.exit(-1)
 
-    sys.path.append(conf.pluginDir)
-
     nick = options.nick
     user = options.user
     ident = options.ident

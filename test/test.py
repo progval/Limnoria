@@ -38,13 +38,11 @@ if 'test' not in sys.path:
 import conf
 conf.dataDir = 'test-data'
 
-if conf.pluginDir not in sys.path:
-    sys.path.insert(0, conf.pluginDir)
-
 from fix import *
 
 import gc
 import re
+import imp
 import glob
 import time
 import os.path
@@ -99,9 +97,10 @@ nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
 
 nicks += [msg.nick for msg in msgs if msg.nick]
 
-def getMsgs(command):
-    return [msg for msg in msgs if msg.command == command]
-
+def loadPlugin(name):
+    moduleInfo = imp.find_module(name, conf.pluginDirs)
+    module = imp.load_module(name, *moduleInfo)
+    return module
 
 class PluginTestCase(unittest.TestCase):
     """Subclass this to write a test case for a plugin.  See test_FunCommands
@@ -120,12 +119,13 @@ class PluginTestCase(unittest.TestCase):
         while self.irc.takeMsg():
             pass
         if isinstance(self.plugins, str):
-            module = __import__(name)
+            moduleInfo = imp.find_module(name, conf.pluginDirs)
+            module = imp.load_module(name, *moduleInfo)
             plugin = module.Class()
             self.irc.addCallback(plugin)
         else:
             for name in self.plugins:
-                module = __import__(name)
+                module = loadPlugin(name)
                 plugin = module.Class()
                 self.irc.addCallback(plugin)
 
@@ -258,6 +258,13 @@ class PluginDocumentation:
                         helps = command.__doc__
                         self.failUnless(helps and len(helps.splitlines()) >= 3,
                                         '%s has no morehelp' % attr)
+
+    def testPluginHasDocumentation(self):
+        for cb in self.irc.callbacks:
+            m = sys.modules[cb.__class__.__module__]
+            self.failIf(m.__doc__ is None,
+                        '%s has no module documentation'%cb.__class__.__name__)
+                
 
     
 

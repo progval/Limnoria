@@ -45,14 +45,12 @@ from fix import *
 import conf
 import callbacks
 
-if conf.pluginDir not in sys.path:
-    sys.path.insert(0, conf.pluginDir)
 
 def makePluginDocumentation(filename):
     trClasses = { 'lightyellow':'lightgreen', 'lightgreen':'lightyellow' }
     trClass = 'lightyellow'
     pluginName = filename.split('.')[0]
-    moduleInfo = imp.find_module(pluginName)
+    moduleInfo = imp.find_module(pluginName, conf.pluginDirs)
     module = imp.load_module(pluginName, *moduleInfo)
     directory = os.path.join('docs', 'plugins')
     if not os.path.exists(directory):
@@ -62,17 +60,18 @@ def makePluginDocumentation(filename):
        isinstance(plugin, callbacks.PrivmsgRegexp):
         fd = file(os.path.join(directory,'%s.html' % pluginName), 'w')
         fd.write(textwrap.dedent("""
-        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+                              "http://www.w3.org/TR/html4/strict.dtd">
         <html lang="en-us">
         <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>Documentation for the %s plugin for Supybot</title>
         <link rel="stylesheet" type="text/css" href="supybot.css">
         <body><div>
-        %s<br><br><table>
+        <h1>%s</h1><br><br><table>
         <tr id="headers"><td>Command</td><td>Args</td><td>
         Detailed Help</td></tr>
-        """) % (pluginName, cgi.escape(module.__doc__)))
+        """) % (pluginName, cgi.escape(module.__doc__ or "")))
         for attr in dir(plugin):
             trClass = trClasses[trClass]
             if plugin.isCommand(attr):
@@ -97,7 +96,7 @@ def makePluginDocumentation(filename):
             s = s.replace('\\n', '\n')
             s = s.replace("\\'", "'")
             fd.write(textwrap.dedent("""
-            <p>Here's an example session with this plugin:</p>
+            <h2><p>Here's an example session with this plugin:</p></h2>
             <pre>
             %s
             </pre>
@@ -110,9 +109,10 @@ def makePluginDocumentation(filename):
         fd.close()
 
 if __name__ == '__main__':
-    for filename in os.listdir(conf.pluginDir):
-        if filename.endswith('.py') and filename.lower() != filename:
-            makePluginDocumentation(filename)
+    for directory in conf.pluginDirs:
+        for filename in os.listdir(directory):
+            if filename.endswith('.py') and filename.lower() != filename:
+                makePluginDocumentation(filename)
             
     
 
