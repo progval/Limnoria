@@ -267,7 +267,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         report['product'] = str(summary['product'])
         s = '%(product)s bug #%(id)s: %(title)s %(summary)s' % report
         irc.reply(s, prefixName=False)
-    bzSnarfer = wrap(bzSnarfer, decorators=['urlSnarfer'])
+    bzSnarfer = urlSnarfer(bzSnarfer)
 
     def urlquery2bugslist(self, url, query):
         """Given a URL and query list for a CSV bug list, it'll return

@@ -189,7 +189,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
                 if m is None:
                     print irc, irc.__class__
                 m.tag('shrunken')
-    shrinkSnarfer = wrap(shrinkSnarfer, decorators=['urlSnarfer'])
+    shrinkSnarfer = urlSnarfer(shrinkSnarfer)
 
     def _getLnUrl(self, url):
         try:
@@ -219,7 +219,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
             m.tag('shrunken')
         else:
             irc.error(error)
-    ln = wrap(ln, ['url'], decorators=['thread'])
+    ln = thread(wrap(ln, ['url']))
 
     _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
     def _getTinyUrl(self, url):
@@ -250,7 +250,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
         else:
             s = 'Could not parse the TinyURL.com results page.'
             irc.errorPossibleBug(s)
-    tiny = wrap(tiny, ['url'], decorators=['thread'])
+    tiny = thread(wrap(tiny, ['url']))
 
 
 Class = ShrinkUrl

@@ -501,6 +501,8 @@ class RichReplyMethods(object):
         return self._error(self.__makeReply(v, s), **kwargs)
 
     def errorNoUser(self, s='', name='that user', **kwargs):
+        if 'Raise' not in kwargs:
+            kwargs['Raise'] = True
         v = self._getConfig(conf.supybot.replies.noUser)
         try:
             v = v % name

@@ -510,7 +510,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(resp, prefixName=False)
         except TrackerError, e:
             self.log.warning(str(e))
-    sfSnarfer = wrap(sfSnarfer, decorators=['urlSnarfer'])
+    sfSnarfer = urlSnarfer(sfSnarfer)
 
 Class = Sourceforge
 

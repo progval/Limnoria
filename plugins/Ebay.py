@@ -127,7 +127,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(self._getResponse(url), prefixName=False)
         except EbayError, e:
             self.log.info('ebaySnarfer exception at %s: %s', url, str(e))
-    ebaySnarfer = wrap(ebaySnarfer, decorators=['urlSnarfer'])
+    ebaySnarfer = urlSnarfer(ebaySnarfer)
 
     def _getResponse(self, url):
         try:

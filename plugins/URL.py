@@ -139,7 +139,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                 title = utils.htmlToText(m.group(1).strip())
                 s = 'Title: %s (at %s)' % (title, domain)
                 irc.reply(s, prefixName=False)
-    titleSnarfer = wrap(titleSnarfer, decorators=['urlSnarfer'])
+    titleSnarfer = urlSnarfer(titleSnarfer)
 
     def stats(self, irc, msg, args, channel):
         """[<channel>]
@@ -152,7 +152,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
         irc.reply('I have %s in my database.' % utils.nItems('URL', count))
     stats = wrap(stats, ['channeldb'])
 
-    def last(self, irc, msg, args, optlist, channel):
+    def last(self, irc, msg, args, channel, optlist):
         """[<channel>] [--{from,with,without,near,proto}=<value>] --nolimit
 
         Gives the last URL matching the given criteria.  --from is from whom

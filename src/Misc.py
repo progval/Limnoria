@@ -279,7 +279,7 @@ class Misc(callbacks.Privmsg):
         s = 'The current (running) version of this Supybot is %s.  %s' % \
             (conf.version, newest)
         irc.reply(s)
-    version = wrap(version, decorators=['thread'])
+    version = wrap(thread(version))
 
     # XXX This should be converted to use commands.wrap, but since it's not
     # using privmsgs.*, I'm saving it for later.

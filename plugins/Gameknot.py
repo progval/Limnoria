@@ -223,7 +223,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             irc.errorPossibleBug(s)
         except Exception, e:
             irc.error(utils.exnToString(e))
-    gameknotSnarfer = wrap(gameknotSnarfer, decorators=['urlSnarfer'])
+    gameknotSnarfer = urlSnarfer(gameknotSnarfer)
 
     def gameknotStatsSnarfer(self, irc, msg, match):
         r"http://gameknot\.com/stats\.pl\?([^&]+)"
@@ -232,7 +232,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
         name = match.group(1)
         s = self.getStats(name)
         irc.reply(s, prefixName=False)
-    gameknotStatsSnarfer = wrap(gameknotStatsSnarfer,decorators=['urlSnarfer'])
+    gameknotStatsSnarfer = urlSnarfer(gameknotStatsSnarfer)
 
 Class = Gameknot
 

@@ -79,6 +79,12 @@ class UrlSnarfThread(world.SupyThread):
         super(UrlSnarfThread, self).__init__(*args, **kwargs)
         self.setDaemon(True)
 
+    def run(self):
+        try:
+            super(UrlSnarfThread, self).run()
+        except webutils.WebError, e:
+            log.debug('Exception in urlSnarfer: %s' % utils.exnToString(e))
+
 class SnarfQueue(ircutils.FloodQueue):
     timeout = conf.supybot.snarfThrottle
     def key(self, channel):
@@ -133,11 +139,6 @@ def urlSnarfer(f):
             t.start()
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
     return newf
-
-decorators = ircutils.IrcDict({
-    'thread': thread,
-    'urlSnarfer': urlSnarfer,
-})
 
 
 ###
@@ -756,26 +757,16 @@ class Spec(object):
 
 # This is used below, but we need to rename it so its name isn't
 # shadowed by our locals.
-_decorators = decorators
-def wrap(f, specList=[], decorators=None, **kw):
+def wrap(f, specList=[], **kw):
     spec = Spec(specList, **kw)
-    # XXX This is a hack, but it's just a workaround until I know the right way
-    #     to fix this problem.
-    if decorators is not None and 'urlSnarfer' in decorators:
-        kw['allowExtra'] = True
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
         f(self, irc, msg, args, *state.args, **state.kwargs)
-    newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
-    if decorators is not None:
-        decorators = map(_decorators.__getitem__, decorators)
-        for decorator in decorators:
-            newf = decorator(newf)
-    return newf
+    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
 
 
 __all__ = ['wrap', 'context', 'additional', 'optional', 'any', 'compose',
-           'Spec', 'first',
+           'Spec', 'first', 'urlSnarfer', 'thread',
            'many', 'getopts', 'getConverter', 'addConverter', 'callConverter']
 
 if world.testing:

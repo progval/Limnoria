@@ -58,7 +58,6 @@ import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.webutils as webutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -158,7 +157,7 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         site = match.groupdict()['site']
         self.log.info('Snarfing geekquote %s from %s.' % (id, site))
         self._gkBackend(irc, msg, site, id)
-    geekSnarfer = wrap(geekSnarfer, decorators=['urlSnarfer'])
+    geekSnarfer = urlSnarfer(geekSnarfer)
 
     def geekquote(self, irc, msg, args, id):
         """[<id>]
@@ -168,7 +167,7 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         """
         site = 'bash.org'
         self._gkBackend(irc, msg, site, id)
-    geekquote = wrap(geekquote, [optional(('id', 'geekquote'))])
+    geekquote = wrap(geekquote, [additional(('id', 'geekquote'))])
 
     def qdb(self, irc, msg, args, id):
         """[<id>]
@@ -176,10 +175,9 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         Returns a random geek quote from qdb.us; the optional argument
         <id> specifies which quote to retrieve.
         """
-        id = privmsgs.getArgs(args, required=0, optional=1)
         site = 'qdb.us'
         self._gkBackend(irc, msg, site, id)
-    qdb = wrap(qdb, [optional(('id', 'qdb'))])
+    qdb = wrap(qdb, [additional(('id', 'qdb'))])
 
 Class = Geekquote
 

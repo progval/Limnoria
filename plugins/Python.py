@@ -193,7 +193,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
                 resp.append('%s: %s' % self._bold(m.groups()))
         if resp:
             irc.reply('; '.join(resp), prefixName = False)
-    aspnRecipes = wrap(aspnRecipes, decorators=['urlSnarfer'])
+    aspnRecipes = urlSnarfer(aspnRecipes)
 
 
 Class = Python
