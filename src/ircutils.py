@@ -105,7 +105,17 @@ def isIP(s):
     >>> isIP('abc.abc.abc.abc')
     0
     """
-    return (s.translate(string.ascii, _ipchars) == "")
+    if s.translate(string.ascii, _ipchars) == '':
+        quads = s.split('.')
+        if len(quads) <= 4:
+            for quad in quads:
+                if int(quad) >= 256:
+                    return False
+            return True
+        else:
+            return False
+    else:
+        return False
 
 def banmask(hostmask):
     """Returns a properly generic banning hostmask for a hostmask.

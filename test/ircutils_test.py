@@ -79,7 +79,11 @@ class FunctionsTestCase(unittest.TestCase):
 
     def testIsIP(self):
         self.failIf(ircutils.isIP('a.b.c'))
+        self.failIf(ircutils.isIP('256.0.0.0'))
+        self.failUnless(ircutils.isIP('127.1'))
+        self.failUnless(ircutils.isIP('0.0.0.0'))
         self.failUnless(ircutils.isIP('100.100.100.100'))
+        self.failUnless(ircutils.isIP('255.255.255.255'))
 
     def testIsNick(self):
         self.failUnless(ircutils.isNick('jemfinch'))
