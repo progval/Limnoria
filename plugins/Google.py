@@ -185,6 +185,8 @@ class GooglePrivmsgRegexp(callbacks.PrivmsgRegexp):
         fd.close()
         if match.group(0).find('&prev=/') >= 0:
             path = re.search('view the <a href=([^>]+)>no',text)
+            if path is None:
+                return
             url = 'http://groups.google.com'
             request = urllib2.Request('%s%s' % (url,path.group(1)),
               headers={'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5;' 
