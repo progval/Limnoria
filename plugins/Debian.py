@@ -58,31 +58,31 @@ import callbacks
 
 
 def configure(advanced):
-    from questions import expect, anything, something, yn
+    from questions import output, expect, anything, something, yn
     conf.registerPlugin('Debian', True)
-    if not utils.findBinaryInPath('zegrep'):
+    if not utils.findBinaryInPath('zgrep'):
         if not advanced:
-            output("""I can't find zegrep in your path.  This is necessary
+            output("""I can't find zgrep in your path.  This is necessary
                       to run the file command.  I'll disable this command
-                      now.  When you get zegrep in your path, use the command
+                      now.  When you get zgrep in your path, use the command
                       "enable file" to re-enable the command.""")
             conf.supybot.defaultCapabilities().add('-Debian.file')
         else:
-            output("""I can't find zegrep in your path.  If you want to run
+            output("""I can't find zgrep in your path.  If you want to run
                       the file command with any sort of expediency, you'll
                       need it.  You can use a python equivalent, but it's
                       about two orders of magnitude slower.  THIS MEANS IT
                       WILL TAKE AGES TO RUN THIS COMMAND.  Don't do this.""")
-            if yn('Do you want to use a Python equivalent of zegrep?'):
+            if yn('Do you want to use a Python equivalent of zgrep?'):
                 conf.supybot.plugins.Debian.pythonZegrep.setValue(True)
             else:
                 output('I\'ll disable file now.')
                 conf.supybot.defaultCapabilities().add('-Debian.file')
 
 conf.registerPlugin('Debian')
-conf.registerGlobalValue(conf.supybot.plugins.Debian, 'pythonZegrep',
+conf.registerGlobalValue(conf.supybot.plugins.Debian, 'pythonZgrep',
     registry.Boolean(False, """An advanced option, mostly just for testing;
-    uses a Python-coded zegrep rather than the actual zegrep executable,
+    uses a Python-coded zgrep rather than the actual zgrep executable,
     generally resulting in a 50x slowdown.  What would take 2 seconds will
     take 100 with this enabled.  Don't enable this."""))
 class Debian(callbacks.Privmsg,
@@ -143,14 +143,14 @@ class Debian(callbacks.Privmsg,
                              imap(lambda line:(re_obj.search(line), line),fd)))
         else:
             try:
-                (r, w) = popen2.popen4(['zegrep', regexp, self.contents])
+                (r, w) = popen2.popen4(['zgrep', '-e', regexp, self.contents])
                 w.close()
             except TypeError:
                 # We're on Windows.
                 irc.error('This command won\'t work on this platform.  '
-                               'If you think it should (i.e., you know that '
-                               'you have a zegrep binary somewhere) then file '
-                               'a bug about it at http://supybot.sf.net/ .')
+                          'If you think it should (i.e., you know that '
+                          'you have a zgrep binary somewhere) then file '
+                          'a bug about it at http://supybot.sf.net/ .')
                 return
         packages = sets.Set()  # Make packages unique
         try:
