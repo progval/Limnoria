@@ -247,7 +247,7 @@ def makePluginDocumentation(pluginWindow):
                 help = cgi.escape(help)
                 trClass = trClasses[trClass]
                 fd.write(textwrap.dedent('''
-                <tr class="%s" id="%s"><td>%s</td><td style="width:>%r</td>
+                <tr class="%s" id="%s"><td>%s</td><td>%r</td>
                 <td class="detail">%s</td></tr>
                 ''' % (trClass, name, name, default, help)))
     except registry.NonExistentRegistryEntry:
