@@ -1,3 +1,11 @@
+	* Made the smileys and frowns configurable in ChannelDB.
+
+	* Added an INVITE handler in Admin, allowing users with the admin
+	capability to INVITE the bot to a channel.  There's also a config
+	variable, alwaysJoinOnInvite, that will cause the bot to join
+	a channel whenever someone invites it to a channel, not just users
+	with the admin capability.
+
 	* Added a vast array of new configurables -- check out the various
 	config commands in Configurable plugins to see.
 	
