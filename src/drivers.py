@@ -52,8 +52,9 @@ _newDrivers = []
 
 class IrcDriver(object):
     """Base class for drivers."""
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         add(self.name(), self)
+        super(IrcDriver, self).__init__(*args, **kwargs)
 
     def run(self):
         raise NotImplementedError
