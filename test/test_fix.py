@@ -94,6 +94,7 @@ class FunctionsTest(unittest.TestCase):
                          ['foo bar', 'baz']) 
         self.assertEqual(rsplit('foo        bar baz', maxsplit=1),
                          ['foo        bar', 'baz'])
+        self.assertEqual(rsplit('foobarbaz', 'bar'), ['foo', 'baz'])
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

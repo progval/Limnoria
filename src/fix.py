@@ -127,6 +127,8 @@ def all(p, seq):
     return True
 
 def rsplit(s, sep=None, maxsplit=-1):
+    if sep is not None:
+        sep = sep[::-1]
     L = s[::-1].split(sep, maxsplit)
     L.reverse()
     return [s[::-1] for s in L]
