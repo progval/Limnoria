@@ -1,11 +1,9 @@
-I'm sure there are tons of them.  When you find them, send them to us and we'll
-fix them ASAP.  I'd love to have a bugless bot someday...
+We're sure there are tons of them.  When you find them, send them to us and
+we'll fix them ASAP.  We'd love to have a bugless bot someday...
 
-(BTW, the way to "send the bugs to us" is via SourceForge: http://sourceforge.net/tracker/?atid=489447&group_id=58965&func=browse)
+Incidentally, the way to "send the bugs to us" is via SourceForge:
+<http://sourceforge.net/tracker/?atid=489447&group_id=58965&func=browse>
 
 Known bugs that probably won't get fixed:
 
-Sometimes something bolded is split between chunks (the chunks you use @more
-to read).  This throws off the bolding of the "(2 more messages)" part, and
-the bolding is lost when the next message starts.  This would involve way too
-much work to be fixed.
+None currently.
