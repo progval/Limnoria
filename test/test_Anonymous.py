@@ -31,8 +31,17 @@
 
 from testsupport import *
 
-class AnonymousTestCase(PluginTestCase):
+class AnonymousTestCase(ChannelPluginTestCase):
     plugins = ('Anonymous',)
+    def testSay(self):
+        m = self.assertError('anonymous say %s I love you!' % self.channel)
+        try:
+            orig = conf.supybot.plugins.Anonymous.requireRegistration()
+            conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
+            m = self.assertNotError('anonymous say %s foo!'%self.channel)
+            self.failUnless(m.args[1] == 'foo!')
+        finally:
+            conf.supybot.plugins.Anonymous.requireRegistration.setValue(orig)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
