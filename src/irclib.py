@@ -559,65 +559,21 @@ class Irc(IrcCommandDispatcher):
         self._queueConnectMessages()
         self.startedSync = ircutils.IrcDict()
 
-    def reset(self):
-        """Resets the Irc object.  Called when the driver reconnects."""
-        self._setNonResettingVariables()
-        self.state.reset()
-        self.queue.reset()
-        self.fastqueue.reset()
-        self.startedSync.clear()
-        for callback in self.callbacks:
-            callback.reset()
-        self._queueConnectMessages()
+    def isChannel(self, s):
+        """Helper function to check whether a given string is a channel on
+        the network this Irc object is connected to."""
+        kw = {}
+        if 'chantypes' in self.state.supported:
+            kw['chantypes'] = self.state.supported['chantypes']
+        if 'channellen' in self.state.supported:
+            kw['channellen'] = self.state.supported['channellen']
+        return ircutils.isChannel(s, **kw)
 
-    def _setNonResettingVariables(self):
-        # Configuration stuff.
-        self.nick = conf.supybot.nick()
-        self.user = conf.supybot.user()
-        self.ident = conf.supybot.ident()
-        self.alternateNicks = conf.supybot.nick.alternates()[:]
-        self.password = conf.supybot.networks.get(self.network).password()
-        self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
-        # The rest.
-        self.lastTake = 0
-        self.server = 'unset'
-        self.afterConnect = False
-        self.lastping = time.time()
-        self.outstandingPing = False
-
-    def _queueConnectMessages(self):
-        if self.zombie:
-            self.driver.die()
-            self._reallyDie()
-        else:
-            if self.password:
-                log.info('Sending PASS command, not logging the password.')
-                self.queueMsg(ircmsgs.password(self.password))
-            log.debug('Queuing NICK command, nick is %s.', self.nick)
-            self.queueMsg(ircmsgs.nick(self.nick))
-            log.debug('Queuing USER command, ident is %s, user is %s.',
-                     self.ident, self.user)
-            self.queueMsg(ircmsgs.user(self.ident, self.user))
-
-    def _getNextNick(self):
-        if self.alternateNicks:
-            nick = self.alternateNicks.pop(0)
-            if '%s' in nick:
-                nick %= conf.supybot.nick()
-            return nick
-        else:
-            nick = conf.supybot.nick()
-            ret = nick
-            L = list(nick)
-            while len(L) <= 3:
-                L.append('`')
-            while ret == nick:
-                L[random.randrange(len(L))] = random.choice('0123456789')
-                ret = ''.join(L)
-            return ret
-
-    def __repr__(self):
-        return '<irclib.Irc object for %s>' % self.network
+    def isNick(self, s):
+        kw = {}
+        if 'nicklen' in self.state.supported:
+            kw['nicklen'] = self.state.supported['nicklen']
+        return ircutils.isNick(s, **kw)
 
     # This *isn't* threadsafe!
     def addCallback(self, callback):
@@ -748,6 +704,132 @@ class Irc(IrcCommandDispatcher):
         else:
             return None
 
+    def feedMsg(self, msg):
+        """Called by the IrcDriver; feeds a message received."""
+        msg.tag('receivedBy', self)
+        msg.tag('receivedOn', self.network)
+        log.debug('Incoming message: ' + str(msg).rstrip('\r\n'))
+
+        # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
+        # messages with our nick instead of our prefix.  We'll fix that here.
+        if msg.prefix == self.nick:
+            log.debug('Got one of those odd nick-instead-of-prefix msgs.')
+            msg = ircmsgs.IrcMsg(prefix=self.prefix, msg=msg)
+
+        # This catches cases where we know our own nick (from sending it to the
+        # server) but we don't yet know our prefix.
+        if msg.nick == self.nick and self.prefix != msg.prefix:
+            self.prefix = msg.prefix
+
+        # This keeps our nick and server attributes updated.
+        if msg.command in self._nickSetters:
+            if msg.args[0] != self.nick:
+                self.nick = msg.args[0]
+                log.debug('Updating nick attribute to %s.', self.nick)
+            if msg.prefix != self.server:
+                self.server = msg.prefix
+                log.debug('Updating server attribute to %s.')
+
+        # Dispatch to specific handlers for commands.
+        method = self.dispatchCommand(msg.command)
+        if method is not None:
+            method(msg)
+
+        # Now update the IrcState object.
+        try:
+            self.state.addMsg(self, msg)
+        except:
+            log.exception('Exception in update of IrcState object:')
+
+        # Now call the callbacks.
+        world.debugFlush()
+        for callback in self.callbacks:
+            try:
+                m = callback.inFilter(self, msg)
+                if not m:
+                    log.debug('%s.inFilter returned None' % callback.name())
+                    return
+                msg = m
+            except:
+                log.exception('Uncaught exception in inFilter:')
+            world.debugFlush()
+        for callback in self.callbacks:
+            try:
+                if callback is not None:
+                    callback(self, msg)
+            except:
+                log.exception('Uncaught exception in callback:')
+            world.debugFlush()
+
+    def die(self):
+        """Makes the Irc object *promise* to die -- but it won't die (of its
+        own volition) until all its queues are clear.  Isn't that cool?"""
+        self.zombie = True
+        if not self.afterConnect:
+            self._reallyDie()
+
+    # This is useless because it's in world.ircs, so it won't be deleted until
+    # the program exits.  Just figured you might want to know.
+    #def __del__(self):
+    #    self._reallyDie()
+
+    def reset(self):
+        """Resets the Irc object.  Called when the driver reconnects."""
+        self._setNonResettingVariables()
+        self.state.reset()
+        self.queue.reset()
+        self.fastqueue.reset()
+        self.startedSync.clear()
+        for callback in self.callbacks:
+            callback.reset()
+        self._queueConnectMessages()
+
+    def _setNonResettingVariables(self):
+        # Configuration stuff.
+        self.nick = conf.supybot.nick()
+        self.user = conf.supybot.user()
+        self.ident = conf.supybot.ident()
+        self.alternateNicks = conf.supybot.nick.alternates()[:]
+        self.password = conf.supybot.networks.get(self.network).password()
+        self.prefix = '%s!%s@%s' % (self.nick, self.ident, 'unset.domain')
+        # The rest.
+        self.lastTake = 0
+        self.server = 'unset'
+        self.afterConnect = False
+        self.lastping = time.time()
+        self.outstandingPing = False
+
+    def _queueConnectMessages(self):
+        if self.zombie:
+            self.driver.die()
+            self._reallyDie()
+        else:
+            if self.password:
+                log.info('Sending PASS command, not logging the password.')
+                self.queueMsg(ircmsgs.password(self.password))
+            log.debug('Queuing NICK command, nick is %s.', self.nick)
+            self.queueMsg(ircmsgs.nick(self.nick))
+            log.debug('Queuing USER command, ident is %s, user is %s.',
+                     self.ident, self.user)
+            self.queueMsg(ircmsgs.user(self.ident, self.user))
+
+    def _getNextNick(self):
+        if self.alternateNicks:
+            nick = self.alternateNicks.pop(0)
+            if '%s' in nick:
+                nick %= conf.supybot.nick()
+            return nick
+        else:
+            nick = conf.supybot.nick()
+            ret = nick
+            L = list(nick)
+            while len(L) <= 3:
+                L.append('`')
+            while ret == nick:
+                L[random.randrange(len(L))] = random.choice('0123456789')
+                ret = ''.join(L)
+            return ret
+
     def do002(self, msg):
         """Logs the ircd version."""
         (beginning, version) = rsplit(msg.args[-1], maxsplit=1)
@@ -836,75 +918,6 @@ class Irc(IrcCommandDispatcher):
                                  u.name, authmask, newhostmask)
                         u.auth[i] = (u.auth[i][0], newhostmask)
                         ircdb.users.setUser(id, u)
-
-    def feedMsg(self, msg):
-        """Called by the IrcDriver; feeds a message received."""
-        msg.tag('receivedBy', self)
-        msg.tag('receivedOn', self.network)
-        log.debug('Incoming message: ' + str(msg).rstrip('\r\n'))
-
-        # Yeah, so this is odd.  Some networks (oftc) seem to give us certain
-        # messages with our nick instead of our prefix.  We'll fix that here.
-        if msg.prefix == self.nick:
-            log.debug('Got one of those odd nick-instead-of-prefix msgs.')
-            msg = ircmsgs.IrcMsg(prefix=self.prefix, msg=msg)
-
-        # This catches cases where we know our own nick (from sending it to the
-        # server) but we don't yet know our prefix.
-        if msg.nick == self.nick and self.prefix != msg.prefix:
-            self.prefix = msg.prefix
-
-        # This keeps our nick and server attributes updated.
-        if msg.command in self._nickSetters:
-            if msg.args[0] != self.nick:
-                self.nick = msg.args[0]
-                log.debug('Updating nick attribute to %s.', self.nick)
-            if msg.prefix != self.server:
-                self.server = msg.prefix
-                log.debug('Updating server attribute to %s.')
-
-        # Dispatch to specific handlers for commands.
-        method = self.dispatchCommand(msg.command)
-        if method is not None:
-            method(msg)
-
-        # Now update the IrcState object.
-        try:
-            self.state.addMsg(self, msg)
-        except:
-            log.exception('Exception in update of IrcState object:')
-
-        # Now call the callbacks.
-        world.debugFlush()
-        for callback in self.callbacks:
-            try:
-                m = callback.inFilter(self, msg)
-                if not m:
-                    log.debug('%s.inFilter returned None' % callback.name())
-                    return
-                msg = m
-            except:
-                log.exception('Uncaught exception in inFilter:')
-            world.debugFlush()
-        for callback in self.callbacks:
-            try:
-                if callback is not None:
-                    callback(self, msg)
-            except:
-                log.exception('Uncaught exception in callback:')
-            world.debugFlush()
-
-    def die(self):
-        """Makes the Irc object *promise* to die -- but it won't die (of its
-        own volition) until all its queues are clear.  Isn't that cool?"""
-        self.zombie = True
-        if not self.afterConnect:
-            self._reallyDie()
-
-    # This is useless because it's in world.ircs, so it won't be deleted until
-    # the program exits.  Just figured you might want to know.
-    #def __del__(self):
-    #    self._reallyDie()
 
     def _reallyDie(self):
         """Makes the Irc object die.  Dead."""
