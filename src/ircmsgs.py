@@ -240,10 +240,14 @@ def toXml(msg, pretty=True, includeTime=True):
     if includeTime:
         L.append(' time="%s"' % time.time())
     L.append('>')
+    if pretty:
+        L.append('\n')
     for arg in msg.args:
         if pretty:
-            L.append('\n    ')
+            L.append('    ')
         L.append('<arg>%s</arg>' % _escape(arg))
+        if pretty:
+            L.append('\n')
     L.append('</msg>')
     return ''.join(L)
 
