@@ -76,7 +76,8 @@ class UptimeDB(object):
         fd.close()
 
     def add(self):
-        if not any(lambda t: t[0] == world.startedAt, self.uptimes):
+        if world.startedAt != 0 and \
+           not any(lambda t: t[0] == world.startedAt, self.uptimes):
             self.uptimes.append((world.startedAt, None))
 
     def top(self, n=3):
@@ -92,7 +93,7 @@ class UptimeDB(object):
         def notNone(t):
             return t[1] is not None
         utils.sortBy(decorator, self.uptimes, cmp=invertCmp(cmp))
-        return list(islice(ifilter(notNone, self.uptimes), 3))
+        return list(islice(ifilter(notNone, self.uptimes), n))
 
     def update(self):
         for (i, t) in enumerate(self.uptimes):
