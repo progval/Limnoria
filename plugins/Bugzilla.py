@@ -207,11 +207,12 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply('I have no defined bugzillae.')
 
     def bugzSnarf(self, irc, msg, match):
-        r"""\s*bug\s*(?:id|ids|#)?\s+(?:id|ids|#)?(?P<bug>\d+)"""
+        r"""\bbug\b(?:id|ids|#)?\s+(?:id|ids|#)?(?P<bug>\d+)"""
       
         snarfTarget = self.registryValue('snarfTarget')
-        bugid       = match.group('bug')
-        
+        if not snarfTarget:
+            return
+        bugid = match.group('bug')
         name = self.shorthand[snarfTarget]
         try:
             (url, description) = self.db[name]
@@ -219,13 +220,10 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             s = self.registryValue('replyNoBugzilla', name)
             irc.error(s % name)
             return
-            
         if not self.registryValue('bugSnarfer', name):
             return
-
         queryurl = '%s/xml.cgi?id=%s' % (url, bugid)
         bold     = self.registryValue('bold', name)
-        
         try:
             summary = self._get_short_bug_summary(queryurl,description,bugid)
         except BugzillaError, e:
@@ -234,16 +232,13 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         except IOError, e:
             s = '%s.  Try yourself: %s' % (e, queryurl)
             irc.error(s)
-        
         report = {}
-        report['id']      = bugid
-        report['url']     = str('%s/show_bug.cgi?id=%s' % (url, bugid))
-        report['title']   = str(summary['title'])
+        report['id'] = bugid
+        report['url'] = str('%s/show_bug.cgi?id=%s' % (url, bugid))
+        report['title'] = str(summary['title'])
         report['summary'] = str(self._mk_summary_string(summary, bold))
         report['product'] = str(summary['product'])
-        
         s = '%(product)s bug #%(id)s: %(title)s %(summary)s' % report
-        
         irc.reply(s, prefixName=False)
 
     def bzSnarfer(self, irc, msg, match):
