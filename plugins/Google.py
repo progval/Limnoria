@@ -69,7 +69,22 @@ def configure(onStart, afterConnect, advanced):
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
         print 'You can apply for a key from http://www.google.com/apis/'
-        
+
+totalSearches = 0
+totalTime = 0
+last24hours = structures.queue()
+
+def search(*args, **kwargs):
+    global totalSearches, totalTime, last24hours
+    data = google.doGoogleSearch(*args, **kwargs)
+    now = time.time()
+    totalSearches += 1
+    totalTime += data.meta.searchTime
+    last24hours.enqueue(now)
+    while last24hours and now - last24hours.peek() > 86400:
+        last24hours.dequeue()
+    return data
+            
 class GooglePrivmsg(callbacks.Privmsg):
     threaded = True
     def __init__(self):
@@ -78,16 +93,7 @@ class GooglePrivmsg(callbacks.Privmsg):
         self.totalTime = 0
         self.last24hours = structures.queue()
 
-    def _searched(self, data):
-        now = time.time()
-        self.total += 1
-        self.totalTime += data.meta.searchTime
-        self.last24hours.enqueue(now)
-        while self.last24hours and now - self.last24hours.peek() > 86400:
-            self.last24hours.dequeue()
-        
     def formatData(self, data):
-        self._searched(data)
         time = '(search took %s seconds)' % data.meta.searchTime
         results = []
         for result in data.results:
@@ -112,6 +118,7 @@ class GooglePrivmsg(callbacks.Privmsg):
         key = privmsgs.getArgs(args)
         google.setLicense(key)
         irc.reply(msg, conf.replySuccess)
+
     googlelicensekey = privmsgs.checkCapability(googlelicensekey, 'admin')
         
     def google(self, irc, msg, args):
@@ -127,7 +134,7 @@ class GooglePrivmsg(callbacks.Privmsg):
         for (option, argument) in optlist:
             kwargs[option[2:]] = argument
         searchString = privmsgs.getArgs(rest)
-        data = google.doGoogleSearch(searchString, **kwargs)
+        data = search(searchString, **kwargs)
         irc.reply(msg, self.formatData(data))
 
     def metagoogle(self, irc, msg, args):
@@ -142,7 +149,7 @@ class GooglePrivmsg(callbacks.Privmsg):
         for option, argument in optlist:
             kwargs[option[2:]] = argument
         searchString = privmsgs.getArgs(rest)
-        data = google.doGoogleSearch(searchString, **kwargs)
+        data = search(searchString, **kwargs)
         meta = data.meta
         categories = [d['fullViewableName'] for d in meta.directoryCategories]
         categories = [repr(s.replace('_', ' ')) for s in categories]
@@ -170,7 +177,7 @@ class GooglePrivmsg(callbacks.Privmsg):
 
         results = []
         for arg in args:
-            data = google.doGoogleSearch(arg)
+            data = search(arg)
             results.append((data.meta.estimatedTotalResultsCount, arg))
         results.sort()
         results.reverse()
@@ -184,9 +191,7 @@ class GooglePrivmsg(callbacks.Privmsg):
         """
         (site, s) = privmsgs.getArgs(args, needed=2)
         searchString = 'site:%s %s' % (site, s)
-        data = google.doGoogleSearch(searchString,
-                                     language='lang_en',
-                                     safeSearch=1)
+        data = search(searchString, language='lang_en', safeSearch=1)
         irc.reply(msg, self.formatData(data))
 
     def googlespell(self, irc, msg, args):
@@ -204,13 +209,13 @@ class GooglePrivmsg(callbacks.Privmsg):
         Returns interesting information about this Google module.  Mostly
         useful for making sure you don't go over your 1000 requests/day limit.
         """
-        last24hours = len(self.last24hours)
+        recent = len(last24hours)
         irc.reply(msg, 'This google module has been called %s time%stotal; '\
                        '%s time%sin the past 24 hours.  ' \
                        'Google has spent %s seconds searching for me.' % \
-                  (self.total, self.total != 1 and 's ' or ' ',
-                   last24hours, last24hours != 1 and 's ' or ' ',
-                   self.totalTime))
+                  (totalSearches, totalSearches != 1 and 's ' or ' ',
+                   recent, recent != 1 and 's ' or ' ',
+                   totalTime))
 
 
 class GooglePrivmsgRegexp(callbacks.PrivmsgRegexp):
@@ -218,7 +223,7 @@ class GooglePrivmsgRegexp(callbacks.PrivmsgRegexp):
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
         searchString = match.group(1)
-        data = google.doGoogleSearch(searchString, safeSearch=1)
+        data = search(searchString, safeSearch=1)
         if data.results:
             url = data.results[0].URL
             irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg), url))
