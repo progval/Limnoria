@@ -714,15 +714,17 @@ class Privmsg(irclib.IrcCallback):
         methodName = canonicalName(methodName)
         return getattr(self, methodName)
 
-    def callCommand(self, f, irc, msg, *L):
-        name = f.im_func.func_name
+    def callCommand(self, method, irc, msg, *L):
+        name = method.im_func.func_name
         assert L, 'Odd, nothing in L.  This can\'t happen.'
         self.log.info('Command %s called with args %s by %s',
                       name, L[0], msg.prefix)
         start = time.time()
         try:
-            f(irc, msg, *L)
+            method(irc, msg, *L)
         except (getopt.GetoptError, ArgumentError, CannotNest):
+            # Not catching getopt.GetoptError, ArgumentError, CannotNest --
+            # those are handled by IrcObjectProxy.
             raise
         except (SyntaxError, Error), e:
             self.log.info('Error return: %s', e)
@@ -730,8 +732,6 @@ class Privmsg(irclib.IrcCallback):
         except Exception, e:
             self.log.exception('Uncaught exception:')
             irc.error(utils.exnToString(e))
-        # Not catching getopt.GetoptError, ArgumentError, CannotNest -- those
-        # are handled by IrcObjectProxy.
         elapsed = time.time() - start
         self.log.info('%s took %s seconds', name, elapsed)
 
