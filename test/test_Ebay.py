@@ -39,6 +39,7 @@ class EbayTest(PluginTestCase, PluginDocumentation):
                             'ViewItem&item=3053641570')
         # test 'Invalid Item' checking
         self.assertRegexp('ebay 2357056673', 'That auction is invalid')
+        self.assertError('ebay foobar')
 
     def testSnarfer(self):
         self.assertRegexp('http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem'

@@ -62,7 +62,7 @@ def configure(onStart, afterConnect, advanced):
         print 'supybot sees such a URL, he will parse the web page for'
         print 'information and reply with the results.\n'
         if yn('Do you want the Ebay snarfer enabled by default?') == 'n':
-            onStart.append('Ebay toggle auction off')
+            onStart.append('Ebay config auction-snarfer off')
 
 class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     """
@@ -119,11 +119,19 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             if option == 'link':
                 link = True
         item = privmsgs.getArgs(rest)
+        try:
+            int(item)
+        except ValueError:
+            irc.error(msg, '<item> must be an integer value.')
+            return
         url = 'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=%s' % item
         if link:
             irc.reply(msg, url)
             return
-        self._getResponse(irc, msg, url)
+        try:
+            self._getResponse(irc, msg, url)
+        except urllib2.HTTPError, e:
+            irc.error(msg, 'Error while fetching the web page: %s' % e.msg)
 
     def ebaySnarfer(self, irc, msg, match):
         r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?" \
@@ -132,7 +140,10 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             return
         url = match.group(0)
         #debug.printf(url)
-        self._getResponse(irc, msg, url, snarf=True)
+        try:
+            self._getResponse(irc, msg, url, snarf=True)
+        except urllib2.HTTPError, e:
+            debug.msg('Error while fetching the web page: %s' % e.msg)
     ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)
 
     def _getResponse(self, irc, msg, url, snarf=False):
