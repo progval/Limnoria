@@ -118,6 +118,8 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('last --with foo', 'foo bar baz')
         self.assertRegexp('last --regexp m/\s+/', 'last --with foo')
         self.assertResponse('last --regexp m/bar/', 'foo bar baz')
+        self.assertResponse('last --from %s' % self.nick.upper(),
+                            '@last --regexp m/bar/')
 
     def testMore(self):
         self.assertRegexp('echo %s' % ('abc'*300), 'more')
