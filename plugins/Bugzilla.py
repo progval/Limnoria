@@ -250,7 +250,10 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             if isinstance(bug, basestring):
                 bugid = bug
             else:
-                bugid = bug[0]
+                if bug:
+                    bugid = bug[0]
+                else:
+                    raise callbacks.Error, 'No bugs found.'
             try:
                 bugid = int(bugid)
             except ValueError:
