@@ -44,6 +44,7 @@ plugins = [
     'Owner',
     'QuoteGrabs',
     'Scheduler',
+    'ShrinkUrl',
     'Status',
     'User',
     'Utilities',
