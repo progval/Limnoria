@@ -212,11 +212,12 @@ if __name__ == '__main__':
     def closeRegistry():
         # We only print if world.dying so we don't see these messages during
         # upkeep.
+        logger = log.debug
         if world.dying:
-            log.info('Writing registry file to %s', registryFilename)
+            logger = log.info
+        logger('Writing registry file to %s', registryFilename)
         registry.close(conf.supybot, registryFilename, annotated=True)
-        if world.dying:
-            log.info('Finished writing registry file.')
+        logger('Finished writing registry file.')
     world.flushers.append(closeRegistry)
     world.registryFilename = registryFilename
 
