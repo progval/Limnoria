@@ -61,23 +61,6 @@ def configure(onStart, afterConnect, advanced):
         else:
             s = ''
 
-example = utils.wrapLines("""
-<jemfinch> @list Parter
-<supybot> jemfinch: autopartchannel, removeautopartchannel
-<jemfinch> @autopartchannel #supybot
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @join #supybot
-
---> supybot (~supybot@dhcp065-024-059-168.columbus.rr.com) has joined #supybot
-<-- supybot (~supybot@dhcp065-024-059-168.columbus.rr.com) has left #supybot
-
-<jemfinch> @removeautopartchannel #supybot
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @join #supybot
-
---> supybot (~supybot@dhcp065-024-059-168.columbus.rr.com) has joined #supybot
-""")
-
 class Parter(callbacks.Privmsg):
     def __init__(self):
         super(self.__class__, self).__init__()

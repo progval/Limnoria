@@ -64,10 +64,6 @@ def configure(onStart, afterConnect, advanced):
         if yn('Do you want the Ebay snarfer enabled by default?') == 'n':
             onStart.append('Ebay toggle auction off')
 
-example = utils.wrapLines("""
-Add an example IRC session using this module here.
-""")
-
 class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     """
     Module for eBay stuff. Currently contains a URL snarfer and a command to

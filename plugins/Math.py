@@ -58,15 +58,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Math')
 
-example = utils.wrapLines("""
-<jemfinch> @calc e**(i*pi) + 1
-<supybot> 0
-<jemfinch> @calc 1+2+3
-<supybot> 6
-<jemfinch> @rpn 1 2 3 + +
-<supybot> 6
-""")
-
 class Math(callbacks.Privmsg):
     ###
     # So this is how the 'calc' command works:

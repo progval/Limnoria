@@ -58,10 +58,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load QuoteGrabs')
 
-example = utils.wrapLines("""
-Add an example IRC session using this module here.
-""")
-
 grabTime = 864000 # 10 days
 minRandomLength = 8
 minRandomWords = 3

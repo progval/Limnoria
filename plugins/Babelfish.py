@@ -52,13 +52,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Babelfish')
 
-example = utils.wrapLines("""
-<jemfinch> @translate en de "Probably one of the worst things about being a genie in a magic lamp is a little thing called \"lamp stench.\""
-<supybot> Vermutlich eins der schlechtesten Sachen ber Sein ein genie in einer magischen Lampe ist eine kleine Sache, die genannt wird "Lampe stench."
-<jemfinch> @babelize en de "Probably one of the worst things about being a genie in a magic lamp is a little thing called \"lamp stench.\""
-<supybot> From the worst its thing surplus is a genius in magic lamp a small thing, is characterized "lamp Gestank."
-""")
-
 class Babelfish(callbacks.Privmsg):
     threaded = True
     _abbrevs = utils.abbrev(map(str.lower, babelfish.available_languages))

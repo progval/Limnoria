@@ -55,27 +55,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load News')
 
-example = utils.wrapLines("""
-<Strike> !listnews
-<strikebot> Strike: News for #sourcereview: (#1) Test; (#3) Expiration test
-five-million-and-one; (#5) no expire
-<Strike> !readnews 1
-<strikebot> Strike: no expiration (Subject: "Test", added by Strike on 10:15
-PM, September 03, 2003, expires at 12:00 AM, September 12, 2003)
-<Strike> !addnews 5000 Another test news item: Here is the news text, much
-longer than the subject should be.  The subject should be short and sweet like
-a headline whereas the text can be a lot more detailed.
-<strikebot> Strike: The operation succeeded.
-<Strike> !listnews
-<strikebot> Strike: News for #sourcereview: (#1) Test; (#3) Expiration test
-five-million-and-one; (#5) no expire; (#7) Another test news item
-<Strike> !readnews 7
-<strikebot> Strike: Here is the news text, much longer than the subject should
-be. The subject should be short and sweet like a headline whereas the text can
-be a lot more detailed. (Subject: "Another test news item", added by Strike on
-07:12 PM, September 12, 2003, expires at 08:36 PM, September 12, 2003)
-""")
-
 class News(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)

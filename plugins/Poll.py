@@ -56,33 +56,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Poll')
 
-example = utils.wrapLines("""
-<G-LiTe> @load Poll
-<supybot> G-LiTe: The operation succeeded.
-<G-LiTe> @list Poll
-<supybot> G-LiTe: close, new, open, poll, results, vote
-<G-LiTe> @poll new Got milk?
-<supybot> G-LiTe: The operation succeeded. (poll #1)
-<G-LiTe> @poll results 1
-<supybot> G-LiTe: Results for poll #1: "Got milk?" by G-LiTe - There have been no votes on this poll yet.
-<G-LiTe> @poll vote 1 yes
-<supybot> G-LiTe: You voted Yes on poll #1.
-<G-LiTe> @poll results 1
-<supybot> G-LiTe: Results for poll #1: "Got milk?" by G-LiTe - Yes: 1 (100%), No: 0 (0%), Total votes: 1.
-<G-LiTe> @poll close 1
-<supybot> G-LiTe: The operation succeeded.
-<G-LiTe> @poll results 1
-<supybot> G-LiTe: Results for poll #1: "Got milk?" by G-LiTe - Yes: 1 (100%), No: 0 (0%), Total votes: 1. Poll is closed.
-<G-LiTe> @poll vote 1 no
-<supybot> G-LiTe: Error: That poll is closed.
-<G-LiTe> @poll open 384 1
-<supybot> G-LiTe: The operation succeeded.
-<G-LiTe> @poll vote 1 no
-<supybot> G-LiTe: Your vote on poll #1 has been updated to No.
-<G-LiTe> @poll results 1
-<supybot> G-LiTe: Results for poll #1: "Got milk?" by G-LiTe - Yes: 0 (0%), No: 1 (100%), Total votes: 1. Poll expires in 6 minutes and 17 seconds
-""")
-
 dbFilename = os.path.join(conf.dataDir, 'Poll.db')
 
 def makeDb(dbfilename):

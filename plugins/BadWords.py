@@ -53,29 +53,6 @@ def configure(onStart, afterConnect, advanced):
         words = anything('What words? (separate individual words by spaces)')
         onStart.append('addbadwords %s' % words)
 
-example = utils.wrapLines("""
-<jemfinch> @load BadWords
-<supybot> The operation succeeded.
-<jemfinch> @list BadWords
-<supybot> addbadword, addbadwords, removebadword, removebadwords
-<jemfinch> @addbadword darn
-<supybot> The operation succeeded.
-<jemfinch> @rot13 qnea
-<supybot> !@#$
-<jemfinch> @removebadword darn
-<supybot> The operation succeeded.
-<jemfinch> @rot13 qnea
-<supybot> darn
-<jemfinch> @addbadwords darn dang shoot
-<supybot> The operation succeeded.
-<jemfinch> @rot13 qnea qnat fubbg
-<supybot> !@#$ !@#$ !@#$!
-<jemfinch> @removebadwords darn dang shoot
-<supybot> The operation succeeded.
-<jemfinch> @rot13 qnea qnat fubbg
-<supybot> darn dang shoot
-""")
-
 nastyChars = '!@#$' * 256
 def subber(m):
     return nastyChars[:len(m.group(1))]

@@ -493,7 +493,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                     },
                  'authored':
                     {'sql':"""SELECT count(key),created_by FROM factoids GROUP
-                           BY created_by ORDER BY created_by DESC LIMIT %s""",
+                           BY created_by ORDER BY count(key) DESC LIMIT %s""",
                      'format':'%s (%s)',
                      'genlist':lambda c: [(ircdb.users.getUser(t[1]).name,
                         t[0]) for t in c],

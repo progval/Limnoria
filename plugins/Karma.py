@@ -51,10 +51,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Karma')
 
-example = utils.wrapLines("""
-Add an example IRC session using this module here.
-""")
-
 class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
     addressedRegexps = ['increaseKarma', 'decreaseKarma']
     def __init__(self):

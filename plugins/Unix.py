@@ -86,27 +86,6 @@ def configure(onStart, afterConnect, advanced):
     if yn('Would you like to disable this command for non-owner users?')=='y':
         onStart.append('disable progstats')
 
-example = utils.wrapLines("""
-<jemfinch> @list Unix
-<supybot> crypt, errno, fortune, progstats, spell
-<jemfinch> @crypt jemfinch
-<supybot> XJsAYQVv6ACAs
-<jemfinch> @help crypt
-<supybot> crypt <password> [<salt>] (for more help use the morehelp command)
-<jemfinch> @crypt jemfinch XXX
-<supybot> XXU51Sc5CjpkY
-<jemfinch> @errno ENOMEM
-<supybot> ENOMEM (#12): Cannot allocate memory
-<jemfinch> @errno 11
-<supybot> EAGAIN (#11): Resource temporarily unavailable
-<jemfinch> @fortune
-<supybot> Q: What's the difference between Bell Labs and the Boy Scouts of America? A: The Boy Scouts have adult supervision.
-<jemfinch> @progstats
-<supybot> Process ID 1264 running as user "jfincher" and as group "1000" from directory "/home/jfincher/src/my/python/supybot" with the command line "src/bot.py conf/supybot.conf".  Running on Python 2.3+ (#2, Aug 10 2003, 11:33:47) [GCC 3.3.1 (Debian)].
-<jemfinch> @spell recind
-<supybot> Possible spellings for "recind" (26 found, 26 shown): rescind, rec ind, rec-ind, resined, rebind, remind, rewind, recent, resend, rescinds, rescinder, reined, resound, rezoned, rend, rind, reascend, recited, refined, refund, relined, repined, resins, resin, rosined, reckoned.
-""")
-
 def progstats():
     pw = pwd.getpwuid(os.getuid())
     response = 'Process ID %i running as user "%s" and as group "%s" '\

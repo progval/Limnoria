@@ -56,13 +56,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load DCC')
 
-example = utils.wrapLines("""
-<jemfinch> @list DCC
-<supybot> jemfinch: chat
-<jemfinch>@chat [dict strike]
-<supybot> wn and web1913 responded: web1913: Strike \Strike\, n. 1. A sudden finding of rich ore in mining; hence, any sudden success or good fortune, esp. financial. 2. (Bowling, U. S.) Act of leveling all the pins with the first bowl; also, the score thus made. Sometimes called {double spare}. 3. (Baseball) Any actual or constructive striking at the pitched ball, three of which, if the ball is not hit fairly, cause the batter to be put out; hence, any of various acts or events which are ruled as equivalent to such a striking, as failing to strike at a ball so pitched that the batter should have struck at it. 4. (Tenpins) Same as {Ten-strike}; web1913: Strike \Strike\, n. 1. The act of striking. 2. An instrument with a straight edge for leveling a measure of grain, salt, and the like, scraping off what is above the level of the top; a strickle. 3. A bushel; four pecks. [Prov. Eng.] --Tusser. 4. An old measure of four bushels. [Prov. Eng.] 5. Fullness of measure; hence, excellence of quality. Three hogsheads 
-""")
-
 class DCC(callbacks.Privmsg):
     def chat(self, irc, msg, args):
         """<text>

@@ -62,15 +62,6 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('alias %s "rss %s"' % (name, url))
         onStart.append('freeze %s' % name)
 
-example = utils.wrapLines("""
-<jemfinch> @list RSS
-<supybot> rssinfo, rsstitles
-<jemfinch> @rssinfo http://arstechnica.com/etc/rdf/ars.rdf
-<supybot> Title: Ars Technica; URL: <http://www.arstechnica.com>; Description: The PC enthusiast's resource; Last updated 1 hour, 2 minutes, and 46 seconds ago.
-<jemfinch> @rsstitles http://arstechnica.com/etc/rdf/ars.rdf
-<supybot> Macintosh Browser Smackdown :: CAIB releases Columbia accident report :: The power of subpoena: hi, you like porn? :: Et Cetera: forget the bullets, it's tooth time :: Ars Emporium Update (updated / extended) :: Google gets even cooler :: Trade secrets trump free speech protection :: OneNote student pricing gives insight into Microsoft's Tablet strategy :: Et Cetera: Diamonds on my nines and golden bullets
-""")
-
 class RSS(callbacks.Privmsg):
     threaded = True
     def __init__(self):

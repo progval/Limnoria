@@ -77,26 +77,6 @@ def configure(onStart, afterConnect, advanced):
         onStart.append('lookup add %s %s' % (command, filename))
     
 
-example = utils.wrapLines("""
-<jemfinch> @lookup add areacode areacodes.supyfact
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @areacode 513
-<supybot> jemfinch: SW Ohio: Cincinnati (see split 937; overlay 283 cancelled)
-<jemfinch> @areacode 937
-<supybot> jemfinch: SW Ohio: Dayton (part of what used to be 513)
-<jemfinch> @lookup remove areacode
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @areacode 513
-<jemfinch> (note there is no response; the command doesn't exist anymore)
-<jemfinch> @lookup add areacode areacodes.supyfact
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @lookup add deepthought deepthoughts.supyfact
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> (deepthought maps numbers to deep thoughts by Jack Handy; if a lookup isn't given an argument, it'll return a random key: value pair.  That's useful for something like this.)
-<jemfinch> @deepthought
-<supybot> jemfinch: 272: I guess the hard thing for a lot of people to accept is why God would allow me to go running through their yards, yelling and spinning around.
-""")
-
 def getDb():
     return sqlite.connect(os.path.join(conf.dataDir, 'Lookup.db'))
 

@@ -54,10 +54,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Dunno')
 
-example = utils.wrapLines("""
-Add an example IRC session using this module here.
-""")
-
 class Dunno(callbacks.Privmsg):
     priority = 100
     def __init__(self):

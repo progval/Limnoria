@@ -50,34 +50,6 @@ import ircutils
 import privmsgs
 import callbacks
 
-example = utils.wrapLines("""
-<jemfinch> @load Relay
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @startrelay freenode
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @relayconnect oftc irc.oftc.net
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @relayjoin #sourcereview
-<supybot> jemfinch: The operation succeeded.
-<supybot> supybot (supybot!~supybot@65.24.59.168) has joined on oftc
-<jemfinch> howdy, folks :)
-<supybot> jemfinch (jemfinch!~jfincher@dhcp065-024-059-168.columbus.rr.com) has joined on oftc
-<jemfinch> @list Relay
-<supybot> jemfinch: relaycolor, relayconnect, relaydisconnect, relayjoin, relaynames, relaypart, relaysay, relaywhois, startrelay
-<jemfinch> @relaynames
-<supybot> jemfinch: oftc: supybot, jemfinch, sweede, Strike, GnuVince
-<jemfinch> @relaycolor 0
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @relaycolor 1
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @relaycolor 2
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @relaycolor 3
-<supybot> jemfinch: relaycolor <0,1,2>
-<jemfinch> @relaywhois GnuVince
-<supybot> jemfinch: Vincent Foley (~vince@modemcable216.89-202-24.mtl.mc.videotron.ca) has been online since 08:37 PM, August 24, 2003 (idle for 1 day, 10 hours, 21 minutes, and 3 seconds) and is on #sourcereview and @#hackcanada
-""")
-
 def configure(onStart, afterConnect, advanced):
     import socket
     from questions import expect, anything, something, yn

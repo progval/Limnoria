@@ -51,17 +51,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Movies')
 
-example = utils.wrapLines("""
-<jemfinch> @list Movies
-<supybot> imdb
-<jemfinch> @imdb die hard
-<supybot> "Die Hard" (1988) belongs to the action and thriller genres.  It's been rated 8.0 out of 10.  More information is available at <http://imdb.com/Title?0095016>
-<jemfinch> @imdb the usual suspects
-<supybot> "The Usual Suspects" (1995) belongs to the crime, thriller, and mystery genres.  It's been rated 8.7 out of 10.  More information is available at <http://imdb.com/Title?0114814>
-<jemfinch> @imdb kevin spacey
-<supybot> "Kevin Spacey" is apparently a person.  More information is available at <http://us.imdb.com/Name?Spacey,+Kevin>
-""")
-
 class Movies(callbacks.Privmsg):
     threaded = True
     def _formatMovie(self, movie):

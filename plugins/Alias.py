@@ -53,43 +53,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Alias')
 
-example = utils.wrapLines("""
-<jemfinch> @list Alias
-<supybot> jemfinch: advogato, alias, debplanet, devshed, freeze, gnome, googlebsd, googlelinux, googlemac, k5, kde, kt, lambda, linuxmag, lj, lwn, nyttech, osnews, pypi, python, slashdot, unalias, unfreeze
-<jemfinch> (just pay attention to the freeze/unfreeze and alias/unalias)
-<jemfinch> @alias rot26 "rot13 [rot13 $1]"
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @rot26 jemfinch
-<supybot> jemfinch: jemfinch
-<jemfinch> @unalias rot26
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @rot26 jemfinch
-<jemfinch> (look, Ma!  No rot26!)
-<Cerlyn> ooohh
-<jemfinch> @alias rot26 "rot13 [rot13 $1]"
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> @freeze rot26
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> (now's your queue :))
-<Cerlyn> @unalias rot26
-<supybot> Cerlyn: Error: That alias is frozen.
-<Cerlyn> @unalias rot26nothere
-<supybot> Cerlyn: Error: There is no such alias.
-<Cerlyn> @unfreeze rot26
-<supybot> Cerlyn: Error: You don't have the "admin" capability.
-<jemfinch> @unfreeze rot26
-<supybot> jemfinch: The operation succeeded.
-<jemfinch> (now try to remove it :))
-<Cerlyn> @unalias rot26
-<supybot> Cerlyn: The operation succeeded.
-<jemfinch> @rot26 blah blah blah
-<jemfinch> (note that it did nothing)
-<jemfinch> @help slashdot
-<supybot> jemfinch: slashdot <an alias, 0 arguments> (for more help use the morehelp command)
-<jemfinch> @morehelp slashdot
-<supybot> jemfinch: Alias for 'rsstitles http://slashdot.org/slashdot.rss'
-""")
-
 class AliasError(Exception):
     pass
 

@@ -61,10 +61,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Todo')
 
-example = utils.wrapLines("""
-Add an example IRC session using this module here.
-""")
-
 class Todo(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)

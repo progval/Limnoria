@@ -54,15 +54,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Network')
 
-example = utils.wrapLines("""
-<jemfinch> @dns slashdot.org
-<supybot> jemfinch: 66.35.250.150
-<jemfinch> @dns 66.35.250.150
-<supybot> jemfinch: slashdot.org
-<jemfinch> @whois ohio-state.edu
-<supybot> jemfinch: ohio-state.edu <http://www.educause.edu/edudomain> is active; registered 18-aug-1987, updated 19-aug-2003, expires 18-aug-2004.
-""")
-
 class Network(callbacks.Privmsg):
     threaded = True
     def dns(self, irc, msg, args):
