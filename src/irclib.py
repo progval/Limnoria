@@ -485,8 +485,11 @@ class IrcState(IrcCommandDispatcher):
     def doTopic(self, irc, msg):
         if len(msg.args) == 1:
             return # Empty TOPIC for information.  Does not affect state.
-        chan = self.channels[msg.args[0]]
-        chan.topic = msg.args[1]
+        try:
+            chan = self.channels[msg.args[0]]
+            chan.topic = msg.args[1]
+        except KeyError:
+            pass # We don't have to be in a channel to send a TOPIC.
 
     def do332(self, irc, msg):
         chan = self.channels[msg.args[1]]
