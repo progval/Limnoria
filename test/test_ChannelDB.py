@@ -135,8 +135,11 @@ if sqlite is not None:
                               '3.*%s: 10.*%s: 5.*foo: 3' %
                               (userNick2, userNick1))
             # Check for the extra-swanky stuff too
+            # (note: to do so we must make sure they don't appear in the list,
+            # so we'll tweak the config)
+            self.assertNotError('channeldb config wordstats-top-n 2')
             self.assertRegexp('wordstats lol',
-                              'total.*19 \'lol\'s.*%s: 10.*%s: 5.*foo: 4.*'
+                              'total.*19 \'lol\'s.*%s: 10.*%s: 5.*'
                               'ranked 3 out of 3 \'lol\'ers' % \
                               (userNick2, userNick1))
 

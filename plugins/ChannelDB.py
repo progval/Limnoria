@@ -604,15 +604,22 @@ class ChannelDB(plugins.ChannelDBHandler,
                 try:
                     id = ircdb.users.getUserId(msg.prefix)
                     rank = 1
-                    for (_, userId) in results:
+                    s = ""  # Don't say anything if they show in the output
+                            # already
+                    seenUser = False
+                    for (count, userId) in results:
                         if userId == id:
-                            s = 'You are ranked %s out of %s.' % \
-                                (rank, utils.nItems(ers, len(results)))
-                            break
+                            seenUser = True
+                            if rank > numResultsShown:
+                                s = 'You are ranked %s out of %s with %s.' % \
+                                    (rank, utils.nItems(ers, len(results)),
+                                     utils.nItems(repr(word), count))
+                                break
                         else:
                             rank += 1
                     else:
-                        s = 'You have not said %r' % word
+                        if not seenUser:
+                            s = 'You have not said %r' % word
                     ret = '%s %s.  %s' % (ret, utils.commaAndify(L), s)
                 except KeyError:
                     ret = '%s %s.' % (ret, utils.commaAndify(L))
