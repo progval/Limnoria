@@ -267,9 +267,10 @@ class Irc(object):
     _nickSetters = set(('001', '002', '003', '004', '250', '251', '252', '254',
                         '255', '265', '266', '372', '375', '376', '333', '353',
                         '332', '366'))
-    def __init__(self, nick, user='', ident='', callbacks=None):
+    def __init__(self, nick, user='', ident='', password='', callbacks=None):
         world.ircs.append(self)
         self.nick = nick
+        self.password = password
         self.prefix = ''
         self.user = user or nick    # Default to nick if user isn't provided.
         self.ident = ident or nick  # Ditto.
@@ -277,25 +278,30 @@ class Irc(object):
             self.callbacks = []
         else:
             self.callbacks = callbacks
-        self._nickmods = copy.copy(conf.nickmods)
         self.state = IrcState()
         self.queue = IrcMsgQueue()
+        self._nickmods = copy.copy(conf.nickmods)
+        self.lastTake = 0
         self.fastqueue = queue()
         self.lastping = time.time()
         self.outstandingPongs = set()
-        self.lastTake = 0
         self.driver = None # The driver should set this later.
-        self.queue.enqueue(ircmsgs.user(self.user, self.ident))
+        if self.password:
+            self.queue.enqueue(ircmsgs.password(self.password))
         self.queue.enqueue(ircmsgs.nick(self.nick))
+        self.queue.enqueue(ircmsgs.user(self.ident, self.user))
 
     def reset(self):
         self._nickmods = copy.copy(conf.nickmods)
         self.state.reset()
         self.queue.reset()
+        self.lastping = time.time()
         self.outstandingPings = set()
         self.fastqueue = queue()
-        self.queue.enqueue(ircmsgs.user(self.user, self.ident))
+        if self.password:
+            self.queue.enqueue(ircmsgs.password(self.password))
         self.queue.enqueue(ircmsgs.nick(self.nick))
+        self.queue.enqueue(ircmsgs.user(self.ident, self.user))
         for callback in self.callbacks:
             callback.reset()
 
