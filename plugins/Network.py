@@ -50,6 +50,8 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
+class NetworkError(callbacks.Error):
+    pass
 
 class Network(callbacks.Privmsg):
     _whois = {}
@@ -59,13 +61,13 @@ class Network(callbacks.Privmsg):
         for irc in world.ircs:
             if irc.network.lower() == network:
                 return irc
-        raise callbacks.Error, 'I\'m not currently connected to %s.' % network
+        raise NetworkError, 'I\'m not currently connected to %s.' % network
 
     def _getNetwork(self, irc, args):
         try:
             self._getIrc(args[0])
             return args.pop(0)
-        except (callbacks.Error, IndexError):
+        except (NetworkError, IndexError):
             return irc.network
 
     def connect(self, irc, msg, args):
@@ -79,7 +81,7 @@ class Network(callbacks.Privmsg):
         try:
             otherIrc = self._getIrc(network)
             irc.error('I\'m already connected to %s.' % network, Raise=True)
-        except callbacks.Error:
+        except NetworkError:
             pass
         if server:
             if ':' in server:
