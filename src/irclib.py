@@ -813,6 +813,8 @@ class Irc(IrcCommandDispatcher):
         """Makes the Irc object *promise* to die -- but it won't die (of its
         own volition) until all its queues are clear.  Isn't that cool?"""
         self.zombie = True
+        if not self.afterConnect:
+            self._reallyDie()
 
     # This is useless because it's in world.ircs, so it won't be deleted until
     # the program exits.  Just figured you might want to know.
