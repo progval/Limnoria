@@ -33,6 +33,8 @@ from test import *
 
 class ServicesTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Services',)
+    def testNoEmptyNick(self):
+        self.assertError('start "" "foobar"')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

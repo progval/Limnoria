@@ -47,14 +47,14 @@ import callbacks
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
-    nick = anything('What is your registered nick?')
-    password = anything('What is your password for that nick?')
+    nick = something('What is your registered nick?')
+    password = something('What is your password for that nick?')
     chanserv = 'ChanServ'
     if yn('Is your ChanServ named something other than ChanServ?') == 'y':
-        chanserv = anything('What is your ChanServ named?')
+        chanserv = something('What is your ChanServ named?')
     nickserv = 'NickServ'
     if yn('Is your NickServ named something other than NickServ?') == 'y':
-        nickserv = anything('What is your NickServ named?')
+        nickserv = something('What is your NickServ named?')
     onStart.append('load Services')
     onStart.append('services start %s %s %s %s' % \
                    (nick, password, nickserv, chanserv))
@@ -79,6 +79,9 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             return
         (self.nick, self.password, nickserv, chanserv) = \
                     privmsgs.getArgs(args, required=2, optional=2)
+        if not self.nick:
+            irc.error(msg, 'The registered nick cannot be blank.')
+            return
         self.nick = ircutils.IrcString(self.nick)
         self.nickserv = ircutils.IrcString(nickserv or 'NickServ')
         self.chanserv = ircutils.IrcString(chanserv or 'ChanServ')
@@ -88,6 +91,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def do376(self, irc, msg):
         if self.nickserv:
+            assert self.nick, 'Services: Nick must not be empty.'
             identify = 'IDENTIFY %s' % self.password
             # It's important that this next statement is irc.sendMsg, not
             # irc.queueMsg.  We want this message to get through before any
