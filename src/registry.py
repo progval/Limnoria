@@ -128,7 +128,8 @@ class Group(object):
         v = self.__class__(self.default, self.help)
         v.set(s)
         v.__class__ = self.X
-        v.supplyDefault = False
+        # Undo this later unless you understand why you commented it out!
+        #v.supplyDefault = False
         v.help = '' # Clear this so it doesn't print a bazillion times.
         self.register(attr, v)
         return v
@@ -171,10 +172,16 @@ class Group(object):
 
     def unregister(self, name):
         try:
+            node = self.children[name]
             del self.children[name]
             self.added.remove(name)
+            return node
         except KeyError:
             self.__nonExistentEntry(name)
+
+    def rename(self, old, new):
+        node = self.unregister(old)
+        self.register(new, node)
 
     def getValues(self, getChildren=False, fullNames=True):
         L = []
@@ -191,6 +198,8 @@ class Group(object):
 
 
 class Value(Group):
+    """Invalid registry value.  If you're getting this message, report it,
+    because someone forgot to put a proper help string here."""
     def __init__(self, default, help,
                  private=False, showDefault=True, **kwargs):
         Group.__init__(self, **kwargs)
@@ -199,6 +208,9 @@ class Value(Group):
         self.showDefault = showDefault
         self.help = utils.normalizeWhitespace(help.strip())
         self.setValue(default)
+
+    def error(self):
+        raise InvalidRegistryValue, utils.normalizeWhitespace(self.__doc__)
 
     def setName(self, *args):
         if self.name == 'unset':
@@ -235,6 +247,7 @@ class Value(Group):
         return self.value
 
 class Boolean(Value):
+    """Value must be either True or False (or On or Off)."""
     def set(self, s):
         s = s.strip().lower()
         if s in ('true', 'on', 'enable', 'enabled'):
@@ -244,45 +257,49 @@ class Boolean(Value):
         elif s == 'toggle':
             value = not self.value
         else:
-            raise InvalidRegistryValue, '%r is not True or False.' % s
+            self.error()
         self.setValue(value)
 
     def setValue(self, v):
         Value.setValue(self, bool(v))
 
 class Integer(Value):
+    """Value must be an integer."""
     def set(self, s):
         try:
             self.setValue(int(s))
         except ValueError:
-            raise InvalidRegistryValue, '%r is not an integer.' % s
+            self.error()
 
 class PositiveInteger(Value):
+    """Value must be positive (non-zero) integer."""
     def set(self, s):
         try:
             self.setValue(int(s))
         except ValueError:
-            raise InvalidRegistryValue, '%r is not a positive integer.' % s
+            self.error()
 
     def setValue(self, v):
         if v <= 0:
-            raise InvalidRegistryValue, '%r is not a positive integer.' % v
+            self.error()
         Value.setValue(self, v)
 
 class Float(Value):
+    """Value must be a floating-point number."""
     def set(self, s):
         try:
             self.setValue(float(s))
         except ValueError:
-            raise InvalidRegistryValue, '%r is not a float.' % s
+            self.error()
 
     def setValue(self, v):
         try:
             Value.setValue(self, float(v))
         except ValueError:
-            raise InvalidRegistryValue, '%r is not a float.' % v
+            self.error()
 
 class String(Value):
+    """Value is not a valid Python string."""
     def set(self, s):
         if not s:
             s = '""'
@@ -294,7 +311,7 @@ class String(Value):
                 raise ValueError
             self.setValue(v)
         except ValueError: # This catches utils.safeEval(s) errors too.
-            raise InvalidRegistryValue, '%r is not a string.' % s
+            self.error()
 
 class OnlySomeStrings(String):
     validStrings = ()
@@ -303,6 +320,11 @@ class OnlySomeStrings(String):
                                   'This is a bug.'
         String.__init__(self, *args, **kwargs)
         
+    def error(self):
+        raise InvalidRegistryValue, \
+              'That is not a valid value.  Valid values include %s.' % \
+              utils.commaAndify(map(repr, self.validStrings))
+
     def normalize(self, s):
         lowered = s.lower()
         L = list(map(str.lower, self.validStrings))
@@ -317,10 +339,8 @@ class OnlySomeStrings(String):
         if s in self.validStrings:
             String.setValue(self, s)
         else:
-            raise InvalidRegistryValue, \
-                  '%r is not a valid value.  Valid values include %s.' % \
-                  (s, utils.commaAndify(map(repr, self.validStrings)))
-
+            self.error()
+            
 class NormalizedString(String):
     def set(self, s):
         s = utils.normalizeWhitespace(s.strip())
@@ -349,6 +369,9 @@ class StringWithSpaceOnRight(String):
         String.setValue(self, v)
 
 class Regexp(Value):
+    def error(self, e):
+        raise InvalidRegistryValue, 'Invalid regexp: %s' % e
+
     def set(self, s):
         try:
             if s:
@@ -358,14 +381,14 @@ class Regexp(Value):
                 self.setValue(None)
             self.sr = s
         except ValueError, e:
-            raise InvalidRegistryValue, '%r is not a valid regexp: %s' % (s, e)
+            self.error(e)
 
     def setValue(self, v):
         if v is None:
             self.sr = ''
             Value.setValue(self, None)
         else:
-            raise InvalidRegistryValue, \
+            raise ValueError, \
                   'Can\'t set to a regexp, there would be an inconsistency ' \
                   'between the regexp and the recorded string value.'
 

@@ -79,22 +79,22 @@ def registerGroup(Group, name, group=None):
     Group.register(name, group)
 
 class ValidNick(registry.String):
+    """Value must be a valid IRC nick."""
     def setValue(self, v):
         if not ircutils.isNick(v):
-            raise registry.InvalidRegistryValue, \
-                  'Value must be a valid IRC nick.'
+            self.error()
         else:
             registry.String.setValue(self, v)
 
 class ValidChannel(registry.String):
+    """Value must be a valid IRC channel name."""
     def setValue(self, v):
         if ',' in v:
             (channel, _) = v.split(',', 1)
         else:
             channel = v
         if not ircutils.isChannel(channel):
-            raise registry.InvalidRegistryValue, \
-                  'Value must be a valid IRC channel name.'
+            self.error()
         else:
             registry.String.setValue(self, v)
 
@@ -136,10 +136,10 @@ supybot.register('channels', SpaceSeparatedSetOfChannels(['#supybot'], """
 Determines what channels the bot will join when it connects to the server."""))
 
 class ValidPrefixChars(registry.String):
+    """Value must contain only ~!@#$%^&*()_-+=[{}]\\|'\";:,<.>/?"""
     def setValue(self, v):
         if v.translate(string.ascii, '`~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'):
-            raise registry.InvalidRegistryValue, \
-                  'Value must contain only ~!@#$%^&*()_-+=[{}]\\|\'";:,<.>/?'
+            self.error()
         registry.String.setValue(self, v)
 
 supybot.register('prefixChars', ValidPrefixChars('', """Determines what prefix
@@ -176,9 +176,10 @@ Refer to the Python documentation for the time module to see valid formatting
 characteres for time formats."""))
 
 class IP(registry.String):
+    """Value must be a valid IP."""
     def setValue(self, v):
         if v and not (utils.isIP(v) or utils.isIPV6(v)):
-            raise registry.InvalidRegistryValue, 'Value must be a valid IP.'
+            self.error()
         else:
             registry.String.setValue(self, v)
         
