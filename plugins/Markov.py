@@ -252,7 +252,7 @@ class Markov(callbacks.Privmsg):
                     # Can't just "raise callbacks.ArgumentError" because
                     # exception is thrown in MarkovQueue, where it isn't
                     # caught and no message is sent to the server
-                    irc.reply(self.getCommandHelp('markov'))
+                    irc.error()
                     return
                 else:
                     givenArgs = False
