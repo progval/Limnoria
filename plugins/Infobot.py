@@ -132,7 +132,7 @@ class Infobot(callbacks.PrivmsgRegexp):
         (nick, key) = match.groups()
         try:
             s = '%s wants you to know that %s' %(msg.nick,self.getFactoid(key))
-            irc.queueMsg(ircmsgs.privmsg(nick, s))
+            irc.reply(nick, s)
         except KeyError:
             irc.reply(msg, 'I don\'t know anything about %s' % key)
 
