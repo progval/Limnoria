@@ -42,7 +42,6 @@ import ircmsgs
 import ircutils
 import registry
 import callbacks
-import configurable
 
 
 conf.registerPlugin('RootWarner')
