@@ -257,7 +257,7 @@ class Config(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         name = self._canonicalizeName(name)
         wrapper = getWrapper(name)
-        v = wrapper.__class__(wrapper.default, '')
+        v = wrapper.__class__(wrapper._default, '')
         irc.reply(str(v))
 
     def reload(self, irc, msg, args):

@@ -65,6 +65,10 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertNotError('config channel reply.whenAddressedBy.chars @')
         self.assertNotRegexp('config search chars', self.channel)
 
+    def testDefault(self):
+        self.assertNotError('config default '
+                            'supybot.replies.genericNoCapability')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
