@@ -34,22 +34,30 @@ available on demand via several commands.
 
 __revision__ = "$Id$"
 
+import supybot.plugins as plugins
+
 import time
 import getopt
 import string
 import os.path
 from itertools import imap
 
-import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
-from supybot.commands import *
-import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+
+import supybot.Owner as Owner
+
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
+
 
 conf.registerPlugin('Factoids')
 
@@ -71,36 +79,19 @@ conf.registerChannelValue(conf.supybot.plugins.Factoids,
     'factoidPrefix', registry.StringWithSpaceOnRight('could be ', """Determines
     the string that factoids will be introduced by."""))
 
-class MultiKeyError(KeyError):
-    pass
+class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
 
-class LockError(Exception):
-    pass
+    def die(self):
+        callbacks.Privmsg.die(self)
+        plugins.ChannelDBHandler.die(self)
 
-class SqliteFactoidsDB(object):
-    def __init__(self, filename):
-        self.dbs = ircutils.IrcDict()
-        self.filename = filename
-
-    def close(self):
-        for db in self.dbs.itervalues():
-            db.close()
-
-    def _getDb(self, channel):
-        try:
-            import sqlite
-        except ImportError:
-            raise callbacks.Error, 'You need to have PySQLite installed to ' \
-                                   'use this plugin.  Download it at ' \
-                                   '<http://pysqlite.sf.net/>'
-        filename = plugins.makeChannelFilename(self.filename, channel)
-        if filename in self.dbs:
-            return self.dbs[filename]
+    def makeDb(self, filename):
         if os.path.exists(filename):
-            self.dbs[filename] = sqlite.connect(filename)
-            return self.dbs[filename]
+            return sqlite.connect(filename)
         db = sqlite.connect(filename)
-        self.dbs[filename] = db
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE keys (
                           id INTEGER PRIMARY KEY,
@@ -123,148 +114,7 @@ class SqliteFactoidsDB(object):
         db.commit()
         return db
 
-    def add(self, channel, key, factoid, name):
-        db = self._getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s", key)
-        if cursor.rowcount == 0:
-            cursor.execute("""INSERT INTO keys VALUES (NULL, %s, 0)""", key)
-            db.commit()
-            cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s",key)
-        (id, locked) = imap(int, cursor.fetchone())
-        if not locked:
-            cursor.execute("""INSERT INTO factoids VALUES
-                              (NULL, %s, %s, %s, %s)""",
-                           id, name, int(time.time()), factoid)
-            db.commit()
-        else:
-            raise LockError
-
-    def get(self, channel, key):
-        db = self._getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT factoids.fact FROM factoids, keys
-                          WHERE keys.key LIKE %s AND factoids.key_id=keys.id
-                          ORDER BY factoids.id
-                          LIMIT 20""", key)
-        return [t[0] for t in cursor.fetchall()]
-
-    def lock(self, channel, key):
-        db = self._getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("UPDATE keys SET locked=1 WHERE key LIKE %s", key)
-        db.commit()
-
-    def unlock(self, channel, key):
-        db = self._getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("UPDATE keys SET locked=0 WHERE key LIKE %s", key)
-        db.commit()
-
-    def remove(self, channel, key, number):
-        db = self._getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT keys.id, factoids.id
-                          FROM keys, factoids
-                          WHERE key LIKE %s AND
-                                factoids.key_id=keys.id""", key)
-        if cursor.rowcount == 0:
-            raise dbi.NoRecordError
-        elif cursor.rowcount == 1 or number is True:
-            (id, _) = cursor.fetchone()
-            cursor.execute("""DELETE FROM factoids WHERE key_id=%s""", id)
-            cursor.execute("""DELETE FROM keys WHERE key LIKE %s""", key)
-            db.commit()
-        else:
-            if number is not None:
-                results = cursor.fetchall()
-                try:
-                    (_, id) = results[number]
-                except IndexError:
-                    raise dbi.NoRecordError
-                cursor.execute("DELETE FROM factoids WHERE id=%s", id)
-                db.commit()
-            else:
-                raise MultiKeyError, cursor.rowcount
-
-    def random(self, channel):
-        db = self._getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT fact, key_id FROM factoids
-                          ORDER BY random()
-                          LIMIT 3""")
-        if cursor.rowcount == 0:
-            raise dbi.NoRecordError
-        L = []
-        for (factoid, id) in cursor.fetchall():
-            cursor.execute("""SELECT key FROM keys WHERE id=%s""", id)
-            (key,) = cursor.fetchone()
-            L.append((key, factoid))
-        return L
-
-    def info(self, channel, key):
-        db = self._getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s", key)
-        if cursor.rowcount == 0:
-            raise dbi.NoRecordError
-        (id, locked) = imap(int, cursor.fetchone())
-        cursor.execute("""SELECT  added_by, added_at FROM factoids
-                          WHERE key_id=%s
-                          ORDER BY id""", id)
-        return (locked, cursor.fetchall())
-
-    _sqlTrans = string.maketrans('*?', '%_')
-    def select(self, channel, values, predicates, globs):
-        db = self._getDb(channel)
-        cursor = db.cursor()
-        tables = ['keys']
-        criteria = []
-        predicateName = 'p'
-        formats = []
-        if not values:
-            target = 'keys.key'
-        else:
-            target = 'factoids.fact'
-            if 'factoids' not in tables:
-                tables.append('factoids')
-            criteria.append('factoids.key_id=keys.id')
-        for glob in globs:
-            criteria.append('TARGET LIKE %s')
-            formats.append(glob.translate(self._sqlTrans))
-        for r in predicates:
-            criteria.append('%s(TARGET)' % predicateName)
-            def p(s, r=r):
-                return int(bool(r(s)))
-            db.create_function(predicateName, 1, p)
-            predicateName += 'p'
-        sql = """SELECT keys.key FROM %s WHERE %s""" % \
-              (', '.join(tables), ' AND '.join(criteria))
-        sql = sql.replace('TARGET', target)
-        cursor.execute(sql, formats)
-        if cursor.rowcount == 0:
-            raise dbi.NoRecordError
-        elif cursor.rowcount == 1 and \
-        conf.supybot.plugins.Factoids.showFactoidIfOnlyOneMatch.get(channel)():
-            return cursor.fetchone()[0]
-        elif cursor.rowcount > 100:
-            return None
-        else:
-            return cursor.fetchall()
-
-FactoidsDB = plugins.DB('Factoids', {'sqlite': SqliteFactoidsDB})
-
-class Factoids(callbacks.Privmsg):
-    def __init__(self):
-        self.__parent = super(Factoids, self)
-        self.__parent.__init__()
-        self.db = FactoidsDB()
-
-    def die(self):
-        self.__parent.die()
-        self.db.close()
-
-    def learn(self, irc, msg, args, channel, text):
+    def learn(self, irc, msg, args):
         """[<channel>] <key> as <value>
 
         Associates <key> with <value>.  <channel> is only necessary if the
@@ -272,36 +122,58 @@ class Factoids(callbacks.Privmsg):
         to separate the key from the value.  It can be changed to another
         word via the learnSeparator registry value.
         """
+        channel = privmsgs.getChannel(msg, args)
         try:
             separator = conf.supybot.plugins.Factoids. \
                             learnSeparator.get(channel)()
-            i = text.index(separator)
+            i = args.index(separator)
         except ValueError:
             raise callbacks.ArgumentError
-        text.pop(i)
-        key = ' '.join(text[:i])
-        factoid = ' '.join(text[i:])
-        try:
-            name = ircdb.users.getUser(msg.prefix).name
-        except KeyError:
-            name = msg.nick
-        try:
-            self.db.add(channel, key, factoid, name)
+        args.pop(i)
+        key = ' '.join(args[:i])
+        factoid = ' '.join(args[i:])
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s", key)
+        if cursor.rowcount == 0:
+            cursor.execute("""INSERT INTO keys VALUES (NULL, %s, 0)""", key)
+            db.commit()
+            cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s",key)
+        (id, locked) = imap(int, cursor.fetchone())
+        capability = ircdb.makeChannelCapability(channel, 'factoids')
+        if not locked:
+            if ircdb.users.hasUser(msg.prefix):
+                name = ircdb.users.getUser(msg.prefix).name
+            else:
+                name = msg.nick
+            cursor.execute("""INSERT INTO factoids VALUES
+                              (NULL, %s, %s, %s, %s)""",
+                           id, name, int(time.time()), factoid)
+            db.commit()
             irc.replySuccess()
-        except LockError:
+        else:
             irc.error('That factoid is locked.')
-    learn = wrap(learn, ['channeldb', many('something')])
+
+    def _lookupFactoid(self, channel, key):
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT factoids.fact FROM factoids, keys
+                          WHERE keys.key LIKE %s AND factoids.key_id=keys.id
+                          ORDER BY factoids.id
+                          LIMIT 20""", key)
+        return [t[0] for t in cursor.fetchall()]
 
     def _replyFactoids(self, irc, channel, key, factoids, number=0, error=True):
         if factoids:
             if number:
                 try:
-                    irc.reply(factoids[number])
+                    irc.reply(factoids[number-1])
                 except IndexError:
-                    irc.errorInvalid('number for that key')
+                    irc.error('That\'s not a valid number for that key.')
+                    return
             else:
                 intro = self.registryValue('factoidPrefix', channel)
-                prefix = '%s %s' % (utils.quoted(key), intro)
+                prefix = '%r %s' % (key, intro)
                 if len(factoids) == 1:
                     irc.reply(prefix + factoids[0])
                 else:
@@ -320,46 +192,64 @@ class Factoids(callbacks.Privmsg):
             channel = msg.args[0]
             if self.registryValue('replyWhenInvalidCommand', channel):
                 key = ' '.join(tokens)
-                factoids = self.db.get(channel, key)
+                factoids = self._lookupFactoid(channel, key)
                 self._replyFactoids(irc, channel, key, factoids, error=False)
 
-    def whatis(self, irc, msg, args, channel, number, key):
+    def whatis(self, irc, msg, args):
         """[<channel>] <key> [<number>]
 
         Looks up the value of <key> in the factoid database.  If given a
         number, will return only that exact factoid.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        factoids = self.db.get(channel, key)
+        channel = privmsgs.getChannel(msg, args)
+        if len(args) > 1 and args[-1].isdigit():
+            number = args.pop()
+        else:
+            number = ''
+        key = privmsgs.getArgs(args)
+        if number:
+            try:
+                number = int(number)
+            except ValueError:
+                irc.error('%s is not a valid number.' % number)
+                return
+        else:
+            number = 0
+        factoids = self._lookupFactoid(channel, key)
         self._replyFactoids(irc, channel, key, factoids, number)
-    whatis = wrap(whatis, ['channeldb', reverse(optional('positiveInt', 0)),
-                           'something'])
 
-    def lock(self, irc, msg, args, channel, key):
+    def lock(self, irc, msg, args):
         """[<channel>] <key>
 
         Locks the factoid(s) associated with <key> so that they cannot be
         removed or added to.  <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        self.db.lock(channel, key)
+        channel = privmsgs.getChannel(msg, args)
+        key = privmsgs.getArgs(args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("UPDATE keys SET locked=1 WHERE key LIKE %s", key)
+        db.commit()
         irc.replySuccess()
-    lock = wrap(lock, ['channeldb', ('checkChannelCapability', 'op'),
-                       'something'])
 
-    def unlock(self, irc, msg, args, channel, key):
+    def unlock(self, irc, msg, args):
         """[<channel>] <key>
 
         Unlocks the factoid(s) associated with <key> so that they can be
         removed or added to.  <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        self.db.unlock(channel, key)
+        channel = privmsgs.getChannel(msg, args)
+        key = privmsgs.getArgs(args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("UPDATE keys SET locked=0 WHERE key LIKE %s", key)
+        db.commit()
         irc.replySuccess()
-    unlock = wrap(unlock, ['channeldb', ('checkChannelCapability', 'op'),
-                           'something'])
 
-    def forget(self, irc, msg, args, channel, number, key):
+    def forget(self, irc, msg, args):
         """[<channel>] <key> [<number>|*]
 
         Removes the factoid <key> from the factoids database.  If there are
@@ -368,49 +258,92 @@ class Factoids(callbacks.Privmsg):
         factoids associated with a key.  <channel> is only necessary if
         the message isn't sent in the channel itself.
         """
-        if number == '*':
+        channel = privmsgs.getChannel(msg, args)
+        if args[-1].isdigit():
+            number = int(args.pop())
+            number -= 1
+            if number < 0:
+                irc.error('Negative numbers aren\'t valid.')
+                return
+        elif args[-1] == '*':
+            del args[-1]
             number = True
         else:
-            number -= 1
-        key = ' '.join(key)
-        try:
-            self.db.remove(channel, key, number)
-            irc.replySuccess()
-        except dbi.NoRecordError:
+            number = None
+        key = privmsgs.getArgs(args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT keys.id, factoids.id
+                          FROM keys, factoids
+                          WHERE key LIKE %s AND
+                                factoids.key_id=keys.id""", key)
+        if cursor.rowcount == 0:
             irc.error('There is no such factoid.')
-        except MultiKeyError, e:
-            irc.error('%s factoids have that key.  '
-                      'Please specify which one to remove, '
-                      'or use * to designate all of them.' % str(e))
-    forget = wrap(forget, ['channeldb',
-                           reverse(first('positiveInt', ('literal', '*'))),
-                           'something'])
+        elif cursor.rowcount == 1 or number is True:
+            (id, _) = cursor.fetchone()
+            cursor.execute("""DELETE FROM factoids WHERE key_id=%s""", id)
+            cursor.execute("""DELETE FROM keys WHERE key LIKE %s""", key)
+            db.commit()
+            irc.replySuccess()
+        else:
+            if number is not None:
+                results = cursor.fetchall()
+                try:
+                    (_, id) = results[number]
+                except IndexError:
+                    irc.error('Invalid factoid number.')
+                    return
+                cursor.execute("DELETE FROM factoids WHERE id=%s", id)
+                db.commit()
+                irc.replySuccess()
+            else:
+                irc.error('%s factoids have that key.  '
+                          'Please specify which one to remove, '
+                          'or use * to designate all of them.' %
+                          cursor.rowcount)
 
-    def random(self, irc, msg, args, channel):
+    def random(self, irc, msg, args):
         """[<channel>]
 
         Returns a random factoid from the database for <channel>.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
-        try:
-            L = ['"%s": %s' % (ircutils.bold(k), v)
-                 for (k, v) in self.db.random(channel)]
+        channel = privmsgs.getChannel(msg, args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT fact, key_id FROM factoids
+                          ORDER BY random()
+                          LIMIT 3""")
+        if cursor.rowcount != 0:
+            L = []
+            for (factoid, id) in cursor.fetchall():
+                cursor.execute("""SELECT key FROM keys WHERE id=%s""", id)
+                (key,) = cursor.fetchone()
+                L.append('"%s": %s' % (ircutils.bold(key), factoid))
             irc.reply('; '.join(L))
-        except dbi.NoRecordError:
+        else:
             irc.error('I couldn\'t find a factoid.')
-    random = wrap(random, ['channeldb'])
 
-    def info(self, irc, msg, args, channel, key):
+    def info(self, irc, msg, args):
         """[<channel>] <key>
 
         Gives information about the factoid(s) associated with <key>.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        try:
-            (locked, factoids) = self.db.info(channel, key)
-        except dbi.NoRecordError:
-            irc.error('No factoid matches that key.', Raise=True)
+        channel = privmsgs.getChannel(msg, args)
+        key = privmsgs.getArgs(args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s", key)
+        if cursor.rowcount == 0:
+            irc.error('No factoid matches that key.')
+            return
+        (id, locked) = imap(int, cursor.fetchone())
+        cursor.execute("""SELECT  added_by, added_at FROM factoids
+                          WHERE key_id=%s
+                          ORDER BY id""", id)
+        factoids = cursor.fetchall()
         L = []
         counter = 0
         for (added_by, added_at) in factoids:
@@ -419,11 +352,10 @@ class Factoids(callbacks.Privmsg):
                                      time.localtime(int(added_at)))
             L.append('#%s was added by %s at %s' % (counter,added_by,added_at))
         factoids = '; '.join(L)
-        s = 'Key %s is %s and has %s associated with it: %s' % \
-            (utils.quoted(key), locked and 'locked' or 'not locked',
+        s = 'Key %r is %s and has %s associated with it: %s' % \
+            (key, locked and 'locked' or 'not locked',
              utils.nItems('factoid', counter), factoids)
         irc.reply(s)
-    info = wrap(info, ['channeldb', 'something'])
 
     def change(self, irc, msg, args):
         """[<channel>] <key> <number> <regexp>
@@ -452,7 +384,7 @@ class Factoids(callbacks.Privmsg):
                           WHERE keys.key LIKE %s AND
                                 keys.id=factoids.key_id""", key)
         if cursor.rowcount == 0:
-            irc.error('I couldn\'t find any key %s' % utils.quoted(key))
+            irc.error('I couldn\'t find any key %r' % key)
             return
         elif cursor.rowcount < number:
             irc.error('That\'s not a valid key id.')
@@ -463,43 +395,63 @@ class Factoids(callbacks.Privmsg):
         db.commit()
         irc.replySuccess()
 
-    def search(self, irc, msg, args, channel, optlist, globs):
+    _sqlTrans = string.maketrans('*?', '%_')
+    def search(self, irc, msg, args):
         """[<channel>] [--values] [--{regexp}=<value>] [<glob>]
 
         Searches the keyspace for keys matching <glob>.  If --regexp is given,
         it associated value is taken as a regexp and matched against the keys.
         If --values is given, search the value space instead of the keyspace.
         """
-        if not optlist and not globs:
+        channel = privmsgs.getChannel(msg, args)
+        (optlist, rest) = getopt.getopt(args, '', ['values', 'regexp='])
+        if not optlist and not rest:
             raise callbacks.ArgumentError
-        values = False
-        predicates = []
+        tables = ['keys']
+        formats = []
+        criteria = []
+        target = 'keys.key'
+        predicateName = 'p'
+        db = self.getDb(channel)
         for (option, arg) in optlist:
-            if option == 'values':
-                values = True
-            elif option == 'regexp':
-                predicates.append(arg.search)
-        L = []
-        for glob in globs:
+            if option == '--values':
+                target = 'factoids.fact'
+                if 'factoids' not in tables:
+                    tables.append('factoids')
+                criteria.append('factoids.key_id=keys.id')
+            elif option == '--regexp':
+                criteria.append('%s(TARGET)' % predicateName)
+                try:
+                    r = utils.perlReToPythonRe(arg)
+                except ValueError, e:
+                    irc.error('Invalid regexp: %s' % e)
+                    return
+                def p(s, r=r):
+                    return int(bool(r.search(s)))
+                db.create_function(predicateName, 1, p)
+                predicateName += 'p'
+        for glob in rest:
             if '*' not in glob and '?' not in glob:
                 glob = '*%s*' % glob
-            L.append(glob)
-        try:
-            factoids = self.db.select(channel, values, predicates, L)
-            if isinstance(factoids, basestring):
-                self.whatis(irc, msg, [factoids])
-            elif factoids is None:
-                irc.reply('More than 100 keys matched that query; '
-                          'please narrow your query.')
-            else:
-                keys = [repr(t[0]) for t in factoids]
-                s = utils.commaAndify(keys)
-                irc.reply(s)
-        except dbi.NoRecordError:
+            criteria.append('TARGET LIKE %s')
+            formats.append(glob.translate(self._sqlTrans))
+        cursor = db.cursor()
+        sql = """SELECT keys.key FROM %s WHERE %s""" % \
+              (', '.join(tables), ' AND '.join(criteria))
+        sql = sql.replace('TARGET', target)
+        cursor.execute(sql, formats)
+        if cursor.rowcount == 0:
             irc.reply('No keys matched that query.')
-    search = wrap(search, ['channeldb',
-                           getopts({'values':'', 'regexp':'regexpMatcher'}),
-                           any('glob')])
+        elif cursor.rowcount == 1 and \
+        conf.supybot.plugins.Factoids.showFactoidIfOnlyOneMatch.get(channel)():
+            self.whatis(irc, msg, [cursor.fetchone()[0]])
+        elif cursor.rowcount > 100:
+            irc.reply('More than 100 keys matched that query; '
+                      'please narrow your query.')
+        else:
+            keys = [repr(t[0]) for t in cursor.fetchall()]
+            s = utils.commaAndify(keys)
+            irc.reply(s)
 
 
 Class = Factoids
