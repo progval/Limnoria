@@ -97,10 +97,10 @@ def progstats():
                 sys.version.translate(string.ascii, '\r\n'))
     return response
 
-class TimeoutError(Exception):
+class TimeoutError(IOError):
     pass
 
-def pipeReadline(fd, timeout=0.5):
+def pipeReadline(fd, timeout=0.75):
     (r, _, _) = select.select([fd], [], [], timeout)
     if r:
         return r[0].readline()
@@ -113,18 +113,11 @@ class Unix(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         # Initialize a file descriptor for the spell module.
-        spellCmd = utils.findBinaryInPath('aspell')
-        if not spellCmd:
-            spellCmd = utils.findBinaryInPath('ispell')
-        (self._spellRead, self._spellWrite) = popen2.popen4([spellCmd, '-a'],0)
-        self._spellRead.readline() # Ignore the banner.
+        self.spellCmd = utils.findBinaryInPath('aspell')
+        if not self.spellCmd:
+            self.spellCmd = utils.findBinaryInPath('ispell')
         self.fortuneCmd = utils.findBinaryInPath('fortune')
         self.wtfCmd = utils.findBinaryInPath('wtf')
-
-    def die(self):
-        # close the filehandles
-        for h in (self._spellRead, self._spellWrite):
-            h.close()
 
     def errno(self, irc, msg, args):
         """<error number or code>
@@ -187,16 +180,23 @@ class Unix(callbacks.Privmsg):
         if ' ' in word:
             irc.error(msg, 'Spaces aren\'t allowed in the word.')
             return
-        self._spellWrite.write(word)
-        self._spellWrite.write('\n')
         try:
-            line = pipeReadline(self._spellRead)
-            # aspell puts extra whitespace, ignore it
-            while line == '\n':
-                line = pipeReadline(self._spellRead)
-        except TimeoutError:
-            irc.error(msg, 'The spell command didn\'t return usefully.')
-            return
+            (r, w) = popen2.popen4([self.spellCmd, '-a'])
+            r.readline() # Banner.
+            w.write(word)
+            w.write('\n')
+            w.flush()
+            try:
+                line = pipeReadline(r)
+                # aspell puts extra whitespace, ignore it
+                while line == '\n':
+                    line = pipeReadline(r)
+            except TimeoutError:
+                irc.error(msg, 'The spell command timed out.')
+                return
+        finally:
+            r.close()
+            w.close()
         # parse the output
         if line[0] in '*+':
             resp = '"%s" may be spelled correctly.' % word
