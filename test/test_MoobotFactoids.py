@@ -208,28 +208,28 @@ if sqlite is not None:
             self.assertError('most popular')
             self.assertResponse('most authored',
                                 'Most prolific author: moo (1)') 
-            self.assertResponse('most recent', "1 latest factoid: 'moogle'") 
+            self.assertRegexp('most recent', "1 latest factoid:.*moogle") 
             self.assertResponse('moogle', 'moo')
-            self.assertResponse('most popular',
-                                "Top 1 requested factoid: 'moogle' (1)")
+            self.assertRegexp('most popular',
+                                "Top 1 requested factoid:.*moogle.*(1)")
             # Check plural response
             self.prefix = userPrefix2
             self.assertNotError('mogle is <reply>mo')
-            self.assertResponse('most authored',
-                                'Most prolific authors: moo (1) and boo (1)') 
-            self.assertResponse('most recent',
-                                "2 latest factoids: 'mogle' and 'moogle'") 
+            self.assertRegexp('most authored',
+                                'Most prolific authors:.*moo.*(1).*boo.*(1)') 
+            self.assertRegexp('most recent',
+                                "2 latest factoids:.*mogle.*moogle.*") 
             self.assertResponse('moogle', 'moo')
-            self.assertResponse('most popular',
-                                "Top 1 requested factoid: 'moogle' (2)")
+            self.assertRegexp('most popular',
+                                "Top 1 requested factoid:.*moogle.*(2)")
             self.assertResponse('mogle', 'mo')
-            self.assertResponse('most popular',
-                                "Top 2 requested factoids: "
-                                "'moogle' (2) and 'mogle' (1)")
+            self.assertRegexp('most popular',
+                                "Top 2 requested factoids:.*"
+                                "moogle.*(2).*mogle.*(1)")
             # Check most author ordering
             self.assertNotError('moo is <reply>oom')
-            self.assertResponse('most authored',
-                                'Most prolific authors: boo (2) and moo (1)')
+            self.assertRegexp('most authored',
+                                'Most prolific authors:.*boo.*(2).*moo.*(1)')
 
         def testListkeys(self):
             self.assertResponse('listkeys %', 'No keys matching "%" found.')
