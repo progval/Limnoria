@@ -60,7 +60,8 @@ class ChannelLogger(irclib.IrcCallback):
     def die(self):
         for log in self.logs.itervalues():
             log.close()
-        world.flushers.remove(self.flush)
+        if self.flush in world.flushers:
+            world.flushers.remove(self.flush)
 
     def __call__(self, irc, msg):
         try:
