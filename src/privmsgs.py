@@ -309,7 +309,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         callbacks = irc.removeCallback(name)
         if callbacks:
             for callback in callbacks:
-                callbacks.die()
+                callback.die()
             try:
                 moduleInfo = imp.find_module(name)
             except ImportError:
