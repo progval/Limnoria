@@ -223,16 +223,25 @@ if __name__ == '__main__':
             registry.open(registryFilename)
         except registry.InvalidRegistryFile, e:
             sys.stderr.write(str(e))
-            sys.stderr.write('\n')
+            sys.stderr.write(os.linesep)
+            sys.exit(-1)
+        except EnvironmentError, e:
+            sys.stderr.write(str(e))
+            sys.stderr.write(os.linesep)
             sys.exit(-1)
 
     import log
     import conf
+    import world
     
     def closeRegistry():
-        log.info('Writing registry file to %s', registryFilename)
+        # We only print if world.dying so we don't see these messages during
+        # upkeep.
+        if world.dying:
+            log.info('Writing registry file to %s', registryFilename)
         registry.close(conf.supybot, registryFilename, annotated=True)
-        log.info('Finished writing registry file.')
+        if world.dying:
+            log.info('Finished writing registry file.')
     world.flushers.append(closeRegistry)
 
     nick = options.nick or conf.supybot.nick()

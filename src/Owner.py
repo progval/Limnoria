@@ -94,6 +94,24 @@ def loadPluginClass(irc, module):
     assert not irc.getCallback(callback.name())
     irc.addCallback(callback)
 
+conf.registerGroup(conf.supybot, 'commands')
+conf.registerGroup(conf.supybot.commands, 'defaultPlugins',
+                   registry.GroupWithDefault(registry.String('', """
+                   Determines what commands have default plugins set, and which
+                   plugins are set to be the default for each of those
+                   commands.""")))
+conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
+                         'list', registry.String('Misc', ''))
+conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
+                         'help', registry.String('Misc', ''))
+conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
+                         'capabilities', registry.String('User', ''))
+conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
+                         'addcapability', registry.String('Admin', ''))
+conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
+                         'removecapability', registry.String('Admin', ''))
+conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
+                         'reload', registry.String('Misc', ''))
 
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
@@ -104,11 +122,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         setattr(self.__class__, 'exec', self.__class__._exec)
-        self.defaultPlugins = {'list': 'Misc',
-                               'help': 'Misc',
-                               'capabilities': 'User',
-                               'addcapability': 'Admin',
-                               'removecapability': 'Admin',}
         for (name, s) in registry._cache.iteritems():
             if name.startswith('supybot.plugins'):
                 try:
@@ -142,9 +155,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             ambiguousCommands = {}
         if tokens:
             command = callbacks.canonicalName(tokens[0])
-            if command in self.defaultPlugins:
-                tokens.insert(0, self.defaultPlugins[command])
-            else:
+            try:
+                plugin = conf.supybot.commands.defaultPlugins.get(command)()
+                if plugin:
+                    tokens.insert(0, plugin)
+                else:
+                    raise registry.NonExistentRegistryEntry
+            except registry.NonExistentRegistryEntry:
                 cbs = callbacks.findCallbackForCommand(irc, command)
                 if len(cbs) > 1:
                     names = [cb.name() for cb in cbs]
@@ -200,44 +217,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             else:
                 callbacks.IrcObjectProxy(irc, msg, tokens)
 
-    def defaultplugin(self, irc, msg, args):
-        """<command> [<plugin>] [--remove]
-
-        Calls <command> from <plugin> by default, rather than complaining about
-        multiple plugins providing it.  If <plugin> is not provided, shows the
-        current default plugin for <command>.  If --remove is given, removes
-        the current default plugin for <command>.
-        """
-        if '--remove' in args:
-            while '--remove' in args:
-                args.remove('--remove')
-            remove = True
-        else:
-            remove = False
-        (command, plugin) = privmsgs.getArgs(args, optional=1)
-        command = callbacks.canonicalName(command)
-        cbs = callbacks.findCallbackForCommand(irc, command)
-        if not cbs:
-            irc.error('That\'t not a valid command.')
-            return
-        if plugin:
-            self.defaultPlugins[command] = plugin
-        else:
-            try:
-                if remove:
-                    del self.defaultPlugins[command]
-                else:
-                    L = [command]
-                    d = self.disambiguate(irc, L)
-                    if d:
-                        raise KeyError
-                    assert len(L) == 2, 'Not disambiguated!'
-                    irc.reply(L[0])
-            except KeyError:
-                irc.error('I have no default plugin for that command.')
-                return
-        irc.replySuccess()
-                                
     if conf.allowEval:
         def eval(self, irc, msg, args):
             """<expression>
@@ -401,16 +380,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         else:
             irc.error('There was no callback %s' % name)
-
-    def reconf(self, irc, msg, args):
-        """takes no arguments
-
-        Reloads the configuration files for the user and channel databases:
-        conf/users.conf and conf/channels.conf, by default.
-        """
-        ircdb.users.reload()
-        ircdb.channels.reload()
-        irc.replySuccess()
 
 
 Class = Owner

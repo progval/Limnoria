@@ -59,7 +59,7 @@ def getWrapper(name):
     parts.pop(0)
     while parts:
         try:
-            group = getattr(group, parts.pop(0))
+            group = group.get(parts.pop(0))
         except registry.NonExistentRegistryEntry:
             raise InvalidRegistryName, name
     return group
@@ -144,15 +144,18 @@ class Config(callbacks.Privmsg):
         wrapper = getWrapper(name)
         irc.reply(wrapper.default)
 
-    def flush(self, irc, msg, args):
-        """<filename>
+    def reload(self, irc, msg, args):
+        """takes no arguments
 
-        Flushes the current registry to the file given.
+        Reloads the various configuration files (user database, channel
+        database, registry, etc.).
         """
-        filename = privmsgs.getArgs(args)
-        registry.close(conf.supybot, filename)
+        # TODO: Reload registry.
+        ircdb.users.reload()
+        ircdb.channels.reload()
         irc.replySuccess()
-    flush = privmsgs.checkCapability(flush, 'owner')
+    reload = privmsgs.checkCapability(reload, 'owner')
+        
 
 
 Class = Config

@@ -653,7 +653,7 @@ def main():
     # Done!
     output("""All done!  Your new bot configuration is %s.  If you're running 
     a *nix based OS, you can probably start your bot with the command line
-    "supybot ./%s".  If you're not running a *nix or similar machine, you'll
+    "supybot %s".  If you're not running a *nix or similar machine, you'll
     just have to start it like you start all your other Python scripts.""" % \
                                                          (filename, filename))
 
