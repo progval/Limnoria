@@ -390,6 +390,9 @@ class Http(callbacks.Privmsg):
         try:
             fromLang = self._abbrevs[fromLang.lower()]
             toLang = self._abbrevs[toLang.lower()]
+            if fromLang != 'english' and toLang != 'english':
+                irc.error(msg, 'One language must be English.')
+                return
             translations = babelfish.babelize(text, fromLang, toLang)
             irc.reply(msg, translations[-1])
         except (KeyError, babelfish.LanguageNotAvailableError), e:
