@@ -34,6 +34,7 @@ from baseplugin import *
 import re
 import urllib2
 
+import debug
 import ircmsgs
 import ircutils
 import ircutils
@@ -62,25 +63,31 @@ class Forums(callbacks.PrivmsgRegexp):
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
               'That doesn\'t appear to be a proper Google Groups page.'))
 
-    gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
+    _gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
+    _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
     def gameknot(self, irc, msg, match):
         r"http://(?:www\.)?gameknot.com/chess.pl\?bd=\d+&r=\d+"
         fd = urllib2.urlopen(match.group(0))
         s = fd.read()
+        fd.close()
         try:
-            ((wRating, wName), (bRating, bName)) = self.gkPlayer.findall(s)
+            ((wRating, wName), (bRating, bName)) = self._gkPlayer.findall(s)
             wName = ircutils.bold(wName)
             bName = ircutils.bold(bName)
-            wRating = wRating.replace('<br>', ' ')
-            bRating = bRating.replace('<br>', ' ')
-            wRating = wRating.replace('Wins', '; Wins')
-            bRating = bRating.replace('Wins', '; Wins ')
+            (wRating, wWins, wLosses, wDraws) = \
+                      self._gkRating.search(wRating).groups()
+            (bRating, bWins, bLosses, bDraws) = \
+                      self._gkRating.search(bRating).groups()
+            wStats = '%s; W-%s, L-%s, D-%s' % (wRating, wWins, wLosses, wDraws)
+            bStats = '%s; W-%s, L-%s, D-%s' % (bRating, bWins, bLosses, bDraws)
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
-              '%s (%s) vs. %s (%s)' % (wName, wRating, bName, bRating)))
+              '%s (%s) vs. %s (%s)' % (wName, wStats, bName, bStats)))
             
         except ValueError:
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
               'That doesn\'t appear to be a proper Gameknot game.'))
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
 
 
 Class = Forums
