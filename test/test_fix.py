@@ -75,6 +75,8 @@ class FunctionsTest(unittest.TestCase):
         self.assertEqual(list(itersplit([], lambda x: x)), [])
         self.assertEqual(list(itersplit(s, lambda c: c.isspace())),
                          map(list, s.split()))
+        self.assertEqual(list(itersplit(['foo', 'for', 'bar'], 'for'.__eq__)),
+                         [['foo'], ['bar']])
 
     def testIterableMap(self):
         class alist(IterableMap):
