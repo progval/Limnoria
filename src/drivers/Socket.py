@@ -33,8 +33,6 @@ Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 
 from __future__ import division
 
-
-
 import time
 import select
 import socket

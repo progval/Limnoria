@@ -95,6 +95,6 @@ class OwnerTestCase(PluginTestCase):
 
     def testDefaultPluginErrorsWhenCommandNotInPlugin(self):
         self.assertError('defaultplugin foobar owner')
-        
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -33,8 +33,6 @@ Module for some slight database-independence for simple databases.
 
 import csv
 import math
-import sets
-import random
 
 import supybot.cdb as cdb
 import supybot.utils as utils
@@ -408,7 +406,7 @@ class Record(object):
                 default = None
             self.defaults[name] = default
             self.converters[name] = converter
-        seen = sets.Set()
+        seen = set()
         for (name, value) in kwargs.iteritems():
             assert name in self.fields, 'name must be a record value.'
             seen.add(name)
@@ -424,7 +422,7 @@ class Record(object):
         return csv.join([repr(getattr(self, name)) for name in self.fields])
 
     def deserialize(self, s):
-        unseenRecords = sets.Set(self.fields)
+        unseenRecords = set(self.fields)
         for (name, strValue) in zip(self.fields, csv.split(s)):
             setattr(self, name, self.converters[name](strValue))
             unseenRecords.remove(name)

@@ -29,14 +29,12 @@
 
 from supybot.test import *
 
-import sets
-
 import supybot.irclib as irclib
 from supybot.utils.iter import all
 import supybot.ircutils as ircutils
 
 class holder:
-    users = sets.Set(map(str, range(1000)))
+    users = set(map(str, range(1000)))
 
 class FunctionsTestCase(SupyTestCase):
     class irc:

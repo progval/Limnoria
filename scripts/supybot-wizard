@@ -37,7 +37,7 @@ def error(s):
     if not s.endswith(os.linesep):
         sys.stderr.write(os.linesep)
     sys.exit(-1)
-    
+
 if sys.version_info < (2, 3, 0):
     error('This program requires Python >= 2.3.0')
 
