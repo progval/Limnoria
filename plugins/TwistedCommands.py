@@ -35,9 +35,10 @@ Various commands that depend on Twisted <http://www.twistedmatrix.com/>.
 
 from baseplugin import *
 
+import re
+
 from twisted.protocols import dict
 
-import debug
 import ircutils
 import privmsgs
 import callbacks
@@ -58,16 +59,26 @@ class TwistedCommands(callbacks.Privmsg):
             irc.error(msg, failure.getErrorMessage())
         return errback
     
+    dictnumberre = re.compile('^\d+:\s*(.*)$')
     def dictCallback(self, irc, msg, word):
         def formatDictResults(definitions):
-            L = []
+            defs = []
             for definition in definitions:
-                L.append(' '.join(definition.text))
-            if not L:
+                definition.text.pop(0)
+                lines = map(str.strip, map(str, definition.text))
+                L = []
+                for line in lines:
+                    m = self.dictnumberre.match(line)
+                    if m:
+                        defs.append(' '.join(L))
+                        L = []
+                        L.append(m.group(1))
+                    else:
+                        L.append(line)
+            if not defs:
                 irc.reply(msg, '%s appears to have no definition.' % word)
                 return
-            s = ircutils.privmsgPayload(L, ', or ', 400).encode('utf-8')
-            s = ' '.join(s.split()) # Normalize whitespace.
+            s = ircutils.privmsgPayload(defs, ', or ', 400).encode('utf-8')
             irc.reply(msg, s)
         return formatDictResults
 
@@ -81,6 +92,10 @@ class TwistedCommands(callbacks.Privmsg):
         deferred.addCallback(self.dictCallback(irc, msg, word))
         deferred.addErrback(self.defaultErrback(irc, msg))
             
+
+class TwistedRegexp(callbacks.PrivmsgRegexp):
+    def dccrecv(self, irc, msg, match):
+        r""
 
 
 Class = TwistedCommands
