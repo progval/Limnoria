@@ -218,12 +218,12 @@ class IrcChannel(object):
     def checkCapability(self, capability):
         if capability in self.capabilities:
             return True
-        anticapability = makeAntiCapability(capability)
-        if anticapability in self.capabilities:
-            return False
+        if isAntiCapability(capability):
+            return not self.defaultAllow
         else:
-            if isAntiCapability(capability):
-                return not self.defaultAllow
+            anticapability = makeAntiCapability(capability)
+            if anticapability in self.capabilities:
+                return False
             else:
                 return self.defaultAllow
 
@@ -362,7 +362,12 @@ if not os.path.exists(conf.channelfile):
     fd.close()
 channels = ChannelsDictionary(conf.channelfile)
 
-atexit.register(users.flush)
+def flushUsers():
+    for (name, u) in users.dict.iteritems():
+        u.unsetAuth()
+    users.flush()
+
+atexit.register(flushUsers)
 atexit.register(channels.flush)
 
 world.flushers.append(users.flush)
