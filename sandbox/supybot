@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# startbot      /etc/init.d/ script for running an irc bot.
+# supybot       /etc/init.d/ script for running an irc bot.
 #
 #               This is untested and not recommended for use yet!
 #               See the supybot documentation.
