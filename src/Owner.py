@@ -109,7 +109,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                                'capabilities': 'User',
                                'addcapability': 'Admin',
                                'removecapability': 'Admin'}
-        for (name, s) in registry.cache.iteritems():
+        for (name, s) in registry._cache.iteritems():
             if name.startswith('supybot.plugins'):
                 try:
                     (_, _, name) = name.split('.')
