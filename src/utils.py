@@ -331,6 +331,8 @@ def pluralize(s, i=2):
             return matchCase(s, plurals[lowered])
         elif any(lowered.endswith, ['ch', 'ss']):
             return matchCase(s, s+'es')
+        elif lowered.endswith('y'):
+            return matchCase(s, s[:-1]+'ies')
         else:
             return matchCase(s, s+'s')
 
@@ -341,8 +343,10 @@ def depluralize(s):
         return matchCase(s, plurals[lowered])
     elif any(lowered.endswith, ['ches', 'sses']):
         return s[:-2]
+    elif lowered.endswith('ies'):
+        return matchCase(s, s[:-3]+'y')
     else:
-        if s.endswith('s') or s.endswith('S'):
+        if lowered.endswith('s'):
             return s[:-1] # Chop off 's'.
         else:
             return s # Don't know what to do.
