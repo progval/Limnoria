@@ -35,6 +35,7 @@ import re
 import string
 import fnmatch
 
+import debug
 import world
 
 def isUserHostmask(s):
@@ -139,6 +140,7 @@ def separateModes(args):
     [('+s', None), ('+n', None), ('+t', None), ('+l', '100')]
     """
     modes = args[0]
+    assert modes[0] in '+-', 'Invalid args: %r' % args
     args = list(args[1:])
     ret = []
     index = 0
@@ -155,7 +157,23 @@ def separateModes(args):
             index += 1
     return ret
 
+def joinModes(modes):
+    """Joins modes of the same form as returned by separateModes."""
+    args = []
+    modeChars = []
+    currentMode = '\x00'
+    for (mode, arg) in modes:
+        if arg is not None:
+            args.append(arg)
+        if not mode.startswith(currentMode):
+            currentMode = mode[0]
+            modeChars.append(mode[0])
+        modeChars.append(mode[1])
+    args.insert(0, ''.join(modeChars))
+    return args
+
 def bold(s):
+    """Returns the string s, bolded."""
     return "\x02%s\x02" % s
 
 def isValidArgument(s):
