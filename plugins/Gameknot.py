@@ -177,13 +177,13 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 return
             m = self._gkGameTitle.search(s)
             if m is None:
-                self.log.info('_gkGameTitle didn\'t match (%s).', url)
+                self.log.debug('_gkGameTitle didn\'t match (%s).', url)
                 return
             gameTitle = m.groups()
             gameTitle = ircutils.bold(gameTitle)
             L = self._gkPlayer.findall(s)
             if not L:
-                self.log.info('_gkPlayer didn\'t match (%s).', url)
+                self.log.debug('_gkPlayer didn\'t match (%s).', url)
                 return
             ((wRating, wName), (bRating, bName)) = L
             wName = ircutils.bold(wName)
@@ -219,10 +219,10 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 (gameTitle, wName, wStats, bName, bStats, toMove)
             irc.reply(s, prefixName=False)
         except ValueError:
-            s = 'That doesn\'t appear to be a proper Gameknot game.'
-            irc.errorPossibleBug(s)
+            s = '%s doesn\'t appear to be a proper Gameknot game.' % url
+            self.log.debug('Unable to snarf.  %s' % s)
         except Exception, e:
-            irc.error(utils.exnToString(e))
+            self.log.warning(utils.exnToString(e))
     gameknotSnarfer = urlSnarfer(gameknotSnarfer)
 
     def gameknotStatsSnarfer(self, irc, msg, match):
