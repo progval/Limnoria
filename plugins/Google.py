@@ -203,7 +203,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
                 kwargs['filter'] = False
             else:
                 kwargs[option[2:]] = argument
-        for (i, arg) in args:
+        for (i, arg) in enumerate(args):
             if len(arg.split()) > 1:
                 args[i] = repr(arg)
         try:
