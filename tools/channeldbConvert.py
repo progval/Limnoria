@@ -64,7 +64,7 @@ if __name__ == '__main__':
                                  smileys, topics, words
                           FROM user_stats ORDER BY user_id""")
         for t in cursor.fetchall():
-            fd.write('%s,%s' % (channel, ','.join(map(str, L))))
+            fd.write('%s,%s' % (channel, ','.join(map(str, t))))
             fd.write(os.linesep)
     fd.close()
 
