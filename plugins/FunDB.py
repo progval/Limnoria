@@ -436,8 +436,9 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
             lartee = nick
             s = lart.replace('$who', lartee)
-            if len(reason) > 0:
+            if reason:
                 s = '%s for %s' % (s, reason)
+            s = s.rstrip('.')
             irc.reply(msg, self._formatResponse(s, id), action=True)
 
     def praise(self, irc, msg, args):
@@ -484,8 +485,9 @@ class FunDB(callbacks.Privmsg, plugins.Configurable):
             reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
             praisee = nick
             s = praise.replace('$who', praisee)
-            if len(reason) > 0:
+            if reason:
                 s = '%s for %s' % (s, reason)
+            s = s.rstrip('.')
             irc.reply(msg, self._formatResponse(s, id), action=True)
 
     def addword(self, irc, msg, args):
