@@ -335,11 +335,11 @@ def pluralize(s, i=2):
         lowered = s.lower()
         # Exception dictionary
         if lowered in plurals:
-            return matchCase(s, plurals[lowered]) 
+            return matchCase(s, plurals[lowered])
         # Words ending with 'ch', 'sh' or 'ss' such as 'punch(es)', 'fish(es)
         # and miss(es)
         elif any(lowered.endswith, ['ch', 'sh', 'ss']):
-            return matchCase(s, s+'es') 
+            return matchCase(s, s+'es')
         # Words ending with a consonant followed by a 'y' such as
         # 'try (tries)' or 'spy (spies)'
         elif re.search(_pluralizeRegex, lowered):

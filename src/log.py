@@ -93,7 +93,7 @@ class StdoutStreamHandler(logging.StreamHandler):
                 self.disable()
                 error('Error logging to stdout.  Removing stdout handler.')
                 exception('Uncaught exception in StdoutStreamHandler:')
-            
+
 
 class BetterFileHandler(logging.FileHandler):
     def emit(self, record):
@@ -208,7 +208,7 @@ def firewall(f, errorHandler=None):
                     errorHandler(self, *args, **kwargs)
                 except Exception, e:
                     logException(self, 'Uncaught exception in errorHandler')
-                    
+
     m = utils.changeFunctionName(m, f.func_name, f.__doc__)
     return m
 
@@ -245,14 +245,14 @@ class ValidLogLevel(registry.String):
 
     def __str__(self):
         return logging.getLevelName(self.value)
-    
+
 class LogLevel(ValidLogLevel):
     """Invalid log level.  Value must be either DEBUG, INFO, WARNING, ERROR,
     or CRITICAL."""
     def setValue(self, v):
         ValidLogLevel.setValue(self, v)
         _logger.setLevel(self.value) # _logger defined later.
-    
+
 conf.supybot.directories.register('log', registry.String('logs', """Determines
 what directory the bot will store its logfiles in."""))
 
@@ -271,7 +271,7 @@ class BooleanRequiredFalseOnWindows(registry.Boolean):
         registry.Boolean.set(self, s)
         if self.value and os.name == 'nt':
             raise InvalidRegistryValue, 'Value cannot be true on Windows.'
-        
+
 conf.supybot.log.stdout.register('colorized',
 BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs to
 stdout (if enabled) will be colorized with ANSI color."""))

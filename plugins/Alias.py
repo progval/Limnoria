@@ -186,7 +186,7 @@ class Alias(callbacks.Privmsg):
                 del self.aliases[alias]
         del self.__class__.__call__
         callbacks.Privmsg.__call__(self, irc, msg)
-        
+
     def lock(self, irc, msg, args):
         """<alias>
 

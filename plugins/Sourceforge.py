@@ -122,7 +122,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.__class__.sf = self.__class__.sourceforge
-        
+
     def _formatResp(self, text, num=''):
         """
         Parses the Sourceforge query to return a list of tuples that
@@ -164,7 +164,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                   conf.supybot.replies.possibleBug()
         except webutils.WebError, e:
             raise callbacks.Error, str(e)
-        
+
     _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
     _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)

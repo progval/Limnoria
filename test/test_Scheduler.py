@@ -38,7 +38,7 @@ class SchedulerTestCase(ChannelPluginTestCase):
     def tearDown(self):
         schedule.schedule.reset()
         ChannelPluginTestCase.tearDown(self)
-        
+
     def testAddRemove(self):
         self.assertRegexp('scheduler list', 'no.*commands')
         m = self.assertNotError('scheduler add 5 echo testAddRemove')

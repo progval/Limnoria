@@ -52,7 +52,7 @@ import callbacks
 class MyFilterProxy(object):
     def reply(self, s):
         self.s = s
-        
+
 class Filter(callbacks.Privmsg):
     """This plugin offers several commands which transform text in some way.
     It also provides the capability of using such commands to 'filter' the
@@ -86,7 +86,7 @@ class Filter(callbacks.Privmsg):
                        'supa1337', 'colorstrip', 'aol']
     def outfilter(self, irc, msg, args, channel):
         """[<channel>] [<command>]
-        
+
         Sets the outFilter of this plugin to be <command>.  If no command is
         given, unsets the outFilter.  <channel> is only necessary if the
         message isn't sent in the channel itself.
@@ -104,7 +104,7 @@ class Filter(callbacks.Privmsg):
             self.outFilters[channel] = []
             irc.replySuccess()
     outfilter = privmsgs.checkChannelCapability(outfilter, 'op')
-    
+
     def squish(self, irc, msg, args):
         """<text>
 
@@ -217,7 +217,7 @@ class Filter(callbacks.Privmsg):
                           ('eE', '3'), ('t', '+'), ('T', '7'), ('l', '1'),
                           ('D', '|)'), ('B', '|3'), ('I', ']['), ('Vv', '\\/'),
                           ('wW', '\\/\\/'), ('d', 'c|'), ('b', '|>'),
-                          ('c', '<'), ('h', '|n'),] 
+                          ('c', '<'), ('h', '|n'),]
     def supa1337(self, irc, msg, args):
         """<text>
 
@@ -380,7 +380,7 @@ class Filter(callbacks.Privmsg):
         text = text.replace(' their ', ' there ')
         smiley = random.choice(['<3', ':)', ':-)', ':D', ':-D'])
         text += smiley*3
-        
+
     def jeffk(self, irc, msg, args):
         """<text>
 

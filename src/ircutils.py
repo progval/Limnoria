@@ -57,7 +57,7 @@ import utils
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
     print '***', s % args
-    
+
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
     p1 = s.find('!')
@@ -401,7 +401,7 @@ class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""
     def __new__(cls, s=''):
         return str.__new__(cls, intern(s))
-    
+
     def __init__(self, s):
         assert isinstance(s, basestring), \
                'Cannot make an IrcString from %s' % type(s)
@@ -432,7 +432,7 @@ class IrcSet(sets.Set):
         self.__parent.__init__()
         for elt in seq:
             self.add(elt)
-        
+
     def add(self, s):
         return self.__parent.add(IrcString(s))
 

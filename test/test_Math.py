@@ -79,16 +79,16 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('base 10 8 [base 8 76532]', '76532')
         self.assertResponse('base 10 36 [base 36 csalnwea]', 'CSALNWEA')
         self.assertResponse('base 5 4 [base 4 5 212231]', '212231')
-        
+
         self.assertRegexp('base 37 1', 'between 2 and 36')
         self.assertRegexp('base 1 1', 'between 2 and 36')
         self.assertRegexp('base 12 1 1', 'between 2 and 36')
         self.assertRegexp('base 1 12 1', 'between 2 and 36')
         self.assertRegexp('base 1.0 12 1', 'between 2 and 36')
         self.assertRegexp('base A 1', 'between 2 and 36')
-        
+
         self.assertRegexp('base 4 4', 'Invalid <number>')
-        self.assertRegexp('base 10 12 A', 'Invalid <number>') 
+        self.assertRegexp('base 10 12 A', 'Invalid <number>')
 
         print
         print "If we have not fixed a bug with Math.base, the following ",
@@ -125,7 +125,7 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
 
     def testCalcFloorWorksWithSqrt(self):
         self.assertNotError('calc floor(sqrt(5))')
-        
+
     def testRpn(self):
         self.assertResponse('rpn 5 2 +', '7')
         self.assertResponse('rpn 1 2 3 +', 'Stack: [1, 5]')
@@ -138,7 +138,7 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
 
     def testRpmNoSyntaxError(self):
         self.assertNotRegexp('rpn 2 3 foobar', 'SyntaxError')
-        
+
     def testConvert(self):
         self.assertResponse('convert 1 m to cm', '100')
         self.assertResponse('convert m to cm', '100')
@@ -146,7 +146,7 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertResponse('convert 32 F to C', '0')
         self.assertResponse('convert 32 C to F', '89.6')
         self.assertResponse('convert [calc 2*pi] rad to degree', '360')
-        self.assertResponse('convert amu to atomic mass unit', 
+        self.assertResponse('convert amu to atomic mass unit',
                             '1')
         self.assertResponse('convert [calc 2*pi] rad to circle', '1')
 
@@ -156,7 +156,7 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertError('convert 1 gram to meatballs')
         self.assertError('convert 1 mol to grams')
         self.assertError('convert 1 m to kpa')
-    
+
     def testConvertSingularPlural(self):
         self.assertResponse('convert [calc 2*pi] rads to degrees',
                             '360')

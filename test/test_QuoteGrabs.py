@@ -44,7 +44,7 @@ if sqlite:
         plugins = ('QuoteGrabs',)
         def testQuoteGrab(self):
             testPrefix = 'foo!bar@baz'
-            self.assertError('grab foo')    
+            self.assertError('grab foo')
             # Test join/part/notice (shouldn't grab)
             self.irc.feedMsg(ircmsgs.join(self.channel, prefix=testPrefix))
             self.assertError('grab foo')
@@ -53,7 +53,7 @@ if sqlite:
             # Test privmsgs
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
                                              prefix=testPrefix))
-            self.assertNotError('grab foo')    
+            self.assertNotError('grab foo')
             self.assertResponse('quote foo', '<foo> something')
             # Test actions
             self.irc.feedMsg(ircmsgs.action(self.channel, 'moos',
@@ -78,7 +78,7 @@ if sqlite:
             testPrefix = 'foo!bar@baz'
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
                                              prefix=testPrefix))
-            self.assertNotError('grab foo') 
+            self.assertNotError('grab foo')
             self.assertNotError('grab foo') # note:NOTanerror,stillwon'tdupe
             self.assertResponse('quotegrabs list foo', '#1: test')
 

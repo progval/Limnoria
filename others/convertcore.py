@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 #****************************************************************************
-# This file has been modified from its original version. It has been 
-# formatted to fit your irc bot. 
+# This file has been modified from its original version. It has been
+# formatted to fit your irc bot.
 #
 # The original version is a nifty PyQt application written by Douglas Bell,
 # available at  http://www.bellz.org/convertall/.
 #
-# Below is the original copyright. Doug Bell rocks. 
+# Below is the original copyright. Doug Bell rocks.
 # The hijacker is Keith Jones, and he has no bomb in his shoe.
 #
 #****************************************************************************
@@ -46,8 +46,8 @@ import StringIO
 # followed by either equations or equivalency lists for the definition.
 # For equations, two are given, separated by a ';'.  Both are functions of
 # "x", the first going from the unit to the equivalent unit and the second
-# one in reverse.  Any valid Python expression returning a float (including 
-# the functions in the math module) should work.  The equivalency list is a 
+# one in reverse.  Any valid Python expression returning a float (including
+# the functions in the math module) should work.  The equivalency list is a
 # python list of tuples giving points for linear interpolation.
 #
 # All units must reduce to primitive units, which are indicated by an '!'
@@ -1042,7 +1042,7 @@ class UnitData(dict):
             typeUnits[unit.typeName].append(unit.name)
         self.sortedKeys = self.keys()
         self.sortedKeys.sort()
-        
+
         if len(self.sortedKeys) < len(units):
             raise UnitDataError, 'Duplicate unit names found'
 
@@ -1137,7 +1137,7 @@ class Unit:
 ############################################################################
 # Wrapper functionality
 #
-############################################################################ 
+############################################################################
 
 
 # Parse the data file, and set everything up for conversion
@@ -1154,7 +1154,7 @@ toUnit = UnitGroup(data, option)
 def convert(num, unit1, unit2):
     """ Convert from one unit to another
 
-    num is the factor for the first unit. Raises UnitDataError for 
+    num is the factor for the first unit. Raises UnitDataError for
     various errors.
     """
     fromUnit.update(unit1)
@@ -1162,17 +1162,17 @@ def convert(num, unit1, unit2):
 
     fromUnit.reduceGroup()
     toUnit.reduceGroup()
-    
+
     # Match up unit categories
     if not fromUnit.categoryMatch(toUnit):
         raise UnitDataError('unit categories did not match')
-            
+
     return fromUnit.convert(num, toUnit)
-                
+
 
 
 def units(type):
-    """ Return comma separated string list of units of given type, or 
+    """ Return comma separated string list of units of given type, or
         a list of types if the argument is not valid.
     """
     if type in types:

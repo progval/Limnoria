@@ -83,7 +83,7 @@ setup(
         'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python',
     ],
-    
+
     # Installation data
     packages=['supybot',
               'supybot.src',

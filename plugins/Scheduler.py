@@ -130,7 +130,7 @@ class Scheduler(callbacks.Privmsg):
             return
         except ValueError:
             pass
-        self.events[name] = command 
+        self.events[name] = command
         f = self._makeCommandFunction(irc, msg, command, remove=False)
         id = schedule.addPeriodicEvent(f, seconds, name)
         assert id == name

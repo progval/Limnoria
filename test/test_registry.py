@@ -131,6 +131,6 @@ class ValuesTestCase(SupyTestCase):
         self.assertEqual(v(), None)
         self.assertRaises(registry.InvalidRegistryValue,
                           v.setValue, re.compile(r'foo'))
-        
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

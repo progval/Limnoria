@@ -143,7 +143,7 @@ if network:
                                   'func=detail&aid=400942&group_id=235&'
                                   'atid=390395',
                                   s)
-    
+
                 # test that it works without index.php
                 self.assertNotError('http://sourceforge.net/tracker/?'
                                     'func=detail&aid=540223&group_id=235&'

@@ -90,7 +90,7 @@ class FunctionsTest(SupyTestCase):
     def testRsplit(self):
         self.assertEqual(rsplit('foo bar baz'), 'foo bar baz'.split())
         self.assertEqual(rsplit('foo bar baz', maxsplit=1),
-                         ['foo bar', 'baz']) 
+                         ['foo bar', 'baz'])
         self.assertEqual(rsplit('foo        bar baz', maxsplit=1),
                          ['foo        bar', 'baz'])
         self.assertEqual(rsplit('foobarbaz', 'bar'), ['foo', 'baz'])

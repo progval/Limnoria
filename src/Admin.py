@@ -57,7 +57,7 @@ import privmsgs
 import schedule
 import callbacks
 
-    
+
 class Admin(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def __init__(self):
@@ -81,7 +81,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 chans.append(channel)
         irc.queueMsg(ircmsgs.joins(chans, keys))
     do422 = do377 = do376
-        
+
     def do437(self, irc, msg):
         """Nick/channel temporarily unavailable."""
         target = msg.args[0]
@@ -119,7 +119,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.error('Cannot join %s, it\'s banned me.' % channel)
         except KeyError:
             self.log.debug('Got 474 without Admin.join being called.')
-            
+
     def do475(self, irc, msg):
         try:
             channel = msg.args[1]
@@ -153,7 +153,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 self.log.info('Invited to %s by %s', channel, msg.prefix)
                 irc.queueMsg(ircmsgs.join(channel))
                 conf.supybot.channels().add(channel)
-    
+
     def join(self, irc, msg, args):
         """<channel>[,<key>] [<channel>[,<key>] ...]
 
@@ -226,14 +226,14 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                           'a channel I\'m in is +m and I\'m -v in it.')
         else:
             self.log.debug('Got 438 without Admin.nick being called.')
-            
+
     def doNick(self, irc, msg):
         if msg.nick == irc.nick or msg.args[0] == irc.nick:
             try:
                 del self.pendingNickChanges[irc]
             except KeyError:
                 self.log.debug('Got NICK without Admin.nick being called.')
-            
+
     def nick(self, irc, msg, args):
         """<nick>
 
@@ -431,7 +431,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         except KeyError:
             irc.error('%s wasn\'t in the ignores database.' % hostmask)
-            
+
     def ignores(self, irc, msg, args):
         """takes no arguments
 

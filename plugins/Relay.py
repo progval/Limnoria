@@ -276,7 +276,7 @@ class Relay(callbacks.Privmsg):
         Owner.disambiguate(irc, args)
         self.Proxy(otherIrc, msg, args)
     command = privmsgs.checkCapability(command, 'admin')
-        
+
     def say(self, irc, msg, args):
         """<network> [<channel>] <text>
 
@@ -348,7 +348,7 @@ class Relay(callbacks.Privmsg):
                 utils.sortBy(ircutils.toLower, usersS)
                 usersS = ', '.join(ifilter(None, imap(', '.join,
                                   (ops,halfops,voices,usersS))))
-                users.append('%s (%s): %s' % 
+                users.append('%s (%s): %s' %
                              (ircutils.bold(abbreviation), numUsers, usersS))
         users.sort()
         irc.reply('; '.join(users))
@@ -506,7 +506,7 @@ class Relay(callbacks.Privmsg):
             self.relayedMsgs[msg] += 1
         except KeyError:
             self.relayedMsgs[msg] = 1
-        
+
     def _sendToOthers(self, irc, msg):
         assert msg.command == 'PRIVMSG' or msg.command == 'TOPIC'
         for otherIrc in self.ircs.itervalues():
@@ -641,7 +641,7 @@ class Relay(callbacks.Privmsg):
 ##                 text.startswith('mode change') or \
 ##                 text.startswith('nick change') or \
 ##                 text.startswith('topic change'))
-    
+
     def outFilter(self, irc, msg):
         if not self.started:
             return msg

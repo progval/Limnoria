@@ -62,7 +62,7 @@ conf.registerChannelValue(conf.supybot.plugins.Anonymous,
 conf.registerGlobalValue(conf.supybot.plugins.Anonymous, 'requireRegistration',
     registry.Boolean(True, """Determines whether the bot should require people
     trying to use this plugin to be registered."""))
-                         
+
 
 class Anonymous(callbacks.Privmsg):
     private = True
@@ -95,7 +95,7 @@ class Anonymous(callbacks.Privmsg):
                       'disallow the use of this plugin.')
             return
         irc.queueMsg(ircmsgs.privmsg(channel, text))
-        
+
 
 Class = Anonymous
 

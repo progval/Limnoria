@@ -65,6 +65,6 @@ if os.name == 'posix':
             def testFortune(self):
                 self.assertNotError('fortune')
 
-    
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

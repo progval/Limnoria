@@ -71,7 +71,7 @@ if sqlite is not None:
             self.assertRegexp('stats #foo', '0')
             self.assertError('random #foo')
 
-    
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -89,7 +89,7 @@ conf.registerPlugin('FunDB')
 conf.registerChannelValue(conf.supybot.plugins.FunDB, 'showIds',
     registry.Boolean(True, """Determine whether the bot will show the id of an
     excuse/insult/praise/lart."""))
-    
+
 class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
     """
     Contains the 'fun' commands that require a database.  Currently includes
@@ -322,7 +322,7 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
             return '%s (#%s)' % (s, id)
         else:
             return s
-        
+
     def insult(self, irc, msg, args):
         """[<channel>] <nick>
 
@@ -353,7 +353,7 @@ class FunDB(callbacks.Privmsg, plugins.ChannelDBHandler):
     def excuse(self, irc, msg, args):
         """[<channel>] [<id>]
 
-        Gives you a standard, random BOFH excuse or the excuse with the given 
+        Gives you a standard, random BOFH excuse or the excuse with the given
         <id>.  <channel> is only necessary if the message isn't sent in the
         channel itself.
         """

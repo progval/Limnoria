@@ -109,7 +109,7 @@ class Herald(callbacks.Privmsg):
             throttle = self.registryValue('throttleTime', channel)
             if now - self.lastHerald.get((channel, id), 0) > throttle:
                 if (channel, id) in self.lastParts:
-                   i = self.registryValue('throttleTimeAfterPart', channel) 
+                   i = self.registryValue('throttleTimeAfterPart', channel)
                    if now - self.lastParts[channel, id] < i:
                        return
                 self.lastHerald[channel, id] = now

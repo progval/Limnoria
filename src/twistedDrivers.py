@@ -101,7 +101,7 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
         protocol = ReconnectingClientFactory.buildProtocol(self, addr)
         protocol.irc = self.irc
         return protocol
-    
+
     def die(self):
         pass
 

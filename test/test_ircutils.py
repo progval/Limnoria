@@ -54,7 +54,7 @@ class FunctionsTestCase(SupyTestCase):
         s = 'jamessan|work!~jamessan@209-6-166-196.c3-0.' \
             'abr-ubr1.sbo-abr.ma.cable.rcn.com'
         self.failUnless(ircutils.hostmaskPatternEqual(s, s))
-        
+
     def testIsUserHostmask(self):
         self.failUnless(ircutils.isUserHostmask(self.hostmask))
         self.failUnless(ircutils.isUserHostmask('a!b@c'))
@@ -237,7 +237,7 @@ class FunctionsTestCase(SupyTestCase):
         for _ in range(100): # 100 should be good :)
             ip = randomIP()
             self.assertEqual(ip, ircutils.unDccIP(ircutils.dccIP(ip)))
-        
+
 
 class IrcDictTestCase(SupyTestCase):
     def test(self):

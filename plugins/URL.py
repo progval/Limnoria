@@ -224,7 +224,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                 s = 'Title: %s (at %s)' % (title, domain)
                 irc.reply(s, prefixName=False)
     titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
-                
+
     def _updateTinyDb(self, url, tinyurl, channel):
         db = self.getDb(channel)
         cursor = db.cursor()

@@ -53,7 +53,7 @@ class IrcMsgQueueTestCase(SupyTestCase):
     def testInit(self):
         q = irclib.IrcMsgQueue([self.msg, self.topic, self.ping])
         self.assertEqual(len(q), 3)
-        
+
     def testLen(self):
         q = irclib.IrcMsgQueue()
         q.enqueue(self.msg)
@@ -262,7 +262,7 @@ class IrcStateTestCase(SupyTestCase):
         st.addMsg(self.irc, ircmsgs.quit(prefix='foo!bar@baz'))
         self.failIf('foo' in st.channels['#foo'].users)
         self.failUnless('foo' in st2.channels['#foo'].users)
-        
+
 
     def testEq(self):
         state1 = irclib.IrcState()
@@ -314,7 +314,7 @@ class IrcTestCase(SupyTestCase):
 
     def test433Response(self):
         # This is necessary; it won't change nick if irc.originalName==irc.nick
-        self.irc.nick = 'somethingElse' 
+        self.irc.nick = 'somethingElse'
         self.irc.feedMsg(ircmsgs.IrcMsg('433 * %s :Nickname already in use.' %\
                                         self.irc.nick))
         msg = self.irc.takeMsg()

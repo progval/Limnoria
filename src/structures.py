@@ -182,7 +182,7 @@ class queue(object):
     def reset(self):
         self.back[:] = []
         self.front[:] = []
-        
+
     def enqueue(self, elt):
         self.back.append(elt)
 
@@ -342,7 +342,7 @@ class TwoWayDictionary(dict):
         for (key, value) in kwargs.iteritems():
             self[key] = value
             self[value] = key
-            
+
     def __setitem__(self, key, value):
         dict.__setitem__(self, key, value)
         dict.__setitem__(self, value, key)

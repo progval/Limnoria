@@ -53,7 +53,7 @@ if sqlite is not None:
                 if option in L:
                     L.remove(option)
             self.failIf(L, 'Some options never seen: %s' % L)
-            
+
         def testPickOptions(self):
             self._testOptions('(a|b)', ['a', 'b'])
             self._testOptions('a', ['a'])
@@ -76,7 +76,7 @@ if sqlite is not None:
             self.assertNotError('moo is foo')
             # Check stripping punctuation
             self.assertError('moo!?    is foo') # 'moo' already exists
-            self.assertNotError('foo!?    is foo') 
+            self.assertNotError('foo!?    is foo')
             self.assertResponse('foo', 'foo is foo')
             self.assertNotError('bar is <reply>moo is moo')
             self.assertResponse('bar', 'moo is moo')
@@ -149,7 +149,7 @@ if sqlite is not None:
                               'Last requested by foo!bar@baz on .*?, '
                               'requested 2 times.$')
             # Make sure I solved this bug
-            # Check and make sure all the other stuff is reset 
+            # Check and make sure all the other stuff is reset
             self.assertNotError('foo is bar')
             self.assertNotError('foo =~ s/bar/blah/')
             self.assertNotError('foo')
@@ -183,7 +183,7 @@ if sqlite is not None:
                                   '^moo: Created by tester on.*?\.')
             finally:
                 world.testing = True
-                              
+
         def testChangeFactoid(self):
             self.assertNotError('moo is <reply>moo')
             self.assertNotError('moo =~ s/moo/moos/')
@@ -214,8 +214,8 @@ if sqlite is not None:
             self.assertNotError('moogle is <reply>moo')
             self.assertError('most popular')
             self.assertResponse('most authored',
-                                'Most prolific author: moo (1)') 
-            self.assertRegexp('most recent', "1 latest factoid:.*moogle") 
+                                'Most prolific author: moo (1)')
+            self.assertRegexp('most recent', "1 latest factoid:.*moogle")
             self.assertResponse('moogle', 'moo')
             self.assertRegexp('most popular',
                                 "Top 1 requested factoid:.*moogle.*(1)")
@@ -223,9 +223,9 @@ if sqlite is not None:
             self.prefix = userPrefix2
             self.assertNotError('mogle is <reply>mo')
             self.assertRegexp('most authored',
-                                'Most prolific authors:.*moo.*(1).*boo.*(1)') 
+                                'Most prolific authors:.*moo.*(1).*boo.*(1)')
             self.assertRegexp('most recent',
-                                "2 latest factoids:.*mogle.*moogle.*") 
+                                "2 latest factoids:.*mogle.*moogle.*")
             self.assertResponse('moogle', 'moo')
             self.assertRegexp('most popular',
                                 "Top 1 requested factoid:.*moogle.*(2)")
@@ -339,6 +339,6 @@ if sqlite is not None:
             self.assertNotError('foo is <reply>bar')
             self.assertNotError('bar is <reply>baz')
             self.assertRegexp('randomfactoid', r'bar|baz')
-            
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

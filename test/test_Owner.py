@@ -45,7 +45,7 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
             conf.allowEval = True
             self.assertNotError('eval 100')
             s = "[irc.__class__ for irc in " \
-                "irc.getCallback('Relay').ircstates.keys()]" 
+                "irc.getCallback('Relay').ircstates.keys()]"
             self.assertNotRegexp('eval ' + s, '^SyntaxError')
             conf.allowEval = False
             self.assertError('eval 100')

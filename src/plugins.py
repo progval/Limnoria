@@ -107,8 +107,8 @@ class DBHandler(object):
         if self.cachedDb is not None:
             self.cachedDb.die()
             del self.cachedDb
-        
-        
+
+
 # XXX: This shouldn't be a mixin.  This should be contained by classes that
 #      want such behavior.  But at this point, it wouldn't gain much for us
 #      to refactor it.
@@ -174,18 +174,18 @@ class ChannelUserDictionary(UserDict.DictMixin):
 
     def __delitem__(self, (channel, id)):
         del self.channels[channel][id]
-        
+
     def iteritems(self):
         for (channel, ids) in self.channels.iteritems():
             for (id, v) in ids.iteritems():
                 yield ((channel, id), v)
-                
+
     def keys(self):
         L = []
         for (k, _) in self.iteritems():
             L.append(k)
         return L
-        
+
 
 class ChannelUserDB(ChannelUserDictionary):
     def __init__(self, filename):
@@ -347,7 +347,7 @@ class PeriodicFileDownloader(object):
             t.setDaemon(True)
             t.start()
             world.threadsSpawned += 1
-        
+
 
 _randomnickRe = re.compile(r'\$rand(?:om)?nick', re.I)
 _randomdateRe = re.compile(r'\$rand(?:om)?date', re.I)
@@ -368,7 +368,7 @@ def standardSubstitute(irc, msg, text):
     def randInt(m):
         return str(random.randint(-1000, 1000))
     def randDate(m):
-        t = pow(2,30)*random.random()+time.time()/4.0 
+        t = pow(2,30)*random.random()+time.time()/4.0
         return time.ctime(t)
     def randNick(m):
         if channel != 'somewhere':

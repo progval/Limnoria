@@ -69,14 +69,14 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Alias', 'Filter', 'Utilities')
     def testNoAliasWithNestedCommandName(self):
         self.assertError('alias add foo "[bar] baz"')
-        
+
     def testDoesNotOverwriteCommands(self):
         self.assertError('alias add alias "echo foo bar baz"')
         self.assertError('alias add add "echo foo bar baz"')
         self.assertError('alias add remove "echo foo bar baz"')
         self.assertError('alias add lock "echo foo bar baz"')
         self.assertError('alias add unlock "echo foo bar baz"')
-        
+
     def testAliasHelp(self):
         self.assertNotError('alias add slashdot foo')
         self.assertRegexp('help slashdot', "Alias for 'foo.*'")
@@ -86,7 +86,7 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('foo', 'bar')
         self.assertNotError('alias remove foo')
         self.assertNoResponse('foo', 2)
-        
+
     def testDollars(self):
         self.assertNotError('alias add rot26 "rot13 [rot13 $1]"')
         self.assertResponse('rot26 foobar', 'foobar')
@@ -155,7 +155,7 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testSimpleAliasWithoutArgsImpliesDollarStar(self):
         self.assertNotError('alias add exo echo')
         self.assertResponse('exo foo bar baz', 'foo bar baz')
-        
+
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -82,7 +82,7 @@ class XMLLogger(callbacks.Privmsg):
                 self.log.warning('My flusher wasn\'t in world.flushers: %r',
                                  world.flushers)
         self.fd.close()
-        
+
     def writeMsg(self, msg):
         pretty = self.registryValue('prettyPrint')
         includeTime = self.registryValue('includeTime')

@@ -42,10 +42,10 @@ class Reader(object):
 
     def normalizeCommand(self, s):
         return s.lower()
-    
+
     def readFile(self, filename):
         self.read(file(filename))
-    
+
     def read(self, fd):
         lineno = 0
         for line in fd:

@@ -12,7 +12,7 @@ RSS 0.9x/common elements:
 Additional RSS 1.0/2.0 elements:
 - dc:rights, dc:language, dc:creator, dc:date, dc:subject,
   content:encoded, admin:generatorAgent, admin:errorReportsTo,
-  
+
 Addition Pie/Atom/Echo elements:
 - subtitle, created, issued, modified, summary, id, content
 
@@ -167,7 +167,7 @@ class FeedParser(sgmllib.SGMLParser):
             prefix = self.namespacemap.get(prefix, prefix)
             name = prefix + ':' + suffix
         return name
-        
+
     def _getAttribute(self, attrs, name):
         value = [v for k, v in attrs if self._mapToStandardPrefix(k) == name]
         if value:
@@ -175,7 +175,7 @@ class FeedParser(sgmllib.SGMLParser):
         else:
             value = None
         return value
-            
+
     def start_channel(self, attrs):
         self.push('channel', 0)
         self.inchannel = 1
@@ -183,16 +183,16 @@ class FeedParser(sgmllib.SGMLParser):
     def end_channel(self):
         self.pop('channel')
         self.inchannel = 0
-    
+
     def start_image(self, attrs):
         self.inimage = 1
-            
+
     def end_image(self):
         self.inimage = 0
-                
+
     def start_textinput(self, attrs):
         self.intextinput = 1
-        
+
     def end_textinput(self):
         self.intextinput = 0
 
@@ -300,7 +300,7 @@ class FeedParser(sgmllib.SGMLParser):
     def end_entry(self):
         self.pop('item')
         self.initem = 0
-        
+
     def start_subtitle(self, attrs):
         self.push('subtitle', 1)
 
@@ -312,7 +312,7 @@ class FeedParser(sgmllib.SGMLParser):
 
     def end_summary(self):
         self.pop('summary')
-        
+
     def start_modified(self, attrs):
         self.push('modified', 1)
 
@@ -376,7 +376,7 @@ class FeedParser(sgmllib.SGMLParser):
     end_div = end_content
     end_xhtml_body = end_content
     end_xhtml_div = end_content
-        
+
     def unknown_starttag(self, tag, attrs):
         if self.incontent and self.contentmode == 'xml':
             self.handle_data("<%s%s>" % (tag, "".join([' %s="%s"' % t for t in attrs])))
@@ -504,7 +504,7 @@ class FeedURLHandler(urllib2.HTTPRedirectHandler, urllib2.HTTPDefaultErrorHandle
 
     http_error_300 = http_error_302
     http_error_307 = http_error_302
-        
+
 def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
     """
     URI, filename, or string --> stream
@@ -538,7 +538,7 @@ def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
 
     if not agent:
         agent = USER_AGENT
-        
+
     # try to open with urllib2 (to use optional headers)
     request = urllib2.Request(source)
     if etag:
@@ -556,7 +556,7 @@ def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
     except:
         # source is not a valid URL, but it might be a valid filename
         pass
-    
+
     # try to open with native open function (if source is a filename)
     try:
         return open(source)
@@ -568,7 +568,7 @@ def open_resource(source, etag=None, modified=None, agent=None, referrer=None):
 
 def get_etag(resource):
     """
-    Get the ETag associated with a response returned from a call to 
+    Get the ETag associated with a response returned from a call to
     open_resource().
 
     If the resource was not returned from an HTTP server or the server did

@@ -148,7 +148,7 @@ class Group(object):
             return self.__makeChild(attr, str(self))
         else:
             self.__nonExistentEntry(attr)
-            
+
     def get(self, attr):
         # Not getattr(self, attr) because some nodes might have groups that
         # are named the same as their methods.
@@ -167,7 +167,7 @@ class Group(object):
                     except InvalidRegistryValue:
                         # It's probably supposed to be registered later.
                         pass
-    
+
     def register(self, name, node=None):
         if not isValidRegistryName(name):
             raise InvalidRegistryName, name
@@ -214,7 +214,7 @@ class Value(Group):
                  private=False, showDefault=True, **kwargs):
         Group.__init__(self, **kwargs)
         self.default = default
-        self.private = private 
+        self.private = private
         self.showDefault = showDefault
         self.help = utils.normalizeWhitespace(help.strip())
         self.setValue(default)
@@ -250,7 +250,7 @@ class Value(Group):
             for (name, v) in self.children.items():
                 if v.__class__ is self.X:
                     self.unregister(name)
-    
+
     def __str__(self):
         return repr(self())
 
@@ -334,7 +334,7 @@ class OnlySomeStrings(String):
         assert self.validStrings, 'There must be some valid strings.  ' \
                                   'This is a bug.'
         String.__init__(self, *args, **kwargs)
-        
+
     def error(self):
         raise InvalidRegistryValue, \
               'That is not a valid value.  Valid values include %s.' % \
@@ -348,14 +348,14 @@ class OnlySomeStrings(String):
         except ValueError:
             return s # This is handled in setValue.
         return self.validStrings[i]
-    
+
     def setValue(self, s):
         s = self.normalize(s)
         if s in self.validStrings:
             String.setValue(self, s)
         else:
             self.error()
-            
+
 class NormalizedString(String):
     def set(self, s):
         s = utils.normalizeWhitespace(s.strip())
@@ -376,7 +376,7 @@ class StringSurroundedBySpaces(String):
         if v.rstrip() == v:
             v += ' '
         String.setValue(self, v)
-            
+
 class StringWithSpaceOnRight(String):
     def setValue(self, v):
         if v.rstrip() == v:
@@ -410,7 +410,7 @@ class Regexp(Value):
     def __str__(self):
         self() # Gotta update if we've been reloaded.
         return self.sr
-        
+
 class SeparatedListOf(Value):
     List = list
     Value = Value
@@ -422,7 +422,7 @@ class SeparatedListOf(Value):
     def joiner(self, L):
         """Override this to join the internal list for output."""
         raise NotImplementedError
-    
+
     def set(self, s):
         L = self.splitter(s)
         for (i, s) in enumerate(L):
@@ -442,13 +442,13 @@ class SeparatedListOf(Value):
             # can run into issues showing users the value if they've disabled
             # nick prefixes in any of the numerous ways possible.  Since the
             # config parser doesn't care about this space, we'll use it :)
-            return ' ' 
-        
+            return ' '
+
 class SpaceSeparatedListOf(SeparatedListOf):
     def splitter(self, s):
         return s.split()
     joiner = ' '.join
-    
+
 class SpaceSeparatedListOfStrings(SpaceSeparatedListOf):
     Value = String
 
@@ -457,7 +457,7 @@ class CommaSeparatedListOfStrings(SeparatedListOf):
     def splitter(self, s):
         return re.split(r'\s*,\s*', s)
     joiner = ', '.join
-    
+
 
 if __name__ == '__main__':
 #if 1:
@@ -496,7 +496,7 @@ if __name__ == '__main__':
 
     print supybot.throttleTime.help
     print supybot.plugins.topic.separator.help
-    
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -187,7 +187,7 @@ class User(callbacks.Privmsg):
             user.name = newname
             ircdb.users.setUser(id, user)
             irc.replySuccess()
-            
+
     def addhostmask(self, irc, msg, args):
         """<name> <hostmask> [<password>]
 

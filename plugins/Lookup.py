@@ -88,7 +88,7 @@ def configure(advanced):
             continue
         command = something('What would you like the command to be?')
         conf.registerGlobalValue(lookups,command, registry.String(filename,''))
-    
+
 
 conf.registerPlugin('Lookup')
 conf.registerGroup(conf.supybot.plugins.Lookup, 'lookups')

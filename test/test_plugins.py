@@ -82,12 +82,12 @@ class FunctionsTestCase(SupyTestCase):
         self.failIf(all(L[0].__eq__, L), 'all $randomnicks were the same')
         c = plugins.standardSubstitute(self.irc, msg, '$channel')
         self.assertEqual(c, msg.args[0])
-        
-        
-        
-        
-        
-            
-            
-            
-        
+
+
+
+
+
+
+
+
+

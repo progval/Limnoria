@@ -68,9 +68,9 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
                     'Implementation of sets using sorted lists')
             finally:
                 conf.supybot.plugins.Python.aspnSnarfer.setValue(False)
-                
 
-        
+
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

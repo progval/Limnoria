@@ -38,7 +38,7 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
             conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))
             self.assertNoResponse(' ')
-        
+
         def testGroupsSnarfer(self):
             conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
             self.assertRegexp('http://groups.google.com/groups?dq=&hl=en&'

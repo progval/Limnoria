@@ -105,7 +105,7 @@ class Connection:
         capstr, msgid = re.search('<(.*)> (<.*>)$', string).groups()
         self.capabilities = capstr.split('.')
         self.messageid = msgid
-        
+
     def getcapabilities(self):
         """Returns a list of the capabilities advertised by the server."""
         return self.capabilities
@@ -120,7 +120,7 @@ class Connection:
         network traffic!"""
         if hasattr(self, 'dbdescs'):
             return self.dbdescs
-        
+
         self.sendcommand("SHOW DB")
         self.dbdescs = self.get100dict()
         return self.dbdescs
@@ -176,7 +176,7 @@ class Connection:
         if database != '*' and database != '!' and \
            not database in self.getdbdescs():
             raise Exception, "Invalid database '%s' specified" % database
-        
+
         self.sendcommand("DEFINE " + enquote(database) + " " + enquote(word))
         code = self.getresultcode()[0]
 
@@ -243,11 +243,11 @@ class Database:
         a database name."""
         self.conn = dictconn
         self.name = dbname
-    
+
     def getname(self):
         """Returns the short name for this database."""
         return self.name
-    
+
     def getdescription(self):
         if hasattr(self, 'description'):
             return self.description
@@ -258,7 +258,7 @@ class Database:
         else:
             self.description = self.conn.getdbdescs()[self.getname()]
         return self.description
-    
+
     def getinfo(self):
         """Returns a string of info describing this database."""
         if hasattr(self, 'info'):

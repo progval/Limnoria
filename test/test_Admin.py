@@ -136,7 +136,7 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
 
     def testAddCapabilityOwner(self):
         self.assertError('admin addcapability %s owner' % self.nick)
-        
+
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

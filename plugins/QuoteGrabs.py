@@ -107,7 +107,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
         db.create_function('nickeq', 2, p)
         db.commit()
         return db
-        
+
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):
             (channel, payload) = msg.args
@@ -150,7 +150,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
         db.commit()
 
     def _sendGrabMsg(self, irc, msg):
-        s = 'jots down a new quote for %s' % msg.nick 
+        s = 'jots down a new quote for %s' % msg.nick
         irc.queueMsg(ircmsgs.action(msg.args[0], s))
 
     def grab(self, irc, msg, args):
@@ -268,7 +268,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
         try:
             grabber = ircdb.users.getUser(grabber_mask).name
         except:
-            grabber = grabber_mask       
+            grabber = grabber_mask
         irc.reply('%s (Said by: %s; grabbed by %s at %s)' % \
                   (quote, hostmask, grabber, time_str))
 

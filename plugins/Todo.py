@@ -75,7 +75,7 @@ class TodoDB(plugins.DBHandler):
             db.commit()
         return db
 
-    
+
 class Todo(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -138,7 +138,7 @@ class Todo(callbacks.Privmsg):
                     irc.reply('That user has no todos.')
                     return
                 L = ['#%s: %s' % (item[0], self._shrink(item[1]))
-                     for item in cursor.fetchall()]                    
+                     for item in cursor.fetchall()]
                 if len(L) == 1:
                     s = 'Todo for %s: %s' % (arg, L[0])
                 else:
@@ -181,8 +181,8 @@ class Todo(callbacks.Privmsg):
         except KeyError:
             irc.errorNotRegistered()
             return
-        (optlist, rest) = getopt.getopt(args, '', ['priority='])  
-        priority = 0 
+        (optlist, rest) = getopt.getopt(args, '', ['priority='])
+        priority = 0
         for (option, arg) in optlist:
             if option == '--priority':
                 try:
@@ -198,7 +198,7 @@ class Todo(callbacks.Privmsg):
                           VALUES (NULL, %s, %s, %s, %s, 1)""",
                           priority, now, id, text)
         db.commit()
-        cursor.execute("""SELECT id FROM todo 
+        cursor.execute("""SELECT id FROM todo
                           WHERE added_at=%s AND userid=%s""", now, id)
         todoId = cursor.fetchone()[0]
         irc.replySuccess('(Todo #%s added)' % (todoId))

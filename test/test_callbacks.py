@@ -129,13 +129,13 @@ class TokenizerTestCase(SupyTestCase):
         self.assertEqual(tokenize(s), [s])
         s = s[:-1] + '\x0f'
         self.assertEqual(tokenize(s), [s])
-        
+
     def testColor(self):
         s = '\x032,3foo\x03'
         self.assertEqual(tokenize(s), [s])
         s = s[:-1] + '\x0f'
         self.assertEqual(tokenize(s), [s])
-        
+
 
 class FunctionsTestCase(SupyTestCase):
     def testCanonicalName(self):
@@ -226,7 +226,7 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(callbacks.tokenize('foo'), ['foo'])
         self.assertEqual(callbacks.tokenize('foo'), ['foo'])
         self.assertEqual(callbacks.tokenize('bar [baz]'), ['bar', ['baz']])
-        
+
 
 class PrivmsgTestCase(ChannelPluginTestCase):
     plugins = ('Utilities', 'Misc')
@@ -295,7 +295,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:
             conf.supybot.reply.errorInPrivate.set(original)
-            
+
     # Now for stuff not based on the plugins.
     class First(callbacks.Privmsg):
         def firstcmd(self, irc, msg, args):
@@ -347,7 +347,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.irc.addCallback(self.First())
         self.irc.addCallback(self.FirstRepeat())
         self.assertError('help first')
-        
+
     def testHelpDispatching(self):
         self.irc.addCallback(self.First())
         self.assertHelp('help firstcmd')
@@ -413,7 +413,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         def invalidCommand(self, irc, msg, tokens):
             s = 'This shouldn\'t keep Misc.invalidCommand from being called'
             raise Exception, s
-        
+
     def testBadInvalidCommandDoesNotKillAll(self):
         try:
             original = str(conf.supybot.reply.whenNotCommand)
@@ -422,7 +422,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             self.assertRegexp('asdfjkl', 'not a valid command')
         finally:
             conf.supybot.reply.whenNotCommand.set(original)
-            
+
 
 class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
     plugins = ()

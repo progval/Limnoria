@@ -36,7 +36,7 @@ import logging
 
 if not os.path.exists('test-conf'):
     os.mkdir('test-conf')
-    
+
 registryFilename = os.path.join('test-conf', 'test.conf')
 fd = file(registryFilename, 'w')
 fd.write("""
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     pluginLogDir = os.path.join(conf.supybot.directories.log(), 'plugins')
     if not os.path.exists(pluginLogDir):
         os.mkdir(pluginLogDir)
-        
+
     for filename in os.listdir(pluginLogDir):
         os.remove(os.path.join(pluginLogDir, filename))
 

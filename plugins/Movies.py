@@ -61,7 +61,7 @@ class Movies(callbacks.Privmsg):
              utils.pluralize('genre', len(movie.genres())),
              movie.rating(), movie.url)
         return s
-        
+
     def imdb(self, irc, msg, args):
         """<movie title>
 

@@ -66,7 +66,7 @@ class ValidNickOrEmptyString(registry.String):
             raise registry.InvalidRegistryValue, \
                   'Value must be a valid nick or the empty string.'
         self.value = v
-            
+
 conf.registerPlugin('Enforcer')
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'enforce',
     registry.Boolean(True, """Determines whether the bot will enforce
@@ -112,7 +112,7 @@ class Enforcer(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.topics = ircutils.IrcDict()
-        
+
     def doJoin(self, irc, msg):
         channel = msg.args[0]
         c = ircdb.channels.getChannel(channel)
@@ -263,7 +263,7 @@ class Enforcer(callbacks.Privmsg):
                 irc.queueMsg(ircmsgs.join(channel))
             else:
                 self.log.warning('Not cycling %s: it\'s +i', channel)
-            
+
     def doPart(self, irc, msg):
         if msg.prefix != irc.prefix:
             channel = msg.args[0]

@@ -68,7 +68,7 @@ class Misc(callbacks.Privmsg):
             if not isinstance(irc.irc, irclib.Irc):
                 brackets = conf.supybot.reply.brackets.get(msg.args[0])()
                 irc.reply(''.join([brackets[0],' '.join(tokens), brackets[1]]))
-        
+
     def list(self, irc, msg, args):
         """[--private] [<module name>]
 
@@ -115,7 +115,7 @@ class Misc(callbacks.Privmsg):
                 else:
                     irc.error('That plugin exists, but it has no '
                                    'commands with help.')
-                
+
     def apropos(self, irc, msg, args):
         """<string>
 
@@ -176,7 +176,7 @@ class Misc(callbacks.Privmsg):
             return
         command = callbacks.canonicalName(name)
         # Users might expect "@help @list" to work.
-        command = command.lstrip(conf.supybot.prefixChars()) 
+        command = command.lstrip(conf.supybot.prefixChars())
         cbs = callbacks.findCallbackForCommand(irc, command)
         if len(cbs) > 1:
             tokens = [command]
@@ -294,7 +294,7 @@ class Misc(callbacks.Privmsg):
                                 break
             L = ['%s: %s' % (k, v) for (k, v) in names.items() if v]
             irc.reply(utils.commaAndify(L))
-                        
+
     def source(self, irc, msg, args):
         """takes no arguments
 

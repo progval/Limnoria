@@ -62,7 +62,7 @@ class Seed(registry.Value):
             self.setValue(long(s))
         except ValueError:
             raise registry.InvalidRegistryValue, 'Value must be an integer.'
-        
+
 conf.registerPlugin('Random')
 conf.registerGlobalValue(conf.supybot.plugins.Random, 'seed', Seed(0, """
 Sets the seed of the random number generator.  The seen must be a valid

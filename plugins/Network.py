@@ -148,7 +148,7 @@ class Network(callbacks.Privmsg):
             irc.reply(s)
         except NameError, e:
             irc.error('I couldn\'t find such a domain.')
-        
+
 
 Class = Network
 

@@ -70,7 +70,7 @@ class UrlSnarferTestCase(PluginTestCase):
             self.FCalled = False
             self.GCalled = False
             callbacks.PrivmsgCommandAndRegexp.__init__(self)
-            
+
         def F(self, irc, msg, match):
             r"."
             self.FCalled = True

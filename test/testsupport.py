@@ -239,7 +239,7 @@ class PluginTestCase(SupyTestCase):
         m = self._feedMsg(query, timeout=timeout, **kwargs)
         self.failIf(m, 'Unexpected response: %r' % m)
         return m
-        
+
     def assertResponse(self, query, expectedResponse, **kwargs):
         m = self._feedMsg(query, **kwargs)
         if m is None:
@@ -299,7 +299,7 @@ class PluginTestCase(SupyTestCase):
                        attr == callbacks.canonicalName(attr):
                         self.failUnless(getattr(cb, attr, None).__doc__,
                                         '%s.%s has no help.' % (name, attr))
-                
+
 
 class ChannelPluginTestCase(PluginTestCase):
     channel = '#test'
@@ -312,7 +312,7 @@ class ChannelPluginTestCase(PluginTestCase):
         self.assertEqual(m.command, 'MODE')
         m = self.irc.takeMsg()
         self.assertEqual(m.command, 'WHO')
-        
+
     def _feedMsg(self, query, timeout=None, to=None, frm=None):
         if to is None:
             to = self.channel
@@ -364,9 +364,9 @@ class ChannelPluginTestCase(PluginTestCase):
 
 class PluginDocumentation:
     pass # This is old stuff, it should be removed some day.
-                
 
-    
+
+
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

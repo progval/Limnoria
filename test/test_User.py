@@ -45,7 +45,7 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
 ##         self.assertNotError('register foo bar')
 ##         self.prefix = original
 ##         self.assertRegexp('hostmasks foo', 'only.*your.*own')
-        
+
     def testRegisterUnregister(self):
         self.prefix = self.prefix1
         self.assertNotError('register foo bar')
@@ -75,7 +75,7 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('register Foo bar')
         self.assertResponse('user list', 'Foo')
         self.assertResponse('user list f*', 'Foo')
-        
+
     def testChangeUsername(self):
         self.prefix = self.prefix1
         self.assertNotError('register foo bar')
@@ -93,7 +93,7 @@ class UserTestCase(PluginTestCase, PluginDocumentation):
         self.assertEqual(ircdb.users.getUser(self.prefix).password, 'baz')
         self.assertNotError('setpassword --hashed foo baz biff')
         self.assertNotEqual(ircdb.users.getUser(self.prefix).password, 'biff')
-        
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -141,7 +141,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
 
     def die(self):
         self.db.close()
-    
+
     def add(self, irc, msg, args):
         """<name> <url> <description>
 
@@ -229,7 +229,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         """Given a URL and query list for a CSV bug list, it'll return
         all the bugs in a dict
         """
-        bugs = {}    
+        bugs = {}
         try:
             url = '%s/buglist.cgi?%s' % (url, '&'.join(query))
             u = webutils.getUrlFd(url)
@@ -256,11 +256,11 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
                 i += 1
         u.close()
         return bugs
-        
+
     def search(self, irc, msg, args):
         """[--keywords=<keyword>] <bugzilla name> <search string in desc>
-        
-        Look for bugs with <search string in the desc>, also matching 
+
+        Look for bugs with <search string in the desc>, also matching
         <keywords>. <keywords> can be statuses, severities, priorities, or
         resolutions, seperated by commas"""
         keywords = None
@@ -270,7 +270,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
                 keywords = arguments.split(',')
         (name,searchstr)= privmsgs.getArgs(rest, required=2)
         if not keywords:
-            keywords = ['UNCONFIRMED', 'NEW', 'ASSIGNED', 'REOPENED'] 
+            keywords = ['UNCONFIRMED', 'NEW', 'ASSIGNED', 'REOPENED']
         query = self.keywords2query(keywords)
         query.append('short_desc_type=allwordssubstr')
         query.append('short_desc=%s' % urllib.quote(searchstr))
@@ -292,7 +292,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             (utils.nItems('bug', len(bugs)), searchstr,
              ' AND '.join(keywords), utils.commaAndify(map(str, bugids)))
         irc.reply(s)
-        
+
     def bug(self, irc, msg, args):
         """<abbreviation> <number>
 

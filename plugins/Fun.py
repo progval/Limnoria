@@ -58,7 +58,7 @@ import callbacks
 class MyFunProxy(object):
     def reply(self, msg, s):
         self.s = s
-        
+
 class Fun(callbacks.Privmsg):
     def __init__(self):
         self.outFilters = ircutils.IrcDict()
@@ -86,7 +86,7 @@ class Fun(callbacks.Privmsg):
             i = int(quad)
             ret += '%02x' % i
         irc.reply(ret.upper())
-            
+
     def ord(self, irc, msg, args):
         """<letter>
 

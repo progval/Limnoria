@@ -51,7 +51,7 @@ class BadWordsTestCase(PluginTestCase):
             self.assertRegexp('echo %s' % word, word)
             self.assertRegexp('echo foo%sbar' % word, word)
             self.assertRegexp('echo [strjoin "" %s]' % ' '.join(word), word)
-        
+
     def testAddbadwords(self):
         self.assertNotError('badwords add %s' % ' '.join(self.badwords))
         self._test()

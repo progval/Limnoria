@@ -58,7 +58,7 @@ class SpaceSeparatedListOfLanguages(registry.SeparatedListOf):
     def splitter(self, s):
         return s.split()
     joiner = ' '.join
-        
+
 conf.registerPlugin('Babelfish')
 conf.registerChannelValue(conf.supybot.plugins.Babelfish, 'languages',
     SpaceSeparatedListOfLanguages(babelfish.available_languages, """Determines
@@ -87,7 +87,7 @@ class Babelfish(callbacks.Privmsg):
         if toLang not in languages:
             toLang = None
         return (fromLang, toLang)
-        
+
     def languages(self, irc, msg, args):
         """takes no arguments
 

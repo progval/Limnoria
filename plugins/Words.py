@@ -101,7 +101,7 @@ class HangmanGame:
         self.unused = ''
         self.hidden = ''
         self.guess = ''
-        
+
     def getWord(self, dbHandler):
         db = dbHandler.getDb()
         cursor = db.cursor()
@@ -229,7 +229,7 @@ class Words(callbacks.Privmsg):
                 irc.reply(utils.commaAndify(words))
             else:
                 irc.reply('That word has no anagrams I could find.')
-             
+
     ###
     # HANGMAN
     ###
@@ -360,11 +360,11 @@ class Words(callbacks.Privmsg):
     ###
     # END HANGMAN
     ###
-                
+
 
 Class = Words
 
 ### TODO: Write a script to make the database.
-        
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

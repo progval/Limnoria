@@ -135,7 +135,7 @@ class Dict(callbacks.Privmsg):
             L.append('%s: %s' % (db, s))
         utils.sortBy(len, L)
         if dictionary == '*' and len(dbs) > 1:
-            s = '%s responded: %s' % (utils.commaAndify(dbs), '; '.join(L)) 
+            s = '%s responded: %s' % (utils.commaAndify(dbs), '; '.join(L))
         else:
             s = '; '.join(L)
         irc.reply(s)

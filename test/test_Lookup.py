@@ -54,7 +54,7 @@ if sqlite:
 
         def testCantCreateLookupNamedLookup(self):
             self.assertError('lookup add lookup foo.supyfact')
-            
+
         def setUp(self):
             PluginTestCase.setUp(self)
             dataDir = conf.supybot.directories.data()

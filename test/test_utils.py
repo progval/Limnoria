@@ -71,7 +71,7 @@ class UtilsTest(SupyTestCase):
         self.assertEqual('Match', f('Matches'))
         self.assertEqual('fish', f('fishes'))
         self.assertEqual('try', f('tries'))
-        
+
     def testTimeElapsed(self):
         self.assertRaises(ValueError, utils.timeElapsed, 0, 0, seconds=False)
         then = 0
@@ -89,7 +89,7 @@ class UtilsTest(SupyTestCase):
                                        'and 2 seconds')]:
             self.assertEqual(utils.timeElapsed(now - then), expected)
 
-    def testEachSubstring(self): 
+    def testEachSubstring(self):
         s = 'foobar'
         L = ['f', 'fo', 'foo', 'foob', 'fooba', 'foobar']
         self.assertEqual(list(utils.eachSubstring(s)), L)
@@ -139,7 +139,7 @@ class UtilsTest(SupyTestCase):
                              '%s was %s, not %s' % (name, soundex, key))
         self.assertRaises(ValueError, utils.soundex, '3')
         self.assertRaises(ValueError, utils.soundex, "'")
-        
+
 
     def testDQRepr(self):
         L = ['foo', 'foo\'bar', 'foo"bar', '"', '\\', '', '\x00']
@@ -243,7 +243,7 @@ class UtilsTest(SupyTestCase):
         def mycmp(x, y):
             return -cmp(x, y)
         self.assertEqual(utils.sorted(L, mycmp), ['c', 'b', 'a'])
-        
+
     def testNItems(self):
         self.assertEqual(utils.nItems('tool', 1, 'crazy'), '1 crazy tool')
         self.assertEqual(utils.nItems('tool', 1), '1 tool')

@@ -65,7 +65,7 @@ https://sourceforge.net/projects/pyrelaychecker/
 http://gameknot.com/tsignup.pl
 http://lambda.weblogs.com/xml/rss.xml
 """.strip().splitlines()
-    
+
 try:
     import sqlite
 except ImportError:
@@ -77,7 +77,7 @@ if sqlite is not None:
         def setUp(self):
             ChannelPluginTestCase.setUp(self)
             conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-            
+
         def test(self):
             counter = 0
             self.assertNotError('url random')

@@ -108,7 +108,7 @@ def pipeReadline(fd, timeout=2):
         return r[0].readline()
     else:
         raise TimeoutError
-    
+
 
 
 class Unix(callbacks.Privmsg):

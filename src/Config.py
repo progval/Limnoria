@@ -227,7 +227,7 @@ class Config(callbacks.Privmsg):
         registry.open(world.registryFilename)
         irc.replySuccess()
     reload = privmsgs.checkCapability(reload, 'owner')
-        
+
 
 
 Class = Config

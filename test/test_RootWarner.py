@@ -63,12 +63,12 @@ class RootWarnerTestCase(PluginTestCase):
         finally:
             conf.supybot.plugins.RootWarner.warn.setValue(True)
             conf.supybot.plugins.RootWarner.kick.setValue(False)
-            
-        
-        
-        
-        
-        
+
+
+
+
+
+
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -85,7 +85,7 @@ class WordStatsDB(plugins.ChannelUserDB):
             self.channelWords[channel].setdefault(word, 0)
             self.channelWords[channel][word] += count
         return d
-    
+
     def getWordCount(self, channel, id, word):
         return self[channel, id][word]
 
@@ -98,7 +98,7 @@ class WordStatsDB(plugins.ChannelUserDB):
         L = self.channelWords[channel].keys()
         L.sort()
         return L
-        
+
     def getTotalWordCount(self, channel, word):
         return self.channelWords[channel][word]
 
@@ -142,7 +142,7 @@ class WordStatsDB(plugins.ChannelUserDB):
             if ircutils.nickEqual(chan, channel):
                 if word in d:
                     del d[word]
-            
+
     def addMsg(self, msg):
         assert msg.command == 'PRIVMSG'
         (channel, text) = msg.args
@@ -168,7 +168,7 @@ class WordStatsDB(plugins.ChannelUserDB):
                     if word not in self[channel, id]:
                         self[channel, id][word] = 0
                     self[channel, id][word] += 1
-                
+
 
 filename=os.path.join(conf.supybot.directories.data(), 'WordStats.db')
 class WordStats(callbacks.Privmsg):
@@ -201,7 +201,7 @@ class WordStats(callbacks.Privmsg):
                     self.log.debug('Queried and ignoring.')
         finally:
             self.queried = False
-        
+
     def add(self, irc, msg, args):
         """[<channel>] <word>
 

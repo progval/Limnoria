@@ -57,7 +57,7 @@ class ValidChannelOrNothing(conf.ValidChannel):
             conf.ValidChannel.setValue(self, v)
         except registry.InvalidRegistryValue:
             registry.Value.setValue(self, '')
-            
+
 conf.registerPlugin('ChannelRelay')
 conf.registerGlobalValue(conf.supybot.plugins.ChannelRelay, 'source',
     ValidChannelOrNothing('', """Determines the channel that the bot will look
@@ -114,7 +114,7 @@ class ChannelRelay(callbacks.Privmsg):
                     s = msg.args[1]
                 s = self.registryValue('prefix') + s
                 irc.queueMsg(ircmsgs.privmsg(target, s))
-    
+
     def do376(self, irc, msg):
         source = self.registryValue('source')
         target = self.registryValue('target')

@@ -72,7 +72,7 @@ class Status(callbacks.Privmsg):
 
     def do001(self, irc, msg):
         self.connected[irc] = time.time()
-        
+
     def net(self, irc, msg, args):
         """takes no arguments
 
@@ -108,7 +108,7 @@ class Status(callbacks.Privmsg):
         response = ('I have taken %.2f seconds of user time and %.2f seconds '
                     'of system time, for a total of %.2f seconds of CPU '
                     'time.  %s'
-                    'I have spawned %s; I currently have %s still running.' % 
+                    'I have spawned %s; I currently have %s still running.' %
                     (user, system, user + system, children,
                      utils.nItems('thread', world.threadsSpawned),
                      activeThreads))

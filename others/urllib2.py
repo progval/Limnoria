@@ -705,7 +705,7 @@ class AbstractDigestAuthHandler:
             # prompting for the information. Crap. This isn't great
             # but it's better than the current 'repeat until recursion
             # depth exceeded' approach <wink>
-            raise HTTPError(req.get_full_url(), 401, "digest auth failed", 
+            raise HTTPError(req.get_full_url(), 401, "digest auth failed",
                             headers, None)
         else:
             self.retried += 1
@@ -780,7 +780,7 @@ class AbstractDigestAuthHandler:
         else:
             # XXX handle auth-int.
             pass
-    
+
         # XXX should the partial digests be encoded too?
 
         base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' \
@@ -822,7 +822,7 @@ class HTTPDigestAuthHandler(BaseHandler, AbstractDigestAuthHandler):
 
     def http_error_401(self, req, fp, code, msg, headers):
         host = urlparse.urlparse(req.get_full_url())[1]
-        retry = self.http_error_auth_reqed('www-authenticate', 
+        retry = self.http_error_auth_reqed('www-authenticate',
                                            host, req, headers)
         self.reset_retry_count()
         return retry
@@ -834,7 +834,7 @@ class ProxyDigestAuthHandler(BaseHandler, AbstractDigestAuthHandler):
 
     def http_error_407(self, req, fp, code, msg, headers):
         host = req.get_host()
-        retry = self.http_error_auth_reqed('proxy-authenticate', 
+        retry = self.http_error_auth_reqed('proxy-authenticate',
                                            host, req, headers)
         self.reset_retry_count()
         return retry

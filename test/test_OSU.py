@@ -45,7 +45,7 @@ class OSUTestCase(PluginTestCase, PluginDocumentation):
         self.assertRegexp('osu building Dl', r'^Dreese Lab')
         self.assertRegexp('osu building dL', r'^Dreese Lab')
         self.assertRegexp('osu building dl', r'^Dreese Lab')
-        
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

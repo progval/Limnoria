@@ -123,25 +123,25 @@ repliesStatement = [
 canonicalizeRe = [(re.compile(r[0], re.I), r[1]) for r in [
     (r"(.*)", r" \1 "),
 	(r"\s\s+", r" "),
-    
+
     (r" si ", r" is "),
     (r" teh ", r "the "),
-    
+
 	# where blah is -> where is blah
     # XXX: Why two?
 	(r" (where|what|who) (\S+) (is|are) ", r" \1 \3 \2 "),
     # XXX: Non greedy (.*) ?
 	(r" (where|what|who) (.*) (is|are) ", r" \1 \3 \2 "),
-	
+
     # XXX: Does absolutely nothing?
 	#(r"^\s*(.*?)\s*", r"\1"),
-	
+
 	(r" be tellin'?g? ", r" tell "),
 	(r" '?bout ", r" about "),
 
 	(r",? any(hoo?w?|ways?) ", r" "),
 	(r",?\s?(pretty )*please\?? $", r"\?"),
-	
+
 	# Profanity filters; just delete it.
 	(r" th(e|at|is) (((m(o|u)th(a|er) ?)?fuck(in'?g?)?|hell|heck|(god-?)?damn?(ed)?) ?)+ ", r" "),
 	(r" wtf ", r" where "),
@@ -217,7 +217,7 @@ class InfobotDatabase(object):
             filename = 'Infobot.db'
             filename = os.path.join(conf.supybot.directories.data(), filename)
         self._db = anydbm.open(filename, 'c')
-    
+
     def die(self):
         self._db.close()
 
@@ -259,7 +259,7 @@ class InfobotDatabase(object):
             return
         log.info('dup: %s !%s! %s' % (key, verb, value))
         raise KeyError, key
-    
+
     def setFactoid(self, key, verb, value):
         verb = verb.lower()
         dbKey = key.lower()
@@ -277,23 +277,23 @@ class InfobotDatabase(object):
         newValue = '%s, or %s' % (currentValue, value)
         self._db[dbKey] = newValue
         log.info('add: %s +%s+ %s' % (key, verb, value))
-    
+
     def deleteFactoid(self, verb, key):
         verb = verb.lower()
         dbKey = key.lower()
         dbKey = '%s %s' % (verb, dbKey)
         del db[dbKey]
         log.info('forgot: %s' % key)
-    
+
     def getNumberOfFactoids(self):
         return len(self._db)
-        
+
 
 class Infobot(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.db = InfobotDatabase()
-    
+
     # Patterns for processing private messages.
     statementRe = re.compile(r'^(no[-:, ]+)?(.+?)\s+(is|are|was|were)'
                                  r'\s+(also\s+)?(.+)$', re.I)
@@ -335,7 +335,7 @@ class Infobot(callbacks.Privmsg):
                 match = self.shortQuestionRe.search(s)
                 if match:
                     self.shortQuestion(proxy, match, addressed)
-    
+
     def statement(self, irc, match, addressed):
         (correction, key, verb, addition, value) = match.groups()
         if self.db.hasFactoid(verb, key):
@@ -383,10 +383,10 @@ class Infobot(callbacks.Privmsg):
                     return
         if addressed or self.registryValue('replyQuestionWhenNotAddressed'):
             irc.reply(random.choice(repliesStatement) % factoid)
-    
+
     def forget(self, irc, msg, args):
         """<factoid>
-        
+
         Make the bot forget about <factoid>."""
         key = privmsgs.getArgs()
         try:
@@ -401,7 +401,7 @@ class Infobot(callbacks.Privmsg):
 
     def whatis(self, irc, msg, args):
         """<factoid>
-        
+
         Explain what <factoid> is."""
         key = privmsgs.getArgs()
         try:
@@ -416,7 +416,7 @@ class Infobot(callbacks.Privmsg):
 
     def stats(self, irc, msg, args):
         """<requires no arguments>
-        
+
         Display some statistics on the infobot database."""
         num = self.db.getNumberOfFactoids()
         if self.registryValue('infobotStyleStatus'):

@@ -151,7 +151,7 @@ class MoobotDBHandler(plugins.DBHandler):
             db.commit()
         return db
 
-    
+
 class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     priority = 98
     addressedRegexps = ['changeFactoid', 'augmentFactoid',
@@ -197,7 +197,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         """
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        cursor.execute("""SELECT fact, key FROM factoids 
+        cursor.execute("""SELECT fact, key FROM factoids
                           ORDER BY random() LIMIT 1""")
         if cursor.rowcount == 0:
             irc.error('No factoids in the database.')
@@ -269,7 +269,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         if cursor.rowcount != 0:
             irc.error('Factoid "%s" already exists.' % key)
             return
-        # Otherwise, 
+        # Otherwise,
         cursor.execute("""INSERT INTO factoids VALUES
                           (%s, %s, %s, NULL, NULL, NULL, NULL, NULL, NULL,
                            %s, 0)""",
@@ -288,7 +288,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         key, regexp = match.groups()
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        # Check and make sure it's in the DB 
+        # Check and make sure it's in the DB
         cursor.execute("""SELECT locked_at, fact FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
@@ -305,9 +305,9 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         except ValueError, e:
             irc.error('Invalid regexp: "%s"' % regexp)
             return
-        new_fact = r(fact) 
-        cursor.execute("""UPDATE factoids   
-                          SET fact = %s, modified_by = %s,   
+        new_fact = r(fact)
+        cursor.execute("""UPDATE factoids
+                          SET fact = %s, modified_by = %s,
                           modified_at = %s WHERE key = %s""",
                           new_fact, id, int(time.time()), key)
         db.commit()
@@ -324,7 +324,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         key, new_text = match.groups()
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        # Check and make sure it's in the DB 
+        # Check and make sure it's in the DB
         cursor.execute("""SELECT locked_at, fact FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
@@ -360,7 +360,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             key = key.split(' ', 1)[1]  # Take out everything to first space
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        # Check and make sure it's in the DB 
+        # Check and make sure it's in the DB
         cursor.execute("""SELECT locked_at, fact FROM factoids
                           WHERE key LIKE %s""", key)
         if cursor.rowcount == 0:
@@ -659,7 +659,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         if cursor.rowcount == 0:
             irc.error('No such factoid: "%s"' % key)
             return
-        (_, locked_at) = cursor.fetchone() 
+        (_, locked_at) = cursor.fetchone()
         if locked_at is not None:
             irc.error("Factoid is locked, cannot remove.")
             return
@@ -674,7 +674,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         """
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        cursor.execute("""SELECT fact, key FROM factoids 
+        cursor.execute("""SELECT fact, key FROM factoids
                           ORDER BY random() LIMIT 1""")
         if cursor.rowcount == 0:
             irc.error('No factoids in the database.')

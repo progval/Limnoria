@@ -43,7 +43,7 @@ if network:
         def testHeaders(self):
             self.assertError('headers ftp://ftp.cdrom.com/pub/linux')
             self.assertNotError('headers http://www.slashdot.org/')
-        
+
         def testDoctype(self):
             self.assertError('doctype ftp://ftp.cdrom.com/pub/linux')
             self.assertNotError('doctype http://www.slashdot.org/')

@@ -70,7 +70,7 @@ if network:
             conf.supybot.plugins.Gameknot.statSnarfer.setValue(True)
             self.assertNotError('http://gameknot.com/stats.pl?ironchefchess')
             self.assertNotError('http://gameknot.com/chess.pl?bd=907498')
-        
+
 
         def testSnarfer(self):
             conf.supybot.plugins.Gameknot.gameSnarfer.setValue(True)

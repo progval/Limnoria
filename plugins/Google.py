@@ -155,7 +155,7 @@ class Language(registry.OnlySomeStrings):
         else:
             s = s.lower()[:-2] + s[-2:]
         return s
-        
+
 conf.registerPlugin('Google')
 conf.registerChannelValue(conf.supybot.plugins.Google, 'groupsSnarfer',
     registry.Boolean(False, """Determines whether the groups snarfer is
@@ -222,7 +222,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(url)
         else:
             irc.reply('Google found nothing.')
-        
+
     def google(self, irc, msg, args):
         """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
 

@@ -141,7 +141,7 @@ def _threadedWrapMethod(f):
         finally:
             self.threaded = originalThreaded
     return utils.changeFunctionName(newf, f.func_name, f.__doc__)
-            
+
 def thread(f):
     """Makes sure a command spawns a thread when called."""
     f = _threadedWrapMethod(f)
@@ -194,7 +194,7 @@ def urlSnarfer(f):
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
     newf.q = q # This isn't necessary, it's just for debugging.
     return newf
-        
+
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
     """A small subclass of callbacks.Privmsg that checks self.capability

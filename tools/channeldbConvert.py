@@ -89,7 +89,7 @@ if __name__ == '__main__':
             L += ['%s:%s' % (word, count) for (word, count) in d.items()]
             writer.writerow(L)
     fd.close()
-        
-    
+
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -152,7 +152,7 @@ class InfobotDB(object):
 
     def getConfirm(self):
         return random.choice(self._confirms) + random.choice(self._ends)
-        
+
     def getChangeCount(self):
         return self._changes
 
@@ -189,7 +189,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             msg = self.msg
         self.replied = True
         irc.reply(plugins.standardSubstitute(irc, msg, s), prefixName=False)
-        
+
     def confirm(self, irc=None, msg=None):
         if self.registryValue('personality'):
             self.reply(self.db.getConfirm(), irc=irc, msg=msg)
@@ -235,7 +235,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             if s.startswith(contraction):
                 s = replacement + s[len(contraction):]
         return s
-        
+
     _forceRe = re.compile(r'^no[,: -]+', re.I)
     def doPrivmsg(self, irc, msg):
         maybeAddressed = callbacks.addressed(irc.nick, msg,
@@ -345,7 +345,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                   'to the database since this plugin was loaded.' %
                   (utils.nItems('request', self.db.getChangeCount()),
                    utils.nItems('change', self.db.getResponseCount())))
-        
+
 
 
 Class = Infobot

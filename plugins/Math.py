@@ -50,7 +50,7 @@ import utils
 import privmsgs
 import callbacks
 
-import convertcore 
+import convertcore
 
 
 class Math(callbacks.Privmsg):
@@ -109,7 +109,7 @@ class Math(callbacks.Privmsg):
             return '-%s' % valStr
         else:
             return valStr
-        
+
     def _convertBaseToBase(self, number, toBase, fromBase):
         """
             Convert a number from any base, 2 through 36, to any other
@@ -119,7 +119,7 @@ class Math(callbacks.Privmsg):
         if toBase == 10:
             return str(number)
         return self._convertDecimalToBase(number, toBase)
-        
+
     _mathEnv = {'__builtins__': types.ModuleType('__builtins__'), 'i': 1j}
     _mathEnv.update(math.__dict__)
     _mathEnv.update(cmath.__dict__)
@@ -143,7 +143,7 @@ class Math(callbacks.Privmsg):
             return str(int(x))
         else:
             return str(x)
-    
+
     def _complexToString(self, x):
         realS = self._floatToString(x.real)
         imagS = self._floatToString(x.imag)
@@ -249,7 +249,7 @@ class Math(callbacks.Privmsg):
         except Exception, e:
             irc.error(utils.exnToString(e))
     icalc = privmsgs.checkCapability(icalc, 'trusted')
-            
+
     _rpnEnv = {
         'dup': lambda s: s.extend([s.pop()]*2),
         'swap': lambda s: s.extend([s.pop(), s.pop()])
@@ -307,9 +307,9 @@ class Math(callbacks.Privmsg):
         Converts from <unit> to <other unit>. If number isn't given, it
         defaults to 1. For unit information, see 'units' command.
         """
-        
+
         # see if the first arg is a number of some sort
-        if args:       
+        if args:
             try:
                 num = float(args[0])
                 args.pop(0)
@@ -327,7 +327,7 @@ class Math(callbacks.Privmsg):
         try:
             newNum = convertcore.convert(num, unit1, unit2)
             newNum = self._floatToString(newNum)
-            
+
             irc.reply('%s' % newNum)
         except convertcore.UnitDataError, ude:
             irc.error(str(ude))
@@ -339,13 +339,13 @@ class Math(callbacks.Privmsg):
         passed as arguments. When called with a type as an argument, returns
         the units of that type.
         """
-        
+
         if len(args) == 0:
             type = None
         else:
             type = ' '.join(args)
         irc.reply(convertcore.units(type))
-        
+
 Class = Math
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

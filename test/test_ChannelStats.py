@@ -51,7 +51,7 @@ if sqlite is not None:
             _ = self.irc.takeMsg()
             chanop = ircdb.makeChannelCapability(self.channel, 'op')
             ircdb.users.getUser(self.nick).addCapability(chanop)
-            
+
         def test(self):
             self.assertNotError('channelstats')
             self.assertNotError('channelstats')
@@ -79,7 +79,7 @@ if sqlite is not None:
                 self.assertEqual(m1.args[1], m2.args[1])
             finally:
                 conf.supybot.plugins.ChannelStats.selfStats.setValue(True)
-            
+
         def testNoKeyErrorStats(self):
             self.assertNotRegexp('stats sweede', 'KeyError')
 

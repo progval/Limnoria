@@ -95,7 +95,7 @@ conf.registerChannelValue(conf.supybot.plugins.Services.ChanServ, 'voice',
     registry.Boolean(False, """Determines whether the bot will request to get
     voiced by the ChanServ when it joins the channel."""))
 
-    
+
 class Services(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'admin'
     def __init__(self):
@@ -144,7 +144,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         if nick and irc.nick != nick:
             if irc.afterConnect and not self.sentGhost:
                 irc.sendMsg(ircmsgs.nick(nick)) # The 433 is handled elsewhere.
-            
+
     def do001(self, irc, msg):
         # New connection, make sure sentGhost is False.
         self.sentGhost = False
@@ -199,7 +199,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         nick = self.registryValue('nick')
         lowered = s.lower()
         return bool('killed' in lowered and (nick in s or 'ghost' in lowered))
-    
+
     def doNotice(self, irc, msg):
         if irc.afterConnect:
             nickserv = self.registryValue('NickServ')
@@ -251,7 +251,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 self.log.info('Requesting voice from %s in %s',
                               chanserv, channel)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'voice %s' % channel))
-                    
+
     def do366(self, irc, msg): # End of /NAMES list; finished joining a channel
         if self.identified:
             channel = msg.args[1] # nick is msg.args[0].

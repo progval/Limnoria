@@ -8,7 +8,7 @@
 Summary:
 
     import babelizer
-   
+
 	print ' '.join(babelizer.available_languages)
 
     print babelizer.translate( 'How much is that doggie in the window?',
@@ -17,7 +17,7 @@ Summary:
     def babel_callback(phrase):
 		print phrase
 		sys.stdout.flush()
-		
+
 	babelizer.babelize( 'I love a reigning knight.',
 						'English', 'German',
 						callback = babel_callback )
@@ -108,7 +108,7 @@ def translate(phrase, from_lang, to_lang):
         to_code = __languages[to_lang.lower()]
     except KeyError, lang:
         raise LanguageNotAvailableError(lang)
-    
+
     params = urllib.urlencode( { 'BabelFishFrontPage' : 'yes',
                                  'doit' : 'done',
                                  'tt' : 'urltext',
@@ -163,7 +163,7 @@ if __name__ == '__main__':
         print x
         sys.stdout.flush();
 
-    
+
     babelize("I won't take that sort of treatment from you, or from your doggie!",
              'english', 'french', callback = printer)
 

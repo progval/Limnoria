@@ -62,10 +62,10 @@ def ircToLowerOrInt(x):
         return x
     else:
         return ircutils.toLower(x)
-    
+
 class IrcStringAndIntDict(utils.InsensitivePreservingDict):
     key = staticmethod(ircToLowerOrInt)
-    
+
 class SeenDB(plugins.ChannelUserDB):
     IdDict = IrcStringAndIntDict
     def serialize(self, v):
@@ -74,7 +74,7 @@ class SeenDB(plugins.ChannelUserDB):
     def deserialize(self, channel, id, L):
         (seen, saying) = L
         return (float(seen), saying)
-    
+
     def update(self, channel, nickOrId, saying):
         seen = time.time()
         self[channel, nickOrId] = (seen, saying)
@@ -84,7 +84,7 @@ class SeenDB(plugins.ChannelUserDB):
         return self[channel, nickOrId]
 
 filename = os.path.join(conf.supybot.directories.data(), 'Seen.db')
-            
+
 class Seen(callbacks.Privmsg):
     noIgnore = True
     def __init__(self):
@@ -99,7 +99,7 @@ class Seen(callbacks.Privmsg):
             self.log.debug('Odd, no flush in flushers: %r', world.flushers)
         self.db.close()
         callbacks.Privmsg.die(self)
-        
+
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):
             said = ircmsgs.prettyPrint(msg)
@@ -110,7 +110,7 @@ class Seen(callbacks.Privmsg):
                 self.db.update(channel, id, said)
             except KeyError:
                 pass # Not in the database.
-        
+
     def seen(self, irc, msg, args):
         """[<channel>] [--user] [<name>]
 
@@ -138,7 +138,7 @@ class Seen(callbacks.Privmsg):
                         return
             try:
                 (when, said) = self.db.seen(channel, nickOrId)
-                irc.reply('%s was last seen here %s ago saying: %s' % 
+                irc.reply('%s was last seen here %s ago saying: %s' %
                           (name, utils.timeElapsed(time.time()-when), said))
             except KeyError:
                 irc.reply('I have not seen %s.' % name)

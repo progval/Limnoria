@@ -70,7 +70,7 @@ class LicenseKey(registry.String):
         registry.String.set(self, s)
         if self.value:
             amazon.setLicense(self.value)
-        
+
 conf.registerPlugin('Amazon')
 conf.registerChannelValue(conf.supybot.plugins.Amazon, 'bold',
     registry.Boolean(True, """Determines whether the results are bolded."""))

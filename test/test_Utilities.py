@@ -43,7 +43,7 @@ class UtilitiesTestCase(PluginTestCase):
 
     def testLast(self):
         self.assertResponse('utilities last foo bar baz', 'baz')
-        
+
     def testStrjoin(self):
         self.assertResponse('strjoin + foo bar baz', 'foo+bar+baz')
 

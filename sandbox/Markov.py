@@ -72,18 +72,18 @@ class Markov(callbacks.Privmsg):
             filename = os.path.join(conf.supybot.directories.data(), filename)
             self.dbCache[channel] = anydbm.open(filename, 'c')
         return self.dbCache[channel]
-    
+
     def _getNumberOfPairs(self, db):
         # Minus one, because we have a key storing the first pairs.
         return len(db) - 1
-    
+
     def _getNumberOfFirstPairs(self, db):
         try:
             pairs = db[''].split()
         except KeyError:
             return 0
         return len(pairs)
-    
+
     def _getFirstPair(self, db):
         try:
             pairs = db[''].split()
@@ -91,7 +91,7 @@ class Markov(callbacks.Privmsg):
             raise ValueError('No starting pairs in the database.')
         pair = random.choice(pairs)
         return pair.split('\x00', 1)
-    
+
     def _getFollower(self, db, first, second):
         pair = '%s %s' % (first, second)
         try:
@@ -99,7 +99,7 @@ class Markov(callbacks.Privmsg):
         except KeyError:
             return '\x00'
         return random.choice(followers)
-    
+
     def _addFirstPair(self, db, first, second):
         pair = '%s\x00%s' % (first, second)
         try:
@@ -107,7 +107,7 @@ class Markov(callbacks.Privmsg):
         except KeyError:
             startingPairs = ''
         db[''] = '%s%s ' % (startingPairs, pair)
-    
+
     def _addPair(self, db, first, second, follower):
         pair = '%s %s' % (first, second)
         try:

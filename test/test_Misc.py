@@ -68,7 +68,7 @@ class MiscTestCase(ChannelPluginTestCase):
             self.assertResponse('StRlEn foobar', '6')
         finally:
             conf.supybot.reply.whenNotCommand.set(original)
-        
+
     def testHelp(self):
         self.assertHelp('help list')
         self.assertRegexp('help help', r'^\(\x02help')
@@ -171,11 +171,11 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertNotError('more %s' % nick)
         self.assertNotError('more %s' % nick.upper())
         self.assertNotError('more %s' % nick.lower())
-    
+
     def testPrivate(self):
         m = self.getMsg('private [list]')
         self.failIf(ircutils.isChannel(m.args[0]))
-    
+
     def testNotice(self):
         m = self.getMsg('notice [list]')
         self.assertEqual(m.command, 'NOTICE')
@@ -211,7 +211,7 @@ class MiscTestCase(ChannelPluginTestCase):
 
     def testRevisionIsCaseInsensitive(self):
         self.assertNotError('revision misc')
-        
+
     def testSeconds(self):
         self.assertResponse('seconds 1s', '1')
         self.assertResponse('seconds 10s', '10')

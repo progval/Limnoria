@@ -550,7 +550,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         except AttributeError: # There's a cleaner way to do this, but I'm lazy.
             irc.error('I couldn\'t reconnect.  You should restart me instead.')
-        
+
 
 
 Class = Owner

@@ -245,7 +245,7 @@ class Debian(callbacks.Privmsg,
     _incomingRe = re.compile(r'<a href="(.*?\.deb)">', re.I)
     def incoming(self, irc, msg, args):
         """[--{regexp,arch}=<value>] <glob>
-        
+
         Checks debian incoming for a matching package name.  The arch
         parameter defaults to i386; --regexp returns only those package names
         that match a given regexp, and normal matches use standard *nix
@@ -322,7 +322,7 @@ class Debian(callbacks.Privmsg,
             if m:
                 m = m.group(1)
                 if fnmatch.fnmatch(m, glob):
-                    packages.append(m) 
+                    packages.append(m)
         fd.close()
         if packages:
             irc.reply(utils.commaAndify(packages))

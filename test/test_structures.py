@@ -205,7 +205,7 @@ class QueueTest(SupyTestCase):
         self.assertEqual(len(q), 1)
         q.reset()
         self.assertEqual(len(q), 0)
-        
+
     def testGetitem(self):
         q = queue()
         n = 10
@@ -370,7 +370,7 @@ class SmallQueueTest(SupyTestCase):
         self.assertEqual(len(q), 1)
         q.reset()
         self.assertEqual(len(q), 0)
-        
+
     def testGetitem(self):
         q = queue()
         n = 10
@@ -599,7 +599,7 @@ class PersistentDictionaryTestCase(SupyTestCase):
         d2 = PersistentDictionary('test.dict')
         self.failUnless(1 in d2)
         self.assertEqual(d2[1], 2)
-        
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

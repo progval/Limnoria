@@ -130,7 +130,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
                 newmodule = getModule(moduleName)
                 if newmodule is None:
                     irc.error('No module %s exists.' % moduleName)
-                else: 
+                else:
                     if hasattr(newmodule, funcName):
                         f = getattr(newmodule, funcName)
                         if hasattr(f, '__doc__') and f.__doc__:
@@ -190,7 +190,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
         if resp:
             irc.reply('; '.join(resp), prefixName = False)
     aspnRecipes = privmsgs.urlSnarfer(aspnRecipes)
-            
+
 
 Class = Python
 

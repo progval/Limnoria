@@ -85,7 +85,7 @@ if sqlite is not None:
             time.sleep(6)
             print 'Done sleeping.'
             self.assertNotError('old')
-            
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

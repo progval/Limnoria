@@ -154,7 +154,7 @@ class UserCapabilitySet(CapabilitySet):
     def __init__(self, *args, **kwargs):
         self.__parent = super(UserCapabilitySet, self)
         self.__parent.__init__(*args, **kwargs)
-        
+
     def __contains__(self, capability):
         capability = ircutils.toLower(capability)
         if capability == 'owner' or capability == antiOwner:
@@ -423,12 +423,12 @@ class IrcChannel(object):
         for ignore in self.ignores:
             write('ignore ' + ignore)
         fd.write(os.linesep)
-        
+
 
 class Creator(object):
     def badCommand(self, command, rest, lineno):
         raise ValueError, 'Invalid command on line %s: %s' % (lineno, command)
-    
+
 class IrcUserCreator(Creator):
     id = None
     def __init__(self, users):
@@ -496,7 +496,7 @@ class IrcChannelCreator(Creator):
         if self.name is None:
             raise ValueError, 'Unexpected channel description without channel.'
         self.c.lobotomized = bool(eval(rest))
-    
+
     def defaultallow(self, rest, lineno):
         if self.name is None:
             raise ValueError, 'Unexpected channel description without channel.'
@@ -531,7 +531,7 @@ class IrcChannelCreator(Creator):
         if self.hadChannel:
             self.channels.setChannel(self.name, self.c)
             IrcChannelCreator.name = None
-    
+
 
 class UsersDictionary(utils.IterableMap):
     """A simple serialized-to-file User Database."""
@@ -666,7 +666,7 @@ class UsersDictionary(utils.IterableMap):
                 for hostmask in self._hostmaskCache[id]:
                     del self._hostmaskCache[hostmask]
                 del self._hostmaskCache[id]
-            
+
     def setUser(self, id, user):
         """Sets a user (given its id) to the IrcUser given it."""
         assert isinstance(id, int), 'setUser takes an integer userId.'
@@ -713,7 +713,7 @@ class UsersDictionary(utils.IterableMap):
         self.users[id] = user
         self.flush()
         return (id, user)
-    
+
 
 class ChannelsDictionary(utils.IterableMap):
     def __init__(self):
@@ -815,7 +815,7 @@ class IgnoresDB(object):
                 log.warning('IgnoresDB.reload failed: %s', e)
         else:
             log.warning('IgnoresDB.reload called without self.filename.')
-        
+
     def checkIgnored(self, prefix):
         for hostmask in self.hostmasks:
             if ircutils.hostmaskPatternEqual(hostmask, prefix):
@@ -858,7 +858,7 @@ except EnvironmentError, e:
 world.flushers.append(users.flush)
 world.flushers.append(ignores.flush)
 world.flushers.append(channels.flush)
-    
+
 
 ###
 # Useful functions for checking credentials.

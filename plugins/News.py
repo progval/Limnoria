@@ -184,7 +184,7 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
             db.commit()
             irc.replySuccess()
     remove = privmsgs.checkChannelCapability(remove, 'news')
-            
+
     def change(self, irc, msg, args, channel):
         """[<channel>] <number> <regexp>
 
@@ -246,10 +246,10 @@ class News(plugins.ChannelDBHandler, callbacks.Privmsg):
                 return
             subjects = ['#%s: %s' % (id, s) for (id, s) in cursor.fetchall()]
             irc.reply(utils.commaAndify(subjects))
-            
 
 
-                    
+
+
 Class = News
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

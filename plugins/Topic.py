@@ -62,7 +62,7 @@ class Topic(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.lastTopics = ircutils.IrcDict()
-        
+
     def _splitTopic(self, topic, channel):
         separator = self.registryValue('separator', channel)
         return filter(None, topic.split(separator))
@@ -84,7 +84,7 @@ class Topic(callbacks.Privmsg):
         except KeyError:
             name = msg.nick
         return self.topicFormatter % (topic, name)
-    
+
     def _sendTopic(self, irc, channel, topics):
         topics = [s for s in topics if s and not s.isspace()]
         self.lastTopics[channel] = topics

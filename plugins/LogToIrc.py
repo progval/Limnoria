@@ -94,8 +94,8 @@ class IrcHandler(logging.Handler):
                     irc.sendMsg(msg)
                 else:
                     print '*** Not sending to %r' % target
-                        
-                        
+
+
 class IrcFormatter(log.Formatter):
     def formatException(self, (E, e, tb)):
         L = [utils.exnToString(e), '::']
@@ -225,7 +225,7 @@ class LogToIrc(callbacks.Privmsg):
             if ircutils.isChannel(target):
                 irc.queueMsg(ircmsgs.join(target))
     do377 = do422 = do376
-            
+
 
 Class = LogToIrc
 

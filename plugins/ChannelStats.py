@@ -161,7 +161,7 @@ class UserStat(ChannelStat):
 class StatsDB(plugins.ChannelUserDB):
     def __init__(self, *args, **kwargs):
         plugins.ChannelUserDB.__init__(self, *args, **kwargs)
-    
+
     def serialize(self, v):
         return v.values()
 
@@ -189,7 +189,7 @@ class StatsDB(plugins.ChannelUserDB):
 
     def getChannelStats(self, channel):
         return self[channel, 'channelStats']
-        
+
     def getUserStats(self, channel, id):
         return self[channel, id]
 
@@ -222,7 +222,7 @@ class ChannelStats(callbacks.Privmsg):
             self.lastmsg = msg
         self.db.addMsg(msg)
         super(ChannelStats, self).__call__(irc, msg)
-        
+
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
             if ircutils.isChannel(msg.args[0]):
@@ -344,7 +344,7 @@ class ChannelStats(callbacks.Privmsg):
         except KeyError:
             irc.error('I\'ve never been on %s.' % channel)
 
-                           
+
 Class = ChannelStats
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

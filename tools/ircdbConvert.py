@@ -13,7 +13,7 @@ import supybot
 import fix
 
 (userFile, channelFile) = sys.argv[1:]
-    
+
 class IrcUser:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
@@ -25,7 +25,7 @@ CapabilitySet = list
 def write(fd, s):
     fd.write(s)
     fd.write(os.linesep)
-    
+
 if __name__ == '__main__':
     shutil.copy(userFile, userFile + '.bak')
     shutil.copy(channelFile, channelFile + '.bak')

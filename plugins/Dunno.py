@@ -66,7 +66,7 @@ class Dunno(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.makeDb(dbfilename)
-    
+
     def makeDb(self, filename):
         """create Dunno database and tables"""
         if os.path.exists(filename):
@@ -81,7 +81,7 @@ class Dunno(callbacks.Privmsg):
                           dunno TEXT
                           )""")
         self.db.commit()
-        
+
     def invalidCommand(self, irc, msg, tokens):
         cursor = self.db.cursor()
         cursor.execute("""SELECT dunno
@@ -220,7 +220,7 @@ class Dunno(callbacks.Privmsg):
         cursor = self.db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM dunnos""")
         irc.reply(cursor.fetchone()[0])
-        
+
 
 
 Class = Dunno

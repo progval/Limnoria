@@ -121,7 +121,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
 
     def open(self, irc, msg, args):
         """[<channel>] <question>
-        
+
         Creates a new poll with the given question.
         """
         channel = privmsgs.getChannel(msg, args)
@@ -144,7 +144,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
 
     def close(self, irc, msg, args):
         """[<channel>] <id>
-        
+
         Closes the poll with the given <id>; further votes will not be allowed.
         """
         channel = privmsgs.getChannel(msg, args)
@@ -166,7 +166,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
 
     def add(self, irc, msg, args):
         """[<channel>] <id> <option text>
-        
+
         Add an option with the given text to the poll with the given id.
         """
         channel = privmsgs.getChannel(msg, args)
@@ -213,7 +213,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
 
     def vote(self, irc, msg, args):
         """[<channel>] <poll id> <option id>
-        
+
         Vote for the option with the given id on the poll with the given poll
         id.  This command can also be used to override any previous vote.
         """
@@ -263,7 +263,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
 
     def results(self, irc, msg, args):
         """[<channel>] <id>
-        
+
         Shows the results for the poll with the given id.
         """
         channel = privmsgs.getChannel(msg, args)
@@ -291,7 +291,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                 (id, question, startedBy)
         cursor.execute("""SELECT count(user_id), option_id
                           FROM votes
-                          WHERE poll_id=%s 
+                          WHERE poll_id=%s
                           GROUP BY option_id
                           UNION
                           SELECT 0, id AS option_id
@@ -316,7 +316,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
             s = utils.commaAndify(results)
         reply += ' - %s' % s
         irc.reply(reply)
-    
+
     def list(self, irc, msg, args):
         """takes no arguments.
 

@@ -62,7 +62,7 @@ class Utilities(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         irc.reply(text)
-        
+
     def success(self, irc, msg, args):
         """[<text>]
 
@@ -86,7 +86,7 @@ class Utilities(callbacks.Privmsg):
             irc.reply(args[-1])
         else:
             raise callbacks.Error
-        
+
     def strjoin(self, irc, msg, args):
         """<separator> <string 1> [<string> ...]
 
@@ -213,7 +213,7 @@ class Utilities(callbacks.Privmsg):
         print '***', allTokens
         Owner = irc.getCallback('Owner')
         Owner.processTokens(irc, msg, allTokens)
-        
+
 
 
 Class = Utilities
