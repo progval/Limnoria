@@ -555,6 +555,21 @@ def changeFunctionName(f, name, doc=None):
     newf.__doc__ = doc
     return newf
 
+def getSocket(host):
+    """Returns a socket of the correct AF_INET type (v4 or v6) in order to
+    communicate with host.
+    """
+    try:
+        host = socket.gethostbyname(host)
+    except socket.error:
+        raise
+    if isIP(host):
+        return socket.socket(socket.INET, socket.SOCK_STREAM)
+    elif isIPV6(host):
+        return socket.socket(socket.INET6, socket.SOCK_STREAM)
+    else:
+        raise socket.error, 'Something wonky happened.'
+
 _ipchars = string.digits + '.'
 def isIP(s):
     """Returns whether or not a given string is an IPV4 address.
@@ -606,7 +621,7 @@ class InsensitivePreservingDict(UserDict.DictMixin, object):
             d[key] = s
         return d
     fromkeys = classmethod(fromkeys)
-    
+
     def __getitem__(self, k):
         return self.data[self.key(k)][1]
 
@@ -624,7 +639,7 @@ class InsensitivePreservingDict(UserDict.DictMixin, object):
         for (k, _) in self.iteritems():
             L.append(k)
         return L
-    
+
     def __reduce__(self):
         return (self.__class__, (dict(self.data.values()),))
 
@@ -632,7 +647,7 @@ def mungeEmailForWeb(s):
     s = s.replace('@', ' AT ')
     s = s.replace('.', ' DOT ')
     return s
-    
+
 
 if __name__ == '__main__':
     import sys, doctest

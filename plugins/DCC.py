@@ -59,9 +59,16 @@ class DCC(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         def openChatPort():
             try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(60)
                 host = ircutils.hostFromHostmask(irc.prefix)
+                try:
+                    inet = utils.getSocket(host)
+                except socket.error, e:
+                    s = 'Error connecting to %s: %s'
+                    self.log.warning(s, host, e)
+                    irc.replyError()
+                    return
+                sock = socket.socket(inet, socket.SOCK_STREAM)
+                sock.settimeout(60)
                 if conf.supybot.externalIP():
                     ip = conf.supybot.externalIP()
                 else:
