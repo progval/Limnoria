@@ -52,8 +52,8 @@ import ircmsgs
 import webutils
 import ircutils
 import privmsgs
+import registry
 import callbacks
-import configurable
 
 try:
     import sqlite
@@ -61,65 +61,53 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-def configure(onStart, afterConnect, advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
+def configure(onStart):
     from questions import expect, anything, something, yn
-    onStart.append('load URL')
+    conf.registerPlugin('URL', True)
     if yn("""This plugin offers a snarfer that will go to tinyurl.com and get
              a shorter version of long URLs that are sent to the channel.
-             Would you like this snarfer to be enabled?""") == 'y':
-        onStart.append('url config tinyurl-snarfer on')
-        if advanced:
-            x = anything("""What would you like to be the minimum URL length
-                            that will trigger this snarfer?""")
-            if not x:
-                x = '46'
-            while True:
-                try:
-                    i = int(x)
-                    onStart.append('url config tinyurl-minimum-length %s' % i)
-                    return
-                except ValueError:
-                    print 'That\'s not a valid integer.'
-                    x = anything("""What would you like to be the minimum URL
-                                    length that will trigger this snarfer?""")
+             Would you like this snarfer to be enabled?"""):
+        conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
+    if yn("""This plugin also offers a snarfer that will try to fetch the
+             title of URLs that it sees in the channel.  Would like you this
+             snarfer to be enabled?"""):
+        conf.supybot.plugins.URL.titleSnarfer.setValue(True)
+
+conf.registerPlugin('URL')
+conf.registerChannelValue(conf.supybot.plugins.URL, 'tinyurlSnarfer',
+    registry.Boolean(False, """Determines whether the
+    tinyurl snarfer is enabled.  This snarfer will watch for URLs in the
+    channel, and if they're sufficiently long (as determined by
+    supybot.plugins.URL.tinyurlSnarfer.minimumLength) it will post a smaller
+    from tinyurl.com."""))
+conf.registerChannelValue(conf.supybot.plugins.URL, 'tinyurlMaximumLength',
+    registry.PositiveInteger(48, """The minimum length a URL must be before the
+    tinyurl snarfer will snarf it."""))
+conf.registerChannelValue(conf.supybot.plugins.URL, 'titleSnarfer',
+    registry.Boolean(False, """Determines whether the bot will output the HTML
+    title of URLs it sees in the channel."""))
+conf.registerChannelValue(conf.supybot.plugins.URL, 'titleSnarferIncludesUrl',
+    registry.Boolean(True, """Determines whether the bot will include the
+    snarfed URL in its message.  This is particularly useful when people have a
+    habit of putting multiple URLs in a message."""))
+conf.registerChannelValue(conf.supybot.plugins.URL, 'nonSnarfingRegexp',
+    registry.Regexp(None, """Determines what URLs are to be snarfed and stored
+    in the database in the channel; URLs matchin the regexp given will not be
+    snarfed.  Give the empty string if you have no URLs that you'd like to
+    exclude from being snarfed."""))
 
 class URL(callbacks.PrivmsgCommandAndRegexp,
-          configurable.Mixin,
           plugins.ChannelDBHandler):
     regexps = ['tinyurlSnarfer', 'titleSnarfer']
-    configurables = configurable.Dictionary(
-        [('tinyurl-snarfer', configurable.BoolType, False,
-          """Determines whether the bot will output shorter versions of URLs
-          longer than the tinyurl-minimum-length config variable."""),
-         ('tinyurl-minimum-length', configurable.IntType, 46,
-          """The minimum length a URL must be before the tinyurl-snarfer will
-          snarf it and offer a tinyurl replacement."""),
-         ('title-snarfer', configurable.BoolType, False,
-          """Determines whether the bot will output the HTML title of URLs it
-          sees in the channel."""),
-         ('title-snarfer-includes-url', configurable.BoolType, True,
-          """Determines whether the bot will include the snarfed URL in its
-          title-snarfer response.  This is particularly useful when people
-          have a habit of putting multiple URLs in a message."""),
-         ('non-snarfing-regexp', configurable.RegexpStrType, None,
-          """A regular expression that should match URLs that should not be
-          snarfed.  Give an empty string to have no regular expression."""),]
-    )
     _titleRe = re.compile('<title>(.*?)</title>', re.I)
     maxSize = 4096
     def __init__(self):
         self.nextMsgs = {}
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        configurable.Mixin.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
 
     def die(self):
         callbacks.PrivmsgCommandAndRegexp.die(self)
-        configurable.Mixin.die(self)
         plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, filename):
@@ -162,7 +150,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         else:
             text = msg.args[1]
         for url in webutils.urlRe.findall(text):
-            r = self.configurables.get('non-snarfing-regexp', channel)
+            r = self.registryValue('nonSnarfingRegexp', channel)
             if r and r.search(url):
                 continue
             (protocol, site, filename, _, _, _) = urlparse.urlparse(url)
@@ -187,9 +175,9 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         if not ircutils.isChannel(msg.args[0]):
             return
         channel = msg.args[0]
-        if self.configurables.get('tinyurl-snarfer', channel):
+        if self.registryValue('tinyurlSnarfer', channel):
             url = match.group(0)
-            minlen = self.configurables.get('tinyurl-minimum-length', channel)
+            minlen = self.registryValue('tinyurlMaximumLength', channel)
             if len(url) >= minlen:
                 db = self.getDb(channel)
                 cursor = db.cursor()
@@ -208,13 +196,13 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         if not ircutils.isChannel(msg.args[0]):
             return
         channel = msg.args[0]
-        if self.configurables.get('title-snarfer', channel):
+        if self.registryValue('titleSnarfer', channel):
             url = match.group(0)
             text = webutils.getUrl(url, size=self.maxSize)
             m = self._titleRe.search(text)
             if m is not None:
                 s = 'Title: %s' % utils.htmlToText(m.group(1).strip())
-                if self.configurables.get('titlesnarferincludesurl', channel):
+                if self.registryValue('titleSnarferIncludesUrl', channel):
                     s += ' (<%s>)' % url
                 irc.reply(s, prefixName=False)
     titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
@@ -293,9 +281,8 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
                       'Stop being a lazy-biotch and type the URL yourself.')
             return
         channel = msg.args[0]
-        snarf = self.configurables.get('tinyurl-snarfer', channel=msg.args[0])
-        minlen = self.configurables.get('tinyurl-minimum-length',
-                                        channel=channel)
+        snarf = self.registryValue('tinyurlSnarfer', channel)
+        minlen = self.registryValue('tinyurlMinimumLength', channel)
         if snarf and len(url) >= minlen:
             return
         (tinyurl, updateDb) = self._getTinyUrl(url, channel, cmd=True)
