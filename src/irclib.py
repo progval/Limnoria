@@ -504,6 +504,7 @@ class Irc(object):
                 if not m:
                     debugmsg = 'inFilter %s returned None' % callback.name()
                     debug.msg(debugmsg)
+                    return
                 msg = m
             except:
                 debug.recoverableException()
