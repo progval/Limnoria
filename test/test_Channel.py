@@ -81,16 +81,34 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('op')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         self.assertNotError('op')
+        m = self.getMsg('op foo')
+        self.failUnless(m.command == 'MODE' and
+                        m.args == (self.channel, '+o', 'foo'))
+        m = self.getMsg('op foo bar')
+        self.failUnless(m.command == 'MODE' and
+                        m.args == (self.channel, '+oo', 'foo', 'bar'))
         
     def testHalfOp(self):
         self.assertError('halfop')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         self.assertNotError('halfop')
+        m = self.getMsg('halfop foo')
+        self.failUnless(m.command == 'MODE' and
+                        m.args == (self.channel, '+h', 'foo'))
+        m = self.getMsg('halfop foo bar')
+        self.failUnless(m.command == 'MODE' and
+                        m.args == (self.channel, '+hh', 'foo', 'bar'))
 
     def testVoice(self):
         self.assertError('voice')
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
         self.assertNotError('voice')
+        m = self.getMsg('voice foo')
+        self.failUnless(m.command == 'MODE' and
+                        m.args == (self.channel, '+v', 'foo'))
+        m = self.getMsg('voice foo bar')
+        self.failUnless(m.command == 'MODE' and
+                        m.args == (self.channel, '+vv', 'foo', 'bar'))
         
     def assertBan(self, query, hostmask, **kwargs):
         m = self.getMsg(query, **kwargs)

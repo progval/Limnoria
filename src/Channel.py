@@ -53,14 +53,17 @@ import callbacks
 
 class Channel(callbacks.Privmsg):
     def op(self, irc, msg, args, channel):
-        """[<channel>]
+        """[<channel>] [<nick> ...]
 
-        If you have the #channel.op capability, this will give you ops.
+        If you have the #channel.op capability, this will give all the <nick>s
+        you provide ops.  If you don't provide any <nick>s, this will op you.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
+        if not args:
+            args = [msg.nick]
         if irc.nick in irc.state.channels[channel].ops:
-            irc.queueMsg(ircmsgs.op(channel, msg.nick))
+            irc.queueMsg(ircmsgs.ops(channel, args))
         else:
             irc.error('How can I op you?  I\'m not opped!')
     op = privmsgs.checkChannelCapability(op, 'op')
@@ -68,12 +71,15 @@ class Channel(callbacks.Privmsg):
     def halfop(self, irc, msg, args, channel):
         """[<channel>]
 
-        If you have the #channel.halfop capability, this will give you halfops.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
+        If you have the #channel.halfop capability, this will give all the
+        <nick>s you provide halfops.  If you don't provide any <nick>s, this
+        will give you halfops. <channel> is only necessary if the message isn't
+        sent in the channel itself.
         """
+        if not args:
+            args = [msg.nick]
         if irc.nick in irc.state.channels[channel].ops:
-            irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
+            irc.queueMsg(ircmsgs.halfops(channel, args))
         else:
             irc.error('How can I halfop you?  I\'m not opped!')
     halfop = privmsgs.checkChannelCapability(halfop, 'halfop')
@@ -81,12 +87,15 @@ class Channel(callbacks.Privmsg):
     def voice(self, irc, msg, args, channel):
         """[<channel>]
 
-        If you have the #channel.voice capability, this will give you voice.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
+        If you have the #channel.voice capability, this will voice all the
+        <nick>s you provide.  If you don't provide any <nick>s, this will
+        voice you. <channel> is only necessary if the message isn't sent in the
+        channel itself.
         """
+        if not args:
+            args = [msg.nick]
         if irc.nick in irc.state.channels[channel].ops:
-            irc.queueMsg(ircmsgs.voice(channel, msg.nick))
+            irc.queueMsg(ircmsgs.voices(channel, args))
         else:
             irc.error('How can I voice you?  I\'m not opped!')
     voice = privmsgs.checkChannelCapability(voice, 'voice')
@@ -263,7 +272,7 @@ class Channel(callbacks.Privmsg):
                 self.log.warning('%r tried to ban %r, but both have %s',
                                  msg.prefix, bannedHostmask, capability)
                 irc.error('%s has %s too, you can\'t ban him/her/it.' %
-                               bannedNick, capability)
+                          (bannedNick, capability))
             else:
                 doBan()
         else:
