@@ -120,7 +120,7 @@ users.setName('users')
 registerGroup(users, 'plugins')
 
 def registerUserValue(group, name, value):
-    assert group.name.startswith('users')
+    assert group._name.startswith('users')
     value.supplyDefault = True
     group.register(name, value)
 

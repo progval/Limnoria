@@ -66,7 +66,7 @@ def configure(advanced):
 class LicenseKey(registry.String):
     def set(self, s):
         # In case we decide we need to recover
-        original = getattr(self, 'value', self.default)
+        original = getattr(self, 'value', self._default)
         registry.String.set(self, s)
         if self.value:
             amazon.setLicense(self.value)
