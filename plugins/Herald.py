@@ -31,7 +31,7 @@
 
 """
 Greets users who join the channel with a recognized hostmask with a nice
-little greeting.  Otherwise, can greet 
+little greeting.
 """
 
 __revision__ = "$Id$"
