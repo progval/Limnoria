@@ -39,6 +39,7 @@ import re
 import sets
 import time
 import getopt
+import string
 
 import sqlite
 
@@ -151,6 +152,8 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
             self._updatePrivmsgStats(msg)
             self._updateWordStats(msg)
 
+    _alphanumeric = string.ascii_letters + string.digits
+    _nonAlphanumeric = string.ascii.translate(string.ascii, _alphanumeric)
     def _updateWordStats(self, msg):
         try:
             if self.outFiltering:
@@ -163,6 +166,7 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
         db = self.getDb(channel)
         cursor = db.cursor()
         words = s.lower().split()
+        words = [s.strip(self._nonAlphanumeric) for s in words]
         criteria = ['word=%s'] * len(words)
         criterion = ' OR '.join(criteria)
         cursor.execute("SELECT id, word FROM words WHERE %s"%criterion, *words)
@@ -447,8 +451,8 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
         channel = privmsgs.getChannel(msg, args)
         word = privmsgs.getArgs(args)
         word = word.strip()
-        if len(word.split()) > 1:
-            irc.error(msg, 'You can\'t have spaces in <word>.')
+        if word.strip(self._nonAlphanumeric) != word:
+            irc.error(msg, '<word> must not contain non-alphanumeric chars.')
             return
         word = word.lower()
         db = self.getDb(channel)

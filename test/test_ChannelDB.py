@@ -121,5 +121,9 @@ if sqlite is not None:
             self.assertResponse('wordstats foo heh',
                                 'foo has said \'heh\' 4 times.')
 
+        def testAddword(self):
+            self.assertError('addword lol!')
+            self.assertNotError('addword lolz0r')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
