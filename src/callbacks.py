@@ -582,11 +582,11 @@ class Privmsg(irclib.IrcCallback):
         self._original = getattr(self, canonicalname, None)
         docstring = """<command> [<args> ...]
         
-        Command dispatcher for %s.  Use 'list %s' to see the commands
-        provided by this plugin.  In most cases this dispatcher command
-        is unnecessary; in cases where more than one plugin defines a given
-        command, use this command to tell the bot which plugin's command to
-        use.""" % (self.name(), self.name())
+        Command dispatcher for the %s plugin.  Use 'list %s' to see the
+        commands provided by this plugin.  In most cases this dispatcher
+        command is unnecessary; in cases where more than one plugin defines a
+        given command, use this command to tell the bot which plugin's command
+        to use.""" % (self.name(), self.name())
         def dispatcher(self, irc, msg, args):
             def handleBadArgs():
                 if self._original:
