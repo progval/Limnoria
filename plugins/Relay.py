@@ -53,7 +53,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
-from supybot.structures import RingBuffer
+from supybot.structures import RingBuffer, MultiSet
 
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
@@ -102,6 +102,7 @@ class Relay(callbacks.Privmsg):
         self._whois = {}
         self.lastmsg = {}
         self.ircstates = {}
+        self.queuedTopics = structures.MultiSet()
         self.last20Privmsgs = ircutils.IrcDict()
 
     def __call__(self, irc, msg):
@@ -487,18 +488,30 @@ class Relay(callbacks.Privmsg):
 
     def doTopic(self, irc, msg):
         irc = self._getRealIrc(irc)
-        if ircutils.strEqual(msg.nick, irc.nick):
-            return
         (channel, newTopic) = msg.args
         if channel not in self.registryValue('channels'):
             return
         network = self._getIrcName(irc)
         if self.registryValue('topicSync', channel):
             m = ircmsgs.topic(channel, newTopic)
+            for otherIrc in world.ircs:
+                if irc != otherIrc:
+                    try:
+                        if otherIrc.state.getTopic(channel) != newTopic:
+                            if (otherIrc, newTopic) not in self.queuedTopics:
+                                self.queuedTopics.add((otherIrc, newTopic))
+                                otherIrc.queueMsg(m)
+                            else:
+                                self.queuedTopics.remove((otherIrc, newTopic))
+                            
+                    except KeyError:
+                        self.log.warning('Not on %s on %s, '
+                                         'can\'t sync topics.',
+                                         channel, otherIrc.network)
         else:
             s = 'topic change by %s on %s: %s' % (msg.nick, network, newTopic)
             m = ircmsgs.privmsg(channel, s)
-        self._sendToOthers(irc, m)
+            self._sendToOthers(irc, m)
 
     def doQuit(self, irc, msg):
         irc = self._getRealIrc(irc)
@@ -523,20 +536,6 @@ class Relay(callbacks.Privmsg):
                     s = self._formatPrivmsg(irc.nick, network, msg)
                     relayMsg = ircmsgs.privmsg(channel, s)
                     self._sendToOthers(irc, relayMsg)
-        elif msg.command == 'TOPIC' and len(msg.args) > 1 and \
-             self.registryValue('topicSync', msg.args[0]):
-            (channel, topic) = msg.args
-            if channel in self.registryValue('channels'):
-                for otherIrc in world.ircs:
-                    if otherIrc != irc:
-                        try:
-                            if otherIrc.state.getTopic(channel) != topic:
-                                otherIrc.queueMsg(msg)
-                        except KeyError:
-                            self.log.warning('Not on %s on %s -- '
-                                             'Can\'t synchronize topics.',
-                                             channel, otherIrc.server)
-
         return msg
 
 Class = Relay
