@@ -357,8 +357,7 @@ class PluginTestCase(SupyTestCase):
         for cb in self.irc.callbacks:
             name = cb.name()
             if ((name in self._noTestDoc) and \
-               not name.lower() in self.__class__.__name__.lower()) or \
-               isinstance(cb, callbacks.PrivmsgRegexp):
+               not name.lower() in self.__class__.__name__.lower()):
                 continue
             self.failUnless(sys.modules[cb.__class__.__name__].__doc__,
                             '%s has no module documentation.' % name)
