@@ -454,4 +454,42 @@ class PrivmsgRegexp(Privmsg):
                     irc = IrcObjectProxyRegexp(irc)
                     self.callCommand(method, irc, msg, m)
 
+
+class Combine:
+    def __getattr__(self, attr):
+        for cls in self.classes:
+            if hasattr(cls, attr):
+                return getattr(cls, attr)
+        raise AttributeError, attr
+
+    def __init__(self, *args, **kwargs):
+        self.instances = []
+        for cls in self.classes:
+            self.instances.append(cls(*args, **kwargs))
+
+    def __call__(self, irc, msg):
+        for instance in self.instances:
+            instance.__call__(irc, msg)
+
+    def inFilter(self, irc, msg):
+        for instance in self.instances:
+            msg = instance.inFilter(irc, msg)
+        return msg
+
+    def outFilter(self, irc, msg):
+        for instance in self.instances:
+            msg = instance.outFilter(irc, msg)
+            
+    def name(self):
+        return 'Combine(%s)' % \
+               ','.join([cls.__name__ for cls in self.classes])
+
+    def reset(self):
+        for instance in instances:
+            instance.reset()
+
+    def die(self):
+        for instance in instances:
+            instance.die()
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
