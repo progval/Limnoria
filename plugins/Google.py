@@ -378,25 +378,22 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         r"http://groups.google.com/[^\s]+"
         if not self.registryValue('groupsSnarfer', msg.args[0]):
             return
-        text = webutils.getUrl(match.group(0))
+        url = match.group(0)
+        text = webutils.getUrl(url)
         mThread = None
         mGroup = None
-        if 'threadm=' in m:
+        if 'threadm=' in url:
             path = self._ggThreadm.search(text)
             if path is None:
                 return
             url = 'http://groups.google.com%s' % path.group(1)
-            request = webutils.Request(url, headers=header)
-            text = webutils.getUrl(request)
-        elif 'selm=' in m:
-            path = self._ggSelm.search(m)
-            if m is None:
+            text = webutils.getUrl(url)
+        elif 'selm=' in url:
+            path = self._ggSelm.search(url)
+            if path is None:
                 return
             url = 'http://groups.google.com/groups?%s' % path.group(0)
-            request = webutils.Request(url, headers=header)
-            text = webutils.getUrl(request)
-        else:
-            pass
+            text = webutils.getUrl(url)
         mThread = self._ggThread.search(text)
         mGroup = self._ggGroup.search(text)
         if mThread and mGroup:
