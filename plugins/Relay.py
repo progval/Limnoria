@@ -286,6 +286,7 @@ class Relay(callbacks.Privmsg, configurable.Mixin):
             otherIrc = self.ircs[network]
         except KeyError:
             irc.error(msg, 'I\'m not currently on %s.' % network)
+            return
         Owner = irc.getCallback('Owner')
         Owner.disambiguate(irc, args)
         self.Proxy(otherIrc, msg, args)
