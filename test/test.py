@@ -52,7 +52,7 @@ supybot.log.stdout: False
 supybot.log.level: VERBOSE
 supybot.log.format: %(levelname)s %(message)s
 supybot.log.plugins.individualLogfiles: False
-supybot.throttleTime: 0
+supybot.protocols.irc.throttleTime: 0
 supybot.reply.whenAddressedBy.chars: @
 supybot.protocols.irc.throttleTime: -1
 supybot.networks.test.server: should.not.need.this
