@@ -94,7 +94,8 @@ if __name__ == '__main__':
     print 'Cleaning up generated documentation.'
     shutil.rmtree('docs/plugins')
     configFiles = ('docs/config.html', 'docs/plugins.html',
-                   'docs/commands.html', 'docs.tar.bz2')
+                   'docs/commands.html', 'docs.tar.bz2', 'test-conf',
+                   'test-data', 'test-logs', 'tmp')
     for fn in configFiles:
         os.remove(fn)
 
