@@ -56,11 +56,9 @@ Class = %s
 '''.strip() # This removes the newlines that precede and follow the text.
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print 'Usage: %s <plugin name>' % sys.argv[0]
-        sys.exit(-1)
-
-    name = sys.argv[1]
+    name = anything('What should the name of the plugin be?')
+    if name.endswith('.py'):
+        name = name[:-3]
     if expect('Do you want a command-based plugin' \
               ' or a regexp-based plugin?',
               ['command', 'regexp']) == 'command':
@@ -75,5 +73,6 @@ if __name__ == '__main__':
     fd = file(os.path.join('plugins', name + '.py'), 'w')
     fd.write(template % (name, className, threaded, name))
     fd.close()
+    print 'Your new plugin template is in plugins/%s.py' % name
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
