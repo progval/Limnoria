@@ -67,7 +67,7 @@ def isChannelCapability(capability):
 def makeChannelCapability(channel, capability):
     """Makes a channel capability given a channel and a capability."""
     assert isCapability(capability), 'got %s' % capability
-    assert ircutils.isChannel(channel), 'got %s' % capability
+    assert ircutils.isChannel(channel), 'got %s' % channel
     return '%s,%s' % (channel, capability)
 
 def isAntiCapability(capability):
@@ -392,12 +392,12 @@ class IrcChannel(object):
 
     def addCapability(self, capability):
         """Adds a capability to the channel's default capabilities."""
-        assert isCapability(capability), 'got %s' % hostmask
+        assert isCapability(capability), 'got %s' % capability
         self.capabilities.add(capability)
 
     def removeCapability(self, capability):
         """Removes a capability from the channel's default capabilities."""
-        assert isCapability(capability), 'got %s' % hostmask
+        assert isCapability(capability), 'got %s' % capability
         self.capabilities.remove(capability)
 
     def setDefaultCapability(self, b):
