@@ -116,7 +116,8 @@ class Status(callbacks.Privmsg):
             if isinstance(cb, callbacks.Privmsg) and cb.public:
                 callbacksPrivmsgs += 1
                 for attr in dir(cb):
-                    if cb.isCommand(attr):
+                    if cb.isCommand(attr) and \
+                       attr == callbacks.canonicalName(attr):
                         commands.add(attr)
         commands = list(commands)
         commands.sort()
