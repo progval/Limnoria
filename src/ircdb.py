@@ -102,7 +102,12 @@ class IrcUser(object):
             self.capabilities.remove(capability)
 
     def checkCapability(self, capability):
-        if self.ignore:
+        if 'owner' in self.capabilities:
+            if isAntiCapability(capability):
+                return False
+            else:
+                return True
+        elif self.ignore:
             if isAntiCapability(capability):
                 return True
             else:
