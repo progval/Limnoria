@@ -149,8 +149,9 @@ class Seen(callbacks.Privmsg):
             if len(results) == 1:
                 (nick, info) = results[0]
                 (when, said) = info
-                irc.reply('%s was last seen here %s ago saying: %s' %
-                          (nick, utils.timeElapsed(time.time()-when), said))
+                irc.reply('%s was last seen in %s %s ago saying: %s' %
+                          (nick, channel, utils.timeElapsed(time.time()-when),
+                           said))
             elif len(results) > 1:
                 L = []
                 for (nick, info) in results:
@@ -174,8 +175,8 @@ class Seen(callbacks.Privmsg):
         """
         try:
             (when, said) = self.db.seen(channel, '<last>')
-            irc.reply('Someone was last seen here %s ago saying: %s' %
-                      (utils.timeElapsed(time.time()-when), said))
+            irc.reply('Someone was last seen in %s %s ago saying: %s' %
+                      (channel, utils.timeElapsed(time.time()-when), said))
         except KeyError:
             irc.reply('I have never seen anyone.')
     last = wrap(last, ['channel'])
@@ -192,8 +193,9 @@ class Seen(callbacks.Privmsg):
         """
         try:
             (when, said) = self.db.seen(channel, user.id)
-            irc.reply('%s was last seen here %s ago saying: %s' %
-                      (user.name, utils.timeElapsed(time.time()-when), said))
+            irc.reply('%s was last seen in %s %s ago saying: %s' %
+                      (user.name, channel, utils.timeElapsed(time.time()-when),
+                       said))
         except KeyError:
             irc.reply('I have not seen %s.' % name)
     user = wrap(user, ['channel', 'otherUser'])
