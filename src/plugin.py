@@ -48,7 +48,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
         try:
             files.extend(os.listdir(dir))
         except EnvironmentError: # OSError, IOError superclass.
-            log.warning(format('Invalid plugin directory: %s; removing.', dir))
+            log.warning('Invalid plugin directory: %s; removing.', dir)
             conf.supybot.directories.plugins().remove(dir)
     loweredFiles = map(str.lower, files)
     try:

@@ -184,7 +184,7 @@ class Math(callbacks.Privmsg):
             return str(x)
         text = self._mathRe.sub(handleMatch, text)
         try:
-            self.log.info(format('evaluating %q from %s', text, msg.prefix))
+            self.log.info('evaluating %q from %s', text, msg.prefix)
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(self._complexToString(x))
         except OverflowError:
@@ -218,7 +218,7 @@ class Math(callbacks.Privmsg):
             return
         text = text.replace('lambda', '')
         try:
-            self.log.info(format('evaluating %q from %s', text, msg.prefix))
+            self.log.info('evaluating %q from %s', text, msg.prefix)
             irc.reply(str(eval(text, self._mathEnv, self._mathEnv)))
         except OverflowError:
             maxFloat = math.ldexp(0.9999999999999999, 1024)

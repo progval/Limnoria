@@ -651,8 +651,7 @@ class UsersDictionary(utils.IterableMap):
                     log.error('Multiple matches found in user database.  '
                               'Removing the offending hostmasks.')
                     for (id, hostmask) in ids.iteritems():
-                        log.error(format('Removing %q from user %s.', hostmask,
-                                         id))
+                        log.error('Removing %q from user %s.', hostmask, id)
                         self.users[id].removeHostmask(hostmask)
                     raise DuplicateHostmask, 'Ids %r matched.' % ids
         else: # Not a hostmask, must be a name.
@@ -851,7 +850,7 @@ class IgnoresDB(object):
                     expiration = 0
                 self.add(hostmask, expiration)
             except Exception, e:
-                log.error(format('Invalid line in ignores database: %q', line))
+                log.error('Invalid line in ignores database: %q', line)
         fd.close()
 
     def flush(self):

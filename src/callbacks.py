@@ -489,8 +489,8 @@ class RichReplyMethods(object):
         if 'Raise' not in kwargs:
             kwargs['Raise'] = True
         if isinstance(capability, basestring): # checkCommandCapability!
-            log.warning(format('Denying %s for lacking %q capability.',
-                        self.msg.prefix, capability))
+            log.warning('Denying %s for lacking %q capability.',
+                        self.msg.prefix, capability)
             if not self._getConfig(conf.supybot.reply.error.noCapability):
                 v = self._getConfig(conf.supybot.replies.noCapability)
                 s = self.__makeReply(v % capability, s)
@@ -1285,8 +1285,8 @@ class PrivmsgRegexp(Privmsg):
                     r = re.compile(value.__doc__, self.flags)
                     self.res.append((r, name))
                 except re.error, e:
-                    self.log.warning(format('Invalid regexp: %q (%s)',
-                                            value.__doc__, e))
+                    self.log.warning('Invalid regexp: %q (%s)',
+                                     value.__doc__, e)
         utils.gen.sortBy(operator.itemgetter(1), self.res)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):

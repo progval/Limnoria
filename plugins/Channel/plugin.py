@@ -284,12 +284,11 @@ class Channel(callbacks.Privmsg):
         # Check that they're not trying to make us kickban ourself.
         self.log.debug('In kban')
         if not irc.isNick(bannedNick):
-            self.log.warning(format('%q tried to kban a non nick: %q',
-                                    msg.prefix, bannedNick))
+            self.log.warning('%q tried to kban a non nick: %q',
+                             msg.prefix, bannedNick)
             raise callbacks.ArgumentError
         elif bannedNick == irc.nick:
-            self.log.warning(format('%q tried to make me kban myself.',
-                                    msg.prefix))
+            self.log.warning('%q tried to make me kban myself.', msg.prefix)
             irc.error('I cowardly refuse to kickban myself.')
             return
         if not reason:
@@ -326,8 +325,7 @@ class Channel(callbacks.Privmsg):
         # Check (again) that they're not trying to make us kickban ourself.
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
             if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
-                self.log.warning(format('%q tried to make me kban myself.',
-                                        msg.prefix))
+                self.log.warning('%q tried to make me kban myself.',msg.prefix)
                 irc.error('I cowardly refuse to ban myself.')
                 return
             else:
@@ -350,16 +348,15 @@ class Channel(callbacks.Privmsg):
             doBan()
         elif ircdb.checkCapability(msg.prefix, capability):
             if ircdb.checkCapability(bannedHostmask, capability):
-                self.log.warning(
-                        format('%s tried to ban %q, but both have %s',
-                               msg.prefix, bannedHostmask, capability))
+                self.log.warning('%s tried to ban %q, but both have %s',
+                                 msg.prefix, bannedHostmask, capability)
                 irc.error('%s has %s too, you can\'t ban him/her/it.' %
                           (bannedNick, capability))
             else:
                 doBan()
         else:
-            self.log.warning(format('%q attempted kban without %s',
-                                    msg.prefix, capability))
+            self.log.warning('%q attempted kban without %s',
+                             msg.prefix, capability)
             irc.errorNoCapability(capability)
             exact,nick,user,host
     kban = wrap(kban,
