@@ -73,6 +73,20 @@ class Status(callbacks.Privmsg):
     def do001(self, irc, msg):
         self.connected[irc] = time.time()
 
+    def status(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the status of the bot.
+        """
+        networks = {}
+        for Irc in world.ircs:
+            networks.setdefault(Irc.network, []).append(Irc.nick)
+        networks = networks.items()
+        networks.sort()
+        networks = ['%s as %s' % (net, utils.commaAndify(nicks))
+                    for (net, nicks) in networks]
+        irc.reply('I am connected to %s.' % utils.commaAndify(networks))
+
     def net(self, irc, msg, args):
         """takes no arguments
 
@@ -85,9 +99,9 @@ class Status(callbacks.Privmsg):
             timeElapsed = 'an indeterminate amount of time'
         irc.reply('I have received %s messages for a total of %s bytes.  '
                   'I have sent %s messages for a total of %s bytes.  '
-                  'I have been connected to this network for %s.' %
+                  'I have been connected to %s for %s.' %
                   (self.recvdMsgs, self.recvdBytes,
-                   self.sentMsgs, self.sentBytes, timeElapsed))
+                   self.sentMsgs, self.sentBytes, irc.server, timeElapsed))
 
     def cpu(self, irc, msg, args):
         """takes no arguments
