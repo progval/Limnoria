@@ -340,7 +340,6 @@ def tokenize(s, channel=None):
     start = time.time()
     try:
         ret = Tokenizer(brackets=brackets,pipe=pipe,quotes=quotes).tokenize(s)
-        log.stat('tokenize took %s seconds.' % (time.time() - start))
         return ret
     except ValueError, e:
         raise SyntaxError, str(e)
@@ -1065,7 +1064,6 @@ class Commands(object):
             self.log.debug('Error return: %s', utils.gen.exnToString(e))
             irc.error(str(e))
         elapsed = time.time() - start
-        log.stat('%s took %s seconds', name, elapsed)
 
     def getCommandHelp(self, name):
         name = canonicalName(name)

@@ -222,11 +222,6 @@ conf.registerGlobalValue(conf.supybot.log, 'level',
     LogLevel(logging.INFO, """Determines what the minimum priority level logged
     will be.  Valid values are DEBUG, INFO, WARNING, ERROR,
     and CRITICAL, in order of increasing priority."""))
-conf.registerGlobalValue(conf.supybot.log, 'statistics',
-    ValidLogLevel(-1, """Determines what level statistics reporting
-    is to be logged at.  Mostly, this just includes, for instance, the time it
-    took to parse a message, process a command, etc.  You probably don't care
-    about this."""))
 conf.registerGlobalValue(conf.supybot.log, 'timestampFormat',
     registry.String('%Y-%m-%dT%H:%M:%S', """Determines the format string for
     timestamps in logfiles.  Refer to the Python documentation for the time
@@ -277,10 +272,6 @@ exception = _logger.exception
 # These were just begging to be replaced.
 registry.error = error
 registry.exception = exception
-
-def stat(*args):
-    level = conf.supybot.log.statistics()
-    _logger.log(level, *args)
 
 setLevel = _logger.setLevel
 
