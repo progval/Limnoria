@@ -41,11 +41,11 @@ how to use them.
 import fix
 
 import re
-import new
 import copy
 import sets
 import time
 import shlex
+import types
 import getopt
 import string
 import inspect
@@ -657,7 +657,8 @@ class Privmsg(irclib.IrcCallback):
                     handleBadArgs()
             else:
                 handleBadArgs()
-        dispatcher = new.function(dispatcher.func_code,globals(),canonicalname)
+        dispatcher = types.FunctionType(dispatcher.func_code,
+                                        dispatcher.func_globals, canonicalname)
         if self._original:
             dispatcher.__doc__ = self._original.__doc__
         else:

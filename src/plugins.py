@@ -32,10 +32,10 @@
 import fix
 
 import os
-import new
 import sys
 import sets
 import time
+import types
 import urllib2
 import threading
 
@@ -254,9 +254,9 @@ class Toggleable(object):
         code = self.toggle.im_func.func_code
         globals = self.toggle.im_func.func_globals
         closure = self.toggle.im_func.func_closure
-        newf = new.function(code, globals, None, closure=closure)
+        newf = types.FunctionType(code, globals, None, closure=closure)
         newf.__doc__ = s
-        self.toggle = new.instancemethod(newf, self, self.__class__)
+        self.toggle = types.MethodType(newf, self, self.__class__)
 
     def _toggleNames(self):
         names = self.toggles.defaults.keys()
@@ -264,6 +264,10 @@ class Toggleable(object):
         return utils.commaAndify(map(repr, names))
         
     def toggle(self, irc, msg, args):
+        """[<channel>] <name> [<value>]
+
+        The author of my plugin didn't call Toggleable.__init__.
+        """
         try:
             channel = privmsgs.getChannel(msg, args)
             capability = ircdb.makeChannelCapability(channel, 'op')
