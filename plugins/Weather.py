@@ -313,6 +313,7 @@ class Weather(callbacks.Privmsg):
     _cnnHumid = re.compile(r'Rel. Humidity: <b>(\d+%)</b>', re.I | re.S)
     _cnnWind = re.compile(r'Wind: <b>([^<]+)</b>', re.I | re.S)
     _cnnLoc = re.compile(r'<title>([^<]+)</title>', re.I | re.S)
+    _cnnMultiLoc = re.compile(r'href="([^f]+forecast.jsp[^"]+)', re.I)
     # Certain countries are expected to use a standard abbreviation
     # The weather we pull uses weird codes.  Map obvious ones here.
     _cnnCountryMap = {'uk': 'en', 'de': 'ge'}
@@ -338,9 +339,14 @@ class Weather(callbacks.Privmsg):
         url = '%s%s' % (self._cnnUrl, urllib.quote(loc))
         text = webutils.getUrl(url) # Errors caught in callCommand.
         if 'No search results' in text or \
-           'does not match a zip code' in text or \
-           'several matching locations for' in text: # XXX Goto first.
+           'does not match a zip code' in text:
             self._noLocation()
+        elif 'several matching locations for' in text:
+            m = self._cnnMultiLoc.search(text)
+            if m:
+                text = webutils.getUrl(m.group(1))
+            else:
+                self._noLocation()
         location = self._cnnLoc.search(text)
         temp = self._cnnFTemp.search(text)
         conds = self._cnnCond.search(text)
