@@ -151,6 +151,29 @@ if sqlite is not None:
             self.assertActionRegexp('moo', '^(moos|woofs)$')
             self.assertError('moo =~ s/moo/')
 
+        def testMost(self):
+            # Check an empty database
+            self.assertResponse('most popular', 'I can\'t find any factoids.')
+            self.assertResponse('most authored', 'I can\'t find any factoids.')
+            self.assertResponse('most recent', 'I can\'t find any factoids.')
+            # Check singularity response
+            self.assertNotError('moogle is <reply>moo')
+            self.assertResponse('most popular', 'I can\'t find any factoids.')
+            self.assertResponse('most authored', 'Top 1 author: tester (1)') 
+            self.assertResponse('most recent', '1 latest factoid: moogle') 
+            self.assertResponse('moogle', 'moo')
+            self.assertResponse('most popular', 'Top 1 factoid: moogle (1)')
+            # Check plural response
+            self.assertNotError('mogle is <reply>mo')
+            self.assertResponse('most authored', 'Top 1 author: tester (2)') 
+            self.assertResponse('most recent', '2 latest factoids: mogle and '\
+                'moogle') 
+            self.assertResponse('moogle', 'moo')
+            self.assertResponse('most popular', 'Top 1 factoid: moogle (2)')
+            self.assertResponse('mogle', 'mo')
+            self.assertResponse('most popular', 'Top 2 factoids: moogle (2) '\
+                'and mogle (1)')
+
         def testListkeys(self):
             self.assertResponse('listkeys %', 'No keys matching \'%\' found.')
             self.assertNotError('moo is <reply>moo')

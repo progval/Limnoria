@@ -68,10 +68,6 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load MoobotFactoids')
 
-example = utils.wrapLines("""
-Add an example IRC session using this module here.
-""")
-
 
 allchars = string.maketrans('', '')
 class OptionList(object):
@@ -473,6 +469,55 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         user be registered and have locked the factoid.
         """
         self._lock(irc, msg, args, False)
+
+    def most(self, irc, msg, args):
+        """<popular|authored|recent>
+
+        Lists the most <popular|authored|recent> factoids.  <popular> list the
+        most frequently requested factoids.  <authored> lists the author with
+        the most factoids.  <recent> lists the most recently created factoids.
+        """
+        key = privmsgs.getArgs(args,needed=1)
+        key = key.lower()
+        if key == 'popular':
+            key = 'requested_count'
+            cursor = self.db.cursor()
+            cursor.execute("""SELECT key,%s FROM factoids WHERE requested_count
+                              > 0 ORDER by %s DESC LIMIT 10""" % (key, key))
+            if cursor.rowcount == 0:
+                irc.reply(msg, 'I can\'t find any factoids.')
+            else:
+                popular = ['%s (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
+                l = len(popular)
+                irc.reply(msg, 'Top %s %s: %s' % (l, utils.pluralize(l,
+                    'factoid'), utils.commaAndify(popular)))
+        elif key == 'authored':
+            key = 'created_by'
+            cursor = self.db.cursor()
+            cursor.execute("""SELECT count(key),%s FROM factoids GROUP BY %s
+                              ORDER BY %s DESC LIMIT 10""" % (key, key, key))
+            if cursor.rowcount == 0:
+                irc.reply(msg, 'I can\'t find any factoids.')
+            else:
+                author = ['%s (%s)' % (ircdb.users.getUser(t[1]).name, t[0])
+                          for t in cursor.fetchall()]
+                l = len(author)
+                irc.reply(msg, 'Top %s %s: %s' % (l, utils.pluralize(l,
+                    'author'), utils.commaAndify(author)))
+        elif key == 'recent':
+            key = 'created_at'
+            cursor = self.db.cursor()
+            cursor.execute("""SELECT key FROM factoids ORDER by %s DESC LIMIT
+                              10""" % key)
+            if cursor.rowcount == 0:
+                irc.reply(msg, 'I can\'t find any factoids.')
+            else:
+                recent = ['%s' % t[0] for t in cursor.fetchall()]
+                l = len(recent)
+                irc.reply(msg, '%s latest %s: %s' % (l, utils.pluralize(l,
+                    'factoid'), utils.commaAndify(recent)))
+        else:
+            raise callbacks.ArgumentError
 
     def listauth(self, irc, msg, args):
         """<author name>
