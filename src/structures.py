@@ -47,11 +47,14 @@ class RingBuffer(object):
         if maxSize <= 0:
             raise ValueError, 'maxSize must be > 0.'
         self.maxSize = maxSize
+        self.reset()
+        for elt in seq:
+            self.append(elt)
+
+    def reset(self):
         self.full = False
         self.L = []
         self.i = 0
-        for elt in seq:
-            self.append(elt)
 
     def __len__(self):
         return len(self.L)
@@ -163,6 +166,10 @@ class queue(object):
         for elt in seq:
             self.enqueue(elt)
 
+    def reset(self):
+        self.back[:] = []
+        self.front[:] = []
+        
     def enqueue(self, elt):
         self.back.append(elt)
 
