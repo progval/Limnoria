@@ -188,13 +188,14 @@ class PeriodicFileDownloader(object):
             t.start()
             world.threadsSpawned += 1
         
+
 class ToggleDictionary(object):
     """I am ToggleDictionary! Hear me roar!
     """
     def __init__(self, toggles):
         if not toggles:
             raise ValueError, 'At least one toggle must be provided.'
-        self.channels = {}
+        self.channels = ircutils.IrcDict()
         self.defaults = toggles
 
     def _getDict(self, channel):
@@ -231,5 +232,47 @@ class ToggleDictionary(object):
                 resp.append('%s: Off' % k)
         resp.sort()
         return '(%s)' % '; '.join(resp)
+
+
+class Toggleable(object):
+    """A mixin class to provide a 'toggle' command that can be consistent
+    across plugins.  To use this class, simply define a 'toggles' attribute
+    in your class that is a ToggleDictionary mapping valid attributes to toggle
+    to their default values.
+    """
+    def __init__(self):
+        s = """[<channel>] <name> [<value>]
+
+        Toggles the value of <name> in <channel>.  If <value> is given,
+        explicitly sets the value of <name> to <value>.  <channel> is only
+        necessary if the message isn't sent in the channel itself.  Valid
+        names are %s""" % (self._toggleNames())
+        self.toggle.__doc__ = s
+
+    def _toggleNames(self):
+        return utils.commaAndify(map(repr, self.toggles.defaults.keys()))
+        
+    def toggle(self, irc, msg, args):
+        try:
+            channel = getChannel(msg, args)
+        except callbacks.Error:
+            channel = None
+        (name, value) = getArgs(args, optional=1)
+        if not value:
+            value = None
+        elif value.lower() in ('enable', 'on', 'true'):
+            value = True
+        elif value.lower() in ('disable', 'off', 'false'):
+            value = False
+        else:
+            irc.error(msg, '%r isn\'t a valid value.' % value)
+            return
+        try:
+            self.toggles.toggle(name, value=value, channel=channel)
+            s = '%s  %s' % (conf.replySuccess, self.toggles.toString(channel))
+            irc.reply(msg, s)
+        except KeyError:
+            irc.error(msg, '%r isn\'t a valid name to toggle.  '
+                           'Valid names are %s' % (name, self._toggleNames()))
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
