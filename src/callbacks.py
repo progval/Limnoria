@@ -561,8 +561,8 @@ class IrcObjectProxy(RichReplyMethods):
         self.notice = notice or self.notice
         self.private = private or self.private
         self.to = to or self.to
+        # action=True implies noLengthCheck=True and prefixName=False
         self.prefixName = prefixName and self.prefixName and not self.action
-        # action=True should imply noLengthCheck=True.  We can't more actions.
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         if self.finalEvaled:
             if not isinstance(self.irc, irclib.Irc):
