@@ -158,16 +158,16 @@ if __name__ == '__main__':
                       help='Determines whether the bot will allow its '
                            'defaultCapabilities not to include "-owner", thus '
                            'giving all users the owner capability by default. '
-                           'This is dumb, hence we require a command-line '
+                           ' This is dumb, hence we require a command-line '
                            'option.  Don\'t do this.')
     parser.add_option('', '--allow-root', action='store_true',
                       dest='allowRoot',
-                      help='Determines whether the bot will be allowed to run'
+                      help='Determines whether the bot will be allowed to run '
                            'as root.  You don\'t want this.  Don\'t do it.  '
                            'Even if you think you want it, you don\'t.  '
                            'You\'re probably dumb if you do this.')
     parser.add_option('', '--debug', action='store_true', dest='debug',
-                      help='Determines whether some extra debugging stuff will'
+                      help='Determines whether some extra debugging stuff will '
                            'be logged in this script.')
 
     (options, args) = parser.parse_args()
@@ -222,7 +222,7 @@ if __name__ == '__main__':
     nick = options.nick or conf.supybot.nick()
     user = options.user or conf.supybot.user()
     ident = options.ident or conf.supybot.ident()
-    
+
     networks = conf.supybot.networks()
     if not networks:
         questions.output("""No networks defined.  Perhaps you should re-run the
@@ -230,7 +230,7 @@ if __name__ == '__main__':
         # XXX We should turn off logging here for a prettier presentation.
         sys.exit(-1)
 
-    
+
 
     if options.optimize:
         # This doesn't work anymore.

@@ -143,13 +143,13 @@ def main():
                                    version='Supybot %s' % conf.version)
     parser.add_option('', '--allow-root', action='store_true',
                       dest='allowRoot',
-                      help='Determines whether the bot will be allowed to run'
-                           'as root.  You don\'t want this.  Don\'t do it.  '
-                           'Even if you think you want it, you don\'t.  '
+                      help='Determines whether the wizard will be allowed to '
+                           'run as root.  You don\'t want this.  Don\'t do it.'
+                           '  Even if you think you want it, you don\'t.  '
                            'You\'re probably dumb if you do this.')
     (options, args) = parser.parse_args()
     if os.name == 'posix':
-        if os.getuid() == 0 or os.geteuid() == 0 and not options.allowRoot:
+        if (os.getuid() == 0 or os.geteuid() == 0) and not options.allowRoot:
             sys.stderr.write('Please, don\'t run this as root.\n')
 
     filename = ''
