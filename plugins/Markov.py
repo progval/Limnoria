@@ -176,7 +176,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM pairs""")
-        n = cursor.fetchone()[0]
+        n = int(cursor.fetchone()[0])
         s = 'There are %s pairs in my Markov database for %s' % (n, channel)
         irc.reply(msg, s)
 
@@ -190,7 +190,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM pairs WHERE is_first=1""")
-        n = cursor.fetchone()[0]
+        n = int(cursor.fetchone()[0])
         s = 'There are %s first pairs in my Markov database for %s'%(n,channel)
         irc.reply(msg, s)
 
@@ -204,7 +204,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM follows""")
-        n = cursor.fetchone()[0]
+        n = int(cursor.fetchone()[0])
         s = 'There are %s follows in my Markov database for %s' % (n, channel)
         irc.reply(msg, s)
 
@@ -218,7 +218,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM follows WHERE word ISNULL""")
-        n = cursor.fetchone()[0]
+        n = int(cursor.fetchone()[0])
         s = 'There are %s lasts in my Markov database for %s' % (n, channel)
         irc.reply(msg, s)
 
