@@ -130,9 +130,11 @@ class set(object):
 
 class queue(dict):
     __slots__ = ('first', 'last')
-    def __init__(self):
+    def __init__(self, *args):
         self.first = 0
         self.last = 0
+        for elt in args:
+            self.enqueue(elt)
 
     def enqueue(self, elt):
         self[self.last] = elt
@@ -158,9 +160,23 @@ class queue(dict):
 
     def __contains__(self, elt):
         return elt in self.itervalues()
-        
-##     def __iter__
-##     def __eq__
+
+    def __iter__(self):
+        for i in xrange(self.first, self.last):
+            yield self[i]
+            
+    def __eq__(self, other):
+        if len(self) == len(other):
+            for (x, y) in zip(self, other):
+                if x != y:
+                    return False
+            return True
+        else:
+            return False
+
+    def __repr__(self):
+        return 'queue(%s)' % ', '.join(map(str, self))
+
 
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.
