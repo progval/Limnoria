@@ -74,8 +74,7 @@ class IrcMsg(object):
 
     IrcMsg(prefix='', args=(newSource, otherMsg.args[1]), msg=otherMsg)
     """
-    __slots__ = ('_args', '_command', '_host', '_nick',
-                 '_prefix', '_user',
+    __slots__ = ('args', 'command', 'host', 'nick', 'prefix', 'user',
                  '_hash', '_str', '_repr', '_len')
     def __init__(self, s='', command='', args=None, prefix='', msg=None):
         if not s and not command and not msg:
@@ -84,94 +83,78 @@ class IrcMsg(object):
         self._repr = None
         self._hash = None
         self._len = None
-        if msg:
-            prefix = msg.prefix
-            command = msg.command
-            args = msg.args
+        if msg is not None:
+            self.prefix = msg.prefix
+            self.command = msg.command
+            self.args = tuple(msg.args)
         if command: # Must be using command=, args=, prefix= form.
+            self.prefix = prefix
+            self.command = command
             if args is not None:
-                #debug.printf(args)
                 assert filter(ircutils.isValidArgument, args) == args
+                self.args = tuple(args)
             else:
-                args = ()
-        else: # Must be using a string.
+                self.args = ()
+        elif s: # Must be using a string.
             if s[0] == ':':
-                prefix, s = s[1:].split(None, 1)
+                self.prefix, s = s[1:].split(None, 1)
             else:
-                prefix = ''
+                self.prefix = ''
             if s.find(' :') != -1:
                 s, last = s.split(' :', 1)
-                args = s.split()
-                args.append(last.rstrip('\r\n'))
+                self.args = s.split()
+                self.args.append(last.rstrip('\r\n'))
             else:
-                args = s.split()
-            command = args.pop(0)
-        if ircutils.isUserHostmask(prefix):
-            (nick, user, host) = ircutils.splitHostmask(prefix)
+                self.args = s.split()
+            self.command = self.args.pop(0)
+        if ircutils.isUserHostmask(self.prefix):
+            (self.nick,self.user,self.host)=ircutils.splitHostmask(self.prefix)
         else:
-            (nick, user, host) = ('', '', '')
-        self._prefix = prefix
-        ## self._nick = ircutils.nick(nick)
-        self._nick = nick
-        self._user = user
-        self._host = host
-        self._command = command
-##         if self.command == 'NICK' and type(args) != tuple:
-##             args[0] = ircutils.nick(args[0])
-        self._args = tuple(args)
+            (self.nick, self.user, self.host) = ('', '', '')
+        self.args = tuple(self.args)
             
-
-    prefix = property(lambda self: self._prefix)
-    nick = property(lambda self: self._nick)
-    user = property(lambda self: self._user)
-    host = property(lambda self: self._host)
-    command = property(lambda self: self._command)
-    args = property(lambda self: self._args)
-
     def __str__(self):
         if self._str is not None:
             return self._str
-        ret = ''
         if self.prefix:
             if len(self.args) > 1:
-                ret = ':%s %s %s :%s\r\n' % \
-                      (self.prefix, self.command,
-                       ' '.join(self.args[:-1]), self.args[-1])
+                self._str = ':%s %s %s :%s\r\n' % \
+                            (self.prefix, self.command,
+                             ' '.join(self.args[:-1]), self.args[-1])
             else:
                 if self.args:
-                    ret = ':%s %s :%s\r\n' % \
-                          (self.prefix, self.command, self.args[0])
+                    self._str = ':%s %s :%s\r\n' % \
+                                (self.prefix, self.command, self.args[0])
                 else:
-                    ret = ':%s %s\r\n' % (self.prefix, self.command)
+                    self._str = ':%s %s\r\n' % (self.prefix, self.command)
         else:
             if len(self.args) > 1:
-                ret = '%s %s :%s\r\n' % \
-                      (self.command, ' '.join(self.args[:-1]), self.args[-1])
+                self._str = '%s %s :%s\r\n' % \
+                            (self.command,
+                             ' '.join(self.args[:-1]), self.args[-1])
             else:
                 if self.args:
-                    ret = '%s :%s\r\n' % (self.command, self.args[0])
+                    self._str = '%s :%s\r\n' % (self.command, self.args[0])
                 else:
-                    ret = '%s\r\n' % self.command
-        self._str = ret
-        return ret
+                    self._str = '%s\r\n' % self.command
+        return self._str
 
     def __len__(self):
         # This might not take into account the length of the prefix, but leaves
         # some room for variation.
         if self._len is not None:
             return self._len
-        ret = 0
+        self._len = 0
         if self.prefix:
-            ret += len(self.prefix)
+            self._len += len(self.prefix)
         else:
-            ret += 42 # Ironically, the average length of an IRC prefix.
-        ret += len(self.command)
+            self._len += 42 # Ironically, the average length of an IRC prefix.
+        self._len += len(self.command)
         if self.args:
             for arg in self.args:
-                ret += len(arg) + 1 # Remember the space prior to the arg.
-        ret += 2 # For the colon before the prefix and before the last arg.
-        self._len = ret
-        return ret
+                self._len += len(arg) + 1 # Remember space prior to the arg.
+        self._len += 2 # For colon before the prefix and before the last arg.
+        return self._len
     
     def __eq__(self, other):
         return hash(self) == hash(other) and \
