@@ -40,6 +40,7 @@ import supybot.fix as fix
 import csv
 import math
 import sets
+import random
 
 import supybot.cdb as cdb
 import supybot.utils as utils
@@ -251,7 +252,7 @@ class CdbMapping(MappingInterface):
 
 
 class DB(object):
-    Mapping = None
+    Mapping = 'flat' # This is a good, sane default.
     Record = None
     def __init__(self, filename, Mapping=None, Record=None):
         if Record is not None:
@@ -280,8 +281,7 @@ class DB(object):
         return self.map.add(s)
 
     def remove(self, id):
-        s = self.map.remove(id)
-        return self._newRecord(id, s)
+        self.map.remove(id)
 
     def __iter__(self):
         for (id, s) in self.map:
@@ -292,6 +292,9 @@ class DB(object):
         for record in self:
             if p(record):
                 yield record
+
+    def random(self):
+        return random.choice(self)
 
     def flush(self):
         self.map.flush()
