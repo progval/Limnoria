@@ -426,6 +426,8 @@ def args(irc,msg,args, types=[], state=None,
             if value != '': # value can be None, remember.
                 key += '='
             getoptL.append(key)
+        log.debug(str(getoptL))
+
     def callWrapper(spec):
         if isinstance(spec, tuple):
             assert spec, 'tuple specification cannot be empty.'
@@ -478,12 +480,14 @@ def args(irc,msg,args, types=[], state=None,
         for (opt, arg) in optlist:
             opt = opt[2:] # Strip --
             assert opt in getopts
+            log.debug('%s: %r', opt, arg)
             if arg is not None:
                 assert getopts[opt] != ''
                 state.getopts.append((opt, callWrapper(getopts[opt])))
             else:
                 assert getopts[opt] == ''
                 state.getopts.append((opt, True))
+    log.debug('Finished getopts: %s', state.getopts)
 
     # Second, we get out everything but the last argument (or, if combineRest
     # is False, we'll clear out all the types).
@@ -517,9 +521,10 @@ def wrap(f, *argsArgs, **argsKwargs):
         state = State('%s.%s' % (self.name(), f.func_name), self.log)
         state.cb = self # This should probably be in State.__init__.
         _args(irc,msg,args, state=state, *argsArgs, **argsKwargs)
-        if state.getopts:
+        if 'getopts' in argsKwargs:
             f(self, irc, msg, args, state.getopts, *state.args, **state.kwargs)
         else:
+            print state.args, state.kwargs
             f(self, irc, msg, args, *state.args, **state.kwargs)
 
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
