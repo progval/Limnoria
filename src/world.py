@@ -92,7 +92,7 @@ def upkeep():
         log.debug('Pattern cache size: %s'%len(ircutils._patternCache))
         log.debug('HostmaskPatternEqual cache size: %s' %
                   len(ircutils._hostmaskPatternEqualCache))
-        log.info('%s Upkeep ran.  Flushers flushed and memory reclaimed.',
+        log.info('%s Upkeep ran.  Flushers flushed and garbage collected.',
                  log.timestamp())
     return collected
 
