@@ -44,10 +44,11 @@ import urlparse
 
 import sqlite
 
+import utils
 import privmsgs
 import callbacks
 
-example = """
+example = utils.wrapLines("""
 <supybot> lasturl, numurls, randomurl
 <jemfinch> @numurls
 <supybot> Error: Command must be sent in a channel or include a channel in its arguments.
@@ -66,7 +67,7 @@ example = """
 <supybot> <http://slashdot.org/comments.pl?sid=75020&cid=6720123>, added by jemfinch at 03:16 PM, August 25, 2003.
 <jemfinch> @lasturl #sourcereview --at coderforums.com
 <supybot> <http://coderforums.com/showthread.php?s=&postid=15798#post15798>, added by Strike|work at 02:41 PM, August 25, 2003.
-"""
+""")
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and

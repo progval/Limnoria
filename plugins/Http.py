@@ -50,7 +50,7 @@ import privmsgs
 import callbacks
 import structures
 
-example = """
+example = utils.wrapLines("""
 <jemfinch> @list Http
 <supybot> acronym, babelize, deepthought, foldoc, freshmeat, geekquote, netcraft, randomlanguage, stockquote, title, translate, weather
 <jemfinch> @acronym ASAP
@@ -82,7 +82,7 @@ example = """
 <supybot> Portuguese
 <jemfinch> @babelize en [randomlanguage] [deepthought]
 <supybot> # 355: When he was a small boy, had always wanted to be one acrobat. It looked at as thus much amusement, turning through air, to launch itself, fulling it it it he himself with the land in the shoulders of the person. Little knew that when finally one was changedded acrobat, would seem irritating thus. Years later, later this that stopped finally, joined did not work to it for it is as one acrobat after everything. Weirdo of the stre
-"""
+""")
 
 class FreshmeatException(Exception):
     pass

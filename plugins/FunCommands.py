@@ -64,7 +64,7 @@ import ircmsgs
 import privmsgs
 import callbacks
 
-example = """
+example = utils.wrapLines("""
 <jemfinch> @list FunCommands
 <supybot> base, binary, calc, chr, coin, cpustats, decode, dice, dns, encode, hexlify, kernel, last, lastfrom, leet, levenshtein, lithp, md5, mimetype, netstats, objects, ord, pydoc, rot13, rpn, sha, soundex, unhexlify, uptime, urlquote, urlunquote, xor
 <jemfinch> @netstats
@@ -144,7 +144,7 @@ example = """
 <jemfinch> @dns kernel.org
 <supybot> 204.152.189.116
 <jemfinch> @kernel
-"""
+""")
 
 class FunCommands(callbacks.Privmsg):
     def __init__(self):

@@ -50,7 +50,7 @@ import ircutils
 import privmsgs
 import callbacks
 
-example = """
+example = utils.wrapLines("""
 <jemfinch> @load Relay
 <supybot> jemfinch: The operation succeeded.
 <jemfinch> @startrelay freenode
@@ -76,7 +76,7 @@ example = """
 <supybot> jemfinch: relaycolor <0,1,2>
 <jemfinch> @relaywhois GnuVince
 <supybot> jemfinch: Vincent Foley (~vince@modemcable216.89-202-24.mtl.mc.videotron.ca) has been online since 08:37 PM, August 24, 2003 (idle for 1 day, 10 hours, 21 minutes, and 3 seconds) and is on #sourcereview and @#hackcanada
-"""
+""")
 
 def configure(onStart, afterConnect, advanced):
     import socket

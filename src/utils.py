@@ -41,6 +41,7 @@ import os
 import re
 import string
 import sgmllib
+import textwrap
 import htmlentitydefs
 
 class HtmlToText(sgmllib.SGMLParser):
@@ -278,5 +279,11 @@ def unCommaThe(s):
         return '%s %s' % (m.group(2), m.group(1))
     else:
         return s
+
+def wrapLines(s):
+    L = []
+    for line in s.splitlines():
+        L.append(textwrap.fill(line))
+    return '\n'.join(L)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
