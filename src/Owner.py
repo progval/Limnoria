@@ -85,7 +85,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         setattr(self.__class__, 'exec', self.__class__._exec)
-        self.defaultPlugins = {}
+        self.defaultPlugins = {'join', 'admin'}
 
     def _disambiguate(self, tokens):
         if tokens:
