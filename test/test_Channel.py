@@ -59,6 +59,10 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('channel setcapability -foo')
         self.assertNotError('channel unsetcapability -foo')
         self.assertError('channel unsetcapability -foo')
+        self.assertNotError('channel setcapability -foo bar baz')
+        self.assertRegexp('channel capabilities', 'baz')
+        self.assertNotError('channel unsetcapability -foo baz')
+        self.assertError('channel unsetcapability baz')
 
     def testUnban(self):
         self.assertError('unban foo!bar@baz')

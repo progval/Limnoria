@@ -568,47 +568,53 @@ class Channel(callbacks.Privmsg):
     ignores = privmsgs.checkChannelCapability(ignores, 'op')
 
     def addcapability(self, irc, msg, args, channel):
-        """[<channel>] <name|hostmask> <capability>
+        """[<channel>] <name|hostmask> <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will give the user
         currently identified as <name> (or the user to whom <hostmask> maps)
         the capability <capability> in the channel. <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        (name, capability) = privmsgs.getArgs(args, 2)
-        capability = ircdb.makeChannelCapability(channel, capability)
+        (name, capabilities) = privmsgs.getArgs(args, 2)
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
-            user.addCapability(capability)
-            ircdb.users.setUser(id, user)
-            irc.replySuccess()
         except KeyError:
             irc.errorNoUser()
+        for c in capability.split():
+            c = ircdb.makeChannelCapability(channel, c)
+            user.addCapability(c)
+        ircdb.users.setUser(id, user)
+        irc.replySuccess()
     addcapability = privmsgs.checkChannelCapability(addcapability,'op')
 
     def removecapability(self, irc, msg, args, channel):
-        """[<channel>] <name|hostmask> <capability>
+        """[<channel>] <name|hostmask> <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will take from the user
         currently identified as <name> (or the user to whom <hostmask> maps)
         the capability <capability> in the channel. <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        (name, capability) = privmsgs.getArgs(args, 2)
-        capability = ircdb.makeChannelCapability(channel, capability)
+        (name, capabilities) = privmsgs.getArgs(args, 2)
         try:
             id = ircdb.users.getUserId(name)
         except KeyError:
             irc.errorNoUser()
             return
         user = ircdb.users.getUser(id)
-        try:
-            user.removeCapability(capability)
-        except KeyError:
-            irc.error('That user doesn\'t have the %s capability.'%capability)
-            return
+        fail = []
+        for c in capabilities.split():
+            cap = ircdb.makeChannelCapability(channel, c)
+            try:
+                user.removeCapability(cap)
+            except KeyError:
+                fail.append(c)
         ircdb.users.setUser(id, user)
+        if fail:
+            irc.error('That user didn\'t have the %s %s.' %
+                      (utils.commaAndify(fail),
+                       utils.pluralize('capability', len(fail))), Raise=True)
         irc.replySuccess()
     removecapability = privmsgs.checkChannelCapability(removecapability, 'op')
 
@@ -637,35 +643,42 @@ class Channel(callbacks.Privmsg):
         privmsgs.checkChannelCapability(setdefaultcapability, 'op')
 
     def setcapability(self, irc, msg, args, channel):
-        """[<channel>] <capability>
+        """[<channel>] <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will add the channel
         capability <capability> for all users in the channel. <channel> is
         only necessary if the message isn't sent in the channel itself.
         """
-        capability = privmsgs.getArgs(args)
-        c = ircdb.channels.getChannel(channel)
-        c.addCapability(capability)
-        ircdb.channels.setChannel(channel, c)
+        capabilities = privmsgs.getArgs(args)
+        chan = ircdb.channels.getChannel(channel)
+        for c in capabilities.split():
+            chan.addCapability(c)
+        ircdb.channels.setChannel(channel, chan)
         irc.replySuccess()
     setcapability = privmsgs.checkChannelCapability(setcapability, 'op')
 
     def unsetcapability(self, irc, msg, args, channel):
-        """[<channel>] <capability>
+        """[<channel>] <capability> [<capability> ...]
 
         If you have the #channel,op capability, this will unset the channel
         capability <capability> so each user's specific capability or the
         channel default capability will take precedence. <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        capability = privmsgs.getArgs(args)
-        c = ircdb.channels.getChannel(channel)
-        try:
-            c.removeCapability(capability)
-            ircdb.channels.setChannel(channel, c)
-            irc.replySuccess()
-        except KeyError:
-            irc.error('I do not know about that channel capability.')
+        capabilities = privmsgs.getArgs(args)
+        chan = ircdb.channels.getChannel(channel)
+        fail = []
+        for c in capabilities.split():
+            try:
+                chan.removeCapability(c)
+            except KeyError:
+                fail.append(c)
+        ircdb.channels.setChannel(channel, chan)
+        if fail:
+            irc.error('I do not know about the %s %s.' %
+                      (utils.commaAndify(fail),
+                       utils.pluralize('capability', len(fail))), Raise=True)
+        irc.replySuccess()
     unsetcapability = privmsgs.checkChannelCapability(unsetcapability, 'op')
 
     def capabilities(self, irc, msg, args):
