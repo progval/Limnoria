@@ -228,6 +228,10 @@ class queue(object):
             if len(range) != len(value):
                 raise ValueError, 'seq must be the same length as slice.'
             else:
+                for i in range:
+                    (m, idx) = divmod(oidx, len(self))
+                    if m and m != -1:
+                        raise IndexError, oidx
                 for (i, x) in zip(range, value):
                     self[i] = x
         else:
