@@ -74,16 +74,40 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotRegexp('rpn 2 3 foobar', 'SyntaxError')
         
     def testConvert(self):
-        self.assertResponse('convert 1 m to cm', '100.0 cm')
-        self.assertResponse('convert m to cm', '100.0 cm')
-        self.assertResponse('convert 1 M to cm', '100.0 cm')
-        self.assertResponse('convert 1 m to CM', '100.0 cm')
-        self.assertResponse('convert 1 m to cM', '100.0 cm')
+        self.assertResponse('convert 1 m to cm', '100 cm')
+        self.assertResponse('convert m to cm', '100 cm')
+        self.assertResponse('convert 3 metres to km', '0.003 km')
+        self.assertResponse('convert 32 F to C', '0 C')
+        self.assertResponse('convert 32 C to F', '89.6 F')
+        self.assertResponse('convert [calc 2*pi] rad to degree', '360 degree')
+        self.assertResponse('convert amu to atomic mass unit', 
+                            '1 atomic mass unit')
+        self.assertResponse('convert [calc 2*pi] rad to circle', '1 circle')
+
+
+
+        self.assertError('convert 1 meatball to bananas')
+        self.assertError('convert 1 gram to meatballs')
+        self.assertError('convert 1 mol to grams')
         self.assertError('convert 1 m to kpa')
-        self.assertNotRegexp('convert 1 m to kpa', 'UNUM_ERROR')
+    
+    def testConvertSingularPlural(self):
+        self.assertResponse('convert [calc 2*pi] rads to degrees',
+                            '360 degrees')
+        self.assertResponse('convert 1 carat to grams',
+                            '0.2 grams')
+        self.assertResponse('convert 10 lbs to oz', '160 oz')
+        self.assertResponse('convert mA to amps', '0.001 amps')
+
+    def testConvertCaseSensitivity(self):
+        self.assertError('convert MA to amps')
+        self.assertError('convert M to amps')
+        self.assertError('convert Radians to rev')
 
     def testUnits(self):
         self.assertNotError('units')
+        self.assertNotError('units mass')
+        self.assertNotError('units flux density')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
