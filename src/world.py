@@ -74,7 +74,7 @@ ircs = [] # A list of all the IRCs.
 def _flushUserData():
     userdataFilename = os.path.join(conf.supybot.directories.conf(),
                                     'userdata.conf')
-    registry.close(conf.users, userdataFilename, annotated=False)
+    registry.close(conf.users, userdataFilename)
 
 flushers = [_flushUserData] # A periodic function will flush all these.
 

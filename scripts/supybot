@@ -216,7 +216,7 @@ if __name__ == '__main__':
         if world.dying:
             logger = log.info
         logger('Writing registry file to %s', registryFilename)
-        registry.close(conf.supybot, registryFilename, annotated=True)
+        registry.close(conf.supybot, registryFilename)
         logger('Finished writing registry file.')
     world.flushers.append(closeRegistry)
     world.registryFilename = registryFilename

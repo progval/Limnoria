@@ -89,35 +89,37 @@ def open(filename, clear=False):
     _lastModified = time.time()
     _fd.close()
 
-def close(registry, filename, annotated=True, helpOnceOnly=False):
+def close(registry, filename, private=True):
     first = True
-    helpCache = sets.Set()
     fd = utils.transactionalFile(filename)
     for (name, value) in registry.getValues(getChildren=True):
-        if annotated and hasattr(value,'_help') and value._help:
-            if not helpOnceOnly or value._help not in helpCache:
-                helpCache.add(value._help)
-                lines = textwrap.wrap(value._help)
-                for (i, line) in enumerate(lines):
-                    lines[i] = '# %s\n' % line
-                lines.insert(0, '###\n')
-                if first:
-                    first = False
-                else:
-                    lines.insert(0, '\n')
-                if hasattr(value, 'value'):
-                    if value._showDefault:
-                        lines.append('#\n')
-                        x = value.__class__(value._default, value._help)
-                        try:
-                            lines.append('# Default value: %s\n' % x)
-                        except Exception, e:
-                            exception('Exception printing default value:')
-                lines.append('###\n')
-                fd.writelines(lines)
+        help = value.help()
+        if help:
+            lines = textwrap.wrap(value._help)
+            for (i, line) in enumerate(lines):
+                lines[i] = '# %s\n' % line
+            lines.insert(0, '###\n')
+            if first:
+                first = False
+            else:
+                lines.insert(0, '\n')
+            if hasattr(value, 'value'):
+                if value._showDefault:
+                    lines.append('#\n')
+                    x = value.__class__(value._default, value._help)
+                    try:
+                        lines.append('# Default value: %s\n' % x)
+                    except Exception, e:
+                        exception('Exception printing default value:')
+            lines.append('###\n')
+            fd.writelines(lines)
         if hasattr(value, 'value'): # This lets us print help for non-valued.
             try:
-                fd.write('%s: %s\n' % (name, value.serialize()))
+                if private or not value._private:
+                    s = value.serialize()
+                else:
+                    s = 'CENSORED'
+                fd.write('%s: %s\n' % (name, s))
             except Exception, e:
                 exception('Exception printing value:')
             
@@ -151,13 +153,14 @@ def join(names):
 
 class Group(object):
     """A group; it doesn't hold a value unless handled by a subclass."""
-    def __init__(self, help='',
-                 supplyDefault=False, orderAlphabetically=False):
+    def __init__(self, help='', supplyDefault=False,
+                 orderAlphabetically=False, private=False):
         self._help = help
         self._name = 'unset'
         self._added = []
         self._children = utils.InsensitivePreservingDict()
         self._lastModified = 0
+        self._private = private
         self._supplyDefault = supplyDefault
         self._orderAlphabetically = orderAlphabetically
         OriginalClass = self.__class__
@@ -284,11 +287,10 @@ class Value(Group):
     """Invalid registry value.  If you're getting this message, report it,
     because we forgot to put a proper help string here."""
     def __init__(self, default, help, setDefault=True,
-                 private=False, showDefault=True, **kwargs):
+                 showDefault=True, **kwargs):
         self.__parent = super(Value, self)
         self.__parent.__init__(help, **kwargs)
         self._default = default
-        self._private = private
         self._showDefault = showDefault
         self._help = utils.normalizeWhitespace(help.strip())
         if setDefault:
