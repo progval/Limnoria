@@ -32,7 +32,7 @@
 from test import *
 
 class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('MiscCommands', 'Utilities', 'ChannelDB')
+    plugins = ('MiscCommands', 'Utilities', 'ChannelDB', 'Ctcp')
     def testReplyWhenNotCommand(self):
         try:
             conf.replyWhenNotCommand = True
@@ -71,6 +71,13 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testList(self):
         self.assertNotError('list MiscCommands')
         self.assertNotError('list misccommands')
+        # If Ctcp changes to public, these tests will break.  So if
+        # the next assert fails, change the plugin we test for public/private
+        # to some other non-public plugin.
+        name = 'Ctcp'
+        self.failIf(self.irc.getCallback(name).public)
+        self.assertNotRegexp('list', name)
+        self.assertRegexp('list --private', name)
 
     def testBug(self):
         self.assertNotError('bug')

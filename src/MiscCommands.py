@@ -81,16 +81,21 @@ class MiscCommands(callbacks.Privmsg):
                     irc.queueMsg(callbacks.reply(msg, s))
         
     def list(self, irc, msg, args):
-        """[<module name>]
+        """[--private] [<module name>]
 
         Lists the commands available in the given plugin.  If no plugin is
-        given, lists the public plugins available.
+        given, lists the public plugins available.  If --private is given,
+        lists all commands, not just the public ones.
         """
-        name = privmsgs.getArgs(args, needed=0, optional=1)
+        (optlist, rest) = getopt.getopt(args, '', ['private'])
+        for (option, argument) in optlist:
+            if option == '--private':
+                evenPrivate = True
+        name = privmsgs.getArgs(rest, needed=0, optional=1)
         name = name.lower()
         if not name:
             names = [cb.name() for cb in irc.callbacks
-                     if hasattr(cb, 'public') and cb.public]
+                     if evenPrivate or hasattr(cb, 'public') and cb.public]
             names.sort()
             irc.reply(msg, ', '.join(names))
         else:
@@ -106,7 +111,7 @@ class MiscCommands(callbacks.Privmsg):
                     irc.reply(msg, ', '.join(commands))
                     return
             irc.error(msg, 'There is no plugin named %s, ' \
-                                 'or that plugin has no commands.' % name)
+                           'or that plugin has no commands.' % name)
 
     def help(self, irc, msg, args):
         """<command>
