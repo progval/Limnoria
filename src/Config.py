@@ -120,7 +120,9 @@ class Config(callbacks.Privmsg):
         group = getWrapper(name)
         L = []
         for (vname, v) in group._children.iteritems():
-            if v._added:
+            if hasattr(v, 'channelValue') and v.channelValue:
+                vname = '#' + vname
+            if v._added and not all(ircutils.isChannel, v._added):
                 vname = '@' + vname
             L.append(vname)
         utils.sortBy(str.lower, L)
