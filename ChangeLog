@@ -1,3 +1,5 @@
+	* Added Nickometer plugin, a translation of Infobot's Nickometer.
+	
 	* Added multiple recipient support for notes.
 	
 	* Added BadWords.list, to list the bad words currently being
