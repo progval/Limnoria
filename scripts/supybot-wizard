@@ -480,31 +480,32 @@ def main():
     directory you gave it, but also to stdout.  We find this useful for
     debugging, and also just for the pretty output (it's colored!)""")
     if yn('Would you like to turn off this logging to stdout?') == 'y':
-        confVariables['stdoutLogging'] = False
+        configVariables['stdoutLogging'] = False
     else:
         # conf.something
         myPrint("""Some terminals may not be able to display the pretty colors
         logged to stderr.  By default, though, we turn the colors off for
         Windows machines and leave it on for *nix machines.""")
         if yn('Would you like to turn this colorization off?') == 'y':
-            confVariables['colorizedStdoutLogging'] = False
+            configVariables['colorizedStdoutLogging'] = False
 
-##     # conf.minimumLogPriority
-##     myPrint("""Your bot can handle debug messages at several priorities,
-##     CRITICAL, in decreasing order of priority.  By
-##     default, your bot will log all of these priorities.  You can, however,
-##     specify that he only log messages above a certain priority level.  Of
-##     course, all error messages will still be logged.""")
-##     priority = anything('What would you like the minimum priority to be?  '
-##                         'Just press enter to accept the default.')
-##     while priority and priority not in ['verbose', 'low', 'normal', 'high']:
-##         myPrint("""That's not a valid priority.  Valid priorities include
-##         'verbose,' 'low,' 'normal,' and 'high,' not including the quotes or
-##         the commas.""")
-##         priority = anything('What would you like the minimum priority to be?  '
-##                             'Just press enter to accept the default.')
-##     if priority:
-##         confVariables['minimumLogPriority'] = priority
+    # conf.minimumLogPriority
+    myPrint("""Your bot can handle debug messages at several priorities,
+    CRITICAL, in decreasing order of priority.  By
+    default, your bot will log all of these priorities.  You can, however,
+    specify that he only log messages above a certain priority level.  Of
+    course, all error messages will still be logged.""")
+    priority = anything('What would you like the minimum priority to be?  '
+                        'Just press enter to accept the default.')
+    priority = priority.lower()
+    while priority and priority not in ['debug', 'info',
+                                        'warning', 'error', 'critical']:
+        myPrint("""That's not a valid priority.  Valid priorities include
+        'debug', 'info', 'warning', 'error', and 'critical'""")
+        priority = anything('What would you like the minimum priority to be?  '
+                            'Just press enter to accept the default.')
+    if priority:
+        configVariables['minimumLogPriority']=getattr(logging,priority.upper())
 
     if advanced:
         myPrint("""Here's some stuff you only get to choose if you're an
