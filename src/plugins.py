@@ -133,8 +133,11 @@ class PeriodicFileDownloader(object):
         self.downloadedCounter = {}
         for filename in self.periodicFiles:
             if self.periodicFiles[filename][-1] is None:
-                fullPathname = os.path.join(conf.dataDir, filename)
-                self.lastDownloaded[filename] = os.stat(fullPathname).st_ctime
+                fullname = os.path.join(conf.dataDir, filename)
+                if os.path.exists(fullname):
+                    self.lastDownloaded[filename] = os.stat(fullname).st_ctime
+                else:
+                    self.lastDownloaded[filename] = 0
             else:
                 self.lastDownloaded[filename] = 0
             self.currentlyDownloading = sets.Set()
@@ -143,7 +146,7 @@ class PeriodicFileDownloader(object):
 
     def _downloadFile(self, filename, url, f):
         infd = urllib2.urlopen(url)
-        newFilename = utils.mktemp()
+        newFilename = os.path.join(conf.dataDir, utils.mktemp())
         outfd = file(newFilename, 'wb')
         start = time.time()
         s = infd.read(4096)
