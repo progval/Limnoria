@@ -245,8 +245,6 @@ if __name__ == '__main__':
         # XXX We should turn off logging here for a prettier presentation.
         sys.exit(-1)
 
-
-
     if options.optimize:
         # This doesn't work anymore.
         __builtins__.__debug__ = False
@@ -257,43 +255,6 @@ if __name__ == '__main__':
             except ImportError:
                 log.warning('Psyco isn\'t installed, cannot -OO.')
 
-    conf.allowEval = options.allowEval
-    conf.allowDefaultOwner = options.allowDefaultOwner
-
-    if not os.path.exists(conf.supybot.directories.log()):
-        os.mkdir(conf.supybot.directories.log())
-    if not os.path.exists(conf.supybot.directories.conf()):
-        os.mkdir(conf.supybot.directories.conf())
-    if not os.path.exists(conf.supybot.directories.data()):
-        os.mkdir(conf.supybot.directories.data())
-    if not os.path.exists(conf.supybot.directories.data.tmp()):
-        os.mkdir(conf.supybot.directories.tmp())
-
-    userdataFilename = os.path.join(conf.supybot.directories.conf(),
-                                    'userdata.conf')
-    # Let's open this now since we've got our directories setup.
-    if not os.path.exists(userdataFilename):
-        fd = file(userdataFilename, 'w')
-        fd.write('\n')
-        fd.close()
-    registry.open(userdataFilename)
-
-    import supybot.Owner as Owner
-    import supybot.irclib as irclib
-    import supybot.ircmsgs as ircmsgs
-    import supybot.drivers as drivers
-    import supybot.callbacks as callbacks
-
-    owner = Owner.Class()
-    irclib._callbacks.append(owner)
-
-    if options.debug:
-        for (name, module) in sys.modules.iteritems():
-            if hasattr(module, '__file__') and hasattr(module, '__revision__'):
-                if module.__file__.startswith(supybot.installDir):
-                    print '%s: %s' % (name, module.__revision__.split()[2])
-
-    # XXX This should go before we instantiate Irc objects, so we don't print.
     if os.name == 'posix' and options.daemon:
         def fork():
             child = os.fork()
@@ -343,6 +304,42 @@ if __name__ == '__main__':
             atexit.register(removePidFile)
         except EnvironmentError, e:
             log.error('Error opening pid file %s: %s', pidFile, e)
+
+    conf.allowEval = options.allowEval
+    conf.allowDefaultOwner = options.allowDefaultOwner
+
+    if not os.path.exists(conf.supybot.directories.log()):
+        os.mkdir(conf.supybot.directories.log())
+    if not os.path.exists(conf.supybot.directories.conf()):
+        os.mkdir(conf.supybot.directories.conf())
+    if not os.path.exists(conf.supybot.directories.data()):
+        os.mkdir(conf.supybot.directories.data())
+    if not os.path.exists(conf.supybot.directories.data.tmp()):
+        os.mkdir(conf.supybot.directories.tmp())
+
+    userdataFilename = os.path.join(conf.supybot.directories.conf(),
+                                    'userdata.conf')
+    # Let's open this now since we've got our directories setup.
+    if not os.path.exists(userdataFilename):
+        fd = file(userdataFilename, 'w')
+        fd.write('\n')
+        fd.close()
+    registry.open(userdataFilename)
+
+    import supybot.Owner as Owner
+    import supybot.irclib as irclib
+    import supybot.ircmsgs as ircmsgs
+    import supybot.drivers as drivers
+    import supybot.callbacks as callbacks
+
+    owner = Owner.Class()
+    irclib._callbacks.append(owner)
+
+    if options.debug:
+        for (name, module) in sys.modules.iteritems():
+            if hasattr(module, '__file__') and hasattr(module, '__revision__'):
+                if module.__file__.startswith(supybot.installDir):
+                    print '%s: %s' % (name, module.__revision__.split()[2])
 
     if options.profile:
         import profile
