@@ -406,6 +406,7 @@ class Irc(IrcCommandDispatcher):
         world.ircs.append(self)
         self.originalNick = intern(nick)
         self.nick = self.originalNick
+        self.network = 'unset'
         self.nickmods = cycle(conf.supybot.nickmods())
         self.password = password
         self.user = intern(user or nick)  # Default to nick
@@ -538,7 +539,7 @@ class Irc(IrcCommandDispatcher):
             return None
 
     def do001(self, msg):
-        """Does some logging."""
+        """Logs (and stores) the name of the network."""
         welcome = msg.args[1]
         assert welcome.startswith('Welcome to the ')
         words = welcome.split()
