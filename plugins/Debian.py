@@ -67,7 +67,9 @@ def configure(advanced):
                       to run the file command.  I'll disable this command
                       now.  When you get zgrep in your path, use the command
                       'enable Debian.file' to re-enable the command.""")
-            conf.supybot.defaultCapabilities().add('-Debian.file')
+            capabilities = conf.supybot.capabilities()
+            capabilities.add('-Debian.file')
+            conf.supybot.capabilities.set(capabilities)
         else:
             output("""I can't find zgrep in your path.  If you want to run
                       the file command with any sort of expediency, you'll
@@ -78,7 +80,9 @@ def configure(advanced):
                 conf.supybot.plugins.Debian.pythonZgrep.setValue(True)
             else:
                 output('I\'ll disable file now.')
-                conf.supybot.defaultCapabilities().add('-Debian.file')
+                capabilities = conf.supybot.capabilities()
+                capabilities.add('-Debian.file')
+                conf.supybot.capabilities.set(capabilities)
 
 conf.registerPlugin('Debian')
 conf.registerGlobalValue(conf.supybot.plugins.Debian, 'pythonZgrep',
