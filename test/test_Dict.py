@@ -42,8 +42,8 @@ class DictTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('dictionaries')
 
     def testRandomDictionary(self):
-        self.assertNotError('randomdictionary')
-        self.assertNotError('dict [randomdictionary] moo')
+        self.assertNotError('random')
+        self.assertNotError('dict [random] moo')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
