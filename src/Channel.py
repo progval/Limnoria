@@ -292,7 +292,7 @@ class Channel(callbacks.Privmsg):
                        additional('text')])
 
     def kban(self, irc, msg, args,
-             optlist, channel, bannedNick, length, reason):
+             channel, optlist, bannedNick, length, reason):
         """[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]
 
         If you have the #channel,op capability, this will kickban <nick> for
