@@ -212,9 +212,9 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         module = imp.load_module(name, *moduleInfo)
         linecache.checkcache()
         callback = module.Class()
+        irc.addCallback(callback)
         if hasattr(callback, 'configure'):
             callback.configure(irc)
-        irc.addCallback(callback)
         irc.reply(msg, conf.replySuccess)
 
     '''
@@ -239,18 +239,18 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
         callbacks = irc.removeCallback(name)
 
         if callbacks:
-            for callback in callbacks:
-                callback.die()
-                del callback
-            gc.collect()
             try:
                 moduleInfo = imp.find_module(name)
                 module = imp.load_module(name, *moduleInfo)
                 linecache.checkcache()
+                for callback in callbacks:
+                    callback.die()
+                    del callback
+                gc.collect()
                 callback = module.Class()
+                irc.addCallback(callback)
                 if hasattr(callback, 'configure'):
                     callback.configure(irc)
-                irc.addCallback(callback)
                 irc.reply(msg, conf.replySuccess)
             except ImportError:
                 for callback in callbacks:
