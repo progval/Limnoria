@@ -92,7 +92,8 @@ import supybot.callbacks as callbacks
 
 
 class %s(%s):
-    """Add the help for "@help %s" here."""
+    """Add the help for "@help %s" here (assuming you don\'t implement a %s
+    command).  This should describe *how* to use this plugin."""
     %s
 
 
@@ -132,7 +133,7 @@ __init__Template = '''
 
 """
 Add a description of the plugin (to be presented to the user inside the wizard)
-here.
+here.  This should describe *what* the plugin does.
 """
 
 import supybot
