@@ -197,7 +197,7 @@ class Alias(callbacks.Plugin):
 
         Locks an alias so that no one else can change it.
         """
-        if hasattr(self, name) and self.isCommand(name):
+        if hasattr(self, name) and self.isCommandMethod(name):
             self.aliases[name][1] = True
             conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(True)
             irc.replySuccess()
@@ -210,7 +210,7 @@ class Alias(callbacks.Plugin):
 
         Unlocks an alias so that people can define new aliases over it.
         """
-        if hasattr(self, name) and self.isCommand(name):
+        if hasattr(self, name) and self.isCommandMethod(name):
             self.aliases[name][1] = False
             conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(False)
             irc.replySuccess()
@@ -231,9 +231,8 @@ class Alias(callbacks.Plugin):
             s = format('That name isn\'t valid.  Try %q instead.', realName)
             raise AliasError, s
         name = realName
-        cbs = callbacks.findCallbackForCommand(irc, name)
-        if self in cbs:
-            if hasattr(self, realName) and realName not in self.aliases:
+        if self.isCommandMethod(name):
+            if realName not in self.aliases:
                 s = 'You can\'t overwrite commands in this plugin.'
                 raise AliasError, s
         if name in self.aliases:
@@ -256,7 +255,7 @@ class Alias(callbacks.Plugin):
 
     def removeAlias(self, name, evenIfLocked=False):
         name = callbacks.canonicalName(name)
-        if hasattr(self, name) and self.isCommand(name):
+        if hasattr(self, name) and self.isCommandMethod(name):
             if evenIfLocked or not self.aliases[name][1]:
                 delattr(self.__class__, name)
                 del self.aliases[name]
