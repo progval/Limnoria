@@ -39,6 +39,7 @@ plugins = [
     'Format',
     'Herald',
     'Math',
+    'Network',
     'Misc',
     'Owner',
     'User',
