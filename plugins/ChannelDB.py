@@ -338,7 +338,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         #debug.printf(sql)
         cursor.execute(sql, name)
         if cursor.rowcount == 0:
-            irc.error(msg, 'I have not seen %s.' % name)
+            irc.reply(msg, 'I have not seen %s.' % name)
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
