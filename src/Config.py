@@ -1,0 +1,149 @@
+#!/usr/bin/python
+
+###
+# Copyright (c) 2002, Jeremiah Fincher
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   * Redistributions of source code must retain the above copyright notice,
+#     this list of conditions, and the following disclaimer.
+#   * Redistributions in binary form must reproduce the above copyright notice,
+#     this list of conditions, and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#   * Neither the name of the author of this software nor the name of
+#     contributors to this software may be used to endorse or promote products
+#     derived from this software without specific prior written consent.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+###
+
+"""
+Handles configuration of the bot while it's running.
+"""
+
+import plugins
+
+import conf
+import utils
+import registry
+import privmsgs
+import callbacks
+
+###
+# Now, to setup the registry.
+###
+import registry
+
+class InvalidRegistryName(callbacks.Error):
+    pass
+
+def getWrapper(name):
+    parts = name.split()
+    if not parts or parts[0] != 'supybot':
+        raise InvalidRegistryName, name
+    group = conf.supybot
+    parts.pop(0)
+    while parts:
+        try:
+            group = getattr(group, parts.pop(0))
+        except registry.NonExistentRegistryEntry:
+            raise InvalidRegistryName, name
+    return group
+
+
+class Config(callbacks.Privmsg):
+    def callCommand(self, method, irc, msg, *L):
+        try:
+            callbacks.Privmsg.callCommand(method, irc, msg, *L)
+        except InvalidRegistryName, e:
+            irc.error('%r is not a valid configuration variable.' % e)
+        except registry.InvalidRegistryValue, e:
+            irc.error(str(e))
+
+    def list(self, irc, msg, args):
+        """<group>
+
+        Returns the configuration variables available under the given
+        configuration <group>.
+        """
+        name = privmsgs.getArgs(args)
+        group = getWrapper(name)
+        if hasattr(group, 'getValues'):
+            L = zip(*group.getValues())[0]
+            irc.reply(utils.commaAndify(L))
+        else:
+            irc.error('%r is not a valid configuration group.' % name)
+
+    def get(self, irc, msg, args):
+        """<name>
+
+        Shows the current value of the configuration variable <name>.
+        """
+        name = privmsgs.getArgs(args)
+        wrapper = getWrapper(name)
+        irc.reply(str(wrapper))
+
+    def set(self, irc, msg, args):
+        """<name> <value>
+
+        Sets the current value of the configuration variable <name> to <value>.
+        """
+        (name, value) = privmsgs.getArgs(args, required=2)
+        wrapper = getWrapper(name)
+        wrapper.set(value)
+        irc.replySuccess()
+
+    def help(self, irc, msg, args):
+        """<name>
+
+        Returns the description of the configuration variable <name>.
+        """
+        name = privmsgs.getArgs(args)
+        wrapper = getWrapper(name)
+        irc.reply(msg, wrapper.help)
+
+    def reset(self, irc, msg, args):
+        """<name>
+
+        Resets the configuration variable <name> to its original value.
+        """
+        name = privmsgs.getArgs(args)
+        wrapper = getWrapper(name)
+        wrapper.reset()
+        irc.replySuccess()
+
+    def default(self, irc, msg, args):
+        """<name>
+
+        Returns the default value of the configuration variable <name>.
+        """
+        name = privmsgs.getArgs(args)
+        wrapper = getWrapper(name)
+        irc.reply(wrapper.default)
+
+    def flush(self, irc, msg, args):
+        """<filename>
+
+        Flushes the current registry to the file given.
+        """
+        filename = privmsgs.getArgs(args)
+        registry.close(conf.supybot, filename)
+        irc.replySuccess()
+    flush = privmsgs.checkCapability(flush, 'owner')
+
+
+Class = Config
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
