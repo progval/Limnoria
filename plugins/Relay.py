@@ -113,6 +113,20 @@ class Relay(privmsgs.CapabilityCheckingPrivmsg):
                 otherIrc.queueMsg(ircmsgs.part(channel))
         irc.reply(msg, conf.replySuccess)
 
+    def relaynames(self, irc, msg, args):
+        "[<channel>] (only if not sent in the channel itself.)"
+        channel = privmsgs.getChannel(msg, args)
+        if channel not in self.channels:
+            irc.error(msg, 'I\'m not relaying that channel.')
+            return
+        users = []
+        for (abbreviation, otherIrc) in self.ircs.iteritems():
+            Channel = otherIrc.state.channels[channel]
+            users.append('%s: %s' % (abbreviation, ', '.join(Channel.users)))
+        irc.reply(msg, '; '.join(users))
+        
+            
+
     def _formatPrivmsg(self, nick, abbreviation, msg):
         if ircmsgs.isAction(msg):
             return '* %s/%s %s' % (nick, abbreviation, ircmsgs.unAction(msg))
