@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2002, 2003, 2004, Jeremiah Fincher, Grant Bowman, et alii
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,9 +33,7 @@
 Provides a multitude of fun, useless commands.
 """
 
-__author__ = "jemfinch"
 __revision__ = "$Id$"
-__contributors__ = ["Grant Bowman <grantbow@grantbow.com>"]
 
 import supybot.plugins as plugins
 
