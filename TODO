@@ -1,6 +1,8 @@
 Roughly in order of precedence (the closer to the front of the file,
 the more likely it'll be done before next release):
 
+* Karma needs to use invalidCommand so it can be nested.
+
 * We need to store the key for channels in the registry and have an
   easy way for plugins to send joins to channels based on their
   registry configuration.
