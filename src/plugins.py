@@ -212,32 +212,65 @@ class ConfigurableDictionary(object):
             self.channels[None][name] = default
 
     def get(self, name, channel=None):
-        return self.channels[channel][name]
+        try:
+            return self.channels[channel][name]
+        except KeyError:
+            return self.channels[None][name]
 
     def set(self, name, value, channel=None):
-        self.channels[channel][name] = self.types[value]
+        d = self.channels.setdefault(channel, {})
+        d[name] = self.types[name](value)
+
+    def help(self, name):
+        return self.helps[name]
+
+    def names(self):
+        L = self.helps.keys()
+        L.sort()
+        return L
 
     # XXX: Make persistent.
 
 class Configurable(object):
     """A mixin class to provide a "config" command that can be consistent
     across all plugins, in order to unify the configuration for each plugin.
+
+    Plugins subclassing this should have a "configurables" attribute which is
+    a ConfigurableDictionary initialized with a list of 4-tuples of
+    (name, type, default, help).  Name is the string name of the config
+    variable; type is a function taking a string and returning some value of
+    the type the variable is supposed to be; default is the default value the
+    variable should take on; help is a string that'll be returned to describe
+    the purpose of the config variable.
     """
-    def __init__(self):
-        self.configurables = ConfigurableDictionary(self.configurables)
-
     def config(self, irc, msg, args):
-        """[<channel>] <name> [<value>]
+        """[<channel>] [<name>] [<value>]
 
-        Sets the config variable <name> to <value> on <channel>.  If <value>
-        isn't given, returns the current value of <name> on <channel>.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
+        Sets the value of config variable <name> to <value> on <channel>.  If
+        <name> is given but <value> is not, returns the help and current value
+        for <name>.  If neither <name> nor <value> is given, returns the valid
+        config variables for this plugin.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
+        try:
+            channel = privmsgs.getChannel(msg, args)
+        except callbacks.ArgumentError:
+            channel = None
         (name, value) = privmsgs.getArgs(args, needed=0, optional=2)
         if not name:
-            pass
+            irc.reply(msg, utils.commaAndify(self.configurables.names()))
+            return
+        if not value:
+            help = self.configurables.help(name)
+            value = self.configurables.get(name)
+            irc.reply(msg, '%s: %s  (Current value: %r)' % (name, help, value))
+            return
+        try:
+            self.configurables.set(name, value, channel)
+            irc.reply(msg, conf.replySuccess)
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
+        
             
 
 class ToggleDictionary(object):

@@ -64,18 +64,18 @@ def configure(onStart, afterConnect, advanced):
         if yn('Do you want the Ebay snarfer enabled by default?') == 'n':
             onStart.append('Ebay toggle auction off')
 
-class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
+class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     """
     Module for eBay stuff. Currently contains a URL snarfer and a command to
     get info about an auction.
     """
     threaded = True
     regexps = ['ebaySnarfer']
-    toggles = plugins.ToggleDictionary({'auction' : True})
-
+    configurables = plugins.ConfigurableDictionary(
+        [('snarfer', utils.safeEval, True, 'Controls the auction snarfer.')]
+        )
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        plugins.Toggleable.__init__(self)
 
     _reopts = re.I | re.S
     _info = re.compile(r'<title>eBay item (\d+) \([^)]+\) - ([^<]+)</title>',
@@ -119,7 +119,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     def ebaySnarfer(self, irc, msg, match):
         r"http://cgi\.ebay\.(?:com(?:.au)?|ca|co.uk)/(?:.*?/)?(?:ws/)?"\
         r"eBayISAPI\.dll\?ViewItem(?:&item=\d+|&category=\d+)+"
-        if not self.toggles.get('auction', channel=msg.args[0]):
+        if not self.configurables.get('snarfer', channel=msg.args[0]):
             return
         url = match.group(0)
         #debug.printf(url)
