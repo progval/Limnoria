@@ -336,7 +336,7 @@ class MoobotFactoids(callbacks.Privmsg):
             newfact = newfact[len(self._actionTag):]
             type = 'action'
         newfact = newfact.strip()
-        newfact = plugins.standardSubstitute(irc, msg, newfact)
+        newfact = ircutils.standardSubstitute(irc, msg, newfact)
         return (type, newfact)
 
     def tokenizedCommand(self, irc, msg, tokens):

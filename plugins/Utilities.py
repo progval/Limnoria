@@ -107,7 +107,7 @@ class Utilities(callbacks.Privmsg):
         $botnick, $channel, $user, $host, $today, $now, and $randomDate are all
         handled appropriately.
         """
-        text = plugins.standardSubstitute(irc, msg, text)
+        text = ircutils.standardSubstitute(irc, msg, text)
         irc.reply(text, prefixName=False)
     echo = wrap(echo, ['text'])
 

@@ -111,7 +111,7 @@ class Dunno(callbacks.Privmsg):
             if dunno is not None:
                 dunno = dunno.text
                 prefixName = self.registryValue('prefixNick', channel)
-                dunno = plugins.standardSubstitute(irc, msg, dunno)
+                dunno = ircutils.standardSubstitute(irc, msg, dunno)
                 irc.reply(dunno, prefixName=prefixName)
 
     def add(self, irc, msg, args, user, at, channel, dunno):

@@ -111,7 +111,7 @@ class Herald(callbacks.Privmsg):
             except KeyError:
                 default = self.registryValue('default', channel)
                 if default:
-                    default = plugins.standardSubstitute(irc, msg, default)
+                    default = ircutils.standardSubstitute(irc, msg, default)
                     msgmaker = ircmsgs.privmsg
                     if self.registryValue('default.notice', channel):
                         msgmaker = ircmsgs.notice
@@ -128,7 +128,7 @@ class Herald(callbacks.Privmsg):
                    if now - self.lastParts[channel, id] < i:
                        return
                 self.lastHerald[channel, id] = now
-                herald = plugins.standardSubstitute(irc, msg, herald)
+                herald = ircutils.standardSubstitute(irc, msg, herald)
                 irc.reply(herald, prefixName=False)
 
     def doPart(self, irc, msg):

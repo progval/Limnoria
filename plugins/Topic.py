@@ -100,7 +100,7 @@ def getTopic(irc, msg, args, state, format=True):
     if format:
         env = {'topic': topic}
         formatter = state.cb.registryValue('format', state.channel)
-        topic = plugins.standardSubstitute(irc, msg, formatter, env)
+        topic = ircutils.standardSubstitute(irc, msg, formatter, env)
     state.args.append(topic)
 
 def getTopicNumber(irc, msg, args, state):
