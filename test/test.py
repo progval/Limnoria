@@ -113,10 +113,15 @@ class PluginTestCase(unittest.TestCase):
         self.irc = irclib.Irc(nick)
         while self.irc.takeMsg():
             pass
-        for name in self.plugins:
+        if isinstance(plugins, str):
             module = __import__(name)
             plugin = module.Class()
             self.irc.addCallback(plugin)
+        else:
+            for name in self.plugins:
+                module = __import__(name)
+                plugin = module.Class()
+                self.irc.addCallback(plugin)
 
     def tearDown(self):
         self.irc.die()
