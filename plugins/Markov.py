@@ -314,7 +314,7 @@ class Markov(callbacks.Privmsg):
                     return
                 words.append(follower)
             if givenArgs:
-                irc.reply(' '.join(words))
+                irc.reply(' '.join(words[:-1]))
             else:
                 irc.reply(' '.join(resp))
         self.q.enqueue(markov)
