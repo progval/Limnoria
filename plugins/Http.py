@@ -249,8 +249,8 @@ class Http(callbacks.Privmsg):
             return
         quote = m.group(1)
         quote = ' // '.join(quote.splitlines())
-        for (def, replacement) in htmlentitydefs.entitydefs.iteritems():
-            quote = quote.replace(def, replacement)
+        for (entity, replacement) in htmlentitydefs.entitydefs.iteritems():
+            quote = quote.replace(entity, replacement)
         irc.reply(msg, quote)
         
     _acronymre = re.compile('<td[^>]*><b>[^<]+</b></td>[^<]+<td[^>]*>(\w+)')
