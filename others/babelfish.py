@@ -123,6 +123,12 @@ def translate(phrase, from_lang, to_lang):
         print "Unexpected error:", sys.exc_info()[0]
 
     html = response.read()
+    try:
+        begin = html.index('<!-- Target text (content) -->')
+        end = html.index('<!-- end: Target text (content) -->')
+        html = html[begin:end]
+    except ValueError:
+        pass
     for regex in __where:
         match = regex.search(html)
         if match:
@@ -134,28 +140,26 @@ def translate(phrase, from_lang, to_lang):
 def babelize(phrase, from_language, through_language, limit = 12, callback = None):
     phrase = clean(phrase)
     seen = { phrase: 1 }
+    results = []
     if callback:
-        callback(phrase)
+        def_callback = callback
     else:
-        results = [ phrase ]
+        def_callback = results.append
+    def_callback(phrase)
     flip = { from_language: through_language, through_language: from_language }
     next = from_language
     for i in range(limit):
         phrase = translate(phrase, next, flip[next])
         if seen.has_key(phrase):
-            next = flip[next]
             break
         seen[phrase] = 1
-        if callback:
-            callback(phrase)
-        else:
-            results.append(phrase)
+        def_callback(phrase)
         next = flip[next]
     # next is set to the language of the last entry.  this should be the same
     # as the language we are translating to
     if next != through_language:
         phrase = translate(phrase, next, flip[next])
-        results.append(phrase)
+        def_callback(phrase)
     if not callback:
         return results
 
