@@ -75,6 +75,8 @@ if sqlite is not None:
     class URLSnarferTestCase(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('URLSnarfer',)
         def test(self):
+            self.assertNotError('toggle tinyreply off')
+            self.assertNotError('toggle tinysnarf off')
             counter = 0
             self.assertNotError('randomurl')
             for url in urls:
@@ -92,14 +94,41 @@ if sqlite is not None:
             self.assertNotError('randomurl')
 
         def testDefaultNotFancy(self):
+            self.assertNotError('toggle tinyreply off')
+            self.assertNotError('toggle tinysnarf off')
             self.feedMsg(urls[0])
             self.assertResponse('lasturl', urls[0])
 
         def testAction(self):
+            self.assertNotError('toggle tinyreply off')
+            self.assertNotError('toggle tinysnarf off')
             self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
             self.assertNotRegexp('lasturl', '\\x01')
-            
 
+        def testTinyurl(self):
+            self.assertNotError('toggle tinyreply on')
+            self.assertNotError('toggle tinysnarf off')
+            self.assertRegexp('tinyurl http://sourceforge.net/tracker/?'\
+                'func=add&group_id=58965&atid=489447',
+                r'http://tinyurl.com/\w{4}')
+            self.assertNotError('toggle tinysnarf on')
+            self.assertRegexp('tinyurl http://sourceforge.net/tracker/?'\
+                'func=add&group_id=58965&atid=489447',
+                r'http://tinyurl.com/\w{4}')
+            self.assertNotError('toggle tinyreply off')
+            self.assertRegexp('tinyurl http://sourceforge.net/tracker/?'\
+                'func=add&group_id=58965&atid=489447',
+                r'http://tinyurl.com/\w{4}')
+
+        def testTinysnarf(self):
+            self.assertNotError('toggle tinyreply off')
+            self.assertNotError('toggle tinysnarf on')
+            self.assertNoResponse('http://sourceforge.net/tracker/?'\
+                'func=add&group_id=58965&atid=489447')
+            self.assertNotError('toggle tinyreply on')
+            self.assertRegexp('http://sourceforge.net/tracker/?'\
+                'func=add&group_id=58965&atid=489447',
+                r'TinyURL: http://tinyurl.com/\w{4}')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

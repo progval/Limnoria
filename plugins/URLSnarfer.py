@@ -41,11 +41,13 @@ import os
 import re
 import time
 import getopt
+import urllib2
 import urlparse
 
 import sqlite
 
 import conf
+import debug
 import utils
 import ircmsgs
 import privmsgs
@@ -80,11 +82,16 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load URLSnarfer')
 
-class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg):
+class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg,
+                 plugins.Toggleable):
+    toggles = plugins.ToggleDictionary({'tinysnarf':True,
+                                        'tinyreply':True})
+    _maxUrlLen = 46
     def __init__(self):
         self.nextMsgs = {}
         callbacks.Privmsg.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
+        plugins.Toggleable.__init__(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):
@@ -102,6 +109,11 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg):
                           protocol TEXT,
                           site TEXT,
                           filename TEXT
+                          )""")
+        cursor.execute("""CREATE TABLE tinyurls (
+                          id INTEGER PRIMARY KEY,
+                          url_id INTEGER,
+                          tinyurl TEXT
                           )""")
         db.commit()
         return db
@@ -134,9 +146,40 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg):
                               (NULL, %s, %s, %s, %s, %s, '', %s, %s, %s)""",
                            url, added, addedBy, msg.args[1], previousMsg,
                            protocol, site, filename)
+            if self.toggles.get('tinysnarf', channel=msg.args[0]) and\
+                len(url) > self._maxUrlLen:
+                cursor.execute("""SELECT id FROM urls WHERE url=%s AND
+                    added=%s AND added_by=%s""", url, added, addedBy)
+                if cursor.rowcount != 0:
+                    #debug.printf(url)
+                    tinyurl = self._getTinyUrl(url)
+                    if tinyurl:
+                        id = int(cursor.fetchone()[0])
+                        cursor.execute("""INSERT INTO tinyurls VALUES
+                            (NULL, %s, %s)""", id, tinyurl)
+                    if self.toggles.get('tinyreply', channel=msg.args[0]):
+                        irc.queueMsg(callbacks.reply(msg, 'TinyURL: %s' %
+                            tinyurl, prefixName=False))
             key = (msg.nick, channel)
             self.nextMsgs.setdefault(key, []).append((url, added))
         db.commit()
+
+    _tinyRe = re.compile(r'23 characters:\n<blockquote>(http://tinyurl.com/\w{4})'\
+        '</blockquote>')
+    def _getTinyUrl(self, url, cmd=False):
+        try:
+            fd = urllib2.urlopen('http://tinyurl.com/create.php?url=%s' % url)
+            s = fd.read()
+            fd.close()
+            m = self._tinyRe.search(s)
+            if m is None:
+                return None
+            return m.group(1)
+        except urllib2.HTTPError, e:
+            if cmd:
+                raise callbacks.Error, e.msg()
+            else:
+                debug.msg(e.msg())
 
     def _formatUrl(self, url, added, addedBy):
         #debug.printf((url, added, addedBy))
@@ -165,6 +208,22 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg):
             irc.reply(msg, 'I have no URLs in my database for %s' % channel)
         else:
             irc.reply(msg, self._formatUrlWithId(*cursor.fetchone()))
+
+    def tinyurl(self, irc, msg, args):
+        """<url>
+
+        Returns a TinyURL.com version of <url>
+        """
+        url = privmsgs.getArgs(args)
+        if self.toggles.get('tinysnarf', channel=msg.args[0]) and\
+            self.toggles.get('tinyreply', channel=msg.args[0]):
+            return
+        url = self._getTinyUrl(url)
+        if not url:
+            irc.error(msg, 'Could not parse the TinyURL.com results page. '\
+                '(%s)' % conf.replyPossibleBug)
+        else:
+            irc.reply(msg, url)
 
     def geturl(self, irc, msg, args):
         """[<channel>] <id>
