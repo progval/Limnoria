@@ -166,6 +166,7 @@ class Notes(callbacks.Privmsg):
                               WHERE notes.to_id=(SELECT id
                                                  FROM users
                                                  WHERE name=%s)""", name)
+            self.db.commit()
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
 
     def sendnote(self, irc, msg, args):
