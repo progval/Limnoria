@@ -343,7 +343,7 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
-            s = '%s was last seen here %s ago saying %s' % \
+            s = '%s was last seen here %s ago saying %r' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
             irc.reply(msg, s)
 
