@@ -110,7 +110,7 @@ conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
 conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
                          'removecapability', registry.String('Admin', ''))
 conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
-                         'reload', registry.String('Misc', ''))
+                         'reload', registry.String('Owner', ''))
 
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
