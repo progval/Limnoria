@@ -134,6 +134,8 @@ class Weather(callbacks.Privmsg):
                         break
                     except NoLocation:
                         self.log.info('%s lookup failed as backup.', command)
+            irc.error('Could not retrieve weather for %s.' %
+                      utils.quoted(location))
     weather = wrap(weather, [additional('text')])
 
 

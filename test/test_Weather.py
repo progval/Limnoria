@@ -71,6 +71,9 @@ if network:
         def testNoEscapingWebError(self):
             self.assertNotRegexp('ham "buenos aires"', 'WebError')
 
+        def testWeatherRepliesWithBogusLocation(self):
+            self.assertRegexp('weather some place that doesn\'t exist', r'.')
+
         def testConvertConfig(self):
             try:
                 convert = conf.supybot.plugins.Weather.convert()
