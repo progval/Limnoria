@@ -678,7 +678,7 @@ class Fun(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
 
         if random.random() < .03:
-            irc.reply(msg, randomlyLaugh('NO YUO'))
+            irc.reply(msg, randomlyLaugh('NO YUO', probability=1))
             return
 
         alwaysInsertions = {
