@@ -3,6 +3,11 @@ Version 0.80.0pre3
 supybot.channels doesn't exist anymore; now the only list of channels
 to join is per-network, in supybot.networks.<network>.channels.
 
+We weren't serializing supybot.replies.* properly in older versions.
+Now we are, but the old, improperly serialized versions won't work
+properly.  Remove from your configuration file all variables
+beginning with "supybot.replies" before you start the bot.
+
 The URL database has been changed again, but it will use a different
 filename so you shouldn't run into conflicts, just a newly-empty
 database.
