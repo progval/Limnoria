@@ -95,7 +95,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
 
         Sets the default capability to be allowed for any command.
         """
-        capability = privmsgs.getArgs(args)
+        capability = callbacks.canonicalName(privmsgs.getArgs(args))
         conf.defaultCapabilities.add(capability)
         irc.reply(msg, conf.replySuccess)
 
@@ -104,7 +104,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
 
         Unsets the default capability for any command.
         """
-        capability = privmsgs.getArgs(args)
+        capability = callbacks.canonicalName(privmsgs.getArgs(args))
         conf.defaultCapabilities.remove(capability)
         irc.reply(msg, conf.replySuccess)
 
