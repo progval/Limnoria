@@ -1,3 +1,7 @@
+	* Added conf.supybot.plugins.Herald.defaultHerald, which provides
+	a default herald to use for unregistered users.  Herald.default was
+	also added as a friendly interface to managing the defaultHerald.
+
 	* Added Weather.wunder, which uses wunderground.com to report the
 	current weather status.
 

@@ -38,6 +38,7 @@ __revision__ = "$Id$"
 
 import os
 import time
+import getopt
 
 import log
 import conf
@@ -70,6 +71,10 @@ conf.registerChannelValue(conf.supybot.plugins.Herald, 'heralding',
 conf.registerChannelValue(conf.supybot.plugins.Herald, 'throttleTime',
     registry.PositiveInteger(600, """Determines the minimum number of seconds
     between heralds."""))
+conf.registerChannelValue(conf.supybot.plugins.Herald, 'defaultHerald',
+    registry.String('', """Sets the default herald to use.  If a user has a
+    personal herald specified, that will be used instead.  If set to the empty
+    string, the default herald will be disabled."""))
 conf.registerChannelValue(conf.supybot.plugins.Herald, 'throttleTimeAfterPart',
     registry.PositiveInteger(60, """Determines the minimum number of seconds
     after parting that the bot will not herald the person when he or she
@@ -96,6 +101,9 @@ class Herald(callbacks.Privmsg):
                 id = ircdb.users.getUserId(msg.prefix)
                 herald = self.db[channel, id]
             except KeyError:
+                default = self.registryValue('defaultHerald', channel)
+                if default:
+                    irc.queueMsg(ircmsgs.privmsg(msg.nick, default))
                 return
             now = time.time()
             throttle = self.registryValue('throttleTime', channel)
@@ -125,6 +133,35 @@ class Herald(callbacks.Privmsg):
             else:
                 raise KeyError
         return id
+
+    def default(self, irc, msg, args):
+        """[<channel>] [--remove|<msg>]
+
+        If <msg> is given, sets the default herald to <msg>.  A <msg> of ""
+        will remove the default herald.  If <msg> is not given, returns the
+        current default herald.  <channel> is only necessary if the message
+        isn't sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        (optlist, rest) = getopt.getopt(args, '', ['remove'])
+        if optlist and rest:
+            raise callbacks.ArgumentError
+        for (option, _) in optlist:
+            if option == '--remove':
+                conf.supybot.plugins.Herald.defaultHerald.set("")
+                irc.replySuccess()
+                return
+        msg = privmsgs.getArgs(rest, required=0, optional=1)
+        if not msg:
+            resp = self.registryValue('defaultHerald', channel)
+            if not resp:
+                irc.reply('I do not have a default herald set.')
+                return
+            else:
+                irc.reply(resp)
+                return
+        conf.supybot.plugins.Herald.defaultHerald.set(msg)
+        irc.replySuccess()
 
     def get(self, irc, msg, args):
         """[<channel>] <user|nick|hostmask>
