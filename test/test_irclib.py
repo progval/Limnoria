@@ -31,6 +31,7 @@
 
 from test import *
 
+import copy
 import pickle
 
 import conf
@@ -130,8 +131,21 @@ class IrcMsgQueueTestCase(unittest.TestCase):
 class ChannelStateTestCase(unittest.TestCase):
     def testPickleCopy(self):
         c = irclib.ChannelState()
-        c1 = pickle.loads(pickle.dumps(c))
         self.assertEqual(pickle.loads(pickle.dumps(c)), c)
+        c.addUser('jemfinch')
+        c1 = pickle.loads(pickle.dumps(c))
+        self.assertEqual(c, c1)
+        c.removeUser('jemfinch')
+        self.failIf('jemfinch' in c.users)
+        self.failUnless('jemfinch' in c1.users)
+
+    def testCopy(self):
+        c = irclib.ChannelState()
+        c.addUser('jemfinch')
+        c1 = copy.deepcopy(c)
+        c.removeUser('jemfinch')
+        self.failIf('jemfinch' in c.users)
+        self.failUnless('jemfinch' in c1.users)
 
     def testAddUser(self):
         c = irclib.ChannelState()
@@ -189,6 +203,31 @@ class IrcStateTestCase(unittest.TestCase):
             except Exception:
                 pass
         self.assertEqual(state, pickle.loads(pickle.dumps(state)))
+
+    def testCopy(self):
+        state = irclib.IrcState()
+        self.assertEqual(state, state.copy())
+        for msg in msgs:
+            try:
+                state.addMsg(self.irc, msg)
+            except Exception:
+                pass
+        self.assertEqual(state, state.copy())
+
+        state = irclib.IrcState()
+
+    def testJoin(self):
+        st = irclib.IrcState()
+        st.addMsg(self.irc, ircmsgs.join('#foo', prefix=self.irc.prefix))
+        self.failUnless('#foo' in st.channels)
+        self.failUnless(self.irc.nick in st.channels['#foo'].users)
+        st.addMsg(self.irc, ircmsgs.join('#foo', prefix='foo!bar@baz'))
+        self.failUnless('foo' in st.channels['#foo'].users)
+        st2 = st.copy()
+        st.addMsg(self.irc, ircmsgs.quit(prefix='foo!bar@baz'))
+        self.failIf('foo' in st.channels['#foo'].users)
+        self.failUnless('foo' in st2.channels['#foo'].users)
+        
 
     def testEq(self):
         state1 = irclib.IrcState()

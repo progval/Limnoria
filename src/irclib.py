@@ -207,7 +207,7 @@ class ChannelState(object):
         # without changing any of his categories.
         for s in (self.users, self.ops, self.halfops, self.voices):
             if oldNick in s:
-                s.discard(oldNick)
+                s.remove(oldNick)
                 s.add(newNick)
 
     def removeUser(self, user):
@@ -266,9 +266,9 @@ class IrcState(IrcCommandDispatcher):
 
     def copy(self):
         ret = self.__class__()
-        ret.history = copy.copy(self.history)
-        ret.nicksToHostmasks = copy.copy(self.nicksToHostmasks)
-        ret.channels = copy.copy(self.channels)
+        ret.history = copy.deepcopy(self.history)
+        ret.nicksToHostmasks = copy.deepcopy(self.nicksToHostmasks)
+        ret.channels = copy.deepcopy(self.channels)
         return ret
 
     def addMsg(self, irc, msg):
