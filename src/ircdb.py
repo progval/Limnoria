@@ -399,7 +399,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
     # capability in a given channel.  This should be easy, but the various
     # different cases are all hard to get right.
 
-    if startup:
+    if world.startup:
         # Are we in special startup mode?
         if isAntiCapability(capability):
             return False
@@ -473,13 +473,4 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
     else:
         return False
 
-
-#################################################
-#################################################
-#################################################
-## Don't even *think* about messing with this. ##
-#################################################
-#################################################
-#################################################
-startup = False
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -113,16 +113,16 @@ def processConfigFile(filename):
         irc = irclib.Irc(nick, user, ident)
         for Class in privmsgs.standardPrivmsgModules:
             irc.addCallback(Class())
-        ircdb.startup = True
+        world.startup = True
         lines = m.get_payload().splitlines()
         (startup, after376) = tuple(itersplit(lines, lambda s: not s))
-        debug.printf('startup: %r' % startup)
-        debug.printf('after376: %r' % after376)
+        #debug.printf('startup: %r' % startup)
+        #debug.printf('after376: %r' % after376)
         for line in filter(None, startup):
             if not line.startswith('#'):
                 irc.feedMsg(ircmsgs.privmsg(irc.nick, line))
         irc.reset()
-        ircdb.startup = False
+        world.startup = False
         msgs = [ircmsgs.privmsg(irc.nick, line) for line in after376]
         irc.addCallback(ConfigAfter376(msgs))
         driver = asyncoreDrivers.AsyncoreDriver(server)
