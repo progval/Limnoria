@@ -1,3 +1,10 @@
+	* Changed channel capabilities to use a comma to separate the
+	channel from the capability instead of a period.  This is because
+	channels can include periods (but not commas) and since we now
+	allow "plugin.command" capabilities, there's no way to know
+	whether a given dot is separating the channel from the capability
+	or the plugin from the command.
+	
 	* Removed Status.bestuptime, since it was buggy and no one felt
 	like maintaining it.
 	
