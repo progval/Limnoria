@@ -40,14 +40,18 @@ import textwrap
 import traceback
 
 import conf
+conf.dataDir = 'test-data'
+conf.confDir = 'test-conf'
+conf.logDir = 'test-log'
+
 import debug
 import callbacks
 
 
 def makePluginDocumentation(filename):
     print 'Generating documentation for %s' % filename
-    trClasses = { 'lightyellow':'lightgreen', 'lightgreen':'lightyellow' }
-    trClass = 'lightyellow'
+    trClasses = { 'treven':'trodd', 'trodd':'treven' }
+    trClass = 'treven'
     pluginName = filename.split('.')[0]
     moduleInfo = imp.find_module(pluginName, conf.pluginDirs)
     module = imp.load_module(pluginName, *moduleInfo)
