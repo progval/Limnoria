@@ -199,6 +199,17 @@ class IrcDictTestCase(unittest.TestCase):
         d['#fOOBAR[]'] = 'blah'
         self.assertEqual('blah', d['#foobar{}'])
 
+class IrcSetTestCase(unittest.TestCase):
+    def test(self):
+        s = ircutils.IrcSet()
+        s.add('foo')
+        s.add('bar')
+        self.failUnless('foo' in s)
+        self.failUnless('FOO' in s)
+        s.discard('alfkj')
+        s.remove('FOo')
+        self.failIf('foo' in s)
+        self.failIf('FOo' in s)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
