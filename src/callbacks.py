@@ -565,7 +565,8 @@ class Privmsg(irclib.IrcCallback):
     noIgnore = False
     handled = False
     commandArgs = ['self', 'irc', 'msg', 'args']
-    _mores = {} # This must be class-scope, so all subclasses use the same one.
+    # This must be class-scope, so all subclasses use the same one.
+    _mores = ircutils.IrcDict()
     def __init__(self):
         self.__parent = super(Privmsg, self)
         self.Proxy = IrcObjectProxy
