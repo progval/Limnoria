@@ -57,7 +57,17 @@ import privmsgs
 import registry
 import callbacks
 
+def ircToLowerOrInt(x):
+    if isinstance(x, int):
+        return x
+    else:
+        return ircutils.toLower(x)
+    
+class IrcStringAndIntDict(utils.InsensitivePreservingDict):
+    key = staticmethod(ircToLowerOrInt)
+    
 class SeenDB(plugins.ChannelUserDB):
+    IdDict = IrcStringAndIntDict
     def serialize(self, v):
         return list(v)
 

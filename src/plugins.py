@@ -161,6 +161,7 @@ class ChannelDBHandler(object):
 
 
 class ChannelUserDictionary(UserDict.DictMixin):
+    IdDict = dict
     def __init__(self):
         self.channels = ircutils.IrcDict()
 
@@ -169,7 +170,7 @@ class ChannelUserDictionary(UserDict.DictMixin):
 
     def __setitem__(self, (channel, id), v):
         if channel not in self.channels:
-            self.channels[channel] = {}
+            self.channels[channel] = self.IdDict()
         self.channels[channel][id] = v
 
     def __delitem__(self, (channel, id)):
