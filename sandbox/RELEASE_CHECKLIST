@@ -8,6 +8,7 @@ Make sure the ChangeLog has been given a proper header and that its
 Update the version in conf.py.
 Update the version in setup.py.
 Update the version in scripts/supybot
+Make sure the man pages are up-to-date.
 Commit these updates, even though it seems useless.
 Make a release-MAJOR_MINOR_PATCHLEVEL tag.  (cvs tag <tag>)
 Make a release-MAJOR_MINOR_PATCHLEVEL-branch branch tag.  (cvs tag -b <tag>)
@@ -32,3 +33,4 @@ Announce the release on comp.lang.python and comp.lang.python.announce.
 Add a topic to #supybot announcing the release.
 Send a GPG-signed tar.gz to jamessan for packing in Debian.
 Update the version in version.txt and upload to the website.
+Generate the documentation and upload to the website.
