@@ -539,11 +539,11 @@ class Directory(registry.String):
         return v
 
     def dirize(self, filename):
-        dir = self()
-        dirname = os.path.basename(filename)
-        if not dirname.endswith(dir): # ??? Should this be an "in" test instead?
-            return os.path.join(dir, os.path.basename(filename))
-        return filename
+        if os.path.isabs(filename):
+            selfAbs = os.path.abspath(self())
+            commonPrefix = os.path.commonprefix([selfAbs, filename])
+            filename = filename[len(commonPrefix)+1:] # +1 for extra /.
+        return os.path.join(self(), filename)
 
 class DataFilename(registry.String):
     def __call__(self):
