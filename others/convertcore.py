@@ -451,12 +451,6 @@ def convert(num, unit1, unit2):
     num is the factor for the first unit. Raises UnitDataError for 
     various errors.
     """
-
-    global fromUnit
-    global toUnit
-    global types
-    global unitsByType
-    
     fromUnit.update(unit1)
     toUnit.update(unit2)
 
@@ -475,10 +469,6 @@ def units(type):
     """ Return comma separated string list of units of given type, or 
         a list of types if the argument is not valid.
     """
-
-    global types
-    global unitsByType
-
     if type in types:
         return '%s units: %s' % (type, ', '.join(unitsByType[type]))
     else:
