@@ -17,7 +17,7 @@ import debug
 import utils
 import ircutils
 
-debug.minimumDebugPriority = 'high'
+debug.minimumPriority = 'high'
 
 useColor = False
 
@@ -469,7 +469,7 @@ if __name__ == '__main__':
         if yn('Would you like to turn this colorization off?') == 'y':
             debugVariables['colorterm'] = False
 
-    # debug.minimumDebugPriority
+    # debug.minimumPriority
     myPrint("""Your bot can handle debug messages at four priorities, 'high,'
     'normal,' 'low,' and 'verbose,' in decreasing order of priority.  By
     default, your bot will log all of these priorities.  You can, however,
@@ -484,7 +484,7 @@ if __name__ == '__main__':
         priority = anything('What would you like the minimum priority to be?  '
                             'Just press enter to accept the default.')
     if priority:
-        debugVariables['minimumDebugPriority'] = priority
+        debugVariables['minimumPriority'] = priority
 
     if advanced:
         myPrint("""Here's some stuff you only get to choose if you're an

@@ -75,9 +75,9 @@ else:
 # printf: True if printf debugging messages should be printed.
 printf = False
 
-# minimumDebugPriority: Lowest priority logged;
-#                       One of {'verbose', 'low', 'normal', 'high'}.
-minimumDebugPriority = 'verbose'
+# minimumPriority: Lowest priority logged;
+#                  One of {'verbose', 'low', 'normal', 'high'}.
+minimumPriority = 'verbose'
 
 # deadlyExceptions: Exceptions that should cause immediate failure.
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
@@ -197,7 +197,7 @@ def unrecoverableException():
     exit(-1)
 
 def msg(s, priority='low'):
-    if priorities[priority] >= priorities[minimumDebugPriority]:
+    if priorities[priority] >= priorities[minimumPriority]:
         if stderr:
             if colorterm:
                 sys.stderr.write(priorityColors.get(priority))
