@@ -53,7 +53,10 @@ import ircutils
 import privmsgs
 import callbacks
 
-__all__ = ['ChannelDBHandler', 'PeriodicFileDownloader', 'ToggleDictionary']
+__all__ = ['ChannelDBHandler',
+           'PeriodicFileDownloader',
+           'ConfigurableDictionary',
+           'Configurable']
 
 class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.
@@ -324,121 +327,6 @@ class Configurable(object):
         except ConfigurableTypeError, e:
             irc.error(msg, str(e))
         
-            
-
-class ToggleDictionary(object):
-    """I am ToggleDictionary! Hear me roar!
-    """
-    def __init__(self, toggles):
-        if not toggles:
-            raise ValueError, 'At least one toggle must be provided.'
-        self.channels = ircutils.IrcDict()
-        self.defaults = {}
-        for (k, v) in toggles.iteritems():
-            self.defaults[callbacks.canonicalName(k)] = v
-
-    def _getDict(self, channel):
-        #debug.printf('_getDict(%s)' % channel)
-        if channel is None:
-            return self.defaults
-        else:
-            assert ircutils.isChannel(channel) or ircutils.isNick(channel)
-            if channel not in self.channels:
-                self.channels[channel] = self.defaults.copy()
-            return self.channels[channel]
-
-    def get(self, key, channel=None):
-        key = callbacks.canonicalName(key)
-        return self._getDict(channel)[key]
-
-    def toggle(self, key, value=None, channel=None):
-        #debug.printf('inside toggle: %s %s %s' % (key, value, channel))
-        if channel is not None:
-            assert ircutils.isChannel(channel) or ircutils.isNick(channel)
-        d = self._getDict(channel)
-        key = callbacks.canonicalName(key)
-        if value is None:
-            d[key] = not d[key] # Raises KeyError, we want this.
-        else:
-            # I considered this, to save the if statement:
-            # d[key] = (d[key] ^ d[key]) or value
-            # But didn't, so people can provide non-boolean keys.
-            if key in d:
-                d[key] = value
-            else:
-                raise KeyError, key
-
-    def toString(self, channel=None):
-        resp = []
-        d = self._getDict(channel)
-        for (k, v) in d.iteritems():
-            if v:
-                resp.append('%s: On' % k)
-            else:
-                resp.append('%s: Off' % k)
-        resp.sort()
-        return '(%s)' % '; '.join(resp)
-
-
-class Toggleable(object):
-    """A mixin class to provide a 'toggle' command that can be consistent
-    across plugins.  To use this class, simply define a 'toggles' attribute
-    in your class that is a ToggleDictionary mapping valid attributes to toggle
-    to their default values.
-    """
-    def __init__(self):
-        s = """[<channel>] <name> [<value>]
-
-        Toggles the value of <name> in <channel>.  If <value> is given,
-        explicitly sets the value of <name> to <value>.  <channel> is only
-        necessary if the message isn't sent in the channel itself.  Valid
-        names are %s""" % (self._toggleNames())
-        code = self.toggle.im_func.func_code
-        globals = self.toggle.im_func.func_globals
-        closure = self.toggle.im_func.func_closure
-        newf = types.FunctionType(code, globals, None, closure=closure)
-        newf.__doc__ = s
-        self.__class__.toggle = types.MethodType(newf, self, self.__class__)
-
-    def _toggleNames(self):
-        names = self.toggles.defaults.keys()
-        names.sort()
-        return utils.commaAndify(map(repr, names))
-        
-    def toggle(self, irc, msg, args):
-        """[<channel>] <name> [<value>]
-
-        The author of my plugin didn't call Toggleable.__init__.
-        """
-        #debug.printf('%s.toggle called.' % self.__class__)
-        try:
-            channel = privmsgs.getChannel(msg, args)
-            capability = ircdb.makeChannelCapability(channel, 'op')
-        except callbacks.ArgumentError:
-            raise
-        except callbacks.Error:
-            channel = None
-            capability = 'admin'
-        if not ircdb.checkCapability(msg.prefix, capability):
-            irc.error(msg, conf.replyNoCapability % capability)
-            return
-        (name, value) = privmsgs.getArgs(args, optional=1)
-        if not value:
-            value = None
-        elif value.lower() in ('enable', 'on', 'true'):
-            value = True
-        elif value.lower() in ('disable', 'off', 'false'):
-            value = False
-        else:
-            irc.error(msg, '%r isn\'t a valid value.' % value)
-            return
-        try:
-            self.toggles.toggle(name, value=value, channel=channel)
-            s = '%s  %s' % (conf.replySuccess, self.toggles.toString(channel))
-            irc.reply(msg, s)
-        except KeyError:
-            irc.error(msg, '%r isn\'t a valid name to toggle.  '
-                           'Valid names are %s' % (name, self._toggleNames()))
 
 _randomnickRe = re.compile(r'\$randomnick', re.I)
 _randomdateRe = re.compile(r'\$randomdate', re.I)
