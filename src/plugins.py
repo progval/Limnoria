@@ -199,32 +199,41 @@ class PeriodicFileDownloader(object):
             self.getFile(filename)
 
     def _downloadFile(self, filename, url, f):
-        infd = urllib2.urlopen(url)
-        newFilename = os.path.join(conf.dataDir, utils.mktemp())
-        outfd = file(newFilename, 'wb')
-        start = time.time()
-        s = infd.read(4096)
-        while s:
-            outfd.write(s)
-            s = infd.read(4096)
-        infd.close()
-        outfd.close()
-        self.log.info('Downloaded %s in %s seconds',filename,time.time()-start)
-        self.downloadedCounter[filename] += 1
-        self.lastDownloaded[filename] = time.time()
-        if f is None:
-            toFilename = os.path.join(conf.dataDir, filename)
-            if os.name == 'nt':
-                # Windows, grrr...
-                if os.path.exists(toFilename):
-                    os.remove(toFilename)
-            os.rename(newFilename, toFilename)
-        else:
+        try:
+            try:
+                infd = urllib2.urlopen(url)
+            except IOError, e:
+                self.log.warning('Error downloading %s', url)
+                self.log.exception('Exception:')
+                return
+            newFilename = os.path.join(conf.dataDir, utils.mktemp())
+            outfd = file(newFilename, 'wb')
             start = time.time()
-            f(newFilename)
-            total = time.time() - start
-            self.log.info('Function ran on %s in %s seconds', filename, total)
-        self.currentlyDownloading.remove(filename)
+            s = infd.read(4096)
+            while s:
+                outfd.write(s)
+                s = infd.read(4096)
+            infd.close()
+            outfd.close()
+            self.log.info('Downloaded %s in %s seconds',
+                          filename, time.time()-start)
+            self.downloadedCounter[filename] += 1
+            self.lastDownloaded[filename] = time.time()
+            if f is None:
+                toFilename = os.path.join(conf.dataDir, filename)
+                if os.name == 'nt':
+                    # Windows, grrr...
+                    if os.path.exists(toFilename):
+                        os.remove(toFilename)
+                os.rename(newFilename, toFilename)
+            else:
+                start = time.time()
+                f(newFilename)
+                total = time.time() - start
+                self.log.info('Function ran on %s in %s seconds',
+                              filename, total)
+        finally:
+            self.currentlyDownloading.remove(filename)
 
     def getFile(self, filename):
         (url, timeLimit, f) = self.periodicFiles[filename]
