@@ -197,6 +197,13 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         else:
             self.log.debug('Got 433 without Admin.nick being called.')
 
+    def do435(self, irc, msg):
+        irc = self.pendingNickChanges.get(irc, None)
+        if irc is not None:
+            irc.error('That nick is currently banned.')
+        else:
+            self.log.debug('Got 435 without Admin.nick being called.')
+
     def do438(self, irc, msg):
         """Can't change nick while in +m channel.  Could just be Freenode."""
         irc = self.pendingNickChanges.get(irc, None)
