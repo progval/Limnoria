@@ -312,8 +312,8 @@ class Relay(callbacks.Privmsg):
             else:
                 s = '%s/%s has quit.' % (msg.nick, network)
             for channel in self.channels:
-                debug.printf(self.ircstates[irc])
-                debug.printf(self.ircstates[irc].channels[channel].users)
+                #debug.printf(self.ircstates[irc])
+                #debug.printf(self.ircstates[irc].channels[channel].users)
                 if msg.nick in self.ircstates[irc].channels[channel].users:
                     for otherIrc in self.ircs.itervalues():
                         if otherIrc != irc:
