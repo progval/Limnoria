@@ -601,10 +601,12 @@ class context(object):
             self.converter = getConverter(spec[0])
         elif spec is None:
             self.converter = getConverter('anything')
-        else:
-            assert isinstance(spec, basestring)
+        elif isinstance(spec, basestring):
             self.args = ()
             self.converter = getConverter(spec)
+        else:
+            assert isinstance(spec, context)
+            self.converter = spec
 
     def __call__(self, irc, msg, args, state):
 ##         if args and not (state.types or state.allowExtra):
