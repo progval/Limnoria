@@ -232,8 +232,10 @@ class MaxLengthQueue(queue):
         queue.__setstate__(self, q)
         
     def enqueue(self, elt):
+        queue.enqueue(self, elt)
         if len(self) > self.length:
             self.dequeue()
+
 
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.
