@@ -73,6 +73,9 @@ class SfTest(PluginTestCase, PluginDocumentation):
         # test that it works with www and without index.php
         self.assertNotError('http://www.sourceforge.net/tracker/?'\
             'func=detail&aid=540223&group_id=235&atid=300235')
+        # test that it works with sf.net
+        self.assertNotError('http://sf.net/tracker/?'\
+            'func=detail&aid=540223&group_id=235&atid=300235')
 
     def testHttpsSnarfer(self):
         s = r';.*Status.*: \w+;'
@@ -86,6 +89,7 @@ class SfTest(PluginTestCase, PluginDocumentation):
             'func=detail&aid=561547&group_id=235&atid=200235', s)
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=400942&group_id=235&atid=390395', s)
+
         # test that it works without index.php
         self.assertNotError('https://sourceforge.net/tracker/?'\
             'func=detail&aid=540223&group_id=235&atid=300235')
@@ -94,6 +98,9 @@ class SfTest(PluginTestCase, PluginDocumentation):
             'func=detail&aid=540223&group_id=235&atid=300235')
         # test that it works with www and without index.php
         self.assertNotError('https://www.sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=540223&group_id=235&atid=300235')
+        # test that it works with www and without index.php
+        self.assertNotError('https://sf.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235')
 
     def testDisablesfsnarfer(self):

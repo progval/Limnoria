@@ -243,7 +243,7 @@ class Sf(callbacks.PrivmsgCommandAndRegexp):
     _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def sfSnarfer(self, irc, msg, match):
-        r"https?://(?:www\.)?sourceforge\.net/tracker/(?:index\.php)?\?func=detail&aid=\d+&group_id=\d+&atid=\d+"
+        r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/(?:index\.php)?\?func=detail&aid=\d+&group_id=\d+&atid=\d+"
         if not self.snarfer:
             return
         url = match.group(0)
