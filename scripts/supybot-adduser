@@ -38,12 +38,13 @@ import os
 import sys
 import optparse
 
-import registry
-
 def main():
-    from conf import version
+    import log
+    import conf
+    conf.supybot.log.stdout.setValue(False)
+    
     parser = optparse.OptionParser(usage='Usage: %prog [options] <configFile>',
-                                   version='supybot %s' % version)
+                                   version='supybot %s' % conf.version)
     parser.add_option('-u', '--username', action='store', default='',
                       dest='name',
                       help='username for the user.')
@@ -64,13 +65,9 @@ def main():
     if len(args) is not 1:
         parser.error('specify the configuration file you\'d like to use.')
 
-    registry.open(args[0])
-    import conf
-    import log
+    conf.supybot.directories.conf.setValue('.')
+    conf.supybot.databases.users.filename.setValue(args[0])
     import ircdb
-
-    oldLogLevel = conf.supybot.log.level()
-    conf.supybot.log.level.set('CRITICAL')
 
     if not options.name:
         name = ''
@@ -124,8 +121,6 @@ def main():
         user.addCapability(capability)
     ircdb.users.setUser(id, user)
     print 'User %s added.' % name
-    conf.supybot.log.level.setValue(oldLogLevel)
-    registry.close(conf.supybot, args[0])
 
 if __name__ == '__main__':
     try:
