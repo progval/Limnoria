@@ -46,7 +46,7 @@ SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 __author__ = "Steve Purcell"
 __email__ = "stephen_purcell at yahoo dot com"
-__version__ = "$Revision$"[11:-2]
+__version__ = "#Revision: 1.43 $"[11:-2]
 
 import time
 import sys
@@ -212,7 +212,7 @@ class TestCase:
             try:
                 testMethod()
                 ok = 1
-            except self.failureException:
+            except self.failureException, e:
                 result.addFailure(self, self.__exc_info())
             except KeyboardInterrupt:
                 raise
@@ -282,7 +282,7 @@ class TestCase:
         """Fail if the two objects are unequal as determined by the '!='
            operator.
         """
-        if first != second:
+        if not first == second:
             raise self.failureException, \
                   (msg or '%s != %s' % (`first`, `second`))
 
@@ -447,6 +447,7 @@ class TestLoader:
         for part in parts:
             obj = getattr(obj, part)
 
+        import unittest
         if type(obj) == types.ModuleType:
             return self.loadTestsFromModule(obj)
         elif type(obj) == types.ClassType and issubclass(obj, unittest.TestCase):
@@ -720,4 +721,3 @@ main = TestProgram
 
 if __name__ == "__main__":
     main(module=None)
-# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
