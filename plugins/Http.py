@@ -31,20 +31,12 @@
 
 """
 Provides several commands that go out to websites and get things.
-
-Commands include:
-  freshmeat
-  stockquote
-  foldoc
-  gkstats
-  zipcode
-  weather
-  slashdot
 """
 
 from baseplugin import *
 
 import re
+import time
 import urllib
 import urllib2
 
@@ -58,6 +50,25 @@ class FreshmeatException(Exception):
 
 class Http(callbacks.Privmsg):
     threaded = True
+    def __init__(self):
+        callbacks.Privmsg.__init__(self)
+        self.deepthoughtq = structures.queue()
+
+    def deepthought(self, irc, msg, args):
+        """takes no arguments
+
+        Returns a Deep Thought by Jack Handey.
+        """
+        url = 'http://www.tremorseven.com/aim/deepaim.php?job=view'
+        thought = ' ' * 512
+        while time.time() - self.deepthoughtq[0][0] > 86400:
+            self.deepthoughtq.dequeue()
+        while len(thought) > 450 or thought in self.deepthoughtq:
+            fd = urllib2.urlopen(url)
+            s = fd.read()
+            thought = s.split('<br>')[2]
+            thought = ' '.join(thought.split())
+        irc.reply(msg, thought)
 
     _titleRe = re.compile(r'<title>(.*)</title>')
     def title(self, irc, msg, args):
@@ -165,7 +176,12 @@ class Http(callbacks.Privmsg):
         text = text.replace('.\n', '.  ')
         text = text.replace('\n', ' ')
         text = utils.htmlToText(text)
-        irc.reply(msg, text.strip())
+        text = text.strip()
+        if text:
+            irc.reply(msg, text)
+        else:
+            s = 'There appears to be no definition for %s.' % search
+            irc.reply(msg, s)
 
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
@@ -305,8 +321,8 @@ class Http(callbacks.Privmsg):
         if len(defs) == 0:
             irc.reply(msg, 'No definitions found.')
         else:
-            defs=[repr(x.strip()) for x in defs[1:-1]][:5]
-            irc.reply(msg, '%s could be %s' % (acronym, ', or '.join(defs)))
+            s = ircutils.privmsgPayload([repr(s.strip()) for s in defs[1:-1]])
+            irc.reply(msg, '%s could be %s' % (acronym, s)
 
     _netcraftre = re.compile(r'whatos text -->(.*?)<a href="/up/acc', re.S)
     def netcraft(self, irc, msg, args):
