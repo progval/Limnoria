@@ -137,7 +137,8 @@ if __name__ == '__main__':
                       help='server password the bot should use')
     parser.add_option('-d', '--daemon', action='store_true',
                       dest='daemon',
-                      help='Determines whether the bot will daemonize.')
+                      help='Determines whether the bot will daemonize.  '
+                           'This is a no-op on non-POSIX systems.')
     parser.add_option('', '--allow-eval', action='store_true',
                       dest='allowEval',
                       help='Determines whether the bot will '
@@ -344,7 +345,7 @@ if __name__ == '__main__':
     import callbacks
     import Owner
 
-    conf.strictRfc = options.strictRfc
+    conf.strictRfc = bool(options.strictRfc)
 
     irc = irclib.Irc(nick, user=user, ident=ident, password=password)
     callback = Owner.Class()
@@ -357,7 +358,7 @@ if __name__ == '__main__':
                 if module.__file__.startswith(supybot.installDir):
                     print '%s: %s' % (name, module.__revision__.split()[2])
 
-    if options.daemon:
+    if os.name == 'posix' and options.daemon:
         def fork():
             child = os.fork()
             if child != 0:
@@ -371,6 +372,8 @@ if __name__ == '__main__':
         # What the heck does this do?  I wonder if it breaks anything...
         os.umask(0)
         # Let's not do this for now (at least until I can make sure it works):
+        # Actually, let's never do this -- we'll always have files open in the
+        # bot directories, so they won't be able to be unmounted anyway.
         # os.chdir('/')
         fork()
         # Since this is the indicator that no writing should be done to stdout,
