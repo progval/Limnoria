@@ -92,6 +92,7 @@ class FakeLog(object):
         return
 
 class ChannelLogger(callbacks.Privmsg):
+    noIgnore = True
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.lastMsg = None
