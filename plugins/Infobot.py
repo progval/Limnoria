@@ -553,6 +553,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                     isAre = None
                 else:
                     value = self.db.getAre(channel, key)
+            else:
+                self.log.debug('Returning early: Got a bad isAre value.')
+                return
         except dbi.InvalidDBError, e:
             self._error('Unable to access db: %s' % e)
             return
@@ -730,6 +733,11 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         r"^(.+?)\s+(?<!\\)(was|is|am|were|are)\s+(also\s+)?(.+?)[?!. ]*$"
         (key, isAre, also, value) = match.groups()
         key = key.replace('\\', '')
+        isAre = isAre.lower()
+        if isAre in ('was', 'is', 'am'):
+            isAre = 'is'
+        else:
+            isAre = 'are'
         if key.lower() in ('where', 'what', 'who', 'wtf'):
             # It's a question.
             if msg.addressed or \
@@ -739,10 +747,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         if not msg.addressed and \
            not self.registryValue('unaddressed.snarfDefinitions'):
             return
-        isAre = isAre.lower()
         if self.added:
             return
-        if isAre in ('was', 'is', 'am'):
+        if isAre == 'is':
             if self.db.hasIs(dynamic.channel, key):
                 oldValue = self.db.getIs(dynamic.channel, key)
                 if oldValue.lower() == value.lower():

@@ -52,6 +52,7 @@ class InfobotTestCase(ChannelPluginTestCase):
             m = self.getMsg('bar is at http://foo.com/')
             self.failUnless(self._endRe.sub('', m.args[1]) in confirms)
             self.assertRegexp('bar?', r'bar.*is.*http://foo.com/')
+            self.assertRegexp('what was bar?', r'http://foo.com/')
         finally:
             ibot.unaddressed.snarfDefinitions.setValue(learn)
             ibot.unaddressed.answerQuestions.setValue(answer)
@@ -87,6 +88,7 @@ class InfobotTestCase(ChannelPluginTestCase):
             self.assertSnarfRegexp('bars?', 'bars.*are.*dirty')
             self.assertSnarfNoResponse('bars are not dirty', 2)
             self.assertSnarfNotRegexp('bars?', 'not')
+            self.assertSnarfRegexp('what were bars?', 'dirty')
         finally:
             ibot.unaddressed.snarfDefinitions.setValue(learn)
             ibot.unaddressed.answerQuestions.setValue(answer)
