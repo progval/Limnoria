@@ -32,13 +32,6 @@ from supybot.test import *
 class MiscTestCase(ChannelPluginTestCase):
 #    plugins = ('Misc', 'Utilities', 'Gameknot', 'Anonymous', 'Dict', 'User')
     plugins = ('Misc', 'Utilities', 'Anonymous', 'Dict', 'User')
-    def testAction(self):
-        self.assertAction('action moos', 'moos')
-
-    def testActionDoesNotAllowEmptyString(self):
-        self.assertHelp('action')
-        self.assertHelp('action ""')
-
     def testReplyWhenNotCommand(self):
         try:
             original = str(conf.supybot.reply.whenNotCommand)
@@ -227,22 +220,6 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertNotError('more %s' % nick.upper())
         self.assertNotError('more %s' % nick.lower())
 
-    def testPrivate(self):
-        m = self.getMsg('private [list]')
-        self.failIf(ircutils.isChannel(m.args[0]))
-
-    def testNotice(self):
-        m = self.getMsg('notice [list]')
-        self.assertEqual(m.command, 'NOTICE')
-
-    def testNoticePrivate(self):
-        m = self.assertNotError('notice [private [list]]')
-        self.assertEqual(m.command, 'NOTICE')
-        self.assertEqual(m.args[0], self.nick)
-        m = self.assertNotError('private [notice [list]]')
-        self.assertEqual(m.command, 'NOTICE')
-        self.assertEqual(m.args[0], self.nick)
-
     def testHostmask(self):
         self.assertResponse('hostmask', self.prefix)
         self.assertError('@hostmask asdf')
@@ -272,15 +249,6 @@ class MiscTestCase(ChannelPluginTestCase):
 
     def testRevisionIsCaseInsensitive(self):
         self.assertNotError('revision misc')
-
-
-class MiscNonChannelTestCase(PluginTestCase):
-    plugins = ('Misc',)
-    def testAction(self):
-        self.prefix = 'something!else@somewhere.else'
-        self.nick = 'something'
-        m = self.assertAction('action foo', 'foo')
-        self.failIf(m.args[0] == self.irc.nick)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

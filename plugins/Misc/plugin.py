@@ -441,36 +441,6 @@ class Misc(callbacks.Privmsg):
         irc.reply(s, to=target, private=True)
     tell = wrap(tell, ['something', 'text'])
 
-    def private(self, irc, msg, args, text):
-        """<text>
-
-        Replies with <text> in private.  Use nested commands to your benefit
-        here.
-        """
-        irc.reply(text, private=True)
-    private = wrap(private, ['text'])
-
-    def action(self, irc, msg, args, text):
-        """<text>
-
-        Replies with <text> as an action.  use nested commands to your benefit
-        here.
-        """
-        if text:
-            irc.reply(text, action=True)
-        else:
-            raise callbacks.ArgumentError
-    action = wrap(action, ['text'])
-
-    def notice(self, irc, msg, args, text):
-        """<text>
-
-        Replies with <text> in a notice.  Use nested commands to your benefit
-        here.  If you want a private notice, nest the private command.
-        """
-        irc.reply(text, notice=True)
-    notice = wrap(notice, ['text'])
-
     def contributors(self, irc, msg, args, cb, nick):
         """<plugin> [<nick>]
 

@@ -46,14 +46,6 @@ class Utilities(callbacks.Privmsg):
         pass
     # Do be careful not to wrap this unless you do any('something').
 
-    def reply(self, irc, msg, args, text):
-        """<text>
-
-        Replies with <text>.  Equivalent to the alias, 'echo $nick: $1'.
-        """
-        irc.reply(text, prefixName=True)
-    reply = wrap(reply, ['text'])
-
     def success(self, irc, msg, args, text):
         """[<text>]
 
