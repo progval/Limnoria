@@ -47,6 +47,13 @@ import privmsgs
 import ircutils
 import callbacks
 
+def configure(onStart, afterConnect, advanced):
+    from questions import expect, anything, something, yn
+    nick = anything('What is your registered nick?')
+    password = anything('What is your password for that nick?')
+    onStart.append('load NickServ')
+    onStart.append('startnickserv %s %s' % (nick, password))
+
 class NickServ(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
     def __init__(self):
