@@ -499,9 +499,13 @@ class FunCommands(callbacks.Privmsg):
     _mathEnv = {'__builtins__': new.module('__builtins__'), 'i': 1j}
     _mathEnv.update(math.__dict__)
     _mathEnv.update(cmath.__dict__)
-    _mathInt = re.compile(r'(?<!\d|\.)(\d+)(?!\d+|\.|\.\d+)')
-    _mathHex = re.compile(r'(0x[A-Fa-f\d]+)')
-    _mathOctal = re.compile(r'(^|[^\dA-Fa-f.])(0[0-7]+)')
+    _mathRe = re.compile(r'((?:(?<![A-Fa-f\d])-)?'
+                         r'(?:0x[A-Fa-f\d]+|'
+                         r'0[0-7]+|'
+                         r'\d+\.\d+|'
+                         r'\.\d+|'
+                         r'\d+\.|'
+                         r'\d+))')
     def _complexToString(self, x):
         real = x.real
         imag = x.imag
@@ -517,10 +521,18 @@ class FunCommands(callbacks.Privmsg):
             imag = 0
         if imag == 0:
             return str(real)
-        elif real == 0:
-            return '%s*i' % imag
+        elif imag == 1:
+            imag = 'i'
+        elif imag == -1:
+            imag = '-i'
+        elif imag < 0:
+            imag = '%si' % imag
+        elif imag > 0:
+            imag = '+%si' % imag
+        if real == 0:
+            return imag.lstrip('+')
         else:
-            return '%s+%si' % (real, imag)
+            return '%s%s' % (real, imag)
 
     def calc(self, irc, msg, args):
         """<math expression>
@@ -531,20 +543,19 @@ class FunCommands(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         text = text.translate(string.ascii, '_[] \t')
         text = text.replace('lambda', '')
-        def hex2float(m):
-            literal = m.group(1)
-            i = long(literal, 16)
-            return '%s.0' % i
-        def oct2float(m):
-            (previous, literal) = m.groups()
-            i = long(literal, 8)
-            return '%s%s.0' % (previous, i)
-        text = self._mathHex.sub(hex2float, text)
-        #debug.printf('After unhexing: %r' % text)
-        text = self._mathOctal.sub(oct2float, text)
-        #debug.printf('After unocting: %r' % text)
-        text = self._mathInt.sub(r'\1.0', text)
-        #debug.printf('After uninting: %r' % text)
+        def handleMatch(m):
+            s = m.group(1)
+            if s.startswith('0x'):
+                i = int(s, 16)
+            elif s.startswith('0') and '.' not in s:
+                try:
+                    i = int(s, 8)
+                except ValueError:
+                    i = int(s)
+            else:
+                i = float(s)
+            return str(complex(i))
+        text = self._mathRe.sub(handleMatch, text)
         try:
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(msg, self._complexToString(x))
@@ -564,7 +575,7 @@ class FunCommands(callbacks.Privmsg):
         stack = []
         for arg in args:
             try:
-                stack.append(float(arg))
+                stack.append(complex(arg))
             except ValueError: # Not a float.
                 if arg in self._mathEnv:
                     f = self._mathEnv[arg]

@@ -57,6 +57,10 @@ class FunCommandsTest(PluginTestCase, PluginDocumentation):
     def testCalc(self):
         self.assertResponse('calc 5*0.06', str(5*0.06))
         self.assertResponse('calc 2.0-7.0', str(2-7))
+        self.assertResponse('calc (-1)**.5', 'i')
+        self.assertResponse('calc e**(i*pi)+1', '0')
+        self.assertResponse('calc (-5)**.5', '2.2360679775i')
+        self.assertResponse('calc -((-5)**.5)', '-2.2360679775i')
 
     def testChr(self):
         for i in range(256):
