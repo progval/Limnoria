@@ -77,6 +77,7 @@ def main():
             drivers.run()
         except KeyboardInterrupt:
             log.info('Exiting due to Ctrl-C.')
+            world.upkeep()
             break
         except SystemExit, e:
             s = str(e)

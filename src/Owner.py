@@ -464,6 +464,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
         Exits the bot.
         """
+        world.upkeep()
         world.ircs[:] = []
 
     def flush(self, irc, msg, args):
