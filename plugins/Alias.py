@@ -46,6 +46,7 @@ import utils
 import privmsgs
 import callbacks
 import structures
+import unpreserve
 
 class AliasError(Exception):
     pass
@@ -165,6 +166,7 @@ class Alias(callbacks.Privmsg):
             def __init__(self):
                 self.aliasCommand = None
                 self.aliasLocked = None
+                self.setAliasName = False
 
             def badCommand(self, command, rest, lineno):
                 raise ValueError, \
@@ -174,6 +176,7 @@ class Alias(callbacks.Privmsg):
                 if self.aliasName is not None:
                     raise ValueError, \
                           'Unexpected alias command at line %s' % lineno
+                self.setAliasName = True
                 AliasCreator.aliasName = rest
                 
             def command(self, rest, lineno):
@@ -186,17 +189,16 @@ class Alias(callbacks.Privmsg):
                 if self.aliasName is None:
                     raise ValueError, \
                           'Unexpected alias configuration at line %s' % lineno
-                self.aliasLocked = rest
+                self.aliasLocked = bool(eval(rest))
 
             def finish(self):
-                if self.aliasCommand is None:
-                    raise ValueError, \
-                          'Unexpected end of alias configuration at line %s' \
-                          % lineno
+                if self.setAliasName:
+                    return
                 aliases[self.aliasName] = (self.aliasCommand, self.aliasLocked)
                 AliasCreator.aliasName = None
         reader = unpreserve.Reader(AliasCreator)
         reader.readFile(filename)
+        self.aliases = aliases
 
     def __call__(self, irc, msg):
         # Adding the aliases requires an Irc.  So the first time we get called
