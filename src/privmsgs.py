@@ -55,6 +55,11 @@ def getChannel(msg, args):
     removed).
     """
     if args and ircutils.isChannel(args[0]):
+        if conf.requireChannelCommandsToBeSentInChannel:
+            if args[0] != msg.args[0]:
+                s = 'Channel commands must be sent in the channel to which ' \
+                    'they apply.'
+                raise callbacks.Error, s
         return args.pop(0)
     elif ircutils.isChannel(msg.args[0]):
         return msg.args[0]
