@@ -40,6 +40,7 @@ import plugins
 
 import os
 import re
+import random
 import cPickle as pickle
 
 import conf
@@ -47,9 +48,25 @@ import utils
 import ircmsgs
 import ircutils
 import privmsgs
+import registry
 import callbacks
 
 conf.registerPlugin('Infobot')
+conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'personality',
+    registry.Boolean(True, """Determines whether the bot will respond will
+    personable (Infobot-like) responses rather than its standard messages."""))
+conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'boringDunno',
+    registry.String('Dunno.', """Determines what boring dunno should be given
+    if supybot.plugins.Infobot.personality is False."""))
+conf.registerGlobalValue(conf.supybot.plugins.Infobot,
+    'snarfUnaddressedDefinitions', registry.Boolean(True, """Determines whether
+    the bot will snarf definitions given in the channel that weren't directly
+    addressed to it.  Of course, no confirmation will be given if the bot isn't
+    directly addressed."""))
+conf.registerGlobalValue(conf.supybot.plugins.Infobot,
+    'answerUnaddressedQuestions', registry.Boolean(True, """Determines whether
+    the bot will answer questions that weren't directly addressed to it.  Of
+    course, if it doesn't have an answer, it will remain silent."""))
 
 def configure(advanced):
     # This will be called by setup.py to configure this module.  Advanced is
@@ -72,6 +89,19 @@ class InfobotDB(object):
             (self._is, self._are) = pickle.load(fd)
         self._changes = 0
         self._responses = 0
+        self._ends = ['!',
+                      '.',
+                      ', $who.',]
+        self._dunnos = ['Dunno',
+                        'No idea',
+                        'I don\'t know',
+                        'I have no idea',
+                        'I don\'t have a clue',]
+        self._confirms = ['10-4',
+                          'Okay',
+                          'Got it',
+                          'Gotcha',
+                          'I hear ya']
 
     def flush(self):
         fd = file(filename, 'w')
@@ -116,6 +146,12 @@ class InfobotDB(object):
         del self._are[factoid]
         self._changes += 1
         self.flush()
+
+    def getDunno(self):
+        return random.choice(self._dunnos) + random.choice(self._ends)
+
+    def getConfirm(self):
+        return random.choice(self._confirms) + random.choice(self._ends)
         
     def getChangeCount(self):
         return self._changes
@@ -126,13 +162,17 @@ class InfobotDB(object):
 class Infobot(callbacks.PrivmsgCommandAndRegexp):
     regexps = ['doForget', 'doFactoid', 'doUnknown']
     def __init__(self):
-        self.db = InfobotDB()
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        try:
+            self.db = InfobotDB()
+        except Exception:
+            self.log.exception('Error loading %s:', filename)
+            raise # So it doesn't get loaded without its database.
         self.irc = None
         self.msg = None
         self.force = False
         self.replied = False
         self.addressed = False
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def die(self):
         self.db.close()
@@ -151,12 +191,17 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(plugins.standardSubstitute(irc, msg, s), prefixName=False)
         
     def confirm(self, irc=None, msg=None):
-        # XXX
-        self.reply('Roger that!', irc=irc, msg=msg)
+        if self.registryValue('personality'):
+            self.reply(self.db.getConfirm(), irc=irc, msg=msg)
+        else:
+            assert self.irc is not None
+            self.irc.replySuccess()
 
     def dunno(self, irc=None, msg=None):
-        # XXX
-        self.reply('I dunno, dude.', irc=irc, msg=msg)
+        if self.registryValue('personality'):
+            self.reply(self.db.getDunno(), irc=irc, msg=msg)
+        else:
+            self.reply(self.registryValue('boringDunno'), irc=irc, msg=msg)
 
     def factoid(self, key, irc=None, msg=None):
         if irc is None:
@@ -249,7 +294,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         r"^(.+?)\?[?!. ]*$"
         key = match.group(1)
         key = plugins.standardSubstitute(irc, msg, key)
-        self.factoid(key) # Does the dunno'ing for us itself.
+        if self.addressed or self.registryValue('answerUnaddressedQuestions'):
+            self.factoid(key) # Does the dunno'ing for us itself.
     # TODO: Add invalidCommand.
 
     def doFactoid(self, irc, msg, match):
@@ -257,7 +303,12 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         (key, isAre, maybeForce, value) = match.groups()
         if key.lower() in ('where', 'what', 'who'):
             # It's a question.
-            self.factoid(value)
+            if self.addressed or \
+               self.registryValue('answerUnaddressedQuestions'):
+                self.factoid(value)
+            return
+        if not self.addressed and \
+           not self.registryValue('snarfUnaddressedDefinitions'):
             return
         isAre = isAre.lower()
         self.force = self.force or bool(maybeForce)
@@ -265,7 +316,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         value = plugins.standardSubstitute(irc, msg, value)
         if isAre in ('was', 'is', 'am'):
             if self.db.hasIs(key):
-                if not self.force:
+                if self.addressed and not self.force:
                     value = self.db.getIs(key)
                     self.reply('But %s is %s.' % (key, value))
                     return
@@ -274,7 +325,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.db.setIs(key, value)
         else:
             if self.db.hasAre(key):
-                if not self.force:
+                if self.addressed and not self.force:
                     value = self.db.getAre(key)
                     self.reply('But %s are %s.' % (key, value))
                     return
