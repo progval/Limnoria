@@ -86,9 +86,10 @@ def eachSubstring(s):
     for i in xrange(1, len(s)+1):
         yield s[:i]
 
-def abbrev(strings):
+def abbrev(strings, d=None):
     """Returns a dictionary mapping unambiguous abbreviations to full forms."""
-    d = {}
+    if d is None:
+        d = {}
     for s in strings:
         for abbreviation in eachSubstring(s):
             if abbreviation not in d:
