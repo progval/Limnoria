@@ -217,7 +217,12 @@ class Words(callbacks.Privmsg):
             game.prefix = self.registryValue('hangman.prefix', channel)
             game.guessed = False
             game.unused = copy.copy(self.validLetters)
-            game.hidden = game.getWord()
+            try:
+                game.hidden = game.getWord()
+            except IOError, e:
+                self.games[channel] = None
+                irc.error(str(e))
+                return
             game.guess = re.sub('[%s]' % string.ascii_lowercase, '_',
                                 game.hidden)
             self._hangmanReply(irc, channel,
@@ -296,11 +301,12 @@ class Words(callbacks.Privmsg):
         # Verify if the user won or lost
         if game.guessed and game.tries > 0:
             self._hangmanReply(irc, channel,
-                               'You win!  The was indeed %r.' % game.hidden)
+                               'You win!  The word was indeed %r.' %
+                               game.hidden)
             self.endGame(channel)
         elif not game.guessed and game.tries == 0:
             self._hangmanReply(irc, channel,
-                               'You lose!  The was %r.' % game.hidden)
+                               'You lose!  The word was %r.' % game.hidden)
             self.endGame(channel)
     ###
     # END HANGMAN
