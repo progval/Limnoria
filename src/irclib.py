@@ -429,7 +429,7 @@ class Irc(object):
                     s = 'outFilter %s returned None' % callback.name()
                     debug.msg(s)
                     return None
-            self.state.addMsg(self,ircmsgs.IrcMsg(msg=msg, prefix=self.prefix))
+            self.state.addMsg(self, msg)
             s = '%s  %s' % (time.strftime(conf.logTimestampFormat), msg)
             debug.msg(s, 'low')
             if msg.command == 'NICK':
