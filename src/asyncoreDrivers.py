@@ -50,7 +50,7 @@ class AsyncoreRunnerDriver(drivers.IrcDriver):
         try:
             timeout = conf.supybot.drivers.poll()
             if not asyncore.socket_map:
-                # FIXME: asyncore should take care of this... but it doesn't?
+                # asyncore should take care of this... but it doesn't?
                 time.sleep(timeout)
             else:
                 asyncore.poll(timeout)
