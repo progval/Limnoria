@@ -31,6 +31,9 @@
 
 from baseplugin import *
 
+import re
+
+import ircmsgs
 import callbacks
 
 class Friendly(callbacks.PrivmsgRegexp):
@@ -42,7 +45,7 @@ class Friendly(callbacks.PrivmsgRegexp):
     def goodbye(self, irc, msg, match):
         "(?:good)?bye|adios|vale|ciao|au revoir|seeya|night"
         if re.search(irc.nick, msg.args[1]):
-            self.reply('vale, amic(e|a)!')
+            irc.queueMsg(ircmsgs.privmsg(msg.args[0], 'seeya, d00d!'))
 
     def exclaim(self, irc, msg, match):
         "([^\s]+)!"
@@ -50,6 +53,6 @@ class Friendly(callbacks.PrivmsgRegexp):
             irc.queueMsg(ircmsgs.privmsg(msg.args[0], '%s!' % msg.nick))
 
     
-            
+Class = Friendly
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
