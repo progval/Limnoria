@@ -33,13 +33,13 @@ import textwrap
 
 def expect(prompt, possibilities, recursed=False):
     originalPrompt = prompt
+    indent = ' ' * ((len(originalPrompt)%70) + 2)
     if recursed:
         print 'Sorry, that response was not an option.'
     if possibilities:
         prompt = '%s [%s]' % (originalPrompt, '/'.join(possibilities))
     if len(prompt) > 70:
         prompt = '%s [%s]' % (originalPrompt, '/ '.join(possibilities))
-    indent = ' ' * (len(originalPrompt) + 2)
     prompt = textwrap.fill(prompt, subsequent_indent=indent)
     prompt = prompt.replace('/ ', '/')
     prompt = prompt.strip() + ' '
@@ -54,7 +54,7 @@ def expect(prompt, possibilities, recursed=False):
         return s.strip()
 
 def expectWithDefault(prompt, possibilities, default):
-    indent = ' ' * (len(prompt) + 2)
+    indent = ' ' * ((len(prompt)%70) + 2)
     prompt = '%s [%s] (default: %s) ' % \
              (prompt.strip(), '/'.join(possibilities), default)
     if len(prompt) > 70:
