@@ -47,6 +47,10 @@ def readLines(filename):
         return [line.rstrip('\r\n') for line in fd.readlines()]
     finally:
         fd.close()
+
+def touch(filename):
+    fd = file(filename, 'w')
+    fd.close()
         
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
