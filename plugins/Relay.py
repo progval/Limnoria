@@ -120,9 +120,9 @@ def configure(onStart, afterConnect, advanced):
 class Relay(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.color = 0
         self.ircs = {}
-        self.whois = {}
+        self._color = 0
+        self._whois = {}
         self.started = False
         self.ircstates = {}
         self.lastmsg = {}
@@ -345,7 +345,7 @@ class Relay(callbacks.Privmsg):
             return
         otherIrc = self.ircs[network]
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))
-        self.whois[(otherIrc, nick)] = (irc, msg, {})
+        self._whois[(otherIrc, nick)] = (irc, msg, {})
 
     def color(self, irc, msg, args):
         """<0,1,2>
@@ -360,7 +360,7 @@ class Relay(callbacks.Privmsg):
             color = int(privmsgs.getArgs(args))
             if color != 0 and color != 1 and color != 2:
                 raise callbacks.ArgumentError
-            self.color = color
+            self._color = color
         except ValueError:
             raise callbacks.ArgumentError
         irc.reply(msg, conf.replySuccess)
@@ -370,10 +370,10 @@ class Relay(callbacks.Privmsg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
         nick = ircutils.toLower(msg.args[1])
-        if (irc, nick) not in self.whois:
+        if (irc, nick) not in self._whois:
             return
         else:
-            self.whois[(irc, nick)][-1][msg.command] = msg
+            self._whois[(irc, nick)][-1][msg.command] = msg
 
     do312 = do311
     do317 = do311
@@ -383,9 +383,9 @@ class Relay(callbacks.Privmsg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
         nick = ircutils.toLower(msg.args[1])
-        if (irc, nick) not in self.whois:
+        if (irc, nick) not in self._whois:
             return
-        (replyIrc, replyMsg, d) = self.whois[(irc, nick)]
+        (replyIrc, replyMsg, d) = self._whois[(irc, nick)]
         hostmask = '@'.join(d['311'].args[2:4])
         user = d['311'].args[-1]
         if '319' in d:
@@ -414,15 +414,15 @@ class Relay(callbacks.Privmsg):
         s = '%s (%s) has been on server %s since %s (idle for %s) and %s.' % \
             (user, hostmask, server, signon, idle, channels)
         replyIrc.reply(replyMsg, s)
-        del self.whois[(irc, nick)]
+        del self._whois[(irc, nick)]
 
     def do402(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
         nick = ircutils.toLower(msg.args[1])
-        if (irc, nick) not in self.whois:
+        if (irc, nick) not in self._whois:
             return
-        (replyIrc, replyMsg, d) = self.whois[(irc, nick)]
+        (replyIrc, replyMsg, d) = self._whois[(irc, nick)]
         s = 'There is no %s on %s.' % (nick, self.abbreviations[irc])
         replyIrc.reply(replyMsg, s)
 
@@ -430,18 +430,18 @@ class Relay(callbacks.Privmsg):
 
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
-        if self.color >= 1:
+        if self._color >= 1:
             nick = ircutils.mircColor(nick, *ircutils.canonicalColor(nick))
-        if self.color >= 2:
+        if self._color >= 2:
             colors = ircutils.canonicalColor(nick, shift=4)
         if ircmsgs.isAction(msg):
-            if self.color >= 2:
+            if self._color >= 2:
                 t = ircutils.mircColor('*', *colors)
             else:
                 t = '*'
             s = '%s %s@%s %s' % (t, nick, network, ircmsgs.unAction(msg))
         else:
-            if self.color >= 2:
+            if self._color >= 2:
                 lt = ircutils.mircColor('<', *colors)
                 gt = ircutils.mircColor('>', *colors)
             else:
