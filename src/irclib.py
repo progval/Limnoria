@@ -314,7 +314,7 @@ class Irc(object):
         self.state.reset()
         self.queue.reset()
         self.lastping = time.time()
-        self.outstandingPings = set()
+        self.outstandingPongs = set()
         self.fastqueue = queue()
         if self.password:
             self.queue.enqueue(ircmsgs.password(self.password))
