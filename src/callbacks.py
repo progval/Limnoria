@@ -357,12 +357,12 @@ class IrcObjectProxy:
                 # " (more)" to the end, so that's 7 more characters.
                 # 512 - 51 == 461.
                 s = ircutils.safeArgument(s)
-                allowedLength = 461 - len(self.irc.prefix)
+                allowedLength = 463 - len(self.irc.prefix)
                 msgs = textwrap.wrap(s, allowedLength-30) # -30 is for "nick:"
                 msgs.reverse()
                 response = msgs.pop()
                 if msgs:
-                    response += ' (more)'
+                    response += ' \x02(more)\x0F'
                 mask = msg.prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
                 self.irc.queueMsg(reply(msg, response))
