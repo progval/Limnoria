@@ -30,6 +30,7 @@
 ###
 
 from test import *
+import sets
 
 import utils
 
@@ -145,6 +146,7 @@ class UtilsTest(unittest.TestCase):
         original = L[:]
         self.assertEqual(utils.commaAndify(L), 'foo, bar, and baz')
         self.assertEqual(L, original)
+        self.failUnless(utils.commaAndify(sets.Set(L)))
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
