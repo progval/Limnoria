@@ -92,6 +92,8 @@ class CommandsTestCase(SupyTestCase):
         self.assertState([any('int')], ['1', '2', '3'], [[1, 2, 3]])
         self.assertState([None, any('int')], ['1', '2', '3'], ['1', [2, 3]])
         self.assertState([any('int')], [], [[]])
+        self.assertState([any('int', continueOnError=True), 'text'],
+                         ['1', '2', 'test'], [[1, 2], 'test'])
 
     def testMany(self):
         spec = [many('int')]

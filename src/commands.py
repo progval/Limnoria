@@ -671,13 +671,24 @@ class optional(additional):
             setDefault(state, self.default)
 
 class any(context):
+    def __init__(self, spec, continueOnError=False):
+        self.__parent = super(any, self)
+        self.__parent.__init__(spec)
+        self.continueOnError = continueOnError
+
     def __call__(self, irc, msg, args, state):
         st = state.essence()
         try:
             while args:
-                super(any, self).__call__(irc, msg, args, st)
+                self.__parent.__call__(irc, msg, args, st)
         except IndexError:
             pass
+        except (callbacks.ArgumentError, callbacks.Error), e:
+            if not self.continueOnError:
+                raise
+            else:
+                log.debug('Got %s, returning default.', utils.exnToString(e))
+                pass
         state.args.append(st.args)
 
 class many(any):
@@ -781,7 +792,7 @@ class State(object):
     def essence(self):
         st = State(self.types)
         for (attr, value) in self.__dict__.iteritems():
-            if attr not in ('args', 'kwargs', 'channel'):
+            if attr not in ('args', 'kwargs'):
                 setattr(st, attr, value)
         return st
 
