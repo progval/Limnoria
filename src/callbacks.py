@@ -52,14 +52,13 @@ import threading
 from cStringIO import StringIO
 
 import conf
+import debug
 import utils
 import world
 import ircdb
 import irclib
 import ircmsgs
 import ircutils
-
-import debug
 
 ###
 # Privmsg: handles privmsg commands in a standard fashion.
@@ -433,12 +432,12 @@ class IrcObjectProxy:
             self.args[self.counter] = s
             self.evalArgs()
 
-    def error(self, msg, s):
+    def error(self, msg, s, private=False):
         if isinstance(self.irc, self.__class__):
-            self.irc.error(msg, s)
+            self.irc.error(msg, s, private)
         else:
             s = 'Error: ' + s
-            if conf.errorReplyPrivate:
+            if private or conf.errorReplyPrivate:
                 self.irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
             else:
                 self.irc.queueMsg(reply(msg, s))
@@ -592,7 +591,7 @@ class Privmsg(irclib.IrcCallback):
                   (f.im_class.__name__, funcname, elapsed), 'verbose')
 
     _r = re.compile(r'^([^\s[]+)(?:\[|\s+|$)')
-    def doPrivmsg(self, irc, msg):
+    def doPrivmsg(self, irc, msg, rateLimit=True):
         s = addressed(irc.nick, msg)
         #debug.printf('Privmsg.doPrivmsg: s == %r' % s)
         if s:
@@ -602,8 +601,9 @@ class Privmsg(irclib.IrcCallback):
                 return
             m = self._r.match(s)
             if m and self.isCommand(canonicalName(m.group(1))):
-                self.rateLimiter.put(msg)
-                msg = self.rateLimiter.get()
+                if rateLimit:
+                    self.rateLimiter.put(msg)
+                    msg = self.rateLimiter.get()
                 if msg:
                     try:
                         args = tokenize(s)
@@ -681,13 +681,14 @@ class PrivmsgRegexp(Privmsg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
             debug.msg('PrivmsgRegexp.doPrivmsg: ignoring %s' % msg.prefix)
             return
+        fed = False
         for (r, method) in self.res:
-            m = r.search(msg.args[1])
-            if m:
-                self.rateLimiter.put(msg)
-                msg = self.rateLimiter.get()
+            for m in r.finditer(msg.args[1]):
+                if not fed:
+                    fed = True
+                    self.rateLimiter.put(msg)
+                    msg = self.rateLimiter.get()
                 if msg:
-                    irc = IrcObjectProxyRegexp(irc)
                     self.callCommand(method, irc, msg, m)
                 if self.onlyFirstMatch:
                     return
@@ -712,26 +713,16 @@ class PrivmsgCommandAndRegexp(Privmsg):
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
             return
+        fed = False
         for (r, method) in self.res:
-            m = r.search(msg.args[1])
-            if m:
-                self.rateLimiter.put(msg)
-                msg = self.rateLimiter.get()
+            for m in r.finditer(msg.args[1]):
+                if not fed:
+                    fed = True
+                    self.rateLimiter.put(msg)
+                    msg = self.rateLimiter.get()
                 if msg:
                     self.callCommand(method, IrcObjectProxyRegexp(irc), msg, m)
-        s = addressed(irc.nick, msg)
-        if s:
-            m = self._r.match(s)
-            if m and self.isCommand(canonicalName(m.group(1))):
-                self.rateLimiter.put(msg)
-                msg = self.rateLimiter.get()
-                if msg:
-                    args = tokenize(s)
-                    self.Proxy(irc, msg, args)
-
-
-
-
-
+        Privmsg.doPrivmsg(self, irc, msg, rateLimit=(not fed))
+            
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
