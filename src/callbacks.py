@@ -503,14 +503,16 @@ class RichReplyMethods(object):
             v = '%s is not a valid %s.' % (given, what)
         else:
             v = 'That\'s not a valid %s.' % what
-        return self._error(self.__makeReply(v, s), Raise=True, **kwargs)
+        if 'Raise' not in kwargs:
+            kwargs['Raise'] = True
+        return self._error(self.__makeReply(v, s), **kwargs)
 
 _repr = repr
 
 class IrcObjectProxy(RichReplyMethods):
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args, nested=0):
-        log.debug('IrcObjectProxy.__init__: %s' % args)
+        log.verbose('IrcObjectProxy.__init__: %s' % args)
         self.irc = irc
         self.msg = msg
         self.nested = nested
@@ -566,13 +568,13 @@ class IrcObjectProxy(RichReplyMethods):
         self.finalEval()
 
     def _callTokenizedCommands(self):
-        log.debug('Calling tokenizedCommands.')
+        log.verbose('Calling tokenizedCommands.')
         for cb in self.irc.callbacks:
             if hasattr(cb, 'tokenizedCommand'):
-                log.debug('Trying to call %s.tokenizedCommand.' % cb.name())
+                log.verbose('Trying to call %s.tokenizedCommand.', cb.name())
                 self._callTokenizedCommand(cb)
                 if self.msg.repliedTo:
-                    log.debug('Done calling tokenizedCommands: %s.' % cb.name())
+                    log.verbose('Done calling tokenizedCommands: %s.',cb.name())
                     return
 
     def _callTokenizedCommand(self, cb):
@@ -608,6 +610,8 @@ class IrcObjectProxy(RichReplyMethods):
             self.commandMethod = cb.getCommand(name)
             try:
                 cb.callCommand(name, self, self.msg, self.args)
+            except Error, e:
+                self.error(str(e))
             except Exception, e:
                 cb.log.exception('Uncaught exception in %s.%s:',
                                  cb.name(), name)
