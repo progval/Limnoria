@@ -230,7 +230,7 @@ class Math(callbacks.Privmsg):
         except NameError, e:
             irc.error('%s is not a defined function.' % str(e).split()[1])
         except Exception, e:
-            irc.error(utils.exnToString(e))
+            irc.error(utils.gen.exnToString(e))
     icalc = wrap(icalc, [('checkCapability', 'trusted'), 'text'])
 
     _rpnEnv = {

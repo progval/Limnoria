@@ -83,7 +83,8 @@ class IrcMsgQueueTestCase(SupyTestCase):
         try:
             repr(q)
         except Exception, e:
-            self.fail('repr(q) raised an exception: %s' % utils.exnToString(e))
+            self.fail('repr(q) raised an exception: %s' %
+                      utils.gen.exnToString(e))
 
     def testEmpty(self):
         q = irclib.IrcMsgQueue()

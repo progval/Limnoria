@@ -84,7 +84,7 @@ class TestPlugin(callbacks.Privmsg):
         try:
             irc.reply(repr(eval(' '.join(args))))
         except Exception, e:
-            irc.reply(utils.exnToString(e))
+            irc.reply(utils.gen.exnToString(e))
 # Since we know we don't now need the Irc object, we just give None.  This
 # might break if callbacks.Privmsg ever *requires* the Irc object.
 TestInstance = TestPlugin(None)
@@ -126,7 +126,7 @@ class PluginTestCase(SupyTestCase):
                         run = False
             if run:
                 originalRunTest()
-        runTest = utils.changeFunctionName(runTest, methodName)
+        runTest = utils.gen.changeFunctionName(runTest, methodName)
         setattr(self.__class__, methodName, runTest)
         SupyTestCase.__init__(self, methodName=methodName)
         self.originals = {}

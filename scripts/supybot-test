@@ -133,14 +133,14 @@ if __name__ == '__main__':
     if not args:
         parser.print_help()
         sys.exit(-1)
-        
+
     if options.timeout:
         test.timeout = options.timeout
 
     if options.trace:
         traceFilename = conf.supybot.directories.log.dirize('trace.log')
         fd = file(traceFilename, 'w')
-        sys.settrace(utils.callTracer(fd))
+        sys.settrace(utils.gen.callTracer(fd))
         atexit.register(fd.close)
         atexit.register(lambda : sys.settrace(None))
 
@@ -172,7 +172,7 @@ if __name__ == '__main__':
             sys.exit(-1)
         if hasattr(pluginModule, 'test'):
             test.suites.append(load(pluginModule.test))
-            
+
     suite = unittest.TestSuite(test.suites)
     runner = unittest.TextTestRunner(verbosity=2)
     print 'Testing began at %s (pid %s)' % (time.ctime(), os.getpid())

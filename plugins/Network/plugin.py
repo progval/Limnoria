@@ -182,7 +182,7 @@ class Network(callbacks.Privmsg):
             L = ['isn\'t on any non-secret channels']
         channels = utils.str.commaAndify(L)
         if '317' in d:
-            idle = utils.timeElapsed(d['317'].args[2])
+            idle = utils.gen.timeElapsed(d['317'].args[2])
             signon = time.strftime(conf.supybot.reply.format.time(),
                                    time.localtime(float(d['317'].args[3])))
         else:

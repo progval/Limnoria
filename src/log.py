@@ -109,7 +109,7 @@ class StdoutStreamHandler(logging.StreamHandler):
             if not isinstance(record.levelname, basestring):
                 print record
                 print record.levelname
-                print utils.stackTrace()
+                print utils.gen.stackTrace()
             prefixLen = len(record.levelname) + 1 # ' '
             s = textwrap.fill(s, width=78, subsequent_indent=' '*prefixLen)
             s.rstrip('\r\n')
@@ -337,7 +337,7 @@ def firewall(f, errorHandler=None):
                 except Exception, e:
                     logException(self, 'Uncaught exception in errorHandler')
 
-    m = utils.changeFunctionName(m, f.func_name, f.__doc__)
+    m = utils.gen.changeFunctionName(m, f.func_name, f.__doc__)
     return m
 
 class MetaFirewall(type):
@@ -377,7 +377,7 @@ except EnvironmentError, e:
           'Generally, this is because you are running Supybot in a directory ' \
           'you don\'t have permissions to add files in, or you\'re running ' \
           'Supybot as a different user than you normal do.  The original ' \
-          'error was: %s' % (miscLogFilename, utils.exnToString(e))
+          'error was: %s' % (miscLogFilename, utils.gen.exnToString(e))
 _handler.setFormatter(formatter)
 _handler.setLevel(-1)
 class PluginLogFilter(logging.Filter):

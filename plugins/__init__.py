@@ -313,11 +313,11 @@ class ChannelUserDB(ChannelUserDictionary):
                 except Exception, e:
                     log.warning('Invalid line #%s in %s.',
                                 lineno, self.__class__.__name__)
-                    log.debug('Exception: %s', utils.exnToString(e))
+                    log.debug('Exception: %s', utils.gen.exnToString(e))
         except Exception, e: # This catches exceptions from csv.reader.
             log.warning('Invalid line #%s in %s.',
                         lineno, self.__class__.__name__)
-            log.debug('Exception: %s', utils.exnToString(e))
+            log.debug('Exception: %s', utils.gen.exnToString(e))
 
     def flush(self):
         fd = utils.file.AtomicFile(self.filename, makeBackupIfSmaller=False)

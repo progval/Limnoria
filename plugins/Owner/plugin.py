@@ -321,7 +321,7 @@ class Owner(callbacks.Privmsg):
         try:
             m = ircmsgs.IrcMsg(s)
         except Exception, e:
-            irc.error(utils.exnToString(e))
+            irc.error(utils.gen.exnToString(e))
         else:
             irc.queueMsg(m)
             irc.noReply()

@@ -659,7 +659,7 @@ class IrcObjectProxy(RichReplyMethods):
                 cb.log.exception('Uncaught exception in %s.%s:',
                                  cb.name(), name)
                 if conf.supybot.reply.error.detailed():
-                    return self.error(utils.exnToString(e))
+                    return self.error(utils.gen.exnToString(e))
                 else:
                     return self.replyError()
         finally:
@@ -1079,7 +1079,7 @@ class Privmsg(irclib.IrcCallback):
                     handleBadArgs()
             else:
                 handleBadArgs()
-        dispatcher = utils.changeFunctionName(dispatcher, canonicalname)
+        dispatcher = utils.gen.changeFunctionName(dispatcher, canonicalname)
         if self._original:
             dispatcher.__doc__ = self._original.__doc__
             dispatcher.isDispatcher = False
@@ -1139,7 +1139,7 @@ class Privmsg(irclib.IrcCallback):
         except (getopt.GetoptError, ArgumentError):
             irc.reply(formatArgumentError(method, name=name))
         except (SyntaxError, Error), e:
-            self.log.debug('Error return: %s', utils.exnToString(e))
+            self.log.debug('Error return: %s', utils.gen.exnToString(e))
             irc.error(str(e))
         elapsed = time.time() - start
         log.stat('%s took %s seconds', name, elapsed)
@@ -1299,7 +1299,7 @@ class PrivmsgRegexp(Privmsg):
             self.log.exception('Uncaught exception in %s.%s:',
                                self.name(), name)
             if conf.supybot.reply.error.detailed():
-                irc.error(utils.exnToString(e))
+                irc.error(utils.gen.exnToString(e))
             else:
                 irc.replyError()
 
@@ -1363,7 +1363,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
             if catchErrors:
                 self.log.exception('Uncaught exception in callCommand:')
                 if conf.supybot.reply.error.detailed():
-                    irc.error(utils.exnToString(e))
+                    irc.error(utils.gen.exnToString(e))
                 else:
                     irc.replyError()
             else:

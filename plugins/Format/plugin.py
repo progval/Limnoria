@@ -184,7 +184,7 @@ class Format(callbacks.Privmsg):
             s %= tuple(args)
             irc.reply(s)
         except TypeError, e:
-            self.log.debug(utils.exnToString(e))
+            self.log.debug(utils.gen.exnToString(e))
             irc.error('Not enough arguments for the format string.',Raise=True)
 
 

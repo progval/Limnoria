@@ -109,7 +109,8 @@ def main():
                 print 'Exception raised in log.exception.  This is *really*'
                 print 'bad.  Hopefully it won\'t happen again, but tell us'
                 print 'about it anyway, this is a significant problem.'
-                print 'Anyway, here\'s the exception: %s'% utils.exnToString(e)
+                print 'Anyway, here\'s the exception: %s' % \
+                      utils.gen.exnToString(e)
             except:
                 print 'Man, this really sucks.  Not only did log.exception'
                 print 'raise an exception, but freaking-a, it was a string'
@@ -117,7 +118,7 @@ def main():
                 print 'die a slow, painful death.'
     now = time.time()
     seconds = now - world.startedAt
-    log.info('Total uptime: %s.', utils.timeElapsed(seconds))
+    log.info('Total uptime: %s.', utils.gen.timeElapsed(seconds))
     (user, system, _, _, _) = os.times()
     log.info('Total CPU time taken: %s seconds.', user+system)
     log.info('No more Irc objects, exiting.')

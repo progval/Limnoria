@@ -112,3 +112,5 @@ def loadPluginClass(irc, module, register=None):
         pass # The plugin isn't there.
     irc.addCallback(cb)
     return cb
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

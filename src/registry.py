@@ -430,11 +430,11 @@ class String(Value):
         elif s[0] != s[-1] or s[0] not in '\'"':
             s = repr(s)
         try:
-            v = utils.safeEval(s)
+            v = utils.gen.safeEval(s)
             if not isinstance(v, basestring):
                 raise ValueError
             self.setValue(v)
-        except ValueError: # This catches utils.safeEval(s) errors too.
+        except ValueError: # This catches utils.gen.safeEval(s) errors too.
             self.error()
 
     _printable = string.printable[:-4]

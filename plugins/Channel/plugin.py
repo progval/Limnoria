@@ -786,7 +786,7 @@ class Channel(callbacks.Privmsg):
         message isn't sent in the channel itself.
         """
         L = list(irc.state.channels[channel].users)
-        utils.sortBy(str.lower, L)
+        utils.gen.sortBy(str.lower, L)
         irc.reply(utils.str.commaAndify(L))
     nicks = wrap(nicks, ['inChannel']) # XXX Check that the caller is in chan.
 

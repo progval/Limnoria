@@ -111,7 +111,7 @@ class Dict(callbacks.Privmsg):
             db = ircutils.bold(db)
             s = utils.str.normalizeWhitespace(s).rstrip(';.,')
             L.append('%s: %s' % (db, s))
-        utils.sortBy(len, L)
+        utils.gen.sortBy(len, L)
         if dictionary == '*' and len(dbs) > 1:
             s = '%s responded: %s' % (utils.str.commaAndify(dbs), '; '.join(L))
         else:

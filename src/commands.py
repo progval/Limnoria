@@ -64,7 +64,7 @@ def thread(f):
             t.start()
         else:
             f(self, irc, msg, args, *L, **kwargs)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
+    return utils.gen.changeFunctionName(newf, f.func_name, f.__doc__)
 
 class UrlSnarfThread(world.SupyThread):
     def __init__(self, *args, **kwargs):
@@ -78,7 +78,7 @@ class UrlSnarfThread(world.SupyThread):
         try:
             super(UrlSnarfThread, self).run()
         except utils.web.Error, e:
-            log.debug('Exception in urlSnarfer: %s' % utils.exnToString(e))
+            log.debug('Exception in urlSnarfer: %s' % utils.gen.exnToString(e))
 
 class SnarfQueue(ircutils.FloodQueue):
     timeout = conf.supybot.snarfThrottle
@@ -132,7 +132,7 @@ def urlSnarfer(f):
             L = list(L)
             t = UrlSnarfThread(target=doSnarf, url=url)
             t.start()
-    newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
+    newf = utils.gen.changeFunctionName(newf, f.func_name, f.__doc__)
     return newf
 
 
@@ -514,7 +514,7 @@ def getLiteral(irc, msg, args, state, literals, errmsg=None):
     # ??? Should we allow abbreviations?
     if isinstance(literals, basestring):
         literals = (literals,)
-    abbrevs = utils.abbrev(literals)
+    abbrevs = utils.gen.abbrev(literals)
     if args[0] in abbrevs:
         state.args.append(abbrevs[args.pop(0)])
     elif errmsg is not None:
@@ -694,7 +694,7 @@ class optional(additional):
         try:
             super(optional, self).__call__(irc, msg, args, state)
         except (callbacks.ArgumentError, callbacks.Error), e:
-            log.debug('Got %s, returning default.', utils.exnToString(e))
+            log.debug('Got %s, returning default.', utils.gen.exnToString(e))
             setDefault(state, self.default)
 
 class any(context):
@@ -714,7 +714,8 @@ class any(context):
             if not self.continueOnError:
                 raise
             else:
-                log.debug('Got %s, returning default.', utils.exnToString(e))
+                log.debug('Got %s, returning default.',
+                          utils.gen.exnToString(e))
                 pass
         state.args.append(st.args)
 
@@ -863,7 +864,7 @@ def wrap(f, specList=[], **kw):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
         self.log.debug('State before call: %s' % state)
         f(self, irc, msg, args, *state.args, **state.kwargs)
-    return utils.changeFunctionName(newf, f.func_name, f.__doc__)
+    return utils.gen.changeFunctionName(newf, f.func_name, f.__doc__)
 
 
 __all__ = [

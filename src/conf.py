@@ -292,11 +292,11 @@ registerChannelValue(supybot.reply.format.time.elapsed, 'short',
     registry.Boolean(False, """Determines whether elapsed times will be given
     as "1 day, 2 hours, 3 minutes, and 15 seconds" or as "1d 2h 3m 15s"."""))
 
-originalTimeElapsed = utils.timeElapsed
+originalTimeElapsed = utils.gen.timeElapsed
 def timeElapsed(*args, **kwargs):
     kwargs['short'] = supybot.reply.format.time.elapsed.short()
     return originalTimeElapsed(*args, **kwargs)
-utils.timeElapsed = timeElapsed
+utils.gen.timeElapsed = timeElapsed
 
 registerGlobalValue(supybot.reply, 'maximumLength',
     registry.Integer(512*256, """Determines the absolute maximum length of the
