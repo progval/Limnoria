@@ -51,14 +51,13 @@ unitAbbrevs['c'] = 'celsius'
 unitAbbrevs['ce'] = 'celsius'
 
 class WeatherUnit(registry.String):
-    def set(self, s):
-        original = getattr(self, 'value', self.default)
-        registry.String.set(self, s)
-        s = self.value.lower()
+    def setValue(self, s):
+        s = s.lower()
         if s not in unitAbbrevs:
-            setattr(self, 'value', original)
             raise registry.InvalidRegistryValue,\
                 'Unit must be one of fahrenheit, celsius, or kelvin.'
+        s = unitAbbrevs[s].capitalize()
+        registry.String.setValue(self, s)
 
 class WeatherCommand(registry.String):
     def set(self, s):
@@ -72,7 +71,7 @@ class WeatherCommand(registry.String):
 
 conf.registerPlugin('Weather')
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'preferredUnit',
-    WeatherUnit('fahrenheit', """Sets the default temperature unit to use when
+    WeatherUnit('Fahrenheit', """Sets the default temperature unit to use when
     reporting the weather."""))
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'weatherCommand',
     WeatherCommand('cnn', """Sets the default command to use when retrieving 
@@ -92,11 +91,11 @@ class Weather(callbacks.Privmsg):
         default = unitAbbrevs[default]
         unit = unit.lower()
         if unitAbbrevs[unit] == default:
-            return deg.join([str(temp), unit.upper()])
+            return deg.join([temp, unit.upper()])
         try:
             temp = int(temp)
         except ValueError:
-            return deg.join([temp, unit])
+            return deg.join([temp, unit.upper()])
         if unit == 'f':
             temp = (temp - 32) * 5 / 9
             if default == 'kelvin':
@@ -113,7 +112,7 @@ class Weather(callbacks.Privmsg):
             elif default == 'fahrenheit':
                 temp = temp * 9 / 5 + 32
                 unit = 'F'
-        return deg.join([str(temp), unit])
+        return deg.join([str(temp), unit.upper()])
 
     _cityregex = re.compile(
         r'<td><font size="4" face="arial"><b>'
@@ -247,7 +246,7 @@ class Weather(callbacks.Privmsg):
             irc.error('The format of the page was odd.')
 
     _cnnUrl = 'http://weather.cnn.com/weather/search?wsearch='
-    _fTemp = re.compile(r'(-?\d+&deg;F)</span>', re.I | re.S)
+    _fTemp = re.compile(r'(-?\d+)(&deg;)(F)</span>', re.I | re.S)
     _conds = re.compile(r'align="center"><b>([^<]+)</b></div></td>', re.I|re.S)
     _humidity = re.compile(r'Rel. Humidity: <b>(\d+%)</b>', re.I | re.S)
     _wind = re.compile(r'Wind: <b>([^<]+)</b>', re.I | re.S)
@@ -292,8 +291,7 @@ class Weather(callbacks.Privmsg):
         if location and temp:
             location = location.group(1)
             location = location.split('-')[-1].strip()
-            temp = temp.group(1)
-            (temp, deg, unit) = (temp[:-2], temp[-2], temp[-1])
+            (temp, deg, unit) = temp.groups()
             temp = self._getTemp(temp, deg, unit, msg.args[0])
             resp = 'The current temperature in %s is %s.' % (location, temp)
             resp = [resp]
