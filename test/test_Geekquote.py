@@ -44,6 +44,8 @@ class GeekQuoteTestCase(ChannelPluginTestCase, PluginDocumentation):
             self.assertError('geekquote asdf')
 
         def testQdb(self):
+            # Run twice just to make sure it handles multiple randoms
+            self.assertNotError('qdb')
             self.assertNotError('qdb')
             self.assertNotError('qdb 13600')
             self.assertError('qdb qwerty')
