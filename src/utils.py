@@ -272,7 +272,7 @@ def wrapLines(s):
         L.append(textwrap.fill(line))
     return '\n'.join(L)
 
-plurals = {}
+plurals = {'match': 'matches'}
 def pluralize(i, s):
     """Returns the plural of s based on its number i.  Put any exceptions to
     the general English rule of appending 's' in the plurals dictionary.
