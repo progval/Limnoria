@@ -1,3 +1,79 @@
+2005-01-11 James Vega <jamessan@supybot.com>
+
+	* Version 0.80.0rc2!
+
+	* Implemented Observer.remove, which disables and removes the observer
+	from all channels.
+
+	* Added supybot.databases.channelSpecific.link.allow to determine
+	whether a channel allows other channels to link to its database.
+
+	* Added supybot.plugins.BadWords.stripFormatting, which determines
+	whether the bot will strip any formatting before filtering bad words.
+
+	* Added supybot.plugins.Markov.ignoreBotCommands, which determines
+	whether the Markov plugin will learn commands given to the bot.
+
+	* Added a Network.driver command, which reports the current driver
+	being used.
+
+	* Added an Infobot.update command, which allows the user to import an
+	existing Infobot factpack.
+
+	* Added a Topic.replace command, which replaces the given topic with a
+	new topic.
+
+	* Added a Note.search command, which allows the user to search for
+	notes they have sent or received.
+
+	* Added supybot.databases.channelSpecific.getChannelLink(), which
+	returns a channel based on how channels link to each other.
+
+	* Added supybot.plugins.Channel.banmask which specifies the default
+	method of generating Channel.kban's banmask.
+
+	* Renamed supybot.databases.plugins.channelSpecific.channel to
+	supybot.databases.plugins.channelSpecific.link.
+
+	* Updated RSS.announce such that it adds the arguments to the current
+	list of announced feeds instead of overwriting the current list.
+
+	* Update the Google groupsSnarfer to work with Google's beta groups
+	website.
+
+	* Updated Network.disconnect to announce that the disconnection
+	attempt has started.
+
+	* Updated Debian.bug to handle website changes.
+
+	* Updated Observer.{add,remove} to require the Admin capability.
+
+	* Updated Infobot so that it actually works reasonably well; removed
+	the deprecation.
+
+	* Updated Sourceforge to handle changes in the website.
+
+	* Updated UrbanDict to handle changes in the website.
+
+	* Updated plugins.getChannel and plugins.makeChannelFilename to
+	properly handle the new channelSpecific database setup.
+
+	* Fixed a bug with ShrinkUrl.ln; the url needed to be urlquoted before
+	being passed off to ln-s.net.
+
+	* Fixed some database conversion bugs in fundbConvert.py.
+
+	* Fixed a bug in socketDrivers where reconnection attempts would
+	always occur immediately, thus continually blocking the bot.
+
+	* Fixed an exception in registry.OnlySomeString's error method;
+	the parent method doesn't accept an argument.
+
+	* Fixed a bug in RSS where announcing the same feed in multiple
+	channels would cause improper displaying of the new feeds.
+
+
+
 2004-12-22 Jeremy Fincher <jemfinch@supybot.com>
 	
 	* Version 0.80.0pre6!
@@ -24,7 +100,7 @@
 	
 	* Fixed bug in User.register; it works now.
 
-	
+
 2004-12-20 Jeremy Fincher <jemfinch@supybot.com>
 
 	* Version 0.80.0pre5!

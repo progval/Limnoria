@@ -1,3 +1,23 @@
+Version 0.80.0rc2
+
+supybot.databases.plugins.channelSpecific.channel was renamed to
+supybot.databases.plugins.channelSpecific.link.
+
+supybot.databases.plugins.channelSpecific.link.allow was added, which
+determines whether a channel will allow other channels to link to its
+database.
+
+Infobot is no longer deprecated and the following changes were made to
+its config variables:
+supybot.plugins.Infobot.answerUnaddressedQuestions was renamed to
+supybot.plugins.Infobot.unaddressed.answerQuestions.
+supybot.plugins.Infobot.snarfUnaddressedDefinitions was renamed to
+supybot.plugins.Infobot.unaddressed.snarfDefinitions.
+supybot.plugins.Infobot.unaddressed.replyExistingFactoid was added to
+determine whether the bot will reply when someone attempts to create a
+duplicate factoid.
+
+
 Version 0.80.0pre6
 
 Another bugfix release.  No incompatibilities known.  The only
