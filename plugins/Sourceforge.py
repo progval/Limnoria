@@ -54,12 +54,24 @@ def configure(onStart, afterConnect, advanced):
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
     onStart.append('load Sourceforge')
-    print 'The Sourceforge plugin has the functionality to watch for URLs'
-    print 'that match a specific pattern (we call this a snarfer). When'
-    print 'supybot sees such a URL, he will parse the web page for information'
-    print 'and reply with the results.\n'
-    if yn('Do you want the Sourceforge snarfer enabled by default?') == 'n':
-        onStart.append('Sourceforge togglesnarfer')
+    if advanced:
+        print 'The Sourceforge plugin has the functionality to watch for URLs'
+        print 'that match a specific pattern (we call this a snarfer). When'
+        print 'supybot sees such a URL, he will parse the web page for'
+        print 'information and reply with the results.\n'
+        if yn('Do you want the Sourceforge snarfer enabled by default?') =='n':
+            onStart.append('Sourceforge togglesnarfer tracker off')
+
+    print 'The bugs and rfes commands of the Sourceforge plugin can be set'
+    print 'to query a default project when no project is specified.  If this'
+    print 'project is not set, calling either of those commands will display'
+    print 'the associated help.  With the default project set, calling'
+    print 'bugs/rfes with no arguments will find the most recent bugs/rfes'
+    print 'for the default project.\n'
+    if yn('Do you want to specify a default project?') == 'y':
+        project = anything('Project name:')
+        if project:
+            onStart.append('Sourceforge setdefault %s' % project)
 
 example = utils.wrapLines("""
 <@jamessan|work> @bugs
@@ -84,36 +96,23 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     regexps = ['sfSnarfer']
 
     _reopts = re.I
-
-    _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href="([^"]+)">'\
-        '([^<]+)</a>', _reopts)
-    _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category=100&'\
-        '_group=100&order=artifact_id&sort=DESC'
-
-    _resolution = re.compile(r'<b>Resolution:</b> <a.+?<br>(.+?)</td>',
-        _reopts)
-    _getRes = lambda self, s: '%s: %s' % (ircutils.bold('Resolution'),
-        self._resolution.search(s).group(1))
-
+    _infoRe = re.compile(r'<td nowrap>(\d+)</td><td><a href='\
+        '"([^"]+)">([^<]+)</a>', _reopts)
+    _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category'\
+        '=100&_group=100&order=artifact_id&sort=DESC'
+    _resolution = re.compile(r'<b>Resolution:</b> <a.+?<br>(.+?)</td>',_reopts)
     _assigned = re.compile(r'<b>Assigned To:</b> <a.+?<br>(.+?)</td>', _reopts)
-    _getAssign = lambda self, s: '%s: %s' % (ircutils.bold('Assigned to'), 
-        self._assigned.search(s).group(1))
-
     _submitted = re.compile(r'<b>Submitted By:</b><br>([^<]+)</td>', _reopts)
-    _getSubmit = lambda self, s: '%s: %s' % (ircutils.bold('Submmited by'),
-        self._submitted.search(s).group(1))
-
     _priority = re.compile(r'<b>Priority:</b> <a.+?<br>(.+?)</td>', _reopts)
-    _getPri = lambda self, s: '%s: %s' % (ircutils.bold('Priority'),
-        self._priority.search(s).group(1))
-
     _status = re.compile(r'<b>Status:</b> <a.+?<br>(.+?)</td>', _reopts)
-    _getStatus = lambda self, s: '%s: %s' % (ircutils.bold('Status'), 
-        self._status.search(s).group(1))
+    _res ={'Resolution':_resolution,'Assigned to':_assigned,
+        'Submitted by':_submitted, 'Priority':_priority,
+        'Status':_status}
 
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        self.snarfer = True
+        self.snarfers = {'tracker' : True}
+        self.project = None
 
     def _formatResp(self, num, text):
         """
@@ -133,17 +132,98 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 matches.append((item[0], utils.htmlToText(item[2])))
         return matches
 
-    def togglesnarfer(self, irc, msg, args):
-        """takes no argument
+    def setdefault(self, irc, msg, args):
+        """<project>
 
-        Disables the snarfer that responds to all Sourceforge Tracker links
+        Sets the default project to be used with bugs and rfes
         """
-        self.snarfer = not self.snarfer
-        if self.snarfer:
-            irc.reply(msg, '%s (Snarfer is enabled)' % conf.replySuccess)
-        else:
-            irc.reply(msg, '%s (Snarfer is disabled)' % conf.replySuccess)
-    togglesnarfer=privmsgs.checkCapability(togglesnarfer,'admin')
+        project = privmsgs.getArgs(args)
+        self.project = project
+        irc.reply(msg, conf.replySuccess)
+    setdefault = privmsgs.checkCapability(setdefault, 'admin')
+        
+    def _toggleHelper(self, irc, msg, state, snarfer):
+        if not state:
+            self.snarfers[snarfer] = not self.snarfers[snarfer] 
+        elif state in self._enable:
+            self.snarfers[snarfer] = True
+        elif state in self._disable:
+            self.snarfers[snarfer] = False
+        resp = []
+        for k in self.snarfers:
+            if self.snarfers[k]:
+                resp.append('%s%s: On' % (k[0].upper(), k[1:]))
+            else:
+                resp.append('%s%s: Off' % (k[0].upper(), k[1:]))
+        irc.reply(msg, '%s (%s)' % (conf.replySuccess, '; '.join(resp)))
+
+    _enable = ('on', 'enable')
+    _disable = ('off', 'disable')
+    def togglesnarfer(self, irc, msg, args):
+        """<tracker> [<on|off>]
+
+        Toggles the snarfer that responds to Sourceforge Tracker links.  If
+        nothing is specified, all snarfers will have their states
+        toggled (on -> off, off -> on).  If only a state is specified, all
+        snarfers will have their state set to the specified state.  If a
+        specific snarfer is specified, the changes will apply only to that
+        snarfer.
+        """
+        (snarfer, state) = privmsgs.getArgs(args, optional=1)
+        snarfer = snarfer.lower()
+        state = state.lower()
+        if snarfer not in self.snarfers:
+            raise callbacks.ArgumentError
+        if state and state not in self._enable and state not in self._disable:
+            raise callbacks.ArgumentError
+        self._toggleHelper(irc, msg, state, snarfer)
+    togglesnarfer=privmsgs.checkCapability(togglesnarfer, 'admin')
+
+    def _getTrackerInfo(self, irc, msg, url, regex, num):
+        try:
+            fd = urllib2.urlopen(url)
+            text = fd.read()
+            fd.close()
+            m = regex.search(text)
+            if m is None:
+                irc.reply(msg, 'Can\'t find the proper Tracker link.')
+                return
+            else:
+                url = 'http://sourceforge.net%s%s' %\
+                    (utils.htmlToText(m.group(1)), self._hrefOpts)
+        except ValueError, e:
+            irc.error(msg, str(e))
+        except urllib2.HTTPError, e:
+            irc.error(msg, e.msg())
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
+
+        try:
+            fd = urllib2.urlopen(url)
+            text = fd.read()
+            fd.close()
+            resp = []
+            if num != '':
+                head = '%s <http://sourceforge.net%s>'
+                for match in self._formatResp(num, text):
+                    resp.append(head % match)
+                if resp:
+                    irc.reply(msg, resp[0])
+                    return
+            else:
+                head = '#%s: %s'
+                for entry in self._formatResp(num, text):
+                    resp.append(head % entry)
+                if resp:
+                    if len(resp) > 10:
+                        resp = map(lambda s: utils.ellipsisify(s, 50), resp)
+                    irc.reply(msg, '%s' % utils.commaAndify(resp))
+                    return
+            irc.reply(msg, 'No Trackers were found.')
+        except ValueError, e:
+            irc.error(msg, str(e))
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
 
     _bugLink = re.compile(r'"([^"]+)">Bugs')
     def bugs(self, irc, msg, args):
@@ -155,52 +235,18 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         """
         (project, bugnum) = privmsgs.getArgs(args, needed=0, optional=2)
         if not project:
-            project = 'supybot'
+            if self.project is None:
+                raise callbacks.ArgumentError
+            else:
+                project = self.project
+        elif not bugnum:
+            try:
+                bugnum = int(project)
+                project = self.project
+            except ValueError:
+                pass
         url = 'http://sourceforge.net/projects/%s' % project
-        try:
-            fd = urllib2.urlopen(url)
-            text = fd.read()
-            fd.close()
-            m = self._bugLink.search(text)
-            if m is None:
-                irc.reply(msg, 'Can\'t find the "Bugs" link.')
-                return
-            else:
-                url = 'http://sourceforge.net%s%s' %\
-                    (utils.htmlToText(m.group(1)), self._hrefOpts)
-        except ValueError, e:
-            irc.error(msg, str(e))
-        except urllib2.HTTPError, e:
-            irc.error(msg, e.msg())
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
-
-        try:
-            fd = urllib2.urlopen(url)
-            text = fd.read()
-            fd.close()
-            resp = []
-            if bugnum != '':
-                head = '%s <http://sourceforge.net%s>'
-                for bug in self._formatResp(bugnum, text):
-                    resp.append(head % bug)
-                if resp:
-                    irc.reply(msg, resp[0])
-                    return
-            else:
-                head = 'Bug #%s: %s'
-                for bug in self._formatResp(bugnum, text):
-                    resp.append(head % bug)
-                if resp:
-                    if len(resp) > 10:
-                        resp = map(lambda s: utils.ellipsisify(s, 50), resp)
-                    irc.reply(msg, '%s' % utils.commaAndify(resp))
-                    return
-            irc.reply(msg, 'No bugs were found.')
-        except ValueError, e:
-            irc.error(msg, str(e))
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+        self._getTrackerInfo(irc, msg, url, self._bugLink, bugnum)
 
     _rfeLink = re.compile(r'"([^"]+)">RFE')
     def rfes(self, irc, msg, args):
@@ -212,72 +258,38 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         """
         (project, rfenum) = privmsgs.getArgs(args, needed=0, optional=2)
         if not project:
-            project = 'supybot'
+            if self.project is None:
+                raise callbacks.ArgumentError
+            else:
+                project = self.project
+        elif not rfenum:
+            try:
+                rfenum = int(project)
+                project = self.project
+            except ValueError:
+                pass
         url = 'http://sourceforge.net/projects/%s' % project
-        try:
-            fd = urllib2.urlopen(url)
-            text = fd.read()
-            fd.close()
-            m = self._rfeLink.search(text)
-            if m is None:
-                irc.reply(msg, 'Can\'t find the "RFE" link.')
-                return
-            else:
-                url = 'http://sourceforge.net%s%s' %\
-                    (utils.htmlToText(m.group(1)), self._hrefOpts)
-        except ValueError, e:
-            irc.error(msg, str(e))
-        except urllib2.HTTPError, e:
-            irc.error(msg, e.msg())
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+        self._getTrackerInfo(irc, msg, url, self._rfeLink, rfenum)
 
-        try:
-            fd = urllib2.urlopen(url)
-            text = fd.read()
-            fd.close()
-            resp = []
-            if rfenum != '':
-                head = '%s <http://sourceforge.net%s>'
-                for rfe in self._formatResp(rfenum, text):
-                    resp.append(head % rfe)
-                if resp:
-                    irc.reply(msg, resp[0])
-                    return
-            else:
-                head = 'RFE #%s: %s'
-                for rfe in self._formatResp(rfenum, text):
-                    resp.append(head % rfe)
-                if resp:
-                    if len(resp) > 10:
-                        resp = map(lambda s: utils.ellipsisify(s, 50), resp)
-                    irc.reply(msg, '%s' % utils.commaAndify(resp))
-                    return
-            irc.reply(msg, 'No rfes were found.')
-        except ValueError, e:
-            irc.error(msg, str(e))
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
-
+    _getSnarferInfo = lambda self, k, v, s: '%s: %s' % (ircutils.bold(k),
+        v.search(s).group(1))
     _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def sfSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/(?:index\.php)?\?(?:&?func=detail|&?aid=\d+|&?group_id=\d+|&?atid=\d+){4}"
-        if not self.snarfer:
+        if not self.snarfers['tracker']:
             return
         url = match.group(0)
         fd = urllib2.urlopen(url)
         s = fd.read()
         fd.close()
-        searches = (self._getSubmit, self._getStatus, self._getRes,
-            self._getPri, self._getAssign)
         try:
             (num, desc) = self._sfTitle.search(s).groups()
             resp = [desc]
             linktype = self._linkType.search(s).group(1)
-            for i in searches:
+            for k,v in self._res.iteritems():
                 try:
-                    resp.append('%s' % i(s))
+                    resp.append(self._getSnarferInfo(k, v, s))
                 except AttributeError:
                     pass
             linktype = utils.depluralize(linktype)

@@ -36,23 +36,29 @@ from test import *
 class SourceforgeTest(PluginTestCase, PluginDocumentation):
     plugins = ('Sourceforge',)
     def testBugs(self):
-        self.assertNotError('bugs')
-        self.assertResponse('bugs alkjfi83fa8', 'Can\'t find the "Bugs" link.')
+        self.assertHelp('bugs')
+        self.assertResponse('bugs alkjfi83fa8', 'Can\'t find the proper '\
+            'Tracker link.')
         self.assertNotError('bugs gaim')
         m = self.getMsg('bugs gaim')
         n = re.search('#(\d+)', m.args[1]).group(1)
         self.assertNotError('bugs gaim %s' % n)
 
     def testRfes(self):
-        self.assertNotError('rfes')
-        self.assertResponse('rfes alkjfi83hfa8', 'Can\'t find the "RFE" link.')
+        self.assertHelp('rfes')
+        self.assertResponse('rfes alkjfi83hfa8', 'Can\'t find the proper '\
+            'Tracker link.')
         self.assertNotError('rfes gaim')
         m = self.getMsg('rfes gaim')
         n = re.search('#(\d+)', m.args[1]).group(1)
         self.assertNotError('rfes gaim %s' % n)
 
+    def testSetdefault(self):
+        self.assertNotError('setdefault supybot')
+        self.assertNotError('rfes')
+
     def testSnarfer(self):
-        s = r';.*Status.*: \w+;'
+        s = r'.*Status.*: \w+'
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=589953&group_id=58965&atid=489447', s)
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
@@ -83,16 +89,15 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
             'group_id=58965&atid=489447')
 
     def testDisablesfsnarfer(self):
+        s = r'.*Status.*: \w+'
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235', 
-            r';.*Status.*: \w+;')
-        self.assertNotError('togglesnarfer')
+            'func=detail&aid=540223&group_id=235&atid=300235', s)
+        self.assertNotError('togglesnarfer tracker off')
         self.assertNoResponse('http://sourceforge.net/tracker/index.php?'\
             'func=detail&aid=540223&group_id=235&atid=300235')
-        self.assertNotError('togglesnarfer')
+        self.assertNotError('togglesnarfer tracker on')
         self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235', 
-            r';.*Status.*: \w+;')
+            'func=detail&aid=540223&group_id=235&atid=300235', s)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
