@@ -134,6 +134,8 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(f('fooba/rba/z'), 'foorz')
         f = utils.perlReToReplacer('s/cat/dog/i')
         self.assertEqual(f('CATFISH'), 'dogFISH')
+        f = utils.perlReToReplacer('s/foo/foo\/bar/')
+        self.assertEqual(f('foo'), 'foo/bar')
 
     def testFindBinaryInPath(self):
         if os.name == 'posix':

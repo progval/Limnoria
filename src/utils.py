@@ -219,6 +219,7 @@ def perlReToReplacer(s):
     replacement.
     """
     (kind, regexp, replace, flags) = nonEscapedSlashes.split(s)
+    replace = replace.replace('\\/', '/')
     if kind != 's':
         raise ValueError, 'Invalid kind: must be "s"'
     g = False
