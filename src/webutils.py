@@ -49,6 +49,7 @@ class WebError(Exception):
 
 # XXX We should tighten this up a bit.
 urlRe = re.compile(r"(\w+://[^\])>\s]+)", re.I)
+httpUrlRe = re.compile(r"https?://[^\])>\s]", re.I)
 
 REFUSED = 'Connection refused.'
 TIMED_OUT = 'Connection timed out.'
