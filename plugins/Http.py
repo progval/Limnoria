@@ -50,11 +50,11 @@ class FreshmeatException(Exception):
 
 class Http(callbacks.Privmsg):
     threaded = True
-    _fmProject = re.compile('<projectname_full>(.*?)</projectname_full>')
-    _fmVersion = re.compile('<latest_version>(.*?)</latest_version>')
-    _fmVitality = re.compile('<vitality_percent>(.*?)</vitality_percent>')
-    _fmPopularity =re.compile('<popularity_percent>(.*?)</popularity_percent>')
-    _fmLastUpdated = re.compile('<date_updated>(.*?)</date_updated>')
+    _fmProject = re.compile('<projectname_full>([^<]+)</projectname_full>')
+    _fmVersion = re.compile('<latest_version>([^<]+)</latest_version>')
+    _fmVitality = re.compile('<vitality_percent>([^<]+)</vitality_percent>')
+    _fmPopular=re.compile('<popularity_percent>([^<]+)</popularity_percent>')
+    _fmLastUpdated = re.compile('<date_updated>([^<]+)</date_updated>')
     def freshmeat(self, irc, msg, args):
         "<project name>"
         project = privmsgs.getArgs(args)
@@ -68,7 +68,7 @@ class Http(callbacks.Privmsg):
             project = self._fmProject.search(text).group(1)
             version = self._fmVersion.search(text).group(1)
             vitality = self._fmVitality.search(text).group(1)
-            popularity = self._fmPopularity.search(text).group(1)
+            popularity = self._fmPopular.search(text).group(1)
             lastupdated = self._fmLastUpdated.search(text).group(1)
             irc.reply(msg,
               '%s, last updated %s, with a vitality percent of %s '\
@@ -79,28 +79,6 @@ class Http(callbacks.Privmsg):
         except Exception, e:
             debug.recoverableException()
             irc.reply(msg, debug.exnToString(e))
-
-    _htmlTag = re.compile('<.*?>')
-    _htmlEntity = re.compile('&.*?;')
-    _html = re.compile('<.*?>|&.*?;')
-    def cfactive(self, irc, msg, args):
-        "takes no arguments."
-        try:
-            fd = urllib2.urlopen('http://www.coderforums.net/')
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
-        text = fd.read()
-        fd.close()
-        text = self._htmlTag.sub('', text)
-        lines = text.splitlines()
-        sent = False
-        for i in range(len(lines) - 1):
-            if lines[i].strip().startswith('Most'):
-                sent = True
-                irc.reply(msg, lines[i+1].strip())
-                break
-        if not sent:
-            irc.reply(msg, 'The format of the page seems odd.')
 
     def stockquote(self, irc, msg, args):
         "<company symbol>"
