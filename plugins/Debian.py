@@ -79,7 +79,9 @@ def configure(onStart, afterConnect, advanced):
                 print 'I\'ll disable file now.'
                 onStart.append('disable file')
 
-class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
+class Debian(callbacks.Privmsg,
+             plugins.Configurable,
+             plugins.PeriodicFileDownloader):
     threaded = True
     periodicFiles = {
         # This file is only updated once a week, so there's no sense in
@@ -89,21 +91,21 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
                              604800, None)
         }
     contents = os.path.join(conf.dataDir, 'Contents-i386.gz')
+    configurables = plugins.ConfigurableDictionary(
+        [('python-zegrep', plugins.ConfigurableBoolType, False,
+          """An advanced option, mostly just for testing; uses a Python-coded
+          zegrep rather than the actual zegrep executable, generally resulting
+          in a 50x slowdown.  What would take 2 seconds will take 100 with this
+          enabled.  Don't enable this.""")]
+    )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        plugins.Configurable.__init__(self)
         plugins.PeriodicFileDownloader.__init__(self)
-        self.usePythonZegrep = False
 
-    def usepythonzegrep(self, irc, msg, args):
-        """takes no arguments
-
-        Mostly a debuggin tool; tells the module to use its own hand-rolled
-        zegrep in Python rather than an actual zegrep command.  The Python
-        zegrep is about 50x slower than a real zegrep, so you probably don't
-        want to do this.
-        """
-        self.usePythonZegrep = not self.usePythonZegrep
-        irc.reply(msg, conf.replySuccess)
+    def die(self):
+        callbacks.Privmsg.die(self)
+        plugins.Configurable.die(self)
 
     def file(self, irc, msg, args):
         """[--{regexp,exact}=<value>] [<glob>]
@@ -133,17 +135,25 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
             regexp = fnmatch.translate(glob.lstrip('/'))
         try:
             re_obj = re.compile(regexp, re.I)
-        except Exception, e:
+        except re.error, e:
             irc.error(msg, "Error in regexp: %s" % e)
             return
-        if self.usePythonZegrep:
+        if self.configurables.get('python-zegrep', None):
             fd = gzip.open(self.contents)
-            r = imap(lambda tup: tup[0], \
-                     ifilter(lambda tup: tup[0], \
-                             imap(lambda line: (re_obj.search(line), line),
-                                  fd)))
+            r = imap(lambda tup: tup[0], 
+                     ifilter(lambda tup: tup[0],
+                             imap(lambda line:(re_obj.search(line), line),fd)))
         else:
-            (r, w) = popen2.popen4(['zegrep', regexp, self.contents])
+            try:
+                (r, w) = popen2.popen4(['zegrep', regexp, self.contents])
+                w.close()
+            except TypeError:
+                # We're on Windows.
+                irc.error(msg, 'This command won\'t work on this platform.  '
+                               'If you think it should (i.e., you know that '
+                               'you have a zegrep binary somewhere) then file '
+                               'a bug about it at http://supybot.sf.net/ .')
+                return
         packages = sets.Set()  # Make packages unique
         try:
             for line in r:
@@ -160,8 +170,8 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
                     continue       # We've not gotten to the files yet.
                 packages.update(pkg_list.split(','))
         finally:
-            r.close()
-            w.close()
+            if hasattr(r, 'close'):
+                r.close()
         if len(packages) == 0:
             irc.reply(msg, 'I found no packages with that file.')
         else:
