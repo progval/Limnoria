@@ -150,6 +150,7 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
             # something wonky is going on here. irc.error (src/Channel.py|449)
             # is being called but the assert is failing
             self.assertError('permban not!a.hostmask')
+            self.assertNotRegexp('permban not!a.hostmask', 'KeyError')
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(orig)
 
