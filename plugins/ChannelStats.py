@@ -50,6 +50,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
@@ -260,16 +261,14 @@ class ChannelStats(callbacks.Privmsg):
             self.db.channels[channel][id] = UserStat()
         self.db.channels[channel][id].kicked += 1
 
-    def stats(self, irc, msg, args):
+    def stats(self, irc, msg, args, channel, name):
         """[<channel>] [<name>]
 
         Returns the statistics for <name> on <channel>.  <channel> is only
         necessary if the message isn't sent on the channel itself.  If <name>
         isn't given, it defaults to the user sending the command.
         """
-        channel = privmsgs.getChannel(msg, args)
-        name = privmsgs.getArgs(args, required=0, optional=1)
-        if ircutils.strEqual(name, irc.nick):
+        if name and ircutils.strEqual(name, irc.nick):
             id = 0
         elif not name:
             try:
@@ -312,14 +311,14 @@ class ChannelStats(callbacks.Privmsg):
             irc.reply(s)
         except KeyError:
             irc.error('I have no stats for that %s in %s' % (name, channel))
+    stats = wrap(stats, ['channeldb', additional('something')])
 
-    def channelstats(self, irc, msg, args):
+    def channelstats(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the statistics for <channel>.  <channel> is only necessary if
         the message isn't sent on the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         try:
             stats = self.db.getChannelStats(channel)
             s = 'On %s there have been %s messages, containing %s ' \
@@ -341,6 +340,7 @@ class ChannelStats(callbacks.Privmsg):
             irc.reply(s)
         except KeyError:
             irc.error('I\'ve never been on %s.' % channel)
+    channelstats = wrap(channelstats, ['channeldb'])
 
 
 Class = ChannelStats
