@@ -50,7 +50,7 @@ import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 def configure(advanced):
-    from questions import output, something, yn
+    from supybot.questions import output, something, yn
     conf.registerPlugin('Parter', True)
     channel = ' '
     while channel:

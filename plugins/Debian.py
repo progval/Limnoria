@@ -59,7 +59,7 @@ import supybot.callbacks as callbacks
 
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Debian', True)
     if not utils.findBinaryInPath('zgrep'):
         if not advanced:

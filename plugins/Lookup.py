@@ -57,7 +57,7 @@ except ImportError:
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Lookup', True)
     lookups = conf.supybot.plugins.Lookup.lookups
     output("""This module allows you to define commands that do a simple key

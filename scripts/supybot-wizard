@@ -21,8 +21,8 @@ import supybot.utils as utils
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 
-import questions
-from questions import output, yn, anything, something, expect, getpass
+import supybot.questions as questions
+from supybot.questions import output, yn, anything, something, expect, getpass
 
 def getPlugins(pluginDirs):
     filenames = []

@@ -56,7 +56,7 @@ import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Relay', True)
     if yn('Would you like to relay between any channels?'):
         channels = anything('What channels?  Separated them by spaces.')

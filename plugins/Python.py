@@ -68,7 +68,7 @@ if hasattr(math, '__file__'):
 pythonPath = map(os.path.dirname, L)
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Python', True)
     if yn("""This plugin provides a snarfer for ASPN Python Recipe URLs;
              it will output the name of the Recipe when it sees such a URL.

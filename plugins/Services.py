@@ -49,7 +49,7 @@ import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Services', True)
     nick = something('What is your registered nick?')
     password = something('What is your password for that nick?')

@@ -51,7 +51,7 @@ import supybot.callbacks as callbacks
 
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     output('To use Amazon\'s Web Services, you must have a license key.')
     if yn('Do you have a license key?'):
         key = anything('What is it?')

@@ -51,7 +51,7 @@ import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Enforcer', True)
     chanserv = anything("""What\'s the name of ChanServ on your network?  If
                            there is no ChanServ on your network, just press

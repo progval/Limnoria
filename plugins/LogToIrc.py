@@ -182,7 +182,7 @@ conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'notice',
     True and the target is a nick, not a channel."""))
 
 def configure(advanced):
-    from questions import something, anything, yn, output
+    from supybot.questions import something, anything, yn, output
     output("""Here you can set which channels and who the bot has to send log
               messages to. Note that by default in order to log to a channel
               the channel has to have mode +s set. Logging to a user requires

@@ -32,7 +32,7 @@
 import supybot
 
 import supybot.fix as fix
-from questions import *
+from supybot.questions import *
 
 import os
 import sys

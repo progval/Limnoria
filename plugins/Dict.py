@@ -53,7 +53,7 @@ import supybot.callbacks as callbacks
 
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Dict', True)
     output('The default dictd server is dict.org.')
     if yn('Would you like to specify a different dictd server?'):

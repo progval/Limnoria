@@ -52,7 +52,7 @@ import supybot.callbacks as callbacks
 
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Gameknot', True)
     if advanced:
         output("""The Gameknot plugin has the functionality to watch for URLs

@@ -90,7 +90,7 @@ class BugzillaError(Exception):
 
 
 def configure(advanced):
-    from questions import output, expect, anything, yn
+    from supybot.questions import output, expect, anything, yn
     conf.registerPlugin('Bugzilla', True)
     output("""The Bugzilla plugin has the functionality to watch for URLs
               that match a specific pattern (we call this a snarfer). When

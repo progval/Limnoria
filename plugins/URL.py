@@ -62,7 +62,7 @@ except ImportError:
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('URL', True)
     if yn("""This plugin offers a snarfer that will go to tinyurl.com and get
              a shorter version of long URLs that are sent to the channel.

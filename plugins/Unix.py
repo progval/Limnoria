@@ -56,7 +56,7 @@ import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 def configure(advanced):
-    from questions import output, expect, anything, something, yn
+    from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('Unix', True)
     spellCmd = utils.findBinaryInPath('aspell')
     if not spellCmd:

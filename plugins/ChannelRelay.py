@@ -91,7 +91,7 @@ def configure(onStart, afterConnect, advanced):
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
-    from questions import expect, anything, something, yn, output
+    from supybot.questions import expect, anything, something, yn, output
     conf.registerPlugin('ChannelRelay', True)
 
 class ChannelRelay(callbacks.Privmsg):
