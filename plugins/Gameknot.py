@@ -71,6 +71,20 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             rating = self._gkrating.search(profile).group(1)
             games = self._gkgames.search(profile).group(1)
             (w, l, d) = self._gkrecord.search(profile).groups()
+            try:
+                w = int(w)
+                l = int(l)
+                d = int(d)
+                wp = 100. * w / (w + l + d) # win percent
+                lp = 100. * l / (w + l + d) # loss percent
+                dp = 100. * d / (w + l + d) # draw percent
+            except ValueError:
+                w = w
+                wp = 0.
+                l = l
+                lp = 0.
+                d = d
+                dp = 0.
             seen = self._gkseen.search(utils.htmlToText(profile))
             if 'is hiding' in seen.group(0):
                 seen = '%s is hiding his/her online status.' % name
@@ -86,12 +100,14 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             if 'Team:' in profile:
                 team = self._gkteam.search(profile).group('name')
                 s = '%s (team: %s) is rated %s and has %s ' \
-                    'and a record of W-%s, L-%s, D-%s.  %s' % \
-                    (name, team, rating, games, w, l, d, seen)
+                    'and a record of W-%s, L-%s, D-%s (win/loss/draw %%: ' \
+                    '%.2f/%.2f/%.2f).  %s' % \
+                    (name, team, rating, games, w, l, d, wp, lp, dp, seen)
             else:
                 s = '%s is rated %s and has %s ' \
-                    'and a record of W-%s, L-%s, D-%s.  %s' % \
-                    (name, rating, games, w, l, d, seen)
+                    'and a record of W-%s, L-%s, D-%s (win/loss/draw %%: ' \
+                    '%.2f/%.2f/%.2f).  %s' % \
+                    (name, rating, games, w, l, d, wp, lp, dp, seen)
             return s
         except AttributeError:
             if ('User %s not found!' % name) in profile:
