@@ -244,7 +244,11 @@ class FunCommands(callbacks.Privmsg):
     def lithp(self, irc, msg, args):
         "<text>"
         text = privmsgs.getArgs(args)
-        irc.reply(msg, text.replace('s', 'th').replace('S', 'TH'))
+        text = text.replace('s', 'th')
+        text = text.replace('S', 'TH')
+        text = text.replace('x', 'kth')
+        text = text.replace('X', 'KTH')
+        irc.reply(msg, text)
         
     _leettrans = string.maketrans('oOaAeElBTiIts', '004433187!1+5')
     _leetres = ((re.compile(r'\b(?:(?:[yY][o0O][oO0uU])|u)\b'), 'j00'),
