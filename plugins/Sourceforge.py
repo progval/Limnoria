@@ -47,6 +47,8 @@ import supybot.registry as registry
 import supybot.conf as conf
 import supybot.utils as utils
 
+import rssparser
+
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -288,8 +290,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 status = option
         try:
             int(project)
-            s = 'Use the tracker command to get information about a specific'\
-                ' tracker.'
+            s = 'Use the tracker command to get information about a specific '\
+                'tracker.'
             irc.error(s)
             return
         except ValueError:
@@ -334,6 +336,69 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         """
         self._trackers(irc, args, msg, 'patches')
 
+    _intRe = re.compile(r'(\d+)')
+    _percentRe = re.compile(r'([\d.]+%)')
+    def stats(self, irc, msg, args):
+        """[<project>]
+
+        Returns the current statistics for <project>.  <project> is not needed
+        if there is a default project set.
+        """
+        project = privmsgs.getArgs(args, optional=1, required=0)
+        project = project.lower() # To make sure it's the UNIX name.
+        url = 'http://sourceforge.net/' \
+              'export/rss2_projsummary.php?project=' + project
+        results = rssparser.parse(url)
+        if not results['items']:
+            irc.errorInvalid('SourceForge project name', project)
+        class x:
+            pass
+        def get(r, s):
+            m = r.search(s)
+            if m is not None:
+                return m.group(0)
+            else:
+                irc.error('Sourceforge gave me a bad RSS feed.', Raise=True)
+        def gets(r, s):
+            L = []
+            for m in r.finditer(s):
+                L.append(m.group(1))
+            return L
+        def afterColon(s):
+            return s.split(': ', 1)[-1]
+        for item in results['items']:
+            title = item['title']
+            description = item['description']
+            if 'Project name' in title:
+                x.project = afterColon(title)
+            elif 'Developers on project' in title:
+                x.devs = get(self._intRe, title)
+            elif 'Activity percentile' in title:
+                x.activity = get(self._percentRe, title)
+                x.ranking = get(self._intRe, afterColon(description))
+            elif 'Downloadable files' in title:
+                x.downloads = get(self._intRe, title)
+                x.downloadsToday = afterColon(description)
+            elif 'Tracker: Bugs' in title:
+                (x.bugsOpen, x.bugsTotal) = gets(self._intRe, title)
+            elif 'Tracker: Patches' in title:
+                (x.patchesOpen, x.patchesTotal) = gets(self._intRe, title)
+            elif 'Tracker: Feature' in title:
+                (x.rfesOpen, x.rfesTotal) = gets(self._intRe, title)
+                
+        irc.reply('%s has %s, '
+                  'is %s active (ranked %s), '
+                  'has had %s (%s today), '
+                  'has %s (out of %s), '
+                  'has %s (out of %s), '
+                  'and has %s (out of %s).' %
+                  (x.project, utils.nItems('developer', x.devs),
+                   x.activity, x.ranking,
+                   utils.nItems('download', x.downloads), x.downloadsToday,
+                   utils.nItems('bug', x.bugsOpen, 'open'), x.bugsTotal,
+                   utils.nItems('rfe', x.rfesOpen, 'open'), x.rfesTotal,
+                   utils.nItems('patch',x.patchesOpen, 'open'), x.patchesTotal))
+                
     _totbugs = re.compile(r'Bugs</a>\s+?\( <b>([^<]+)</b>', re.S | re.I)
     def _getNumBugs(self, project):
         text = webutils.getUrl('%s%s' % (self._projectURL, project))
