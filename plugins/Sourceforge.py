@@ -101,14 +101,12 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         '"([^"]+)">([^<]+)</a>', _reopts)
     _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category'\
         '=100&_group=100&order=artifact_id&sort=DESC'
-    _resolution = re.compile(r'<b>Resolution:</b> <a.+?<br>(.+?)</td>',_reopts)
-    _assigned = re.compile(r'<b>Assigned To:</b> <a.+?<br>(.+?)</td>', _reopts)
-    _submitted = re.compile(r'<b>Submitted By:</b><br>([^<]+)</td>', _reopts)
-    _priority = re.compile(r'<b>Priority:</b> <a.+?<br>(.+?)</td>', _reopts)
-    _status = re.compile(r'<b>Status:</b> <a.+?<br>(.+?)</td>', _reopts)
-    _res ={'Resolution':_resolution,'Assigned to':_assigned,
-        'Submitted by':_submitted, 'Priority':_priority,
-        'Status':_status}
+    _resolution = re.compile(r'<b>(Resolution):</b> <a.+?<br>(.+?)</td>',_reopts)
+    _assigned = re.compile(r'<b>(Assigned To):</b> <a.+?<br>(.+?)</td>', _reopts)
+    _submitted = re.compile(r'<b>(Submitted By):</b><br>([^<]+)</td>', _reopts)
+    _priority = re.compile(r'<b>(Priority):</b> <a.+?<br>(.+?)</td>', _reopts)
+    _status = re.compile(r'<b>(Status):</b> <a.+?<br>(.+?)</td>', _reopts)
+    _res =(_resolution, _assigned, _submitted, _priority, _status)
 
     toggles = plugins.ToggleDictionary({'tracker' : True})
     project = None
@@ -237,8 +235,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         url = 'http://sourceforge.net/projects/%s' % project
         self._getTrackerInfo(irc, msg, url, self._rfeLink, rfenum)
 
-    _getSnarferInfo = lambda self, k, v, s: '%s: %s' % (ircutils.bold(k),
-        v.search(s).group(1))
+    _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
     _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
     _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def sfSnarfer(self, irc, msg, match):
@@ -246,27 +243,32 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         r".*\?(?:&?func=detail|&?aid=\d+|&?group_id=\d+|&?atid=\d+){4}"
         if not self.toggles.get('tracker', channel=msg.args[0]):
             return
-        url = match.group(0)
-        fd = urllib2.urlopen(url)
-        s = fd.read()
-        fd.close()
         try:
-            (num, desc) = self._sfTitle.search(s).groups()
-            resp = [desc]
-            linktype = self._linkType.search(s).group(1)
-            for k,v in self._res.iteritems():
-                try:
-                    resp.append(self._getSnarferInfo(k, v, s))
-                except AttributeError:
-                    pass
-            linktype = utils.depluralize(linktype)
+            url = match.group(0)
+            fd = urllib2.urlopen(url)
+            s = fd.read()
+            fd.close()
+            resp = []
+            head = ''
+            m = self._linkType.search(s)
+            n = self._sfTitle.search(s)
+            if m and n:
+                linktype = m.group(1)
+                linktype = utils.depluralize(linktype)
+                (num, desc) = n.groups()
+                head = '%s #%s:' % (ircutils.bold(linktype), num)
+                resp.append(desc)
+            else:
+                debug.msg('%s does not appear to be a proper Sourceforge '\
+                    'Tracker page (%s)' % (url, conf.replyPossibleBug))
+            for r in self._res:
+                m = r.search(s)
+                if m:
+                    resp.append('%s: %s' % self._bold(m.groups()))
             irc.reply(msg, '%s #%s: %s' % (ircutils.bold(linktype),
                 ircutils.bold(num), '; '.join(resp)), prefixName = False)
-        except AttributeError, e:
-            irc.error(msg, 'That doesn\'t appear to be a proper Sourceforge '\
-                'Tracker page. (%s)' % conf.replyPossibleBug)
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+        except urllib2.HTTPError, e:
+            debug.msg(e.msg())
 
 Class = Sourceforge
 
