@@ -40,7 +40,6 @@ import os
 import sys
 import atexit
 import shutil
-import os.path
 
 if sys.version_info < (2, 3, 0):
     sys.stderr.write('This program requires Python >= 2.3.0\n')
@@ -61,6 +60,7 @@ import registry
 
 def main():
     import conf
+    import utils
     import world
     import drivers
     import schedule
@@ -72,7 +72,11 @@ def main():
         log.info('No more Irc objects, exiting.')
     except KeyboardInterrupt:
         log.info('Exiting due to Ctrl-C.')
-        raise SystemExit, 'Goodbye!'
+        now = time.time()
+        log.info('Total uptime: %s.', utils.timeElapsed(now - world.startedAt))
+        (user, system, _, _, _) = os.times()
+        log.info('Total CPU time taken: %s seconds.', user+system)
+        raise SystemExit
     except:
         log.exception('Exception raised out of drivers.run:')
 
