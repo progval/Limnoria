@@ -127,7 +127,7 @@ def makeNewAlias(name, alias):
                 return args[idx-1]
             alias_ = dollarRe.sub(replace, alias_)
         self.Proxy(irc.irc, msg, callbacks.tokenize(alias_))
-    f.__doc__ ='<an alias, %s %s>\n\nAlias for %r' % \
+    f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \
                 (utils.nItems(biggestDollar, 'argument'), alias)
     #f = new.function(f.func_code, f.func_globals, name)
     return f
