@@ -65,7 +65,7 @@ conf.registerPlugin('Http')
 class FreshmeatException(Exception):
     pass
 
-class Http(callbacks.PrivmsgCommand):
+class Http(callbacks.Privmsg):
     threaded = True
 
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
