@@ -35,9 +35,11 @@
 Fixes stuff that Python should have but doesn't.
 """
 
+__all__ = ['ignore', 'catch', 'reviter', 'window', 'group',
+           'partition', 'any', 'all', 'rsplit']
+
 import string
 string.ascii = string.maketrans('', '')
-del string
 
 def ignore(*args, **kwargs):
     """Simply ignore the arguments sent to it."""
@@ -70,8 +72,6 @@ def ilen(iterator):
         i += 1
     return i
 itertools.ilen = ilen
-del itertools
-del ilen
 
 def group(seq, groupSize, noneFill=True):
     """Groups a given sequence into sublists of length groupSize."""
