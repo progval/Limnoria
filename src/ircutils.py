@@ -100,10 +100,11 @@ def toLower(s):
     """Returns the string s lowered according to IRC case rules."""
     return intern(s.translate(_lowertrans))
 
-def nickEqual(nick1, nick2):
+def strEqual(nick1, nick2):
     """Returns True if nick1 == nick2 according to IRC case rules."""
     return toLower(nick1) == toLower(nick2)
 
+nickEqual = strEqual
 
 _nickchars = r'_[]\`^{}|-'
 nickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$'
@@ -289,6 +290,10 @@ def mircColor(s, fg=None, bg=None):
     """Returns s with the appropriate mIRC color codes applied."""
     if fg is None and bg is None:
         return s
+    if isinstance(fg, int):
+        fg = mircColors[fg] # Convert to string, just in case.
+    if isinstance(bg, int):
+        bg = mircColors[bg] # Convert to string, just in case.
     if fg is None or isinstance(fg, str):
         fg = mircColors[fg]
     if bg is None:

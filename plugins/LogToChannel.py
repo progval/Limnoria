@@ -31,7 +31,7 @@
 ###
 
 """
-Allows for sending the bot's logging output to channels.
+Allows for sending the bot's logging output to a channel.
 """
 
 __revision__ = "$Id$"
@@ -44,6 +44,7 @@ import log
 import conf
 import utils
 import world
+import ircmsgs
 import ircutils
 import privmsgs
 import registry
@@ -51,26 +52,24 @@ import callbacks
 
 
 class IrcHandler(logging.Handler):
-    def __init__(self, irc=None):
-        logging.Handler.__init__(self)
-        self._irc = irc
-
     def emit(self, record):
+        channel = conf.supybot.plugins.LogToChannel.channel()
         try:
-            if not self._irc.driver.connected:
-                return
-        except AttributeError:
-            return
-        from ircmsgs import privmsg
-        for channel in conf.supybot.plugins.LogToChannel.channels():
-            try:
-                msg = self.format(record).split('\n')
-                msg = [line.strip() for line in msg]
-                msg = ' '.join(msg)
-                self._irc.queueMsg(privmsg(channel, msg))
-            except:
-                self.handleError(record)
-
+            s = utils.normalizeWhitespace(self.format(record))
+        except:
+            self.handleError(record)
+        msg = ircmsgs.privmsg(channel, s)
+        if channel:
+            for irc in world.ircs:
+                try:
+                    if not irc.driver.connected:
+                        continue
+                except AttributeError, e:
+                    print '*** AttributeError, shouldn\'t happen: %s' % e
+                    continue
+                if channel in irc.state.channels:
+                    irc.queueMsg(msg)
+            
 
 class IrcFormatter(log.Formatter):
     def formatException(self, ei):
@@ -93,51 +92,62 @@ class ColorizedIrcFormatter(IrcFormatter):
             return IrcFormatter.formatException(self, (E, e, tb))
 
     def format(self, record, *args, **kwargs):
+        s = IrcFormatter.format(self, record, *args, **kwargs)
         if conf.supybot.plugins.LogToChannel.colorized():
-            fmt = '%s'
             if record.levelno == logging.CRITICAL:
-                fmt = ircutils.bold(ircutils.mircColor('%s', fg='red'))
+                s = ircutils.bold(ircutils.mircColor(s, fg='red'))
             elif record.levelno == logging.ERROR:
-                fmt = ircutils.mircColor('%s', fg='red')
+                s = ircutils.mircColor(s, fg='orange')
             elif record.levelno == logging.WARNING:
-                fmt = ircutils.mircColor('%s', fg='orange')
-            return fmt % IrcFormatter.format(self, record, *args, **kwargs)
-        else:
-            return IrcFormatter.format(self, record, *args, **kwargs)
+                s = ircutils.mircColor(s, fg='yellow')
+        return s
 
 
-_ircHandler = IrcHandler(irc=world.ircs[0])
+_ircHandler = IrcHandler()
 _formatString = '%(name)s: %(levelname)s %(message)s'
 _ircFormatter = ColorizedIrcFormatter(_formatString)
 _ircHandler.setFormatter(_ircFormatter)
 
+class ChannelLogLevel(log.LogLevel):
+    """Invalid log level.  Value must be either INFO, WARNING, ERROR,
+    or CRITICAL."""
+    def setValue(self, v):
+        if v <= logging.DEBUG:
+            self.error()
+        else:
+            log.LogLevel.setValue(self, v)
+            _ircHandler.setLevel(v)
+
+class ValidChannelOrNot(conf.ValidChannel):
+    def setValue(self, v):
+        if v:
+            conf.ValidChannel.setValue(self, v)
+        else:
+            registry.Value.setValue(self, '')
 
 conf.registerPlugin('LogToChannel')
 conf.registerGlobalValue(conf.supybot.plugins.LogToChannel, 'level',
-    log.LogLevel(_ircHandler, logging.WARNING, """Determines what the minimum
-    priority level logged will be to IRC. See supybot.log.level for possible
-    values. (NEVER set this to DEBUG!)"""))
-conf.supybot.plugins.LogToChannel.level._target = _ircHandler
-_ircHandler.setLevel(conf.supybot.plugins.LogToChannel.level())
-conf.registerGlobalValue(conf.supybot.plugins.LogToChannel, 'channels',
-    conf.SpaceSeparatedSetOfChannels('', """Determines which channels the
-    bot should log to or empty if none at all."""))
+    ChannelLogLevel(logging.WARNING, """Determines what the minimum priority
+    level logged will be to IRC. See supybot.log.level for possible
+    values.  DEBUG is disabled due to the large quantity of output."""))
+conf.registerGlobalValue(conf.supybot.plugins.LogToChannel, 'channel',
+    ValidChannelOrNot('', """Determines which channel the bot should log to or
+    empty if none at all."""))
 conf.registerGlobalValue(conf.supybot.plugins.LogToChannel, 'colorized',
     registry.Boolean(False, """Determines whether the bot's logs
     to IRC will be colorized with mIRC colors."""))
 
-
 def configure(advanced):
     from questions import something, anything, yn, output
-    channels = ''
-    while not channels:
+    channel = ''
+    while not channel:
         try:
-            channels = anything('Which channels would you like to send log '
+            channel = anything('Which channel would you like to send log '
                                  'messages too?')
-            conf.supybot.plugins.LogToChannel.channels.set(channels)
+            conf.supybot.plugins.LogToChannel.channel.set(channel)
         except registry.InvalidRegistryValue, e:
             output(str(e))
-            channels = ''
+            channel = ''
     colorized = yn('Would you like these messages to be colored?')
     conf.supybot.plugins.LogToChannel.colorized.setValue(colorized)
     if advanced:
@@ -161,6 +171,11 @@ class LogToChannel(callbacks.Privmsg):
     def die(self):
         log._logger.removeHandler(_ircHandler)
 
+    def do376(self, irc, msg):
+        channel = self.registryValue('channel')
+        if channel:
+            irc.queueMsg(ircmsgs.join(channel))
+            
 
 Class = LogToChannel
 
