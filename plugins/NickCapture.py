@@ -82,9 +82,10 @@ class NickCapture(callbacks.Privmsg):
         if irc.afterConnect:
             nick = self._getNick()
             if nick and not ircutils.strEqual(nick, irc.nick):
-                if nick not in irc.state.nicksToHostmasks:
-                    # We don't know if it's online, let's ISON it.
-                    self._ison(irc, nick)
+                # We used to check this, but nicksToHostmasks is never cleared
+                # except on reconnects, which can cause trouble.
+                # if nick not in irc.state.nicksToHostmasks:
+                self._ison(irc, nick)
                 callbacks.Privmsg.__call__(self, irc, msg)
 
     def _ison(self, irc, nick):
