@@ -500,13 +500,15 @@ class AdminCommands(callbacks.Privmsg):
         """
         command = getArgs(args)
         if ircdb.checkCapability(msg.prefix, 'admin'):
-            if command in ('enable', 'identify', 'auth'):
+            if command in ('enable', 'identify'):
                 irc.error(msg, 'You can\'t disable %s!' % command)
             else:
                 # This has to know that defaultCapabilties gets turned into a
                 # dictionary.
+                if command in conf.defaultCapabilities:
+                    conf.defaultCapabilities.remove(capability)
                 capability = ircdb.makeAntiCapability(command)
-                conf.defaultCapabilities[capability] = True
+                conf.defaultCapabilities.add(capability)
                 irc.reply(msg, conf.replySuccess)
                 return
         else:
@@ -522,7 +524,7 @@ class AdminCommands(callbacks.Privmsg):
         anticapability = ircdb.makeAntiCapability(command)
         if ircdb.checkCapability(msg.prefix, 'admin'):
             if anticapability in conf.defaultCapabilities:
-                del conf.defaultCapabilities[anticapability]
+                conf.defaultCapabilities.remove(anticapability)
                 irc.reply(msg, conf.replySuccess)
                 return
             else:
