@@ -286,26 +286,40 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         message isn't sent on the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        name = privmsgs.getArgs(args)
+        name = privmsgs.getArgs(args, needed=0, optional=1)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT added, subtracted
-                          FROM karma
-                          WHERE name=%s""", name)
-        if cursor.rowcount == 0:
-            irc.reply(msg, '%s has no karma.' % name)
-        else:
-            (added, subtracted) = map(int, cursor.fetchone())
-            total = added - subtracted
-            irc.reply(msg, '%s\'s karma has been increased %s %s ' \
-                           'and decreased %s %s for a total karma of %s.' % \
-                      (name, added, added == 1 and 'time' or 'times',
-                       subtracted, subtracted == 1 and 'time' or 'times',
-                       total))
-
+        if name:
+            cursor.execute("""SELECT added, subtracted
+                              FROM karma
+                              WHERE name=%s""", name)
+            if cursor.rowcount == 0:
+                irc.reply(msg, '%s has no karma.' % name)
+            else:
+                (added, subtracted) = map(int, cursor.fetchone())
+                total = added - subtracted
+                s = 'Karma for %r has been increased %s %s ' \
+                    'and decreased %s %s for a total karma of %s.' % \
+                    (name, added, added == 1 and 'time' or 'times',
+                     subtracted, subtracted == 1 and 'time' or 'times', total)
+                irc.reply(msg, s)
+        else: # No name was given.  Return the top/bottom 3 karmas.
+            cursor.execute("""SELECT name, added-subtracted
+                              FROM karma
+                              ORDER BY added-subtracted DESC
+                              LIMIT 3""")
+            highest = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
+            cursor.execute("""SELECT name, added-subtracted
+                              FROM karma
+                              ORDER BY added-subtracted ASC
+                              LIMIT 3""")
+            lowest = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
+            s = 'Highest karma: %s.  Lowest karma: %s.' % \
+                (utils.commaAndify(highest), utils.commaAndify(lowest))
+            irc.reply(msg, s)
+            
     def increaseKarma(self, irc, msg, match):
         r"^(.)(.*)\+\+$"
-        debug.printf('increaseKarma')
         (first, rest) = match.groups()
         if first in conf.prefixChars:
             name = rest
@@ -318,7 +332,6 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
 
     def decreaseKarma(self, irc, msg, match):
         r"^(.)(.*)--$"
-        debug.printf('decreaseKarma')
         (first, rest) = match.groups()
         if first in conf.prefixChars:
             name = rest
