@@ -98,18 +98,18 @@ def getUrlFd(url, headers=None):
         fd = urllib2.urlopen(request)
         return fd
     except socket.timeout, e:
-        raise WebError, TIMED_OUT
+        raise Error, TIMED_OUT
     except (socket.error, socket.sslerror), e:
-        raise WebError, strError(e)
+        raise Error, strError(e)
     except httplib.InvalidURL, e:
-        raise WebError, 'Invalid URL: %s' % e
+        raise Error, 'Invalid URL: %s' % e
     except urllib2.HTTPError, e:
-        raise WebError, strError(e)
+        raise Error, strError(e)
     except urllib2.URLError, e:
-        raise WebError, strError(e.reason)
+        raise Error, strError(e.reason)
     # Raised when urllib doesn't recognize the url type
     except ValueError, e:
-        raise WebError, strError(e)
+        raise Error, strError(e)
 
 def getUrl(url, size=None, headers=None):
     """Gets a page.  Returns a string that is the page gotten."""
@@ -120,7 +120,7 @@ def getUrl(url, size=None, headers=None):
         else:
             text = fd.read(size)
     except socket.timeout, e:
-        raise WebError, TIMED_OUT
+        raise Error, TIMED_OUT
     fd.close()
     return text
 
