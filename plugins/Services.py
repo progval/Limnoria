@@ -102,11 +102,12 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     do377 = do376
     do422 = do376
 
-    _owned = re.compile(r'nick.*(?<!n[\'o]t)\s*(?:registered|protected|owned)')
     def doNotice(self, irc, msg):
         if self.nickserv:
             if msg.nick == self.nickserv:
-                if self._owned.search(msg.args[1]):
+                s = msg.args[1]
+                if ('registered' in s or 'protected' in s) and \
+                   ('not' not in s and 'isn\'t' not in s):
                     # NickServ told us the nick is registered.
                     identify = 'IDENTIFY %s' % self.password
                     irc.queueMsg(ircmsgs.privmsg(self.nickserv, identify))
