@@ -82,6 +82,7 @@ class MiscCommands(callbacks.Privmsg):
                     if not callbacks.findCallbackForCommand(irc, command):
                         notCommands.append(repr(command))
                 if notCommands:
+                    irc = callbacks.IrcObjectProxyRegexp(irc)
                     replyWhenNotCommand(irc, msg, notCommands)
         
     def list(self, irc, msg, args):
