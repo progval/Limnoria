@@ -410,10 +410,6 @@ __builtins__['sorted'] = sorted
 
 def mktemp(suffix=''):
     """Gives a decent random string, suitable for a filename."""
-    import sha
-    import md5
-    import time
-    import random
     r = random.Random()
     m = md5.md5(suffix)
     r.seed(time.time())
