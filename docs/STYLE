@@ -75,6 +75,10 @@ statements in the code (commented out) so they can later be
 re-enabled.  Remember that once code is buggy, it tends to have more
 bugs, and you'll probably need those print statements again.
 
+While on the topic of logs, note that we do not use % with logged
+strings; we simple pass the format parameters as additional
+arguemnts.
+
 SQL table names should be all-lowercase and include underscores to
 separate words.  This is because SQL itself is case-insensitive.
 

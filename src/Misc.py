@@ -273,7 +273,7 @@ class Misc(callbacks.Privmsg):
                     return s.split(None, 3)[2]
                 except:
                     self.log.exception('Getting %s module\'s revision number '
-                                       'from __revision__ string: %s'%(n, s))
+                                       'from __revision__ string: %s', n, s)
             if hasattr(module, '__revision__'):
                 if 'supybot' in module.__file__:
                     return getVersion(module.__revision__, name)
