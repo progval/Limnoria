@@ -33,6 +33,8 @@
 Provides a multitude of fun, useless commands.
 """
 
+__revision__ = "$Id$"
+
 import plugins
 
 import gc
@@ -400,12 +402,15 @@ class Fun(callbacks.Privmsg):
         classes = 0
         functions = 0
         modules = 0
+        strings = 0
         dicts = 0
         lists = 0
         tuples = 0
         refcounts = 0
         objs = gc.get_objects()
         for obj in objs:
+            if isinstance(obj, str):
+                strings += 1
             if isinstance(obj, tuple):
                 tuples += 1
             elif inspect.isroutine(obj):
@@ -420,10 +425,11 @@ class Fun(callbacks.Privmsg):
                 modules += 1
             refcounts += sys.getrefcount(obj)
         response = 'I have %s objects: %s modules, %s classes, %s functions, '\
-                   '%s dictionaries, %s lists, and %s tuples (and a few other'\
-                   ' different types).  I have a total of %s references.' %\
+                   '%s dictionaries, %s lists, %s tuples, %s strings, and a ' \
+                   'few other odds and ends.  ' \
+                   'I have a total of %s references.' %\
                    (len(objs), modules, classes, functions,
-                    dicts, lists, tuples, refcounts)
+                    dicts, lists, tuples, strings, refcounts)
         irc.reply(msg, response)
 
     def levenshtein(self, irc, msg, args):
