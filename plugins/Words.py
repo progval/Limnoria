@@ -96,6 +96,7 @@ def addWord(db, word, commit=False):
     if commit:
         db.commit()
 
+
 class HangmanGame:
     def __init__(self):
         self.gameOn = False
@@ -115,6 +116,45 @@ class HangmanGame:
         cur.execute("""SELECT word FROM words ORDER BY random() LIMIT 1""")
         word = cur.fetchone()[0]
         return word
+
+    def letterPositions(self, letter, word):
+        """
+        Returns a list containing the positions of letter in word.
+        """
+        lst = []
+        for i in xrange(len(word)):
+            if word[i] == letter:
+                lst.append(i)
+        return lst
+
+    def addLetter(self, letter, word, pos):
+        """
+        Replaces all characters of word at positions contained in pos
+        by letter.
+        """
+        newWord = []
+        for i in xrange(len(word)):
+            if i in pos:
+                newWord.append(letter)
+            else:
+                newWord.append(word[i])
+        return ''.join(newWord)
+
+    def triesLeft(self, n):
+        """
+        Returns the number of tries and the correctly pluralized try/tries
+        """
+        return utils.nItems('try', n)
+
+    def letterArticle(self, letter):
+        """
+        Returns 'a' or 'an' to match the letter that will come after
+        """
+        anLetter = 'aefhilmnorsx'
+        if letter in anLetter:
+            return 'an'
+        else:
+            return 'a'
 
 
 class Words(callbacks.Privmsg, configurable.Mixin):
@@ -204,47 +244,8 @@ class Words(callbacks.Privmsg, configurable.Mixin):
     games = ircutils.IrcDict()
     validLetters = [chr(c) for c in range(ord('a'), ord('z')+1)]
 
-    def letterPositions(self, letter, word):
-        """
-        Returns a list containing the positions of letter in word.
-        """
-        lst = []
-        for i in xrange(len(word)):
-            if word[i] == letter:
-                lst.append(i)
-        return lst
-
-    def addLetter(self, letter, word, pos):
-        """
-        Replaces all characters of word at positions contained in pos
-        by letter.
-        """
-        newWord = []
-        for i in xrange(len(word)):
-            if i in pos:
-                newWord.append(letter)
-            else:
-                newWord.append(word[i])
-        return ''.join(newWord)
-
     def endGame(self, channel):
         self.games[channel].gameOn = False
-
-    def triesLeft(self, n):
-        """
-        Returns the number of tries and the correctly pluralized try/tries
-        """
-        return utils.nItems('try', n)
-
-    def letterArticle(self, letter):
-        """
-        Returns 'a' or 'an' to match the letter that will come after
-        """
-        anLetter = 'aefhilmnorsx'
-        if letter in anLetter:
-            return 'an'
-        else:
-            return 'a'
 
     def letters(self, irc, msg, args):
         """takes no arguments
@@ -276,7 +277,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
             irc.reply(msg, '%sOkay ladies and gentlemen, you have '
                       'a %s-letter word to find, you have %s!' %
                       (game.prefix, len(game.hidden),
-                      self.triesLeft(game.tries)), prefixName=False)
+                      game.triesLeft(game.tries)), prefixName=False)
         # So, a game is going on, but let's see if it's timed out.  If it is
         # we create a new one, otherwise we inform the user
         else:
@@ -307,9 +308,9 @@ class Words(callbacks.Privmsg, configurable.Mixin):
             del game.unused[game.unused.index(letter)]
             if letter in game.hidden:
                 irc.reply(msg, '%sYes, there is %s %s' % (game.prefix,
-                    self.letterArticle(letter), `letter`), prefixName=False)
-                game.guess = self.addLetter(letter, game.guess,
-                        self.letterPositions(letter, game.hidden))
+                    game.letterArticle(letter), `letter`), prefixName=False)
+                game.guess = game.addLetter(letter, game.guess,
+                        game.letterPositions(letter, game.hidden))
                 if game.guess == game.hidden:
                     game.guessed = True
             else:
@@ -317,7 +318,7 @@ class Words(callbacks.Privmsg, configurable.Mixin):
                         prefixName=False)
                 game.tries -= 1
             irc.reply(msg, '%s%s (%s left)' % (game.prefix, game.guess,
-                self.triesLeft(game.tries)), prefixName=False)
+                game.triesLeft(game.tries)), prefixName=False)
         # User input a valid character that has already been tried
         elif letter in self.validLetters:
             irc.error(msg, 'That letter has already been tried.')
