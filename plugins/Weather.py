@@ -30,14 +30,15 @@
 ###
 
 """
-This plugin does weather-related stuff.
+This plugin does weather-related stuff.  It can't change the weather, though,
+so don't get your hopes up.  We just report it.
 """
 
-import urllib
 import plugins
 
 import re
 import sets
+import urllib
 
 import conf
 import utils
@@ -55,19 +56,20 @@ class WeatherUnit(registry.String):
         s = s.lower()
         if s not in unitAbbrevs:
             raise registry.InvalidRegistryValue,\
-                'Unit must be one of fahrenheit, celsius, or kelvin.'
+                'Unit must be one of Fahrenheit, Celsius, or Kelvin.'
         s = unitAbbrevs[s].capitalize()
         registry.String.setValue(self, s)
 
 class WeatherCommand(registry.String):
-    def set(self, s):
-        original = getattr(self, 'value', self.default)
-        registry.String.set(self, s)
-        m = Weather.commands
-        if self.value not in m:
-            setattr(self, 'value', original)
+    def setValue(self, s):
+        m = Weather.weatherCommands
+        if s not in m:
             raise registry.InvalidRegistryValue,\
                 'Command must be one of %s' % utils.commaAndify(m)
+        else:
+            method = getattr(Weather, s)
+            Weather.weather.__doc__ = method.__doc__
+        registry.String.setValue(self, s)
 
 conf.registerPlugin('Weather')
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'preferredUnit',
@@ -78,7 +80,7 @@ conf.registerChannelValue(conf.supybot.plugins.Weather, 'weatherCommand',
     the weather."""))
 
 class Weather(callbacks.Privmsg):
-    commands = ['ham', 'cnn']
+    weatherCommands = ['ham', 'cnn']
     threaded = True
     def callCommand(self, method, irc, msg, *L):
         try:
@@ -86,6 +88,15 @@ class Weather(callbacks.Privmsg):
         except webutils.WebError, e:
             irc.error(str(e))
             
+    def weather(self, irc, msg, args):
+        # This specifically does not have a docstring.
+        channel = None
+        if ircutils.isChannel(msg.args[0]):
+            channel = msg.args[0]
+        realCommandName = self.registryValue('weatherCommand', channel)
+        realCommand = getattr(self, realCommandName)
+        realCommand(irc, msg, args)
+        
     def _getTemp(self, temp, deg, unit, chan):
         default = self.registryValue('preferredUnit', chan).lower()
         default = unitAbbrevs[default]
