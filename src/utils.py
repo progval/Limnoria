@@ -612,25 +612,32 @@ def isIP(s):
     except socket.error:
         return False
 
+def bruteIsIPV6(s):
+    if s.count('::') <= 1:
+        L = s.split(':')
+        if len(L) <= 8:
+            for x in L:
+                if x:
+                    try:
+                        int(x, 16)
+                    except ValueError:
+                        return False
+            return True
+    return False
+
 def isIPV6(s):
     """Returns whether or not a given string is an IPV6 address."""
     try:
-        return bool(socket.inet_pton(socket.AF_INET6, s))
+        if hasattr(socket, 'inet_pton'):
+            return bool(socket.inet_pton(socket.AF_INET6, s))
+        else:
+            return bruteIsIPV6(s)
     except socket.error:
         try:
             socket.inet_pton(socket.AF_INET6, '::')
         except socket.error:
             # We gotta fake it.
-            if s.count('::') <= 1:
-                L = s.split(':')
-                if len(L) <= 8:
-                    for x in L:
-                        if x:
-                            try:
-                                int(x, 16)
-                            except ValueError:
-                                return False
-                    return True
+            return bruteIsIPV6(s)
         return False
 
 class InsensitivePreservingDict(UserDict.DictMixin, object):
