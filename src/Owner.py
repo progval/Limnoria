@@ -175,7 +175,7 @@ class LogErrorHandler(logging.Handler):
             else:
                 s = record.msg
             # Send to the owner dudes.
-            
+
 
 class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # This plugin must be first; its priority must be lowest; otherwise odd
@@ -363,7 +363,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.error('You must give your bot the --allow-eval option for '
                       'this command to be enabled.')
         _exec = eval
-            
+
     def announce(self, irc, msg, args):
         """<text>
 
@@ -377,7 +377,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             c = ircdb.channels.getChannel(channel)
             if not c.lobotomized:
                 irc.queueMsg(ircmsgs.privmsg(channel, text))
-            
+
     def defaultplugin(self, irc, msg, args):
         """[--remove] <command> [<plugin>]
 
@@ -393,9 +393,17 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         (command, plugin) = privmsgs.getArgs(rest, optional=1)
         command = callbacks.canonicalName(command)
         cbs = callbacks.findCallbackForCommand(irc, command)
+        def isDispatcher(cb):
+            name = callbacks.canonicalName(getattr(cb, 'name')())
+            return getattr(cb, name).isDispatcher
+        # Ensure someone isn't trying to use a plugin for their command
+        cbs = [cb for cb in cbs if not isDispatcher(cb)]
         if remove:
-            conf.supybot.commands.defaultPlugins.unregister(command)
-            irc.replySuccess()
+            try:
+                conf.supybot.commands.defaultPlugins.unregister(command)
+                irc.replySuccess()
+            except registry.NonExistentRegistryEntry:
+                raise callbacks.ArgumentError
         elif not cbs:
             irc.error('That\'s not a valid command.')
             return
