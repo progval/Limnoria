@@ -618,7 +618,7 @@ class IrcObjectProxy(RichReplyMethods):
                 else:
                     s = ircutils.safeArgument(s)
                     allowedLength = 450 - len(self.irc.prefix)
-                    maximumMores = conf.supybot.reply.maximumMores()
+                    maximumMores = conf.supybot.reply.mores.maximum()
                     maximumLength = allowedLength * maximumMores
                     if len(s) > maximumLength:
                         log.warning('Truncating to %s bytes from %s bytes',
@@ -641,6 +641,16 @@ class IrcObjectProxy(RichReplyMethods):
                         return
                     msgs = ircutils.wrap(s, allowedLength-30) # -30 is for nick:
                     msgs.reverse()
+                    instant = conf.supybot.reply.mores.instant()
+                    while instant > 1 and msgs:
+                        instant -= 1
+                        response = msgs.pop()
+                        self.irc.queueMsg(reply(msg, response, to=self.to,
+                                                notice=self.notice,
+                                                private=self.private,
+                                                prefixName=self.prefixName))
+                    if not msgs:
+                        return
                     response = msgs.pop()
                     if msgs:
                         n = ircutils.bold('(%s)')

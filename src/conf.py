@@ -284,9 +284,16 @@ registerChannelValue(supybot.reply, 'truncate',
     messages instead of breaking up long messages and using the 'more' command
     to get the remaining chunks."""))
 
-registerChannelValue(supybot.reply, 'maximumMores',
+registerGroup(supybot.reply, 'mores')
+registerChannelValue(supybot.reply.mores, 'maximum',
     registry.PositiveInteger(50, """Determines what the maximum number of
     chunks (for use with the 'more' command) will be."""))
+
+registerChannelValue(supybot.reply.mores, 'instant',
+    registry.PositiveInteger(1, """Determines how many mores will be sent
+    instantly (i.e., without the use of the more command, immediately when
+    they are formed).  Defaults to 1, which means that a more command will be
+    required for all but the first chunk."""))
 
 registerGlobalValue(supybot.reply, 'oneToOne',
     registry.Boolean(True, """Determines whether the bot will send
