@@ -66,6 +66,7 @@ class HttpTest(PluginTestCase, PluginDocumentation):
         self.assertError('geekquote --id=48a')
 
     def testAcronym(self):
+        self.assertRegexp('acronym ASAP', 'as soon as possible')
         self.assertNotError('acronym PERL')
         self.assertNotRegexp('acronym UNIX', 'not an acronym')
 

@@ -264,7 +264,7 @@ class Http(callbacks.Privmsg):
         quote = ' // '.join(quote.splitlines())
         irc.reply(msg, quote)
 
-    _acronymre = re.compile(r'<td[^w]+width="70[^>]+>(?:<b>)?([^<]+)(?:</b>)?')
+    _acronymre = re.compile(r'width="71%" bgcolor="[^"]+">(?:<b>)?([^<]+)')
     def acronym(self, irc, msg, args):
         """<acronym>
 
@@ -284,7 +284,7 @@ class Http(callbacks.Privmsg):
                 defs[i] = s.split('is ', 1)[1]
         #debug.printf(defs)
         if len(defs) == 0:
-            irc.reply(msg, 'No definitions found.')
+            irc.reply(msg,'No definitions found.  (%s)'%conf.replyPossibleBug)
         else:
             s = ', or '.join(defs)
             irc.reply(msg, '%s could be %s' % (acronym, s))
