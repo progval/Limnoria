@@ -48,9 +48,10 @@ import itertools
 import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.ircmsgs as ircmsgs
-import supybot.webutils as webutils
 import supybot.ircutils as ircutils
+import supybot.webutils as webutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -145,7 +146,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                 title = utils.htmlToText(m.group(1).strip())
                 s = 'Title: %s (at %s)' % (title, domain)
                 irc.reply(s, prefixName=False)
-    titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
+    titleSnarfer = wrap(titleSnarfer, decorators=['urlSnarfer'])
 
     def stats(self, irc, msg, args):
         """[<channel>]

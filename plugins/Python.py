@@ -57,6 +57,7 @@ finally:
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.webutils as webutils
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -191,7 +192,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
                 resp.append('%s: %s' % self._bold(m.groups()))
         if resp:
             irc.reply('; '.join(resp), prefixName = False)
-    aspnRecipes = privmsgs.urlSnarfer(aspnRecipes)
+    aspnRecipes = wrap(aspnRecipes, decorators=['urlSnarfer'])
 
 
 Class = Python

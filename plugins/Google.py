@@ -51,6 +51,7 @@ import supybot.registry as registry
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
@@ -418,7 +419,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         if data.results:
             url = data.results[0].URL
             irc.reply(url, prefixName=False)
-    googleSnarfer = privmsgs.urlSnarfer(googleSnarfer)
+    googleSnarfer = wrap(googleSnarfer, decorators=['urlSnarfer'])
 
     _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>', re.I)
     _ggGroup = re.compile(r'Newsgroups: (?:<a[^>]+>)?([^<]+)(?:</a>)?', re.I)
@@ -451,7 +452,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         else:
             irc.errorPossibleBug('That doesn\'t appear to be a proper '
                                  'Google Groups page.')
-    googleGroups = privmsgs.urlSnarfer(googleGroups)
+    googleGroups = wrap(googleGroups, decorators=['urlSnarfer'])
 
     _calcRe = re.compile(r'<td nowrap><font size=\+1><b>(.*?)</b>', re.I)
     _calcSupRe = re.compile(r'<sup>(.*?)</sup>', re.I)

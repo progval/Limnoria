@@ -43,6 +43,7 @@ import getopt
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -129,7 +130,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(self._getResponse(url), prefixName=False)
         except EbayError, e:
             self.log.info('ebaySnarfer exception at %s: %s', url, str(e))
-    ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)
+    ebaySnarfer = wrap(ebaySnarfer, decorators=['urlSnarfer'])
 
     def _getResponse(self, url):
         try:

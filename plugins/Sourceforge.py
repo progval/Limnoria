@@ -50,6 +50,7 @@ import supybot.utils as utils
 import rssparser
 
 import supybot.plugins as plugins
+from supybot.commands import wrap
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -509,7 +510,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(resp, prefixName=False)
         except TrackerError, e:
             self.log.warning(str(e))
-    sfSnarfer = privmsgs.urlSnarfer(sfSnarfer)
+    sfSnarfer = wrap(sfSnarfer, decorators=['urlSnarfer'])
 
 Class = Sourceforge
 

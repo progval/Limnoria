@@ -51,6 +51,7 @@ from itertools import imap, ifilter
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.webutils as webutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -109,7 +110,7 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         site = match.groupdict()['site']
         self.log.info('Snarfing geekquote %s from %s.' % (id, site))
         self._gkBackend(irc, msg, site, id)
-    geekSnarfer = privmsgs.urlSnarfer(geekSnarfer)
+    geekSnarfer = wrap(geekSnarfer, decorators=['urlSnarfer'])
 
     def geekquote(self, irc, msg, args):
         """[<id>]

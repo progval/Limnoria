@@ -48,6 +48,7 @@ from htmlentitydefs import entitydefs as entities
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.plugins as plugins
+from supybot.commands import wrap
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -266,7 +267,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         report['product'] = str(summary['product'])
         s = '%(product)s bug #%(id)s: %(title)s %(summary)s' % report
         irc.reply(s, prefixName=False)
-    bzSnarfer = privmsgs.urlSnarfer(bzSnarfer)
+    bzSnarfer = wrap(bzSnarfer, decorators=['urlSnarfer'])
 
     def urlquery2bugslist(self, url, query):
         """Given a URL and query list for a CSV bug list, it'll return

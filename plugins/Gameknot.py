@@ -42,6 +42,7 @@ import supybot.registry as registry
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.webutils as webutils
@@ -222,7 +223,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             irc.errorPossibleBug(s)
         except Exception, e:
             irc.error(utils.exnToString(e))
-    gameknotSnarfer = privmsgs.urlSnarfer(gameknotSnarfer)
+    gameknotSnarfer = wrap(gameknotSnarfer, decorators=['urlSnarfer'])
 
     def gameknotStatsSnarfer(self, irc, msg, match):
         r"http://gameknot\.com/stats\.pl\?([^&]+)"
@@ -231,7 +232,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
         name = match.group(1)
         s = self.getStats(name)
         irc.reply(s, prefixName=False)
-    gameknotStatsSnarfer = privmsgs.urlSnarfer(gameknotStatsSnarfer)
+    gameknotStatsSnarfer = wrap(gameknotStatsSnarfer,decorators=['urlSnarfer'])
 
 Class = Gameknot
 
