@@ -227,7 +227,12 @@ class Todo(callbacks.Privmsg):
             if cursor.rowcount == 0:
                 invalid.append(taskid)
         #print 'Invalid tasks: %s' % repr(invalid)
-        if invalid:
+        if invalid and len(invalid) == 1:
+            irc.error('Task %s could not be removed either because '
+                      'that id doesn\'t exist, the todo doesn\'t '
+                      'belong to you, or it has been removed '
+                      'already.' % invalid[0])
+        elif invalid:
             irc.error('No tasks were removed because the following '
                       'tasks could not be removed: %s' %
                       utils.commaAndify(invalid))
