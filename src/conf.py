@@ -458,7 +458,7 @@ registerGlobalValue(supybot.databases.users, 'timeoutIdentification',
    out.  If the value is less than or equal to zero, identification never times
    out."""))
 registerGlobalValue(supybot.databases.users, 'hash',
-   registry.Boolean(False, """Determines whether the passwords in the user
+   registry.Boolean(True, """Determines whether the passwords in the user
    database will be hashed by default."""))
 
 registerGroup(supybot.databases, 'ignores')
