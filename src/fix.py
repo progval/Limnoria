@@ -126,4 +126,5 @@ def all(p, seq):
             return False
     return True
 
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

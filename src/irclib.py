@@ -211,8 +211,8 @@ class IrcState(IrcCommandDispatcher):
 
     def reset(self):
         self.history.reset()
-        self.nicksToHostmasks = ircutils.IrcDict()
         self.channels = ircutils.IrcDict()
+        self.nicksToHostmasks = ircutils.IrcDict()
 
     def __getstate__(self):
         return map(lambda name: getattr(self, name), self.__slots__)
