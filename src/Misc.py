@@ -280,7 +280,6 @@ class Misc(callbacks.Privmsg):
         a nick from whom the message came; --in and --to require a channel the
         message was sent to; --with requires some string that had to be in the
         message; --regexp requires a regular expression the message must match
-        --fancy determines whether or not to show the nick; the default is not
         """
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
                                                    'with=', 'regexp='])
