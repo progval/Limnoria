@@ -522,6 +522,13 @@ class SourceNestedPluginTestCase(PluginTestCase):
                     J
                     """
                     irc.reply('j')
+        class same(callbacks.Commands):
+            def same(self, irc, msg, args):
+                """takes no arguments
+
+                same
+                """
+                irc.reply('same')
 
     def test(self):
         cb = self.E(self.irc)
@@ -538,6 +545,11 @@ class SourceNestedPluginTestCase(PluginTestCase):
         self.assertHelp('help e g h')
         self.assertHelp('help e g i j')
         self.assertRegexp('list e', 'f, g h, and g i j')
+
+    def testCommandSameNameAsNestedPlugin(self):
+        cb = self.E(self.irc)
+        self.irc.addCallback(cb)
+        self.assertResponse('e same', 'same')
 
                 
 class WithPrivateNoticeTestCase(ChannelPluginTestCase):
