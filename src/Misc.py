@@ -200,7 +200,10 @@ class Misc(callbacks.Privmsg):
         name = privmsgs.getArgs(args, required=0, optional=1)
         if name:
             try:
-                module = sys.modules[name]
+                modules = {}
+                for moduleName in sys.modules:
+                    modules[moduleName.lower()] = moduleName
+                module = sys.modules[modules[name.lower()]]
             except KeyError:
                 irc.error(msg, 'I couldn\'t find a module named %s' % name)
                 return

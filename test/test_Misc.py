@@ -156,6 +156,7 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testRevision(self):
         self.assertNotError('revision Misc')
+        self.assertNotError('revision misc')
         self.assertNotError('revision')
         
 
