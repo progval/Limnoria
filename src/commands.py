@@ -245,6 +245,18 @@ def getChannelDb(irc, msg, args, state, **kwargs):
     else:
         getChannel(irc, msg, args, state, **kwargs)
 
+def getNetworkIrc(irc, msg, args, state, errorIfNoMatch=False):
+    if args:
+        for otherIrc in world.ircs:
+            if otherIrc.network.lower() == args[0].lower():
+                state.args.append(otherIrc)
+                del args[0]
+                return
+    if errorIfNoMatch:
+        raise callbacks.ArgumentError
+    else:
+        state.args.append(irc)
+
 def getHaveOp(irc, msg, args, state, action='do that'):
     if state.channel not in irc.state.channels:
         irc.error('I\'m not even in %s.' % state.channel, Raise=True)
@@ -432,6 +444,12 @@ def checkCapability(irc, msg, args, state, cap):
     if not ircdb.checkCapability(msg.prefix, cap):
         irc.errorNoCapability(cap, Raise=True)
 
+def owner(irc, msg, args, state):
+    checkCapability(irc, msg, args, state, 'owner')
+
+def admin(irc, msg, args, state):
+    checkCapability(irc, msg, args, state, 'admin')
+
 def anything(irc, msg, args, state):
     state.args.append(args.pop(0))
 
@@ -546,6 +564,7 @@ wrappers = ircutils.IrcDict({
     'inChannel': inChannel,
     'onlyInChannel': onlyInChannel,
     'nickInChannel': nickInChannel,
+    'networkIrc': getNetworkIrc,
     'callerInGivenChannel': callerInGivenChannel,
     'plugin': getPlugin,
     'boolean': getBoolean,
@@ -569,6 +588,8 @@ wrappers = ircutils.IrcDict({
     'regexpMatcher': getMatcher,
     'validChannel': validChannel,
     'regexpReplacer': getReplacer,
+    'owner': owner,
+    'admin': admin,
     'checkCapability': checkCapability,
     'checkChannelCapability': checkChannelCapability,
 })
