@@ -415,7 +415,7 @@ class FunDB(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, '<id> must be an integer.')
+            irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
             irc.error(msg, '"%s" is not valid. Valid values include %s' % \
@@ -429,7 +429,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There is no such %s.' % table)
         else:
             (add,req,count) = cursor.fetchone()
-            reply = '%s #%s: Created by %s. last requested by %s, requested '\
+            reply = '%s #%s: Created by %s. last requested by %s, requested'\
                     ' a total of %s' % \
                     (table, id, add, req, utils.nItems(count, 'time'))
             irc.reply(msg, reply)
