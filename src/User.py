@@ -176,7 +176,11 @@ class User(callbacks.Privmsg):
         (name, hostmask, password) = privmsgs.getArgs(args, 2, 1)
         self._checkNotChannel(irc, msg, password)
         if not ircutils.isUserHostmask(hostmask):
-            irc.error('That\'s not a valid hostmask.')
+            irc.error('That\'s not a valid hostmask. Make sure your hostmask '
+                      'includes a nick, then an exclamation point (!), then '
+                      'a user, then an at symbol (@), then a host.  Feel '
+                      'free to use wildcards (* and ?, which work just like '
+                      'they do on the command line) in any of these parts.')
             return
         try:
             id = ircdb.users.getUserId(name)
@@ -237,7 +241,9 @@ class User(callbacks.Privmsg):
         Sets the new password for the user specified by <name> to
         <new password>.  Obviously this message must be sent to the bot
         privately (not in a channel).  If --hashed is given, the password will
-        be hashed on disk (rather than being stored in plaintext.
+        be hashed on disk (rather than being stored in plaintext.  If the
+        requesting user is an owner user, the <old password> needn't be
+        correct.
         """
         (optlist, rest) = getopt.getopt(args, '', ['hashed'])
         (name, oldpassword, newpassword) = privmsgs.getArgs(rest, 3)
@@ -252,7 +258,9 @@ class User(callbacks.Privmsg):
         except KeyError:
             irc.errorNoUser()
             return
-        if user.checkPassword(oldpassword):
+        requester = ircdb.users.getUser(msg.prefix)
+        if user.checkPassword(oldpassword) or \
+           (requester.checkCapability('owner') and not requester == user):
             user.setPassword(newpassword, hashed=hashed)
             ircdb.users.setUser(id, user)
             irc.replySuccess()
