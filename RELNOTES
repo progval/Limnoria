@@ -8,7 +8,7 @@ rerun the wizard in order for us to find any bugs that remain in it
 before we officially declare ourselves Beta.
 
 Channel capabilities have been changed; rather than being
-#channel.capability, they're not #channel,capability.  It's a bit
+#channel.capability, they're now #channel,capability.  It's a bit
 uglier, we know, but dots can be valid in channel names, and we
 needed the dot for handling plugin.command capabilities.
 
