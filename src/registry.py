@@ -47,6 +47,9 @@ class RegistryException(Exception):
 class InvalidRegistryFile(RegistryException):
     pass
 
+class InvalidRegistryName(RegistryException):
+    pass
+
 class InvalidRegistryValue(RegistryException):
     pass
 
@@ -99,6 +102,9 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
         if hasattr(value, 'value'): # This lets us print help for non-valued.
             fd.write('%s: %s\n' % (name, value))
     fd.close()
+
+def isValidRegistryName(name):
+    return '.' not in name and ':' not in name and len(name.split()) == 1
 
 
 class Group(object):
@@ -161,6 +167,8 @@ class Group(object):
                         pass
     
     def register(self, name, node=None):
+        if not isValidRegistryName(name):
+            raise InvalidRegistryName, name
         if node is None:
             node = Group()
         if name not in self.children: # XXX Is this right?

@@ -63,6 +63,11 @@ if network:
             finally:
                 conf.supybot.reply.whenNotCommand.setValue(orig)
 
+        def testRssAddBadName(self):
+            self.assertError('rss add . %s' % url)
+            self.assertError('rss add : %s' % url)
+            self.assertError('rss add "foo bar" %s' % url)
+
         def testCantAddFeedNamedRss(self):
             self.assertError('rss add rss %s' % url)
 

@@ -231,6 +231,11 @@ class RSS(callbacks.Privmsg):
     def getHeadlines(self, feed):
         return [utils.htmlToText(d['title'].strip()) for d in feed['items']]
 
+    def _validFeedName(self, name):
+        if not registry.isValidRegistryName(name):
+            raise ValueError, name
+        return callbacks.canonicalName(name)
+
     def makeFeedCommand(self, name, url):
         docstring = """<number of headlines>
 
@@ -240,7 +245,7 @@ class RSS(callbacks.Privmsg):
         seconds, which defaults to 1800 (30 minutes) since that's what most
         websites prefer.
         """ % (name, url)
-        name = callbacks.canonicalName(name)
+        assert name == self._validFeedName(name)
         if url not in self.locks:
             self.locks[url] = threading.RLock()
         if hasattr(self, name):
@@ -262,6 +267,12 @@ class RSS(callbacks.Privmsg):
         given URL.
         """
         (name, url) = privmsgs.getArgs(args, required=2)
+        try:
+            name = self._validFeedName(name)
+        except ValueError:
+            irc.error('%r is not a valid feed name.  Feed names must not '
+                      'include dots, colons, or spaces.' % name)
+            return
         self.makeFeedCommand(name, url)
         irc.replySuccess()
 
@@ -317,7 +328,7 @@ class RSS(callbacks.Privmsg):
             try:
                 n = int(n)
             except ValueError:
-                raise callbacks.Error
+                raise callbacks.ArgumentError
             headlines = headlines[:n]
         headlines = imap(utils.htmlToText, headlines)
         sep = self.registryValue('headlineSeparator', channel)
