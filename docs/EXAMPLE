@@ -40,7 +40,9 @@ Your new plugin template is in plugins/Random.py
 functor%
 -----
 
-So that's what it looks like.  Now let's look at the source code:
+So that's what it looks like.  Now let's look at the source code (if
+you'd like to look at it in your programming editor, the whole plugin
+is available as examples/Random.py):
 
 -----
 #!/usr/bin/env python
