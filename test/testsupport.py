@@ -120,6 +120,7 @@ class TestPlugin(callbacks.Privmsg):
         except Exception, e:
             irc.reply(utils.exnToString(e))
 TestInstance = TestPlugin()
+conf.registerPlugin('TestPlugin', True, public=False)
 
 class SupyTestCase(unittest.TestCase):
     def setUp(self):
@@ -376,12 +377,14 @@ class PluginTestCase(SupyTestCase):
         return self.assertActionRegexp(query, regexp, flags=re.I,
                                        usePrefixChar=False, **kwargs)
 
+    _noTestDoc = ('Admin', 'Channel', 'Config',
+                  'Misc', 'Owner', 'User', 'TestPlugin')
     def testDocumentation(self):
         if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
             return
         for cb in self.irc.callbacks:
             name = cb.name()
-            if (name in ('Admin', 'Channel', 'Misc', 'Owner', 'User') and \
+            if ((name in self._noTestDoc) and \
                not name.lower() in self.__class__.__name__.lower()) or \
                isinstance(cb, callbacks.PrivmsgRegexp):
                 continue
