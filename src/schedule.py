@@ -80,7 +80,8 @@ class Schedule(drivers.IrcDriver):
         if name is None:
             name = self.counter
             self.counter += 1
-        assert name not in self.events
+        assert name not in self.events, \
+               'An event with the same name has already been scheduled.'
         self.events[name] = f
         heapq.heappush(self.schedule, mytuple((t, name)))
         return name
