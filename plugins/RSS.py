@@ -39,6 +39,7 @@ import plugins
 
 import sets
 import time
+import getopt
 import sgmllib
 import threading
 from itertools import imap
@@ -64,6 +65,10 @@ def configure(advanced):
         url = something('What\'s the URL of the RSS feed?')
         registerFeed(name, url)
 
+class AnnouncedFeeds(registry.SpaceSeparatedListOf):
+    Value = registry.String
+    List = ircutils.IrcSet
+
 conf.registerPlugin('RSS')
 conf.registerChannelValue(conf.supybot.plugins.RSS, 'bold', registry.Boolean(
     True, """Determines whether the bot will bold the title of the feed when it
@@ -76,9 +81,9 @@ conf.registerChannelValue(conf.supybot.plugins.RSS, 'announcementPrefix',
     is prepended (if any) to the new news item announcements made in the
     channel."""))
 conf.registerChannelValue(conf.supybot.plugins.RSS, 'announce',
-    registry.SpaceSeparatedListOfStrings([], """Determines which RSS feeds
-    should be announced in the channel; valid input is a list of strings
-    (either registered RSS feeds or RSS feed URLs) separated by spaces."""))
+    AnnouncedFeeds([], """Determines which RSS feeds should be announced in
+    the channel; valid input is a list of strings (either registered RSS feeds
+    or RSS feed URLs) separated by spaces."""))
 conf.registerGlobalValue(conf.supybot.plugins.RSS, 'waitPeriod',
     registry.PositiveInteger(1800, """Indicates how many seconds the bot will
     wait between retrieving RSS feeds; requests made within this period will
@@ -89,7 +94,7 @@ the registered feeds for the RSS plugin.""")
 
 def registerFeed(name, url):
     conf.supybot.plugins.RSS.feeds.register(name, registry.String(url, ''))
-    
+
 class RSS(callbacks.Privmsg):
     threaded = True
     def __init__(self):
@@ -100,7 +105,6 @@ class RSS(callbacks.Privmsg):
         self.cachedFeeds = {}
         self.gettingLockLock = threading.Lock()
         for (name, url) in registry._cache.iteritems():
-            name = name.lower()
             if name.startswith('supybot.plugins.rss.feeds.'):
                 name = rsplit(name, '.', 1)[-1]
                 v = registry.String('', 'help is not needed here')
@@ -114,7 +118,7 @@ class RSS(callbacks.Privmsg):
         L = conf.supybot.plugins.RSS.announce.getValues(fullNames=False)
         newFeeds = {}
         for (channel, v) in L:
-            feeds = v() 
+            feeds = v()
             for name in feeds:
                 commandName = callbacks.canonicalName(name)
                 if self.isCommand(commandName):
@@ -178,7 +182,7 @@ class RSS(callbacks.Privmsg):
                                 to=channel, prefixName=False, private=True)
         finally:
             self.releaseLock(url)
-                
+
     def willGetNewFeed(self, url):
         now = time.time()
         wait = self.registryValue('waitPeriod')
@@ -201,7 +205,7 @@ class RSS(callbacks.Privmsg):
 
     def releaseLock(self, url):
         self.locks[url].release()
-            
+
     def getFeed(self, url):
         try:
             # This is the most obvious place to acquire the lock, because a
@@ -256,7 +260,7 @@ class RSS(callbacks.Privmsg):
         self.feedNames.add(name)
         setattr(self.__class__, name, f)
         registerFeed(name, url)
-        
+
     def add(self, irc, msg, args):
         """<name> <url>
 
@@ -290,21 +294,42 @@ class RSS(callbacks.Privmsg):
         irc.replySuccess()
 
     def announce(self, irc, msg, args, channel):
-        """[<channel>] [<name|url> ...]
+        """[<channel>] [--remove] [<name|url> ...]
 
         Sets the current list of announced feeds in the channel to the feeds
         given.  Valid feeds include the names of registered feeds as well as
         URLs for a RSS feeds.  <channel> is only necessary if the message isn't
-        sent in the channel itself.
+        sent in the channel itself.  If no arguments are specified, replies
+        with the current list of feeds to announce.  If --remove is given,
+        the specified feeds will be removed from the list of feeds to announce.
         """
-        conf.supybot.plugins.RSS.announce.get(channel).setValue(args)
-        if not args:
-            irc.replySuccess('All previously announced feeds will not be '
-                             'announced any longer.')
+        (optlist, rest) = getopt.getopt(args, '', ['remove'])
+        remove = False
+        announce = conf.supybot.plugins.RSS.announce
+        for (option, _) in optlist:
+            if option == '--remove':
+                remove = True
+        if remove:
+            if rest:
+                feeds = announce.get(channel)()
+                for feed in rest:
+                    if feed in feeds:
+                        feeds.remove(feed)
+                announce.get(channel).setValue(feeds)
+                irc.replySuccess()
+                return
+            else:
+                raise callbacks.ArgumentError
+        elif not rest:
+            feeds = utils.commaAndify(announce.get(channel)())
+            irc.reply(feeds or 'I am currently not announcing any feeds.')
+            return
         else:
+            announce.get(channel).setValue(rest)
             irc.replySuccess()
+            return
     announce = privmsgs.checkChannelCapability(announce, 'op')
-            
+
     def rss(self, irc, msg, args):
         """<url> [<number of headlines>]
 
