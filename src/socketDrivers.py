@@ -49,7 +49,9 @@ import supybot.world as world
 import supybot.drivers as drivers
 import supybot.schedule as schedule
 
-reconnectWaits = (0, 60, 300)
+# XXX Shouldn't the reconnect wait (at least the last one) be configurable?
+reconnectWaits = [0, 60, 300]
+
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def __init__(self, irc):
         self.irc = irc

@@ -103,6 +103,7 @@ def errorMsg(reason):
     return reason.getErrorMessage()
 
 class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
+    # XXX Shouldn't the maxDelay be configurable?
     maxDelay = 300
     protocol = SupyIrcProtocol
     def __init__(self, irc):
@@ -129,7 +130,8 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
         protocol = ReconnectingClientFactory.buildProtocol(self, addr)
         protocol.irc = self.irc
         return protocol
-        
+
+
 Driver = SupyReconnectingFactory
 
 try:
