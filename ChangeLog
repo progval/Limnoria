@@ -1,3 +1,8 @@
+	* Fixed snarfers to respect lobotomies.
+	
+	* Fixed Admin.join not to add the channel to the supybot.channels
+	registry entry if joining the channel wasn't successful.
+	
 2004-02-20  Jeremy Fincher  <jemfinch@supybot.org>
 
 	* Version 0.77.0!

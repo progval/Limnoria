@@ -166,17 +166,23 @@ def urlSnarfer(f):
     f = _threadedWrapMethod(f)
     q = structures.smallqueue()
     def newf(self, irc, msg, match, *L):
+        channel = msg.args[0]
+        if ircutils.isChannel(channel):
+            c = ircdb.channels.getChannel(channel)
+            if c.lobotomized:
+                self.log.info('Refusing to snarf in %s: lobotomized.', channel)
+                return
         now = time.time()
         cutoff = now - conf.supybot.snarfThrottle()
         while q and q[0][2] < cutoff:
             q.dequeue()
         url = match.group(0)
         for (qUrl, target, when) in q:
-            if url == qUrl and target == msg.args[0] and not world.testing:
+            if url == qUrl and target == channel and not world.testing:
                 self.log.warning('Not snarfing %s from %r.', url, msg.prefix)
                 return
         else:
-            q.enqueue((url, msg.args[0], now))
+            q.enqueue((url, channel, now))
             if self.threaded:
                 f(self, irc, msg, match, *L)
             else:
@@ -186,7 +192,7 @@ def urlSnarfer(f):
                 t.setDaemon(True)
                 t.start()
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
-    newf.q = q
+    newf.q = q # This isn't necessary, it's just for debugging.
     return newf
         
 
