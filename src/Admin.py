@@ -65,25 +65,6 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         self.joins = {}
         self.pendingNickChanges = {}
 
-    def do376(self, irc, msg):
-        channels = ircutils.IrcSet(conf.supybot.channels())
-        channels |= conf.supybot.networks.get(irc.network).channels()
-        channels = list(channels)
-        if not channels:
-            return
-        utils.sortBy(lambda s: ',' not in s, channels)
-        keys = []
-        chans = []
-        for channel in channels:
-            if ',' in channel:
-                (channel, key) = channel.split(',', 1)
-                chans.append(channel)
-                keys.append(key)
-            else:
-                chans.append(channel)
-        irc.queueMsg(ircmsgs.joins(chans, keys))
-    do422 = do377 = do376
-
     def do437(self, irc, msg):
         """Nick/channel temporarily unavailable."""
         target = msg.args[0]

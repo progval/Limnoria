@@ -661,11 +661,16 @@ def main():
         and tell us you're an advanced user.  Some of those questions might be
         boring, but they'll really help you customize your bot :)""")
 
+    # Let's make sure that src/ plugins are loaded.
+    conf.registerPlugin('Admin', True)
+    conf.registerPlugin('Channel', True)
+    conf.registerPlugin('Config', True)
+    conf.registerPlugin('Misc', True)
+    conf.registerPlugin('User', True)
+
     ###
     # Write the registry
     ###
-
-    # Save the registry
     if not filename:
         filename = '%s.conf' % nick
     registry.close(conf.supybot, filename)

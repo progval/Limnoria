@@ -53,9 +53,9 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
-import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.drivers as drivers
+import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -184,7 +184,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # things will happen when adding callbacks.
     priority = ~sys.maxint-1 # This must be first!
     capability = 'owner'
-    _srcPlugins = ('Admin', 'Channel', 'Config', 'Misc', 'Owner', 'User')
+    _srcPlugins = ircutils.IrcSet(('Admin', 'Channel', 'Config',
+                                   'Misc', 'Owner', 'User'))
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.log = LogProxy(self.log)
@@ -215,20 +216,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         privmsgs.CapabilityCheckingPrivmsg.reset(self)
 
     def do001(self, irc, msg):
-        if len(irc.callbacks) < 6:
-            self.log.info('Loading other src/ plugins.')
-        for s in ('Admin', 'Channel', 'Config', 'Misc', 'User'):
-            if irc.getCallback(s) is None:
-                self.log.info('Loading %s.' % s)
-                try:
-                    m = loadPluginModule(s)
-                    loadPluginClass(irc, m)
-                except Exception, e:
-                    self.log.exception('Error loading %s:', s)
-                    self.log.error('Error loading src/ plugin %s.  '
-                                   'This is rather serious; these plugins '
-                                   'must always be loaded.', s)
-        self.log.info('Loading plugins/ plugins.')
+        self.log.info('Loading plugins.')
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):
             if name.lower() == 'owner':
                 continue # Just in case.
@@ -241,6 +229,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                             loadPluginClass(irc, m)
                         except ImportError, e:
                             log.warning('Failed to load %s: %s', name, e)
+                            if name in self._srcPlugins:
+                                self.log.exception('Error loading %s:', name)
+                                self.log.error('Error loading src/ plugin %s.  '
+                                               'This is usually rather '
+                                               'serious; these plugins are '
+                                               'almost always be loaded.', s)
+                                
                         except Exception, e:
                             log.exception('Failed to load %s:', name)
                 else:
@@ -305,6 +300,25 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.queueMsg(callbacks.error(msg, s))
         else:
             callbacks.IrcObjectProxy(irc, msg, tokens)
+
+    def do376(self, irc, msg):
+        channels = ircutils.IrcSet(conf.supybot.channels())
+        channels |= conf.supybot.networks.get(irc.network).channels()
+        channels = list(channels)
+        if not channels:
+            return
+        utils.sortBy(lambda s: ',' not in s, channels)
+        keys = []
+        chans = []
+        for channel in channels:
+            if ',' in channel:
+                (channel, key) = channel.split(',', 1)
+                chans.append(channel)
+                keys.append(key)
+            else:
+                chans.append(channel)
+        irc.queueMsg(ircmsgs.joins(chans, keys))
+    do422 = do377 = do376
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
@@ -520,7 +534,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 for callback in callbacks:
                     callback.die()
                     del callback
-                gc.collect()
+                gc.collect() # This makes sure the callback is collected.
                 callback = loadPluginClass(irc, module)
                 irc.replySuccess()
             except ImportError:
@@ -539,7 +553,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         """
         name = privmsgs.getArgs(args)
         if ircutils.strEqual(name, self.name()):
-            irc.error('You can\'t unload the %s plugin.' % self.name())
+            irc.error('You can\'t unload the %s plugin.' % name)
             return
         callbacks = irc.removeCallback(name)
         if callbacks:
