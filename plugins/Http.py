@@ -47,37 +47,15 @@ from itertools import imap, ifilter
 
 import conf
 import utils
+import webutils
 import privmsgs
 import callbacks
 
 class FreshmeatException(Exception):
     pass
 
-def getPage(url, size=None):
-    """Gets a page.  Returns a string that is the page gotten."""
-    fd = urllib2.urlopen(url)
-    if size is None:
-        text = fd.read()
-    else:
-        text = fd.read(size)
-    fd.close()
-    return text
-
 class Http(callbacks.Privmsg):
     threaded = True
-    def callCommand(self, method, irc, msg, *L):
-        try:
-            callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
-        except socket.error, e:
-            if e.args[0] == 111:
-                irc.error(msg, 'Connection refused.')
-            elif e.args[0] in (110, 10060):
-                irc.error(msg, 'Connection timed out.')
-            else:
-                irc.error(msg, e.args[1])
-        except (urllib2.HTTPError, urllib2.URLError), e:
-            irc.error(msg, str(e))
-
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
     def title(self, irc, msg, args):
         """<url>
@@ -88,7 +66,7 @@ class Http(callbacks.Privmsg):
         if '://' not in url:
             url = 'http://%s' % url
         try:
-            text = getPage(url, size=4096)
+            text = webutils.getUrl(url, size=4096)
             m = self._titleRe.search(text)
             if m is not None:
                 irc.reply(msg, utils.htmlToText(m.group(1).strip()))
@@ -105,7 +83,7 @@ class Http(callbacks.Privmsg):
         project = privmsgs.getArgs(args)
         url = 'http://www.freshmeat.net/projects-xml/%s' % project
         try:
-            text = getPage(url)
+            text = webutils.getUrl(url)
             if text.startswith('Error'):
                 raise FreshmeatException, text
             dom = xml.dom.minidom.parseString(text)
@@ -133,7 +111,7 @@ class Http(callbacks.Privmsg):
         symbol = privmsgs.getArgs(args)
         url = 'http://finance.yahoo.com/d/quotes.csv?s=%s'\
               '&f=sl1d1t1c1ohgv&e=.csv' % symbol
-        quote = getPage(url)
+        quote = webutils.getUrl(url)
         data = quote.split(',')
         if data[1] != '0.00':
             irc.reply(msg,
@@ -205,13 +183,13 @@ class Http(callbacks.Privmsg):
                   'pass=&dpp=&forecast=zandh&config=&'\
                   'place=%s&state=%s&country=%s' % \
                   (city, state, country)
-	    html = getPage(url)
+	    html = webutils.getUrl(url)
 	    if 'was not found' in html:
 	        url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
 		      'pass=&dpp=&forecast=zandh&config=&'\
 		      'place=%s&state=&country=%s' % \
 		      (city, state)
-		html = getPage(url)
+		html = webutils.getUrl(url)
 		if 'was not found' in html:
 		    irc.error(msg, 'No such location could be found.')
 		    return
@@ -223,7 +201,7 @@ class Http(callbacks.Privmsg):
             zip = zip.lower().split()
             url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
                   'config=&forecast=zandh&pands=%s&Submit=GO' % args[0]
-            html = getPage(url)
+            html = webutils.getUrl(url)
 	    if 'was not found' in html:
 	        irc.error(msg, 'No such location could be found.')
 		return
@@ -267,7 +245,7 @@ class Http(callbacks.Privmsg):
                     irc.error(msg, 'Invalid id: %s' % e)
                     return
 
-        html = getPage('http://bash.org/?%s' % id)
+        html = webutils.getUrl('http://bash.org/?%s' % id)
         m = self._mlgeekquotere.search(html)
         if m is None:
             irc.error(msg, 'No quote found.')
@@ -288,7 +266,7 @@ class Http(callbacks.Privmsg):
               'af-query.asp?String=exact&Acronym=%s' % acronym
         request = urllib2.Request(url, headers={'User-agent':
           'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
-        html = getPage(request)
+        html = webutils.getUrl(request)
         # The following definitions are stripped and empties are removed.
         defs = filter(None, imap(str.strip, self._acronymre.findall(html)))
         utils.sortBy(lambda s: not s.startswith('[not an acronym]'), defs)
@@ -310,7 +288,7 @@ class Http(callbacks.Privmsg):
         """
         hostname = privmsgs.getArgs(args)
         url = 'http://uptime.netcraft.com/up/graph/?host=%s' % hostname
-        html = getPage(url)
+        html = webutils.getUrl(url)
         m = self._netcraftre.search(html)
         if m:
             html = m.group(1)
