@@ -73,6 +73,7 @@ def configure(onStart, afterConnect, advanced):
         name = anything('What\'s the name of the website?')
         url = anything('What\'s the URL of the RSS feed?')
         onStart.append('alias %s "rsstitles %s"' % (name, url))
+        onStart.append('freeze %s' % name)
         
 
 class RSS(callbacks.Privmsg):
@@ -91,7 +92,8 @@ class RSS(callbacks.Privmsg):
         now = time.time()
         if url not in self.lastRequest or now - self.lastRequest[url] > 1800:
             results = rssparser.parse(url)
-            headlines = [d['title'] for d in results['items']]
+            headlines = [d['title'].strip().replace('\n', ' ') \
+                         for d in results['items']]
             while reduce(operator.add, map(len, headlines), 0) > 350:
                 headlines.pop()
             if not headlines:
