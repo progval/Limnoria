@@ -60,7 +60,12 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertRegexp('base 4 4', 'Invalid <number>')
         self.assertRegexp('base 10 12 A', 'Invalid <number>') 
 
-        
+        print
+        print "If we have not fixed a bug with Math.base, the following ",
+        print "tests will hang the test-suite."
+        self.assertRegexp('base 2 10 [base 10 2 -12]', '-12')
+        self.assertRegexp('base 16 2 [base 2 16 -110101]', '-110101')
+
     def testCalc(self):
         self.assertResponse('calc 5*0.06', str(5*0.06))
         self.assertResponse('calc 2.0-7.0', str(2-7))
