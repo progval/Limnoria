@@ -39,7 +39,7 @@ class ChannelDBTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('channelstats')
 
     def testNoKeyErrorEscapeFromSeen(self):
-        self.assertRegexp('seen asldfkjasdlfkj', conf.replyNoUser)
+        self.assertRegexp('seen asldfkjasdlfkj', 'I have not seen')
         self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
 
 
