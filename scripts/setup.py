@@ -130,8 +130,7 @@ if __name__ == '__main__':
         filenames.extend(os.listdir(dir))
     plugins = []
     for filename in filenames:
-        if filename.endswith('.py') and \
-           filename.lower() != filename:
+        if filename.endswith('.py') and filename[0].isupper():
             plugins.append(os.path.splitext(filename)[0])
         plugins.sort()
     if yn('Would you like to see a list of the available modules?') == 'y':
@@ -201,12 +200,13 @@ if __name__ == '__main__':
     if yn('Would you like to add an owner user?') == 'y':
         owner = something('What should the owner\'s username be?')
         password = something('What should the owner\'s password be?')
-        user = ircdb.IrcUser()
+        (id, user) = ircdb.users.newUser()
         user.setPassword(password)
+        user.names.add(owner)
         user.addCapability('owner')
         while yn('Would you like to add a hostmask for the owner?') == 'y':
             user.addHostmask(something('What hostmask?'))
-        ircdb.users.setUser(owner, user)
+        ircdb.users.setUser(id, user)
 
     ###
     # Configuration variables in conf.py.

@@ -136,9 +136,10 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         if ircdb.checkCapability(msg.prefix, capability) or \
            '!' in capability:
             try:
-                u = ircdb.users.getUser(name)
-                u.addCapability(capability)
-                ircdb.users.setUser(name, u)
+                id = ircdb.users.getUserId(name)
+                user = ircdb.users.getUser(id)
+                user.addCapability(capability)
+                ircdb.users.setUser(id, user)
                 irc.reply(msg, conf.replySuccess)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
@@ -156,9 +157,10 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
         if ircdb.checkCapability(msg.prefix, capability) or \
            '!' in capability:
             try:
-                u = ircdb.users.getUser(name)
-                u.addCapability(capability)
-                ircdb.users.setUser(name, u)
+                id = ircdb.users.getUserId(name)
+                user = ircdb.users.getUser(id)
+                user.addCapability(capability)
+                ircdb.users.setUser(id, user)
                 irc.reply(msg, conf.replySuccess)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)

@@ -255,34 +255,32 @@ class IrcChannelTestCase(unittest.TestCase):
         c.removeBan(banmask)
         self.failIf(c.checkIgnored(prefix))
 
-class UsersDictionaryTestCase(unittest.TestCase):
-    filename = 'UsersDictionaryTestCase.conf'
+class UsersDBTestCase(unittest.TestCase):
+    filename = 'UsersDBTestCase.conf'
     def setUp(self):
-        fd = file(self.filename, 'w')
-        fd.write('{}\n')
-        fd.close()
-        self.users = ircdb.UsersDictionary(self.filename)
-
-    def tearDown(self):
-        os.remove(self.filename)
+        try:
+            os.remove(self.filename)
+        except:
+            pass
+        self.users = ircdb.UsersDB(self.filename)
 
     def testGetSetDelUser(self):
         self.assertRaises(KeyError, self.users.getUser, 'foo')
         self.assertRaises(KeyError, self.users.getUser, 'foo!bar@baz')
-        u = ircdb.IrcUser()
+        (id, u) = self.users.newUser()
         hostmask = 'foo!bar@baz'
         banmask = ircutils.banmask(hostmask)
         u.addHostmask(banmask)
-        self.users.setUser('foo', u)
+        u.name = 'foo'
+        self.users.setUser(id, u)
         self.assertEqual(self.users.getUser('foo'), u)
         self.assertEqual(self.users.getUser(hostmask), u)
         self.assertEqual(self.users.getUser(banmask), u)
-        # The UsersDictionary shouldn't allow users to be added whose hostmasks
+        # The UsersDB shouldn't allow users to be added whose hostmasks
         # match another user's already in the database.
-        self.assertRaises(ValueError, self.users.setUser, 'bar', u)
-        u.removeHostmask(banmask)
-        u.addHostmask('*!*@*')
-        self.assertRaises(ValueError, self.users.setUser, 'biff', u)
+        (id, u2) = self.users.newUser()
+        u2.addHostmask('*!*@*')
+        self.assertRaises(ValueError, self.users.setUser, id, u2)
 
 
 class CheckCapabilityTestCase(unittest.TestCase):
@@ -304,39 +302,43 @@ class CheckCapabilityTestCase(unittest.TestCase):
     channelanticap = ircdb.IrcChannel()
     channelanticap.addCapability(anticap)
     def setUp(self):
-        fd = file(self.filename, 'w')
-        fd.write('{}\n')
-        fd.close()
-        self.users = ircdb.UsersDictionary(self.filename)
+        try:
+            os.remove(self.filename)
+        except:
+            pass
+        self.users = ircdb.UsersDB(self.filename)
         self.channels = ircdb.ChannelsDictionary(self.filename)
-        owner = ircdb.IrcUser()
+        (id, owner) = self.users.newUser()
+        owner.name = 'owner'
         owner.addCapability('owner')
         owner.addHostmask(self.owner)
-        self.users.setUser('owner', owner)
-        nothing = ircdb.IrcUser()
+        self.users.setUser(id, owner)
+        (id, nothing) = self.users.newUser()
+        nothing.name = 'nothing'
         nothing.addHostmask(self.nothing)
-        self.users.setUser('nothing', nothing)
-        justfoo = ircdb.IrcUser()
+        self.users.setUser(id, nothing)
+        (id, justfoo) = self.users.newUser()
+        justfoo.name = 'justfoo'
         justfoo.addCapability(self.cap)
         justfoo.addHostmask(self.justfoo)
-        self.users.setUser('justfoo', justfoo)
-        antifoo = ircdb.IrcUser()
+        self.users.setUser(id, justfoo)
+        (id, antifoo) = self.users.newUser()
+        antifoo.name = 'antifoo'
         antifoo.addCapability(self.anticap)
         antifoo.addHostmask(self.antifoo)
-        self.users.setUser('antifoo', antifoo)
-        justchanfoo = ircdb.IrcUser()
+        self.users.setUser(id, antifoo)
+        (id, justchanfoo) = self.users.newUser()
+        justchanfoo.name = 'justchanfoo'
         justchanfoo.addCapability(self.chancap)
         justchanfoo.addHostmask(self.justchanfoo)
-        self.users.setUser('justchanfoo', justchanfoo)
-        antichanfoo = ircdb.IrcUser()
+        self.users.setUser(id, justchanfoo)
+        (id, antichanfoo) = self.users.newUser()
+        antichanfoo.name = 'antichanfoo'
         antichanfoo.addCapability(self.antichancap)
         antichanfoo.addHostmask(self.antichanfoo)
-        self.users.setUser('antichanfoo', antichanfoo)
+        self.users.setUser(id, antichanfoo)
         channel = ircdb.IrcChannel()
         self.channels.setChannel(self.channel, channel)
-
-    def tearDown(self):
-        os.remove(self.filename)
 
     def checkCapability(self, hostmask, capability):
         return ircdb.checkCapability(hostmask, capability,

@@ -262,7 +262,7 @@ class FunDB(callbacks.Privmsg):
         (table, s) = privmsgs.getArgs(args, needed=2)
         table = table.lower()
         try:
-            name = ircdb.users.getUserName(msg.prefix)
+            name = ircdb.users.getUser(msg.prefix).name
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
@@ -295,7 +295,7 @@ class FunDB(callbacks.Privmsg):
         (table, id) = privmsgs.getArgs(args, needed=2)
         table = table.lower()
         try:
-            ircdb.users.getUserName(msg.prefix)
+            ircdb.users.getUser(msg.prefix).name
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
@@ -464,7 +464,7 @@ class FunDB(callbacks.Privmsg):
                 irc.queueMsg(ircmsgs.action(channel, '%s for %s (#%s)' %\
                     (praise, reason, id)))
             else:
-                irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (praise, id)))
+                irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' %(praise, id)))
         raise callbacks.CannotNest
 
     def addword(self, irc, msg, args):

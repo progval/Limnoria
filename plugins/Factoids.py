@@ -144,7 +144,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
                 irc.error(msg, conf.replyNoCapability % capability)
                 return
             if ircdb.users.hasUser(msg.prefix):
-                name = ircdb.users.getUserName(msg.prefix)
+                name = ircdb.users.getUser(msg.prefix).name
             else:
                 name = msg.nick
             cursor.execute("""INSERT INTO factoids VALUES
@@ -364,6 +364,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
                                utils.nItems(cursor.rowcount, 'key'))
             else:
                 irc.reply(msg, s)
+
         
 Class = Factoids
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

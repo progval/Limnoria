@@ -438,8 +438,10 @@ class Irc(object):
                 # it to abuse our 'owner' power we give to ourselves.  Ergo, on
                 # outgoing messages that change our nick, we pre-emptively
                 # delete the 'owner' user we setup for ourselves.
-                if ircdb.users.hasUser(self.nick):
-                    ircdb.users.delUser(self.nick)
+                user = ircdb.users.getUser(0)
+                user.unsetAuth()
+                user.hostmasks = []
+                ircdb.users.setUser(0, user)
             return msg
         else:
             return None
@@ -455,10 +457,10 @@ class Irc(object):
                                  args=msg.args)
         # First, make sure self.nick is always consistent with the server.
         if msg.command == 'NICK' and msg.nick == self.nick:
-            if ircdb.users.hasUser(self.nick):
-                ircdb.users.delUser(self.nick)
-            if ircdb.users.hasUser(self.prefix):
-                ircdb.users.delUser(self.prefix)
+            user = ircdb.users.getUser(0)
+            user.unsetAuth()
+            user.hostmasks = []
+            ircdb.users.setUser(0, user)
             self.nick = msg.args[0]
             (nick, user, domain) = ircutils.splitHostmask(msg.prefix)
             self.prefix = '%s!%s@%s' % (self.nick, user, domain)
@@ -472,17 +474,12 @@ class Irc(object):
             self.sendMsg(ircmsgs.nick(self._nickmods.pop(0) % self.nick))
         if msg.nick == self.nick:
             self.prefix = msg.prefix
-            if ircdb.users.hasUser(self.nick):
-                u = ircdb.users.getUser(self.nick)
-                if not u.hasHostmask(msg.prefix):
-                    u.addHostmask(msg.prefix)
-                    ircdb.users.setUser(self.nick, u)
-            else:
-                u = ircdb.IrcUser(capabilities=['owner'],
-                                  password=utils.mktemp(),
-                                  hostmasks=[msg.prefix])
-                ircdb.users.setUser(self.nick, u)
-                atexit.register(lambda: catch(ircdb.users.delUser(self.nick)))
+            user = ircdb.users.getUser(0)
+            user.hostmasks = []
+            user.name = self.nick
+            user.addHostmask(msg.prefix)
+            user.setPassword(utils.mktemp())
+            ircdb.users.setUser(0, user)
         if msg.command == 'ERROR':
             if msg.args[0].startswith('Closing Link'):
                 if hasattr(self.driver, 'scheduleReconnect'):

@@ -148,7 +148,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
                                   actions=actions+%s""",
                            smileys, frowns, chars, words, int(isAction))
             try:
-                name = ircdb.users.getUserName(msg.prefix)
+                name = ircdb.users.getUser(msg.prefix).name
             except KeyError:
                 return
             cursor.execute("""SELECT COUNT(*)
@@ -181,7 +181,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         cursor.execute("""UPDATE channel_stats SET joins=joins+1""")
         try:
             if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUserName(msg.prefix)
+                name = ircdb.users.getUser(msg.prefix).name
             else:
                 name = msg.prefix
             cursor.execute("""UPDATE user_stats
@@ -198,7 +198,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         cursor.execute("""UPDATE channel_stats SET parts=parts+1""")
         try:
             if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUserName(msg.prefix)
+                name = ircdb.users.getUser(msg.prefix).name
             else:
                 name = msg.prefix
             cursor.execute("UPDATE user_stats SET parts=parts+1 WHERE name=%s",
@@ -214,7 +214,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         cursor.execute("""UPDATE channel_stats SET topics=topics+1""")
         try:
             if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUserName(msg.prefix)
+                name = ircdb.users.getUser(msg.prefix).name
             else:
                 name = msg.prefix
             cursor.execute("""UPDATE user_stats
@@ -231,7 +231,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         cursor.execute("""UPDATE channel_stats SET modes=modes+1""")
         try:
             if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUserName(msg.prefix)
+                name = ircdb.users.getUser(msg.prefix).name
             else:
                 name = msg.prefix
             cursor.execute("""UPDATE user_stats
@@ -248,7 +248,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         cursor.execute("""UPDATE channel_stats SET kicks=kicks+1""")
         try:
             if ircutils.isUserHostmask(msg.prefix):
-                name = ircdb.users.getUserName(msg.prefix)
+                name = ircdb.users.getUser(msg.prefix).name
             else:
                 name = msg.prefix
             cursor.execute("""UPDATE user_stats
@@ -258,7 +258,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
             pass
         try:
             kicked = msg.args[1]
-            name = ircdb.users.getUserName(irc.state.nickToHostmask(kicked))
+            name = ircdb.users.getUser(irc.state.nickToHostmask(kicked)).name
             cursor.execute("""UPDATE user_stats
                               SET kicked=kicked+1
                               WHERE name=%s""", name)
@@ -278,7 +278,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         if not ircdb.users.hasUser(name):
             try:
                 hostmask = irc.state.nickToHostmask(name)
-                name = ircdb.users.getUserName(hostmask)
+                name = ircdb.users.getUser(hostmask).name
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
                 return
@@ -369,7 +369,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         if not ircdb.users.hasUser(name):
             hostmask = irc.state.nickToHostmask(name)
             try:
-                name = ircdb.users.getUserName(hostmask)
+                name = ircdb.users.getUser(hostmask).name
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
                 return

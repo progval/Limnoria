@@ -182,7 +182,8 @@ Name: """ % (world.version, sys.version.translate(string.ascii, '\r\n'))
             try:
                 name = self.buffer
                 self.buffer = ''
-                self.u = ircdb.users.getUser(name)
+                id = ircdb.users.getUserId(name)
+                self.u = ircdb.users.getUser(id)
                 self.prompt = 'Password: '
             except KeyError:
                 self.push('Unknown user.\n')

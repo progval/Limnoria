@@ -256,9 +256,10 @@ class ChannelCommands(callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, capability)
         if ircdb.checkCapability(msg.prefix, neededcapability):
             try:
-                u = ircdb.users.getUser(name)
-                u.addCapability(capability)
-                ircdb.users.setUser(name, u)
+                id = ircdb.users.getUserId(name)
+                user = ircdb.users.getUser(id)
+                user.addCapability(capability)
+                ircdb.users.setUser(id, user)
                 irc.reply(msg, conf.replySuccess)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
@@ -280,9 +281,10 @@ class ChannelCommands(callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, capability)
         if ircdb.checkCapability(msg.prefix, neededcapability):
             try:
-                u = ircdb.users.getUser(name)
-                u.removeCapability(capability)
-                ircdb.users.setUser(name, u)
+                id = ircdb.users.getUser(name)
+                user = ircdb.users.getUser(id)
+                user.removeCapability(capability)
+                ircdb.users.setUser(id, user)
                 irc.reply(msg, conf.replySuccess)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)

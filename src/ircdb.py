@@ -34,11 +34,11 @@ from fix import *
 import os
 import sets
 import time
-import atexit
 import string
 
 import conf
 import debug
+import utils
 import world
 import ircutils
 
@@ -158,9 +158,10 @@ class UserCapabilitySet(CapabilitySet):
 class IrcUser(object):
     """This class holds the capabilities and authentications for a user.
     """
-    def __init__(self, ignore=False, password='', auth=None,
+    def __init__(self, ignore=False, password='', name='',
                  capabilities=(), hostmasks=None):
-        self.auth = auth # The (time, hostmask) a user authenticated under.
+        self.auth = None # The (time, hostmask) a user authenticated under
+        self.name = name # The name of the user.
         self.ignore = ignore # A boolean deciding if the person is ignored.
         self.password = password # password (plaintext? hashed?)
         self.capabilities = UserCapabilitySet()
@@ -172,10 +173,10 @@ class IrcUser(object):
             self.hostmasks = hostmasks
 
     def __repr__(self):
-        return '%s(ignore=%s, auth=%r, password=%r, '\
+        return '%s(ignore=%s, password=%r, name=%r, '\
                'capabilities=%r, hostmasks=%r)\n' %\
-               (self.__class__.__name__, self.ignore, self.auth,
-                self.password, self.capabilities, self.hostmasks)
+               (self.__class__.__name__, self.ignore, self.password,
+                self.name, self.capabilities, self.hostmasks)
 
     def addCapability(self, capability):
         self.capabilities.add(capability)
@@ -315,103 +316,139 @@ class IrcChannel(object):
                 return True
         return False
 
-
-class UsersDictionary(object):
+class UsersDB(object):
     def __init__(self, filename):
         self.filename = filename
-        fd = file(filename, 'r')
-        s = fd.read()
-        fd.close()
-        Set = sets.Set
-        ignore(Set) # Make PyChecker happy.
-        self.dict = eval(normalize(s))
-        self.cache = {} # hostmasks to nicks.
-        self.revcache = ircutils.IrcDict() # nicks to hostmasks.
-
-    def resetCache(self, s):
-        if s in self.cache:
-            # it's a hostmask.
-            name = self.cache[s]
-            del self.cache[s]
+        if os.path.exists(filename):
+            fd = file(filename, 'r')
+            s = fd.read()
+            fd.close()
+            IrcSet = ircutils.IrcSet
+            (self.nextId, self.users) = eval(normalize(s))
         else:
-            # it's already a name.
-            name = s
-        # name should always be in self.revcache, this should never KeyError.
-        if name in self.revcache:
-            for hostmask in self.revcache[name]:
-                del self.cache[hostmask]
-            del self.revcache[name]
-
-    def setCache(self, hostmask, name):
-        self.cache[hostmask] = name
-        self.revcache.setdefault(name, []).append(hostmask)
-
-    def getUser(self, s):
-        if ircutils.isUserHostmask(s):
-            name = self.getUserName(s)
-        else:
-            name = s
-        return self.dict[name]
-
-    def setUser(self, s, u):
-        # First, invalidate the cache for this user.
-        self.resetCache(s)
-        if ircutils.isUserHostmask(s):
-            name = self.getUserName(s)
-        else:
-            name = s
-        for hostmask in u.hostmasks:
-            try:
-                username = self.getUserName(hostmask)
-                if username != name:
-                    raise ValueError, 'User has hostmasks already matching ' \
-                                      'another user\'s hostmasks.'
-            except KeyError:
-                pass
-        self.dict[name] = u
-
-    def hasUser(self, s):
-        return (s in self.dict)
-
-    def delUser(self, s):
-        if ircutils.isUserHostmask(s):
-            name = self.getUserName(s)
-        else:
-            name = s
-        self.resetCache(name)
-        try:
-            del self.dict[name]
-        except KeyError:
-            pass
-
-    def getUserName(self, s):
-        assert ircutils.isUserHostmask(s), 'string must be a hostmask'
-        if s in self.cache:
-            return self.cache[s]
-        else:
-            for (name, user) in self.dict.iteritems():
-                if user.checkHostmask(s):
-                    self.cache[s] = name
-                    self.revcache.setdefault(name,[]).append(s)
-                    return name
-            raise KeyError, s
-
-    def flush(self):
-        fd = file(self.filename, 'w')
-        fd.write(repr(self.dict))
-        fd.close()
+            self.nextId = 1
+            self.users = [IrcUser(capabilities=['owner'],
+                                  password=utils.mktemp())]
+        self._nameCache = {}
+        self._hostmaskCache = {}
 
     def reload(self):
         self.__init__(self.filename)
 
+    def flush(self):
+        fd = file(self.filename, 'w')
+        fd.write(repr((self.nextId, self.users)))
+        fd.close()
+
+    def getUserId(self, s):
+        if ircutils.isUserHostmask(s):
+            try:
+                return self._hostmaskCache[s]
+            except KeyError:
+                ids = []
+                for (id, user) in enumerate(self.users):
+                    if user is None:
+                        continue
+                    if user.checkHostmask(s):
+                        ids.append(id)
+                if len(ids) == 1:
+                    id = ids[0]
+                    self._hostmaskCache[s] = id
+                    self._hostmaskCache.setdefault(id, sets.Set()).add(s)
+                    return id
+                elif len(ids) == 0:
+                    raise KeyError, s
+                else:
+                    raise ValueError, 'Ids %r matched.' % ids
+        else: # Not a hostmask, must be a name.
+            try:
+                return self._nameCache[s]
+            except KeyError:
+                for (id, user) in enumerate(self.users):
+                    if user is None:
+                        continue
+                    if s == user.name:
+                        self._nameCache[s] = id
+                        self._nameCache.setdefault(id, sets.Set()).add(s)
+                        return id
+                else:
+                    raise KeyError, s
+
+    def getUser(self, id):
+        if not isinstance(id, int):
+            # Must be a string.  Get the UserId first.
+            id = self.getUserId(id)
+        try:
+            ret = self.users[id]
+            if ret is None:
+                raise KeyError, id
+            return ret
+        except IndexError:
+            raise KeyError, id
+
+    def hasUser(self, id):
+        try:
+            self.getUser(id)
+            return True
+        except KeyError:
+            return False
+
+    def setUser(self, id, user):
+        assert isinstance(id, int), 'setUser takes an integer userId.'
+        if not 0 <= id < len(self.users) or self.users[id] is None:
+            raise KeyError, id
+        try:
+            if self.getUserId(user.name) != id:
+                raise ValueError, \
+                      '%s is already registered to someone else.' % user.name
+        except KeyError:
+            pass
+        for hostmask in user.hostmasks:
+            try:
+                if self.getUserId(hostmask) != id:
+                    raise ValueError, \
+                          '%s is already registered to someone else.'% hostmask
+            except KeyError:
+                continue
+        if id in self._nameCache:
+            for name in self._nameCache[id]:
+                del self._nameCache[name]
+            del self._nameCache[id]
+        if id in self._hostmaskCache:
+            for hostmask in self._hostmaskCache[id]:
+                del self._hostmaskCache[hostmask]
+            del self._hostmaskCache[id]
+        ### FIXME: what if the new hostmasks overlap with another hostmask?
+        self.users[id] = user
+
+    def delUser(self, id):
+        if not 0 <= id < len(self.users) or self.users[id] is None:
+            raise KeyError, id
+        self.users[id] = None
+        for name in self._nameCache.get(id, []):
+            del self._nameCache[name]
+        for hostmask in self._hostmaskCache.get(id, []):
+            del self._hostmaskCache[hostmask]
+
+    def newUser(self):
+        user = IrcUser()
+        id = self.nextId
+        self.nextId += 1
+        self.users.append(user)
+        return (id, user)
+
+
 class ChannelsDictionary(object):
     def __init__(self, filename):
         self.filename = filename
-        fd = file(filename, 'r')
-        s = fd.read()
-        fd.close()
-        Set = sets.Set
-        self.dict = eval(normalize(s))
+        if os.path.exists(filename):
+            fd = file(filename, 'r')
+            s = fd.read()
+            fd.close()
+            Set = sets.Set
+            self.dict = eval(normalize(s))
+        else:
+            self.dict = {}
 
     def getChannel(self, channel):
         channel = channel.lower()
@@ -438,25 +475,8 @@ class ChannelsDictionary(object):
 ###
 # Later, I might add some special handling for botnet.
 ###
-if not os.path.exists(conf.userfile):
-    fd = open(conf.userfile, 'w')
-    fd.write('{}')
-    fd.close()
-users = UsersDictionary(conf.userfile)
-
-if not os.path.exists(conf.channelfile):
-    fd = file(conf.channelfile, 'w')
-    fd.write('{}')
-    fd.close()
+users = UsersDB(conf.userfile)
 channels = ChannelsDictionary(conf.channelfile)
-
-def flushUsers():
-    for (name, u) in users.dict.iteritems():
-        u.unsetAuth()
-    users.flush()
-
-atexit.register(flushUsers)
-atexit.register(channels.flush)
 
 world.flushers.append(users.flush)
 world.flushers.append(channels.flush)
@@ -473,7 +493,8 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
         if ircutils.hostmaskPatternEqual(ignore, hostmask):
             return True
     try:
-        user = users.getUser(hostmask)
+        id = users.getUserId(hostmask)
+        user = users.getUser(id)
     except KeyError:
         # If there's no user...
         if ircutils.isChannel(recipient):
@@ -507,7 +528,8 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
         #debug.printf('world.startup is active.')
         return _x(capability, True)
     try:
-        u = users.getUser(hostmask)
+        id = users.getUserId(hostmask)
+        u = users.getUser(id)
     except KeyError:
         #debug.printf('user could not be found.')
         if isChannelCapability(capability):
@@ -582,13 +604,5 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
     else:
         return False
 
-def getUser(irc, s):
-    if ircutils.isUserHostmask(s):
-        return users.getUserName(s)
-    else:
-        if users.hasUser(s):
-            return s
-        else:
-            return users.getUserName(irc.state.nickToHostmask(s))
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

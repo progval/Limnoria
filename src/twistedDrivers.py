@@ -103,7 +103,8 @@ class MyShell(Shell):
         debug.printf(repr(username))
         debug.printf(repr(password))
         try:
-            u = ircdb.users.getUser(username)
+            id = ircdb.users.getUserId(username)
+            u = ircdb.users.getUser(id)
             debug.printf(u)
             if u.checkPassword(password) and u.checkCapability('owner'):
                 debug.printf('returning True')

@@ -84,7 +84,7 @@ class Topic(callbacks.Privmsg):
                 return
             currentTopic = irc.state.getTopic(channel)
             try:
-                name = ircdb.users.getUserName(msg.prefix)
+                name = ircdb.users.getUser(msg.prefix).name
             except KeyError:
                 name = msg.nick
             formattedTopic = self.topicFormatter % (topic, name)
@@ -166,7 +166,7 @@ class Topic(callbacks.Privmsg):
         else:
             (topic, name) = match.groups()
         try:
-            senderName = ircdb.users.getUserName(msg.prefix)
+            senderName = ircdb.users.getUser(msg.prefix).name
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
@@ -208,7 +208,7 @@ class Topic(callbacks.Privmsg):
             else:
                 (topic, name) = match.groups()
             try:
-                username = ircdb.users.getUserName(msg.prefix)
+                username = ircdb.users.getUser(msg.prefix).name
             except KeyError:
                 username = msg.nick
             if name and name != username and \

@@ -36,6 +36,7 @@ Provides commands useful to users in general. This plugin is loaded by default.
 import string
 
 import conf
+import utils
 import ircdb
 import ircutils
 import privmsgs
@@ -61,16 +62,20 @@ class UserCommands(callbacks.Privmsg):
         if ircutils.isChannel(msg.args[0]):
             irc.error(msg, conf.replyRequiresPrivacy)
             return
-        if ircdb.users.hasUser(name):
-            irc.error(msg, 'That name is already registered.')
+        try:
+            ircdb.users.getUserId(name)
+            irc.error(msg, 'That name is alrady assigned to someone.')
             return
+        except KeyError:
+            pass
         if ircutils.isUserHostmask(name):
             irc.error(msg, 'Hostmasks aren\'t valid usernames.')
             return
-        user = ircdb.IrcUser()
+        (id, user) = ircdb.users.newUser()
+        user.name = name
         user.setPassword(password)
         user.addHostmask(msg.prefix)
-        ircdb.users.setUser(name, user)
+        ircdb.users.setUser(id, user)
         irc.reply(msg, conf.replySuccess)
 
     def addhostmask(self, irc, msg, args):
@@ -92,20 +97,20 @@ class UserCommands(callbacks.Privmsg):
             irc.error(msg, s)
             return
         try:
-            user = ircdb.users.getUser(name)
+            id = ircdb.users.getUserId(name)
+            user = ircdb.users.getUser(id)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
         try:
-            name = ircdb.users.getUserName(hostmask)
-            s = 'That hostmask is already registered to %s.' % name
-            irc.error(msg, s)
+            _ = ircdb.users.getUserId(hostmask)
+            irc.error(msg, 'That hostmask is already registered.')
             return
         except KeyError:
             pass
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             user.addHostmask(hostmask)
-            ircdb.users.setUser(name, user)
+            ircdb.users.setUser(id, user)
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyIncorrectAuth)
@@ -122,13 +127,14 @@ class UserCommands(callbacks.Privmsg):
         if not self._checkNotChannel(irc, msg, password):
             return
         try:
-            user = ircdb.users.getUser(name)
+            id = ircdb.users.getUserId(name)
+            user = ircdb.users.getUser(id)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             user.removeHostmask(hostmask)
-            ircdb.users.setUser(name, user)
+            ircdb.users.setUser(id, user)
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyIncorrectAuth)
@@ -144,13 +150,14 @@ class UserCommands(callbacks.Privmsg):
         if not self._checkNotChannel(irc, msg, oldpassword+newpassword):
             return
         try:
-            user = ircdb.users.getUser(name)
+            id = ircdb.users.getUserId(name)
+            user = ircdb.users.getUser(id)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
         if user.checkPassword(oldpassword):
             user.setPassword(newpassword)
-            ircdb.users.setUser(name, user)
+            ircdb.users.setUser(id, user)
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyIncorrectAuth)
@@ -169,8 +176,8 @@ class UserCommands(callbacks.Privmsg):
                 irc.error(msg, conf.replyNoUser)
                 return
         try:
-            name = ircdb.users.getUserName(hostmask)
-            irc.reply(msg, name)
+            user = ircdb.users.getUser(hostmask)
+            irc.reply(msg, user.name)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
 
@@ -197,11 +204,7 @@ class UserCommands(callbacks.Privmsg):
         isn't specified, returns the hostmasks of the user calling the command.
         """
         if not args:
-            try:
-                name = ircdb.users.getUserName(msg.prefix)
-            except KeyError:
-                irc.error(msg, conf.replyNoUser)
-                return
+            name = msg.prefix
         else:
             name = privmsgs.getArgs(args)
         try:
@@ -219,13 +222,14 @@ class UserCommands(callbacks.Privmsg):
         if not self._checkNotChannel(irc, msg):
             return
         try:
-            u = ircdb.users.getUser(name)
+            id = ircdb.users.getUserId(name)
+            user = ircdb.users.getUser(id)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
-        if u.checkPassword(password):
-            u.setAuth(msg.prefix)
-            ircdb.users.setUser(name, u)
+        if user.checkPassword(password):
+            user.setAuth(msg.prefix)
+            ircdb.users.setUser(id, user)
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyIncorrectAuth)
@@ -236,13 +240,13 @@ class UserCommands(callbacks.Privmsg):
         Un-identifies the user.
         """
         try:
-            u = ircdb.users.getUser(msg.prefix)
-            name = ircdb.users.getUserName(msg.prefix)
+            id = ircdb.users.getUserId(msg.prefix)
+            user = ircdb.users.getUser(id)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
-        u.unsetAuth()
-        ircdb.users.setUser(name, u)
+        user.unsetAuth()
+        ircdb.users.setUser(id, user)
         irc.reply(msg, conf.replySuccess)
 
     def whoami(self, irc, msg, args):
@@ -251,8 +255,8 @@ class UserCommands(callbacks.Privmsg):
         Returns the name of the user calling the command.
         """
         try:
-            name = ircdb.users.getUserName(msg.prefix)
-            irc.reply(msg, name)
+            user = ircdb.users.getUser(msg.prefix)
+            irc.reply(msg, user.name)
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
 
