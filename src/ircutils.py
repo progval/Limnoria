@@ -127,12 +127,6 @@ def isChannel(s):
     return (s and s[0] in '#&+!' and len(s) <= 50 and \
             '\x07' not in s and ',' not in s and ' ' not in s)
 
-def isCtcp(msg):
-    """Returns whether or not msg is a CTCP message."""
-    return msg.command == 'PRIVMSG' and \
-           msg.args[1].startswith('\x01') and \
-           msg.args[1].endswith('\x01')
-
 _patternCache = {}
 def _hostmaskPatternEqual(pattern, hostmask):
     """Returns True if hostmask matches the hostmask pattern pattern."""

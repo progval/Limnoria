@@ -84,10 +84,6 @@ class FunctionsTestCase(SupyTestCase):
         self.failIf(ircutils.isChannel('foo'))
         self.failIf(ircutils.isChannel(''))
 
-    def testIsCtcp(self):
-        self.failUnless(ircutils.isCtcp(ircmsgs.privmsg('foo',
-                                                        '\x01VERSION\x01')))
-
     def testBold(self):
         s = ircutils.bold('foo')
         self.assertEqual(s[0], '\x02')

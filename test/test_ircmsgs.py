@@ -129,6 +129,10 @@ class FunctionsTestCase(SupyTestCase):
         for msg in msgs:
             self.failUnless(ircmsgs.isAction(msg))
 
+    def testIsCtcp(self):
+        self.failUnless(ircutils.isCtcp(ircmsgs.privmsg('foo',
+                                                        '\x01VERSION\x01')))
+
     def testIsActionFalseWhenNoSpaces(self):
         msg = ircmsgs.IrcMsg('PRIVMSG #foo :\x01ACTIONfoobar\x01')
         self.failIf(ircmsgs.isAction(msg))

@@ -481,7 +481,7 @@ class IrcObjectProxy(RichReplyMethods):
         self.finalEval()
 
     def _callInvalidCommands(self):
-        if ircutils.isCtcp(self.msg):
+        if ircmsgs.isCtcp(self.msg):
             log.debug('Skipping invalidCommand, msg is CTCP.')
             return
         log.debug('Calling invalidCommands.')

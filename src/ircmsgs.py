@@ -211,11 +211,16 @@ class IrcMsg(object):
 ##     pass
 
 
+def isCtcp(msg):
+    """Returns whether or not msg is a CTCP message."""
+    return msg.command == 'PRIVMSG' and \
+           msg.args[1].startswith('\x01') and \
+           msg.args[1].endswith('\x01')
+
 def isAction(msg):
     """A predicate returning true if the PRIVMSG in question is an ACTION"""
-    if msg.command == 'PRIVMSG' and msg.args[1].endswith('\x01'):
-        L = msg.args[1].split(None, 1)
-        return len(L) == 2 and L[0] == '\x01ACTION'
+    if isCtcp(msg):
+        return len(msg.args[1].split(None, 1)) == 2
     else:
         return False
 

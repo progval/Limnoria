@@ -480,7 +480,7 @@ class Relay(callbacks.Privmsg):
             irc = self._getRealIrc(irc)
             if channel not in self.registryValue('channels'):
                 return
-            if ircutils.isCtcp(msg) and \
+            if ircmsgs.isCtcp(msg) and \
                'AWAY' not in text and 'ACTION' not in text:
                 return
             network = self._getIrcName(irc)

@@ -212,7 +212,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             assert self.msg is not None
             msg = self.msg
         isAre = None
-        key = plugins.standardSubstitute(irc, msg, key)
         if self.db.hasIs(key):
             isAre = 'is'
             value = self.db.getIs(key)
@@ -246,7 +245,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
 
     _forceRe = re.compile(r'^no[,: -]+', re.I)
     def doPrivmsg(self, irc, msg):
-        if ircmsgs.isAction(msg):
+        if ircmsgs.isCtcp(msg):
             return
         maybeAddressed = callbacks.addressed(irc.nick, msg,
                                              whenAddressedByNick=True)
@@ -316,7 +315,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     def doUnknown(self, irc, msg, match):
         r"^(.+?)\?[?!. ]*$"
         key = match.group(1)
-        key = plugins.standardSubstitute(irc, msg, key)
         if self.addressed or self.registryValue('answerUnaddressedQuestions'):
             self.factoid(key) # Does the dunno'ing for us itself.
     # TODO: Add invalidCommand.
@@ -335,8 +333,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
            not self.registryValue('snarfUnaddressedDefinitions'):
             return
         isAre = isAre.lower()
-        key = plugins.standardSubstitute(irc, msg, key)
-        value = plugins.standardSubstitute(irc, msg, value)
         if isAre in ('was', 'is', 'am'):
             if self.db.hasIs(key):
                 if also:
