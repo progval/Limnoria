@@ -538,7 +538,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             conf.registerPlugin(name, False)
             irc.replySuccess()
         else:
-            irc.error('There was no callback %s' % name)
+            irc.error('There was no callback %s.' % name)
 
 
 Class = Owner
