@@ -251,7 +251,7 @@ def getChannelDb(irc, msg, args, state, **kwargs):
 def getHaveOp(irc, msg, args, state, action='do that'):
     if state.channel not in irc.state.channels:
         irc.error('I\'m not even in %s.' % state.channel, Raise=True)
-    if irc.nick not in irc.state.channels[state.channel].ops:
+    if not irc.state.channels[state.channel].isOp(irc.nick):
         irc.error('I need to be opped to %s.' % action, Raise=True)
 
 def validChannel(irc, msg, args, state):
