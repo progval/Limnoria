@@ -170,7 +170,7 @@ def makePluginDocumentation(pluginWindow):
     %s
     <div class="mainbody" style="padding: 0;">
     <table>
-    <tr id="headers"><td>Command</td><td>Args</td><td>
+    <tr id="trheader"><td>Command</td><td>Args</td><td>
     Detailed Help</td></tr>
     ''' % (genHeader(title, meta),
            cgi.escape(module.__doc__ or ""),
