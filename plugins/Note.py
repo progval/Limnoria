@@ -38,6 +38,7 @@ __revision__ = "$Id$"
 
 import supybot.plugins as plugins
 
+import csv
 import sets
 import time
 import getopt
@@ -53,13 +54,6 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
-
 
 conf.registerPlugin('Note')
 conf.registerGlobalValue(conf.supybot.plugins.Note, 'notifyOnJoin',
@@ -82,43 +76,93 @@ class Ignores(registry.SpaceSeparatedListOfStrings):
 
 conf.registerUserValue(conf.users.plugins.Note, 'ignores', Ignores([], ''))
 
-class NoteDb(plugins.DBHandler):
-    def makeDb(self, filename):
-        "create Notes database and tables"
-        if os.path.exists(filename):
-            db = sqlite.connect(filename)
-        else:
-            db = sqlite.connect(filename, converters={'bool': bool})
-            cursor = db.cursor()
-            cursor.execute("""CREATE TABLE notes (
-                              id INTEGER PRIMARY KEY,
-                              from_id INTEGER,
-                              to_id INTEGER,
-                              added_at TIMESTAMP,
-                              notified BOOLEAN,
-                              read BOOLEAN,
-                              public BOOLEAN,
-                              note TEXT
-                              )""")
-            db.commit()
-        return db
+class FlatfileNoteDB(plugins.FlatfileDB):
+    class Note(object):
+        def __init__(self, L=None, to=None, frm=None, text=None):
+            if L is not None:
+                self.frm = int(L[0])
+                self.to = int(L[1])
+                self.at = float(L[2])
+                self.notified = bool(int(L[3]))
+                self.read = bool(int(L[4]))
+                self.public = bool(int(L[5]))
+                self.text = L[6]
+            else:
+                self.to = to
+                self.frm = frm
+                self.text = text
+                self.read = False
+                self.public = True
+                self.at = time.time()
+                self.notified = False
+
+        def __str__(self):
+            return csv.join(map(str, [self.frm, self.to, self.at,
+                                      int(self.notified), int(self.read),
+                                      int(self.public), self.text]))
+
+    def serialize(self, n):
+        return str(n)
+
+    def deserialize(self, s):
+        return self.Note(csv.split(s))
+
+    def setRead(self, id):
+        n = self.getRecord(id)
+        n.read = True
+        n.notified = True
+        self.setRecord(id, n)
+
+    def setNotified(self, id):
+        n = self.getRecord(id)
+        n.notified = True
+        self.setRecord(id, n)
+
+    def getUnnotifiedIds(self, to):
+        L = []
+        for (id, note) in self.records():
+            if note.to == to and not note.notified:
+                L.append(id)
+        return L
+
+    def getUnreadIds(self, to):
+        L = []
+        for (id, note) in self.records():
+            if note.to == to and not note.read:
+                L.append(id)
+        return L
+
+    def send(self, frm, to, text):
+        n = self.Note(frm=frm, to=to, text=text)
+        return self.addRecord(n)
+
+    def get(self, id):
+        return self.getRecord(id)
+
+    def remove(self, id):
+        n = self.getRecord(id)
+        assert not n.read
+        self.delRecord(id)
+
+    def notes(self, p):
+        L = []
+        for (id, note) in self.records():
+            if p(note):
+                L.append((id, note))
+        return L
+        
+    
+def NoteDB():
+    return FlatfileNoteDB(conf.supybot.directories.data.dirize('Note.db'))
+
 
 class Note(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        dataDir = conf.supybot.directories.data()
-        self.dbHandler = NoteDb(name=os.path.join(dataDir, 'Notes'))
-
-    def setAsRead(self, id):
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute("""UPDATE notes
-                          SET read=1, notified=1
-                          WHERE id=%s""", id)
-        db.commit()
+        self.db = NoteDB()
 
     def die(self):
-        self.dbHandler.die()
+        self.db.close()
 
     def doPrivmsg(self, irc, msg):
         self._notify(irc, msg)
@@ -130,33 +174,27 @@ class Note(callbacks.Privmsg):
 
     def _notify(self, irc, msg, repeatedly=False):
         try:
-            id = ircdb.users.getUserId(msg.prefix)
+            to = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             return
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute("""SELECT id FROM notes
-                          WHERE notes.to_id=%s AND notified=0""", id)
-        unnotifiedIds = ['#%s' % t[0] for t in cursor.fetchall()]
+        unnotifiedIds = ['#%s' % nid for nid in self.db.getUnnotifiedIds(to)]
         unnotified = len(unnotifiedIds)
-        if unnotified != 0 or repeatedly:
-            cursor.execute("""SELECT id FROM notes
-                              WHERE notes.to_id=%s AND read=0""", id)
-            unreadIds = ['#%s' % t[0] for t in cursor.fetchall()]
+        if unnotified or repeatedly:
+            unreadIds = ['#%s' % nid for nid in self.db.getUnreadIds(to)]
             unread = len(unreadIds)
             s = 'You have %s; %s that I haven\'t told you about before now.  '\
                 '%s %s still unread.' % \
                 (utils.nItems('note', unread, 'unread'), unnotified,
                  utils.commaAndify(unreadIds), utils.be(unread))
-            maker = ircmsgs.privmsg
+            msgmaker = ircmsgs.privmsg
             if self.userValue('notifyWithNotice', msg.prefix):
-                maker = ircmsgs.notice
-            irc.queueMsg(maker(msg.nick, s))
-            cursor.execute("""UPDATE notes SET notified=1
-                              WHERE notes.to_id=%s""", id)
-            db.commit()
+                msgmaker = ircmsgs.notice
+            irc.queueMsg(msgmaker(msg.nick, s))
+            for nid in unnotifiedIds:
+                id = int(nid[1:])
+                self.db.setNotified(id)
 
-    def getUserId(self, irc, name):
+    def _getUserId(self, irc, name):
         if ircdb.users.hasUser(name):
             return ircdb.users.getUserId(name)
         else:
@@ -166,6 +204,14 @@ class Note(callbacks.Privmsg):
             except KeyError:
                 return None
 
+    def _validId(self, irc, id):
+        try:
+            id = id.lstrip('#')
+            return int(id)
+        except ValueError:
+            irc.error('That\'s not a valid note id.')
+            return None
+
     def send(self, irc, msg, args):
         """<recipient>,[<recipient>,[...]] <text>
 
@@ -173,23 +219,18 @@ class Note(callbacks.Privmsg):
         specified by separating their names by commas, with *no* spaces
         between.
         """
-        (names, note) = privmsgs.getArgs(args, required=2)
+        (names, text) = privmsgs.getArgs(args, required=2)
         # Let's get the from user.
         try:
             fromId = ircdb.users.getUserId(msg.prefix)
-            senderName = ircdb.users.getUser(fromId).name
         except KeyError:
             irc.errorNotRegistered()
             return
-        # Let's get the publicitousness.
-        if ircutils.isChannel(msg.args[0]):
-            public = 1
-        else:
-            public = 0
-
+        public = ircutils.isChannel(msg.args[0])
         names = names.split(',')
-        ids = [self.getUserId(irc, name) for name in names]
+        ids = [self._getUserId(irc, name) for name in names]
         badnames = []
+        # Make sure all targets are registered.
         if None in ids:
             for (id, name) in zip(ids, names):
                 if id is None:
@@ -197,6 +238,8 @@ class Note(callbacks.Privmsg):
             irc.errorNoUser(name=utils.commaAndify(badnames, And='or'))
             return
 
+        # Make sure the sender isn't being ignored.
+        senderName = ircdb.users.getUser(fromId).name
         for name in names:
             if senderName in self.userValue('ignores', name):
                 badnames.append(name)
@@ -204,20 +247,12 @@ class Note(callbacks.Privmsg):
             irc.error('%s %s ignoring notes from you.' % \
                       (utils.commaAndify(badnames), utils.be(len(badnames))))
             return
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        now = int(time.time())
         sent = []
-        for (name, toId) in zip(names, ids):
-            cursor.execute("""INSERT INTO notes VALUES
-                              (NULL, %s, %s, %s, 0, 0, %s, %s)""",
-                           fromId, toId, now, public, note)
-            cursor.execute("""SELECT id FROM notes WHERE
-                              from_id=%s AND to_id=%s AND added_at=%s""",
-                           fromId, toId, now)
-            s = 'note #%s sent to %s' % (cursor.fetchone()[0], name)
+        for toId in ids:
+            id = self.db.send(fromId, toId, text)
+            name = ircdb.users.getUser(toId).name
+            s = 'note #%s sent to %s' % (id, name)
             sent.append(s)
-        db.commit()
         irc.reply(utils.commaAndify(sent).capitalize() + '.')
 
     def unsend(self, irc, msg, args):
@@ -226,29 +261,24 @@ class Note(callbacks.Privmsg):
         Unsends the note with the id given.  You must be the
         author of the note, and it must be unread.
         """
-        id = privmsgs.getArgs(args)
         try:
             userid = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.errorNotRegistered()
             return
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute("""SELECT from_id, read FROM notes WHERE id=%s""", id)
-        if cursor.rowcount < 1:
-            irc.error('That\'s not a valid note id.')
+        id = privmsgs.getArgs(args)
+        id = self._validId(irc, id)
+        if id is None:
             return
-        (from_id, read) = map(int, cursor.fetchone())
-        if from_id == userid:
-            if not read:
-                cursor.execute("""DELETE FROM notes WHERE id=%s""", id)
-                db.commit()
+        note = self.db.get(id)
+        if note.frm == userid:
+            if not note.read:
+                self.db.remove(id)
                 irc.replySuccess()
             else:
                 irc.error('That note has been read already.')
         else:
             irc.error('That note wasn\'t sent by you.')
-
 
     def note(self, irc, msg, args):
         """<note id>
@@ -256,53 +286,33 @@ class Note(callbacks.Privmsg):
         Retrieves a single note by its unique note id.  Use the 'note list'
         command to see what unread notes you have.
         """
-        noteid = privmsgs.getArgs(args)
-        if noteid.startswith('get'):
-            irc.error('The Note.get command has changed to be simply "note".')
-            return
-        noteid = noteid.lstrip('#') # Some people are just dumb.
         try:
-            id = ircdb.users.getUserId(msg.prefix)
+            userid = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.errorNotRegistered()
             return
-        try:
-            noteid = int(noteid)
-        except ValueError:
-            irc.error('%r is not a valid note id.' % noteid)
+        id = privmsgs.getArgs(args)
+        id = self._validId(irc, id)
+        if id is None:
             return
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute("""SELECT note, to_id, from_id, added_at, public
-                          FROM notes
-                          WHERE (to_id=%s OR from_id=%s) AND id=%s""",
-                       id, id, noteid)
-        if cursor.rowcount < 1:
+        try:
+            note = self.db.get(id)
+        except KeyError:
+            irc.error('That\'s not a valid note id.')
+            return
+        if userid != note.frm and userid != note.to:
             s = 'You may only retrieve notes you\'ve sent or received.'
             irc.error(s)
             return
-        (note, toId, fromId, addedAt, public) = cursor.fetchone()
-        (toId,fromId,addedAt,public) = imap(int, (toId,fromId,addedAt,public))
-        elapsed = utils.timeElapsed(time.time() - addedAt)
-        if toId == id:
-            author = ircdb.users.getUser(fromId).name
-            newnote = '%s (Sent by %s %s ago)' % (note, author, elapsed)
-        elif fromId == id:
-            recipient = ircdb.users.getUser(toId).name
-            newnote = '%s (Sent to %s %s ago)' % (note, recipient, elapsed)
-        irc.reply(newnote, private=(not public))
-        self.setAsRead(noteid)
-
-    def _formatNoteData(self, msg, id, fromId, public, sent=False):
-        (id, fromId, public) = imap(int, (id, fromId, public))
-        if public or not ircutils.isChannel(msg.args[0]):
-            sender = ircdb.users.getUser(fromId).name
-            if sent:
-                return '#%s to %s' % (id, sender)
-            else:
-                return '#%s from %s' % (id, sender)
-        else:
-            return '#%s (private)' % id
+        elapsed = utils.timeElapsed(time.time() - note.at)
+        if note.to == userid:
+            author = ircdb.users.getUser(note.frm).name
+            newnote = '%s (Sent by %s %s ago)' % (note.text, author, elapsed)
+        elif note.frm == userid:
+            recipient = ircdb.users.getUser(note.to).name
+            newnote = '%s (Sent to %s %s ago)' % (note.text, recipient,elapsed)
+        irc.reply(newnote, private=(not note.public))
+        self.db.setRead(id)
 
     def ignore(self, irc, msg, args):
         """[--remove] <user>
@@ -330,6 +340,16 @@ class Note(callbacks.Privmsg):
         except KeyError:
             irc.errorNoUser()
 
+    def _formatNoteId(self, msg, id, frm, public, sent=False):
+        if public or not ircutils.isChannel(msg.args[0]):
+            sender = ircdb.users.getUser(frm).name
+            if sent:
+                return '#%s to %s' % (id, sender)
+            else:
+                return '#%s from %s' % (id, sender)
+        else:
+            return '#%s (private)' % id
+
     def list(self, irc, msg, args):
         """[--{old,sent}] [--{from,to} <user>]
 
@@ -342,14 +362,13 @@ class Note(callbacks.Privmsg):
         (optlist, rest) = getopt.getopt(args, '', options)
         sender, receiver, old, sent = ('', '', False, False)
         for (option, arg) in optlist:
-            option = option.lstrip('-')
-            if option == 'old':
+            if option == '--old':
                 old = True
-            if option == 'sent':
+            if option == '--sent':
                 sent = True
-            if option == 'from':
+            if option == '--from':
                 sender = arg
-            if option == 'to':
+            if option == '--to':
                 receiver = arg
                 sent = True
         if old:
@@ -357,28 +376,29 @@ class Note(callbacks.Privmsg):
         if sent:
             return self._sentnotes(irc, msg, receiver)
         try:
-            id = ircdb.users.getUserId(msg.prefix)
+            userid = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.errorNotRegistered()
             return
-        sql = """SELECT id, from_id, public
-                 FROM notes
-                 WHERE notes.to_id=%r AND notes.read=0""" % id
+        
+        def p(note):
+            return not note.read and note.to == userid
         if sender:
             try:
                 sender = ircdb.users.getUserId(sender)
+                originalP = p
+                def p(note):
+                    return originalP(note) and note.frm == sender
             except KeyError:
-                irc.error('That user is not in my user database.')
+                irc.errorNoUser()
                 return
-            sql = '%s %s' % (sql, 'AND notes.from_id=%r' % sender)
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute(sql)
-        count = cursor.rowcount
-        if count < 1:
+        notesAndIds = self.db.notes(p)
+        notesAndIds.sort()
+        if not notesAndIds:
             irc.reply('You have no unread notes.')
         else:
-            L = [self._formatNoteData(msg, *t) for t in cursor.fetchall()]
+            L = [self._formatNoteId(msg, id, n.frm, n.public)
+                 for (id, n) in notesAndIds]
             L = self._condense(L)
             irc.reply(utils.commaAndify(L))
 
@@ -396,68 +416,56 @@ class Note(callbacks.Privmsg):
         return notes
 
     def _sentnotes(self, irc, msg, receiver):
-        """takes no arguments
-
-        Returns a list of your most recent old notes.
-        """
         try:
-            id = ircdb.users.getUserId(msg.prefix)
+            userid = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.errorNotRegistered()
             return
-        sql = """SELECT id, to_id, public
-                 FROM notes
-                 WHERE notes.from_id=%r""" % id
+        def p(note):
+            return note.frm == userid
         if receiver:
             try:
                 receiver = ircdb.users.getUserId(receiver)
             except KeyError:
                 irc.error('That user is not in my user database.')
                 return
-            sql = '%s %s' % (sql, 'AND notes.to_id=%r' % receiver)
-        sql = '%s ORDER BY id DESC' % sql
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute(sql)
-        if cursor.rowcount < 1:
-            irc.reply('I couldn\'t find any sent notes for your user.')
+            originalP = p
+            def p(note):
+                return originalP(note) and note.to == receiver
+        notesAndIds = self.db.notes(p)
+        notesAndIds.sort()
+        if not notesAndIds:
+            irc.error('I couldn\'t find any sent notes for your user.')
         else:
-            ids = [self._formatNoteData(msg, sent=True, *t) for t in
-                   cursor.fetchall()]
+            ids = [self._formatNoteId(msg, id, note.to, note.public,sent=True)
+                   for (id, note) in notesAndIds]
             ids = self._condense(ids)
             irc.reply(utils.commaAndify(ids))
 
     def _oldnotes(self, irc, msg, sender):
-        """takes no arguments
-
-        Returns a list of your most recent old notes.
-        """
         try:
-            id = ircdb.users.getUserId(msg.prefix)
+            userid = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.errorNotRegistered()
             return
-        sql = """SELECT id, from_id, public
-                 FROM notes
-                 WHERE notes.to_id=%r AND notes.read=1""" % id
-        #self.log.warning(sender)
+        def p(note):
+            return note.to == userid and note.read
         if sender:
             try:
                 sender = ircdb.users.getUserId(sender)
             except KeyError:
                 irc.error('That user is not in my user database.')
                 return
-            sql = '%s %s' % (sql, 'AND notes.from_id=%r' % sender)
-        sql = '%s ORDER BY id DESC' % sql
-        db = self.dbHandler.getDb()
-        cursor = db.cursor()
-        cursor.execute(sql)
-        #self.log.warning(cursor.rowcount)
-        if cursor.rowcount < 1:
-            irc.reply('I couldn\'t find any read notes for your user.')
+            originalP = p
+            def p(note):
+                return originalP(note) and note.frm == sender
+        notesAndIds = self.db.notes(p)
+        notesAndIds.sort()
+        if not notesAndIds:
+            irc.reply('I couldn\'t find any matching read notes for your user.')
         else:
-            ids = [self._formatNoteData(msg, *t) for t in cursor.fetchall()]
-            #self.log.warning(ids)
+            ids = [self._formatNoteId(msg, id, note.frm, note.public)
+                   for (id, note) in notesAndIds]
             ids = self._condense(ids)
             irc.reply(utils.commaAndify(ids))
 
