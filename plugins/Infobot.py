@@ -755,7 +755,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             if self.db.hasIs(dynamic.channel, key):
                 oldValue = self.db.getIs(dynamic.channel, key)
                 if oldValue.lower() == value.lower() and \
-                   self.registryValue('unaddress.replyExistingValue',
+                   self.registryValue('unaddress.replyExistingFactoid',
                                       dynamic.channel):
                     self.reply('I already had it that way, %s.' % msg.nick)
                     return
@@ -778,7 +778,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             if self.db.hasAre(dynamic.channel, key):
                 oldValue = self.db.getAre(dynamic.channel, key)
                 if oldValue.lower() == value.lower() and \
-                   self.registryValue('unaddressed.replyExistingValue',
+                   self.registryValue('unaddressed.replyExistingFactoid',
                                       dynamic.channel):
                     self.reply('I already had it that way, %s.' % msg.nick)
                     return
