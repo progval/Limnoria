@@ -90,9 +90,10 @@ def search(log, queries, **kwargs):
         log.exception('Uncaught SAX error:')
         raise callbacks.Error, 'Google returned an unparsable response.  ' \
                                'The full traceback has been logged.'
-    except SOAPpy.Error, e:
-        log.exception('Uncaught SOAP exception in Google.search:')
-        raise callbacks.Error, 'Error connecting to Google.com.'
+# We don't use SOAPpy anymore, apparently.
+##     except SOAPpy.Error, e:
+##         log.exception('Uncaught SOAP exception in Google.search:')
+##         raise callbacks.Error, 'Error connecting to Google.com.'
 
 last24hours = utils.structures.TimeoutQueue(86400)
 totalTime = conf.supybot.plugins.Google.state.time()
