@@ -61,6 +61,7 @@ import utils
 import world
 import ircdb
 import irclib
+import plugins
 import ircmsgs
 import ircutils
 
@@ -322,13 +323,15 @@ def checkCommandCapability(msg, cb, command):
 
 
 class RichReplyMethods(object):
-    """This is a mixin so these replies need only be defined once."""
+    """This is a mixin so these replies need only be defined once.  It operates
+    under several assumptions, including the fact that "self" is an Irc object
+    of some sort and there is a self.msg that is an IrcMsg."""
     def __makeReply(self, prefix, s):
         if s:
             s = '%s  %s' % (prefix, s)
         else:
             s = prefix
-        return s
+        return plugins.standardSubstitute(self, self.msg, s)
 
     def replySuccess(self, s='', **kwargs):
         v = conf.supybot.replies.success.get(self.msg.args[0])()

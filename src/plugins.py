@@ -40,7 +40,6 @@ import csv
 import sys
 import sets
 import time
-import types
 import random
 import urllib2
 import UserDict
@@ -51,11 +50,7 @@ import log
 import conf
 import utils
 import world
-import ircdb
 import ircutils
-import privmsgs
-import callbacks
-import structures
 
 try:
     mxCrap = {}

@@ -1,3 +1,7 @@
+	* Made standard replies (such as supybot.replies.success, etc.)
+	use the standard substitute (such as $nick, $who, $channel, etc.)
+	in their text.
+	
 	* Fixed snarfers to respect lobotomies.
 	
 	* Fixed Admin.join not to add the channel to the supybot.channels
