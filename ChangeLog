@@ -1,8 +1,6 @@
-	* Changed the format of the Alias database, and also its location
-	(to go to your configuration directory rather than your data
-	directory now).  Be sure, if you're upgrading, to run
-	tools/aliasConvert.py on your Alias.db *BEFORE* installing the new
-	version.
+	* Added the ability to reply to factoids without the "whatis" in
+	the Factoids plugin.  Now, you can use "@foo" instead of "@whatis
+	foo".
 	
 	* Changed the format of the user and channel databases to
 	something much more readable and user-editable.  Be sure, if

@@ -88,7 +88,7 @@ class Weather(callbacks.Privmsg):
     # The weather we pull uses weird codes.  Map obvious ones here.
     _countryMap = {'uk': 'gb'}
     def weather(self, irc, msg, args):
-        """<US zip code> <US/Canada city, state> <Foreign city, country>
+        """<US zip code | US/Canada city, state | Foreign city, country>
 
         Returns the approximate weather conditions for a given city.
         """
