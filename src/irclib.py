@@ -920,7 +920,7 @@ class Irc(IrcCommandDispatcher):
         if not self.zombie:
            if msg.args[0].startswith('Closing Link'):
               self.driver.reconnect()
-           elif 'too fast' in msg.args[0]:
+           elif 'too fast' in msg.args[0]: # Connecting too fast.
               self.driver.reconnect(wait=True)
 
     def doNick(self, msg):
@@ -951,6 +951,11 @@ class Irc(IrcCommandDispatcher):
     def _reallyDie(self):
         """Makes the Irc object die.  Dead."""
         log.info('Irc object for %s dying.' % self.network)
+        # XXX This hasattr should be removed, I'm just putting it here because
+        #     we're so close to a release.  After 0.80.0 we should remove this
+        #     and fix whatever AttributeErrors arise in the drivers themselves.
+        if self.driver is not None and hasattr(self.driver, 'die'):
+            self.driver.die()
         if self in world.ircs:
             world.ircs.remove(self)
             # Only kill the callbacks if we're the last Irc.
