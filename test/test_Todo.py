@@ -113,5 +113,16 @@ if sqlite is not None:
             self.assertNotError('todo change 1 s/moo/foo/')
             self.assertRegexp('todo 1', 'Todo for tester: foo \(Added .*?\)')
 
+        def testActiveInactiveTodo(self):
+            self.assertNotError('todo add foo')
+            self.assertNotError('todo add bar')
+            self.assertRegexp('todo 1', 'Active')
+            self.assertRegexp('todo 2', 'Active')
+            self.assertNotError('todo remove 1')
+            self.assertRegexp('todo 1', 'Inactive')
+            self.assertRegexp('todo 2', 'Active')
+            self.assertNotError('todo remove 2')
+            self.assertRegexp('todo 2', 'Inactive')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
