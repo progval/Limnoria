@@ -110,6 +110,15 @@ class FunCommandsTest(PluginTestCase, PluginDocumentation):
         self.assertResponse('rpn 1 dup', 'Stack: [1, 1]')
         self.assertResponse('rpn 2 3 4 + -', str(2-7))
 
+    def testLess(self):
+        s390 = ' '.join(['123456789']*39)
+        s790 = ' '.join(['123456789']*79)
+        self.assertNotError('less %s' % s390)
+        self.assertError('less')
+        self.assertNotError('less %s' % s790)
+        self.assertNotError('less')
+        self.assertError('less')
+
     
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
