@@ -139,26 +139,16 @@ supybot.register('ignores', registry.CommaSeparatedListOfStrings('', """
 A list of hostmasks ignored by the bot.  Add people you don't like to here.
 """))
 
-supybot.register('directories')
-supybot.directories.register('conf', registry.String('conf', """
-Determines what directory configuration data is put into."""))
-supybot.directories.register('data', registry.String('data', """
-Determines what directory data is put into."""))
-supybot.directories.register('plugins',
-registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir],
-"""Determines what directories the bot will look for plugins in."""))
+supybot.register('defaultAllow', registry.Boolean(True, """Determines whether
+the bot by default will allow users to run commands.  If this is disabled, a
+user will have to have the capability for whatever command he wishes to run.
+"""))
 
-supybot.register('databases')
-supybot.databases.register('users')
-supybot.databases.register('channels')
-supybot.databases.users.register('filename', registry.String('users.conf', """
-Determines what filename will be used for the users database.  This file will
-go into the directory specified by the supybot.directories.conf
-variable."""))
-supybot.databases.channels.register('filename',registry.String('channels.conf',
-"""Determines what filename will be used for the channels database.  This file
-will go into the directory specified by the supybot.directories.conf
-variable."""))
+supybot.register('defaultIgnore', registry.Boolean(False, """Determines
+whether the bot will ignore unregistered users by default.  Of course, that'll
+make it particularly hard for those users to register with the bot, but that's
+your problem to solve."""))
+
 
 supybot.register('humanTimestampFormat', registry.String('%I:%M %p, %B %d, %Y',
 """Determines how timestamps printed for human reading should be formatted.
@@ -176,27 +166,6 @@ supybot.register('externalIP', IP('', """A string that is the external IP of
 the bot.  If this is the empty string, the bot will attempt to find out its IP
 dynamically (though sometimes that doesn't work, hence this variable)."""))
 
-# XXX Should this (and a few others) be made into a group 'network' or
-# 'server' or something?
-supybot.register('throttleTime', registry.Float(1.0, """A floating point
-number of seconds to throttle queued messages -- that is, messages will not
-be sent faster than once per throttleTime seconds."""))
-
-supybot.register('snarfThrottle', registry.Float(10.0, """A floating point
-number of seconds to throttle snarfed URLs, in order to prevent loops between
-two bots snarfing the same URLs and having the snarfed URL in the output of
-the snarf message."""))
-
-supybot.register('threadAllCommands', registry.Boolean(False, """Determines
-whether the bot will automatically thread all commands.  At this point this
-option exists almost exclusively for debugging purposes; it can do very little
-except to take up more CPU."""))
-
-supybot.register('httpPeekSize', registry.PositiveInteger(4096, """Determines
-how many bytes the bot will 'peek' at when looking through a URL for a
-doctype or title or something similar.  It'll give up after it reads this many
-bytes."""))
-
 ###
 # Reply/error tweaking.
 ###
@@ -205,6 +174,17 @@ supybot.reply.register('oneToOne', registry.Boolean(True, """Determines whether
 the bot will send multi-message replies in a single messsage or in multiple
 messages.  For safety purposes (so the bot can't possibly flood) it will
 normally send everything in a single message."""))
+
+supybot.register('pipeSyntax', registry.Boolean(False, """Supybot allows
+nested commands; generally, commands are nested via square brackets.  Supybot
+can also provide a syntax more similar to UNIX pipes.  The square bracket
+nesting syntax is always enabled, but when this value is True, users can also
+nest commands by saying 'bot: foo | bar' instead of 'bot: bar [foo]'."""))
+
+supybot.reply.register('whenNotCommand', registry.Boolean(True, """
+Determines whether the bot will reply with an error message when it is
+addressed but not given a valid command.  If this value is False, the bot
+will remain silent."""))
 
 supybot.reply.register('detailedErrors', registry.Boolean(True, """Determines
 whether error messages that result from bugs in the bot will show a detailed
@@ -218,11 +198,6 @@ Determines whether the bot will send an error message to users who attempt to
 call a command for which they do not have the necessary capability.  You may
 wish to make this False if you don't want users to understand the underlying
 security system preventing them from running certain commands."""))
-
-supybot.reply.register('whenNotCommand', registry.Boolean(True, """
-Determines whether the bot will reply with an error message when it is
-addressed but not given a valid command.  If this value is False, the bot
-will remain silent."""))
 
 supybot.reply.register('withPrivateNotice', registry.Boolean(False, """
 Determines whether the bot will reply with a private notice to users rather
@@ -263,12 +238,6 @@ is False, the bot will only join a channel if the user inviting it has the
 'admin' capability (or if it's explicitly told to join the channel using the
 Admin.join command)"""))
 
-supybot.register('pipeSyntax', registry.Boolean(False, """Supybot allows
-nested commands; generally, commands are nested via square brackets.  Supybot
-can also provide a syntax more similar to UNIX pipes.  The square bracket
-nesting syntax is always enabled, but when this value is True, users can also
-nest commands by saying 'bot: foo | bar' instead of 'bot: bar [foo]'."""))
-
 supybot.register('showSimpleSyntax', registry.Boolean(False, """Supybot
 normally replies with the full help whenever a user misuses a command.  If this
 value is set to True, the bot will only reply with the syntax of the command
@@ -279,36 +248,15 @@ value is set to True, the bot will only reply with the syntax of the command
 ###
 supybot.register('replies')
 
+registerChannelValue(supybot.replies, 'success',
+    registry.NormalizedString("""The operation succeeded.""", """Determines
+    what message the bot replies with when a command succeeded."""))
+
 registerChannelValue(supybot.replies, 'error',
     registry.NormalizedString("""An error has occurred and has been logged.
     Please contact this bot's administrator for more information.""", """
     Determines what error message the bot gives when it wants to be
     ambiguous."""))
-
-registerChannelValue(supybot.replies, 'noCapability',
-    registry.NormalizedString("""You don't have the %r capability.  If you
-    think that you should have this capability, be sure that you are identified
-    before trying again.  The 'whoami' command can tell you if you're
-    identified.""", """Determines what error message is given when the bot is
-    telling someone they aren't cool enough to use the command they tried to
-    use."""))
-
-registerChannelValue(supybot.replies, 'genericNoCapability',
-    registry.NormalizedString("""You're missing some capability you need.
-    This could be because you actually possess the anti-capability for the
-    capability that's required of you, or because the channel provides that
-    anti-capability by default, or because the global capabilities include
-    that anti-capability.  Or, it could be because the channel or the global
-    defaultAllow is set to False, meaning that no commands are allowed unless
-    explicitly in your capabilities.  Either way, you can't do what you want
-    to do.""", """Dertermines what generic error message is given when the bot
-    is telling someone that they aren't cool enough to use the command they
-    tried to use, and the author of the code calling errorNoCapability didn't
-    provide an explicit capability for whatever reason."""))
-
-registerChannelValue(supybot.replies, 'success',
-    registry.NormalizedString("""The operation succeeded.""", """Determines
-    what message the bot replies with when a command succeeded."""))
 
 registerChannelValue(supybot.replies, 'incorrectAuthentication',
     registry.NormalizedString("""Your hostmask doesn't match or your password
@@ -331,6 +279,27 @@ registerChannelValue(supybot.replies, 'notRegistered',
     with when someone tries to do something that requires them to be registered
     but they're not currently recognized."""))
 
+registerChannelValue(supybot.replies, 'noCapability',
+    registry.NormalizedString("""You don't have the %r capability.  If you
+    think that you should have this capability, be sure that you are identified
+    before trying again.  The 'whoami' command can tell you if you're
+    identified.""", """Determines what error message is given when the bot is
+    telling someone they aren't cool enough to use the command they tried to
+    use."""))
+
+registerChannelValue(supybot.replies, 'genericNoCapability',
+    registry.NormalizedString("""You're missing some capability you need.
+    This could be because you actually possess the anti-capability for the
+    capability that's required of you, or because the channel provides that
+    anti-capability by default, or because the global capabilities include
+    that anti-capability.  Or, it could be because the channel or the global
+    defaultAllow is set to False, meaning that no commands are allowed unless
+    explicitly in your capabilities.  Either way, you can't do what you want
+    to do.""", """Dertermines what generic error message is given when the bot
+    is telling someone that they aren't cool enough to use the command they
+    tried to use, and the author of the code calling errorNoCapability didn't
+    provide an explicit capability for whatever reason."""))
+
 registerChannelValue(supybot.replies, 'requiresPrivacy',
     registry.NormalizedString("""That operation cannot be done in a
     channel.""", """Determines what error messages the bot sends to people who
@@ -345,16 +314,6 @@ bug that the developers don't know about."""))
 # End supybot.replies.
 ###
 
-supybot.register('pingServer', registry.Boolean(True, """Determines whether
-the bot will send PINGs to the server it's connected to in order to keep the
-connection alive and discover earlier when it breaks.  Really, this option
-only exists for debugging purposes: you always should make it True unless
-you're testing some strange server issues."""))
-
-supybot.register('pingInterval', registry.Integer(120, """Determines the
-number of seconds between sending pings to the server, if pings are being sent
-to the server."""))
-
 supybot.register('maxHistoryLength', registry.Integer(1000, """Determines
 how many old messages the bot will keep around in its history.  Changing this
 variable will not take effect until the bot is restarted."""))
@@ -365,15 +324,34 @@ supybot.register('nickmods', registry.CommaSeparatedListOfStrings(
     to get from the server is in use.  There should be one %s in each string;
     this will get replaced with the original nick."""))
 
-supybot.register('defaultAllow', registry.Boolean(True, """Determines whether
-the bot by default will allow users to run commands.  If this is disabled, a
-user will have to have the capability for whatever command he wishes to run.
-"""))
+supybot.register('throttleTime', registry.Float(1.0, """A floating point
+number of seconds to throttle queued messages -- that is, messages will not
+be sent faster than once per throttleTime seconds."""))
 
-supybot.register('defaultIgnore', registry.Boolean(False, """Determines
-whether the bot will ignore unregistered users by default.  Of course, that'll
-make it particularly hard for those users to register with the bot, but that's
-your problem to solve."""))
+supybot.register('snarfThrottle', registry.Float(10.0, """A floating point
+number of seconds to throttle snarfed URLs, in order to prevent loops between
+two bots snarfing the same URLs and having the snarfed URL in the output of
+the snarf message."""))
+
+supybot.register('threadAllCommands', registry.Boolean(False, """Determines
+whether the bot will automatically thread all commands.  At this point this
+option exists almost exclusively for debugging purposes; it can do very little
+except to take up more CPU."""))
+
+supybot.register('httpPeekSize', registry.PositiveInteger(4096, """Determines
+how many bytes the bot will 'peek' at when looking through a URL for a
+doctype or title or something similar.  It'll give up after it reads this many
+bytes."""))
+
+supybot.register('pingServer', registry.Boolean(True, """Determines whether
+the bot will send PINGs to the server it's connected to in order to keep the
+connection alive and discover earlier when it breaks.  Really, this option
+only exists for debugging purposes: you always should make it True unless
+you're testing some strange server issues."""))
+
+supybot.register('pingInterval', registry.Integer(120, """Determines the
+number of seconds between sending pings to the server, if pings are being sent
+to the server."""))
 
 ###
 # Driver stuff.
@@ -405,6 +383,27 @@ stable.  asyncoreDrivers is a bit older (and less well-maintained) but allows
 you to integrate with asyncore-based applications.  twistedDrivers is very
 stable and simple, and if you've got Twisted installed, is probably your best
 bet."""))
+
+supybot.register('directories')
+supybot.directories.register('conf', registry.String('conf', """
+Determines what directory configuration data is put into."""))
+supybot.directories.register('data', registry.String('data', """
+Determines what directory data is put into."""))
+supybot.directories.register('plugins',
+registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir],
+"""Determines what directories the bot will look for plugins in."""))
+
+supybot.register('databases')
+supybot.databases.register('users')
+supybot.databases.register('channels')
+supybot.databases.users.register('filename', registry.String('users.conf', """
+Determines what filename will be used for the users database.  This file will
+go into the directory specified by the supybot.directories.conf
+variable."""))
+supybot.databases.channels.register('filename',registry.String('channels.conf',
+"""Determines what filename will be used for the channels database.  This file
+will go into the directory specified by the supybot.directories.conf
+variable."""))
 
 supybot.register('plugins') # This will be used by plugins, but not here.
 
