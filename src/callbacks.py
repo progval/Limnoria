@@ -588,7 +588,7 @@ class IrcObjectProxy(RichReplyMethods):
                 # pick up where we left off via self.counter.
                 self.__class__(self, self.msg,
                                self.args[self.counter], nested=self.nested+1)
-                # We have to return here becuase the new IrcObjectProxy
+                # We have to return here because the new IrcObjectProxy
                 # might not have called our reply method instantly, since
                 # its command might be threaded.  So (obviously) we can't
                 # just fall through to self.finalEval.

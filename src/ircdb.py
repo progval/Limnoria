@@ -613,7 +613,7 @@ class UsersDictionary(utils.IterableMap):
             else:
                 log.error('UsersDictionary.flush called with no filename.')
         else:
-            log.debug('Not flushing UsersDictionary becuase of noFlush.')
+            log.debug('Not flushing UsersDictionary because of noFlush.')
 
     def close(self):
         self.flush()
