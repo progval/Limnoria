@@ -144,6 +144,19 @@ class Enforcer(callbacks.Privmsg):
         capabilities = [_chanCap(channel, 'op'),_chanCap(channel, 'protected')]
         return ircdb.checkCapabilities(hostmask, capabilities)
 
+    def _isPowerful(self, irc, msg):
+        if msg.nick == irc.nick:
+            return True # It's me.
+        if not ircutils.isUserHostmask(msg.prefix):
+            return True # It's a server.
+        chanserv = self.registryValue('ChanServ')
+        if ircutils.nickEqual(msg.nick, chanserv):
+            return True # It's ChanServ.
+        capability = _chanCap(msg.args[0], 'op')
+        if ircdb.checkCapability(msg.prefix, capability):
+            return True # It's a chanop.
+        return False    # Default.
+
     def _revenge(self, irc, channel, hostmask):
         irc.queueMsg(ircmsgs.ban(channel, ircutils.banmask(hostmask)))
         irc.queueMsg(ircmsgs.kick(channel,ircutils.nickFromHostmask(hostmask)))
@@ -152,8 +165,7 @@ class Enforcer(callbacks.Privmsg):
         channel = msg.args[0]
         kicked = msg.args[1].split(',')
         deop = False
-        if msg.nick != irc.nick and \
-           not ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
+        if not self._isPowerful(irc, msg):
             for nick in kicked:
                 hostmask = irc.state.nickToHostmask(nick)
                 if nick == irc.nick:
@@ -162,7 +174,7 @@ class Enforcer(callbacks.Privmsg):
                     deop = True
                 if self._isProtected(channel, hostmask):
                     deop = True
-                    irc.queueMsg(ircmsgs.invite(channel, msg.args[1]))
+                    irc.queueMsg(ircmsgs.invite(msg.args[1], channel))
             if deop:
                 deop = False
                 if self.registryValue('takeRevenge', channel):
@@ -173,62 +185,56 @@ class Enforcer(callbacks.Privmsg):
     def doMode(self, irc, msg):
         channel = msg.args[0]
         chanserv = self.registryValue('ChanServ', channel)
-        if not ircutils.isChannel(channel) or \
-               (chanserv and msg.nick == chanserv):
+        if not ircutils.isChannel(channel) or self._isPowerful(irc, msg):
             return
-        if msg.nick != irc.nick and \
-           not ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
-            for (mode, value) in ircutils.separateModes(msg.args[1:]):
-                if value == msg.nick:
-                    continue
-                elif mode == '+o' and value != irc.nick:
-                    hostmask = irc.state.nickToHostmask(value)
-                    if ircdb.checkCapability(channel,
-                                           ircdb.makeAntiCapability('op')):
-                        irc.queueMsg(ircmsgs.deop(channel, value))
-                elif mode == '+h' and value != irc.nick:
-                    hostmask = irc.state.nickToHostmask(value)
-                    if ircdb.checkCapability(channel,
-                                           ircdb.makeAntiCapability('halfop')):
-                        irc.queueMsg(ircmsgs.dehalfop(channel, value))
-                elif mode == '+v' and value != irc.nick:
-                    hostmask = irc.state.nickToHostmask(value)
-                    if ircdb.checkCapability(channel,
-                                           ircdb.makeAntiCapability('voice')):
-                        irc.queueMsg(ircmsgs.devoice(channel, value))
-                elif mode == '-o':
-                    hostmask = irc.state.nickToHostmask(value)
-                    if self._isProtected(channel, hostmask):
-                        irc.queueMsg(ircmsgs.op(channel, value))
-                        if self.registryValue('takeRevenge', channel):
-                            self._revenge(irc, channel, msg.prefix)
-                        else:
-                            irc.queueMsg(ircmsgs.deop(channel, msg.nick))
-                elif mode == '-h':
-                    hostmask = irc.state.nickToHostmask(value)
-                    if self._isProtected(channel, hostmask):
-                        irc.queueMsg(ircmsgs.halfop(channel, value))
-                        if self.registryValue('takeRevenge', channel):
-                            self._revenge(irc, channel, msg.prefix)
-                        else:
-                            irc.queueMsg(ircmsgs.deop(channel, msg.nick))
-                elif mode == '-v':
-                    hostmask = irc.state.nickToHostmask(value)
-                    if self._isProtected(channel, hostmask):
-                        irc.queueMsg(ircmsgs.voice(channel, value))
-                        if self.registryValue('takeRevenge', channel):
-                            self._revenge(irc, channel, msg.prefix)
-                        else:
-                            irc.queueMsg(ircmsgs.deop(channel, msg.nick))
-                elif mode == '+b':
-                    # To be safe, only #channel,ops are allowed to ban.
-                    if not ircdb.checkCapability(msg.prefix,
-                                                 _chanCap(channel, 'op')):
-                        irc.queueMsg(ircmsgs.unban(channel, value))
-                        if self.registryValue('takeRevenge', channel):
-                            self._revenge(irc, channel, msg.prefix)
-                        else:
-                            irc.queueMsg(ircmsgs.deop(channel, msg.nick))
+        for (mode, value) in ircutils.separateModes(msg.args[1:]):
+            if value == msg.nick:
+                continue
+            elif mode == '+o' and value != irc.nick:
+                hostmask = irc.state.nickToHostmask(value)
+                if ircdb.checkCapability(channel,
+                                       ircdb.makeAntiCapability('op')):
+                    irc.queueMsg(ircmsgs.deop(channel, value))
+            elif mode == '+h' and value != irc.nick:
+                hostmask = irc.state.nickToHostmask(value)
+                if ircdb.checkCapability(channel,
+                                       ircdb.makeAntiCapability('halfop')):
+                    irc.queueMsg(ircmsgs.dehalfop(channel, value))
+            elif mode == '+v' and value != irc.nick:
+                hostmask = irc.state.nickToHostmask(value)
+                if ircdb.checkCapability(channel,
+                                       ircdb.makeAntiCapability('voice')):
+                    irc.queueMsg(ircmsgs.devoice(channel, value))
+            elif mode == '-o':
+                hostmask = irc.state.nickToHostmask(value)
+                if self._isProtected(channel, hostmask):
+                    irc.queueMsg(ircmsgs.op(channel, value))
+                    if self.registryValue('takeRevenge', channel):
+                        self._revenge(irc, channel, msg.prefix)
+                    else:
+                        irc.queueMsg(ircmsgs.deop(channel, msg.nick))
+            elif mode == '-h':
+                hostmask = irc.state.nickToHostmask(value)
+                if self._isProtected(channel, hostmask):
+                    irc.queueMsg(ircmsgs.halfop(channel, value))
+                    if self.registryValue('takeRevenge', channel):
+                        self._revenge(irc, channel, msg.prefix)
+                    else:
+                        irc.queueMsg(ircmsgs.deop(channel, msg.nick))
+            elif mode == '-v':
+                hostmask = irc.state.nickToHostmask(value)
+                if self._isProtected(channel, hostmask):
+                    irc.queueMsg(ircmsgs.voice(channel, value))
+                    if self.registryValue('takeRevenge', channel):
+                        self._revenge(irc, channel, msg.prefix)
+                    else:
+                        irc.queueMsg(ircmsgs.deop(channel, msg.nick))
+            elif mode == '+b':
+                irc.queueMsg(ircmsgs.unban(channel, value))
+                if self.registryValue('takeRevenge', channel):
+                    self._revenge(irc, channel, msg.prefix)
+                else:
+                    irc.queueMsg(ircmsgs.deop(channel, msg.nick))
 
     def _cycle(self, irc, channel):
         if self.registryValue('cycleToGetOps', channel):
