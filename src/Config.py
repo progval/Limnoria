@@ -36,6 +36,7 @@ Handles configuration of the bot while it's running.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
+import os
 import getopt
 import signal
 
