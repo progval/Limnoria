@@ -64,6 +64,18 @@ class Utilities(callbacks.Privmsg):
         """
         irc.replySuccess()
 
+    def last(self, irc, msg, args):
+        """<text> [<text> ...]
+
+        Returns the last argument given.  Useful when you'd like multiple
+        nested commands to run, but only the output of the last one to be
+        returned.
+        """
+        if args:
+            irc.reply(args[-1])
+        else:
+            raise callbacks.Error
+        
     def strjoin(self, irc, msg, args):
         """<separator> <string 1> [<string> ...]
 

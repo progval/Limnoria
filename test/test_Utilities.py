@@ -41,6 +41,9 @@ class UtilitiesTestCase(PluginTestCase):
         self.assertNotError('success 1')
         self.assertError('success [re m/foo bar]')
 
+    def testLast(self):
+        self.assertResponse('utilities last foo bar baz', 'baz')
+        
     def testStrjoin(self):
         self.assertResponse('strjoin + foo bar baz', 'foo+bar+baz')
 

@@ -1,3 +1,7 @@
+	* Added Utilities.last, which replies with the last string
+	given.  This is useful for sequencing commands and then replying
+	with the output of the last commnad.
+
 	* Updated RSS.info to accept a feed name as well as a url.
 
 	* Added a signal handler for SIGTERM, so you folks killing your
