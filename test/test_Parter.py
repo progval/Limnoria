@@ -31,8 +31,18 @@
 
 from test import *
 
+import ircmsgs
+
 class ParterTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Parter',)
+    def test(self):
+        self.assertNotError('autopartchannel #foo')
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
+        m = self.getMsg(' ')
+        if m.command == 'WHO':
+            m = self.getMsg(' ')
+        self.assertEqual(m.command, 'PART')
+        self.assertEqual(m.args, ('#foo',))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
