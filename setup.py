@@ -34,7 +34,6 @@ plugins = [
     'Alias',
     'Anonymous',
     'AutoMode',
-    'Babelfish',
     'Channel',
     'ChannelLogger',
     'ChannelStats',
