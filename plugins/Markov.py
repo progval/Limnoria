@@ -162,7 +162,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.reply(msg, ' '.join(words))
 
-    def markovpairs(self, irc, msg, args):
+    def pairs(self, irc, msg, args):
         """[<channel>]
 
         Returns the number of Markov's chain links in the database for
@@ -176,7 +176,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         s = 'There are %s pairs in my Markov database for %s' % (n, channel)
         irc.reply(msg, s)
 
-    def markovfirsts(self, irc, msg, args):
+    def firsts(self, irc, msg, args):
         """[<channel>]
 
         Returns the number of Markov's first links in the database for
@@ -190,7 +190,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         s = 'There are %s first pairs in my Markov database for %s'%(n,channel)
         irc.reply(msg, s)
 
-    def markovfollows(self, irc, msg, args):
+    def follows(self, irc, msg, args):
         """[<channel>]
 
         Returns the number of Markov's third links in the database for
@@ -204,7 +204,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
         s = 'There are %s follows in my Markov database for %s' % (n, channel)
         irc.reply(msg, s)
 
-    def markovlasts(self, irc, msg, args):
+    def lasts(self, irc, msg, args):
         """[<channel>]
 
         Returns the number of Markov's last links in the database for
