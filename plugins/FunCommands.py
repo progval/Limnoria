@@ -207,7 +207,6 @@ class FunCommands(callbacks.Privmsg):
             L.extend(LL)
         irc.reply(msg, ''.join(L))
 
-
     def encode(self, irc, msg, args):
         """<encoding> <text>
 
@@ -395,11 +394,11 @@ class FunCommands(callbacks.Privmsg):
         s = s.translate(self._leettrans)
         irc.reply(msg, s)
 
-
     def objects(self, irc, msg, args):
         """takes no arguments.
 
-        Returns the number and types of Python objects in memory."""
+        Returns the number and types of Python objects in memory.
+        """
         classes = 0
         functions = 0
         modules = 0
@@ -481,22 +480,23 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, random.choice(self._eightballs))
 
     _scrambleRe = re.compile(r'(?:\b|(?![a-zA-Z]))([a-zA-Z])([a-zA-Z]*)'\
-        '([a-zA-Z])(?:\b|(?![a-zA-Z]))')
-    def _subber(self, m):
-        s = list(m.group(2))
-        random.shuffle(s)
-        return '%s%s%s' % (m.group(1), ''.join(s), m.group(3))
-
+                             r'([a-zA-Z])(?:\b|(?![a-zA-Z]))')
     def scramble(self, irc, msg, args):
         """<text>
 
-        Replies a string whose inner letters are randomly shuffled.
+        Replies with a string where each word is scrambled; i.e., each internal
+        letter (that is, all letters but the first and last) are shuffled.
         """
+        def _subber(m):
+            L = list(m.group(2))
+            random.shuffle(L)
+            return '%s%s%s' % (m.group(1), ''.join(L), m.group(3))
         text = privmsgs.getArgs(args)
-        if text is not None:
-            s = self._scrambleRe.sub(self._subber, text)
-            irc.reply(msg, s)
+        s = self._scrambleRe.sub(_subber, text)
+        irc.reply(msg, s)
+
 
 Class = FunCommands
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
