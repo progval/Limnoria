@@ -472,7 +472,6 @@ class Misc(callbacks.Privmsg):
         if ircutils.isChannel(msg.args[0]):
             predicates['in'] = lambda m: ircutils.strEqual(m.args[0],
                                                            msg.args[0])
-        predicates['on'] = lambda m: m.receivedOn == msg.receivedOn
         for (option, arg) in optlist:
             if option == '--from':
                 def f(m, arg=arg):
