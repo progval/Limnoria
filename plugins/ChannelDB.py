@@ -45,6 +45,7 @@ import getopt
 
 import sqlite
 
+import conf
 import debug
 import utils
 import ircdb
