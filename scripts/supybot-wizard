@@ -186,10 +186,10 @@ def main():
     specific place you'd like them?  If not, just press enter and we'll make
     a directory named "logs" right here.""")
     try:
-        registry.cache['supybot.directories.log'] = getDirectoryName(
-                                    registry.cache['supybot.directories.log'])
+        registry._cache['supybot.directories.log'] = getDirectoryName(
+                                    registry._cache['supybot.directories.log'])
     except KeyError:
-        registry.cache['supybot.directories.log'] = getDirectoryName('logs')
+        registry._cache['supybot.directories.log'] = getDirectoryName('logs')
     
 
     # conf.supybot.directories.data
@@ -198,10 +198,10 @@ def main():
     like the bot to put these things?  If not, just press enter and we'll make
     a directory named "data" right here.""")
     try:
-        registry.cache['supybot.directories.data'] = getDirectoryName(
-                                   registry.cache['supybot.directories.data'])
+        registry._cache['supybot.directories.data'] = getDirectoryName(
+                                   registry._cache['supybot.directories.data'])
     except KeyError:
-        registry.cache['supybot.directories.data'] = getDirectoryName('data')
+        registry._cache['supybot.directories.data'] = getDirectoryName('data')
 
     # conf.supybot.directories.conf
     output("""Your bot must know where to find his configuration files.  It'll
@@ -209,10 +209,10 @@ def main():
     Where should that place be?  If you don't care, just press enter and we'll
     make a directory right here named "conf" where it'll store his stuff. """)
     try:
-        registry.cache['supybot.directories.conf'] = getDirectoryName(
-                                   registry.cache['supybot.directories.conf'])
+        registry._cache['supybot.directories.conf'] = getDirectoryName(
+                                   registry._cache['supybot.directories.conf'])
     except KeyError:
-        registry.cache['supybot.directories.conf'] = getDirectoryName('conf')
+        registry._cache['supybot.directories.conf'] = getDirectoryName('conf')
 
     # pluginDirs
     output("""Your bot will also need to know where to find his plugins at.
@@ -220,7 +220,7 @@ def main():
     your own personal plugins that you write for will probably be somewhere
     else.""")
     try:
-        pluginDirs = registry.cache['supybot.directories.plugins'].split(',')
+        pluginDirs = registry._cache['supybot.directories.plugins'].split(',')
         output("""Currently, the bot knows about the following directories:""")
         for pluginDir in pluginDirs:
             output(pluginDir)
@@ -238,17 +238,17 @@ def main():
         pluginDir = getDirectoryName('plugins')
         if pluginDir not in pluginDirs:
             pluginDirs.append(pluginDir)
-    registry.cache['supybot.directories.plugins'] = ','.join(pluginDirs)
+    registry._cache['supybot.directories.plugins'] = ','.join(pluginDirs)
 
     output("Good!  We're done with the directory stuff.")
     
     # Store the minimum log priority if set, because we set it to a temporary
     # value during the wizard
     try:
-        priority = registry.cache['supybot.log.minimumPriority']
+        priority = registry._cache['supybot.log.minimumPriority']
     except KeyError:
         priority = 'INFO'
-    registry.cache['supybot.log.minimumPriority'] = 'CRITICAL'
+    registry._cache['supybot.log.minimumPriority'] = 'CRITICAL'
     
     # Now that we're all set, import conf and log
     import conf
