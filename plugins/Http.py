@@ -208,11 +208,14 @@ class Http(callbacks.Privmsg):
 
     _cyborgRe = re.compile(r'<p class="mediumheader">(.*?)</p>', re.I)
     def cyborg(self, irc, msg, args):
-        """<name>
+        """[<name>]
 
         Returns a cyborg acronym for <name> from <http://www.cyborgname.com/>.
+        If <name> is not specified, uses that of the user.
         """
-        name = privmsgs.getArgs(args)
+        name = privmsgs.getArgs(args, required=0, optional=1)
+        if not name:
+            name = msg.nick
         name = urllib.quote(name)
         url = 'http://www.cyborgname.com/cyborger.cgi?acronym=%s' % name
         html = webutils.getUrl(url)
