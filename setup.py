@@ -191,7 +191,9 @@ setup(
              'scripts/supybot-botchk',
              'scripts/supybot-wizard',
              'scripts/supybot-adduser',
-             'scripts/supybot-newplugin']
+             'scripts/supybot-newplugin',
+             'scripts/supybot-plugin-package',
+             ]
     )
 
 
