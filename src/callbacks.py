@@ -1025,12 +1025,12 @@ class Commands(BasePlugin):
         for cb in self.cbs:
             if first == cb.canonicalName():
                 return cb.getCommand(args)
-        if self.isCommandMethod(first):
-            return [first]
-        elif first == self.canonicalName():
+        if first == self.canonicalName() and len(args) > 1:
             ret = self.getCommand(args[1:])
             if ret:
                 return [first] + ret
+        if self.isCommandMethod(first):
+            return [first]
         return []
     
     def getCommandMethod(self, command):
