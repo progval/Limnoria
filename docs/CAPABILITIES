@@ -83,8 +83,8 @@ People who are to administer channels with the bot should have the #channel.op
 capability -- whatever channel they are to administrate, they should have that
 channel capability for "op".  For example, since I want inkedmn to be an
 administrator in #supybot, I'll give him the #supybot.op capability.  This is
-in addition to his admin capability, since admin capability doesn't give the
-person having it control over channels.  #channel.op is object used for such
+in addition to his admin capability, since the admin capability doesn't give
+the person having it control over channels.  #channel.op is used for such
 things as giving/receiving ops, kickbanning people, lobotomizing the bot,
 ignoring users in the channel, and managing the channel capabilities.  The
 #channel.op capability is also basically the equivalent of the owner capability
