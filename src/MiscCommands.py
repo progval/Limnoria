@@ -85,7 +85,7 @@ class MiscCommands(callbacks.Privmsg):
         if cb:
             method = getattr(cb, command)
             if hasattr(method, '__doc__') and method.__doc__ is not None:
-                doclines = method.__doc__.splitlines()
+                doclines = method.__doc__.strip().splitlines()
                 help = doclines.pop(0)
                 if doclines:
                     s = '%s %s (for more help use the morehelp command)'
@@ -95,16 +95,22 @@ class MiscCommands(callbacks.Privmsg):
             else:
                 irc.reply(msg, 'That command exists, but has no help.')
         else:
-            for cb in irc.callbacks:
-                if cb.name() == command:
-                    if hasattr(cb, '__doc__'):
-                        doclines = cb.__doc__.splitlines()
+            cb = irc.getCallback(command)
+            if cb:
+                if hasattr(cb, '__doc__') and cb.__doc__ is not None:
+                    doclines = cb.__doc__.strip().splitlines()
+                    help = ' '.join(map(str.strip, doclines))
+                    irc.reply(msg, help)
+                else:
+                    module = __import__(cb.__module__)
+                    if hasattr(module, '__doc__') and module.__doc__:
+                        doclines = module.__doc__.strip().splitlines()
                         help = ' '.join(map(str.strip, doclines))
                         irc.reply(msg, help)
                     else:
                         irc.error(msg, 'That callback has no help.')
             else:
-                irc.error(msg, 'There is no such command.')
+                irc.error(msg, 'There is no such command or callback.')
 
     def morehelp(self, irc, msg, args):
         """<command>
