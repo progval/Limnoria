@@ -438,6 +438,7 @@ class IrcState(IrcCommandDispatcher):
 # callbacks of the IrcCallback interface.  Public attributes include 'driver',
 # 'queue', and 'state', in addition to the standard nick/user/ident attributes.
 ###
+_callbacks = []
 class Irc(IrcCommandDispatcher):
     """The base class for an IRC connection.
 
@@ -450,14 +451,13 @@ class Irc(IrcCommandDispatcher):
     _nickSetters = sets.Set(['001', '002', '003', '004', '250', '251', '252',
                              '254', '255', '265', '266', '372', '375', '376',
                              '333', '353', '332', '366', '005'])
-    def __init__(self, network, callbacks=None):
+    # We specifically want these callbacks to be common between all Ircs,
+    # that's why we don't do the normal None default with a check.
+    def __init__(self, network, callbacks=_callbacks):
         self.zombie = False
         world.ircs.append(self)
         self.network = network
-        if callbacks is None:
-            self.callbacks = []
-        else:
-            self.callbacks = callbacks
+        self.callbacks = callbacks
         self.state = IrcState()
         self.queue = IrcMsgQueue()
         self.fastqueue = smallqueue()
@@ -560,6 +560,8 @@ class Irc(IrcCommandDispatcher):
 
     def takeMsg(self):
         """Called by the IrcDriver; takes a message to be sent."""
+        if not self.callbacks:
+            log.critical('No callbacks in %s.', self)
         now = time.time()
         msg = None
         if self.fastqueue:
@@ -599,11 +601,13 @@ class Irc(IrcCommandDispatcher):
             self.state.addMsg(self, msg)
             log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
             return msg
+        elif self.zombie:
+            # We kill the driver here so it doesn't continue to try to
+            # take messages from us.
+            self.driver.die()
+            self._reallyDie()
         else:
-            if self.zombie:
-                self._reallyDie()
-            else:
-                return None
+            return None
 
     def do002(self, msg):
         """Logs the ircd version."""
@@ -734,15 +738,20 @@ class Irc(IrcCommandDispatcher):
         """Makes the Irc object die.  Dead."""
         log.info('Irc object for %s dying.' % self.server)
         if self in world.ircs:
-            for cb in self.callbacks:
-                cb.die()
-            # If we shared our list of callbacks, this ensures that cb.die() is
-            # only called once for each callback.
-            self.callbacks[:] = []
             world.ircs.remove(self)
+            # Only kill the callbacks if we're the last Irc.
+            if not world.ircs:
+                for cb in self.callbacks:
+                    cb.die()
+                # If we shared our list of callbacks, this ensures that
+                # cb.die() is only called once for each callback.  It's
+                # not really necessary since we already check to make sure
+                # we're the only Irc object, but a little robustitude never
+                # hurt anybody.
+                log.debug('Last Irc, clearing callbacks.')
+                self.callbacks[:] = []
         else:
-            log.warning('Irc object killed twice.')
-            #utils.stackTrace()
+            log.warning('Irc object killed twice: %s', utils.stackTrace())
 
     def __hash__(self):
         return id(self)
