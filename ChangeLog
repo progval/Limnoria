@@ -1,3 +1,38 @@
+2003-10-10  Jeremy Fincher  <jfincher@functor>
+
+	* Fixed imports in the DCC plugin.
+
+	* Fixed a bug where the bot would not reply to nick-addressed
+	messages on a channel if his nick wasn't entirely lowercased.
+
+	* Fixed the Relay plugin to relay topic changes; an oversight not
+	caught earlier because supybot has for a long time managed our
+	topics.
+
+	* Fixed a bug in the Services plugin where the bot would ghost
+	himself if his nick didn't match in case the nick given.
+
+	* Added the ability for PrivmsgCommandAndRegexp to have regexps
+	that are called *after* callbacks.addressed has been called on the
+	message -- see ChannelDB.{increase,decrease}Karma for an example.
+
+	* Fixed bug in supybot-wizard.py where plugins without configure
+	functions would raise an uncaught exception.
+
+	* Fixed debincoming to work since the removal of baseplugin; it
+	was missing an import.
+
+	* Fixed MiscCommands.doPrivmsg to send an IrcObjectProxyRegexp to
+	the replyWhenNotCommand function.
+
+	* Fixed debversion to display the correct output when no matching
+	packages were found.
+
+	* Fixed ChannelDB to import conf; karma didn't work otherwise.
+
+	* Fixed a bug in the Enforcer plugin that would cause the bot to
+	ban everyone from the channel whenever ChanServ deopped someone.
+
 2003-10-07  Jeremy Fincher  <jfincher@functor>
 
 	* Changed the "whois" command in the Network plugin to "internic"
