@@ -254,7 +254,8 @@ class Http(callbacks.Privmsg):
             s = ', or '.join(defs)
             irc.reply('%s could be %s' % (acronym, s))
 
-    _netcraftre = re.compile(r'td align="left">\s+<a[^>]+>(.*?)<a href', re.S)
+    _netcraftre = re.compile(r'td align="left">\s+<a[^>]+>(.*?)<a href',
+                             re.S | re.I)
     def netcraft(self, irc, msg, args):
         """<hostname|ip>
 

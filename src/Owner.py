@@ -251,7 +251,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
            ambiguous commands, mapping the command to the plugins it's
            available in."""
         if ambiguousCommands is None:
-            print '***', tokens
             ambiguousCommands = {}
         if tokens:
             command = callbacks.canonicalName(tokens[0])
