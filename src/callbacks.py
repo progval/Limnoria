@@ -1012,7 +1012,7 @@ class Plugin(irclib.IrcCallback):
         return self._disabled.disabled(command, self.name())
 
     def __init__(self, irc):
-        self.__parent = super(Privmsg, self)
+        self.__parent = super(Plugin, self)
         myName = self.name()
         self.log = log.getPluginLogger(myName)
         # We can't do this because of the specialness that Owner and Misc do.
@@ -1245,16 +1245,16 @@ class SimpleProxy(RichReplyMethods):
 Privmsg = Plugin # Backwards compatibility.
 
 class PluginRegexp(Plugin):
-    """Same as Privmsg, except allows the user to also include regexp-based
-    callbacks.  All regexp-based callbacks must be specified in a set
-    (or list) attribute "regexps".
+    """Same as Plugin, except allows the user to also include regexp-based
+    callbacks.  All regexp-based callbacks must be specified in a set (or
+    list) attribute "regexps".
     """
     flags = re.I
     regexps = ()
     addressedRegexps = ()
     Proxy = SimpleProxy
     def __init__(self, irc):
-        self.__parent = super(PrivmsgCommandAndRegexp, self)
+        self.__parent = super(PluginRegexp, self)
         self.__parent.__init__(irc)
         self.res = []
         self.addressedRes = []
