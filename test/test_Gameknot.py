@@ -70,8 +70,9 @@ class GameknotTestCase(PluginTestCase, PluginDocumentation):
         # This game expired.
 ##         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
 ##                           '\x02ddipaolo\x0f won')
-        self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-                          '\x02chroniqueur\x0f resigned')
+        # As did this :(
+##         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
+##                           '\x02chroniqueur\x0f resigned')
         self.assertRegexp('http://gameknot.com/chess.pl?bd=955432',
                           '\x02ddipaolo\x0f lost')
         self.assertRegexp('http://gameknot.com/chess.pl?bd=1077345&r=365',
