@@ -79,7 +79,7 @@ except NameError:
 
 
 def upkeep(): # Function to be run on occasion to do upkeep stuff.
-    gc.collect()
+    collected = gc.collect()
     if os.name == 'nt':
         msvcrt.heapmin()
     if gc.garbage:
@@ -88,6 +88,7 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
         flush()
     msg = '%s upkeep ran.' % time.strftime(conf.logTimestampFormat)
     debug.msg(msg, 'verbose')
+    return collected
 
 '''
 def superReload(oldmodule):
