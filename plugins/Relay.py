@@ -280,8 +280,8 @@ class Relay(callbacks.Privmsg):
             irc.error('I\'m not relaying in %s.' % channel)
             return
         users = []
-        for irc in self.ircs:
-            network = self._getIrcName(irc)
+        for otherIrc in self.ircs:
+            network = self._getIrcName(otherIrc)
             ops = []
             halfops = []
             voices = []
