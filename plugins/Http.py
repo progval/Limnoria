@@ -325,12 +325,11 @@ class Http(callbacks.Privmsg):
         Returns the results of querying filext.com for file extensions that
         match <ext>.
         """
-        # XXX This probably ought to be handled in a converter from commands.py
         invalid = '|<>\^=?/[]";,*'
         for c in invalid:
             if c in ext:
-                irc.error('\'%s\' is an invalid extension character' % c)
-                return
+                irc.error('%s is an invalid extension character' %
+                          utils.quoted(c), Raise=True)
         s = 'http://www.filext.com/detaillist.php?extdetail=%s&goButton=Go'
         text = webutils.getUrl(s % ext)
         matches = self._filextre.findall(text)

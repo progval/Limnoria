@@ -108,7 +108,7 @@ class Scheduler(callbacks.Privmsg):
         thereafter).  <name> is a name by which the command can be
         unscheduled.
         """
-        name = name.lower() # XXX We should have a "compose" context for this.
+        name = name.lower()
         self.events[name] = command
         f = self._makeCommandFunction(irc, msg, command, remove=False)
         id = schedule.addPeriodicEvent(f, seconds, name)

@@ -126,6 +126,9 @@ class Seen(callbacks.Privmsg):
         if irc.isChannel(msg.args[0]):
             said = ircmsgs.prettyPrint(msg)
             channel = msg.args[0]
+            channelSpecific = conf.supybot.databases.plugins.channelSpecific
+            if not conf.get(channelSpecific, channel):
+                channel = conf.get(channelSpecific.channel, channel)
             self.db.update(channel, msg.nick, said)
             try:
                 id = ircdb.users.getUserId(msg.prefix)
@@ -164,8 +167,7 @@ class Seen(callbacks.Privmsg):
                 irc.reply('I haven\'t seen anyone matching %s.' % name)
         except KeyError:
             irc.reply('I have not seen %s.' % name)
-    # XXX This should be channeldb, but ChannelUserDictionary does't support it.
-    seen = wrap(seen, ['channel', 'nick'])
+    seen = wrap(seen, ['channeldb', 'nick'])
 
     def last(self, irc, msg, args, channel):
         """[<channel>]
@@ -179,7 +181,7 @@ class Seen(callbacks.Privmsg):
                       (channel, utils.timeElapsed(time.time()-when), said))
         except KeyError:
             irc.reply('I have never seen anyone.')
-    last = wrap(last, ['channel'])
+    last = wrap(last, ['channeldb'])
 
 
     def user(self, irc, msg, args, channel, user):
@@ -198,7 +200,7 @@ class Seen(callbacks.Privmsg):
                        said))
         except KeyError:
             irc.reply('I have not seen %s.' % name)
-    user = wrap(user, ['channel', 'otherUser'])
+    user = wrap(user, ['channeldb', 'otherUser'])
 
 
 Class = Seen

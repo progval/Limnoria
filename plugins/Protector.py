@@ -128,10 +128,10 @@ class Protector(callbacks.Privmsg):
         chanOp = ircdb.makeChannelCapability(channel, 'op')
         chanVoice = ircdb.makeChannelCapability(channel, 'voice')
         chanhalfop = ircdb.makeChannelCapability(channel, 'halfop')
+        if not ircdb.checkCapability(msg.prefix, chanop):
+            irc.sendMsg(ircmsgs.deop(channel, msg.nick))
         for (mode, value) in ircutils.separateModes(msg.args[1:]):
             if not value:
-                # XXX We should check whether this person has the right to do
-                #     a mode change like this.
                 continue
             if ircutils.strEqual(value, msg.nick):
                 # We allow someone to mode themselves to oblivion.

@@ -61,7 +61,6 @@ class ActiveObservers(registry.SpaceSeparatedListOfStrings):
     String = callbacks.canonicalName
 
 conf.registerPlugin('Observer')
-# XXX These both need to be CanonicalStrings.
 conf.registerGlobalValue(conf.supybot.plugins.Observer, 'observers',
     Observers([], """Determines what observers are available.""",
     orderAlphabetically=True))

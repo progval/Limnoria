@@ -444,7 +444,7 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
     def search(self, irc, msg, args, channel, optlist, glob):
         """[<channel>] [--{regexp,by} <value>] [<glob>]
 
-        Searches for $types matching the criteria given. XXX
+        Searches for $types matching the criteria given.
         """
         predicates = []
         def p(record):
@@ -459,8 +459,9 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
             elif opt == 'regexp':
                 predicates.append(lambda r, arg=arg: arg.search(r.text))
         if glob:
-            # XXX Case sensitive.
-            predicates.append(lambda r: fnmatch.fnmatch(r.text, glob))
+            def globP(r, glob=glob.lower()):
+                return fnmatch.fnmatch(r.text.lower(), glob)
+            predicates.append(globP)
         L = []
         for record in self.db.select(channel, p):
             L.append(self.searchSerializeRecord(record))

@@ -311,9 +311,8 @@ class Services(callbacks.Privmsg):
             # You have been unbanned from (oftc)
             irc.sendMsg(networkGroup.channels.join(channel))
         elif 'isn\'t registered' in s:
-            # XXX We should notify the user that this happened as well.
-            self.log.info('Received "%s isn\'t registered" from ChanServ',
-                          channel)
+            self.log.warning('Received "%s isn\'t registered" from ChanServ',
+                             channel)
         elif 'this channel has been registered' in s:
             self.log.debug('Got "Registered channel" from ChanServ.')
         elif 'already opped' in s:
@@ -321,8 +320,7 @@ class Services(callbacks.Privmsg):
             # we already have ops.
             self.log.debug('Got "Already opped" from ChanServ.')
         elif 'access level' in s and 'is required' in s:
-            # XXX We should notify the user that this happened.
-            self.log.debug('Got "Access level required" from ChanServ.')
+            self.log.warning('Got "Access level required" from ChanServ.')
         elif 'inviting' in s:
             self.log.debug('Got "Inviting to channel" from ChanServ.')
         else:

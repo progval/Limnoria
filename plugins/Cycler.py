@@ -67,7 +67,6 @@ class Cycler(callbacks.Privmsg):
            len(irc.state.channels[channel].users) == 1:
             if 'i' not in irc.state.channels[channel].modes and \
                'k' not in irc.state.channels[channel].modes:
-                # XXX We should pull these keywords from the registry.
                 self.log.info('Cycling %s: I\'m the only one left.', channel)
                 irc.queueMsg(ircmsgs.part(channel))
                 networkGroup = conf.supybot.networks.get(irc.network)
