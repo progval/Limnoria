@@ -58,26 +58,12 @@ import supybot.callbacks as callbacks
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('URL', True)
-    if yn("""This plugin offers a snarfer that will go to tinyurl.com and get
-             a shorter version of long URLs that are sent to the channel.
-             Would you like this snarfer to be enabled?""", default=False):
-        conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
     if yn("""This plugin also offers a snarfer that will try to fetch the
              title of URLs that it sees in the channel.  Would like you this
              snarfer to be enabled?""", default=False):
         conf.supybot.plugins.URL.titleSnarfer.setValue(True)
 
 conf.registerPlugin('URL')
-conf.registerChannelValue(conf.supybot.plugins.URL, 'tinyurlSnarfer',
-    registry.Boolean(False, """Determines whether the
-    tinyurl snarfer is enabled.  This snarfer will watch for URLs in the
-    channel, and if they're sufficiently long (as determined by
-    supybot.plugins.URL.tinyurlSnarfer.minimumLength) it will post a smaller
-    from tinyurl.com."""))
-conf.registerChannelValue(conf.supybot.plugins.URL.tinyurlSnarfer,
-    'minimumLength',
-    registry.PositiveInteger(48, """The minimum length a URL must be before the
-    tinyurl snarfer will snarf it."""))
 conf.registerChannelValue(conf.supybot.plugins.URL, 'titleSnarfer',
     registry.Boolean(False, """Determines whether the bot will output the HTML
     title of URLs it sees in the channel."""))
@@ -111,7 +97,7 @@ URLDB = plugins.DB('URL', {'flat': DbiUrlDB})
 
 class URL(callbacks.PrivmsgCommandAndRegexp):
     priority = 100 # lower than 99, the normal priority.
-    regexps = ['titleSnarfer', 'tinyurlSnarfer']
+    regexps = ['titleSnarfer']
     _titleRe = re.compile('<title>(.*?)</title>', re.I | re.S)
     def __init__(self):
         self.__parent = super(URL, self)
@@ -133,28 +119,6 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                 self.log.debug('Adding %r to db.', url)
                 self.db.add(channel, url, msg)
         self.__parent.doPrivmsg(irc, msg)
-
-    def tinyurlSnarfer(self, irc, msg, match):
-        r"https?://[^\])>\s]{13,}"
-        channel = msg.args[0]
-        if not ircutils.isChannel(channel):
-            return
-        r = self.registryValue('nonSnarfingRegexp', channel)
-        if self.registryValue('tinyurlSnarfer', channel):
-            url = match.group(0)
-            if r and r.search(url) is not None:
-                self.log.debug('Not tinyUrlSnarfing %r', url)
-                return
-            minlen = self.registryValue('tinyurlSnarfer.minimumLength',channel)
-            if len(url) >= minlen:
-                tinyurl = self._getTinyUrl(url, channel)
-                if tinyurl is None:
-                    self.log.info('Couldn\'t get tinyurl for %r', url)
-                    return
-                domain = webutils.getDomain(url)
-                s = '%s (at %s)' % (ircutils.bold(tinyurl), domain)
-                irc.reply(s, prefixName=False)
-    tinyurlSnarfer = privmsgs.urlSnarfer(tinyurlSnarfer)
 
     def titleSnarfer(self, irc, msg, match):
         r"https?://[^\])>\s]+"
@@ -182,52 +146,6 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                 s = 'Title: %s (at %s)' % (title, domain)
                 irc.reply(s, prefixName=False)
     titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
-
-    _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
-    def _getTinyUrl(self, url, channel, cmd=False):
-        try:
-            s = webutils.getUrl('http://tinyurl.com/create.php?url=%s' % url)
-            m = self._tinyRe.search(s)
-            if m is None:
-                tinyurl = None
-            else:
-                tinyurl = m.group(1)
-            return tinyurl
-        except webutils.WebError, e:
-            if cmd:
-                raise callbacks.Error, e
-            else:
-                self.log.info(str(e))
-
-    def tiny(self, irc, msg, args):
-        """<url>
-
-        Returns a TinyURL.com version of <url>
-        """
-        url = privmsgs.getArgs(args)
-        if len(url) < 20:
-            irc.error('Stop being a lazy-biotch and type the URL yourself.')
-            return
-        channel = msg.args[0]
-        snarf = self.registryValue('tinyurlSnarfer', channel)
-        minlen = self.registryValue('tinyurlSnarfer.minimumLength', channel)
-        dontSnarf = False
-        r = self.registryValue('nonSnarfingRegexp', channel)
-        if r is not None:
-            dontSnarf = r.search(url)
-        dontSnarf = not dontSnarf
-        if snarf and len(url) >= minlen and dontSnarf:
-            self.log.debug('Not applying tiny command, snarfer is active.')
-            return
-        tinyurl = self._getTinyUrl(url, channel, cmd=True)
-        domain = webutils.getDomain(url)
-        s = '%s (at %s)' % (ircutils.bold(tinyurl), domain)
-        if tinyurl is not None:
-            irc.reply(s)
-        else:
-            s = 'Could not parse the TinyURL.com results page.'
-            irc.errorPossibleBug(s)
-    tiny = privmsgs.thread(tiny)
 
     def stats(self, irc, msg, args):
         """[<channel>]

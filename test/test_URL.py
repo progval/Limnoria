@@ -59,10 +59,6 @@ http://gameknot.com/tsignup.pl
 
 class URLTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('URL',)
-    def setUp(self):
-        ChannelPluginTestCase.setUp(self)
-        conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-
     def test(self):
         counter = 0
         #self.assertNotError('url random')
@@ -98,35 +94,6 @@ class URLTestCase(ChannelPluginTestCase, PluginDocumentation):
             conf.supybot.plugins.URL.nonSnarfingRegexp.set('')
 
     if network:
-        def testTinyurl(self):
-            try:
-                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-                self.assertRegexp(
-                    'url tiny http://sourceforge.net/tracker/?'
-                    'func=add&group_id=58965&atid=489447',
-                    r'http://tinyurl.com/rqac')
-                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
-                self.assertRegexp(
-                    'url tiny http://sourceforge.net/tracker/?'
-                    'func=add&group_id=58965&atid=489447',
-                    r'http://tinyurl.com/rqac')
-            finally:
-                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-
-        def testTinysnarf(self):
-            try:
-                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
-                self.assertSnarfRegexp(
-                    'http://sourceforge.net/tracker/?func=add&'
-                    'group_id=58965&atid=489447',
-                    r'http://tinyurl.com/rqac.* \(at')
-                self.assertSnarfRegexp(
-                    'http://www.urbandictionary.com/define.php?'
-                    'term=all+your+base+are+belong+to+us',
-                    r'http://tinyurl.com/u479.* \(at')
-            finally:
-                conf.supybot.plugins.URL.tinyurlSnarfer.setValue(False)
-
         def testTitleSnarfer(self):
             try:
                 conf.supybot.plugins.URL.titleSnarfer.setValue(True)
@@ -137,18 +104,10 @@ class URLTestCase(ChannelPluginTestCase, PluginDocumentation):
                 conf.supybot.plugins.URL.titleSnarfer.setValue(False)
 
         def testNonSnarfing(self):
-            tiny = conf.supybot.plugins.URL.tinyurlSnarfer()
             snarf = conf.supybot.plugins.URL.nonSnarfingRegexp()
             title = conf.supybot.plugins.URL.titleSnarfer()
             try:
                 conf.supybot.plugins.URL.nonSnarfingRegexp.set('m/sf/')
-                try:
-                    conf.supybot.plugins.URL.tinyurlSnarfer.setValue(True)
-                    self.assertSnarfNoResponse('http://sf.net/', 2)
-                    self.assertSnarfResponse('http://www.sourceforge.net/',
-                                             'http://tinyurl.com/2cnkf')
-                finally:
-                    conf.supybot.plugins.URL.tinyurlSnarfer.setValue(tiny)
                 try:
                     conf.supybot.plugins.URL.titleSnarfer.setValue(True)
                     self.assertSnarfNoResponse('http://sf.net/', 2)
