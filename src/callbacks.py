@@ -473,8 +473,6 @@ class IrcObjectProxy(RichReplyMethods):
         name = canonicalName(self.args[0])
         cbs = findCallbackForCommand(self, name)
         if len(cbs) == 0:
-            if self.irc.nick == self.msg.nick and not world.testing:
-                return
             for cb in self.irc.callbacks:
                 if isinstance(cb, PrivmsgRegexp):
                     for (r, m) in cb.res:
@@ -499,7 +497,7 @@ class IrcObjectProxy(RichReplyMethods):
         else:
             if len(cbs) > 1:
                 for cb in cbs:
-                    if cb.name().lower() == name:
+                    if canonicalName(cb.name()) == name:
                         break
                 else:
                     # This should've been caught earlier, that's why we
