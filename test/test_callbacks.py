@@ -212,6 +212,13 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(callbacks.addressed('bar', msg,
                                              whenAddressedByNickAtEnd=True),
                          'baz')
+
+    def testAddressedPrefixCharsTakePrecedenceOverNickAtEnd(self):
+        msg = ircmsgs.privmsg('#foo', '@echo foo')
+        self.assertEqual(callbacks.addressed('foo', msg,
+                                             whenAddressedByNickAtEnd=True,
+                                             prefixChars='@'),
+                         'echo foo')
             
 
     def testReply(self):

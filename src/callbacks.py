@@ -83,6 +83,8 @@ def addressed(nick, msg, prefixChars=None, nicks=None,
 
     assert msg.command == 'PRIVMSG'
     (target, payload) = msg.args
+    if not payload:
+        return ''
     if prefixChars is None:
         prefixChars = get(conf.supybot.reply.whenAddressedBy.chars)
     if whenAddressedByNick is None:
@@ -92,6 +94,12 @@ def addressed(nick, msg, prefixChars=None, nicks=None,
         whenAddressedByNickAtEnd = get(r)
     if prefixStrings is None:
         prefixStrings = get(conf.supybot.reply.whenAddressedBy.strings)
+    # We have to check this before nicks -- try "@google supybot" with supybot
+    # and whenAddressedBy.nick.atEnd on to see why.
+    if any(payload.startswith, prefixStrings):
+        return stripPrefixStrings(payload)
+    elif payload[0] in prefixChars:
+        return payload[1:].strip()
     if nicks is None:
         nicks = get(conf.supybot.reply.whenAddressedBy.nicks)
         nicks = map(ircutils.toLower, nicks)
@@ -128,11 +136,7 @@ def addressed(nick, msg, prefixChars=None, nicks=None,
                     # There should be some separator between the nick and the
                     # previous alphanumeric character.
                     return possiblePayload
-    if payload and any(payload.startswith, prefixStrings):
-        return stripPrefixStrings(payload)
-    elif payload and payload[0] in prefixChars:
-        return payload[1:].strip()
-    elif conf.supybot.reply.whenNotAddressed():
+    if conf.supybot.reply.whenNotAddressed():
         return payload
     else:
         return ''
