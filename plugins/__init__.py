@@ -101,7 +101,8 @@ class NoSuitableDatabase(Exception):
         return format('No suitable databases were found.  Suitable databases '
                       'include %L.  If you have one of these databases '
                       'installed, make sure it is listed in the '
-                      'supybot.databases configuration variable.',self.suitable)
+                      'supybot.databases configuration variable.',
+                      self.suitable)
 
 def DB(filename, types):
     filename = conf.supybot.directories.data.dirize(filename)
@@ -116,41 +117,6 @@ def DB(filename, types):
                 continue
         raise NoSuitableDatabase, types.keys()
     return MakeDB
-
-class DBHandler(object):
-    def __init__(self, name=None, suffix='.db'):
-        if name is None:
-            self.name = self.__class__.__name__
-        else:
-            self.name = name
-        if suffix and suffix[0] != '.':
-            suffix = '.' + suffix
-        self.suffix = suffix
-        self.cachedDb = None
-
-    def makeFilename(self):
-        if self.name.endswith(self.suffix):
-            return self.name
-        else:
-            return self.name + self.suffix
-
-    def makeDb(self, filename):
-        raise NotImplementedError
-
-    def getDb(self):
-        if self.cachedDb is None or \
-           threading.currentThread() is not world.mainThread:
-            db = self.makeDb(self.makeFilename())
-        else:
-            db = self.cachedDb
-        db.autocommit = 1
-        return db
-
-    def die(self):
-        if self.cachedDb is not None:
-            self.cachedDb.die()
-            del self.cachedDb
-
 
 def makeChannelFilename(filename, channel=None, dirname=None):
     assert channel is not None, 'Death to those who use None for their channel'
