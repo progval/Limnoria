@@ -39,6 +39,14 @@ import textwrap
 import supybot.fix as fix
 import supybot.utils as utils
 
+def error(s):
+    """Replace me with something better from another module!"""
+    print '***', s
+
+def exception(s):
+    """Ditto!"""
+    print '***', s, 'A bad exception.'
+
 class RegistryException(Exception):
     pass
 
@@ -101,11 +109,18 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                     if value._showDefault:
                         lines.append('#\n')
                         x = value.__class__(value._default, value._help)
-                        lines.append('# Default value: %s\n' % x)
+                        try:
+                            lines.append('# Default value: %s\n' % x)
+                        except Exception, e:
+                            exception('Exception printing default value:')
                 lines.append('###\n')
                 fd.writelines(lines)
         if hasattr(value, 'value'): # This lets us print help for non-valued.
-            fd.write('%s: %s\n' % (name, value.serialize()))
+            try:
+                fd.write('%s: %s\n' % (name, value.serialize()))
+            except Exception, e:
+                exception('Exception printing value:')
+            
     fd.close()
 
 def isValidRegistryName(name):
