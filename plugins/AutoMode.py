@@ -104,11 +104,11 @@ class AutoMode(callbacks.Privmsg):
                     msgmaker = getattr(ircmsgs, type)
                     irc.queueMsg(msgmaker(channel, msg.nick))
                     raise Continue # Even if fallthrough, let's only do one.
-            elif not fallthrough:
-                self.log.info('%s has %s, but supybot.plugins.AutoMode.%s is '
-                              'not enabled in %s, refusing to fall through.',
-                              msg.prefix, cap, type, channel)
-                raise Continue
+                elif not fallthrough:
+                    self.log.info('%s has %s, but supybot.plugins.AutoMode.%s '
+                                  'is not enabled in %s, refusing to fall '
+                                  'through.', msg.prefix, cap, type, channel)
+                    raise Continue
         try:
             do('op')
             if 'h' in irc.state.supported['prefix']:
