@@ -557,7 +557,6 @@ class IrcObjectProxy(RichReplyMethods):
         # tokenized commands.
         self.args = copy.deepcopy(args)
         self.counter = 0
-        self.commandMethod = None # Used in error.
         self._resetReplyAttributes()
         if not args:
             self.finalEvaled = True
@@ -629,29 +628,6 @@ class IrcObjectProxy(RichReplyMethods):
         except Exception, e:
             log.exception('Uncaught exception in %s.invalidCommand.'%
                           cb.name())
-
-    def _callCommand(self, name, cb):
-        try:
-            self.commandMethod = cb.getCommandMethod(name)
-            if not world.isMainThread():
-                # If we're a threaded command, we may not reply quickly enough
-                # to prevent regexp stuff from running.  So we do this to make
-                # sure it doesn't happen.  Neither way (tagging or not tagging)
-                # is perfect, but this seems better than not tagging.
-                self.msg.tag('repliedTo')
-            try:
-                cb.callCommand(name, self, self.msg, self.args)
-            except Error, e:
-                self.error(str(e))
-            except Exception, e:
-                cb.log.exception('Uncaught exception in %s.%s:',
-                                 cb.name(), name)
-                if conf.supybot.reply.error.detailed():
-                    return self.error(utils.exnToString(e))
-                else:
-                    return self.replyError()
-        finally:
-            self.commandMethod = None
 
     def findCallbackForCommand(self, command):
         cbs = findCallbackForCommand(self, command)
@@ -734,11 +710,11 @@ class IrcObjectProxy(RichReplyMethods):
             del self.args[0] # Remove the command.
             if world.isMainThread() and \
                (cb.threaded or conf.supybot.debug.threadAllCommands()):
-                t = CommandThread(target=self._callCommand,
-                                  args=(command, cb))
+                t = CommandThread(target=cb._callCommand,
+                                  args=(command, self, self.msg, self.args))
                 t.start()
             else:
-                self._callCommand(command, cb)
+                cb._callCommand(command, self, self.msg, self.args)
 
     def reply(self, s, noLengthCheck=False, prefixName=None,
               action=None, private=None, notice=None, to=None, msg=None):
@@ -889,12 +865,7 @@ class IrcObjectProxy(RichReplyMethods):
                 self.irc.queueMsg(m)
                 return m
         else:
-            if self.commandMethod is not None:
-                # We can recurse here because it only gets called once.
-                return self.reply(formatArgumentError(self.commandMethod),
-                                  **kwargs)
-            else:
-                raise ArgumentError # We shouldn't get here, but just in case.
+            raise ArgumentError
 
     def getRealIrc(self):
         """Returns the real irclib.Irc object underlying this proxy chain."""
@@ -912,11 +883,12 @@ class CommandThread(world.SupyThread):
     to run in threads.
     """
     def __init__(self, target=None, args=(), kwargs={}):
-        (self.name, self.cb) = args
+        self.command = args[0]
         self.__parent = super(CommandThread, self)
-        self.command = self.cb.getCommandMethod(self.name)
+        self.method = self.cb.getCommandMethod(self.command)
         threadName = 'Thread #%s (for %s.%s)' % (world.threadsSpawned,
-                                                 self.cb.name(), self.name)
+                                                 target.im_self.name(),
+                                                 self.command)
         log.debug('Spawning thread %s' % threadName)
         self.__parent.__init__(target=target, name=threadName,
                                args=args, kwargs=kwargs)
@@ -1044,20 +1016,27 @@ class Commands(object):
         commands.sort()
         return commands
     
-    def callCommand(self, name, irc, msg, *L, **kwargs):
-        method = self.getCommandMethod(name)
-        assert L, 'Odd, nothing in L.  This can\'t happen.'
-        self.log.info('%s.%s called by %s.', self.name(), name, msg.prefix)
-        self.log.debug('args: %s', L[0])
-        start = time.time()
+    def callCommand(self, method, irc, msg, *args, **kwargs):
+        method(irc, msg, *args, **kwargs)
+
+    def _callCommand(self, command, irc, msg, *args, **kwargs):
+        method = self.getCommandMethod(command)
+        self.log.info('%s called by %s.', command, msg.prefix)
         try:
-            method(irc, msg, *L)
+            self.callCommand(method, irc, msg, *args, **kwargs)
         except (getopt.GetoptError, ArgumentError):
-            irc.reply(formatArgumentError(method, name=name))
+            irc.reply(formatArgumentError(method, name=command))
         except (SyntaxError, Error), e:
             self.log.debug('Error return: %s', utils.exnToString(e))
             irc.error(str(e))
-        elapsed = time.time() - start
+        except Error, e:
+            irc.error(str(e))
+        except Exception, e:
+            self.log.exception('Uncaught exception in %s.', command)
+            if conf.supybot.reply.error.detailed():
+                irc.error(utils.exnToString(e))
+            else:
+                irc.replyError()
 
     def getCommandHelp(self, name):
         name = canonicalName(name)
@@ -1067,10 +1046,10 @@ class Commands(object):
         if hasattr(method, 'isDispatcher') and \
            method.isDispatcher and self.__doc__:
             return utils.str.normalizeWhitespace(self.__doc__)
-        elif hasattr(command, '__doc__'):
-            return getHelp(command)
+        elif hasattr(method, '__doc__'):
+            return getHelp(method)
         else:
-            return format('The %s command has no help.', name)
+            return format('The %q command has no help.', name)
 
 
 class PluginMixin(irclib.IrcCallback):
@@ -1258,11 +1237,11 @@ class PluginRegexp(Plugin):
         self.res = []
         self.addressedRes = []
         for name in self.regexps:
-            method = getattr(self, name)
+            method = self.getCommandMethod(name)
             r = re.compile(method.__doc__, self.flags)
             self.res.append((r, name))
         for name in self.addressedRegexps:
-            method = getattr(self, name)
+            method = self.getCommandMethod(name)
             r = re.compile(method.__doc__, self.flags)
             self.addressedRes.append((r, name))
 
@@ -1271,31 +1250,18 @@ class PluginRegexp(Plugin):
                name in self.regexps or \
                name in self.addressedRegexps
 
-    def getCommandMethod(self, name):
+    def getCommandMethod(self, command):
         try:
-            return getattr(self, name) # Regexp stuff.
+            # First we tried without canonizing, in case it's a regexp
+            # command.
+            return getattr(self, command)
         except AttributeError:
-            return self.__parent.getCommandMethod(name)
-
-    def callCommand(self, name, irc, msg, *L, **kwargs):
-        try:
-            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
-        except Exception, e:
-            # As annoying as it is, Python doesn't allow *L in addition to
-            # well-defined keyword arguments.  So we have to do this trick.
-            catchErrors = kwargs.pop('catchErrors', False)
-            if catchErrors:
-                self.log.exception('Uncaught exception in callCommand:')
-                if conf.supybot.reply.error.detailed():
-                    irc.error(utils.exnToString(e))
-                else:
-                    irc.replyError()
-            else:
-                raise
+            # Now we try with canonization (or, rather, we let our parent do
+            # so) for normal commands.
+            return self.__parent.getCommandMethod(command)
 
     def doPrivmsg(self, irc, msg):
         if msg.isError:
-            self.log.debug('%s not running due to msg.isError.', self.name())
             return
         s = addressed(irc.nick, msg)
         if s:
@@ -1304,11 +1270,11 @@ class PluginRegexp(Plugin):
                     continue
                 for m in r.finditer(s):
                     proxy = self.Proxy(irc, msg)
-                    self.callCommand(name, proxy, msg, m, catchErrors=True)
+                    self._callCommand(name, proxy, msg, m)
         for (r, name) in self.res:
             for m in r.finditer(msg.args[1]):
                 proxy = self.Proxy(irc, msg)
-                self.callCommand(name, proxy, msg, m, catchErrors=True)
+                self._callCommand(name, proxy, msg, m)
 
 PrivmsgCommandAndRegexp = PluginRegexp
 

@@ -108,9 +108,9 @@ class Google(callbacks.PluginRegexp):
         self.__parent.__init__(irc)
         google.setLicense(self.registryValue('licenseKey'))
 
-    def callCommand(self, name, irc, msg, *L, **kwargs):
+    def callCommand(self, method, irc, msg, *args, **kwargs):
         try:
-            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
+            self.__parent.callCommand(method, irc, msg, *args, **kwargs)
         except xml.sax.SAXReaderNotAvailable, e:
             irc.error('No XML parser available.')
 

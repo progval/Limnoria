@@ -53,9 +53,9 @@ class Weather(callbacks.Plugin):
         self.__parent = super(Weather, self)
         self.__parent.__init__(irc)
 
-    def callCommand(self, name, irc, msg, *L, **kwargs):
+    def callCommand(self, method, irc, msg, *args, **kwargs):
         try:
-            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
+            self.__parent.callCommand(method, irc, msg, *args, **kwargs)
         except utils.web.Error, e:
             irc.error(str(e))
 

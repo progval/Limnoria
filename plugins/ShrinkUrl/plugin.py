@@ -76,11 +76,10 @@ class ShrinkUrl(callbacks.PluginRegexp):
     def die(self):
         self.db.close()
 
-    def callCommand(self, name, irc, msg, *L, **kwargs):
+    def callCommand(self, method, irc, msg, *args, **kwargs):
         try:
-            self.__parent.callCommand(name, irc, msg, *L, **kwargs)
+            self.__parent.callCommand(method, irc, msg, *args, **kwargs)
         except utils.web.Error, e:
-            irc = callbacks.SimpleProxy(irc, msg)
             irc.error(str(e))
 
     def _outFilterThread(self, irc, msg):

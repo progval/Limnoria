@@ -100,9 +100,9 @@ def getConfigVar(irc, msg, args, state):
 addConverter('configVar', getConfigVar)
 
 class Config(callbacks.Plugin):
-    def callCommand(self, name, irc, msg, *L, **kwargs):
+    def callCommand(self, method, irc, msg, *args, **kwargs):
         try:
-            super(Config, self).callCommand(name, irc, msg, *L, **kwargs)
+            super(Config, self).callCommand(method, irc, msg, *args, **kwargs)
         except registry.InvalidRegistryValue, e:
             irc.error(str(e))
 
