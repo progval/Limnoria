@@ -106,7 +106,7 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg):
         db.commit()
         return db
 
-    _urlRe = re.compile(r"([^<\s]+://[^>\s]+)", re.I)
+    _urlRe = re.compile(r"([^\[<(\s]+://[^\])>\s]+)", re.I)
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
         channel = msg.args[0]
