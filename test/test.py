@@ -395,6 +395,7 @@ if __name__ == '__main__':
     
     world.testing = True
     names = [os.path.splitext(os.path.basename(name))[0] for name in args]
+    names.sort()
     suite = unittest.defaultTestLoader.loadTestsFromNames(names)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
