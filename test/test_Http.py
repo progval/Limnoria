@@ -49,6 +49,11 @@ class HttpTest(PluginTestCase, PluginDocumentation):
                              '1884822312/qid=1063140754/sr=8-1/ref=sr_8_1/'
                              '002-9802970-2308826?v=glance&s=books&n=507846',
                              'no HTML title')
+        # Checks the non-greediness of the regexp
+        self.assertResponse('title '
+                            'http://www.space.com/scienceastronomy/'
+                            'jupiter_dark_spot_031023.html',
+                            'Mystery Spot on Jupiter Baffles Astronomers')
 
     def testGeekquote(self):
         self.assertNotError('geekquote')

@@ -79,7 +79,7 @@ class FreshmeatException(Exception):
 class Http(callbacks.Privmsg):
     threaded = True
 
-    _titleRe = re.compile(r'<title>(.*)</title>', re.I | re.S)
+    _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
     def title(self, irc, msg, args):
         """<url>
 
