@@ -100,7 +100,14 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
           snarf it and offer a tinyurl replacement."""),
          ('title-snarfer', configurable.BoolType, False,
           """Determines whether the bot will output the HTML title of URLs it
-          sees in the channel."""),]
+          sees in the channel."""),
+         ('title-snarfer-includes-url', configurable.BoolType, True,
+          """Determines whether the bot will include the snarfed URL in its
+          title-snarfer response.  This is particularly useful when people
+          have a habit of putting multiple URLs in a message."""),
+         ('non-snarfing-regexp', configurable.RegexpStrType, None,
+          """A regular expression that should match URLs that should not be
+          snarfed.  Give an empty string to have no regular expression."""),]
     )
     _titleRe = re.compile('<title>(.*?)</title>', re.I)
     maxSize = 4096
@@ -156,6 +163,9 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         else:
             text = msg.args[1]
         for url in self._urlRe.findall(text):
+            r = self.configurables.get('non-snarfing-regexp', channel)
+            if r and r.search(url):
+                continue
             (protocol, site, filename, _, _, _) = urlparse.urlparse(url)
             previousMsg = ''
             for oldMsg in reviter(irc.state.history):
@@ -204,7 +214,9 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
             text = webutils.getUrl(url, size=self.maxSize)
             m = self._titleRe.search(text)
             if m is not None:
-                s = utils.htmlToText(m.group(1).strip())
+                s = 'Title: %s' % utils.htmlToText(m.group(1).strip())
+                if self.configurables.get('titlesnarferincludesurl', channel):
+                    s += ' (<%s>)' % url
                 irc.reply(msg, 'Title: %s' % s, prefixName=False)
     titleSnarfer = privmsgs.urlSnarfer(titleSnarfer)
                 
