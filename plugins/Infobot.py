@@ -40,12 +40,14 @@ import supybot.plugins as plugins
 
 import os
 import re
+import time
 import random
 import cPickle as pickle
 
 import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.world as world
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -98,21 +100,42 @@ confirms = ['10-4',
             'Got it',
             'Gotcha',
             'I hear ya']
+initialIs = {'who': '<reply>',
+             'what': '<reply>',
+             'when': '<reply>',
+             'where': '<reply>',
+             'why': '<reply>',
+             'it': '<reply>',
+            }
+initialAre = {'who': '<reply>',
+              'what': '<reply>',
+              'when': '<reply>',
+              'where': '<reply>',
+              'why': '<reply>',
+              'it': '<reply>',
+              'roses': 'red',
+              'violets': 'blue',
+             }
 
 class PickleInfobotDB(object):
     def __init__(self):
+        self._changes = 0
+        self._responses = 0
         try:
             fd = file(filename)
         except EnvironmentError:
             self._is = utils.InsensitivePreservingDict()
             self._are = utils.InsensitivePreservingDict()
+            for (k, v) in initialIs.iteritems():
+                self.setIs(k, v)
+            for (k, v) in initialAre.iteritems():
+                self.setAre(k, v)
+            self._changes = 0
         else:
             try:
                 (self._is, self._are) = pickle.load(fd)
             except cPickle.UnpicklingError, e:
                 raise dbi.InvalidDBError, str(e)
-        self._changes = 0
-        self._responses = 0
 
     def flush(self):
         fd = utils.transactionalFile(filename, 'wb')
@@ -196,6 +219,9 @@ class PickleInfobotDB(object):
     def getResponseCount(self):
         return self._responses
 
+    def getNumFacts(self):
+        return len(self._are.keys()) + len(self._is.keys())
+
 class SqliteInfobotDB(object):
     def __init__(self):
         self._changes = 0
@@ -216,6 +242,11 @@ class SqliteInfobotDB(object):
                               key TEXT UNIQUE ON CONFLICT REPLACE,
                               value TEXT
                               );""")
+            for (k, v) in initialIs.iteritems():
+                self.setIs(k, v)
+            for (k, v) in initialAre.iteritems():
+                self.setAre(k, v)
+            self._changes = 0
             db.commit()
             return db
         except sqlite.DatabaseError, e:
@@ -321,6 +352,15 @@ class SqliteInfobotDB(object):
 
     def getResponseCount(self):
         return self._responses
+
+    def getNumFacts(self):
+        db = self._getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM areFacts""")
+        areFacts = int(cursor.fetchone()[0])
+        cursor.execute("""SELECT COUNT(*) FROM isFacts""")
+        isFacts = int(cursor.fetchone()[0])
+        return areFacts + isFacts
 
 def InfobotDB():
     return SqliteInfobotDB()
@@ -620,10 +660,22 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         Returns the number of changes and requests made to the Infobot database
         since the plugin was loaded.
         """
-        irc.reply('There have been %s answered and %s made '
-                  'to the database since this plugin was loaded.' %
-                  (utils.nItems('request', self.db.getResponseCount()),
-                   utils.nItems('change', self.db.getChangeCount())))
+        changes = self.db.getChangeCount()
+        responses = self.db.getResponseCount()
+        now = time.time()
+        diff = int(now - world.startedAt)
+        mode = {True: 'optional', False: 'require'}
+        answer = self.registryValue('answerUnaddressedQuestions')
+        irc.reply('Since %s, there %s been %s and %s. I have been awake for %s'
+                  ' this session, and currently reference %s. Addressing is in'
+                  ' %s mode.' % (time.ctime(world.startedAt),
+                                 utils.has(changes),
+                                 utils.nItems('modification', changes),
+                                 utils.nItems('question', responses),
+                                 utils.timeElapsed(int(now - world.startedAt)),
+                                 utils.nItems('factoid',self.db.getNumFacts()),
+                                 mode[answer]))
+    status=stats
 
     def tell(self, irc, msg, args):
         """<nick> [about] <factoid>
@@ -646,7 +698,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.factoid(factoid, msg=newmsg, prepend=prepend)
         except Dunno:
             self.dunno()
-        
 
 
 Class = Infobot
