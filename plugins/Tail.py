@@ -185,7 +185,6 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
                 irc.reply('I\'m not currently targeting anywhere.')
         elif remove:
             pass #XXX
-
     target = wrap(target, [getopts({'remove': ''}), any('something')])
         
 
