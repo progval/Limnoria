@@ -185,6 +185,8 @@ class Lookup(callbacks.Privmsg):
         def f(self, irc, msg, args):
             args.insert(0, name)
             self._lookup(irc, msg, args)
+        f = types.FunctionType(f.func_code, f.func_globals,
+                               name, closure=f.func_closure)
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
