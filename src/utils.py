@@ -562,10 +562,7 @@ def getSocket(host):
     """Returns a socket of the correct AF_INET type (v4 or v6) in order to
     communicate with host.
     """
-    try:
-        host = socket.gethostbyname(host)
-    except socket.error:
-        raise
+    host = socket.gethostbyname(host)
     if isIP(host):
         return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     elif isIPV6(host):
