@@ -120,11 +120,14 @@ def clearLoadedPlugins(plugins, pluginRegistry):
             continue
 
 _windowsVarRe = re.compile(r'%(\w+)%')
-def getDirectoryName(default, basedir=os.curdir):
+def getDirectoryName(default, basedir=os.curdir, prompt=True):
     done = False
     while not done:
-        dir = something('What directory do you want to use?',
-                       default=os.path.join(basedir, default))
+        if prompt:
+            dir = something('What directory do you want to use?',
+                           default=os.path.join(basedir, default))
+        else:
+            dir = os.path.join(basedir, default)
         orig_dir = dir
         dir = os.path.expanduser(dir)
         dir = _windowsVarRe.sub(r'$\1', dir)
@@ -138,6 +141,7 @@ def getDirectoryName(default, basedir=os.curdir):
                 output("""Sorry, I couldn't make that directory for some
                 reason.  The Operating System told me %s.  You're going to
                 have to pick someplace else.""" % e)
+                prompt = True
             else:
                 done = True
     return (dir, os.path.dirname(orig_dir))
@@ -202,51 +206,87 @@ def main():
     # We set these variables in cache because otherwise conf and log will
     # create directories for the default values, which might not be what the
     # user wants.
-    output("""Now we've got to ask you some questions about where some of
-    your directories are (or, perhaps, will be :)).  If you're running this
-    wizard from the directory you'll actually be starting your bot from and
-    don't mind creating some directories in the current directory, then just
-    don't give answers to these questions and we'll create the directories we
-    need right here in this directory.""")
+    if advanced:
+        output("""Now we've got to ask you some questions about where some of
+        your directories are (or, perhaps, will be :)).  If you're running this
+        wizard from the directory you'll actually be starting your bot from and
+        don't mind creating some directories in the current directory, then
+        just don't give answers to these questions and we'll create the
+        directories we need right here in this directory.""")
 
-    # conf.supybot.directories.log
-    output("""Your bot will need to put his logs somewhere.  Do you have any
-    specific place you'd like them?  If not, just press enter and we'll make
-    a directory named "logs" right here.""")
-    (logDir, basedir) = getDirectoryName('logs')
-    conf.supybot.directories.log.setValue(logDir)
+        # conf.supybot.directories.log
+        output("""Your bot will need to put his logs somewhere.  Do you have
+        any specific place you'd like them?  If not, just press enter and we'll
+        make a directory named "logs" right here.""")
+        (logDir, basedir) = getDirectoryName('logs')
+        conf.supybot.directories.log.setValue(logDir)
 
-    # conf.supybot.directories.data
-    output("""Your bot will need to put various data somewhere.  Things like
-    databases, downloaded files, etc.  Do you have any specific place you'd
-    like the bot to put these things?  If not, just press enter and we'll make
-    a directory named "data" right here.""")
-    (dataDir, basedir) = getDirectoryName('data', basedir=basedir)
-    conf.supybot.directories.data.setValue(dataDir)
+        # conf.supybot.directories.data
+        output("""Your bot will need to put various data somewhere.  Things
+        like databases, downloaded files, etc.  Do you have any specific place
+        you'd like the bot to put these things?  If not, just press enter and
+        we'll make a directory named "data" right here.""")
+        (dataDir, basedir) = getDirectoryName('data', basedir=basedir)
+        conf.supybot.directories.data.setValue(dataDir)
 
-    # conf.supybot.directories.conf
-    output("""Your bot must know where to find his configuration files.  It'll
-    probably only make one or two, but it's gotta have some place to put them.
-    Where should that place be?  If you don't care, just press enter and we'll
-    make a directory right here named "conf" where it'll store his stuff. """)
-    (confDir, basedir) = getDirectoryName('conf', basedir=basedir)
-    conf.supybot.directories.conf.setValue(confDir)
+        # conf.supybot.directories.conf
+        output("""Your bot must know where to find his configuration files.
+        It'll probably only make one or two, but it's gotta have some place to
+        put them.  Where should that place be?  If you don't care, just press
+        enter and we'll make a directory right here named "conf" where it'll
+        store his stuff. """)
+        (confDir, basedir) = getDirectoryName('conf', basedir=basedir)
+        conf.supybot.directories.conf.setValue(confDir)
 
-    # pluginDirs
-    output("""Your bot will also need to know where to find his plugins at.
-    Of course, he already knows where the plugins that he came with are, but
-    your own personal plugins that you write for will probably be somewhere
-    else.""")
-    pluginDirs = conf.supybot.directories.plugins()
-    output("""Currently, the bot knows about the following directories:""")
-    output(format('%L', pluginDirs))
-    while yn('Would you like to add another plugin directory?  '
-             'Adding a local plugin directory is good style.',
-             default=True):
+        # conf.supybot.directories.backup
+        output("""Your bot must know where to place backups of its conf and
+        data files.  Where should that place be?  If you don't care, just press
+        enter and we'll make a directory right here named "backup" where it'll
+        store his stuff.""")
+        (backupDir, basedir) = getDirectoryName('backup', basedir=basedir)
+        conf.supybot.directories.backup.setValue(backupDir)
+
+        # pluginDirs
+        output("""Your bot will also need to know where to find his plugins at.
+        Of course, he already knows where the plugins that he came with are,
+        but your own personal plugins that you write for will probably be
+        somewhere else.""")
+        pluginDirs = conf.supybot.directories.plugins()
+        output("""Currently, the bot knows about the following directories:""")
+        output(format('%L', pluginDirs))
+        while yn('Would you like to add another plugin directory?  '
+                 'Adding a local plugin directory is good style.',
+                 default=True):
+            (pluginDir, _) = getDirectoryName('plugins', basedir=basedir)
+            if pluginDir not in pluginDirs:
+                pluginDirs.append(pluginDir)
+        conf.supybot.directories.plugins.setValue(pluginDirs)
+    else:
+        output("""Your bot needs to create some directories in order to store
+        the various log, config, and data files.""")
+        basedir = something("""Where would you like to create these
+                            directories?""")
+        # conf.supybot.directories.log
+        (logDir, basedir) = getDirectoryName('logs', prompt=False)
+        conf.supybot.directories.log.setValue(logDir)
+        # conf.supybot.directories.data
+        (dataDir, basedir) = getDirectoryName('data',
+                                              basedir=basedir, prompt=False)
+        conf.supybot.directories.data.setValue(dataDir)
+        # conf.supybot.directories.conf
+        (confDir, basedir) = getDirectoryName('conf',
+                                              basedir=basedir, prompt=False)
+        conf.supybot.directories.conf.setValue(confDir)
+        # conf.supybot.directories.backup
+        (backupDir, basedir) = getDirectoryName('backup',
+                                                basedir=basedir, prompt=False)
+        conf.supybot.directories.backup.setValue(backupDir)
+        # pluginDirs
+        pluginDirs = conf.supybot.directories.plugins()
         (pluginDir, _) = getDirectoryName('plugins', basedir=basedir)
         if pluginDir not in pluginDirs:
             pluginDirs.append(pluginDir)
-    conf.supybot.directories.plugins.setValue(pluginDirs)
+        conf.supybot.directories.plugins.setValue(pluginDirs)
 
     output("Good!  We're done with the directory stuff.")
 
