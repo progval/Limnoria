@@ -108,7 +108,7 @@ def search(log, queries, **kwargs):
         else:
             raise callbacks.Error, 'Error connecting to Google.com.'
     except SOAP.HTTPError, e:
-        log.warning('HTTP Error accessing Google: %s', e)
+        log.info('HTTP Error accessing Google: %s', e)
         raise callbacks.Error, 'Error connecting to Google.com.'
     except SOAP.faultType, e:
         log.exception('Uncaught SOAP error:')

@@ -177,13 +177,13 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
                 return
             m = self._gkGameTitle.search(s)
             if m is None:
-                self.log.warning('_gkGameTitle didn\'t match (%s).', url)
+                self.log.info('_gkGameTitle didn\'t match (%s).', url)
                 return
             gameTitle = m.groups()
             gameTitle = ircutils.bold(gameTitle)
             L = self._gkPlayer.findall(s)
             if not L:
-                self.log.warning('_gkPlayer didn\'t match (%s).', url)
+                self.log.info('_gkPlayer didn\'t match (%s).', url)
                 return
             ((wRating, wName), (bRating, bName)) = L
             wName = ircutils.bold(wName)

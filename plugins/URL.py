@@ -203,7 +203,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
             if len(url) >= minlen:
                 tinyurl = self._getTinyUrl(url, channel)
                 if tinyurl is None:
-                    self.log.warning('Couldn\'t get tinyurl for %r', url)
+                    self.log.info('Couldn\'t get tinyurl for %r', url)
                     return
                 domain = webutils.getDomain(url)
                 s = '%s (at %s)' % (ircutils.bold(tinyurl), domain)
@@ -251,7 +251,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
             if cmd:
                 raise callbacks.Error, e
             else:
-                self.log.warning(str(e))
+                self.log.info(str(e))
 
     def tiny(self, irc, msg, args):
         """<url>
