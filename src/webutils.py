@@ -47,6 +47,7 @@ REFUSED = 'Connection refused.'
 TIMED_OUT = 'Connection timed out.'
 UNKNOWN_HOST = 'Unknown host.'
 RESET_BY_PEER = 'Connection reset by peer.'
+FORBIDDEN = 'Client forbidden from accessing URL.'
 
 def strError(e):
     try:
@@ -61,6 +62,8 @@ def strError(e):
         return RESET_BY_PEER
     elif n == 8:
         return UNKNOWN_HOST
+    elif n == 403:
+        return FORBIDDEN
     else:
         return str(e)
     
@@ -74,9 +77,9 @@ def getUrlFd(url):
     except socket.error, e:
         raise WebError, strError(e)
     except urllib2.URLError, e:
-        raise WebError, strError(e.reason)
+        raise WebError, strError(e)
     except urllib2.HTTPError, e:
-        raise WebError, str(e)
+        raise WebError, strError(e)
     
 def getUrl(url, size=None):
     """Gets a page.  Returns a string that is the page gotten."""
