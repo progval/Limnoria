@@ -28,7 +28,7 @@ like being asked many questions, just run supybot with no arguments
 and it'll ask you only the questions necessary to run a bot.
 
 So after running either of those two programs, you've got a nice
-registry[*] file handy.  If you're not satisfied with your answers to
+registry file handy.  If you're not satisfied with your answers to
 any of the questions you were asked, feel free to run the program
 again until you're satisfied with all your answers.  Once you're
 satisfied, though, run the "supybot" program with the registry file
@@ -154,9 +154,3 @@ Enjoy using Supybot!
 # Addenda
 ###
 Local installs: See this forum post: http://tinyurl.com/2tb37
-
-The Registry: The Supybot registry is somewhat similar to Window's
-registry in concept, but completely different in implementation.
-It's still a hierarchical representation of configuration data, but
-it's in a completely text-based and easy-to-use/modify format.  We
-think it's great :)
