@@ -484,7 +484,7 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
         return False
 
 def getUser(irc, s):
-    if ircutils.isHostmask(s):
+    if ircutils.isUserHostmask(s):
         return users.getUserName(s)
     else:
         if users.hasUser(s):

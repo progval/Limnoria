@@ -319,7 +319,7 @@ class Irc(object):
                 #debug.printf(repr(msg))
                 msg = callback.outFilter(self, msg)
                 if msg is None:
-                    s = 'outFilter %s returned None' % callbacks.name()
+                    s = 'outFilter %s returned None' % callback.name()
                     debug.debugMsg(s)
                     return None
             self.state.addMsg(self,ircmsgs.IrcMsg(msg=msg, prefix=self.prefix))
