@@ -138,7 +138,7 @@ class ChannelCommands(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         capability = ircdb.makeChannelCapability(channel, 'op')
         if ircdb.checkCapability(msg.prefix, capability):
-            ircdb.channels.privmsgs.getChannel(channel).lobotomized = True
+            ircdb.channels.getChannel(channel).lobotomized = True
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
@@ -154,7 +154,7 @@ class ChannelCommands(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         capability = ircdb.makeChannelCapability(channel, 'op')
         if ircdb.checkCapability(msg.prefix, capability):
-            ircdb.channels.privmsgs.getChannel(channel).lobotomized = False
+            ircdb.channels.getChannel(channel).lobotomized = False
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
@@ -175,7 +175,7 @@ class ChannelCommands(callbacks.Privmsg):
         else:
             banmask = arg
         if ircdb.checkCapability(msg.prefix, capability):
-            c = ircdb.channels.privmsgs.getChannel(channel)
+            c = ircdb.channels.getChannel(channel)
             c.addBan(banmask)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
@@ -193,7 +193,7 @@ class ChannelCommands(callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'op')
         banmask = privmsgs.getArgs(args)
         if ircdb.checkCapability(msg.prefix, capability):
-            c = ircdb.channels.privmsgs.getChannel(channel)
+            c = ircdb.channels.getChannel(channel)
             c.removeBan(banmask)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
@@ -216,7 +216,7 @@ class ChannelCommands(callbacks.Privmsg):
         else:
             banmask = arg
         if ircdb.checkCapability(msg.prefix, capability):
-            c = ircdb.channels.privmsgs.getChannel(channel)
+            c = ircdb.channels.getChannel(channel)
             c.addIgnore(banmask)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
@@ -234,7 +234,7 @@ class ChannelCommands(callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'op')
         banmask = privmsgs.getArgs(args)
         if ircdb.checkCapability(msg.prefix, capability):
-            c = ircdb.channels.privmsgs.getChannel(channel)
+            c = ircdb.channels.getChannel(channel)
             c.removeIgnore(banmask)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
@@ -300,7 +300,7 @@ class ChannelCommands(callbacks.Privmsg):
         v = privmsgs.getArgs(args)
         capability = ircdb.makeChannelCapability(channel, 'op')
         if ircdb.checkCapability(msg.prefix, capability):
-            c = ircdb.channels.privmsgs.getChannel(channel)
+            c = ircdb.channels.getChannel(channel)
             if v == 'True' or v == 'False':
                 if v == 'True':
                     c.setDefaultCapability(True)
@@ -355,7 +355,7 @@ class ChannelCommands(callbacks.Privmsg):
         neededcapability = ircdb.makeChannelCapability(channel, 'op')
         if ircdb.checkCapability(msg.prefix, neededcapability):
             capability = privmsgs.getArgs(args)
-            c = ircdb.channels.privmsgs.getChannel(channel)
+            c = ircdb.channels.getChannel(channel)
             c.removeCapability(capability)
             ircdb.channels.setChannel(channel, c)
             irc.reply(msg, conf.replySuccess)
