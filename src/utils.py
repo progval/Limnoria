@@ -163,10 +163,7 @@ def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
             ret.append(nItems('second', secs))
     if len(ret) == 0:
         raise ValueError, 'Time difference not great enough to be noted.'
-    if len(ret) == 1:
-        return ret[0]
-    else:
-        return commaAndify(ret)
+    return commaAndify(ret)
 
 def distance(s, t):
     """Returns the levenshtein edit distance between two strings."""
@@ -681,7 +678,6 @@ class AtomicFile(file):
     Opens the file in 'w' mode."""
     def __init__(self, filename, allowEmptyOverwrite=False):
         self.filename = filename
-        self.closed = False
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
         self.tempFilename = '%s.%s' % (filename, mktemp())
@@ -692,7 +688,7 @@ class AtomicFile(file):
         if not self.closed:
             super(AtomicFile, self).close()
             if os.path.exists(self.tempFilename):
-                print 'AtomicFile: Removing %s.' % self.tempFilename
+                #print 'AtomicFile: Removing %s.' % self.tempFilename
                 os.remove(self.tempFilename)
             self.rolledback = True
 
@@ -700,7 +696,6 @@ class AtomicFile(file):
         #print 'AtomicFile.close'
         if not self.rolledback:
             #print 'AtomicFile.close: actually closing.'
-            self.closed = True
             super(AtomicFile, self).close()
             size = os.stat(self.tempFilename).st_size
             if size or self.allowEmptyOverwrite:
