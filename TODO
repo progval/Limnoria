@@ -12,6 +12,10 @@ the more likely it'll be done before next release):
   compatible with Eggdrop, since we've been replacing many eggdrop
   bots lately.
 
+* Config.list should prefix ChannelValues with #.
+
+* We should be able to set the log level for plugins individually.
+
 Problems that involve a lot of tedious minutiae, but really need to
 be done at some point:
 
