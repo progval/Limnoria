@@ -274,7 +274,7 @@ class Debian(callbacks.Privmsg,
         try:
             fd = webutils.getUrlFd('http://incoming.debian.org/')
         except webutils.WebError, e:
-            irc.error(e)
+            irc.error(str(e))
             return
         for line in fd:
             m = self._incomingRe.search(line)
@@ -313,7 +313,7 @@ class Debian(callbacks.Privmsg,
             fd = webutils.getUrlFd(
                 'http://packages.debian.org/unstable/newpkg_%s' % section)
         except webutils.WebError, e:
-            irc.error(e)
+            irc.error(str(e))
         packages = []
         #self.log.warning(section)
         #self.log.warning(glob)
