@@ -81,5 +81,8 @@ class DebianTestCase(PluginTestCase):
         def testDebincoming(self):
             self.assertNotError('incoming')
 
+        def testDebianize(self):
+            self.assertNotError('debianize supybot')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

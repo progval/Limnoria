@@ -126,7 +126,7 @@ class Debian(callbacks.Privmsg,
             raise callbacks.ArgumentError
         if optlist and glob:
             irc.error('You must specify either a glob or a regexp/exact '
-                      'search, but not both.')
+                      'search, but not both.', Raise=True)
         for (option, arg) in optlist:
             if option == 'exact':
                 regexp = arg.lstrip('/')
@@ -139,8 +139,7 @@ class Debian(callbacks.Privmsg,
         try:
             re_obj = re.compile(regexp, re.I)
         except re.error, e:
-            irc.error("Error in regexp: %s" % e)
-            return
+            irc.error("Error in regexp: %s" % e, Raise=True)
         if self.registryValue('pythonZgrep'):
             fd = gzip.open(self.contents)
             r = imap(lambda tup: tup[0],
@@ -153,17 +152,15 @@ class Debian(callbacks.Privmsg,
             except TypeError:
                 # We're on Windows.
                 irc.error('This command won\'t work on this platform.  '
-                          'If you think it should (i.e., you know that '
-                          'you have a zgrep binary somewhere) then file '
-                          'a bug about it at http://supybot.sf.net/ .')
-                return
+                          'If you think it should (i.e., you know that you '
+                          'have a zgrep binary somewhere) then file a bug '
+                          'about it at http://supybot.sf.net/ .', Raise=True)
         packages = sets.Set()  # Make packages unique
         try:
             for line in r:
                 if len(packages) > 100:
                     irc.error('More than 100 packages matched, '
-                                   'please narrow your search.')
-                    return
+                              'please narrow your search.', Raise=True)
                 try:
                     if hasattr(line, 'group'): # we're actually using
                         line = line.group(0)   # pythonZgrep  :(
@@ -207,9 +204,7 @@ class Debian(callbacks.Privmsg,
         try:
             html = webutils.getUrl(url)
         except webutils.WebError, e:
-            irc.error('I couldn\'t reach the search page (%s).' % e)
-            return
-
+            irc.error('I couldn\'t reach the search page (%s).' % e,Raise=True)
         if 'is down at the moment' in html:
             irc.error('Packages.debian.org is down at the moment.  '
                            'Please try again later.', Raise=True)
@@ -270,8 +265,7 @@ class Debian(callbacks.Privmsg,
         try:
             fd = webutils.getUrlFd('http://incoming.debian.org/')
         except webutils.WebError, e:
-            irc.error(str(e))
-            return
+            irc.error(str(e), Raise=True)
         for line in fd:
             m = self._incomingRe.search(line)
             if m:
@@ -300,7 +294,7 @@ class Debian(callbacks.Privmsg,
             fd = webutils.getUrlFd(
                 'http://packages.debian.org/unstable/newpkg_%s' % section)
         except webutils.WebError, e:
-            irc.error(str(e))
+            irc.error(str(e), Raise=True)
         packages = []
         for line in fd:
             m = self._newpkgre.search(line)
@@ -330,10 +324,13 @@ class Debian(callbacks.Privmsg,
         Returns a description of the bug with bug id <num>.
         """
         url = 'http://bugs.debian.org/%s' % bug
-        text = webutils.getUrl(url)
+        try:
+            text = webutils.getUrl(url)
+        except webutils.WebError, e:
+            irc.error(str(e), Raise=True)
         if "There is no record of Bug" in text:
-            irc.error('I could not find a bug report matching that number.')
-            return
+            irc.error('I could not find a bug report matching that number.',
+                      Raise=True)
         searches = map(lambda p: p.search(text), self._searches)
         sev = self._severity.search(text)
         # This section should be cleaned up to ease future modifications
@@ -350,6 +347,25 @@ class Debian(callbacks.Privmsg,
         else:
             irc.reply('I was unable to properly parse the BTS page.')
     bug = wrap(bug, [('id', 'bug')])
+
+    _dpnRe = re.compile(r'"\+2">([^<]+)</font', re.I)
+    def debianize(self, irc, msg, args, words):
+        """<text>
+
+        Turns <text> into a 'debian package name' using
+        http://www.pigdog.com/features/dpn.html.
+        """
+        url = r'http://www.pigdog.org/cgi_bin/dpn.phtml?name=%s'
+        try:
+            text = webutils.getUrl(url % '+'.join(words))
+        except webutils.WebError, e:
+            irc.error(str(e), Raise=True)
+        m = self._dpnRe.search(text)
+        if m is not None:
+            irc.reply(m.group(1))
+        else:
+            irc.errorPossibleBug('Unable to parse webpage.')
+    debianize = wrap(debianize, [many('something')])
 
 Class = Debian
 
