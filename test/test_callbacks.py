@@ -160,5 +160,24 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertResponse("eval irc.reply(msg, 'foo', action=True)",
                             '\x01ACTION foo\x01')
 
+    def testErrorReplyPrivate(self):
+        try:
+            originalConfErrorReplyPrivate = conf.errorReplyPrivate
+            conf.errorReplyPrivate = False
+            # If this doesn't raise an error, we've got a problem, so the next
+            # two assertions shouldn't run.  So we first check that what we
+            # expect to error actually does so we don't go on a wild goose
+            # chase because our command never errored in the first place :)
+            s = 're s/foo/bar baz' # will error; should be "re s/foo/bar/ baz"
+            self.assertError(s)
+            m = self.getMsg(s)
+            self.failUnless(ircutils.isChannel(m.args[0]))
+            conf.errorReplyPrivate = True
+            m = self.getMsg(s)
+            self.failIf(ircutils.isChannel(m.args[0]))
+        finally:
+            conf.errorReplyPrivate = originalConfErrorReplyPrivate
+            
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -430,7 +430,11 @@ class IrcObjectProxy:
         if isinstance(self.irc, self.__class__):
             self.irc.error(msg, s)
         else:
-            self.irc.queueMsg(reply(msg, 'Error: ' + s))
+            s = 'Error: ' + s
+            if conf.errorReplyPrivate:
+                self.irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
+            else:
+                self.irc.queueMsg(reply(msg, s))
 
     def killProxy(self):
         if not isinstance(self.irc, irclib.Irc):
