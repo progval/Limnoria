@@ -55,6 +55,7 @@ import supybot.callbacks as callbacks
 
 class Network(callbacks.Privmsg):
     _whois = {}
+    _latency = {}
     def _getIrc(self, network):
         network = network.lower()
         for irc in world.ircs:
@@ -276,6 +277,27 @@ class Network(callbacks.Privmsg):
         L = ['%s: %s' % (ircd.network, ircd.server) for ircd in world.ircs]
         utils.sortBy(str.lower, L)
         irc.reply(utils.commaAndify(L))
+
+    def doPong(self, irc, msg):
+        now = time.time()
+        if irc in self._latency:
+            (replyIrc, when) = self._latency.pop(irc)
+            replyIrc.reply('%s seconds.' % (now-when))
+
+    def latency(self, irc, msg, args):
+        """[<network>]
+
+        Returns the current latency to <network>.  <network> is only necessary
+        if the message isn't sent on the network to which this command is to
+        apply.
+        """
+        network = self._getNetwork(irc, args)
+        otherIrc = self._getIrc(network)
+        otherIrc.queueMsg(ircmsgs.ping('Latency check.'))
+        self._latency[otherIrc] = (irc, time.time())
+        
+    # XXX join
+    # XXX part
         
 
 
