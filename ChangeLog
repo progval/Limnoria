@@ -1,3 +1,125 @@
+	* Added QuoteGrabs module which allows people to grab interesting quotes
+	from other people and store them in the bot for later retrieval (also
+	optionally have the bot randomly snarf quotes)
+
+	* Renamed URLSnarfer plugin to just URL.
+	
+	* Moved TwistedCommands plugin to sandbox.	
+
+	* Renamed Notes plugin to just Note.
+
+	* Renamed FunCommands plugin to just Fun.
+
+	* Removed the Moobot plugin (either moved the commands to the Fun plugin
+	or dropped them entirely).
+	
+	* Added Movies plugin which searches IMDb (www.imdb.com) for movie info.
+
+	* Added Ebay plugin for snarfing eBay URLs as well as getting info on
+	certain auction numbers.
+
+	* Added Dunno plugin as an optional replacement for the boring 'no such
+	command' response.
+
+	* Added MoobotFactoids plugin for moobot-style factoids (which are meant
+	to mimic blootbot-style factoids).
+	
+	* Removed all example strings from plugins.  To be replaced with an
+	automated process later.
+	
+	* Command names in a plugin no longer have to make sure that they are
+	unique and don't conflict with commands in another plugin.  Commands that
+	are ambiguous are greeted with an error message and instructions to the
+	user on how to disambiguate the command.  So any command that used to have
+	the plugin name in it or some shortened form of the plugin name probably
+	got changed, as it was done across all plugins I'm not going to include
+	each name change like this.
+
+	* Made aliases persistent across reloads/bot restarts. 
+
+	* Fixed alias recursion detection from triggering on non-recursive
+	aliases.
+
+	* TODO: document all the changes in makeNewAlias
+
+	* Reworked the admin capability checking in BadWords.py to make it require
+	admin capability for any command in the plugin instead of checking for
+	that capability in each command in the plugin.
+
+	* Converted several plugins to the new Configurable plugin type
+	(ChannelDB, Dict, Enforcer, Gameknot, Google, Python, Relay)
+
+	* Switched ChannelDB databases to use integer user ids instead of text
+	nicks.
+
+	* Added QUIT monitoring to ChannelDB stats.
+
+	* Added monitoring of occurrences of certain words on a per-user basis,
+	adding 2 new databases and several new commands ("wordstats", in
+	ChannelDB).
+
+	* Moved karma out of ChannelDB and into its own plugin.
+
+	* ChannelLogger.py: TODO: document what these changes are
+
+	* Removed "dictserver" command in favor of using the Configurable
+	framework with the Dict plugin instead.
+
+	* Added a "change" command to change factoid values in the Factoids
+	plugin.
+
+	* Added another greet command to the Friendly plugin.
+
+	* Moved uptime-related commands to from FunDB to the Status plugin.
+	
+	* Added substitutions for 'me' and 'my' in insult/praise/lart.
+
+	* Changed {excuse,lart,praise} to allow accessing {excuse,lart,praise}s by
+	id.
+	
+	* Removed the "googlesite" function.
+
+	* Fixed up the google groups snarfer to handle more display styles.
+
+	* Switched freshmeat searches from using regexps to using XML parsing to
+	obtain the needed info.
+
+	* Made all multiline geekquotes into one line, and remove the option of
+	choosing a multiline geekquote.
+	
+	* Added an --id switch to geekquote to pick a specific geekquote.
+
+	* Renamed "internic" command to "whois".
+
+	* Changed most commands in News to require the 'news' capability.
+
+	* Actually implemented the 'change' and 'old' commands for News.
+
+	* Added ASPN Python Cookbook URL snarfer/parser.
+
+	* Moved quotegrabs out of Quotes to their own module.
+
+	* Made relay names output sorted by mode and then alphabetically.
+
+	* Removed 'relaycolor' command in favor of Configurable framework.
+
+	* Added total memory usage to 'cpustats' output for several *nix
+	platforms.
+
+	* Removed the total percentage of CPU time from 'cpustats'.
+
+	* Made sure that shuffling the topic actually shuffles the topic.
+
+	* Made topic numbering 1-indexed instead of 0-indexed (but -1 is still the
+	last topic and -2 next to last and so on).
+
+	* Fixed a bug where special characters would lock up the spell command
+	(now accepts only alpha characters to being a word).
+
+	* Changed spell from keeping an open fd for the life of the plugin to
+	opening and closing fd's on the fly (if the fd got closed unexpectedly,
+	the spell command would block).
+	
 	* Added Bugzilla module
 	
 	* Changed the name of the "bug" command in the AdminCommands
