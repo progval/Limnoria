@@ -142,9 +142,8 @@ class ChannelDBHandler(object):
     def makeFilename(self, channel):
         """Override this to specialize the filenames of your databases."""
         channel = ircutils.toLower(channel)
-        prefix = makeChannelFilename(channel,
-                                     self.__class__.__name__ + self.suffix)
-        return os.path.join(conf.supybot.directories.data(), prefix)
+        className = self.__class__.__name__
+        return makeChannelFilename(channel, className + self.suffix)
 
     def makeDb(self, filename):
         """Override this to create your databases."""
