@@ -184,8 +184,8 @@ class Tokenizer:
     def handleToken(self, token):
         while token and token[0] == '"' and token[-1] == token[0]:
             if len(token) > 1:
-                # token = token[1:-1].decode('string-escape') # 2.3+
-                token = eval('"%s"' % token[1:-1], self._env, self._env)
+                token = token[1:-1].decode('string_escape') # 2.3+
+                # token = eval('"%s"' % token[1:-1], self._env, self._env)
             else:
                 break
         return token
