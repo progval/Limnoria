@@ -59,14 +59,21 @@ def configure(onStart, afterConnect, advanced):
 # Enforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
 ###
 _chanCap = ircdb.makeChannelCapability
-class Enforcer(callbacks.Privmsg, plugins.Toggleable):
-    toggles = plugins.ToggleDictionary({'auto-op': False,
-                                        'auto-voice': False,
-                                        'auto-halfop': False})
+class Enforcer(callbacks.Privmsg, plugins.Configurable):
+    configurables = plugins.ConfigurableDictionary(
+        [('auto-op', plugins.ConfigurableTypes.bool, False,
+          """Determines whether the bot will automatically op people with
+          the <channel>.op capability when they join the channel."""),
+         ('auto-voice', plugins.ConfigurableTypes.bool, False,
+          """Determines whether the bot will automatically voice people with
+          the <channel>.voice capability when they join the channel."""),
+         ('auto-halfop', plugins.ConfigurableTypes.bool, False,
+          """Determines whether the bot will automatically halfop people with
+          the <channel>.halfop capability when they join the channel."""),]
+    )
     started = False
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Toggleable.__init__(self)
 
     def start(self, irc, msg, args):
         """[<CHANSERV> <revenge>]
@@ -103,13 +110,13 @@ class Enforcer(callbacks.Privmsg, plugins.Toggleable):
             irc.queueMsg(ircmsgs.ban(channel, ircutils.banmask(msg.prefix)))
             irc.queueMsg(ircmsgs.kick(channel, msg.nick))
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'op')):
-            if self.toggles.get('auto-op', channel):
+            if self.configurables.get('auto-op', channel):
                 irc.queueMsg(ircmsgs.op(channel, msg.nick))
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'halfop')):
-            if self.toggles.get('auto-halfop', channel):
+            if self.configurables.get('auto-halfop', channel):
                 irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
         elif ircdb.checkCapability(msg.prefix, _chanCap(channel, 'voice')):
-            if self.toggles.get('auto-voice', channel):
+            if self.configurables.get('auto-voice', channel):
                 irc.queueMsg(ircmsgs.voice(channel, msg.nick))
 
     def doTopic(self, irc, msg):
