@@ -132,7 +132,7 @@ class Boolean(Value):
         elif s == 'toggle':
             value = not self.value
         else:
-            raise InvalidRegistryValue, 'Value must be True or False.'
+            raise InvalidRegistryValue, '%r is not True or False.' % s
         self.setValue(value)
 
     def setValue(self, v):
@@ -143,18 +143,18 @@ class Integer(Value):
         try:
             self.setValue(int(s))
         except ValueError:
-            raise InvalidRegistryValue, 'Value must be an integer.'
+            raise InvalidRegistryValue, '%r is not an integer.' % s
 
 class PositiveInteger(Value):
     def set(self, s):
         try:
             self.setValue(int(s))
         except ValueError:
-            raise InvalidRegistryValue, 'Value must be a positive integer.'
+            raise InvalidRegistryValue, '%r is not a positive integer.' % s
 
     def setValue(self, v):
         if v <= 0:
-            raise InvalidRegistryValue, 'Value must be a positive integer.'
+            raise InvalidRegistryValue, '%r is not a positive integer.' % v
         Value.setValue(self, v)
 
 class Float(Value):
@@ -162,13 +162,13 @@ class Float(Value):
         try:
             self.setValue(float(s))
         except ValueError:
-            raise InvalidRegistryValue, 'Value must be a float.'
+            raise InvalidRegistryValue, '%r is not a float.' % s
 
     def setValue(self, v):
         try:
             Value.setValue(self, float(v))
         except ValueError:
-            raise InvalidRegistryValue, 'Value must be a float.'
+            raise InvalidRegistryValue, '%r is not a float.' % v
 
 class String(Value):
     def set(self, s):
@@ -182,7 +182,7 @@ class String(Value):
                 raise ValueError
             self.value = v
         except ValueError: # This catches utils.safeEval(s) errors too.
-            raise InvalidRegistryValue, 'Value must be a string.'
+            raise InvalidRegistryValue, '%r is not a string.' % s
 
 class NormalizedString(String):
     def set(self, s):
@@ -220,7 +220,7 @@ class Regexp(Value):
                 self.value = None
             self.sr = s
         except ValueError, e:
-            raise InvalidRegistryValue, 'Value must be a valid regexp: %s' % e
+            raise InvalidRegistryValue, '%r is not a valid regexp: %s' % (s, e)
 
     def setValue(self, v):
         if v is None:
