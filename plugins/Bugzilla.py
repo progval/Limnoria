@@ -29,26 +29,26 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 ###
+
 """
 Bugzilla bug retriever
 """
-import urllib
-import string
-import xml.dom.minidom as minidom
-import base64
-import re
+
 import os
+import re
+import string
+import urllib
+import base64
+import xml.dom.minidom as minidom
 from htmlentitydefs import entitydefs as entities
 
-import plugins
+import sqlite
 
-import string
-
+import conf
 import utils
+import plugins
 import privmsgs
 import callbacks
-import conf
-import sqlite
 
 dbfilename = os.path.join(conf.dataDir, 'Bugzilla.db')
 def makeDb(filename):
