@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2002-2005, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 ###
-
-__revision__ = "$Id: __init__.py,v 1.8 2004/10/01 04:12:30 jemfinch Exp $"
 
 import sys
 import os.path
