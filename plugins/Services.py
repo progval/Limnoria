@@ -171,7 +171,13 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         given, the current channel is assumed.
         """
         channel = privmsgs.getChannel(msg, args)
-        irc.sendMsg(ircmsgs.privmsg(self.chanserv, 'op %s' % channel))
+        try:
+            if irc.nick in irc.state.channels[channel].ops:
+                irc.error(msg, 'I\'ve already got ops in %sx' % channel)
+            else:
+                irc.sendMsg(ircmsgs.privmsg(self.chanserv, 'op %s' % channel))
+        except KeyError:
+            irc.error(msg, 'I\'m not in %s.' % channel)
 
     def identify(self, irc, msg, args):
         """takes no arguments
