@@ -1,7 +1,9 @@
 Version 0.75.0
 
 Don't forget to reinstall (i.e., run "python setup.py install" as
-root).
+root).  Sometimes it even does good to remove the old installation;
+$PYTHON/site-packages/supybot can be removed with no problems
+whatsoever.
 
 You will need to re-run supybot-wizard and generate a new botscript.
 
