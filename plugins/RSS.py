@@ -129,7 +129,7 @@ class RSS(callbacks.Privmsg):
                     except ValueError:
                         pass
                 if newheadlines:
-                    pre = prefix + name
+                    pre = '%s%s ' % (prefix, name)
                     if bold:
                         pre = ircutils.bold(pre)
                     irc.replies(newheadlines, prefixer=pre, joiner=sep)
