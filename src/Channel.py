@@ -453,7 +453,13 @@ class Channel(callbacks.Privmsg):
         replyIrc = self.invites.pop((irc, nick), None)
         if replyIrc is not None:
             replyIrc.error('There is no %s on this network.' % nick)
-    do504 = do401
+
+    def do504(self, irc, msg):
+        nick = msg.args[1]
+        nick = ircutils.toLower(nick)
+        replyIrc = self.invites.pop((irc, nick), None)
+        if replyirc is not None:
+            replyIrc.error('There is no %s on this server.' % nick)
 
     def lobotomize(self, irc, msg, args, channel):
         """[<channel>]
