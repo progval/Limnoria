@@ -71,10 +71,13 @@ conf.registerChannelValue(conf.supybot.plugins.Herald, 'heralding',
 conf.registerChannelValue(conf.supybot.plugins.Herald, 'throttleTime',
     registry.PositiveInteger(600, """Determines the minimum number of seconds
     between heralds."""))
-conf.registerChannelValue(conf.supybot.plugins.Herald, 'defaultHerald',
+conf.registerChannelValue(conf.supybot.plugins.Herald, 'default',
     registry.String('', """Sets the default herald to use.  If a user has a
     personal herald specified, that will be used instead.  If set to the empty
     string, the default herald will be disabled."""))
+conf.registerChannelValue(conf.supybot.plugins.Herald.default, 'public',
+    registry.Boolean(False, """Determines whether the default herald will be
+    sent publicly."""))
 conf.registerChannelValue(conf.supybot.plugins.Herald, 'throttleTimeAfterPart',
     registry.PositiveInteger(60, """Determines the minimum number of seconds
     after parting that the bot will not herald the person when he or she
@@ -101,9 +104,12 @@ class Herald(callbacks.Privmsg):
                 id = ircdb.users.getUserId(msg.prefix)
                 herald = self.db[channel, id]
             except KeyError:
-                default = self.registryValue('defaultHerald', channel)
+                default = self.registryValue('default', channel)
                 if default:
-                    irc.queueMsg(ircmsgs.privmsg(msg.nick, default))
+                    target = msg.nick
+                    if self.registryValue('default.public', channel):
+                        target = channel
+                    irc.queueMsg(ircmsgs.privmsg(target, default))
                 return
             now = time.time()
             throttle = self.registryValue('throttleTime', channel)
@@ -148,19 +154,19 @@ class Herald(callbacks.Privmsg):
             raise callbacks.ArgumentError
         for (option, _) in optlist:
             if option == '--remove':
-                conf.supybot.plugins.Herald.defaultHerald.set("")
+                self.setRegistryValue('default', '', channel)
                 irc.replySuccess()
                 return
-        msg = privmsgs.getArgs(rest, required=0, optional=1)
-        if not msg:
-            resp = self.registryValue('defaultHerald', channel)
+        text = privmsgs.getArgs(rest, required=0, optional=1)
+        if not text:
+            resp = self.registryValue('default', channel)
             if not resp:
                 irc.reply('I do not have a default herald set.')
                 return
             else:
                 irc.reply(resp)
                 return
-        conf.supybot.plugins.Herald.defaultHerald.set(msg)
+        self.setRegistryValue('default', text, channel)
         irc.replySuccess()
 
     def get(self, irc, msg, args):
