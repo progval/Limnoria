@@ -106,7 +106,7 @@ class Config(callbacks.Privmsg):
             return L
         else:
             try:
-                L = zip(*group.getValues(fullNames=False))[0]
+                L = [t[0] for t in group.getValues(fullNames=False)]
                 utils.sortBy(str.lower, L)
                 return L
             except TypeError:
@@ -125,7 +125,7 @@ class Config(callbacks.Privmsg):
             if name == '--groups':
                 groups = True
         name = privmsgs.getArgs(rest)
-        L = self._list(name, groups)
+        L = self._list(name, groups=groups)
         if L:
             irc.reply(utils.commaAndify(L))
         elif groups:
