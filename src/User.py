@@ -102,7 +102,7 @@ class User(callbacks.Privmsg):
         hostmask of the person registering.  This command (and all other
         commands that include a password) must be sent to the bot privately,
         not in a channel.  If --hashed is given, the password will be hashed
-        on disk, rather than being stored in plaintext.
+        on disk, rather than being stored in the default configured format.
         """
         (optlist, rest) = getopt.getopt(args, '', ['hashed'])
         (name, password) = privmsgs.getArgs(rest, required=2)
