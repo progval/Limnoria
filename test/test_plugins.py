@@ -55,12 +55,16 @@ class ToggleDictionaryTestCase(unittest.TestCase):
         t.toggle('bar', value=False)
         self.assertEqual(t.get('bar'), False)
 
-    def test__str__(self):
+    def testToString(self):
         t = plugins.ToggleDictionary({'foo': True})
-        self.assertEqual(str(t), '(foo: On)')
+        self.assertEqual(t.toString(), '(foo: On)')
         t.toggle('foo')
-        self.assertEqual(str(t), '(foo: Off)')
+        self.assertEqual(t.toString(), '(foo: Off)')
         t.toggle('bar', value=True)
-        self.assertEqual(str(t), '(bar: On, foo: Off)')
+        self.assertEqual(t.toString(), '(bar: On, foo: Off)')
         t.toggle('baz', value=True)
-        self.assertEqual(str(t), '(bar: On, baz: On, foo: Off)')
+        self.assertEqual(t.toString(), '(bar: On, baz: On, foo: Off)')
+        t.toggle('baz', channel='#foo')
+        self.assertEqual(t.toString(channel='#foo'),
+                         '(bar: On, baz: Off, foo: Off)')
+        
