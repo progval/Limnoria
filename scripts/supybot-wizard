@@ -403,7 +403,7 @@ def main():
     reason it just won't work, it might be that you need to set a
     password.""")
     if yn('Do you want to set such a password?', default=False):
-        conf.supybot.password.set(getpass())
+        network.password.set(getpass())
 
     # conf.supybot.channels
     output("""Of course, having an IRC bot isn't the most useful thing in the
