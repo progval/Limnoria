@@ -162,7 +162,7 @@ def reply(msg, s, prefixName=True, private=None,
         else:
             target = to
         # XXX: User value for reply.withNoticeWhenPrivate.
-        if getConfig(conf.supybot.reply.withNoticeWhenPrivate):
+        if conf.supybot.reply.withNoticeWhenPrivate(): # global, no getConfig.
             notice = True
     if to is None:
         to = msg.nick
