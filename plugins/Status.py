@@ -126,7 +126,7 @@ class Status(callbacks.Privmsg):
         s = 'I offer a total of %s in %s.  I have processed %s.' % \
             (utils.nItems(commands, 'command'),
              utils.nItems(callbacksPrivmsg, 'plugin', 'command-based'),
-             world.commandsProcessed)
+             utils.nItems(world.commandsProcessed, 'command'))
         irc.reply(msg, s)
 
     def commands(self, irc, msg, args):
