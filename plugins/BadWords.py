@@ -45,7 +45,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -164,7 +164,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
         set.update(words)
         self.words.setValue(set)
         irc.replySuccess()
-    add = wrap(add, ['something+'])
+    add = wrap(add, [many('text')])
 
     def remove(self, irc, msg, args, words):
         """<word> [<word> ...]
@@ -176,7 +176,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
             set.discard(word)
         self.words.setValue(set)
         irc.replySuccess()
-    remove = wrap(remove, ['something+'])
+    remove = wrap(remove, [many('text')])
 
 
 Class = BadWords
