@@ -322,7 +322,7 @@ class Note(callbacks.Privmsg):
                 temp[note[1]] = [note[0]]
         notes = []
         for (k,v) in temp.iteritems():
-            notes.append('%s %s' % (', '.join(v), k))
+            notes.append('%s %s' % (utils.commaAndify(v), k))
         return notes
 
     def _sentnotes(self, irc, msg, receiver):
@@ -345,6 +345,7 @@ class Note(callbacks.Privmsg):
                 irc.error('That user is not in my user database.')
                 return
             sql = '%s %s' % (sql, 'AND notes.to_id=%r' % receiver)
+        sql = '%s ORDER BY id DESC' % sql
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         cursor.execute(sql)
@@ -377,6 +378,7 @@ class Note(callbacks.Privmsg):
                 irc.error('That user is not in my user database.')
                 return
             sql = '%s %s' % (sql, 'AND notes.from_id=%r' % sender)
+        sql = '%s ORDER BY id DESC' % sql
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         cursor.execute(sql)
@@ -386,7 +388,6 @@ class Note(callbacks.Privmsg):
         else:
             ids = [self._formatNoteData(msg, *t) for t in cursor.fetchall()]
             #self.log.warning(ids)
-            ids.reverse()
             ids = self._condense(ids)
             irc.reply(utils.commaAndify(ids))
 
