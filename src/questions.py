@@ -38,6 +38,7 @@ import textwrap
 from getpass import getpass as getPass
 
 import ansi
+import conf
 import utils
 
 useColor = False
@@ -135,6 +136,25 @@ def getpass(prompt='Enter password: '):
         else:
             break
     return password
+
+def getRegistryValue(setting, prompt='', showHelp=True, showType=True):
+    from registry import InvalidRegistryValue
+    if not prompt:
+        prompt = 'What would you like to set this option to?'
+    if showHelp:
+        help = ''
+        if showType:
+            help = '%s:   ' % type(setting).__name__
+        help = '%s%s' % (help, setting.help)
+        output(textwrap.fill(help), unformatted=False)
+    ret = None
+    while not ret:
+        try:
+            setting.set(expect(prompt, [], default=str(setting)))
+            ret = setting()
+        except InvalidRegistryValue, reason:
+            output(str(reason))
+    return ret
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -15,21 +15,18 @@ import logging
 import optparse
 from itertools import imap
 
-import log
 import ansi
-import registry
-import conf
 import utils
-import Owner
 import ircutils
+import registry
 
 import questions
 from questions import output, yn, anything, something, expect, getpass
 
-def getPlugins():
+def getPlugins(pluginDirs):
     filenames = []
-    for dir in conf.supybot.directories.plugins():
-        filenames.extend(os.listdir(dir))
+    for pluginDir in pluginDirs:
+        filenames.extend(os.listdir(pluginDir))
     plugins = sets.Set([])
     for filename in filenames:
         if filename.endswith('.py') and filename[0].isupper():
@@ -40,6 +37,7 @@ def getPlugins():
     return plugins
 
 def loadPlugin(name):
+    import Owner
     try:
         module = Owner.loadPluginModule(name)
         if hasattr(module, 'Class'):
@@ -72,19 +70,15 @@ def describePlugin(module, showUsage):
         else:
             output("""This plugin has no usage example.""")
     
-def configurePlugin(module, advanced):
-    if hasattr(module, 'configure'):
-        output("""Beginning configuration for %s..."""%module.Class.__name__)
-        module.configure(advanced)
-        print # Blank line :)
-        output("""Done!""")
-    else:
-        Owner.registerPlugin(module, currentValue=True)
-
-def clearLoadedPlugins(plugins):
-    for plugin, group in conf.supybot.plugins.children.iteritems():
-        if plugin in plugins and group():
-            plugins.remove(plugin)
+def clearLoadedPlugins(plugins, pluginRegistry):
+    # FIXME: This is removing all plugins??
+    for plugin in plugins:
+        try:
+            pluginKey = pluginRegistry.getChild(plugin)
+            if pluginKey():
+                plugins.remove(plugin)
+        except AttributeError:
+            continue
 
 _windowsVarRe = re.compile(r'%(\w+)%')
 def getDirectoryName(default):
@@ -109,15 +103,28 @@ def getDirectoryName(default):
     return os.path.expandvars(os.path.expanduser(dir))
 
 def main():
-    conf.supybot.log.minimumPriority.setValue('CRITICAL')
-    parser = optparse.OptionParser(usage='Usage: %prog [options]',
-                                   version='Supybot %s' % conf.version)
+    from conf import version
+    parser = optparse.OptionParser(usage='Usage: %prog [options] [configFile]',
+                                   version='Supybot %s' % version)
     (options, args) = parser.parse_args()
     
-    output("""This is a wizard to help you start running supybot.  What it
-    will do is create a single Python file whose effect will be that of
-    starting an IRC bot with the options you select here.  So hold on tight
-    and be ready to be interrogated :)""")
+    filename = ''
+    if len(args) > 1:
+        parser.error()
+    elif len(args) == 1:
+        filename = args[0]
+        try:
+            registry.open(filename)
+        except OSError, msg:
+            raise SystemExit, 'Unable to open file %s: %s' % (filename, msg)
+        output("""It seems you already have a configuration file. We'll run
+        you through the options so you can change them if you want.""")
+    else:
+        output("""This is a wizard to help you start running supybot.  What it
+        will do is create a single Python file whose effect will be that of
+        starting an IRC bot with the options you select here.  So hold on tight
+        and be ready to be interrogated :)""")
+
 
     output("""First of all, we can bold the questions you're asked so you can
     easily distinguish the mostly useless blather (like this) from the
@@ -144,8 +151,11 @@ def main():
     users.  Others might not make sense unless you've used Supybot for some
     time.""")
     advanced = yn('Are you an advanced Supybot user?', default=False)
-
+    
     ### Directories.
+    # We set these variables in cache because otherwise conf and log will
+    # create directories for the default values, which might not be what the
+    # user wants.
     output("""Now we've got to ask you some questions about where some of
     your directories are (or, perhaps, will be :)).  If you're running this
     wizard from the directory you'll actually be starting your bot from and
@@ -157,42 +167,74 @@ def main():
     output("""Your bot will need to put his logs somewhere.  Do you have any
     specific place you'd like them?  If not, just press enter and we'll make
     a directory named "logs" right here.""")
-    conf.supybot.directories.log.setValue(getDirectoryName('logs'))
+    try:
+        registry.cache['supybot.directories.log'] = getDirectoryName(
+                                    registry.cache['supybot.directories.log'])
+    except KeyError:
+        registry.cache['supybot.directories.log'] = getDirectoryName('logs')
+    
 
     # conf.supybot.directories.data
     output("""Your bot will need to put various data somewhere.  Things like
     databases, downloaded files, etc.  Do you have any specific place you'd
     like the bot to put these things?  If not, just press enter and we'll make
     a directory named "data" right here.""")
-    conf.supybot.directories.data.setValue(getDirectoryName('data'))
+    try:
+        registry.cache['supybot.directories.data'] = getDirectoryName(
+                                   registry.cache['supybot.directories.data'])
+    except KeyError:
+        registry.cache['supybot.directories.data'] = getDirectoryName('data')
 
     # conf.supybot.directories.conf
     output("""Your bot must know where to find his configuration files.  It'll
     probably only make one or two, but it's gotta have some place to put them.
     Where should that place be?  If you don't care, just press enter and we'll
     make a directory right here named "conf" where it'll store his stuff. """)
-    conf.supybot.directories.conf.setValue(getDirectoryName('conf'))
-
-    output("Good!  We're done with the directory stuff.")
+    try:
+        registry.cache['supybot.directories.conf'] = getDirectoryName(
+                                   registry.cache['supybot.directories.conf'])
+    except KeyError:
+        registry.cache['supybot.directories.conf'] = getDirectoryName('conf')
 
     # pluginDirs
     output("""Your bot will also need to know where to find his plugins at.
     Of course, he already knows where the plugins that he came with are, but
     your own personal plugins that you write for will probably be somewhere
-    else.  Where do you plan to put those plugins?  If you don't know, just
-    press enter and we'll put a "plugins" directory right here that you can
-    stick your own personal plugins in.""")
-    pluginDirs = conf.supybot.directories.plugins()
-    pluginDir = getDirectoryName('plugins')
-    if pluginDir not in pluginDirs:
-        pluginDirs.append(pluginDir)
-    output("""Of course, you can have more than one plugin directory.""")
+    else.""")
+    try:
+        pluginDirs = registry.cache['supybot.directories.plugins'].split(',')
+        output("""Currently, the bot knows about the following directories:""")
+        for pluginDir in pluginDirs:
+            output(pluginDir)
+    except KeyError:
+        pluginDirs = []
+        output("""Where do you plan to put those plugins?  If you don't know,
+        just press enter and we'll put a "plugins" directory right here that
+        you can stick your own personal plugins in.""")
+        pluginDir = getDirectoryName('plugins')
+        if pluginDir not in pluginDirs:
+            pluginDirs.append(pluginDir)
+        output("""Of course, you can have more than one plugin directory.""")
     while yn('Would you like to add another plugin directory?',
              default=False):
         pluginDir = getDirectoryName('plugins')
         if pluginDir not in pluginDirs:
             pluginDirs.append(pluginDir)
-    conf.supybot.directories.plugins.setValue(pluginDirs)
+    registry.cache['supybot.directories.plugins'] = ','.join(pluginDirs)
+
+    output("Good!  We're done with the directory stuff.")
+    
+    # Store the minimum log priority if set, because we set it to a temporary
+    # value during the wizard
+    try:
+        priority = registry.cache['supybot.log.minimumPriority']
+    except KeyError:
+        priority = 'INFO'
+    registry.cache['supybot.log.minimumPriority'] = 'CRITICAL'
+    
+    # Now that we're all set, import conf and log
+    import conf
+    import log
 
     ###
     # Bot stuff
@@ -230,7 +272,7 @@ def main():
         else:
             port = 6667
         server = ':'.join(map(str, [serverString, port]))
-    conf.supybot.server.setValue(server)
+    conf.supybot.server.set(server)
 
     # conf.supybot.nick
     nick = ''
@@ -239,7 +281,7 @@ def main():
         if not ircutils.isNick(nick):
             output("""That's not a valid nick.  Go ahead and pick another.""")
             nick = ''
-    conf.supybot.nick.setValue(nick)
+    conf.supybot.nick.set(nick)
 
     # conf.supybot.user
     user = ''
@@ -251,7 +293,7 @@ def main():
         user = anything('What would you like your bot\'s full name to be?')
         if not user:
             user = nick
-    conf.supybot.user.setValue(user)
+    conf.supybot.user.set(user)
 
     # conf.supybot.ident (if advanced)
     if advanced:
@@ -266,7 +308,7 @@ def main():
                 ident = nick
     else:
         ident = nick
-    conf.supybot.ident.setValue(ident)
+    conf.supybot.ident.set(ident)
 
     # conf.supybot.password
     output("""Some servers require a password to connect to them.  Most
@@ -274,7 +316,7 @@ def main():
     reason it just won't work, it might be that you need to set a
     password.""")
     if yn('Do you want to set such a password?', default=False):
-            conf.supybot.password.setValue(getpass())
+            conf.supybot.password.set(getpass())
 
     # conf.supybot.channels
     output("""Of course, having an IRC bot isn't the most useful thing in the
@@ -282,22 +324,31 @@ def main():
     if yn('Do you want your bot to join some channels when he connects?',
           default=True):
         channels = something('What channels?  Separate channels with '
-                             'spaces.').split()
-        while not all(ircutils.isChannel, channels):
+                             'commas.')
+        while not all(ircutils.isChannel, channels.split(',')):
             # FIXME: say which ones weren't channels.
             output("""Not all of those are valid IRC channels.  Be sure to
             prefix the channel with # (or +, or !, or &, but no one uses those
             channels, really).""")
-            channels = something('What channels?').split()
-    conf.supybot.channels.setValue(channels)
+            channels = something('What channels?')
+    conf.supybot.channels.set(channels)
 
     ###
     # Plugins
     ###
-    plugins = getPlugins()
+    def configurePlugin(module, advanced):
+        if hasattr(module, 'configure'):
+            output("""Beginning configuration for %s..."""%module.Class.__name__)
+            module.configure(advanced)
+            print # Blank line :)
+            output("""Done!""")
+        else:
+            conf.registerPlugin(module, currentValue=True)
+
+    plugins = getPlugins(pluginDirs)
     for s in ('Admin', 'User', 'Channel', 'Misc', 'Config'):
         configurePlugin(s, advanced)
-    clearLoadedPlugins(plugins)
+    clearLoadedPlugins(plugins, conf.supybot.plugins)
 
     # bulk
     addedBulk = False
@@ -312,7 +363,7 @@ def main():
             module = loadPlugin(name)
             if module is not None:
                 configurePlugin(module, advanced)
-                clearLoadedPlugins(plugins)
+                clearLoadedPlugins(plugins, conf.supybot.plugins)
 
     # individual
     if yn('Would you like to look at plugins individually?'):
@@ -331,7 +382,7 @@ def main():
                 describePlugin(module, showUsage)
                 if yn('Would you like to load this plugin?', default=True):
                     configurePlugin(module, advanced)
-                    clearLoadedPlugins(plugins)
+                    clearLoadedPlugins(plugins, conf.supybot.plugins)
             if not yn('Would you like add another plugin?'):
                 break
             name = expect('What plugin would you like to look at?', plugins)
@@ -378,7 +429,7 @@ def main():
     the same effect.  Of course, you don't *have* to have a prefix char, but
     if the bot ends up participating significantly in your channel, it'll ease
     things.""")
-    if yn('Would you like to set the prefix char(s) for your bot?',
+    if yn('Would you like to set the prefix char(s) for your bot?  ',
           default=True):
         output("""Enter any characters you want here, but be careful: they
         should be rare enough that people don't accidentally address the bot
@@ -389,15 +440,15 @@ def main():
         import callbacks
         while True:
             try:
-                conf.supybot.prefixChars.setValue(
+                conf.supybot.prefixChars.set(
                                     something('What would you like your '
                                     'bot\'s prefix character(s) to be?',
                                     default='@'))
                 break
             except registry.InvalidRegistryValue, reason:
-                output(reason)
+                output(str(reason))
     else:
-        conf.supybot.prefixChars.setValue('')
+        conf.supybot.prefixChars.set('')
 
     # enablePipeSyntax
     output("""Supybot allows nested commands.  You've probably
@@ -412,7 +463,7 @@ def main():
     nicks, and we've found it to be somewhat frustrating to have to quote such
     nicks in commands.""")
     conf.supybot.pipeSyntax.setValue(yn('Would you like to enable the pipe '
-                                 'syntax for nesting?', default=False))
+                                 'syntax for nesting?  ', default=False))
 
     ###
     # logging variables.
@@ -440,15 +491,15 @@ def main():
     default, your bot will log all of these priorities.  You can, however,
     specify that he only log messages above a certain priority level.  Of
     course, all error messages will still be logged.""")
-    priority = something('What would you like the minimum priority to be?  '
+    newPriority = something('What would you like the minimum priority to be?  '
                          'Just press enter to accept the default.',
-                         default='INFO').lower()
-    while priority not in ['debug', 'info', 'warning', 'error', 'critical']:
+                         default=priority).lower()
+    while newPriority not in ['debug', 'info', 'warning', 'error', 'critical']:
         output("""That's not a valid priority.  Valid priorities include
         'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL'""")
-        priority = something('What would you like the minimum priority to be?'
-                             '  Just press enter to accept the default.',
-                             default='INFO').lower()
+        newPriority = something('What would you like the minimum priority to '
+                             'be?  Just press enter to accept the default.',
+                             default=priority).lower()
 
     if advanced:
         output("""Here's some stuff you only get to choose if you're an
@@ -507,24 +558,6 @@ def main():
             yn('Would you like the bot to notice replies to users in private '
               'when a command is executed in a channel?', default=False))
 
-        # allowEval
-        output("""Here in supybot-developer world, we really like Python.  In
-        fact, we like it so much we just couldn't do without the ability to
-        have our bots evaluate arbitrary Python code.  Of course, we are aware
-        of the possible security hazards in allowing such a thing, but we're
-        pretty sure our capability system is sound enough to do such a thing
-        with some kind of security.  Nevertheless, by default we have these
-        commands (eval and exec, both in the Owner plugin which is
-        loaded by default) disabled by a config variable allowEval.  If you'd
-        like to use either eval or exec, you'll have to make this variable
-        True.  Unless you intend to hack on supybot a lot, we suggest against
-        it -- it's just not worth the risk, and if you find something that you
-        can't do via a command because the command you want doesn't exist, you
-        should tell us and we'll implement the command (rather than make you
-        allow eval).  But either way, here's your chance to enable it.""")
-        allowEval = yn('Would you like to enable allowEval, possibly opening '
-                       'you to a significant security risk?', default=False)
-
         # conf.supybot.throttleTime
         output("""In order to prevent flooding itself off the network,
         your bot by default will not send more than one message per second to
@@ -533,7 +566,7 @@ def main():
               'messages your bot sends to the network?', default=False):
             while True:
                 try:
-                    conf.supybot.throttleTime.setValue(something(
+                    conf.supybot.throttleTime.set(something(
                         'How long do you want your bot to wait between '
                         'sending messages to the server?  Floating '
                         'point values are accepted.'))
@@ -553,40 +586,28 @@ def main():
         what you'd like to change, then come back and run this script again
         and tell us you're an advanced user.  Some of those questions might be
         boring, but they'll really help you customize your bot :)""")
-
-    ###
-    # Writing the bot script.
-    ###
-    filename = reduce(os.path.join, [conf.installDir, 'src', 'template.py'])
-    fd = file(filename)
-    template = fd.read()
-    fd.close()
-
-    format = pprint.pformat
-    template = template.replace('"%%allowEval%%"',
-                                format(allowEval))
-    template = template.replace('/usr/bin/env python',
-                                os.path.normpath(sys.executable))
-
-    filename = '%s-botscript.py' % nick
-    fd = file(filename, 'w')
-    fd.write(template)
-    fd.close()
-
-    if os.name == 'posix':
-        os.chmod(filename, 0755)
     
-    # Overwrite temporary minimum log priority
-    conf.supybot.log.minimumPriority.setValue(priority)
+    ###
+    # Write the registry
+    ###
+    # Replace the temporary value in supybot.log.minimumPriority
+    conf.supybot.log.minimumPriority.set(newPriority)
+
+    # Save the registry
+    if not filename:
+        filename = '%s.conf' % nick
+    registry.close(conf.supybot, filename)
     
-    # Save the registry registry
-    registry.close(conf.supybot, 'supybot.conf')
+    # Prevent some INFO messages from being printed when exiting
+    # conf.supybot.log.minimumPriority.set('CRITICAL')
+    # FIXME: Apparently, this doesn't work.
     
     # Done!
-    output("""All done!  Your new bot script is %s.  If you're running a *nix,
-    you can start your bot script with the command line "./%s".  If you're not
-    running a *nix or similar machine, you'll just have to start it like you
-    start all your other Python scripts.""" % (filename, filename))
+    output("""All done!  Your new bot configuration is %s.  If you're running 
+    a *nix based OS, you can probably start your bot with the command line
+    "supybot ./%s".  If you're not running a *nix or similar machine, you'll
+    just have to start it like you start all your other Python scripts.""" % \
+                                                         (filename, filename))
 
 if __name__ == '__main__':
     try:
