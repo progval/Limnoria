@@ -748,6 +748,11 @@ registerGlobalValue(supybot.databases.users, 'timeoutIdentification',
     registry.Integer(0, """Determines how long it takes identification to time
     out.  If the value is less than or equal to zero, identification never
     times out."""))
+registerGlobalValue(supybot.databases.users, 'allowUnregistration',
+    registry.Boolean(False, """Determines whether the bot will allow users to
+    unregister their users.  This can wreak havoc with already-existing
+    databases, so by default we don't allow it.  Enable this at your own risk.
+    """))
 registerGlobalValue(supybot.databases.users, 'hash',
     registry.Boolean(True, """Determines whether the passwords in the user
     database will be hashed by default.  This only affects new users; users
