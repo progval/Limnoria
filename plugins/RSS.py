@@ -107,7 +107,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
             bold = self.configurables.get('announce-news-bold', channel)
             prefix = self.configurables.get('announce-news-prefix', channel)
             for name in d:
-                if self.isCommand(name):
+                if self.isCommand(callbacks.canonicalName(name)):
                     url = self.getCommand(name).url
                 else:
                     url = name
