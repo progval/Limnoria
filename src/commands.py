@@ -301,17 +301,16 @@ argWrappers = ircutils.IrcDict({
     'regexpReplacer': getReplacer, 
 })
 
-    
-_wrappers = wrappers # Used below so we can use a keyword argument "wrappers".
-def wrap(f, required=[], optional=[],
-         wrappers=None, getopts=None, noExtra=False):
+def args(irc,msg,args, required=[], optional=[], getopts=None, noExtra=False):
+    starArgs = []
+    req = required[:]
+    opt = optional[:]
     if getopts is not None:
         getoptL = []
         for (key, value) in getopts.iteritems():
             if value != '': # value can be None, remember.
                 key += '='
             getoptL.append(key)
-            
     def getArgWrapper(x):
         if isinstance(x, tuple):
             assert x
@@ -325,61 +324,68 @@ def wrap(f, required=[], optional=[],
             return argWrappers[name], args
         else:
             return lambda irc, msg, args: args.pop(0), args
+    def getConversion(name):
+        (converter, convertArgs) = getArgWrapper(name)
+        v = converter(irc, msg, args, *convertArgs)
+        return v
+    def callConverter(name):
+        v = getConversion(name)
+        starArgs.append(v)
 
-    def newf(self, irc, msg, args, **kwargs):
-        starArgs = []
-        req = (required or [])[:]
-        opt = (optional or [])[:]
-        def getConversion(name):
-            (converter, convertArgs) = getArgWrapper(name)
-            v = converter(irc, msg, args, *convertArgs)
-            return v
-        def callConverter(name):
-            v = getConversion(name)
-            starArgs.append(v)
+    # First, we getopt stuff.
+    if getopts is not None:
+        L = []
+        (optlist, args) = getopt.getopt(args, '', getoptL)
+        for (opt, arg) in optlist:
+            opt = opt[2:] # Strip --
+            assert opt in getopts
+            if arg is not None:
+                assert getopts[opt] != ''
+                L.append((opt, getConversion(getopts[opt])))
+            else:
+                assert getopts[opt] == ''
+                L.append((opt, True))
+        starArgs.append(L)
 
-        # First, we getopt stuff.
-        if getopts is not None:
-            L = []
-            (optlist, args) = getopt.getopt(args, '', getoptL)
-            for (opt, arg) in optlist:
-                opt = opt[2:] # Strip --
-                assert opt in getopts
-                if arg is not None:
-                    assert getopts[opt] != ''
-                    L.append((opt, getConversion(getopts[opt])))
-                else:
-                    assert getopts[opt] == ''
-                    L.append((opt, True))
-            starArgs.append(L)
-
-        # Second, we get out everything but the last argument.
-        try:
-            while len(req) + len(opt) > 1:
-                if req:
-                    callConverter(req.pop(0))
-                else:
-                    assert opt
-                    callConverter(opt.pop(0))
-            # Third, if there is a remaining required or optional argument
-            # (there's a possibility that there were no required or optional
-            # arguments) then we join the remaining args and work convert that.
-            if req or opt:
-                rest = ' '.join(args)
-                args = [rest]
-                if required:
-                    converterName = req.pop(0)
-                else:
-                    converterName = opt.pop(0)
-                callConverter(converterName)
-        except IndexError:
+    # Second, we get out everything but the last argument.
+    try:
+        while len(req) + len(opt) > 1:
             if req:
-                raise callbacks.ArgumentError
-            while opt:
-                del opt[-1]
-                starArgs.append('')
-        if noExtra and args:
+                callConverter(req.pop(0))
+            else:
+                assert opt
+                callConverter(opt.pop(0))
+        # Third, if there is a remaining required or optional argument
+        # (there's a possibility that there were no required or optional
+        # arguments) then we join the remaining args and work convert that.
+        if req or opt:
+            rest = ' '.join(args)
+            args = [rest]
+            if required:
+                converterName = req.pop(0)
+            else:
+                converterName = opt.pop(0)
+            callConverter(converterName)
+    except IndexError:
+        if req:
             raise callbacks.ArgumentError
+        while opt:
+            del opt[-1]
+            starArgs.append('')
+    if noExtra and args:
+        raise callbacks.ArgumentError
+    return starArgs
+    
+# These are used below, but we need to rename them so their names aren't
+# shadowed by our locals.
+_args = args
+_wrappers = wrappers
+def wrap(f, required=[], optional=[],
+         wrappers=None, getopts=None, noExtra=False):
+    def newf(self, irc, msg, args, **kwargs):
+        starArgs = _args(irc, msg, args,
+                         getopts=getopts, noExtra=noExtra,
+                         required=required, optional=optional)
         f(self, irc, msg, args, *starArgs, **kwargs)
 
     if wrappers is not None:
