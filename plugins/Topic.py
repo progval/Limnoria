@@ -112,7 +112,7 @@ class Topic(callbacks.Privmsg):
     def gettopic(self, irc, msg, args, channel):
         """[<channel>] <number>
 
-        Returns topic number <number> from <channel>.  <number> is a zero-based
+        Returns topic number <number> from <channel>.  <number> is a one-based
         index into the topics.  <channel> is only necessary if the message
         isn't sent in the channel itself.
         """
@@ -136,7 +136,7 @@ class Topic(callbacks.Privmsg):
         """[<channel>] <number> <regexp>
 
         Changes the topic number <number> on <channel> according to the regular
-        expression <regexp>.  <number> is the zero-based index into the topics;
+        expression <regexp>.  <number> is the one-based index into the topics;
         <regexp> is a regular expression of the form
         s/regexp/replacement/flags.  <channel> is only necessary if the message
         isn't sent in the channel itself.
@@ -185,7 +185,7 @@ class Topic(callbacks.Privmsg):
         """[<channel>] <number>
 
         Removes topic <number> from the topic for <channel>  Topics are
-        numbered starting from 0; you can also use negative indexes to refer
+        numbered starting from 1; you can also use negative indexes to refer
         to topics starting the from the end of the topic.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
