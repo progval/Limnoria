@@ -34,6 +34,7 @@ __revision__ = "$Id$"
 import re
 import sets
 import time
+import string
 import textwrap
 
 import supybot.fix as fix
@@ -66,11 +67,12 @@ def open(filename, clear=False):
     for (i, line) in enumerate(fd):
         line = line.rstrip('\r\n')
         try:
+            #print '***', repr(line)
             (key, value) = re.split(r'(?<!\\):', line, 1)
             key = key.strip()
             value = value.strip()
         except ValueError:
-            raise InvalidRegistryFile, 'Error unpacking line #%s' % (i+1)
+            raise InvalidRegistryFile, 'Error unpacking line %r' % line
         _cache[key] = value
     _lastModified = time.time()
     _fd.close()
@@ -291,6 +293,8 @@ class Value(Group):
         if _lastModified > self._lastModified:
             if self._name in _cache:
                 self.set(_cache[self._name])
+            else:
+                self.setValue(self._default)
         return self.value
 
 class Boolean(Value):
@@ -318,19 +322,19 @@ class Integer(Value):
         except ValueError:
             self.error()
 
-class PositiveInteger(Integer):
-    """Value must be positive (non-zero) integer."""
-    def setValue(self, v):
-        if v <= 0:
-            self.error()
-        Integer.setValue(self, v)
-
 class NonNegativeInteger(Integer):
     """Value must not be negative."""
     def setValue(self, v):
         if v < 0:
             self.error()
         Integer.setValue(self, v)
+
+class PositiveInteger(NonNegativeInteger):
+    """Value must be positive (non-zero) integer."""
+    def setValue(self, v):
+        if not v:
+            self.error()
+        NonNegativeInteger.setValue(self, v)
 
 class Float(Value):
     """Value must be a floating-point number."""
@@ -346,6 +350,14 @@ class Float(Value):
         except ValueError:
             self.error()
 
+class PositiveFloat(Float):
+    """Value must be a float-point number greater than zero."""
+    def setValue(self, v):
+        if v <= 0:
+            self.error()
+        else:
+            Float.setValue(self, v)
+
 class String(Value):
     """Value is not a valid Python string."""
     def set(self, s):
@@ -360,6 +372,16 @@ class String(Value):
             self.setValue(v)
         except ValueError: # This catches utils.safeEval(s) errors too.
             self.error()
+
+    _printable = string.printable[:-4]
+    def _needsQuoting(self, s):
+        return s.translate(string.ascii, self._printable) and s.strip() != s
+               
+    def __str__(self):
+        s = self.value
+        if self._needsQuoting(s):
+            s = repr(s)
+        return s
 
 class OnlySomeStrings(String):
     validStrings = ()
@@ -390,6 +412,10 @@ class OnlySomeStrings(String):
             self.error()
 
 class NormalizedString(String):
+    def __init__(self, default, help):
+        default = self.normalize(default)
+        String.__init__(self, default, help)
+        
     def normalize(self, s):
         return utils.normalizeWhitespace(s.strip())
     
@@ -471,9 +497,9 @@ class SeparatedListOf(Value):
         Value.setValue(self, self.List(v))
 
     def __str__(self):
-        value = self()
-        if value:
-            return self.joiner(value)
+        values = self()
+        if values:
+            return self.joiner(values)
         else:
             # We must return *something* here, otherwise down along the road we
             # can run into issues showing users the value if they've disabled

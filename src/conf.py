@@ -513,8 +513,8 @@ registerGroup(supybot, 'commands')
 ###
 registerGroup(supybot, 'drivers')
 registerGlobalValue(supybot.drivers, 'poll',
-    registry.Float(1.0, """Determines the default length of time a driver
-    should block waiting for input."""))
+    registry.PositiveFloat(1.0, """Determines the default length of time a
+    driver should block waiting for input."""))
 
 class ValidDriverModule(registry.OnlySomeStrings):
     validStrings = ('default', 'socketDrivers',
