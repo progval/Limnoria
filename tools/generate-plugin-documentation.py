@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import supybot
+
 import os
 import cgi
 import imp
@@ -37,16 +39,13 @@ import os.path
 import textwrap
 import traceback
 
-if 'src' not in sys.path:
-    sys.path.insert(0, 'src')
-
-import fix
-
 import conf
+import debug
 import callbacks
 
 
 def makePluginDocumentation(filename):
+    print 'Generating documentation for %s' % filename
     trClasses = { 'lightyellow':'lightgreen', 'lightgreen':'lightyellow' }
     trClass = 'lightyellow'
     pluginName = filename.split('.')[0]
@@ -55,7 +54,14 @@ def makePluginDocumentation(filename):
     directory = os.path.join('docs', 'plugins')
     if not os.path.exists(directory):
         os.mkdir(directory)
-    plugin = module.Class()
+    if not hasattr(module, 'Class'):
+        print '%s is not a plugin.' % filename
+        return
+    try:
+        plugin = module.Class()
+    except Exception, e:
+        print '%s could not be loaded: %s' % (filename, debug.exnToString(e))
+        return
     if isinstance(plugin, callbacks.Privmsg) and not \
        isinstance(plugin, callbacks.PrivmsgRegexp):
         fd = file(os.path.join(directory,'%s.html' % pluginName), 'w')
@@ -84,10 +90,12 @@ def makePluginDocumentation(filename):
                         doclines = filter(None, doclines)
                         doclines = map(str.strip, doclines)
                         morehelp = ' '.join(doclines)
+                    help = cgi.escape(help)
+                    morehelp = cgi.escape(morehelp)
                     fd.write(textwrap.dedent("""
                     <tr class="%s"><td>%s</td><td>%s</td><td class="detail">%s
                     </td></tr>
-                    """) % (trClass, attr, cgi.escape(help), cgi.escape(morehelp)))
+                    """) % (trClass, attr, help, morehelp))
         fd.write(textwrap.dedent("""
         </table>
         """))
@@ -111,7 +119,7 @@ def makePluginDocumentation(filename):
 if __name__ == '__main__':
     for directory in conf.pluginDirs:
         for filename in os.listdir(directory):
-            if filename.endswith('.py') and filename.lower() != filename:
+            if filename.endswith('.py') and filename[0].isupper():
                 makePluginDocumentation(filename)
             
     
