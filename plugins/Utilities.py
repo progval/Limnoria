@@ -42,7 +42,7 @@ from baseplugin import *
 import privmsgs
 import callbacks
 
-class Utils(callbacks.Privmsg):
+class Utilities(callbacks.Privmsg):
     def strjoin(self, irc, msg, args):
         "<separator> <strings to join>"
         sep = args.pop(0)
@@ -60,5 +60,5 @@ class Utils(callbacks.Privmsg):
             sep = None
         irc.reply(msg, text.split(sep))
         
-Class = Utils
+Class = Utilities
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
