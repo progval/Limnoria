@@ -55,16 +55,6 @@ def getTracer(fd):
             print >>fd, '%s: %s' % (code.co_filename, code.co_name)
     return tracer
 
-def progstats():
-    pw = pwd.getpwuid(os.getuid())
-    response = 'Process ID %s running as user "%s" and as group "%s" ' \
-               'from directory "%s" with the command line "%s".  ' \
-               'Running on Python %s.' % \
-               (os.getpid(), pw[0], pw[3],
-                os.getcwd(), ' '.join(sys.argv),
-                sys.version.translate(string.ascii, '\r\n'))
-    return response
-
 class Debug(callbacks.Privmsg):
     capability = 'owner'
     def __init__(self, irc):
@@ -189,7 +179,14 @@ class Debug(callbacks.Privmsg):
 
         Returns various unix-y information on the running supybot process.
         """
-        irc.reply(progstats())
+        pw = pwd.getpwuid(os.getuid())
+        response = 'Process ID %s running as user "%s" and as group "%s" ' \
+                   'from directory "%s" with the command line "%s".  ' \
+                   'Running on Python %s.' % \
+                   (os.getpid(), pw[0], pw[3],
+                    os.getcwd(), ' '.join(sys.argv),
+                    sys.version.translate(string.ascii, '\r\n'))
+        irc.reply(response)
     progstats = wrap(progstats)
 
     def environ(self, irc, msg, args):
