@@ -128,7 +128,7 @@ class Relay(callbacks.Privmsg):
         self.started = False
         self.ircstates = {}
         self.lastmsg = ircmsgs.ping('this is just a fake message')
-        self.channels = sets.Set()
+        self.channels = ircutils.IrcSet()
         self.abbreviations = {}
         self.originalIrc = None
 
