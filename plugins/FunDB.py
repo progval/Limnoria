@@ -500,59 +500,6 @@ class FunDB(callbacks.Privmsg):
         else:
             irc.reply(msg, 'That word has no anagrams that I know of.')
 
-    def zipcode(self, irc, msg, args):
-        """<zipcode>
-
-        Returns the City, ST for a given zipcode.
-        """
-        try:
-            zipcode = int(privmsgs.getArgs(args))
-        except ValueError:
-            # Must not be an integer.  Try zipcodefor.
-            try:
-                self.zipcodefor(irc, msg, args)
-                return
-            except:
-                pass
-            irc.error(msg, 'Invalid zipcode.')
-            return
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT city, state
-                          FROM zipcodes
-                          WHERE zipcode=%s""", zipcode)
-        if cursor.rowcount == 0:
-            irc.reply(msg, 'I have nothing for that zipcode.')
-        else:
-            (city, state) = cursor.fetchone()
-            irc.reply(msg, '%s, %s' % (city, state))
-
-
-    def zipcodefor(self, irc, msg, args):
-        """<city> <state>
-
-        Returns the zipcode for a <city> in <state>.
-        """
-        (city, state) = privmsgs.getArgs(args, needed=2)
-        state = args.pop()
-        city = ' '.join(args)
-        if '%' in msg.args[1]:
-            irc.error(msg, '% wildcard is not allowed.  Use _ instead.')
-            return
-        city = city.rstrip(',') # In case they did "City, ST"
-        cursor = self.db.cursor()
-        cursor.execute("""SELECT zipcode
-                          FROM zipcodes
-                          WHERE city LIKE %s AND
-                                state LIKE %s""", city, state)
-        if cursor.rowcount == 0:
-            irc.reply(msg, 'I have no zipcode for %r, %r.' % \
-                      (city, state))
-        elif cursor.rowcount == 1:
-            irc.reply(msg, str(cursor.fetchone()[0]))
-        else:
-            zipcodes = [str(t[0]) for t in cursor.fetchall()]
-            irc.reply(msg, utils.commaAndify(zipcodes))
-
 Class = FunDB
 
 
@@ -595,20 +542,6 @@ if __name__ == '__main__':
         elif category == 'excuses':
             cursor.execute("""INSERT INTO excuses VALUES (NULL, %s, %s,
                               nobody, 0)""", line, added_by)
-        elif category == 'zipcodes':
-            (zipcode, cityState) = line.split(':')
-            if '-' in zipcode:
-                (begin, end) = map(int, zipcode.split('-'))
-                zipcodes = range(begin, end+1)
-                (zipcode, _) = zipcode.split('-')
-            else:
-                zipcodes = [int(zipcode)]
-            cityStateList = cityState.split(', ')
-            state = cityStateList.pop()
-            city = ', '.join(cityStateList)
-            for zipcode in zipcodes:
-                cursor.execute("""INSERT INTO zipcodes VALUES (%s, %s, %s)""",
-                               zipcode, city, state)
     db.commit()
     db.close()
 
