@@ -514,7 +514,7 @@ class UsersDictionary(utils.IterableMap):
     def reload(self):
         """Reloads the database from its file."""
         if self.filename is not None:
-            self.nextId = 0
+            self.nextId = 1
             self.users.clear()
             try:
                 self.open(self.filename)
@@ -712,6 +712,9 @@ try:
     channels.open(os.path.join(confDir,channelFile))
 except EnvironmentError, e:
     log.warning('Couldn\'t open channel database: %s', e)
+
+world.flushers.append(users.flush)
+world.flushers.append(channels.flush)
     
 
 ###
