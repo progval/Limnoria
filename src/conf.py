@@ -663,7 +663,7 @@ class Databases(registry.SpaceSeparatedListOfStrings):
     def __call__(self):
         v = super(Databases, self).__call__()
         if not v:
-            v = ['flat', 'cdb', 'pickle']
+            v = ['anydbm', 'cdb', 'flat', 'pickle']
             if 'sqlite' in sys.modules:
                 v.insert(0, 'sqlite')
         return v

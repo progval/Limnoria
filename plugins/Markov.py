@@ -68,7 +68,45 @@ class MarkovDBInterface(object):
         # Returns (follower, last) tuple.
         pass
 
+    def firsts(self, channel):
+        pass
+
+    def lasts(self, channel):
+        pass
+
+    def pairs(self, channel):
+        pass
+
+    def follows(self, channel):
+        pass
+
 class SqliteMarkovDB(object):
+    def __init__(self, filename):
+        self.dbs = ircutils.IrcDict()
+        self.filename = filename
+
+    def close(self):
+        for db in self.dbs.values():
+            db.close()
+
+    def _getDb(self, channel):
+        try:
+            import sqlite
+        except ImportError:
+            raise callbacks.Error, 'You need to have PySQLite installed to '\
+                                   'use this plugin.  Download it at '\
+                                   '<http://pysqlite.sf.net/>'
+        if channel not in self.dbs:
+            filename = plugins.makeChannelFilename(self.filename, channel)
+            if os.path.exists(filename):
+                self.dbs[channel] = sqlite.connect(filename)
+                return self.dbs[channel]
+            #else:
+            self.dbs[channel] = sqlite.connect(filename)
+            cursor = self.dbs[channel].cursor()
+            # TODO Finish the rest of the implementation
+        return self.dbs[channel]
+
     def addPair(self, channel, first, second, follower,
                 isFirst=False, isLast=False):
         pass
@@ -80,10 +118,24 @@ class SqliteMarkovDB(object):
         # Returns (follower, last) tuple.
         pass
 
+    def firsts(self, channel):
+        pass
+
+    def lasts(self, channel):
+        pass
+
+    def pairs(self, channel):
+        pass
+
+    def follows(self, channel):
+        pass
+
 
 class DbmMarkovDB(object):
-    def __init__(self):
+    def __init__(self, filename):
         self.dbs = ircutils.IrcDict()
+        # Stupid anydbm seems to append .db to the end of this.
+        self.filename = filename.replace('.db', '')
 
     def close(self):
         for db in self.dbs.values():
@@ -91,8 +143,7 @@ class DbmMarkovDB(object):
 
     def _getDb(self, channel):
         if channel not in self.dbs:
-            # Stupid anydbm seems to append .db to the end of this.
-            filename = plugins.makeChannelFilename('DbmMarkovDB', channel)
+            filename = plugins.makeChannelFilename(self.filename, channel)
             # To keep the code simpler for addPair, I decided not to make
             # self.dbs[channel]['firsts'] and ['lasts'].  Instead, we'll pad
             # the words list being sent to addPair such that ['\n \n'] will be
@@ -168,8 +219,8 @@ class DbmMarkovDB(object):
         follows = [len(v.split()) for (k,v) in db.iteritems() if '\n' not in k]
         return sum(follows)
 
-def MarkovDB():
-    return DbmMarkovDB()
+MarkovDB = plugins.DB('Markov',
+                      {'anydbm': DbmMarkovDB})
 
 class MarkovWorkQueue(threading.Thread):
     def __init__(self, *args, **kwargs):
