@@ -234,6 +234,23 @@ def makePluginDocumentation(pluginWindow):
             <tr class="%s" id="%s"><td>%s</td><td>%s</td>
             <td class="detail">%s</td></tr>
             ''' % (trClass, attr, attr, help, morehelp)))
+    try:
+        pluginconf = conf.supybot.plugins.get(pluginName)
+        fd.write(textwrap.dedent('''</table><br /><table><tr id="trheader">
+            <td>Config Var</td><td>Help</td>'''))
+        trClass = trClasses[trClass]
+        for config in [(c[0], c[1].help) for c in\
+                       pluginconf.getValues(getChildren=True,fullNames=False)]:
+                name = config[0]
+                help = config[1]
+                help = cgi.escape(help)
+                trClass = trClasses[trClass]
+                fd.write(textwrap.dedent('''
+                <tr class="%s" id="%s"><td>%s</td>
+                <td class="detail">%s</td></tr>
+                ''' % (trClass, name, name, help)))
+    except registry.NonExistentRegistryEntry:
+        pass
     fd.write('</table>\n')
     fd.write(textwrap.dedent('''
     </div>
