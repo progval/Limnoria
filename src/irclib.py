@@ -733,6 +733,10 @@ class Irc(IrcCommandDispatcher):
         """Called by the IrcDriver; feeds a message received."""
         msg.tag('receivedBy', self)
         msg.tag('receivedOn', self.network)
+        if msg.args and self.isChannel(msg.args[0]):
+            channel = msg.args[0]
+        else:
+            channel = None
         log.debug('Incoming message: ' + str(msg).rstrip('\r\n'))
 
         # Yeah, so this is odd.  Some networks (oftc) seem to give us certain

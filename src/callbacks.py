@@ -1081,10 +1081,6 @@ class Privmsg(irclib.IrcCallback):
 
     def __call__(self, irc, msg):
         # This is for later dynamic scoping.
-        if msg.args and irc.isChannel(msg.args[0]):
-            channel = msg.args[0]
-        else:
-            channel = None
         if msg.command == 'PRIVMSG':
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
                 self.__parent.__call__(irc, msg)
