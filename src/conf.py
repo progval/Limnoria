@@ -55,7 +55,6 @@ allowEval = False
 
 supybot = registry.Group()
 supybot.setName('supybot')
-supybot.registerGroup('plugins') # This will be used by plugins, but not here.
 
 def registerPlugin(name, currentValue=None):
     supybot.plugins.registerGroup(
@@ -407,6 +406,8 @@ stable.  asyncoreDrivers is a bit older (and less well-maintained) but allows
 you to integrate with asyncore-based applications.  twistedDrivers is very
 stable and simple, and if you've got Twisted installed, is probably your best
 bet."""))
+
+supybot.registerGroup('plugins') # This will be used by plugins, but not here.
 
 ###############################
 ###############################

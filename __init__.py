@@ -40,11 +40,4 @@ othersDir = os.path.join(installDir, 'others')
 sys.path.insert(0, srcDir)
 sys.path.insert(0, othersDir)
 
-import registry
-
-supybot = registry.Group()
-supybot.setName('supybot')
-supybot.registerGroup('plugins')
-
-
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
