@@ -259,7 +259,8 @@ def findBinaryInPath(s):
             break
     return cmdLine
 
-def commaAndify(L):
+def commaAndify(seq):
+    L = list(seq)
     if len(L) == 0:
         return ''
     elif len(L) == 1:
@@ -267,11 +268,7 @@ def commaAndify(L):
     elif len(L) == 2:
         return '%s and %s' % (L[0], L[1])
     else:
-        # Not technically threadsafe.  But we'll see if that matters.
-        originalLastElement = L[-1]
         L[-1] = 'and %s' % L[-1]
-        s = ', '.join(L)
-        L[-1] = originalLastElement
-        return s
+        return ', '.join(L)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
