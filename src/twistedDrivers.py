@@ -82,7 +82,6 @@ class SupyIrcProtocol(LineReceiver):
     def connectionMade(self):
         self.factory.irc.driver = self
         self.factory.irc.reset()
-        #self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
 
     def die(self):
         self.transport.loseConnection()
