@@ -64,7 +64,7 @@ def configure(advanced):
     if not spellCmd:
         output("""NOTE: I couldn't find aspell or ispell in your path, so that
                   function of this module will not work.  You may choose to
-                  install it later.  The re-enable the command then, give the
+                  install it later.  To re-enable the command then, give the
                   bot the command 'enable Unix.spell'.""")
         conf.supybot.defaultCapabilities().add('-Unix.spell')
     fortuneCmd = utils.findBinaryInPath('fortune')
