@@ -35,8 +35,12 @@ class IMDBTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('IMDB',)
     def testImdb(self):
         self.assertNotError('imdb die hard')
-        m = self.getMsg('imdb kevin spacey')
-        self.failUnless('is apparently a person' in m.args[1])
+        self.assertRegexp('imdb kevin spacey', 'is apparently a person')
+
+    def testGenrePluralization(self):
+        self.assertNotRegexp('imdb 24', 'genres')
+        self.assertRegexp('imdb die hard', 'genres')
+        
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

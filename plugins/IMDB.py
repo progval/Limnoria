@@ -68,10 +68,12 @@ class IMDB(callbacks.Privmsg):
     def _formatMovie(self, movie):
         title = utils.unCommaThe(movie.title())
         genres = utils.commaAndify(map(str.lower, movie.genres()))
-        s = '"%s" (%s) belongs to the %s genres.  ' \
+        s = '"%s" (%s) belongs to the %s %s.  ' \
             'It\'s been rated %s out of 10.  ' \
             'More information is available at <%s>' % \
-            (title, movie.year(), genres, movie.rating(), movie.url)
+            (title, movie.year(), genres,
+             utils.pluralize(len(movie.genres()), 'genre'),
+             movie.rating(), movie.url)
         return s
         
     def imdb(self, irc, msg, args):
