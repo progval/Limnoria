@@ -40,8 +40,10 @@ class ConfigurableDictionaryTestCase(unittest.TestCase):
     def test(self):
         t = plugins.ConfigurableDictionary([('foo', bool, False, 'bar')])
         self.assertEqual(t.help('foo'), 'bar')
+        self.assertEqual(t.help('f-o-o'), 'bar')
         self.assertRaises(KeyError, t.help, 'bar')
         self.assertEqual(t.get('foo'), False)
+        self.assertEqual(t.get('f-o-o'), False)
         t.set('foo', True)
         self.assertEqual(t.get('foo'), True)
         t.set('foo', False, '#foo')
@@ -49,62 +51,8 @@ class ConfigurableDictionaryTestCase(unittest.TestCase):
         self.assertEqual(t.get('foo'), True)
         self.assertRaises(KeyError, t.set, 'bar', True)
         self.assertRaises(KeyError, t.set, 'bar', True, '#foo')
-
-
-class ToggleDictionaryTestCase(unittest.TestCase):
-    def test(self):
-        t = plugins.ToggleDictionary({'foo': True})
-##         self.assertEqual(t['foo'], True)
-##         self.assertEqual(t['#baz']['foo'], True)
-        self.assertEqual(t.get('foo'), True)
-        self.assertEqual(t.get('foo', '#baz'), True)
-        t.toggle('foo', value=False)
-        self.assertEqual(t.get('foo', '#baz'), True)
-        t.toggle('foo', value=False, channel='#baz')
-        self.assertEqual(t.get('foo', '#baz'), False)
-        t.toggle('foo', channel='#baz')
-        self.assertEqual(t.get('foo', '#baz'), True)
-        t.toggle('foo', channel='#baz')
-        self.assertEqual(t.get('foo', '#baz'), False)
-        #self.assertRaises(TypeError, t.toggle, 'foo', value='lak')
-
-    def testCanonicalization(self):
-        t = plugins.ToggleDictionary({'foo': True})
-        self.assertEqual(t.get('foo'), True)
-        self.assertEqual(t.get('fOO'), True)
-        self.assertEqual(t.get('Foo'), True)
-        self.assertEqual(t.get('-fo-o'), True)
-        t = plugins.ToggleDictionary({'FOO': True})
-        self.assertEqual(t.get('foo'), True)
-        self.assertEqual(t.get('fOO'), True)
-        self.assertEqual(t.get('Foo'), True)
-        self.assertEqual(t.get('-fo-o'), True)
-        t = plugins.ToggleDictionary({'f-o-o': True})
-        self.assertEqual(t.get('foo'), True)
-        self.assertEqual(t.get('fOO'), True)
-        self.assertEqual(t.get('Foo'), True)
-        self.assertEqual(t.get('-fo-o'), True)
-
-    def test__init__(self):
-        self.assertRaises(TypeError, plugins.ToggleDictionary.__init__)
-        self.assertRaises(ValueError, plugins.ToggleDictionary, {})
-
-    def testToggle(self):
-        t = plugins.ToggleDictionary({'foo': True})
-        self.assertRaises(KeyError, t.toggle, 'bar')
-        self.assertRaises(KeyError, t.toggle, 'bar', value=False)
-
-    def testToString(self):
-        t = plugins.ToggleDictionary({'foo': True, 'bar': False})
-        self.assertEqual(t.toString(), '(bar: Off; foo: On)')
-        t.toggle('foo', channel='#foo')
-        self.assertEqual(t.toString(), '(bar: Off; foo: On)')
-        self.assertEqual(t.toString(channel='#foo'),
-                        '(bar: Off; foo: Off)')
-        t.toggle('bar', value=True)
-        self.assertEqual(t.toString(), '(bar: On; foo: On)')
-        self.assertEqual(t.toString(channel='#foo'),
-                        '(bar: Off; foo: Off)')
+        t.set('f-o-o', False)
+        self.assertEqual(t.get('foo'), False)
 
 
 class holder:
@@ -127,7 +75,7 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$who'),
                          msg.nick)
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$randomdate'))
-        q = plugins.standardSubstitute(self.irc, msg, '$randomdate\t$randomdate')
+        q = plugins.standardSubstitute(self.irc,msg,'$randomdate\t$randomdate')
         dl = q.split('\t')
         if dl[0] == dl[1]:
             self.fail ('Two $randomdates in the same string were the same')
