@@ -109,3 +109,25 @@ class UtilsTest(unittest.TestCase):
             self.assertEqual(r, utils.dqrepr(s))
             self.assertEqual(s, eval(utils.dqrepr(s)))
              
+    def testPerlReToPythonRe(self):
+        r = utils.perlReToPythonRe('m/foo/')
+        self.failUnless(r.search('foo'))
+        r = utils.perlReToPythonRe('/foo/')
+        self.failUnless(r.search('foo'))
+        r = utils.perlReToPythonRe('m/\\//')
+        self.failUnless(r.search('/'))
+
+    def testPerlReToReplacer(self):
+        f = utils.perlReToReplacer('s/foo/bar/')
+        self.assertEqual(f('foobarbaz'), 'barbarbaz')
+        f = utils.perlReToReplacer('s/fool/bar/')
+        self.assertEqual(f('foobarbaz'), 'foobarbaz')
+        f = utils.perlReToReplacer('s/foo//')
+        self.assertEqual(f('foobarbaz'), 'barbaz')
+        f = utils.perlReToReplacer('s/ba//')
+        self.assertEqual(f('foobarbaz'), 'foorbaz')
+        f = utils.perlReToReplacer('s/ba//g')
+        self.assertEqual(f('foobarbaz'), 'foorz')
+        f = utils.perlReToReplacer('s/ba\\///g')
+        self.assertEqual(f('fooba/rba/z'), 'foorz')
+        

@@ -37,6 +37,7 @@ from __future__ import generators
 
 from fix import *
 
+import re
 import string
 import sgmllib
 import htmlentitydefs
@@ -197,5 +198,33 @@ def soundex(s, length=4):
 def dqrepr(s):
     """Returns a repr() of s guaranteed to be in double quotes."""
     return '"' + repr("'\x00" + s)[6:]
+
+nonEscapedSlashes = re.compile(r'(?<!\\)/')
+def perlReToPythonRe(s):
+    (kind, regexp, flags) = nonEscapedSlashes.split(s)
+    regexp = regexp.replace('\\/', '/')
+    if kind not in ('', 'm'):
+        raise ValueError, 'Invalid kind: must be in ("", "m")'
+    flag = 0
+    try:
+        for c in flags.upper():
+            flag &= getattr(re, c)
+    except AttributeError:
+        raise ValueError, 'Invalid flag: %s' % c
+    return re.compile(regexp, flag)
+    
+def perlReToReplacer(s):
+    (kind, regexp, replace, flags) = nonEscapedSlashes.split(s)
+    if kind != 's':
+        raise ValueError, 'Invalid kind: must be "s"'
+    g = False
+    if 'g' in flags:
+        g = True
+        flags = filter('g'.__ne__, flags)
+    r = perlReToPythonRe('/'.join(('', regexp, flags)))
+    if g:
+        return lambda s: r.sub(replace, s)
+    else:
+        return lambda s: r.sub(replace, s, 1)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
