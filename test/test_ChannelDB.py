@@ -80,11 +80,16 @@ if sqlite is not None:
             finally:
                 conf.replyWhenNotCommand = False
             self.assertRegexp('karma foobar', 'increased 1.*total.*1')
+            self.assertRegexp('karma FOOBAR', 'increased 1.*total.*1')
             self.assertNoResponse('foobar--', 2)
             self.assertRegexp('karma foobar', 'decreased 1.*total.*0')
-            self.assertNoResponse('foo++', 2)
-            self.assertNoResponse('bar--', 2)
+            self.assertRegexp('karma FOOBAR', 'decreased 1.*total.*0')
+            self.assertNoResponse('FOO++', 2)
+            self.assertNoResponse('BAR--', 2)
             self.assertRegexp('karma foo bar foobar', '.*foo.*foobar.*bar.*')
+            self.assertRegexp('karma FOO BAR FOOBAR', '.*foo.*foobar.*bar.*')
+            self.assertRegexp('karma FOO BAR FOOBAR',
+                              '.*FOO.*foobar.*BAR.*', flags=0)
             # Test case-insensitive
             self.assertNoResponse('MOO++', 2)
             self.assertRegexp('karma moo', 'Karma for \'moo\'.*increased 1'
