@@ -48,6 +48,8 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 
 class Utilities(callbacks.Privmsg):
+    # Yes, I really do mean "requires no arguments" below.  "takes no
+    # arguments" would probably lead people to think it was a useless command.
     def ignore(self, irc, msg, args):
         """requires no arguments
 
@@ -61,7 +63,7 @@ class Utilities(callbacks.Privmsg):
 
         Replies with <text>.  Equivalent to the alias, 'echo $nick: $1'.
         """
-        irc.reply(text)
+        irc.reply(text, prefixName=True)
     reply = wrap(reply, ['text'])
 
     def success(self, irc, msg, args, text):
