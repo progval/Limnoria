@@ -489,7 +489,11 @@ class Fun(callbacks.Privmsg):
         """
         (s, length) = privmsgs.getArgs(args, optional=1)
         if length:
-            length = int(length)
+            try:
+                length = int(length)
+            except ValueError:
+                irc.error(msg, '%r isn\'t a valid length.')
+                return
         else:
             length = 4
         irc.reply(msg, utils.soundex(s, length))
