@@ -528,7 +528,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             if not payload.strip():
                 self.log.debug('Bailing since we received an empty msg.')
                 return
-            msg = ircmsgs.privmsg(msg.args[0], payload, prefix=msg.prefix)
+            msg = ircmsgs.IrcMsg(args=(msg.args[0], payload), msg=msg)
             super(Infobot, self).doPrivmsg(irc, msg)
         finally:
             self.force = False

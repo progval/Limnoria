@@ -95,11 +95,11 @@ class IrcCallback(IrcCommandDispatcher):
                               callbacks to call after me)"""
         after = []
         before = []
-        for name in self.callAfter:
+        for name in self.callBefore:
             cb = irc.getCallback(name)
             if cb is not None:
                 after.append(cb)
-        for name in self.callBefore:
+        for name in self.callAfter:
             cb = irc.getCallback(name)
             if cb is not None:
                 before.append(cb)
@@ -816,8 +816,8 @@ class Irc(IrcCommandDispatcher):
 
     def feedMsg(self, msg):
         """Called by the IrcDriver; feeds a message received."""
-        msg.receivedOn = self.network
-        msg.receivedBy = self
+        msg.tag('receivedBy', self)
+        msg.tag('receivedOn', self.network)
         log.debug('Incoming message: ' + str(msg).rstrip('\r\n'))
 
         # Yeah, so this is odd.  Some networks (oftc) seem to give us certain

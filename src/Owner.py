@@ -412,8 +412,6 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
     def doPrivmsg(self, irc, msg):
         assert self is irc.callbacks[0], 'Owner isn\'t first callback.'
-        msg.errored = False
-        msg.repliedTo = False
         if ircmsgs.isCtcp(msg):
             return
         s = callbacks.addressed(irc.nick, msg)

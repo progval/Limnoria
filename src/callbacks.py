@@ -143,7 +143,7 @@ def canonicalName(command):
 
 def reply(msg, s, prefixName=None, private=None,
           notice=None, to=None, action=None, error=False):
-    msg.repliedTo = True
+    msg.tag('repliedTo')
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
     if ircutils.isChannel(target):
@@ -188,13 +188,13 @@ def reply(msg, s, prefixName=None, private=None,
         msgmaker = ircmsgs.action
     # Finally, we'll return the actual message.
     ret = msgmaker(target, s)
-    ret.inReplyTo = msg
+    ret.tag('inReplyTo', msg)
     return ret
 
 def error(msg, s, **kwargs):
     """Makes an error reply to msg with the appropriate error payload."""
     kwargs['error'] = True
-    msg.errored = True
+    msg.tag('errored')
     return reply(msg, s, **kwargs)
 
 def getHelp(method, name=None):
@@ -221,7 +221,7 @@ class ArgumentError(Error):
     """The bot replies with a help message when this is raised."""
     pass
 
-class Tokenizer:
+class Tokenizer(object):
     # This will be used as a global environment to evaluate strings in.
     # Evaluation is, of course, necessary in order to allowed escaped
     # characters to be properly handled.
@@ -497,10 +497,11 @@ class RichReplyMethods(object):
 
 class IrcObjectProxy(RichReplyMethods):
     "A proxy object to allow proper nested of commands (even threaded ones)."
-    def __init__(self, irc, msg, args):
+    def __init__(self, irc, msg, args, nested=False):
         log.debug('IrcObjectProxy.__init__: %s' % args)
         self.irc = irc
         self.msg = msg
+        self.nested = nested
         # The deepcopy here is necessary for Scheduler; it re-runs already
         # tokenized commands.
         self.args = copy.deepcopy(args)
@@ -534,10 +535,10 @@ class IrcObjectProxy(RichReplyMethods):
             if type(self.args[self.counter]) == str:
                 self.counter += 1
             else:
-                IrcObjectProxy(self, self.msg, self.args[self.counter])
+                self.__class__(self, self.msg,
+                               self.args[self.counter], nested=True)
                 return
         self.finalEval()
-
 
     def _callTokenizedCommands(self):
         log.debug('Calling tokenizedCommands.')
@@ -789,7 +790,7 @@ class IrcObjectProxy(RichReplyMethods):
                 raise ArgumentError # We shouldn't get here, but just in case.
 
     def noReply(self):
-        self.msg.repliedTo = True
+        self.msg.tag('repliedTo')
         
     def getRealIrc(self):
         """Returns the real irclib.Irc object underlying this proxy chain."""
@@ -992,7 +993,6 @@ class Privmsg(irclib.IrcCallback):
         return getattr(self, name)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
-        #print '*', name, utils.stackTrace()
         checkCapabilities = kwargs.pop('checkCapabilities', True)
         if checkCapabilities:
             cap = checkCommandCapability(msg, self, name)

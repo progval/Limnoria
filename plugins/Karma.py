@@ -224,7 +224,7 @@ class Karma(callbacks.Privmsg):
             irc.replySuccess()
         else:
             irc.noReply()
-        assert irc.msg.repliedTo == True
+        assert irc.msg.repliedTo
         
     def _doKarma(self, irc, channel, thing):
         assert thing[-2:] in ('++', '--')

@@ -376,7 +376,7 @@ class Relay(callbacks.Privmsg):
         for otherIrc in world.ircs:
             if otherIrc != irc and not otherIrc.zombie:
                 if msg.args[0] in otherIrc.state.channels:
-                    msg.relayedMsg = True
+                    msg.tag('relayedMsg')
                     otherIrc.queueMsg(msg)
 
     def _detectRelays(self, irc, msg, channel):
@@ -534,7 +534,7 @@ class Relay(callbacks.Privmsg):
     def outFilter(self, irc, msg):
         irc = self._getRealIrc(irc)
         if msg.command == 'PRIVMSG':
-            if not hasattr(msg, 'relayedMsg'):
+            if not msg.relayedMsg:
                 channel = msg.args[0]
                 if channel in self.registryValue('channels'):
                     network = self._getIrcName(irc)
