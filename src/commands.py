@@ -622,12 +622,15 @@ class context(object):
 
 class rest(context):
     def __call__(self, irc, msg, args, state):
-        original = args[:]
-        args[:] = [' '.join(args)]
-        try:
-            super(rest, self).__call__(irc, msg, args, state)
-        except Exception, e:
-            args[:] = original
+        if args:
+            original = args[:]
+            args[:] = [' '.join(args)]
+            try:
+                super(rest, self).__call__(irc, msg, args, state)
+            except Exception, e:
+                args[:] = original
+        else:
+            raise callbacks.ArgumentError
 
 # additional means:  Look for this (and make sure it's of this type).  If
 # there are no arguments for us to check, then use our default.

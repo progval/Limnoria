@@ -57,6 +57,10 @@ class CommandsTestCase(SupyTestCase):
     def testRestHandling(self):
         self.assertState([rest(None)], ['foo', 'bar', 'baz'], ['foo bar baz'])
 
+    def testRestRequiresArgs(self):
+        self.assertRaises(callbacks.ArgumentError,
+                          self.assertState, [rest('something')], [], ['asdf'])
+
     def testOptional(self):
         spec = [optional('int', 999), None]
         self.assertState(spec, ['12', 'foo'], [12, 'foo'])
