@@ -51,6 +51,7 @@ plugins = [
     'Math',
     'Network',
     'NickCapture',
+    'Nickometer',
     'Note',
     'Misc',
     'Owner',
