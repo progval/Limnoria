@@ -147,6 +147,12 @@ class Relay(callbacks.Privmsg):
             self.ircstates[irc] = irclib.IrcState()
         if irc not in self.lastmsg:
             self.lastmsg[irc] = ircmsgs.ping('this is just a fake message')
+        if irc.afterConnect:
+            # We've probably been reloaded.  Let's send some messages to get
+            # our IrcState objects up to current.
+            for channel in self.registryValue('channels'):
+                irc.queueMsg(ircmsgs.who(channel))
+                irc.queueMsg(ircmsgs.names(channel))
 
     def join(self, irc, msg, args):
         """<channel>
