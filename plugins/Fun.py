@@ -338,23 +338,39 @@ class Fun(callbacks.Privmsg):
         """
         irc.reply(random.choice(self._eightballs))
 
+    _rouletteChamber = random.randrange(0, 6)
+    _rouletteBullet = random.randrange(0, 6)
     def roulette(self, irc, msg, args):
-        """takes no arguments
+        """[spin]
 
-        Randomly picks a number from 1 to 6 and if it comes up 1, you get
-        kicked.  Otherwise -- *click*
+        Fires the revolver.  If the bullet was in the chamber, you're dead.
+        Tell me to spin the chambers and I will.
         """
+        if args:
+            if args[0] != 'spin':
+                raise callbacks.ArgumentError
+            else:
+                self._rouletteBullet = random.randrange(0, 6)
+                irc.reply('*SPIN* Are you feeling lucky?', prefixName=False)
+                return
         nick = msg.nick
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             irc.error('This message must be sent in a channel.')
-        if random.randint(1, 6) == 1:
+            return
+        if self._rouletteChamber == self._rouletteBullet:
+            self._rouletteBullet = random.randrange(0, 6)
+            self._rouletteChamber = random.randrange(0, 6)
             if irc.nick in irc.state.channels[channel].ops:
                 irc.queueMsg(ircmsgs.kick(channel, nick, 'BANG!'))
             else:
-                irc.reply('*BANG* Hey, who put a blank in here?!')
+                irc.reply('*BANG* Hey, who put a blank in here?!',
+                          prefixName=False)
+            irc.reply('reloads and spins the chambers.', action=True)
         else:
             irc.reply('*click*')
+            self._rouletteChamber += 1
+            self._rouletteChamber %= 6
 
     def monologue(self, irc, msg, args):
         """[<channel>]
