@@ -66,7 +66,7 @@ class FunctionsTest(unittest.TestCase):
 
 
 class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Alias', 'Fun', 'Utilities', 'Misc')
+    plugins = ('Alias', 'Fun', 'Utilities')
     def testAliasHelp(self):
         self.assertNotError('alias add slashdot foo')
         self.assertRegexp('help slashdot', "Alias for 'foo'")
