@@ -89,7 +89,6 @@ class Format(callbacks.Privmsg):
         raise NotImplementedError
         try:
             fg = args.pop(0)
-            if args[0] in ircutils.foo
         except KeyError:
             pass
 
