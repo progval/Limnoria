@@ -445,7 +445,8 @@ class FunCommands(callbacks.Privmsg):
         if len(stack) == 1:
             irc.reply(msg, str(self._complexToString(complex(stack[0]))))
         else:
-            irc.reply(msg, 'Stack: %r' % stack)
+            s = ', '.join(map(self._complexToString, map(complex, stack)))
+            irc.reply(msg, 'Stack: [%s]' % s)
 
     def objects(self, irc, msg, args):
         """takes no arguments.
