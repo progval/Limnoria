@@ -67,5 +67,8 @@ class HttpTest(PluginTestCase, PluginDocumentation):
     def testKernel(self):
         self.assertNotError('kernel')
 
+    def testPgpkey(self):
+        self.assertNotError('pgpkey jeremiah fincher')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

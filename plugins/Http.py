@@ -38,7 +38,6 @@ from baseplugin import *
 import re
 import sets
 import time
-import urllib
 import urllib2
 
 import utils
@@ -360,7 +359,7 @@ class Http(callbacks.Privmsg):
         elif 'We could not get any results' in html:
             irc.reply(msg, 'No results found for %s.' % hostname)
         else:
-            irc.error(msg, 'The format of the was odd.')
+            irc.error(msg, 'The format of page the was odd.')
 
     def kernel(self, irc, msg, args):
         """takes no arguments
@@ -381,6 +380,32 @@ class Http(callbacks.Privmsg):
         fd.close()
         irc.reply(msg, 'The latest stable kernel is %s; ' \
                        'the latest beta kernel is %s.' % (stable, beta))
+
+    _pgpkeyre = re.compile(r'pub\s+\d{4}\w/<a '\
+        'href="([^"]+)">([^<]+)</a>[^>]+>([^<]+)</a>')
+    def pgpkey(self, irc, msg, args):
+        """<search words>
+
+        Returns the results of querying pgp.mit.edu for keys that match
+        the <search words>.
+        """
+        search = privmsgs.getArgs(args)
+        urlClean = search.replace(' ', '+')
+        host = 'http://pgp.mit.edu:11371'
+        url = '%s/pks/lookup?op=index&search=%s' % (host, urlClean)
+        fd = urllib2.urlopen(url)
+        html = fd.read().split('\n')
+        fd.close()
+        pgpkeys = ''
+        for line in html:
+            info = self._pgpkeyre.search(line)
+            if info:
+                pgpkeys += '%s <%s> :: ' % (info.group(3), '%s%s' % (host,
+                    info.group(1)))
+        if len(pgpkeys) == 0:
+            irc.reply(msg, 'No results found for %s.' % search)
+        else:
+            irc.reply(msg, 'Matches found for %s: %s' % (search, pgpkeys))
 
 Class = Http
 
