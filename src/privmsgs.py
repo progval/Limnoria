@@ -1030,6 +1030,7 @@ class UserCommands(callbacks.Privmsg):
         """
         try:
             u = ircdb.users.getUser(msg.prefix)
+            name = ircdb.users.getUserName(msg.prefix)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
