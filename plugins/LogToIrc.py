@@ -132,12 +132,19 @@ _ircHandler.setFormatter(_ircFormatter)
 
 class IrcLogLevel(log.LogLevel):
     """Value must be one of INFO, WARNING, ERROR, or CRITICAL."""
+    def set(self, s):
+        s = s.upper()
+        try:
+            self.setValue(getattr(logging, s))
+            _ircHandler.setLevel(self.value)
+        except AttributeError:
+            self.error()
+    
     def setValue(self, v):
         if v <= logging.DEBUG:
             self.error()
         else:
             log.LogLevel.setValue(self, v)
-            _ircHandler.setLevel(v)
 
 class ValidChannelOrNick(registry.String):
     """Value must be a valid channel or a valid nick."""
