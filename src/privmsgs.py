@@ -174,6 +174,8 @@ class SnarfQueue(ircutils.FloodQueue):
 
 _snarfed = SnarfQueue()
 
+# This lock is used to serialize the calls to snarfers, so earlier snarfers are
+# guaranteed to beat out later snarfers.
 _snarfLock = threading.Lock()
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
