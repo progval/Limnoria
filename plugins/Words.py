@@ -237,7 +237,6 @@ class Words(callbacks.Privmsg):
     ###
     # HANGMAN
     ###
-    dicturl = 'http://www.unixhideout.com/freebsd/share/dict/words'
     games = ircutils.IrcDict()
     validLetters = list(string.ascii_lowercase)
 
