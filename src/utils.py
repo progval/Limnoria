@@ -43,15 +43,16 @@ import htmlentitydefs
 class HtmlToText(sgmllib.SGMLParser):
     """Taken from some eff-bot code on c.l.p."""
     entitydefs = htmlentitydefs.entitydefs
-    def __init__(self):
+    def __init__(self, tagReplace=' '):
         self.data = []
+        self.tagReplace = tagReplace
         sgmllib.SGMLParser.__init__(self)
 
     def unknown_starttag(self, tag, attrib):
-        self.data.append(" ")
+        self.data.append(self.tagReplace)
 
     def unknown_endtag(self, tag):
-        self.data.append(" ")
+        self.data.append(self.tagReplace)
 
     def handle_data(self, data):
         self.data.append(data)
@@ -60,8 +61,8 @@ class HtmlToText(sgmllib.SGMLParser):
         text = ''.join(self.data).strip()
         return ' '.join(text.split()) # normalize whitespace
 
-def htmlToText(s):
-    x = HtmlToText()
+def htmlToText(s, tagReplace=' '):
+    x = HtmlToText(tagReplace)
     x.feed(s)
     return x.getText()
 
