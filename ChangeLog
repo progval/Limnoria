@@ -52,8 +52,11 @@
 	* Fixed the problem with channels with dots or colons in them
 	raising exceptions whenever the registry was accessed.
 	
-	* Changed Fun.roulette to use a 6-barrel revolver.
+        * Changed Fun.eightball to provide a similar answer for a question
+        asked multiple times.
 	
+	* Changed Fun.roulette to use a 6-barrel revolver.
+        
 	* Changed Bugzilla to use the registry, rather than a custom
 	flatfile database format.
 	
@@ -184,6 +187,9 @@
 
 	* Added Misc.author, a command for finding out which author
 	claims a particular plugin.
+
+        * Added Topic configuration supybot.plugins.Topic.format template
+        string allowing full customization of the Topic items.
 
 	* Added Topic.lock and Topic.unlock, for locking and unlocking
 	the topic.
@@ -900,7 +906,7 @@
 	SQL statement to do so:
 	    CREATE TABLE nick_seen (
 	    name TEXT UNIQUE ON CONFLICT REPLACE,
-	    last_seen TIMESTAMP,
+	    last_seen Mon 23 Aug 2004 11:51:37 AM PDT,
 	    last_msg TEXT
 	    );
 
