@@ -820,16 +820,10 @@ class OwnerCommands(callbacks.Privmsg):
             except ImportError:
                 irc.error(msg, 'Sorry, no plugin %s exists.' % plugin)
                 return
-            try:
-                module = imp.load_module(plugin, *moduleInfo)
-                callback = module.Class()
-                irc.addCallback(callback)
-                irc.reply(msg, conf.replySuccess)
-                return
-            except Exception, e:
-                debug.recoverableException()
-                irc.error(msg, debug.exnToString(e))
-                return
+            module = imp.load_module(plugin, *moduleInfo)
+            callback = module.Class()
+            irc.addCallback(callback)
+            irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, conf.replyNoCapability % 'owner')
             return
