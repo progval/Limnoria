@@ -326,6 +326,7 @@ class FunCommands(callbacks.Privmsg):
     _mathEnv = {}
     _mathEnv.update(math.__dict__)
     _mathEnv.update(cmath.__dict__)
+    _mathEnv['i'] = 1j
     _mathEnv['__builtins__'] = new.module('__builtins__')
     _mathInt = re.compile(r'(?<!\d|\.)(\d+)(?!\d+|\.|\.\d+)')
     _mathHex = re.compile(r'(0x[A-Fa-f\d]+)')
