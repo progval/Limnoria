@@ -68,6 +68,9 @@ def configure(onStart, afterConnect, advanced):
         counter = 1
         try:
             for line in fd:
+                line = line.rstrip('\r\n')
+                if not line or line.startswith('#'):
+                    continue
                 (key, value) = line.split(':', 1)
                 counter += 1
         except ValueError:
