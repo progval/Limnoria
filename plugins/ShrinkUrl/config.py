@@ -63,6 +63,9 @@ conf.registerChannelValue(ShrinkUrl, 'outFilter',
 conf.registerChannelValue(ShrinkUrl, 'default',
     ShrinkService('ln', """Determines what website the bot will use when
     shrinking a URL."""))
+conf.registerGlobalValue(ShrinkUrl, 'bold',
+    registry.Boolean(True, """Determines whether this plugin will bold certain
+    portions of its replies."""))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78

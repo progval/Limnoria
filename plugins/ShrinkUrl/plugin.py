@@ -133,7 +133,10 @@ class ShrinkUrl(callbacks.PluginRegexp):
                     self.log.info('Couldn\'t get shorturl for %u', url)
                     return
                 domain = utils.web.getDomain(url)
-                s = format('%u (at %s)', ircutils.bold(shorturl), domain)
+                if self.registryValue('bold'):
+                    s = format('%u (at %s)', ircutils.bold(shorturl), domain)
+                else:
+                    s = format('%u (at %s)', shorturl, domain)
                 m = irc.reply(s, prefixName=False)
                 m.tag('shrunken')
     shrinkSnarfer = urlSnarfer(shrinkSnarfer)
