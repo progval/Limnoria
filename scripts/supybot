@@ -77,6 +77,8 @@ def main():
             (user, system, _, _, _) = os.times()
             log.info('Total CPU time taken: %s seconds.', user+system)
             raise SystemExit
+        except SystemExit:
+            raise
         except:
             try: # Ok, now we're *REALLY* paranoid!
                 log.exception('Exception raised out of drivers.run:')
