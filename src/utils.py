@@ -693,8 +693,20 @@ def mungeEmailForWeb(s):
     s = s.replace('.', ' DOT ')
     return s
 
-def stackTrace():
-    traceback.print_stack(sys._getframe())
+def stackTrace(frame=None, compact=False):
+    if frame is None:
+        frame = sys._getframe()
+    if compact:
+        L = []
+        while frame:
+            lineno = frame.f_lineno
+            funcname = frame.f_code.co_name
+            filename = os.path.basename(frame.f_code.co_filename)
+            L.append('[%s|%s|%s]' % (filename, funcname, lineno))
+            frame = frame.f_back
+        return textwrap.fill(' '.join(L))
+    else:
+        return traceback.format_stack(frame)
 
 class AtomicFile(file):
     """Used for files that need to be atomically written -- i.e., if there's a
