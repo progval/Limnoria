@@ -68,6 +68,13 @@ if sqlite is not None:
             self.assertRegexp('karma MoO',
                               'Karma for \'MoO\'.*increased 1.*total.*1')
 
+        def testSimpleOutput(self):
+            self.assertNotError('karma config simple-output on')
+            self.assertNoResponse('foo++', 2)
+            self.assertResponse('karma foo', 'foo: 1')
+            self.assertNoResponse('bar--', 2)
+            self.assertResponse('karma bar', 'bar: -1')
+        
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

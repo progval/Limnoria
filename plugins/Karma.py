@@ -55,11 +55,24 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Karma')
 
-class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
+class Karma(callbacks.PrivmsgCommandAndRegexp,
+            plugins.Configurable,
+            plugins.ChannelDBHandler):
     addressedRegexps = ['increaseKarma', 'decreaseKarma']
+    configurables = plugins.ConfigurableDictionary(
+        [('simple-output', plugins.ConfigurableBoolType, False,
+          """Determines whether the bot will output shorter versions of URLs
+          longer than the tinyurl-minimum-length config variable.""")]
+    )
     def __init__(self):
-        plugins.ChannelDBHandler.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        plugins.Configurable.__init__(self)
+        plugins.ChannelDBHandler.__init__(self)
+
+    def die(self):
+        callbacks.PrivmsgCommandAndRegexp.die(self)
+        plugins.Configurable.die(self)
+        plugins.ChannelDBHandler.die(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):
@@ -103,10 +116,14 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
             else:
                 (added, subtracted) = imap(int, cursor.fetchone())
                 total = added - subtracted
-                s = 'Karma for %r has been increased %s %s ' \
-                    'and decreased %s %s for a total karma of %s.' % \
-                    (name, added, utils.pluralize(added, 'time'),
-                     subtracted, utils.pluralize(subtracted, 'time'), total)
+                if self.configurables.get('simple-output', channel):
+                    s = '%s: %s' % (name, total)
+                else:
+                    s = 'Karma for %r has been increased %s %s ' \
+                        'and decreased %s %s for a total karma of %s.' % \
+                        (name, added, utils.pluralize(added, 'time'),
+                         subtracted, utils.pluralize(subtracted, 'time'),
+                         total)
                 irc.reply(msg, s)
         elif len(args) > 1:
             normalizedArgs = sets.Set(imap(str.lower, args))
