@@ -72,6 +72,7 @@ def processConfigFile(filename):
     import debug
     import irclib
     import ircmsgs
+    import ircutils
     import privmsgs
     import asyncoreDrivers
     def reportConfigError(filename, msg):
@@ -86,7 +87,7 @@ def processConfigFile(filename):
             for command in self.commands:
                 #debug.printf(irc.nick)
                 #debug.printf(command)
-                msg = ircmsgs.privmsg(irc.nick, command)
+                msg = ircmsgs.privmsg(irc.nick, command, prefix=irc.prefix)
                 irc.queueMsg(msg)
 
         do377 = do376
@@ -131,9 +132,10 @@ def processConfigFile(filename):
         (startup, after376) = tuple(itersplit(lines,lambda s: not s, True))
         #debug.printf('startup: %r' % startup)
         #debug.printf('after376: %r' % after376)
+        prefix = ircutils.joinHostmask(nick, ident, 'host')
         for line in filter(None, startup):
             if not line.startswith('#'):
-                irc.feedMsg(ircmsgs.privmsg(irc.nick, line))
+                irc.feedMsg(ircmsgs.privmsg(irc.nick, line, prefix=prefix))
         irc.reset()
         world.startup = False
         irc.addCallback(ConfigAfter376(after376))
