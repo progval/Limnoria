@@ -71,6 +71,7 @@ plugins = [
     'Status',
     'String',
     'Time',
+    'Todo',
     'Topic',
     'URL',
     'User',
