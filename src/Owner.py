@@ -110,7 +110,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     _srcPlugins = ('Owner', 'Misc', 'Admin', 'User', 'Channel')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        setattr(self.__class__, 'exec', self.__class__._exec)
+        if hasattr(self.__class__, '_exec'):
+            setattr(self.__class__, 'exec', self.__class__._exec)
         self.defaultPlugins = {'list': 'Misc',
                                'capabilities': 'User',
                                'addcapability': 'Admin',
@@ -242,36 +243,37 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 return
         irc.replySuccess()
                                 
-    def eval(self, irc, msg, args):
-        """<expression>
+    if conf.allowEval:
+        def eval(self, irc, msg, args):
+            """<expression>
 
-        Evaluates <expression> and returns its value.
-        """
-        if conf.allowEval:
-            s = privmsgs.getArgs(args)
-            try:
-                irc.reply(repr(eval(s)))
-            except SyntaxError, e:
-                irc.reply('%s: %r' % (utils.exnToString(e), s))
-            except Exception, e:
-                irc.reply(utils.exnToString(e))
-        else:
-            irc.error('You must enable conf.allowEval for that to work.')
+            Evaluates <expression> and returns its value.
+            """
+            if conf.allowEval:
+                s = privmsgs.getArgs(args)
+                try:
+                    irc.reply(repr(eval(s)))
+                except SyntaxError, e:
+                    irc.reply('%s: %r' % (utils.exnToString(e), s))
+                except Exception, e:
+                    irc.reply(utils.exnToString(e))
+            else:
+                irc.error('You must enable conf.allowEval for that to work.')
 
-    def _exec(self, irc, msg, args):
-        """<statement>
+        def _exec(self, irc, msg, args):
+            """<statement>
 
-        Execs <code>.  Returns success if it didn't raise any exceptions.
-        """
-        if conf.allowEval:
-            s = privmsgs.getArgs(args)
-            try:
-                exec s
-                irc.replySuccess()
-            except Exception, e:
-                irc.reply(utils.exnToString(e))
-        else:
-            irc.error('You must enable conf.allowEval for that to work.')
+            Execs <code>.  Returns success if it didn't raise any exceptions.
+            """
+            if conf.allowEval:
+                s = privmsgs.getArgs(args)
+                try:
+                    exec s
+                    irc.replySuccess()
+                except Exception, e:
+                    irc.reply(utils.exnToString(e))
+            else:
+                irc.error('You must enable conf.allowEval for that to work.')
 
     def ircquote(self, irc, msg, args):
         """<string to be sent to the server>

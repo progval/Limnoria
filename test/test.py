@@ -53,6 +53,7 @@ registry.open(registryFilename)
 
 import log
 import conf
+conf.allowEval = True
 
 import fix
 
