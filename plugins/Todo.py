@@ -35,7 +35,7 @@ tasks to do, with an optional priority for each.
 """
 
 __revision__ = "$Id$"
-
+__author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
 import plugins
 
 import glob

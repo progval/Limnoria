@@ -35,7 +35,7 @@ A module for managing and voting on polls.
 """
 
 __revision__ = "$Id$"
-__author__ = "Daniel DiPaolo (Strike) <ddipaolo AT users DOT sf DOT net>"
+__author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
 import plugins
 
 import os

@@ -37,7 +37,7 @@ and if nothing is found, responds with an entry from the "dunno" database.
 """
 
 __revision__="$Id$"
-__author__ = "Daniel DiPaolo (Strike) <ddipaolo AT users DOT sf DOT net>"
+__author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
 
 import plugins
 
