@@ -99,7 +99,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         except KeyError:
             return 'an unknown user'
 
-    def _getId(self, idStr):
+    def _getId(self, irc, idStr):
         try:
             return int(idStr)
         except ValueError:
@@ -166,7 +166,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         """
         channel = privmsgs.getChannel(msg, args)
         id = privmsgs.getArgs(args)
-        id = self._getId(id)
+        id = self._getId(irc, id)
         db = self.getDb(channel)
         cursor = db.cursor()
         # Check to make sure that the poll exists
@@ -186,7 +186,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         """
         channel = privmsgs.getChannel(msg, args)
         (poll_id, option) = privmsgs.getArgs(args, required=2)
-        poll_id = self._getId(poll_id)
+        poll_id = self._getId(irc, poll_id)
         userId = self._getUserId(msg.prefix)
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -228,8 +228,8 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         """
         channel = privmsgs.getChannel(msg, args)
         (poll_id, option_id) = privmsgs.getArgs(args, required=2)
-        poll_id = self._getId(poll_id)
-        option_id = self._getId(option_id)
+        poll_id = self._getId(irc, poll_id)
+        option_id = self._getId(irc, option_id)
         userId = self._getUserId(msg.prefix)
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -269,7 +269,7 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
         """
         channel = privmsgs.getChannel(msg, args)
         poll_id = privmsgs.getArgs(args)
-        poll_id = self._getId(poll_id)
+        poll_id = self._getId(irc, poll_id)
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT id, question, started_by, open

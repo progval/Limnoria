@@ -104,4 +104,16 @@ if sqlite is not None:
             self.assertNotError('poll open Foo 2?')
             self.assertRegexp('poll list', '#1: \'Foo\?\'.*#2: \'Foo 2\?\'')
 
+        def testGetIDError(self):
+            self.assertNotError('poll open Foo?')
+            self.assertError('poll add a moo')
+            self.assertNotError('poll add 1 moo')
+            self.assertError('poll vote a 1')
+            self.assertError('poll vote 1 a')
+            self.assertNotError('poll vote 1 1')
+            self.assertError('poll results a')
+            self.assertNotError('poll results 1')
+            self.assertError('poll close a')
+            self.assertNotError('poll close 1')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
