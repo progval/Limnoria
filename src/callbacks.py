@@ -1131,6 +1131,17 @@ class Privmsg(irclib.IrcCallback):
         elapsed = time.time() - start
         log.stat('%s took %s seconds', name, elapsed)
 
+    def getCommandHelp(self, name):
+        assert self.isCommand(name)
+        command = self.getCommand(name)
+        if hasattr(command, 'isDispatcher') and \
+           command.isDispatcher and self.__doc__:
+            return utils.normalizeWhitespace(self.__doc__)
+        elif hasattr(command, '__doc__'):
+            return getHelp(command)
+        else:
+            return 'The %s command has no help.' % utils.quoted(name)
+        
     def registryValue(self, name, channel=None, value=True):
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
