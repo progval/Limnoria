@@ -438,7 +438,6 @@ class IrcObjectProxy:
                 private = self.private or not ircutils.isChannel(msg.args[0])
                 Privmsg._mores[msg.nick] = (private, msgs)
                 if self.private:
-                    debug.printf('got here!')
                     self.irc.queueMsg(ircmsgs.privmsg(msg.nick, response))
                 else:
                     self.irc.queueMsg(reply(msg, response, self.prefixName))

@@ -100,14 +100,14 @@ class SupyReconnectingFactory(ReconnectingClientFactory):
 
 class MyShell(Shell):
     def checkUserAndPass(self, username, password):
-        debug.printf(repr(username))
-        debug.printf(repr(password))
+        #debug.printf(repr(username))
+        #debug.printf(repr(password))
         try:
             id = ircdb.users.getUserId(username)
             u = ircdb.users.getUser(id)
-            debug.printf(u)
+            #debug.printf(u)
             if u.checkPassword(password) and u.checkCapability('owner'):
-                debug.printf('returning True')
+                #debug.printf('returning True')
                 return True
             else:
                 return False

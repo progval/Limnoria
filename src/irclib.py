@@ -532,6 +532,7 @@ class Irc(object):
             self.outstandingPing = False
         # Send new nicks on 433
         if msg.command == '433' or msg.command == '432':
+            #debug.printf('In irclib.Irc 433 handler.')
             self.sendMsg(ircmsgs.nick(self._nickmods.pop(0) % self.nick))
         if msg.nick == self.nick:
             self.prefix = msg.prefix
@@ -550,8 +551,6 @@ class Irc(object):
         if msg.command in self._nickSetters:
             #debug.printf('msg.command in self._nickSetters')
             newnick = msg.args[0]
-            if self.nick != newnick:
-                debug.printf('Hmm...self.nick != newnick.  Odd.')
             self.nick = newnick
         # Now update the IrcState object.
         try:

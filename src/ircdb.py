@@ -608,7 +608,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
     try:
         u = users.getUser(hostmask)
         if u.secure and not u.checkHostmask(hostmask, useAuth=False):
-            debug.printf('Secure user with non-matching hostmask.')
+            #debug.printf('Secure user with non-matching hostmask.')
             raise KeyError
     except KeyError:
         # Raised when no hostmasks match.
