@@ -330,7 +330,7 @@ if __name__ == '__main__':
 
     conf.strictRfc = options.strictRfc
 
-    irc = irclib.Irc(nick, user, ident, password)
+    irc = irclib.Irc(nick, user=user, ident=ident, password=password)
     callback = Owner.Class()
     irc.addCallback(callback)
     driver = drivers.newDriver(server, irc)
