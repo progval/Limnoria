@@ -389,7 +389,7 @@ class Weather(callbacks.Privmsg):
         temp = info['Temperature']
         convert = self.registryValue('convert', msg.args[0])
         if location and temp:
-            (temp, deg, unit) = temp.split()
+            (temp, deg, unit) = temp.split()[3:] # We only want temp format
             if convert:
                 temp = self._getTemp(int(temp), deg, unit, msg.args[0])
             else:
