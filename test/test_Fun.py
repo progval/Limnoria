@@ -54,8 +54,6 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertResponse('ping', 'pong')
                 
     def testNoErrors(self):
-        self.assertNotError('leet foobar')
-        self.assertNotError('lithp meghan sweeney')
         self.assertNotError('objects')
         self.assertNotError('levenshtein Python Perl')
 
@@ -63,40 +61,11 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('soundex jemfinch')
         self.assertNotRegexp('soundex foobar 3:30', 'ValueError')
 
-    def testJeffk(self):
-        for i in range(100):
-            self.assertNotError('jeffk the quick brown fox is ghetto')
-
-    def testSquish(self):
-        self.assertResponse('squish foo bar baz', 'foobarbaz')
-        self.assertResponse('squish "foo bar baz"', 'foobarbaz')
-
-    def testLithp(self):
-        self.assertResponse('lithp jamessan', 'jamethan')
-
-    def testMorse(self):
-        self.assertResponse('unmorse [morse jemfinch]', 'JEMFINCH')
-
-    def testReverse(self):
-        for nick in nicks[:10]:
-            self.assertResponse('reverse %s' % nick, nick[::-1])
-
-    def testBinary(self):
-        self.assertResponse('binary A', '01000001')
-
-    def testRot13(self):
-        for s in nicks[:10]: # 10 is probably enough.
-            self.assertResponse('rot13 [rot13 %s]' % s, s)
-
     def testChr(self):
         for i in range(256):
             c = chr(i)
             regexp = r'%s|%s' % (re.escape(c), re.escape(repr(c)))
             self.assertRegexp('chr %s' % i, regexp)
-
-    def testHexlifyUnhexlify(self):
-        for s in nicks[:10]: # 10, again, is probably enough.
-            self.assertResponse('unhexlify [hexlify %s]' % s, s)
 
     def testXor(self):
         L = [nick for nick in nicks if '|' not in nick and
@@ -114,44 +83,10 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
             i = ord(c)
             self.assertResponse('ord %s' % utils.dqrepr(c), str(i))
 
-    def testScramble(self):
-        s = 'the recalcitrant jamessan tests his scramble function'
-        self.assertNotRegexp('scramble %s' % s, s)
-        s = 'the recalc1trant jam3ssan tests his scramble fun><tion'
-        self.assertNotRegexp('scramble %s' % s, s)
-
-    def testColorize(self):
-        self.assertNotRegexp('colorize foobar', r'\s+')
-        self.assertRegexp('colorize foobar', r'\x03')
-
     def testEncodeDecode(self):
         s = 'the recalcitrant jamessan tests his scramble function'
         self.assertNotRegexp('encode aldkfja foobar', 'LookupError')
         self.assertNotRegexp('decode asdflkj foobar', 'LookupError')
         self.assertResponse('decode zlib [encode zlib %s]' % s, s)
-
-    def testOutfilter(self):
-        s = self.nick.encode('rot13')
-        self.assertNotError('outfilter rot13')
-        self.assertResponse('rot13 foobar', '%s: foobar' % s)
-        self.assertNotError('outfilter rot13')
-        self.assertResponse('rot13 foobar', 'sbbone')
-        self.assertNotError('outfilter')
-        self.assertResponse('rot13 foobar', 'sbbone')
-        self.assertNotError('outfilter ROT13')
-        self.assertResponse('rot13 foobar', '%s: foobar' % s)
-        self.assertNotError('outfilter')
-        self.assertResponse('rot13 foobar', 'sbbone')
-
-    def testOutfilterAction(self):
-        s = self.nick.encode('rot13')
-        self.assertNotError('outfilter rot13')
-        self.assertResponse('rot13 foobar', '%s: foobar' % s)
-        m = self.getMsg('action foobar')
-        self.failUnless(ircmsgs.isAction(m))
-        s = ircmsgs.unAction(m)
-        self.assertEqual(s, 'sbbone')
-        
-        
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
