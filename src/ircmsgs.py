@@ -510,10 +510,10 @@ def who(hostmaskOrChannel, prefix=''):
            hostmaskOrChannel
     return IrcMsg(prefix=prefix, command='WHO', args=(hostmaskOrChannel,))
 
-def whois(nick, prefix=''):
+def whois(nick, mask='', prefix=''):
     """Returns a WHOIS for nick."""
     assert isNick(nick), nick
-    return IrcMsg(prefix=prefix, command='WHOIS', args=(nick,))
+    return IrcMsg(prefix=prefix, command='WHOIS', args=(nick, mask))
 
 def invite(channel, nick, prefix=''):
     """Returns an INVITE for nick."""
