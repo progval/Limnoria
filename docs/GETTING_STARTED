@@ -83,11 +83,12 @@ supybot: config list
 
 Rather than just "list".
 
-Speaking of the load command, that's the command you'll use to load
-other plugins.  If you didn't use supybot-wizard, though, you might do
-well to try it before playing around with loading plugins yourself:
-each plugin has its own configure function that the wizard uses to
-setup the appropriate registry entries if the plugin requires any.
+Now that you know how to deal with plugins having commands with the
+same name, let's take a look at loading other plugins.  If you didn't
+use supybot-wizard, though, you might do well to try it before playing
+around with loading plugins yourself: each plugin has its own
+configure function that the wizard uses to setup the appropriate
+registry entries if the plugin requires any.
 
 Now, if you do want to play around with loading plugins, you're going
 to need to have the owner capability.  If you ran the wizard, then

@@ -141,7 +141,7 @@ A: Submit it on Sourceforge through our Sourceforge project page:
    (basically the stuff from "Uncaught exception in ..." to the next
    log entry).  We'd also like to see the commands that caused the
    bug, or happened around the time you saw the bug.  If the bug
-   involved a datase, we'd love to see the database.  Remember, it's
+   involved a database, we'd love to see the database.  Remember, it's
    always worse to send us too much information in a bug report than
    too little.
 
