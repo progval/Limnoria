@@ -44,6 +44,7 @@ import supybot.fix as fix
 
 import re
 import sets
+import time
 import pydoc
 import pprint
 import socket
@@ -570,7 +571,7 @@ def main():
               to change, then take a look at your configuration file
               when your bot isn't running and read the comments,
               tweaking values to your heart's desire.""")
-    
+
     # Let's make sure that src/ plugins are loaded.
     conf.registerPlugin('Admin', True)
     conf.registerPlugin('Channel', True)
@@ -588,7 +589,7 @@ def main():
     registry.close(conf.supybot, filename)
 
     # Done!
-    output("""All done!  Your new bot configuration is %s.  If you're running 
+    output("""All done!  Your new bot configuration is %s.  If you're running
     a *nix based OS, you can probably start your bot with the command line
     "supybot %s".  If you're not running a *nix or similar machine, you'll
     just have to start it like you start all your other Python scripts.""" % \
