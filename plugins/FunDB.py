@@ -81,7 +81,7 @@ class DbiFunDBDB(object):
             self.dbs[channel] = {}
         if type not in self.dbs[channel]:
             filename = type.capitalize() + '.db'
-            filename = plugins.makeChannelFilename(channel, filename)
+            filename = plugins.makeChannelFilename(filename, channel)
             self.filenames.add(filename)
             self.dbs[channel][type] = self.FunDBDB(filename)
         return self.dbs[channel][type]

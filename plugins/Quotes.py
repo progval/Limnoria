@@ -82,7 +82,7 @@ class QuoteRecord(object):
 
 class SqliteQuotesDB(object):
     def _getDb(self, channel):
-        filename = plugins.makeChannelFilename(channel, 'Quotes.db')
+        filename = plugins.makeChannelFilename('Quotes.db', channel)
         if os.path.exists(filename):
             return sqlite.connect(db=filename, mode=0755,
                                   converters={'bool': bool})

@@ -91,7 +91,7 @@ conf.registerChannelValue(conf.supybot.plugins.URL, 'nonSnarfingRegexp',
 class URLDB(object):
     def __init__(self, channel, log):
         self.log = log
-        self.filename = plugins.makeChannelFilename(channel, 'URL.db')
+        self.filename = plugins.makeChannelFilename('URL.db', channel)
 
     def _getFile(self):
         try:

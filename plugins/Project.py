@@ -83,7 +83,7 @@ class TrackerDB(dbi.DB):
         
 class ProjectDB(object):
     def __init__(self, channel, project):
-        dir = plugins.makeChannelFilename(channel, 'Projects')
+        dir = plugins.makeChannelFilename('Projects', channel)
         if not os.path.exists(dir):
             os.mkdir(dir)
         self.projectDir = os.path.join(dir, project)
@@ -189,7 +189,7 @@ class ProjectsDB(object):
 
     def projects(self, channel):
         """Returns the projects on channel."""
-        dir = plugins.makeChannelFilename(channel, 'Projects')
+        dir = plugins.makeChannelFilename('Projects', channel)
         return os.listdir(conf.supybot.directories.data.dirize(dir))
 
     def isProject(self, channel, project):

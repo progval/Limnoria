@@ -92,7 +92,7 @@ class DbmMarkovDB(object):
     def _getDb(self, channel):
         if channel not in self.dbs:
             # Stupid anydbm seems to append .db to the end of this.
-            filename = plugins.makeChannelFilename(channel, 'DbmMarkovDB')
+            filename = plugins.makeChannelFilename('DbmMarkovDB', channel)
             # To keep the code simpler for addPair, I decided not to make
             # self.dbs[channel]['firsts'] and ['lasts'].  Instead, we'll pad
             # the words list being sent to addPair such that ['\n \n'] will be

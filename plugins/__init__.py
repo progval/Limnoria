@@ -142,12 +142,12 @@ class DBHandler(object):
             del self.cachedDb
 
 
-def makeChannelFilename(channel, filename, dirname=None):
-    assert ircutils.isChannel(channel), 'channel not a channel, ' \
-           'the arguments to makeChannelFilename are probably reversed.'
-    assert filename == os.path.basename(filename), 'We don\'t handle dirs.'
+def makeChannelFilename(filename, channel=None, dirname=None):
     channel = ircutils.toLower(channel)
-    if conf.supybot.databases.plugins.channelSpecific.get(channel)():
+    # ??? This may not be right.
+    filename = os.path.basename(filename)
+    if channel is not None and \
+       conf.get(conf.supybot.databases.plugins.channelSpecific, channel):
         if dirname is None:
             dir = conf.supybot.directories.data.dirize(channel)
         else:
@@ -177,7 +177,7 @@ class ChannelDBHandler(object):
         """Override this to specialize the filenames of your databases."""
         channel = ircutils.toLower(channel)
         className = self.__class__.__name__
-        return makeChannelFilename(channel, className + self.suffix)
+        return makeChannelFilename(className + self.suffix, channel)
 
     def makeDb(self, filename):
         """Override this to create your databases."""

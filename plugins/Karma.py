@@ -82,7 +82,7 @@ conf.registerChannelValue(conf.supybot.plugins.Karma, 'allowUnaddressedKarma',
 
 class SqliteKarmaDB(object):
     def _getDb(self, channel):
-        filename = plugins.makeChannelFilename(channel, 'Karma.db')
+        filename = plugins.makeChannelFilename('Karma.db', channel)
         if os.path.exists(filename):
             db = sqlite.connect(filename)
         else:

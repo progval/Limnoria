@@ -80,7 +80,7 @@ class DbiDunnoDB(object):
 
     def _getDb(self, channel):
         # Why cache?  It gains very little.
-        filename = plugins.makeChannelFilename(channel, 'Dunno.db')
+        filename = plugins.makeChannelFilename('Dunno.db', channel)
         self.filenames.add(filename)
         return self.DunnoDB(filename)
 
