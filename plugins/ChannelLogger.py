@@ -44,12 +44,13 @@ import debug
 import world
 import irclib
 import ircmsgs
+import ircutils
 
 ###
 # Logger: Handles logging of IRC channels to files.
 ###
 class ChannelLogger(irclib.IrcCallback):
-    logs = {}
+    logs = ircutils.IrcDict()
     actionre = re.compile('\x01ACTION (.*)\x01')
     def __init__(self):
         self.laststate = None
@@ -63,7 +64,7 @@ class ChannelLogger(irclib.IrcCallback):
     def reset(self):
         for log in self.logs.itervalues():
             log.close()
-        self.logs = {}
+        self.logs = ircutils.IrcDict()
 
     def flush(self):
         for log in self.logs.itervalues():

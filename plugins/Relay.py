@@ -178,7 +178,7 @@ class Relay(callbacks.Privmsg):
         channels.
         """
         channel = privmsgs.getArgs(args)
-        self.channels.add(channel)
+        self.channels.add(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
@@ -193,7 +193,7 @@ class Relay(callbacks.Privmsg):
         channel.
         """
         channel = privmsgs.getArgs(args)
-        self.channels.remove(channel)
+        self.channels.remove(ircutils.toLower(channel))
         for otherIrc in self.ircs.itervalues():
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))

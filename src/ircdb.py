@@ -252,7 +252,7 @@ class UsersDictionary(object):
         fd.close()
         self.dict = eval(normalize(s))
         self.cache = {} # hostmasks to nicks.
-        self.revcache = {} # nicks to hostmasks.
+        self.revcache = ircutils.IrcDict() # nicks to hostmasks.
 
     def resetCache(self, s):
         if s in self.cache:
