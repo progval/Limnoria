@@ -69,6 +69,24 @@ class Math(callbacks.Privmsg):
     # Then we delete all square brackets, underscores, and whitespace, so no
     # one can do list comprehensions or call __...__ functions.
     ###
+    def base(self, irc, msg, args):
+        """<base> <number>
+
+        Converts from base <base> the number <number>
+        """
+        (base, number) = privmsgs.getArgs(args, required=2)
+        try:
+            base = int(base)
+            if not (2 <= base <= 36):
+                raise ValueError
+        except ValueError:
+            irc.error('<base> must be a number between 2 and 36.')
+            return
+        try:
+            irc.reply(str(long(number, int(base))))
+        except ValueError:
+            irc.error('Invalid <number> for base %s: %s' % (base, number))
+
     _mathEnv = {'__builtins__': types.ModuleType('__builtins__'), 'i': 1j}
     _mathEnv.update(math.__dict__)
     _mathEnv.update(cmath.__dict__)

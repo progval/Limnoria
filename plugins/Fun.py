@@ -119,14 +119,6 @@ class Fun(callbacks.Privmsg):
         except ValueError:
             irc.error('That number doesn\'t map to an 8-bit character.')
 
-    def base(self, irc, msg, args):
-        """<base> <number>
-
-        Converts from base <base> the number <number>
-        """
-        (base, number) = privmsgs.getArgs(args, required=2)
-        irc.reply(str(long(number, int(base))))
-
     def encode(self, irc, msg, args):
         """<encoding> <text>
 

@@ -33,6 +33,9 @@ from testsupport import *
 
 class MathTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Math',)
+    def testBase(self):
+        self.assertNotRegexp('base 56 asdflkj', 'ValueError')
+        
     def testCalc(self):
         self.assertResponse('calc 5*0.06', str(5*0.06))
         self.assertResponse('calc 2.0-7.0', str(2-7))
