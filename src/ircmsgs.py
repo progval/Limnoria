@@ -77,25 +77,14 @@ class IrcMsg(object):
     __slots__ = ('args', 'command', 'host', 'nick', 'prefix', 'user',
                  '_hash', '_str', '_repr', '_len')
     def __init__(self, s='', command='', args=None, prefix='', msg=None):
+        assert not (msg and s), 'Ircmsg.__init__ cannot accept both s and msg'
         if not s and not command and not msg:
             raise ValueError, 'IRC messages require a command.'
         self._str = None
         self._repr = None
         self._hash = None
         self._len = None
-        if msg is not None:
-            self.prefix = msg.prefix
-            self.command = msg.command
-            self.args = tuple(msg.args)
-        if command: # Must be using command=, args=, prefix= form.
-            self.prefix = prefix
-            self.command = command
-            if args is not None:
-                assert all(ircutils.isValidArgument, args)
-                self.args = tuple(args)
-            else:
-                self.args = ()
-        elif s: # Must be using a string.
+        if s:
             self._str = s
             if s[0] == ':':
                 self.prefix, s = s[1:].split(None, 1)
@@ -108,11 +97,30 @@ class IrcMsg(object):
             else:
                 self.args = s.split()
             self.command = self.args.pop(0)
+        else:
+            if msg is not None:
+                if prefix:
+                    self.prefix = prefix
+                else:
+                    self.prefix = msg.prefix
+                if command:
+                    self.command = command
+                else:
+                    self.command = msg.command
+                if args:
+                    self.args = args
+                else:
+                    self.args = msg.args
+            else:
+                self.prefix = prefix
+                self.command = command
+                assert all(ircutils.isValidArgument, args)
+                self.args = args
+        self.args = tuple(self.args)
         if ircutils.isUserHostmask(self.prefix):
             (self.nick,self.user,self.host)=ircutils.splitHostmask(self.prefix)
         else:
             (self.nick, self.user, self.host) = (self.prefix,)*3
-        self.args = tuple(self.args)
 
     def __str__(self):
         if self._str is not None:

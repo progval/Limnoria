@@ -104,6 +104,13 @@ class IrcMsgTestCase(unittest.TestCase):
                 zeroes += 1
         self.failIf(zeroes > (len(msgs)/10), 'Too many zero hashes.')
 
+    def testMsgKeywordHandledProperly(self):
+        msg = ircmsgs.notice('foo', 'bar')
+        msg2 = ircmsgs.IrcMsg(msg=msg, command='PRIVMSG')
+        self.assertEqual(msg2.command, 'PRIVMSG')
+        self.assertEqual(msg2.args, msg.args)
+
+
 class FunctionsTestCase(unittest.TestCase):
     def testIsAction(self):
         L = [':jemfinch!~jfincher@ts26-2.homenet.ohio-state.edu PRIVMSG'
