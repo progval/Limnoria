@@ -91,6 +91,14 @@ if sqlite is not None:
                               '.*?\. Last modified by tester on .*?\. '
                               'Last requested by foo!bar@baz on .*?, '
                               'requested 2 times.$')
+            # Make sure I solved this bug
+            # Check and make sure all the other stuff is reset 
+            self.assertNotError('foo is bar')
+            self.assertNotError('foo =~ s/bar/blah/')
+            self.assertNotError('foo')
+            self.assertNotError('no foo is baz')
+            self.assertRegexp('factinfo foo', '^foo: Created by tester on'
+                              '(?!(request|modif)).*?\.$')
 
         def testLockUnlock(self):
             self.assertNotError('moo is <reply>moo')
@@ -151,6 +159,29 @@ if sqlite is not None:
             self.assertResponse('listauth tester', 'Author search for tester '
                                 '(1 found): \'moo\'')
             self.assertError('listauth moo')
+
+        def testDelete(self):
+            self.assertNotError('moo is <reply>moo')
+            self.assertNotError('lock moo')
+            self.assertError('delete moo')
+            self.assertNotError('unlock moo')
+            self.assertNotError('delete moo')
+            # if there's a dunno that's just 'moo', this will fail
+            self.assertRegexp('moo', '^(?!moo).*$')  
+
+        def testAugmentFactoid(self):
+            self.assertNotError('moo is foo')
+            self.assertNotError('moo is also bar')
+            self.assertResponse('moo', 'moo is foo, or bar')
+
+        def testReplaceFactoid(self):
+            self.assertNotError('moo is foo')
+            self.assertNotError('no moo is bar')
+            self.assertResponse('moo', 'moo is bar')
+            self.assertNotError('no, moo is baz')
+            self.assertResponse('moo', 'moo is baz')
+            self.assertNotError('lock moo')
+            self.assertError('no moo is qux')
 
 #    class DunnoTestCase(PluginTestCase, PluginDocumentation):
 #        plugins = ('MiscCommands', 'MoobotFactoids', 'UserCommands')

@@ -125,7 +125,8 @@ def pick(L, recursed=False):
 
 class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     priority = 1000
-    addressedRegexps = sets.Set(['addFactoids', 'changeFactoids'])
+    addressedRegexps = sets.Set(['addFactoid', 'changeFactoid',
+                                 'augmentFactoid', 'replaceFactoid'])
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.makeDB(dbfilename)
@@ -219,8 +220,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             else:
                 irc.error(msg, "Spurious type from parseFactoid.")
 
-    def addFactoids(self, irc, msg, match):
-        r"^(.+)\s+(is|are|_is_|_are_)\s+(.+)"
+    def addFactoid(self, irc, msg, match):
+        r"^(?!no\s+)(.+)\s+(is|_is_)\s+(?!also)(.+)"
         # Must be registered!
         try:
             id = ircdb.users.getUserId(msg.prefix)
@@ -242,8 +243,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
-    def changeFactoids(self, irc, msg, match):
-        r"(\S+)\s+=~\s+(\S+)"
+    def changeFactoid(self, irc, msg, match):
+        r"(.+)\s+=~\s+(.+)"
         # Must be registered!
         try:
             id = ircdb.users.getUserId(msg.prefix)
@@ -273,7 +274,70 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         cursor.execute("""UPDATE factoids   
                           SET fact = %s, modified_by = %s,   
                           modified_at = %s WHERE key = %s""",
-                       new_fact, id, int(time.time()), key)
+                          new_fact, id, int(time.time()), key)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
+
+    def augmentFactoid(self, irc, msg, match):
+        r"(.+) is also (.+)"
+        # Must be registered!
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        key, new_text = match.groups()
+        cursor = self.db.cursor()
+        # Check and make sure it's in the DB 
+        cursor.execute("""SELECT locked_at, fact FROM factoids
+                          WHERE key = %s""", key)
+        if cursor.rowcount == 0:
+            irc.error(msg, "Factoid '%s' not found." % key)
+            return
+        # No dice if it's locked, no matter who it is
+        (locked_at, fact) = cursor.fetchone()
+        if locked_at is not None:
+            irc.error(msg, "Factoid '%s' is locked." % key)
+            return
+        # It's fair game if we get to here
+        new_fact = "%s, or %s" % (fact, new_text)
+        cursor.execute("""UPDATE factoids
+                          SET fact = %s, modified_by = %s,
+                          modified_at = %s WHERE key = %s""",
+                          new_fact, id, int(time.time()), key)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
+
+    def replaceFactoid(self, irc, msg, match):
+        r"^no,?\s+(.+)\s+(is|_is_)\s+(.+)"
+        # Must be registered!
+        try:
+            id = ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        key, _, new_fact = match.groups()
+        cursor = self.db.cursor()
+        # Check and make sure it's in the DB 
+        cursor.execute("""SELECT locked_at, fact FROM factoids
+                          WHERE key = %s""", key)
+        if cursor.rowcount == 0:
+            irc.error(msg, "Factoid '%s' not found." % key)
+            return
+        # No dice if it's locked, no matter who it is
+        (locked_at, _) = cursor.fetchone()
+        if locked_at is not None:
+            irc.error(msg, "Factoid '%s' is locked." % key)
+            return
+        # It's fair game if we get to here
+        cursor.execute("""UPDATE factoids
+                          SET fact = %s, created_by = %s,
+                          created_at = %s, modified_by = NULL,
+                          modified_at = NULL, requested_count = 0,
+                          last_requested_by = NULL, last_requested_at = NULL,
+                          locked_at = NULL
+                          WHERE key = %s""",
+                          new_fact, id, int(time.time()), key)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
@@ -445,7 +509,6 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     def listvalues(self, irc, msg, args):
         """<glob>
 
-
         Lists the keys of the factoids whose value matches the provided glob.
         """
         glob = privmsgs.getArgs(args, needed=1)
@@ -462,7 +525,31 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             (glob, len(keys), utils.commaAndify(keys))
         irc.reply(msg, s)
 
+    def delete(self, irc, msg, args):
+        """<factoid key>
 
+        Deletes the factoid with the given key.
+        """
+        # Must be registered to use this
+        try:
+            ircdb.users.getUserId(msg.prefix)
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        key = privmsgs.getArgs(args, needed=1)
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT key, locked_at FROM factoids
+                          WHERE key = %s""", key)
+        if cursor.rowcount == 0:
+            irc.error(msg, "No such factoid: %s" % key)
+            return
+        (_, locked_at) = cursor.fetchone() 
+        if locked_at is not None:
+            irc.error(msg, "Factoid is locked, cannot remove.")
+            return
+        cursor.execute("""DELETE FROM factoids WHERE key = %s""", key)
+        self.db.commit()
+        irc.reply(msg, conf.replySuccess)
 
 Class = MoobotFactoids
 
