@@ -147,8 +147,8 @@ class Http(callbacks.Privmsg):
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
     _gkrecord = re.compile(r'"#FFFF00">(\d+)[^"]+"#FFFF00">(\d+)[^"]+'\
         '"#FFFF00">(\d+)')
-    _gkteam = re.compile(r'Team:\s+(.*?)\s+Last time')
-    _gkseen = re.compile(r'seen on GK:\s+([^[]+)\s+')
+    _gkteam = re.compile(r'Team:(<.*?>)+(?P<name>.*?)</span>')
+    _gkseen = re.compile(r'(seen on GK:\s+([^[]+)\s+|.*?is hiding.*?)')
     def gkstats(self, irc, msg, args):
         """<name>
 
@@ -165,14 +165,15 @@ class Http(callbacks.Privmsg):
             rating = self._gkrating.search(profile).group(1)
             games = self._gkgames.search(profile).group(1)
             (w, l, d) = self._gkrecord.search(profile).groups()
-            profile = utils.htmlToText(profile)
             seen = self._gkseen.search(profile).group(1)
-            if seen.startswith('0'):
+            if seen.find("is hiding") != -1:
+                seen = '%s is hiding his/her online status.' % name
+            elif seen.startswith('0'):
                 seen = '%s is on gameknot right now.' % name
             else:
                 seen = '%s was last seen on Gameknot %s.' % (name, seen)
             if profile.find('Team:') >= 0:
-                team = self._gkteam.search(profile).group(1)
+                team = self._gkteam.search(profile).group('name')
                 irc.reply(msg, '%s (team: %s) is rated %s and has %s active ' \
                           'games and a record of W-%s, L-%s, D-%s.  %s' % \
                           (name, team, rating, games, w, l, d, seen))
