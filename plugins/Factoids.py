@@ -296,7 +296,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
-    def randomfactoid(self, irc, msg, args):
+    def random(self, irc, msg, args):
         """[<channel>]
 
         Returns a random factoid from the database for <channel>.  <channel>
@@ -318,7 +318,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error(msg, 'I couldn\'t find a factoid.')
 
-    def factoidinfo(self, irc, msg, args):
+    def info(self, irc, msg, args):
         """[<channel>] <key>
 
         Gives information about the factoid(s) associated with <key>.
@@ -351,7 +351,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         irc.reply(msg, s)
 
     _sqlTrans = string.maketrans('*?', '%_')
-    def searchfactoids(self, irc, msg, args):
+    def search(self, irc, msg, args):
         """[<channel>] [--{regexp,exact}=<value>] [<glob>]
 
         Searches the keyspace for keys matching <glob>.  If --regexp is given,

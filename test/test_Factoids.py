@@ -40,13 +40,13 @@ if sqlite is not None:
     class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('Factoids',)
         def testRandomfactoid(self):
-            self.assertError('randomfactoid')
+            self.assertError('random')
             self.assertNotError('learn jemfinch as my primary author')
-            self.assertRegexp('randomfactoid', 'primary author')
+            self.assertRegexp('random', 'primary author')
 
         def testLearn(self):
             self.assertNotError('learn jemfinch as my primary author')
-            self.assertNotError('factoidinfo jemfinch')
+            self.assertNotError('info jemfinch')
             self.assertRegexp('whatis jemfinch', 'my primary author')
             self.assertRegexp('whatis JEMFINCH', 'my primary author')
             self.assertRegexp('whatis JEMFINCH 1', 'my primary author')
@@ -60,10 +60,10 @@ if sqlite is not None:
             self.assertNotError('forget jemfinch 2')
             self.assertNotError('forget jemfinch 1')
             self.assertError('whatis jemfinch')
-            self.assertError('factoidinfo jemfinch')
+            self.assertError('info jemfinch')
 
             self.assertNotError('learn foo bar as baz')
-            self.assertNotError('factoidinfo foo bar')
+            self.assertNotError('info foo bar')
             self.assertRegexp('whatis foo bar', 'baz')
             self.assertNotError('learn foo bar as quux')
             self.assertRegexp('whatis foo bar', '.*baz.*quux')
@@ -71,7 +71,7 @@ if sqlite is not None:
             self.assertNotError('forget foo bar 2')
             self.assertNotError('forget foo bar 1')
             self.assertError('whatis foo bar')
-            self.assertError('factoidinfo foo bar')
+            self.assertError('info foo bar')
 
             self.assertRegexp('learn foo bar baz', '^learn') # No 'as'
             self.assertRegexp('learn foo bar', '^learn') # No 'as'
@@ -82,25 +82,25 @@ if sqlite is not None:
             self.assertNotError('learn inkedmn as another of my developers')
             self.assertNotError('learn jamessan as a developer of much python')
             self.assertNotError('learn bwp as author of my weather command')
-            self.assertRegexp('searchfactoids --regexp /.w./', 'bwp')
-            self.assertRegexp('searchfactoids --regexp /^.+i/',
+            self.assertRegexp('search --regexp /.w./', 'bwp')
+            self.assertRegexp('search --regexp /^.+i/',
                               'jemfinch.*strike')
-            self.assertNotRegexp('searchfactoids --regexp /^.+i/', 'inkedmn')
-            self.assertRegexp('searchfactoids --regexp /^j/',
+            self.assertNotRegexp('search --regexp /^.+i/', 'inkedmn')
+            self.assertRegexp('search --regexp /^j/',
                               'jemfinch.*jamessan')
-            self.assertRegexp('searchfactoids j*', 'jemfinch.*jamessan')
-            self.assertRegexp('searchfactoids --exact ke',
+            self.assertRegexp('search j*', 'jemfinch.*jamessan')
+            self.assertRegexp('search --exact ke',
                               'inkedmn.*strike|strike.*inkedmn')
-            self.assertRegexp('searchfactoids *ke*',
+            self.assertRegexp('search *ke*',
                               'inkedmn.*strike|strike.*inkedmn')
 
 
         def testNotZeroIndexed(self):
             self.assertNotError('learn foo as bar')
-            self.assertNotRegexp('factoidinfo foo', '#0')
+            self.assertNotRegexp('info foo', '#0')
             self.assertNotRegexp('whatis foo', '#0')
             self.assertNotError('learn foo as baz')
-            self.assertNotRegexp('factoidinfo foo', '#0')
+            self.assertNotRegexp('info foo', '#0')
             self.assertNotRegexp('whatis foo', '#0')
 
 

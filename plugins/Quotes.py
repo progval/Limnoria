@@ -75,7 +75,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         db.commit()
         return db
 
-    def addquote(self, irc, msg, args):
+    def add(self, irc, msg, args):
         """[<channel>] <quote>
 
         Adds <quote> to the quotes database for <channel>.  <channel> is only
@@ -98,7 +98,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         quoteid = cursor.fetchone()[0]
         irc.reply(msg, '%s (Quote #%s added)' % (conf.replySuccess, quoteid))
 
-    def numquotes(self, irc, msg, args):
+    def num(self, irc, msg, args):
         """[<channel>]
 
         Returns the numbers of quotes in the quote database for <channel>.
@@ -191,7 +191,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
             irc.reply(msg, utils.commaAndify(idsWithSnippets))
         ### FIXME: we need to remove those predicates from the database.
 
-    def randomquote(self, irc, msg, args):
+    def random(self, irc, msg, args):
         """[<channel>]
 
         Returns a random quote from <channel>.  <channel> is only necessary if
@@ -209,7 +209,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         (id,) = cursor.fetchone()
         self.quote(irc, msg, [channel, '--id', str(id)])
 
-    def quoteinfo(self, irc, msg, args):
+    def info(self, irc, msg, args):
         """[<channel>] <id>
 
         Returns the metadata about the quote <id> in the quotes
@@ -230,7 +230,7 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error(msg, 'There isn\'t a quote with that id.')
 
-    def removequote(self, irc, msg, args):
+    def remove(self, irc, msg, args):
         """[<channel>] <id>
 
         Removes quote <id> from the quotes database for <channel>.  <channel>
