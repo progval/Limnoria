@@ -54,6 +54,7 @@ import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+from supybot.structures import RingBuffer
 
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
@@ -87,6 +88,9 @@ conf.registerChannelValue(conf.supybot.plugins.Relay, 'includeNetwork',
     registry.Boolean(True, """Determines whether the bot will include the
     network in relayed PRIVMSGs; if you're only relaying between two networks,
     it's somewhat redundant, and you may wish to save the space."""))
+conf.registerChannelValue(conf.supybot.plugins.Relay, 'detectOtherRelayBots',
+    registry.Boolean(False, """Determines whether the bot will detect other
+    bots relaying and respond by kickbanning them."""))
 conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
     conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
     will relay in."""))
@@ -104,6 +108,7 @@ class Relay(callbacks.Privmsg):
         self.relayedMsgs = {}
         self.lastmsg = {}
         self.ircstates = {}
+        self.last20Privmsgs = ircutils.IrcDict()
 
     def __call__(self, irc, msg):
         try:
@@ -507,6 +512,50 @@ class Relay(callbacks.Privmsg):
                     self._addRelayedMsg(msg)
                     otherIrc.queueMsg(msg)
 
+    def _detectRelays(self, irc, msg, channel):
+        def isRelayPrefix(s):
+            return s and s[0] == '<' and s[-1] == '>'
+        def punish():
+            punished = False
+            for irc in self.ircs:
+                if irc.nick in irc.state.channels[channel].ops:
+                    self.log.info('Punishing %s in %s on %s for relaying.',
+                                  msg.prefix, channel, irc.network)
+                    irc.sendMsg(ircmsgs.ban(channel, msg.prefix))
+                    kmsg = 'You seem to be relaying, punk.'
+                    irc.sendMsg(ircmsgs.kick(channel, msg.nick, kmsg))
+                    punished = True
+                else:
+                    self.log.warning('Can\'t punish %s in %s on %s; '
+                                     'I\'m not opped.',
+                                     msg.prefix, channel, irc.network)
+            return punished
+        if channel not in self.last20Privmsgs:
+            self.last20Privmsgs[channel] = RingBuffer(20)
+        s = ircutils.stripFormatting(msg.args[1])
+        s = utils.normalizeWhitespace(s)
+        try:
+            (prefix, suffix) = s.split(None, 1)
+        except ValueError, e:
+            pass
+        else:
+            if isRelayPrefix(prefix):
+                parts = suffix.split()
+                while parts and isRelayPrefix(parts[0]):
+                    parts.pop(0)
+                suffix = ' '.join(parts)
+                for m in self.last20Privmsgs[channel]:
+                    if suffix in m:
+                        who = msg.prefix
+                        self.log.info('%s seems to be relaying too.', who)
+                        if punish():
+                            self.log.info('Successfully punished %s.', who)
+                        else:
+                            self.log.info('Unsuccessfully attempted to '
+                                          'punish %s.', who)
+                        break
+        self.last20Privmsgs[channel].append(s)
+
     def doPrivmsg(self, irc, msg):
         (channel, text) = msg.args
         if ircutils.isChannel(channel):
@@ -516,6 +565,9 @@ class Relay(callbacks.Privmsg):
             if ircmsgs.isCtcp(msg) and \
                'AWAY' not in text and 'ACTION' not in text:
                 return
+            # Let's try to detect other relay bots.
+            if self.registryValue('detectOtherRelayBots', channel):
+                self._detectRelays(irc, msg, channel)
             network = self._getIrcName(irc)
             s = self._formatPrivmsg(msg.nick, network, msg)
             m = ircmsgs.privmsg(channel, s)
