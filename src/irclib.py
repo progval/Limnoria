@@ -679,8 +679,11 @@ class Irc(IrcCommandDispatcher):
              conf.supybot.protocols.irc.ping() and \
              now > self.lastping + conf.supybot.protocols.irc.ping.interval():
             if self.outstandingPing:
-                log.warning('Ping sent at %s not replied to.',
-                            log.timestamp(self.lastping))
+                s = 'Ping sent at %s not replied to.' % \
+                    log.timestamp(self.lastping)
+                log.warning(s)
+                # Let's notify the plugins that we're reconnecting.
+                self.feedMsg(ircmsgs.error(s))
                 self.driver.reconnect()
             elif not self.zombie:
                 self.lastping = now
