@@ -32,6 +32,31 @@ from supybot.test import *
 import time
 import supybot.utils as utils
 
+class UtilsTest(SupyTestCase):
+    def testReversed(self):
+        L = range(10)
+        revL = list(reversed(L))
+        L.reverse()
+        self.assertEqual(L, revL, 'reversed didn\'t return reversed list')
+        for _ in reversed([]):
+            self.fail('reversed caused iteration over empty sequence')
+
+
+class SeqTest(SupyTestCase):
+    def testWindow(self):
+        L = range(10)
+        def wwindow(*args):
+            return list(utils.seq.window(*args))
+        self.assertEqual(wwindow([], 1), [], 'Empty sequence, empty window')
+        self.assertEqual(wwindow([], 2), [], 'Empty sequence, empty window')
+        self.assertEqual(wwindow([], 5), [], 'Empty sequence, empty window')
+        self.assertEqual(wwindow([], 100), [], 'Empty sequence, empty window')
+        self.assertEqual(wwindow(L, 1), [[x] for x in L], 'Window length 1')
+        self.assertRaises(ValueError, wwindow, [], 0)
+        self.assertRaises(ValueError, wwindow, [], -1)
+
+
+
 class GenTest(SupyTestCase):
     def testInsensitivePreservingDict(self):
         ipd = utils.InsensitivePreservingDict
@@ -157,6 +182,15 @@ class GenTest(SupyTestCase):
 
 
 class StrTest(SupyTestCase):
+    def testRsplit(self):
+        rsplit = utils.str.rsplit
+        self.assertEqual(rsplit('foo bar baz'), 'foo bar baz'.split())
+        self.assertEqual(rsplit('foo bar baz', maxsplit=1),
+                         ['foo bar', 'baz'])
+        self.assertEqual(rsplit('foo        bar baz', maxsplit=1),
+                         ['foo        bar', 'baz'])
+        self.assertEqual(rsplit('foobarbaz', 'bar'), ['foo', 'baz'])
+
     def testMatchCase(self):
         f = utils.str.matchCase
         self.assertEqual('bar', f('foo', 'bar'))
@@ -342,6 +376,46 @@ class StrTest(SupyTestCase):
 
 
 class IterTest(SupyTestCase):
+    def testRandomChoice(self):
+        choice = utils.iter.choice
+        self.assertRaises(IndexError, choice, {})
+
+##     def testGroup(self):
+##         group = utils.iter.group
+##         s = '1. d4 d5 2. Nf3 Nc6 3. e3 Nf6 4. Nc3 e6 5. Bd3 a6'
+##         self.assertEqual(group(s.split(), 3)[:3],
+##                          [['1.', 'd4', 'd5'],
+##                           ['2.', 'Nf3', 'Nc6'],
+##                           ['3.', 'e3', 'Nf6']])
+
+    def testAny(self):
+        any = utils.iter.any
+        self.failUnless(any(lambda i: i == 0, range(10)))
+        self.failIf(any(None, range(1)))
+        self.failUnless(any(None, range(2)))
+        self.failIf(any(None, []))
+
+    def testAll(self):
+        all = utils.iter.all
+        self.failIf(all(lambda i: i == 0, range(10)))
+        self.failIf(all(lambda i: i % 2, range(2)))
+        self.failIf(all(lambda i: i % 2 == 0, [1, 3, 5]))
+        self.failUnless(all(lambda i: i % 2 == 0, [2, 4, 6]))
+        self.failUnless(all(None, ()))
+
+    def testPartition(self):
+        partition = utils.iter.partition
+        L = range(10)
+        def even(i):
+            return not(i % 2)
+        (yes, no) = partition(even, L)
+        self.assertEqual(yes, [0, 2, 4, 6, 8])
+        self.assertEqual(no, [1, 3, 5, 7, 9])
+
+    def testIlen(self):
+        ilen = utils.iter.ilen
+        self.assertEqual(ilen(iter(range(10))), 10)
+
     def testSplit(self):
         itersplit = utils.iter.split
         L = [1, 2, 3] * 3

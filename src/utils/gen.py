@@ -39,9 +39,9 @@ import textwrap
 import UserDict
 import traceback
 
-from iter import imap
 from str import format
 from file import mktemp
+from iter import imap, all
 
 def abbrev(strings, d=None):
     """Returns a dictionary mapping unambiguous abbreviations to full forms."""

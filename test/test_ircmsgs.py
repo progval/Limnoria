@@ -50,7 +50,6 @@ class IrcMsgTestCase(SupyTestCase):
 
     def testRepr(self):
         IrcMsg = ircmsgs.IrcMsg
-        ignore(IrcMsg) # Make pychecker happy.
         for msg in msgs:
             self.assertEqual(msg, eval(repr(msg)))
 
