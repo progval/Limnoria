@@ -211,7 +211,7 @@ class RSS(callbacks.Privmsg):
             self.acquireLock(url)
             if self.willGetNewFeed(url):
                 try:
-                    self.log.info('Downloading new feed from <%s>', url)
+                    self.log.debug('Downloading new feed from <%s>', url)
                     results = rssparser.parse(url)
                 except sgmllib.SGMLParseError:
                     self.log.exception('Uncaught exception from rssparser:')
