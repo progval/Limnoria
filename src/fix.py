@@ -204,6 +204,15 @@ class queue(dict):
                 dict.__setitem__(self, i+self.last, v)
         except KeyError:
             raise IndexError, i
+
+    def __getstate__(self):
+        return (self.first, self.last, dict(self))
+
+    def __setstate__(self, (first, last, d)):
+        self.first = first
+        self.last = last
+        for (k, v) in d.iteritems():
+            dict.__setitem__(self, k, v)
             
 
 class IterableMap(object):

@@ -33,6 +33,8 @@ from __future__ import generators
 
 from test import *
 
+import pickle
+
 class QueueTest(unittest.TestCase):
     def testGetitem(self):
         q = queue()
@@ -47,7 +49,6 @@ class QueueTest(unittest.TestCase):
         self.assertRaises(IndexError, q.__getitem__, n)
         #self.assertEqual(q[3:7], queue([3, 4, 5, 6]))
         
-            
     def testSetitem(self):
         q1 = queue()
         for i in xrange(10):
@@ -177,6 +178,10 @@ class QueueTest(unittest.TestCase):
         self.assertEqual(q1, q2, 'iterate didn\'t return all elements')
         for _ in queue():
             self.fail('no elements should be in empty queue')
+
+    def testPickleCopy(self):
+        q = queue(range(10))
+        self.assertEqual(q, pickle.loads(pickle.dumps(q)))
 
 
 class FunctionsTest(unittest.TestCase):
