@@ -993,9 +993,12 @@ class Privmsg(irclib.IrcCallback):
     noIgnore = False
     Proxy = IrcObjectProxy
     commandArgs = ['self', 'irc', 'msg', 'args']
-    # This must be class-scope, so all plugins use the same one.
+    # These must be class-scope, so all plugins use the same one.
     _mores = ircutils.IrcDict()
     _disabled = DisabledCommands()
+    def isDisabled(self, command):
+        return self._disabled.disabled(command, self.name())
+
     def __init__(self):
         self.__parent = super(Privmsg, self)
         myName = self.name()
@@ -1066,7 +1069,7 @@ class Privmsg(irclib.IrcCallback):
 
         # Don't canonicalize this name: consider outFilter(self, irc, msg).
         # name = canonicalName(name)
-        if self._disabled.disabled(name, plugin=self.name()):
+        if self.isDisabled(name):
             return False
         if hasattr(self, name):
             method = getattr(self, name)

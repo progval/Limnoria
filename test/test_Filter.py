@@ -32,14 +32,28 @@ from testsupport import *
 import re
 
 import supybot.utils as utils
+import supybot.callbacks as callbacks
 
 class FilterTest(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Filter',)
+    plugins = ('Filter', 'Utilities')
     def testNoErrors(self):
         self.assertNotError('leet foobar')
         self.assertNotError('supa1337 foobar')
         self.assertNotError('lithp meghan sweeney')
         self.assertNotError('aol I\'m too legit to quit.')
+
+    def testDisabledCommandsCannotFilter(self):
+        self.assertNotError('outfilter rot13')
+        self.assertResponse('echo foo', 'sbb')
+        self.assertNotError('outfilter')
+        try:
+            self.assertNotError('disable rot13')
+            self.assertError('outfilter rot13')
+            self.assertNotError('enable rot13')
+            self.assertNotError('disable notAPlugin rot13')
+            self.assertNotError('outfilter rot13')
+        finally:
+            callbacks.Privmsg._disabled.remove('rot13')
 
     def testHebrew(self):
         self.assertResponse('hebrew The quick brown fox '
