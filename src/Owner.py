@@ -82,19 +82,27 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
     # things will happen when adding callbacks.
     priority = ~sys.maxint-1 # This must be first!
     capability = 'owner'
+    _srcPlugins = ('Owner', 'Misc', 'Admin', 'User', 'Channel')
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         setattr(self.__class__, 'exec', self.__class__._exec)
-        self.defaultPlugins = {'join': 'admin',
-                               'load': 'owner',
-                               'reload': 'owner',
-                               'unload': 'owner'}
+        self.defaultPlugins = {}
 
-    def _disambiguate(self, tokens):
+    def _disambiguate(self, irc, tokens, ambiguousCommands):
         if tokens:
             command = callbacks.canonicalName(tokens[0])
             if command in self.defaultPlugins:
                 tokens.insert(0, self.defaultPlugins[command])
+            else:
+                cbs = callbacks.findCallbackForCommand(irc, command)
+                if len(cbs) > 1:
+                    names = [cb.name() for cb in cbs]
+                    for name in names:
+                        if name in self._srcPlugins:
+                            tokens.insert(0, name)
+                            break
+                    else:
+                        ambiguousCommands[command] = names
             for elt in tokens:
                 if isinstance(elt, list):
                     self._disambiguate(elt)
@@ -108,14 +116,8 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             except SyntaxError, e:
                 irc.queueMsg(callbacks.error(msg, str(e)))
                 return
-            self._disambiguate(tokens)
             ambiguousCommands = {}
-            commands = callbacks.getCommands(tokens)
-            for command in commands:
-                command = callbacks.canonicalName(command)
-                cbs = callbacks.findCallbackForCommand(irc, command)
-                if len(cbs) > 1:
-                    ambiguousCommands[command] = [cb.name() for cb in cbs]
+            self._disambiguate(irc, tokens, ambiguousCommands)
             if ambiguousCommands:
                 if len(ambiguousCommands) == 1: # Common case.
                     (command, names) = ambiguousCommands.popitem()
