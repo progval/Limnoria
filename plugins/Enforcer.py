@@ -43,7 +43,6 @@ import privmsgs
 import ircutils
 import callbacks
 
-
 ###
 # ChannelEnforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
 ###
@@ -184,7 +183,7 @@ class ChannelEnforcer(callbacks.Privmsg):
         if msg.prefix == self.chanserv:
             return
         else:
-            return BasePlugin.__call__(self, irc, msg)
+            return callbacks.Privmsg.__call__(self, irc, msg)
 
 
 Class = ChannelEnforcer
