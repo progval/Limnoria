@@ -140,14 +140,18 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 loadPluginClass(irc, m)
         self.log.info('Loading plugins/ plugins.')
         for (name, value) in conf.supybot.plugins.getValues(fullNames=False):
-            if value() and irc.getCallback(name) is None:
-                if not irc.getCallback(name):
-                    self.log.info('Loading %s.' % name)
-                    try:
-                        m = loadPluginModule(name)
-                        loadPluginClass(irc, m)
-                    except Exception, e:
-                        log.exception('Failed to load %s:' % name)
+            if irc.getCallback(name) is None:
+                if value():
+                    if not irc.getCallback(name):
+                        self.log.info('Loading %s.' % name)
+                        try:
+                            m = loadPluginModule(name)
+                            loadPluginClass(irc, m)
+                        except Exception, e:
+                            log.exception('Failed to load %s:' % name)
+                else:
+                    # Let's import the module so configuration is preserved.
+                    _ = loadPluginModule(name)
 
     def disambiguate(self, irc, tokens, ambiguousCommands=None):
         """Disambiguates the given tokens based on the plugins loaded and
