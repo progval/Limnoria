@@ -57,6 +57,7 @@ deadlyExceptions = [KeyboardInterrupt, SystemExit]
 testing = False
 
 class Formatter(logging.Formatter):
+    _fmtConf = staticmethod(lambda : conf.supybot.log.format())
     def formatTime(self, record, datefmt=None):
         return timestamp(record.created)
 
@@ -65,6 +66,14 @@ class Formatter(logging.Formatter):
             if issubclass(e.__class__, exn):
                 raise
         return logging.Formatter.formatException(self, (E, e, tb))
+
+    def format(self, record):
+        self._fmt = self._fmtConf()
+        return logging.Formatter.format(self, record)
+
+
+class PluginFormatter(Formatter):
+    _fmtConf = staticmethod(lambda : conf.supybot.log.plugins.format())
 
 
 class Logger(logging.Logger):
@@ -97,7 +106,7 @@ class StdoutStreamHandler(logging.StreamHandler):
         if record.levelname != 'ERROR' and conf.supybot.log.stdout.wrap():
             # We check for ERROR there because otherwise, tracebacks (which are
             # already wrapped by Python itself) wrap oddly.
-            prefixLen = len(record.name) + 2 # ": "
+            prefixLen = len(record.levelname) + 1 # ' '
             s = textwrap.fill(s, width=78, subsequent_indent=' '*prefixLen)
             s.rstrip('\r\n')
         return s
@@ -129,6 +138,9 @@ class BetterFileHandler(logging.FileHandler):
 
 
 class ColorizedFormatter(Formatter):
+    # This was necessary because these variables aren't defined until later.
+    # The staticmethod is necessary because they get treated like methods.
+    _fmtConf = staticmethod(lambda : conf.supybot.log.stdout.format())
     def formatException(self, (E, e, tb)):
         if conf.supybot.log.stdout.colorized():
             return ''.join([ansi.RED,
@@ -156,12 +168,99 @@ class ColorizedFormatter(Formatter):
             return Formatter.format(self, record, *args, **kwargs)
 
 # These are public.
-formatter = Formatter('%(levelname)s %(asctime)s %(message)s')
-pluginFormatter = Formatter('%(levelname)s %(asctime)s %(name)s %(message)s')
+formatter = Formatter('NEVER SEEN')
+pluginFormatter = PluginFormatter('NEVER SEEN')
 
 # These are not.
 logging.setLoggerClass(Logger)
 _logger = logging.getLogger('supybot')
+
+class ValidLogLevel(registry.String):
+    """Invalid log level."""
+    minimumLevel = -1
+    def set(self, s):
+        s = s.upper()
+        try:
+            level = getattr(logging, s)
+        except AttributeError:
+            try:
+                level = int(s)
+            except ValueError:
+                self.error()
+        if level < self.minimumLevel:
+            self.error()
+        self.setValue(level)
+
+    def __str__(self):
+        level = logging.getLevelName(self.value)
+        if level.startswith('Level'):
+            level = level.split()[-1]
+        return level
+
+class LogLevel(ValidLogLevel):
+    """Invalid log level.  Value must be either DEBUG, INFO, WARNING, ERROR,
+    or CRITICAL."""
+    def setValue(self, v):
+        ValidLogLevel.setValue(self, v)
+        _logger.setLevel(self.value) # _logger defined later.
+
+conf.registerGlobalValue(conf.supybot.directories, 'log',
+    conf.Directory('logs', """Determines what directory the bot will store its
+    logfiles in."""))
+
+conf.registerGroup(conf.supybot, 'log')
+conf.registerGlobalValue(conf.supybot.log, 'format',
+    registry.String('%(levelname)s %(asctime)s %(name)s %(message)s',
+    """Determines what the bot's logging format will be.  The relevant
+    documentation on the available formattings is Python's documentation on
+    its logging module."""))
+conf.registerGlobalValue(conf.supybot.log, 'level',
+    LogLevel(logging.INFO, """Determines what the minimum priority level logged
+    will be.  Valid values are DEBUG, INFO, WARNING, ERROR, and CRITICAL, in
+    order of increasing priority."""))
+conf.registerGlobalValue(conf.supybot.log, 'statistics',
+    ValidLogLevel(logging.DEBUG, """Determines what level statistics reporting
+    is to be logged at.  Mostly, this just includes, for instance, the time it
+    took to parse a message, process a command, etc.  You probably don't care
+    about this."""))
+conf.registerGlobalValue(conf.supybot.log, 'timestampFormat',
+    registry.String('[%d-%b-%Y %H:%M:%S]', """Determines the format string for
+    timestamps in logfiles.  Refer to the Python documentation for the time
+    module to see what formats are accepted. If you set this variable to the
+    empty string, times will be logged in a simple seconds-since-epoch
+    format."""))
+
+class BooleanRequiredFalseOnWindows(registry.Boolean):
+    def set(self, s):
+        registry.Boolean.set(self, s)
+        if self.value and os.name == 'nt':
+            raise InvalidRegistryValue, 'Value cannot be true on Windows.'
+
+conf.registerGlobalValue(conf.supybot.log, 'stdout',
+    registry.Boolean(True, """Determines whether the bot will log to
+    stdout."""))
+conf.registerGlobalValue(conf.supybot.log.stdout, 'colorized',
+    BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs
+    to stdout (if enabled) will be colorized with ANSI color."""))
+conf.registerGlobalValue(conf.supybot.log.stdout, 'wrap',
+    registry.Boolean(True, """Determines whether the bot will wrap its logs
+    when they're output to stdout."""))
+conf.registerGlobalValue(conf.supybot.log.stdout, 'format',
+    registry.String('%(levelname)s %(asctime)s %(message)s',
+    """Determines what the bot's logging format will be.  The relevant
+    documentation on the available formattings is Python's documentation on
+    its logging module."""))
+
+conf.registerGroup(conf.supybot.log, 'plugins')
+conf.registerGlobalValue(conf.supybot.log.plugins, 'individualLogfiles',
+    registry.Boolean(False, """Determines whether the bot will separate plugin
+    logs into their own individual logfiles."""))
+conf.registerGlobalValue(conf.supybot.log.plugins, 'format',
+    registry.String('%(levelname)s %(asctime)s %(message)s',
+    """Determines what the bot's logging format will be.  The relevant
+    documentation on the available formattings is Python's documentation on
+    its logging module."""))
+
 
 # These just make things easier.
 debug = _logger.debug
@@ -183,7 +282,7 @@ atexit.register(logging.shutdown)
 ircutils.debug = debug
 
 def getPluginLogger(name):
-    if not conf.supybot.log.individualPluginLogfiles():
+    if not conf.supybot.log.plugins.individualLogfiles():
         return _logger
     log = logging.getLogger('supybot.plugins.%s' % name)
     if not log.handlers:
@@ -260,77 +359,6 @@ class MetaFirewall(type):
         #return type.__new__(cls, name, bases, dict)
 
 
-class ValidLogLevel(registry.String):
-    """Invalid log level."""
-    minimumLevel = -1
-    def set(self, s):
-        s = s.upper()
-        try:
-            level = getattr(logging, s)
-        except AttributeError:
-            try:
-                level = int(s)
-            except ValueError:
-                self.error()
-        if level < self.minimumLevel:
-            self.error()
-        self.setValue(level)
-
-    def __str__(self):
-        level = logging.getLevelName(self.value)
-        if level.startswith('Level'):
-            level = level.split()[-1]
-        return level
-
-class LogLevel(ValidLogLevel):
-    """Invalid log level.  Value must be either DEBUG, INFO, WARNING, ERROR,
-    or CRITICAL."""
-    def setValue(self, v):
-        ValidLogLevel.setValue(self, v)
-        _logger.setLevel(self.value) # _logger defined later.
-
-conf.registerGlobalValue(conf.supybot.directories, 'log',
-    conf.Directory('logs', """Determines what directory the bot will store its
-    logfiles in."""))
-
-conf.registerGroup(conf.supybot, 'log')
-conf.registerGlobalValue(conf.supybot.log, 'level',
-    LogLevel(logging.INFO, """Determines what the minimum priority level logged
-    will be.  Valid values are DEBUG, INFO, WARNING, ERROR, and CRITICAL, in
-    order of increasing priority."""))
-conf.registerGlobalValue(conf.supybot.log, 'statistics',
-    ValidLogLevel(logging.DEBUG, """Determines what level statistics reporting
-    is to be logged at.  Mostly, this just includes, for instance, the time it
-    took to parse a message, process a command, etc.  You probably don't care
-    about this."""))
-conf.registerGlobalValue(conf.supybot.log, 'stdout',
-    registry.Boolean(True, """Determines whether the bot will log to
-    stdout."""))
-conf.registerGlobalValue(conf.supybot.log, 'individualPluginLogfiles',
-    registry.Boolean(False, """Determines whether the bot will separate plugin
-    logs into their own individual logfiles."""))
-
-class BooleanRequiredFalseOnWindows(registry.Boolean):
-    def set(self, s):
-        registry.Boolean.set(self, s)
-        if self.value and os.name == 'nt':
-            raise InvalidRegistryValue, 'Value cannot be true on Windows.'
-
-conf.registerGlobalValue(conf.supybot.log.stdout, 'colorized',
-    BooleanRequiredFalseOnWindows(False, """Determines whether the bot's logs
-    to stdout (if enabled) will be colorized with ANSI color."""))
-
-conf.registerGlobalValue(conf.supybot.log.stdout, 'wrap',
-    registry.Boolean(True, """Determines whether the bot will wrap its logs
-    when they're output to stdout."""))
-
-conf.registerGlobalValue(conf.supybot.log, 'timestampFormat',
-    registry.String('[%d-%b-%Y %H:%M:%S]', """Determines the format string for
-    timestamps in logfiles.  Refer to the Python documentation for the time
-    module to see what formats are accepted. If you set this variable to the
-    empty string, times will be logged in a simple seconds-since-epoch
-    format."""))
-
 _logDir = conf.supybot.directories.log()
 if not os.path.exists(_logDir):
     os.mkdir(_logDir, 0755)
@@ -348,8 +376,7 @@ _logger.setLevel(conf.supybot.log.level())
 
 if not conf.daemonized:
     _stdoutHandler = StdoutStreamHandler(sys.stdout)
-    _formatString = '%(name)s: %(levelname)s %(message)s'
-    _stdoutFormatter = ColorizedFormatter(_formatString)
+    _stdoutFormatter = ColorizedFormatter('YOU SHOULD NEVER SEE THIS!')
     _stdoutHandler.setFormatter(_stdoutFormatter)
     _stdoutHandler.setLevel(-1)
     _logger.addHandler(_stdoutHandler)
