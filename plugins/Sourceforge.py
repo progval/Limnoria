@@ -309,6 +309,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 ircutils.bold(num), '; '.join(resp)), prefixName = False)
         except urllib2.HTTPError, e:
             debug.msg(e.msg())
+        except error, e:
+            debug.msg(e.msg())
     sfSnarfer = privmsgs.urlSnarfer(sfSnarfer)
 
 Class = Sourceforge
