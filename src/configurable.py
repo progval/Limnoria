@@ -76,6 +76,17 @@ class Dictionary(object):
         else:
             return self.defaults[name]
 
+    def getDefault(self, name):
+        name = callbacks.canonicalName(name)
+        return self.defaults[name]
+
+    def getChannels(self, name):
+        d = ircutils.IrcDict()
+        for (channel, names) in self.channels.iteritems():
+            if name in names:
+                d[channel] = names[name]
+        return d
+    
     def set(self, name, value, channel=None):
         name = callbacks.canonicalName(name)
         if name not in self.originalNames:
@@ -130,6 +141,14 @@ def NoSpacesStrType(s):
     except Error:
         raise Error, 'Value must be a string with no space characters.'
 
+def SpaceSurroundedStrType(s):
+    s = StrType(s)
+    if s.lstrip() == s:
+        s = ' ' + s
+    if s.rstrip() == s:
+        s += ' '
+    return s
+
 def RegexpStrType(s):
     try:
         s = StrType(s)
@@ -165,6 +184,15 @@ def PositiveIntType(s):
             raise Error
     except Error:
         raise Error, 'Value must be a positive integer.'
+
+def SpaceSeparatedStrListType(s):
+    try:
+        L = []
+        for s in s.split():
+            L.append(StrType(s))
+        return L
+    except Error:
+        raise Error, 'Value must be a space-separated list of strings.'
 
 
 class Mixin(object):
@@ -252,6 +280,11 @@ class Mixin(object):
                 channel = None
                 capability = 'admin'
             (name, value) = privmsgs.getArgs(args, required=1, optional=1)
+            def help(configurables):
+                s = configurables.help(name)
+                value = configurables.get(name, channel)
+                s = '%s  (Current value: %r)' % (s, value)
+                irc.reply(msg, s)
             if name in self.configurables:
                 if value:
                     if ircdb.checkCapability(msg.prefix, capability):
@@ -263,7 +296,7 @@ class Mixin(object):
                     else:
                         irc.error(msg, conf.replyNoCapability % capability)
                 else:
-                    irc.reply(msg, self.configurables.help(name))
+                    help(self.configurables)
             elif hasattr(self, 'globalConfigurables') and \
                  name in self.globalConfigurables:
                 if value:
@@ -278,7 +311,7 @@ class Mixin(object):
                             'the "admin" capability.'
                         irc.error(msg, s)
                 else:
-                    irc.reply(msg, self.globalConfigurables.help(name))
+                    help(self.globalConfigurables)
             else:
                 irc.error(msg, 'There is no config variable %r' % name)
 
