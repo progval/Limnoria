@@ -20,21 +20,21 @@ import socket, re
 
 version = '1.0'
 
-def dequote(str):
+def dequote(s):
     """Will remove single or double quotes from the start and end of a string
     and return the result."""
     quotechars = "'\""
-    while len(str) and str[0] in quotechars:
-        str = str[1:]
-    while len(str) and str[-1] in quotechars:
-        str = str[0:-1]
-    return str
+    while s and s[0] in quotechars:
+        s = s[1:]
+    while str and str[-1] in quotechars:
+        s = s[0:-1]
+    return s
 
-def enquote(str):
+def enquote(s):
     """This function will put a string in double quotes, properly
     escaping any existing double quotes with a backslash.  It will
     return the result."""
-    return '"' + str.replace('"', "\\\"") + '"'
+    return '"' + s.replace('"', "\\\"") + '"'
 
 class Connection:
     """This class is used to establish a connection to a database server.
@@ -42,8 +42,9 @@ class Connection:
     Instantiating it takes two optional arguments: a hostname (a string)
     and a port (an int).  The hostname defaults to localhost
     and the port to 2628, the port specified in RFC."""
-    def __init__(self, hostname = 'localhost', port = 2628):
+    def __init__(self, hostname='localhost', port=2628, timeout=10):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.settimeout(timeout)
         self.sock.connect((hostname, port))
         self.rfile = self.sock.makefile("rt")
         self.wfile = self.sock.makefile("wt", 0)

@@ -37,6 +37,7 @@ import plugins
 
 import sets
 import random
+import socket
 
 import dictclient
 
@@ -60,7 +61,7 @@ def configure(onStart, afterConnect, advanced):
         server = something('What server?')
         onStart.append('dictserver %s' % server)
 
-class Dictionary(callbacks.Privmsg):
+class Dict(callbacks.Privmsg):
     threaded = True
     dictServer = 'dict.org'
     def __init__(self):
@@ -68,9 +69,13 @@ class Dictionary(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
 
     def setDictServer(self, server):
-        conn = dictclient.Connection(server)
-        self.dictdbs = sets.Set(conn.getdbdescs())
         self.dictServer = server
+        try:
+            conn = dictclient.Connection(server, timeout=3)
+            self.dictdbs = sets.Set(conn.getdbdescs())
+        except socket.timeout:
+            debug.msg('Timeout on server %s' % server)
+            self.dictdbs = sets.Set([])
             
     def dictserver(self, irc, msg, args):
         """[<dictd server>]
@@ -91,7 +96,7 @@ class Dictionary(callbacks.Privmsg):
         """
         irc.reply(msg, utils.commaAndify(self.dictdbs))
 
-    def randomdictionary(self, irc, msg, args):
+    def random(self, irc, msg, args):
         """takes no arguments.
 
         Returns a random valid dictionary.
@@ -101,18 +106,22 @@ class Dictionary(callbacks.Privmsg):
     def dict(self, irc, msg, args):
         """[<dictionary>] <word>
 
-        Looks up the definition of <word> on dict.org's dictd server.  If a
-        a dictionary is specified and the definition is too long, snips it to
-        an appropriate length.
+        Looks up the definition of <word> on dict.org's dictd server.
         """
         if not args:
             raise callbacks.ArgumentError
+        try:
+            conn = dictclient.Connection(self.dictServer)
+        except socket.timeout:
+            irc.error(msg, 'Timeout on the dict server.')
+            return
+        if not self.dictdbs:
+            self.dictdbs = sets.Set(conn.getdbdescs())
         if args[0] in self.dictdbs:
             dictionary = args.pop(0)
         else:
             dictionary = '*'
         word = privmsgs.getArgs(args)
-        conn = dictclient.Connection(self.dictServer)
         definitions = conn.define(dictionary, word)
         dbs = sets.Set()
         if not definitions:
@@ -137,6 +146,7 @@ class Dictionary(callbacks.Privmsg):
         irc.reply(msg, s)
 
 
-Class = Dictionary
+Class = Dict
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
