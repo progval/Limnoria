@@ -88,12 +88,13 @@ def checkCapability(f, capability):
 
 def checkChannelCapability(f, capability):
     """Makes sure a user has a certain channel capability before running f."""
-    def newf(self, irc, msg, args):
+    def newf(self, irc, msg, args, *L):
         channel = getChannel(msg, args) # Make a copy, f might getChannel.
         chancap = ircdb.makeChannelCapability(channel, capability)
         if ircdb.checkCapability(msg.prefix, chancap):
+            L += (channel,)
             ff = new.instancemethod(f, self, self.__class__)
-            ff(irc, msg, args, channel)
+            ff(irc, msg, args, *L)
         else:
             irc.error(msg, conf.replyNoCapability % chancap)
     newf.__doc__ = f.__doc__
@@ -101,16 +102,16 @@ def checkChannelCapability(f, capability):
 
 def thread(f):
     """Makes sure a command spawns a thread when called."""
-    def newf(self, irc, msg, args):
+    def newf(self, irc, msg, args, *L):
         ff = new.instancemethod(f, self, self.__class__)
-        t = callbacks.CommandThread(self.callCommand, ff, irc, msg, args)
+        t = callbacks.CommandThread(self.callCommand, ff, irc, msg, args, *L)
         t.start()
     newf.__doc__ = f.__doc__
     return newf
 
 def name(f):
     """Makes sure a name is available based on conf.requireRegistration."""
-    def newf(self, irc, msg, args):
+    def newf(self, irc, msg, args, *L):
         try:
             name = ircdb.users.getUser(msg.prefix).name
         except KeyError:
@@ -119,17 +120,19 @@ def name(f):
                 return
             else:
                 name = msg.prefix
+        L = (name,) + L
         ff = new.instancemethod(f, self, self.__class__)
-        ff(irc, msg, args, name)
+        ff(irc, msg, args, *L)
     newf.__doc__ = f.__doc__
     return newf
 
 def channel(f):
     """Gives the command an extra channel arg as if it had called getChannel"""
-    def newf(self, irc, msg, args):
+    def newf(self, irc, msg, args, *L):
         channel = getChannel(msg, args)
+        L = (channel,) + L
         ff = new.instancemethod(f, self, self.__class__)
-        ff(irc, msg, args, channel)
+        ff(irc, msg, args, *L)
     newf.__doc__ = f.__doc__
     return newf
         

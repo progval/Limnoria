@@ -436,7 +436,7 @@ class CommandThread(threading.Thread):
     """Just does some extra logging and error-recovery for commands that need
     to run in threads.
     """
-    def __init__(self, callCommand, command, irc, msg, args):
+    def __init__(self, callCommand, command, irc, msg, args, *L):
         self.command = command
         world.threadsSpawned += 1
         try:
@@ -449,7 +449,7 @@ class CommandThread(threading.Thread):
             self.className = '<unknown>'
         name = '%s.%s with args %r' % (self.className, self.commandName, args)
         threading.Thread.__init__(self, target=callCommand, name=name,
-                                  args=(command, irc, msg, args))
+                                  args=(command, irc, msg, args)+L)
         debug.msg('Spawning thread %s' % name, 'verbose')
         self.irc = irc
         self.msg = msg
@@ -548,17 +548,17 @@ class Privmsg(irclib.IrcCallback):
             method = getattr(self, methodName)
             if inspect.ismethod(method):
                 code = method.im_func.func_code
-                return inspect.getargs(code) == (self.commandArgs, None, None)
+                return inspect.getargs(code)[0] == self.commandArgs
             else:
                 return False
         else:
             return False
 
-    def callCommand(self, f, irc, msg, args):
+    def callCommand(self, f, irc, msg, args, *L):
         # Exceptions aren't caught here because IrcObjectProxy.finalEval
         # catches them and does The Right Thing.
         start = time.time()
-        f(irc, msg, args)
+        f(irc, msg, args, *L)
         elapsed = time.time() - start
         funcname = f.im_func.func_name
         debug.msg('%s.%s took %s seconds' % \
