@@ -414,8 +414,11 @@ class RichReplyMethods(object):
 
     def replySuccess(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.success)
-        s = self.__makeReply(v, s)
-        return self.reply(s, **kwargs)
+        if v:
+            s = self.__makeReply(v, s)
+            return self.reply(s, **kwargs)
+        else:
+            self.noReply()
 
     def replyError(self, s='', **kwargs):
         v = self._getConfig(conf.supybot.replies.error)

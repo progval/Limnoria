@@ -421,7 +421,8 @@ registerGroup(supybot, 'replies')
 
 registerChannelValue(supybot.replies, 'success',
     registry.NormalizedString("""The operation succeeded.""", """Determines
-    what message the bot replies with when a command succeeded."""))
+    what message the bot replies with when a command succeeded.  If this
+    configuration variable is empty, no success message will be sent."""))
 
 registerChannelValue(supybot.replies, 'error',
     registry.NormalizedString("""An error has occurred and has been logged.
