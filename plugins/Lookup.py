@@ -62,7 +62,7 @@ def configure(onStart, afterConnect, advanced):
         filename = something('What\'s the filename?')
         try:
             fd = file(os.path.join(conf.dataDir, filename))
-        except OSError, e:
+        except EnvironmentError, e:
             print 'I couldn\'t open that file: %s' % e
             continue
         counter = 1
