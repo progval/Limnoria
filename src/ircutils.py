@@ -29,6 +29,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Provides a great number of useful utility functions IRC.  Things to muck around
+with hostmasks, set bold or color on strings, IRC-case-insensitive dicts, a
+nick class to handle nicks (so comparisons and hashing and whatnot work in an
+IRC-case-insensitive fashion), and numerous other things.
+"""
+
 from fix import *
 
 import re
@@ -115,6 +122,7 @@ def isIP(s):
     >>> isIP('abc.abc.abc.abc')
     0
     """
+
     if s.translate(string.ascii, _ipchars) == '':
         quads = s.split('.')
         if len(quads) <= 4:
@@ -144,7 +152,8 @@ def banmask(hostmask):
 
 _argModes = 'ovhblkqe'
 def separateModes(args):
-    """Separates modelines into single mode change tuples.
+    """Separates modelines into single mode change tuples.  Basically, you
+    should give it the .args of a MODE IrcMsg.
 
     Examples:
 
@@ -217,12 +226,13 @@ mircColors = {
     'light grey': 15,
 }
 
+# Offer a reverse mapping from integers to their associated colors.
 for (k, v) in mircColors.items():
     if k is not None: # Ignore empty string for None.
         mircColors[v] = k
 
 def mircColor(s, fg=None, bg=None):
-    """Returns s, with the appropriate mIRC color codes applied."""
+    """Returns s with the appropriate mIRC color codes applied."""
     if fg is None and bg is None:
         return s
     if fg is None or isinstance(fg, str):
@@ -234,8 +244,18 @@ def mircColor(s, fg=None, bg=None):
             bg = mircColors[bg]
         return '\x03%s,%s%s\x03' % (fg, bg, s)
 
-def canonicalColor(s):
-    return mircColor(s, hash(s) % 14 + 2)
+def canonicalColor(s, bg=False):
+    h = hash(s)
+    fg = h % 14 + 2 # The + 2 is to rule out black and white.
+    if bg:
+        bg = (h >> 4) & 3 # The 5th, 6th, and 7th least significant bits.
+        if fg < 8:
+            bg += 8
+        else:
+            bg += 2
+        return mircColor(s, fg, bg)
+    else:
+        return mircColor(s, fg)
 
 def isValidArgument(s):
     """Returns if s is strictly a valid argument for an IRC message."""
@@ -273,7 +293,7 @@ def shrinkList(L, sep='', limit=425):
 
 
 class nick(str):
-    """This class does case-insensitive comparisons of nicks."""
+    """This class does case-insensitive comparison and hashing of nicks."""
     def __init__(self, s):
         self.original = s
         self.lowered = toLower(s)
