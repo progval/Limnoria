@@ -59,7 +59,7 @@ class MiscCommands(callbacks.Privmsg):
         else:
             for cb in irc.callbacks:
                 cls = cb.__class__
-                if cls.__name__.lower().startswith(name) and \
+                if cls.name().lower().startswith(name) and \
                        not issubclass(cls, callbacks.PrivmsgRegexp) and \
                        issubclass(cls, callbacks.Privmsg):
                     commands = [x for x in cls.__dict__
@@ -192,7 +192,7 @@ class MiscCommands(callbacks.Privmsg):
         command = privmsgs.getArgs(args)
         Class = irc.findCallback(command)
         if Class is not None:
-            irc.reply(msg, Class.__class__.__name__)
+            irc.reply(msg, Class.name())
         else:
             irc.error(msg, 'There is no such command %s' % command)
 
