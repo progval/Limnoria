@@ -520,7 +520,7 @@ class Channel(callbacks.Privmsg):
             id = ircdb.users.getUserId(hostmask)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.errorNoUser()
+            irc.errorNoUser(Raise=True)
         for c in capabilities.split():
             c = ircdb.makeChannelCapability(channel, c)
             user.addCapability(c)
@@ -540,8 +540,7 @@ class Channel(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(hostmask)
         except KeyError:
-            irc.errorNoUser()
-            return
+            irc.errorNoUser(Raise=True)
         user = ircdb.users.getUser(id)
         fail = []
         for c in capabilities.split():
