@@ -123,8 +123,8 @@ def canonicalName(command):
         command = command[:-1]
     return command.translate(string.ascii, special).lower() + reAppend
 
-def reply(msg, s, prefixName=True, private=False,
-          notice=False, to=None, action=False):
+def reply(msg, s, prefixName=True, private=None,
+          notice=None, to=None, action=None):
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
     if private:
@@ -134,7 +134,7 @@ def reply(msg, s, prefixName=True, private=False,
         else:
             target = msg.nick
         # XXX: User value.
-        if conf.supybot.reply.withNoticeWhenPrivate():
+        if conf.supybot.reply.withNoticeWhenPrivate() and notice is None:
             notice = True
     if to is None:
         to = msg.nick
@@ -151,8 +151,10 @@ def reply(msg, s, prefixName=True, private=False,
     if notice:
         msgmaker = ircmsgs.notice
     if conf.supybot.reply.withPrivateNotice():
-        target = msg.nick
-        msgmaker = ircmsgs.notice
+        if private is None:
+            target = msg.nick
+        if notice is None:
+            msgmaker = ircmsgs.notice
     if action:
         msgmaker = ircmsgs.action
     # Finally, we'll return the actual message.
@@ -467,10 +469,10 @@ class IrcObjectProxy(RichReplyMethods):
 
     def _resetReplyAttributes(self):
         self.to = None
-        self.action = False
-        self.notice = False
-        self.private = False
-        self.noLengthCheck = False
+        self.action = None
+        self.notice = None
+        self.private = None
+        self.noLengthCheck = None
         self.prefixName = conf.supybot.reply.withNickPrefix()
 
     def evalArgs(self):
@@ -571,7 +573,7 @@ class IrcObjectProxy(RichReplyMethods):
                 self._callCommand(name, command, cb)
 
     def reply(self, s, noLengthCheck=False, prefixName=True,
-              action=False, private=False, notice=False, to=None, msg=None):
+              action=None, private=None, notice=None, to=None, msg=None):
         """reply(s) -> replies to msg with s
 
         Keyword arguments:
@@ -593,10 +595,14 @@ class IrcObjectProxy(RichReplyMethods):
                'Old code alert: there is no longer a "msg" argument to reply.'
         if msg is None:
             msg = self.msg
-        self.action = action or self.action
-        self.notice = notice or self.notice
-        self.private = private or self.private
-        self.to = to or self.to
+        if action is not None:
+            self.action = self.action or action
+        if notice is not None:
+            self.notice = self.notice or notice
+        if private is not None:
+            self.private = self.private or private
+        if to is not None:
+            self.to = self.to or to
         # action=True implies noLengthCheck=True and prefixName=False
         self.prefixName = prefixName and self.prefixName and not self.action
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action

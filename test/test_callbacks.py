@@ -439,4 +439,38 @@ class RichReplyMethodsTestCase(PluginTestCase):
         self.irc.addCallback(self.NoCapability())
         self.assertRegexp('error', 'admin')
 
+
+class WithPrivateNoticeTestCase(ChannelPluginTestCase):
+    plugins = ()
+    class WithPrivateNotice(callbacks.Privmsg):
+        def normal(self, irc, msg, args):
+            irc.reply('should be with private notice')
+        def explicit(self, irc, msg, args):
+            irc.reply('should not be with private notice',
+                      private=False, notice=False)
+    def test(self):
+        self.irc.addCallback(self.WithPrivateNotice())
+        # Check normal behavior.
+        m = self.assertNotError('normal')
+        self.failIf(m.command == 'NOTICE')
+        self.failUnless(ircutils.isChannel(m.args[0]))
+        m = self.assertNotError('explicit')
+        self.failIf(m.command == 'NOTICE')
+        self.failUnless(ircutils.isChannel(m.args[0]))
+        # Check abnormal behavior.
+        original = conf.supybot.reply.withPrivateNotice()
+        try:
+            conf.supybot.reply.withPrivateNotice.setValue(True)
+            m = self.assertNotError('normal')
+            self.failUnless(m.command == 'NOTICE')
+            self.failIf(ircutils.isChannel(m.args[0]))
+            m = self.assertNotError('explicit')
+            self.failIf(m.command == 'NOTICE')
+            self.failUnless(ircutils.isChannel(m.args[0]))
+        finally:
+            conf.supybot.reply.withPrivateNotice.setValue(original)
+            
+            
+        
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
