@@ -32,7 +32,23 @@
 ###
 # Note the exception above the declaration of _code.
 ###
-"""Module to replicate some of moobot's functionality."""
+"""
+Provides several commands that shamelessly imitate Moobot, if only to show
+developers coming from Moobot how to code to Supybot.
+
+Commands include:
+  cool
+  hi
+  morse
+  unmorse
+  ditdaw
+  dawdit
+  reverse
+  mime
+  unmime
+  stack
+  give
+"""
 
 from baseplugin import *
 
@@ -128,6 +144,7 @@ class Moobot(callbacks.Privmsg):
         irc.reply(msg, ' '.join(L))
 
     ditdaw = morse
+    dawdit = unmorse
 
     def hi(self, irc, msg, args):
         "takes no arguments"
