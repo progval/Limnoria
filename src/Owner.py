@@ -534,9 +534,13 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         """<plugin>
 
         Unloads the callback by name; use the 'list' command to see a list
-        of the currently loaded callbacks.
+        of the currently loaded callbacks.  Obviously, the Owner plugin can't
+        be unloaded.
         """
         name = privmsgs.getArgs(args)
+        if ircutils.strEqual(name, self.name()):
+            irc.error('You can\'t unload the %s plugin.' % self.name())
+            return
         callbacks = irc.removeCallback(name)
         if callbacks:
             for callback in callbacks:
