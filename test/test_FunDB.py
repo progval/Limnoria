@@ -70,6 +70,32 @@ if sqlite is not None:
             self.assertRegexp('num lart', 'currently 0')
             self.assertError('lart jemfinch')
 
+        def testMyMeReplacement(self):
+            self.assertNotError('add lart jabs $who')
+            self.assertNotError('add praise pets $who')
+            self.assertNotError('add insult foo')
+            self.assertRegexp('lart me', 'jabs test \(#1\)')
+            self.assertRegexp('praise me', 'pets test \(#1\)')
+            self.assertRegexp('insult me', 'test: foo \(#1\)')
+            self.assertRegexp('lart whamme', 'jabs whamme \(#1\)')
+            self.assertRegexp('praise whamme', 'pets whamme \(#1\)')
+            self.assertRegexp('insult whamme', 'whamme: foo \(#1\)')
+            self.assertRegexp('lart my knee', 'jabs test\'s knee \(#1\)')
+            self.assertRegexp('praise my knee', 'pets test\'s knee \(#1\)')
+            self.assertRegexp('insult my knee', 'test\'s knee: foo \(#1\)')
+            self.assertRegexp('lart sammy the snake', 'jabs sammy the snake'\
+                ' \(#1\)')
+            self.assertRegexp('praise sammy the snake', 'pets sammy the snake'\
+                ' \(#1\)')
+            self.assertRegexp('insult sammy the snake', 'sammy the snake: foo'\
+                ' \(#1\)')
+            self.assertRegexp('lart me for my', 'jabs test for test\'s \(#1\)')
+            self.assertRegexp('praise me for my','pets test for test\'s '\
+                '\(#1\)')
+            self.assertNotError('remove lart 1')
+            self.assertNotError('remove praise 1')
+            self.assertNotError('remove insult 1')
+
         def testExcuse(self):
             self.assertNotError('add excuse Power failure')
             self.assertResponse('excuse', 'Power failure (#1)')

@@ -154,10 +154,9 @@ class FunDB(callbacks.Privmsg):
         else:
             (id, insult) = cursor.fetchone()
             nick = nick.strip()
-            if nick in (irc.nick, 'yourself', 'me'):
-                insultee = msg.nick
-            else:
-                insultee = nick
+            nick = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, nick)
+            nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
+            insultee = nick
             insult = insult.replace("$who", insultee)
             s = '%s: %s (#%s)' % (insultee, insult, id)
             irc.reply(msg, s)
@@ -427,12 +426,11 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available larts.')
         else:
             (id, lart) = cursor.fetchone()
-            if nick in (irc.nick, 'me'):
-                lartee = msg.nick
-            elif 'my' in nick:
-                lartee = nick.replace('my', '%s\'s' % msg.nick)
-            else:
-                lartee = nick
+            nick = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, nick)
+            reason = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, reason)
+            nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
+            reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
+            lartee = nick
             lart = lart.replace("$who", lartee)
             if len(reason) > 0:
                 s = '%s for %s (#%s)' % (lart, reason, id)
@@ -480,12 +478,11 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'There are currently no available praises.')
         else:
             (id, praise) = cursor.fetchone()
-            if nick in (msg.nick, 'me'):
-                praisee = msg.nick
-            elif 'my' in nick:
-                praisee = nick.replace('my', '%s\'s' % msg.nick)
-            else:
-                praisee = nick
+            nick = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, nick)
+            reason = re.sub(r'\b(?:me|%s)\b' % irc.nick, msg.nick, reason)
+            nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
+            reason = re.sub(r'\bmy\b', '%s\'s' % msg.nick, reason)
+            praisee = nick
             praise = praise.replace("$who", praisee)
             if len(reason) > 0:
                 s = '%s for %s (#%s)' % (praise, reason, id)
