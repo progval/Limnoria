@@ -132,9 +132,9 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                 query.append('priority=%s' % k.upper())
             elif k in severityKeys:
                 query.append('bug_severity=%s' % k.upper())
-	    
         query.append('ctype=csv')
         return query
+
     def die(self):
         self.db.close()
         configurable.Mixin.die(self)
