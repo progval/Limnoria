@@ -238,7 +238,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         # Otherwise, 
         cursor.execute("""INSERT INTO factoids VALUES
                           (%s, %s, %s, NULL, NULL, NULL, NULL, NULL, NULL,
-                           %s, 0, 0)""",
+                           %s, 0)""",
                            key, id, int(time.time()), fact)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
