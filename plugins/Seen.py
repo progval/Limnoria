@@ -35,8 +35,6 @@ Keeps track of the last time a user was seen on a channel.
 
 __revision__ = "$Id$"
 
-import supybot.plugins as plugins
-
 import os
 import re
 import sets
@@ -88,7 +86,7 @@ class Seen(callbacks.Privmsg):
     def __init__(self):
         self.db = SeenDB(filename)
         world.flushers.append(self.db.flush)
-        callbacks.Privmsg.__init__(self)
+        super(Seen, self).__init__()
 
     def die(self):
         if self.db.flush in world.flushers:
@@ -96,7 +94,7 @@ class Seen(callbacks.Privmsg):
         else:
             self.log.debug('Odd, no flush in flushers: %r', world.flushers)
         self.db.close()
-        callbacks.Privmsg.die(self)
+        super(Seen, self).die()
 
     def doPrivmsg(self, irc, msg):
         if ircutils.isChannel(msg.args[0]):
@@ -166,7 +164,7 @@ class Seen(callbacks.Privmsg):
                       (name, utils.timeElapsed(time.time()-when), said))
         except KeyError:
             irc.reply('I have not seen %s.' % name)
-            
+
 
 Class = Seen
 

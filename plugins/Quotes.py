@@ -35,8 +35,6 @@ Maintains a Quotes database for each channel.
 
 __revision__ = "$Id$"
 
-import supybot.plugins as plugins
-
 import re
 import time
 import getopt
@@ -46,15 +44,11 @@ import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
+import supybot.plugins as plugins
+import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
-
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this '\
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 conf.registerPlugin('Quotes')
 conf.registerGlobalValue(conf.supybot.plugins.Quotes, 'requireRegistration',
@@ -81,13 +75,31 @@ class QuoteRecord(object):
                 time.strftime(format, time.localtime(float(self.at))))
 
 class SqliteQuotesDB(object):
+    def __init__(self, filename):
+        self.dbs = ircutils.IrcDict()
+        self.filename = filename
+
+    def close(self):
+        for db in self.dbs.itervalues():
+            db.close()
+
     def _getDb(self, channel):
-        filename = plugins.makeChannelFilename('Quotes.db', channel)
+        try:
+            import sqlite
+        except ImportError:
+            raise callbacks.Error, 'You need to have PySQLite installed to ' \
+                                   'use this plugin.  Download it at ' \
+                                   '<http://pysqlite.sf.net/>'
+        filename = plugins.makeChannelFilename(self.filename, channel)
+        if channel in self.dbs:
+            return self.dbs[channel]
         if os.path.exists(filename):
-            return sqlite.connect(db=filename, mode=0755,
-                                  converters={'bool': bool})
+            self.dbs[channel] = sqlite.connect(db=filename, mode=0755,
+                                               converters={'bool': bool})
+            return self.dbs[channel]
         #else:
         db = sqlite.connect(db=filename, mode=0755, coverters={'bool': bool})
+        self.dbs[channel] = db
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE quotes (
                           id INTEGER PRIMARY KEY,
@@ -184,13 +196,17 @@ class SqliteQuotesDB(object):
             raise dbi.NoRecordError, id
         db.commit()
 
-def QuotesDB():
-    return SqliteQuotesDB()
+QuotesDB = plugins.DB('Quotes',
+                      {'sqlite': SqliteQuotesDB})
 
 class Quotes(callbacks.Privmsg):
     def __init__(self):
+        super(Quotes, self).__init__()
         self.db = QuotesDB()
-        callbacks.Privmsg.__init__(self)
+
+    def die(self):
+        super(Quotes, self).die()
+        self.db.close()
 
     def add(self, irc, msg, args):
         """[<channel>] <quote>

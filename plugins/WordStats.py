@@ -71,7 +71,7 @@ class WordStatsDB(plugins.ChannelUserDB):
     def close(self):
         if self.channelWords:
             plugins.ChannelUserDB.close(self)
-            
+
     def serialize(self, v):
         L = []
         for (word, count) in v.iteritems():
@@ -178,7 +178,7 @@ filename=os.path.join(conf.supybot.directories.data(), 'WordStats.db')
 class WordStats(callbacks.Privmsg):
     noIgnore = True
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
+        super(WordStats, self).__init__()
         self.db = WordStatsDB(filename)
         self.queried = False
         world.flushers.append(self.db.flush)
@@ -187,7 +187,7 @@ class WordStats(callbacks.Privmsg):
         if self.db.flush in world.flushers:
             world.flushers.remove(self.db.flush)
         self.db.close()
-        callbacks.Privmsg.die(self)
+        super(WordStats, self).die()
 
     def callCommand(self, *args, **kwargs):
         self.queried = True

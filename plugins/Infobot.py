@@ -385,6 +385,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         self.addressed = False
 
     def die(self):
+        super(Infobot, self).die()
         self.db.close()
 
     def _error(self, s):

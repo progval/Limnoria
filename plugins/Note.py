@@ -36,14 +36,13 @@ users that can be retrieved later.
 
 __revision__ = "$Id$"
 
-import supybot.plugins as plugins
-
 import csv
 import sets
 import time
 import getopt
 import os.path
 import operator
+
 from itertools import imap
 
 import supybot.dbi as dbi
@@ -83,19 +82,21 @@ class Ignores(registry.SpaceSeparatedListOfStrings):
 
 conf.registerUserValue(conf.users.plugins.Note, 'ignores', Ignores([], ''))
 
+class NoteRecord(object):
+    __metaclass__ = dbi.Record
+    __fields__ = [
+        'frm',
+        'to',
+        'at',
+        'notified',
+        'read',
+        'public',
+        'text',
+        ]
+
 class DbiNoteDB(dbi.DB):
     Mapping = 'flat'
-    class Record(object):
-        __metaclass__ = dbi.Record
-        __fields__ = [
-            'frm',
-            'to',
-            'at',
-            'notified',
-            'read',
-            'public',
-            'text',
-            ]
+    Record = NoteRecord
 
     def __init__(self, *args, **kwargs):
         dbi.DB.__init__(self, *args, **kwargs)
@@ -121,7 +122,7 @@ class DbiNoteDB(dbi.DB):
                 self.unRead[record.to].remove(record.id)
             except (KeyError, ValueError):
                 pass
-            
+
     def setRead(self, id):
         n = self.get(id)
         n.read = True
@@ -153,20 +154,18 @@ class DbiNoteDB(dbi.DB):
         id = self.add(n)
         self._addCache(n)
         return id
-        
-    
+
+
 NoteDB = plugins.DB('Note', {'flat': DbiNoteDB})
-## def NoteDB():
-##     # XXX This should eventually be smarter.
-##     return DbiNoteDB(conf.supybot.directories.data.dirize('Note.db'))
 
 
 class Note(callbacks.Privmsg):
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
+        super(Note, self).__init__()
         self.db = NoteDB()
 
     def die(self):
+        super(Note, self).die()
         self.db.close()
 
     def doPrivmsg(self, irc, msg):
@@ -318,7 +317,7 @@ class Note(callbacks.Privmsg):
             assert note.frm == to, 'Odd, userid isn\'t frm either.'
             recipient = ircdb.users.getUser(note.to).name
             return '%s (Sent to %s %s ago)' % (note.text, recipient, elapsed)
-        
+
     def note(self, irc, msg, args):
         """<note id>
 
@@ -411,7 +410,7 @@ class Note(callbacks.Privmsg):
         except KeyError:
             irc.errorNotRegistered()
             return
-        
+
         def p(note):
             return not note.read and note.to == userid
         if sender:

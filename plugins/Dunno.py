@@ -66,35 +66,36 @@ conf.registerChannelValue(conf.supybot.plugins.Dunno, 'prefixNick',
     registry.Boolean(True, """Determines whether the bot will prefix the nick
     of the user giving an invalid command to the "dunno" response."""))
 
+class DunnoRecord(object):
+    __metaclass__ = dbi.Record
+    __fields__ = [
+        'at',
+        'by',
+        'text',
+        ]
+
 class DbiDunnoDB(object):
     class DunnoDB(dbi.DB):
-        class Record(object):
-            __metaclass__ = dbi.Record
-            __fields__ = [
-                'at',
-                'by',
-                'text',
-                ]
-    def __init__(self):
-        self.filenames = sets.Set()
+        Record = DunnoRecord
+
+    def __init__(self, filename):
+        self.dbs = ircutils.IrcDict()
+        self.filename = filename
 
     def _getDb(self, channel):
-        # Why cache?  It gains very little.
-        filename = plugins.makeChannelFilename('Dunno.db', channel)
-        self.filenames.add(filename)
-        return self.DunnoDB(filename)
+        filename = plugins.makeChannelFilename(self.filename, channel)
+        if channel in self.dbs:
+            return self.dbs[channel]
+        self.dbs[channel] = self.DunnoDB(filename)
+        return self.dbs[channel]
 
     def close(self):
-        for filename in self.filenames:
-            try:
-                db = self.DunnoDB(filename)
-                db.close()
-            except EnvironmentError:
-                pass
+        for db in self.dbs.itervalues():
+            db.close()
 
     def flush(self):
         pass
-    
+
     def add(self, channel, text, by, at):
         db = self._getDb(channel)
         return db.add(db.Record(at=at, by=by, text=text))
@@ -112,7 +113,7 @@ class DbiDunnoDB(object):
         dunno = db.get(id)
         dunno.text = f(dunno.text)
         db.set(id, dunno)
-        
+
     def random(self, channel):
         db = self._getDb(channel)
         return random.choice(db)
@@ -120,17 +121,17 @@ class DbiDunnoDB(object):
     def search(self, channel, p):
         db = self._getDb(channel)
         return db.select(p)
-    
+
     def size(self, channel):
         try:
             db = self._getDb(channel)
             return itertools.ilen(db)
         except EnvironmentError, e:
             return 0
-    
-def DunnoDB():
-    return DbiDunnoDB()
-        
+
+DunnoDB = plugins.DB('Dunno',
+                     {'flat': DbiDunnoDB})
+
 class Dunno(callbacks.Privmsg):
     """This plugin was written initially to work with MoobotFactoids, the two
     of them to provide a similar-to-moobot-and-blootbot interface for factoids.
@@ -139,11 +140,12 @@ class Dunno(callbacks.Privmsg):
     responses."""
     callAfter = ['MoobotFactoids']
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
+        super(Dunno, self).__init__()
         self.db = DunnoDB()
 
     def die(self):
         self.db.close()
+        super(Dunno, self).die()
 
     def invalidCommand(self, irc, msg, tokens):
         channel = msg.args[0]

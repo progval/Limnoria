@@ -227,10 +227,11 @@ KarmaDB = plugins.DB('Karma',
 class Karma(callbacks.Privmsg):
     callBefore = ('Factoids', 'MoobotFactoids', 'Infobot')
     def __init__(self):
-        self.db = KarmaDB()
         super(Karma, self).__init__()
+        self.db = KarmaDB()
 
     def die(self):
+        super(Karma, self).die()
         self.db.close()
 
     def _normalizeThing(self, thing):

@@ -54,35 +54,33 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
+class FunDBRecord(object):
+    __metaclass__ = dbi.Record
+    __fields__ = [
+        'by',
+        'text',
+        ]
+
 class DbiFunDBDB(object):
     class FunDBDB(dbi.DB):
-        class Record(object):
-            __metaclass__ = dbi.Record
-            __fields__ = [
-                'by',
-                'text',
-                ]
+        Record = FunDBRecord
 
-    def __init__(self):
+    def __init__(self, filename):
         self.dbs = ircutils.IrcDict()
-        self.filenames = sets.Set()
+        self.filename = filename
 
     def close(self):
-        for filename in self.filenames:
-            try:
-                db = self.FunDBDB(filename)
+        for type in self.dbs.itervalues():
+            for db in type.itervalues():
                 db.close()
-            except EnvironmentError:
-                pass
 
     def _getDb(self, channel, type):
         type = type.lower()
         if channel not in self.dbs:
             self.dbs[channel] = {}
         if type not in self.dbs[channel]:
-            filename = type.capitalize() + '.db'
+            filename = self.filename.replace('db', '%s.db' % type.capitalize())
             filename = plugins.makeChannelFilename(filename, channel)
-            self.filenames.add(filename)
             self.dbs[channel][type] = self.FunDBDB(filename)
         return self.dbs[channel][type]
 
@@ -112,8 +110,8 @@ class DbiFunDBDB(object):
         db = self._getDb(channel, type)
         return itertools.ilen(db)
 
-def FunDBDB():
-    return DbiFunDBDB()
+FunDBDB = plugins.DB('FunDB',
+                     {'flat': DbiFunDBDB})
 
 conf.registerPlugin('FunDB')
 conf.registerChannelValue(conf.supybot.plugins.FunDB, 'showIds',
@@ -127,11 +125,12 @@ class FunDB(callbacks.Privmsg):
     """
     _types = ('insult', 'lart', 'praise')
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
+        super(FunDB, self).__init__()
         self.db = FunDBDB()
 
     def die(self):
         self.db.close()
+        super(FunDB, self).die()
 
     def _getBy(self, by):
         try:
