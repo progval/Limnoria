@@ -257,12 +257,12 @@ class Enforcer(callbacks.Privmsg):
     def _cycle(self, irc, channel):
         if self.registryValue('cycleToGetOps', channel):
             if 'i' not in irc.state.channels[channel].modes:
-                # What about keywords?
+                # XXX: What about keywords?
                 self.log.info('Cycling %s: I\'m the only one left.', channel)
                 irc.queueMsg(ircmsgs.part(channel))
                 irc.queueMsg(ircmsgs.join(channel))
             else:
-                self.log.warning('Not cycling %s: it\'s +i', channel)
+                self.log.info('Not cycling %s: it\'s +i', channel)
 
     def doPart(self, irc, msg):
         if msg.prefix != irc.prefix:
