@@ -74,10 +74,10 @@ class SupyIrcProtocol(LineReceiver):
 
     def connectionLost(self, r):
         self.mostRecentCall.cancel()
-        if not r.check(error.ConnectionDone):
-            drivers.log.disconnect(self.factory.currentServer, errorMsg(r))
-        else:
+        if r.check(error.ConnectionDone):
             drivers.log.disconnect(self.factory.currentServer)
+        else:
+            drivers.log.disconnect(self.factory.currentServer, errorMsg(r))
         if self.irc.zombie:
             # Let's take and take and take until our IRC is DESTROYED!
             x = 1
