@@ -245,11 +245,11 @@ class Relay(callbacks.Privmsg):
     
     def do318(self, irc, msg):
         if not isinstance(irc, irclib.Irc):
-            realIrc = irc.getRealIrc()
+            irc = irc.getRealIrc()
         nick = msg.args[1]
-        if (realIrc, nick) not in self.whois:
+        if (irc, nick) not in self.whois:
             return
-        (replyIrc, replyMsg, d) = self.whois[(realIrc, nick)]
+        (replyIrc, replyMsg, d) = self.whois[(irc, nick)]
         hostmask = '@'.join(d['311'].args[2:])
         channels = d['319'].args[-1].split()
         channels = ', and '.join([', '.join(channels[:-1]), channels[-1]])
@@ -261,9 +261,10 @@ class Relay(callbacks.Privmsg):
             
     def _formatPrivmsg(self, nick, abbreviation, msg):
         if ircmsgs.isAction(msg):
-            return '* %s@%s %s' % (nick, abbreviation, ircmsgs.unAction(msg))
+            return '* \x02%s\x02@%s %s' % \
+                   (nick, abbreviation, ircmsgs.unAction(msg))
         else:
-            return '<%s@%s> %s' % (nick, abbreviation, msg.args[1])
+            return '<\x02%s\x02@%s> %s' % (nick, abbreviation, msg.args[1])
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
