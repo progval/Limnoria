@@ -135,24 +135,6 @@ def getDirectoryName(default, basedir=os.curdir):
                 done = True
     return (dir, os.path.dirname(orig_dir))
 
-def getRegistryValue(setting, prompt='', showHelp=True, showType=True):
-    if not prompt:
-        prompt = 'What would you like to set this option to?'
-    if showHelp:
-        help = ''
-        if showType:
-            help = '%s:   ' % type(setting).__name__
-        help = '%s%s' % (help, setting.help)
-        output(textwrap.fill(help), unformatted=False)
-    ret = None
-    while not ret:
-        try:
-            setting.set(expect(prompt, [], default=str(setting)))
-            ret = setting()
-        except registry.InvalidRegistryValue, reason:
-            output(str(reason))
-    return ret
-
 def main():
     import supybot.log as log
     import supybot.conf as conf
@@ -493,7 +475,7 @@ def main():
     ###
     # Sundry
     ###
-    output("""Although supybot offers a supybot-adduser.py script, with which
+    output("""Although supybot offers a supybot-adduser script, with which
     you can add users to your bot's user database, it's *very* important that
     you have an owner user for you bot.""")
     if yn('Would you like to add an owner user for your bot?', default=True):
@@ -573,123 +555,51 @@ def main():
                 not yn('Would you like to turn this colorization off?',
                 default=False))
 
-    # conf.supybot.log.level
-    output("""Your bot can handle debug messages at several priorities,
-    CRITICAL, ERROR, WARNING, INFO, and DEBUG, in decreasing order of priority.
-    By default, your bot will log all of these priorities except DEBUG.  You
-    can, however, specify that it only log messages above a certain priority
-    level.""")
-    priority = str(conf.supybot.log.level)
-    logLevel = something('What would you like the minimum priority to be?  '
-                         'Just press enter to accept the default.',
-                         default=priority).lower()
-    while logLevel not in ['debug', 'info', 'warning', 'error', 'critical']:
-        output("""That's not a valid priority.  Valid priorities include
-        'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL'""")
-        logLevel = something('What would you like the minimum priority to '
-                             'be?  Just press enter to accept the default.',
-                             default=priority).lower()
-    conf.supybot.log.level.set(logLevel)
-
     if advanced:
         output("""Here's some stuff you only get to choose if you're an
         advanced user :)""")
 
-        # enablePipeSyntax
-        output("""Supybot allows nested commands.  You've probably read about
-        them in our website or documentation.  By default, they work with a
-        syntax that looks something like Lisp with square brackets.  I.e., to
-        call the command foo on the output of bar, you would use "foo [bar]".
-        Supybot is also capable of providing a pipe syntax similar to *nix
-        pipes.  In addition to "foo [bar]", you could achieve the same effect
-        with "bar | foo", which some people find more natural.  This syntax
-        is disabled by default because so many people have pipes in their
-        nicks, and we've found it to be somewhat frustrating to have to quote
-        such nicks in commands.""")
-        response = yn('Would you like to enable this pipe syntax?', default=0)
+        # conf.supybot.log.level
+        output("""Your bot can handle debug messages at several priorities,
+        CRITICAL, ERROR, WARNING, INFO, and DEBUG, in decreasing order of
+        priority. By default, your bot will log all of these priorities except
+        DEBUG.  You can, however, specify that it only log messages above a
+        certain priority level.""")
+        priority = str(conf.supybot.log.level)
+        logLevel = something('What would you like the minimum priority to be?'
+                             '  Just press enter to accept the default.',
+                             default=priority).lower()
+        while logLevel not in ['debug','info','warning','error','critical']:
+            output("""That's not a valid priority.  Valid priorities include
+            'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL'""")
+            logLevel = something('What would you like the minimum priority to '
+                                 'be?  Just press enter to accept the default.',
+                                 default=priority).lower()
+        conf.supybot.log.level.set(logLevel)
 
-        # conf.supybot.reply.withNickPrefix
-        output("""By defualt, the bot will respond to all commands with a
-        Nick: <response> response.  That is, the user making the command will
-        have their nick prefixed to the command.
-        If supybot.reply.withNickPrefix is set to False, replies from the bot
-        will not include this nick prefix.""")
-        conf.supybot.reply.withNickPrefix.setValue(
-            not yn('Would you like to turn off this nick prefix?',
-            default=False))
+        # conf.supybot.databases.plugins.channelSpecific
 
-        # conf.supybot.reply.whenAddressedByNick
-        output("""By default, the bot will respond when addressed by its nick.
-        That is, if the bot's nick is 'botnick', then 'botnick: foo' will call
-        the foo command.  If replyWhenAddressedByNick is False, the bot will
-        not respond to such messages.  Make sure you have a prefixChar set if
-        you set this, otherwise people will only be able to communicate with
-        the bot through private messages.""")
-        conf.supybot.reply.whenAddressedByNick.setValue(
-            not yn('Would you like to turn off the bot\'s replies to messages '
-                   'prefixed with its nick?', default=False))
+        output("""Many plugins in Supybot are channel-specific.  Their
+        databases, likewise, are specific to each channel the bot is in.  Many
+        people don't want this, so we have one central location in which to
+        say that you would prefer all databases for all channels to be shared.
+        This variable, supybot.databases.plugins.channelSpecific, is that
+        place.""")
 
-        # conf.supybot.reply.showSimpleSyntax
-        output("""By default, when the bot receives a message with invalid
-        arguments, the bot returns the full help (syntax and description) of
-        the command.  If showOnlySyntax is set to True, though, the bot will
-        return just the syntax of the command.  Of course, the help will still
-        be available via the help command.""")
-        conf.supybot.reply.showSimpleSyntax.setValue(
-            yn('Would you like to show only the syntax of commands when '
-              'they\'re given invalid arguments?', default=False))
+        conf.supybot.databases.plugins.channelSpecific.setValue(
+            not yn('Would you like plugin databases to be shared by all '
+                   'channels, rather than specific to each channel the '
+                   'bot is in?'))
 
-        # conf.supybot.reply.whenNotCommand
-        output("""By default, when people address your bot but don't give it
-        a valid command, it'll respond with a message saying that they didn't
-        give it a valid command.  When your channel grows more accustomed to
-        the bot, they may prefer that it not do that, since any command you
-        give the bot (at least within the included plugins) will respond with
-        something, so invalid commands are still noticeable.  This decreases
-        the channel traffic somewhat.""")
-        conf.supybot.reply.whenNotCommand.setValue(
-            not yn('Would you like to turn off the bot\'s replies when he\'s '
-              'addressed but given a non-command?', default=False))
-
-        # conf.supybot.reply.withPrivateNotice
-        output("""When a user sends a command to the bot from within a
-        channel, the bot, by default, also responds to that channel. In some
-        rather busy channels this might be considered spam, especially if the
-        command returns several lines in its result. In this case you may want
-        to notice the user instead.""")
-        conf.supybot.reply.withPrivateNotice.setValue(
-            yn('Would you like the bot to notice replies to users in private '
-              'when a command is executed in a channel?', default=False))
-
-        # conf.supybot.throttleTime
-        output("""In order to prevent flooding itself off the network,
-        your bot by default will not send more than one message per second to
-        the network.  This is, however, configurable.""")
-        if yn('Would you like to change the minimum amount of time between '
-              'messages your bot sends to the network?', default=False):
-            while True:
-                try:
-                    conf.supybot.throttleTime.set(something(
-                        'How long do you want your bot to wait between '
-                        'sending messages to the server?  Floating '
-                        'point values are accepted.'))
-                    break
-                except InvalidRegistryValue:
-                    output("""That's not a valid time.  You'll need to give
-                    a floating-point number.""")
-
-    ###
-    # This is close to the end.
-    ###
-    if not advanced:
-        output("""There are a lot of options we didn't ask you about simply
-        because we'd rather you get up and running and have time left to play
-        around with your bot.  But come back and see us!  When you've played
-        around with your bot enough to know what you like, what you don't like,
-        what you'd like to change, then come back and run this script again
-        and tell us you're an advanced user.  Some of those questions might be
-        boring, but they'll really help you customize your bot :)""")
-
+    output("""There are a lot of options we didn't ask you about simply
+              because we'd rather you get up and running and have time
+              left to play around with your bot.  But come back and see
+              us!  When you've played around with your bot enough to
+              know what you like, what you don't like, what you'd like
+              to change, then take a look at your configuration file
+              when your bot isn't running and read the comments,
+              tweaking values to your heart's desire.""")
+    
     # Let's make sure that src/ plugins are loaded.
     conf.registerPlugin('Admin', True)
     conf.registerPlugin('Channel', True)
