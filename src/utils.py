@@ -319,6 +319,8 @@ def matchCase(s1, s2):
                 L[i] = L[i].upper()
         return ''.join(L)
 
+consonants = 'bcdfghjklmnpqrstvwxz'
+_pluralizeRegex = re.compile('[%s]y$' % consonants)
 def pluralize(s, i=2):
     """Returns the plural of s based on its number i.  Put any exceptions to
     the general English rule of appending 's' in the plurals dictionary.
@@ -327,24 +329,31 @@ def pluralize(s, i=2):
         return s
     else:
         lowered = s.lower()
+        # Exception dictionary
         if lowered in plurals:
-            return matchCase(s, plurals[lowered])
-        elif any(lowered.endswith, ['ch', 'ss']):
-            return matchCase(s, s+'es')
-        elif lowered.endswith('y'):
-            return matchCase(s, s[:-1]+'ies')
+            return matchCase(s, plurals[lowered]) 
+        # Words ending with 'ch', 'sh' or 'ss' such as 'punch(es)', 'fish(es)
+        # and miss(es)
+        elif any(lowered.endswith, ['ch', 'sh', 'ss']):
+            return matchCase(s, s+'es') 
+        # Words ending with a consonant followed by a 'y' such as
+        # 'try (tries)' or 'spy (spies)'
+        elif re.search(_pluralizeRegex, lowered):
+            return matchCase(s, s[:-1] + 'ies')
+        # In all other cases, we simply add an 's' to the base word
         else:
             return matchCase(s, s+'s')
 
+_depluralizeRegex = re.compile('[%s]ies' % consonants)
 def depluralize(s):
     """Returns the singular of s."""
     lowered = s.lower()
     if lowered in plurals:
         return matchCase(s, plurals[lowered])
-    elif any(lowered.endswith, ['ches', 'sses']):
+    elif any(lowered.endswith, ['ches', 'shes', 'sses']):
         return s[:-2]
-    elif lowered.endswith('ies'):
-        return matchCase(s, s[:-3]+'y')
+    elif re.search(_depluralizeRegex, lowered):
+        return s[:-3] + 'y'
     else:
         if lowered.endswith('s'):
             return s[:-1] # Chop off 's'.
