@@ -566,8 +566,11 @@ class Irc(IrcCommandDispatcher):
         welcome = msg.args[1]
         if not welcome.startswith('Welcome to the '):
             log.info('Unexpected 001 welcome, guessing at network name.')
-        words = welcome.split()
-        self.network = words[3].lower()
+            self.network = msg.prefix
+        else:
+            words = welcome.split()
+            # We assume there is one more word after "Welcome to the ".
+            self.network = words[3].lower()
         log.info('Setting network to %s.', self.network)
 
     def do002(self, msg):
