@@ -67,7 +67,7 @@ class DbiDunnoDB(object):
             __fields__ = [
                 'at',
                 'by',
-                ('text', (str, '')),
+                'text',
                 ]
     def __init__(self):
         self.filenames = sets.Set()
