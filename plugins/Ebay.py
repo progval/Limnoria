@@ -1,4 +1,4 @@
-#!/usr/bin/python2.3
+#!/usr/bin/env python
 
 ###
 # Copyright (c) 2003, James Vega
