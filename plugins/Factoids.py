@@ -30,7 +30,7 @@
 ###
 
 """
-Handles "factoids," little tidbits of information held in a database and
+Handles 'factoids,' little tidbits of information held in a database and
 available on demand via several commands.
 """
 

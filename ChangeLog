@@ -1,3 +1,10 @@
+	* Changed and moved several configuration variables.
+	supybot.{throttleTime,maxHistoryLength,pingServer,pingInterval}
+	all moved to supybot.protocols.irc; supybot.httpPeekSize moved to
+	supybot.protocols.http; supybot.threadAllCommands moved to
+	supybot.debug.threadAllCommands, and probably a few others I
+	forgot to mention.
+	
 	* Added Http.zipinfo, which returns a veritable plethora of
 	information about the supplied zip code.
 

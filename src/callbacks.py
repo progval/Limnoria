@@ -542,7 +542,7 @@ class IrcObjectProxy(RichReplyMethods):
                 return
             command = getattr(cb, name)
             Privmsg.handled = True
-            if cb.threaded or conf.supybot.threadAllCommands():
+            if cb.threaded or conf.supybot.debug.threadAllCommands():
                 t = CommandThread(target=self._callCommand,
                                   args=(name, command, cb))
                 t.start()

@@ -269,7 +269,7 @@ class IrcState(IrcCommandDispatcher):
     __metaclass__ = log.MetaFirewall
     __firewalled__ = {'addMsg': None}
     def __init__(self):
-        self.history = RingBuffer(conf.supybot.maxHistoryLength())
+        self.history=RingBuffer(conf.supybot.protocols.irc.maxHistoryLength())
         self.reset()
 
     def reset(self):
@@ -530,8 +530,7 @@ class Irc(IrcCommandDispatcher):
         if self.fastqueue:
             msg = self.fastqueue.dequeue()
         elif self.queue:
-            if not world.testing and now - self.lastTake <= \
-                                           conf.supybot.throttleTime():
+            if now-self.lastTake <= conf.supybot.protocols.irc.throttleTime():
                 log.debug('Irc.takeMsg throttling.')
             else:
                 self.lastTake = now

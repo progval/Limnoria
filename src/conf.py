@@ -175,7 +175,6 @@ whether the bot will ignore unregistered users by default.  Of course, that'll
 make it particularly hard for those users to register with the bot, but that's
 your problem to solve."""))
 
-
 supybot.register('humanTimestampFormat', registry.String('%I:%M %p, %B %d, %Y',
 """Determines how timestamps printed for human reading should be formatted.
 Refer to the Python documentation for the time module to see valid formatting
@@ -272,8 +271,6 @@ don't address it (either via its nick or a prefix character).  If you set this
 to True, you almost certainly want to set supybot.reply.whenNotCommand to
 False."""))
 
-# XXX: Removed requireRegistration: it wasn't being used.
-
 supybot.reply.register('requireChannelCommandsToBeSentInChannel',
 registry.Boolean(False, """Determines whether the bot will allow you to send
 channel-related commands outside of that channel.  Sometimes people find it
@@ -349,7 +346,7 @@ registerChannelValue(supybot.replies, 'genericNoCapability',
     that anti-capability.  Or, it could be because the channel or the global
     defaultAllow is set to False, meaning that no commands are allowed unless
     explicitly in your capabilities.  Either way, you can't do what you want
-    to do.""", """Dertermines what generic error message is given when the bot
+    to do.""", """Determines what generic error message is given when the bot
     is telling someone that they aren't cool enough to use the command they
     tried to use, and the author of the code calling errorNoCapability didn't
     provide an explicit capability for whatever reason."""))
@@ -369,39 +366,16 @@ registerChannelValue(supybot.replies, 'possibleBug',
 # End supybot.replies.
 ###
 
-supybot.register('maxHistoryLength', registry.Integer(1000, """Determines
-how many old messages the bot will keep around in its history.  Changing this
-variable will not take effect until the bot is restarted."""))
-
 supybot.register('nickmods', registry.CommaSeparatedListOfStrings(
     '__%s__,%s^,%s`,%s_,%s__,_%s,__%s,[%s]'.split(','),
     """A list of modifications to be made to a nick when the nick the bot tries
     to get from the server is in use.  There should be one %s in each string;
     this will get replaced with the original nick."""))
 
-supybot.register('throttleTime', registry.Float(1.0, """A floating point
-number of seconds to throttle queued messages -- that is, messages will not
-be sent faster than once per throttleTime seconds."""))
-
 supybot.register('snarfThrottle', registry.Float(10.0, """A floating point
 number of seconds to throttle snarfed URLs, in order to prevent loops between
 two bots snarfing the same URLs and having the snarfed URL in the output of
 the snarf message."""))
-
-supybot.register('threadAllCommands', registry.Boolean(False, """Determines
-whether the bot will automatically thread all commands.  At this point this
-option exists almost exclusively for debugging purposes; it can do very little
-except to take up more CPU."""))
-
-supybot.register('pingServer', registry.Boolean(True, """Determines whether
-the bot will send PINGs to the server it's connected to in order to keep the
-connection alive and discover earlier when it breaks.  Really, this option
-only exists for debugging purposes: you always should make it True unless
-you're testing some strange server issues."""))
-
-supybot.register('pingInterval', registry.Integer(120, """Determines the
-number of seconds between sending pings to the server, if pings are being sent
-to the server."""))
 
 supybot.register('upkeepInterval', registry.PositiveInteger(3600, """Determines
 the number of seconds between running the upkeep function that flushes
@@ -415,11 +389,6 @@ configuration files by hand and don't want the bot to flush its current version
 over your modifications.  Do note that if you change this to False inside the
 bot, your changes won't be flushed.  To make this change permanent, you must
 edit the registry yourself."""))
-
-supybot.register('httpPeekSize', registry.PositiveInteger(4096, """Determines
-how many bytes the bot will 'peek' at when looking through a URL for a
-doctype or title or something similar.  It'll give up after it reads this many
-bytes."""))
 
 class SocketTimeout(registry.PositiveInteger):
     def setValue(self, v):
@@ -439,65 +408,70 @@ required for changes to this variable to take effect."""))
 ###
 # supybot.drivers.  For stuff relating to Supybot's drivers (duh!)
 ###
-supybot.register('drivers')
-supybot.drivers.register('poll', registry.Float(1.0, """Determines the default
-length of time a driver should block waiting for input."""))
+registerGroup(supybot, 'drivers')
+registerGlobalValue(supybot.drivers, 'poll',
+   registry.Float(1.0, """Determines the default length of time a driver should
+   block waiting for input."""))
 
 class ValidDriverModule(registry.OnlySomeStrings):
-    validStrings = ('socketDrivers', 'twistedDrivers', 'asyncoreDrivers')
+    validStrings = ('default', 'socketDrivers',
+                    'twistedDrivers', 'asyncoreDrivers')
 
-supybot.drivers.register('module', ValidDriverModule('socketDrivers', """
-Determines what driver module the bot will use.  socketDrivers, a simple
-driver based on timeout sockets, is used by default because it's simple and
-stable.  asyncoreDrivers is a bit older (and less well-maintained) but allows
-you to integrate with asyncore-based applications.  twistedDrivers is very
-stable and simple, and if you've got Twisted installed, is probably your best
-bet."""))
+registerGlobalValue(supybot.drivers, 'module',
+   ValidDriverModule('default', """Determines what driver module the bot will
+   use.  socketDrivers, a simple driver based on timeout sockets, is used by
+   default because it's simple and stable.  asyncoreDrivers is a bit older (and
+   less well-maintained) but allows you to integrate with asyncore-based
+   applications.  twistedDrivers is very stable and simple, and if you've got
+   Twisted installed, is probably your best bet."""))
 
-supybot.register('directories')
-supybot.directories.register('conf', registry.String('conf', """
-Determines what directory configuration data is put into."""))
-supybot.directories.register('data', registry.String('data', """
-Determines what directory data is put into."""))
-supybot.directories.register('plugins',
-registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir],
-"""Determines what directories the bot will look for plugins in.  Accepts a
-comma-separated list of strings.  This means that to add another directory,
-you can nest the former value and add a new one.  E.g. you can say: bot:
-'config supybot.directories.plugins [config supybot.directories.plugins],
-newPluginDirectory'."""))
+###
+# supybot.directories, for stuff relating to directories.
+###
+registerGroup(supybot, 'directories')
+registerGlobalValue(supybot.directories, 'conf',
+   registry.String('conf', """Determines what directory configuration data is
+   put into."""))
+registerGlobalValue(supybot.directories, 'data',
+   registry.String('data', """Determines what directory data is put into."""))
+registerGlobalValue(supybot.directories, 'plugins',
+   registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir], """Determines
+   what directories the bot will look for plugins in.  Accepts a
+   comma-separated list of strings.  This means that to add another directory,
+   you can nest the former value and add a new one.  E.g. you can say: bot:
+   'config supybot.directories.plugins [config supybot.directories.plugins],
+   newPluginDirectory'."""))
 
+supybot.register('plugins') # This will be used by plugins, but not here.
 
 ###
 # supybot.databases.  For stuff relating to Supybot's databases (duh!)
 ###
-supybot.register('databases')
-supybot.databases.register('users')
-supybot.databases.users.register('filename', registry.String('users.conf', """
-Determines what filename will be used for the users database.  This file will
-go into the directory specified by the supybot.directories.conf
-variable."""))
-supybot.databases.users.register('timeoutIdentification',
-registry.Integer(0, """Determines how long it takes identification to time
-out.  If the value is less than or equal to zero, identification never
-times out."""))
-supybot.databases.users.register('hash', registry.Boolean(False, """
-Determines whether the passwords in the user database will be hashed by
-default."""))
+registerGroup(supybot, 'databases')
+registerGroup(supybot.databases, 'users')
+registerGlobalValue(supybot.databases.users, 'filename',
+   registry.String('users.conf', """Determines what filename will be used for
+   the users database.  This file will go into the directory specified by the
+   supybot.directories.conf variable."""))
+registerGlobalValue(supybot.databases.users, 'timeoutIdentification',
+   registry.Integer(0, """Determines how long it takes identification to time
+   out.  If the value is less than or equal to zero, identification never times
+   out."""))
+registerGlobalValue(supybot.databases.users, 'hash',
+   registry.Boolean(False, """Determines whether the passwords in the user
+   database will be hashed by default."""))
 
-supybot.databases.register('ignores')
-supybot.databases.ignores.register('filename', registry.String('ignores.conf',
-"""Determines what filename will be used for the ignores database.  This file
-will go into the directory specified by the supybot.directories.conf
-variable."""))
+registerGroup(supybot.databases, 'ignores')
+registerGlobalValue(supybot.databases.ignores, 'filename',
+   registry.String('ignores.conf', """Determines what filename will be used for
+   the ignores database.  This file will go into the directory specified by the
+   supybot.directories.conf variable."""))
 
-supybot.databases.register('channels')
-supybot.databases.channels.register('filename',registry.String('channels.conf',
-"""Determines what filename will be used for the channels database.  This file
-will go into the directory specified by the supybot.directories.conf
-variable."""))
-
-supybot.register('plugins') # This will be used by plugins, but not here.
+registerGroup(supybot.databases, 'channels')
+registerGlobalValue(supybot.databases.channels, 'filename',
+   registry.String('channels.conf', """Determines what filename will be used
+   for the channels database.  This file will go into the directory specified
+   by the supybot.directories.conf variable."""))
 
 ###
 # Protocol information.
@@ -524,4 +498,46 @@ registerGlobalValue(supybot.protocols.irc, 'strictRfc',
    currently this only affects what strings are considered to be nicks.  If
    you're using a server or a network that requires you to message a nick such
    as services@this.network.server then you you should set this to False."""))
+
+registerGlobalValue(supybot.protocols.irc, 'maxHistoryLength',
+   registry.Integer(1000, """Determines how many old messages the bot will keep
+   around in its history.  Changing this variable will not take effect until
+   the bot is restarted."""))
+
+registerGlobalValue(supybot.protocols.irc, 'throttleTime',
+   registry.Float(1.0, """A floating point number of seconds to throttle queued
+   messages -- that is, messages will not be sent faster than once per
+   throttleTime seconds."""))
+
+registerGlobalValue(supybot.protocols.irc, 'ping',
+   registry.Boolean(True, """Determines whether the bot will send PINGs to the
+   server it's connected to in order to keep the connection alive and discover
+   earlier when it breaks.  Really, this option only exists for debugging
+   purposes: you always should make it True unless you're testing some strange
+   server issues."""))
+registerGlobalValue(supybot.protocols.irc.ping, 'interval',
+   registry.Integer(120, """Determines the number of seconds between sending
+   pings to the server, if pings are being sent to the server."""))
+
+registerGroup(supybot.protocols, 'http')
+registerGlobalValue(supybot.protocols.http, 'peekSize',
+   registry.PositiveInteger(4096, """Determines how many bytes the bot will
+   'peek' at when looking through a URL for a doctype or title or something
+   similar.  It'll give up after it reads this many bytes, even if it hasn't
+   found what it was looking for."""))
+
+
+###
+# Debugging options.
+###
+registerGroup(supybot, 'debug')
+registerGlobalValue(supybot.debug, 'threadAllCommands',
+   registry.Boolean(False, """Determines whether the bot will automatically
+   thread all commands."""))
+registerGlobalValue(supybot.debug, 'flushVeryOften',
+   registry.Boolean(False, """Determines whether the bot will automatically
+   flush all flushers *very* often.  Useful for debugging when you don't know
+   what's breaking or when, but think that it might be logged."""))
+
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -115,6 +115,13 @@ def newDriver(server, irc, moduleName=None):
     conf.supybot.driverModule to determine what driver to pick."""
     if moduleName is None:
         moduleName = conf.supybot.drivers.module()
+    if moduleName == 'default':
+        try:
+            import twistedDrivers
+            moduleName = 'twistedDrivers'
+        except ImportError:
+            del sys.modules['twistedDrivers']
+            moduleName = 'socketDrivers'
     driver = __import__(moduleName).Driver(server, irc)
     irc.driver = driver
     return driver

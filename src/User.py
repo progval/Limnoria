@@ -226,7 +226,8 @@ class User(callbacks.Privmsg):
         """<name> <hostmask> [<password>]
 
         Removes the hostmask <hostmask> from the record of the user specified
-        by <name>.  The <password> may only be required if the user is not
+        by <name>.  If the hostmask is 'all' then all hostmasks will be
+        removed.  The <password> may only be required if the user is not
         recognized by his hostmask.  If you include the <password> parameter,
         this message must be sent to the bot privately (not on a channel).
         """
@@ -240,12 +241,17 @@ class User(callbacks.Privmsg):
             return
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             try:
-                user.removeHostmask(hostmask)
+                s = ''
+                if hostmask == 'all':
+                    user.hostmasks[:] = []
+                    s = 'All hostmasks removed.'
+                else:
+                    user.removeHostmask(hostmask)
             except ValueError:
                 irc.error('There was no such hostmask.')
                 return
             ircdb.users.setUser(id, user)
-            irc.replySuccess()
+            irc.replySuccess(s)
         else:
             irc.error(conf.supybot.replies.incorrectAuthentication())
             return

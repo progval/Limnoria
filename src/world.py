@@ -77,6 +77,12 @@ def flush():
         except Exception, e:
             log.exception('Uncaught exception in flusher #%s (%s):', i, f)
 
+def debugFlush(s=''):
+    if conf.supybot.debug.flushVeryOften():
+        if s:
+            log.debug(s)
+        flush()
+
 def upkeep(scheduleNext=True):
     """Does upkeep (like flushing, garbage collection, etc.)"""
     sys.exc_clear() # Just in case, let's clear the exception info.

@@ -49,6 +49,7 @@ supybot.log.level: DEBUG
 supybot.log.detailedTracebacks: False
 supybot.throttleTime: 0
 supybot.prefixChars: @
+supybot.protocols.irc.throttleTime: -1
 """)
 fd.close()
 
