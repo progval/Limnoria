@@ -458,6 +458,8 @@ class RichReplyMethods(object):
             return self.error(s, **kwargs)
 
     def errorNoCapability(self, capability, s='', **kwargs):
+        if 'Raise' not in kwargs:
+            kwargs['Raise'] = True
         if isinstance(capability, basestring): # checkCommandCapability!
             log.warning('Denying %s for lacking %r capability.',
                         self.msg.prefix, capability)
