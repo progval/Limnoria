@@ -81,7 +81,11 @@ def loadPluginModule(name, ignoreDeprecation=False):
     except ValueError: # We'd rather raise the ImportError, so we'll let go...
         pass
     moduleInfo = imp.find_module(name, pluginDirs)
-    module = imp.load_module(name, *moduleInfo)
+    try:
+        module = imp.load_module(name, *moduleInfo)
+    except:
+        del sys.modules[name]
+        raise
     if 'deprecated' in module.__dict__ and module.deprecated:
         if ignoreDeprecation:
             log.warning('Deprecated plugin loaded: %s', name)
