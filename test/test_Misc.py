@@ -153,6 +153,14 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertRegexp('echo %s' % ('abc'*300), 'more')
         self.assertRegexp('more', 'more')
         self.assertNotRegexp('more', 'more')
+
+    def testMoreIsCaseInsensitive(self):
+        self.assertNotError('echo %s' % ('abc'*2000))
+        self.assertNotError('more')
+        nick = ircutils.nickFromHostmask(self.prefix)
+        self.assertNotError('more %s' % nick)
+        self.assertNotError('more %s' % nick.upper())
+        self.assertNotError('more %s' % nick.lower())
     
     def testPrivate(self):
         m = self.getMsg('private [list]')
