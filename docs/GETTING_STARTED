@@ -1,0 +1,24 @@
+Ok, so you've decided to try out Supybot.  That's great!  The more people who
+use Supybot, the more people can submit bugs and help us to make it the best
+IRC bot in the world :)
+
+So what do you do?  First thing you'll want to do is run (with root
+privileges) "python setup.py install".  This will install Supybot globally.
+### TODO: Local installs.
+### TODO: Explain how to run tests?
+
+After that, you'll want to run supybot-wizard and generate yourself a 
+configuration file.  To run this configuration file, you'll want to type 
+"supybot <config file>", replacing <config file> with the name of the
+configuration file you just generated with the supybot-wizard.  The supybot
+program accepts several command-line parameters which you can see by simply
+running "supybot --help"
+
+After that, you should have a bot up and running in the 
+
+# TODO: Identification, owner, etc.
+
+# Common problems
+#   import error in http (relies on python-xml)
+#   import error in database-based plugins.
+#   Can't find the wizard.  Full path on Windows and MacOS X.
