@@ -546,7 +546,7 @@ class Irc(IrcCommandDispatcher):
 
     def do002(self, msg):
         """Logs the ircd version."""
-        (beginning, version) = rsplit(msg.args[0], maxsplit=1)
+        (beginning, version) = rsplit(msg.args[-1], maxsplit=1)
         log.info('Server %s has version %s', self.server, version)
 
     def doPing(self, msg):
