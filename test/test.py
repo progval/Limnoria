@@ -173,5 +173,5 @@ if __name__ == '__main__':
     suite = unittest.defaultTestLoader.loadTestsFromNames(names)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
-##     print 'Total asserts: %s' % unittest.asserts
-##     world.testing = False
+    print 'Total asserts: %s' % unittest.asserts
+    world.testing = False
