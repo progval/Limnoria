@@ -186,7 +186,7 @@ class Math(callbacks.Privmsg):
         if 'lambda' in text:
             irc.error('You can\'t use lambda in this command.')
             return
-        text = text.replace('lambda', '') # Let's leave it in for safety.
+        text = text.lower()
         def handleMatch(m):
             s = m.group(1)
             if s.startswith('0x'):

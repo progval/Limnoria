@@ -112,11 +112,6 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('calc 3-2*4')
         self.assertNotError('calc (1600 * 1200)-2*(1024*1280)')
 
-    def testICalc(self):
-        self.assertResponse('icalc 1^1', '0')
-        self.assertResponse('icalc 10**24', '1' + '0'*24)
-        self.assertRegexp('icalc 49/6', '8.16')
-
     def testCalcNoNameError(self):
         self.assertNotRegexp('calc foobar(x)', 'NameError')
 
@@ -125,6 +120,14 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
 
     def testCalcFloorWorksWithSqrt(self):
         self.assertNotError('calc floor(sqrt(5))')
+
+    def testCaseInsensitive(self):
+        self.assertNotError('calc PI**PI')
+
+    def testICalc(self):
+        self.assertResponse('icalc 1^1', '0')
+        self.assertResponse('icalc 10**24', '1' + '0'*24)
+        self.assertRegexp('icalc 49/6', '8.16')
 
     def testRpn(self):
         self.assertResponse('rpn 5 2 +', '7')
