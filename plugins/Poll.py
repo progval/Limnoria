@@ -43,246 +43,199 @@ import supybot.plugins as plugins
 import os
 import time
 
+import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
+from supybot.commands import *
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
+class PollError(Exception):
+    pass
 
-class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        plugins.ChannelDBHandler.__init__(self)
+class OptionRecord(dbi.Record):
+    __fields__ = [
+        'text',
+        'votes'
+        ]
+    def __str__(self):
+        return '#%s: %s' % (self.id, utils.quoted(self.text))
 
-    def makeDb(self, filename):
-        if os.path.exists(filename):
-            db = sqlite.connect(filename)
+class PollRecord(dbi.Record):
+    __fields__ = [
+        'by',
+        'question',
+        'options',
+        'status'
+        ]
+    def __str__(self):
+        format = conf.supybot.humanTimestampFormat()
+        try:
+            user = ircdb.users.getUser(int(self.by)).name
+        except KeyError:
+            user = 'a user that is no longer registered'
+        if self.options:
+            options = 'Options: %s' % '; '.join(map(str, self.options))
         else:
-            db = sqlite.connect(filename)
-            cursor = db.cursor()
-            cursor.execute("""CREATE TABLE polls (
-                              id INTEGER PRIMARY KEY,
-                              question TEXT UNIQUE ON CONFLICT IGNORE,
-                              started_by INTEGER,
-                              open INTEGER)""")
-            cursor.execute("""CREATE TABLE options (
-                              id INTEGER,
-                              poll_id INTEGER,
-                              option TEXT,
-                              UNIQUE (poll_id, id) ON CONFLICT IGNORE)""")
-            cursor.execute("""CREATE TABLE votes (
-                              user_id INTEGER,
-                              poll_id INTEGER,
-                              option_id INTEGER,
-                              UNIQUE (user_id, poll_id)
-                              ON CONFLICT IGNORE)""")
-            db.commit()
+            options = 'The poll has no options, yet'
+        if self.status:
+            status = 'open'
+        else:
+            status = 'closed'
+        return 'Poll #%s: %s started by %s. %s.  Poll is %s.' % \
+               (self.id, utils.quoted(self.question), user,
+                options, status)
+
+class SqlitePollDB(object):
+    def __init__(self, filename):
+        self.dbs = ircutils.IrcDict()
+        self.filename = filename
+
+    def close(self):
+        for db in self.dbs.itervalues():
+            db.close()
+
+    def _getDb(self, channel):
+        try:
+            import sqlite
+        except ImportError:
+            raise callbacks.Error, 'You need to have PySQLite installed to ' \
+                                   'use this plugin.  Download it at ' \
+                                   '<http://pysqlite.sf.net/>'
+        filename = plugins.makeChannelFilename(self.filename, channel)
+        if filename in self.dbs:
+            return self.dbs[filename]
+        if os.path.exists(filename):
+            self.dbs[filename] = sqlite.connect(filename)
+            return self.dbs[filename]
+        db = sqlite.connect(filename)
+        self.dbs[filename] = db
+        cursor = db.cursor()
+        cursor.execute("""CREATE TABLE polls (
+                          id INTEGER PRIMARY KEY,
+                          question TEXT UNIQUE ON CONFLICT IGNORE,
+                          started_by INTEGER,
+                          open INTEGER)""")
+        cursor.execute("""CREATE TABLE options (
+                          id INTEGER,
+                          poll_id INTEGER,
+                          option TEXT,
+                          UNIQUE (poll_id, id) ON CONFLICT IGNORE)""")
+        cursor.execute("""CREATE TABLE votes (
+                          user_id INTEGER,
+                          poll_id INTEGER,
+                          option_id INTEGER,
+                          UNIQUE (user_id, poll_id)
+                          ON CONFLICT IGNORE)""")
+        db.commit()
         return db
 
-    def _getUserId(self, irc, prefix):
-        try:
-            return ircdb.users.getUserId(prefix)
-        except KeyError:
-            irc.errorNotRegistered(Raise=True)
-
-    def _getUserName(self, id):
-        try:
-            return ircdb.users.getUser(int(id)).name
-        except KeyError:
-            return 'an unknown user'
-
-    def _getId(self, irc, idStr):
-        try:
-            return int(idStr)
-        except ValueError:
-            irc.error('The id must be a valid integer.', Raise=True)
-
-    def poll(self, irc, msg, args):
-        """[<channel>] <id>
-
-        Displays the poll question and options for the given poll id.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        poll_id = privmsgs.getArgs(args)
-        db = self.getDb(channel)
+    def get(self, channel, poll_id):
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT question, started_by, open
                           FROM polls WHERE id=%s""", poll_id)
-        if cursor.rowcount == 0:
-            irc.error('There is no poll with id %s.' % poll_id)
-            return
-        question, started_by, open = cursor.fetchone()
-        starter = ircdb.users.getUser(started_by).name
-        if open:
-            statusstr = 'open'
+        if cursor.rowcount:
+            (question, by, status) = cursor.fetchone()
         else:
-            statusstr = 'closed'
+            raise dbi.NoRecordError
         cursor.execute("""SELECT id, option FROM options WHERE poll_id=%s""",
                        poll_id)
-        if cursor.rowcount == 0:
-            optionstr = 'This poll has no options yet'
+        if cursor.rowcount:
+            options = [OptionRecord(i, text=o, votes=0)
+                       for (i, o) in cursor.fetchall()]
         else:
-            options = cursor.fetchall()
-            optionstr = 'Options: %s' % \
-                    ' '.join(['%s: %s' % (s, utils.quoted(t)) \
-                              for (s, t) in options])
-        pollstr = 'Poll #%s: %s started by %s.  %s.  Poll is %s.' % \
-                  (poll_id, utils.quoted(question), starter, optionstr,
-                   statusstr)
-        irc.reply(pollstr)
+            options = []
+        return PollRecord(poll_id, question=question, status=status, by=by,
+                          options=options)
 
-    def open(self, irc, msg, args):
-        """[<channel>] <question>
-
-        Creates a new poll with the given question.  <channel> is only
-        necessary if the message isn't sent in the channel itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        question = privmsgs.getArgs(args)
-        userId = self._getUserId(irc, msg.prefix)
-        db = self.getDb(channel)
+    def open(self, channel, user, question):
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""INSERT INTO polls VALUES (NULL, %s, %s, 1)""",
-                       question, userId)
+                       question, user.id)
         db.commit()
         cursor.execute("""SELECT id FROM polls WHERE question=%s""", question)
-        id = cursor.fetchone()[0]
-        irc.replySuccess('(poll #%s added)' % id)
+        return cursor.fetchone()[0]
 
-    def close(self, irc, msg, args):
-        """[<channel>] <id>
-
-        Closes the poll with the given <id>; further votes will not be allowed.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        id = privmsgs.getArgs(args)
-        id = self._getId(irc, id)
-        db = self.getDb(channel)
+    def closePoll(self, channel, id):
+        db = self._getDb(channel)
         cursor = db.cursor()
         # Check to make sure that the poll exists
         cursor.execute("""SELECT id FROM polls WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            irc.error('Id #%s is not an existing poll.')
-            return
+            raise dbi.NoRecordError
         cursor.execute("""UPDATE polls SET open=0 WHERE id=%s""", id)
-        irc.replySuccess()
+        db.commit()
 
-    def add(self, irc, msg, args):
-        """[<channel>] <id> <option text>
-
-        Add an option with the given text to the poll with the given id.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        (poll_id, option) = privmsgs.getArgs(args, required=2)
-        poll_id = self._getId(irc, poll_id)
-        userId = self._getUserId(irc, msg.prefix)
-        db = self.getDb(channel)
+    def add(self, channel, user, id, option):
+        db = self._getDb(channel)
         cursor = db.cursor()
         # Only the poll starter or an admin can add options
         cursor.execute("""SELECT started_by FROM polls
                           WHERE id=%s""",
-                          poll_id)
+                          id)
         if cursor.rowcount == 0:
-            irc.error('There is no such poll.')
-            return
-        if not ((userId == cursor.fetchone()[0]) or
-                (ircdb.checkCapability(userId, 'admin'))):
-            irc.error('That poll isn\'t yours and you aren\'t an admin.')
-            return
+            raise dbi.NoRecordError
+        if not ((user.id == cursor.fetchone()[0]) or
+                (ircdb.checkCapability(user.id, 'admin'))):
+            raise PollAddError, \
+                    'That poll isn\'t yours and you aren\'t an admin.'
         # and NOBODY can add options once a poll has votes
         cursor.execute("""SELECT COUNT(user_id) FROM votes
                           WHERE poll_id=%s""",
-                          poll_id)
+                          id)
         if int(cursor.fetchone()[0]) != 0:
-            irc.error('Cannot add options to a poll with votes.')
-            return
+            raise PollAddError, 'Cannot add options to a poll with votes.'
         # Get the next highest id
         cursor.execute("""SELECT MAX(id)+1 FROM options
                           WHERE poll_id=%s""",
-                          poll_id)
+                          id)
         option_id = cursor.fetchone()[0] or 1
         cursor.execute("""INSERT INTO options VALUES
                           (%s, %s, %s)""",
-                          option_id, poll_id, option)
-        irc.replySuccess()
+                          option_id, id, option)
+        db.commit()
 
-    def vote(self, irc, msg, args):
-        """[<channel>] <poll id> <option id>
-
-        Vote for the option with the given id on the poll with the given poll
-        id.  This command can also be used to override any previous vote.
-        <channel> is only necesssary if the message isn't sent in the channel
-        itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        (poll_id, option_id) = privmsgs.getArgs(args, required=2)
-        poll_id = self._getId(irc, poll_id)
-        option_id = self._getId(irc, option_id)
-        userId = self._getUserId(irc, msg.prefix)
-        db = self.getDb(channel)
+    def vote(self, channel, user, id, option):
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT open
                           FROM polls WHERE id=%s""",
-                          poll_id)
+                          id)
         if cursor.rowcount == 0:
-            irc.error('There is no such poll.')
-            return
+            raise dbi.NoRecordError
         elif int(cursor.fetchone()[0]) == 0:
-            irc.error('That poll is closed.')
-            return
+            raise PollError, 'That poll is closed.'
         cursor.execute("""SELECT id FROM options
                           WHERE poll_id=%s
                           AND id=%s""",
-                          poll_id, option_id)
+                          id, option)
         if cursor.rowcount == 0:
-            irc.error('There is no such option.')
-            return
+            raise PollError, 'There is no such option.'
         cursor.execute("""SELECT option_id FROM votes
                           WHERE user_id=%s AND poll_id=%s""",
-                          userId, poll_id)
+                          user.id, id)
         if cursor.rowcount == 0:
             cursor.execute("""INSERT INTO votes VALUES (%s, %s, %s)""",
-                           userId, poll_id, option_id)
+                           user.id, id, option)
         else:
             cursor.execute("""UPDATE votes SET option_id=%s
                               WHERE user_id=%s AND poll_id=%s""",
-                              option_id, userId, poll_id)
-        irc.replySuccess()
+                              option, user.id, id)
+        db.commit()
 
-    def results(self, irc, msg, args):
-        """[<channel>] <id>
-
-        Shows the results for the poll with the given id.  <channel> is only
-        necessary if the message is not sent in the channel itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        poll_id = privmsgs.getArgs(args)
-        poll_id = self._getId(irc, poll_id)
-        db = self.getDb(channel)
+    def results(self, channel, poll_id):
+        db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT id, question, started_by, open
                           FROM polls WHERE id=%s""",
                           poll_id)
         if cursor.rowcount == 0:
-            irc.error('There is no such poll.')
-            return
-        (id, question, startedBy, open) = cursor.fetchone()
-        startedBy = self._getUserName(startedBy)
-        reply = 'Results for poll #%s: "%s" by %s' % \
-                (id, question, startedBy)
+            raise dbi.NoRecordError
+        (id, question, by, status) = cursor.fetchone()
+        by = ircdb.users.getUser(by).name
         cursor.execute("""SELECT count(user_id), option_id
                           FROM votes
                           WHERE poll_id=%s
@@ -298,35 +251,152 @@ class Poll(callbacks.Privmsg, plugins.ChannelDBHandler):
                           ORDER BY count(user_id) DESC""",
                           poll_id, poll_id, poll_id)
         if cursor.rowcount == 0:
-            s = 'This poll has no votes yet.'
+            raise PollError, 'This poll has no votes yet.'
         else:
-            results = []
+            options = []
             for count, option_id in cursor.fetchall():
                 cursor.execute("""SELECT option FROM options
                                   WHERE id=%s AND poll_id=%s""",
                                   option_id, poll_id)
                 option = cursor.fetchone()[0]
-                results.append('%s: %s' % (utils.quoted(option), int(count)))
-            s = utils.commaAndify(results)
-        reply += ' - %s' % s
-        irc.reply(reply)
+                options.append(OptionRecord(option_id, votes=int(count),
+                                            text=option))
+        return PollRecord(poll_id, question=question, status=status, by=by,
+                          options=options)
 
-    def list(self, irc, msg, args):
+    def select(self, channel):
+        db = self._getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT id, started_by, question
+                          FROM polls
+                          WHERE open=1""")
+        if cursor.rowcount:
+            return [PollRecord(id, question=q, by=by, status=1)
+                    for (id, by, q) in cursor.fetchall()]
+        else:
+            raise dbi.NoRecordError
+
+PollDB = plugins.DB('Poll', {'sqlite': SqlitePollDB})
+
+class Poll(callbacks.Privmsg):
+    def __init__(self):
+        self.__parent = super(Poll, self)
+        self.__parent.__init__()
+        self.db = PollDB()
+
+    def die(self):
+        self.__parent.die()
+        self.db.close()
+
+    def poll(self, irc, msg, args, channel, id):
+        """[<channel>] <id>
+
+        Displays the poll question and options for the given poll id.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        try:
+            record = self.db.get(channel, id)
+        except dbi.NoRecordError:
+            irc.error('There is no poll with id %s.' % id, Raise=True)
+        irc.reply(record)
+    poll = wrap(poll, ['channeldb', 'id'])
+
+    def open(self, irc, msg, args, channel, user, question):
+        """[<channel>] <question>
+
+        Creates a new poll with the given question.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
+        """
+        irc.replySuccess('(poll #%s added)' %
+                         self.db.open(channel, user, question))
+    open = wrap(open, ['channeldb', 'user', 'text'])
+
+    def close(self, irc, msg, args, channel, id):
+        """[<channel>] <id>
+
+        Closes the poll with the given <id>; further votes will not be allowed.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        try:
+            self.db.closePoll(channel, id)
+            irc.replySuccess()
+        except dbi.NoRecordError:
+            irc.errorInvalid('poll id')
+    close = wrap(close, ['channeldb', ('id', 'poll')])
+
+    def add(self, irc, msg, args, channel, user, id, option):
+        """[<channel>] <id> <option text>
+
+        Add an option with the given text to the poll with the given id.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        try:
+            self.db.add(channel, user, id, option)
+            irc.replySuccess()
+        except dbi.NoRecordError:
+            irc.errorInvalid('poll id')
+        except PollError, e:
+            irc.error(str(e))
+        irc.replySuccess()
+    add = wrap(add, ['channeldb', 'user', ('id', 'poll'), 'text'])
+
+    def vote(self, irc, msg, args, channel, user, id, option):
+        """[<channel>] <poll id> <option id>
+
+        Vote for the option with the given id on the poll with the given poll
+        id.  This command can also be used to override any previous vote.
+        <channel> is only necesssary if the message isn't sent in the channel
+        itself.
+        """
+        try:
+            self.db.vote(channel, user, id, option)
+            irc.replySuccess()
+        except dbi.NoRecordError:
+            irc.errorInvalid('poll id')
+        except PollError, e:
+            irc.error(str(e))
+    vote = wrap(vote, ['channeldb', 'user', ('id', 'poll'), ('id', 'option')])
+
+    def results(self, irc, msg, args, channel, id):
+        """[<channel>] <id>
+
+        Shows the results for the poll with the given id.  <channel> is only
+        necessary if the message is not sent in the channel itself.
+        """
+        try:
+            poll = self.db.results(channel, id)
+            reply = 'Results for poll #%s: "%s" by %s' % \
+                    (poll.id, poll.question, poll.by)
+            options = poll.options
+            L = []
+            for option in options:
+                L.append('%s: %s' % (utils.quoted(option.text), option.votes))
+            s = utils.commaAndify(L)
+            reply += ' - %s' % s
+            irc.reply(reply)
+        except dbi.NoRecordError:
+            irc.error('There is no such poll.', Raise=True)
+        except PollError, e:
+            irc.error(str(e))
+    results = wrap(results, ['channeldb', ('id', 'poll')])
+
+    def list(self, irc, msg, args, channel):
         """[<channel>]
 
         Lists the currently open polls for <channel>.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT id, question FROM polls WHERE open=1""")
-        if cursor.rowcount == 0:
-            irc.reply('This channel currently has no open polls.')
-        else:
-            polls = ['#%s: %s' % (s, utils.quoted(t))
-                     for (s, t) in cursor.fetchall()]
+        try:
+            polls = self.db.select(channel)
+            polls = ['#%s: %s' % (p.id, utils.quoted(p.question))
+                     for p in polls]
             irc.reply(utils.commaAndify(polls))
+        except dbi.NoRecordError:
+            irc.reply('This channel currently has no open polls.')
+    list = wrap(list, ['channeldb'])
 
 Class = Poll
 
