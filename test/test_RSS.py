@@ -44,6 +44,8 @@ if network:
 
         def testRss(self):
             self.assertNotError('rss %s' % url)
+            m = self.assertNotError('rss %s' % url)
+            self.failUnless(m.args[1].count('||') == 1)
 
         def testRssAdd(self):
             self.assertNotError('rss add advogato %s' % url)

@@ -159,11 +159,16 @@ class RSS(callbacks.Privmsg):
                 oldheadlines = []
             newresults = self.getFeed(url)
             newheadlines = self.getHeadlines(newresults)
-            for headline in oldheadlines:
+            def headlineEq(h1, h2):
+                return h1.lower().split() == h2.lower().split()
+            for (i, oldheadline) in enumerate(oldheadlines):
                 try:
-                    newheadlines.remove(headline)
-                except ValueError:
-                    pass
+                    newheadline = newheadlines[i]
+                except IndexError:
+                    break
+                if headlineEq(oldheadline, newheadline):
+                    newheadlines[i] = None
+            newheadlines = filter(None, newheadlines) # Removes Nones.
             if newheadlines:
                 for channel in channels:
                     bold = self.registryValue('bold', channel)
