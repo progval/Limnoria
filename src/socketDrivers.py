@@ -63,6 +63,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.inbuffer = ''
         self.outbuffer = ''
         self.zombie = False
+        self.scheduled = None
         self.connected = False
         self.reconnectWaitsIndex = 0
         self.reconnectWaits = reconnectWaits
@@ -123,6 +124,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.reconnect(reset=False, **kwargs)
         
     def reconnect(self, wait=False, reset=True):
+        self.scheduled = False
         if self.connected:
             drivers.log.reconnect(self.irc.network)
             self.conn.close()
@@ -181,10 +183,12 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         if not world.dying:
             drivers.log.reconnect(self.irc.network, when)
-        schedule.addEvent(self.reconnect, when)
+        self.scheduled = schedule.addEvent(self.reconnect, when)
 
     def die(self):
         self.zombie = True
+        if self.scheduled:
+            schedule.removeEvent(self.scheduled)
         drivers.log.die(self.irc)
         
     def _reallyDie(self):
