@@ -169,7 +169,7 @@ class Weather(callbacks.Privmsg):
             if int(chill[:-2]) < int(temp[:-2]):
                 index = ' (Wind Chill: %s)' % chill
         heat = self._heatregex.search(html)
-        if heat:
+        if heat is not None:
             heat = heat.group(1)
             if int(heat[:-2]) > int(temp[:-2]):
                 index = ' (Heat Index: %s)' % heat
