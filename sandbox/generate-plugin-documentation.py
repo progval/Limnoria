@@ -160,7 +160,7 @@ def genConfigSection(fd, item, toplevel=False):
         if not toplevel:
             name = '.%s' % c
         else:
-            name = 'supybot.%s' % c
+            name = v._name
         fd.write(textwrap.dedent('''
         <li id="%s"><strong>%s</strong>
         ''' % (v._name, name)))
@@ -169,6 +169,7 @@ def genConfigSection(fd, item, toplevel=False):
             if isinstance(v._default, basestring):
                 default = utils.dqrepr(default)
             help = v.help()
+            channelValue = v.channelValue
         except registry.NonExistentRegistryEntry:
             pass
         else:
@@ -179,7 +180,7 @@ def genConfigSection(fd, item, toplevel=False):
             <li class="nonPlugin">Default: %s</li>
             <li class="nonPlugin">Channel Specific: %s</li>
             <li class="nonPlugin">Help: %s</li></ul>
-            ''' % (default, v.channelValue, help)))
+            ''' % (default, channelValue, help)))
         genConfigSection(fd, v)
         fd.write(textwrap.dedent('''</li>'''))
     fd.write('''</ul>''')
@@ -195,7 +196,8 @@ def makeNonPluginDocumentation():
     <div class="mainbody" style="padding: 0;">
     %s
     <div style="margin: 1em;">
-    Configuration variables under conf.supybot:
+    <h4 style="text-align: center;">Non-plugin configuration variables for
+    Supybot</h4>
     ''' % (genHeader(title, meta), genNavbar('../'))))
     genConfigSection(fd, conf.supybot, toplevel=True)
     fd.write(textwrap.dedent('''
@@ -297,32 +299,18 @@ def makePluginDocumentation(pluginWindow):
             ''' % (trClass, attr, attr, help, morehelp)))
     try:
         pluginconf = conf.supybot.plugins.get(pluginName)
-        fd.write(textwrap.dedent(
-            '''</table><br /><table>
-            <tr><th colspan="4">Configuration Variables for %s</th></tr>
-            <tr class="trheader">
-            <td>Config Var</td>
-            <td>Default Value</td>
-            <td>Channel Specific</td>
-            <td>Help</td></tr>''' % pluginName))
-        trClass = trClasses[trClass]
-        for config in [(c[0], c[1]) for c in\
-                       pluginconf.getValues(getChildren=True,fullNames=False)]:
-                name = config[0]
-                default = str(config[1])
-                if isinstance(config[1]._default, basestring):
-                    default = utils.dqrepr(default)
-                help = config[1].help()
-                help = cgi.escape(help)
-                default = cgi.escape(default)
-                trClass = trClasses[trClass]
-                fd.write(textwrap.dedent('''
-                <tr class="%s"><td>%s</td><td>%s</td><td>%s</td>
-                <td class="detail">%s</td></tr>
-                ''' % (trClass, name, default, config[1].channelValue, help)))
     except registry.NonExistentRegistryEntry:
+        fd.write('</table>\n')
         pass
-    fd.write('</table>\n')
+    else:
+        fd.write(textwrap.dedent(
+            '''</table><br />
+               <div>
+               <h4 style="text-align: center">Configuration Variables for
+               the %s plugin</h4>
+            ''' % pluginName))
+        genConfigSection(fd, pluginconf, toplevel=True)
+        fd.write(textwrap.dedent('''</div>'''))
     fd.write(textwrap.dedent('''
     </div>
     </div>
