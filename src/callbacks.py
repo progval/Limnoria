@@ -404,14 +404,14 @@ class IrcObjectProxy:
             for cb in self.irc.callbacks:
                 if isinstance(cb, PrivmsgRegexp):
                     for (r, _) in cb.res:
-                        if r.search(msg.args[1]):
+                        if r.search(self.msg.args[1]):
                             return
-                if isinstance(cb, PrivmsgCommandAndRegexp):
+                elif isinstance(cb, PrivmsgCommandAndRegexp):
                     for (r, _) in cb.res:
-                        if r.search(msg.args[1]):
+                        if r.search(self.msg.args[1]):
                             return
                     for (r, _) in cb.addressedRes:
-                        if r.search(msg.args[1]):
+                        if r.search(self.msg.args[1]):
                             return
             # Ok, no regexp-based things matched.
             for cb in self.irc.callbacks:
