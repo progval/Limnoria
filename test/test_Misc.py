@@ -135,6 +135,8 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         m = self.getMsg('tell #foo [plugin tell]')
         self.failUnless(m.args[0] == '#foo')
         self.failUnless('Misc' in m.args[1])
+        m = self.getMsg('tell me you love me')
+        self.failUnless(m.args[0] == self.nick)
 
     def testLast(self):
         self.feedMsg('foo bar baz')
