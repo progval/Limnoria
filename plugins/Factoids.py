@@ -162,7 +162,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                           LIMIT 20""", key)
         return [t[0] for t in cursor.fetchall()]
 
-    def _replyFactoids(self, irc, key, factoids, number=0):
+    def _replyFactoids(self, irc, key, factoids, number=0, error=False):
         if factoids:
             if number:
                 try:
@@ -178,7 +178,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                     counter += 1
                 irc.replies(factoidsS, prefixer='%r could be ' % key,
                             joiner=', or ', onlyPrefixFirst=True)
-        else:
+        elif error:
             irc.error('No factoid matches that key.')
 
     def invalidCommand(self, irc, msg, tokens):
@@ -187,7 +187,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
             if self.registryValue('replyWhenInvalidCommand', channel):
                 key = ' '.join(tokens)
                 factoids = self._lookupFactoid(channel, key)
-                self._replyFactoids(irc, key, factoids)
+                self._replyFactoids(irc, key, factoids, error=False)
 
     def whatis(self, irc, msg, args):
         """[<channel>] <key> [<number>]
