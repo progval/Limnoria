@@ -618,10 +618,13 @@ def whois(nick, mask='', prefix=''):
         assert isNick(nick), repr(nick)
     return IrcMsg(prefix=prefix, command='WHOIS', args=(nick, mask))
 
-def names(channel, prefix=''):
+def names(channel=None, prefix=''):
     if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel)
-    return IrcMsg(prefix=prefix, command='NAMES', args=(channel,))
+    if channel is not None:
+        return IrcMsg(prefix=prefix, command='NAMES', args=(channel,))
+    else:
+        return IrcMsg(prefix=prefix, command='NAMES')
 
 def mode(channel, args=(), prefix=''):
     if isinstance(args, basestring):
