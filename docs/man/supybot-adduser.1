@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tascii supybot-adduser.1
 .\"
-.TH SUPYBOT\-ADDUSER 1 "SEPTEMBER 2004"
+.TH SUPYBOT\-ADDUSER 1 "APRIL 2005"
 .SH NAME
 supybot\-adduser \- Adds a user to a Supybot users.conf file
 .SH SYNOPSIS
@@ -22,6 +22,9 @@ Show summary of options.
 .BR \-u " NAME" "\fR,\fP \-\^\-username=" NAME
 Specifies the username to use for the new user.
 .TP
+.BR \-p " PASSWORD" "\fR,\fP \-\^\-password=" PASSWORD
+Specifies the password to use for the new user.
+.TP
 .BR \-x ", " \-\^\-hashed
 Hash encrypt the password.
 .TP
@@ -34,8 +37,11 @@ multiple times.
 .SH "SEE ALSO"
 .IR python (1),
 .IR supybot (1),
+.IR supybot\-test (1),
+.IR supybot\-botchk (1),
 .IR supybot\-wizard (1),
-.IR supybot\-newplugin (1)
+.IR supybot\-plugin\-doc (1),
+.IR supybot\-plugin\-create (1)
 .SH AUTHOR
 This manual page was originally written by James Vega
 <vega dot james at gmail dot com>.  Permission is granted to copy,

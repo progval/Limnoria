@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tascii supybot.1
 .\"
-.TH SUPYBOT 1 "SEPTEMBER 2004"
+.TH SUPYBOT 1 "APRIL 2005"
 .SH NAME
 supybot \- A robust and user friendly Python IRC bot
 .SH SYNOPSIS
@@ -27,7 +27,7 @@ Show summary of options.
 Enable profiling.
 .TP
 .B \-O
-Optimizes asserts out of the code; \-O0 optimizes asserts and uses
+Optimizes asserts out of the code; \-OO optimizes asserts and uses
 .IR psyco .
 .TP
 .BI \-n " NICK" "\fR,\fP \-\^\-nick=" NICK
@@ -58,9 +58,12 @@ Determines whether some extra debugging stuff will be logged by this
 script.
 .SH "SEE ALSO"
 .IR python (1),
+.IR supybot\-test (1),
+.IR supybot\-botchk (1),
 .IR supybot\-wizard (1),
 .IR supybot\-adduser (1),
-.IR supybot\-newplugin (1)
+.IR supybot\-plugin\-doc (1),
+.IR supybot\-plugin\-create (1)
 .SH AUTHOR
 This manual page was originally written by James Vega
 <vega dot james at gmail dot com>.  Permission is granted to copy,
