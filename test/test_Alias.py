@@ -66,7 +66,7 @@ class FunctionsTest(SupyTestCase):
 
 
 class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Alias', 'Filter', 'Utilities')
+    plugins = ('Alias', 'Filter', 'Utilities', 'Format')
     def testNoAliasWithNestedCommandName(self):
         self.assertError('alias add foo "[bar] baz"')
 
@@ -109,18 +109,14 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('alias add FOO foo')
         self.assertError('alias add [] foo')
         self.assertError('alias add "foo bar" foo')
-        try:
-            conf.supybot.pipeSyntax.setValue(True)
-            self.assertError('alias add "foo|bar" foo')
-            conf.supybot.pipeSyntax.setValue(False)
-            self.assertNotError('alias add "foo|bar" foo')
-        finally:
-            conf.supybot.pipeSyntax.setValue(False)
+        self.assertError('alias add "foo|bar" foo')
 
-    def testNotCannotNestRaised(self):
-        self.assertNotError('alias add mytell "tell $channel $1"')
-        self.assertNotError('mytell #foo bugs')
-        self.assertNoResponse('blah blah blah', 2)
+# Can't do this because we can't tell channels anymore, but I forget what
+# exactly it was testing.
+##     def testNotCannotNestRaised(self):
+##         self.assertNotError('alias add mytell "tell $channel $1"')
+##         self.assertNotError('mytell #foo bugs')
+##         self.assertNoResponse('blah blah blah', 2)
 
     def testChannel(self):
         self.assertNotError('alias add channel echo $channel')
