@@ -84,7 +84,8 @@ def checkCapability(f, capability):
             f(self, irc, msg, args)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
-    #newf = new.function(newf.func_code, newf.func_globals, f.func_name)
+    newf = new.function(newf.func_code, newf.func_globals,
+                        f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
     return newf
 
@@ -102,7 +103,8 @@ def checkChannelCapability(f, capability):
             ff(irc, msg, args, *L)
         else:
             irc.error(msg, conf.replyNoCapability % chancap)
-    #newf = new.function(newf.func_code, newf.func_globals, f.func_name)
+    newf = new.function(newf.func_code, newf.func_globals,
+                        f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
     return newf
 
@@ -112,7 +114,8 @@ def thread(f):
         ff = new.instancemethod(f, self, self.__class__)
         t = callbacks.CommandThread(self.callCommand, ff, irc, msg, args, *L)
         t.start()
-    #newf = new.function(newf.func_code, newf.func_globals, f.func_name)
+    newf = new.function(newf.func_code, newf.func_globals,
+                        f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
     return newf
 
@@ -130,7 +133,8 @@ def name(f):
         L = (name,) + L
         ff = new.instancemethod(f, self, self.__class__)
         ff(irc, msg, args, *L)
-    #newf = new.function(newf.func_code, newf.func_globals, f.func_name)
+    newf = new.function(newf.func_code, newf.func_globals,
+                        f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
     return newf
 
@@ -141,7 +145,8 @@ def channel(f):
         L = (channel,) + L
         ff = new.instancemethod(f, self, self.__class__)
         ff(irc, msg, args, *L)
-    #newf = new.function(newf.func_code, newf.func_globals, f.func_name)
+    newf = new.function(newf.func_code, newf.func_globals,
+                        f.func_name, closure=newf.func_closure)
     newf.__doc__ = f.__doc__
     return newf
         

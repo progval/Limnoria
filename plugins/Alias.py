@@ -148,10 +148,9 @@ def makeNewAlias(name, alias):
         alias_ = atRe.sub(replace, alias_)
         alias_ = alias_.replace('$*', ' '.join(map(utils.dqrepr, args)))
         self.Proxy(irc.irc, msg, callbacks.tokenize(alias_))
-    #f = new.function(f.func_code, f.func_globals, alias)
+    f = new.function(f.func_code, f.func_globals, name, closure=f.func_closure)
     f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \
                 (utils.nItems(biggestDollar, 'argument'), alias)
-    #f = new.function(f.func_code, f.func_globals, name)
     return f
 
 
