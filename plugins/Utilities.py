@@ -41,6 +41,7 @@ from baseplugin import *
 
 import re
 
+import utils
 import privmsgs
 import callbacks
 
@@ -90,11 +91,11 @@ class Utilities(callbacks.Privmsg):
         Returns all matches to <regexp> (in the form /regexp/flags) in text.
         """
         (regexp, text) = privmsgs.getArgs(args, needed=2)
-        (_, regexp, flags) = regexp.split('/')
-        flag = 0
-        for c in flags:
-            flag &= getattr(re, c.upper())
-        r = re.compile(regexp, flag)
+        try:
+            r = utils.perlReToPythonRe(regexp)
+        except ValueError, e:
+            irc.error(msg, 'Invalid regexp: %s' % e.args[0])
+            return
         irc.reply(msg, ' '.join(r.findall(text)))
         
         
