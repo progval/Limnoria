@@ -129,6 +129,8 @@ class Http(callbacks.Privmsg):
         in fact anything having to do with computing.  This commands searches
         that dictionary.
         """
+        if not args:
+            raise callbacks.ArgumentError
         search = '+'.join([urllib.quote(arg) for arg in args])
         url = 'http://foldoc.doc.ic.ac.uk/foldoc/foldoc.cgi?query=%s' % search
         try:
