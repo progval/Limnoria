@@ -249,6 +249,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     continue
                 registerDefaultPlugin(name, s)
 
+    priority = ~sys.maxint - 1 # For working with IrcCallbacks.
     callAfter = utils.Nothing()
     callBefore = utils.Everything()
     def __lt__(self, other):

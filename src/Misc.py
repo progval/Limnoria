@@ -79,6 +79,7 @@ class Misc(callbacks.Privmsg):
         super(Misc, self).__init__()
         self.invalidCommands = ircutils.FloodQueue(60)
 
+    priority = sys.maxint + 1 # This is for working with IrcCallbacks.
     callAfter = utils.Everything()
     callBefore = utils.Nothing()
     def __lt__(self, other):
