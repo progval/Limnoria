@@ -53,6 +53,7 @@ def configure(onStart, afterConnect, advanced):
     if yn('Do you have a license key?') == 'y':
         key = anything('What is it?')
 
+        onStart.append('load Amazon')
         onStart.append('amazonlicensekey %s' % key)
     else:
         print 'You\'ll need to get a key before you can use this plugin.'
