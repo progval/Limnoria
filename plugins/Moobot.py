@@ -218,7 +218,7 @@ class Moobot(callbacks.Privmsg):
         elif someone in ('yourself', 'you', irc.nick):
             someone = 'himself'
         response = 'gives %s %s' % (someone, something)
-        irc.queueMsg(ircmsgs.action(ircutils.reply(msg), response))
+        irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), response))
 
 
 Class = Moobot

@@ -68,7 +68,7 @@ class Forums(callbacks.PrivmsgRegexp):
         mThread = self._ggThread.search(text)
         mGroup = self._ggGroup.search(text)
         if mThread and mGroup:
-            irc.queueMsg(ircmsgs.privmsg(ircutils.reply(msg),
+            irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg),
               'Google Groups: %s, %s' % (mGroup.group(1), mThread.group(1))))
         else:
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],

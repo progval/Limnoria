@@ -167,7 +167,7 @@ def safeArgument(s):
     else:
         return repr(s)
 
-def reply(msg):
+def replyTo(msg):
     if isChannel(msg.args[0]):
         return msg.args[0]
     else:
