@@ -347,10 +347,8 @@ class TimeoutQueue(object):
     def __len__(self):
         # No dependency on utils.iter
         # return ilen(self)
-        i = 0
-        for _ in self:
-            i += 1
-        return i
+        self._clearOldElements()
+        return len(self.queue)
 
 class MaxLengthQueue(queue):
     __slots__ = ('length',)
