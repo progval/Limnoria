@@ -138,7 +138,7 @@ class String(Value):
             s = repr(s)
         try:
             v = utils.safeEval(s)
-            if type(v) is not str:
+            if not isinstance(v, basestring):
                 raise ValueError
             self.value = v
         except ValueError: # This catches utils.safeEval(s) errors too.
