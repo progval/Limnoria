@@ -164,6 +164,10 @@ class IrcStateTestCase(unittest.TestCase):
         self.assertEqual(list(state.history), msgs[len(msgs)-conf.maxHistory:])
         conf.maxHistory = oldconfmaxhistory
 
+    def testEmptyTopic(self):
+        state = irclib.IrcState()
+        state.addMsg(self.irc, ircmsgs.topic('#foo'))
+
     def testPickleCopy(self):
         state = irclib.IrcState()
         self.assertEqual(state, pickle.loads(pickle.dumps(state)))
