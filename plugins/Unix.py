@@ -57,6 +57,7 @@ import supybot.callbacks as callbacks
 
 
 def configure(advanced):
+    from supybot.questions import output, expect, anything, something, yn
     output("""The "progstats" command can reveal potentially sensitive
               information about your machine. Here's an example of its output:
 
