@@ -468,7 +468,9 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
         for stats.  With <user> alone, returns all the stats for that user.
         With <word> alone, returns the top users for that word.  With <user>
         and <word>, returns that user's stat for that word. <channel> is only
-        needed if not said in the channel.
+        needed if not said in the channel.  (Note: if only one of <user> or
+        <word> is given, <word> is assumed first and only if no stats are
+        available for that word, do we assume it's <user>.)
         """
         channel = privmsgs.getChannel(msg, args)
         (arg1, arg2) = privmsgs.getArgs(args, needed=0, optional=2)
@@ -512,51 +514,54 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
             irc.reply(msg, s)
         else:
             # Figure out if we got a user or a word
-            try:
-                id = ircdb.users.getUserId(arg1)
-            except KeyError: # Maybe it was a nick.  Check the hostmask.
-                try:
-                    hostmask = irc.state.nickToHostmask(arg1)
-                    id = ircdb.users.getUserId(hostmask)
-                except KeyError:
-                    # okay, maybe it was a word
-                    cursor.execute("""SELECT word FROM words
-                                      WHERE word=%s""", arg1)
-                    if cursor.rowcount == 0:
-                        irc.error(msg, '%r doesn\'t look like a user I know '
-                                       'or a word that I\'m keeping stats '
-                                       'on' % arg1)
-                        return
-                    cursor.execute("""SELECT word_stats.count,
-                                             word_stats.user_id
-                                      FROM words, word_stats
-                                      WHERE words.word=%s 
-                                      AND words.id=word_stats.word_id
-                                      ORDER BY word_stats.count DESC
-                                      LIMIT 3""", arg1)
-                    results = cursor.fetchall()
-                    s = 'Top %s: ' % utils.nItems(cursor.rowcount,
-                                                  '%rer' % arg1)
-                    l = []
-                    for (count, id) in results:
-                        username = ircdb.users.getUser(id).name
-                        l.append('%s: %s' % (username, count))
-                    s += utils.commaAndify(l)
-                    irc.reply(msg, s)
-                    return
-            # It's a user, not a word
-            cursor.execute("""SELECT words.word, word_stats.count
-                              FROM words, word_stats
-                              WHERE words.id = word_stats.word_id
-                              AND word_stats.user_id=%s
-                              ORDER BY words.word""", id)
+            cursor.execute("""SELECT word FROM words
+                              WHERE word=%s""", arg1)
             if cursor.rowcount == 0:
-                username = ircdb.users.getUser(id).name
-                irc.error(msg, '%r has no wordstats' % username)
+                try:
+                    id = ircdb.users.getUserId(arg1)
+                except KeyError: # Maybe it was a nick.  Check the hostmask.
+                    try:
+                        hostmask = irc.state.nickToHostmask(arg1)
+                        id = ircdb.users.getUserId(hostmask)
+                    except KeyError:
+                        irc.error(msg, '%r doesn\'t look like a user I know '
+                                           'or a word that I\'m keeping stats '
+                                           'on' % arg1)
+                        return
+                cursor.execute("""SELECT words.word, word_stats.count
+                                  FROM words, word_stats
+                                  WHERE words.id = word_stats.word_id
+                                  AND word_stats.user_id=%s
+                                  ORDER BY words.word""", id)
+                if cursor.rowcount == 0:
+                    username = ircdb.users.getUser(id).name
+                    irc.error(msg, '%r has no wordstats' % username)
+                    return
+                l = [('%r: %s' % (word, count)) for \
+                     (word, count) in cursor.fetchall()]
+                irc.reply(msg, utils.commaAndify(l))
                 return
-            l = [('%r: %s' % (word, count)) for \
-                 (word, count) in cursor.fetchall()]
-            irc.reply(msg, utils.commaAndify(l))
+            # It's a word, not a user
+            word = arg1
+            cursor.execute("""SELECT word_stats.count,
+                                     word_stats.user_id
+                              FROM words, word_stats
+                              WHERE words.word=%s 
+                              AND words.id=word_stats.word_id
+                              ORDER BY word_stats.count DESC
+                              LIMIT 3""", word)
+            if cursor.rowcount == 0:
+                irc.error(msg, 'No one has said %r' % word)
+                return
+            results = cursor.fetchall()
+            s = 'Top %s: ' % utils.nItems(cursor.rowcount,
+                                          '%rer' % word)
+            l = []
+            for (count, id) in results:
+                username = ircdb.users.getUser(id).name
+                l.append('%s: %s' % (username, count))
+            s += utils.commaAndify(l)
+            irc.reply(msg, s)
                            
 Class = ChannelDB
 
