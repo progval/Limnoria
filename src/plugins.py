@@ -209,6 +209,7 @@ class ToggleDictionary(object):
         if channel is None:
             return self.defaults
         else:
+            assert ircutils.isChannel(channel) or ircutils.isNick(channel)
             if channel not in self.channels:
                 self.channels[channel] = self.defaults.copy()
             return self.channels[channel]
@@ -219,6 +220,8 @@ class ToggleDictionary(object):
 
     def toggle(self, key, value=None, channel=None):
         #debug.printf('inside toggle: %s %s %s' % (key, value, channel))
+        if channel is not None:
+            assert ircutils.isChannel(channel) or ircutils.isNick(channel)
         d = self._getDict(channel)
         key = callbacks.canonicalName(key)
         if value is None:
