@@ -89,7 +89,6 @@ class Schedule(drivers.IrcDriver):
     def removeEvent(self, name):
         """Removes the event with the given name from the schedule."""
         del self.events[name]
-        heapq.heappop(self.schedule)
         self.schedule = [(t, n) for (t, n) in self.schedule if n != name]
 
     def addPeriodicEvent(self, f, t, name=None):
