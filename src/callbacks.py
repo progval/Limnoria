@@ -1284,7 +1284,7 @@ class PrivmsgRegexp(Privmsg):
             # dirty work for us anymore.
             self.log.exception('Uncaught exception in %s.%s:',
                                self.name(), name)
-            if conf.supybot.reply.detailedErrors():
+            if conf.supybot.reply.error.detailed():
                 irc.error(utils.exnToString(e))
             else:
                 irc.replyError()
@@ -1348,7 +1348,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
             catchErrors = kwargs.pop('catchErrors', False)
             if catchErrors:
                 self.log.exception('Uncaught exception in callCommand:')
-                if conf.supybot.reply.detailedErrors():
+                if conf.supybot.reply.error.detailed():
                     irc.error(utils.exnToString(e))
                 else:
                     irc.replyError()
