@@ -34,6 +34,7 @@ Provides commands useful to users in general. This plugin is loaded by default.
 """
 
 __revision__ = "$Id$"
+__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import fix
 

@@ -34,6 +34,7 @@ Various utility commands, mostly useful for manipulating nested commands.
 """
 
 __revision__ = "$Id$"
+__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import plugins
 

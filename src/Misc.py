@@ -34,6 +34,7 @@ Miscellaneous commands.
 """
 
 __revision__ = "$Id$"
+__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import fix
 
@@ -336,6 +337,25 @@ class Misc(callbacks.Privmsg):
             irc.reply(utils.commaAndify(names))
         else:
             irc.error('There is no such command %s' % command)
+
+    def author(self, irc, msg, args):
+        """<plugin>
+
+        Returns the author of <plugin>.  This is the person you should talk to
+        if you have ideas, suggestions, or other comments about a given plugin.
+        """
+        plugin = privmsgs.getArgs(args)
+        cb = irc.getCallback(plugin)
+        if cb is None:
+            irc.error('That plugin does not seem to be loaded.')
+            return
+        module = sys.modules[cb.__class__.__module__]
+        if hasattr(module, '__author__') and module.__author__:
+            s = module.__author__.replace('@', ' AT ')
+            s = s.replace('.', ' DOT ')
+            irc.reply(s)
+        else:
+            irc.reply('That plugin doesn\'t have an author that claims it.')
 
     def more(self, irc, msg, args):
         """[<nick>]

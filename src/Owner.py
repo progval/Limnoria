@@ -35,6 +35,7 @@ their caller to have the 'owner' capability.  This plugin is loaded by default.
 """
 
 __revision__ = "$Id$"
+__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import fix
 

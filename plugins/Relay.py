@@ -34,6 +34,7 @@ Handles relaying between networks.
 """
 
 __revision__ = "$Id$"
+__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import plugins
 

@@ -37,6 +37,7 @@ empty channel in order to get ops.
 """
 
 __revision__ = "$Id$"
+__author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import plugins
 
