@@ -38,10 +38,12 @@ __revision__ = "$Id$"
 import supybot.plugins as plugins
 
 import re
+import cgi
 import sets
 import time
 import getopt
 import socket
+import urllib
 import xml.sax
 
 import SOAP
@@ -384,10 +386,15 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     _ggThreadm = re.compile(r'view the <a href=([^>]+)>no', re.I)
     _ggSelm = re.compile(r'selm=[^&]+', re.I)
     def googleGroups(self, irc, msg, match):
-        r"http://groups.google.com/[^\s]+"
+        r"http://groups.google.[\w.]+/\S+\?(\S+)"
         if not self.registryValue('groupsSnarfer', msg.args[0]):
             return
-        url = match.group(0)
+        queries = cgi.parse_qsl(match.group(1))
+        queries = filter(lambda q: q[0] in ['threadm', 'selm'], queries)
+        if not queries:
+            return
+        queries.append(('hl', 'en'))
+        url = 'http://groups.google.com/groups?%s' % urllib.urlencode(queries)
         text = webutils.getUrl(url)
         mThread = None
         mGroup = None
@@ -396,12 +403,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             if path is None:
                 return
             url = 'http://groups.google.com%s' % path.group(1)
-            text = webutils.getUrl(url)
-        elif 'selm=' in url:
-            path = self._ggSelm.search(url)
-            if path is None:
-                return
-            url = 'http://groups.google.com/groups?%s' % path.group(0)
             text = webutils.getUrl(url)
         mThread = self._ggThread.search(text)
         mGroup = self._ggGroup.search(text)
