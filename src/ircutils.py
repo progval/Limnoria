@@ -49,21 +49,25 @@ def isServerHostmask(s):
     return (not isUserHostmask(s) and s.find('!') == -1 and s.find('@') == -1)
 
 def nickFromHostmask(hostmask):
+    assert isUserHostmask(hostmask)
     return nick(hostmask.split('!', 1)[0])
 
 def userFromHostmask(hostmask):
-    #debug.printf('FOO!: %r' % hostmask)
+    assert isUserHostmask(hostmask)
     return hostmask.split('!', 1)[1].split('@', 1)[0]
 
 def hostFromHostmask(hostmask):
+    assert isUserHostmask(hostmask)
     return hostmask.split('@', 1)[1]
 
 def splitHostmask(hostmask):
+    assert isUserHostmask(hostmask)
     nck, rest = hostmask.split('!', 1)
     user, host = rest.split('@', 1)
     return (nick(nck), user, host)
 
 def joinHostmask(nick, ident, host):
+    assert nick and ident and host
     return '%s!%s@%s' % (nick, ident, host)
 
 _lowertrans = string.maketrans(string.ascii_uppercase + r'\[]',
