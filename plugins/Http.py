@@ -70,7 +70,7 @@ class Http(callbacks.Privmsg):
             s = fd.read()
             thought = s.split('<br>')[2]
             thought = ' '.join(thought.split())
-        self.deepthoughtq.enqueue(thought)
+        self.deepthoughtq.enqueue((now, thought))
         irc.reply(msg, thought)
 
     _titleRe = re.compile(r'<title>(.*)</title>')
