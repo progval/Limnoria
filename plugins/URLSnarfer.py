@@ -108,7 +108,6 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg):
 
     _urlRe = re.compile(r"([^\[<(\s]+://[^\])>\s]+)", re.I)
     def doPrivmsg(self, irc, msg):
-        callbacks.Privmsg.doPrivmsg(self, irc, msg)
         channel = msg.args[0]
         db = self.getDb(channel)
         cursor = db.cursor()

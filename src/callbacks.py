@@ -714,9 +714,6 @@ class Privmsg(irclib.IrcCallback):
         funcname = '%s.%s' % (f.im_class.__name__, f.im_func.func_name)
         debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
 
-    def doPrivmsg(self, irc, msg, rateLimit=True):
-        pass
-
 
 class IrcObjectProxyRegexp:
     def __init__(self, irc, *args):

@@ -461,7 +461,6 @@ class Relay(callbacks.Privmsg):
                     otherIrc.queueMsg(msg)
 
     def doPrivmsg(self, irc, msg):
-        callbacks.Privmsg.doPrivmsg(self, irc, msg)
         if not isinstance(irc, irclib.Irc):
             irc = irc.getRealIrc()
         if self.started and ircutils.isChannel(msg.args[0]):

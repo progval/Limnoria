@@ -113,7 +113,6 @@ class Notes(callbacks.Privmsg):
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
-            callbacks.Privmsg.doPrivmsg(self, irc, msg)
             return
         cursor = self.db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM notes
@@ -130,7 +129,6 @@ class Notes(callbacks.Privmsg):
             cursor.execute("""UPDATE notes SET notified=1
                               WHERE notes.to_id=%s""", id)
             self.db.commit()
-        callbacks.Privmsg.doPrivmsg(self, irc, msg)
 
     def sendnote(self, irc, msg, args):
         """<recipient> <text>

@@ -85,7 +85,7 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
 
     def doPrivmsg(self, irc, msg):
         if not ircutils.isChannel(msg.args[0]):
-            return callbacks.Privmsg.doPrivmsg(self, irc, msg)
+            return
         channel = msg.args[0]
         db = self.getDb(channel)
         cursor = db.cursor()
@@ -116,7 +116,6 @@ class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
             id = int(cursor.fetchone()[0])
             cursor.execute("INSERT INTO follows VALUES (NULL, %s, NULL)", id)
         db.commit()
-        return callbacks.Privmsg.doPrivmsg(self, irc, msg)
 
     _maxMarkovLength = 80
     _minMarkovLength = 7
