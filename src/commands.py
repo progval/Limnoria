@@ -307,6 +307,12 @@ def getChannel(irc, msg, args, state):
     state.channel = channel
     state.args.append(channel)
 
+def inChannel(irc, msg, args, state):
+    assert not state.channel, 'inChannel acts as a channel'
+    getChannel(irc, msg, args, state)
+    if state.channel not in irc.state.channels:
+        irc.error('I\'m not in %s.' % state.channel, Raise=True)
+
 def getChannelOrNone(irc, msg, args, state):
     try:
         getChannel(irc, msg, args, state)
@@ -382,6 +388,7 @@ wrappers = ircutils.IrcDict({
     'expiry': getExpiry,
     'nick': getNick,
     'channel': getChannel,
+    'inChannel': inChannel,
     'plugin': getPlugin,
     'boolean': getBoolean,
     'lowered': getLowered,
@@ -401,6 +408,9 @@ wrappers = ircutils.IrcDict({
     'checkCapability': checkCapability,
     'checkChannelCapability': checkChannelCapability,
 })
+
+def addWrapper(name, wrapper):
+    wrappers[name] = wrapper
 
 class State(object):
     def __init__(self, name=None, logger=None):
@@ -447,6 +457,8 @@ def args(irc,msg,args, types=[], state=None,
         elif name.endswith('?'):
             optional = True
             enforce = False
+            name = name[:-1]
+        elif name[-1] in '*+':
             name = name[:-1]
         default = ''
         wrapper = wrappers[name]
@@ -497,11 +509,24 @@ def args(irc,msg,args, types=[], state=None,
     # (there's a possibility that there were no required or optional
     # arguments) then we join the remaining args and work convert that.
     if types:
-        assert len(types) == 1
-        if args:
-            rest = ' '.join(args)
-            args = [rest]
-        callWrapper(types.pop(0))
+        name = types[0]
+        if isinstance(name, tuple):
+            name = name[0]
+        if name[-1] in '*+':
+            originalStateArgs = state.args
+            state.args = []
+            if name.endswith('+'):
+                callWrapper(types[0]) # So it raises an error if no args.
+            while args:
+                callWrapper(types[0])
+            lastArgs = state.args
+            state.args = originalStateArgs
+            state.args.append(lastArgs)
+        else:
+            if args:
+                rest = ' '.join(args)
+                args = [rest]
+            callWrapper(types.pop(0))
     if noExtra and args:
         log.debug('noExtra and args: %r', args)
         raise callbacks.ArgumentError
