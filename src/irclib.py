@@ -491,14 +491,15 @@ class Irc(IrcCommandDispatcher):
         self.outstandingPing = False
 
     def _queueConnectMessages(self):
-        if self.password:
-            log.info('Sending PASS command, not logging the password.')
-            self.queueMsg(ircmsgs.password(self.password))
-        log.info('Queuing NICK command, nick is %s.', self.nick)
-        self.queueMsg(ircmsgs.nick(self.nick))
-        log.info('Queuing USER command, ident is %s, user is %s.',
-                 self.ident, self.user)
-        self.queueMsg(ircmsgs.user(self.ident, self.user))
+        if not self.zombie:
+            if self.password:
+                log.info('Sending PASS command, not logging the password.')
+                self.queueMsg(ircmsgs.password(self.password))
+            log.info('Queuing NICK command, nick is %s.', self.nick)
+            self.queueMsg(ircmsgs.nick(self.nick))
+            log.info('Queuing USER command, ident is %s, user is %s.',
+                     self.ident, self.user)
+            self.queueMsg(ircmsgs.user(self.ident, self.user))
 
     def _getNextNick(self):
         if self.alternateNicks:
@@ -741,6 +742,7 @@ class Irc(IrcCommandDispatcher):
             world.ircs.remove(self)
         else:
             log.warning('Irc object killed twice.')
+            #utils.stackTrace()
 
     def __hash__(self):
         return id(self)
