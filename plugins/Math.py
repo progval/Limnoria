@@ -328,7 +328,7 @@ class Math(callbacks.Privmsg):
             newNum = convertcore.convert(num, unit1, unit2)
             newNum = self._floatToString(newNum)
             
-            irc.reply('%s %s' % (newNum , unit2))
+            irc.reply('%s' % newNum)
         except convertcore.UnitDataError, ude:
             irc.error(str(ude))
 
