@@ -59,11 +59,17 @@ frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
-class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
-    toggles = plugins.ToggleDictionary({'selfstats': True})
+class ChannelDB(callbacks.Privmsg,
+                plugins.Configurable,
+                plugins.ChannelDBHandler):
+    configurables = plugins.ConfigurableDictionary(
+        [('self-stats', plugins.ConfigurableTypes.bool, True,
+          """Determines whether the bot will keep channel statistics on itself,
+          possibly skewing the channel stats (especially in cases where he's
+          relaying between channels on a network.""")]
+        )
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        plugins.Toggleable.__init__(self)
         plugins.ChannelDBHandler.__init__(self)
         self.lastmsg = None
         self.laststate = None
@@ -224,7 +230,7 @@ class ChannelDB(callbacks.Privmsg,plugins.Toggleable,plugins.ChannelDBHandler):
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
             if ircutils.isChannel(msg.args[0]):
-                if self.toggles.get('selfstats', msg.args[0]):
+                if self.configurables.get('self-stats', msg.args[0]):
                     db = self.getDb(msg.args[0])
                     cursor = db.cursor()
                     try:

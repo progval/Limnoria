@@ -70,7 +70,7 @@ if sqlite is not None:
             u = ircdb.users.getUser(id)
             u.addCapability(ircdb.makeChannelCapability(self.channel, 'op'))
             ircdb.users.setUser(id, u)
-            self.assertNotError('channeldb toggle selfstats off')
+            self.assertNotError('channeldb config self-stats off')
             m1 = self.getMsg('channeldb stats %s' % self.irc.nick)
             m2 = self.getMsg('channeldb stats %s' % self.irc.nick)
             self.assertEqual(m1.args[1], m2.args[1])

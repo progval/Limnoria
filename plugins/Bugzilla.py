@@ -78,9 +78,7 @@ def makeDb(filename):
 
 class BugError(Exception):
     """A bugzilla error"""
-    def __init__(self, args = None):
-        Exception.__init__(self)
-        self.args = args
+    pass
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, yn
@@ -91,17 +89,20 @@ def configure(onStart, afterConnect, advanced):
         print 'supybot sees such a URL, he will parse the web page for'
         print 'information and reply with the results.\n'
         if yn('Do you want the Bugzilla snarfer enabled by default?') == 'n':
-            onStart.append('Bugzilla toggle bug off')
+            onStart.append('Bugzilla config bug-snarfer off')
 
-class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
+class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     """Show a link to a bug report with a brief description"""
     threaded = True
     regexps = ['bzSnarfer']
-    toggles = plugins.ToggleDictionary({'bug' : True})
-
+    configurables = plugins.ConfigurableDictionary(
+        [('bug-snarfer', plugins.ConfigurableTypes.bool, True,
+         """Determines whether the bug snarfer will be enabled, such that any
+         Bugzilla URLs seen in the channel will have their information reported
+         into the channel.""")]
+    )
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        plugins.Toggleable.__init__(self)
         self.entre = re.compile('&(\S*?);')
         self.db = makeDb(dbfilename)
 
@@ -116,7 +117,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         is the name that will be used to reference the zilla in all other
         commands. <description> is the common name for the bugzilla and will
         be listed with the bugzilla query.
-        E.g.: add rh http://bugzilla.redhat.com/bugzilla Red Hat Zilla"""
+        """
         (shorthand, url, description) = privmsgs.getArgs(args, needed=3)
         cursor = self.db.cursor()
         cursor.execute("""INSERT INTO bugzillas VALUES (%s, %s, %s)""",
@@ -131,7 +132,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
         Remove the bugzilla associated with <abbreviation> from the list of
         defined bugzillae.
-        E.g.: remove rh"""
+        """
         shorthand = privmsgs.getArgs(args)
         cursor = self.db.cursor()
         cursor.execute("""SELECT * from bugzillas where shorthand = %s""",
@@ -151,7 +152,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
         List defined bugzillae. If <abbreviation> is specified, list the
         information for that bugzilla.
-        E.g.: list rh; or just list"""
+        """
         shorthand = privmsgs.getArgs(args, needed=0, optional=1)
         if shorthand:
             cursor = self.db.cursor()
@@ -175,7 +176,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
 
     def bzSnarfer(self, irc, msg, match):
         r"(http://\S+)/show_bug.cgi\?id=([0-9]+)"
-        if not self.toggles.get('bug', channel=msg.args[0]):
+        if not self.configurables.get('bug-snarfer', channel=msg.args[0]):
             return
         queryurl = '%s/xml.cgi?id=%s' % (match.group(1), match.group(2))
         try:
@@ -195,14 +196,15 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         report['title'] = str(summary['title'])
         report['summary'] = str(self._mk_summary_string(summary))
         report['product'] = str(summary['product'])
-        irc.reply(msg, '%(product)s bug #%(id)s: %(title)s %(summary)s'
-            % report, prefixName = False)
+        s = '%(product)s bug #%(id)s: %(title)s %(summary)s' % report
+        irc.reply(msg, s, prefixName=False)
+    bzSnarfer = privmsgs.urlSnarfer(bzSnarfer)
         
     def bug(self, irc, msg, args):
         """<abbreviation> <number>
 
         Look up bug <number> in the bugzilla associated with <abbreviation>.
-        E.g.: bug rh 10301"""
+        """
         (shorthand, num) = privmsgs.getArgs(args, needed=2)
         cursor = self.db.cursor()
         cursor.execute("""SELECT url,description from bugzillas where
@@ -231,38 +233,38 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         report['url'] = str('%s/show_bug.cgi?id=%s' % (url, num))
         report['title'] = str(summary['title'])
         report['summary'] = str(self._mk_summary_string(summary))
-        irc.reply(msg, '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s'
-            % report)
-        return
+        s = '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report
+        irc.reply(msg, s)
 
     def _mk_summary_string(self, summary):
-        ary = []
+        L = []
         if 'product' in summary:
-            ary.append(ircutils.bold('Product: ') + summary['product'])
+            L.append(ircutils.bold('Product: ') + summary['product'])
         if 'component' in summary:
-            ary.append(ircutils.bold('Component: ') + summary['component'])
+            L.append(ircutils.bold('Component: ') + summary['component'])
         if 'severity' in summary:
-            ary.append(ircutils.bold('Severity: ') + summary['severity'])
+            L.append(ircutils.bold('Severity: ') + summary['severity'])
         if 'assigned to' in summary:
-            ary.append(ircutils.bold('Assigned to: ') + summary['assigned to'])
+            L.append(ircutils.bold('Assigned to: ') + summary['assigned to'])
         if 'status' in summary:
-            ary.append(ircutils.bold('Status: ') + summary['status'])
+            L.append(ircutils.bold('Status: ') + summary['status'])
         if 'resolution' in summary:
-            ary.append(ircutils.bold('Resolution: ') + summary['resolution'])
-        out = string.join(ary, ', ')
-        return out
+            L.append(ircutils.bold('Resolution: ') + summary['resolution'])
+        return ', '.join(L)
 
     def _is_bug_number(self, bug):
-        try: int(bug)
-        except: return 0
-        else: return 1
+        try:
+            int(bug)
+            return True
+        except ValueError:
+            return False
         
     def _get_short_bug_summary(self, url, desc, num):
         bugxml = self._getbugxml(url, desc)
         try: zilladom = minidom.parseString(bugxml)
         except Exception, e:
             msg = 'Could not parse XML returned by %s bugzilla: %s'
-            raise BugError(str(msg % (desc, e)))
+            raise BugError, msg % (desc, e)
         bug_n = zilladom.getElementsByTagName('bug')[0]
         if bug_n.hasAttribute('error'):
             errtxt = bug_n.getAttribute('error')
@@ -296,40 +298,37 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         return summary
 
     def _getbugxml(self, url, desc):
-        try: fh = urllib.urlopen(url)
-        except: raise IOError('Connection to %s bugzilla failed' % desc)
-        bugxml = ''
-        while 1:
-            chunk = fh.read(8192)
-            if chunk == '':
-                break
-            bugxml = bugxml + chunk
+        try:
+            fh = urllib.urlopen(url)
+        except:
+            raise IOError('Connection to %s bugzilla failed' % desc)
+        bugxml = fh.read()
         fh.close()
-        if not len(bugxml):
-            msg = 'Error getting bug content from %s' % desc
-            raise IOError(msg)
+        if not bugxml:
+            raise IOError, 'Error getting bug content from %s' % desc
         return bugxml
 
     def _getnodetxt(self, node):
-        val = ''
+        L = []
         for childnode in node.childNodes:
             if childnode.nodeType == childnode.TEXT_NODE:
-                val = val + childnode.data
+                L.append(childnode.data)
+        val = ''.join(L)
         if node.hasAttribute('encoding'):
             encoding = node.getAttribute('encoding')
             if encoding == 'base64':
                 try:
-                    val = base64.decodestring(val)
+                    val = val.decode('base64')
                 except:
-                    val = 'Cannot convert bug data from base64!'
-        entre = self.entre
-        while entre.search(val):
-            entity = entre.search(val).group(1)
-            if entities.has_key(entity):
-                val = re.sub(entre, entities[entity], val)
+                    val = 'Cannot convert bug data from base64.'
+        while self.entre.search(val):
+            entity = self.entre.search(val).group(1)
+            if entity in entities:
+                val = re.sub(self.entre, entities[entity], val)
             else:
-                val = re.sub(entre, '_', val)
+                val = re.sub(self.entre, '_', val)
         return val
+
 
 Class = Bugzilla
 
