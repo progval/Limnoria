@@ -37,15 +37,12 @@ from fix import *
 
 import os
 import sys
-import time
 import getopt
-import textwrap
 from itertools import ifilter
 
 import conf
 import debug
 import utils
-import world
 import ircmsgs
 import ircutils
 import privmsgs
