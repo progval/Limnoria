@@ -70,9 +70,6 @@ max-branchs=12
 # Maximum number of statements in function / method body
 max-statements=50
 
-# Required attributes for module, separated by a comma
-required-attributes=
-
 # Warning on global statements
 global-warning=no
 
@@ -106,7 +103,7 @@ variable-rgx=[a-z_][A-Za-z0-9]*
 
 # Good variable names which are lesser than min-name-length 
 # or wouldn't match the variable-rgx, separated by a comma
-good-variable-names=i,j,k,db,s,t,s1,s2,t1,t2,m,e,cb,r,h,c,fd,_,u,tb,f,no,b,bg,fg,id
+good-variable-names=i,j,k,db,s,t,s1,s2,t1,t2,m,e,cb,r,h,c,fd,_,u,tb,f,no,b,bg,fg,id,L,p,ff,x,n,d,cs,ct,g,ip
 
 # Bad variable names which are greater than min-name-length or would
 # match the variable-rgx, separated by a comma
