@@ -67,9 +67,6 @@ class SocketDriver(drivers.IrcDriver):
         while msgs[-1] is not None:
             msgs.append(self.irc.takeMsg())
         del msgs[-1]
-        for msg in msgs:
-            msg.prefix = ''
-            msg._str = None
         self.outbuffer += ''.join(map(str, msgs))
         if self.outbuffer:
             sent = self.conn.send(self.outbuffer)
@@ -86,7 +83,10 @@ class SocketDriver(drivers.IrcDriver):
             lines = self.inbuffer.split('\n')
             self.inbuffer = lines.pop()
             for line in lines:
+                started = time.time()
                 msg = ircmsgs.IrcMsg(line)
+                debug.msg('Time to parse IrcMsg: %s' % (time.time()-start),
+                          'verbose')
                 self.irc.feedMsg(msg)
         except socket.timeout:
             pass
@@ -108,7 +108,10 @@ class SocketDriver(drivers.IrcDriver):
         self.irc.reset()
         self.conn.close()
         self.connected = False
-        schedule.addEvent(self.reconnect, time.time()+300)
+        when = time.time() + 60
+        whenS = time.strftime(conf.logTimestampFormat, time.localtime(when))
+        debug.msg('Scheduling reconnect at %s' % whenS, 'normal')
+        schedule.addEvent(self.reconnect, when)
 
 
 Driver = SocketDriver
