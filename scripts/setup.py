@@ -29,29 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-def expect(prompt, possibilities, recursed=False):
-    if recursed:
-        print 'Sorry, that response was not an option.'
-    if possibilities:
-        prompt = '%s [%s]' % (prompt, '/'.join(possibilities))
-    prompt = prompt.strip() + ' '
-    s = raw_input(prompt)
-    if possibilities:
-        if s in possibilities:
-            return s.strip()
-        else:
-            return expect(prompt, possibilities, recursed=True)
-    else:
-        return s.strip()
-
-def anything(prompt):
-    return expect(prompt, [])
-
-def yn(prompt):
-    return expect(prompt, ['y', 'n'])
-
-def ny(prompt):
-    return expect(prompt, ['n', 'y'])
 
 # So we gotta:
 #   Check to see if the user has sqlite installed.
@@ -62,6 +39,7 @@ def ny(prompt):
 import sys
 sys.path.insert(0, 'src')
 from fix import *
+from questions import *
 import os
 import imp
 import conf
@@ -87,7 +65,9 @@ if __name__ == '__main__':
     while not server:
         server = anything('What server would you like to connect to?')
         try:
-            socket.gethostbyname(server)
+            print 'Lookup up %s...' % server
+            ip = socket.gethostbyname(server)
+            print 'Found %s (%s).' % (server, ip)
         except:
             print 'Sorry, but I couldn\'t find that server.'
             server = ''
