@@ -154,7 +154,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
 
     def _sendGrabMsg(self, irc, msg):
         s = 'jots down a new quote for %s' % msg.nick
-        irc.reply(s, action=True)
+        irc.reply(s, action=True, prefixName=False)
 
     def grab(self, irc, msg, args):
         """[<channel>] <nick>
