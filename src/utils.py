@@ -115,55 +115,31 @@ def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
         if leadingZeroes or yrs:
             if yrs:
                 leadingZeroes = True
-            if yrs != 1:
-                yrs = '%s years' % yrs
-            else:
-                yrs = '1 year'
-            ret.append(yrs)
+            ret.append(nItems(yrs, 'year'))
     if weeks:
         wks, elapsed = elapsed // 604800, elapsed % 604800
         if leadingZeroes or wks:
             if wks:
                 leadingZeroes = True
-            if wks != 1:
-                wks = '%s weeks' % wks
-            else:
-                wks = '1 week'
-            ret.append(wks)
+            ret.append(nItems(wks, 'week'))
     if days:
         ds, elapsed = elapsed // 86400, elapsed % 86400
         if leadingZeroes or ds:
             if ds:
                 leadingZeroes = True
-            if ds != 1:
-                ds = '%s days' % ds
-            else:
-                ds = '1 day'
-            ret.append(ds)
+            ret.append(nItems(ds, 'day'))
     if hours:
         hrs, elapsed = elapsed // 3600, elapsed % 3600
         if leadingZeroes or hrs:
             if hrs:
                 leadingZeroes = True
-            if hrs != 1:
-                hrs = '%s hours' % hrs
-            else:
-                hrs = '1 hour'
-            ret.append(hrs)
+            ret.append(nItems(hrs, 'hour'))
     if minutes or seconds:
         mins, secs = elapsed // 60, elapsed % 60
         if leadingZeroes or mins:
-            if mins != 1:
-                mins = '%s minutes' % mins
-            else:
-                mins = '1 minute'
-            ret.append(mins)
+            ret.append(nItems(mins, 'minute'))
         if seconds:
-            if secs != 1:
-                secs = '%s seconds' % secs
-            else:
-                secs = '1 second'
-            ret.append(secs)
+            ret.append(nItems(secs, 'second'))
     if len(ret) == 0:
         raise ValueError, 'Time difference not great enough to be noted.'
     if len(ret) == 1:
