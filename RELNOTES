@@ -1,7 +1,15 @@
+Version 0.79.9
+
 We've changed so much stuff in this release that we've given up on
 users upgrading their configuration files for the new release.  So
 do a clean install (python2.3 setup.py install --clean), run the
 wizard again, and kick some butt.
+
+(It's rumored that you can save most of your old configuration by
+appending your new configuration at the end of your old configuration
+and running supybot with that new configuration file.  This, of
+course, comes with no warranty or guarantee of utility -- try it if
+you want, but backup your original configuration file!)
 
 Version 0.77.2
 

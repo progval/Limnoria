@@ -1,3 +1,7 @@
+2004-08-27  Jeremy Fincher  <jemfinch@supybot.org>
+
+	* Version 0.79.9!
+	
 	* Added Infobot, a plugin to emulate Infobot.
 
 	* Added Anonymous, a plugin for anonymously saying things to a
