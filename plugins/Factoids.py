@@ -77,6 +77,9 @@ conf.registerChannelValue(conf.supybot.plugins.Factoids,
     the bot will reply to invalid commands by searching for a factoid;
     basically making the whatis unnecessary when you want all factoids for a
     given key."""))
+conf.registerChannelValue(conf.supybot.plugins.Factoids,
+    'factoidPrefix', registry.StringWithSpaceOnRight('could be ', """Determines
+    the string that factoids will be introduced by."""))
 
 class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
@@ -171,13 +174,18 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                     irc.error('That\'s not a valid number for that key.')
                     return
             else:
-                factoidsS = []
-                counter = 1
-                for factoid in factoids:
-                    factoidsS.append('(#%s) %s' % (counter, factoid))
-                    counter += 1
-                irc.replies(factoidsS, prefixer='%r could be ' % key,
-                            joiner=', or ', onlyPrefixFirst=True)
+                intro = self.registryValue('factoidPrefix', channel)
+                prefix = '%r %s' % (key, intro)
+                if len(factoids) == 1:
+                    irc.reply(prefix + factoids[0])
+                else:
+                    factoidsS = []
+                    counter = 1
+                    for factoid in factoids:
+                        factoidsS.append('(#%s) %s' % (counter, factoid))
+                        counter += 1
+                    irc.replies(factoidsS, prefixer=prefix,
+                                joiner=', or ', onlyPrefixFirst=True)
         elif error:
             irc.error('No factoid matches that key.')
 
