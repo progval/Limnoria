@@ -31,7 +31,8 @@ from supybot.test import *
 
 class MiscTestCase(ChannelPluginTestCase):
 #    plugins = ('Misc', 'Utilities', 'Gameknot', 'Anonymous', 'Dict', 'User')
-    plugins = ('Misc', 'Utilities', 'Anonymous', 'Dict', 'User', 'String')
+    plugins = ('Misc', 'Utilities', 'Anonymous',
+               'Channel', 'Dict', 'User', 'String')
     def testReplyWhenNotCommand(self):
         try:
             original = str(conf.supybot.reply.whenNotCommand)
@@ -70,6 +71,11 @@ class MiscTestCase(ChannelPluginTestCase):
         self.assertRegexp('help help', r'^\(\x02help')
         #self.assertRegexp('help misc help', r'^\(\x02misc help')
         self.assertError('help nonExistentCommand')
+
+    def testHelpIncludeFullCommandName(self):
+        self.assertHelp('help channel capability add')
+        m = self.getMsg('help channel capability add')
+        self.failUnless('channel capability add' in m.args[1])
 
     def testHelpDoesAmbiguityWithDefaultPlugins(self):
         m = self.getMsg('help list') # Misc.list and User.list.
