@@ -37,8 +37,9 @@ import plugins
 
 import re
 import sets
-import urllib2
 import getopt
+import socket
+import urllib2
 
 import utils
 import debug
@@ -76,8 +77,23 @@ example = utils.wrapLines("""
 class FreshmeatException(Exception):
     pass
 
+
+def getPage(url):
+    """Gets a page.  Returns a string that is the page gotten."""
+    fd = urllib2.urlopen(url)
+    text = fd.read()
+    fd.close()
+    return text
+
 class Http(callbacks.Privmsg):
     threaded = True
+    def callCommand(self, method, irc, msg, *L):
+        try:
+            callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
+        except socket.gaierror, e:
+            irc.error(msg, e.args[1])
+        except urllib2.HTTPError:
+            irc.error(msg, str(e))
 
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
     def title(self, irc, msg, args):
@@ -89,8 +105,7 @@ class Http(callbacks.Privmsg):
         if '://' not in url:
             url = 'http://%s' % url
         try:
-            fd = urllib2.urlopen(url)
-            text = fd.read()
+            text = getPage(url)
             m = self._titleRe.search(text)
             if m is not None:
                 irc.reply(msg, utils.htmlToText(m.group(1).strip()))
@@ -98,8 +113,6 @@ class Http(callbacks.Privmsg):
                 irc.reply(msg, 'That URL appears to have no HTML title.')
         except ValueError, e:
             irc.error(msg, str(e))
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
 
     _fmProject = re.compile('<projectname_full>([^<]+)</projectname_full>')
     _fmVersion = re.compile('<latest_version>([^<]+)</latest_version>')
@@ -114,9 +127,7 @@ class Http(callbacks.Privmsg):
         project = privmsgs.getArgs(args)
         url = 'http://www.freshmeat.net/projects-xml/%s' % project
         try:
-            fd = urllib2.urlopen(url)
-            text = fd.read()
-            fd.close()
+            text = getPage(url)
             if text.startswith('Error'):
                 raise FreshmeatException, text
             project = self._fmProject.search(text).group(1)
@@ -125,13 +136,10 @@ class Http(callbacks.Privmsg):
             popularity = self._fmPopular.search(text).group(1)
             lastupdated = self._fmLastUpdated.search(text).group(1)
             irc.reply(msg,
-              '%s, last updated %s, with a vitality percent of %s '\
-              'and a popularity of %s, is in version %s.' % \
-              (project, lastupdated, vitality, popularity, version))
+                      '%s, last updated %s, with a vitality percent of %s '\
+                      'and a popularity of %s, is in version %s.' % \
+                      (project, lastupdated, vitality, popularity, version))
         except FreshmeatException, e:
-            irc.error(msg, debug.exnToString(e))
-        except Exception, e:
-            debug.recoverableException()
             irc.error(msg, debug.exnToString(e))
 
     def stockquote(self, irc, msg, args):
@@ -143,25 +151,16 @@ class Http(callbacks.Privmsg):
         symbol = privmsgs.getArgs(args)
         url = 'http://finance.yahoo.com/d/quotes.csv?s=%s'\
               '&f=sl1d1t1c1ohgv&e=.csv' % symbol
-        try:
-            fd = urllib2.urlopen(url)
-            quote = fd.read()
-            fd.close()
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
-            return
+        quote = getPage(url)
         data = quote.split(',')
-        #debug.printf(data) # debugging
         if data[1] != '0.00':
             irc.reply(msg,
                        'The current price of %s is %s, as of %s EST.  '\
                        'A change of %s from the last business day.' %\
                        (data[0][1:-1], data[1], data[3][1:-1], data[4]))
-            return
         else:
             m = 'I couldn\'t find a listing for %s' % symbol
             irc.error(msg, m)
-            return
 
     _cityregex = re.compile(
         r'<td><font size="4" face="arial"><b>'\
@@ -230,35 +229,27 @@ class Http(callbacks.Privmsg):
                   'config=&forecast=zandh&pands=%s&Submit=GO' % args[0]
 
         #debug.printf(url)
-        try:
-            fd = urllib2.urlopen(url)
-            html = fd.read()
-            fd.close()
-            if 'was not found' in html:
-                irc.error(msg, 'No such location could be found.')
-                return
-            headData = self._cityregex.search(html)
-            if headData:
-                (city, state, country) = headData.groups()
-            else:
-                headData = self._interregex.search(html)
-                (city, state) = headData.groups()
-                
-            temp = self._tempregex.search(html).group(1)
-            conds = self._condregex.search(html).group(1)
-            
-            if temp and conds and city and state:
-                s = 'The current temperature in %s, %s is %s.  ' \
-                    'Conditions are %s.' % \
-                    (city.strip(), state.strip(), temp, conds)
-                irc.reply(msg, s)
-            else:
-                irc.error(msg, 'The format of the page was odd.')
-        except urllib2.URLError:
-            irc.error(msg, 'I couldn\'t open the search page.')
-        except Exception, e:
-            debug.recoverableException()
-            irc.error(msg, debug.exnToString(e))
+        html = getPage(url)
+        if 'was not found' in html:
+            irc.error(msg, 'No such location could be found.')
+            return
+        headData = self._cityregex.search(html)
+        if headData:
+            (city, state, country) = headData.groups()
+        else:
+            headData = self._interregex.search(html)
+            (city, state) = headData.groups()
+
+        temp = self._tempregex.search(html).group(1)
+        conds = self._condregex.search(html).group(1)
+
+        if temp and conds and city and state:
+            s = 'The current temperature in %s, %s is %s.  ' \
+                'Conditions are %s.' % \
+                (city.strip(), state.strip(), temp, conds)
+            irc.reply(msg, s)
+        else:
+            irc.error(msg, 'The format of the page was odd.')
 
     _mlgeekquotere = re.compile('<p class="qt">(.*?)</p>', re.M | re.DOTALL)
     def geekquote(self, irc, msg, args):
@@ -277,13 +268,7 @@ class Http(callbacks.Privmsg):
                     irc.error(msg, 'Invalid id: %s' % e)
                     return
 
-        try:
-            fd = urllib2.urlopen('http://bash.org/?%s' % id)
-        except urllib2.URLError:
-            irc.error(msg, 'Error connecting to geekquote server.')
-            return
-        html = fd.read()
-        fd.close()
+        html = getPage('http://bash.org/?%s' % id)
         m = self._mlgeekquotere.search(html)
         if m is None:
             irc.error(msg, 'No quote found.')
@@ -299,17 +284,11 @@ class Http(callbacks.Privmsg):
         Displays acronym matches from acronymfinder.com
         """
         acronym = privmsgs.getArgs(args)
-        try:
-            url = 'http://www.acronymfinder.com/' \
-                  'af-query.asp?String=exact&Acronym=%s' % acronym
-            request = urllib2.Request(url, headers={'User-agent':
-              'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
-            fd = urllib2.urlopen(request)
-        except urllib2.URLError:
-            irc.error(msg, 'Couldn\'t connect to acronymfinder.com')
-            return
-        html = fd.read()
-        fd.close()
+        url = 'http://www.acronymfinder.com/' \
+              'af-query.asp?String=exact&Acronym=%s' % acronym
+        request = urllib2.Request(url, headers={'User-agent':
+          'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
+        html = getPage(request)
         # The following definitions are stripped and empties are removed.
         defs = filter(None, map(str.strip, self._acronymre.findall(html)))
         utils.sortBy(lambda s: not s.startswith('[not an acronym]'), defs)
@@ -332,9 +311,7 @@ class Http(callbacks.Privmsg):
         """
         hostname = privmsgs.getArgs(args)
         url = 'http://uptime.netcraft.com/up/graph/?host=%s' % hostname
-        fd = urllib2.urlopen(url)
-        html = fd.read()
-        fd.close()
+        html = getPage(url)
         m = self._netcraftre.search(html)
         if m:
             html = m.group(1)
@@ -350,11 +327,7 @@ class Http(callbacks.Privmsg):
 
         Returns information about the current version of the Linux kernel.
         """
-        try:
-            fd = urllib2.urlopen('http://www.kernel.org/kdist/finger_banner')
-        except urllib2.URLError:
-            irc.error(msg, 'Couldn\'t connect to kernel.org.')
-            return
+        fd = urllib2.urlopen('http://www.kernel.org/kdist/finger_banner')
         for line in fd:
             (name, version) = line.split(':')
             if 'latest stable' in name:
@@ -377,20 +350,19 @@ class Http(callbacks.Privmsg):
         urlClean = search.replace(' ', '+')
         host = 'http://pgp.mit.edu:11371'
         url = '%s/pks/lookup?op=index&search=%s' % (host, urlClean)
-        fd = urllib2.urlopen(url)
-        pgpkeys = ''
-        line = fd.readline()
-        while len(line) != 0:
-            info = self._pgpkeyre.search(line)
-            if info:
-                pgpkeys += '%s <%s> :: ' % (info.group(3), '%s%s' % (host,
-                    info.group(1)))
-            line = fd.readline()
-        if len(pgpkeys) == 0:
-            irc.reply(msg, 'No results found for %s.' % search)
-            fd.close()
-        else:
-            irc.reply(msg, 'Matches found for %s: %s' % (search, pgpkeys[:-4]))
+        try:
+            L = []
+            fd = urllib2.urlopen(url)
+            for line in iter(fd.next, ''):
+                info = self._pgpkeyre.search(line)
+                if info:
+                    L.append('%s <%s%s>' % (info.group(3),host,info.group(1)))
+            if len(L) == 0:
+                irc.reply(msg, 'No results found for %s.' % search)
+            else:
+                s = 'Matches found for %s: %s' % (search, ' :: '.join(L))
+                irc.reply(msg, s)
+        finally:
             fd.close()
 
 Class = Http
