@@ -47,6 +47,27 @@ import sqlite
 import privmsgs
 import callbacks
 
+example = """
+<supybot> lasturl, numurls, randomurl
+<jemfinch> @numurls
+<supybot> Error: Command must be sent in a channel or include a channel in its arguments.
+<jemfinch> (each channel has its own URL database, so these commands need to know which channel database to access)
+<jemfinch> @numurls #sourcereview
+<supybot> I have 93 URLs in my database.
+<jemfinch> @randomurl #sourcereview
+<supybot> 6: <http://gameknot.com/chess.pl?bd=1022045&r=735> (added by Strike at 06:25 PM, August 17, 2003)
+<jemfinch> (that's the ID number, the link, and some other sundry info about it)
+<jemfinch> @lasturl
+<supybot> Error: Command must be sent in a channel or include a channel in its arguments.
+<jemfinch> @lasturl #sourcereview
+<supybot> <http://lambda.weblogs.com/xml/rss.xml>, added by Strike at 12:12 AM, August 26, 2003.
+<jemfinch> @lasturl #sourcereview --proto ftp
+<supybot> <ftp://ftp.us.debian.org/debian/dists/unstable/Contents-i386.gz>, added by Strike|work at 07:27 PM, August 21, 2003.
+<jemfinch> @lasturl #sourcereview --near Stuka
+<supybot> <http://slashdot.org/comments.pl?sid=75020&cid=6720123>, added by jemfinch at 03:16 PM, August 25, 2003.
+<jemfinch> @lasturl #sourcereview --at coderforums.com
+<supybot> <http://coderforums.com/showthread.php?s=&postid=15798#post15798>, added by Strike|work at 02:41 PM, August 25, 2003.
+"""
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
@@ -82,7 +103,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         db.commit()
         return db
 
-    _urlRe = re.compile(r"(\S+://\S+)", re.I)
+    _urlRe = re.compile(r"([^<\s]+://[^>\s]+)", re.I)
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
         channel = msg.args[0]
@@ -124,7 +145,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         (id, url, added, addedBy, _, _, _, _, _, _) = cursor.fetchone()
         when = time.strftime(conf.humanTimestampFormat,
                              time.localtime(int(added)))
-        s = '%s: <%s> (added by %s on %s)' % (id, url, addedBy, when)
+        s = '%s: <%s> (added by %s at %s)' % (id, url, addedBy, when)
         irc.reply(msg, s)
 
     def numurls(self, irc, msg, args):
