@@ -1,18 +1,20 @@
 <!-- Segregate all of our stuff into its own class for possible extension
      later and just because I wanted to write my own class :) -->
-<!ENTITY % local.supybot.class "">
-<!ENTITY % supybot.class "BotCommand|Plugin|Flag|Nick|Capability
+<!ENTITY % local.supybot.tech.char.class "">
+<!ENTITY % supybot.tech.char.class "BotCommand|Plugin|Flag|Nick|Capability
                           |RegistryGroup|Registry|Script
-                          |Channel %local.supybot.class;">
+                          |Channel %local.supybot.tech.char.class;">
 
 <!-- Stuff that isn't supybot-specific, but it's python-related and no
      suitable element exists in the DocBook DTD -->
-<!ENTITY % local.python.class "">
-<!ENTITY % python.class "Module|Keyword %local.python.class;">
+<!ENTITY % local.python.tech.char.class "">
+<!ENTITY % python.tech.char.class "Module|Keyword
+                                   %local.python.tech.char.class;">
 
 <!-- Pretty much all of our stuff fits where stuff in the tech.char class
      goes, so we simply add our stuff using the local extension -->
-<!ENTITY % local.tech.char.class "|%supybot.class;|%python.class;">
+<!ENTITY % local.tech.char.class "|%supybot.tech.char.class;
+                                  |%python.tech.char.class;">
 
 <!-- linespecific is the same class as things like screen and programlisting,
      so it's added here to fit with the DocBook stuff (i.e., so putting an

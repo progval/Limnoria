@@ -1,0 +1,177 @@
+The Official Supybot DocBook Metadocumentation
+(or, How Does One SGML File Turn Into All Those Document Formats?)
+
+Okay, though this isn't the case yet, ideally all of Supybot's documentation
+can and will be done using DocBook and DocBook-related tools as well as a few
+custom extensions that I've written.
+
+- How does DocBook work?
+First things first, you have to understand sort of how DocBook works in order
+to figure out how our documentation gets generated from just one file.  What
+DocBook is, basically, is just a DTD (Document Type Definition).  What that
+means is that it simply specifies how a document can be structured and still be
+considered a valid document by placing restrictions on what elements go where.
+It's a popular DTD because it is structured very well and it's not only fairly
+generic, but it also has nice elements that make documenting things (such as
+supybot) rather easy.  It focuses on structure and content instead of
+presentation which is what makes it nice for writing things which are output
+format agnostic.
+
+So, let's say we've written a proper DocBook document, now what?  Well, using
+an output formatting tool and a stylesheet, you create whatever form of output
+you want.  What we use for producing the outptut is jade, and DocBook comes
+with a few stylesheets that work with that tool to create output formats like
+HTML and TeX.  From the TeX file we produce a DVI (device independent) file
+with latex, and from that we produce the print formats of our documents, like
+PDF and Postscript using tools like dvips and dvipdfm.
+
+- What extra stuff do we do?
+Well, since our documents all have to do with an IRC bot, there are some very
+common things that we talk about a lot that we might like to format specially.
+For example, when we discuss a particular command for the bot we might like to
+have that text appear slightly different to emphasize the fact that it is
+special.  So, for the commonly used items that weren't already covered by
+DocBook's DTD, I added elements into a new DTD which just extends DocBook's
+DTD.  So now we have elements like <nick> and <channel> and <botcommand> that
+we can use for our documentation.
+
+Of course, now that we have used a DTD with more stuff in it (than DocBook),
+the stylesheets that DocBook provides won't do any special formatting for those
+new elements so we have to write new stylesheets as well.  Once again I just
+extended the existing ones with formatting instructions on how to treat the new
+elements.  So with this done, now our HTML and TeX (and whatever else) output
+will be properly formatted.
+
+- How do I make my own changes to the DTD and stylesheets?
+Primarily, you don't :)  Ask me (Strike) first about it, and I will generally
+write them for you or explain a better way of doing things.  This is especially
+true for the DTD, because that must remain consistent everywhere we write/read
+supybot docs based on it.  The stylesheets are more lax and can be modified to
+produce whatever kind of output you wish.
+
+So, with that warning/reminder out of the way, here's how to modify each
+anyway.  This doesn't really assume any knowledge of how to write a DTD, nor is
+it an exhaustive reference on writing one, so don't treat it as such.  I'm
+basically just going to explain how to add extra elements that will play well
+with the DocBook DTD.
+
+-- Adding an element to the DTD
+If you've decided that there's a certain "thing" that's mentioned a lot in the
+documentation and deserves classification (for potential special formatting),
+you'll probably want to create a new element (or set of elements) for it.  I'll
+walk you through how I added the "nick" element to our DTD (though many/most of
+the elements I added follow an identical process).
+
+The very first thing you need to figure out is: where in my document does this
+element "fit".  That is to say, what elements should/can rightly contain this
+particular one?  In the case of the "nick" element, it's basically always an
+inline-formatted deal that belongs in paragraphs for the most part.  For those
+of you scratching your heads at that last sentence, perhaps thinking "okay, so
+how are we supposed to know what is relevant?" I say, "don't worry, I learned
+by example as well."  Basically, I just looked through the DocBook DTD and
+figured out where things belong. Now, even if you don't know the DocBook DTD
+front-to-back, you can still peruse it to figure out where your new element
+belongs.  Obviously, you should probably know *some* DocBook to figure out what
+each element means, but luckily all of our docs have been converted to DocBook
+and serve as nice examples of the usage of many elements :)
+
+Now, to figure out where something like "nick" belongs.  In many ways, a nick
+is sort of like a variable name (at least in documentation usage).  So, the
+element I chose to base it off of was "varname".  If you have the DocBook DTD
+installed (as you should if you intend on making extensions to it), the varname
+element definition is contained in the dbpoolx.mod filename (in Debian, it's
+under /usr/share/sgml/docbook/dtd/4.2).  How did I know this?  Well, grep is
+your friend and mine too, and dbpoolx is the only filename that shows up when
+grepping for "varname" in the DocBook DTD directory.  So, we open up dbpoolx.mod and search for varname.  The first thing we find it in looks like this:
+
+<!ENTITY % tech.char.class
+		"action|application
+                |classname|methodname|interfacename|exceptionname
+                |ooclass|oointerface|ooexception
+                |command|computeroutput
+		|database|email|envar|errorcode|errorname|errortype|errortext|filename
+		|function|guibutton|guiicon|guilabel|guimenu|guimenuitem
+		|guisubmenu|hardware|interface|keycap
+		|keycode|keycombo|keysym|literal|constant|markup|medialabel
+		|menuchoice|mousebutton|option|optional|parameter
+		|prompt|property|replaceable|returnvalue|sgmltag|structfield
+		|structname|symbol|systemitem|token|type|userinput|varname
+                %ebnf.inline.hook;
+		%local.tech.char.class;">
+
+Hmm, this doesn't look like a definition of varname (to me, but I sort of
+cheated by having read about DocBook before-hand ;)), but it will be important
+to remember for later.  Let's try and find the element definition for varname
+(so, basically, let's look for the first line that starts with "<!ELEMENT ").
+The first line I come up with when I search is:
+
+<!ELEMENT varname %ho; (%smallcptr.char.mix;)*>
+
+Rather than write a separate tutorial for interpreting DTDs, I found a good
+SGML tutorial online that explains everything necessary to help you parse the
+DocBook DTD to figure out what the varname element really is, as well as to
+help you learn all the stuff necessary for what we will cover in creating our
+new nick element.  That tutorial is at
+http://www.w3.org/TR/WD-html40-970708/intro/sgmltut.html#howtodtd  (it's for
+reading the HTML DTD, but it applies to any DTD).
+
+So, now that we understand how to write/read things for a DTD, we arrive at the
+time where we can write the actual definition of our "nick" element:
+
+<!ELEMENT Nick - - ((%smallcptr.char.mix;)+)>
+
+As we learned in the above tutorial, this means that we are creating an element
+named "nick", which must have start and end tags, and is defined to contain one
+or more of whatever is in "smallcptr.char.mix".  And rather than hunt through
+the DocBook DTD to figure out what that is, for now we'll just live with the
+fact that whatever can go into a DocBook varname can go into our new nick
+element.  If you feel so inclined, feel free to try and define the content
+model for nick to only include valid nick characters.  It's perfectly doable,
+and I'll probably do it at some point but I haven't yet.
+
+Since we're extending the DocBook DTD, I also decided that it'd be nice to
+follow the element creation conventions observed in their DTD, so there are a
+few more lines associated with our new nick element.  All of them are related
+to the attributes of the element, and allowing for them to be extended by
+external DTDs (much like we are doing, only we aren't changing attributes of
+existing elements, just adding our own). The first one is:
+
+<!ENTITY % local.nick.attrib "">
+
+This basically defines an empty entity named local.nick.attrib which we will
+include so that if anyone chooses to extend the nick attributes, all they have
+to do is redefine local.nick.attrib.
+
+<!ENTITY % nick.role.attrib "%role.attrib;">
+
+To tell you the truth, I'm not entirely sure what this is for, but it follows the DocBook convention :)
+
+<!ATTLIST Nick
+    %common.attrib;
+    %local.nick.attrib;
+    %nick.role.attrib;
+>
+
+This is, of course, our attribute list for our nick element.  It consists of
+the two things we just defined as well as common.attrib which contains things
+like "id" and whatnot which all DocBook elements are expected to have.
+
+-- Extending the DocBook DTD to recognize new elements
+So, that's all you need to define your new element.  But, we're not done just
+yet!  We're almost there, we just need to make it so that it works with the
+existing DocBook elements, otherwise it's no good to us.  Since we defined our
+element to esentially be the same as varname, it probably belongs at the same
+place within the DocBook schema as varname.  Do you remember when we had that
+large entity definition that wasn't what we were looking for at the time though
+I said it'd be important later?  Well, later is now.  So, what that line tells
+us is what class of elements DocBook has varname in, which is
+"tech.char.class".  And thanks to the DocBook convention of defining a
+local.<classname> entity that we can extend, all we have to do is redefine
+local.tech.char.class to contain "nick", and we are done.
+
+You may notice, however, that we don't actually put varname right into the
+local.tech.char.class entity, but instead we create our own
+supybot.tech.char.class class of elements that are supybot-specific (and are
+the equivalent of DocBook's tech.char.class elements) and instead, put all of
+those into the local.tech.char.class entity.  Basically, we just go through one
+more level of indirection.
