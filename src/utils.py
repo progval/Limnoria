@@ -461,9 +461,13 @@ def itersplit(isSeparator, iterable, maxsplit=-1, yieldEmpty=False):
     """itersplit(isSeparator, iterable, maxsplit=-1, yieldEmpty=False)
 
     Splits an iterator based on a predicate isSeparator."""
+    if isinstance(isSeparator, basestring):
+        f = lambda s: s == isSeparator
+    else:
+        f = isSeparator
     acc = []
     for element in iterable:
-        if maxsplit == 0 or not isSeparator(element):
+        if maxsplit == 0 or not f(element):
             acc.append(element)
         else:
             maxsplit -= 1
