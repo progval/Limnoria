@@ -58,6 +58,7 @@ plugins = [
     'String',
     'Topic',
     'User',
+    'URL',
     'Utilities',
     'Web',
     ]
