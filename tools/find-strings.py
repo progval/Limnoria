@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+"""
+This script exists mostly to pull out literal strings in a program in order to
+spell-check them.
+"""
+
 import os
 import sys
 import symbol
@@ -22,19 +27,26 @@ def getText(filename):
     finally:
         fd.close()
                 
+goodChars = string.letters + string.whitespace
+prefixes = ('r"', "r'", '$Id')
 def main():
-    out = file('strings.txt', 'w')
     for filename in sys.argv[1:]:
         s = getText(filename)
         node = parser.ast2list(parser.suite(s), True)
-        for (lineno, string) in strings(node):
-            if string.startswith("r'") or string.startswith('r"'):
+        for (lineno, s) in strings(node):
+            if s.translate(string.ascii, string.printable):
                 continue
-            string = eval(string)
-            if len(string) <= 3:
+            for prefix in prefixes:
+                if s.startswith(prefix):
+                    continue
+            s = eval(s)
+            s = s.replace('%s', ' ')
+            s = s.replace('%r', ' ')
+            if len(s.translate(string.ascii, goodChars))/len(s) < 0.2:
                 continue
-            out.write('%s: %s: %s\n' % (filename, lineno, string))
-    out.close()
+            if len(s) <= 3:
+                continue
+            print '%s: %s: %s' % (filename, lineno, s)
 
 if __name__ == '__main__':
     main()
