@@ -48,7 +48,7 @@ if sys.version_info < (2, 3, 0):
     sys.exit(-1)
 
 def _termHandler(signalNumber, stackFrame):
-    raise SystemExit, 'Signal #%s' % signalNumber
+    raise SystemExit, 'Signal #%s.' % signalNumber
 
 signal.signal(signal.SIGTERM, _termHandler)
 
