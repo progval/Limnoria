@@ -36,6 +36,7 @@ Handles relaying between networks.
 import plugins
 
 import re
+import sys
 import time
 
 import conf
@@ -118,6 +119,7 @@ def configure(onStart, afterConnect, advanced):
 
 
 class Relay(callbacks.Privmsg):
+    priority = sys.maxint
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.ircs = {}
