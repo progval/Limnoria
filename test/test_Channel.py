@@ -66,7 +66,7 @@ class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNoResponse(' ', 2)
         
     def testErrorsWithoutOps(self):
-        for s in 'op deop halfop dehalfop voice devoice kick'.split():
+        for s in 'op deop halfop dehalfop voice devoice kick invite'.split():
             self.assertError('%s foo' % s)
             self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
             self.assertNotError('%s foo' % s)
