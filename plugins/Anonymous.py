@@ -102,6 +102,7 @@ class Anonymous(callbacks.Privmsg):
         self.log.info('Saying %s in %s due to %s.',
                       utils.quoted(text), channel, msg.prefix)
         irc.queueMsg(ircmsgs.privmsg(channel, text))
+        irc.noReply()
     say = wrap(say, ['inChannel', 'text'])
 
     def do(self, irc, msg, args, channel, text):
@@ -113,6 +114,7 @@ class Anonymous(callbacks.Privmsg):
         self.log.info('Performing %s in %s due to %s.',
                       utils.quoted(text), channel, msg.prefix)
         irc.queueMsg(ircmsgs.action(channel, text))
+        irc.noReply()
     do = wrap(do, ['inChannel', 'text'])
 
 
