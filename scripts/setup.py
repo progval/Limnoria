@@ -67,7 +67,9 @@ import imp
 import conf
 sys.path.insert(0, conf.pluginDir)
 if __name__ == '__main__':
-    name = anything('What would you like to name your config file?') + '.conf'
+    name = anything('What would you like to name your config file?')
+    if not name.endswith('.conf'):
+        name += '.conf'
     configfd = file(os.path.join(conf.confDir, name), 'w')
     server = anything('What server would you like to connect to?')
     if ny('Does that server require connection on a non-standard port?')=='y':
@@ -92,13 +94,19 @@ if __name__ == '__main__':
             print module.__doc__
             if yn('Would you like to add this plugin?') == 'y':
                 configfd.write('load %s\n' % plugin)
-    while yn('Would you like any other commands ' \
-             'to run before the bot connects to the server?') == 'y':
+    preConnect = 'Would you like any commands to run ' \
+                 'before the bot connects to the server?'
+    while yn(preConnect) == 'y':
+        preConnect = 'Would you like any other commands ' \
+                     'to run before the bot connects to the server?'
         configfd.write(anything('What command?'))
         configfd.write('\n')
     configfd.write('\n')
-    while yn('Would you like any other commands to run ' \
-             'when the bot is finished connecting to the server?') == 'y':
+    postConnect = 'Would you like any commands to run ' \
+                  'when the bot is finished connecting to the server?'
+    while yn(postConnect) == 'y':
+        postConnect = 'Would you like any other ocmmands to run ' \
+                      'when the bot is finished connecting to the server?'
         configfd.write(anything('What command?'))
         configfd.write('\n')
     configfd.close()
