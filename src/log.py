@@ -77,6 +77,8 @@ class Logger(logging.Logger):
         eStrId = '%s:%s' % (E, path)
         eId = hex(hash(eStrId) & 0xFFFFF)
         logging.Logger.exception(self, *args)
+        if hasattr(e, '__revision__') and e.__revision__:
+            self.error('Exception __revision__: %r', e.__revision__)
         self.error('Exception id: %s', eId)
         # The traceback should be sufficient if we want it.
         # self.error('Exception string: %s', eStrId)

@@ -42,6 +42,7 @@ __all__ = []
 exported = ['ignore', 'reversed', 'window', 'group',
            'partition', 'any', 'all', 'rsplit']
 
+import sys
 import new
 import string
 string.ascii = string.maketrans('', '')
@@ -196,6 +197,16 @@ import socket
 # Some socket modules don't have sslerror, so we'll just make it an error.
 if not hasattr(socket, 'sslerror'):
     socket.sslerror = socket.error
+
+# Trick to get an __revision__ attribute in all exceptions, if possible.
+Exception__init__ = Exception.__init__
+def __init__(self, *args, **kwargs):
+    caller = sys._getframe(1)
+    module = sys.modules.get(caller.f_globals.get('__name__'))
+    self.__revision__ = getattr(module, '__revision__', None)
+    Exception__init__(self, *args, **kwargs)
+Exception.__init__ = __init__
+    
     
 for name in exported:
     __builtins__[name] = globals()[name]
