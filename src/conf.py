@@ -70,7 +70,7 @@ def registerChannelValue(group, name, value):
 
 def registerGlobalValue(group, name, value):
     group.register(name, value)
-                                       
+
 class ValidNick(registry.String):
     def set(self, s):
         original = getattr(self, 'value', self.default)
@@ -117,7 +117,7 @@ Determines what directory configuration data is put into."""))
 supybot.directories.register('data', registry.String('data', """
 Determines what directory data is put into."""))
 supybot.directories.register('plugins',
-registry.CommaSeparatedListOfStrings(['plugins',_srcDir,_pluginsDir],
+registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir],
 """Determines what directories the bot will look for plugins in."""))
 
 supybot.register('humanTimestampFormat', registry.String('%I:%M %p, %B %d, %Y',

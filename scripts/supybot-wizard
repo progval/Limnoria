@@ -26,7 +26,10 @@ from questions import output, yn, anything, something, expect, getpass
 def getPlugins(pluginDirs):
     filenames = []
     for pluginDir in pluginDirs:
-        filenames.extend(os.listdir(pluginDir))
+        try:
+            filenames.extend(os.listdir(pluginDir))
+        except OSError:
+            continue
     plugins = sets.Set([])
     for filename in filenames:
         if filename.endswith('.py') and filename[0].isupper():
@@ -71,13 +74,12 @@ def describePlugin(module, showUsage):
             output("""This plugin has no usage example.""")
     
 def clearLoadedPlugins(plugins, pluginRegistry):
-    # FIXME: This is removing all plugins??
     for plugin in plugins:
         try:
             pluginKey = pluginRegistry.getChild(plugin)
             if pluginKey():
                 plugins.remove(plugin)
-        except AttributeError:
+        except KeyError:
             continue
 
 _windowsVarRe = re.compile(r'%(\w+)%')
@@ -148,11 +150,11 @@ def main():
     easily distinguish the mostly useless blather (like this) from the
     questions that you actually have to answer.""")
     if yn('Would you like to try this bolding?', default=True):
-        questions.useColor = True
+        questions.useBold = True
         if not yn('Do you see this in bold?'):
             output("""Sorry, it looks like your terminal isn't ANSI compliant.
             Try again some other day, on some other terminal :)""")
-            questions.useColor = False
+            questions.useBold = False
         else:
             output("""Great!""")
 
@@ -186,10 +188,12 @@ def main():
     specific place you'd like them?  If not, just press enter and we'll make
     a directory named "logs" right here.""")
     try:
-        registry._cache['supybot.directories.log'] = getDirectoryName(
-                                    registry._cache['supybot.directories.log'])
+        logDir = registry._cache['supybot.directories.log']
+        logDir = utils.safeEval(logDir)
+        logDir = getDirectoryName(logDir)
     except KeyError:
-        registry._cache['supybot.directories.log'] = getDirectoryName('logs')
+        logDir = getDirectoryName('logs')
+    registry._cache['supybot.directories.log'] = logDir
     
 
     # conf.supybot.directories.data
@@ -198,10 +202,12 @@ def main():
     like the bot to put these things?  If not, just press enter and we'll make
     a directory named "data" right here.""")
     try:
-        registry._cache['supybot.directories.data'] = getDirectoryName(
-                                   registry._cache['supybot.directories.data'])
+        dataDir = registry._cache['supybot.directories.data']
+        dataDir = utils.safeEval(dataDir)
+        dataDir = getDirectoryName(dataDir)
     except KeyError:
-        registry._cache['supybot.directories.data'] = getDirectoryName('data')
+        dataDir = getDirectoryName('data')
+    registry._cache['supybot.directories.data'] = dataDir
 
     # conf.supybot.directories.conf
     output("""Your bot must know where to find his configuration files.  It'll
@@ -209,38 +215,12 @@ def main():
     Where should that place be?  If you don't care, just press enter and we'll
     make a directory right here named "conf" where it'll store his stuff. """)
     try:
-        registry._cache['supybot.directories.conf'] = getDirectoryName(
-                                   registry._cache['supybot.directories.conf'])
+        confDir = registry._cache['supybot.directories.conf']
+        confDir = utils.safeEval(confDir)
+        confDir = getDirectoryName(confDir)
     except KeyError:
-        registry._cache['supybot.directories.conf'] = getDirectoryName('conf')
-
-    # pluginDirs
-    output("""Your bot will also need to know where to find his plugins at.
-    Of course, he already knows where the plugins that he came with are, but
-    your own personal plugins that you write for will probably be somewhere
-    else.""")
-    try:
-        pluginDirs = registry._cache['supybot.directories.plugins'].split(',')
-        output("""Currently, the bot knows about the following directories:""")
-        for pluginDir in pluginDirs:
-            output(pluginDir)
-    except KeyError:
-        pluginDirs = []
-        output("""Where do you plan to put those plugins?  If you don't know,
-        just press enter and we'll put a "plugins" directory right here that
-        you can stick your own personal plugins in.""")
-        pluginDir = getDirectoryName('plugins')
-        if pluginDir not in pluginDirs:
-            pluginDirs.append(pluginDir)
-        output("""Of course, you can have more than one plugin directory.""")
-    while yn('Would you like to add another plugin directory?',
-             default=False):
-        pluginDir = getDirectoryName('plugins')
-        if pluginDir not in pluginDirs:
-            pluginDirs.append(pluginDir)
-    registry._cache['supybot.directories.plugins'] = ','.join(pluginDirs)
-
-    output("Good!  We're done with the directory stuff.")
+        confDir = getDirectoryName('conf')
+    registry._cache['supybot.directories.conf'] = confDir
     
     # Store the minimum log priority if set, because we set it to a temporary
     # value during the wizard
@@ -254,6 +234,23 @@ def main():
     import conf
     import log
 
+    # pluginDirs
+    output("""Your bot will also need to know where to find his plugins at.
+    Of course, he already knows where the plugins that he came with are, but
+    your own personal plugins that you write for will probably be somewhere
+    else.""")
+    pluginDirs = conf.supybot.directories.plugins()
+    output("""Currently, the bot knows about the following directories:""")
+    output(utils.commaAndify(pluginDirs))
+    while yn('Would you like to add another plugin directory?',
+             default=False):
+        pluginDir = getDirectoryName('plugins')
+        if pluginDir not in pluginDirs:
+            pluginDirs.append(pluginDir)
+    conf.supybot.directories.plugins.setValue(pluginDirs)
+
+    output("Good!  We're done with the directory stuff.")
+
     ###
     # Bot stuff
     ###
@@ -261,9 +258,17 @@ def main():
     bot you'll be running.""")
 
     # conf.supybot.server
+    # Force the user into specifying a server if he didn't have one already
+    try:
+        defaultServer = registry._cache['supybot.server']
+        defaultServer = utils.safeEval(defaultServer)
+        defaultServer = defaultServer.split(':')[0]
+    except KeyError:
+        defaultServer = None
     server = None
     while not server:
-        serverString = something('What server would you like to connect to?')
+        serverString = something('What server would you like to connect to?',
+                                 default=defaultServer)
         try:
             output("""Looking up %s...""" % serverString)
             ip = socket.gethostbyname(serverString)
@@ -293,40 +298,58 @@ def main():
     conf.supybot.server.set(server)
 
     # conf.supybot.nick
-    nick = ''
-    while not nick:
-        nick = something('What nick would you like your bot to use?')
-        if not ircutils.isNick(nick):
+    # Force the user into specifying a nick if he didn't have one already
+    try:
+        defaultNick = registry._cache['supybot.nick']
+        defaultNick = utils.safeEval(defaultNick)
+    except KeyError:
+        defaultNick = None
+    while True:
+        nick = something('What nick would you like your bot to use?',
+                         default=defaultNick)
+        try:
+            conf.supybot.nick.set(nick)
+            break
+        except registry.InvalidRegistryValue:
             output("""That's not a valid nick.  Go ahead and pick another.""")
-            nick = ''
-    conf.supybot.nick.set(nick)
 
     # conf.supybot.user
-    user = ''
     output("""If you've ever done a /whois on a person, you know that IRC
     provides a way for users to show the world their full name.  What would
     you like your bot's full name to be?  If you don't care, just press
     enter and it'll be the same as your bot's nick.""")
-    while not user:
-        user = anything('What would you like your bot\'s full name to be?')
-        if not user:
-            user = nick
+    user = ''
+    try:
+        defaultUser = registry._cache['supybot.user']
+        defaultUser = utils.safeEval(defaultUser)
+    except KeyError:
+        defaultUser = nick
+    user = something('What would you like your bot\'s full name to be?',
+                     default=defaultUser)
     conf.supybot.user.set(user)
 
     # conf.supybot.ident (if advanced)
+    try:
+        defaultIdent = registry._cache['supybot.ident']
+        defaultIdent = utils.safeEval(defaultIdent)
+    except KeyError:
+        defaultIdent = nick
     if advanced:
-        ident = ''
         output("""IRC servers also allow you to set your ident, which they
         might need if they can't find your identd server.  What would you
         like your ident to be?  If you don't care, press enter and we'll
         use the same string as your bot's nick.""")
-        while not ident:
-            ident = anything('What would you like your bot\'s ident to be?')
-            if not ident:
-                ident = nick
+        while True:
+            ident = something('What would you like your bot\'s ident to be?',
+                              default=defaultIdent)
+            try:
+                conf.supybot.ident.set(ident)
+                break
+            except registry.InvalidRegistryValue:
+                output("""That was not a valid ident.
+                       Go ahead and pick another.""")
     else:
-        ident = nick
-    conf.supybot.ident.set(ident)
+        conf.supybot.ident.set(defaultIdent)
 
     # conf.supybot.password
     output("""Some servers require a password to connect to them.  Most
@@ -334,21 +357,23 @@ def main():
     reason it just won't work, it might be that you need to set a
     password.""")
     if yn('Do you want to set such a password?', default=False):
-            conf.supybot.password.set(getpass())
+        conf.supybot.password.set(getpass())
 
     # conf.supybot.channels
     output("""Of course, having an IRC bot isn't the most useful thing in the
     world unless you can make that bot join some channels.""")
     if yn('Do you want your bot to join some channels when he connects?',
           default=True):
+        defaultChannels = ','.join(conf.supybot.channels())
         channels = something('What channels?  Separate channels with '
-                             'commas.')
+                             'commas.', default=defaultChannels)
         while not all(ircutils.isChannel, channels.split(',')):
             # FIXME: say which ones weren't channels.
             output("""Not all of those are valid IRC channels.  Be sure to
             prefix the channel with # (or +, or !, or &, but no one uses those
             channels, really).""")
-            channels = something('What channels?')
+            channels = something('What channels?',
+                                 default=defaultChannels)
     conf.supybot.channels.set(channels)
 
     ###
@@ -368,14 +393,21 @@ def main():
         configurePlugin(s, advanced)
     clearLoadedPlugins(plugins, conf.supybot.plugins)
 
+    output("""Now we're going to run you through plugin configuration. There's
+           a variety of plugins in supybot by default, but you can create and
+           add your own, ofcourse. We'll allow you to take a look at the known
+           plugins' descriptions and configure them
+           if you like what you see.""")
+
     # bulk
     addedBulk = False
     if advanced and yn('Would you like to add plugins en masse first?'):
         addedBulk = True
-        output("""The available plugins are %s.  What plugins would you like
-        to add?  If you've changed your mind and would rather not add plugins
-        in bulk like this, just press enter and we'll move on to the individual
-        plugin configuration.""" % utils.commaAndify(plugins))
+        output("""The available plugins are: %s.""" % \
+                                                   utils.commaAndify(plugins))
+        output("""What plugins would you like to add?  If you've changed your
+        mind and would rather not add plugins in bulk like this, just press
+        enter and we'll move on to the individual plugin configuration.""")
         massPlugins = anything('Separate plugin names by spaces:')
         for name in re.split(r',?\s+', massPlugins):
             module = loadPlugin(name)
@@ -616,9 +648,7 @@ def main():
         filename = '%s.conf' % nick
     registry.close(conf.supybot, filename)
     
-    # Prevent some INFO messages from being printed when exiting
-    # conf.supybot.log.minimumPriority.set('CRITICAL')
-    # FIXME: Apparently, this doesn't work.
+    # FIXME: Prevent some INFO messages from being printed when exiting
     
     # Done!
     output("""All done!  Your new bot configuration is %s.  If you're running 
@@ -632,7 +662,7 @@ if __name__ == '__main__':
         main()
     except KeyboardInterrupt:
         # We may still be using bold text when exiting during a prompt
-        if questions.useColor:
+        if questions.useBold:
             import ansi
             print ansi.RESET
         print
