@@ -87,7 +87,39 @@ if sqlite is not None:
             self.assertNotError('seen %s' % self.nick)
             self.assertNotError('seen %s' % self.nick.upper())
 
-
+        def testWordStats(self):
+            self.assertNotError('addword lol')
+            self.assertResponse('wordstats foo lol',
+                                'foo has said \'lol\' 1 time.')
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
+                                             prefix=self.prefix))
+            self.assertResponse('wordstats foo lol',
+                                'foo has said \'lol\' 3 times.')
+            # Now check for case-insensitivity
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'LOL',
+                                             prefix=self.prefix))
+            self.assertResponse('wordstats foo lol',
+                                'foo has said \'lol\' 5 times.')
+            # Check and make sure actions get nabbed too
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol',
+                                            prefix=self.prefix))
+            self.assertResponse('wordstats foo lol',
+                                'foo has said \'lol\' 7 times.')
+            # Check and make sure it handles two words in one message
+            self.assertNotError('addword heh')
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'lol heh',
+                                             prefix=self.prefix))
+            self.assertResponse('wordstats foo lol',
+                                'foo has said \'lol\' 9 times.')
+            self.assertResponse('wordstats foo heh',
+                                'foo has said \'heh\' 2 times.')
+            # It should ignore punctuation around words
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel,'lol, I said "heh"',
+                                             prefix=self.prefix))
+            self.assertResponse('wordstats foo lol',
+                                'foo has said \'lol\' 11 times.')
+            self.assertResponse('wordstats foo heh',
+                                'foo has said \'heh\' 4 times.')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
