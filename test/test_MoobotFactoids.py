@@ -65,7 +65,7 @@ if sqlite is not None:
             self._testOptions('(|a)', ['a', ''])
             self._testOptions('((a)|(b))', ['(a)', '(b)'])
 
-    class FactoidsTestCase(ChannelPluginTestCase, PluginDocumentation):
+    class FactoidsTestCase(ChannelPluginTestCase):
         plugins = ('MoobotFactoids', 'User', 'Utilities')
         config = {'reply.whenNotCommand': False}
         def setUp(self):
@@ -116,7 +116,7 @@ if sqlite is not None:
             self.assertResponse('mOo', 'foo')
             self.assertResponse('MoO', 'foo')
             # Check the "_is_" ability
-            self.assertNotError('delete moo')
+            self.assertNotError('remove moo')
             self.assertNotError('moo _is_ <reply>foo')
             self.assertResponse('moo', 'foo')
             self.assertNotError('foo is bar _is_ baz')
@@ -279,12 +279,12 @@ if sqlite is not None:
             self.assertRegexp('listauth tester', 'tester.*\(1 found\):.*moo')
             self.assertError('listauth moo')
 
-        def testDelete(self):
+        def testRemove(self):
             self.assertNotError('moo is <reply>moo')
             self.assertNotError('lock moo')
-            self.assertError('delete moo')
+            self.assertError('remove moo')
             self.assertNotError('unlock moo')
-            self.assertNotError('delete moo')
+            self.assertNotError('remove moo')
 
         def testAugmentFactoid(self):
             self.assertNotError('moo is foo')
@@ -332,10 +332,10 @@ if sqlite is not None:
             self.assertResponse('listkeys foo', 'Key search for "foo" '
                                                 '(1 found): "foo"')
 
-        def testRandomFactoid(self):
+        def testRandom(self):
             self.assertNotError('foo is <reply>bar')
             self.assertNotError('bar is <reply>baz')
-            self.assertRegexp('randomfactoid', r'bar|baz')
+            self.assertRegexp('random', r'bar|baz')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

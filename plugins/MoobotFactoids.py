@@ -54,6 +54,7 @@ import supybot.registry as registry
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -123,6 +124,13 @@ conf.registerChannelValue(conf.supybot.plugins.MoobotFactoids,
 class SqliteMoobotDB(object):
     def __init__(self, filename):
         self.filename = filename
+        self.dbs = ircutils.IrcDict()
+
+    def close(self):
+        for db in self.dbs.itervalues():
+            db.close()
+        self.dbs.clear()
+
     def _getDb(self, channel):
         try:
             import sqlite
@@ -130,26 +138,29 @@ class SqliteMoobotDB(object):
             raise callbacks.Error, \
                   'You need to have PySQLite installed to use this ' \
                   'plugin.  Download it at <http://pysqlite.sf.net/>'
+        if channel in self.dbs:
+            return self.dbs[channel]
         filename = plugins.makeChannelFilename(self.filename, channel)
         if os.path.exists(filename):
-            db = sqlite.connect(filename)
-        else:
-            db = sqlite.connect(filename)
-            cursor = db.cursor()
-            cursor.execute("""CREATE TABLE factoids (
-                              key TEXT PRIMARY KEY,
-                              created_by INTEGER,
-                              created_at TIMESTAMP,
-                              modified_by INTEGER,
-                              modified_at TIMESTAMP,
-                              locked_at TIMESTAMP,
-                              locked_by INTEGER,
-                              last_requested_by TEXT,
-                              last_requested_at TIMESTAMP,
-                              fact TEXT,
-                              requested_count INTEGER
-                              )""")
-            db.commit()
+            self.dbs[channel] = sqlite.connect(filename)
+            return self.dbs[channel]
+        db = sqlite.connect(filename)
+        self.dbs[channel] = db
+        cursor = db.cursor()
+        cursor.execute("""CREATE TABLE factoids (
+                          key TEXT PRIMARY KEY,
+                          created_by INTEGER,
+                          created_at TIMESTAMP,
+                          modified_by INTEGER,
+                          modified_at TIMESTAMP,
+                          locked_at TIMESTAMP,
+                          locked_by INTEGER,
+                          last_requested_by TEXT,
+                          last_requested_at TIMESTAMP,
+                          fact TEXT,
+                          requested_count INTEGER
+                          )""")
+        db.commit()
         return db
 
     def getFactoid(self, channel, key):
@@ -288,6 +299,7 @@ class SqliteMoobotDB(object):
     def getKeysByGlob(self, channel, glob):
         db = self._getDb(channel)
         cursor = db.cursor()
+        glob = '%%%s%%' % glob
         cursor.execute("""SELECT key FROM factoids WHERE key LIKE %s
                           ORDER BY key""", glob)
         if cursor.rowcount == 0:
@@ -298,6 +310,7 @@ class SqliteMoobotDB(object):
     def getKeysByValueGlob(self, channel, glob):
         db = self._getDb(channel)
         cursor = db.cursor()
+        glob = '%%%s%%' % glob
         cursor.execute("""SELECT key FROM factoids WHERE fact LIKE %s
                           ORDER BY key""", glob)
         if cursor.rowcount == 0:
@@ -307,21 +320,28 @@ class SqliteMoobotDB(object):
 
 MoobotDB = plugins.DB('MoobotFactoids', {'sqlite': SqliteMoobotDB})
 
-## We define our own getChannel so we can set raiseError=False in one place.
-# Actually, we'll go ahead and raise the error and say that everything must be
-# in channel. The smart users will know that they can specify the channel name
-# for certain commands.
+## We define our own getChannel so we can take advantage of the channeldb
+# wrapper from non-command methods.  This means that the bot will use
+# supybot.databases.plugins.channelSpecific.channel as the default channel
+# when the user is talking to the bot privately.
 def getChannel(irc, msg, args=()):
-    try:
-        return privmsgs.getChannel(msg, args)
-    except callbacks.Error:
-        irc.error('Command must be sent in a channel.', Raise=True)
+    spec = Spec(['channeldb'])
+    state = spec(irc, msg, args)
+    return state.channel
 
 class MoobotFactoids(callbacks.Privmsg):
     callBefore = ['Dunno']
     def __init__(self):
         self.db = MoobotDB()
-        super(MoobotFactoids, self).__init__()
+        self.__parent = super(MoobotFactoids, self)
+        self.__parent.__init__()
+
+    def die(self):
+        self.__parent.die()
+        self.db.close()
+
+    def reset(self):
+        self.db.close()
 
     _replyTag = '<reply>'
     _actionTag = '<action>'
@@ -462,28 +482,25 @@ class MoobotFactoids(callbacks.Privmsg):
         self.db.addFactoid(channel, key, fact, id)
         irc.replySuccess()
 
-    def literal(self, irc, msg, args):
+    def literal(self, irc, msg, args, channel, key):
         """[<channel>] <factoid key>
 
         Returns the literal factoid for the given factoid key.  No parsing of
         the factoid value is done as it is with normal retrieval.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
-        channel = getChannel(irc, msg, args)
-        key = privmsgs.getArgs(args)
         fact = self._getFactoid(irc, channel, key)
         fact = fact[0]
         irc.reply(fact)
+    literal = wrap(literal, ['channeldb', 'text'])
 
-    def factinfo(self, irc, msg, args):
+    def factinfo(self, irc, msg, args, channel, key):
         """[<channel>] <factoid key>
 
         Returns the various bits of info on the factoid for the given key.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(irc, msg, args)
-        key = privmsgs.getArgs(args)
         # Start building the response string
         s = key + ": "
         # Next, get all the info and build the response piece by piece
@@ -521,17 +538,12 @@ class MoobotFactoids(callbacks.Privmsg):
             lock_by = ircdb.users.getUser(locked_by).name
             s += " Locked by %s on %s." % (lock_by, lock_at)
         irc.reply(s)
+    factinfo = wrap(factinfo, ['channeldb', 'text'])
 
-    def _lock(self, irc, msg, args, locking=True):
-        self.log.debug('in _lock')
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        self.log.debug('id: %s' % id)
-        channel = getChannel(irc, msg, args)
-        key = privmsgs.getArgs(args)
+    def _lock(self, irc, msg, channel, user, key, locking=True):
+        #self.log.debug('in _lock')
+        #self.log.debug('id: %s' % id)
+        id = user.id
         info = self.db.getFactinfo(channel, key)
         if not info:
             irc.error('No such factoid: "%s"' % key)
@@ -545,8 +557,8 @@ class MoobotFactoids(callbacks.Privmsg):
                irc.error('Factoid "%s" is not locked.' % key)
                return
         # Can only lock/unlock own factoids unless you're an admin
-        self.log.debug('admin?: %s' % ircdb.checkCapability(id, 'admin'))
-        self.log.debug('created_by: %s' % created_by)
+        #self.log.debug('admin?: %s' % ircdb.checkCapability(id, 'admin'))
+        #self.log.debug('created_by: %s' % created_by)
         if not (ircdb.checkCapability(id, 'admin') or created_by == id):
             if locking:
                 s = "lock"
@@ -562,25 +574,27 @@ class MoobotFactoids(callbacks.Privmsg):
            self.db.unlock(channel, key)
         irc.replySuccess()
 
-    def lock(self, irc, msg, args):
+    def lock(self, irc, msg, args, channel, user, key):
         """[<channel>] <factoid key>
 
         Locks the factoid with the given factoid key.  Requires that the user
         be registered and have created the factoid originally.  <channel> is
         only necessary if the message isn't sent in the channel itself.
         """
-        self._lock(irc, msg, args, True)
+        self._lock(irc, msg, channel, user, key, True)
+    lock = wrap(lock, ['channeldb', 'user', 'text'])
 
-    def unlock(self, irc, msg, args):
+    def unlock(self, irc, msg, args, channel, user, key):
         """[<channel>] <factoid key>
 
         Unlocks the factoid with the given factoid key.  Requires that the
         user be registered and have locked the factoid.  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        self._lock(irc, msg, args, False)
+        self._lock(irc, msg, channel, user, key, False)
+    unlock = wrap(unlock, ['channeldb', 'user', 'text'])
 
-    def most(self, irc, msg, args):
+    def most(self, irc, msg, args, channel, method):
         """[<channel>] {popular|authored|recent}
 
         Lists the most {popular|authored|recent} factoids.  "popular" lists the
@@ -589,14 +603,14 @@ class MoobotFactoids(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(irc, msg, args)
-        arg = privmsgs.getArgs(args)
-        arg = arg.capitalize()
-        method = getattr(self, '_most%s' % arg, None)
+        method = method.capitalize()
+        method = getattr(self, '_most%s' % method, None)
         if method is None:
             raise callbacks.ArgumentError
         limit = self.registryValue('mostCount', channel)
         method(irc, channel, limit)
+    most = wrap(most, ['channeldb',
+                       ('literal', ('popular', 'authored', 'recent'))])
 
     def _mostAuthored(self, irc, channel, limit):
         results = self.db.mostAuthored(channel, limit)
@@ -628,7 +642,7 @@ class MoobotFactoids(callbacks.Privmsg):
         else:
             irc.error('No factoids have been requested from my database.')
 
-    def listauth(self, irc, msg, args):
+    def listauth(self, irc, msg, args, channel, author):
         """[<channel>] <author name>
 
         Lists the keys of the factoids with the given author.  Note that if an
@@ -636,8 +650,6 @@ class MoobotFactoids(callbacks.Privmsg):
         this function (so don't use integer usernames!).  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = getChannel(irc, msg, args)
-        author = privmsgs.getArgs(args)
         try:
             id = ircdb.users.getUserId(author)
         except KeyError:
@@ -650,18 +662,16 @@ class MoobotFactoids(callbacks.Privmsg):
         s = 'Author search for "%s" (%s found): %s' % \
             (author, len(keys), utils.commaAndify(keys))
         irc.reply(s)
+    listauth = wrap(listauth, ['channeldb', 'something'])
 
-    def listkeys(self, irc, msg, args):
+    def listkeys(self, irc, msg, args, channel, search):
         """[<channel>] <text>
 
         Lists the keys of the factoids whose key contains the provided text.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(irc, msg, args)
-        search = privmsgs.getArgs(args)
-        glob = '%' + search + '%'
-        results = self.db.getKeysByGlob(channel, glob)
+        results = self.db.getKeysByGlob(channel, search)
         if not results:
             irc.reply('No keys matching "%s" found.' % search)
         elif len(results) == 1 and \
@@ -673,18 +683,16 @@ class MoobotFactoids(callbacks.Privmsg):
             s = 'Key search for "%s" (%s found): %s' % \
                 (search, len(keys), utils.commaAndify(keys))
             irc.reply(s)
+    listkeys = wrap(listkeys, ['channeldb', 'text'])
 
-    def listvalues(self, irc, msg, args):
+    def listvalues(self, irc, msg, args, channel, search):
         """[<channel>] <text>
 
         Lists the keys of the factoids whose value contains the provided text.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(irc, msg, args)
-        search = privmsgs.getArgs(args)
-        glob = '%' + search + '%'
-        results = self.db.getKeysByValueGlob(channel, glob)
+        results = self.db.getKeysByValueGlob(channel, search)
         if not results:
             irc.reply('No values matching "%s" found.' % search)
             return
@@ -692,36 +700,35 @@ class MoobotFactoids(callbacks.Privmsg):
         s = 'Value search for "%s" (%s found): %s' % \
             (search, len(keys), utils.commaAndify(keys))
         irc.reply(s)
+    listvalues = wrap(listvalues, ['channeldb', 'text'])
 
-    def delete(self, irc, msg, args):
+    def remove(self, irc, msg, args, channel, key):
         """[<channel>] <factoid key>
 
         Deletes the factoid with the given key.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        channel = getChannel(irc, msg, args)
-        key = privmsgs.getArgs(args)
         _ = self._getUserId(irc, msg.prefix)
         _ = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         self.db.removeFactoid(channel, key)
         irc.replySuccess()
+    remove = wrap(remove, ['channeldb', 'text'])
 
-    # XXX What the heck?  Why are there two definitions of randomfactoid?
-    def randomfactoid(self, irc, msg, args):
+    def random(self, irc, msg, args, channel):
         """[<channel>]
 
         Displays a random factoid (along with its key) from the database.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(irc, msg, args)
         results = self.db.randomFactoid(channel)
         if not results:
             irc.error('No factoids in the database.')
             return
         (fact, key) = results
         irc.reply('Random factoid: "%s" is "%s"' % (key, fact))
+    random = wrap(random, ['channeldb'])
 
 Class = MoobotFactoids
 

@@ -43,11 +43,11 @@ import dictclient
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.plugins as plugins
-import supybot.webutils as webutils
-import supybot.registry as registry
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
 def configure(advanced):
@@ -84,6 +84,7 @@ class Dict(callbacks.Privmsg):
             irc.reply(utils.commaAndify(dbs))
         except socket.error, e:
             irc.error(webutils.strError(e))
+    dictionaries = wrap(dictionaries)
 
     def random(self, irc, msg, args):
         """takes no arguments
@@ -97,23 +98,21 @@ class Dict(callbacks.Privmsg):
             irc.reply(random.choice(dbs))
         except socket.error, e:
             irc.error(webutils.strError(e))
+    random = wrap(random)
 
-    def dict(self, irc, msg, args):
+    def dict(self, irc, msg, args, words):
         """[<dictionary>] <word>
 
         Looks up the definition of <word> on dict.org's dictd server.
         """
-        if not args:
-            raise callbacks.ArgumentError
         try:
             server = conf.supybot.plugins.Dict.server()
             conn = dictclient.Connection(server)
         except socket.error, e:
-            irc.error(webutils.strError(e))
-            return
+            irc.error(webutils.strError(e), Raise=True)
         dbs = sets.Set(conn.getdbdescs())
-        if args[0] in dbs:
-            dictionary = args.pop(0)
+        if words[0] in dbs:
+            dictionary = words.pop(0)
         else:
             default = self.registryValue('default', msg.args[0])
             if default in dbs:
@@ -123,9 +122,9 @@ class Dict(callbacks.Privmsg):
                     self.log.info('Default dict for %s is not a supported '
                                   'dictionary: %s.', msg.args[0], default)
                 dictionary = '*'
-        word = privmsgs.getArgs(args)
-        if not word:
+        if not words:
             irc.error('You must give a word to define.', Raise=True)
+        word = ' '.join(words)
         definitions = conn.define(dictionary, word)
         dbs = sets.Set()
         if not definitions:
@@ -149,6 +148,7 @@ class Dict(callbacks.Privmsg):
         else:
             s = '; '.join(L)
         irc.reply(s)
+    dict = wrap(dict, [many('something')])
 
 
 Class = Dict
