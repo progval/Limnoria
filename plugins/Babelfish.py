@@ -84,10 +84,10 @@ class Babelfish(callbacks.Privmsg):
                       'include %s' %
                       (e, utils.commaAndify(babelfish.available_languages)))
         except babelfish.BabelizerIOError, e:
-            irc.error(e)
+            irc.error(str(e))
         except babelfish.BabelfishChangedError, e:
             irc.error('Babelfish has foiled our plans by changing its '
-                           'webpage format')
+                      'webpage format')
 
     def babelize(self, irc, msg, args):
         """<from-language> <to-language> <text>
