@@ -93,6 +93,8 @@ class HttpTest(PluginTestCase, PluginDocumentation):
         self.assertRegexp('acronym ASAP', 'as soon as possible')
         self.assertNotRegexp('acronym asap', 'Definition')
         self.assertNotRegexp('acronym UNIX', 'not an acronym')
+        # Used to pass requests with spaces ... make sure that stays fixed
+        self.assertNotError('acronym W T F')
 
     def testNetcraft(self):
         self.assertNotError('netcraft slashdot.org')

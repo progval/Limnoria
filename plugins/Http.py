@@ -41,6 +41,7 @@ import re
 import sets
 import getopt
 import socket
+import urllib
 import urllib2
 import xml.dom.minidom
 from itertools import imap, ifilter
@@ -354,7 +355,7 @@ class Http(callbacks.Privmsg):
         """
         acronym = privmsgs.getArgs(args)
         url = 'http://www.acronymfinder.com/' \
-              'af-query.asp?String=exact&Acronym=%s' % acronym
+              'af-query.asp?String=exact&Acronym=%s' % urllib.quote(acronym)
         request = urllib2.Request(url, headers={'User-agent':
           'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
         html = webutils.getUrl(request)
