@@ -275,7 +275,8 @@ class Debian(callbacks.Privmsg,
                     r = utils.perlReToPythonRe(arg)
                     predicates.append(r.search)
                 except ValueError:
-                    irc.errorInvalid('regular expression', arg, Raise=True)
+                    irc.error('%r is not a valid regexp.' % arg)
+                    return
             elif option == '--arch':
                 arg = '_%s.' % arg
                 archPredicate = lambda s, arg=arg: (arg in s)

@@ -133,7 +133,8 @@ class Lookup(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         name = callbacks.canonicalName(name)
         if name not in self.lookupDomains:
-            irc.errorInvalid('lookup', name, Raise=True)
+            irc.error('That\'s not a valid lookup to remove.')
+            return
         db = self.dbHandler.getDb()
         cursor = db.cursor()
         try:
@@ -248,7 +249,9 @@ class Lookup(callbacks.Privmsg):
                 try:
                     r = utils.perlReToPythonRe(arg)
                 except ValueError, e:
-                    irc.errorInvalid('regular expression', arg, Raise=True)
+                    irc.error('%r is not a valid regular expression' %
+                              arg)
+                    return
                 def p(s, r=r):
                     return int(bool(r.search(s)))
                 db.create_function(predicateName, 1, p)

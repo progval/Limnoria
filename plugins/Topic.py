@@ -166,7 +166,7 @@ class Topic(callbacks.Privmsg):
                     n += len(topics)
             return n
         except (ValueError, IndexError):
-            irc.errorInvalid('topic number', n, Raise=True)
+            irc.error('That\'s not a valid topic number.', Raise=True)
 
     def topic(self, irc, msg, args, channel):
         """[<channel>]
@@ -308,12 +308,14 @@ class Topic(callbacks.Privmsg):
         (number, regexp) = privmsgs.getArgs(args, required=2)
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if not topics:
-            irc.error('There are no topics to change.', Raise=True)
+            irc.error('There are no topics to change.')
+            return
         number = self._topicNumber(irc, number, topics=topics)
         try:
             replacer = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.errorInvalid('regexp', regexp, Raise=True)
+            irc.error('The regexp wasn\'t valid: %s' % e)
+            return
         topics[number] = replacer(topics[number])
         self._sendTopics(irc, channel, topics)
     change = privmsgs.channel(change)
