@@ -196,7 +196,7 @@ class Seen(callbacks.Privmsg):
                       (user.name, channel, utils.timeElapsed(time.time()-when),
                        said))
         except KeyError:
-            irc.reply('I have not seen %s.' % name)
+            irc.reply('I have not seen %s.' % user.name)
     user = wrap(user, ['channeldb', 'otherUser'])
 
 
