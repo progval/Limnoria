@@ -128,7 +128,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             title = utils.htmlToText(result.title.encode('utf-8'))
             url = result.URL
             if title:
-                results.append('\x02%s\x02: <%s>' % (title, url))
+                results.append('\x02%s\x0F: <%s>' % (title, url))
             else:
                 results.append(url)
         if not results:
@@ -148,19 +148,20 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     googlelicensekey = privmsgs.checkCapability(googlelicensekey, 'admin')
 
     def google(self, irc, msg, args):
-        """<search string> [--{language,restrict}=<value>] [--{safe,similar}]
+        """<search> [--{language,restrict}=<value>] [--{notsafe,similar}]
 
         Searches google.com for the given string.  As many results as can fit
         are included.  --language accepts a language abbreviation; --restrict
         restricts the results to certain classes of things; --similar tells
-        Google not to filter similar results.
+        Google not to filter similar results. --notsafe allows possibly
+        work-unsafe results.
         """
         (optlist, rest) = getopt.getopt(args, '', ['language=', 'restrict=',
-                                                   'safe', 'similar'])
+                                                   'notsafe', 'similar'])
         kwargs = {'language': 'lang_en', 'safeSearch': 1}
         for (option, argument) in optlist:
-            if option == '--safe':
-                kwargs['safeSearch'] = True
+            if option == '--notsafe':
+                kwargs['safeSearch'] = False
             elif option == '--similar':
                 kwargs['filter'] = False
             else:
@@ -170,28 +171,31 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(msg, self.formatData(data))
 
     def metagoogle(self, irc, msg, args):
-        """<search string> [--(language,restrict,safe,filter)=<value>]
+        """<search> [--(language,restrict)=<value>] [--{similar,notsafe}]
 
         Searches google and gives all the interesting meta information about
-        the search.
+        the search.  See the help for the google command for a detailed
+        description of the parameters.
         """
         (optlist, rest) = getopt.getopt(args, '', ['language=', 'restrict=',
-                                                   'safe=', 'filter='])
+                                                   'notsafe', 'similar'])
         kwargs = {'language': 'lang_en', 'safeSearch': 1}
         for option, argument in optlist:
-            kwargs[option[2:]] = argument
+            if option == '--notsafe':
+                kwargs['safeSearch'] = False
+            elif option == '--similar':
+                kwargs['filter'] = False
+            else:
+                kwargs[option[2:]] = argument
         searchString = privmsgs.getArgs(rest)
         data = search(searchString, **kwargs)
         meta = data.meta
         categories = [d['fullViewableName'] for d in meta.directoryCategories]
-        categories = [repr(s.replace('_', ' ')) for s in categories]
-        if len(categories) > 1:
-            categories = ', and '.join([', '.join(categories[:-1]),
-                                        categories[-1]])
-        elif not categories:
-            categories = ''
+        categories = [utils.dqrepr(s.replace('_', ' ')) for s in categories]
+        if categories:
+            categories = utils.commaAndify(categories)
         else:
-            categories = categories[0]
+            categories = ''
         s = 'Search for %r returned %s %s results in %s seconds.%s' % \
             (meta.searchQuery,
              meta.estimateIsExact and 'exactly' or 'approximately',
