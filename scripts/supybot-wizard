@@ -48,15 +48,15 @@ def getPlugins():
     for filename in filenames:
         if filename.endswith('.py') and filename[0].isupper():
             plugins.add(os.path.splitext(filename)[0])
-    plugins.discard('OwnerCommands')
+    plugins.discard('Owner')
     plugins = list(plugins)
     plugins.sort()
     return plugins
 
 def loadPlugin(name):
-    import OwnerCommands
+    import Owner
     try:
-        module = OwnerCommands.loadPluginModule(name)
+        module = Owner.loadPluginModule(name)
         if hasattr(module, 'Class'):
             return module
         else:
@@ -340,7 +340,7 @@ def main():
     # Plugins
     ###
     plugins = getPlugins()
-    for s in ('AdminCommands','UserCommands','ChannelCommands','MiscCommands'):
+    for s in ('Admin','User','Channel','Misc'):
         s = 'load %s' % s
         if s not in onStart:
             onStart.append(s)
@@ -513,7 +513,7 @@ def main():
         rather busy channels this might be considered spam, especially if the
         command returns several lines in its result. In this case you may want
         to notice the user instead.""")
-        if yn('Would you like the bot to notice replies to users in private'
+        if yn('Would you like the bot to notice replies to users in private '
               'when a command is executed in a channel?') == 'y':
             configVariables['replyWithPrivateNotice'] = True
 
@@ -523,7 +523,7 @@ def main():
         of the possible security hazards in allowing such a thing, but we're
         pretty sure our capability system is sound enough to do such a thing
         with some kind of security.  Nevertheless, by default we have these
-        commands (eval and exec, both in the OwnerCommands plugin which is
+        commands (eval and exec, both in the Owner plugin which is
         loaded by default) disabled by a config variable allowEval.  If you'd
         like to use either eval or exec, you'll have to make this variable
         True.  Unless you intend to hack on supybot a lot, we suggest against
