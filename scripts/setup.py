@@ -78,6 +78,10 @@ if __name__ == '__main__':
     nick = anything('What nick would you like the bot to use?')
     configfd.write('Nick: %s\n' % nick)
     configfd.write('\n')
+    configfd.write('load AdminCommands\n')
+    configfd.write('load UserCommands\n')
+    configfd.write('load ChannelCommands\n')
+    configfd.write('load MiscCommands\n')
     # Now's where we load the modules.
     if yn('Would you like to see a list of the available modules?') == 'y':
         filenames = os.listdir(conf.pluginDir)
@@ -105,7 +109,7 @@ if __name__ == '__main__':
     postConnect = 'Would you like any commands to run ' \
                   'when the bot is finished connecting to the server?'
     while yn(postConnect) == 'y':
-        postConnect = 'Would you like any other ocmmands to run ' \
+        postConnect = 'Would you like any other commands to run ' \
                       'when the bot is finished connecting to the server?'
         configfd.write(anything('What command?'))
         configfd.write('\n')
