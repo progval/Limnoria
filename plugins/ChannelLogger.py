@@ -66,12 +66,6 @@ conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'noLogPrefix',
     registry.String('[nolog]', """Determines what string a message should be
     prefixed with in order not to be logged.  If you don't want any such
     prefix, just set it to the empty string."""))
-conf.registerChannelValue(conf.supybot.plugins.ChannelLogger,
-    'includeNetworkName', registry.Boolean(True, """Determines whether the bot
-    will include the name of the network in the filename for channel logs.
-    Since this is a channel-specific value, you can override for any channel.
-    You almost certainly want this to be True if you're relaying in a given
-    channel."""))
 conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'rotateLogs',
     registry.Boolean(False, """Determines whether the bot will automatically
     rotate the logs for this channel.  The bot will rotate logs when the
@@ -85,6 +79,24 @@ conf.registerChannelValue(conf.supybot.plugins.ChannelLogger,
     python.org.  In order for your logs to be rotated, you'll also have to
     enable supybot.plugins.ChannelLogger.rotateLogs."""))
 
+conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger, 'directories',
+    registry.Boolean(True, """Determines whether the bot will partition its
+    channel logs into separate directories based on different criteria."""))
+conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger.directories,
+    'network', registry.Boolean(True, """Determines whether the bot will use
+    a network directory if using directories."""))
+conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger.directories,
+    'channel', registry.Boolean(True, """Determines whether the bot will use
+    a channel directory if using directories."""))
+t = conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger.directories,
+    'timestamp', registry.Boolean(False, """Determines whether the bot will use
+    a timestamp (determined by
+    supybot.plugins.ChannelLogger.directories.timestamp.format) if using
+    directories."""))
+conf.registerGlobalValue(t, 'format', registry.String('%B', """Determines what
+    timestamp format will be used in the directory stucture for channel logs if
+    supybot.plugins.ChannelLogger.directories.timestamp is True."""))
+
 class FakeLog(object):
     def flush(self):
         return
@@ -96,7 +108,8 @@ class FakeLog(object):
 class ChannelLogger(callbacks.Privmsg):
     noIgnore = True
     def __init__(self):
-        callbacks.Privmsg.__init__(self)
+        self.__parent = super(ChannelLogger, self)
+        self.__parent.__init__()
         self.lastMsg = None
         self.laststate = None
         self.logs = ircutils.IrcDict()
@@ -134,14 +147,6 @@ class ChannelLogger(callbacks.Privmsg):
             if e.args[0] != 'I/O operation on a closed file':
                 self.log.exception('Odd exception:')
 
-    def registryValue(self, name, channel=None, **kwargs):
-        if channel is not None:
-            # This handles the possible #channel@network channels we might be
-            # getting.  It's a hack, because we should know what we're doing,
-            # but apparently we don't.
-            channel = channel.split('@')[0]
-        return callbacks.Privmsg.registryValue(self, name, channel, **kwargs)
-
     def logNameTimestamp(self, channel):
         format = self.registryValue('filenameTimestamp', channel)
         return time.strftime(format)
@@ -152,6 +157,22 @@ class ChannelLogger(callbacks.Privmsg):
         else:
             return '%s.log' % channel
 
+    def getLogDir(self, irc, channel):
+        logDir = conf.supybot.directories.log()
+        logDir = os.path.join(logDir, self.name())
+        if self.registryValue('directories'):
+            if self.registryValue('directories.network'):
+                logDir = os.path.join(logDir,  irc.network)
+            if self.registryValue('directories.channel'):
+                logDir = os.path.join(logDir, channel)
+            if self.registryValue('directories.timestamp'):
+                format = self.registryValue('directories.timestamp.format')
+                timeDir =time.strtime(format)
+                logDir = os.path.join(logDir, timeDir)
+        if not os.path.exists(logDir):
+            os.makedirs(logDir)
+        return logDir
+
     def checkLogNames(self):
         for (channel, log) in self.logs.items():
             if self.registryValue('rotateLogs', channel):
@@ -160,17 +181,14 @@ class ChannelLogger(callbacks.Privmsg):
                     log.close()
                     del self.logs[channel]
 
-    def getLog(self, channel):
+    def getLog(self, irc,  channel):
         self.checkLogNames()
         if channel in self.logs:
             return self.logs[channel]
         else:
             try:
-                logDir = conf.supybot.directories.log()
-                logDir = os.path.join(logDir, self.name())
-                if not os.path.exists(logDir):
-                    os.makedirs(logDir)
                 name = self.getLogName(channel)
+                logDir = self.getLogDir(irc, channel)
                 log = file(os.path.join(logDir, name), 'a')
                 self.logs[channel] = log
                 return log
@@ -185,13 +203,11 @@ class ChannelLogger(callbacks.Privmsg):
             log.write('  ')
 
     def normalizeChannel(self, irc, channel):
-        if self.registryValue('includeNetworkName', channel):
-            channel = '%s@%s' % (channel, irc.network)
         return ircutils.toLower(channel)
 
     def doLog(self, irc, channel, s):
         channel = self.normalizeChannel(irc, channel)
-        log = self.getLog(channel)
+        log = self.getLog(irc, channel)
         if self.registryValue('timestamp', channel):
             self.timestamp(log)
         if self.registryValue('stripFormatting', channel):
