@@ -47,6 +47,7 @@ from itertools import imap
 
 import log
 import conf
+import utils
 import world
 import drivers
 import ircmsgs
@@ -96,7 +97,7 @@ class SocketDriver(drivers.IrcDriver):
                 else:
                     log.debug('Got EAGAIN, current count: %s', self.eagains)
                     self.eagains += 1
-        
+
     def run(self):
         if not self.connected:
             # We sleep here because otherwise, if we're the only driver, we'll
@@ -126,7 +127,7 @@ class SocketDriver(drivers.IrcDriver):
                 self.eagains += 1
             return
         self._sendIfMsgs()
-        
+
     def reconnect(self, wait=False):
         if self.connected:
             log.info('Reconnect called on driver for %s.' % self.irc)
@@ -167,7 +168,7 @@ class SocketDriver(drivers.IrcDriver):
             return
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
-        
+
     def _checkAndWriteOrReconnect(self):
         log.debug('Checking whether we are connected.')
         (_, w, _) = select.select([], [self.conn], [], 0)
@@ -178,7 +179,7 @@ class SocketDriver(drivers.IrcDriver):
         else:
             log.warning('Error connecting to %s: Timed out.', self.server[0])
             self.reconnect()
-            
+
     def _scheduleReconnect(self):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         if not world.dying:
