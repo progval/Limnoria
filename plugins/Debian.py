@@ -109,19 +109,18 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         # (the filenames don't have leading slashes, and people may not know
         # that).
         regexp = privmsgs.getArgs(args).lstrip('^/')
-        regexp = '^' + regexp
         try:
             r = re.compile(regexp, re.I)
         except re.error, e:
             irc.error(msg, e)
             return
         if self.usePythonZegrep:
-            fd = gzip.open(self.contents)
-            fd = ifilter(imap(lambda line: r.search(line), fd))
+            r = gzip.open(self.contents)
+            r = ifilter(imap(lambda line: r.search(line), fd))
         (r, w) = popen2.popen4(['zegrep', regexp, self.contents])
         packages = []
         try:
-            for line in fd:
+            for line in r:
                 try:
                     (filename, package) = line[:-1].split()
                     if filename == 'FILE':
