@@ -159,7 +159,7 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
             try:
                 id = ircdb.users.getUserId(name)
                 user = ircdb.users.getUser(id)
-                user.addCapability(capability)
+                user.removeCapability(capability)
                 ircdb.users.setUser(id, user)
                 irc.reply(msg, conf.replySuccess)
             except KeyError:
