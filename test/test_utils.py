@@ -35,6 +35,16 @@ import sets
 import utils
 
 class UtilsTest(unittest.TestCase):
+    def testMatchCase(self):
+        f = utils.matchCase
+        self.assertEqual('bar', f('foo', 'bar'))
+        self.assertEqual('Bar', f('Foo', 'bar'))
+        self.assertEqual('BAr', f('FOo', 'bar'))
+        self.assertEqual('BAR', f('FOO', 'bar'))
+        self.assertEqual('bAR', f('fOO', 'bar'))
+        self.assertEqual('baR', f('foO', 'bar'))
+        self.assertEqual('BaR', f('FoO', 'bar'))
+
     def testPluralize(self):
         f = utils.pluralize
         self.assertEqual('bike', f('bike', 1))

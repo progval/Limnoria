@@ -306,7 +306,7 @@ def ellipsisify(s, n):
         return (textwrap.wrap(s, n-3)[0] + '...')
 
 plurals = TwoWayDictionary({})
-def _matchCase(s1, s2):
+def matchCase(s1, s2):
     """Matches the case of s1 in s2"""
     if s1.isupper():
         return s2.upper()
@@ -314,7 +314,7 @@ def _matchCase(s1, s2):
         L = list(s2)
         for (i, char) in enumerate(s1[:len(s2)]):
             if char.isupper():
-                L[i] = char.upper()
+                L[i] = L[i].upper()
         return ''.join(L)
 
 def pluralize(s, i=2):
@@ -326,17 +326,17 @@ def pluralize(s, i=2):
     else:
         lowered = s.lower()
         if lowered in plurals:
-            return _matchCase(s, plurals[lowered])
+            return matchCase(s, plurals[lowered])
         elif any(lowered.endswith, ['ch', 'ss']):
-            return _matchCase(s, s+'es')
+            return matchCase(s, s+'es')
         else:
-            return _matchCase(s, s+'s')
+            return matchCase(s, s+'s')
 
 def depluralize(s):
     """Returns the singular of s."""
     lowered = s.lower()
     if lowered in plurals:
-        return _matchCase(s, plurals[lowered])
+        return matchCase(s, plurals[lowered])
     elif any(lowered.endswith, ['ches', 'sses']):
         return s[:-2]
     else:
