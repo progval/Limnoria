@@ -275,7 +275,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             L = []
             for channelWithPass in conf.supybot.channels():
                 channel = channelWithPass.split(',')[0]
-                if arg == channel:
+                if chan == channel:
                     L.append(channelWithPass)
             # This is necessary so the set doesn't change size while iterating.
             for channel in L:
