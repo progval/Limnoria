@@ -217,12 +217,17 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         chanserv = self.registryValue('ChanServ')
         if chanserv and self.registryValue('ChanServ.op', channel):
             if irc.nick not in irc.state.channels[channel].ops:
+                self.log.info('Requesting op from %s in %s', chanserv, channel)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'op %s' % channel))
         if chanserv and self.registryValue('ChanServ.halfop', channel):
             if irc.nick not in irc.state.channels[channel].halfops:
+                self.log.info('Requesting halfop from %s in %s',
+                              chanserv, channel)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'halfop %s' % channel))
         if chanserv and self.registryValue('ChanServ.voice', channel):
             if irc.nick not in irc.state.channels[channel].voices:
+                self.log.info('Requesting voice from %s in %s',
+                              chanserv, channel)
                 irc.sendMsg(ircmsgs.privmsg(chanserv, 'voice %s' % channel))
                     
     def do366(self, irc, msg): # End of /NAMES list; finished joining a channel
