@@ -181,7 +181,7 @@ class Alias(callbacks.Privmsg):
                 self.addAlias(irc, alias, command, locked)
             except Exception, e:
                 self.log.exception('Exception when trying to add alias %s.  '
-                                   'Removing from the Alias database.' % name)
+                                   'Removing from the Alias database.' % alias)
                 del self.aliases[name]
         del self.__class__.__call__
         callbacks.Privmsg.__call__(self, irc, msg)
