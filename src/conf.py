@@ -71,6 +71,9 @@ def registerChannelValue(group, name, value):
 def registerGlobalValue(group, name, value):
     group.register(name, value)
 
+def registerGroup(group, name):
+    group.registerGroup(name)
+
 class ValidNick(registry.String):
     def setValue(self, v):
         if not ircutils.isNick(v):
