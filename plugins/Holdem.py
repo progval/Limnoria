@@ -37,6 +37,19 @@ __revision__ = "$Id$"
 __author__ = supybot.authors.jemfinch
 __contributors__ = {}
 
+###
+# TODO:
+#
+# Betting timeouts.
+# Change the "bet" command to allow saying a specific amount to bet to.
+# Change the stack command to see another person's stack.
+# Keep a bankroll in the users registry.
+# Allow the "sit" command to have specified a stack size, subtracting it from
+#  the bankroll.
+# Write a command to allow Owner users to give a person money.
+# Re-expand the commands using forwarder so they can have better help. 
+###
+
 import sets
 import random
 import operator
@@ -115,13 +128,13 @@ class Table(object):
             s = self._color(s)
         self.irc.reply(s, to=users[player.user], private=True)
 
-    def error(self, player, s):
-        s = self._color('%s: %s' % (player.nick(), s))
-        self.irc.reply(s)
+    def error(self, s):
+        s = self._color('%s: %s' % (self.irc.msg.nick, s))
+        self.irc.reply(s, to=self.channel)
 
     def sit(self, player):
         if player in self.players:
-            self.error(player, 'You\'re already seated.')
+            self.error('You\'re already seated.')
             return
         self.waitingToJoin.append(player)
         self.irc.reply('You will be dealt in when the next hand begins.')
@@ -133,10 +146,11 @@ class Table(object):
         elif player in self.waitingToJoin:
             self.waitingToJoin.remove(player)
         else:
-            self.error(player, 'You aren\'t currently seated.')
+            self.error('You aren\'t currently seated.')
 
     def deal(self, startingPlayer):
         # Ignore player.
+        self.color = self.colors.next()
         self.blind = conf.get(conf.supybot.plugins.Holdem.blind, self.channel)
         if self.waitingToJoin:
             self.players.extend(self.waitingToJoin)
@@ -166,7 +180,6 @@ class Table(object):
         self._waitingOn = self.button
         self.deck = poker.deck[:]
         random.shuffle(self.deck)
-        self.color = self.colors.next()
         for player in self.players:
             self.hands[player] = [self.deck.pop()]
         for player in self.players:
@@ -312,8 +325,8 @@ class Table(object):
 
     def checkNoCurrentBet(self):
         if self.currentBet:
-            self.error(player, 'There\'s a bet of %s, you must call it, '
-                               'raise it, or fold.' % self.currentBet)
+            self.error('There\'s a bet of %s, you must call it, '
+                       'raise it, or fold.' % self.currentBet)
             return True
         return False
     
@@ -321,7 +334,7 @@ class Table(object):
         try:
             self.private(player, 'Your hand is %s.' % self.hands[player])
         except KeyError:
-            self.error(player, 'You\'re not dealt in right now.')
+            self.error('You\'re not dealt in right now.')
 
     def table(self, player):
         self.public('The table shows %s.' % self.tableCards)
@@ -338,8 +351,9 @@ class Table(object):
     def check(self, player):
         if self.checkWrongPlayer(player):
             return
-        if self.checkNoCurrentBet():
-            return
+        if self.currentBet and self.currentBets[player] < self.currentBet:
+            self.error('There is a bet of %s, you must call it, raise it, '
+                       'or fold.' % self.currentBet)
         self.public('%s checks.' % player.nick())
         self.couldBet[player] = True
         self.checkEndOfRound()
@@ -355,7 +369,8 @@ class Table(object):
     def call(self, player):
         if self.checkWrongPlayer(player):
             return
-        bet = self.addCurrentBet(player, min(self.currentBet, player.stack))
+        toCall = self.currentBet - self.currentBets[player]
+        bet = self.addCurrentBet(player, min(toCall, player.stack))
         self.public('%s calls %s.' % (player.nick(), bet))
         self.checkEndOfRound()
 
@@ -365,12 +380,12 @@ class Table(object):
         if self.checkNoCurrentBet():
             return
         if amount > player.stack:
-            self.error(player, 'You only have %s in your stack, you can\'t '
+            self.error('You only have %s in your stack, you can\'t '
                        'bet that much.  Perhaps you should use the allin '
                        'command.' % player.stack)
             return
         if amount < 2*self.blind:
-            self.error(player, 'You must bet at least the big blind.')
+            self.error('You must bet at least the big blind.')
             return
         bet = self.addCurrentBet(player, amount)
         self.public('%s bets %s.' % (player.nick(), bet))
@@ -380,11 +395,11 @@ class Table(object):
         if self.checkWrongPlayer(player):
             return
         if not self.currentBet:
-            self.error(player, 'You can\'t raise when there\'s no current '
+            self.error('You can\'t raise when there\'s no current '
                        'bet.  Perhaps you should use the bet command.')
             return
-        if amount < 2*self.currentBet:
-            self.error(player, 'You can\'t raise less than twice the current '
+        if amount < self.currentBet:
+            self.error('You can\'t raise by less than the current '
                        'bet of %s.' % self.currentBet)
             return
         totalRaise = amount + self.currentBet - self.currentBets[player]
