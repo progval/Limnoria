@@ -46,8 +46,9 @@ class SupyIrcProtocol(LineReceiver):
                 self.transport.write(str(msg))
         self.mostRecentCall = reactor.callLater(1, self.checkIrcForMsgs)
 
-    def connectionLost(self):
+    def connectionLost(self, failure):
         self.mostRecentCall.cancel()
+        debug.msg(failure.getErrorMessage(), 'normal')
 
     def connectionMade(self):
         self.factory.irc.driver = self
