@@ -50,6 +50,7 @@ import shlex
 import getopt
 import string
 import inspect
+import operator
 import threading
 from cStringIO import StringIO
 from itertools import imap, ifilter
@@ -1122,10 +1123,10 @@ class PrivmsgRegexp(Privmsg):
             if self.isCommand(name):
                 try:
                     r = re.compile(value.__doc__, self.flags)
-                    self.res.append((r, value))
+                    self.res.append((r, name))
                 except re.error, e:
                     self.log.warning('Invalid regexp: %r (%s)',value.__doc__,e)
-        self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
+        utils.sortBy(operator.itemgetter(1), self.res)
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
         try:
@@ -1145,7 +1146,7 @@ class PrivmsgRegexp(Privmsg):
             self.log.info('%s not running due to Privmsg.errored.',
                           self.name())
             return
-        for (r, method) in self.res:
+        for (r, name) in self.res:
             spans = sets.Set()
             for m in r.finditer(msg.args[1]):
                 # There's a bug in finditer: http://www.python.org/sf/817234
@@ -1154,7 +1155,7 @@ class PrivmsgRegexp(Privmsg):
                 else:
                     spans.add(m.span())
                 proxy = self.Proxy(irc, msg)
-                self.callCommand(method, proxy, msg, m)
+                self.callCommand(name, proxy, msg, m)
 
 
 class PrivmsgCommandAndRegexp(Privmsg):
