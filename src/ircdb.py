@@ -572,7 +572,7 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
     """
     for ignore in conf.supybot.ignores():
         if ircutils.hostmaskPatternEqual(ignore, hostmask):
-            log.info('Ignoring %s due to conf.supybot.ignores.', hostmask)
+            log.debug('Ignoring %s due to conf.supybot.ignores.', hostmask)
             return True
     try:
         id = users.getUserId(hostmask)
@@ -582,13 +582,13 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
         if ircutils.isChannel(recipient):
             channel = channels.getChannel(recipient)
             if channel.checkIgnored(hostmask):
-                log.info('Ignoring %s due to the channel ignores.', hostmask)
+                log.debug('Ignoring %s due to the channel ignores.', hostmask)
                 return True
             else:
                 return False
         else:
             if conf.supybot.defaultIgnore():
-                log.info('Ignoring %s due to conf.supybot.defaultIgnore',
+                log.debug('Ignoring %s due to conf.supybot.defaultIgnore',
                          hostmask)
                 return True
             else:
@@ -597,13 +597,13 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
         # Owners shouldn't ever be ignored.
         return False
     elif user.ignore:
-        log.info('Ignoring %s due to his IrcUser ignore flag.', hostmask)
+        log.debug('Ignoring %s due to his IrcUser ignore flag.', hostmask)
         return True
     elif recipient:
         if ircutils.isChannel(recipient):
             channel = channels.getChannel(recipient)
             if channel.checkIgnored(hostmask):
-                log.info('Ignoring %s due to the channel ignores.', hostmask)
+                log.debug('Ignoring %s due to the channel ignores.', hostmask)
                 return True
             else:
                 return False
