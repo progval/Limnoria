@@ -152,6 +152,26 @@ def timeElapsed(now, then, leadingZeroes=False, years=True, weeks=True,
     else:
         return ' and '.join([', '.join(ret[:-1]), ret[-1]])
         
+def distance(s, t):
+    n = len(s)
+    m = len(t)
+    if n == 0:
+        return m
+    elif m == 0:
+        return n
+    d = range(n+1)
+    for i in range(len(d)):
+        d[i] = range(m+1)
+    for i in range(1, n+1):
+        cs = s[i-1]
+        for j in range(1, m+1):
+            ct = t[j-1]
+            if cs == ct:
+                cost = 0
+            else:
+                cost = 1
+            d[i][j] = min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost)
+    return d[n][m]
     
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

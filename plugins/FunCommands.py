@@ -56,6 +56,7 @@ Commands include:
   last
   lastfrom
   lithp
+  levenshtein
   pydoc
 """
 
@@ -422,6 +423,15 @@ class FunCommands(callbacks.Privmsg):
                     irc.reply(msg, '<%s> %s' % (nick, m.args[1]))
                 return
         irc.error(msg, 'I don\'t remember a message from that person.')
+
+    def levenshtein(self, irc, msg, args):
+        """<string1> <string2>
+
+        Returns the levenshtein distance (also known as the "edit distance"
+        between <string1> and <string2>
+        """
+        (s1, s2) = privmsgs.getArgs(args, needed=2)
+        irc.reply(msg, str(utils.distance(s1, s2)))
 
     modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
     def pydoc(self, irc, msg, args):

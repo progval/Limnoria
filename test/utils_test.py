@@ -53,3 +53,12 @@ class UtilsTest(unittest.TestCase):
         s = 'foobar'
         L = ['f', 'fo', 'foo', 'foob', 'fooba', 'foobar']
         self.assertEqual(list(utils.eachSubstring(s)), L)
+
+    def testDistance(self):
+        self.assertEqual(utils.distance('', ''), 0)
+        self.assertEqual(utils.distance('a', 'b'), 1)
+        self.assertEqual(utils.distance('a', 'a'), 0)
+        self.assertEqual(utils.distance('foobar', 'jemfinch'), 8)
+        self.assertEqual(utils.distance('a', 'ab'), 1)
+        self.assertEqual(utils.distance('foo', ''), 3)
+        self.assertEqual(utils.distance('', 'foo'), 3)
