@@ -85,8 +85,6 @@ class Schedule(drivers.IrcDriver):
         if name is None:
             name = self.counter
             self.counter += 1
-        elif isinstance(name, int):
-            raise ValueError, 'int names are reserved for the scheduler.'
         assert name not in self.events
         self.events[name] = f
         heapq.heappush(self.schedule, mytuple((t, name)))
@@ -94,7 +92,7 @@ class Schedule(drivers.IrcDriver):
 
     def removeEvent(self, name):
         """Removes the event with the given name from the schedule."""
-        del self.events[name]
+        f = self.events.pop(name)
         self.schedule = [(t, n) for (t, n) in self.schedule if n != name]
         # We must heapify here because the heap property may not be preserved
         # by the above list comprehension.  We could, conceivably, just mark
@@ -102,6 +100,11 @@ class Schedule(drivers.IrcDriver):
         # but that would only save a constant factor (we're already linear for
         # the listcomp) so I'm not worried about it right now.
         heapq.heapify(self.schedule)
+        return f
+
+    def rescheduleEvent(self, name, t):
+        f = self.removeEvent(name)
+        self.addEvent(f, t, name=name)
 
     def addPeriodicEvent(self, f, t, name=None):
         """Adds a periodic event that is called every t seconds."""
@@ -134,6 +137,7 @@ except NameError:
 
 addEvent = schedule.addEvent
 removeEvent = schedule.removeEvent
+rescheduleEvent = schedule.rescheduleEvent
 addPeriodicEvent = schedule.addPeriodicEvent
 removePeriodicEvent = removeEvent
 run = schedule.run

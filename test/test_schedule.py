@@ -61,6 +61,19 @@ class TestSchedule(SupyTestCase):
         time.sleep(3)
         self.assertEqual(i[0], 11)
 
+    def testReschedule(self):
+        sched = schedule.Schedule()
+        i = [0]
+        def inc():
+            i[0] += 1
+        n = sched.addEvent(inc, time.time() + 1)
+        sched.rescheduleEvent(n, time.time() + 3)
+        time.sleep(1.2)
+        sched.run()
+        self.assertEqual(i[0], 0)
+        time.sleep(2)
+        sched.run()
+        self.assertEqual(i[0], 1)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
