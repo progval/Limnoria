@@ -48,8 +48,8 @@ import supybot.log as log
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
-from supybot.commands import additional, wrap
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.schedule as schedule
@@ -136,38 +136,23 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 irc.queueMsg(ircmsgs.join(channel))
                 conf.supybot.networks.get(irc.network).channels().add(channel)
 
-    def join(self, irc, msg, args):
-        """<channel>[,<key>] [<channel>[,<key>] ...]
+    def join(self, irc, msg, args, channel, key):
+        """<channel> [<key>]
 
-        Tell the bot to join the whitespace-separated list of channels
-        you give it.  If a channel requires a key, attach it behind the
-        channel name via a comma.  I.e., if you need to join both #a and #b,
-        and #a requires a key of 'aRocks', then you'd call 'join #a,aRocks #b'
+        Tell the bot to join the given channel.  If <key> is given, it is used
+        when attempting to join the channel.
         """
-        if not args:
-            raise callbacks.ArgumentError
-        keys = []
-        channels = []
-        for channel in args:
-            original = channel
-            if ',' in channel:
-                (channel, key) = channel.split(',', 1)
-                channels.insert(0, channel)
-                keys.insert(0, key)
-            else:
-                channels.append(channel)
-            if not irc.isChannel(channel):
-                irc.errorInvalid('channel', channel)
-                return
-            conf.supybot.networks.get(irc.network).channels().add(original)
+        if not irc.isChannel(channel):
+            irc.errorInvalid('channel', channel, Raise=True)
+        conf.supybot.networks.get(irc.network).channels().add(channel)
         maxchannels = irc.state.supported.get('maxchannels', sys.maxint)
-        if len(irc.state.channels) + len(channels) > maxchannels:
+        if len(irc.state.channels) + 1 > maxchannels:
             irc.error('I\'m already too close to maximum number of '
                       'channels for this network.', Raise=True)
-        irc.queueMsg(ircmsgs.joins(channels, keys))
+        irc.queueMsg(ircmsgs.join(channel, key))
         irc.noReply()
-        for channel in channels:
-            self.joins[channel] = (irc, msg)
+        self.joins[channel] = (irc, msg)
+    join = wrap(join, ['validChannel', additional('something')])
 
     def channels(self, irc, msg, args):
         """takes no arguments
@@ -240,42 +225,25 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(irc.nick)
     nick = wrap(nick, [additional('nick')])
 
-    def part(self, irc, msg, args):
-        """<channel> [<channel> ...] [<reason>]
+    def part(self, irc, msg, args, channels, reason):
+        """[<channel> ...] [<reason>]
 
-        Tells the bot to part the list of channels you give it.  If <reason>
-        is specified, use it as the part message.
+        Tells the bot to part the list of channels you give it.  <channel> is
+        only necessary if you want the bot to part a channel other than the
+        current channel.  If <reason> is specified, use it as the part
+        message.
         """
-        if not args:
-            args = [msg.args[0]]
-        channels = []
-        reason = ''
-        for (i, arg) in enumerate(args):
-            if irc.isChannel(arg):
-                channels.append(args[i])
-                args[i] = None
-            else:
-                break
-        args = filter(None, args)
         if not channels:
             channels.append(msg.args[0])
-        if args:
-            reason = ' '.join(args)
-        for chan in channels:
-            if chan not in irc.state.channels:
-                irc.error('I\'m not currently in %s.' % chan)
-                return
         for chan in channels:
             try:
                 network = conf.supybot.networks.get(irc.network)
                 network.channels.removeChannel(chan)
             except KeyError:
                 pass # It might be in the network thingy.
-            try:
-                networkGroup = conf.supybot.networks.get(irc.network)
-                networkGroup.channels.removeChannel(chan)
-            except KeyError:
-                pass # It might be in the non-network thingy.
+        for chan in channels:
+            if chan not in irc.state.channels:
+                irc.error('I\'m not in %s.' % chan, Raise=True)
         irc.queueMsg(ircmsgs.parts(channels, reason or msg.nick))
         inAtLeastOneChannel = False
         for chan in channels:
@@ -285,6 +253,8 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         else:
             irc.noReply()
+    part = wrap(part, [any('validChannel', continueOnError=True),
+                       additional('text','')])
 
     def addcapability(self, irc, msg, args, user, capability):
         """<name|hostmask> <capability>
@@ -348,11 +318,9 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         3600.  If no <expires> is given, the ignore will never automatically
         expire.
         """
-        if expires:
-            expires += time.time()
         ircdb.ignores.add(hostmask, expires)
         irc.replySuccess()
-    ignore = wrap(ignore, ['hostmask', additional('int', 0)])
+    ignore = wrap(ignore, ['hostmask', additional('expiry', 0)])
 
     def unignore(self, irc, msg, args, hostmask):
         """<hostmask|nick>

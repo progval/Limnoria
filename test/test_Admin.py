@@ -76,21 +76,10 @@ class AdminTestCase(PluginTestCase):
         m = self.getMsg('join #foo')
         self.assertEqual(m.command, 'JOIN')
         self.assertEqual(m.args[0], '#foo')
-        m = self.getMsg('join #foo #bar')
-        self.assertEqual(m.command, 'JOIN')
-        self.assertEqual(m.args[0], '#foo,#bar')
-        m = self.getMsg('join #foo,key')
+        m = self.getMsg('join #foo key')
         self.assertEqual(m.command, 'JOIN')
         self.assertEqual(m.args[0], '#foo')
         self.assertEqual(m.args[1], 'key')
-        m = self.getMsg('join #bar #foo,key')
-        self.assertEqual(m.command, 'JOIN')
-        self.assertEqual(m.args[0], '#foo,#bar')
-        self.assertEqual(m.args[1], 'key')
-        m = self.getMsg('join #bar,key1 #foo,key2')
-        self.assertEqual(m.command, 'JOIN')
-        self.assertEqual(m.args[0], '#foo,#bar')
-        self.assertEqual(m.args[1], 'key2,key1')
 
     def testPart(self):
         def getAfterJoinMessages():
@@ -99,7 +88,7 @@ class AdminTestCase(PluginTestCase):
             m = self.irc.takeMsg()
             self.assertEqual(m.command, 'WHO')
         self.assertError('part #foo')
-        self.assertRegexp('part #foo', 'currently')
+        self.assertRegexp('part #foo', 'not in')
         self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
         getAfterJoinMessages()
         self.assertError('part #foo #bar')
@@ -113,6 +102,14 @@ class AdminTestCase(PluginTestCase):
         m = self.getMsg('part #foo #bar')
         self.assertEqual(m.command, 'PART')
         self.assertEqual(m.args[0], '#foo,#bar')
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
+        getAfterJoinMessages()
+        self.irc.feedMsg(ircmsgs.join('#bar', prefix=self.prefix))
+        getAfterJoinMessages()
+        m = self.getMsg('part #foo #bar reason')
+        self.assertEqual(m.command, 'PART')
+        self.assertEqual(m.args[0], '#foo,#bar')
+        self.assertEqual(m.args[1], 'reason')
 
     def testNick(self):
         original = conf.supybot.nick()
@@ -125,7 +122,6 @@ class AdminTestCase(PluginTestCase):
 
     def testAddCapabilityOwner(self):
         self.assertError('admin addcapability %s owner' % self.nick)
-
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
