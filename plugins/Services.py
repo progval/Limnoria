@@ -80,8 +80,9 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             return
         (self.nick, self.password, nickserv, chanserv) = \
                     privmsgs.getArgs(args, needed=2, optional=2)
-        self.nickserv = nickserv or 'NickServ'
-        self.chanserv = chanserv or 'ChanServ'
+        self.nick = ircutils.IrcString(self.nick)
+        self.nickserv = ircutils.IrcString(nickserv or 'NickServ')
+        self.chanserv = ircutils.IrcString(chanserv or 'ChanServ')
         self.sentGhost = False
         self._ghosted = re.compile('%s.*killed' % self.nick)
         irc.reply(msg, conf.replySuccess)
