@@ -48,10 +48,12 @@ if network:
             self.assertNotError('search --keywords=fixed gcc alpha')
 
         def testConfigBugzillaSnarfer(self):
-            self.assertNotError('bugzilla config bug-snarfer off')
-            self.assertNoResponse('http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
-            self.assertNotError('bugzilla config bug-snarfer on')
-            self.assertNotError('http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
+            conf.supybot.plugins.bugzilla.bugSnarfer.setValue(False)
+            self.assertNoResponse(
+                            'http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
+            conf.supybot.plugins.bugzilla.bugSnarfer.setValue(True)
+            self.assertNotError(
+                            'http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

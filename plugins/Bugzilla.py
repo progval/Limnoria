@@ -38,23 +38,25 @@ __revision__ = "$Id$"
 
 import os
 import re
+import csv
+import getopt
 import string
 import urllib
 import urllib2
 import xml.dom.minidom as minidom
+
 from itertools import imap, ifilter
 from htmlentitydefs import entitydefs as entities
-import csv
-import getopt
+
+import registry
+
 import conf
 import utils
-
 import plugins
 import ircutils
 import privmsgs
 import callbacks
 import structures
-import configurable
 
 statusKeys = ['unconfirmed', 'new', 'assigned', 'reopened', 'resolved',
               'verified', 'closed']
@@ -96,23 +98,24 @@ def configure(onStart, afterConnect, advanced):
     print 'supybot sees such a URL, he will parse the web page for'
     print 'information and reply with the results.\n'
     if yn('Do you want this bug snarfer enabled by default?') == 'y':
-        onStart.append('Bugzilla config bug-snarfer on')
+        conf.supybot.plugins.Bugzilla.bugSnarfer.setValue(True)
 
 replyNoBugzilla = 'I don\'t have a bugzilla %r'
 
+conf.registerPlugin('Bugzilla')
+conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bugSnarfer',
+    registry.Boolean(False, """Determines whether the bug snarfer will be
+    enabled, such that any Bugzilla URLs seen in the channel will have their
+    information reported into the channel."""))
+conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'bold',
+    registry.Boolean(True, """Determines whether results are bolded."""))
 
-class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
+class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
     """Show a link to a bug report with a brief description"""
     threaded = True
     regexps = ['bzSnarfer']
-    configurables = configurable.Dictionary(
-        [('bug-snarfer', configurable.BoolType, False,
-         """Determines whether the bug snarfer will be enabled, such that any
-         Bugzilla URLs seen in the channel will have their information reported
-         into the channel.""")]
-    )
+
     def __init__(self):
-        configurable.Mixin.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.entre = re.compile('&(\S*?);')
         # Schema: {name, [url, description]}
@@ -137,7 +140,6 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
 
     def die(self):
         self.db.close()
-        configurable.Mixin.die(self)
     
     def add(self, irc, msg, args):
         """<name> <url> <description>
@@ -194,7 +196,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
 
     def bzSnarfer(self, irc, msg, match):
         r"(http://\S+)/show_bug.cgi\?id=([0-9]+)"
-        if not self.configurables.get('bug-snarfer', channel=msg.args[0]):
+        if not conf.supybot.plugins.Bugzilla.bugSnarfer():
             return
         queryurl = '%s/xml.cgi?id=%s' % (match.group(1), match.group(2))
         try:
@@ -307,18 +309,22 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
 
     def _mk_summary_string(self, summary):
         L = []
+        if conf.supybot.plugins.Bugzilla.bold():
+            decorate = lambda s: ircutils.bold(s)
+        else:
+            decorate = lambda s: s
         if 'product' in summary:
-            L.append(ircutils.bold('Product: ') + summary['product'])
+            L.append(decorate('Product: ') + summary['product'])
         if 'component' in summary:
-            L.append(ircutils.bold('Component: ') + summary['component'])
+            L.append(decorate('Component: ') + summary['component'])
         if 'severity' in summary:
-            L.append(ircutils.bold('Severity: ') + summary['severity'])
+            L.append(decorate('Severity: ') + summary['severity'])
         if 'assigned to' in summary:
-            L.append(ircutils.bold('Assigned to: ') + summary['assigned to'])
+            L.append(decorate('Assigned to: ') + summary['assigned to'])
         if 'status' in summary:
-            L.append(ircutils.bold('Status: ') + summary['status'])
+            L.append(decorate('Status: ') + summary['status'])
         if 'resolution' in summary:
-            L.append(ircutils.bold('Resolution: ') + summary['resolution'])
+            L.append(decorate('Resolution: ') + summary['resolution'])
         return ', '.join(imap(str, L))
 
     def _get_short_bug_summary(self, url, desc, number):
