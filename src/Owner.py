@@ -622,6 +622,31 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             raise
             irc.error('That command wasn\'t disabled.')
 
+    def rename(self, irc, msg, args):
+        """<plugin> <command> <new name>
+
+        Renames <command> in <plugin> to the <new name>.
+        """
+        (plugin, command, newName) = privmsgs.getArgs(args, required=3)
+        name = callbacks.canonicalName(newName)
+        if name != newName:
+            irc.error('%s is a not a valid new command name.  '
+                      'Try making it lowercase and removing - and _.' %newName)
+            return
+        cb = irc.getCallback(plugin)
+        if cb is None:
+            irc.error('%s is not a valid plugin.' % plugin)
+            return
+        if not cb.isCommand(command):
+            s = '%s is not a valid command in the %s plugin.' % (name, plugin)
+            irc.error(s)
+            return
+        method = getattr(cb.__class__, command)
+        setattr(cb.__class__, name, method)
+        delattr(cb.__class__, command)
+        irc.replySuccess()
+            
+
 
 
 Class = Owner

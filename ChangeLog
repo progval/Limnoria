@@ -1,3 +1,6 @@
+	* Added Owner.rename, a command for renaming commands in other
+	plugins.
+	
 	* Added a new plugin, Tail, which will tail logfiles and send the
 	new lines to a configurable list of targets.
 	
