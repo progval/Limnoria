@@ -49,6 +49,7 @@ import sqlite
 
 import conf
 import debug
+import utils
 import ircdb
 import ircmsgs
 import privmsgs
@@ -173,8 +174,8 @@ class Notes(callbacks.Privmsg):
         author = self.getUserName(from_id)
         public = int(public)
         added_at = int(added_at)
-        senttime = time.strftime(conf.timestampFormat)
-        newnote = "%s (Sent by %s on %s)" % (note, author, senttime)
+        elapsed = utils.timeElapsed(time.time() - added_at)
+        newnote = "%s (Sent by %s %s ago)" % (note, author, elapsed)
         if senderID == to_id:
             if public:
                 irc.reply(msg, newnote)
@@ -189,7 +190,8 @@ class Notes(callbacks.Privmsg):
     def notes(self, irc, msg, args):
         """<takes no arguments>
         
-        Retrieves all unread notes for the requesting user."""
+        Retrieves all unread notes for the requesting user.
+        """
         try:
             sender = ircdb.users.getUserName(msg.prefix)
         except KeyError:
