@@ -73,6 +73,9 @@ class IrcHandler(logging.Handler):
                 except AttributeError, e:
                     print '*** AttributeError, shouldn\'t happen: %s' % e
                     continue
+                networks = conf.supybot.plugins.LogToIrc.networks()
+                if networks and irc.network not in networks:
+                    continue
                 msgOk = True
                 if target in irc.state.channels:
                     channel = irc.state.channels[target]
@@ -163,6 +166,10 @@ conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'targets',
     Targets([], """Determines which channels/nicks the bot should
     log to.  If no channels/nicks are set, this plugin will effectively be
     turned off."""))
+conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'networks',
+    registry.SpaceSeparatedSetOfStrings([], """Determines what networks the
+    bot should log to.  If no networks are set, the bot will log on one network
+    (whichever happens to be around at the time it feels like logging)."""))
 conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'channelModesRequired',
     registry.String('s', """Determines what channel modes a channel will be
     required to have for the bot to log to the channel.  If this string is
