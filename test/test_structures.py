@@ -605,8 +605,16 @@ class TestTimeoutQueue(SupyTestCase):
         q = TimeoutQueue(1)
         q.enqueue(1)
         self.failUnless(1 in q)
+        self.failUnless(1 in q) # For some reason, the second one might fail.
         self.failIf(2 in q)
         time.sleep(1.1)
+        self.failIf(1 in q)
+
+    def testReset(self):
+        q = TimeoutQueue(10)
+        q.enqueue(1)
+        self.failUnless(1 in q)
+        q.reset()
         self.failIf(1 in q)
 
 

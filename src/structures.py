@@ -305,7 +305,11 @@ class TimeoutQueue(object):
         self.queue = queue
         self.timeout = timeout
 
+    def reset(self):
+        self.queue.reset()
+
     def __repr__(self):
+        self._clearOldElements()
         return '%s(timeout=%r, queue=%r)' % (self.__class__.__name__,
                                              self.timeout, self.queue)
 
@@ -317,7 +321,7 @@ class TimeoutQueue(object):
 
     def _clearOldElements(self):
         now = time.time()
-        while now - self.queue.peek()[0] > self._getTimeout():
+        while self.queue and now - self.queue.peek()[0] > self._getTimeout():
             self.queue.dequeue()
 
     def setTimeout(self, i):
