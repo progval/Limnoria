@@ -191,6 +191,9 @@ def newDriver(irc, moduleName=None):
             import twistedDrivers
             moduleName = 'supybot.twistedDrivers'
         except ImportError:
+            # We formerly used 'del' here, but 2.4 fixes the bug that we added
+            # the 'del' for, so we need to make sure we don't complain if the
+            # module is cleaned up already.
             sys.modules.pop('supybot.twistedDrivers', None)
             moduleName = 'supybot.socketDrivers'
     elif not moduleName.startswith('supybot.'):
