@@ -86,6 +86,19 @@ def checkCapability(f, capability):
     newf.__doc__ = f.__doc__
     return newf
 
+def checkChannelCapability(f, capability):
+    """Makes sure a user has a certain channel capability before running f."""
+    def newf(self, irc, msg, args):
+        channel = getChannel(msg, args) # Make a copy, f might getChannel.
+        chancap = ircdb.makeChannelCapability(channel, capability)
+        if ircdb.checkCapability(msg.prefix, chancap):
+            ff = new.instancemethod(f, self, self.__class__)
+            ff(irc, msg, args, channel)
+        else:
+            irc.error(msg, conf.replyNoCapability % chancap)
+    newf.__doc__ = f.__doc__
+    return newf
+
 def thread(f):
     """Makes sure a command spawns a thread when called."""
     def newf(self, irc, msg, args):
@@ -94,6 +107,32 @@ def thread(f):
         t.start()
     newf.__doc__ = f.__doc__
     return newf
+
+def name(f):
+    """Makes sure a name is available based on conf.requireRegistration."""
+    def newf(self, irc, msg, args):
+        try:
+            name = ircdb.users.getUser(msg.prefix).name
+        except KeyError:
+            if conf.requireRegistration:
+                irc.error(msg, conf.replyNotRegistered)
+                return
+            else:
+                name = msg.prefix
+        ff = new.instancemethod(f, self, self.__class__)
+        ff(irc, msg, args, name)
+    newf.__doc__ = f.__doc__
+    return newf
+
+def channel(f):
+    """Gives the command an extra channel arg as if it had called getChannel"""
+    def newf(self, irc, msg, args):
+        channel = getChannel(msg, args)
+        ff = new.instancemethod(f, self, self.__class__)
+        ff(irc, msg, args, channel)
+    newf.__doc__ = f.__doc__
+    return newf
+        
 
 class CapabilityCheckingPrivmsg(callbacks.Privmsg):
     """A small subclass of callbacks.Privmsg that checks self.capability
