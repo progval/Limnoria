@@ -92,6 +92,8 @@ class TestLogFilter(logging.Filter):
         'Queuing USER',
         'IgnoresDB.reload failed',
         'Starting log for',
+        'Irc object for test dying',
+        'Last Irc,',
         ]
     def filter(self, record):
         for bad in self.bads:
