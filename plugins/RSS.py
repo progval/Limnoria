@@ -226,7 +226,8 @@ class RSS(callbacks.Privmsg):
             self.releaseLock(url)
 
     def getHeadlines(self, feed):
-        return [utils.htmlToText(d['title'].strip()) for d in feed['items']]
+        return [utils.htmlToText(d['title'].strip()) for d in feed['items'] if
+                'title' in d]
 
     def _validFeedName(self, name):
         if not registry.isValidRegistryName(name):
