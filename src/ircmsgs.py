@@ -485,10 +485,13 @@ def quit(msg='', prefix=''):
     else:
         return IrcMsg(prefix=prefix, command='QUIT')
 
-def topic(channel, topic, prefix=''):
+def topic(channel, topic=None, prefix=''):
     """Returns a TOPIC for channel with the topic topic."""
     assert isChannel(channel), channel
-    return IrcMsg(prefix=prefix, command='TOPIC', args=(channel, topic))
+    if topic is None:
+        return IrcMsg(prefix=prefix, command='TOPIC', args=(channel,))
+    else:
+        return IrcMsg(prefix=prefix, command='TOPIC', args=(channel, topic))
 
 def nick(nick, prefix=''):
     """Returns a NICK with nick nick."""
