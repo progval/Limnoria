@@ -50,6 +50,7 @@ import privmsgs
 import callbacks
 
 class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
+    priority = ~sys.maxint # This must be first!
     capability = 'owner'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
