@@ -323,7 +323,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             module = loadPluginModule(name, ignoreDeprecation)
         except Deprecated:
             irc.error('Plugin %r is deprecated.  '
-                      'Use --deprecated to force it to load.')
+                      'Use --deprecated to force it to load.'  % name)
             return
         except ImportError, e:
             if name in str(e):
