@@ -54,6 +54,11 @@ class CommandsTestCase(SupyTestCase):
         self.assertState(['int'], ['1'], [1])
         self.assertState(['int', 'int', 'int'], ['1', '2', '3'], [1, 2, 3])
 
+    def testSpecLong(self):
+        self.assertState(['long'], ['1'], [1L])
+        self.assertState(['long', 'long', 'long'], ['1', '2', '3'],
+                         [1L, 2L, 3L])
+
     def testRestHandling(self):
         self.assertState([rest(None)], ['foo', 'bar', 'baz'], ['foo bar baz'])
 

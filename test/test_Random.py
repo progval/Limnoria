@@ -40,11 +40,11 @@ class RandomTestCase(PluginTestCase):
     def testRange(self):
         for x in range(iters):
             self.assertRegexp('range 1 2', '^(1|2)$')
-        
+
     def testDiceroll(self):
         for x in range(iters):
             self.assertActionRegexp('diceroll', '^rolls a (1|2|3|4|5|6)$')
-    
+
     def testSample(self):
         for x in range(iters):
             self.assertRegexp('sample 1 a b c', '^(a|b|c)$')

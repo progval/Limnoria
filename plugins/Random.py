@@ -38,9 +38,9 @@ import random
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -65,7 +65,7 @@ class Seed(registry.Integer):
     def serialize(self):
         # We do this so if it's 0, it doesn't store a real time.
         return str(self.value)
-        
+
 conf.registerPlugin('Random')
 conf.registerGlobalValue(conf.supybot.plugins.Random, 'seed', Seed(0, """
 Sets the seed of the random number generator.  The seed must be a valid
@@ -84,78 +84,53 @@ class Random(callbacks.Privmsg):
         generator.
         """
         irc.reply(str(self.rng.random()))
+    random = wrap(random)
 
-    def seed(self, irc, msg, args):
+    def seed(self, irc, msg, args, seed):
         """<seed>
 
         Sets the seed of the random number generator.  <seed> must be an int
         or a long.
         """
-        seed = privmsgs.getArgs(args)
-        try:
-            seed = long(seed)
-        except ValueError:
-            # It wasn't a valid long!
-            irc.errorInvalid('number', seed)
-            return
         self.rng.seed(seed)
         irc.replySuccess()
+    seed = wrap(seed, ['long'])
 
-    def range(self, irc, msg, args):
+    def range(self, irc, msg, args, start, end):
         """<start> <end>
 
         Returns a number between <start> and <end>, inclusive (i.e., the number
         can be either of the endpoints.
         """
-        (start, end) = privmsgs.getArgs(args, required=2)
-        try:
-            end = int(end)
-            start = int(start)
-        except ValueError:
-            irc.error('<start> and <end> must both be integers.')
-            return
         # .randrange() doesn't include the endpoint, so we use end+1.
         irc.reply(str(self.rng.randrange(start, end+1)))
+    range = wrap(range, ['int', 'int'])
 
-    def sample(self, irc, msg, args):
+    def sample(self, irc, msg, args, n, items):
         """<number of items> [<text> ...]
 
         Returns a sample of the <number of items> taken from the remaining
         arguments.  Obviously <number of items> must be less than the number
         of arguments given.
         """
-        try:
-            n = args.pop(0)
-            n = int(n)
-        except IndexError: # raised by .pop(0)
-            raise callbacks.ArgumentError
-        except ValueError:
-            irc.errorInvalid('number', n)
-            return
-        if n > len(args):
+        if n > len(items):
             irc.error('<number of items> must be less than the number '
                       'of arguments.')
             return
-        sample = self.rng.sample(args, n)
+        sample = self.rng.sample(items, n)
         sample.sort()
         irc.reply(utils.commaAndify(sample))
+    sample = wrap(sample, ['int', many('something')])
 
-    def diceroll(self, irc, msg, args):
+    def diceroll(self, irc, msg, args, n):
         """[<number of sides>]
 
         Rolls a die with <number of sides> sides.  The default number of
         sides is 6.
         """
-        try:
-            n = privmsgs.getArgs(args, required=0, optional=1)
-            if not n:
-                n = 6
-            n = int(n)
-        except ValueError:
-            irc.error('Dice have integer numbers of sides.  Use one.')
-            return
         s = 'rolls a %s' % self.rng.randrange(1, n)
         irc.reply(s, action=True)
+    diceroll = wrap(diceroll, [additional(('int', 'number of sides'), 6)])
 
 Class = Random
 
