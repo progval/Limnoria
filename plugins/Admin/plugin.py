@@ -157,7 +157,7 @@ class Admin(callbacks.Privmsg):
         L = irc.state.channels.keys()
         if L:
             utils.sortBy(ircutils.toLower, L)
-            irc.reply(utils.str.commaAndify(L))
+            irc.reply(format('%L', L))
         else:
             irc.reply('I\'m not currently in any channels.')
     channels = wrap(channels, ['private'])
@@ -325,7 +325,7 @@ class Admin(callbacks.Privmsg):
         """
         # XXX Add the expirations.
         if ircdb.ignores.hostmasks:
-            irc.reply(utils.str.commaAndify(map(repr,ircdb.ignores.hostmasks)))
+            irc.reply(format('%L', (map(repr,ircdb.ignores.hostmasks))))
         else:
             irc.reply('I\'m not currently globally ignoring anyone.')
     ignores = wrap(ignores)

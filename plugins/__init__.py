@@ -99,10 +99,10 @@ class NoSuitableDatabase(Exception):
         self.suitable.sort()
 
     def __str__(self):
-        return 'No suitable databases were found.  Suitable databases ' \
-               'include %s.  If you have one of these databases installed, ' \
-               'make sure it is listed in the supybot.databases ' \
-               'configuration variable.' % utils.str.commaAndify(self.suitable)
+        return format('No suitable databases were found.  Suitable databases '
+                      'include %L.  If you have one of these databases '
+                      'installed, make sure it is listed in the '
+                      'supybot.databases configuration variable.',self.suitable)
 
 def DB(filename, types):
     filename = conf.supybot.directories.data.dirize(filename)
@@ -467,10 +467,10 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
             L.append(self.searchSerializeRecord(record))
         if L:
             L.sort()
-            irc.reply('%s found: %s' % (len(L), utils.str.commaAndify(L)))
+            irc.reply(format('%s found: %L', len(L), L))
         else:
-            irc.reply('No matching %s were found.' %
-                      utils.str.pluralize(self.name().lower()))
+            what = self.name().lower()
+            irc.reply(format('No matching %p were found.', what))
     search = wrap(search, ['channeldb',
                            getopts({'by': 'otherUser',
                                     'regexp': 'regexpMatcher'}),
@@ -478,11 +478,8 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
 
     def showRecord(self, record):
         name = getUserName(record.by)
-        at = time.localtime(record.at)
-        timeS = time.strftime(conf.supybot.reply.format.time(), at)
-        return '%s #%s: %s (added by %s at %s)' % \
-               (self.name(), record.id,
-                utils.str.quoted(record.text), name, timeS)
+        return format('%s #%s: %q (added by %s at %t)',
+                      self.name(), record.id, record.text, name, record.at)
 
     def get(self, irc, msg, args, channel, id):
         """[<channel>] <id>
@@ -523,8 +520,8 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
         itself.
         """
         n = self.db.size(channel)
-        irc.reply('There %s %s in my database.' %
-                  (utils.str.be(n), utils.str.nItems(self.name().lower(), n)))
+        whats = self.name().lower()
+        irc.reply(format('There %b %n in my database.', n, (n, whats)))
     stats = wrap(stats, ['channeldb'])
 
 
