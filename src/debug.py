@@ -105,18 +105,26 @@ priorityColors.setdefault('')
 # If the most recent time is
 lastTimes = [time.time()-1] * 10
 
-def reset():
-    """Resets the various file descriptors kept open by this module."""
-    global _errorfd, _debugfd, _tracefd
+def _close():
+    """Implementation detail; needed because Windows sucks."""
     _errorfd.flush()
     _errorfd.close()
-    _errorfd = file(_errorfd.name, 'a')
     _debugfd.flush()
     _debugfd.close()
-    _debugfd = file(_errorfd.name, 'a')
     _tracefd.flush()
     _tracefd.close()
+
+def _open():
+    """Implementation details; needed because Windows sucks."""
+    global _errorfd, _debugfd, _tracefd
+    _errorfd = file(_errorfd.name, 'a')
+    _debugfd = file(_errorfd.name, 'a')
     _tracefd = file(_errorfd.name, 'w')
+    
+def reset():
+    """Resets the various file descriptors kept open by this module."""
+    _close()
+    _open()
 
 def exit(i=-1):
     """Makes sure to actually exit."""
