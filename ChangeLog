@@ -1,4 +1,4 @@
-	* Added Channel.{deop,devoice,dehalfop}.
+	* Added Channel.{deop,devoice,dehalfop,kick}.
 	
 	* Added Http.size and Http.doctype and Http.headers to retrieve
 	various meta-information on URLs.

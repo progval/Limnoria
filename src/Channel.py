@@ -115,7 +115,7 @@ class Channel(callbacks.Privmsg):
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.dehalfops(channel, args))
         else:
-            irc.error(msg, 'How can I deop someone?  I\'m not opped!')
+            irc.error(msg, 'How can I dehalfop someone?  I\'m not opped!')
     dehalfop = privmsgs.checkChannelCapability(dehalfop, 'op')
     
     def devoice(self, irc, msg, args, channel):
@@ -129,7 +129,7 @@ class Channel(callbacks.Privmsg):
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.devoices(channel, args))
         else:
-            irc.error(msg, 'How can I deop someone?  I\'m not opped!')
+            irc.error(msg, 'How can I devoice someone?  I\'m not opped!')
     devoice = privmsgs.checkChannelCapability(devoice, 'op')
     
     def cycle(self, irc, msg, args, channel):
@@ -155,10 +155,13 @@ class Channel(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        (nick, reason) = privmsgs.getArgs(args, optional=1)
-        if not reason:
-            reason = msg.nick
-        irc.queueMsg(ircmsgs.kick(channel, nick, reason))
+        if irc.nick in irc.state.channels[channel].ops:
+            (nick, reason) = privmsgs.getArgs(args, optional=1)
+            if not reason:
+                reason = msg.nick
+            irc.queueMsg(ircmsgs.kick(channel, nick, reason))
+        else:
+            irc.error(msg, 'How can I kick someone?  I\'m not opped!')
     kick = privmsgs.checkChannelCapability(kick, 'op')
 
     def kban(self, irc, msg, args):
