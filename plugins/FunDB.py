@@ -35,6 +35,7 @@ Provides fun commands that require a database to operate.
 
 from baseplugin import *
 
+import sets
 import string
 import random
 import os.path
@@ -114,6 +115,11 @@ class FunDB(callbacks.Privmsg):
     """
     def __init__(self):
         callbacks.Privmsg.__init__(self)
+        self._tables = sets.Set()
+        self._tables.add('lart')
+        self._tables.add('insult')
+        self._tables.add('excuse')
+        self._tables.add('praise')
         self.db = makeDb(dbFilename)
 
     def die(self):
@@ -231,7 +237,6 @@ class FunDB(callbacks.Privmsg):
         else:
             irc.reply(msg, cursor.fetchone()[0])
 
-    _tables = ['lart','excuse','insult','praise']
     def adddb(self, irc, msg, args):
         """<lart|excuse|insult|praise> <text>
 
@@ -245,7 +250,7 @@ class FunDB(callbacks.Privmsg):
                     'somewhere.')
                 return
         elif table not in self._tables:
-            irc.error(msg, '\"%s\" is an invalid choice. Must be one of: '\
+            irc.error(msg, '"%s" is an invalid choice. Must be one of: '\
                 'lart, excuse, insult, praise.' % table)
             return
         cursor = self.db.cursor()
@@ -267,7 +272,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'You must give a numeric id.')
             return
         if table not in self._tables:
-            irc.error(msg, '\"%s\" is an invalid choice. Must be one of: '\
+            irc.error(msg, '"%s" is an invalid choice. Must be one of: '\
                 'lart, excuse, insult, praise.' % table)
             return
         cursor = self.db.cursor()
@@ -284,7 +289,7 @@ class FunDB(callbacks.Privmsg):
         table = privmsgs.getArgs(args)
         table = str.lower(table)
         if table not in self._tables:
-            irc.error(msg, '\"%s\" is an invalid choice. Must be one of: '\
+            irc.error(msg, '"%s" is an invalid choice. Must be one of: '\
                 'lart, excuse, insult, praise.' % table)
             return
         cursor = self.db.cursor()
@@ -306,7 +311,7 @@ class FunDB(callbacks.Privmsg):
             irc.error(msg, 'The id must be an integer.')
             return
         if table not in self._tables:
-            irc.error(msg, '\"%s\" is an invalid choice. Must be one of: '\
+            irc.error(msg, '"%s" is an invalid choice. Must be one of: '\
                 'lart, excuse, insult, praise.' % table)
             return
         cursor = self.db.cursor()
