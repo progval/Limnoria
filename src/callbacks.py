@@ -443,7 +443,7 @@ class Privmsg(irclib.IrcCallback):
 
     def configure(self, irc):
         fakeIrc = ConfigIrcProxy(irc)
-        for args in conf.config['onStart']:
+        for args in conf.commandsOnStart:
             args = args[:]
             command = args.pop(0)
             if self.isCommand(command):
@@ -461,13 +461,14 @@ class Privmsg(irclib.IrcCallback):
         irclib.IrcCallback.__call__(self, irc, msg)
         # Now, if there's anything in the rateLimiter...
         msg = self.rateLimiter.get()
-        if msg:
+        while msg:
             s = addressed(irc.nick, msg)
             try:
                 args = tokenize(s)
                 self.Proxy(irc, msg, args)
             except SyntaxError, e:
                 irc.queueMsg(reply(msg, str(e)))
+            msg = self.rateLimiter.get()
 
     def isCommand(self, methodName):
         # This function is ugly, but I don't want users to call methods like
@@ -496,7 +497,7 @@ class Privmsg(irclib.IrcCallback):
             funcname = f.im_func.func_name
             debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
 
-    _r = re.compile(r'^([\w_-]+)(?:\s+|$)')
+    _r = re.compile(r'^([\w_-]+)(?:\[|\s+|$)')
     def doPrivmsg(self, irc, msg):
         s = addressed(irc.nick, msg)
         #debug.printf('Privmsg.doPrivmsg: s == %r' % s)

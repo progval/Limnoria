@@ -36,31 +36,38 @@
 #   Provide a list of modules to load by default.
 #   See what other commands the user would like to run by default.
 #   Go through conf.py options and see which ones the user would like.
-import sys
-sys.path.insert(0, 'src')
-from fix import *
-from questions import *
 import os
 import imp
+import sys
+import socket
+import pprint
+sys.path.insert(0, 'src')
+
+from fix import *
+from questions import *
+
 import conf
 import ircdb
+import ircutils
+
 sys.path.insert(0, conf.pluginDir)
-import socket
+
 if __name__ == '__main__':
+    fd = file('src/template.py')
+    template = fd.read()
+    fd.close()
     ###
     # First things first.
     ###
-    if ny('Are you an advanced Supybot/IRC user?') == 'y':
+    if yn('Are you an advanced Supybot/IRC user?') == 'y':
         advanced = True
     else:
         advanced = False
     ###
     # Basic stuff.
     ###
-    name = anything('What would you like to name your config file?')
-    if not name.endswith('.conf'):
-        name += '.conf'
-    configfd = file(os.path.join(conf.confDir, name), 'w')
+
+    # Server.
     server = ''
     while not server:
         server = anything('What server would you like to connect to?')
@@ -71,28 +78,48 @@ if __name__ == '__main__':
         except:
             print 'Sorry, but I couldn\'t find that server.'
             server = ''
-    if ny('Does that server require connection on a non-standard port?')=='y':
-        server = ':'.join(server, anything('What port is that?'))
-    configfd.write('Server: %s\n' % server)
-    if ny('Does the server require a password to connect?') == 'y':
+    if yn('Does that server require connection on a non-standard port?')=='y':
+        port = ''
+        while not port:
+            port = something('What port is that?')
+            try:
+                i = int(port)
+                if not (0 < i < 65536):
+                    raise ValueError
+            except ValueError:
+                print 'That\'s not a valid port.'
+                port = ''
+        server = ':'.join((server, port))
+    template = template.replace('%%server%%', repr(server))
+
+    # Password.
+    password = ''
+    if yn('Does the server require a password to connect?') == 'y':
         password = anything('What password would you like the bot to use?')
-        configfd.write('Pass: ' + password)
-    nick = anything('What nick would you like the bot to use?')
-    configfd.write('Nick: %s\n' % nick)
-    if advanced and ny('Would you like to set a user/ident?') == 'y':
+    template = template.replace('%%password%%', repr(password))
+
+    # Nick.
+    nick = something('What nick would you like the bot to use?')
+    while not ircutils.isNick(nick):
+        print 'That\'s not a valid nick.'
+        nick = something('What nick would you like the bot use?')
+    template = template.replace('%%nick%%', repr(nick))
+
+    # User/Ident.
+    user = nick
+    ident = nick
+    if advanced and yn('Would you like to set a user/ident?') == 'y':
         user = anything('What user would you like the bot to use?')
-        configfd.write('User: %s\n' % user)
         ident = anything('What ident would you like the bot to use?')
-        configfd.write('Ident: %s\n' % ident)
-    configfd.write('\n')
+    template = template.replace('%%user%%', repr(user))
+    template = template.replace('%%ident%%', repr(ident))
+    
     onStart = []
-    onStart.append('# Commands to run before connecting.')
+    afterConnect = []
     onStart.append('load AdminCommands')
     onStart.append('load UserCommands')
     onStart.append('load ChannelCommands')
     onStart.append('load MiscCommands')
-    afterConnect = []
-    afterConnect.append('# Commands to run after connecting.')
 
     ###
     # Modules.
@@ -141,6 +168,7 @@ if __name__ == '__main__':
         postConnect = 'Would you like any other commands to run ' \
                       'when the bot is finished connecting to the server?'
         afterConnect.append(anything('What command?'))
+
     ###
     # Set owner user.
     ###
@@ -157,18 +185,31 @@ if __name__ == '__main__':
     ###
     # Finito!
     ###
-    for command in onStart:
-        configfd.write(command)
-        configfd.write('\n')
-    configfd.write('\n')
-    for command in afterConnect:
-        configfd.write(command)
-        configfd.write('\n')
-    configfd.close()
+    template = template.replace('%%onStart%%', pprint.pformat(onStart))
+    template = template.replace('%%afterConnect%%',
+                                pprint.pformat(afterConnect))
+
+    ###
+    # Configuration variables in conf.py.
+    ###
+    configVariables = {}
+    if advanced and \
+       yn('Would you like to modify the default config variables?')=='y':
+        pass
+    template = template.replace('%%configVariables%%',
+                                pprint.pformat(configVariables))
+
+    filename = '%s.py' % nick
+    fd = open(filename, 'w')
+    fd.write(template)
+    fd.close()
+
+    os.chmod(filename, 0755)
+    
 
     print
     print 'You\'re done!  Now run the bot with the command line:'
-    print 'src/bot.py conf/%s' % name
+    print './%s' % filename
     print
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
