@@ -366,6 +366,7 @@ class CommandThread(threading.Thread):
         name = '%s.%s with args %r' % (self.className, self.commandName, args)
         threading.Thread.__init__(self, target=command, name=name,
                                   args=(irc, msg, args))
+        debug.msg('Spawning thread %s' % name, 'verbose')
         self.irc = irc
         self.msg = msg
         self.setDaemon(True)
