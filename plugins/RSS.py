@@ -112,13 +112,12 @@ class RSS(callbacks.Privmsg):
         feed = self.cachedFeeds[url]
         headlines = [d['title'].strip().replace('\n', ' ') \
                      for d in feed['items']]
-        while reduce(operator.add, map(len, headlines), 0) > 350:
-            headlines.pop()
-        if not headlines:
+        headlines = map(utils.htmlToText, headlines)
+        payload = ircutils.privmsgPayload(headlines, ' :: ')
+        if not payload:
             irc.error(msg, 'Error grabbing RSS feed')
             return
-        response = ' :: '.join(headlines)
-        irc.reply(msg, response)
+        irc.reply(msg, payload)
     
     def rssinfo(self, irc, msg, args):
         """<url>
