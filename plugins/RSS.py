@@ -58,7 +58,7 @@ import supybot.callbacks as callbacks
 
 class AnnouncedFeeds(registry.SpaceSeparatedListOfStrings):
     List = callbacks.CanonicalNameSet
-    
+
 conf.registerPlugin('RSS')
 conf.registerChannelValue(conf.supybot.plugins.RSS, 'bold', registry.Boolean(
     True, """Determines whether the bot will bold the title of the feed when it
@@ -74,9 +74,6 @@ conf.registerChannelValue(conf.supybot.plugins.RSS, 'announce',
     AnnouncedFeeds([], """Determines which RSS feeds should be announced in the
     channel; valid input is a list of strings (either registered RSS feeds or
     RSS feed URLs) separated by spaces."""))
-conf.registerGlobalValue(conf.supybot.plugins.RSS, 'showLinks',
-    registry.Boolean(False, """Determines whether the bot will list the link
-    along with the title of the feed."""))
 conf.registerGlobalValue(conf.supybot.plugins.RSS, 'waitPeriod',
     registry.PositiveInteger(1800, """Indicates how many seconds the bot will
     wait between retrieving RSS feeds; requests made within this period will
@@ -84,6 +81,17 @@ conf.registerGlobalValue(conf.supybot.plugins.RSS, 'waitPeriod',
 conf.registerGlobalValue(conf.supybot.plugins.RSS, 'feeds',
     AnnouncedFeeds([], """Determines what feeds should be accessible as
     commands."""))
+conf.registerChannelValue(conf.supybot.plugins.RSS, 'showLinks',
+    registry.Boolean(False, """Determines whether the bot will list the link
+    along with the title of the feed when the rss command is called.
+    supybot.plugins.RSS.announce.showLinks affects whether links will be
+    listed when a feed is automatically announced."""))
+
+conf.registerGroup(conf.supybot.plugins.RSS, 'announce')
+conf.registerChannelValue(conf.supybot.plugins.RSS.announce, 'showLinks',
+    registry.Boolean(False, """Determines whether the bot will list the link
+    along with the title of the feed when a feed is automatically
+    announced."""))
 
 class RSS(callbacks.Privmsg):
     """This plugin is useful both for announcing updates to RSS feeds in a
@@ -143,6 +151,19 @@ class RSS(callbacks.Privmsg):
                     self.releaseLock(url)
                     time.sleep(0.1) # So other threads can run.
 
+    def buildHeadlines(self, headlines, channel, config='announce.showLinks'):
+        newheadlines = []
+        if self.registryValue('%s' % config, channel):
+            for headline in headlines:
+                if headline[1]:
+                    newheadlines.append('%s <%s>' % headline)
+                else:
+                    newheadlines.append('%s' % headline[0])
+        else:
+            for headline in headlines:
+                newheadlines = ['%s' % h[0] for h in headlines]
+        return newheadlines
+
     def _newHeadlines(self, irc, channels, name, url):
         try:
             # We acquire the lock here so there's only one announcement thread
@@ -160,7 +181,7 @@ class RSS(callbacks.Privmsg):
             newresults = self.getFeed(url)
             newheadlines = self.getHeadlines(newresults)
             def canonicalize(headline):
-                return tuple(headline.lower().split())
+                return (tuple(headline[0].lower().split()), headline[1])
             oldheadlines = sets.Set(map(canonicalize, oldheadlines))
             for (i, headline) in enumerate(newheadlines):
                 if canonicalize(headline) in oldheadlines:
@@ -175,6 +196,7 @@ class RSS(callbacks.Privmsg):
                     if bold:
                         pre = ircutils.bold(pre)
                         sep = ircutils.bold(sep)
+                    newheadlines = self.buildHeadlines(newheadlines, channel)
                     irc.replies(newheadlines, prefixer=pre, joiner=sep,
                                 to=channel, prefixName=False, private=True)
         finally:
@@ -232,15 +254,14 @@ class RSS(callbacks.Privmsg):
 
     def getHeadlines(self, feed):
         headlines = []
-        showLinks = self.registryValue('showLinks')
         for d in feed['items']:
             if 'title' in d:
                 title = utils.htmlToText(d['title']).strip()
                 link = d.get('link')
-                if link and showLinks:
-                    headlines.append('%s <%s>' % (title, link))
+                if link:
+                    headlines.append((title, link))
                 else:
-                    headlines.append('%s' % title)
+                    headlines.append((title, None))
         return headlines
 
     def _validFeedName(self, name):
@@ -358,6 +379,7 @@ class RSS(callbacks.Privmsg):
         if not headlines:
             irc.error('Couldn\'t get RSS feed')
             return
+        headlines = self.buildHeadlines(headlines, channel, 'showLinks')
         if n:
             try:
                 n = int(n)
