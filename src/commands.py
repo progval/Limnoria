@@ -174,7 +174,7 @@ def getInt(irc, msg, args, state, type='integer', p=None):
         if p is not None:
             if not p(i):
                 raise ValueError
-        state.args.append(_int(args[0]))
+        state.args.append(i)
         del args[0]
     except ValueError:
         irc.errorInvalid(type, args[0])
@@ -195,11 +195,11 @@ def getFloat(irc, msg, args, state):
 
 def getPositiveInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
-           p=lambda i: i<=0, type='positive integer', *L)
+           p=lambda i: i>0, type='positive integer', *L)
 
 def getNonNegativeInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
-            p=lambda i: i<0, type='non-negative integer', *L)
+            p=lambda i: i>=0, type='non-negative integer', *L)
 
 def getId(irc, msg, args, state, kind=None):
     type = 'id'
@@ -319,7 +319,7 @@ def getSeenNick(irc, msg, args, state, errmsg=None):
         if errmsg is None:
             errmsg = 'I haven\'t seen %s.' % args[0]
         irc.error(errmsg)
-    
+
 
 def getChannel(irc, msg, args, state):
     if args and ircutils.isChannel(args[0]):
@@ -364,7 +364,7 @@ def checkChannelCapability(irc, msg, args, state, cap):
     cap = ircdb.makeChannelCapability(state.channel, cap)
     if not ircdb.checkCapability(msg.prefix, cap):
         irc.errorNoCapability(cap, Raise=True)
-            
+
 def getLowered(irc, msg, args, state):
     state.args.append(ircutils.toLower(args.pop(0)))
 
@@ -399,7 +399,7 @@ def checkCapability(irc, msg, args, state, cap):
         state.log.warning('%s tried %s without %s.',
                           msg.prefix, state.name, cap)
         irc.errorNoCapability(cap, Raise=True)
-    
+
 def anything(irc, msg, args, state):
     state.args.append(args.pop(0))
 
@@ -454,7 +454,7 @@ def getPlugin(irc, msg, args, state, require=True):
         irc.errorInvalid('plugin', args[0])
     else:
         state.args.append(None)
-    
+
 wrappers = ircutils.IrcDict({
     'id': getId,
     'ip': getIp,
@@ -553,7 +553,7 @@ class optional(additional):
         try:
             self.__parent.__call__(irc, msg, args, state)
         except (callbacks.ArgumentError, callbacks.Error), e:
-            log.debug('Got %s, returning default.', utils.exntoString(e)) 
+            log.debug('Got %s, returning default.', utils.exntoString(e))
             state.args.append(self.default)
 
 class any(context):
@@ -568,14 +568,14 @@ class any(context):
                 originalStateArgs.append(state.args)
         finally:
             state.args = originalStateArgs
-                
+
 class many(any):
     def __call__(self, irc, msg, args, state):
         super(many, self).__call__(irc, msg, args, state)
         assert state.args
         if not state.args[-1]:
             raise callbacks.ArgumentError
-        
+
 # getopts:  None means "no conversion", '' means "takes no argument"
 def args(irc,msg,args, types=[], state=None,
          getopts=None, allowExtra=False, requireExtra=False, combineRest=True):
