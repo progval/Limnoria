@@ -51,6 +51,27 @@ setup(
     url='http://supybot.sf.net/',
     author='Jeremy Fincher',
     author_email='jemfinch@users.sf.net',
+    #description='A highly robust and full-featured IRC library and bot.',
+    description='A flexible and extensible Python IRC bot and framework.',
+    long_description="""A full-featured Python IRC bot with a clean and
+    flexible plugin API.  Equipped with a complete ACL system for specifying
+    user permissions with as much as per-command granularity.  Batteries are
+    included in the form of numerous plugins already written.""",
+    download_url='http://www.sf.net/project/showfiles.php?group_id=58965',
+    classifiers = [
+        'Development Status :: 3 - Alpha',
+        'Environment :: Console',
+        'Environment :: No Input/Output (Daemon)',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Topic :: Communications :: Chat :: Internet Relay Chat',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Operating System :: POSIX',
+        'Operating System :: Microsoft :: Windows',
+        'Programming Language :: Python',
+    ],
     
     # Installation data
     packages=['supybot',
@@ -68,7 +89,6 @@ setup(
                  'supybot.others.unum': os.path.join('others', 'unum'),
                  'supybot.others.unum.units': 
 		     os.path.join(os.path.join('others', 'unum'), 'units')},
-    description='A highly robust and full-featured IRC library and bot.',
     scripts=['scripts/supybot-wizard',
              'scripts/supybot-adduser',
              'scripts/supybot-newplugin']
