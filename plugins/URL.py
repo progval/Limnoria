@@ -183,7 +183,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         super(URL, self).doPrivmsg(irc, msg)
 
     def tinyurlSnarfer(self, irc, msg, match):
-        r"https?://[^\])>\s]{17,}"
+        r"https?://[^\])>\s]{18,}"
         if not ircutils.isChannel(msg.args[0]):
             return
         channel = msg.args[0]
@@ -288,7 +288,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         Returns a TinyURL.com version of <url>
         """
         url = privmsgs.getArgs(args)
-        if len(url) < 23:
+        if len(url) < 24:
             irc.error(
                       'Stop being a lazy-biotch and type the URL yourself.')
             return
