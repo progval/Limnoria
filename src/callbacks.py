@@ -198,7 +198,7 @@ class Tokenizer:
         return args
 
 def tokenize(s):
-    return Tokenizer.tokenize(s)
+    return Tokenizer().tokenize(s)
 
 class IrcObjectProxy:
     def __init__(self, irc, msg, args):
@@ -231,8 +231,12 @@ class IrcObjectProxy:
         name = self.args.pop(0)
         callback = self.findCallback(name)
         try:
+            if callback is None:
+                self.reply(msg, '[%s]' % ' '.join(args))
             callback.callCommand(getattr(callback, name), 
                                  (self, self.msg, self.args))
+        except Error, e:
+            self.reply(self.msg, debug.exnToString(e))
         except Exception, e:
             debug.recoverableException()
             self.reply(self.msg, debug.exnToString(e))
@@ -312,6 +316,14 @@ class Privmsg(irclib.IrcCallback):
         else:
             f(*args)
 
+    def _getCommands(self, args):
+        commands = []
+        if type(args) == list:
+            commands.append(args[0])
+            for arg in args[1:]:
+                commands.extend(self._getCommands(arg))
+        return commands
+    
     _r = re.compile(r'(\w+)')
     def doPrivmsg(self, irc, msg):
         s = addressed(irc.nick, msg)
@@ -325,7 +337,23 @@ class Privmsg(irclib.IrcCallback):
             if m and self.isCommand(canonicalName(m.group(1))):
                 self.rateLimiter.put(msg)
                 msg = self.rateLimiter.get()
-                self.Proxy(irc, msg, tokenize(s))
+                args = tokenize(s)
+                commands = self._getCommands(args)
+                for command in commands:
+                    anticap = ircdb.makeAntiCapability(command)
+                    if ircdb.checkCapability(msg.prefix, anticap):
+                        debug.debugMsg('Preventing %s from calling %s' % \
+                                            (msg.nick,        command))
+                        return
+                    if ircutils.isChannel(msg.args[0]):
+                        chan = msg.args[0]
+                        chancap = ircdb.makeChannelCapability(chan, command)
+                        antichancap = ircdb.makeAntiCapability(chancap)
+                        if ircdb.checkCapability(msg.prefix, antichancap):
+                            debug.debugMsg('Preventing %s from calling %s' % \
+                                                (msg.nick,        command))
+                            return
+                self.Proxy(irc, msg, args)
 
 
 class IrcObjectProxyRegexp:
