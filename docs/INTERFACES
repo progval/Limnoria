@@ -150,7 +150,8 @@ irclib.Irc:
             prefix: The current prefix of the bot.
 
             server: The current server the bot is connected to.
-                    Usually consists of a (host, port) pair.
+
+	    network: The current network name the bot is connected to.
 
             afterConnect: False until the bot has received a
                           command sent after the connection is finished --

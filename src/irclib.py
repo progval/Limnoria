@@ -539,7 +539,11 @@ class Irc(IrcCommandDispatcher):
 
     def do001(self, msg):
         """Does some logging."""
-        log.info('Received 001 from the server.')
+        welcome = msg.args[1]
+        assert welcome.startswith('Welcome to the ')
+        words = welcome.split()
+        self.network = words[3].lower()
+        log.info('Setting network to %s.', self.network)
 
     def do002(self, msg):
         """Logs the ircd version."""
