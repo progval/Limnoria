@@ -69,8 +69,8 @@ def configure(onStart, afterConnect, advanced):
     prompt = 'Would you like to add an RSS feed?'
     while yn(prompt) == 'y':
         prompt = 'Would you like to add another RSS feed?'
-        name = anything('What\'s the name of the website?')
-        url = anything('What\'s the URL of the RSS feed?')
+        name = something('What\'s the name of the website?')
+        url = something('What\'s the URL of the RSS feed?')
         if yn('Would you like to add an alias for accessing ' \
           '%s\'s info?' % name) == 'y':
             if advanced:
@@ -79,11 +79,11 @@ def configure(onStart, afterConnect, advanced):
                 infocmd = name + "info"
                 print 'You will be able to  access %s\'s info via the ' \
                     '\'%s\' command' % (name, infocmd)
+            if infocmd:
+                onStart.append('alias %s "rssinfo %s"' % (infocmd, url))
+                onStart.append('freeze %s' % infocmd)
         onStart.append('alias %s "rsstitles %s"' % (name, url))
         onStart.append('freeze %s' % name)
-        if infocmd:
-            onStart.append('alias %s "rssinfo %s"' % (infocmd, url))
-            onStart.append('freeze %s' % infocmd)
 
 example = utils.wrapLines("""
 <jemfinch> @list RSS
