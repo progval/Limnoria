@@ -1,0 +1,103 @@
+So what do you do?  That depends on which operating system you're
+running.  We've split this document up to address the different
+methods, so find the section for your operating system and continue
+from there.  First let's start with the parts that are common to all
+OSes.
+
+
+###
+# COMMON:
+###
+
+First things first: Supybot *requires* Python 2.3.  There ain't no
+getting around it.  If you're a Python developer, you probably know
+how superior 2.3 is to previous incarnations.  If you're not, just
+think about the difference between a bowl of plain vanilla ice cream
+and a banana split.  Or something like that.  Either way, *We're*
+Python developers and we like banana splits.  So, be sure to install
+python2.3 before continuing.  You can get it from http://www.python.org/
+
+
+###
+# UNIX/Linux/*BSD:
+###
+
+If you're installing Python using your distributor's packages, you may
+need a python-dev package installed, too.  If you don't have a
+/usr/lib/python2.3/distutils directory (assuming /usr/lib/python2.3 is
+where your Python libs are installed), then you will need a python-dev
+package.
+
+After you extract Supybot and cd into the supybot directory just
+created, you'll want to run (as root) "python setup.py install".  This
+will install Supybot globally.  If you need to install locally for
+whatever reason, see the addendum near the end of this document.
+You'll then have several new programs installed where Python scripts
+are normally installed on your system (/usr/bin or /usr/local/bin are
+common on UNIX systems).  The two that might be of particular interest
+to you, the new user, are "supybot" and "supybot-wizard".  The former
+("supybot") is the script to run an actual bot; the latter
+("supybot-wizard") is an in-depth wizard that provides a nice user
+interface for creating a registry file for your bot.
+
+So after running supybot-wizard, you've got a nice registry file
+handy.  If you're not satisfied with your answers to any of the
+questions you were asked, feel free to run the program again until
+you're satisfied with all your answers.  Once you're satisfied,
+though, run the "supybot" program with the registry file you created
+as an argument.  This will start the bot; unless you turned off
+logging to stdout, you'll see some nice log messages describing what
+the bot is doing at any particular moment; it may pause for a
+significant amount of time after saying "Connecting to ..." while the
+server tries to check its ident.
+
+
+###
+# Windows:
+###
+
+Now that you have Python installed, open up a command prompt.  The
+easiest way to do this is to open the run dialog (Programs -> run) and
+type "cmd" (for Windows 2000/XP/2003) or "command" (for Windows 9x).
+In order to reduce the amount of typing you need to do, I suggest
+adding Python's directory to your path.  If you installed Python using
+the default settings, you would then do the following in the command
+prompt (otherwise change the path to match your settings):
+
+set PATH=%PATH%;C:\Python23\
+
+You should now be able to type "python" to start the Python
+interpreter (CTRL-Z and Return to exit).  Now that that's setup,
+you'll want to cd into the directory that was created when you
+unzipped Supybot; I'll assume you unzipped it to C:\Supybot for these
+instructions.  From C:\Supybot, run "python setup.py install".  This
+will install Supybot under C:\Python23\.  If you want to install
+Supybot to a non-default location, see the addendum near the end of
+this document.  You will now have several new programs installed in
+C:\Python23\Scripts\.  The two that might be of particular interest to
+you, the new user, are "supybot" and "supybot-wizard".  The former
+("supybot") is the script to run an actual bot; the latter
+("supybot-wizard") is an in-depth wizard that provides a nice user
+interface for creating a registry file for your bot.
+
+Now you will want to run "python C:\Python23\Scripts\supybot-wizard"
+to generate a registry file for your bot.  So after running
+supybot-wizard, you've got a nice registry file handy.  If you're not
+satisfied with your answers to any of the questions you were asked,
+feel free to run the program again until you're satisfied with all
+your answers.  Once you're satisfied, though, run "python
+C:\Python23\supybot botname.conf".  This will start the bot; unless
+you turned off logging to stdout, you'll see some nice log messages
+describing what the bot is doing at any particular moment; it may
+pause for a significant amount of time after saying "Connecting to
+..." while the server tries to check its ident.
+
+For more information and help on how to use Supybot, checkout
+docs/GETTING_STARTED.  Our forums (http://forums.supybot.org/) may
+also be of use, especially the "Tips and Tricks" topic under "Supybot
+User Discussion".
+
+###
+# Addenda
+###
+Local installs: See this forum post: http://tinyurl.com/2tb37
