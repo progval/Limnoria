@@ -207,7 +207,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         else:
             self.reply(self.registryValue('boringDunno'), irc=irc, msg=msg)
 
-    def factoid(self, key, irc=None, msg=None, dunno=True):
+    def factoid(self, key, irc=None, msg=None, dunno=True, prepend=''):
         if irc is None:
             assert self.irc is not None
             irc = self.irc
@@ -236,8 +236,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 self.reply(value[8:].strip(),
                            irc=irc, msg=msg, action=True)
             else:
-                self.reply('%s %s %s, $who.' % (key,isAre,value),
-                           irc=irc, msg=msg)
+                s = '%s %s %s, $who' % (key, isAre, value)
+                s = prepend + s
+                self.reply(s, irc=irc, msg=msg)
 
     def normalize(self, s):
         s = ircutils.stripFormatting(s)
@@ -392,7 +393,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             return
         newmsg = ircmsgs.privmsg(irc.nick, factoid+'?', prefix=hostmask)
         try:
-            self.factoid(factoid, msg=newmsg)
+            prepend = '%s wants you to know that ' % msg.nick
+            self.factoid(factoid, msg=newmsg, prepend=prepend)
         except Dunno:
             self.dunno()
         
