@@ -118,22 +118,26 @@ class Debian(callbacks.Privmsg, PeriodicFileDownloader):
         if self.usePythonZegrep:
             fd = gzip.open(self.contents)
             fd = ifilter(imap(lambda line: r.search(line), fd))
-        (fd, _) = popen2.popen4(['zegrep', regexp, self.contents])
+        (r, w) = popen2.popen4(['zegrep', regexp, self.contents])
         packages = []
-        for line in fd:
-            try:
-                (filename, package) = line[:-1].split()
-                if filename == 'FILE':
-                    # This is the last line before the actual files.
-                    continue
-            except ValueError: # Unpack list of wrong size.
-                continue       # We've not gotten to the files yet.
-            if r.search(filename):
-                packages.extend(package.split(','))
-            if len(packages) > 40:
-                irc.error(msg, 'More than 40 results returned, ' \
-                               'please be more specific.')
-                return
+        try:
+            for line in fd:
+                try:
+                    (filename, package) = line[:-1].split()
+                    if filename == 'FILE':
+                        # This is the last line before the actual files.
+                        continue
+                except ValueError: # Unpack list of wrong size.
+                    continue       # We've not gotten to the files yet.
+                if r.search(filename):
+                    packages.extend(package.split(','))
+                if len(packages) > 40:
+                    irc.error(msg, 'More than 40 results returned, ' \
+                                   'please be more specific.')
+                    return
+        finally:
+            r.close()
+            w.close()
         if len(packages) == 0:
             irc.reply(msg, 'I found no packages with that file.')
         else:
