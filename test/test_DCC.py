@@ -34,7 +34,7 @@ from testsupport import *
 import time
 import telnetlib
 
-import ircutils
+import supybot.ircutils as ircutils
 
 if network:
     class DCCTestCase(PluginTestCase):

@@ -35,12 +35,12 @@ Logs raw IRC messages to a file.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
-import conf
-import world
-import irclib
+import supybot.conf as conf
+import supybot.world as world
+import supybot.irclib as irclib
 
 ###
 # RawLogger: Logs the *raw* IRC messages.

@@ -42,17 +42,17 @@ import getopt
 
 from itertools import ifilter, imap
 
-import registry
+import supybot.registry as registry
 
-import conf
-import utils
+import supybot.conf as conf
+import supybot.utils as utils
 
-import plugins
-import ircutils
-import privmsgs
-import registry
-import webutils
-import callbacks
+import supybot.plugins as plugins
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.webutils as webutils
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):

@@ -38,14 +38,14 @@ object (which, as you'll read later, is quite...full-featured :))
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import re
 import time
 import string
 
-import conf
-import ircutils
+import supybot.conf as conf
+import supybot.ircutils as ircutils
 
 ###
 # IrcMsg class -- used for representing IRC messages acquired from a network.

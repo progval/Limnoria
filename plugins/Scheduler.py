@@ -37,16 +37,16 @@ or repeatedly run at a particular interval.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import sets
 import time
 
-import conf
-import utils
-import privmsgs
-import schedule
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.schedule as schedule
+import supybot.callbacks as callbacks
 
 
 class Scheduler(callbacks.Privmsg):

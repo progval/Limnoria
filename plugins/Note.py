@@ -36,7 +36,7 @@ users that can be retrieved later.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import sets
 import time
@@ -44,15 +44,15 @@ import getopt
 import os.path
 from itertools import imap
 
-import conf
-import utils
-import ircdb
-import ircmsgs
-import plugins
-import privmsgs
-import registry
-import ircutils
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.ircmsgs as ircmsgs
+import supybot.plugins as plugins
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.ircutils as ircutils
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

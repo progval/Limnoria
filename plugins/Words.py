@@ -36,7 +36,7 @@ This handles interesting things to do with a dictionary (words) database.
 __revision__ = "$Id$"
 
 import supybot
-import plugins
+import supybot.plugins as plugins
 
 import os
 import copy
@@ -46,12 +46,12 @@ import random
 
 import sqlite
 
-import conf
-import utils
-import privmsgs
-import callbacks
-import ircutils
-import registry
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
+import supybot.ircutils as ircutils
+import supybot.registry as registry
 
 
 class WordsDB(plugins.DBHandler):

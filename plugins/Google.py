@@ -35,7 +35,7 @@ Acceses Google for various things.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import sets
@@ -48,16 +48,16 @@ import xml.sax
 import SOAP
 import google
 
-import registry
+import supybot.registry as registry
 
-import conf
-import utils
-import ircmsgs
-import plugins
-import ircutils
-import privmsgs
-import callbacks
-import structures
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.plugins as plugins
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
+import supybot.structures as structures
 
 def configure(advanced):
     from questions import output, expect, anything, something, yn

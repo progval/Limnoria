@@ -33,7 +33,7 @@ from testsupport import *
 
 import time
 
-import schedule
+import supybot.schedule as schedule
 
 class TestSchedule(SupyTestCase):
     def testSchedule(self):

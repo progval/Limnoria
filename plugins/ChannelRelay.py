@@ -38,17 +38,17 @@ between channels on different networks, check out the Relay plugin.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 
-import conf
-import utils
-import irclib
-import ircmsgs
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.irclib as irclib
+import supybot.ircmsgs as ircmsgs
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 class ValidChannelOrNothing(conf.ValidChannel):
     """Value must be either a valid IRC channel or the empty string."""

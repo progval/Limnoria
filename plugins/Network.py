@@ -35,16 +35,16 @@ Various network-related commands.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import sets
 import socket
 import telnetlib
 
-import utils
-import ircutils
-import privmsgs
-import callbacks
+import supybot.utils as utils
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 class Network(callbacks.Privmsg):

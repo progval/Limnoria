@@ -36,7 +36,7 @@ available on demand via several commands.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import time
 import getopt
@@ -44,15 +44,15 @@ import string
 import os.path
 from itertools import imap
 
-import conf
-import utils
-import ircdb
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
-import Owner
+import supybot.Owner as Owner
 
 try:
     import sqlite

@@ -35,12 +35,12 @@ Removes all bold output by the bot.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 
-import ircmsgs
-import callbacks
+import supybot.ircmsgs as ircmsgs
+import supybot.callbacks as callbacks
 
 
 # For some stupid reason, this doesn't work.

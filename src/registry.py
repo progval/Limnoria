@@ -38,8 +38,8 @@ import time
 import types
 import textwrap
 
-import fix
-import utils
+import supybot.fix as fix
+import supybot.utils as utils
 
 class RegistryException(Exception):
     pass

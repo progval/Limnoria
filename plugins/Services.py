@@ -35,18 +35,18 @@ Services: Handles management of nicks with NickServ, and ops with ChanServ.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import time
 
-import conf
-import ircmsgs
-import privmsgs
-import ircutils
-import registry
-import schedule
-import callbacks
+import supybot.conf as conf
+import supybot.ircmsgs as ircmsgs
+import supybot.privmsgs as privmsgs
+import supybot.ircutils as ircutils
+import supybot.registry as registry
+import supybot.schedule as schedule
+import supybot.callbacks as callbacks
 
 def configure(advanced):
     from questions import output, expect, anything, something, yn

@@ -33,8 +33,8 @@ from testsupport import *
 
 import re
 
-import conf
-import registry
+import supybot.conf as conf
+import supybot.registry as registry
 
 class ValuesTestCase(SupyTestCase):
     def testBoolean(self):

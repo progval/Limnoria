@@ -38,7 +38,7 @@ IRC-case-insensitive fashion), and numerous other things.
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import re
 import copy
@@ -53,7 +53,7 @@ import textwrap
 from itertools import imap
 from cStringIO import StringIO as sio
 
-import utils
+import supybot.utils as utils
 
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""

@@ -37,7 +37,7 @@ Data structures for Python.
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import types
 import pprint

@@ -35,7 +35,7 @@ Module for general worldly stuff, like global variables and whatnot.
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import gc
 import os
@@ -46,12 +46,12 @@ import types
 import atexit
 import threading
 
-import log
-import conf
-import drivers
-import ircutils
-import registry
-import schedule
+import supybot.log as log
+import supybot.conf as conf
+import supybot.drivers as drivers
+import supybot.ircutils as ircutils
+import supybot.registry as registry
+import supybot.schedule as schedule
 
 startedAt = time.time() # Just in case it doesn't get set later.
 

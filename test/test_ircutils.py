@@ -35,8 +35,8 @@ from testsupport import *
 import copy
 import random
 
-import ircmsgs
-import ircutils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
 
 class FunctionsTestCase(SupyTestCase):
     hostmask = 'foo!bar@baz'

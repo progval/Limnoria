@@ -36,17 +36,17 @@ Logs all the messages the bot receives to XML.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import os.path
 
-import conf
-import utils
-import world
-import ircmsgs
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircmsgs as ircmsgs
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 conf.registerPlugin('XMLLogger')
 conf.registerGlobalValue(conf.supybot.plugins.XMLLogger, 'prettyPrint',

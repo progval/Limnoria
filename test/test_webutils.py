@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-import webutils
+import supybot.webutils as webutils
 
 
 class WebutilsTestCase(SupyTestCase):

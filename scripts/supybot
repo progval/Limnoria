@@ -58,14 +58,14 @@ import optparse
 started = time.time()
 
 import supybot
-import registry
+import supybot.registry as registry
 
 def main():
-    import conf
-    import utils
-    import world
-    import drivers
-    import schedule
+    import supybot.conf as conf
+    import supybot.utils as utils
+    import supybot.world as world
+    import supybot.drivers as drivers
+    import supybot.schedule as schedule
     # We schedule this event rather than have it actually run because if there
     # is a failure between now and the time it takes the Owner plugin to load
     # all the various plugins, our registry file might be wiped.  That's bad.
@@ -184,9 +184,9 @@ if __name__ == '__main__':
             sys.stderr.write(os.linesep)
             sys.exit(-1)
 
-    import log
-    import conf
-    import world
+    import supybot.log as log
+    import supybot.conf as conf
+    import supybot.world as world
     world.starting = True
 
     def closeRegistry():
@@ -245,11 +245,11 @@ if __name__ == '__main__':
         fd.close()
     registry.open(userdataFilename)
 
-    import irclib
-    import ircmsgs
-    import drivers
-    import callbacks
-    import Owner
+    import supybot.irclib as irclib
+    import supybot.ircmsgs as ircmsgs
+    import supybot.drivers as drivers
+    import supybot.callbacks as callbacks
+    import supybot.Owner as Owner
 
     irc = irclib.Irc(nick, user=user, ident=ident,
                      network=defaultNetwork, password=password)

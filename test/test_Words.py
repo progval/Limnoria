@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-import utils
+import supybot.utils as utils
 
 try:
     import sqlite

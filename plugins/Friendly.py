@@ -37,10 +37,10 @@ __revision__ = "$Id$"
 
 deprecated = True
 
-import plugins
+import supybot.plugins as plugins
 
-import ircutils
-import callbacks
+import supybot.ircutils as ircutils
+import supybot.callbacks as callbacks
 
 class Friendly(callbacks.PrivmsgRegexp):
     onlyFirstMatch = True

@@ -35,15 +35,15 @@ Allows folks to talk through the bot anonymously.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
-import conf
-import utils
-import ircdb
-import ircmsgs
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.ircmsgs as ircmsgs
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):

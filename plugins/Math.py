@@ -37,7 +37,7 @@ __revision__ = "$Id$"
 
 from __future__ import division
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import math
@@ -46,9 +46,9 @@ import types
 import string
 from itertools import imap
 
-import utils
-import privmsgs
-import callbacks
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 import convertcore
 

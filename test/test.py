@@ -55,22 +55,22 @@ supybot.protocols.irc.throttleTime: -1
 """)
 fd.close()
 
-import registry
+import supybot.registry as registry
 registry.open(registryFilename)
 
-import log
-import conf
+import supybot.log as log
+import supybot.conf as conf
 conf.allowEval = True
 conf.supybot.flush.setValue(False)
 
-import fix
+import supybot.fix as fix
 
 import re
 import glob
 import os.path
 import unittest
 
-import world
+import supybot.world as world
 
 class path(str):
     """A class to represent platform-independent paths."""

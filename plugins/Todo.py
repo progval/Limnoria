@@ -36,7 +36,7 @@ tasks to do, with an optional priority for each.
 
 __revision__ = "$Id$"
 __author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
-import plugins
+import supybot.plugins as plugins
 
 import glob
 import time
@@ -44,11 +44,11 @@ import getopt
 import string
 import os.path
 
-import conf
-import ircdb
-import utils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.ircdb as ircdb
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

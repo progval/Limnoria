@@ -35,16 +35,16 @@ Contains various drivers (network, file, and otherwise) for using IRC objects.
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import re
 import os
 import sys
 
-import log
-import conf
-import ansi
-import ircmsgs
+import supybot.log as log
+import supybot.conf as conf
+import supybot.ansi as ansi
+import supybot.ircmsgs as ircmsgs
 
 _drivers = {}
 _deadDrivers = []
@@ -118,11 +118,14 @@ def newDriver(server, irc, moduleName=None):
     if moduleName == 'default':
         try:
             import twistedDrivers
-            moduleName = 'twistedDrivers'
+            moduleName = 'supybot.twistedDrivers'
         except ImportError:
-            del sys.modules['twistedDrivers']
-            moduleName = 'socketDrivers'
-    driver = __import__(moduleName).Driver(server, irc)
+            del sys.modules['supybot.twistedDrivers']
+            moduleName = 'supybot.socketDrivers'
+    elif not moduleName.startswith('supybot.'):
+        moduleName = 'supybot.' + moduleName
+    driverModule = __import__(moduleName, {}, {}, ['not empty'])
+    driver = driverModule.Driver(server, irc)
     irc.driver = driver
     return driver
 

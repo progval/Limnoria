@@ -36,7 +36,7 @@ written in) somehow.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import re
@@ -54,13 +54,13 @@ try:
 finally:
     sys.stdout = sys.__stdout__
 
-import conf
-import utils
-import webutils
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.webutils as webutils
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 L = [os.__file__]
 if hasattr(math, '__file__'):

@@ -36,20 +36,20 @@ Provides commands for manipulating channel topics.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import random
 
-import conf
-import utils
-import ircdb
-import ircmsgs
-import plugins
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.ircmsgs as ircmsgs
+import supybot.plugins as plugins
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 conf.registerPlugin('Topic')
 conf.registerChannelValue(conf.supybot.plugins.Topic, 'separator',

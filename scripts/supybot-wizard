@@ -5,7 +5,7 @@ import sys
 
 import supybot
 
-import fix
+import supybot.fix as fix
 
 import re
 import sets
@@ -16,10 +16,10 @@ import logging
 import optparse
 from itertools import imap
 
-import ansi
-import utils
-import ircutils
-import registry
+import supybot.ansi as ansi
+import supybot.utils as utils
+import supybot.ircutils as ircutils
+import supybot.registry as registry
 
 import questions
 from questions import output, yn, anything, something, expect, getpass
@@ -41,7 +41,7 @@ def getPlugins(pluginDirs):
     return plugins
 
 def loadPlugin(name):
-    import Owner
+    import supybot.Owner as Owner
     try:
         module = Owner.loadPluginModule(name)
         if hasattr(module, 'Class'):
@@ -124,8 +124,8 @@ def getRegistryValue(setting, prompt='', showHelp=True, showType=True):
     return ret
 
 def main():
-    import log
-    import conf
+    import supybot.log as log
+    import supybot.conf as conf
     log._stdoutHandler.setLevel(100) # *Nothing* gets through this!
     parser = optparse.OptionParser(usage='Usage: %prog [options] [configFile]',
                                    version='Supybot %s' % conf.version)
@@ -468,7 +468,7 @@ def main():
     you can add users to your bot's user database, it's *very* important that
     you have an owner user for you bot.""")
     if yn('Would you like to add an owner user for your bot?', default=True):
-        import ircdb
+        import supybot.ircdb as ircdb
         name = something('What should the owner\'s username be?')
         try:
             id = ircdb.users.getUserId(name)
@@ -511,7 +511,7 @@ def main():
         on accident).  You can even have more than one.  I (jemfinch) am quite
         partial to @, but that's because I've been using it since my ocamlbot
         days.""")
-        import callbacks
+        import supybot.callbacks as callbacks
         c = ''
         while not c:
             try:
@@ -683,7 +683,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         # We may still be using bold text when exiting during a prompt
         if questions.useBold:
-            import ansi
+            import supybot.ansi as ansi
             print ansi.RESET
         print
         print

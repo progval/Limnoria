@@ -40,17 +40,17 @@ import os
 import time
 import getopt
 
-import log
-import conf
-import utils
-import world
-import ircdb
-import ircmsgs
-import plugins
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircdb as ircdb
+import supybot.ircmsgs as ircmsgs
+import supybot.plugins as plugins
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 filename = os.path.join(conf.supybot.directories.data(), 'Herald.db')
 

@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-import schedule
+import supybot.schedule as schedule
 
 class SchedulerTestCase(ChannelPluginTestCase):
     plugins = ('Scheduler', 'Utilities')

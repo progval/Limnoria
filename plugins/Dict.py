@@ -35,7 +35,7 @@ Commands that use the dictd protocol to snag stuff off a server.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import sets
 import random
@@ -43,13 +43,13 @@ import socket
 
 import dictclient
 
-import conf
-import utils
-import plugins
-import registry
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.plugins as plugins
+import supybot.registry as registry
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):

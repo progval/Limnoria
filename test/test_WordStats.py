@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-import ircdb
+import supybot.ircdb as ircdb
 
 class WordStatsTestCase(ChannelPluginTestCase):
     plugins = ('WordStats', 'User', 'Utilities')

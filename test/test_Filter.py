@@ -33,7 +33,7 @@ from testsupport import *
 
 import re
 
-import utils
+import supybot.utils as utils
 
 class FilterTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Filter',)

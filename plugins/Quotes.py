@@ -35,18 +35,18 @@ Maintains a Quotes database for each channel.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import time
 import getopt
 import os.path
 
-import conf
-import utils
-import ircdb
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

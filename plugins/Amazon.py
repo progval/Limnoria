@@ -37,17 +37,17 @@ __revision__ = "$Id$"
 __author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
 
 import getopt
-import plugins
+import supybot.plugins as plugins
 
 import amazon
 
-import registry
+import supybot.registry as registry
 
-import conf
-import utils
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):

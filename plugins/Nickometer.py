@@ -55,16 +55,16 @@ an IRC nick is. It's an elitist hacker thing, but quite fun.
 __revision__ = '$Id$'
 __author__ = 'William Robinson (baggins) <airbaggins@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import math
 import string
 
-import conf
-import utils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 def slowExponent(x):

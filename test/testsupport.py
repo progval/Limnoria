@@ -31,7 +31,7 @@
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import gc
 import os
@@ -41,19 +41,19 @@ import time
 started = time.time()
 import unittest
 
-import log
-import conf
-import utils
-import ircdb
-import world
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.world as world
 world.startedAt = started
-import irclib
-import drivers
-import ircmsgs
-import ircutils
-import callbacks
+import supybot.irclib as irclib
+import supybot.drivers as drivers
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.callbacks as callbacks
 
-import Owner
+import supybot.Owner as Owner
 
 network = True
 

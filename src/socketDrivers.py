@@ -37,7 +37,7 @@ from __future__ import division
 
 __revision__ ="$Id$"
 
-import fix
+import supybot.fix as fix
 
 import time
 import atexit
@@ -45,13 +45,13 @@ import select
 import socket
 from itertools import imap
 
-import log
-import conf
-import utils
-import world
-import drivers
-import ircmsgs
-import schedule
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.drivers as drivers
+import supybot.ircmsgs as ircmsgs
+import supybot.schedule as schedule
 
 instances = 0
 originalPoll = conf.supybot.drivers.poll()

@@ -36,14 +36,14 @@ to access the bot.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import random
 
-import irclib
-import ircmsgs
-import ircutils
+import supybot.irclib as irclib
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
 
 class FixRelayBot(irclib.IrcCallback):
     _re = re.compile(r'<([^@]+)@[^>]+>\s+(.*)')

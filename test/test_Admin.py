@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-import conf
+import supybot.conf as conf
 
 class AdminTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Admin',)

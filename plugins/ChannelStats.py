@@ -37,7 +37,7 @@ statistics about smileys, actions, characters, and words.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import re
@@ -47,18 +47,18 @@ import getopt
 import string
 from itertools import imap, ifilter
 
-import log
-import conf
-import utils
-import world
-import ircdb
-import irclib
-import ircmsgs
-import plugins
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircdb as ircdb
+import supybot.irclib as irclib
+import supybot.ircmsgs as ircmsgs
+import supybot.plugins as plugins
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 class Smileys(registry.Value):
     def set(self, s):

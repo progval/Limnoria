@@ -39,13 +39,13 @@ __author__ = ''
 
 import re
 
-import conf
-import utils
-import ircutils
-import privmsgs
-import registry
-import webutils
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.webutils as webutils
+import supybot.callbacks as callbacks
 
 class CurrencyCommand(registry.String):
     def setValue(self, s):

@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-import conf
+import supybot.conf as conf
 
 class ConfigTestCase(ChannelPluginTestCase):
     # We add utilities so there's something in supybot.plugins.

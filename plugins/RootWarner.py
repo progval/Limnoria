@@ -35,13 +35,13 @@ Warns (or even kicks) people when they join a channel if their ident is root.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
-import conf
-import ircmsgs
-import ircutils
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 
 conf.registerPlugin('RootWarner')

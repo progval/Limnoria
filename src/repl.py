@@ -33,13 +33,13 @@
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import sys
 import traceback
 from cStringIO import StringIO
 
-import log
+import supybot.log as log
 
 filename = 'repl'
 

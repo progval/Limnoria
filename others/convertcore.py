@@ -23,10 +23,10 @@
 # distributed in the hope that it will be useful, but WITTHOUT ANY WARRANTY.
 #*****************************************************************************
 
-import re, copy, sys, os.path
-import registry
-import conf
-import StringIO
+import re, copy, sys, os.path, StringIO
+
+import supybot.conf as conf
+import supybot.registry as registry
 
 #*****************************************************************************
 #

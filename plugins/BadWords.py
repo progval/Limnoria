@@ -36,21 +36,21 @@ to say bad words.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import math
 import sets
 import time
 
-import conf
-import utils
-import ircdb
-import ircmsgs
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 def configure(advanced):
     from questions import output, expect, anything, something, yn

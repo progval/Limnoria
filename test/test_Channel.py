@@ -31,9 +31,9 @@
 
 from testsupport import *
 
-import conf
-import ircdb
-import ircmsgs
+import supybot.conf as conf
+import supybot.ircdb as ircdb
+import supybot.ircmsgs as ircmsgs
 
 class ChannelTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Channel', 'User')

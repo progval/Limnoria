@@ -36,15 +36,15 @@ Provides simple commands for formatting text on IRC.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import string
 
-import conf
-import utils
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):

@@ -36,19 +36,19 @@ the output of the bot.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import string
 import random
 import itertools
 
-import conf
-import utils
-import ircmsgs
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 class MyFilterProxy(object):
     def reply(self, s):

@@ -36,7 +36,7 @@ Provides commands useful to users in general. This plugin is loaded by default.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import fix
+import supybot.fix as fix
 
 import re
 import getopt
@@ -44,14 +44,14 @@ import string
 import fnmatch
 from itertools import imap, ifilter
 
-import conf
-import utils
-import ircdb
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
-import Config
+import supybot.Config as Config
 
 class User(callbacks.Privmsg):
     def _checkNotChannel(self, irc, msg, password=' '):

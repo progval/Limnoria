@@ -35,7 +35,7 @@ Provides basic functionality for handling RSS/RDF feeds.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import sets
 import time
@@ -46,14 +46,14 @@ from itertools import imap
 
 import rssparser
 
-import conf
-import utils
-import world
-import ircmsgs
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 def configure(advanced):
     from questions import output, expect, anything, something, yn

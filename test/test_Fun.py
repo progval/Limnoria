@@ -32,9 +32,9 @@
 from testsupport import *
 
 import re
-import ircmsgs
+import supybot.ircmsgs as ircmsgs
 
-import utils
+import supybot.utils as utils
 
 class FunTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Fun',)

@@ -32,7 +32,7 @@
 from testsupport import *
 import sets
 
-import utils
+import supybot.utils as utils
 
 class UtilsTest(SupyTestCase):
     def testMatchCase(self):
@@ -251,7 +251,7 @@ class UtilsTest(SupyTestCase):
         self.assertEqual(utils.nItems('tool', 2), '2 tools')
 
     def testItersplit(self):
-        from utils import itersplit
+        itersplit = utils.itersplit
         L = [1, 2, 3] * 3
         s = 'foo bar baz'
         self.assertEqual(list(itersplit(lambda x: x == 3, L)),

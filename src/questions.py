@@ -37,8 +37,8 @@ import sys
 import textwrap
 from getpass import getpass as getPass
 
-import ansi
-import utils
+import supybot.ansi as ansi
+import supybot.utils as utils
 
 useBold = False
 

@@ -36,7 +36,7 @@ Handles relaying between networks.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import sys
@@ -44,16 +44,16 @@ import copy
 import time
 from itertools import imap, ifilter
 
-import conf
-import utils
-import world
-import irclib
-import drivers
-import ircmsgs
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.irclib as irclib
+import supybot.drivers as drivers
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 def configure(advanced):
     from questions import output, expect, anything, something, yn

@@ -37,21 +37,21 @@ to have the <channel>.op capability.  This plugin is loaded by default.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import fix
+import supybot.fix as fix
 
 import time
 import getopt
 from itertools import imap
 
-import conf
-import ircdb
-import utils
-import ircmsgs
-import schedule
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.ircdb as ircdb
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.schedule as schedule
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 conf.registerPlugin('Channel')
 conf.registerChannelValue(conf.supybot.plugins.Channel, 'alwaysRejoin',

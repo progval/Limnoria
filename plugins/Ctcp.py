@@ -36,7 +36,7 @@ and FINGER.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import sys
@@ -44,9 +44,9 @@ import time
 
 sys.path.append(os.pardir)
 
-import conf
-import ircmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.ircmsgs as ircmsgs
+import supybot.callbacks as callbacks
 
 notice = ircmsgs.notice
 

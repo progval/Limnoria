@@ -37,7 +37,7 @@ caller to have the 'admin' capability.  This plugin is loaded by default.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import fix
+import supybot.fix as fix
 
 import time
 import pprint
@@ -47,15 +47,15 @@ import smtplib
 import textwrap
 from itertools import imap
 
-import log
-import conf
-import ircdb
-import utils
-import ircmsgs
-import ircutils
-import privmsgs
-import schedule
-import callbacks
+import supybot.log as log
+import supybot.conf as conf
+import supybot.ircdb as ircdb
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.schedule as schedule
+import supybot.callbacks as callbacks
 
 
 class Admin(privmsgs.CapabilityCheckingPrivmsg):

@@ -31,7 +31,7 @@
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import gc
 import os
@@ -45,13 +45,13 @@ import urllib2
 import UserDict
 import threading
 
-import cdb
-import log
-import conf
-import utils
-import world
-import ircutils
-import webutils
+import supybot.cdb as cdb
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircutils as ircutils
+import supybot.webutils as webutils
 
 try:
     mxCrap = {}

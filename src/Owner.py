@@ -37,7 +37,7 @@ their caller to have the 'owner' capability.  This plugin is loaded by default.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import fix
+import supybot.fix as fix
 
 import gc
 import os
@@ -48,17 +48,17 @@ import getopt
 import logging
 import linecache
 
-import log
-import conf
-import utils
-import world
-import ircdb
-import irclib
-import ircmsgs
-import drivers
-import privmsgs
-import registry
-import callbacks
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircdb as ircdb
+import supybot.irclib as irclib
+import supybot.ircmsgs as ircmsgs
+import supybot.drivers as drivers
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 class Deprecated(ImportError):
     pass

@@ -36,14 +36,14 @@ Maintains various arbitrary information on users.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
-import conf
-import utils
-import ircdb
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 conf.registerPlugin('UserInfo')
 conf.registerUserValue(conf.users, 'name',

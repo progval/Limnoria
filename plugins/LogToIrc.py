@@ -36,22 +36,22 @@ Allows for sending the bot's logging output to channels or users.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import logging
 import os.path
 from itertools import imap
 
-import log
-import conf
-import utils
-import world
-import ircdb
-import ircmsgs
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircdb as ircdb
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 
 class IrcHandler(logging.Handler):

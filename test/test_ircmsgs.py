@@ -34,8 +34,8 @@ from testsupport import *
 import copy
 import pickle
 
-import ircmsgs
-import ircutils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
 
 
 class IrcMsgTestCase(SupyTestCase):

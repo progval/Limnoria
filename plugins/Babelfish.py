@@ -42,11 +42,11 @@ from itertools import imap
 
 import babelfish
 
-import conf
-import utils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 class Languages(registry.OnlySomeStrings):
     validStrings = tuple(map(str.capitalize, babelfish.available_languages))

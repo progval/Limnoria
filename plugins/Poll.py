@@ -36,17 +36,17 @@ A module for managing and voting on polls.
 
 __revision__ = "$Id$"
 __author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
-import plugins
+import supybot.plugins as plugins
 
 import os
 import time
 
-import conf
-import utils
-import ircdb
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

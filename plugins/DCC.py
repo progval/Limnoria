@@ -35,19 +35,19 @@ Supports various DCC things.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import socket
 import textwrap
 import threading
 
-import conf
-import utils
-import world
-import ircmsgs
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 class DCC(callbacks.Privmsg):
     def chat(self, irc, msg, args):

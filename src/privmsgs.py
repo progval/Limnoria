@@ -35,20 +35,20 @@ Includes various accessories for callbacks.Privmsg based callbacks.
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import time
 import types
 import threading
 
-import conf
-import utils
-import world
-import ircdb
-import ircmsgs
-import ircutils
-import callbacks
-import structures
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircdb as ircdb
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.callbacks as callbacks
+import supybot.structures as structures
 
 def getChannel(msg, args, raiseError=True):
     """Returns the channel the msg came over or the channel given in args.

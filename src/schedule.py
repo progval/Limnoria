@@ -36,13 +36,13 @@ Supybot driver.
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import time
 import heapq
 
-import log
-import drivers
+import supybot.log as log
+import supybot.drivers as drivers
 
 class mytuple(tuple):
     def __cmp__(self, other):

@@ -31,15 +31,15 @@
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import time
 
-import log
-import conf
-import ircdb
-import drivers
-import ircmsgs
+import supybot.log as log
+import supybot.conf as conf
+import supybot.ircdb as ircdb
+import supybot.drivers as drivers
+import supybot.ircmsgs as ircmsgs
 
 from twisted.internet import reactor
 from twisted.protocols.basic import LineReceiver

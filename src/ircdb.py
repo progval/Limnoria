@@ -33,7 +33,7 @@ __revision__ = "$Id$"
 
 from __future__ import division
 
-import fix
+import supybot.fix as fix
 
 import os
 import sets
@@ -41,12 +41,12 @@ import time
 import string
 from itertools import imap, ilen, ifilter
 
-import log
-import conf
-import utils
-import world
-import ircutils
-import unpreserve
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircutils as ircutils
+import supybot.unpreserve as unpreserve
 
 def fromChannelCapability(capability):
     """Returns a (channel, capability) tuple from a channel capability."""

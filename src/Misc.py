@@ -36,22 +36,22 @@ Miscellaneous commands.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import fix
+import supybot.fix as fix
 
 import os
 import sys
 import getopt
 from itertools import imap, ifilter
 
-import conf
-import utils
-import ircdb
-import irclib
-import ircmsgs
-import ircutils
-import privmsgs
-import webutils
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.irclib as irclib
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.webutils as webutils
+import supybot.callbacks as callbacks
 
 class Misc(callbacks.Privmsg):
     priority = sys.maxint

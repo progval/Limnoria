@@ -34,10 +34,10 @@ from testsupport import *
 import os
 import unittest
 
-import conf
-import world
-import ircdb
-import ircutils
+import supybot.conf as conf
+import supybot.world as world
+import supybot.ircdb as ircdb
+import supybot.ircutils as ircutils
 
 class IrcdbTestCase(SupyTestCase):
     def setUp(self):

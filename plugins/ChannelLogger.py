@@ -36,19 +36,19 @@ Logs each channel to its own individual logfile.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import time
 from cStringIO import StringIO
 
 import os
-import conf
-import world
-import irclib
-import ircmsgs
-import ircutils
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.world as world
+import supybot.irclib as irclib
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 conf.registerPlugin('ChannelLogger')
 conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger,

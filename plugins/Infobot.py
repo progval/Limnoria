@@ -36,20 +36,20 @@ Infobot compatibility, for the parts that we don't support already.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import re
 import random
 import cPickle as pickle
 
-import conf
-import utils
-import ircmsgs
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 conf.registerPlugin('Infobot')
 conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'personality',

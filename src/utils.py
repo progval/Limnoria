@@ -35,7 +35,7 @@ Simple utility functions.
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import os
 import re
@@ -52,7 +52,7 @@ import UserDict
 import htmlentitydefs
 from itertools import imap, ifilter
 
-from structures import TwoWayDictionary
+from supybot.structures import TwoWayDictionary
 
 curry = new.instancemethod
 

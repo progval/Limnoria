@@ -35,7 +35,7 @@ Provides several commands that go out to websites and get things.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import sets
@@ -46,12 +46,12 @@ import urllib2
 import xml.dom.minidom
 from itertools import imap, ifilter
 
-import conf
-import utils
-import webutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.webutils as webutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 class FreshmeatException(Exception):
     pass

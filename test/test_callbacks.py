@@ -31,10 +31,10 @@
 
 from testsupport import *
 
-import conf
-import utils
-import ircmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.callbacks as callbacks
 
 tokenize = callbacks.tokenize
 

@@ -38,7 +38,7 @@ try:
 except ImportError:
     sqlite = None
 
-import conf
+import supybot.conf as conf
 
 if sqlite:
     class LookupTestCase(PluginTestCase, PluginDocumentation):

@@ -62,9 +62,8 @@ setup(
     url='http://supybot.sf.net/',
     author='Jeremy Fincher',
     author_email='jemfinch@users.sf.net',
-    #description='A highly robust and full-featured IRC library and bot.',
     description='A flexible and extensible Python IRC bot and framework.',
-    long_description="""A full-featured Python IRC bot with a clean and
+    long_description="""A robust, full-featured Python IRC bot with a clean and
     flexible plugin API.  Equipped with a complete ACL system for specifying
     user permissions with as much as per-command granularity.  Batteries are
     included in the form of numerous plugins already written.""",
@@ -86,15 +85,11 @@ setup(
 
     # Installation data
     packages=['supybot',
-              'supybot.src',
               'supybot.others',
-              'supybot.plugins',
-              'supybot.others.IMDb',],
-    package_dir={'supybot': os.curdir,
-                 'supybot.src': 'src',
+              'supybot.plugins',],
+    package_dir={'supybot': 'src',
                  'supybot.others': 'others',
-                 'supybot.plugins': 'plugins',
-                 'supybot.others.IMDb': os.path.join('others', 'IMDb'),},
+                 'supybot.plugins': 'plugins',},
     scripts=['scripts/supybot',
              'scripts/supybot-wizard',
              'scripts/supybot-adduser',

@@ -35,7 +35,7 @@ Provides commands available only on Unix.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import re
@@ -50,10 +50,10 @@ import string
 import struct
 
 
-import conf
-import utils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 def configure(advanced):
     from questions import output, expect, anything, something, yn

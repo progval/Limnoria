@@ -31,8 +31,8 @@
 
 from testsupport import *
 
-import world
-import ircdb
+import supybot.world as world
+import supybot.ircdb as ircdb
 
 class UserTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('User',)

@@ -39,7 +39,7 @@ and if nothing is found, responds with an entry from the "dunno" database.
 __revision__="$Id$"
 __author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import sets
@@ -50,17 +50,17 @@ import random
 from itertools import imap
 from cStringIO import StringIO
 
-import registry
+import supybot.registry as registry
 
-import conf
-import ircdb
-import utils
-import ircmsgs
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.ircdb as ircdb
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
-import Owner
+import supybot.Owner as Owner
 
 try:
     import sqlite

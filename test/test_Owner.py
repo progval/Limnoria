@@ -31,8 +31,8 @@
 
 from testsupport import *
 
-import conf
-import Owner
+import supybot.conf as conf
+import supybot.Owner as Owner
 
 class OwnerTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Utilities', 'Relay', 'Network', 'Admin', 'Channel')

@@ -35,7 +35,7 @@ The Lookup plugin handles looking up various values by their key.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import re
@@ -44,11 +44,11 @@ import sets
 import getopt
 import string
 
-import conf
-import utils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-import utils
+import supybot.utils as utils
 
 if network:
     class GameknotTestCase(PluginTestCase, PluginDocumentation):

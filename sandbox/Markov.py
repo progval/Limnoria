@@ -30,8 +30,8 @@
 ###
 
 """
-Silently listens to a channel, building a database of Markov Chains for later
-hijinks.  To read more about Markov Chains, check out
+Silently listens to a channel, building an SQL database of Markov Chains for
+later hijinks.  To read more about Markov Chains, check out
 <http://www.cs.bell-labs.com/cm/cs/pearls/sec153.html>.  When the database is
 large enough, you can have it make fun little random messages from it.
 """
@@ -40,112 +40,109 @@ __revision__ = "$Id$"
 
 import plugins
 
-import anydbm
-import random
 import os.path
 
-import conf
-import world
 import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
 
+try:
+    import sqlite
+except ImportError:
+    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
+                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-class MarkovDB(object):
-    def __init__(self):
-        self.dbs = {}
+conf.registerPlugin('Markov')
+conf.registerGlobalValue(supybot.plugins.Markov, 'maximumWorkQueue',
+    registry.PositiveInteger(10, """Determines what the maximum number of
+    oustanding Markov work requests will be allowed."""))
 
-    def die(self):
-        for db in self.dbs.values():
-            try:
-                db.close()
-            except:
-                continue
+class MarkovThread(threading.Thread):
+    def __init__(self, high, low):
+        self.q = q
 
-    def _getDb(self, channel):
-        channel = channel.lower()
-        if channel not in self.dbs:
-            filename = '%s-Markov.db' % channel
-            filename = os.path.join(conf.supybot.directories.data(), filename)
-            self.dbs[channel] = anydbm.open(filename, 'c')
-        return self.dbs[channel]
-
-    def __getitem__(self, (channel, item)):
-        return self._getDb(channel)[item]
-
-    def __setitem__(self, (channel, item), value):
-        self._getDb(channel)[item] = value
-
-    def getNumberOfPairs(self, channel):
-        try:
-            # Minus one, because we have a key storing the first pairs.
-            return len(self[channel.lower()]) - 1
-        except KeyError:
-            return 0
-
-    def getNumberOfFirstPairs(self, channel):
-        try:
-            return len(self[channel, ''].split())
-        except KeyError:
-            return 0
-
-    def getFirstPair(self, channel):
-        try:
-            pairs = self[channel, ''].split()
-        except KeyError:
-            raise ValueError('No starting pairs in the database.')
-        pair = random.choice(pairs)
-        return pair.split('\x00', 1)
-
-    def getFollower(self, channel, first, second):
-        pair = '%s %s' % (first, second)
-        try:
-            followers = self[channel, pair].split()
-        except KeyError:
-            return '\x00'
-        return random.choice(followers)
-
-    def addFirstPair(self, channel, first, second):
-        pair = '%s\x00%s' % (first, second)
-        try:
-            startingPairs = self[channel, '']
-        except KeyError:
-            startingPairs = ''
-        self[channel, ''] = '%s%s ' % (startingPairs, pair)
-
-    def addPair(self, channel, first, second, follower):
-        pair = '%s %s' % (first, second)
-        try:
-            followers = self[channel, pair]
-        except KeyError:
-            followers = ''
-        self[channel, pair] = '%s%s ' % (followers, follower)
+    def run(self):
+        while 1:
+            f = self.q.get()
+            if f is None:
+                break
+            else:
+                f()
 
 
-class Markov(callbacks.Privmsg):
+class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        self.db = MarkovDB()
+        plugins.ChannelDBHandler.__init__(self)
+        self.q = Queue.Queue(self.registryValue('maximumWorkQueue'))
+        self.t = MarkovThread(self.q)
+        self.t.start()
+
+    def putq(self, f):
+        try:
+            self.q.put(f, False)
+        except Queue.Full:
+            self.log.info('Can\'t putq, queue full.')
+            raise
+
+    def makeDb(self, filename):
+        def f():
+            if os.path.exists(filename):
+                return sqlite.connect(filename)
+            db = sqlite.connect(filename)
+            cursor = db.cursor()
+            cursor.execute("""CREATE TABLE pairs (
+                              id INTEGER PRIMARY KEY,
+                              first TEXT,
+                              second TEXT,
+                              is_first BOOLEAN,
+                              UNIQUE (first, second) ON CONFLICT IGNORE
+                              )""")
+            cursor.execute("""CREATE TABLE follows (
+                              id INTEGER PRIMARY KEY,
+                              pair_id INTEGER,
+                              word TEXT
+                              )""")
+            cursor.execute("""CREATE INDEX follows_pair_id
+                              ON follows (pair_id)""")
+            db.commit()
+            return db
+        self.putq(f)
 
     def doPrivmsg(self, irc, msg):
         if not ircutils.isChannel(msg.args[0]):
             return
         channel = msg.args[0]
+        db = self.getDb(channel)
+        cursor = db.cursor()
         if ircmsgs.isAction(msg):
             words = ircmsgs.unAction(msg).split()
-            words.insert(0, '\x00nick')
-            #words.insert(0, msg.nick)
         else:
             words = msg.args[1].split()
         isFirst = True
         for (first, second, follower) in window(words, 3):
             if isFirst:
-                self.db.addFirstPair(channel, first, second)
+                cursor.execute("""INSERT OR REPLACE
+                                  INTO pairs VALUES (NULL, %s, %s, 1)""",
+                               first, second)
                 isFirst = False
-            self.db.addPair(channel, first, second, follower)
+            else:
+                cursor.execute("INSERT INTO pairs VALUES (NULL, %s, %s, 0)",
+                               first, second)
+            cursor.execute("""SELECT id FROM pairs
+                              WHERE first=%s AND second=%s""", first, second)
+            id = int(cursor.fetchone()[0])
+            cursor.execute("""INSERT INTO follows VALUES (NULL, %s, %s)""",
+                           id, follower)
         if not isFirst: # i.e., if the loop iterated at all.
-            self.db.addPair(channel, second, follower, '\x00')
+            cursor.execute("""INSERT INTO pairs VALUES (NULL, %s, %s, 0)""",
+                           second, follower)
+            cursor.execute("""SELECT id FROM pairs
+                              WHERE first=%s AND second=%s""", second,follower)
+            id = int(cursor.fetchone()[0])
+            cursor.execute("INSERT INTO follows VALUES (NULL, %s, NULL)", id)
+        db.commit()
 
     _maxMarkovLength = 80
     _minMarkovLength = 7
@@ -156,26 +153,41 @@ class Markov(callbacks.Privmsg):
         data kept on <channel> (which is only necessary if not sent in the
         channel itself).
         """
+        argsCopy = args[:]
         channel = privmsgs.getChannel(msg, args)
-        try:
-            pair = self.db.getFirstPair(channel)
-        except ValueError:
-            irc.error('I have no records for this channel.')
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        words = []
+        cursor.execute("""SELECT id, first, second FROM pairs
+                          WHERE is_first=1
+                          ORDER BY random()
+                          LIMIT 1""")
+        if cursor.rowcount == 0:
+            irc.error('I have no records for that channel.')
             return
-        words = [pair[0], pair[1]]
+        (id, first, second) = cursor.fetchone()
+        id = int(id)
+        words.append(first)
+        words.append(second)
+        sql = """SELECT follows.word FROM pairs, follows
+                 WHERE pairs.first=%s AND
+                       pairs.second=%s AND
+                       pairs.id=follows.pair_id
+                 ORDER BY random()
+                 LIMIT 1"""
         while len(words) < self._maxMarkovLength:
-            follower = self.db.getFollower(channel, words[-2], words[-1])
-            if follower == '\x00':
-                if len(words) < self._minMarkovLength:
-                    pair = self.db.getFirstPair(channel)
-                    words = [pair[0], pair[1]]
-                else:
-                    break
-            else:
-                words.append(follower)
-        if words[0] == '\x00nick':
-            words[0] = choice(irc.state.channels[channel].users)
-        irc.reply(' '.join(words))
+            cursor.execute(sql, words[-2], words[-1])
+            results = cursor.fetchone()
+            if not results:
+                break
+            word = results[0]
+            if word is None:
+                break
+            words.append(word)
+        if len(words) < self._minMarkovLength:
+            self.markov(irc, msg, argsCopy)
+        else:
+            irc.reply(' '.join(words))
 
     def pairs(self, irc, msg, args):
         """[<channel>]
@@ -184,7 +196,10 @@ class Markov(callbacks.Privmsg):
         <channel>.
         """
         channel = privmsgs.getChannel(msg, args)
-        n = self.db.getNumberOfPairs(channel)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM pairs""")
+        n = int(cursor.fetchone()[0])
         s = 'There are %s pairs in my Markov database for %s' % (n, channel)
         irc.reply(s)
 
@@ -195,37 +210,40 @@ class Markov(callbacks.Privmsg):
         <channel>.
         """
         channel = privmsgs.getChannel(msg, args)
-        n = self.db.getNumberOfFirstPairs(channel)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM pairs WHERE is_first=1""")
+        n = int(cursor.fetchone()[0])
         s = 'There are %s first pairs in my Markov database for %s'%(n,channel)
         irc.reply(s)
 
-#    def follows(self, irc, msg, args):
-#        """[<channel>]
-#
-#        Returns the number of Markov's third links in the database for
-#        <channel>.
-#        """
-#        channel = privmsgs.getChannel(msg, args)
-#        db = self._getDb(channel)
-#        cursor = db.cursor()
-#        cursor.execute("""SELECT COUNT(*) FROM follows""")
-#        n = int(cursor.fetchone()[0])
-#        s = 'There are %s follows in my Markov database for %s' % (n, channel)
-#        irc.reply(s)
+    def follows(self, irc, msg, args):
+        """[<channel>]
 
-#    def lasts(self, irc, msg, args):
-#        """[<channel>]
-#
-#        Returns the number of Markov's last links in the database for
-#        <channel>.
-#        """
-#        channel = privmsgs.getChannel(msg, args)
-#        db = self._getDb(channel)
-#        cursor = db.cursor()
-#        cursor.execute("""SELECT COUNT(*) FROM follows WHERE word ISNULL""")
-#        n = int(cursor.fetchone()[0])
-#        s = 'There are %s lasts in my Markov database for %s' % (n, channel)
-#        irc.reply(s)
+        Returns the number of Markov's third links in the database for
+        <channel>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM follows""")
+        n = int(cursor.fetchone()[0])
+        s = 'There are %s follows in my Markov database for %s' % (n, channel)
+        irc.reply(s)
+
+    def lasts(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the number of Markov's last links in the database for
+        <channel>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM follows WHERE word ISNULL""")
+        n = int(cursor.fetchone()[0])
+        s = 'There are %s lasts in my Markov database for %s' % (n, channel)
+        irc.reply(s)
 
 
 Class = Markov

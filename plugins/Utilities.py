@@ -36,15 +36,15 @@ Various utility commands, mostly useful for manipulating nested commands.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import string
 
-import utils
-import ircmsgs
-import ircutils
-import privmsgs
-import callbacks
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 class Utilities(callbacks.Privmsg):
     def ignore(self, irc, msg, args):

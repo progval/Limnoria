@@ -39,23 +39,23 @@ as see who "grabbed" the quote in the first place.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import time
 import random
 
-import registry         # goes before conf! yell at jamessan, not me
+import supybot.registry as registry         # goes before conf! yell at jamessan, not me
 
-import conf
-import ircdb
-import utils
-import ircmsgs
-import plugins
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.ircdb as ircdb
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.plugins as plugins
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

@@ -35,20 +35,20 @@ Handles URL snarfing for Gameknot.com and the gkstats command.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import sets
 import urllib2
 
-import registry
+import supybot.registry as registry
 
-import conf
-import utils
-import plugins
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.plugins as plugins
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):

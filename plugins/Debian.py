@@ -36,7 +36,7 @@ This is a module to contain Debian-specific commands.
 __revision__ = "$Id$"
 __author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
 
-import plugins
+import supybot.plugins as plugins
 
 import re
 import gzip
@@ -49,13 +49,13 @@ import fnmatch
 import os.path
 from itertools import imap, ifilter
 
-import registry
+import supybot.registry as registry
 
-import conf
-import utils
-import privmsgs
-import webutils
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.webutils as webutils
+import supybot.callbacks as callbacks
 
 
 def configure(advanced):

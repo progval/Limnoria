@@ -32,8 +32,8 @@
 
 from testsupport import *
 
-import utils
-import ircdb
+import supybot.utils as utils
+import supybot.ircdb as ircdb
 
 try:
     import sqlite

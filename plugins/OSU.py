@@ -36,13 +36,13 @@ Commands specific to OSU;
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import urllib2
 
-import utils
-import privmsgs
-import callbacks
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 buildings = {

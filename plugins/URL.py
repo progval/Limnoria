@@ -37,7 +37,7 @@ URLs in the database.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import re
@@ -46,14 +46,14 @@ import getopt
 import urllib2
 import urlparse
 
-import conf
-import utils
-import ircmsgs
-import webutils
-import ircutils
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.webutils as webutils
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

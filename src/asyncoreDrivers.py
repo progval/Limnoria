@@ -31,7 +31,7 @@
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import re
 import sys
@@ -40,13 +40,13 @@ import socket
 import asyncore
 import asynchat
 
-import log
-import conf
-import ircdb
-import world
-import drivers
-import ircmsgs
-import schedule
+import supybot.log as log
+import supybot.conf as conf
+import supybot.ircdb as ircdb
+import supybot.world as world
+import supybot.drivers as drivers
+import supybot.ircmsgs as ircmsgs
+import supybot.schedule as schedule
 
 class AsyncoreRunnerDriver(drivers.IrcDriver):
     def run(self):

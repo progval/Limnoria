@@ -33,8 +33,8 @@ from testsupport import *
 
 import sets
 
-import irclib
-import plugins
+import supybot.irclib as irclib
+import supybot.plugins as plugins
 
 class holder:
     users = sets.Set(map(str, range(1000)))

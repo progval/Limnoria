@@ -31,21 +31,21 @@
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import copy
 import sets
 import time
 from itertools import imap, chain, cycle
 
-import log
-import conf
-import utils
-import world
-import ircdb
-import ircmsgs
-import ircutils
-from structures import queue, smallqueue, RingBuffer
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircdb as ircdb
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+from supybot.structures import queue, smallqueue, RingBuffer
 
 ###
 # The base class for a callback to be registered with an Irc object.  Shows

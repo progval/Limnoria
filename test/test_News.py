@@ -33,7 +33,7 @@ from testsupport import *
 
 import time
 
-import utils
+import supybot.utils as utils
 
 try:
     import sqlite

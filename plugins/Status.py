@@ -35,7 +35,7 @@ current status and statistics.
 """
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import sys
@@ -44,11 +44,11 @@ import time
 import threading
 from itertools import islice, ifilter, imap
 
-import conf
-import utils
-import world
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 
 class Status(callbacks.Privmsg):

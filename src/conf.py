@@ -31,19 +31,19 @@
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import os
 import sys
 import socket
 import string
 
-import utils
-import registry
-import ircutils
+import supybot.utils as utils
+import supybot.registry as registry
+import supybot.ircutils as ircutils
 
-installDir = os.path.dirname(os.path.dirname(sys.modules[__name__].__file__))
-_srcDir = os.path.join(installDir, 'src')
+installDir = os.path.dirname(sys.modules[__name__].__file__)
+_srcDir = installDir
 _pluginsDir = os.path.join(installDir, 'plugins')
 
 ###
@@ -506,7 +506,7 @@ registerGlobalValue(supybot.directories, 'conf',
 registerGlobalValue(supybot.directories, 'data',
     registry.String('data', """Determines what directory data is put into."""))
 registerGlobalValue(supybot.directories, 'plugins',
-    registry.CommaSeparatedListOfStrings([_srcDir,_pluginsDir], """Determines
+    registry.CommaSeparatedListOfStrings([_srcDir, _pluginsDir], """Determines
     what directories the bot will look for plugins in.  Accepts a
     comma-separated list of strings.  This means that to add another directory,
     you can nest the former value and add a new one.  E.g. you can say: bot:

@@ -36,16 +36,16 @@ when they join the channel.  News items may have expiration dates.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import time
 
-import conf
-import ircdb
-import utils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.ircdb as ircdb
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

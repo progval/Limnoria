@@ -31,9 +31,9 @@
 
 from testsupport import *
 
-import ircmsgs
-import privmsgs
-import callbacks
+import supybot.ircmsgs as ircmsgs
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 class FunctionsTest(SupyTestCase):
     def testGetChannel(self):

@@ -31,7 +31,7 @@
 
 from testsupport import *
 
-import ircmsgs
+import supybot.ircmsgs as ircmsgs
 
 class ParterTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Parter',)

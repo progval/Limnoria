@@ -32,7 +32,7 @@
 from testsupport import *
 
 import os
-import utils
+import supybot.utils as utils
 
 if os.name == 'posix':
     class UnixTestCase(PluginTestCase, PluginDocumentation):

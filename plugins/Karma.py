@@ -39,12 +39,12 @@ import os
 import sets
 from itertools import imap
 
-import conf
-import utils
-import plugins
-import privmsgs
-import registry
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.plugins as plugins
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

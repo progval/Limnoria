@@ -33,7 +33,7 @@ from testsupport import *
 
 import pickle
 
-from structures import *
+from supybot.structures import *
 
 class RingBufferTestCase(SupyTestCase):
     def testInit(self):

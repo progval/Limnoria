@@ -31,7 +31,7 @@
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import os
 import sys
@@ -42,12 +42,12 @@ import logging
 import operator
 import traceback
 
-import ansi
-import conf
-import utils
-import registry
+import supybot.ansi as ansi
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.registry as registry
 
-import ircutils
+import supybot.ircutils as ircutils
 
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
 

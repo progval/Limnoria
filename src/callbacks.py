@@ -40,7 +40,7 @@ how to use them.
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import re
 import copy
@@ -54,15 +54,15 @@ import threading
 from cStringIO import StringIO
 from itertools import imap, ifilter
 
-import log
-import conf
-import utils
-import world
-import ircdb
-import irclib
-import plugins
-import ircmsgs
-import ircutils
+import supybot.log as log
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.world as world
+import supybot.ircdb as ircdb
+import supybot.irclib as irclib
+import supybot.plugins as plugins
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
 
 def addressed(nick, msg, prefixChars=None, whenAddressedByNick=None):
     """If msg is addressed to 'name', returns the portion after the address.

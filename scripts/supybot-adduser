@@ -31,7 +31,7 @@
 
 import supybot
 
-import fix
+import supybot.fix as fix
 from questions import *
 
 import os
@@ -39,8 +39,8 @@ import sys
 import optparse
 
 def main():
-    import log
-    import conf
+    import supybot.log as log
+    import supybot.conf as conf
     conf.supybot.log.stdout.setValue(False)
     #conf.supybot.log.level.set('DEBUG')
     
@@ -72,7 +72,7 @@ def main():
     conf.supybot.directories.data.setValue('/')
     conf.supybot.directories.plugins.setValue(['/'])
     conf.supybot.databases.users.filename.setValue(filename)
-    import ircdb
+    import supybot.ircdb as ircdb
 
     if not options.name:
         name = ''

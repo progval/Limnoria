@@ -46,16 +46,16 @@ import xml.dom.minidom as minidom
 from itertools import imap, ifilter
 from htmlentitydefs import entitydefs as entities
 
-import registry
+import supybot.registry as registry
 
-import conf
-import utils
-import plugins
-import ircutils
-import privmsgs
-import webutils
-import callbacks
-import structures
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.plugins as plugins
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.webutils as webutils
+import supybot.callbacks as callbacks
+import supybot.structures as structures
 
 statusKeys = ['unconfirmed', 'new', 'assigned', 'reopened', 'resolved',
               'verified', 'closed']

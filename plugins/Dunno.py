@@ -41,12 +41,12 @@ __author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
 import os
 import time
 
-import conf
-import utils
-import ircdb
-import plugins
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircdb as ircdb
+import supybot.plugins as plugins
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

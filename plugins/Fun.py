@@ -35,7 +35,7 @@ Provides a multitude of fun, useless commands.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import gc
 import re
@@ -48,12 +48,12 @@ import inspect
 import mimetypes
 from itertools import imap
 
-import conf
-import utils
-import ircmsgs
-import ircutils
-import privmsgs
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 class MyFunProxy(object):
     def reply(self, msg, s):

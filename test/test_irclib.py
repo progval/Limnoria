@@ -34,9 +34,9 @@ from testsupport import *
 import copy
 import pickle
 
-import conf
-import irclib
-import ircmsgs
+import supybot.conf as conf
+import supybot.irclib as irclib
+import supybot.ircmsgs as ircmsgs
 
 class IrcMsgQueueTestCase(SupyTestCase):
     mode = ircmsgs.op('#foo', 'jemfinch')

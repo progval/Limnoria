@@ -33,7 +33,7 @@ from testsupport import *
 
 import sys
 
-import world
+import supybot.world as world
 
 class StatusTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Status',)

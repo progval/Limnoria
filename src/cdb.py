@@ -36,7 +36,7 @@ the same as) DJB's CDB <http://cr.yp.to/cdb.html>.
 
 __revision__ = "$Id$"
 
-import fix
+import supybot.fix as fix
 
 import os
 import sys
@@ -45,7 +45,7 @@ import struct
 import os.path
 import cPickle as pickle
 
-import utils
+import supybot.utils as utils
 
 def hash(s):
     """DJB's hash function for CDB."""

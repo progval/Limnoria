@@ -38,14 +38,14 @@ large enough, you can have it make fun little random messages from it.
 
 __revision__ = "$Id$"
 
-import plugins
+import supybot.plugins as plugins
 
 import os.path
 
-import ircmsgs
-import ircutils
-import privmsgs
-import callbacks
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
+import supybot.privmsgs as privmsgs
+import supybot.callbacks as callbacks
 
 try:
     import sqlite

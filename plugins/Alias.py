@@ -36,19 +36,19 @@ Allows aliases for other commands.
 __revision__ = "$Id$"
 __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
-import plugins
+import supybot.plugins as plugins
 
 import os
 import re
 import sets
 
-import conf
-import utils
-import privmsgs
-import registry
-import callbacks
-import structures
-import unpreserve
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.privmsgs as privmsgs
+import supybot.registry as registry
+import supybot.callbacks as callbacks
+import supybot.structures as structures
+import supybot.unpreserve as unpreserve
 
 class AliasError(Exception):
     pass
