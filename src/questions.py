@@ -58,17 +58,21 @@ def expect(prompt, possibilities, recursed=False, default=None,
     originalPrompt = prompt
     if recursed:
         output('Sorry, that response was not an option.')
+    if useBold:
+        choices = '[%s%%s%s]' % (ansi.RESET, ansi.BOLD)
+    else:
+        choices = '[%s]'
     if possibilities:
-        prompt = '%s [%s]' % (originalPrompt, '/'.join(possibilities))
+        prompt = '%s %s' % (originalPrompt, choices % '/'.join(possibilities))
         if len(prompt) > 70:
-            prompt = '%s [%s]' % (originalPrompt, '/ '.join(possibilities))
+            prompt = '%s %s' % (originalPrompt, choices % '/ '.join(possibilities))
     if default is not None:
         prompt = '%s (default: %s)' % (prompt, default)
     prompt = textwrap.fill(prompt)
     prompt = prompt.replace('/ ', '/')
     prompt = prompt.strip() + ' '
     if useBold:
-        sys.stdout.write(ansi.BOLD)
+        print ansi.BOLD,
     s = raw_input(prompt)
     if useBold:
         print ansi.RESET
