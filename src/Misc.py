@@ -70,9 +70,38 @@ class Misc(callbacks.Privmsg):
         # This exists to be able to respond to attempts to command the bot
         # with a "That's not a command!" if the proper conf.variable is set.
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
-        if conf.replyWhenNotCommand and msg.nick != irc.nick:
-            s = callbacks.addressed(irc.nick, msg)
-            if s:
+        notCommands = []
+        ambiguousCommands = {}
+        s = callbacks.addressed(irc.nick, msg)
+        if s:
+            tokens = callbacks.tokenize(s)
+            commands = callbacks.getCommands(tokens)
+            for command in commands:
+                command = callbacks.canonicalName(command)
+                cbs = callbacks.findCallbackForCommand(irc, command)
+                if not cbs:
+                    notCommands.append(command)
+                elif len(cbs) > 1:
+                    ambiguousCommands[command] = [cb.name() for cb in cbs]
+            if ambiguousCommands:
+                if len(ambiguousCommands) == 1: # Common case.
+                    (command, cbs) = ambiguousCommands.popitem()
+                    s = 'The command %r is available in the plugins %s.  '\
+                        'Please specify the plugin whose command you ' \
+                        'wish to call by using its name as a command ' \
+                        'before %r' % \
+                        (command, utils.commaAndify(cbs), command)
+                else:
+                    L = []
+                    while ambiguousCommands:
+                        (command, cbs) = ambiguousCommands.popitem()
+                        L.append('%r is available in the plugins %s' % \
+                             (command, utils.commaAndify(cbs)))
+                    s = '%s; please specify from which plugins to ' \
+                        'call these commands.' % '; '.join(L)
+                irc.queueMsg(callbacks.reply(msg, 'Error: ' + s))
+                return
+            if conf.replyWhenNotCommand and msg.nick!=irc.nick and notCommands:
                 for cb in irc.callbacks:
                     if isinstance(cb, callbacks.PrivmsgRegexp) or \
                        isinstance(cb, callbacks.PrivmsgCommandAndRegexp):
@@ -83,36 +112,8 @@ class Misc(callbacks.Privmsg):
                             for (r, _) in cb.addressedRes:
                                 if r.search(s):
                                     return
-                notCommands = []
-                ambiguousCommands = {}
-                tokens = callbacks.tokenize(s)
-                for command in callbacks.getCommands(tokens):
-                    command = callbacks.canonicalName(command)
-                    cbs = callbacks.findCallbackForCommand(irc, command)
-                    if not cbs:
-                        notCommands.append(command)
-                    elif len(cbs) > 1:
-                        ambiguousCommands[command] = [cb.name() for cb in cbs]
-                if notCommands:
-                    irc = callbacks.IrcObjectProxyRegexp(irc)
-                    replyWhenNotCommand(irc, msg, notCommands)
-                elif ambiguousCommands:
-                    if len(ambiguousCommands) == 1: # Common case.
-                        (command, cbs) = ambiguousCommands.popitem()
-                        s = 'The command %r is available in the plugins %s.  '\
-                            'Please specify the plugin whose command you ' \
-                            'wish to call by using its name as a command ' \
-                            'before %r' % \
-                            (command, utils.commaAndify(cbs), command)
-                    else:
-                        L = []
-                        while ambiguousCommands:
-                            (command, cbs) = ambiguousCommands.popitem()
-                            L.append('%r is available in the plugins %s' % \
-                                 (command, utils.commaAndify(cbs)))
-                        s = '%s; please specify from which plugins to ' \
-                            'call these commands.' % '; '.join(L)
-                    irc.queueMsg(callbacks.reply(msg, 'Error: ' + s))
+                irc = callbacks.IrcObjectProxyRegexp(irc)
+                replyWhenNotCommand(irc, msg, notCommands)
         
     def list(self, irc, msg, args):
         """[--private] [<module name>]

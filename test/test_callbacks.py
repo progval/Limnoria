@@ -234,6 +234,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
 
     def testAmbiguousError(self):
         self.irc.addCallback(self.First())
+        self.assertNotError('firstcmd')
         self.irc.addCallback(self.FirstRepeat())
         self.assertError('firstcmd')
         self.assertNotRegexp('firstcmd', '(foo.*baz|baz.*foo)')
