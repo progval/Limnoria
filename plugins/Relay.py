@@ -43,6 +43,7 @@ Commands include:
 from baseplugin import *
 
 import re
+import copy
 
 import ircdb
 import debug
@@ -98,8 +99,15 @@ class Relay(callbacks.Privmsg):
         self.ircs = {}
         self.started = False
         self.channels = set()
+        self.ircstates = {}
         self.abbreviations = {}
         
+    def inFilter(self, irc, msg):
+        if not isinstance(irc, irclib.Irc):
+            irc = irc.getRealIrc()
+        self.ircstates[irc] = copy.copy(irc.state)
+        return msg
+    
     def startrelay(self, irc, msg, args):
         """<network abbreviation for current server>
 
@@ -298,7 +306,7 @@ class Relay(callbacks.Privmsg):
             else:
                 s = '%s/%s has quit.' % (msg.nick, network)
             for channel in self.channels:
-                if msg.nick in irc.state.channels[channel].users:
+                if msg.nick in self.ircstates.channels[channel].users:
                     for otherIrc in self.ircs.itervalues():
                         if otherIrc != irc:
                             otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
