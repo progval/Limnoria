@@ -254,7 +254,7 @@ class UserCommands(callbacks.Privmsg):
             name = ircdb.users.getUserName(msg.prefix)
             irc.reply(msg, name)
         except KeyError:
-            irc.error(msg, 'I can\'t find you in my database')
+            irc.error(msg, conf.replyNotRegistered)
 
 
 Class = UserCommands
