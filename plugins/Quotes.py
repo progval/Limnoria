@@ -55,9 +55,6 @@ except ImportError:
     raise callbacks.Error, 'You need to have PySQLite installed to use this '\
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
-class QuotesError(Exception):
-    pass
-
 class QuoteRecord(object):
     __metaclass__ = dbi.Record
     __fields__ = [
@@ -161,7 +158,7 @@ class SqliteQuotesDB(object):
         cursor.execute("""SELECT added_by, added_at, quote FROM quotes
                           WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            raise QuotesDBError, id
+            raise dbi.NoRecordError, id
         (by, at, text) = cursor.fetchone()
         return QuoteRecord(id, by=by, at=int(at), text=text)
 
@@ -170,7 +167,7 @@ class SqliteQuotesDB(object):
         cursor = db.cursor()
         cursor.execute("""DELETE FROM quotes WHERE id=%s""", id)
         if cursor.rowcount == 0:
-            raise QuotesDBError, id
+            raise dbi.NoRecordError, id
         db.commit()
 
 def QuotesDB():
@@ -291,7 +288,7 @@ class Quotes(callbacks.Privmsg):
         try:
             quote = self.db.get(channel, id)
             irc.reply(str(quote))
-        except QuotesDBError, e:
+        except dbi.NoRecordError, e:
             irc.error('There isn\'t a quote with that id.')
 
     def remove(self, irc, msg, args):

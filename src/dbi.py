@@ -47,7 +47,10 @@ import supybot.utils as utils
 
 class Error(Exception):
     """General error for this module."""
-    
+
+class NoRecordError(KeyError):
+    pass
+
 class MappingInterface(object):
     """This is a class to represent the underlying representation of a map
     from integer keys to strings."""
@@ -56,7 +59,7 @@ class MappingInterface(object):
         raise NotImplementedError
 
     def get(id):
-        """Gets the record matching id.  Raises KeyError otherwise."""
+        """Gets the record matching id.  Raises NoRecordError otherwise."""
         raise NotImplementedError
 
     def set(id, s):
@@ -149,7 +152,7 @@ class FlatfileMapping(MappingInterface):
                 (lineId, s) = self._splitLine(line)
                 if lineId == strId:
                     return s
-            raise KeyError, id
+            raise NoRecordError, id
         finally:
             fd.close()
 
