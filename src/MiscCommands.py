@@ -62,7 +62,7 @@ class MiscCommands(callbacks.Privmsg):
                 if cb.name().lower().startswith(name) and \
                        not issubclass(cls, callbacks.PrivmsgRegexp) and \
                        issubclass(cls, callbacks.Privmsg):
-                    commands = [x for x in cls.__dict__
+                    commands = [x for x in dir(cls)
                                 if cb.isCommand(x) and \
                                 hasattr(getattr(cb, x), '__doc__')]
                     commands.sort()
