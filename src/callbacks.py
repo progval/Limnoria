@@ -83,7 +83,7 @@ def reply(msg, s):
         m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (msg.nick, s))
     else:
         m = ircmsgs.privmsg(msg.nick, s)
-    if len(m) > 450:
+    if len(m) > 512:
         m = reply(msg, 'My response would\'ve been too long.')
     return m
         
