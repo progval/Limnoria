@@ -43,10 +43,11 @@ import supybot.fix as fix
 import re
 import string
 import textwrap
-from itertools import imap
+from itertools import imap, ilen
 from cStringIO import StringIO as sio
 
 import supybot.utils as utils
+import supybot.structures as structures
 
 def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
@@ -92,11 +93,16 @@ def joinHostmask(nick, ident, host):
     assert nick and ident and host
     return '%s!%s@%s' % (nick, ident, host)
 
-_lowertrans = string.maketrans(string.ascii_uppercase + r'\[]~',
-                               string.ascii_lowercase + r'|{}^')
-def toLower(s):
+_rfc1459trans = string.maketrans(string.ascii_uppercase + r'\[]~',
+                                 string.ascii_lowercase + r'|{}^')
+def toLower(s, casemapping=None):
     """Returns the string s lowered according to IRC case rules."""
-    return s.translate(_lowertrans)
+    if casemapping is None or casemapping == 'rfc1459':
+        return s.translate(_rfc1459trans)
+    elif casemapping == 'ascii': # freenode
+        return s.lower()
+    else:
+        raise ValueError, 'Invalid casemapping: %r' % casemapping
 
 def strEqual(nick1, nick2):
     """Returns True if nick1 == nick2 according to IRC case rules."""
@@ -108,17 +114,24 @@ _nickchars = r'_[]\`^{}|-'
 nickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$'
                     % (re.escape(_nickchars), re.escape(_nickchars)))
 
-def isNick(s, strictRfc=True):
+def isNick(s, strictRfc=True, nicklen=None):
     """Returns True if s is a valid IRC nick."""
     if strictRfc:
-        return bool(nickRe.match(s))
+        ret = bool(nickRe.match(s))
+        if ret and nicklen is not None:
+            ret = len(s) <= nicklen
+        return ret
     else:
         return not isChannel(s) and not isUserHostmask(s)
 
-def isChannel(s):
+def isChannel(s, chantypes='#&+!'):
     """Returns True if s is a valid IRC channel name."""
-    return (s and s[0] in '#&+!' and len(s) <= 50 and \
-            '\x07' not in s and ',' not in s and ' ' not in s)
+    return s and \
+           len(s) <= 50 and \
+            ',' not in s and \
+            '\x07' not in s and \
+            s[0] in chantypes and \
+            len(s.split()) == 1
 
 _patternCache = {}
 def _hostmaskPatternEqual(pattern, hostmask):
@@ -491,6 +504,58 @@ class IrcSet(utils.NormalizingSet):
     def __reduce__(self):
         return (self.__class__, (list(self),))
 
+
+class FloodQueue(object):
+    timeout = 0
+    def __init__(self, timeout=None):
+        if timeout is not None:
+            self.timeout = timeout
+        self.queues = IrcDict()
+
+    def key(self, msg):
+        return msg.user + '@' + msg.host
+
+    def getTimeout(self):
+        if callable(self.timeout):
+            return self.timeout()
+        else:
+            return self.timeout
+
+    def _getQueue(self, msg, insert=True):
+        key = self.key(msg)
+        try:
+            return self.queues[key]
+        except KeyError:
+            if insert:
+                q = structures.TimeoutQueue(self.getTimeout)
+                self.queues[key] = q
+                return q
+            else:
+                return None
+        
+    def enqueue(self, msg, what=None):
+        if what is None:
+            what = msg
+        q = self._getQueue(msg)
+        q.enqueue(what)
+
+    def len(self, msg):
+        q = self._getQueue(msg, insert=False)
+        if q is not None:
+            return len(q)
+        else:
+            return 0
+
+    def has(self, msg, what=None):
+        q = self._getQueue(msg, insert=False)
+        if q is not None:
+            if what is None:
+                what = msg
+            for elt in q:
+                if elt == what:
+                    return True
+        return False
+            
 
 mircColors = IrcDict({
     'white': '0',
