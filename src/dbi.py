@@ -92,6 +92,62 @@ class MappingInterface(object):
         "Cleans up in the database, if possible.  Not required to do anything."
         pass
 
+
+class DirMapping(MappingInterface):
+    def __init__(self, filename, **kwargs):
+        self.dirname = filename
+        if not os.path.exists(self.dirname):
+            os.mkdir(self.dirname)
+        if not os.path.exists(os.path.join(self.dirname, 'max')):
+            self._setMax(1)
+
+    def _setMax(self, id):
+        fd = file(os.path.join(self.dirname, 'max'), 'w')
+        try:
+            fd.write(str(id))
+        finally:
+            fd.close()
+
+    def _getMax(self):
+        fd = file(os.path.join(self.dirname, 'max'))
+        try:
+            i = int(fd.read())
+            return i
+        finally:
+            fd.close()
+
+    def _makeFilename(self, id):
+        return os.path.join(self.dirname, str(id))
+
+    def get(id):
+        try:
+            fd = file(self._makeFilename(id))
+            return fd.read()
+        except EnvironmentError, e:
+            exn = NoRecordError(id)
+            exn.realException = e
+            raise exn
+
+    def set(id, s):
+        fd = file(self._makeFilename(id), 'w')
+        fd.write(s)
+        fd.close()
+
+    def add(self, s):
+        id = self._getMax()
+        fd = file(self._makeFilename(id), 'w')
+        try:
+            fd.write(s)
+            return id
+        finally:
+            fd.close()
+
+    def remove(self, id):
+        try:
+            os.remove(self._makeFilename(id))
+        except EnvironmentError, e:
+            raise NoRecordError, id
+
 class FlatfileMapping(MappingInterface):
     def __init__(self, filename, maxSize=10**6):
         self.filename = filename
@@ -363,7 +419,10 @@ class Record(object):
             setattr(self, name, value)
         for name in self.fields:
             if name not in seen:
-                setattr(self, name, self.defaults[name])
+                default = self.defaults[name]
+                if callable(default):
+                    default = default()
+                setattr(self, name, default)
 
     def serialize(self):
         return csv.join([repr(getattr(self, name)) for name in self.fields])
