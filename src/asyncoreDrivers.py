@@ -106,9 +106,13 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
         if msg is not None:
             self.irc.feedMsg(msg)
 
-    def handle_close(self):
-        self._scheduleReconnect()
-        self.die()
+    def handle_close(self, wait=True):
+        if not wait:
+            self._scheduleReconnect(at=0)
+        else:
+            self._scheduleReconnect()
+        if self.socket is not None:
+            self.close()
     reconnect = handle_close
 
     def handle_connect(self):
@@ -116,7 +120,7 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
 
     def die(self):
         drivers.log.die(self.irc)
-        self.close()
+        self.reconnect()
 
 try:
     ignore(poller)
