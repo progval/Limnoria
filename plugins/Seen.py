@@ -104,7 +104,7 @@ class SeenDB(plugins.ChannelUserDB):
     def seen(self, channel, nickOrId):
         return self[channel, nickOrId]
 
-filename = os.path.join(conf.supybot.directories.data(), 'Seen.db')
+filename = conf.supybot.directories.data.dirize('Seen.db')
 
 class Seen(callbacks.Privmsg):
     noIgnore = True
@@ -123,7 +123,7 @@ class Seen(callbacks.Privmsg):
         self.__parent.die()
 
     def doPrivmsg(self, irc, msg):
-        if ircutils.isChannel(msg.args[0]):
+        if irc.isChannel(msg.args[0]):
             said = ircmsgs.prettyPrint(msg)
             channel = msg.args[0]
             self.db.update(channel, msg.nick, said)

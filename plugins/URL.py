@@ -100,7 +100,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
 
     def doPrivmsg(self, irc, msg):
         channel = msg.args[0]
-        if ircutils.isChannel(channel):
+        if irc.isChannel(channel):
             if ircmsgs.isAction(msg):
                 text = ircmsgs.unAction(msg)
             else:
@@ -118,7 +118,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
     def titleSnarfer(self, irc, msg, match):
         r"https?://[^\])>\s]+"
         channel = msg.args[0]
-        if not ircutils.isChannel(channel):
+        if not irc.isChannel(channel):
             return
         if callbacks.addressed(irc.nick, msg):
             return

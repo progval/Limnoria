@@ -371,7 +371,7 @@ class RSS(callbacks.Privmsg):
         """
         self.log.debug('Fetching %s', url)
         feed = self.getFeed(url)
-        if ircutils.isChannel(msg.args[0]):
+        if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
         else:
             channel = None

@@ -110,7 +110,7 @@ class Weather(callbacks.Privmsg):
     def weather(self, irc, msg, args, location):
         # This specifically does not have a docstring.
         channel = None
-        if ircutils.isChannel(msg.args[0]):
+        if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
         if not location:
             location = self.userValue('lastLocation', msg.prefix)

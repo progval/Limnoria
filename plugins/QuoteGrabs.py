@@ -212,7 +212,7 @@ class QuoteGrabs(callbacks.Privmsg):
 
     def doPrivmsg(self, irc, msg):
         irc = callbacks.SimpleProxy(irc, msg)
-        if ircutils.isChannel(msg.args[0]):
+        if irc.isChannel(msg.args[0]):
             (channel, payload) = msg.args
             words = self.registryValue('randomGrabber.minimumWords',
                                        channel)

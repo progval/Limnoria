@@ -398,7 +398,7 @@ class Relay(callbacks.Privmsg):
 
     def doPrivmsg(self, irc, msg):
         (channel, text) = msg.args
-        if ircutils.isChannel(channel):
+        if irc.isChannel(channel):
             irc = self._getRealIrc(irc)
             if channel not in self.registryValue('channels'):
                 return

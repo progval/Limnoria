@@ -153,7 +153,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
 
     def outFilter(self, irc, msg):
         channel = msg.args[0]
-        if msg.command == 'PRIVMSG' and ircutils.isChannel(channel):
+        if msg.command == 'PRIVMSG' and irc.isChannel(channel):
             if not msg.shrunken:
                 if self.registryValue('outFilter', channel):
                     if webutils.httpUrlRe.search(msg.args[1]):
@@ -164,7 +164,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
     def shrinkSnarfer(self, irc, msg, match):
         r"https?://[^\])>\s]{13,}"
         channel = msg.args[0]
-        if not ircutils.isChannel(channel):
+        if not irc.isChannel(channel):
             return
         if self.registryValue('shrinkSnarfer', channel):
             url = match.group(0)

@@ -234,7 +234,7 @@ class ChannelLogger(callbacks.Privmsg):
     def doPrivmsg(self, irc, msg):
         (recipients, text) = msg.args
         for channel in recipients.split(','):
-            if ircutils.isChannel(channel):
+            if irc.isChannel(channel):
                 noLogPrefix = self.registryValue('noLogPrefix', channel)
                 if noLogPrefix and text.startswith(noLogPrefix):
                     text = '-= THIS MESSAGE NOT LOGGED =-'
@@ -248,7 +248,7 @@ class ChannelLogger(callbacks.Privmsg):
     def doNotice(self, irc, msg):
         (recipients, text) = msg.args
         for channel in recipients.split(','):
-            if ircutils.isChannel(channel):
+            if irc.isChannel(channel):
                 self.doLog(irc, channel, '-%s- %s\n' % (msg.nick, text))
 
     def doNick(self, irc, msg):
@@ -285,7 +285,7 @@ class ChannelLogger(callbacks.Privmsg):
 
     def doMode(self, irc, msg):
         channel = msg.args[0]
-        if ircutils.isChannel(channel) and msg.args[1:]:
+        if irc.isChannel(channel) and msg.args[1:]:
             self.doLog(irc, channel,
                        '*** %s sets mode: %s %s\n' %
                        (msg.nick or msg.prefix, msg.args[1],

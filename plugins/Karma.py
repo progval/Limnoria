@@ -287,7 +287,7 @@ class Karma(callbacks.Privmsg):
 
     def tokenizedCommand(self, irc, msg, tokens):
         channel = msg.args[0]
-        if not ircutils.isChannel(channel):
+        if not irc.isChannel(channel):
             return
         if tokens[-1][-2:] in ('++', '--'):
             thing = ' '.join(tokens)
@@ -296,7 +296,7 @@ class Karma(callbacks.Privmsg):
     def doPrivmsg(self, irc, msg):
         if not msg.repliedTo:
             channel = msg.args[0]
-            if ircutils.isChannel(channel) and \
+            if irc.isChannel(channel) and \
                self.registryValue('allowUnaddressedKarma', channel):
                 irc = callbacks.SimpleProxy(irc, msg)
                 thing = msg.args[1].rstrip()

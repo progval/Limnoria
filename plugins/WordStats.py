@@ -196,7 +196,7 @@ class WordStats(callbacks.Privmsg):
         # This depends on the fact that it's called after the command.
         try:
             channel = msg.args[0]
-            if ircutils.isChannel(channel):
+            if irc.isChannel(channel):
                 if not (self.queried and
                         self.registryValue('ignoreQueries', channel)):
                     self.db.addMsg(msg)

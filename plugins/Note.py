@@ -219,7 +219,7 @@ class Note(callbacks.Privmsg):
         specified by separating their names by commas.
         """
         # Let's get the from user.
-        public = ircutils.isChannel(msg.args[0])
+        public = irc.isChannel(msg.args[0])
         sent = []
         for target in targets:
             id = self.db.send(user.id, target.id, public, text)
@@ -242,7 +242,7 @@ class Note(callbacks.Privmsg):
                       'that have been sent to you.', Raise=True)
         self.db.setRead(id)
         text += ' (in reply to #%s)' % id
-        public = ircutils.isChannel(msg.args[0])
+        public = irc.isChannel(msg.args[0])
         try:
             target = ircdb.users.getUser(note.frm)
         except KeyError:

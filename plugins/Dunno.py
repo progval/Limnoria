@@ -73,7 +73,7 @@ class Dunno(plugins.ChannelIdDatabasePlugin):
     callAfter = ['MoobotFactoids']
     def invalidCommand(self, irc, msg, tokens):
         channel = msg.args[0]
-        if ircutils.isChannel(channel):
+        if irc.isChannel(channel):
             dunno = self.db.random(channel)
             if dunno is not None:
                 dunno = dunno.text

@@ -188,7 +188,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
             irc.error('No factoid matches that key.')
 
     def tokenizedCommand(self, irc, msg, tokens):
-        if ircutils.isChannel(msg.args[0]):
+        if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
             if self.registryValue('replyWhenInvalidCommand', channel):
                 key = ' '.join(tokens)

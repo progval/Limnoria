@@ -66,7 +66,7 @@ class Currency(callbacks.Privmsg):
     def convert(self, irc, msg, args):
         # This specifically does not have a docstring.
         channel = None
-        if ircutils.isChannel(msg.args[0]):
+        if irc.isChannel(msg.args[0]):
             channel = msg.args[0]
         realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)

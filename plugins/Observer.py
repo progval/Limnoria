@@ -143,7 +143,7 @@ class Observer(callbacks.Privmsg):
             # automatically pick the channel if the message is sent in
             # the channel itself.
             channel = args.pop(0)
-            if args or not ircutils.isChannel(channel):
+            if args or not irc.isChannel(channel):
                 raise callbacks.ArgumentError
             observers = self.registryValue('observers.active', channel)
             # We don't sort because order matters.

@@ -183,7 +183,7 @@ class Words(callbacks.Privmsg):
     ###
     def tokenizedCommand(self, irc, msg, tokens):
         channel = msg.args[0]
-        if ircutils.isChannel(channel):
+        if irc.isChannel(channel):
             if channel in self.games:
                 if len(tokens) == 1:
                     c = tokens[0]

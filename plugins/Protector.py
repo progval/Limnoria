@@ -111,7 +111,7 @@ class Protector(callbacks.Privmsg):
     def __call__(self, irc, msg):
         if not msg.args:
             self.log.debug('Ignoring %r, no msg.args.', msg, irc)
-        elif not ircutils.isChannel(msg.args[0]):
+        elif not irc.isChannel(msg.args[0]):
             self.log.debug('Ignoring %r, not on a channel.', msg)
         elif msg.args[0] not in irc.state.channels:
             # One has to wonder how this would happen, but just in case...
