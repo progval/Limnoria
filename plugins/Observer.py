@@ -148,7 +148,7 @@ class Observer(callbacks.Privmsg):
             # We don't sort because order matters.
         else:
             observers = self.registryValue('observers')
-            observers = utils.sorted(observers, key=str.lower)
+            observers = sorted(observers, key=str.lower)
         if observers:
             irc.reply(utils.commaAndify(observers))
         else:
