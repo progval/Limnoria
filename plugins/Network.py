@@ -283,6 +283,7 @@ class Network(callbacks.Privmsg):
         command is to apply.
         """
         irc.reply(otherIrc.driver.__class__.__module__[8:])
+    driver = wrap(driver, ['networkIrc'])
 
 
 Class = Network
