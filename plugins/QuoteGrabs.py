@@ -196,7 +196,7 @@ class QuoteGrabs(plugins.ChannelDBHandler,
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT id, quote FROM quotegrabs
-                          WHERE nick=%s
+                          WHERE nick LIKE %s
                           ORDER BY id ASC""", nick)
         if cursor.rowcount == 0:
             irc.error('I couldn\'t find any quotegrabs for %s' % nick)

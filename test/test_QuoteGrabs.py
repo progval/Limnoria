@@ -90,6 +90,8 @@ if sqlite:
             self.assertNotError('quote foo')
             self.assertNotError('quote FoO')
             self.assertNotError('quote Foo')
+            self.assertNotError('quotegrabs list FOO')
+            self.assertNotError('quotegrabs list fOo')
 
         def testRandomquote(self):
             testPrefix = 'foo!bar@baz'
