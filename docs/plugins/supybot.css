@@ -1,0 +1,37 @@
+body {
+  background:#fff;
+  color:#000;
+}
+tr#headers {
+  text-align:center;
+  font-weight:bold;
+  margin:none;
+  border:none;
+}
+td {
+  padding: 0px 3px 0px 3px;
+  white-space:nowrap;
+}
+pre {
+  border:1px solid black;
+  padding:3px;
+  background:#e4eaf2;
+  color:inherit;
+}
+.detail {
+  white-space:normal;
+}
+.dark {
+  background:#c2cfdf;
+  color:inherit;
+}
+.dark td {
+  border:1px solid black;
+}
+.light {
+  background:#e4eaf2;
+  color:inherit;
+}
+.light td {
+  border:1px solid black;
+}
