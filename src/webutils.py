@@ -105,6 +105,9 @@ def getUrlFd(url, headers=None):
         raise WebError, strError(e)
     except urllib2.URLError, e:
         raise WebError, strError(e.reason)
+    # Raised when urllib doesn't recognize the url type
+    except ValueError, e:
+        raise WebError, strError(e)
 
 def getUrl(url, size=None, headers=None):
     """Gets a page.  Returns a string that is the page gotten."""

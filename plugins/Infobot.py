@@ -55,6 +55,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
+import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
 
@@ -340,12 +341,12 @@ class SqliteInfobotDB(object):
     def changeIs(self, channel, factoid, replacer):
         (db, filename) = self._getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT value FROM isFacts WHERE key=%s""", factoid)
+        cursor.execute("""SELECT value FROM isFacts WHERE key LIKE %s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
         old = cursor.fetchone()[0]
         if replacer is not None:
-            cursor.execute("""UPDATE isFacts SET value=%s WHERE key=%s""",
+            cursor.execute("""UPDATE isFacts SET value=%s WHERE key LIKE %s""",
                            replacer(old), factoid)
             db.commit()
             self.incChanges()
@@ -353,7 +354,7 @@ class SqliteInfobotDB(object):
     def getIs(self, channel, factoid):
         (db, filename) = self._getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT value FROM isFacts WHERE key=%s""", factoid)
+        cursor.execute("""SELECT value FROM isFacts WHERE key LIKE %s""", factoid)
         ret = cursor.fetchone()[0]
         self.incResponses()
         return ret
@@ -368,7 +369,7 @@ class SqliteInfobotDB(object):
     def delIs(self, channel, factoid):
         (db, filename) = self._getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""DELETE FROM isFacts WHERE key=%s""", factoid)
+        cursor.execute("""DELETE FROM isFacts WHERE key LIKE %s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
         db.commit()
@@ -377,18 +378,18 @@ class SqliteInfobotDB(object):
     def hasIs(self, channel, factoid):
         (db, _) = self._getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT * FROM isFacts WHERE key=%s""", factoid)
+        cursor.execute("""SELECT * FROM isFacts WHERE key LIKE %s""", factoid)
         return cursor.rowcount == 1
 
     def changeAre(self, channel, factoid, replacer):
         (db, filename) = self._getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT value FROM areFacts WHERE key=%s""", factoid)
+        cursor.execute("""SELECT value FROM areFacts WHERE key LIKE %s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
         old = cursor.fetchone()[0]
         if replacer is not None:
-            cursor.execute("""UPDATE areFacts SET value=%s WHERE key=%s""",
+            cursor.execute("""UPDATE areFacts SET value=%s WHERE key LIKE %s""",
                            replacer(old), factoid)
             db.commit()
             self.incChanges()
@@ -396,7 +397,7 @@ class SqliteInfobotDB(object):
     def getAre(self, channel, factoid):
         (db, filename) = self._getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT value FROM areFacts WHERE key=%s""", factoid)
+        cursor.execute("""SELECT value FROM areFacts WHERE key LIKE %s""", factoid)
         ret = cursor.fetchone()[0]
         self.incResponses()
         return ret
@@ -411,7 +412,7 @@ class SqliteInfobotDB(object):
     def delAre(self, channel, factoid):
         (db, filename) = self._getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""DELETE FROM areFacts WHERE key=%s""", factoid)
+        cursor.execute("""DELETE FROM areFacts WHERE key LIKE %s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
         db.commit()
@@ -420,7 +421,7 @@ class SqliteInfobotDB(object):
     def hasAre(self, channel, factoid):
         (db, _) = self._getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT * FROM areFacts WHERE key=%s""", factoid)
+        cursor.execute("""SELECT * FROM areFacts WHERE key LIKE %s""", factoid)
         return cursor.rowcount == 1
 
     def getDunno(self):
@@ -787,10 +788,11 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.confirm()
 
     def stats(self, irc, msg, args, channel):
-        """takes no arguments
+        """[<channel>]
 
         Returns the number of changes and requests made to the Infobot database
-        since the plugin was loaded.
+        since the plugin was loaded.  <channel> is only necessary if the
+        message isn't in the channel itself.
         """
         changes = self.db.getChangeCount(channel)
         responses = self.db.getResponseCount(channel)
@@ -812,9 +814,10 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     status=stats
 
     def tell(self, irc, msg, args, channel, nick, _, factoid):
-        """<nick> [about] <factoid>
+        """[<channel>] <nick> [about] <factoid>
 
-        Tells <nick> about <factoid>.
+        Tells <nick> about <factoid>.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
         """
         try:
             hostmask = irc.state.nickToHostmask(nick)
@@ -830,6 +833,44 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     tell = wrap(tell, ['channeldb', 'something',
                        optional(('literal', 'about')), 'text'])
 
+    def update(self, irc, msg, args, channel, isAre, url):
+        """[<channel>] {is,are} <url|file>
+
+        Updates the Infobot database using the dumped database at remote <url>
+        or local <file>.  The first argument should be "is" or "are", and
+        determines whether the is or are database is updated.
+        """
+        isAre = isAre.lower()
+        if isAre == 'is':
+            add = self.db.setIs
+        elif isAre == 'are':
+            add = self.db.setAre
+        count = 0
+        try:
+            fd = webutils.getUrlFd(url)
+        except webutils.WebError:
+            try:
+                fd = file(url)
+            except EnvironmentError:
+                irc.errorInvalid('url or file')
+        for line in fd:
+            line = line.rstrip('\r\n')
+            try:
+                (key, value) = line.split(' => ', 1)
+            except ValueError: #unpack list of wrong size
+                self.log.debug('Invalid line: %r', line)
+                continue
+            else:
+                key = key.rstrip()
+                value = value.lstrip()
+                self.log.debug('Adding factoid %r with value %r.', key, value)
+                add(channel, key, value)
+                count += 1
+        fd.close()
+        irc.replySuccess('%s added.' % utils.nItems('factoid', count))
+    update = wrap(update,
+                  ['owner', 'channeldb', ('literal', ('is', 'are')),
+                   first('url', 'text')])
 
 Class = Infobot
 
