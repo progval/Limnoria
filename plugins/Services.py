@@ -194,7 +194,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 log = 'Received "Password Incorrect" from NickServ.'
                 self.log.warning(log)
             else:
-                self.log.warning('Unexpected notice from NickServ: %r', s)
+                self.log.debug('Unexpected notice from NickServ: %r', s)
 
     def getops(self, irc, msg, args):
         """[<channel>]
