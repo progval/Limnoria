@@ -42,6 +42,7 @@ from itertools import imap
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.plugins as plugins
+import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
