@@ -39,8 +39,8 @@ except ImportError:
     sqlite = None
 
 if sqlite is not None:
-    class ChannelDBTestCase(ChannelPluginTestCase):
-        plugins = ('ChannelDB', 'User')
+    class ChannelStatsTestCase(ChannelPluginTestCase):
+        plugins = ('ChannelStats', 'User')
         def setUp(self):
             ChannelPluginTestCase.setUp(self)
             self.prefix = 'foo!bar@baz'
@@ -57,42 +57,27 @@ if sqlite is not None:
             self.assertNotError('channelstats')
 
         def testStats(self):
-            self.assertError('channeldb stats %s' % self.nick)
-            self.assertNotError('channeldb stats %s' % self.nick)
-            self.assertNotError('channeldb stats %s' % self.nick.upper())
-            self.assertNotError('channeldb stats')
-            self.assertRegexp('channeldb stats', self.nick)
+            self.assertError('channelstats stats %s' % self.nick)
+            self.assertNotError('channelstats stats %s' % self.nick)
+            self.assertNotError('channelstats stats %s' % self.nick.upper())
+            self.assertNotError('channelstats stats')
+            self.assertRegexp('channelstats stats', self.nick)
 
         def testSelfStats(self):
-            self.assertError('channeldb stats %s' % self.irc.nick)
-            self.assertNotError('channeldb stats %s' % self.irc.nick)
-            self.assertNotError('channeldb stats %s' % self.irc.nick)
+            self.assertError('channelstats stats %s' % self.irc.nick)
+            self.assertNotError('channelstats stats %s' % self.irc.nick)
+            self.assertNotError('channelstats stats %s' % self.irc.nick)
             id = ircdb.users.getUserId(self.prefix)
             u = ircdb.users.getUser(id)
             u.addCapability(ircdb.makeChannelCapability(self.channel, 'op'))
             ircdb.users.setUser(id, u)
-            self.assertNotError('channeldb config self-stats off')
-            m1 = self.getMsg('channeldb stats %s' % self.irc.nick)
-            m2 = self.getMsg('channeldb stats %s' % self.irc.nick)
+            self.assertNotError('channelstats config self-stats off')
+            m1 = self.getMsg('channelstats stats %s' % self.irc.nick)
+            m2 = self.getMsg('channelstats stats %s' % self.irc.nick)
             self.assertEqual(m1.args[1], m2.args[1])
             
-        def testNoKeyErrorEscapeFromSeen(self):
-            self.assertRegexp('seen asldfkjasdlfkj', '^I have not seen')
-            self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
-
         def testNoKeyErrorStats(self):
             self.assertNotRegexp('stats sweede', 'KeyError')
-
-        def testSeen(self):
-            self.assertNotError('list')
-            self.assertNotError('seen %s' % self.nick)
-            m = self.assertNotError('seen %s' % self.nick.upper())
-            self.failUnless(self.nick.upper() in m.args[1])
-            self.assertRegexp('seen --user %s' % self.nick,
-                              '^%s was last seen' % self.nick)
-
-        def testSeenNoUser(self):
-            self.assertNotRegexp('seen --user alsdkfjalsdfkj', 'KeyError')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
