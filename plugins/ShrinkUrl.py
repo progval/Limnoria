@@ -47,10 +47,9 @@ import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
+from supybot.commands import wrap
 import supybot.webutils as webutils
 import supybot.ircutils as ircutils
-import supybot.commands as commands
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
@@ -157,8 +156,10 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
                 domain = webutils.getDomain(url)
                 s = '%s (at %s)' % (ircutils.bold(tinyurl), domain)
                 m = irc.reply(s, prefixName=False)
+                if m is None:
+                    print irc, irc.__class__
                 m.tag('shrunken')
-    tinyurlSnarfer = privmsgs.urlSnarfer(tinyurlSnarfer)
+    tinyurlSnarfer = wrap(tinyurlSnarfer, decorators=['urlSnarfer'])
 
     _tinyRe = re.compile(r'<blockquote><b>(http://tinyurl\.com/\w+)</b>')
     def _getTinyUrl(self, url):
@@ -176,12 +177,11 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
                 self.db.set(url, tinyurl)
             return tinyurl
 
-    def tiny(self, irc, msg, args):
+    def tiny(self, irc, msg, args, url):
         """<url>
 
         Returns a TinyURL.com version of <url>
         """
-        url = privmsgs.getArgs(args)
         if len(url) < 20:
             irc.error('Stop being a lazy-biotch and type the URL yourself.')
             return
@@ -192,7 +192,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
         else:
             s = 'Could not parse the TinyURL.com results page.'
             irc.errorPossibleBug(s)
-    tiny = commands.wrap(tiny, decorators=['thread'])
+    tiny = wrap(tiny, ['url'], decorators=['thread'])
 
 
 Class = ShrinkUrl
