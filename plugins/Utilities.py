@@ -47,6 +47,10 @@ def configure(onStart, afterConnect, advanced):
 
 class Utilities(callbacks.Privmsg):
     def ignore(self, irc, msg, args):
+        """takes no arguments
+
+        does nothing
+        """
         pass
 
     def shrink(self, irc, msg, args):
