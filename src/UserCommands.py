@@ -70,6 +70,12 @@ class UserCommands(callbacks.Privmsg):
         if ircutils.isUserHostmask(name):
             irc.error(msg, 'Hostmasks aren\'t valid usernames.')
             return
+        try:
+            u = ircdb.users.getUser(msg.prefix)
+            irc.error(msg,'Your hostmask is already registered to %s' % u.name)
+            return
+        except KeyError:
+            pass
         (id, user) = ircdb.users.newUser()
         user.name = name
         user.setPassword(password)
