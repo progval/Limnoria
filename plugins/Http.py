@@ -50,6 +50,8 @@ import urllib
 import urllib2
 import xml.dom.minidom
 
+import rssparser
+
 import utils
 import debug
 import privmsgs
@@ -240,19 +242,13 @@ class Http(callbacks.Privmsg):
         that Matters.
         """
         if time.time() - self._slashdotTime > 1800:
-            try:
-                fd = urllib2.urlopen('http://slashdot.org/slashdot.xml')
-                slashdotXml = fd.read()
-                fd.close()
-                dom = xml.dom.minidom.parseString(slashdotXml)
-                headlines = []
-                for headline in dom.getElementsByTagName('title'):
-                    headlines.append(str(headline.firstChild.data))
+            results = rssparser.parse('http://slashdot.org/slashdot.rss')
+            headlines = [x['title'] for x in results['items']]
+            self._slashdotResponse = ' :: '.join(headlines)
+            while len(self._slashdotResponse) > 400:
+                headlines.pop()
                 self._slashdotResponse = ' :: '.join(headlines)
-                self._slashdotTime = time.time()
-            except urllib2.URLError, e:
-                irc.error(msg, str(e))
-                return
+            self._slashdotTime = time.time()
         irc.reply(msg, self._slashdotResponse)
 
     _geekquotere = re.compile('<p class="qt">(.*?)</p>')
