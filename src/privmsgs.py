@@ -288,17 +288,40 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
 
         Loads the plugin <plugin> from the plugins/ directory.
         """
-        plugin = getArgs(args)
+        name = getArgs(args)
         try:
-            moduleInfo = imp.find_module(plugin)
+            moduleInfo = imp.find_module(name)
         except ImportError:
-            irc.error(msg, 'Sorry, no plugin %s exists.' % plugin)
+            irc.error(msg, 'Sorry, no plugin %s exists.' % name)
             return
-        module = imp.load_module(plugin, *moduleInfo)
+        module = imp.load_module(name, *moduleInfo)
         callback = module.Class()
         irc.addCallback(callback)
         irc.reply(msg, conf.replySuccess)
 
+    def reload(self, irc, msg, args):
+        """<callback name>
+
+        Unloads and subsequently reloads the callback by name; use the 'list'
+        command to see a list of the currently loaded callbacks.
+        """
+        name = getArgs(args)
+        callbacks = irc.removeCallback(name)
+        if callbacks:
+            for callback in callbacks:
+                callbacks.die()
+            try:
+                moduleInfo = imp.find_module(name)
+            except ImportError:
+                irc.error(msg, 'Sorry, no plugin %s exists.' % name)
+                return
+            module = imp.load_module(name, *moduleInfo)
+            callback = module.Class()
+            irc.addCallback(callback)
+            irc.reply(msg, conf.replySuccess)
+        else:
+            irc.error(msg, 'There was no callback %s' % name)
+        
     def unload(self, irc, msg, args):
         """<callback name>
 
@@ -306,11 +329,10 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
         of the currently loaded callbacks.
         """
         name = getArgs(args)
-        numCallbacks = len(irc.callbacks)
         callbacks = irc.removeCallback(name)
-        for callback in callbacks:
-            callback.die()
-        if len(irc.callbacks) < numCallbacks:
+        if callbacks:
+            for callback in callbacks:
+                callback.die()
             irc.reply(msg, conf.replySuccess)
         else:
             irc.error(msg, 'There was no callback %s' % name)
