@@ -68,6 +68,7 @@ class ChannelStat(irclib.IrcCommandDispatcher):
             method(msg)
 
     def doPayload(self, channel, payload):
+        channel = plugins.getChannel(channel)
         self.chars += len(payload)
         self.words += len(payload.split())
         fRe = conf.supybot.plugins.ChannelStats.get('frowns').get(channel)()
@@ -128,8 +129,8 @@ class StatsDB(plugins.ChannelUserDB):
             return UserStat(*L)
 
     def addMsg(self, msg, id=None):
-        channel = msg.args[0]
-        if ircutils.isChannel(channel):
+        if ircutils.isChannel(msg.args[0]):
+            channel = plugins.getChannel(msg.args[0])
             if (channel, 'channelStats') not in self:
                 self[channel, 'channelStats'] = ChannelStat()
             self[channel, 'channelStats'].addMsg(msg)
