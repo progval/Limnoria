@@ -118,7 +118,18 @@ class Config(callbacks.Privmsg):
             else:
                 irc.error('%r is not a valid configuration group.' % name)
 
-    def get(self, irc, msg, args):
+    def config(self, irc, msg, args):
+        """<name> [<value>]
+
+        If <value> is given, sets the value of <name> to <value>.  Otherwise,
+        returns the current value of <name>.
+        """
+        if len(args) >= 2:
+            self._set(irc, msg, args)
+        else:
+            self._get(irc, msg, args)
+
+    def _get(self, irc, msg, args):
         """<name>
 
         Shows the current value of the configuration variable <name>.
@@ -132,7 +143,7 @@ class Config(callbacks.Privmsg):
             return
         irc.reply(str(wrapper))
 
-    def set(self, irc, msg, args):
+    def _set(self, irc, msg, args):
         """<name> <value>
 
         Sets the current value of the configuration variable <name> to <value>.
