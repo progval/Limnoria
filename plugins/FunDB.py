@@ -31,23 +31,6 @@
 
 """
 Provides fun commands that require a database to operate.
-
-Commands include:
-  crossword
-  anagram
-  addword
-  lart
-  addlart
-  removelart
-  excuse
-  addexcuse
-  removeexcuse
-  insult
-  addinsult
-  removeinsult
-  numinsults
-  numexcuses
-  numlarts
 """
 
 from baseplugin import *
@@ -152,7 +135,10 @@ class FunDB(callbacks.Privmsg):
     '''
 
     def insult(self, irc, msg, args):
-        """<nick>"""
+        """<nick>
+
+        Insults <nick>.
+        """
         nick = privmsgs.getArgs(args)
         cursor = self.db.cursor()
         cursor.execute("""SELECT id, insult FROM insults
@@ -173,7 +159,10 @@ class FunDB(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.privmsg(means, s))
 
     def getinsult(self, irc, msg, args):
-        """<id>"""
+        """<id>
+
+        Returns insult #<id>
+        """
         id = privmsgs.getArgs(args)
         try:
             id = int(id)
@@ -188,7 +177,10 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, cursor.fetchone()[0])
             
     def addinsult(self, irc, msg, args):
-        """<insult>"""
+        """<insult>
+
+        Adds an insult to the insult database.
+        """
         insult = privmsgs.getArgs(args)
         cursor = self.db.cursor()
         cursor.execute("""INSERT INTO insults VALUES (NULL, %s)""", insult)
@@ -196,7 +188,10 @@ class FunDB(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
 
     def removeinsult(self, irc, msg, args):
-        """<number>"""
+        """<id>
+
+        Removes the insult with id <id> from the insult database.
+        """
         id = privmsgs.getArgs(args)
         try:
             id = int(id)
@@ -211,7 +206,8 @@ class FunDB(callbacks.Privmsg):
     def numinsults(self, irc, msg, args):
         """takes no arguments
 
-        Returns the number of insults currently in the database"""
+        Returns the number of insults currently in the database.
+        """
         cursor = self.db.cursor()
         cursor.execute('SELECT count(*) FROM insults')
         total = cursor.fetchone()[0]
@@ -235,7 +231,10 @@ class FunDB(callbacks.Privmsg):
         irc.reply(msg, ', '.join(words))
 
     def excuse(self, irc, msg, args):
-        """takes no arguments"""
+        """takes no arguments
+
+        Gives you a standard BOFH excuse.
+        """
         cursor = self.db.cursor()
         cursor.execute("""SELECT id, excuse FROM excuses
                           WHERE excuse NOTNULL
@@ -245,7 +244,10 @@ class FunDB(callbacks.Privmsg):
         irc.reply(msg, '%s (#%s)' % (excuse, id))
 
     def getexcuse(self, irc, msg, args):
-        """<id>"""
+        """<id>
+
+        Gets the excuse with the id number <id>.
+        """
         id = privmsgs.getArgs(args)
         try:
             id = int(id)
@@ -260,7 +262,10 @@ class FunDB(callbacks.Privmsg):
             irc.reply(msg, cursor.fetchone()[0])
             
     def addexcuse(self, irc, msg, args):
-        """<excuse>"""
+        """<excuse>
+
+        Adds another excuse to the database.
+        """
         excuse = privmsgs.getArgs(args)
         cursor = self.db.cursor()
         cursor.execute("""INSERT INTO excuses VALUES (NULL, %s)""", excuse)
@@ -268,7 +273,10 @@ class FunDB(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
 
     def removeexcuse(self, irc, msg, args):
-        """<number>"""
+        """<id>
+
+        Removes the excuse with the id number <id> from the database.
+        """
         id = privmsgs.getArgs(args)
         try:
             id = int(id)
@@ -283,7 +291,8 @@ class FunDB(callbacks.Privmsg):
     def numexcuses(self, irc, msg, args):
         """takes no arguments
 
-        Returns the number of excuses currently in the database"""
+        Returns the number of excuses currently in the database.
+        """
         cursor = self.db.cursor()
         cursor.execute('SELECT count(*) FROM excuses')
         total = cursor.fetchone()[0]
@@ -293,7 +302,7 @@ class FunDB(callbacks.Privmsg):
         """[<channel>] <nick>
 
         The <channel> argument is only necessary if the message isn't being
-        sent in the channel itself.
+        sent in the channel itself.  Uses a lart on <nick>.
         """
         channel = privmsgs.getChannel(msg, args)
         nick = privmsgs.getArgs(args)
@@ -311,7 +320,10 @@ class FunDB(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
 
     def getlart(self, irc, msg, args):
-        """<id>"""
+        """<id>
+
+        Gets the lart with the id number <id>.
+        """
         id = privmsgs.getArgs(args)
         try:
             id = int(id)
@@ -328,7 +340,8 @@ class FunDB(callbacks.Privmsg):
     def addlart(self, irc, msg, args):
         """<lart>
 
-        The target of the lart is represented with '$who'.
+        The target of the lart is represented with '$who'.  And example might
+        be "addlart chops $who in half with an AOL cd."
         """
         lart = privmsgs.getArgs(args)
         if lart.find('$who') == -1:
@@ -340,7 +353,10 @@ class FunDB(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
 
     def removelart(self, irc, msg, args):
-        """<number>"""
+        """<id>
+
+        Removes the lart with id number <id> from the database.
+        """
         id = privmsgs.getArgs(args)
         try:
             id = int(id)
@@ -355,14 +371,19 @@ class FunDB(callbacks.Privmsg):
     def numlarts(self, irc, msg, args):
         """takes no arguments
         
-        Returns the number of larts currently in the database"""
+        Returns the number of larts currently in the database.
+        """
         cursor = self.db.cursor()
         cursor.execute('SELECT count(*) FROM larts')
         total = cursor.fetchone()[0]
         irc.reply(msg, 'There are currently %s larts in my database' % total)
 
     def addword(self, irc, msg, args):
-        """<word>"""
+        """<word>
+
+        Adds a word to the database of words.  This database is used for the
+        anagram and crossword commands.
+        """
         word = privmsgs.getArgs(args)
         if word.translate(string.ascii, string.ascii_letters) != '':
             irc.error(msg, 'Word must contain only letters')
@@ -370,7 +391,10 @@ class FunDB(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
 
     def anagram(self, irc, msg, args):
-        """<word>"""
+        """<word>
+
+        Using the words database, determines if a word has any anagrams.
+        """
         word = privmsgs.getArgs(args).strip().lower()
         cursor = self.db.cursor()
         cursor.execute("""SELECT words.word FROM words
