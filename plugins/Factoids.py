@@ -361,6 +361,8 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         """
         channel = privmsgs.getChannel(msg, args)
         (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
+        if not optlist and not rest:
+            raise callbacks.ArgumentError
         criteria = []
         formats = []
         predicateName = 'p'
