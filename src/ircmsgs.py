@@ -80,7 +80,7 @@ class IrcMsg(object):
         self._host = host
         self._command = command
         if self.command == 'NICK':
-            self._args[0] = ircutils.nick(args[0])
+            args[0] = ircutils.nick(args[0])
         self._args = tuple(args)
             
 
