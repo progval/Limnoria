@@ -44,6 +44,7 @@ import utils
 import debug
 import privmsgs
 import callbacks
+import structures
 
 class FreshmeatException(Exception):
     pass
@@ -68,6 +69,7 @@ class Http(callbacks.Privmsg):
             s = fd.read()
             thought = s.split('<br>')[2]
             thought = ' '.join(thought.split())
+        self.deepthoughtq.enqueue(thought)
         irc.reply(msg, thought)
 
     _titleRe = re.compile(r'<title>(.*)</title>')
