@@ -319,24 +319,20 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
             irc.reply(msg, s)
             
     def increaseKarma(self, irc, msg, match):
-        r"^(.)(.*)\+\+$"
-        (first, rest) = match.groups()
-        if first in conf.prefixChars:
-            name = rest
-        else:
-            name = first + rest
+        r"^(.)(\S+)\+\+$"
+        (first, name) = match.groups()
+        if first not in conf.prefixChars:
+            return
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
         cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
         cursor.execute("""UPDATE karma SET added=added+1 WHERE name=%s""",name)
 
     def decreaseKarma(self, irc, msg, match):
-        r"^(.)(.*)--$"
-        (first, rest) = match.groups()
-        if first in conf.prefixChars:
-            name = rest
-        else:
-            name = first + rest
+        r"^(.)(\S+)--$"
+        (first, name) = match.groups()
+        if first not in conf.prefixChars:
+            return
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
         cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
