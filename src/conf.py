@@ -164,6 +164,13 @@ ignores = []
 ###
 prefixChars = '@'
 
+###
+# detailedTracebacks: A boolean describing whether or not the bot will give
+#                     *extremely* detailed tracebacks.  Be cautioned, this eats
+#                     a lot of log file space.
+###
+detailedTracebacks = True
+
 ###############################
 ###############################
 ###############################

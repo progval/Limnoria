@@ -141,7 +141,8 @@ def recoverableException():
     else:
         lastTimes.pop(0)
     try:
-        1/0
+        if not conf.detailedTracebacks:
+            1/0
         text = cgitb.text((E, e, tb))
     except:
         text = ''.join(traceback.format_exception(E, e, tb))
