@@ -385,6 +385,7 @@ if __name__ == '__main__':
         sys.stderr.close()
         sys.stdout = StringIO.StringIO()
         sys.stderr = StringIO.StringIO()
+        signal.signal(signal.SIGHUP, signal.SIG_IGN)
         log.info('Completed daemonization.  Current PID: %s', os.getpid())
 
     # Let's write the PID file.  This has to go after daemonization, obviously.
