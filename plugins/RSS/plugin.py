@@ -141,6 +141,12 @@ class RSS(callbacks.Plugin):
                 oldheadlines = []
             newresults = self.getFeed(url)
             newheadlines = self.getHeadlines(newresults)
+            if len(newheadlines) == 1:
+                s = newheadlines[0][0]
+                if s in ('Timeout downloading feed.',
+                         'Unable to download feed.'):
+                    self.log.debug('%s %u', s, url)
+                    return
             def canonize(headline):
                 return (tuple(headline[0].lower().split()), headline[1])
             oldheadlines = set(map(canonize, oldheadlines))
@@ -217,7 +223,11 @@ class RSS(callbacks.Plugin):
             try:
                 return self.cachedFeeds[url]
             except KeyError:
-                self.lastRequest[url] = 0
+                wait = self.registryValue('waitPeriod')
+                # If there's a problem retrieving the feed, we should back off
+                # for a little bit before retrying so that there is time for
+                # the error to be resolved.
+                self.lastRequest[url] = time.time() - .5 * wait
                 return error('Unable to download feed.')
         finally:
             self.releaseLock(url)
