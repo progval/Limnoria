@@ -538,6 +538,8 @@ class Relay(callbacks.Privmsg):
         if self.started:
             if not isinstance(irc, irclib.Irc):
                 irc = irc.getRealIrc()
+            if msg.nick == irc.nick:
+                return
             newTopic = msg.args[1]
             network = self.abbreviations[irc]
             s = 'topic change by %s on %s: %s' % (msg.nick, network, newTopic)
