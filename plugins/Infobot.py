@@ -412,7 +412,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.reply(self.db.getConfirm(), irc=irc, msg=msg)
         else:
             assert self.irc is not None
-            self.irc.replySuccess()
+            self.reply(conf.supybot.replies.success())
 
     def dunno(self, irc=None, msg=None):
         if self.registryValue('personality'):
@@ -561,7 +561,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.confirm()
         else:
             # XXX: Should this be genericified?
-            irc.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
+            self.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
 
     def doChange(self, irc, msg, match):
         r"^(.+)\s+=~\s+(.+)$"
@@ -586,7 +586,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.confirm()
         else:
             # XXX: Should this be genericified?
-            irc.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
+            self.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
 
     def doUnknown(self, irc, msg, match):
         r"^(.+?)\s*\?[?!. ]*$"
