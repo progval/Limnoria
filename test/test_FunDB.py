@@ -40,108 +40,108 @@ if sqlite is not None:
     class TestFunDB(PluginTestCase, PluginDocumentation):
         plugins = ('FunDB',)
 
-        def testDbAdd(self):
-            self.assertError('dbadd l4rt foo')
-            self.assertError('dbadd lart foo')
+        def testAdd(self):
+            self.assertError('add l4rt foo')
+            self.assertError('add lart foo')
 
-        def testDbRemove(self):
-            self.assertError('dbremove l4rt foo')
-            self.assertError('dbremove lart foo')
+        def testRemove(self):
+            self.assertError('remove l4rt foo')
+            self.assertError('remove lart foo')
 
         def testLart(self):
-            self.assertNotError('dbadd lart jabs $who')
+            self.assertNotError('add lart jabs $who')
             self.assertRegexp('lart', '^lart \[<id>\]')
             self.assertResponse('lart jemfinch for being dumb',
                 '\x01ACTION jabs jemfinch for being dumb (#1)\x01')
             self.assertResponse('lart jemfinch',
                 '\x01ACTION jabs jemfinch (#1)\x01')
-            self.assertNotError('dbnum lart')
-            self.assertNotError('dbadd lart shoots $who')
+            self.assertNotError('num lart')
+            self.assertNotError('add lart shoots $who')
             self.assertRegexp('lart 1', '^lart \[<id>\]')
             self.assertResponse('lart 1 jemfinch',
                 '\x01ACTION jabs jemfinch (#1)\x01')
             self.assertResponse('lart 2 jemfinch for being dumb',
                 '\x01ACTION shoots jemfinch for being dumb (#2)\x01')
-            self.assertNotError('dbremove lart 1')
-            self.assertNotError('dbnum lart')
+            self.assertNotError('remove lart 1')
+            self.assertNotError('num lart')
             self.assertResponse('lart jemfinch',
                 '\x01ACTION shoots jemfinch (#2)\x01')
-            self.assertNotError('dbremove lart 2')
-            self.assertNotError('dbnum lart')
+            self.assertNotError('remove lart 2')
+            self.assertNotError('num lart')
             self.assertError('lart jemfinch')
 
         def testExcuse(self):
-            self.assertNotError('dbadd excuse Power failure')
+            self.assertNotError('add excuse Power failure')
             self.assertResponse('excuse', 'Power failure (#1)')
             self.assertError('excuse a few random words')
-            self.assertNotError('dbnum excuse')
-            self.assertNotError('dbadd excuse /pub/lunch')
+            self.assertNotError('num excuse')
+            self.assertNotError('add excuse /pub/lunch')
             self.assertResponse('excuse 1', 'Power failure (#1)')
-            self.assertNotError('dbremove excuse 1')
-            self.assertNotError('dbnum excuse')
+            self.assertNotError('remove excuse 1')
+            self.assertNotError('num excuse')
             self.assertResponse('excuse', '/pub/lunch (#2)')
-            self.assertNotError('dbremove excuse 2')
-            self.assertNotError('dbnum excuse')
+            self.assertNotError('remove excuse 2')
+            self.assertNotError('num excuse')
             self.assertError('excuse')
 
         def testInsult(self):
-            self.assertNotError('dbadd insult Fatty McFatty')
+            self.assertNotError('add insult Fatty McFatty')
             self.assertNotError('insult jemfinch')
-            self.assertNotError('dbnum insult')
-            self.assertNotError('dbremove insult 1')
-            self.assertNotError('dbnum insult')
+            self.assertNotError('num insult')
+            self.assertNotError('remove insult 1')
+            self.assertNotError('num insult')
             self.assertError('insult jemfinch')
 
         def testPraise(self):
-            self.assertNotError('dbadd praise pets $who')
+            self.assertNotError('add praise pets $who')
             self.assertRegexp('praise', '^praise \[<id>\]')
             self.assertResponse('praise jemfinch for being him',
                 '\x01ACTION pets jemfinch for being him (#1)\x01')
             self.assertResponse('praise jemfinch',
                 '\x01ACTION pets jemfinch (#1)\x01')
-            self.assertNotError('dbnum praise')
-            self.assertNotError('dbadd praise gives $who a cookie')
+            self.assertNotError('num praise')
+            self.assertNotError('add praise gives $who a cookie')
             self.assertRegexp('praise 1', '^praise \[<id>\]')
             self.assertResponse('praise 1 jemfinch',
                 '\x01ACTION pets jemfinch (#1)\x01')
             self.assertResponse('praise 2 jemfinch for being him',
                 '\x01ACTION gives jemfinch a cookie for being him (#2)\x01')
-            self.assertNotError('dbremove praise 1')
-            self.assertNotError('dbnum praise')
+            self.assertNotError('remove praise 1')
+            self.assertNotError('num praise')
             self.assertResponse('praise jemfinch',
                 '\x01ACTION gives jemfinch a cookie (#2)\x01')
-            self.assertNotError('dbremove praise 2')
-            self.assertNotError('dbnum praise')
+            self.assertNotError('remove praise 2')
+            self.assertNotError('num praise')
             self.assertError('praise jemfinch')
 
-        def testDbInfo(self):
-            self.assertNotError('dbadd praise $who')
-            self.assertNotError('dbinfo praise 1')
-            self.assertNotError('dbremove praise 1')
-            self.assertError('dbinfo fake 1')
+        def testInfo(self):
+            self.assertNotError('add praise $who')
+            self.assertNotError('info praise 1')
+            self.assertNotError('remove praise 1')
+            self.assertError('info fake 1')
 
-        def testDbGet(self):
-            self.assertError('dbget fake 1')
-            self.assertError('dbget lart foo')
-            self.assertNotError('dbadd praise pets $who')
-            self.assertNotError('dbget praise 1')
-            self.assertNotError('dbremove praise 1')
-            self.assertError('dbget praise 1')
+        def testGet(self):
+            self.assertError('get fake 1')
+            self.assertError('get lart foo')
+            self.assertNotError('add praise pets $who')
+            self.assertNotError('get praise 1')
+            self.assertNotError('remove praise 1')
+            self.assertError('get praise 1')
 
-        def testDbNum(self):
-            self.assertError('dbnum fake')
-            self.assertError('dbnum 1')
-            self.assertNotError('dbnum praise')
-            self.assertNotError('dbnum lart')
-            self.assertNotError('dbnum excuse')
-            self.assertNotError('dbnum insult')
+        def testNum(self):
+            self.assertError('num fake')
+            self.assertError('num 1')
+            self.assertNotError('num praise')
+            self.assertNotError('num lart')
+            self.assertNotError('num excuse')
+            self.assertNotError('num insult')
 
-        def testDbChange(self):
-            self.assertNotError('dbadd praise teaches $who perl')
-            self.assertNotError('dbchange praise 1 s/perl/python/')
+        def testChange(self):
+            self.assertNotError('add praise teaches $who perl')
+            self.assertNotError('change praise 1 s/perl/python/')
             self.assertResponse('praise jemfinch', '\x01ACTION teaches'\
                 ' jemfinch python (#1)\x01')
-            self.assertNotError('dbremove praise 1')
+            self.assertNotError('remove praise 1')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

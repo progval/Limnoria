@@ -211,7 +211,7 @@ class FunDB(callbacks.Privmsg):
             (id, excuse) = cursor.fetchone()
             irc.reply(msg, '%s (#%s)' % (excuse, id))
 
-    def dbadd(self, irc, msg, args):
+    def add(self, irc, msg, args):
         """<lart|excuse|insult|praise> <text>
 
         Adds another record to the data referred to in the first argument.  For
@@ -247,7 +247,7 @@ class FunDB(callbacks.Privmsg):
         response = '%s (%s #%s)' % (conf.replySuccess, table, id)
         irc.reply(msg, response)
 
-    def dbremove(self, irc, msg, args):
+    def remove(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
 
         Removes the data, referred to in the first argument, with the id
@@ -275,7 +275,7 @@ class FunDB(callbacks.Privmsg):
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
-    def dbchange(self, irc, msg, args):
+    def change(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id> <regexp>
 
         Changes the data, referred to in the first argument, with the id
@@ -320,7 +320,7 @@ class FunDB(callbacks.Privmsg):
             self.db.commit()
             irc.reply(msg, conf.replySuccess)
 
-    def dbnum(self, irc, msg, args):
+    def num(self, irc, msg, args):
         """<lart|excuse|insult|praise>
 
         Returns the number of records, of the type specified, currently in
@@ -339,7 +339,7 @@ class FunDB(callbacks.Privmsg):
         irc.reply(msg, 'There %s currently %s in my database.' % \
                   (utils.be(total), utils.nItems(total, table)))
 
-    def dbget(self, irc, msg, args):
+    def get(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
 
         Gets the record with id <id> from the table specified.
@@ -364,7 +364,7 @@ class FunDB(callbacks.Privmsg):
             reply = cursor.fetchone()[0]
             irc.reply(msg, reply)
 
-    def dbinfo(self, irc, msg, args):
+    def info(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
 
         Gets the info for the record with id <id> from the table specified.
