@@ -176,4 +176,17 @@ if network:
             self.assertError('totalbugs lkjfad')
             self.assertError('totalrfes lkjfad')
 
+        def testFight(self):
+            self.assertRegexp('fight gaim opengaim',
+                              r'\'(open|)gaim\': \d+, \'(open|)gaim\': \d+')
+            self.assertRegexp('fight --rfes gaim opengaim',
+                              r'\'(open|)gaim\': \d+, \'(open|)gaim\': \d+')
+            self.assertRegexp('fight --closed gaim opengaim',
+                              r'\'(open|)gaim\': \d+, \'(open|)gaim\': \d+')
+            m = self.getMsg('fight --bugs gaim opengaim')
+            n = self.getMsg('fight --open gaim opengaim')
+            o = self.getMsg('fight gaim opengaim')
+            self.assertEqual(m, o)
+            self.assertEqual(n, o)
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -118,7 +118,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _statusOpt = {'any':100, 'open':1, 'closed':2, 'deleted':3, 'pending':4}
 
     _projectURL = 'http://sourceforge.net/projects/'
-    _trackerURL = 'https://sourceforge.net/support/tracker.php?aid='
+    _trackerURL = 'http://sourceforge.net/support/tracker.php?aid='
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.__class__.sf = self.__class__.sourceforge
@@ -242,9 +242,27 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             return
         irc.reply(self._getTrackerList(url))
 
+    _totbugs = re.compile(r'Bugs</a>\s+?\( <b>([^<]+)</b>', re.S | re.I)
+    def _getNumBugs(self, project):
+        text = webutils.getUrl('%s%s' % (self._projectURL, project))
+        m = self._totbugs.search(text)
+        if m:
+            return m.group(1)
+        else:
+            return ''
+
+    _totrfes = re.compile(r'Feature Requests</a>\s+?\( <b>([^<]+)</b>',
+                          re.S | re.I)
+    def _getNumRfes(self, project):
+        text = webutils.getUrl('%s%s' % (self._projectURL, project))
+        m = self._totrfes.search(text)
+        if m:
+            return m.group(1)
+        else:
+            return ''
+
     # TODO: consolidate total* into one command which takes options for all
     # the viable statistics that can be snarfed from the project page
-    _totbugs = re.compile(r'Bugs</a>\s+?\( <b>([^<]+)</b>', re.S | re.I)
     def totalbugs(self, irc, msg, args):
         """[<project>]
 
@@ -255,12 +273,27 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         project = project or self.registryValue('defaultProject', msg.args[0])
         if not project:
             raise callbacks.ArgumentError
-        text = webutils.getUrl(''.join([self._projectURL, project]))
-        m = self._totbugs.search(text)
-        if m:
-            irc.reply(m.group(1))
+        total = self._getNumBugs(project)
+        if total:
+            irc.reply(total)
         else:
             irc.error('Could not find bug statistics.')
+
+    def totalrfes(self, irc, msg, args):
+        """[<project>]
+
+        Returns a count of the open/total RFEs.  <project> is not needed if a
+        default project is set.
+        """
+        project = privmsgs.getArgs(args, required=0, optional=1)
+        project = project or self.registryValue('defaultProject', msg.args[0])
+        if not project:
+            raise callbacks.ArgumentError
+        total = self._getNumRfes(project)
+        if total:
+            irc.reply(total)
+        else:
+            irc.error('Could not find RFE statistics.')
 
     _rfeLink = re.compile(r'"([^"]+)">RFE')
     def rfes(self, irc, msg, args):
@@ -296,24 +329,34 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             return
         irc.reply(self._getTrackerList(url))
 
-    _totrfes = re.compile(r'Feature Requests</a>\s+?\( <b>([^<]+)</b>',
-                          re.S | re.I)
-    def totalrfes(self, irc, msg, args):
-        """[<project>]
+    def fight(self, irc, msg, args):
+        """[--{bugs,rfes}] [--{open,closed}] <project name> <project name>
 
-        Returns a count of the open/total RFEs.  <project> is not needed if a
-        default project is set.
+        Returns the projects, in order, from greatest number of bugs to least.
+        Defaults to bugs and open.
         """
-        project = privmsgs.getArgs(args, required=0, optional=1)
-        project = project or self.registryValue('defaultProject', msg.args[0])
-        if not project:
-            raise callbacks.ArgumentError
-        text = webutils.getUrl(''.join([self._projectURL, project]))
-        m = self._totrfes.search(text)
-        if m:
-            irc.reply(m.group(1))
-        else:
-            irc.error('Could not find RFE statistics.')
+        search = self._getNumBugs
+        type = 0
+        (optlist, rest) = getopt.getopt(args, '',
+                                        ['bugs', 'rfes', 'open', 'closed'])
+        for (option, _) in optlist:
+            if option == '--bugs':
+                search = self._getNumBugs
+            if option == '--rfes':
+                search = self._getNumRfes
+            if option == '--open':
+                type = 0
+            if option == '--closed':
+                type = 1
+        results = []
+        for proj in args:
+            num = search(proj)
+            if num:
+                results.append((int(num.split('/')[type].split()[0]), proj))
+        results.sort()
+        results.reverse()
+        s = ', '.join(['\'%s\': %s' % (s, i) for (i, s) in results])
+        irc.reply(s)
 
     def sfSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/" \
