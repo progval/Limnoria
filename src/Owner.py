@@ -233,6 +233,30 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     self.disambiguate(irc, elt, ambiguousCommands)
         return ambiguousCommands
 
+    def processTokens(self, irc, msg, tokens):
+        ambiguousCommands = self.disambiguate(irc, tokens)
+        if ambiguousCommands:
+            if len(ambiguousCommands) == 1: # Common case.
+                (command, names) = ambiguousCommands.popitem()
+                names.sort()
+                s = 'The command %r is available in the %s plugins.  ' \
+                    'Please specify the plugin whose command you ' \
+                    'wish to call by using its name as a command ' \
+                    'before calling it.' % \
+                    (command, utils.commaAndify(names))
+            else:
+                L = []
+                for (command, names) in ambiguousCommands.iteritems():
+                    names.sort()
+                    L.append('The command %r is available in the %s '
+                             'plugins' %
+                             (command, utils.commaAndify(names)))
+                s = '%s; please specify from which plugins to ' \
+                    'call these commands.' % '; '.join(L)
+            irc.queueMsg(callbacks.error(msg, s))
+        else:
+            callbacks.IrcObjectProxy(irc, msg, tokens)
+
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
         callbacks.Privmsg.errored = False
@@ -247,33 +271,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                         'of a nested command.'
                     irc.queueMsg(callbacks.error(msg, s))
                     return
+                self.processTokens(irc, msg, tokens)
             except SyntaxError, e:
                 callbacks.Privmsg.errored = True
                 irc.queueMsg(callbacks.error(msg, str(e)))
                 return
-            ambiguousCommands = {}
-            self.disambiguate(irc, tokens, ambiguousCommands)
-            if ambiguousCommands:
-                if len(ambiguousCommands) == 1: # Common case.
-                    (command, names) = ambiguousCommands.popitem()
-                    names.sort()
-                    s = 'The command %r is available in the %s plugins.  ' \
-                        'Please specify the plugin whose command you ' \
-                        'wish to call by using its name as a command ' \
-                        'before calling it.' % \
-                        (command, utils.commaAndify(names))
-                else:
-                    L = []
-                    for (command, names) in ambiguousCommands.iteritems():
-                        names.sort()
-                        L.append('The command %r is available in the %s '
-                                 'plugins' %
-                                 (command, utils.commaAndify(names)))
-                    s = '%s; please specify from which plugins to ' \
-                        'call these commands.' % '; '.join(L)
-                irc.queueMsg(callbacks.error(msg, s))
-            else:
-                callbacks.IrcObjectProxy(irc, msg, tokens)
 
     if conf.allowEval:
         def eval(self, irc, msg, args):

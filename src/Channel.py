@@ -549,6 +549,18 @@ class Channel(callbacks.Privmsg):
             irc.reply(s)
         else:
             irc.reply('I\'m not currently lobotomized in any channels.')
+
+    def nicks(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the nicks in <channel>.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        L = list(irc.state.channels[channel].users)
+        utils.sortBy(str.lower, L)
+        irc.reply(utils.commaAndify(L))
+        
                         
 
 Class = Channel

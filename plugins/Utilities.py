@@ -158,6 +158,25 @@ class Utilities(callbacks.Privmsg):
             irc.reply(f(text))
     re = privmsgs.checkCapability(re, 'trusted')
 
+    def apply(self, irc, msg, args):
+        """<command> <text>
+
+        Tokenizes <text> and calls <command> with the resulting arguments.
+        """
+        if not args:
+            raise callbacks.ArgumentError
+        command = args.pop(0)
+        args = [token and token or '""' for token in args]
+        text = privmsgs.getArgs(args)
+        commands = command.split()
+        commands = map(callbacks.canonicalName, commands)
+        tokens = callbacks.tokenize(text)
+        allTokens = commands + tokens
+        print '***', allTokens
+        Owner = irc.getCallback('Owner')
+        Owner.processTokens(irc, msg, allTokens)
+        
+
 
 Class = Utilities
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
