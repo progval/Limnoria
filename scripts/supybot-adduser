@@ -33,7 +33,6 @@
 
 import supybot
 
-import supybot.fix as fix
 from supybot.questions import *
 
 import os

@@ -29,8 +29,6 @@
 
 
 
-import supybot.fix as fix
-
 import time
 
 import supybot.log as log

@@ -43,8 +43,6 @@ if sys.version_info < (2, 3, 0):
 
 import supybot
 
-import supybot.fix as fix
-
 import re
 import sets
 import time

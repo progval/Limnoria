@@ -67,8 +67,6 @@ import supybot.conf as conf
 conf.allowEval = True
 conf.supybot.flush.setValue(False)
 
-import supybot.fix as fix
-
 import re
 import sys
 import glob

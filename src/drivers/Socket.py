@@ -35,8 +35,6 @@ from __future__ import division
 
 
 
-import supybot.fix as fix
-
 import time
 import select
 import socket

@@ -33,8 +33,6 @@ Contains various drivers (network, file, and otherwise) for using IRC objects.
 
 
 
-import supybot.fix as fix
-
 import sys
 import time
 import socket
