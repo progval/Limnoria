@@ -3570,7 +3570,6 @@ class SOAPProxy:
         return self.__call(None, body, {})
 
     def __getattr__(self, name):  # hook to catch method calls
-        print '__getattr__ called with %s' % name
         if name == '__del__':
             raise AttributeError, name
         else:
