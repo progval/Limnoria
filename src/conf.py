@@ -47,6 +47,18 @@ _srcDir = os.path.join(installDir, 'src')
 _pluginsDir = os.path.join(installDir, 'plugins')
 
 ###
+# version: This should be pretty obvious.
+###
+version ='0.77.2'
+
+###
+# daemonized: This determines whether or not the bot has been daemonized
+#             (i.e., set to run in the background).  Obviously, this defaults
+#             to False.
+###
+daemonized = False
+
+###
 # allowEval: True if the owner (and only the owner) should be able to eval
 #            arbitrary Python code.  This is specifically *not* a registry
 #            variable because it shouldn't be modifiable in the bot.
@@ -483,14 +495,5 @@ will go into the directory specified by the supybot.directories.conf
 variable."""))
 
 supybot.register('plugins') # This will be used by plugins, but not here.
-
-###############################
-###############################
-###############################
-# DO NOT EDIT PAST THIS POINT #
-###############################
-###############################
-###############################
-version ='0.77.2'
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

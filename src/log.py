@@ -82,7 +82,7 @@ class StdoutStreamHandler(BetterStreamHandler):
             logging._releaseLock()
 
     def emit(self, record):
-        if conf.supybot.log.stdout():
+        if conf.supybot.log.stdout() and not conf.daemonized:
             try:
                 BetterStreamHandler.emit(self, record)
             except ValueError, e: # Raised if sys.stdout is closed.
@@ -278,12 +278,13 @@ _handler.setLevel(-1)
 _logger.addHandler(_handler)
 _logger.setLevel(conf.supybot.log.level())
 
-_stdoutHandler = StdoutStreamHandler(sys.stdout)
-_formatString = '%(name)s: %(levelname)s %(message)s'
-_stdoutFormatter = ColorizedFormatter(_formatString)
-_stdoutHandler.setFormatter(_stdoutFormatter)
-_stdoutHandler.setLevel(-1)
-_logger.addHandler(_stdoutHandler)
+if not conf.daemonized:
+    _stdoutHandler = StdoutStreamHandler(sys.stdout)
+    _formatString = '%(name)s: %(levelname)s %(message)s'
+    _stdoutFormatter = ColorizedFormatter(_formatString)
+    _stdoutHandler.setFormatter(_stdoutFormatter)
+    _stdoutHandler.setLevel(-1)
+    _logger.addHandler(_stdoutHandler)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
