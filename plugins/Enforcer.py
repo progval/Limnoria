@@ -92,7 +92,7 @@ class Enforcer(callbacks.Privmsg, plugins.Configurable):
         aspect of Services (it defaults to ChanServ).
         """
         self.topics = {}
-        chanserv = privmsgs.getArgs(args, required=0, optional=2)
+        chanserv = privmsgs.getArgs(args, required=0, optional=1)
         self.chanserv = chanserv or 'ChanServ'
         self.started = True
         for channel in irc.state.channels:
