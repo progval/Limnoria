@@ -151,6 +151,9 @@ class ChannelLogger(callbacks.Privmsg):
         else:
             try:
                 logDir = conf.supybot.directories.log()
+                logDir = os.path.join(logDir, self.name())
+                if not os.path.exists(logDir):
+                    os.makedirs(logDir)
                 name = self.getLogName(channel)
                 log = file(os.path.join(logDir, name), 'a')
                 self.logs[channel] = log
