@@ -59,6 +59,7 @@ class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('bugs')
         m = self.getMsg('bugs')
         n = re.search('#(\d+)', m.args[1]).group(1)
+        # This should have the same effect as calling 'bugs supybot %s'
         self.assertNotError('bugs %s' % n)
 
     def testSnarfer(self):
