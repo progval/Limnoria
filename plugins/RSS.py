@@ -299,7 +299,8 @@ class RSS(callbacks.Privmsg):
         """
         conf.supybot.plugins.RSS.announce.get(channel).setValue(args)
         if not args:
-            irc.replySuccess('All previous announced feeds removed.')
+            irc.replySuccess('All previously announced feeds will not be '
+                             'announced any longer.')
         else:
             irc.replySuccess()
     announce = privmsgs.checkChannelCapability(announce, 'op')
