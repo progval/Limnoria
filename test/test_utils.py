@@ -341,6 +341,10 @@ class UtilsTest(SupyTestCase):
         for s in ['lambda: 2', 'import foo', 'foo.bar']:
             self.assertRaises(ValueError, utils.safeEval, s)
 
+
+    def testSafeEvalTurnsSyntaxErrorIntoValueError(self):
+        self.assertRaises(ValueError, utils.safeEval, '/usr/local/')
+
     def testLines(self):
         L = ['foo', 'bar', '#baz', '  ', 'biff']
         self.assertEqual(list(utils.nonEmptyLines(L)),

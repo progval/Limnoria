@@ -491,7 +491,10 @@ def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
     without unsafely using eval()."""
     #print s, '::', stackTrace()
-    node = compiler.parse(s)
+    try:
+        node = compiler.parse(s)
+    except SyntaxError, e:
+        raise ValueError, 'Invalid string: %s.' % e
     nodes = compiler.parse(s).node.nodes
     if not nodes:
         if node.__class__ is compiler.ast.Module:
