@@ -37,6 +37,8 @@ committed, remove it immediately.  It must not be released with Supybot.
 import supybot.plugins as plugins
 
 import gc
+import os
+import pwd
 import sys
 import exceptions
 
@@ -52,6 +54,16 @@ def getTracer(fd):
             code = frame.f_code
             print >>fd, '%s: %s' % (code.co_filename, code.co_name)
     return tracer
+
+def progstats():
+    pw = pwd.getpwuid(os.getuid())
+    response = 'Process ID %s running as user "%s" and as group "%s" ' \
+               'from directory "%s" with the command line "%s".  ' \
+               'Running on Python %s.' % \
+               (os.getpid(), pw[0], pw[3],
+                os.getcwd(), ' '.join(sys.argv),
+                sys.version.translate(string.ascii, '\r\n'))
+    return response
 
 class Debug(callbacks.Privmsg):
     capability = 'owner'
@@ -171,6 +183,22 @@ class Debug(callbacks.Privmsg):
             times -= 1
         irc.reply(format('%L', map(str, L)))
     collect = wrap(collect, [additional('positiveInt', 1)])
+
+    def progstats(self, irc, msg, args):
+        """takes no arguments
+
+        Returns various unix-y information on the running supybot process.
+        """
+        irc.reply(progstats())
+    progstats = wrap(progstats)
+
+    def environ(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the environment of the supybot process.
+        """
+        irc.reply(repr(os.environ))
+    environ = wrap(environ)
 
 
 Class = Debug
