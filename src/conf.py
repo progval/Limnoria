@@ -69,7 +69,7 @@ def registerChannelValue(group, name, value):
     group.registerGroup(name, registry.GroupWithDefault(value))
 
 def registerGlobalValue(group, name, value):
-    group.register(name, value)
+    group.registerGroup(name, registry.GroupWithValue(value))
 
 def registerGroup(group, name, Group=None):
     group.registerGroup(name, Group)
