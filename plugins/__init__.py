@@ -404,6 +404,7 @@ def standardSubstitute(irc, msg, text, env=None):
         'randnick': randNick, 'randomnick': randNick,
         'randdate': randDate, 'randomdate': randDate,
         'rand': randInt, 'randint': randInt, 'randomint': randInt,
+        'today': time.strftime('%d %b %Y', localtime),
         'year': localtime[0],
         'month': localtime[1],
         'monthname': time.strftime('%b', localtime),
