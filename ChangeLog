@@ -1,3 +1,12 @@
+	* Added supybot.databases.plugins.channelSpecific, a channel
+	value that determines whether the database used for channel-based
+	plugins will be a channel-specific database or a global database.
+	
+	* Changed the way channel databases are handled; instead of
+	generating numerous #channel-<name> files, instead we create a
+	subdirectory of the data directory named #channel, and then stick
+	all the files in there.
+	
 	* Added several configuration variables to the Status plugin to
 	determine how verbose the cpu command is.
 	

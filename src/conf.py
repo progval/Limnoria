@@ -618,6 +618,12 @@ registerGlobalValue(supybot.databases.channels, 'filename',
     for the channels database.  This file will go into the directory specified
     by the supybot.directories.conf variable."""))
 
+registerGroup(supybot.databases, 'plugins')
+registerChannelValue(supybot.databases.plugins, 'channelSpecific',
+    registry.Boolean(True, """Determines whether database-based plugins that
+    can be channel-specific will be so.  This can be overridden by individual
+    channels."""))
+
 ###
 # Protocol information.
 ###

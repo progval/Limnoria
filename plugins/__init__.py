@@ -112,10 +112,18 @@ class DBHandler(object):
 
 def makeChannelFilename(channel, filename):
     # XXX We should put channel stuff in its own directory.
-    assert filename == os.path.basename(filename)
+    assert filename == os.path.basename(filename), 'We don\'t handle dirs.'
     channel = ircutils.toLower(channel)
-    filename = '%s-%s' % (channel, filename)
-    return conf.supybot.directories.data.dirize(filename)
+    if conf.supybot.databases.plugins.channelSpecific.get(channel)():
+        # Should we offer the old #channel-filename naming scheme?
+        dir = conf.supybot.directories.data.dirize(channel)
+        if not os.path.exists(dir):
+            os.mkdir(dir)
+        return os.path.join(dir, filename)
+    else:
+        return conf.supybot.directories.data.dirize(filename)
+##     filename = '%s-%s' % (channel, filename)
+##     return conf.supybot.directories.data.dirize(filename)
 
 # XXX: This shouldn't be a mixin.  This should be contained by classes that
 #      want such behavior.  But at this point, it wouldn't gain much for us
