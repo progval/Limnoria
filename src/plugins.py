@@ -148,7 +148,11 @@ class PeriodicFileDownloader(object):
         self.downloadedCounter[filename] += 1
         self.lastDownloaded[filename] = time.time()
         if f is None:
-            os.rename(newFilename, os.path.join(conf.dataDir, filename))
+            toFilename = os.path.join(conf.dataDir, filename)
+            if os.name == 'nt':
+                # Windows, grrr...
+                os.remove(toFilename)
+            os.rename(newFilename, toFilename)
         else:
             start = time.time()
             f(newFilename)
