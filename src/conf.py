@@ -880,6 +880,7 @@ registerGlobalValue(supybot, 'defaultIgnore',
     hard for those users to register with the bot, but that's your problem to
     solve."""))
 
+# XXX There's no reason this can't be channel-specific.
 registerGlobalValue(supybot, 'humanTimestampFormat',
     registry.String('%I:%M %p, %B %d, %Y', """Determines how timestamps printed
     for human reading should be formatted. Refer to the Python documentation
