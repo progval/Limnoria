@@ -443,8 +443,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(url, prefixName=False)
     googleSnarfer = urlSnarfer(googleSnarfer)
 
-    _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>', re.I)
-    _ggGroup = re.compile(r'Newsgroups: (?:<a[^>]+>)?([^<]+)(?:</a>)?', re.I)
+    _ggThread = re.compile(r'Subject: <b>([^<]+)</b>', re.I)
+    _ggGroup = re.compile(r'<TITLE>Google Groups :\s*([^<]+)</TITLE>', re.I)
     _ggThreadm = re.compile(r'view the <a href=([^>]+)>no', re.I)
     _ggSelm = re.compile(r'selm=[^&]+', re.I)
     def googleGroups(self, irc, msg, match):
@@ -461,6 +461,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
         mThread = None
         mGroup = None
         if 'threadm=' in url:
+            # Let's just return from here until google decides to stop being
+            # in beta for their groups site
+            return
             path = self._ggThreadm.search(text)
             if path is None:
                 return
