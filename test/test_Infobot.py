@@ -31,26 +31,32 @@
 
 from testsupport import *
 
-class InfobotTestCase(PluginTestCase):
-    plugins = ('Infobot',)
-    def testIsSnarf(self):
-        self.assertNoResponse('foo is at http://bar.com/', 2)
-        self.assertRegexp('foo?', r'foo.*is.*http://bar.com/')
-        self.assertNoResponse('foo is at http://baz.com/', 2)
-        self.assertNotRegexp('foo?', 'baz')
+try:
+    import sqlite
+except ImportError:
+    sqlite = None
 
-    def testAreSnarf(self):
-        self.assertNoResponse('bars are dirty', 2)
-        self.assertRegexp('bars?', 'bars.*are.*dirty')
-        self.assertNoResponse('bars are not dirty', 2)
-        self.assertNotRegexp('bars?', 'not')
+if sqlite is not None:
+    class InfobotTestCase(PluginTestCase):
+        plugins = ('Infobot',)
+        def testIsSnarf(self):
+            self.assertNoResponse('foo is at http://bar.com/', 2)
+            self.assertRegexp('foo?', r'foo.*is.*http://bar.com/')
+            self.assertNoResponse('foo is at http://baz.com/', 2)
+            self.assertNotRegexp('foo?', 'baz')
 
-    def testIsResponses(self):
-        self.assertNoResponse('foo is bar', 2)
-        self.assertRegexp('foo?', 'foo.*is.*bar')
-        self.assertNoResponse('when is foo?', 2)
-        self.assertNoResponse('why is foo?', 2)
-        self.assertNoResponse('why foo?', 2)
-        self.assertNoResponse('when is foo?', 2)
+        def testAreSnarf(self):
+            self.assertNoResponse('bars are dirty', 2)
+            self.assertRegexp('bars?', 'bars.*are.*dirty')
+            self.assertNoResponse('bars are not dirty', 2)
+            self.assertNotRegexp('bars?', 'not')
+
+        def testIsResponses(self):
+            self.assertNoResponse('foo is bar', 2)
+            self.assertRegexp('foo?', 'foo.*is.*bar')
+            self.assertNoResponse('when is foo?', 2)
+            self.assertNoResponse('why is foo?', 2)
+            self.assertNoResponse('why foo?', 2)
+            self.assertNoResponse('when is foo?', 2)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
