@@ -1,3 +1,12 @@
+        * Added Topic.reorder, a new command for reordering the topics in a
+        specific manner.
+
+        * Added Http.extension, a new command to retrieve file extension in
+        formation from filext.com.
+
+        * Updated Relay.whois to include a user's away status and identified
+        state, if the server supports it.
+
 2003-12-6  Jeremy Fincher  <jemfinch@supybot.org>
 	
 	* Added a "trusted" capability that defaults to off (-trusted) and
