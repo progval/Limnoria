@@ -86,7 +86,6 @@ class Notes(callbacks.Privmsg):
                                public BOOLEAN,
                                note TEXT
                                )""")
-        self.cursor.execute("""CREATE INDEX users_username ON users (name)""")
         self.db.commit()
    
     def _addUser(self, username):
@@ -110,14 +109,6 @@ class Notes(callbacks.Privmsg):
         else:
             raise KeyError, userid
 
-    def isValidNote(self, noteid):
-        "Checks to see if a note id represents a valid note in the table."
-        self.cursor.execute('SELECT * FROM notes WHERE id=%s', noteid)
-        if self.cursor.rowcount == 0:
-            return False
-        else:
-            return True
-    
     def setAsRead(self, noteid):
         "Changes a message's 'read' value to true in the notes table."
         self.cursor.execute('UPDATE notes SET read=1 WHERE id=%s', noteid)
@@ -160,28 +151,28 @@ class Notes(callbacks.Privmsg):
         Retrieves a single note by unique note id.
         """
         noteid = privmsgs.getArgs(args)
-        if not self.isValidNote(noteid):
-            irc.error(msg, 'Not a valid note id')
-            return
         sender = ircdb.users.getUserName(msg.prefix)
         senderID = self.getUserID(sender)
         self.cursor.execute("""SELECT note, to_id, from_id, added_at, public 
-                               FROM notes WHERE id=%s LIMIT 1""", noteid)
+                               FROM notes
+                               WHERE id=%s
+                               LIMIT 1""", noteid)
+        if self.cursor.rowcount == 0:
+            irc.error(msg, 'That\'s not a valid note id.')
+            return
         note, to_id, from_id, added_at, public = self.cursor.fetchone()
         author = self.getUserName(from_id)
+        if senderID != to_id:
+            irc.error(msg, 'You are not the recipient of note %s.' % noteid)
+            return
         public = int(public)
-        added_at = int(added_at)
-        elapsed = utils.timeElapsed(time.time(), added_at)
+        elapsed = utils.timeElapsed(time.time(), int(added_at))
         newnote = "%s (Sent by %s %s ago)" % (note, author, elapsed)
-        if senderID == to_id:
-            if public:
-                irc.reply(msg, newnote)
-            else:
-                irc.queueMsg(ircmsgs.privmsg(msg.nick, newnote))
-            #debug.printf("setting note to read=true")
-            self.setAsRead(noteid)
+        if public:
+            irc.reply(msg, newnote)
         else:
-            irc.error(msg, 'You are not the recipient of note %s' % noteid)
+            irc.queueMsg(ircmsgs.privmsg(msg.nick, newnote))
+        self.setAsRead(noteid)
 
     def notes(self, irc, msg, args):
         """<takes no arguments>
@@ -200,6 +191,7 @@ class Notes(callbacks.Privmsg):
         count = self.cursor.rowcount
         notes = self.cursor.fetchall()
         L = []
+        more = False
         if count == 0:
             irc.reply(msg, 'You have no unread notes.')
         else:
@@ -212,6 +204,9 @@ class Notes(callbacks.Privmsg):
                         L.append(r'#%s (private)' % id)
             while reduce(operator.add, map(len, L)) + 2*len(L) > 400:
                 L.pop()
+                more = True
+            if more:
+                L.append('and even more notes.')
             irc.reply(msg, ', '.join(L))
 
 
