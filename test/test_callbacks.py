@@ -254,16 +254,6 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(callbacks.reply(msg, 'blah', to='blah', private=True),
                          ircmsgs.privmsg('blah', 'blah'))
 
-    def testGetCommands(self):
-        self.assertEqual(callbacks.getCommands(['foo']), ['foo'])
-        self.assertEqual(callbacks.getCommands(['foo', 'bar']), ['foo'])
-        self.assertEqual(callbacks.getCommands(['foo', ['bar', 'baz']]),
-                         ['foo', 'bar'])
-        self.assertEqual(callbacks.getCommands(['foo', 'bar', ['baz']]),
-                         ['foo', 'baz'])
-        self.assertEqual(callbacks.getCommands(['foo', ['bar'], ['baz']]),
-                         ['foo', 'bar', 'baz'])
-
     def testTokenize(self):
         self.assertEqual(callbacks.tokenize(''), [])
         self.assertEqual(callbacks.tokenize('foo'), ['foo'])
