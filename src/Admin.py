@@ -133,7 +133,8 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         to protect the secrecy of secret channels.
         """
         if ircutils.isChannel(msg.args[0]):
-            raise callbacks.Error
+            irc.error(msg, conf.replyRequiresPrivacy)
+            return
         L = irc.state.channels.keys()
         if L:
             utils.sortBy(ircutils.toLower, L)
