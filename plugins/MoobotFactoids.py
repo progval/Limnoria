@@ -309,9 +309,15 @@ class SqliteMoobotDB(object):
 
 MoobotDB = plugins.DB('MoobotFactoids', {'sqlite': SqliteMoobotDB})
 
-# We define our own getChannel so we can set raiseError=False in one place.
-def getChannel(msg, args=()):
-    return privmsgs.getChannel(msg, args, raiseError=False)
+## We define our own getChannel so we can set raiseError=False in one place.
+# Actually, we'll go ahead and raise the error and say that everything must be
+# in channel. The smart users will know that they can specify the channel name
+# for certain commands.
+def getChannel(irc, msg, args=()):
+    try:
+        return privmsgs.getChannel(msg, args)
+    except callbacks.Error:
+        irc.error('Command must be sent in a channel.', Raise=True)
 
 class MoobotFactoids(callbacks.Privmsg):
     callBefore = ['Dunno']
@@ -345,7 +351,7 @@ class MoobotFactoids(callbacks.Privmsg):
         else:
             key = ' '.join(tokens)
             key = self._sanitizeKey(key)
-            channel = getChannel(msg)
+            channel = getChannel(irc, msg)
             fact = self.db.getFactoid(channel, key)
             if fact:
                 self.db.updateRequest(channel, key, msg.prefix)
@@ -402,7 +408,7 @@ class MoobotFactoids(callbacks.Privmsg):
         
     def addFactoid(self, irc, msg, tokens):
         # First, check and see if the entire message matches a factoid key
-        channel = getChannel(msg)
+        channel = getChannel(irc, msg)
         id = self._getUserId(irc, msg.prefix)
         (key, fact) = self._getKeyAndFactoid(tokens)
         # Check and make sure it's not in the DB already
@@ -415,7 +421,7 @@ class MoobotFactoids(callbacks.Privmsg):
         id = self._getUserId(irc, msg.prefix)
         (key, regexp) = map(' '.join,
                             utils.itersplit('=~'.__eq__, tokens, maxsplit=1))
-        channel = getChannel(msg)
+        channel = getChannel(irc, msg)
         # Check and make sure it's in the DB
         fact = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
@@ -436,7 +442,7 @@ class MoobotFactoids(callbacks.Privmsg):
         isAlso = pairs.index(['is', 'also'])
         key = ' '.join(tokens[:isAlso])
         new_text = ' '.join(tokens[isAlso+2:])
-        channel = getChannel(msg)
+        channel = getChannel(irc, msg)
         fact = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         # It's fair game if we get to here
@@ -447,7 +453,7 @@ class MoobotFactoids(callbacks.Privmsg):
 
     def replaceFactoid(self, irc, msg, tokens):
         # Must be registered!
-        channel = getChannel(msg)
+        channel = getChannel(irc, msg)
         id = self._getUserId(irc, msg.prefix)
         del tokens[0] # remove the "no,"
         (key, fact) = self._getKeyAndFactoid(tokens)
@@ -464,7 +470,7 @@ class MoobotFactoids(callbacks.Privmsg):
         the factoid value is done as it is with normal retrieval.  <channel>
         is only necessary if the message isn't sent in the channel itself.
         """
-        channel = getChannel(msg, args)
+        channel = getChannel(irc, msg, args)
         key = privmsgs.getArgs(args)
         fact = self._getFactoid(irc, channel, key)
         fact = fact[0]
@@ -477,7 +483,7 @@ class MoobotFactoids(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(msg, args)
+        channel = getChannel(irc, msg, args)
         key = privmsgs.getArgs(args)
         # Start building the response string
         s = key + ": "
@@ -525,7 +531,7 @@ class MoobotFactoids(callbacks.Privmsg):
             irc.errorNotRegistered()
             return
         self.log.debug('id: %s' % id)
-        channel = getChannel(msg, args)
+        channel = getChannel(irc, msg, args)
         key = privmsgs.getArgs(args)
         info = self.db.getFactinfo(channel, key)
         if not info:
@@ -584,7 +590,7 @@ class MoobotFactoids(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(msg, args)
+        channel = getChannel(irc, msg, args)
         arg = privmsgs.getArgs(args)
         arg = arg.capitalize()
         method = getattr(self, '_most%s' % arg, None)
@@ -631,7 +637,7 @@ class MoobotFactoids(callbacks.Privmsg):
         this function (so don't use integer usernames!).  <channel> is only
         necessary if the message isn't sent in the channel itself.
         """
-        channel = getChannel(msg, args)
+        channel = getChannel(irc, msg, args)
         author = privmsgs.getArgs(args)
         try:
             id = ircdb.users.getUserId(author)
@@ -653,7 +659,7 @@ class MoobotFactoids(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(msg, args)
+        channel = getChannel(irc, msg, args)
         search = privmsgs.getArgs(args)
         glob = '%' + search + '%'
         results = self.db.getKeysByGlob(channel, glob)
@@ -676,7 +682,7 @@ class MoobotFactoids(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(msg, args)
+        channel = getChannel(irc, msg, args)
         search = privmsgs.getArgs(args)
         glob = '%' + search + '%'
         results = self.db.getKeysByValueGlob(channel, glob)
@@ -694,7 +700,7 @@ class MoobotFactoids(callbacks.Privmsg):
         Deletes the factoid with the given key.  <channel> is only necessary
         if the message isn't sent in the channel itself.
         """
-        channel = getChannel(msg, args)
+        channel = getChannel(irc, msg, args)
         key = privmsgs.getArgs(args)
         _ = self._getUserId(irc, msg.prefix)
         _ = self._getFactoid(irc, channel, key)
@@ -710,7 +716,7 @@ class MoobotFactoids(callbacks.Privmsg):
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
-        channel = getChannel(msg, args)
+        channel = getChannel(irc, msg, args)
         results = self.db.randomFactoid(channel)
         if not results:
             irc.error('No factoids in the database.')
