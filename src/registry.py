@@ -368,7 +368,14 @@ class SeparatedListOf(Value):
         Value.setValue(self, self.List(v))
 
     def __str__(self):
-        return self.joiner(self.value)
+        if self.value:
+            return self.joiner(self.value)
+        else:
+            # We must return *something* here, otherwise down along the road we
+            # can run into issues showing users the value if they've disabled
+            # nick prefixes in any of the numerous ways possible.  Since the
+            # config parser doesn't care about this space, we'll use it :)
+            return ' ' 
         
 class SpaceSeparatedListOfStrings(SeparatedListOf):
     Value = String
