@@ -41,6 +41,7 @@ import os
 import sys
 import sets
 import time
+import os.path
 import threading
 from itertools import islice, ifilter, imap
 
@@ -214,6 +215,36 @@ class Status(callbacks.Privmsg):
         Returns the server the bot is on.
         """
         irc.reply(irc.server)
+
+    def logfile(self, irc, msg, args):
+        """[<logfile>]
+
+        Returns the size of the various logfiles in use.  If given a specific
+        logfile, returns only the size of that logfile.
+        """
+        filenameArg = privmsgs.getArgs(args, required=0, optional=1)
+        if filenameArg:
+            if not filenameArg.endswith('.log'):
+                irc.error('That filename doesn\'t appear to be a log.')
+                return
+            filenameArg = os.path.basename(filenameArg)
+        ret = []
+        dirname = conf.supybot.directories.log()
+        for (dirname,_,filenames) in os.walk(dirname):
+            if filenameArg:
+                if filenameArg in filenames:
+                    filename = os.path.join(dirname, filenameArg)
+                    stats = os.stat(filename)
+                    ret.append('%s: %s' % (filename, stats.st_size))
+            else:
+                for filename in filenames:
+                    stats = os.stat(os.path.join(dirname, filename))
+                    ret.append('%s: %s' % (filename, stats.st_size))
+        if ret:
+            ret.sort()
+            irc.reply(utils.commaAndify(ret))
+        else:
+            irc.error('I couldn\'t find any logfiles.')
 
 
 Class = Status

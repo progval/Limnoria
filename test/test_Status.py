@@ -37,10 +37,10 @@ import supybot.world as world
 
 class StatusTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Status',)
-    def testNetstats(self):
+    def testNet(self):
         self.assertNotError('net')
 
-    def testCpustats(self):
+    def testCpu(self):
         m = self.assertNotError('status cpu')
         self.failIf('kB kB' in m.args[1])
         self.failIf('None' in m.args[1], 'None in cpu output: %r.' % m)
@@ -48,15 +48,28 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
             if sys.platform.startswith(s):
                 self.failUnless('kB' in m.args[1],
                                 'No memory string on supported platform.')
+        try:
+            original = conf.supybot.plugins.Status.cpu.get('children')()
+            conf.supybot.plugins.Status.cpu.get('children').setValue(False)
+            self.assertNotRegexp('cpu', 'children')
+        finally:
+            conf.supybot.plugins.Status.cpu.get('children').setValue(original)
+            
 
     def testUptime(self):
         self.assertNotError('uptime')
 
-    def testCmdstats(self):
+    def testCmd(self):
         self.assertNotError('cmd')
 
     def testCommands(self):
         self.assertNotError('commands')
+
+    def testLogfilesize(self):
+        self.feedMsg('list')
+        self.feedMsg('list Status')
+        self.assertNotError('upkeep')
+        self.assertNotError('logfile')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -123,12 +123,6 @@ class MiscTestCase(ChannelPluginTestCase):
     def testSource(self):
         self.assertNotError('source')
 
-    def testLogfilesize(self):
-        self.feedMsg('foo bar baz')
-        self.feedMsg('bar baz quux')
-        self.assertNotError('upkeep')
-        self.assertNotError('logfilesize')
-
     def testPlugin(self):
         self.assertResponse('plugin plugin', 'Misc')
 
