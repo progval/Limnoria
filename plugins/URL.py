@@ -154,7 +154,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
     stats = wrap(stats, ['channeldb'])
 
     def last(self, irc, msg, args, channel, optlist):
-        """[<channel>] [--{from,with,without,near,proto}=<value>] --nolimit
+        """[<channel>] [--{from,with,without,near,proto} <value>] [--nolimit]
 
         Gives the last URL matching the given criteria.  --from is from whom
         the URL came; --proto is the protocol the URL used; --with is something
