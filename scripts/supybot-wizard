@@ -67,9 +67,9 @@ def loadPlugin(name):
             you can always add it later.""")
             return None
     except Exception, e:
-        myPrint("""We encountered a bit of trouble trying to load that plugin.
+        myPrint("""We encountered a bit of trouble trying to load plugin %r.
         Python told us %s.  We'll skip over it for now, you can always add it
-        later.""" % e)
+        later.""" % (name, repr(e)))
         return None
 
 def describePlugin(module, showUsage):
