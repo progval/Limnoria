@@ -128,6 +128,40 @@ class set(object):
             del self.d[x]
 
 
+class queue(dict):
+    __slots__ = ('first', 'last')
+    def __init__(self):
+        self.first = 0
+        self.last = 0
+
+    def enqueue(self, elt):
+        self[self.last] = elt
+        self.last += 1
+
+    def peek(self):
+        try:
+            return self[self.first]
+        except KeyError:
+            raise IndexError, 'peek into empty queue'
+
+    def dequeue(self):
+        try:
+            ret = self[self.first]
+            del self[self.first]
+            self.first += 1
+            return ret
+        except KeyError:
+            raise IndexError, 'dequeue from empty queue'
+
+    def __len__(self):
+        return self.last - self.first
+
+    def __contains__(self, elt):
+        return elt in self.itervalues()
+        
+##     def __iter__
+##     def __eq__
+
 class IterableMap(object):
     """Define .iteritems() in a class and subclass this to get the other iters.
     """
