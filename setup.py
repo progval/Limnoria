@@ -42,6 +42,7 @@ plugins = [
     'Network',
     'Misc',
     'Owner',
+    'QuoteGrabs',
     'Status',
     'User',
     'Utilities',
