@@ -479,6 +479,7 @@ wrappers = ircutils.IrcDict({
     'lowered': getLowered,
     'anything': anything,
     'something': getSomething,
+    'filename': getSomething,
     'commandName': getCommandName,
     'text': anything,
     'somethingWithoutSpaces': getSomethingNoSpaces,
@@ -534,13 +535,56 @@ class context(object):
     def __call__(self, irc, msg, args, state):
         self.converter(irc, msg, args, state, *self.args)
 
+class additional(context):
+    def __init__(self, spec, default=None):
+        self.__parent = super(additional, self)
+        self.__parent.__init__(spec)
+        self.default = default
+
+    def __call__(self, irc, msg, args, state):
+        try:
+            self.__parent.__call__(irc, msg, args, state)
+        except IndexError:
+            log.debug('Got IndexError, returning default.')
+            state.args.append(self.default)
+
+class optional(additional):
+    def __call__(self, irc, msg, args, state):
+        try:
+            self.__parent.__call__(irc, msg, args, state)
+        except (callbacks.ArgumentError, callbacks.Error), e:
+            log.debug('Got %s, returning default.', utils.exntoString(e)) 
+            state.args.append(self.default)
+
+class any(context):
+    def __call__(self, irc, msg, args, state):
+        originalStateArgs = state.args
+        state.args = []
+        try:
+            try:
+                while args:
+                    super(any, self).__call__(irc, msg, args, state)
+            except IndexError:
+                originalStateArgs.append(state.args)
+        finally:
+            state.args = originalStateArgs
+                
+class many(any):
+    def __call__(self, irc, msg, args, state):
+        super(many, self).__call__(irc, msg, args, state)
+        assert state.args
+        if not state.args[-1]:
+            raise callbacks.ArgumentError
+        
 # getopts:  None means "no conversion", '' means "takes no argument"
 def args(irc,msg,args, types=[], state=None,
          getopts=None, allowExtra=False, requireExtra=False, combineRest=True):
     if state is None:
         state = State(name='unknown', logger=log)
     if requireExtra:
-        combineRest = False # Implied by requireExtra.
+        # Implied by requireExtra.
+        allowExtra = True
+        combineRest = False
     types = types[:] # We're going to destroy this.
     if getopts is not None:
         getoptL = []
