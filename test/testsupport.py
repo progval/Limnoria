@@ -109,6 +109,10 @@ class SupyTestCase(unittest.TestCase):
         log.critical('Beginning test case %s', self.id())
         unittest.TestCase.setUp(self)
 
+    def tearDown(self):
+        for irc in world.ircs[:]:
+            irc._reallyDie()
+
 
 class PluginTestCase(SupyTestCase):
     """Subclass this to write a test case for a plugin.  See test/test_Fun.py
@@ -123,6 +127,10 @@ class PluginTestCase(SupyTestCase):
             # Necessary because there's a test in here that shouldn\'t run.
             return
         SupyTestCase.setUp(self)
+        # Just in case, let's do this.  Too many people forget to call their
+        # super methods.
+        for irc in world.ircs[:]:
+            irc._reallyDie()
         # Set conf variables appropriately.
         conf.supybot.prefixChars.setValue('@')
         conf.supybot.reply.detailedErrors.setValue(True)
@@ -170,10 +178,10 @@ class PluginTestCase(SupyTestCase):
         if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
             # Necessary because there's a test in here that shouldn\'t run.
             return
-        self.irc.die()
         ircdb.users.close()
         ircdb.ignores.close()
         ircdb.channels.close()
+        SupyTestCase.tearDown(self)
         gc.collect()
 
     def _feedMsg(self, query, timeout=None, to=None, frm=None,
