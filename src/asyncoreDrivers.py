@@ -103,7 +103,8 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
         start = time.time()
         msg = drivers.parseMsg(self.buffer)
         self.buffer = ''
-        self.irc.feedMsg(msg)
+        if msg is not None:
+            self.irc.feedMsg(msg)
 
     def handle_close(self):
         self._scheduleReconnect()

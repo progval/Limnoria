@@ -200,8 +200,12 @@ def newDriver(irc, moduleName=None):
 
 def parseMsg(s):
     start = time.time()
-    msg = ircmsgs.IrcMsg(s)
-    log.stat('Time to parse IrcMsg: %s', time.time()-start)
-    return msg
+    s = s.strip()
+    if s:
+        msg = ircmsgs.IrcMsg(s)
+        log.stat('Time to parse IrcMsg: %s', time.time()-start)
+        return msg
+    else:
+        return None
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -61,7 +61,8 @@ class SupyIrcProtocol(LineReceiver):
     def lineReceived(self, line):
         start = time.time()
         msg = drivers.parseMsg(line)
-        self.irc.feedMsg(msg)
+        if msg is not None:
+            self.irc.feedMsg(msg)
 
     def checkIrcForMsgs(self):
         if self.connected:

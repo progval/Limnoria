@@ -109,7 +109,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.inbuffer = lines.pop()
             for line in lines:
                 msg = drivers.parseMsg(line)
-                self.irc.feedMsg(msg)
+                if msg is not None:
+                    self.irc.feedMsg(msg)
         except socket.timeout:
             pass
         except socket.error, e:
