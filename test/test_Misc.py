@@ -35,7 +35,10 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Misc', 'Utilities', 'Gameknot', 'Ctcp', 'Dict')
     def testAction(self):
         self.assertAction('action moos', 'moos')
-        self.assertAction('action','')
+
+    def testActionDoesNotAllowEmptyString(self):
+        self.assertError('action')
+        self.assertError('action ""')
 
     def testReplyWhenNotCommand(self):
         try:
@@ -64,21 +67,29 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         
     def testHelp(self):
         self.assertHelp('help list')
+        self.assertRegexp('help help', r'^\(\x02help')
+        self.assertRegexp('help misc help', r'^\(\x02misc help')
+        self.assertError('help nonExistentCommand')
+
+    def testHelpStripsPrefixChars(self):
         try:
             original = conf.prefixChars
             conf.prefixChars = '@'
             self.assertHelp('help @list')
         finally:
             conf.prefixChars = original
-        self.assertHelp('help list')
-        self.assertRegexp('help help', r'^\(\x02help')
-        self.assertRegexp('help misc help', r'^\(\x02misc help')
-        self.assertError('help morehelp')
+
+    def testHelpIsCaseInsensitive(self):
+        self.assertHelp('help LIST')
 
     def testList(self):
-        self.assertNotError('list Misc')
-        self.assertNotError('list misc')
         self.assertNotError('list')
+        self.assertNotError('list Misc')
+
+    def testListIsCaseInsensitive(self):
+        self.assertNotError('list misc')
+
+    def testListPrivate(self):
         # If Ctcp changes to public, these tests will break.  So if
         # the next assert fails, change the plugin we test for public/private
         # to some other non-public plugin.
@@ -159,8 +170,10 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testRevision(self):
         self.assertNotError('revision Misc')
-        self.assertNotError('revision misc')
         self.assertNotError('revision')
+
+    def testRevisionIsCaseInsensitive(self):
+        self.assertNotError('revision misc')
         
 
 

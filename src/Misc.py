@@ -402,11 +402,15 @@ class Misc(callbacks.Privmsg):
         irc.reply(msg, text, private=True)
 
     def action(self, irc, msg, args):
-        """takes any number of arguments
+        """<text>
 
         Returns the arguments given it, but as an action.
         """
-        irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), ' '.join(args)))
+        text = privmsgs.getArgs(args)
+        if text:
+            irc.queueMsg(ircmsgs.action(ircutils.replyTo(msg), ' '.join(args)))
+        else:
+            raise callbacks.Error
 
     def notice(self, irc, msg, args):
         """<text>
