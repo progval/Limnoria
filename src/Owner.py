@@ -320,27 +320,30 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     self.disambiguate(irc, elt, ambiguousCommands)
         return ambiguousCommands
 
+    def ambiguousError(self, irc, msg, ambiguousCommands):
+        if len(ambiguousCommands) == 1: # Common case.
+            (command, names) = ambiguousCommands.popitem()
+            names.sort()
+            s = 'The command %r is available in the %s plugins.  ' \
+                'Please specify the plugin whose command you ' \
+                'wish to call by using its name as a command ' \
+                'before calling it.' % \
+                (command, utils.commaAndify(names))
+        else:
+            L = []
+            for (command, names) in ambiguousCommands.iteritems():
+                names.sort()
+                L.append('The command %r is available in the %s '
+                         'plugins' %
+                         (command, utils.commaAndify(names)))
+            s = '%s; please specify from which plugins to ' \
+                'call these commands.' % '; '.join(L)
+        irc.queueMsg(callbacks.error(msg, s))
+
     def processTokens(self, irc, msg, tokens):
         ambiguousCommands = self.disambiguate(irc, tokens)
         if ambiguousCommands:
-            if len(ambiguousCommands) == 1: # Common case.
-                (command, names) = ambiguousCommands.popitem()
-                names.sort()
-                s = 'The command %r is available in the %s plugins.  ' \
-                    'Please specify the plugin whose command you ' \
-                    'wish to call by using its name as a command ' \
-                    'before calling it.' % \
-                    (command, utils.commaAndify(names))
-            else:
-                L = []
-                for (command, names) in ambiguousCommands.iteritems():
-                    names.sort()
-                    L.append('The command %r is available in the %s '
-                             'plugins' %
-                             (command, utils.commaAndify(names)))
-                s = '%s; please specify from which plugins to ' \
-                    'call these commands.' % '; '.join(L)
-            irc.queueMsg(callbacks.error(msg, s))
+            self.ambiguousError(irc, msg, ambiguousCommands)
         else:
             callbacks.IrcObjectProxy(irc, msg, tokens)
 
