@@ -109,7 +109,7 @@ example = utils.wrapLines("""
 <supybot> I have 24941 objects: 234 modules, 716 classes, 5489 functions, 1656 dictionaries, 827 lists, and 14874 tuples (and a few other different types).  I have a total of 119242 references.
 <jemfinch> @levenshtein supybot supbot
 <supybot> 1
-<jemfinch> (taht's the edit distance between "supybot" and "supbot")
+<jemfinch> (that's the edit distance between "supybot" and "supbot")
 <jemfinch> @soundex jemfinch
 <supybot> J515
 <jemfinch> @soundex supercallifragilisticexpealadocious
@@ -587,7 +587,7 @@ class Fun(callbacks.Privmsg):
         def randomlyReplace(s, probability=0.5):
             def f(m):
                 if random.random() < probability:
-                    return s
+                    return m.expand(s)
                 else:
                     return m.group(0)
             return f
@@ -606,21 +606,61 @@ class Fun(callbacks.Privmsg):
                 random.shuffle(L)
             return ''.join(L)
         text = privmsgs.getArgs(args)
-        text = re.sub(r'er\b', 'ar', text)
-        text = re.sub(r'\bthe\b', 'teh', text)
-        text = re.sub(r'you', 'yuo', text)
-        text = re.sub(r'\bis\b', 'si', text)
-        text = re.sub(r'ing\b', 'eing', text)
-        text = re.sub(r'like', 'liek', text)
-        text = re.sub(r'y\b', randomlyReplace('ey', 0.9), text)
+
+        alwaysInsertions = {
+            r'er\b': 'ar',
+            r'\bthe\b': 'teh',
+            r'\byou\b': 'yuo',
+            r'\bis\b': 'si',
+            r'\blike\b': 'liek',
+            r'[^e]ing\b': 'eing',
+            }
+        for (r, s) in alwaysInsertions.iteritems():
+            text = re.sub(r, s, text)
+            
+        randomInsertions = {
+            r'i': 'ui',
+            r'le\b': 'al',
+            r'i': 'io',
+            r'l': 'll',
+            r'to': 'too',
+            r'that': 'taht',
+            r'[^s]c([ei])': r'sci\1',
+            r'ed\b': r'e',
+            r'\band\b': 'adn',
+            r'\bhere\b': 'hear',
+            r'\bthey\'re': 'their',
+            r'\bthere\b': 'they\'re',
+            r'\btheir\b': 'there',
+            r'[^e]y': 'ey',
+            }
+        for (r, s) in randomInsertions.iteritems():
+            text = re.sub(r, randomlyReplace(s), text)
+            
         text = re.sub(r'(\w)\'(\w)', quoteOrNothing, text)
         text = re.sub(r'\.(\s+|$)', randomExclaims, text)
         text = re.sub(r'([aeiou])([aeiou])', randomlyShuffle, text)
-        text = re.sub(r'to', randomlyReplace('too', 0.6), text)
         text = re.sub(r'([bcdfghkjlmnpqrstvwxyz])([bcdfghkjlmnpqrstvwxyz])',
                       lessRandomlyShuffle, text)
+
+        if random.random() < .3:
+            if random.random() < .5:
+                insult = random.choice([' fagot1', ' fagorts', ' jerks',
+                                        'fagot'
+                                        ' jerk', ' dumbshoes', ' dumbshoe'])
+            else:
+                insult = ''
+            laugh1 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
+            laugh2 = random.choice(['ha', 'hah', 'lol', 'l0l', 'ahh'])
+            laugh1 = laugh1 * random.randrange(1, 5)
+            laugh2 = laugh2 * random.randrange(1, 5)
+            exclaim = random.choice(['!', '~', '!~', '~!!~~', '!!~', '~~~!'])*2
+            laugh = ''.join([' ', laugh1, laugh2, insult, exclaim])
+            text += laugh
+            
         if random.random() < .4:
             text = text.upper()
+
         irc.reply(msg, text)
 
 
