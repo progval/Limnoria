@@ -94,6 +94,8 @@ class FunTest(PluginTestCase, PluginDocumentation):
     def testoutfilter(self):
         self.assertNotError('outfilter rot13')
         self.assertResponse('rot13 foobar', 'foobar')
+        self.assertNotError('outfilter rot13')
+        self.assertResponse('rot13 foobar', 'sbbone')
         self.assertNotError('outfilter')
         self.assertResponse('rot13 foobar', 'sbbone')
         self.assertNotError('outfilter ROT13')

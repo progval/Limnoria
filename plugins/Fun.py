@@ -132,19 +132,21 @@ class MyFunProxy(object):
         
 class Fun(callbacks.Privmsg):
     def __init__(self):
-        self.filtercommand = None
+        self.filtercommands = []
         callbacks.Privmsg.__init__(self)
 
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
-            if self.filtercommand is not None:
+            s = msg.args[1]
+            for filtercommand in self.filtercommands:
                 myIrc = MyFunProxy()
-                self.filtercommand(myIrc, msg, [msg.args[1]])
-                msg = ircmsgs.IrcMsg(msg=msg, args=(msg.args[0], myIrc.s))
+                filtercommand(myIrc, msg, [s])
+                s = myIrc.s
+            msg = ircmsgs.IrcMsg(msg=msg, args=(msg.args[0], s))
         return msg
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
-                       'scramble', 'morse', 'reverse']
+                       'scramble', 'morse', 'reverse', 'urlquote', 'md5','sha']
     def outfilter(self, irc, msg, args):
         """[<command>]
         
@@ -155,12 +157,12 @@ class Fun(callbacks.Privmsg):
         if command:
             command = callbacks.canonicalName(command)
             if command in self._filterCommands:
-                self.filtercommand = getattr(self, command)
+                self.filtercommands.append(getattr(self, command))
                 irc.reply(msg, conf.replySuccess)
             else:
                 irc.error(msg, 'That\'s not a valid filter command.')
         else:
-            self.filtercommand = None
+            self.filtercommands = []
             irc.reply(msg, conf.replySuccess)
     outfilter = privmsgs.checkCapability(outfilter, 'admin')
     
