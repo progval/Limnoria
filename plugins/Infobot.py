@@ -486,6 +486,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 payload = payload[:-len(irc.nick)]
                 payload = payload.strip(', ') # Strip punctuation separating nick.
                 payload += '?' # So doUnknown gets called.
+            if not payload.strip():
+                self.log.debug('Bailing since we received an empty msg.')
+                return
             msg = ircmsgs.privmsg(msg.args[0], payload, prefix=msg.prefix)
             callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
         finally:
