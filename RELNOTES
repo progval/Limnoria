@@ -1,8 +1,15 @@
 Version 0.76.0
 
 Major bugfix release.  A great number of bugs fixed.  This is the last
-release without an upgrade script.  There shouldn't be any major
-upgrade hiccups, just be sure to note the new logging format.
+release without an upgrade script.
+
+The only hiccup in the upgrade from 0.75.0 should be that you'll need
+to update your botscript to reflect the removal of the debug module.
+We'd rather you use supybot-wizard to generate a new botscript, of
+course, but if you insist on modifying your existing botscript, take a
+look at
+<http://cvs.sourceforge.net/viewcvs.py/supybot/supybot/src/template.py?r1=1.20&r2=1.21>
+to see what you need to do.
 
 
 Version 0.75.0
