@@ -50,6 +50,7 @@ class LogLevel(registry.Value):
         s = s.upper()
         try:
             self.value = getattr(logging, s)
+            _logger.setLevel(self.value) # _logger defined later.
         except AttributeError:
             s = 'Invalid log level: should be one of ' \
                 'DEBUG, INFO, WARNING, ERROR, or CRITICAL.'
@@ -224,7 +225,7 @@ def getPluginLogger(name):
     if not log.handlers:
         filename = os.path.join(pluginLogDir, '%s.log' % name)
         handler = BetterFileHandler(filename)
-        handler.setLevel(conf.supybot.log.minimumPriority())
+        handler.setLevel(-1)
         handler.setFormatter(pluginFormatter)
         log.addHandler(handler)
     return log

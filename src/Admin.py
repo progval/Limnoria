@@ -361,19 +361,6 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         irc.replySuccess()
     reportbug = privmsgs.thread(reportbug)
 
-    def loglevel(self, irc, msg, args):
-        """{DEBUG,INFO,WARNING,ERROR,CRITICAL}
-
-        Sets the logging level of the bot's logs.
-        """
-        level = privmsgs.getArgs(args)
-        try:
-            level = getattr(logging, level.upper())
-        except AttributeError:
-            raise callbacks.ArgumentError
-        log.setLevel(level)
-        irc.replySuccess()
-
 
 Class = Admin
 
