@@ -141,6 +141,7 @@ setup(
     package_dir=package_dir,
 
     scripts=['scripts/supybot',
+             'scripts/supybot-test',
              'scripts/supybot-wizard',
              'scripts/supybot-adduser',
              'scripts/supybot-newplugin']
