@@ -1,5 +1,10 @@
 Version 0.80.0pre4
 
+Completely bugfix release.  No incompatibilies known.
+
+
+Version 0.80.0pre4
+
 Mainly a bug fix release.  This will likely be the last release before
 0.80.0final, but we're gonna let it stew for a couple weeks to attempt
 to catch any lingering bugs.
@@ -14,6 +19,7 @@ being linked together).
 For those of you that use eval and/or exec, they have been removed from
 the Owner plugin and are now in sandbox/Debug.py (which you'll have to
 grab from CVS).
+
 
 Version 0.80.0pre3
 
@@ -52,6 +58,7 @@ database.
 
 We upgraded the SOAP stuff in others; you may do well to do a
 setup.py install --clean this time around.
+
 
 Version 0.80.0pre2
 

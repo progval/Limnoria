@@ -1,3 +1,23 @@
+2004-12-20 Jeremy Fincher <jemfinch@supybot.com>
+
+	* Version 0.80.0pre5!
+	
+	* Added a "shuffle" command to the Utilities plugin, which
+	shuffles its arguments.  Useful in combination with
+	Utilities.last, which returns the last argument it's given, in
+	combination with Utilities.apply, in order to pick a random
+	string (think aliases).
+	
+	* Added supybot.plugins.Relay.noticeNonPrivmsgs, for making the
+	relay plugin use NOTICEs rather than PRIVMSGs to relay
+	non-PRIVMSG messages to a channel.  This often affects tab
+	coloring in IRC clients and thus makes it so that relay messages
+	color the tabs like the actual messages would have.
+	
+	* Numerous bug fixes.  Many, many bugs fixed.  Oodles and oodles
+	of bugs have been fixed.  Myriad bugs fixed.  Get the idea? :)
+
+	
 2004-12-17 James Vega <jamessan@supybot.org>
 
 	* Version 0.80.0pre4!
@@ -12,6 +32,7 @@
 	* Moved {eval,exec} from Owner.py to Debug.py in the sandbox.
 
 	* Numerous bug fixes.
+	
 
 2004-09-30 Jeremy Fincher <jemfinch@supybot.org>
 
