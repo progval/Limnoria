@@ -128,6 +128,7 @@ def registerDefaultPlugin(command, plugin):
     command = callbacks.canonicalName(command)
     conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
                              command, registry.String(plugin, ''))
+    conf.supybot.commands.defaultPlugins.get(command).setValue(plugin)
 
 registerDefaultPlugin('ignore', 'Admin')
 registerDefaultPlugin('unignore', 'Admin')
@@ -399,7 +400,11 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             registerDefaultPlugin(command, plugin)
             irc.replySuccess()
         else:
-            irc.reply(conf.supybot.commands.defaultPlugins.get(command)())
+            try:
+                irc.reply(conf.supybot.commands.defaultPlugins.get(command)())
+            except registry.NonExistentRegistryEntry:
+                s = 'I don\'t have a default plugin set for that command.'
+                irc.error(s)
 
     def ircquote(self, irc, msg, args):
         """<string to be sent to the server>
