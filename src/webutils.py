@@ -92,7 +92,7 @@ def getUrlFd(url, headers=None):
         return fd
     except socket.timeout, e:
         raise WebError, TIMED_OUT
-    except socket.error, e:
+    except (socket.error, socket.sslerror), e:
         raise WebError, strError(e)
     except urllib2.HTTPError, e:
         raise WebError, strError(e)
