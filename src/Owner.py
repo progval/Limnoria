@@ -552,13 +552,15 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         if ircutils.strEqual(name, self.name()):
             irc.error('You can\'t unload the %s plugin.' % name)
             return
+        # Let's do this so even if the plugin isn't currently loaded, it doesn't
+        # stay attempting to load.
+        conf.registerPlugin(name, False)
         callbacks = irc.removeCallback(name)
         if callbacks:
             for callback in callbacks:
                 callback.die()
                 del callback
             gc.collect()
-            conf.registerPlugin(name, False)
             irc.replySuccess()
         else:
             irc.error('There was no plugin %s.' % name)
