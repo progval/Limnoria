@@ -176,7 +176,7 @@ class Status(callbacks.Privmsg):
                     'seconds of CPU time.  Out of %s I have %s active.' % 
                     (user, system, user + system,
                      childUser, childSystem, childUser + childSystem,
-                     utils.nItems(world.threadsSpawned, 'thread', 'spawned'),
+                     utils.nItems('thread', world.threadsSpawned, 'spawned'),
                      activeThreads))
         mem = None
         pid = os.getpid()
@@ -211,9 +211,9 @@ class Status(callbacks.Privmsg):
                        attr == callbacks.canonicalName(attr):
                         commands += 1
         s = 'I offer a total of %s in %s.  I have processed %s.' % \
-            (utils.nItems(commands, 'command'),
-             utils.nItems(callbacksPrivmsg, 'plugin', 'command-based'),
-             utils.nItems(world.commandsProcessed, 'command'))
+            (utils.nItems('command', commands),
+             utils.nItems('plugin', callbacksPrivmsg, 'command-based'),
+             utils.nItems('command', world.commandsProcessed))
         irc.reply(msg, s)
 
     def commands(self, irc, msg, args):

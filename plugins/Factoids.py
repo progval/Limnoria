@@ -318,7 +318,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         factoids = '; '.join(L)
         s = 'Key %r is %s and has %s associated with it: %s' % \
             (key, locked and 'locked' or 'not locked',
-             utils.nItems(counter, 'factoid'), factoids)
+             utils.nItems('factoid', counter), factoids)
         irc.reply(msg, s)
 
     def change(self, irc, msg, args):

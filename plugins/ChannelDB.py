@@ -432,21 +432,21 @@ class ChannelDB(plugins.ChannelDBHandler,
             '%s has joined %s, parted %s, quit %s, kicked someone %s, '\
             'been kicked %s, changed the topic %s, ' \
             'and changed the mode %s.' % \
-            (name, utils.nItems(values.msgs, 'message'),
-             utils.nItems(values.chars, 'character'),
-             utils.nItems(values.words, 'word'),
-             utils.nItems(values.smileys, 'smiley'),
-             utils.nItems(values.frowns, 'frown'),
+            (name, utils.nItems('message', values.msgs),
+             utils.nItems('character', values.chars),
+             utils.nItems('word', values.words),
+             utils.nItems('smiley', values.smileys),
+             utils.nItems('frown', values.frowns),
              values.actions, values.actions == 1 and 'was an ACTION.  '
                                                  or 'were ACTIONs.  ',
              name,
-             utils.nItems(values.joins, 'time'),
-             utils.nItems(values.parts, 'time'),
-             utils.nItems(values.quits, 'time'),
-             utils.nItems(values.kicks, 'time'),
-             utils.nItems(values.kicked, 'time'),
-             utils.nItems(values.topics, 'time'),
-             utils.nItems(values.modes, 'time'))
+             utils.nItems('time', values.joins),
+             utils.nItems('time', values.parts),
+             utils.nItems('time', values.quits),
+             utils.nItems('time', values.kicks),
+             utils.nItems('time', values.kicked),
+             utils.nItems('time', values.topics),
+             utils.nItems('time', values.modes))
         irc.reply(msg, s)
 
     def channelstats(self, irc, msg, args):
@@ -538,7 +538,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                     irc.error(msg, '%s has never said %r.' % (user, word))
                 return
             count = int(cursor.fetchone()[0])
-            s = '%s has said %r %s.' % (user,word,utils.nItems(count, 'time'))
+            s = '%s has said %r %s.' % (user,word,utils.nItems('time', count))
             irc.reply(msg, s)
         else:
             # Figure out if we got a user or a word
@@ -594,9 +594,9 @@ class ChannelDB(plugins.ChannelDBHandler,
                                   word)
                 total = int(cursor.fetchone()[0])
                 ers = '%rer' % word
-                ret = 'Top %s ' % utils.nItems(numResultsShown, ers)
+                ret = 'Top %s ' % utils.nItems(ers, numResultsShown)
                 ret += '(out of a total of %s seen):' % \
-                             utils.nItems(total, repr(word))
+                             utils.nItems(repr(word), total)
                 L = []
                 for (count, id) in results[:numResultsShown]:
                     username = ircdb.users.getUser(id).name
@@ -607,7 +607,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                     for (_, userId) in results:
                         if userId == id:
                             s = 'You are ranked %s out of %s.' % \
-                                (rank, utils.nItems(len(results), ers))
+                                (rank, utils.nItems(ers, len(results)))
                             break
                         else:
                             rank += 1

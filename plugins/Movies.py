@@ -64,7 +64,7 @@ class Movies(callbacks.Privmsg):
             'It\'s been rated %s out of 10.  ' \
             'More information is available at <%s>' % \
             (title, movie.year(), genres,
-             utils.pluralize(len(movie.genres()), 'genre'),
+             utils.pluralize('genre', len(movie.genres())),
              movie.rating(), movie.url)
         return s
         

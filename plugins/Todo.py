@@ -247,20 +247,18 @@ class Todo(callbacks.Privmsg):
 
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args):
-        """[--{regexp,exact}=<value>] [<glob>]
+        """[--{regexp}=<value>] [<glob>]
 
-        Searches the keyspace for tasks matching <glob>.  If --regexp is given,
+        Searches the todos for tasks matching <glob>.  If --regexp is given,
         its associated value is taken as a regexp and matched against the
-        tasks; if --exact is given, its associated value is taken as an exact
-        string to match against the tasks.
+        tasks.
         """
         try:
             id = ircdb.users.getUserId(msg.prefix)
         except KeyError:
             irc.error(msg, conf.replyNotRegistered)
             return
-
-        (optlist, rest) = getopt.getopt(args, '', ['regexp=', 'exact='])
+        (optlist, rest) = getopt.getopt(args, '', ['regexp='])
         if not optlist and not rest:
             raise callbacks.ArgumentError
         db = self.dbHandler.getDb()
@@ -268,10 +266,7 @@ class Todo(callbacks.Privmsg):
         formats = []
         predicateName = 'p'
         for (option, arg) in optlist:
-            if option == '--exact':
-                criteria.append('task LIKE %s')
-                formats.append('%' + arg + '%')
-            elif option == '--regexp':
+            if option == '--regexp':
                 criteria.append('%s(task)' % predicateName)
                 try:
                     r = utils.perlReToPythonRe(arg)

@@ -1,14 +1,17 @@
-        * Added Lookup.search
+	* Added Lookup.search
 
-        * Updated Todo.remove to allow removing multiple taskids
+	* Updated Todo.remove to allow removing multiple taskids
 
-        * Added Topic.reorder, a new command for reordering the topics in a
+	* Added Topic.reorder, a new command for reordering the topics in a
         specific manner.
 
-        * Added Http.extension, a new command to retrieve file extension in
+	* Added Topic.list, a new command for listing the topics in a
+	channel (mostly in order to help out with Topic.reorder :))
+
+	* Added Http.extension, a new command to retrieve file extension in
         formation from filext.com.
 
-        * Updated Relay.whois to include a user's away status and identified
+	* Updated Relay.whois to include a user's away status and identified
         state, if the server supports it.
 
 2003-12-6  Jeremy Fincher  <jemfinch@supybot.org>

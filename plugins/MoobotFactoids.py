@@ -435,7 +435,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             last_at = time.strftime(conf.humanTimestampFormat,
                                     time.localtime(int(last_requested_at)))
             req_count = requested_count
-            times_str = utils.nItems(requested_count, 'time')
+            times_str = utils.nItems('time', requested_count)
             s += " Last requested by %s on %s, requested %s." % \
                  (last_by, last_at, times_str)
         # Last, locked info
@@ -538,14 +538,14 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         L = ['%s (%s)' % (ircdb.users.getUser(t[0]).name, int(t[1]))
              for t in cursor.fetchall()]
         return 'Most prolific %s: %s' % \
-               (utils.pluralize(len(L), 'author'), utils.commaAndify(L))
+               (utils.pluralize('author', len(L)), utils.commaAndify(L))
 
     def _mostRecent(self, cursor, limit):
         cursor.execute("""SELECT key FROM factoids
                           ORDER by created_at DESC LIMIT %s""", limit)
         L = [repr(t[0]) for t in cursor.fetchall()]
         return '%s: %s' % \
-               (utils.nItems(len(L), 'factoid', between='latest'),
+               (utils.nItems('factoid', len(L), between='latest'),
                 utils.commaAndify(L))
 
     def _mostPopular(self, cursor, limit):
@@ -556,7 +556,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             raise self.MostException, 'No factoids have been requested.'
         L = ['%r (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
         return 'Top %s: %s' % \
-               (utils.nItems(len(L), 'factoid', between='requested'),
+               (utils.nItems('factoid', len(L), between='requested'),
                 utils.commaAndify(L))
 
     def listauth(self, irc, msg, args):

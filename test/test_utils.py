@@ -37,14 +37,14 @@ import utils
 class UtilsTest(unittest.TestCase):
     def testPluralize(self):
         f = utils.pluralize
-        self.assertEqual('bike', f(1, 'bike'))
-        self.assertEqual('bikes', f(2, 'bike'))
-        self.assertEqual('BIKE', f(1, 'BIKE'))
-        self.assertEqual('BIKES', f(2, 'BIKE'))
-        self.assertEqual('match', f(1, 'match'))
-        self.assertEqual('matches', f(2, 'match'))
-        self.assertEqual('Patch', f(1, 'Patch'))
-        self.assertEqual('Patches', f(2, 'Patch'))
+        self.assertEqual('bike', f('bike', 1))
+        self.assertEqual('bikes', f('bike', 2))
+        self.assertEqual('BIKE', f('BIKE', 1))
+        self.assertEqual('BIKES', f('BIKE', 2))
+        self.assertEqual('match', f('match', 1))
+        self.assertEqual('matches', f('match', 2))
+        self.assertEqual('Patch', f('Patch', 1))
+        self.assertEqual('Patches', f('Patch', 2))
 
     def testDepluralize(self):
         f = utils.depluralize
@@ -221,10 +221,10 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(utils.sorted(L, mycmp), ['c', 'b', 'a'])
         
     def testNItems(self):
-        self.assertEqual(utils.nItems(1, 'tool', 'crazy'), '1 crazy tool')
-        self.assertEqual(utils.nItems(1, 'tool'), '1 tool')
-        self.assertEqual(utils.nItems(2, 'tool', 'crazy'), '2 crazy tools')
-        self.assertEqual(utils.nItems(2, 'tool'), '2 tools')
+        self.assertEqual(utils.nItems('tool', 1, 'crazy'), '1 crazy tool')
+        self.assertEqual(utils.nItems('tool', 1), '1 tool')
+        self.assertEqual(utils.nItems('tool', 2, 'crazy'), '2 crazy tools')
+        self.assertEqual(utils.nItems('tool', 2), '2 tools')
 
     def testItersplit(self):
         from utils import itersplit

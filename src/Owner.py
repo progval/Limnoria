@@ -337,7 +337,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         if gc.garbage:
             irc.reply(msg, 'Garbage!  %r' % gc.garbage)
         else:
-            irc.reply(msg, '%s collected.' % utils.nItems(collected, 'object'))
+            irc.reply(msg, '%s collected.' % utils.nItems('object', collected))
 
     def set(self, irc, msg, args):
         """<name> <value>

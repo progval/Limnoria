@@ -124,31 +124,31 @@ def timeElapsed(elapsed, leadingZeroes=False, years=True, weeks=True,
         if leadingZeroes or yrs:
             if yrs:
                 leadingZeroes = True
-            ret.append(nItems(yrs, 'year'))
+            ret.append(nItems('year', yrs))
     if weeks:
         wks, elapsed = elapsed // 604800, elapsed % 604800
         if leadingZeroes or wks:
             if wks:
                 leadingZeroes = True
-            ret.append(nItems(wks, 'week'))
+            ret.append(nItems('week', wks))
     if days:
         ds, elapsed = elapsed // 86400, elapsed % 86400
         if leadingZeroes or ds:
             if ds:
                 leadingZeroes = True
-            ret.append(nItems(ds, 'day'))
+            ret.append(nItems('day', ds))
     if hours:
         hrs, elapsed = elapsed // 3600, elapsed % 3600
         if leadingZeroes or hrs:
             if hrs:
                 leadingZeroes = True
-            ret.append(nItems(hrs, 'hour'))
+            ret.append(nItems('hour', hrs))
     if minutes or seconds:
         mins, secs = elapsed // 60, elapsed % 60
         if leadingZeroes or mins:
-            ret.append(nItems(mins, 'minute'))
+            ret.append(nItems('minute', mins))
         if seconds:
-            ret.append(nItems(secs, 'second'))
+            ret.append(nItems('second', secs))
     if len(ret) == 0:
         raise ValueError, 'Time difference not great enough to be noted.'
     if len(ret) == 1:
@@ -317,7 +317,7 @@ def _matchCase(s1, s2):
                 L[i] = char.upper()
         return ''.join(L)
 
-def pluralize(i, s):
+def pluralize(s, i=2):
     """Returns the plural of s based on its number i.  Put any exceptions to
     the general English rule of appending 's' in the plurals dictionary.
     """
@@ -345,22 +345,22 @@ def depluralize(s):
         else:
             return s # Don't know what to do.
 
-def nItems(n, item, between=None):
+def nItems(item, n, between=None):
     """Works like this:
 
-    >>> nItems(1, 'clock')
+    >>> nItems('clock', 1)
     '1 clock'
 
-    >>> nItems(10, 'clock')
+    >>> nItems('clock', 10)
     '10 clocks'
 
-    >>> nItems(10, 'clock', between='grandfather')
+    >>> nItems('clock', 10, between='grandfather')
     '10 grandfather clocks'
     """
     if between is None:
-        return '%s %s' % (n, pluralize(n, item))
+        return '%s %s' % (n, pluralize(item, n))
     else:
-        return '%s %s %s' % (n, between, pluralize(n, item))
+        return '%s %s %s' % (n, between, pluralize(item, n))
 
 def be(i):
     """Returns the form of the verb 'to be' based on the number i."""

@@ -318,7 +318,7 @@ class Misc(callbacks.Privmsg):
             chunk = L.pop()
             if L:
                 chunk += ' \x02(%s)\x0F' % \
-                         utils.nItems(len(L), 'message', 'more')
+                         utils.nItems('message', len(L), 'more')
             irc.reply(msg, chunk, True)
         except KeyError:
             irc.error(msg, 'You haven\'t asked me a command!')

@@ -76,6 +76,13 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         separator = self.configurables.get('separator', channel)
         return separator.join(topics)
 
+    def _unformatTopic(self, topic, channel):
+        m = self.topicUnformatter.match(topic)
+        if m:
+            return (m.group(1), m.group(2))
+        else:
+            return (topic, '')
+
     def add(self, irc, msg, args, channel):
         """[<channel>] <topic>
 
@@ -168,6 +175,22 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
             irc.error(msg, 'There are no topics to reorder.')
     reorder = privmsgs.checkChannelCapability(reorder, 'topic')
 
+    def list(self, irc, msg, args, channel):
+        """[<channel>] <number>
+
+        Returns a list of the topics in <channel>, prefixed by their indexes.
+        Mostly useful for topic reordering.  <channel> is only necessary if the
+        message isn't sent in the channel itself.
+        """
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        L = []
+        for (i, t) in enumerate(topics):
+            (t, _) = self._unformatTopic(t, channel)
+            L.append('%s: %s' % (i+1, utils.ellipsisify(t, 30)))
+        s = utils.commaAndify(L)
+        irc.reply(msg, s)
+    list = privmsgs.channel(list)
+
     def get(self, irc, msg, args, channel):
         """[<channel>] <number>
 
@@ -189,11 +212,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         topics = self._splitTopic(irc.state.getTopic(channel), channel)
         if topics:
             try:
-                match = self.topicUnformatter.match(topics[number])
-                if match:
-                    irc.reply(msg, match.group(1))
-                else:
-                    irc.reply(msg, topics[number])
+                irc.reply(msg, self._unformatTopic(topics[number], channel)[0])
             except IndexError:
                 irc.error(msg, 'That\'s not a valid topic.')
         else:
@@ -233,11 +252,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
             irc.error(msg, 'There are no topics to change.')
             return
         topic = topics.pop(number)
-        match = self.topicUnformatter.match(topic)
-        if match is None:
-            name = ''
-        else:
-            (topic, name) = match.groups()
+        (topic, name) = self._unformatTopic(topic, channel)
         try:
             senderName = ircdb.users.getUser(msg.prefix).name
         except KeyError:
@@ -279,11 +294,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         except IndexError:
             irc.error(msg, 'That\'s not a valid topic number.')
             return
-        match = self.topicUnformatter.match(topic)
-        if match is None:
-            name = ''
-        else:
-            (topic, name) = match.groups()
+        (topic, name) = self._unformatTopic(topic, channel)
         try:
             username = ircdb.users.getUser(msg.prefix).name
         except KeyError:

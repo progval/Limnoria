@@ -140,18 +140,18 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
                     'and a record of %s, %s, and %s ' \
                     '(win/loss/draw percentage: %.2f%%/%.2f%%/%.2f%%).  %s' % \
                     (name, team, rating, games,
-                     utils.nItems(w, 'win'),
-                     utils.nItems(l, 'loss'),
-                     utils.nItems(d, 'draw'),
+                     utils.nItems('win', w),
+                     utils.nItems('loss', l),
+                     utils.nItems('draw', d),
                      wp, lp, dp, seen)
             else:
                 s = '%s is rated %s and has %s ' \
                     'and a record of %s, %s, and %s ' \
                     '(win/loss/draw percentage: %.2f%%/%.2f%%/%.2f%%).  %s' % \
                     (name, rating, games,
-                     utils.nItems(w, 'win'),
-                     utils.nItems(l, 'loss'),
-                     utils.nItems(d, 'draw'),
+                     utils.nItems('win', w),
+                     utils.nItems('loss', l),
+                     utils.nItems('draw', d),
                      wp, lp, dp, seen)
             return s
         except AttributeError:

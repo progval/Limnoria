@@ -104,5 +104,14 @@ class TopicTestCase(ChannelPluginTestCase, PluginDocumentation):
         _ = self.getMsg('topic remove 1')
         self.assertError('topic reorder 0')
 
+    def testList(self):
+        _ = self.getMsg('topic add foo')
+        self.assertResponse('topic list', '1: foo')
+        _ = self.getMsg('topic add bar')
+        self.assertResponse('topic list', '1: foo and 2: bar')
+        _ = self.getMsg('topic add baz')
+        self.assertResponse('topic list', '1: foo, 2: bar, and 3: baz')
+
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

@@ -259,7 +259,7 @@ class FunDB(callbacks.Privmsg, configurable.Mixin, plugins.ChannelDBHandler):
         cursor.execute(sql)
         total = int(cursor.fetchone()[0])
         irc.reply(msg, 'There %s currently %s in my database.' %
-                  (utils.be(total), utils.nItems(total, table)))
+                  (utils.be(total), utils.nItems(table, total)))
 
     def get(self, irc, msg, args):
         """[<channel>] <lart|excuse|insult|praise> <id>

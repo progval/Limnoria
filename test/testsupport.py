@@ -106,6 +106,9 @@ class PluginTestCase(unittest.TestCase):
     cleanDataDir = True
     def setUp(self, nick='test'):
         # Set conf variables appropriately.
+        if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
+            # Necessary because there's a test in here that shouldn\'t run.
+            return
         conf.prefixChars = '@'
         conf.replyWhenNotCommand = False
         self.myVerbose = world.myVerbose
@@ -137,6 +140,9 @@ class PluginTestCase(unittest.TestCase):
                     cb = Owner.loadPluginClass(self.irc, module)
 
     def tearDown(self):
+        if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
+            # Necessary because there's a test in here that shouldn\'t run.
+            return
         self.irc.die()
         gc.collect()
 
@@ -262,9 +268,29 @@ class PluginTestCase(unittest.TestCase):
         self.failUnless(re.search(regexp, s, flags),
                         '%r does not match %r' % (s, regexp))
 
+    def testDocumentation(self):
+        if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
+            return
+        for cb in self.irc.callbacks:
+            name = cb.name()
+            if (name in ('Admin', 'Channel', 'Misc', 'Owner', 'User') and \
+               not name.lower() in self.__class__.__name__.lower()) or \
+               isinstance(cb, callbacks.PrivmsgRegexp):
+                continue
+            self.failUnless(sys.modules[cb.__class__.__name__].__doc__,
+                            '%s has no module documentation.' % name)
+            if hasattr(cb, 'isCommand'):
+                for attr in dir(cb):
+                    if cb.isCommand(attr):
+                        self.failUnless(getattr(cb, attr, None).__doc__,
+                                        '%s.%s has no help.' % (name, attr))
+                
+
 class ChannelPluginTestCase(PluginTestCase):
     channel = '#test'
     def setUp(self):
+        if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
+            return
         PluginTestCase.setUp(self)
         self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
         
@@ -307,33 +333,7 @@ class ChannelPluginTestCase(PluginTestCase):
 
 
 class PluginDocumentation:
-    def testAllCommandsHaveHelp(self):
-        for cb in self.irc.callbacks:
-            if isinstance(cb, callbacks.PrivmsgRegexp):
-                continue
-            if hasattr(cb, 'isCommand'):
-                for attr in cb.__class__.__dict__:
-                    if cb.isCommand(attr):
-                        self.failUnless(getattr(cb, attr).__doc__,
-                                        '%s has no syntax' % attr)
-
-    def testAllCommandsHaveMorehelp(self):
-        for cb in self.irc.callbacks:
-            if isinstance(cb, callbacks.PrivmsgRegexp):
-                continue
-            if hasattr(cb, 'isCommand'):
-                for attr in cb.__class__.__dict__:
-                    if cb.isCommand(attr):
-                        command = getattr(cb, attr)
-                        helps = command.__doc__
-                        self.failUnless(helps and len(helps.splitlines()) >= 3,
-                                        '%s has no help' % attr)
-
-    def testPluginHasDocumentation(self):
-        for cb in self.irc.callbacks:
-            m = sys.modules[cb.__class__.__module__]
-            self.failIf(m.__doc__ is None,
-                        '%s has no module documentation'%cb.__class__.__name__)
+    pass # This is old stuff, it should be removed some day.
                 
 
     

@@ -110,8 +110,8 @@ class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
         maxid = int(cursor.fetchone()[0])
         if maxid is None:
             maxid = 0
-        QUOTE = utils.pluralize(maxid, 'quote')
-        s = 'There %s %s %s in my database.' % (utils.be(maxid), maxid, QUOTE)
+        s = 'There %s %s in my database.' % \
+            (utils.be(maxid), utils.nItems('quote', maxid))
         irc.reply(msg, s)
 
     def get(self, irc, msg, args):

@@ -113,8 +113,6 @@ if sqlite is not None:
             self.assertRegexp('todo search task*',
                               '#1: task number one and #2: task number two is '
                               'much longer than task number...')
-            self.assertRegexp('todo search --exact "task number one"',
-                              '#1: task number one')
             self.assertError('todo search --regexp s/bustedregex')
             self.assertRegexp('todo search --regexp m/task/',
                               '#1: task number one and #2: task number two is '

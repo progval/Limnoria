@@ -124,11 +124,10 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
                 if self.configurables.get('simple-output', channel):
                     s = '%s: %s' % (name, total)
                 else:
-                    s = 'Karma for %r has been increased %s %s ' \
-                        'and decreased %s %s for a total karma of %s.' % \
-                        (name, added, utils.pluralize(added, 'time'),
-                         subtracted, utils.pluralize(subtracted, 'time'),
-                         total)
+                    s = 'Karma for %r has been increased %s ' \
+                        'and decreased %s for a total karma of %s.' % \
+                        (name, utils.nItems('time', added),
+                         utils.nItems('time', subtracted), total)
                 irc.reply(msg, s)
         elif len(args) > 1:
             normalizedArgs = sets.Set(imap(str.lower, args))

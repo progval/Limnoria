@@ -151,7 +151,7 @@ def makeNewAlias(name, alias):
     f = types.FunctionType(f.func_code, f.func_globals,
                            name, closure=f.func_closure)
     f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \
-                (utils.nItems(biggestDollar, 'argument'), alias)
+                (utils.nItems('argument', biggestDollar), alias)
     return f
 
 

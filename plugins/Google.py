@@ -153,7 +153,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
     def formatData(self, data):
         if isinstance(data, basestring):
             return data
-        time = 'Search took %s seconds: ' % data.meta.searchTime
+        time = 'Search took %s seconds' % data.meta.searchTime
         results = []
         for result in data.results:
             title = utils.htmlToText(result.title.encode('utf-8'))
@@ -163,9 +163,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             else:
                 results.append(url)
         if not results:
-            return 'No matches found %s' % time
+            return 'No matches found (%s)' % time
         else:
-            return '%s %s' % (time, '; '.join(results))
+            return '%s: %s' % (time, '; '.join(results))
 
     def licensekey(self, irc, msg, args):
         """<key>

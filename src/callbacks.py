@@ -445,8 +445,9 @@ class IrcObjectProxy:
                 msgs.reverse()
                 response = msgs.pop()
                 if msgs:
-                    response = ircutils.bold('(%s)')
-                    response %= utils.nItems(len(msgs), 'message', 'more')
+                    n = ircutils.bold('(%s)')
+                    n %= utils.nItems('message', len(msgs), 'more')
+                    response = '%s %s' % (response, n)
                 mask = msg.prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
                 private = self.private or not ircutils.isChannel(msg.args[0])
