@@ -109,10 +109,11 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def _doIdentify(self, irc):
         nickserv = self.registryValue('NickServ')
-        if not nickserv:
-            self.log.warning('_doIdentify called without a set NickServ.')
-            return
         password = self.registryValue('NickServ.password')
+        if not nickserv or not password:
+            s = 'Tried to identify without a NickServ or password set.'
+            self.log.warning(s)
+            return
         assert irc.nick == self.registryValue('nick'), \
                'Identifying with not normal nick.'
         self.log.info('Sending identify (current nick: %s)' % irc.nick)
@@ -124,15 +125,21 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def _doGhost(self, irc):
         nickserv = self.registryValue('NickServ')
-        if not nickserv:
-            self.log.warning('Tried to ghost without a NickServ set.')
+        password = self.registryValue('NickServ.password')
+        if not nickserv or not password:
+            s = 'Tried to ghost without a NickServ or password set.'
+            self.log.warning(s)
             return
         if self.sentGhost:
             self.log.warning('Refusing to send GHOST twice.')
         else:
             nick = self.registryValue('nick')
             password = self.registryValue('NickServ.password')
-            self.log.info('Sending ghost (current nick: %s)', irc.nick)
+            if not password:
+                self.log.warning('Not ghosting: no password set.')
+                return
+            self.log.info('Sending ghost (current nick: %s; ghosting: %s)',
+                          irc.nick, nick)
             ghost = 'GHOST %s %s' % (nick, password)
             # Ditto about the sendMsg (see _doIdentify).
             irc.sendMsg(ircmsgs.privmsg(nickserv, ghost))
@@ -141,9 +148,14 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     def __call__(self, irc, msg):
         callbacks.Privmsg.__call__(self, irc, msg)
         nick = self.registryValue('nick')
-        if nick and irc.nick != nick:
+        nickserv = self.registryValue('NickServ')
+        password = self.registryValue('NickServ.password')
+        if nick and irc.nick != nick and nickserv and password:
             if irc.afterConnect and not self.sentGhost:
-                irc.sendMsg(ircmsgs.nick(nick)) # The 433 is handled elsewhere.
+                if nick in irc.state.nicksToHostmasks:
+                    self._doGhost(irc)
+                else:
+                    irc.sendMsg(ircmsgs.nick(nick)) # 433 is handled elsewhere.
 
     def do001(self, irc, msg):
         # New connection, make sure sentGhost is False.
@@ -151,24 +163,27 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def do376(self, irc, msg):
         nickserv = self.registryValue('NickServ')
-        if nickserv: # Check to see if we're started.
-            nick = self.registryValue('nick')
-            if not nick:
-                self.log.warning('Cannot identify without a nick being set.  '
-                                 'Set supybot.plugins.Services.nick.')
-                return
-            if irc.nick == nick:
-                self._doIdentify(irc)
-            else:
-                self._doGhost(irc)
-        else:
-            s = 'supybot.plugins.Services.NickServ is unset; cannot identify.'
+        password = self.registryValue('NickServ.password')
+        if not nickserv or not password:
+            s = 'NickServ or password is unset; cannot identify.'
             self.log.warning(s)
+            return
+        nick = self.registryValue('nick')
+        if not nick:
+            self.log.warning('Cannot identify without a nick being set.  '
+                             'Set supybot.plugins.Services.nick.')
+            return
+        if irc.nick == nick:
+            self._doIdentify(irc)
+        else:
+            self._doGhost(irc)
     do422 = do377 = do376
 
     def do433(self, irc, msg):
         if irc.afterConnect:
-            nickserv = self.registryValue('NickServ')
+            password = self.registryValue('NickServ.password')
+            if not password:
+                return
             self._doGhost(irc)
 
 ##     def do474(self, irc, msg):
@@ -192,8 +207,15 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def doNick(self, irc, msg):
         nick = self.registryValue('nick')
-        if msg.args[0] == nick:
+        if msg.args[0] == irc.nick:
             self._doIdentify(irc)
+        elif ircutils.strEqual(msg.nick, nick):
+            irc.sendMsg(ircmsgs.nick(nick))
+
+    def doQuit(self, irc, msg):
+        nick = self.registryValue('nick')
+        if ircutils.strEqual(msg.nick, nick):
+            irc.sendMsg(ircmsgs.nick(nick))
 
     def _ghosted(self, s):
         nick = self.registryValue('nick')
@@ -208,17 +230,22 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
             nick = self.registryValue('nick')
             self.log.debug('Notice received from NickServ: %r.', msg)
             s = msg.args[1].lower()
-            if self._ghosted(s):
+            if 'incorrect' in s or 'denied' in s:
+                log = 'Received "Password Incorrect" from NickServ.  ' \
+                      'Resetting password to empty.'
+                self.log.warning(log)
+                self.sentGhost = False
+                self.setRegistryValue('NickServ.password', '')
+            elif self._ghosted(s):
                 self.log.info('Received "GHOST succeeded" from NickServ.')
                 self.sentGhost = False
+                self.identified = False
                 irc.queueMsg(ircmsgs.nick(nick))
             elif ('registered' in s or 'protected' in s) and \
                ('not' not in s and 'isn\'t' not in s):
                 self.log.info('Received "Registered Nick" from NickServ.')
                 if nick == irc.nick:
                     self._doIdentify(irc)
-                else:
-                    irc.sendMsg(ircmsgs.nick(nick))
             elif '/msg' in s and 'identify' in s and 'password' in s:
                 # Usage info for identify command; ignore.
                 self.log.debug('Got usage info for identify command.')
@@ -229,9 +256,6 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                     self.checkPrivileges(irc, channel)
                 if self.channels:
                     irc.queueMsg(ircmsgs.joins(self.channels))
-            elif 'incorrect' in s:
-                log = 'Received "Password Incorrect" from NickServ.'
-                self.log.warning(log)
             else:
                 self.log.debug('Unexpected notice from NickServ: %r.', s)
 
