@@ -60,6 +60,15 @@ if sqlite is not None:
             self.assertNotError('channeldb stats')
             self.assertRegexp('channeldb stats', self.nick)
 
+        def testSelfStats(self):
+            self.assertError('channeldb stats %s' % self.irc.nick)
+            self.assertNotError('channeldb stats %s' % self.irc.nick)
+            self.assertNotError('channeldb stats %s' % self.irc.nick)
+            m1 = self.getMsg('channeldb stats %s' % self.irc.nick)
+            self.assertNotError('channeldb toggle selfstats off')
+            m2 = self.getMsg('channeldb stats %s' % self.irc.nick)
+            self.assertEqual(m1.args[1], m2.args[1])
+            
         def testNoKeyErrorEscapeFromSeen(self):
             self.assertRegexp('seen asldfkjasdlfkj', 'I have not seen')
             self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')

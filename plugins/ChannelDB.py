@@ -30,10 +30,7 @@
 ###
 
 """
-Silently listens to every message received on a channel and keeps statistics
-concerning joins, parts, and various other commands in addition to tracking
-statistics about smileys, actions, characters, and words.
-"""
+Silently listens to every message received on a channel and keeps statistics concerning joins, parts, and various other commands in addition to tracking statistics about smileys, actions, characters, and words. """
 
 import plugins
 
@@ -50,6 +47,7 @@ import debug
 import utils
 import ircdb
 import ircmsgs
+import plugins
 import privmsgs
 import ircutils
 import callbacks
@@ -76,11 +74,15 @@ frowns = (':|', ':-/', ':-\\', ':\\', ':/', ':(', ':-(', ':\'(')
 smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
-class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
+class ChannelDB(plugins.ChannelDBHandler,
+                callbacks.PrivmsgCommandAndRegexp,
+                plugins.Toggleable):
     addressedRegexps = sets.Set(['increaseKarma', 'decreaseKarma'])
+    toggles = plugins.ToggleDictionary({'selfstats': True})
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        plugins.Toggleable.__init__(self)
         self.lastmsg = None
         self.laststate = None
         self.outFiltering = False
@@ -135,7 +137,8 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
 
             cursor.execute("""CREATE TABLE karma (
                               id INTEGER PRIMARY KEY,
-                              name TEXT UNIQUE ON CONFLICT IGNORE,
+                              name TEXT,
+                              normalized TEXT UNIQUE ON CONFLICT IGNORE,
                               added INTEGER,
                               subtracted INTEGER
                               )""")
@@ -206,13 +209,14 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG':
             if ircutils.isChannel(msg.args[0]):
-                db = self.getDb(msg.args[0])
-                cursor = db.cursor()
-                try:
-                    self.outFiltering = True
-                    self._updatePrivmsgStats(msg)
-                finally:
-                    self.outFiltering = False
+                if self.toggles.get('selfstats', msg.args[0]):
+                    db = self.getDb(msg.args[0])
+                    cursor = db.cursor()
+                    try:
+                        self.outFiltering = True
+                        self._updatePrivmsgStats(msg)
+                    finally:
+                        self.outFiltering = False
         return msg
 
     def doPart(self, irc, msg):
@@ -359,28 +363,28 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
         db = self.getDb(channel)
         cursor = db.cursor()
         if len(args) == 1:
-            orig_name = args[0]
-            name = args[0].lower()
+            name = args[0]
+            normalized = name.lower()
             cursor.execute("""SELECT added, subtracted
                               FROM karma
-                              WHERE name=%s""", name)
+                              WHERE normalized=%s""", normalized)
             if cursor.rowcount == 0:
-                irc.reply(msg, '%s has no karma.' % orig_name)
+                irc.reply(msg, '%s has no karma.' % name)
             else:
                 (added, subtracted) = map(int, cursor.fetchone())
                 total = added - subtracted
                 s = 'Karma for %r has been increased %s %s ' \
                     'and decreased %s %s for a total karma of %s.' % \
-                    (orig_name, added, utils.pluralize(added, 'time'),
+                    (name, added, utils.pluralize(added, 'time'),
                      subtracted, utils.pluralize(subtracted, 'time'), total)
                 irc.reply(msg, s)
         elif len(args) > 1:
-            lowered_args = map(str.lower, args)
-            criteria = ' OR '.join(['name=%s'] * len(args))
+            normalizedArgs = map(str.lower, args)
+            criteria = ' OR '.join(['normalized=%s'] * len(args))
             sql = """SELECT name, added-subtracted
                      FROM karma WHERE %s
                      ORDER BY added-subtracted DESC""" % criteria
-            cursor.execute(sql, *lowered_args)
+            cursor.execute(sql, *normalizedArgs)
             if cursor.rowcount > 0:
                 s = utils.commaAndify(['%s: %s' % (n, t)
                                        for (n,t) in cursor.fetchall()])
@@ -405,21 +409,27 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
             
     def increaseKarma(self, irc, msg, match):
         r"^(\S+)\+\+$"
-        name = match.group(1).lower()           
+        name = match.group(1)
+        normalized = name.lower()
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
-        cursor.execute("""UPDATE karma SET added=added+1 WHERE name=%s""",name)
+        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, %s, 0, 0)""",
+                       name, normalized)
+        cursor.execute("""UPDATE karma
+                          SET added=added+1
+                          WHERE normalized=%s""", normalized)
 
     def decreaseKarma(self, irc, msg, match):
         r"^(\S+)--$"
-        name = match.group(1).lower()          
+        name = match.group(1)
+        normalized = name.lower()
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
+        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, %s, 0, 0)""",
+                       name, normalized)
         cursor.execute("""UPDATE karma
                           SET subtracted=subtracted+1
-                          WHERE name=%s""", name)
+                          WHERE normalized=%s""", normalized)
 
     def stats(self, irc, msg, args):
         """[<channel>] [<name>]
