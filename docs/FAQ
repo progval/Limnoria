@@ -175,6 +175,16 @@ Q: How do I make my Supybot connect to multiple servers?
 A: Just use the "connect" command in the Network plugin.  Easy as pie!
 
 
+Q: My bot can't handle nicks with brackets in them!  It always
+   complains about something not being a valid command, or about
+   spurious or missing right brackets, etc.
+
+A: You should quote arguments (using double quotes, like this:
+   "foo[bar]") that have brackets in them that you don't wish to be
+   evaluated as nested commands.  Otherwise, you can turn off nested
+   commands by setting supybot.commands.nested to False.
+
+
 Q: I've edited my configuration file, but my Supybot doesn't notice
    the changes!  Even if I restart it, it doesn't see them.  What's
    the deal?
