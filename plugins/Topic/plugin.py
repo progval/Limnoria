@@ -135,13 +135,18 @@ class Topic(callbacks.Privmsg):
         except (KeyError, IndexError):
             return None
 
-    def _sendTopics(self, irc, channel, topics, isDo=False):
+    def _sendTopics(self, irc, channel, topics, isDo=False, fit=False):
         topics = [s for s in topics if s and not s.isspace()]
         self.lastTopics[channel] = topics
         newTopic = self._joinTopic(channel, topics)
         try:
             maxLen = irc.state.supported['topiclen']
-            if len(newTopic) > maxLen:
+            if fit:
+                while len(newTopic) > maxLen:
+                    topics.pop(0)
+                    self.lastTopics[channel] = topics
+                    newTopic = self._joinTopic(channel, topics)
+            elif len(newTopic) > maxLen:
                 if self.registryValue('recognizeTopiclen', channel):
                     irc.error(format('That topic is too long for this server '
                                      '(maximum length: %i; this topic: %i).',
@@ -184,6 +189,19 @@ class Topic(callbacks.Privmsg):
         topics.append(topic)
         self._sendTopics(irc, channel, topics)
     add = wrap(add, ['canChangeTopic', rest('topic')])
+
+    def fit(self, irc, msg, args, channel, topic):
+        """[<channel>] <topic>
+
+        Adds <topic> to the topics for <channel>.  If the topic is too long
+        for the server, topics will be popped until there is enough room.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        topics = self._splitTopic(irc.state.getTopic(channel), channel)
+        topics.append(topic)
+        self._sendTopics(irc, channel, topics, fit=True)
+    fit = wrap(fit, ['canChangeTopic', rest('topic')])
 
     def replace(self, irc, msg, args, channel, i, topic):
         """[<channel>] <number> <topic>

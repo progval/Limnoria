@@ -51,7 +51,7 @@ class TopicTestCase(ChannelPluginTestCase):
         self.assertRegexp('topic replace 2 lorem ipsum',
                           'oof.*lorem ipsum.*zab')
         self.assertRegexp('topic replace 2 rab', 'oof.*rab.*zab')
-        
+
     def testGet(self):
         self.assertError('topic get 1')
         _ = self.getMsg('topic add foo')
@@ -186,7 +186,7 @@ class TopicTestCase(ChannelPluginTestCase):
             self.assertError('topic swap -3 1')
         finally:
             conf.supybot.plugins.Topic.format.setValue(original)
-            
+
     def testDefault(self):
         self.assertError('topic default')
         try:
@@ -219,8 +219,20 @@ class TopicTestCase(ChannelPluginTestCase):
             self.assertResponse('topic separator ||', 'foo || bar || baz')
         finally:
             conf.supybot.plugins.Topic.format.setValue(original)
-            
-        
+
+    def testFit(self):
+        original = conf.supybot.plugins.Topic.format()
+        try:
+            conf.supybot.plugins.Topic.format.setValue('$topic')
+            self.irc.state.supported['TOPICLEN'] = 20
+            self.assertResponse('topic fit foo', 'foo')
+            self.assertResponse('topic fit bar', 'foo || bar')
+            self.assertResponse('topic fit baz', 'foo || bar || baz')
+            self.assertResponse('topic fit qux', 'bar || baz || qux')
+        finally:
+            conf.supybot.plugins.Topic.format.setValue(original)
+            self.irc.state.supported.pop('TOPICLEN', None)
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
