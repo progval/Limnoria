@@ -1,9 +1,9 @@
-supybot (0.80.0pre1-1) unstable; urgency=high
+supybot (0.80.0pre2-1) unstable; urgency=high
 
   * New upstream
   * Urgency high because it still fixes previous bugs.
 
- -- James Vega <vega.james@gmail.com>  Mon, 13 Sep 2004 09:32:00 -0400
+ -- James Vega <vega.james@gmail.com>  Fri, 17 Sep 2004 11:18:43 -0400
 
 supybot (0.79.9999-1) unstable; urgency=high
 
