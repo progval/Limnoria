@@ -267,19 +267,20 @@ class Misc(callbacks.Privmsg):
             if name.endswith('.py'):
                 name = name[:-3]
             return name
-        def getRevisionNumber(module):
-            def getVersion(s):
+        def getRevisionNumber(module, name):
+            def getVersion(s, n):
                 try:
                     return s.split(None, 3)[2]
                 except:
-                    self.log.exception('Couldn\'t get id string: %r', s)
+                    self.log.exception('Couldn\'t get id string from module '
+                                       '%s: %r', n, s)
             if hasattr(module, '__revision__'):
                 if 'supybot' in module.__file__:
-                    return getVersion(module.__revision__)
+                    return getVersion(module.__revision__, name)
                 else:
                     for dir in conf.supybot.directories.plugins():
                         if module.__file__.startswith(dir):
-                            return getVersion(module.__revision__)
+                            return getVersion(module.__revision__, name)
         if len(args) == 1 and '*' not in args[0] and '?' not in args[0]:
             # wildcards are handled below.
             name = normalize(args[0])
@@ -319,12 +320,12 @@ class Misc(callbacks.Privmsg):
             if not args:
                 # I shouldn't use iteritems here for some reason.
                 for (name, module) in sys.modules.items():
-                    names.append((name, getRevisionNumber(module)))
+                    names.append((name, getRevisionNumber(module, name)))
             elif len(args) == 1: # wildcards
                 pattern = args[0]
                 for (name, module) in sys.modules.items():
                     if ircutils.hostmaskPatternEqual(pattern, name):
-                        names.append((name, getRevisionNumber(module)))
+                        names.append((name, getRevisionNumber(module, name)))
             else:
                 for name in args:
                     name = normalize(name)
@@ -332,7 +333,7 @@ class Misc(callbacks.Privmsg):
                         irc.error('I couldn\'t find a Supybot named %s.'%name)
                         return
                     module = sys.modules[name]
-                    names.append((name, getRevisionNumber(module)))
+                    names.append((name, getRevisionNumber(module, name)))
             names.sort()
             L = ['%s: %s' % (k, v) for (k, v) in names if v]
             irc.reply(utils.commaAndify(L))
