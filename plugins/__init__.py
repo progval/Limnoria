@@ -79,6 +79,15 @@ try:
                 return
             else:
                 Connection.commit(self, *args, **kwargs)
+
+        def __del__(self):
+            try:
+                Connection.__del__(self)
+            except Exception, e:
+                try:
+                    log.exception('Uncaught exception in __del__:')
+                except:
+                    pass
     sqlite.Connection = MyConnection
     #del Connection.__del__
 except ImportError:
