@@ -186,8 +186,11 @@ def getNonNegativeInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
             p=lambda i: i<0, type='non-negative integer', *L)
 
-def getId(irc, msg, args, state):
-    getInt(irc, msg, args, state, type='id')
+def getId(irc, msg, args, state, kind=None):
+    type = 'id'
+    if kind is not None:
+        type = kind + ' id'
+    getInt(irc, msg, args, state, type=type)
 
 def getExpiry(irc, msg, args, state):
     now = int(time.time())
@@ -362,10 +365,14 @@ def getUrl(irc, msg, args, state):
         state.args.append(args.pop(0))
     else:
         irc.errorInvalid('url', args[0])
+
+def getNow(irc, msg, args, state):
+    state.args.append(int(time.time()))
     
 wrappers = ircutils.IrcDict({
     'id': getId,
     'int': getInt,
+    'now': getNow,
     'url': getUrl,
     'float': getFloat,
     'nonInt': getNonInt,
@@ -380,6 +387,7 @@ wrappers = ircutils.IrcDict({
     'lowered': getLowered,
     'anything': anything,
     'something': getSomething,
+    'text': anything,
     'somethingWithoutSpaces': getSomethingNoSpaces,
     'channelDb': getChannelDb,
     'hostmask': getHostmask,
