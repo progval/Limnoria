@@ -98,6 +98,10 @@ conf.registerChannelValue(conf.supybot.plugins.Sourceforge, 'defaultProject',
     explicit project is given."""))
 conf.registerGlobalValue(conf.supybot.plugins.Sourceforge, 'bold',
     registry.Boolean(True, """Determines whether the results are bolded."""))
+conf.registerGlobalValue(conf.supybot.plugins.Sourceforge,
+    'enableSpecificTrackerCommands', registry.Boolean(True, """Determines
+    whether the bug, rfe, and patch commands (convenience wrappers around
+    the tracker command) will be enabled."""))
 
 class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     """
@@ -129,6 +133,12 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     def __init__(self):
         super(Sourceforge, self).__init__()
         self.__class__.sf = self.__class__.sourceforge
+
+    def isCommand(self, name):
+        if name in ('bug', 'rfe', 'patch'):
+            return self.registryValue('enableSpecificTrackerCommands')
+        else:
+            return super(Sourceforge, self).isCommand(name)
 
     def _formatResp(self, text, num=''):
         """
@@ -221,11 +231,38 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         except webutils.WebError, e:
             raise TrackerError, str(e)
 
-    def tracker(self, irc, msg, args):
-        """<num>
+    def bug(self, irc, msg, args):
+        """<id>
 
-        Returns a description of the tracker with Tracker id <num> and the
-        corresponding Tracker url.
+        Returns a description of the bug with id <id>.  Really, this is
+        just a wrapper for the tracker command; it won't even complain if the
+        <id> you give isn't a bug.
+        """
+        self.tracker(irc, msg, args)
+        
+    def patch(self, irc, msg, args):
+        """<id>
+
+        Returns a description of the patch with id <id>.  Really, this is
+        just a wrapper for the tracker command; it won't even complain if the
+        <id> you give isn't a patch.
+        """
+        self.tracker(irc, msg, args)
+        
+    def rfe(self, irc, msg, args):
+        """<id>
+
+        Returns a description of the rfe with id <id>.  Really, this is
+        just a wrapper for the tracker command; it won't even complain if the
+        <id> you give isn't an rfe.
+        """
+        self.tracker(irc, msg, args)
+        
+    def tracker(self, irc, msg, args):
+        """<id>
+
+        Returns a description of the tracker with id <id> and the corresponding
+        url.
         """
         num = privmsgs.getArgs(args)
         try:

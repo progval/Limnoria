@@ -39,6 +39,19 @@ Sf = conf.supybot.plugins.Sourceforge
 class SourceforgeTest(ChannelPluginTestCase):
     plugins = ('Sourceforge',)
     config = {'supybot.plugins.Sourceforge.bold': False}
+    def testEnableSpecificTrackerCommands(self):
+        w = conf.supybot.plugins.Sourceforge.enableSpecificTrackerCommands
+        orig = w()
+        try:
+            w.setValue(True)
+            self.assertRegexp('list Sourceforge',
+                              r'bug[^s].*patch[^es].*rfe[^s]')
+            w.setValue(False)
+            self.assertNotRegexp('list Sourceforge',
+                                 r'bug[^s].*patch[^es].*rfe[^s]')
+        finally:
+            w.setValue(orig)
+
     if network:
         def testAny(self):
             m = self.getMsg('bugs --any gaim')
