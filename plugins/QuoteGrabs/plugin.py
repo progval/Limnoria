@@ -171,11 +171,11 @@ class SqliteQuoteGrabsDB(object):
 
     def search(self, channel, text):
         db = self._getDb(channel)
-	cursor = db.cursor()
+        cursor = db.cursor()
         text = '%' + text + '%'
-	cursor.execute("""SELECT id, nick, quote FROM quotegrabs
-	                  WHERE quote LIKE %s
-			  ORDER BY id DESC""", text)
+        cursor.execute("""SELECT id, nick, quote FROM quotegrabs
+                          WHERE quote LIKE %s
+                          ORDER BY id DESC""", text)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
         return [QuoteGrabsRecord(id, text=quote, by=nick)
