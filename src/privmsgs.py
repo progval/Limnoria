@@ -1038,7 +1038,7 @@ class UserCommands(callbacks.Privmsg):
         irc.reply(msg, conf.replySuccess)
 
     def whoami(self, irc, msg, args):
-        """takes no arguments.
+        """takes no arguments
 
         Returns the name of the user calling the command.
         """
