@@ -511,7 +511,8 @@ class Irc(object):
     def die(self):
         for callback in self.callbacks:
             callback.die()
-        world.ircs.remove(self)
+        if self in world.ircs:
+            world.ircs.remove(self)
 
     def __hash__(self):
         return id(self)
