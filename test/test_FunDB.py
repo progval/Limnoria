@@ -99,6 +99,8 @@ if sqlite is not None:
                 '\(#1\)')
             self.assertRegexp('lart me and %s' % self.irc.nick, 'jabs t3st '\
                 'and %s \(#1\)' % self.irc.nick)
+            self.assertRegexp('praise me and %s' % self.irc.nick, 'pets t3st '\
+                'and %s \(#1\)' % self.irc.nick)
             self.assertNotError('remove lart 1')
             self.assertNotError('remove praise 1')
             self.assertNotError('remove insult 1')
