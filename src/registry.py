@@ -345,6 +345,7 @@ class Regexp(Value):
                   'between the regexp and the recorded string value.'
 
     def __str__(self):
+        self() # Gotta update if we've been reloaded.
         return self.sr
         
 class SeparatedListOf(Value):
@@ -370,8 +371,9 @@ class SeparatedListOf(Value):
         Value.setValue(self, self.List(v))
 
     def __str__(self):
-        if self.value:
-            return self.joiner(self.value)
+        value = self()
+        if value:
+            return self.joiner(value)
         else:
             # We must return *something* here, otherwise down along the road we
             # can run into issues showing users the value if they've disabled
