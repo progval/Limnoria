@@ -163,13 +163,14 @@ class Config(callbacks.Privmsg):
     search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?
 
     def _getValue(self, irc, msg, group):
+        value = str(group) or ' '
         if hasattr(group, 'value'):
             if not group._private:
-                irc.reply(str(group) or ' ')
+                irc.reply(value)
             else:
                 capability = getCapability(group._name)
                 if ircdb.checkCapability(msg.prefix, capability):
-                    irc.reply(str(group), private=True)
+                    irc.reply(value, private=True)
                 else:
                     irc.errorNoCapability(capability)
         else:
