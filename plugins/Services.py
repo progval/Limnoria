@@ -69,7 +69,6 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self.reset()
 
     def reset(self):
-        self.got376 = False
         self.sentGhost = False
         self.identified = False
 
@@ -124,7 +123,6 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         self.sentGhost = False
 
     def do376(self, irc, msg):
-        self.got376 = True
         if self.nickserv: # Check to see if we're started.
             assert self.nick, 'Services: Nick must not be empty.'
             if irc.nick == self.nick:
@@ -136,7 +134,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
     do422 = do377 = do376
 
     def do433(self, irc, msg):
-        if self.nickserv and self.got376:
+        if self.nickserv and irc.afterConnect:
             self._doGhost(irc)
         else:
             self.log.warning('do433 called without plugin being started.')
