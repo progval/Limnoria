@@ -293,6 +293,8 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         elif 'isn\'t registered' in s:
             self.log.info('Received "%s isn\'t registered" from ChanServ',
                           channel)
+        elif 'this channel has been registered' in s:
+            self.log.debug('Got "Registered channel" from ChanServ.')
         else:
             self.log.warning('Got unexpected notice from ChanServ: %r.', msg)
 
