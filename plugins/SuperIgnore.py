@@ -36,6 +36,8 @@ messages out before most plugins ever look at them.  This is a good example of
 a plugin's use of inFilter, for aspiring Supybot plugin authors.
 """
 
+import supybot
+
 __revision__ = "$Id$"
 __author__ = supybot.authors.jemfinch
 
