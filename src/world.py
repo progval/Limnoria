@@ -72,7 +72,10 @@ registryFilename = None
 def flush():
     """Flushes all the registered flushers."""
     for f in flushers:
-        f()
+        try:
+            f()
+        except Exception, e:
+            log.exception('Uncaught exception in flusher:')
 
 def upkeep():
     """Does upkeep (like flushing, garbage collection, etc.)"""
