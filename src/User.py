@@ -209,19 +209,17 @@ class User(callbacks.Privmsg):
                       'includes a nick, then an exclamation point (!), then '
                       'a user, then an at symbol (@), then a host.  Feel '
                       'free to use wildcards (* and ?, which work just like '
-                      'they do on the command line) in any of these parts.')
-            return
+                      'they do on the command line) in any of these parts.',
+                      Raise=True)
         try:
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.errorNoUser()
-            return
+            irc.errorNoUser(Raise=True)
         try:
             otherId = ircdb.users.getUserId(hostmask)
             if otherId != id:
-                irc.error('That hostmask is already registered.')
-                return
+                irc.error('That hostmask is already registered.', Raise=True)
         except KeyError:
             pass
         if not user.checkPassword(password) and \
@@ -229,20 +227,19 @@ class User(callbacks.Privmsg):
             try:
                 u = ircdb.users.getUser(msg.prefix)
             except KeyError:
-                irc.error(conf.supybot.replies.incorrectAuthentication())
-                return
+                irc.error(conf.supybot.replies.incorrectAuthentication(),
+                          Raise=True)
             if not u.checkCapability('owner'):
-                irc.error(conf.supybot.replies.incorrectAuthentication())
-                return
+                irc.error(conf.supybot.replies.incorrectAuthentication(),
+                          Raise=True)
         try:
             user.addHostmask(hostmask)
         except ValueError, e:
-            irc.error(str(e))
-            return
+            irc.error(str(e), Raise=True)
         try:
             ircdb.users.setUser(id, user)
         except ValueError, e:
-            irc.error(str(e))
+            irc.error(str(e), Raise=True)
         irc.replySuccess()
 
     def removehostmask(self, irc, msg, args):
