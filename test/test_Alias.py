@@ -31,7 +31,7 @@
 
 from test import *
 
-Alias = loadPlugin('Alias')
+Alias = OwnerCommands.loadPluginModule('Alias')
 
 
 class FunctionsTest(unittest.TestCase):

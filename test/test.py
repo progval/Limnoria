@@ -64,6 +64,7 @@ import irclib
 import drivers
 import ircmsgs
 import ircutils
+import OwnerCommands
 
 fd = file(os.path.join('test', 'rfc2812.msgs'), 'r')
 rawmsgs = [line.strip() for line in fd]
@@ -98,11 +99,6 @@ nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
 
 nicks += [msg.nick for msg in msgs if msg.nick]
 
-def loadPlugin(name):
-    moduleInfo = imp.find_module(name, conf.pluginDirs)
-    module = imp.load_module(name, *moduleInfo)
-    return module
-
 class PluginTestCase(unittest.TestCase):
     """Subclass this to write a test case for a plugin.  See test_FunCommands
     for an example.
@@ -120,15 +116,12 @@ class PluginTestCase(unittest.TestCase):
         while self.irc.takeMsg():
             pass
         if isinstance(self.plugins, str):
-            moduleInfo = imp.find_module(name, conf.pluginDirs)
-            module = imp.load_module(name, *moduleInfo)
-            plugin = module.Class()
-            self.irc.addCallback(plugin)
+            module = OwnerCommands.loadPluginModule(self.plugins)
+            cb = OwnerCommands.loadPluginClass(self.irc, module)
         else:
             for name in self.plugins:
-                module = loadPlugin(name)
-                plugin = module.Class()
-                self.irc.addCallback(plugin)
+                module = OwnerCommands.loadPluginModule(name)
+                cb = OwnerCommands.loadPluginClass(self.irc, module)
 
     def tearDown(self):
         self.irc.die()
