@@ -175,22 +175,22 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         except webutils.WebError, e:
             raise callbacks.Error, str(e)
 
-    def _getTrackerList(self, url):
+    def _getTrackerList(self, url, type):
         """
         Searches the tracker list page and returns a list of the trackers.
         """
         try:
             text = webutils.getUrl(url)
             if "No matches found." in text:
-                return 'No trackers were found.'
+                return 'No %s were found.' % type
             head = '#%s: %s'
             resp = [head % entry for entry in self._formatResp(text)]
             if resp:
                 if len(resp) > 10:
                     resp = imap(lambda s: utils.ellipsisify(s, 50), resp)
                 return '%s' % utils.commaAndify(resp)
-            raise callbacks.Error, 'No Trackers were found.  (%s)' % \
-                  conf.supybot.replies.possibleBug()
+            raise callbacks.Error, 'No %s were found.  (%s)' % \
+                  (type, conf.supybot.replies.possibleBug())
         except webutils.WebError, e:
             raise callbacks.Error, str(e)
 
@@ -288,8 +288,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 status = option
         try:
             int(project)
-            s = 'Use the tracker command to get information about a specific '\
-                'tracker.'
+            s = 'Use the tracker command to get information about specific '\
+                '%s.' % tracker
             irc.error(s)
             return
         except ValueError:
@@ -305,7 +305,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             irc.error('%s.  I can\'t find the %s link.' %
                       (e, tracker.capitalize()))
             return
-        irc.reply(self._getTrackerList(url))
+        irc.reply(self._getTrackerList(url, tracker))
 
     def bugs(self, irc, msg, args, optlist, project):
         """[--{any,open,closed,deleted,pending}] [<project>]
