@@ -85,7 +85,7 @@ class Weather(callbacks.Privmsg):
             callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
         except webutils.WebError, e:
             irc.error(str(e))
-            
+
     def weather(self, irc, msg, args):
         # This specifically does not have a docstring.
         channel = None
@@ -102,7 +102,7 @@ class Weather(callbacks.Privmsg):
         realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)
         realCommand(irc, msg, args)
-        
+
     def _toCelsius(self, temp, unit):
         if unit == 'K':
             return temp - 273.15
@@ -111,6 +111,7 @@ class Weather(callbacks.Privmsg):
         else:
             return temp
 
+    _temp = re.compile(r'(-?\d+)(.*?)(F|C)')
     def _getTemp(self, temp, deg, unit, chan):
         assert unit == unit.upper()
         assert temp == int(temp)
@@ -141,7 +142,6 @@ class Weather(callbacks.Privmsg):
     _hamTemp = re.compile(
         r'<td valign="top" align="right"><strong><font face="arial">'
         r'(-?\d+)(.*?)(F|C)</font></strong></td>', re.I)
-    _temp = re.compile(r'(-?\d+)(.*?)(F|C)')
     _hamChill = re.compile(
         r'Wind Chill</font></strong>:</small></td>\s+<td align="right">'
         r'<small><font face="arial">([^N][^<]+)</font></small></td>',
@@ -151,7 +151,7 @@ class Weather(callbacks.Privmsg):
         r'<small><font face="arial">([^N][^<]+)</font></small></td>',
          re.I | re.S)
     # States
-    _realStates = sets.Set(['ak', 'al', 'ar', 'az', 'ca', 'co', 'ct', 
+    _realStates = sets.Set(['ak', 'al', 'ar', 'az', 'ca', 'co', 'ct',
                             'dc', 'de', 'fl', 'ga', 'hi', 'ia', 'id',
                             'il', 'in', 'ks', 'ky', 'la', 'ma', 'md',
                             'me', 'mi', 'mn', 'mo', 'ms', 'mt', 'nc',
@@ -170,7 +170,7 @@ class Weather(callbacks.Privmsg):
 
         Returns the approximate weather conditions for a given city.
         """
-        
+
         #If we received more than one argument, then we have received
         #a city and state argument that we need to process.
         if len(args) > 1:
@@ -185,7 +185,7 @@ class Weather(callbacks.Privmsg):
             city = city.lower()
             #We must break the States up into two sections.  The US and
             #Canada are the only countries that require a State argument.
-            
+
             if state in self._realStates:
                 country = 'us'
             elif state in self._fakeStates:
@@ -211,7 +211,7 @@ class Weather(callbacks.Privmsg):
         #We received a single argument.  Zipcode or station id.
         else:
             zip = privmsgs.getArgs(args)
-            zip = zip.replace(',', '')  
+            zip = zip.replace(',', '')
             zip = zip.lower()
             url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?' \
                   'config=&forecast=zandh&pands=%s&Submit=GO' % zip
@@ -219,7 +219,7 @@ class Weather(callbacks.Privmsg):
             if 'was not found' in html:
                 irc.error('No such location could be found.')
                 return
-                
+
         headData = self._hamLoc.search(html)
         if headData is not None:
             (city, state, country) = headData.groups()
@@ -355,6 +355,9 @@ class Weather(callbacks.Privmsg):
     _wunderDew = re.compile(r'Dew Point:</td><td[^>]+><b>\s+<nobr><b>'
                             r'(-?\d+)</b>&nbsp;(&#176;)(F)</nobr>',
                             re.I | re.S)
+    _wunderHeat = re.compile(
+        r'HeatIndex:</td><td[^>]+><b>\s+<nobr><b>(\d+)</b>&nbsp;([^F]+)(F)<',
+        re.I | re.S)
     _wunderWind = re.compile(
         r'Wind:</td><td[^>]+>\s+<b>\s+<nobr><b>(\d+)</b>&nbsp;(mph)'
         r'</nobr>\s+/\s+<nobr><b>(\d+)</b>&nbsp;(km/h)</nobr>\s+</b>'
@@ -363,10 +366,10 @@ class Weather(callbacks.Privmsg):
         r'Pressure:</td><td[^<]+><b>\s+<b>(\d+\.\d+)</b>&nbsp;(in)\s+/\s+'
         r'<b>(\d+)</b>&nbsp;(hPa)', re.I | re.S)
     _wunderVisible = re.compile(
-        r'Visibility:</td><td[^>]+><b>\s+<nobr><b>(\w+)</b>&nbsp;(miles)'
-        r'</nobr>\s+/\s+<nobr><b>(\w+)</b>&nbsp;(kilometers)</nobr>',
+        r'Visibility:</td><td[^>]+><b>\s+<nobr><b>([\w.]+)</b>&nbsp;(miles)'
+        r'</nobr>\s+/\s+<nobr><b>([\w.]+)</b>&nbsp;(kilometers)</nobr>',
         re.I | re.S)
-    _wunderUv = re.compile(r'UV:</td><td[^>]+><b>(\d\d?)</b>', re.I | re.S)
+    _wunderUv = re.compile(r'UV:</td><td[^>]+><b>(\d\d?)</b>( out of \d\d?)', re.I | re.S)
     _wunderTime = re.compile(r'Updated:\s+<b>([\w\s:,]+)</b>', re.I | re.S)
     def wunder(self, irc, msg, args):
         """<US zip code | US/Canada city, state | Foreign city, country>
@@ -404,6 +407,12 @@ class Weather(callbacks.Privmsg):
                 time = ''
             resp = ['The current temperature at %s is %s%s.' %\
                     (location, temp, time)]
+            heat = self._wunderHeat.search(text)
+            if heat is not None:
+                (heat, deg, unit) = map(str.strip, heat.groups())
+                if convert:
+                    heat = self._getTemp(int(heat), deg, unit, msg.args[0])
+                resp.append('Heat Index: %s.' % heat)
             conds = self._wunderCond.search(text)
             if conds is not None:
                 resp.append('Conditions: %s.' % conds.group(1))
@@ -433,7 +442,7 @@ class Weather(callbacks.Privmsg):
                 resp.append('Visibility: %s %s (%s %s).' % vis.groups())
             uv = self._wunderUv.search(text)
             if uv is not None:
-                resp.append('UV: %s' % uv.group(1))
+                resp.append('UV: %s%s' % uv.groups())
             resp = map(utils.htmlToText, resp)
             irc.reply(' '.join(resp))
         else:
@@ -444,7 +453,7 @@ conf.registerChannelValue(conf.supybot.plugins.Weather, 'temperatureUnit',
     WeatherUnit('Fahrenheit', """Sets the default temperature unit to use when
     reporting the weather."""))
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'command',
-    WeatherCommand('cnn', """Sets the default command to use when retrieving 
+    WeatherCommand('cnn', """Sets the default command to use when retrieving
     the weather.  Command must be one of %s.""" %
     utils.commaAndify(Weather.weatherCommands, And='or')))
 conf.registerChannelValue(conf.supybot.plugins.Weather, 'convert',
