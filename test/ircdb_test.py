@@ -34,9 +34,10 @@ from test import *
 import unittest
 
 import ircdb
+import ircutils
 
 class IrcUserTestCase(unittest.TestCase):
-    def testCheckCapability(self):
+    def testCapabilities(self):
         u = ircdb.IrcUser()
         u.addCapability('foo')
         u.addCapability('!bar')
@@ -44,4 +45,87 @@ class IrcUserTestCase(unittest.TestCase):
         self.failUnless(u.checkCapability('!bar'))
         self.failUnless(u.checkCapability('foo'))
         self.failIf(u.checkCapability('!foo'))
+        u.removeCapability('foo')
+        u.removeCapability('!bar')
+        self.failIf(u.checkCapability('!bar'))
+        self.failIf(u.checkCapability('foo'))
+
+    def testInitCapabilities(self):
+        u = ircdb.IrcUser(capabilities=['foo'])
+        self.failUnless(u.checkCapability('foo'))
+
+    def testPassword(self):
+        u = ircdb.IrcUser()
+        u.setPassword('foobar')
+        self.failUnless(u.checkPassword('foobar'))
+        self.failIf(u.checkPassword('somethingelse'))
+
+    def testHostmasks(self):
+        prefix = 'foo!bar@baz'
+        hostmasks = ['*!bar@baz', 'foo!*@*']
+        u = ircdb.IrcUser()
+        self.failIf(u.checkHostmask(prefix))
+        for hostmask in hostmasks:
+            u.addHostmask(hostmask)
+        self.failUnless(u.checkHostmask(prefix))
+
+    def testAuth(self):
+        prefix = 'foo!bar@baz'
+        u = ircdb.IrcUser()
+        u.setAuth(prefix)
+        self.failUnless(u.checkAuth(prefix))
+        u.unsetAuth()
+        self.failIf(u.checkAuth(prefix))
+
+    def testIgnore(self):
+        u = ircdb.IrcUser(ignore=True)
+        self.failIf(u.checkCapability('foo'))
+        self.failUnless(u.checkCapability('!foo'))
         
+
+class IrcChannelTestCase(unittest.TestCase):
+    def testInit(self):
+        c = ircdb.IrcChannel()
+        self.failIf(c.checkCapability('op'))
+        self.failIf(c.checkCapability('voice'))
+        self.failIf(c.checkCapability('halfop'))
+        self.failIf(c.checkCapability('protected'))
+
+    def testCapabilities(self):
+        c = ircdb.IrcChannel(defaultAllow=False)
+        self.failIf(c.checkCapability('foo'))
+        c.addCapability('foo')
+        self.failUnless(c.checkCapability('foo'))
+        c.removeCapability('foo')
+        self.failIf(c.checkCapability('foo'))
+
+    def testDefaultCapability(self):
+        c = ircdb.IrcChannel()
+        c.setDefaultCapability(False)
+        self.failIf(c.checkCapability('foo'))
+        c.setDefaultCapability(True)
+        self.failUnless(c.checkCapability('foo'))
+
+    def testLobotomized(self):
+        c = ircdb.IrcChannel(lobotomized=True)
+        self.failUnless(c.checkIgnored(''))
+        
+    def testIgnored(self):
+        prefix = 'foo!bar@baz'
+        banmask = ircutils.banmask(prefix)
+        c = ircdb.IrcChannel()
+        self.failIf(c.checkIgnored(prefix))
+        c.addIgnore(banmask)
+        self.failUnless(c.checkIgnored(prefix))
+        c.removeIgnore(banmask)
+        self.failIf(c.checkIgnored(prefix))
+        c.addBan(banmask)
+        self.failUnless(c.checkIgnored(prefix))
+        c.removeBan(banmask)
+        self.failIf(c.checkIgnored(prefix))
+
+    
+        
+
+                        
+
