@@ -286,6 +286,11 @@ registerChannelValue(supybot.reply.mores, 'maximum',
     registry.PositiveInteger(50, """Determines what the maximum number of
     chunks (for use with the 'more' command) will be."""))
 
+registerChannelValue(supybot.reply.mores, 'length',
+    registry.NonNegativeInteger(0, """Determines how long individual chunks
+    will be.  If set to 0, uses our super-tweaked,
+    get-the-most-out-of-an-individual-message default."""))
+
 registerChannelValue(supybot.reply.mores, 'instant',
     registry.PositiveInteger(1, """Determines how many mores will be sent
     instantly (i.e., without the use of the more command, immediately when
