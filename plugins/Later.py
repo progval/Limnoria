@@ -126,6 +126,9 @@ class Later(callbacks.Privmsg):
         Tells <nick> <text> the next time <nick> is in seen.
         """
         (nick, text) = privmsgs.getArgs(args, required=2)
+        if ircutils.strEqual(nick, irc.nick):
+            irc.error('I can\'t send notes to myself.')
+            return
         try:
             self._addNote(nick, msg.nick, text)
             irc.replySuccess()
