@@ -222,7 +222,7 @@ class RSS(callbacks.Privmsg):
         delattr(self.__class__, name)
         irc.replySuccess()
 
-    def announce(self, irc, msg, args):
+    def announce(self, irc, msg, args, channel):
         """[<channel>] [<name|url> ...]
 
         Sets the current list of announced feeds in the channel to the feeds
@@ -230,12 +230,12 @@ class RSS(callbacks.Privmsg):
         URLs for a RSS feeds.  <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
         conf.supybot.plugins.RSS.announce.get(channel).setValue(args)
         if not args:
             irc.replySuccess('All previous announced feeds removed.')
         else:
             irc.replySuccess()
+    announce = privmsgs.checkChannelCapability(announce, 'op')
             
     def rss(self, irc, msg, args):
         """<url>
