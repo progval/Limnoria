@@ -124,7 +124,7 @@ class Status(callbacks.Privmsg):
             'I have processed %s.  My public commands include %s.' % \
             (utils.nItems(len(commands), 'command'),
              utils.nItems(callbacksPrivmsgs, 'plugin', 'command-based'),
-             utils.nItems(world.commandsProcessed, 'command'),
+             utils.nItems(world.commandsProcessed, 'command', 'individual'),
              utils.commaAndify(commands))
         irc.reply(msg, s)
 
