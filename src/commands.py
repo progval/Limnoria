@@ -308,8 +308,8 @@ def getChannel(irc, msg, args, state):
     state.args.append(channel)
 
 def inChannel(irc, msg, args, state):
-    assert not state.channel, 'inChannel acts as a channel'
-    getChannel(irc, msg, args, state)
+    if not state.channel:
+        getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         irc.error('I\'m not in %s.' % state.channel, Raise=True)
 
@@ -320,8 +320,8 @@ def getChannelOrNone(irc, msg, args, state):
         state.args.append(None)
 
 def checkChannelCapability(irc, msg, args, state, cap):
-    assert not state.channel, 'checkChannelCapability acts as a channel.'
-    getChannel(irc, msg, args, state)
+    if not state.channel:
+        getChannel(irc, msg, args, state)
     cap = ircdb.canonicalCapability(cap)
     cap = ircdb.makeChannelCapability(state.channel, cap)
     if not ircdb.checkCapability(msg.prefix, cap):
@@ -374,6 +374,9 @@ def getUrl(irc, msg, args, state):
 
 def getNow(irc, msg, args, state):
     state.args.append(int(time.time()))
+
+def getCommandName(irc, msg, args, state):
+    state.args.append(callbacks.canonicalName(args.pop(0)))
     
 wrappers = ircutils.IrcDict({
     'id': getId,
@@ -394,6 +397,7 @@ wrappers = ircutils.IrcDict({
     'lowered': getLowered,
     'anything': anything,
     'something': getSomething,
+    'commandName': getCommandName,
     'text': anything,
     'somethingWithoutSpaces': getSomethingNoSpaces,
     'capability': getSomethingNoSpaces,
@@ -508,7 +512,7 @@ def args(irc,msg,args, types=[], state=None,
             else:
                 assert getopts[opt] == ''
                 state.getopts.append((opt, True))
-    log.debug('Finished getopts: %s', state.getopts)
+    #log.debug('Finished getopts: %s', state.getopts)
 
     # Second, we get out everything but the last argument (or, if combineRest
     # is False, we'll clear out all the types).
@@ -541,9 +545,9 @@ def args(irc,msg,args, types=[], state=None,
         raise callbacks.ArgumentError
     if requireExtra and not args:
         log.debug('requireExtra and not args: %r', args)
-    log.debug('args: %r' % args)
-    log.debug('State.args: %r' % state.args)
-    log.debug('State.getopts: %r' % state.getopts)
+    log.debug('command.args args: %r' % args)
+    log.debug('command.args state.args: %r' % state.args)
+    log.debug('command.args state.getopts: %r' % state.getopts)
     return state
 
 # These are used below, but we need to rename them so their names aren't
