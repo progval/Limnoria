@@ -330,7 +330,7 @@ def getNick(irc, msg, args, state):
                                  'That nick is too long for this server.')
         state.args.append(args.pop(0))
     else:
-        irc.errorInvalid('nick', s)
+        irc.errorInvalid('nick', args[0])
 
 def getSeenNick(irc, msg, args, state, errmsg=None):
     try:
