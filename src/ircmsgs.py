@@ -625,6 +625,12 @@ def mode(channel, args=(), prefix=''):
         args = tuple(map(str, args))
     return IrcMsg(prefix=prefix, command='MODE', args=(channel,)+args)
 
+def limit(channel, limit, prefix=''):
+    return mode(channel, ['+l', limit], prefix=prefix)
+
+def unlimit(channel, limit, prefix=''):
+    return mode(channel, ['-l', limit], prefix=prefix)
+
 def invite(nick, channel, prefix=''):
     """Returns an INVITE for nick."""
     if conf.supybot.protocols.irc.strictRfc():
