@@ -222,6 +222,11 @@ class PluginTestCase(unittest.TestCase):
 
 class ChannelPluginTestCase(PluginTestCase):
     channel = '#test'
+
+    def setUp(self):
+        PluginTestCase.setUp(self)
+        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
+        
     def _feedMsg(self, query, timeout=None):
         if timeout is None:
             timeout = self.timeout
