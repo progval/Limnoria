@@ -221,9 +221,12 @@ class FlatfileMapping(MappingInterface):
 class CdbMapping(MappingInterface):
     def __init__(self, filename, **kwargs):
         self.filename = filename
-        self.db = cdb.open(filename, 'c', **kwargs)
+        self._openCdb() # So it can be overridden later.
         if 'nextId' not in self.db:
             self.db['nextId'] = '1'
+
+    def _openCdb(self, *args, **kwargs):
+        self.db = cdb.open(filename, 'c', **kwargs)
 
     def _getNextId(self):
         i = int(self.db['nextId'])
