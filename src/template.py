@@ -51,6 +51,12 @@ if 'src' not in sys.path:
 
 import conf
 
+defaultNick = %%nick%%
+defaultUser = %%user%%
+defaultIdent = %%ident%%
+defaultServer = %%server%%
+defaultPassword = %%password%%
+
 conf.commandsOnStart = %%onStart%%
 
 afterConnect = %%afterConnect%%
@@ -95,19 +101,19 @@ if __name__ == '__main__':
                       help='-O optimizes asserts out of the code; ' \
                            '-OO optimizes asserts and uses psyco.')
     parser.add_option('-n', '--nick', action='store',
-                      dest='nick', default=%%nick%%,
+                      dest='nick', default=defaultNick,
                       help='nick the bot should use') # FIXME (quotes)
     parser.add_option('-s', '--server', action='store',
-                      dest='server', default=%%server%%,
+                      dest='server', default=defaultServer,
                       help='server to connect to') # FIXME (quotes)
     parser.add_option('-u', '--user', action='store',
-                      dest='user', default=%%user%%,
+                      dest='user', default=defaultUser,
                       help='full username the bot should use')
     parser.add_option('-i', '--ident', action='store',
-                      dest='ident', default=%%ident%%,
+                      dest='ident', default=defaultIdent,
                       help='ident the bot should use')
     parser.add_option('-p', '--password', action='store',
-                      dest='password', default=%%password%%,
+                      dest='password', default=defaultPassword,
                       help='server password the bot should use')
     parser.add_option('--startup', action='append', dest='onStart',
                       help='file of additional commands to run at startup.')
