@@ -281,7 +281,8 @@ class RSS(callbacks.Privmsg):
         assert name == self._validFeedName(name)
         if url not in self.locks:
             self.locks[url] = threading.RLock()
-        if hasattr(self.__class__, name):
+        if hasattr(self.__class__, name) and \
+           not hasattr(getattr(self, name), 'url'):
             s = 'I already have a command in this plugin named %s.' % name
             raise callbacks.Error, s
         def f(self, irc, msg, args):
