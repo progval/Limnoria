@@ -43,6 +43,7 @@ import os
 import imp
 import sys
 import sets
+import getopt
 import linecache
 
 import log
@@ -56,13 +57,16 @@ import drivers
 import privmsgs
 import callbacks
 
-def loadPluginModule(name):
+class Deprecated(ImportError):
+    pass
+
+def loadPluginModule(name, ignoreDeprecation=False):
     """Loads (and returns) the module for the plugin with the given name."""
     files = []
     for dir in conf.pluginDirs:
         try:
             files.extend(os.listdir(dir))
-        except EnvironmentError:
+        except EnvironmentError: # OSError, IOError superclass.
             log.warning('Invalid plugin directory: %s', dir)
     loweredFiles = map(str.lower, files)
     try:
@@ -72,6 +76,11 @@ def loadPluginModule(name):
         pass
     moduleInfo = imp.find_module(name, conf.pluginDirs)
     module = imp.load_module(name, *moduleInfo)
+    if 'deprecated' in module.__dict__ and module.deprecated:
+        if ignoreDeprecation:
+            log.warning('Deprecated plugin loaded: %s', name)
+        else:
+            raise Deprecated, 'Attempted to load deprecated plugin %s' % name
     if module.__name__ in sys.modules:
         sys.modules[module.__name__] = module
     linecache.checkcache()
@@ -345,19 +354,30 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply('%s collected.' % utils.nItems('object', collected))
 
     def load(self, irc, msg, args):
-        """<plugin>
+        """[--deprecated] <plugin>
 
         Loads the plugin <plugin> from any of the directories in
         conf.pluginDirs; usually this includes the main installed directory
-        and 'plugins' in the current directory.  Be sure not to have ".py" at
-        the end.
+        and 'plugins' in the current directory.  --deprecated is necessary
+        if you wish to load deprecated plugins.
         """
+        (optlist, args) = getopt.getopt(args, '', ['deprecated'])
+        ignoreDeprecation = False
+        for (option, argument) in optlist:
+            if option == '--deprecated':
+                ignoreDeprecation = True
         name = privmsgs.getArgs(args)
+        if name.endswith('.py'):
+            name = name[:-3]
         if irc.getCallback(name):
             irc.error('That module is already loaded.')
             return
         try:
-            module = loadPluginModule(name)
+            module = loadPluginModule(name, ignoreDeprecation)
+        except Deprecated:
+            irc.error('Plugin %r is deprecated.  '
+                      'Use --deprecated to force it to load.')
+            return
         except ImportError, e:
             if name in str(e):
                 irc.error('No plugin %s exists.' % name)

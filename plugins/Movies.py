@@ -34,6 +34,8 @@ Does various (well, only one at the moment :)) things with the Internet Movie
 Database.
 """
 
+deprecated = True
+
 __revision__ = "$Id$"
 
 import plugins

@@ -33,6 +33,8 @@
 A plugin that tries to emulate Infobot somewhat faithfully.
 """
 
+deprecated = True
+
 __revision__ = "$Id$"
 
 import plugins
