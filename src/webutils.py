@@ -36,6 +36,7 @@ import supybot.fix as fix
 import re
 import socket
 import urllib2
+import httplib
 import urlparse
 
 import supybot.conf as conf
@@ -44,6 +45,7 @@ Request = urllib2.Request
 class WebError(Exception):
     pass
 
+# XXX We should tighten this up a bit.
 urlRe = re.compile(r"(\w+://[^\])>\s]+)", re.I)
 
 REFUSED = 'Connection refused.'
@@ -94,6 +96,8 @@ def getUrlFd(url, headers=None):
         raise WebError, TIMED_OUT
     except (socket.error, socket.sslerror), e:
         raise WebError, strError(e)
+    except httplib.InvalidURL, e:
+        raise WebError, 'Invalid URL: %s' % e
     except urllib2.HTTPError, e:
         raise WebError, strError(e)
     except urllib2.URLError, e:
