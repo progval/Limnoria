@@ -592,7 +592,10 @@ class Fun(callbacks.Privmsg):
                     return m.group(0)
             return f
         def randomExclaims(m):
-            return ('!'*random.randrange(1, 5)) + m.group(1)
+            if random.random() < 0.85:
+                return ('!' * random.randrange(1, 5)) + m.group(1)
+            else:
+                return '.' + m.group(1)
         def randomlyShuffle(m):
             L = list(m.groups())
             random.shuffle(L)
