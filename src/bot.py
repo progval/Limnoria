@@ -178,5 +178,10 @@ def main():
             sys.exit(0)
 
 if __name__ == '__main__':
-    main()
+    import sys
+    if '-p' in sys.args:
+        import profile, time
+        profile.run('main()', '%i.prof' % time.time())
+    else:
+        main()
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
