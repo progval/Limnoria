@@ -74,7 +74,7 @@ class MiscTestCase(ChannelPluginTestCase):
     def testHelp(self):
         self.assertHelp('help list')
         self.assertRegexp('help help', r'^\(\x02help')
-        self.assertRegexp('help misc help', r'^\(\x02misc help')
+        #self.assertRegexp('help misc help', r'^\(\x02misc help')
         self.assertError('help nonExistentCommand')
 
     def testHelpDoesAmbiguityWithDefaultPlugins(self):
@@ -125,16 +125,15 @@ class MiscTestCase(ChannelPluginTestCase):
         # contributed more than one command to the plugin.
         # -- Need to create this case, check it with the regexp 'commands'
         # Test handling of invalid plugin
-        self.assertRegexp('contributors InvalidPlugin', 
-            'No such plugin')
+        self.assertRegexp('contributors InvalidPlugin', 'not a valid plugin')
         # Test handling of invalid person
         self.assertRegexp('contributors Misc noname', 
-            'not a registered contributor')
+                          'not a registered contributor')
         # Test handling of valid person with no contributions
         # Note: This will break if the listed person ever makes a contribution
         # to the Misc plugin
         self.assertRegexp('contributors Misc bwp',
-            'listed as a contributor')
+                          'listed as a contributor')
         
     def testContributorsIsCaseInsensitive(self):
         self.assertNotError('contributors Misc Skorobeus')

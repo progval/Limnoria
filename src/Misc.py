@@ -53,9 +53,9 @@ import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
+from supybot.commands import wrap
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.webutils as webutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -123,25 +123,21 @@ class Misc(callbacks.Privmsg):
                 else:
                     pass # Let's just do nothing, I can't think of better.
 
-    def list(self, irc, msg, args):
-        """[--private] [<module name>]
+    def list(self, irc, msg, args, optlist, cb):
+        """[--private] [<plugin>]
 
         Lists the commands available in the given plugin.  If no plugin is
         given, lists the public plugins available.  If --private is given,
         lists the private plugins.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['private'])
         private = False
         for (option, argument) in optlist:
-            if option == '--private':
+            if option == 'private':
                 private = True
                 if not self.registryValue('listPrivatePlugins') and \
                    not ircdb.checkCapability(msg.prefix, 'owner'):
                     irc.errorNoCapability('owner')
-                    return
-        name = privmsgs.getArgs(rest, required=0, optional=1)
-        name = callbacks.canonicalName(name)
-        if not name:
+        if not cb:
             def isPublic(cb):
                 name = cb.name()
                 return conf.supybot.plugins.get(name).public()
@@ -157,16 +153,14 @@ class Misc(callbacks.Privmsg):
                 else:
                     irc.reply('There are no public plugins.')
         else:
-            cb = irc.getCallback(name)
-            if cb is None:
-                irc.error('No such plugin %r exists.' % name)
-            elif isinstance(cb, callbacks.PrivmsgRegexp) or \
-                 not isinstance(cb, callbacks.Privmsg):
+            if isinstance(cb, callbacks.PrivmsgRegexp) or \
+               not isinstance(cb, callbacks.Privmsg):
                 irc.error('That plugin exists, but it has no commands.  '
                           'You may wish to check if it has any useful '
                           'configuration variables with the command '
-                          '"config list supybot.plugins.%s".' % name)
+                          '"config list supybot.plugins.%s".' % cb.name())
             else:
+                name = callbacks.canonicalName(cb.name())
                 commands = []
                 for s in dir(cb):
                     if cb.isCommand(s) and \
@@ -181,14 +175,14 @@ class Misc(callbacks.Privmsg):
                 else:
                     irc.error('That plugin exists, but it has no '
                               'commands with help.')
+    list = wrap(list, ['?plugin'], getopts={'private': ''})
 
-    def apropos(self, irc, msg, args):
+    def apropos(self, irc, msg, args, s):
         """<string>
 
         Searches for <string> in the commands currently offered by the bot,
         returning a list of the commands containing that string.
         """
-        s = privmsgs.getArgs(args)
         commands = {}
         L = []
         for cb in irc.callbacks:
@@ -209,8 +203,9 @@ class Misc(callbacks.Privmsg):
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('No appropriate commands were found.')
+    apropos = wrap(apropos, ['something'])
 
-    def help(self, irc, msg, args):
+    def help(self, irc, msg, args, cb, command):
         """[<plugin>] <command>
 
         This command gives a useful description of what <command> does.
@@ -221,29 +216,19 @@ class Misc(callbacks.Privmsg):
                 irc.reply(callbacks.getHelp(method, name=name))
             else:
                 irc.error('%s has no help.' % name)
-        if len(args) > 1:
-            cb = irc.getCallback(args[0]) # No pop, we'll use this later.
-            if cb is not None:
-                command = callbacks.canonicalName(privmsgs.getArgs(args[1:]))
-                prefixChars = conf.supybot.reply.whenAddressedBy.chars()
-                command = command.lstrip(prefixChars)
-                name = ' '.join(args)
-                if hasattr(cb, 'isCommand') and cb.isCommand(command):
-                    method = getattr(cb, command)
-                    getHelp(method, name)
-                else:
-                    irc.error('There is no such command %s.' % name)
+        if cb is not None:
+            if hasattr(cb, 'isCommand') and cb.isCommand(command):
+                method = getattr(cb, command)
+                getHelp(method, command)
+                return
             else:
-                irc.error('There is no such plugin %s.' % args[0])
-            return
-        name = privmsgs.getArgs(args)
-        cb = irc.getCallback(name)
+                irc.error('There is no such command %s.' % command, Raise=True)
+        #else:
+        # Is the command a callback?   If so, possibly give the plugin doc.
+        cb = irc.getCallback(command)
         if cb is not None and cb.__doc__ and not getattr(cb,'_original',None):
             irc.reply(utils.normalizeWhitespace(cb.__doc__))
             return
-        command = callbacks.canonicalName(name)
-        # Users might expect "@help @list" to work.
-        # command = command.lstrip(conf.supybot.reply.whenAddressedBy.chars())
         cbs = irc.findCallbackForCommand(command)
         if not cbs:
             irc.error('There is no such command %s.' % command)
@@ -256,21 +241,18 @@ class Misc(callbacks.Privmsg):
             cb = cbs[0]
             method = getattr(cb, command)
             getHelp(method)
+    help = wrap(help, [('plugin?', None, False), 'commandName'])
 
-    def hostmask(self, irc, msg, args):
+    def hostmask(self, irc, msg, args, nick):
         """[<nick>]
 
         Returns the hostmask of <nick>.  If <nick> isn't given, return the
         hostmask of the person giving the command.
         """
-        nick = privmsgs.getArgs(args, required=0, optional=1)
-        if nick:
-            try:
-                irc.reply(irc.state.nickToHostmask(nick))
-            except KeyError:
-                irc.error('I haven\'t seen anyone named %r' % nick)
-        else:
-            irc.reply(msg.prefix)
+        if not nick:
+            nick = msg.nick
+        irc.reply(irc.state.nickToHostmask(nick))
+    hostmask = wrap(hostmask, ['?seenNick'])
 
     def version(self, irc, msg, args):
         """takes no arguments
@@ -287,8 +269,10 @@ class Misc(callbacks.Privmsg):
         s = 'The current (running) version of this Supybot is %s.  %s' % \
             (conf.version, newest)
         irc.reply(s)
-    version = privmsgs.thread(version)
+    version = wrap(version, decorators=['thread'])
 
+    # XXX This should be converted to use commands.wrap, but since it's not
+    # using privmsgs.*, I'm saving it for later.
     def revision(self, irc, msg, args):
         """[<module>]
 
@@ -313,7 +297,7 @@ class Misc(callbacks.Privmsg):
                     for dir in conf.supybot.directories.plugins():
                         if module.__file__.startswith(dir):
                             return getVersion(module.__revision__, name)
-        if len(args) == 1 and '*' not in args[0] and '?' not in args[0]:
+        if args and '*' not in args[0] and '?' not in args[0]:
             # wildcards are handled below.
             name = normalize(args[0])
             try:
@@ -376,15 +360,15 @@ class Misc(callbacks.Privmsg):
         Returns a URL saying where to get Supybot.
         """
         irc.reply('My source is at http://supybot.sf.net/')
+    source = wrap(source)
 
-    def plugin(self, irc, msg, args):
+    def plugin(self, irc, msg, args, command):
         """<command>
 
         Returns the plugin (or plugins) <command> is in.  If this command is
         nested, it returns only the plugin name(s).  If given as a normal
         command, it returns a more verbose, user-friendly response.
         """
-        command = callbacks.canonicalName(privmsgs.getArgs(args))
         cbs = callbacks.findCallbackForCommand(irc, command)
         if cbs:
             names = [cb.name() for cb in cbs]
@@ -398,15 +382,14 @@ class Misc(callbacks.Privmsg):
                            utils.pluralize('plugin', len(names))))
         else:
             irc.error('There is no such command %s.' % command)
+    plugin = wrap(plugin, ['commandName'])
 
-    def author(self, irc, msg, args):
+    def author(self, irc, msg, args, cb):
         """<plugin>
 
         Returns the author of <plugin>.  This is the person you should talk to
         if you have ideas, suggestions, or other comments about a given plugin.
         """
-        plugin = privmsgs.getArgs(args)
-        cb = irc.getCallback(plugin)
         if cb is None:
             irc.error('That plugin does not seem to be loaded.')
             return
@@ -415,8 +398,9 @@ class Misc(callbacks.Privmsg):
             irc.reply(utils.mungeEmailForWeb(module.__author__))
         else:
             irc.reply('That plugin doesn\'t have an author that claims it.')
+    author = wrap(author, [('plugin', False)])
 
-    def more(self, irc, msg, args):
+    def more(self, irc, msg, args, nick):
         """[<nick>]
 
         If the last command was truncated due to IRC message length
@@ -424,7 +408,6 @@ class Misc(callbacks.Privmsg):
         If <nick> is given, it takes the continuation of the last command from
         <nick> instead of the person sending this message.
         """
-        nick = privmsgs.getArgs(args, required=0, optional=1)
         userHostmask = msg.prefix.split('!', 1)[1]
         if nick:
             try:
@@ -448,13 +431,14 @@ class Misc(callbacks.Privmsg):
             irc.error('You haven\'t asked me a command!')
         except IndexError:
             irc.error('That\'s all, there is no more.')
+    more = wrap(more, ['?seenNick'])
 
     def _validLastMsg(self, msg):
         return msg.prefix and \
                msg.command == 'PRIVMSG' and \
                ircutils.isChannel(msg.args[0])
 
-    def last(self, irc, msg, args):
+    def last(self, irc, msg, args, optlist):
         """[--{from,in,on,with,without,regexp,nolimit}] <args>
 
         Returns the last message matching the given criteria.  --from requires
@@ -465,51 +449,39 @@ class Misc(callbacks.Privmsg):
         the messages that can be found.  By default, the current channel is
         searched.
         """
-        (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'on=',
-                                                   'with=', 'regexp=',
-                                                   'without=', 'nolimit'])
         predicates = {}
         nolimit = False
         if ircutils.isChannel(msg.args[0]):
             predicates['in'] = lambda m: ircutils.strEqual(m.args[0],
                                                            msg.args[0])
         for (option, arg) in optlist:
-            if option == '--from':
+            if option == 'from':
                 def f(m, arg=arg):
                     return ircutils.hostmaskPatternEqual(arg, m.nick)
                 predicates['from'] = f
-            elif option == '--in':
-                if arg not in irc.state.channels:
-                    irc.error('I\'m not in %s.' % arg, Raise=True)
-                if msg.nick in irc.state.channels[arg].users:
-                    irc.error('You\'re not in %s.' % arg, Raise=True)
+            elif option == 'in':
                 def f(m, arg=arg):
                     return ircutils.strEqual(m.args[0], arg)
                 predicates['in'] = f
-            elif option == '--on':
+            elif option == 'on':
                 def f(m, arg=arg):
                     return m.receivedOn == arg
                 predicates['on'] = f
-            elif option == '--with':
+            elif option == 'with':
                 def f(m, arg=arg):
                     return arg.lower() in m.args[1].lower()
                 predicates.setdefault('with', []).append(f)
-            elif option == '--without':
+            elif option == 'without':
                 def f(m, arg=arg):
                     return arg.lower() not in m.args[1].lower()
                 predicates.setdefault('without', []).append(f)
-            elif option == '--regexp':
-                try:
-                    r = utils.perlReToPythonRe(arg)
-                    def f(m, r=r):
-                        if ircmsgs.isAction(m):
-                            return r.search(ircmsgs.unAction(m))
-                        else:
-                            return r.search(m.args[1])
-                    predicates.setdefault('regexp', []).append(f)
-                except ValueError, e:
-                    irc.error(str(e))
-                    return
+            elif option == 'regexp':
+                def f(m, arg=arg):
+                    if ircmsgs.isAction(m):
+                        return arg.search(ircmsgs.unAction(m))
+                    else:
+                        return arg.search(m.args[1])
+                predicates.setdefault('regexp', []).append(f)
             elif option == '--nolimit':
                 nolimit = True
         iterable = ifilter(self._validLastMsg, reversed(irc.state.history))
@@ -532,66 +504,73 @@ class Misc(callbacks.Privmsg):
                       'my history of %s messages.' % len(irc.state.history))
         else:
             irc.reply(utils.commaAndify(resp))
+    last = wrap(last, getopts={'nolimit': '',
+                               'on': 'something',
+                               'with': 'something',
+                               'from': 'something',
+                               'without': 'something',
+                               'in': 'callerInChannel',
+                               'regexp': 'regexpMatcher',})
+                               
 
-    def tell(self, irc, msg, args):
+    def tell(self, irc, msg, args, target, text):
         """<nick> <text>
 
         Tells the <nick> whatever <text> is.  Use nested commands to your
         benefit here.
         """
-        (target, text) = privmsgs.getArgs(args, required=2)
         if target.lower() == 'me':
             target = msg.nick
-        elif ircutils.isChannel(target):
+        if ircutils.isChannel(target):
             irc.error('Dude, just give the command.  No need for the tell.')
             return
-        elif not ircutils.isNick(target):
-            irc.errorInvalid('nick', target, Raise=True)
-        elif ircutils.nickEqual(target, irc.nick):
+        if not ircutils.isNick(target):
+            irc.errorInvalid('nick', target)
+        if ircutils.nickEqual(target, irc.nick):
             irc.error('You just told me, why should I tell myself?',Raise=True)
-        elif target not in irc.state.nicksToHostmasks and \
+        if target not in irc.state.nicksToHostmasks and \
              not ircdb.checkCapability(msg.prefix, 'owner'):
             # We'll let owners do this.
             s = 'I haven\'t seen %s, I\'ll let you do the telling.' % target
-            irc.error(s)
-            return
+            irc.error(s, Raise=True)
         if irc.action:
             irc.action = False
             text = '* %s %s' % (irc.nick, text)
         s = '%s wants me to tell you: %s' % (msg.nick, text)
         irc.reply(s, to=target, private=True)
+    tell = wrap(tell, ['something', 'text'])
 
-    def private(self, irc, msg, args):
+    def private(self, irc, msg, args, text):
         """<text>
 
         Replies with <text> in private.  Use nested commands to your benefit
         here.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(text, private=True)
+    private = wrap(private, ['text'])
 
-    def action(self, irc, msg, args):
+    def action(self, irc, msg, args, text):
         """<text>
 
         Replies with <text> as an action.  use nested commands to your benefit
         here.
         """
-        text = privmsgs.getArgs(args)
         if text:
             irc.reply(text, action=True)
         else:
             raise callbacks.ArgumentError
+    action = wrap(action, ['text'])
 
-    def notice(self, irc, msg, args):
+    def notice(self, irc, msg, args, text):
         """<text>
 
         Replies with <text> in a notice.  Use nested commands to your benefit
         here.  If you want a private notice, nest the private command.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(text, notice=True)
+    notice = wrap(notice, ['text'])
 
-    def contributors(self, irc, msg, args):
+    def contributors(self, irc, msg, args, cb, nick):
         """<plugin> [<nick>]
 
         Replies with a list of people who made contributions to a given plugin.
@@ -599,8 +578,7 @@ class Misc(callbacks.Privmsg):
         be listed.  Note: The <nick> is the part inside of the parentheses
         in the people listing.
         """
-        (plugin, nick) = privmsgs.getArgs(args, required=1, optional=1)
-        nick = nick.lower()
+        nick = ircutils.toLower(nick)
         def getShortName(authorInfo):
             """
             Take an Authors object, and return only the name and nick values
@@ -629,7 +607,7 @@ class Misc(callbacks.Privmsg):
             Build the list of author + contributors (if any) for the requested
             plugin.
             """
-            head = 'The %s plugin' % plugin
+            head = 'The %s plugin' % cb.name()
             author = 'has not been claimed by an author'
             conjunction = 'and'
             contrib = 'has no contributors listed'
@@ -671,7 +649,7 @@ class Misc(callbacks.Privmsg):
             if hasattr(module, '__contributors__'):
                 if authorInfo not in module.__contributors__:
                     return 'The %s plugin does not have \'%s\' listed as a ' \
-                           'contributor' % (plugin, nick)
+                           'contributor' % (cb.name(), nick)
                 contributions = module.__contributors__[authorInfo]
             if getattr(module, '__author__', False) == authorInfo:
                 isAuthor = True
@@ -687,25 +665,22 @@ class Misc(callbacks.Privmsg):
                 results.append('the %s' % utils.commaAndify(nonCommands))
             if results and isAuthor:
                 return '%s wrote the %s plugin and also contributed %s' % \
-                    (fullName, plugin, utils.commaAndify(results))
+                    (fullName, cb.name(), utils.commaAndify(results))
             elif results and not isAuthor:
                 return '%s contributed %s to the %s plugin' % \
-                    (fullName, utils.commaAndify(results), plugin)
+                    (fullName, utils.commaAndify(results), cb.name())
             elif isAuthor and not results:
-                return '%s wrote the %s plugin' % (fullName, plugin)
+                return '%s wrote the %s plugin' % (fullName, cb.name())
             else:
                 return '%s has no listed contributions for the %s plugin %s' %\
-                    (fullName, plugin)
+                    (fullName, cb.name())
         # First we need to check and see if the requested plugin is loaded
-        cb = irc.getCallback(plugin)
-        if cb is None:
-            irc.error('No such plugin %r exists.' % plugin)
-            return
         module = sys.modules[cb.__class__.__module__]
         if not nick:
             irc.reply(buildPeopleString(module))
         else:
             irc.reply(buildPersonString(module))
+    contributors = wrap(contributors, ['plugin', '?nick'])
 
 Class = Misc
 

@@ -312,6 +312,16 @@ def getNick(irc, msg, args, state):
     else:
         irc.errorInvalid('nick', s)
 
+def getSeenNick(irc, msg, args, state, errmsg=None):
+    try:
+        _ = irc.state.nickToHostmask(args[0])
+        state.args.append(args.pop(0))
+    except KeyError:
+        if errmsg is None:
+            errmsg = 'I haven\'t seen %s.' % args[0]
+        irc.error(errmsg)
+    
+
 def getChannel(irc, msg, args, state):
     if args and ircutils.isChannel(args[0]):
         channel = args.pop(0)
@@ -328,6 +338,19 @@ def inChannel(irc, msg, args, state):
         getChannel(irc, msg, args, state)
     if state.channel not in irc.state.channels:
         irc.error('I\'m not in %s.' % state.channel, Raise=True)
+
+def callerInChannel(irc, msg, args, state):
+    channel = args[0]
+    if ircutils.isChannel(channel):
+        if channel in irc.state.channels:
+            if msg.nick in irc.state.channels[channel].users:
+                state.args.append(args.pop(0))
+            else:
+                irc.error('You must be in %s.' % channel, Raise=True)
+        else:
+            irc.error('I\'m not in %s.' % channel, Raise=True)
+    else:
+        irc.errorInvalid('channel', args[0])
 
 def getChannelOrNone(irc, msg, args, state):
     try:
@@ -360,13 +383,6 @@ def getSomethingNoSpaces(irc, msg, args, state, *L):
     def p(s):
         return len(s.split(None, 1)) == 1
     getSomething(irc, msg, args, state, p=p, *L)
-
-def getPlugin(irc, msg, args, state, requirePresent=False):
-    cb = irc.getCallback(args[0])
-    if requirePresent and cb is None:
-        irc.errorInvalid('plugin', s)
-    state.args.append(cb)
-    del args[0]
 
 def private(irc, msg, args, state):
     if ircutils.isChannel(msg.args[0]):
@@ -429,6 +445,16 @@ def getLiteral(irc, msg, args, state, literals, errmsg=None):
         irc.error(errmsg, Raise=True)
     else:
         raise callbacks.ArgumentError
+
+def getPlugin(irc, msg, args, state, require=True):
+    cb = irc.getCallback(args[0])
+    if cb is not None:
+        state.args.append(cb)
+        del args[0]
+    elif require:
+        irc.errorInvalid('plugin', args[0])
+    else:
+        state.args.append(None)
     
 wrappers = ircutils.IrcDict({
     'id': getId,
@@ -445,8 +471,10 @@ wrappers = ircutils.IrcDict({
     'expiry': getExpiry,
     'literal': getLiteral,
     'nick': getNick,
+    'seenNick': getSeenNick,
     'channel': getChannel,
     'inChannel': inChannel,
+    'callerInChannel': callerInChannel,
     'plugin': getPlugin,
     'boolean': getBoolean,
     'lowered': getLowered,
@@ -483,7 +511,8 @@ class State(object):
         self.log = logger
         self.getopts = []
         self.channel = None
-            
+
+# getopts:  None means "no conversion", '' means "takes no argument"
 def args(irc,msg,args, types=[], state=None,
          getopts=None, allowExtra=False, requireExtra=False, combineRest=True):
     if state is None:
@@ -497,7 +526,7 @@ def args(irc,msg,args, types=[], state=None,
             if value != '': # value can be None, remember.
                 key += '='
             getoptL.append(key)
-        log.debug(str(getoptL))
+        log.debug('getoptL: %r', getoptL)
 
     def callWrapper(spec):
         if isinstance(spec, tuple):
@@ -552,21 +581,21 @@ def args(irc,msg,args, types=[], state=None,
         (optlist, args) = getopt.getopt(args, '', getoptL)
         for (opt, arg) in optlist:
             opt = opt[2:] # Strip --
-            assert opt in getopts
-            log.debug('%s: %r', opt, arg)
-            if arg is not None:
+            log.debug('getopt %s: %r', opt, arg)
+            if getopts[opt] != '':
                 # This is a MESS.  But I can't think of a better way to do it.
-                assert getopts[opt] != ''
                 originalArgs = args
                 args = [arg]
-                originalLen = len(state.args)
+                originalStateArgsLen = len(state.args)
                 callWrapper(getopts[opt])
                 args = originalArgs
-                assert originalLen == len(state.args)-1
-                assert not args
-                state.getopts.append((opt, state.args.pop()))
+                if originalStateArgsLen < len(state.args):
+                    assert originalStateArgsLen == len(state.args)-1
+                    arg = state.args.pop()
+                else:
+                    arg = None
+                state.getopts.append((opt, arg))
             else:
-                assert getopts[opt] == ''
                 state.getopts.append((opt, True))
     #log.debug('Finished getopts: %s', state.getopts)
 
@@ -596,7 +625,8 @@ def args(irc,msg,args, types=[], state=None,
                 rest = ' '.join(args)
                 args = [rest]
             callWrapper(types.pop(0))
-    if args and not allowExtra:
+    if args and not allowExtra and isinstance(args, list):
+        # args could be a regexp in a urlSnarfer.
         log.debug('args but not allowExtra: %r', args)
         raise callbacks.ArgumentError
     if requireExtra and not args:
