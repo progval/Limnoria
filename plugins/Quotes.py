@@ -48,7 +48,7 @@ import ircdb
 import privmsgs
 import callbacks
 
-class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg, plugins.Toggleable):
+class Quotes(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
