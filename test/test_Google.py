@@ -42,8 +42,10 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
             self.assertNotRegexp('google calc '
                                  'the speed of light '
                                  'in microns / fortnight', '&times;')
-            
 
+        def testCalcDoesNotHaveExtraSpaces(self):
+            self.assertNotRegexp('google calc 1000^2', r'\s+,\s+')
+            
         def testNoNoLicenseKeyError(self):
             conf.supybot.plugins.Google.groupsSnarfer.setValue(True)
             self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'google blah'))
