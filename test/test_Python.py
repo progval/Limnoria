@@ -42,7 +42,8 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
         if os.name == 'posix':
             self.assertNotRegexp('pydoc crypt.crypt', 'NameError')
             self.assertNotError('pydoc crypt.crypt')
-        self.assertNotError('pydoc math.sin')
+            # .so modules don't have an __file__ in Windows.
+            self.assertNotError('pydoc math.sin')
         self.assertNotError('pydoc string.translate')
         self.assertNotError('pydoc fnmatch.fnmatch')
         self.assertNotError('pydoc socket.socket')

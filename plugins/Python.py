@@ -53,7 +53,10 @@ import utils
 import privmsgs
 import callbacks
 
-pythonPath = map(os.path.dirname, [os.__file__, math.__file__])
+L = [os.__file__]
+if hasattr(math, '__file__'):
+    L.append(math.__file__)
+pythonPath = map(os.path.dirname, L)
 
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
