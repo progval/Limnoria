@@ -189,6 +189,14 @@ if sqlite is not None:
             self.assertResponse('echo foo is bar', 'foo is bar')
             self.assertNoResponse(' ', 3)
 
+        def testNoResponseToCtcp(self):
+            self.assertNotError('foo is bar')
+            self.assertResponse('foo', 'foo is bar')
+            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, '\x01VERSION\x01'))
+            m = self.irc.takeMsg()
+            self.failIf(m)
+                
+
     class DunnoTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('Misc', 'MoobotFactoids', 'User')
         def setUp(self):

@@ -201,6 +201,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
     def _checkFactoids(self, irc, msg, _):
         # Strip the bot name
         key = callbacks.addressed(irc.nick, msg)
+        if key.startswith('\x01'):
+            return
         # Check the factoid db for an appropriate reply
         cursor = self.db.cursor()
         cursor.execute("""SELECT fact FROM factoids WHERE key = %s""", key)
