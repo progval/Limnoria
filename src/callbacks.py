@@ -79,6 +79,8 @@ def addressed(nick, msg):
         try:
             (maybeNick, rest) = msg.args[1].split(None, 1)
             while not ircutils.isNick(maybeNick):
+                if maybeNick[-1].isalnum():
+                    return ''
                 maybeNick = maybeNick[:-1]
             if ircutils.nickEqual(maybeNick, nick):
                 return rest
