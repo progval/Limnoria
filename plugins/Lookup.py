@@ -114,8 +114,11 @@ class Lookup(callbacks.Privmsg):
         for (name, value) in group.getValues(fullNames=False):
             name = name.lower() # Just in case.
             filename = value()
-            self.addDatabase(name, filename)
-            self.addCommand(name)
+            try:
+                self.addDatabase(name, filename)
+                self.addCommand(name)
+            except Exception, e:
+                self.log.warning('Couldn\'t add lookup %s: %s', name, e)
         
     def _shrink(self, s):
         return utils.ellipsisify(s, 50)
