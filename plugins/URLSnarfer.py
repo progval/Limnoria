@@ -269,7 +269,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
                 urls = ['<%s>' % t[1] for t in cursor.fetchall()]
                 s = ', '.join(urls)
             elif simple:
-                s = cursor.fetchone()[0]
+                s = cursor.fetchone()[1]
             else:
                 (id, url, added, added_by) = cursor.fetchone()
                 timestamp = time.strftime('%I:%M %p, %B %d, %Y',
