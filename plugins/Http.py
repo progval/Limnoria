@@ -42,10 +42,11 @@ import random
 import urllib
 import urllib2
 
+import babelfish
+
 import utils
 import debug
 import privmsgs
-import babelfish
 import callbacks
 import structures
 
@@ -194,24 +195,6 @@ class Http(callbacks.Privmsg):
             search = urllib.unquote(search)
             s = 'There appears to be no definition for %s.' % search
             irc.reply(msg, s)
-    '''
-    _zipcode = re.compile(r'Local Forecast for (.*), (.*?) ')
-    def zipcode(self, irc, msg, args):
-        """<US zip code>
-
-        Returns the city and state of a given US Zip code.
-        """
-        zip = privmsgs.getArgs(args)
-        url = "http://www.weather.com/weather/local/%s?lswe=%s" % (zip, zip)
-        try:
-            html = urllib2.urlopen(url).read()
-            (city, state) = self._zipcode.search(html).groups()
-            irc.reply(msg, '%s, %s' % (city, state))
-        except AttributeError:
-            irc.error(msg, 'the format of the page was odd.')
-        except urllib2.URLError:
-            irc.error(msg, 'Couldn\'t open search page.')
-    '''
 
 
     _tempregex = re.compile('CLASS=obsTempTextA>(\d+)&deg;F</b></td>',\
@@ -269,7 +252,7 @@ class Http(callbacks.Privmsg):
     def acronym(self, irc, msg, args):
         """<acronym>
 
-        Displays the first acronym matches from acronymfinder.com
+        Displays acronym matches from acronymfinder.com
         """
         acronym = privmsgs.getArgs(args)
         try:
@@ -365,55 +348,71 @@ class Http(callbacks.Privmsg):
         irc.reply(msg, s)
 
     _abbrevs = utils.abbrev(map(str.lower, babelfish.available_languages))
+    _abbrevs['de'] = 'german'
+    _abbrevs['fr'] = 'french'
+    _abbrevs['jp'] = 'japanese'
+    _abbrevs['ko'] = 'korean'
+    _abbrevs['es'] = 'spanish'
+    _abbrevs['pt'] = 'portuguese'
+    _abbrevs['it'] = 'italian'
+    _abbrevs['zh'] = 'chinese'
+    for language in babelfish.available_languages:
+        _abbrevs[language] = language
     def translate(self, irc, msg, args):
-        """<from-language> <to-language> <phrase>
+        """<from-language> <to-language> <text>
 
-        Returns the phrase translated to the new language. One of the
-        languages must be English.
+        Returns the text translated to the new language.
         """
-        (flang, tlang, phrase) = privmsgs.getArgs(args, 3)
-        flang = str.lower(flang)
-        tlang = str.lower(tlang)
-        if self._abbrevs.has_key(flang):
-            flang = self._abbrevs[flang]
-        if self._abbrevs.has_key(tlang):
-            tlang = self._abbrevs[tlang]
+        (fromLang, toLang, text) = privmsgs.getArgs(args, needed=3)
         try:
-            trans = babelfish.translate(phrase, flang, tlang)
-            irc.reply(msg, trans)
-        except babelfish.LanguageNotAvailableError, e:
-            irc.reply(msg, 'Valid languages: %s.' %\
-                ', '.join(babelfish.available_languages))
+            fromLang = self._abbrevs[fromLang.lower()]
+            toLang = self._abbrevs[toLang.lower()]
+            translation = babelfish.translate(text, fromLang, toLang)
+            irc.reply(msg, translation)
+        except (KeyError, babelfish.LanguageNotAvailableError), e:
+            irc.error(msg, '%s is not a valid language.  Valid languages ' \
+                      'include %s' % \
+                      (e, utils.commaAndify(babelfish.available_languages)))
         except babelfish.BabelizerIOError, e:
-            irc.reply(msg, e.args[0])
+            irc.error(msg, e)
         except babelfish.BabelfishChangedError, e:
-            irc.reply(msg, 'Babelfish has foiled our plans by changing their\
-                format')
+            irc.error(msg, 'Babelfish has foiled our plans by changing its ' \
+                           'webpage format')
 
     def babelize(self, irc, msg, args):
-        """<from-language> <to-language> <phrase>
+        """<from-language> <to-language> <text>
 
-        Returns the phrase translated to the new language. This is done 12
-        times, or until the output doesn't change anymore.
+        Translates <text> repeatedly between <from-language> and <to-language>
+        until it doesn't change anymore or 12 times, whichever is fewer.  One
+        of the languages must be English.
         """
-        (flang, tlang, phrase) = privmsgs.getArgs(args, 3)
-        flang = str.lower(flang)
-        tlang = str.lower(tlang)
-        if self._abbrevs.has_key(flang):
-            flang = self._abbrevs[flang]
-        if self._abbrevs.has_key(tlang):
-            tlang = self._abbrevs[tlang]
+        (fromLang, toLang, text) = privmsgs.getArgs(args, needed=3)
         try:
-            trans = babelfish.babelize(phrase, flang, tlang)
-            irc.reply(msg, trans[-1])
-        except babelfish.LanguageNotAvailableError, e:
-            irc.reply(msg, 'Valid languages: %s.' %\
-                ', '.join(babelfish.available_languages))
+            fromLang = self._abbrevs[fromLang.lower()]
+            toLang = self._abbrevs[toLang.lower()]
+            translations = babelfish.babelize(text, fromLang, toLang)
+            irc.reply(msg, translations[-1])
+        except (KeyError, babelfish.LanguageNotAvailableError), e:
+            irc.reply(msg, '%s is not a valid language.  Valid languages ' \
+                      'include %s' % \
+                      (e, utils.commaAndify(babelfish.available_languages)))
         except babelfish.BabelizerIOError, e:
-            irc.reply(msg, e.args[0])
+            irc.reply(msg, e)
         except babelfish.BabelfishChangedError, e:
-            irc.reply(msg, 'Babelfish has foiled our plans by changing their\
-                format')
+            irc.reply(msg, 'Babelfish has foiled our plans by changing its ' \
+                           'webpage format')
+
+    def randomlanguage(self, irc, msg, args):
+        """[<allow-english>]
+
+        Returns a random language supported by babelfish.  If <allow-english>
+        is provided, will include English in the list of possible languages.
+        """
+        allowEnglish = privmsgs.getArgs(args, needed=0, optional=1)
+        language = random.sample(babelfish.available_languages, 1)[0]
+        while not allowEnglish and language == 'English':
+            language = random.sample(babelfish.available_languages, 1)[0]
+        irc.reply(msg, language)
 
 Class = Http
 

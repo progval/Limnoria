@@ -124,8 +124,10 @@ def translate(phrase, from_lang, to_lang):
     html = response.read()
     for regex in __where:
         match = regex.search(html)
-        if match: break
-    if not match: raise BabelfishChangedError("Can't recognize translated string.")
+        if match:
+            break
+    if not match:
+        raise BabelfishChangedError("Can't recognize translated string.")
     return clean(match.group(1))
 
 def babelize(phrase, from_language, through_language, limit = 12, callback = None):
@@ -139,7 +141,8 @@ def babelize(phrase, from_language, through_language, limit = 12, callback = Non
     next = from_language
     for i in range(limit):
         phrase = translate(phrase, next, flip[next])
-        if seen.has_key(phrase): break
+        if seen.has_key(phrase):
+            break
         seen[phrase] = 1
         if callback:
             callback(phrase)
@@ -149,7 +152,8 @@ def babelize(phrase, from_language, through_language, limit = 12, callback = Non
     if next != from_language:
         phrase = translate(phrase, next, flip[next])
         results.append(phrase)
-    if not callback: return results
+    if not callback:
+        return results
 
 if __name__ == '__main__':
     import sys
