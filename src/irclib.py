@@ -776,7 +776,7 @@ class Irc(IrcCommandDispatcher):
             now = time.time()
             started = self.startedSync.pop(channel)
             elapsed = now - started
-            log.info('Join to %s on %s synced in %s seconds.',
+            log.info('Join to %s on %s synced in %.2f seconds.',
                      channel, self.network, elapsed)
             popped = True
         if popped and not self.startedSync:
