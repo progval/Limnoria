@@ -476,7 +476,7 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
             name = 'a user that is no longer registered'
         at = time.localtime(record.at)
         timeS = time.strftime(conf.supybot.humanTimestampFormat(), at)
-        return '%s #%S: %s (added by %s at %s)' % \
+        return '%s #%s: %s (added by %s at %s)' % \
                (self.name(), record.id, utils.quoted(record.text), name, timeS)
 
     def get(self, irc, msg, args, channel, id):
