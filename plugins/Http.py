@@ -252,7 +252,7 @@ class Http(callbacks.Privmsg):
     def acronym(self, irc, msg, args):
         """<acronym>
 
-        displays the first 5 acronym matches"""
+        Displays the first 5 matches from acronymfinder.com"""
         acronym = privmsgs.getArgs(args)
         try:
             url = 'http://www.acronymfinder.com/' \
