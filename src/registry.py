@@ -98,7 +98,6 @@ class Value(object):
         self.default = default
         self.help = utils.normalizeWhitespace(help.strip())
         self.setValue(default)
-        self.set(str(self)) # This is needed.
 
     def set(self, s):
         """Override this with a function to convert a string to whatever type
