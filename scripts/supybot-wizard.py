@@ -391,12 +391,28 @@ if __name__ == '__main__':
     if yn('Would you like to add an owner user for your bot?') == 'y':
         import ircdb
         name = something('What should the owner\'s username be?')
-        password = something('What should the owner\'s password be?')
-        (id, u) = ircdb.users.newUser()
-        u.name = name
-        u.setPassword(password)
-        u.addCapability('owner')
-        ircdb.users.setUser(id, u)
+        try:
+            id = ircdb.users.getUserId(name)
+            u = ircdb.users.getUser(id)
+            if u.checkCapability('owner'):
+                myPrint("""That user already exists, and has owner capabilities
+                already.  Perhaps you added it before? """)
+                if yn('Do you want to remove the its owner capability?')=='y':
+                    u.removeCapability('owner')
+                    ircdb.setUser(id, u)
+            else:
+                myPrint("""That user already exists, but doesn't have owner
+                capabilities.""")
+                if yn('Do you want to add to it owner capabilities?') == 'y':
+                    u.addCapability('owner')
+                    ircdb.setUser(id, u)
+        except KeyError:
+            password = something('What should the owner\'s password be?')
+            (id, u) = ircdb.users.newUser()
+            u.name = name
+            u.setPassword(password)
+            u.addCapability('owner')
+            ircdb.users.setUser(id, u)
 
     myPrint("""Of course, when you're in an IRC channel you can address the bot
     by its nick and it will respond, if you give it a valid command (it may or
