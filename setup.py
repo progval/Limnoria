@@ -33,6 +33,7 @@ plugins = [
     'Admin',
     'Channel',
     'Config',
+    'Dict',
     'Math',
     'Misc',
     'Owner',
