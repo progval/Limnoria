@@ -49,6 +49,7 @@ import string
 import fnmatch
 import operator
 from itertools import imap
+from cStringIO import StringIO as sio
 
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
@@ -116,9 +117,33 @@ def isChannel(s):
             '\x07' not in s and ',' not in s and ' ' not in s)
 
 _match = fnmatch.fnmatchcase
+
+_patternCache = {}
 def hostmaskPatternEqual(pattern, hostmask):
     """Returns True if hostmask matches the hostmask pattern pattern."""
-    return _match(toLower(hostmask), toLower(pattern))
+    try:
+        return bool(_patternCache[pattern](hostmask))
+    except KeyError:
+        fd = sio()
+        for c in pattern:
+            if c == '*':
+                fd.write('.*')
+            elif c == '?':
+                fd.write('.')
+            elif c == '[' or c == '{':
+                fd.write('[[{]')
+            elif c == '}' or c == ']':
+                fd.write(r'[}\]]')
+            elif c == '|' or c == '\\':
+                fd.write(r'[|\\]')
+            elif c == '^' or c == '~':
+                fd.write('[~^]')
+            else:
+                fd.write(re.escape(c))
+        fd.write('$')
+        f = re.compile(fd.getvalue(), re.I).match
+        _patternCache[pattern] = f
+        return bool(f(hostmask))
 
 _ipchars = string.digits + '.'
 def isIP(s):
