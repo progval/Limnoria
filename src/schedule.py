@@ -90,6 +90,7 @@ class Schedule(drivers.IrcDriver):
         """Removes the event with the given name from the schedule."""
         del self.events[name]
         self.schedule = [(t, n) for (t, n) in self.schedule if n != name]
+        heapq.heapify(self.schedule)
 
     def addPeriodicEvent(self, f, t, name=None):
         """Adds a periodic event that is called every t seconds."""
