@@ -137,10 +137,15 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
                    i = self.configurables.get('throttle-after-part', channel) 
                    if now - self.lastParts[(id, channel)] < i:
                        return
+                self.lastHerald[(id, channel)] = now
                 irc.queueMsg(ircmsgs.privmsg(channel, herald))
 
     def doPart(self, irc, msg):
-        self.lastParts[(msg.prefix, msg.args[0])] = time.time()
+        try:
+            id = self._getId(msg.prefix)
+            self.lastParts[(id, msg.args[0])] = time.time()
+        except KeyError:
+            pass
 
     def _getId(self, userNickHostmask):
         try:
