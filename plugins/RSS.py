@@ -116,7 +116,9 @@ class RSS(callbacks.Privmsg):
         for (channel, v) in L:
             feeds = v() 
             for name in feeds:
-                if self.isCommand(callbacks.canonicalName(name)):
+                commandName = callbacks.canonicalName(name)
+                if self.isCommand(commandName):
+                    name = commandName
                     url = self.getCommand(name).url
                 else:
                     url = name
