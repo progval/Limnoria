@@ -122,12 +122,12 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 self.log.debug(s)
 
     def doInvite(self, irc, msg):
-        if msg.args[1] not in irc.state.channels:
-            if conf.supybot.alwaysJoinOnInvite():
-                irc.queueMsg(ircmsgs.join(msg.args[1]))
-            else:
-                if ircdb.checkCapability(msg.prefix, 'admin'):
-                    irc.queueMsg(ircmsgs.join(msg.args[1]))
+        channel = msg.args[1]
+        if channel not in irc.state.channels:
+            if conf.supybot.alwaysJoinOnInvite() or \
+               ircdb.checkCapability(msg.prefix, 'admin'):
+                irc.queueMsg(ircmsgs.join(channel))
+                conf.supybot.channels().append(channel)
     
     def join(self, irc, msg, args):
         """<channel>[,<key>] [<channel>[,<key>] ...]
@@ -199,8 +199,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 irc.error('I\'m not currently in %s' % arg)
                 return
         for arg in args:
-            if arg in conf.supybot.channels():
-                conf.supybot.channels().remove(arg)
+            for channelWithPass in conf.supybot.channels():
+                channel = channelWithPass.split(',')[0]
+                if arg == channel:
+                    conf.supybot.channels().remove(channelWithPass)
         irc.queueMsg(ircmsgs.parts(args, msg.nick))
 
     def disable(self, irc, msg, args):
