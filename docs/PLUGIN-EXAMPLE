@@ -304,9 +304,9 @@ Then we set the seed -- that's a simple function on our rng object.
 Assuming that succeeds (and doesn't raise an exception, which it
 shouldn't, because we already read the documentation and know that it
 should work) we reply to say that everything worked fine.  That's what
-conf.replySuccess says.  By default, it has the very dry (and
+irc.replySuccess says.  By default, it has the very dry (and
 appropriately robot-like) "The operation succeeded." but you're
-perfectly welcome to customize it yourself -- conf.py was written to
+perfectly welcome to customize it yourself -- the registry was written to
 be modified!
 
 So that's a bit more complicated command.  But we still haven't dealt
