@@ -140,6 +140,10 @@ if __name__ == '__main__':
                 plugins.remove(plugin)
     if yn('Would you like to see a list of the available modules?') == 'y':
         print 'The available plugins are:\n  %s' % '\n  '.join(plugins)
+    usage = True
+    if advanced and \
+       yn('Would you like the option of seeing usage examples?')=='n':
+        usage = False
     while yn('Would you like to add a plugin?') == 'y':
         plugin = expect('What plugin?', plugins)
         moduleInfo = imp.find_module(plugin, conf.pluginDirs)
@@ -154,7 +158,7 @@ if __name__ == '__main__':
         else:
             print 'This plugin has no documentation.'
         if hasattr(module, 'example'):
-            if yn('Would you like to see a usage example?') == 'y':
+            if usage and yn('Would you like to see a usage example?') == 'y':
                 print
                 print 'Here\'s an example of usage of this module:'
                 print
