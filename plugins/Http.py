@@ -203,6 +203,10 @@ class Http(callbacks.Privmsg):
         """
         id = privmsgs.getArgs(args, required=0, optional=1)
         if id:
+            try:
+                id = int(id)
+            except ValueError:
+                irc.error('Invalid id: %s' % id, Raise=True)
             id = 'quote=%s' % id
         else:
             id = 'random'
