@@ -185,25 +185,16 @@ class Status(callbacks.Privmsg):
                      activeThreads))
         mem = None
         pid = os.getpid()
+        plat = sys.platform
         try:
-            if sys.platform.startswith('linux'):
-                mem = 0
-                fd = file('/proc/%s/status' % pid)
-                for line in fd:
-                    if line.startswith('VmSize'):
-                        line = line.rstrip()
-                        mem = int(line.split()[1])
-                        break
-                assert mem, 'Format changed in /proc/<pid>/status'
+            if plat.startswith('linux') or plat.startswith('sunos') or \
+               plat.startswith('freebsd') or plat.startswith('openbsd'):
+                r = os.popen('ps -o vsz -p %s' % pid)
+                r.readline() # VSZ Header.
+                mem = int(r.readline().strip())
+                r.close()
             elif sys.platform.startswith('netbsd'):
                 mem = os.stat('/proc/%s/mem')[7]
-            elif sys.platform.startswith('freebsd') or \
-                 sys.platform.startswith('openbsd'):
-                r = os.popen('/bin/ps -l -p %s' % pid)
-                line = r.readline()
-                line = line.strip()
-                r.close()
-                mem = int(line.split()[20])
             response += '  I\'m taking up %s kB of memory.' % mem
         except Exception, e:
             debug.msg(debug.exnToString(e))
