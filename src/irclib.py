@@ -30,6 +30,7 @@
 ###
 
 from fix import *
+from structures import queue, MaxLengthQueue
 
 import copy
 import time
