@@ -76,7 +76,10 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
           it announces new additions."""),
          ('headline-separator', configurable.SpaceSurroundedStrType, ' :: ',
           """Determines what string is used to seperate headlines in
-          feeds."""),]
+          feeds."""),
+         ('announce-news-prefix', configurable.StrType, 'New news item - ',
+          """Sets the prefix to be added (if any) to the new news item
+          announcements made to the channel."""),]
     )
     globalConfigurables = configurable.Dictionary(
          [('wait-period', configurable.PositiveIntType, 1800,
@@ -96,6 +99,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
         for (channel, d) in feeds.iteritems():
             sep = self.configurables.get('headline-separator', channel)
             bold = self.configurables.get('announce-news-bold', channel)
+            prefix = self.configurables.get('announce-news-prefix', channel)
             for name in d:
                 if self.isCommand(name):
                     url = self.getCommand(name).url
@@ -117,7 +121,7 @@ class RSS(callbacks.Privmsg, configurable.Mixin):
                     if bold:
                         name = ircutils.bold(name)
                     headlines = sep.join(newheadlines)
-                    s = '%s: %s' % (name, headlines)
+                    s = '%s%s: %s' % (prefix, name, headlines)
                     irc.queueMsg(ircmsgs.privmsg(channel, s))
                 
     def getFeed(self, url):
