@@ -295,7 +295,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         if cursor.rowcount == 0:
             irc.reply(msg, '%s has no karma.' % name)
         else:
-            (added, subtracted) = cursor.fetchone()
+            (added, subtracted) = map(int, cursor.fetchone())
             total = added - subtracted
             irc.reply(msg, '%s\'s karma has been increased %s %s ' \
                            'and decreased %s %s for a total karma of %s.' % \
