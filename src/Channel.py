@@ -39,6 +39,7 @@ __author__ = 'Jeremy Fincher (jemfinch) <jemfinch@users.sf.net>'
 
 import supybot.fix as fix
 
+import sys
 import time
 import getopt
 from itertools import imap
@@ -273,6 +274,11 @@ class Channel(callbacks.Privmsg):
                 return
             if not reason:
                 reason = msg.nick
+            kicklen = irc.state.supported.get('kicklen', sys.maxint)
+            if len(reason) > kicklen:
+                irc.error('The reason you gave is longer than the allowed '
+                          'length for a KICK reason on this server.')
+                return
             irc.queueMsg(ircmsgs.kick(channel, nick, reason))
     kick = privmsgs.checkChannelCapability(kick, 'op')
 
