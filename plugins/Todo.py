@@ -189,11 +189,15 @@ class Todo(callbacks.Privmsg):
                     return
         text = privmsgs.getArgs(rest, required=1)
         cursor = self.db.cursor()
+        now = int(time.time())
         cursor.execute("""INSERT INTO todo
                           VALUES (NULL, %s, %s, %s, %s, 1)""",
-                          priority, int(time.time()), id, text)
+                          priority, now, id, text)
         self.db.commit()
-        irc.reply(msg, conf.replySuccess)
+        cursor.execute("""SELECT id FROM todo 
+                          WHERE added_at=%s AND userid=%s""", now, id)
+        todoId = cursor.fetchone()[0]
+        irc.reply(msg, '%s (Todo #%s added)' % (conf.replySuccess, todoId)))
 
     def remove(self, irc, msg, args):
         """<task id>
