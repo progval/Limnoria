@@ -33,6 +33,11 @@ from test import *
 
 import os
 
+try:
+    import sqlite
+except ImportError:
+    sqlite = None
+
 import conf
 
 class LookupTestCase(PluginTestCase, PluginDocumentation):
@@ -64,6 +69,9 @@ class LookupTestCase(PluginTestCase, PluginDocumentation):
                 self.assertError('test foo')
             finally:
                 conf.replyWhenNotCommand = original
+
+        def testNotEscapingIOError(self):
+            self.assertNotRegexp('lookup add foo asdlfkjsdalfkj', 'IOError')
         
 
 
