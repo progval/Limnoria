@@ -500,16 +500,18 @@ class Relay(callbacks.Privmsg):
             s = '%s%s@%s%s %s' % (lt, nick, network, gt, msg.args[1])
         return s
 
+    def _addRelayedMsg(self, msg):
+        try:
+            self.relayedMsgs[msg] += 1
+        except KeyError:
+            self.relayedMsgs[msg] = 1
+        
     def _sendToOthers(self, irc, msg):
         assert msg.command == 'PRIVMSG' or msg.command == 'TOPIC'
         for otherIrc in self.ircs.itervalues():
             if otherIrc != irc:
                 if msg.args[0] in otherIrc.state.channels:
-                    if msg.command == 'PRIVMSG':
-                        try:
-                            self.relayedMsgs[msg].append(otherIrc)
-                        except KeyError:
-                            self.relayedMsgs[msg] = [otherIrc]
+                    self._addRelayedMsg(msg)
                     otherIrc.queueMsg(msg)
 
     def doPrivmsg(self, irc, msg):
@@ -615,24 +617,40 @@ class Relay(callbacks.Privmsg):
                     m = ircmsgs.privmsg(channel, s)
                     self._sendToOthers(irc, m)
 
+    def _isRelayedPrivmsg(self, msg):
+        if msg in self.relayedMsgs:
+            self.relayedMsgs[msg] -= 1
+            if not self.relayedMsgs[msg]:
+                del self.relayedMsgs[msg]
+            return True
+        else:
+            return False
+##         abbreviations = self.abbreviations.values()
+##         rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
+##         rAction = re.compile(r'\* [^/]+@(?:%s) ' % '|'.join(abbreviations))
+##         text = ircutils.stripColor(msg.args[1])
+##         return (rPrivmsg.match(text) or \
+##                 rAction.match(text) or \
+##                 'has left on ' in text or \
+##                 'has joined on ' in text or \
+##                 'has quit ' in text or \
+##                 'was kicked by' in text or \
+##                 text.startswith('mode change') or \
+##                 text.startswith('nick change') or \
+##                 text.startswith('topic change'))
+    
     def outFilter(self, irc, msg):
         if not self.started:
             return msg
         irc = self._getRealIrc(irc)
         if msg.command == 'PRIVMSG':
-            abbreviations = self.abbreviations.values()
-            if msg in self.relayedMsgs and irc in self.relayedMsgs[msg]:
-                self.relayedMsgs[msg].remove(irc)
-                if not self.relayedMsgs[msg]:
-                    del self.relayedMsgs[msg]
+            if not self._isRelayedPrivmsg(msg):
                 channel = msg.args[0]
                 if channel in self.registryValue('channels'):
                     abbreviation = self.abbreviations[irc]
                     s = self._formatPrivmsg(irc.nick, abbreviation, msg)
-                    for otherIrc in self.ircs.itervalues():
-                        if otherIrc != irc:
-                            if channel in otherIrc.state.channels:
-                                otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
+                    relayMsg = ircmsgs.privmsg(channel, s)
+                    self._sendToOthers(irc, relayMsg)
         elif msg.command == 'TOPIC' and len(msg.args) > 1 and \
              self.registryValue('topicSync', msg.args[0]):
             (channel, topic) = msg.args
