@@ -16,6 +16,12 @@ the more likely it'll be done before next release):
 
 * We should be able to set the log level for plugins individually.
 
+* Rbot has a "remind" plugin that seems pretty cool, we should get
+  one as well.
+
+* MozBot has a "list" plugin that seems pretty cool, we should get
+  one as well.
+
 Problems that involve a lot of tedious minutiae, but really need to
 be done at some point:
 
