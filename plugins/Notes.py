@@ -29,6 +29,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""A complete messaging system that allows users to leave 'notes' for other
+users that can be retrieved later.
+
+Commands include:
+  sendnote
+  note
+  notes
+"""
+
 from baseplugin import *
 
 import time
@@ -82,14 +91,16 @@ class Notes(callbacks.Privmsg):
         self.db.commit()
         
     def getUserID(self, username):
+        "returns the user id matching the given username from the users table"
         self.cursor.execute('SELECT id FROM users where name=%s', username)
         if self.cursor.rowcount != 0:
             results = self.cursor.fetchall()
             return results[0][0]
-        else: # this should NEVER happen
+        else: 
             assert False
 
     def getUserName(self, userid):
+        "returns the username matching the given user id from the users table"
         self.cursor.execute('SELECT name FROM users WHERE id=%s', userid)
         if self.cursor.rowcount != 0:
             results = self.cursor.fetchall()
@@ -98,6 +109,7 @@ class Notes(callbacks.Privmsg):
             raise KeyError
 
     def isNote(self, noteid):
+        "checks to see if a note id represents a valid note in the table"
         self.cursor.execute('SELECT * FROM notes WHERE id=%s', noteid)
         if self.cursor.rowcount == 0:
             return 0
@@ -105,21 +117,20 @@ class Notes(callbacks.Privmsg):
             return 1
     
     def makePrivate(self, msg):
+        "returns a IrcMsg object with an updated target value"
         args = list(msg.args)
         args[0] = msg.nick
         return ircmsgs.IrcMsg(command = msg.command, prefix = msg.prefix,
                               args = tuple(args))
 
     def setAsRead(self, noteid):
+        "changes a message's 'read' value to true in the notes table"
         self.cursor.execute('UPDATE notes SET read=1 WHERE id=%s', noteid)
         self.db.commit()
-    
-#    def setUnread(self, irc, msg, args):
-#        "set a note as unread"
-#        noteid = privmsgs.getArgs(args) 
-#        self.cursor.execute('UPDATE notes SET read=0 where id=%s'% noteid)
-#        self.db.commit()
-#        irc.reply(msg, conf.replySuccess)    
+
+    def die(self):
+        "called when module is unloaded/reloaded"
+        self.db.close()
     
     def sendnote(self, irc, msg, args):
         """<recipient> <text>
@@ -207,8 +218,5 @@ class Notes(callbacks.Privmsg):
             reply = "you have %s unread notes: %s" % (count, L)
         debug.printf(L)
         irc.reply(msg, reply)
-
-    def die(self):
-        self.db.close()
 
 Class = Notes
