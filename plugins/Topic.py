@@ -60,7 +60,7 @@ class TopicFormat(registry.String):
             registry.String.setValue(self, v)
         else:
             self.error()
-            
+
 conf.registerPlugin('Topic')
 conf.registerChannelValue(conf.supybot.plugins.Topic, 'separator',
     registry.StringSurroundedBySpaces(' || ', """Determines what separator is
@@ -113,7 +113,7 @@ class Topic(callbacks.Privmsg):
         stack.append(topics)
         maxLen = self.registryValue('undo.max', channel)
         del stack[:len(stack)-maxLen]
-            
+
     def _getUndo(self, channel):
         try:
             return self.undos[channel].pop()
@@ -125,7 +125,7 @@ class Topic(callbacks.Privmsg):
             return self.redos[channel].pop()
         except (KeyError, IndexError):
             return None
-        
+
     def _sendTopics(self, irc, channel, topics, isDo=False):
         topics = [s for s in topics if s and not s.isspace()]
         self.lastTopics[channel] = topics
@@ -150,7 +150,7 @@ class Topic(callbacks.Privmsg):
                       'is +t.' % channel, Raise=True)
         else:
             return True
-            
+
     def _topicNumber(self, irc, n, topics=None, normalize=False):
         try:
             n = int(n)
@@ -180,9 +180,9 @@ class Topic(callbacks.Privmsg):
             topic = irc.state.channels[channel].topic
             irc.reply(topic)
         except KeyError:
-            irc.error('I\'m not current in %s.' % channel)
+            irc.error('I\'m not currently in %s.' % channel)
     topic = privmsgs.channel(topic)
-            
+
     def add(self, irc, msg, args, channel, insert=False):
         """[<channel>] <topic>
 
@@ -444,7 +444,7 @@ class Topic(callbacks.Privmsg):
         topics[second] = t
         self._sendTopics(irc, channel, topics)
     swap = privmsgs.channel(swap)
-        
+
     def default(self, irc, msg, args, channel):
         """[<channel>]
 
