@@ -234,7 +234,6 @@ def shrinkList(L, sep='', limit=425):
 
 class nick(str):
     """This class does case-insensitive comparisons of nicks."""
-    __slots__ = ('lowered',)
     def __init__(self, s):
         self.lowered = toLower(s)
 
