@@ -146,10 +146,10 @@ class Channel(object):
         self.voices = set()
 
     def removeUser(self, user):
-        self.users.remove(user)
-        self.ops.remove(user)
-        self.halfops.remove(user)
-        self.voices.remove(user)
+        self.users.discard(user)
+        self.ops.discard(user)
+        self.halfops.discard(user)
+        self.voices.discard(user)
 
 class IrcState(object):
     """Maintains state of the Irc connection.  Should also become smarter.
@@ -264,9 +264,9 @@ class Irc(object):
 
     Handles PING commands already.
     """
-    _nickSetters = set('001', '002', '003', '004', '250', '251', '252', '254',
+    _nickSetters = set(('001', '002', '003', '004', '250', '251', '252', '254',
                         '255', '265', '266', '372', '375', '376', '333', '353',
-                        '332', '366')
+                        '332', '366'))
     def __init__(self, nick, user='', ident='', callbacks=None):
         world.ircs.append(self)
         self.nick = nick
