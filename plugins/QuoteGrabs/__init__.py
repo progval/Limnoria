@@ -38,6 +38,10 @@ as see who "grabbed" the quote in the first place.
 import supybot
 import supybot.world as world
 
+# Use this for the version of this plugin.  You may wish to put a CVS keyword
+# in here if you're keeping the plugin in CVS or some similar system.
+__version__ = "%%VERSION%%"
+
 # XXX Replace this with an appropriate author or supybot.Author instance.
 __author__ = supybot.authors.strike
 
