@@ -275,6 +275,15 @@ class Network(callbacks.Privmsg):
         irc.noReply()
     latency = wrap(latency, ['networkIrc'])
 
+    def driver(self, irc, msg, args, otherIrc):
+        """[<network>]
+
+        Returns the current network driver for <network>.  <network> is only
+        necessary if the message isn't sent on the network to which this
+        command is to apply.
+        """
+        irc.reply(otherIrc.driver.__class__.__module__[8:])
+
 
 Class = Network
 
