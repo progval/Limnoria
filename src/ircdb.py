@@ -46,6 +46,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircutils as ircutils
+import supybot.registry as registry
 import supybot.unpreserve as unpreserve
 
 def fromChannelCapability(capability):
@@ -928,9 +929,7 @@ def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
             pass
     defaultCapabilities = conf.supybot.capabilities()
     if capability in defaultCapabilities:
-        return True
-    elif invertCapability(capability) in defaultCapabilities:
-        return False
+        return defaultCapabilities.check(capability)
     else:
         return _x(capability, conf.supybot.capabilities.default())
 
@@ -970,9 +969,7 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
                 return _x(capability, c.defaultAllow)
         defaultCapabilities = conf.supybot.capabilities()
         if capability in defaultCapabilities:
-            return True
-        elif invertCapability(capability) in defaultCapabilities:
-            return False
+            return defaultCapabilities.check(capability)
         else:
             return _x(capability, conf.supybot.capabilities.default())
 
@@ -994,6 +991,37 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
         return True
     else:
         return False
+
+###
+# supybot.capabilities
+###
+
+class DefaultCapabilities(registry.SpaceSeparatedListOfStrings):
+    List = CapabilitySet
+    # We use a keyword argument trick here to prevent eval'ing of code that
+    # changes allowDefaultOwner from affecting this.  It's not perfect, but
+    # it's still an improvement, raising the bar for potential crackers.
+    def setValue(self, v, allowDefaultOwner=conf.allowDefaultOwner):
+        registry.SpaceSeparatedListOfStrings.setValue(self, v)
+        if '-owner' not in self.value and not allowDefaultOwner:
+            print '*** You must run supybot with the --allow-default-owner'
+            print '*** option in order to allow a default capability of owner.'
+            print '*** Don\'t do that, it\'s dumb.'
+            self.value.add('-owner')
+
+conf.registerGlobalValue(conf.supybot, 'capabilities',
+    DefaultCapabilities(['-owner', '-admin', '-trusted'], """These are the
+    capabilities that are given to everyone by default.  If they are normal
+    capabilities, then the user will have to have the appropriate
+    anti-capability if you want to override these capabilities; if they are
+    anti-capabilities, then the user will have to have the actual capability
+    to override these capabilities.  See docs/CAPABILITIES if you don't
+    understand why these default to what they do."""))
+
+conf.registerGlobalValue(conf.supybot.capabilities, 'default',
+    registry.Boolean(True, """Determines whether the bot by default will allow
+    users to have a capability.  If this is disabled, a user must explicitly
+    have the capability for whatever command he wishes to run."""))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

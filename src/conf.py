@@ -252,36 +252,6 @@ registerGlobalValue(supybot, 'channels',
     SpaceSeparatedSetOfChannels([], """Determines what channels the bot will
     join when it connects to the server."""))
 
-class DefaultCapabilities(registry.SpaceSeparatedListOfStrings):
-    List = ircutils.IrcSet
-    # We use a keyword argument trick here to prevent eval'ing of code that
-    # changes allowDefaultOwner from affecting this.  It's not perfect, but
-    # it's still an improvement, raising the bar for potential crackers.
-    def setValue(self, v, allowDefaultOwner=allowDefaultOwner):
-        registry.SpaceSeparatedListOfStrings.setValue(self, v)
-        if '-owner' not in self.value and not allowDefaultOwner:
-            print '*** You must run supybot with the --allow-default-owner'
-            print '*** option in order to allow a default capability of owner.'
-            print '*** Don\'t do that, it\'s dumb.'
-            self.value.add('-owner')
-
-###
-# supybot.capabilities
-###
-registerGlobalValue(supybot, 'capabilities',
-    DefaultCapabilities(['-owner', '-admin', '-trusted'], """These are the
-    capabilities that are given to everyone by default.  If they are normal
-    capabilities, then the user will have to have the appropriate
-    anti-capability if you want to override these capabilities; if they are
-    anti-capabilities, then the user will have to have the actual capability
-    to override these capabilities.  See docs/CAPABILITIES if you don't
-    understand why these default to what they do."""))
-
-registerGlobalValue(supybot.capabilities, 'default',
-    registry.Boolean(True, """Determines whether the bot by default will allow
-    users to have a capability.  If this is disabled, a user must explicitly
-    have the capability for whatever command he wishes to run."""))
-
 ###
 # Reply/error tweaking.
 ###
