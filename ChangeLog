@@ -1,3 +1,7 @@
+	* Added a configuration variable to ChannelLogger, timestamp,
+	which determines whether the bot will timestamp its logfiles.
+	This is a channel-specific variable, of course.
+	
 	* Updated ChannelLogger not to log messages starting with
 	[nolog], in order to allow private information to remain private.
 

@@ -54,6 +54,9 @@ conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger,
     'flushImmediately', registry.Boolean(False, """Determines whether channel
     logfiles will be flushed anytime they're written to, rather than being
     buffered by the operating system."""))
+conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'timestamp',
+    registry.Boolean(True, """Determines whether the logs for this channel are
+    timestamped with the timestamp in supybot.log.timestampFormat."""))
 conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'noLogPrefix',
     registry.String('[nolog]', """Determines what string a message should be
     prefixed with in order not to be logged.  If you don't want any such
@@ -118,7 +121,8 @@ class ChannelLogger(callbacks.Privmsg):
 
     def doLog(self, channel, s):
         log = self.getLog(channel)
-        self.timestamp(log)
+        if self.registryValue('timestamp', channel):
+            self.timestamp(log)
         log.write(s)
         if self.registryValue('flushImmediately'):
             log.flush()
