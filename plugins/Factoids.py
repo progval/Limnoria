@@ -114,7 +114,7 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         Associates <key> with <value>.  <channel> is only necessary if the
         message isn't sent on the channel itself.  The word 'as' is necessary
         to separate the key from the value.  It can be changed to another
-        word via the learn-separator configurable.
+        word via the learnSeparator registry value.
         """
         channel = privmsgs.getChannel(msg, args)
         try:
