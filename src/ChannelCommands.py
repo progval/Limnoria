@@ -55,7 +55,10 @@ class ChannelCommands(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         capability = ircdb.makeChannelCapability(channel, 'op')
         if ircdb.checkCapability(msg.prefix, capability):
-            irc.queueMsg(ircmsgs.op(channel, msg.nick))
+            if irc.nick in irc.state.channels[channel].ops:
+                irc.queueMsg(ircmsgs.op(channel, msg.nick))
+            else:
+                irc.error(msg, 'How can I op you?  I\'m not opped!')
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
@@ -69,7 +72,10 @@ class ChannelCommands(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         capability = ircdb.makeChannelCapability(channel, 'halfop')
         if ircdb.checkCapability(msg.prefix, capability):
-            irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
+            if irc.nick in irc.state.channels[channel].ops:
+                irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
+            else:
+                irc.error(msg, 'How can I halfop you?  I\'m not opped!')
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
@@ -83,7 +89,10 @@ class ChannelCommands(callbacks.Privmsg):
         channel = privmsgs.getChannel(msg, args)
         capability = ircdb.makeChannelCapability(channel, 'voice')
         if ircdb.checkCapability(msg.prefix, capability):
-            irc.queueMsg(ircmsgs.halfop(channel, msg.nick))
+            if irc.nick in irc.state.channels[channel].ops:
+                irc.queueMsg(ircmsgs.voice(channel, msg.nick))
+            else:
+                irc.error(msg, 'How can I voice you?  I\'m not opped!')
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
@@ -119,12 +128,15 @@ class ChannelCommands(callbacks.Privmsg):
         banmask = ircutils.banmask(bannedHostmask)
         if ircdb.checkCapability(msg.prefix, capability)\
            and not ircdb.checkCapability(bannedHostmask, capability):
-            irc.queueMsg(ircmsgs.ban(channel, banmask))
-            irc.queueMsg(ircmsgs.kick(channel, bannedNick, msg.nick))
-            if length > 0:
-                def f():
-                    irc.queueMsg(ircmsgs.unban(channel, banmask))
-                schedule.addEvent(f, time.time() + length)
+            if irc.nick in irc.state.channels[channel].ops:
+                irc.queueMsg(ircmsgs.ban(channel, banmask))
+                irc.queueMsg(ircmsgs.kick(channel, bannedNick, msg.nick))
+                if length > 0:
+                    def f():
+                        irc.queueMsg(ircmsgs.unban(channel, banmask))
+                    schedule.addEvent(f, time.time() + length)
+            else:
+                irc.error(msg, 'How can I do that?  I\'m not opped.')
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
