@@ -30,7 +30,7 @@ run supybot-wizard.py (it's been installed in your path somewhere) to
 create a script that will run your bot as you answered the questions
 in the wizard.
 
-If you have any trouble, feel free to swing by #sourcereview on
+If you have any trouble, feel free to swing by #supybot on
 irc.freenode.net or irc.oftc.net (we have a supybot there relaying, so
 either network works) and ask questions.  We'll be happy to help
 wherever we can.  And by all means, if you find anything hard to
