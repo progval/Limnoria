@@ -391,4 +391,29 @@ class TwoWayDictionary(dict):
         dict.__delitem__(self, value)
 
 
+class MultiSet(object):
+    def __init__(self, seq=()):
+        self.d = {}
+        for elt in seq:
+            self.add(elt)
+
+    def add(self, elt):
+        try:
+            self.d[elt] += 1
+        except KeyError:
+            self.d[elt] = 1
+
+    def remove(self, elt):
+        self.d[elt] -= 1
+        if not self.d[elt]:
+            del self.d[elt]
+
+    def __getitem__(self, elt):
+        return self.d[elt]
+
+    def __contains__(self, elt):
+        return elt in self.d
+            
+
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
