@@ -147,7 +147,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     _gkWon = re.compile(r'>(\S+)\s+won')
     _gkReason = re.compile(r'won\s+\(\S+\s+(\S+)\)')
     def gameknotSnarfer(self, irc, msg, match):
-        r"http://(?:www\.)?gameknot.com/chess.pl\?bd=\d+(&r=\d+)?"
+        r"http://(?:www\.)?gameknot\.com/chess\.pl\?bd=\d+(&r=\d+)?"
         #debug.printf('Got a GK URL from %s' % msg.prefix)
         url = match.group(0)
         fd = urllib2.urlopen(url)
