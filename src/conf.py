@@ -260,6 +260,7 @@ types = {
     'throttleTime': float,
     #'allowEval': mybool,
     'replyWhenNotCommand': mybool,
+    'replyWithPrivateNotice': mybool,
     'requireRegistration': mybool,
     'enablePipeSyntax': mybool,
     'replyError': mystr,
