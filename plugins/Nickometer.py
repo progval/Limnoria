@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ###
 # Copyright (c) 2004, William Robinson.
 # Derived from work (c) 1998, Adam Spiers <adam.spiers@new.ox.ac.uk>
