@@ -50,6 +50,7 @@ plugins = [
     'Misc',
     'Owner',
     'QuoteGrabs',
+    'Praise',
     'Reply',
     'Relay',
     'RSS',
