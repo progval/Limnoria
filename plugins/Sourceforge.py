@@ -245,10 +245,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                     resp.append('%s' % i(s))
                 except AttributeError:
                     pass
-            if linktype.endswith('es'):
-                linktype = linktype[:-2]
-            else:
-                linktype = linktype[:-1]
+            linktype = utils.depluralize(linktype)
             irc.reply(msg, '%s #%s: %s' % (ircutils.bold(linktype),
                 ircutils.bold(num), '; '.join(resp)))
         except AttributeError, e:
