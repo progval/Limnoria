@@ -71,6 +71,8 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
         try:
             server = self._getNextServer()
             sock = utils.getSocket(server[0])
+            vhost = conf.supybot.protocols.irc.vhost()
+            sock.bind((vhost, 0))
             self.set_socket(sock)
             drivers.log.connect(self.currentServer)
             self.connect(server)

@@ -138,6 +138,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         drivers.log.connect(self.currentServer)
         try:
             self.conn = utils.getSocket(server[0])
+            vhost = conf.supybot.protocols.irc.vhost()
+            self.conn.bind((vhost, 0))
         except socket.error, e:
             drivers.log.connectError(self.currentServer, e)
             self.reconnect(wait=True)
