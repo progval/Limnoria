@@ -36,9 +36,11 @@ caller to have the 'admin' capability.  This plugin is loaded by default.
 
 from fix import *
 
+import time
 import pprint
 import string
 import smtplib
+import textwrap
 
 import conf
 import ircdb
