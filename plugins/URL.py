@@ -127,7 +127,11 @@ class URLDB(object):
         try:
             for line in fd:
                 line = line.strip()
-                (url, nick) = line.split()
+                try:
+                    (url, nick) = line.split()
+                except ValueError: # unpack list of wrong size.
+                    self.log.warning('Invalid line in URLDB: %r.', line)
+                    continue
                 if p(url, nick):
                     L.append((url, nick))
             seen = sets.Set()
