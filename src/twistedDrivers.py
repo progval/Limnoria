@@ -93,7 +93,7 @@ class SupyIrcProtocol(LineReceiver):
 
 
 class SupyReconnectingFactory(ReconnectingClientFactory):
-    maxDelay = 600
+    maxDelay = 300
     protocol = SupyIrcProtocol
     def __init__(self, (server, port), irc):
         self.irc = irc
