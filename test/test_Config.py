@@ -60,6 +60,11 @@ class ConfigTestCase(ChannelPluginTestCase):
                              'supybot.commands.defaultPlugins.help',
                              'AssertionError')
 
+    def testSearch(self):
+        self.assertNotError('config search prefixChars')
+        self.assertNotError('config channel prefixChars @')
+        self.assertNotRegexp('config search prefixChars', self.channel)
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

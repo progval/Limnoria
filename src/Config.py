@@ -142,7 +142,9 @@ class Config(callbacks.Privmsg):
         L = []
         for (name, _) in conf.supybot.getValues(getChildren=True):
             if word in name.lower():
-                L.append(name)
+                possibleChannel = registry.split(name)[-1]
+                if not ircutils.isChannel(possibleChannel):
+                    L.append(name)
         if L:
             irc.reply(utils.commaAndify(L))
         else:
