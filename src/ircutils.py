@@ -305,10 +305,13 @@ def mircColor(s, fg=None, bg=None):
     if fg is None or isinstance(fg, str):
         fg = mircColors[fg]
     if bg is None:
+        fg = str(fg).zfill(2)
         return '\x03%s%s\x03' % (fg, s)
     else:
+        # We don't need to zfill fg here because the comma delimits it.
         if isinstance(bg, str):
             bg = mircColors[bg]
+        bg = str(bg).zfill(2)
         return '\x03%s,%s%s\x03' % (fg, bg, s)
 
 def canonicalColor(s, bg=False, shift=0):
