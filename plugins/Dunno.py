@@ -275,8 +275,8 @@ class Dunno(callbacks.Privmsg):
             irc.error('%r is not a valid dunno id.' % id)
             return
         try:
-            name = ircdb.users.getUser(id).name
             (dunno, by, at) = self.db.get(channel, id)
+            name = ircdb.users.getUser(by).name
             at = time.localtime(at)
             timeStr = time.strftime(conf.supybot.humanTimestampFormat(), at)
             irc.reply("Dunno #%s: %r (added by %s at %s)" % \
