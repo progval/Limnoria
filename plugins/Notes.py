@@ -157,9 +157,9 @@ class Notes(callbacks.Privmsg):
                                 notes.to_id=users.id AND
                                 read=0""", name)
         unread = int(cursor.fetchone()[0])
-        s = 'You have %s unread note%s ' \
+        s = 'You have %s unread %s; ' \
             '%s that I haven\'t told you about before now..' % \
-            (unread, unread == 1 and ';' or 's;', unnotified)
+            (unread, utils.pluralize(unread, 'note'), unnotified)
         irc.queueMsg(ircmsgs.privmsg(msg.nick, s))
         cursor.execute("""UPDATE notes
                           SET notified=1

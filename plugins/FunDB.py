@@ -81,7 +81,7 @@ def tableExists(db, table):
     try:
         cursor.execute("""SELECT * from %s LIMIT 1""" % table)
         return True
-    except DatabaseError:
+    except sqlite.DatabaseError:
         return False
 
 tableDict = {
@@ -153,27 +153,19 @@ class FunDB(callbacks.Privmsg):
         cursor = self.db.cursor()
         started = int(world.startedAt)
         cursor.execute("""INSERT INTO uptime VALUES (%s, NULL)""", started)
+        self.db.commit()
         def f():
+            db = makeDb(dbFilename)
+            cursor = db.cursor()
             cursor.execute("""UPDATE uptime SET ended=%s WHERE started=%s""",
                            int(time.time()), started)
+            db.commit()
         atexit.register(f)
 
     def die(self):
         self.db.commit()
         self.db.close()
         del self.db
-
-    def _pluralize(self, string, count, verb=None):
-        if verb is None:
-            if count == 1:
-                return string
-            else:
-                return '%ss' % string
-        else:
-            if count == 1:
-                return ('is', string)
-            else:
-                return ('are', '%ss' % string)
 
     def bestuptime(self, irc, msg, args):
         """takes no arguments.
@@ -352,9 +344,8 @@ class FunDB(callbacks.Privmsg):
             total = int(cursor.fetchone()[0])
         except ValueError:
             irc.error(msg, 'Unexpected response from database')
-        (verb, table) = self._pluralize(table, total, 1)
-        irc.reply(msg, 'There %s currently %s %s in my database' %\
-            (verb, total, table))
+        irc.reply(msg, 'There %s currently %s %s in my database' % \
+                  (utils.be(total), total, utils.pluralize(total, table)))
 
     def dbget(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
@@ -406,8 +397,9 @@ class FunDB(callbacks.Privmsg):
         else:
             (add,req,count) = cursor.fetchone()
             reply = '%s #%s: Created by %s. last requested by %s, requested '\
-                ' a total of %s %s' % (table, id, add, req, count,
-                self._pluralize('time',count))
+                    ' a total of %s %s' % \
+                    (table, id, add, req,
+                     count, utils.pluralize(count, 'time'))
             irc.reply(msg, reply)
 
     def lart(self, irc, msg, args):

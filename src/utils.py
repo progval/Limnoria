@@ -286,4 +286,20 @@ def wrapLines(s):
         L.append(textwrap.fill(line))
     return '\n'.join(L)
 
+plurals = {}
+def pluralize(i, s):
+    if i == 1:
+        return s
+    else:
+        if s in plurals:
+            return plurals[s]
+        else:
+            return s + 's'
+
+def be(i):
+    if i == 1:
+        return 'is'
+    else:
+        return 'are'
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

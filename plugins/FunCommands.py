@@ -461,13 +461,17 @@ class FunCommands(callbacks.Privmsg):
                      childUser, childSystem, childUser + childSystem,
                      (user+system+childUser+childSystem)/timeRunning,
                      world.threadsSpawned,
-                     world.threadsSpawned == 1 and 'thread' or 'threads',
-                     activeThreads, world.commandsProcessed,
-                     world.commandsProcessed == 1 and 'command' or 'commands')
+                     utils.pluralize(world.threadsSpawned, 'thread'),
+                     activeThreads,
+                     world.commandsProcessed,
+                     utils.pluralize(world.commandsProcessed, 'command'))
         irc.reply(msg, response)
 
     def uptime(self, irc, msg, args):
-        "takes no arguments"
+        """takes no arguments.
+
+        Returns the amount of time the bot has been running.
+        """
         response = 'I have been running for %s.' % \
                    utils.timeElapsed(time.time() - world.startedAt)
         irc.reply(msg, response)
