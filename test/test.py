@@ -226,7 +226,8 @@ class ChannelPluginTestCase(PluginTestCase):
         if response is not None:
             args = list(response.args)
             # Strip off nick: at beginning of response.
-            args[1] = args[1].split(None, 1)[1]
+            if not ircmsgs.isAction(response):
+                args[1] = args[1].split(None, 1)[1]
             return ircmsgs.privmsg(*args)
         else:
             return None
