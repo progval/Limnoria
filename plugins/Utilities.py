@@ -68,7 +68,7 @@ class Utilities(callbacks.Privmsg):
         irc.reply(msg, ' '.join(args))
 
     def arg(self, irc, msg, args):
-        (i, rest) = privmsgs.getArgs(needed=2)
+        (i, rest) = privmsgs.getArgs(args, needed=2)
         i = int(i)
         args = callbacks.tokenize(rest)
         irc.reply(msg, args[i])
