@@ -420,16 +420,22 @@ newPluginDirectory'."""))
 
 supybot.register('databases')
 supybot.databases.register('users')
-supybot.databases.register('ignores')
-supybot.databases.register('channels')
 supybot.databases.users.register('filename', registry.String('users.conf', """
 Determines what filename will be used for the users database.  This file will
 go into the directory specified by the supybot.directories.conf
 variable."""))
+supybot.databases.users.register('timeoutIdentification',
+registry.Integer(0, """Determines how long it takes identification to time
+out.  If the value is less than or equal to zero, identification never
+times out."""))
+
+supybot.databases.register('ignores')
 supybot.databases.ignores.register('filename', registry.String('ignores.conf',
 """Determines what filename will be used for the ignores database.  This file
 will go into the directory specified by the supybot.directories.conf
 variable."""))
+
+supybot.databases.register('channels')
 supybot.databases.channels.register('filename',registry.String('channels.conf',
 """Determines what filename will be used for the channels database.  This file
 will go into the directory specified by the supybot.directories.conf
@@ -444,6 +450,6 @@ supybot.register('plugins') # This will be used by plugins, but not here.
 ###############################
 ###############################
 ###############################
-version ='0.77.0'
+version ='0.77.0+cvs'
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

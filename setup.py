@@ -59,7 +59,7 @@ if os.path.exists(previousInstall):
 setup(
     # Metadata
     name='supybot',
-    version='0.77.0',
+    version='0.77.0+cvs',
     url='http://supybot.sf.net/',
     author='Jeremy Fincher',
     author_email='jemfinch@users.sf.net',
