@@ -131,6 +131,7 @@ class Weather(callbacks.Privmsg):
     _tempregex = re.compile(
         r'<td valign="top" align="right"><strong><font face="arial">'
         r'(-?\d+)(.*?)(F|C)</font></strong></td>', re.I)
+    _temp = re.compile(r'(-?\d+)(.*?)(F|C)')
     _chillregex = re.compile(
         r'Wind Chill</font></strong>:</small></td>\s+<td align="right">'
         r'<small><font face="arial">([^N][^<]+)</font></small></td>',
@@ -232,16 +233,23 @@ class Weather(callbacks.Privmsg):
         index = ''
         chill = self._chillregex.search(html)
         if chill is not None:
-            #self.log.warning(chill.groups())
             chill = chill.group(1)
             chill = utils.htmlToText(chill)
-            if int(chill[:-2]) < int(temp[:-2]):
+            tempsplit = self._temp.search(chill)
+            if tempsplit:
+                (chill, deg, unit) = tempsplit.groups()
+                chill = self._getTemp(int(chill), deg, unit,msg.args[0])
+            if float(chill[:-2]) < float(temp[:-2]):
                 index = ' (Wind Chill: %s)' % chill
         heat = self._heatregex.search(html)
         if heat is not None:
             heat = heat.group(1)
             heat = utils.htmlToText(heat)
-            if int(heat[:-2]) > int(temp[:-2]):
+            tempsplit = self._temp.search(heat)
+            if tempsplit:
+                (heat, deg, unit) = tempsplit.groups()
+                heat = self._getTemp(int(heat), deg, unit,msg.args[0])
+            if float(heat[:-2]) > float(temp[:-2]):
                 index = ' (Heat Index: %s)' % heat
         if temp and conds and city and state:
             conds = conds.replace('Tsra', 'Thunderstorms')
