@@ -148,5 +148,10 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(L, original)
         self.failUnless(utils.commaAndify(sets.Set(L)))
 
+    def testUnCommaThe(self):
+        self.assertEqual(utils.unCommaThe('foo bar'), 'foo bar')
+        self.assertEqual(utils.unCommaThe('foo bar, the'), 'the foo bar')
+        self.assertEqual(utils.unCommaThe('foo bar, The'), 'The foo bar')
+        self.assertEqual(utils.unCommaThe('foo bar,the'), 'the foo bar')
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

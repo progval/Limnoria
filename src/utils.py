@@ -271,4 +271,12 @@ def commaAndify(seq):
         L[-1] = 'and %s' % L[-1]
         return ', '.join(L)
 
+_unCommaTheRe = re.compile(r'(.*),\s*(the)$', re.I)
+def unCommaThe(s):
+    m = _unCommaTheRe.match(s)
+    if m is not None:
+        return '%s %s' % (m.group(2), m.group(1))
+    else:
+        return s
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
