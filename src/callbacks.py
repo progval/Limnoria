@@ -303,7 +303,8 @@ class RichReplyMethods(object):
         self.reply(self._makeReply(conf.replyError, s), **kwargs)
 
     def errorNoCapability(self, capability, s='', **kwargs):
-        self.error(self._makeReply(conf.replyNoCapability % s, s), **kwargs)
+        s = self._makeReply(conf.replyNoCapability % capability, s)
+        self.error(s, **kwargs)
 
     def errorPossibleBug(self, s='', **kwargs):
         if s:

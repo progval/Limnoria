@@ -376,5 +376,12 @@ class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
         self.irc.addCallback(self.PCAR())
         self.assertResponse('test', 'test <foo>')
 
+class RichReplyMethodsTestCase(unittest.TestCase):
+    def testErrorNoCapability(self):
+        class NoCapability(callbacks.RichReplyMethods):
+            def error(self, s, **kwargs):
+                assert 'admin' in s
+        x = NoCapability()
+        x.errorNoCapability('admin')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
