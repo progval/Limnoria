@@ -52,6 +52,27 @@ import struct
 import privmsgs
 import callbacks
 
+def configure(onStart, afterConnect, advanced):
+    from questions import expect, anything, something, yn
+    print 'The "progstats" command can reveal potentially sensitive'
+    print 'information about your machine.  Here\'s an example of its output:'
+    print
+    print progstats()
+    print
+    if yn('Would you like to disable this command?') == 'y':
+        onStart.append('disable progstats')
+    
+def progstats():
+    pw = pwd.getpwuid(os.getuid())
+    response = 'Process ID %i running as user "%s" and as group "%s" '\
+               'from directory "%s" with the command line "%s".  '\
+               'Running on Python %s.' %\
+               (os.getpid(), pw[0], pw[3],
+                os.getcwd(), " ".join(sys.argv),
+                sys.version.translate(string.ascii, '\r\n'))
+    return response
+    
+
 class Unix(callbacks.Privmsg):
     def errno(self, irc, msg, args):
         "<error number or code>"
@@ -72,14 +93,7 @@ class Unix(callbacks.Privmsg):
             
     def progstats(self, irc, msg, args):
         "takes no arguments"
-        pw = pwd.getpwuid(os.getuid())
-        response = 'Process ID %i running as user "%s" and as group "%s" '\
-                   'from directory "%s" with the command line "%s".  '\
-                   'Running on Python %s.' %\
-                   (os.getpid(), pw[0], pw[3],
-                    os.getcwd(), " ".join(sys.argv),
-                    sys.version.translate(string.ascii, '\r\n'))
-        irc.reply(msg, response)
+        irc.reply(msg, progstats())
 
     _cryptre = re.compile(r'[./0-9A-Za-z]')
     def crypt(self, irc, msg, args):
