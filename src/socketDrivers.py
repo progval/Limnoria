@@ -149,8 +149,7 @@ class SocketDriver(drivers.IrcDriver):
                          'check for %s', when)
                 schedule.addEvent(self._checkAndWriteOrReconnect, when)
             else:
-                log.warning('Error connecting to %s: %s',
-                            self.irc.server, e.args[1])
+                log.warning('Error connecting to %s: %s', self.irc.server, e)
                 self.reconnect(wait=True)
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
