@@ -170,9 +170,14 @@ class GooglePrivmsgRegexp(callbacks.PrivmsgRegexp):
     threaded = True
     def googleSnarfer(self, irc, msg, match):
         r"^google\s+(.*)$"
-        data = google.doGoogleSearch(match.group(1), safeSearch=1)
-        url = data.results[0].URL
-        irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg), url))
+        searchString = match.group(1)
+        data = google.doGoogleSearch(searchString, safeSearch=1)
+        if data.results:
+            url = data.results[0].URL
+            irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg), url))
+        else:
+            irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg),
+                                         'No results for "%s"' % searchString))
 
     _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
     _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
