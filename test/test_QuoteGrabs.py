@@ -33,66 +33,73 @@ import sets
 
 from test import *
 
+try:
+    import sqlite
+except ImportError:
+    sqlite = None
+
+
 class QuoteGrabsTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('QuoteGrabs',)
+    if sqlite:
+        def testQuoteGrab(self):
+            testPrefix = 'foo!bar@baz'
+            self.assertError('grab foo')    
+            # Test join/part/notice (shouldn't grab)
+            self.irc.feedMsg(ircmsgs.join(self.channel, prefix=testPrefix))
+            self.assertError('grab foo')
+            self.irc.feedMsg(ircmsgs.part(self.channel, prefix=testPrefix))
+            self.assertError('grab foo')
+            # Test privmsgs
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                             prefix=testPrefix))
+            self.assertNotError('grab foo')    
+            self.assertResponse('quote foo', '<foo> something')
+            # Test actions
+            self.irc.feedMsg(ircmsgs.action(self.channel, 'moos',
+                                            prefix=testPrefix))
+            self.assertNotError('grab foo')
+            self.assertResponse('quote foo', '* foo moos')
 
-    def testQuoteGrab(self):
-        testPrefix = 'foo!bar@baz'
-        self.assertError('grab foo')    
-        # Test join/part/notice (shouldn't grab)
-        self.irc.feedMsg(ircmsgs.join(self.channel, prefix=testPrefix))
-        self.assertError('grab foo')
-        self.irc.feedMsg(ircmsgs.part(self.channel, prefix=testPrefix))
-        self.assertError('grab foo')
-        # Test privmsgs
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
-                                         prefix=testPrefix))
-        self.assertNotError('grab foo')    
-        self.assertResponse('quote foo', '<foo> something')
-        # Test actions
-        self.irc.feedMsg(ircmsgs.action(self.channel, 'moos',
-                                        prefix=testPrefix))
-        self.assertNotError('grab foo')
-        self.assertResponse('quote foo', '* foo moos')
+        def testList(self):
+            testPrefix = 'foo!bar@baz'
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                             prefix=testPrefix))
+            self.assertNotError('grab foo')
+            self.assertResponse('quotegrabs list foo', '#1: test')
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'a' * 80,
+                                             prefix=testPrefix))
+            self.assertNotError('grab foo')
+            self.assertResponse('quotegrabs list foo',
+                                '#1: test and #2: %s...' %\
+                                ('a'*43)) # 50 - length of "#2: ..."
 
-    def testList(self):
-        testPrefix = 'foo!bar@baz'
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
-                                         prefix=testPrefix))
-        self.assertNotError('grab foo')
-        self.assertResponse('quotegrabs list foo', '#1: test')
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'a' * 80,
-                                         prefix=testPrefix))
-        self.assertNotError('grab foo')
-        self.assertResponse('quotegrabs list foo', '#1: test and #2: %s...' %\
-                            ('a'*43)) # 50 - length of "#2: ..."
+        def testDuplicateGrabs(self):
+            testPrefix = 'foo!bar@baz'
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                             prefix=testPrefix))
+            self.assertNotError('grab foo') 
+            self.assertNotError('grab foo') # note:NOTanerror,stillwon'tdupe
+            self.assertResponse('quotegrabs list foo', '#1: test')
 
-    def testDuplicateGrabs(self):
-        testPrefix = 'foo!bar@baz'
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
-                                         prefix=testPrefix))
-        self.assertNotError('grab foo') 
-        self.assertNotError('grab foo') # note: NOT an error, still won't dupe
-        self.assertResponse('quotegrabs list foo', '#1: test')
+        def testCaseInsensitivity(self):
+            testPrefix = 'foo!bar@baz'
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                             prefix=testPrefix))
+            self.assertNotError('grab FOO')
+            self.assertNotError('quote foo')
+            self.assertNotError('quote FoO')
+            self.assertNotError('quote Foo')
 
-    def testCaseInsensitivity(self):
-        testPrefix = 'foo!bar@baz'
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
-                                         prefix=testPrefix))
-        self.assertNotError('grab FOO')
-        self.assertNotError('quote foo')
-        self.assertNotError('quote FoO')
-        self.assertNotError('quote Foo')
-
-    def testGet(self):
-        testPrefix= 'foo!bar@baz'
-        self.assertError('quotegrabs get asdf')
-        self.assertError('quotegrabs get 1')
-        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
-                                         prefix=testPrefix))
-        self.assertNotError('grab foo')
-        self.assertRegexp('quotegrabs get 1',
-                          '<foo> test \(Said by: foo!bar@baz on .*?\)')
+        def testGet(self):
+            testPrefix= 'foo!bar@baz'
+            self.assertError('quotegrabs get asdf')
+            self.assertError('quotegrabs get 1')
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                             prefix=testPrefix))
+            self.assertNotError('grab foo')
+            self.assertRegexp('quotegrabs get 1',
+                              '<foo> test \(Said by: foo!bar@baz on .*?\)')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
