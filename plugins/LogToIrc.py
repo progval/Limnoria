@@ -44,6 +44,7 @@ import log
 import conf
 import utils
 import world
+import ircdb
 import ircmsgs
 import ircutils
 import privmsgs
@@ -53,13 +54,13 @@ import callbacks
 
 class IrcHandler(logging.Handler):
     def emit(self, record):
-        target = conf.supybot.plugins.LogToIrc.target()
+        config = conf.supybot.plugins.LogToIrc
         try:
             s = utils.normalizeWhitespace(self.format(record))
         except:
             self.handleError(record)
-        msg = ircmsgs.privmsg(target, s)
-        if target:
+        for target in config.targets():
+            msg = ircmsgs.privmsg(target, s)
             for irc in world.ircs:
                 try:
                     if not irc.driver.connected:
@@ -67,11 +68,28 @@ class IrcHandler(logging.Handler):
                 except AttributeError, e:
                     print '*** AttributeError, shouldn\'t happen: %s' % e
                     continue
-                if target in irc.state.channels or \
-                   target in irc.state.nicksToHostmasks:
+                msgOk = True
+                if target in irc.state.channels:
+                    channel = irc.state.channels[target]
+                    for modeChar in config.channelModesRequired():
+                        if modeChar not in channel.modes:
+                            msgOk = False
+                else:
+                    capability = config.userCapabilityRequired()
+                    if capability:
+                        try:
+                            hostmask = irc.state.nicksToHostmasks[target]
+                        except KeyError:
+                            msgOk = False
+                            continue
+                        if not ircdb.checkCapability(hostmask, capability):
+                            msgOk = False
+                if msgOk:
                     irc.queueMsg(msg)
-            
-
+                else:
+                    print '*** Not sending to %r' % target
+                        
+                        
 class IrcFormatter(log.Formatter):
     def formatException(self, ei):
         import cStringIO
@@ -118,23 +136,33 @@ class IrcLogLevel(log.LogLevel):
             log.LogLevel.setValue(self, v)
             _ircHandler.setLevel(v)
 
-class ValidChannelOrNickOrNot(registry.String):
-    """Value must be a valid channel, a valid nick, or an empty string."""
+class ValidChannelOrNick(registry.String):
+    """Value must be a valid channel or a valid nick."""
     def setValue(self, v):
-        if v:
-            if not (ircutils.isNick(v) or ircutils.isChannel(v)):
-                self.error()
+        if not (ircutils.isNick(v) or ircutils.isChannel(v)):
+            self.error()
         registry.String.setValue(self, v)
+
+class Targets(registry.SpaceSeparatedListOfStrings):
+    Value = ValidChannelOrNick
 
 conf.registerPlugin('LogToIrc')
 conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'level',
     IrcLogLevel(logging.WARNING, """Determines what the minimum priority
     level logged will be to IRC. See supybot.log.level for possible
     values.  DEBUG is disabled due to the large quantity of output."""))
-conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'target',
-    ValidChannelOrNickOrNot('', """Determines which channel/nick the bot should
-    log to.  If no channel/nick is set, this plugin will be effectively
-    off."""))
+conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'targets',
+    Targets([], """Determines which channels/nicks the bot should
+    log to.  If no channels/nicks are set, this plugin will effectively be
+    turned off."""))
+conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'channelModesRequired',
+    registry.String('s', """Determines what channel modes a channel will be
+    required to have for the bot to log to the channel.  If this string is
+    empty, no modes will be checked."""))
+conf.registerGlobalValue(conf.supybot.plugins.LogToIrc,
+    'userCapabilityRequired', registry.String('owner', """Determines what
+    capability is required for the bot to log to in private messages to the
+    user.  If this is empty, there will be no capability that's checked."""))
 conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'colorized',
     registry.Boolean(False, """Determines whether the bot's logs
     to IRC will be colorized with mIRC colors."""))
@@ -174,9 +202,10 @@ class LogToIrc(callbacks.Privmsg):
         log._logger.removeHandler(_ircHandler)
 
     def do376(self, irc, msg):
-        target = self.registryValue('target')
-        if target and ircutils.isChannel(target):
-            irc.queueMsg(ircmsgs.join(target))
+        targets = self.registryValue('targets')
+        for target in targets:
+            if ircutils.isChannel(target):
+                irc.queueMsg(ircmsgs.join(target))
     do377 = do422 = do376
             
 
