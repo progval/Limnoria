@@ -42,10 +42,10 @@ import unittest
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        names = sys.argv[1:]
+        files = sys.argv[1:]
     else:
         files = glob.glob(os.path.join('test', '*_test.py'))
-        names = [os.path.splitext(os.path.basename(file))[0] for file in files]
+    names = [os.path.splitext(os.path.basename(file))[0] for file in files]
     suite = unittest.defaultTestLoader.loadTestsFromNames(names)
     runner = unittest.TextTestRunner(verbosity=1)
     runner.run(suite)
