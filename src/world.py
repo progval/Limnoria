@@ -71,11 +71,11 @@ registryFilename = None
 
 def flush():
     """Flushes all the registered flushers."""
-    for f in flushers:
+    for (i, f) in enumerate(flushers):
         try:
             f()
         except Exception, e:
-            log.exception('Uncaught exception in flusher:')
+            log.exception('Uncaught exception in flusher #%s (%s):', i, f)
 
 def upkeep(scheduleNext=True):
     """Does upkeep (like flushing, garbage collection, etc.)"""
