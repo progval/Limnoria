@@ -30,7 +30,7 @@
 ###
 
 """
-Enforcer: Enforces capabilities on a channel, watching MODEs, KICKs,
+Enforces capabilities on a channel, watching MODEs, KICKs,
 JOINs, etc. to make sure they match the channel's config.  Also handles
 auto-opping, auto-halfopping, or auto-voicing, as well as cycling an otherwise
 empty channel in order to get ops.

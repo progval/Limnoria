@@ -479,7 +479,7 @@ class IrcString(str):
 
     def __init__(self, s):
         assert isinstance(s, basestring), \
-               'Cannot make an IrcString from %s' % type(s)
+               'Cannot make an IrcString from %r' % s
         self.lowered = toLower(s)
 
     def __eq__(self, s):
