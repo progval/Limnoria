@@ -57,7 +57,7 @@ conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger,
     'flushImmediately', registry.Boolean(False, """Determines whether channel
     logfiles will be flushed anytime they're written to, rather than being
     buffered by the operating system."""))
-conf.registerGlobalValue(conf.supybot.plugins.ChannelLogger,
+conf.registerChannelValue(conf.supybot.plugins.ChannelLogger,
     'stripFormatting', registry.Boolean(True, """Determines whether
     formatting characters (such as bolding, color, etc.) are removed when
     writing the logs to disk."""))
