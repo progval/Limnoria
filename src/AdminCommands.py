@@ -62,7 +62,8 @@ class AdminCommands(privmsgs.CapabilityCheckingPrivmsg):
                 channels.append(channel)
         irc.queueMsg(ircmsgs.joins(channels, keys))
         for channel in channels:
-            irc.queueMsg(ircmsgs.who(channel))
+            if channel not in irc.state.channels:
+                irc.queueMsg(ircmsgs.who(channel))
 
     def nick(self, irc, msg, args):
         """<nick>
