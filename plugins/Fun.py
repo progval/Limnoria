@@ -43,7 +43,7 @@ import sha
 import random
 import inspect
 import mimetypes
-from itertools import imap
+from itertools import imap, cycle
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -144,12 +144,10 @@ class Fun(callbacks.Privmsg):
         http://www.yoe.org/developer/xor.html for information about XOR
         encryption.
         """
-        passwordlen = len(password)
-        i = 0
+        chars = cycle(password)
         ret = []
         for c in text:
-            ret.append(chr(ord(c) ^ ord(password[i])))
-            i = (i + 1) % passwordlen
+            ret.append(chr(ord(c) ^ ord(chars.next())))
         irc.reply(''.join(ret))
     xor = wrap(xor, ['something', 'text'])
 
