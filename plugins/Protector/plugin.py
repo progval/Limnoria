@@ -70,17 +70,23 @@ class Protector(callbacks.Plugin):
         irc.queueMsg(ircmsgs.deop(channel, nick))
         
     def __call__(self, irc, msg):
+        def ignore(reason):
+            self.log.debug('Ignoring %q, %s.', msg, reason)
         if not msg.args:
-            self.log.debug('Ignoring %q, no msg.args.', msg, irc)
+            ignore('no msg.args')
         elif not irc.isChannel(msg.args[0]):
-            self.log.debug('Ignoring %q, not on a channel.', msg)
+            ignore('not on a channel')
         elif msg.args[0] not in irc.state.channels:
             # One has to wonder how this would happen, but just in case...
-            self.log.debug('Ignoring %q, bot isn\'t in channel.', msg)
+            ignore('bot isn\'t in channel')
         elif irc.nick not in irc.state.channels[msg.args[0]].ops:
-            self.log.debug('Ignoring %q, bot is not opped.', msg)
+            ignore('bot is not opped')
+        elif msg.nick not in irc.state.channels[msg.args[0]].users:
+            ignore('sender is not in channel (ChanServ, maybe?)')
+        elif msg.nick not in irc.state.channels[msg.args[0]].ops:
+            ignore('sender is not an op in channel (IRCOP, maybe?)')
         elif self.isImmune(irc, msg):
-            self.log.debug('Ignoring %q, it is immune.', msg, irc)
+            ignore('sender is immune')
         else:
             super(Protector, self).__call__(irc, msg)
 
