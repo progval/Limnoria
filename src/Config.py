@@ -199,7 +199,7 @@ class Config(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         name = self._canonicalizeName(name)
         wrapper = getWrapper(name)
-        if wrapper.help:
+        if hasattr(wrapper, 'help'):
             irc.reply(wrapper.help)
         else:
             irc.error('%s has no help.' % name)

@@ -31,8 +31,11 @@
 
 from testsupport import *
 
+import conf
+
 class ConfigTestCase(ChannelPluginTestCase):
-    plugins = ('Config',)
+    # We add utilities so there's something in supybot.plugins.
+    plugins = ('Config', 'Ebay')
     def testGet(self):
         self.assertNotRegexp('config get supybot.reply', r'registry\.Group')
 
