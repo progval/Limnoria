@@ -248,7 +248,7 @@ buildings = {
 
 class OSU(callbacks.Privmsg):
     threaded = True
-    def osuemail(self, irc, msg, args):
+    def email(self, irc, msg, args):
         """<first name> <middle initial> <last name>
 
         Returns possible email address matches for the given name.
@@ -272,7 +272,7 @@ class OSU(callbacks.Privmsg):
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 
-    def osubuilding(self, irc, msg, args):
+    def building(self, irc, msg, args):
         """<building abbreviation>
 
         Returns the address and full name of an OSU building based on its

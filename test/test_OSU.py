@@ -34,14 +34,14 @@ from test import *
 class OSUTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('OSU',)
     def testOsuemail(self):
-        self.assertResponse('osuemail jeremiah fincher', 'fincher.8@osu.edu')
-        self.assertResponse('osuemail jeremiah d fincher', 'fincher.8@osu.edu')
+        self.assertResponse('osu email jeremiah fincher', 'fincher.8@osu.edu')
+        self.assertResponse('osu email jeremiah d fincher','fincher.8@osu.edu')
 
     def testOsubuilding(self):
-        self.assertRegexp('osubuilding DL', '^Dreese Lab')
-        self.assertRegexp('osubuilding Dl', '^Dreese Lab')
-        self.assertRegexp('osubuilding dL', '^Dreese Lab')
-        self.assertRegexp('osubuilding dl', '^Dreese Lab')
+        self.assertRegexp('osu building DL', '^Dreese Lab')
+        self.assertRegexp('osu building Dl', '^Dreese Lab')
+        self.assertRegexp('osu building dL', '^Dreese Lab')
+        self.assertRegexp('osu building dl', '^Dreese Lab')
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
