@@ -3,11 +3,17 @@
 import supybot
 
 import os
+import sys
+import os.path
+
+if sys.version_info < (2, 3, 0):
+    sys.stderr.write('This script requires Python 2.3 or newer.\n')
+    sys.exit(-1)
 
 from questions import *
 
 template = '''
-#!/usr/bin/env python
+#!%s
 
 ###
 # Copyright (c) 2002, Jeremiah Fincher
@@ -114,8 +120,9 @@ if __name__ == '__main__':
     else:
         threaded = 'pass'
 
+    python = os.path.normpath(sys.executable)
     fd = file(name + '.py', 'w')
-    fd.write(template % (name, name, className, threaded, name))
+    fd.write(template % (python, name, name, className, threaded, name))
     fd.close()
     print 'Your new plugin template is %s.py.' % name
 
