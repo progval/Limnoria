@@ -401,7 +401,11 @@ class Relay(callbacks.Plugin):
             hostmask = format(' (%s)', msg.prefix)
         else:
             hostmask = ''
-        s = format('%s%s has left on %s', msg.nick, hostmask, network)
+        if len(msg.args) > 1:
+            s = format('%s%s has left on %s (%s)',
+                       msg.nick, hostmask, network, msg.args[1])
+        else:
+            s = format('%s%s has left on %s', msg.nick, hostmask, network)
         m = self._msgmaker(channel, s)
         self._sendToOthers(irc, m)
 
