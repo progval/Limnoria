@@ -45,44 +45,45 @@ class FunctionsTestCase(SupyTestCase):
             channels = {'#foo': holder()}
         nick = 'foobar'
     def testStandardSubstitute(self):
+        f = plugins.standardSubstitute
         msg = ircmsgs.privmsg('#foo', 'filler', prefix='biff!quux@xyzzy')
-        s = plugins.standardSubstitute(self.irc, msg, '$rand')
+        s = f(self.irc, msg, '$rand')
         try:
             int(s)
         except ValueError:
             self.fail('$rand wasn\'t an int.')
-        s = plugins.standardSubstitute(self.irc, msg, '$randomInt')
+        s = f(self.irc, msg, '$randomInt')
         try:
             int(s)
         except ValueError:
             self.fail('$randomint wasn\'t an int.')
-        self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$botnick'),
+        self.assertEqual(f(self.irc, msg, '$botnick'),
                          self.irc.nick)
-        self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$who'),
+        self.assertEqual(f(self.irc, msg, '$who'),
                          msg.nick)
-        self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$WHO'),
+        self.assertEqual(f(self.irc, msg, '$WHO'),
                          msg.nick, 'stand. sub. not case-insensitive.')
-        self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$nick'),
+        self.assertEqual(f(self.irc, msg, '$nick'),
                          msg.nick)
-        self.assert_(plugins.standardSubstitute(self.irc, msg, '$randomdate'))
-        q = plugins.standardSubstitute(self.irc,msg,'$randomdate\t$randomdate')
+        self.assert_(f(self.irc, msg, '$randomdate'))
+        q = f(self.irc,msg,'$randomdate\t$randomdate')
         dl = q.split('\t')
         if dl[0] == dl[1]:
             self.fail ('Two $randomdates in the same string were the same')
-        q = plugins.standardSubstitute(self.irc, msg, '$randomint\t$randomint')
+        q = f(self.irc, msg, '$randomint\t$randomint')
         dl = q.split('\t')
         if dl[0] == dl[1]:
             self.fail ('Two $randomints in the same string were the same')
-        self.assert_(plugins.standardSubstitute(self.irc, msg, '$today'))
-        self.assert_(plugins.standardSubstitute(self.irc, msg, '$now'))
-        n = plugins.standardSubstitute(self.irc, msg, '$randnick')
+        self.assertNotEqual(f(self.irc, msg, '$today'), '$today')
+        self.assertNotEqual(f(self.irc, msg, '$now'), '$now')
+        n = f(self.irc, msg, '$randnick')
         self.failUnless(n in self.irc.state.channels['#foo'].users)
-        n = plugins.standardSubstitute(self.irc, msg, '$randomnick')
+        n = f(self.irc, msg, '$randomnick')
         self.failUnless(n in self.irc.state.channels['#foo'].users)
-        n = plugins.standardSubstitute(self.irc, msg, '$randomnick '*100)
+        n = f(self.irc, msg, '$randomnick '*100)
         L = n.split()
         self.failIf(all(L[0].__eq__, L), 'all $randomnicks were the same')
-        c = plugins.standardSubstitute(self.irc, msg, '$channel')
+        c = f(self.irc, msg, '$channel')
         self.assertEqual(c, msg.args[0])
 
 
