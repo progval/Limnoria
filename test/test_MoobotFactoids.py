@@ -193,6 +193,9 @@ if sqlite is not None:
             self.assertNotError('moo is foo')
             self.assertNotError('moo is also bar')
             self.assertResponse('moo', 'moo is foo, or bar')
+            self.assertNotError('moo is bar _is_ foo')
+            self.assertNotError('moo is bar is also foo')
+            self.assertResponse('moo is bar', 'moo is bar is foo, or foo')
 
         def testReplaceFactoid(self):
             self.assertNotError('moo is foo')
@@ -202,6 +205,9 @@ if sqlite is not None:
             self.assertResponse('moo', 'moo is baz')
             self.assertNotError('lock moo')
             self.assertError('no moo is qux')
+            self.assertNotError('foo is bar _is_ foo')
+            self.assertNotError('no foo is bar _is_ baz')
+            self.assertResponse('foo is bar', 'foo is bar is baz')
 
         def testRegexpNotCalledIfAlreadyHandled(self):
             self.assertResponse('echo foo is bar', 'foo is bar')

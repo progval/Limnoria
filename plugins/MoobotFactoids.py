@@ -284,7 +284,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(msg, conf.replySuccess)
 
     def augmentFactoid(self, irc, msg, match):
-        r"(.+) is also (.+)"
+        r"(.+?) is also (.+)"
         # Must be registered!
         try:
             id = ircdb.users.getUserId(msg.prefix)
@@ -314,7 +314,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(msg, conf.replySuccess)
 
     def replaceFactoid(self, irc, msg, match):
-        r"^no,?\s+(.+)\s+is\s+(.+)"
+        r"^no,?\s+(.+?)\s+is\s+(.+)"
         # Must be registered!
         try:
             id = ircdb.users.getUserId(msg.prefix)
@@ -322,6 +322,11 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, conf.replyNotRegistered)
             return
         key, new_fact = match.groups()
+        # These are okay, unless there's an _is_ in there, in which case
+        # we split on the leftmost one.
+        if '_is_' in match.group():
+            key, new_fact = map(str.strip, match.group().split('_is_', 1))
+            key = key.split(' ', 1)[1]  # Take out everything to first space
         cursor = self.db.cursor()
         # Check and make sure it's in the DB 
         cursor.execute("""SELECT locked_at, fact FROM factoids
