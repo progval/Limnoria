@@ -181,21 +181,22 @@ class SqliteQuoteGrabsDB(object):
     def search(self, channel, text):
         db = self._getDb(channel)
 	cursor = db.cursor()
-	cursor.execute("""SELECT id, quote FROM quotegrabs
+        text = '%' + text + '%'
+	cursor.execute("""SELECT id, nick, quote FROM quotegrabs
 	                  WHERE quote LIKE %s
 			  ORDER BY id DESC""", text)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
-        return [QuoteGrabsRecord(id, text=quote)
-                for (id, quote) in cursor.fetchall()]
+        return [QuoteGrabsRecord(id, text=quote, by=nick)
+                for (id, nick, quote) in cursor.fetchall()]
 
 QuoteGrabsDB = plugins.DB('QuoteGrabs', {'sqlite': SqliteQuoteGrabsDB})
 
 class QuoteGrabs(callbacks.Privmsg):
     """Add the help for "@help QuoteGrabs" here."""
-    def __init__(self):
+    def __init__(self, irc):
         self.__parent = super(QuoteGrabs, self)
-        self.__parent.__init__()
+        self.__parent.__init__(irc)
         self.db = QuoteGrabsDB()
 
     def doPrivmsg(self, irc, msg):
@@ -329,7 +330,7 @@ class QuoteGrabs(callbacks.Privmsg):
             L = []
             for record in records:
                 # strip the nick from the quote
-                quote = record.text.replace('<%s> ' % nick, '', 1)
+                quote = record.text.replace('<%s> ' % record.by, '', 1)
                 item = utils.str.ellipsisify('#%s: %s' % (record.id, quote),50)
                 L.append(item)
             irc.reply(utils.str.commaAndify(L))
@@ -337,8 +338,6 @@ class QuoteGrabs(callbacks.Privmsg):
             irc.error('No quotegrabs matching %s' % utils.str.quoted(text),
                        Raise=True)
     search = wrap(search, ['channeldb', 'text'])
-
-
 
 Class = QuoteGrabs
 

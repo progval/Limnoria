@@ -29,7 +29,7 @@
 
 from supybot.test import *
 
-class QuoteGrabsTestCase(PluginTestCase):
+class QuoteGrabsTestCase(ChannelPluginTestCase):
     plugins = ('QuoteGrabs',)
     def testQuoteGrab(self):
         testPrefix = 'foo!bar@baz'
@@ -101,6 +101,15 @@ class QuoteGrabsTestCase(PluginTestCase):
                                          prefix=testPrefix))
         self.assertNotError('grab foo')
         self.assertNotError('quotegrabs get 1')
+
+    def testSearch(self):
+        testPrefix= 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'test',
+                                         prefix=testPrefix))
+        self.assertError('quotegrabs search test')  # still none in db
+        self.assertNotError('grab foo')
+        self.assertNotError('quotegrabs search test')
+        
 
 class QuoteGrabsNonChannelTestCase(QuoteGrabsTestCase):
     config = { 'databases.plugins.channelSpecific' : False }
