@@ -92,18 +92,20 @@ class Misc(callbacks.Privmsg):
                     ambiguousCommands[command] = [cb.name() for cb in cbs]
             if ambiguousCommands:
                 if len(ambiguousCommands) == 1: # Common case.
-                    (command, cbs) = ambiguousCommands.popitem()
+                    (command, names) = ambiguousCommands.popitem()
+                    names.sort()
                     s = 'The command %r is available in the %s plugins.  '\
                         'Please specify the plugin whose command you ' \
                         'wish to call by using its name as a command ' \
-                        'before %r' % \
-                        (command, utils.commaAndify(cbs), command)
+                        'before calling it.' % \
+                        (command, utils.commaAndify(names), command)
                 else:
                     L = []
                     while ambiguousCommands:
-                        (command, cbs) = ambiguousCommands.popitem()
+                        (command, names) = ambiguousCommands.popitem()
+                        names.sort()
                         L.append('The command %r is available in the %s '
-                                 'plugins' % (command, utils.commaAndify(cbs)))
+                                 'plugins' %(command,utils.commaAndify(names)))
                     s = '%s; please specify from which plugins to ' \
                         'call these commands.' % '; '.join(L)
                 irc.queueMsg(callbacks.reply(msg, 'Error: ' + s))
@@ -185,15 +187,15 @@ class Misc(callbacks.Privmsg):
             if cb is not None:
                 command = callbacks.canonicalName(privmsgs.getArgs(args[1:]))
                 command = command.lstrip(conf.prefixChars)
+                name = ' '.join(args)
                 if hasattr(cb, 'isCommand') and cb.isCommand(command):
                     method = getattr(cb, command)
                     if hasattr(method, '__doc__') and method.__doc__ != None:
-                        irc.reply(msg, callbacks.getHelp(method))
+                        irc.reply(msg, callbacks.getHelp(method, name=name))
                     else:
                         irc.error(msg, 'That command has no help.')
                 else:
-                    irc.error(msg, 'There is no such command %s %s.' %
-                                   (args[0], command))
+                    irc.error(msg, 'There is no such command %s.' % name)
             else:
                 irc.error(msg, 'There is no such plugin %s' % args[0])
             return
@@ -202,10 +204,11 @@ class Misc(callbacks.Privmsg):
         command = command.lstrip(conf.prefixChars) 
         cbs = callbacks.findCallbackForCommand(irc, command)
         if len(cbs) > 1:
+            names = [cb.name() for cb in cbs]
+            names.sort()
             irc.error(msg, 'That command exists in the %s plugins.  '
                            'Please specify exactly which plugin command '
-                           'you want help with.'% \
-                           utils.commaAndify([cb.name() for cb in cbs]))
+                           'you want help with.'% utils.commaAndify(names))
             return
         elif not cbs:
             irc.error(msg, 'There is no such command %s.' % command)
@@ -213,7 +216,7 @@ class Misc(callbacks.Privmsg):
             cb = cbs[0]
             method = getattr(cb, command)
             if hasattr(method, '__doc__') and method.__doc__ is not None:
-                irc.reply(msg, callbacks.getHelp(method))
+                irc.reply(msg, callbacks.getHelp(method, name=command))
             else:
                 irc.error(msg, '%s has no help.' % command)
 
