@@ -143,6 +143,9 @@ class Quotes(DBHandler, callbacks.Privmsg):
         cursor.execute("""SELECT quote FROM quotes
                           ORDER BY random()
                           LIMIT 1""")
+	if cursor.rowcount != 1:
+            irc.error(msg, 'It seems that quote database is empty.')
+            return
         quote = cursor.fetchone()[0]
         irc.reply(msg, quote)
         return
