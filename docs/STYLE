@@ -66,3 +66,9 @@ debug, use debug.printf to do so, and leave those print statements in the code
 (perhaps commented out) so they can later be re-enabled.  Remember that once
 code is buggy, it tends to have more bugs, and you'll probably need those print
 statements again.
+
+SQL table names should be all-lowercase and include underscores to separate
+words.  This is because SQL itself is case-insensitive.
+
+SQL statements in code should put SQL words in ALL CAPS:
+  SELECT quote FROM quotes ORDER BY random() LIMIT 1
