@@ -1,3 +1,10 @@
+	* Changed the Relay plugin to rely only on the registry, allowing
+	it to start and join all networks and channels with no user/owner
+	interaction at all.  Also, removed the Relay.say and
+	Relay.reconnect commands, since both can be accomplished easily
+	using the Relay.command command in combination with
+	Owner.reconnect and Anonymous.say commands.
+	
 	* Added supybot.reply.withNoticeWhenPrivate, to make the bot
 	reply with a notice when it privately messages a user -- this
 	generally means that the user's client won't open a query window,

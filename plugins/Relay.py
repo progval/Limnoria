@@ -68,6 +68,10 @@ def configure(advanced):
     use the 'start' command followed by the 'connect' command.  Use the 'help'
     command to see how these two commands should be used.""")
 
+class Networks(registry.SpaceSeparatedListOf):
+    List = ircutils.IrcSet
+    Value = registry.String
+
 conf.registerPlugin('Relay')
 conf.registerChannelValue(conf.supybot.plugins.Relay, 'color',
     registry.Boolean(False, """Determines whether the bot will color relayed
@@ -78,19 +82,9 @@ conf.registerChannelValue(conf.supybot.plugins.Relay, 'topicSync',
 conf.registerGlobalValue(conf.supybot.plugins.Relay, 'channels',
     conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
     will relay in."""))
-
-ircs = ircutils.IrcDict()
-lastmsg = {} # Not IrcDict.  Doesn't map strings.
-ircstates = {} # Not IrcDict.  Doesn't map strings.
-abbreviations = {} # Not IrcDict.  Doesn't map strings.
-originalIrc = None
-
-def reload(x=None):
-    global ircs, ircstates, lastmsg, abbreviations, originalIrc
-    if x is None:
-        return (ircs, ircstates, lastmsg, abbreviations, originalIrc)
-    else:
-        (ircs, ircstates, lastmsg, abbreviations, originalIrc) = x
+conf.registerGlobalValue(conf.supybot.plugins.Relay, 'networks',
+    Networks('', """Determines what networks the bot will join in order to relay
+    between."""))
 
 class Relay(callbacks.Privmsg):
     noIgnore = True
@@ -98,29 +92,37 @@ class Relay(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self._whois = {}
-        self.ircs = ircs
-        self.started = False
+        self.ircs = []
         self.relayedMsgs = {}
-        self.lastmsg = lastmsg
-        self.ircstates = ircstates
-        self.abbreviations = abbreviations
+        self.lastmsg = {}
+        self.ircstates = {}
 
     def __call__(self, irc, msg):
-        if self.started:
-            try:
-                irc = self._getRealIrc(irc)
-                self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
-            finally:
-                self.lastmsg[irc] = msg
+        try:
+            irc = self._getRealIrc(irc)
+            if irc not in self.ircs:
+                self._addIrc(irc)
+            self.ircstates[irc].addMsg(irc, self.lastmsg[irc])
+        finally:
+            self.lastmsg[irc] = msg
         callbacks.Privmsg.__call__(self, irc, msg)
 
     def do376(self, irc, msg):
+        if not self.ircs:
+            name = self._getIrcName(irc)
+            self.log.info('Registering initial Irc as %s.', name)
+            self._connect(name, irc, serverPort=None, makeNew=False)
         L = []
         for channel in self.registryValue('channels'):
             if channel not in irc.state.channels:
                 L.append(channel)
         if L:
             irc.queueMsg(ircmsgs.joins(L))
+        for network in self.registryValue('networks'):
+            ircNames = map(self._getIrcName, self.ircs)
+            if network not in ircNames:
+                self.log.info('Starting relay connection to %s.', network)
+                self._connect(network, irc)
     do377 = do422 = do376
 
     def _getRealIrc(self, irc):
@@ -129,86 +131,83 @@ class Relay(callbacks.Privmsg):
         else:
             return irc.getRealIrc()
 
-    def start(self, irc, msg, args):
-        """<network abbreviation for current server>
+    def _getIrc(self, name):
+        for irc in self.ircs:
+            if self._getIrcName(irc) == name:
+                return irc
+        raise KeyError, name
 
-        This command is necessary to start the Relay plugin; the
-        <network abbreviation> is the abbreviation that the network the
-        bot is currently connected to should be shown as to other networks.
-        For instance, if the network abbreviation is 'oftc', then when
-        relaying messages from that network to other networks, the users
-        will show up as 'user@oftc'.
-        """
-        global originalIrc
-        realIrc = self._getRealIrc(irc)
-        originalIrc = realIrc
-        abbreviation = privmsgs.getArgs(args)
-        self.ircs[abbreviation] = realIrc
-        self.abbreviations[realIrc] = abbreviation
-        self.ircstates[realIrc] = copy.copy(realIrc.state)
-        self.lastmsg[realIrc] = ircmsgs.ping('this is just a fake message')
-        self.started = True
-        irc.replySuccess()
-    start = privmsgs.checkCapability(start, 'owner')
+    def _getIrcName(self, irc):
+        # We should allow abbreviations at some point.
+        return irc.network
 
     def connect(self, irc, msg, args):
-        """<network abbreviation> <host:port> (port defaults to 6667)
+        """<network> [<host:port>] (port defaults to 6667)
 
-        Connects to another network at <host:port>.  The network
-        abbreviation <network abbreviation> is used when relaying messages from
-        that network to other networks.
+        Connects to another network at <host:port>.  The network name is used
+        when relaying messages from that network to other networks.
         """
-        if not self.started:
-            irc.error('You must use the start command first.')
-            return
-        abbreviation, server = privmsgs.getArgs(args, required=2)
         realIrc = self._getRealIrc(irc)
-        if ':' in server:
-            (server, port) = server.split(':')
-            port = int(port)
+        (network, server) = privmsgs.getArgs(args, optional=1)
+        if not server:
+            server = None
         else:
-            port = 6667
-        newIrc = irclib.Irc(irc.nick, callbacks=realIrc.callbacks)
-        newIrc.state.history = realIrc.state.history
-        driver = drivers.newDriver((server, port), newIrc)
-        newIrc.driver = driver
-        self.ircs[abbreviation] = newIrc
-        self.abbreviations[newIrc] = abbreviation
-        self.ircstates[newIrc] = irclib.IrcState()
-        self.lastmsg[newIrc] = ircmsgs.ping('this is just a fake message')
+            if ':' in server:
+                (server, port) = server.split(':')
+                port = int(port)
+            else:
+                port = 6667
+        self._connect(network, realIrc, serverPort=(server, port))
         irc.replySuccess()
     connect = privmsgs.checkCapability(connect, 'owner')
 
-    def reconnect(self, irc, msg, args):
-        """<network>
+    def _addIrc(self, irc):
+        # Let's just be extra-special-careful here.
+        if irc not in self.ircs:
+            self.ircs.append(irc)
+        if irc not in self.ircstates:
+            self.ircstates[irc] = irclib.IrcState()
+        if irc not in self.lastmsg:
+            self.lastmsg[irc] = ircmsgs.ping('this is just a fake message')
 
-        Reconnects the bot to <network> when it has become disconnected.
-        """
-        network = privmsgs.getArgs(args)
+    def _connect(self, network, realIrc, serverPort=None, makeNew=True):
         try:
-            toReconnect = self.ircs[network]
-        except KeyError:
-            irc.error('I\'m not connected to %s.' % network)
-            return
-        toReeconnect.driver.reconnect()
-        irc.replySuccess()
-    reconnect = privmsgs.checkCapability(reconnect, 'owner')
+            group = conf.supybot.networks.get(network)
+            try:
+                (server, port) = group.server().split(':')
+                serverPort = (server, int(port))
+            except ValueError: # Unpack list of wrong size.
+                serverPort = (group.server(), 6667)
+        except registry.NonExistentRegistryEntry:
+            # XXX: This should be a real error.
+            if serverPort is None:
+                raise ValueError, '_connect requires a (server, port) if ' \
+                                  'the network is not registered.'
+            conf.registerNetwork(network, server=('%s:%s' % serverPort))
+        if makeNew:
+            self.log.info('Creating new Irc for relaying to %s.', network)
+            newIrc = irclib.Irc(network)
+            newIrc.state.history = realIrc.state.history
+            newIrc.callbacks = realIrc.callbacks
+            driver = drivers.newDriver(serverPort, newIrc)
+        else:
+            newIrc = realIrc
+        self._addIrc(newIrc)
+        networks = self.registryValue('networks')
+        networks.add(network)
+        # XXX: Should set the value here, but I'm lazy, this'll work for now.
 
     def disconnect(self, irc, msg, args):
         """<network>
 
         Disconnects and ceases to relay to and from the network represented by
-        the network abbreviation <network>.
+        the network <network>.
         """
-        if not self.started:
-            irc.error('You must use the start command first.')
-            return
         network = privmsgs.getArgs(args)
-        otherIrc = self.ircs[network]
+        otherIrc = self._getIrc(network)
         otherIrc.driver.die()
         world.ircs.remove(otherIrc)
-        del self.ircs[network]
-        del self.abbreviations[otherIrc]
+        self.ircs.remove(otherIrc) # Should we abstract this?
         irc.replySuccess()
     disconnect = privmsgs.checkCapability(disconnect, 'owner')
 
@@ -221,15 +220,12 @@ class Relay(callbacks.Privmsg):
         relay between those channels unless he's told to join both
         channels.
         """
-        if not self.started:
-            irc.error('You must use the start command first.')
-            return
         channel = privmsgs.getArgs(args)
         if not ircutils.isChannel(channel):
             irc.error('%r is not a valid channel.' % channel)
             return
-        self.registryValue('channels').add(ircutils.toLower(channel))
-        for otherIrc in self.ircs.itervalues():
+        self.registryValue('channels').add(channel)
+        for otherIrc in self.ircs: # Should we abstract this?
             if channel not in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.join(channel))
         irc.replySuccess()
@@ -242,15 +238,12 @@ class Relay(callbacks.Privmsg):
         will part from the channel on all networks in which it is on the
         channel.
         """
-        if not self.started:
-            irc.error('You must use the start command first.')
-            return
         channel = privmsgs.getArgs(args)
         if not ircutils.isChannel(channel):
             irc.error('%r is not a valid channel.' % channel)
             return
-        self.registryValue('channels').remove(ircutils.toLower(channel))
-        for otherIrc in self.ircs.itervalues():
+        self.registryValue('channels').remove(channel)
+        for otherIrc in self.ircs:
             if channel in otherIrc.state.channels:
                 otherIrc.queueMsg(ircmsgs.part(channel))
         irc.replySuccess()
@@ -261,14 +254,11 @@ class Relay(callbacks.Privmsg):
 
         Gives the bot <command> (with its associated <arg>s) on <network>.
         """
-        if not self.started:
-            irc.error('You must use the start command first.')
-            return
         if len(args) < 2:
             raise callbacks.ArgumentError
         network = args.pop(0)
         try:
-            otherIrc = self.ircs[network]
+            otherIrc = self._getIrc(network)
         except KeyError:
             irc.error('I\'m not currently on the network %r.' % network)
             return
@@ -277,29 +267,6 @@ class Relay(callbacks.Privmsg):
         self.Proxy(otherIrc, msg, args)
     command = privmsgs.checkCapability(command, 'admin')
 
-    def say(self, irc, msg, args):
-        """<network> [<channel>] <text>
-
-        Says <text> on <channel> (using the current channel if unspecified)
-        on <network>.
-        """
-        if not self.started:
-            irc.error('You must use the start command first.')
-            return
-        if not args:
-            raise callbacks.ArgumentError
-        network = args.pop(0)
-        channel = privmsgs.getChannel(msg, args)
-        text = privmsgs.getArgs(args)
-        if network not in self.ircs:
-            irc.error('I\'m not currently on %s.' % network)
-            return
-        if channel not in self.registryValue('channels'):
-            irc.error('I\'m not currently relaying to %s.' % channel)
-            return
-        self.ircs[network].queueMsg(ircmsgs.privmsg(channel, text))
-    say = privmsgs.checkCapability(say, 'admin')
-
     def nicks(self, irc, msg, args):
         """[<channel>] (only if not sent in the channel itself.)
 
@@ -307,25 +274,23 @@ class Relay(callbacks.Privmsg):
         the channel itself.  Returns the nicks of the people in the channel on
         the various networks the bot is connected to.
         """
-        if not self.started:
-            irc.error('You must use the start command first.')
-            return
         realIrc = self._getRealIrc(irc)
         channel = privmsgs.getChannel(msg, args)
         if channel not in self.registryValue('channels'):
-            irc.error('I\'m not relaying %s.' % channel)
+            irc.error('I\'m not relaying in %s.' % channel)
             return
         users = []
-        for (abbreviation, otherIrc) in self.ircs.iteritems():
+        for irc in self.ircs:
+            network = self._getIrcName(irc)
             ops = []
             halfops = []
             voices = []
             usersS = []
-            if abbreviation != self.abbreviations[realIrc]:
+            if network != self._getIrcName(realIrc):
                 try:
                     Channel = otherIrc.state.channels[channel]
                 except KeyError:
-                    s = 'Somehow I\'m not in %s on %s.'% (channel,abbreviation)
+                    s = 'Somehow I\'m not in %s on %s.'% (channel, network)
                     irc.error(s)
                     return
                 numUsers = 0
@@ -349,7 +314,7 @@ class Relay(callbacks.Privmsg):
                 usersS = ', '.join(ifilter(None, imap(', '.join,
                                   (ops,halfops,voices,usersS))))
                 users.append('%s (%s): %s' %
-                             (ircutils.bold(abbreviation), numUsers, usersS))
+                             (ircutils.bold(network), numUsers, usersS))
         users.sort()
         irc.reply('; '.join(users))
 
@@ -358,9 +323,6 @@ class Relay(callbacks.Privmsg):
 
         Returns the WHOIS response <network> gives for <nick>.
         """
-        if not self.started:
-            irc.error('You must use the start command first.')
-            return
         nickAtNetwork = privmsgs.getArgs(args)
         realIrc = self._getRealIrc(irc)
         try:
@@ -369,20 +331,21 @@ class Relay(callbacks.Privmsg):
                 irc.error('%s is not an IRC nick.' % nick)
                 return
             nick = ircutils.toLower(nick)
-        except ValueError:
-            if len(self.abbreviations) == 2:
+        except ValueError: # If split doesn't work, we get an unpack error.
+            if len(self.ircs) == 2:
                 # If there are only two networks being relayed, we can safely
                 # pick the *other* one.
                 nick = ircutils.toLower(nickAtNetwork)
-                for (keyIrc, net) in self.abbreviations.iteritems():
-                    if keyIrc != realIrc:
-                        network = net
+                for otherIrc in self.ircs:
+                    if otherIrc != realIrc:
+                        network = self._getIrcName(otherIrc)
             else:
                 raise callbacks.ArgumentError
-        if network not in self.ircs:
+        try:
+            otherIrc = self._getIrc(network)
+        except KeyError:
             irc.error('I\'m not on that network.')
             return
-        otherIrc = self.ircs[network]
         otherIrc.queueMsg(ircmsgs.whois(nick, nick))
         self._whois[(otherIrc, nick)] = (irc, msg, {})
 
@@ -394,6 +357,7 @@ class Relay(callbacks.Privmsg):
         else:
             self._whois[(irc, nick)][-1][msg.command] = msg
 
+    # These are all sent by a WHOIS response.
     do301 = do311
     do312 = do311
     do317 = do311
@@ -474,7 +438,7 @@ class Relay(callbacks.Privmsg):
             return
         (replyIrc, replyMsg, d) = self._whois[(irc, loweredNick)]
         del self._whois[(irc, loweredNick)]
-        s = 'There is no %s on %s.' % (nick, self.abbreviations[irc])
+        s = 'There is no %s on %s.' % (nick, self._getIrcName(irc))
         replyIrc.reply(s)
 
     do401 = do402
@@ -509,116 +473,108 @@ class Relay(callbacks.Privmsg):
 
     def _sendToOthers(self, irc, msg):
         assert msg.command == 'PRIVMSG' or msg.command == 'TOPIC'
-        for otherIrc in self.ircs.itervalues():
+        for otherIrc in self.ircs:
             if otherIrc != irc:
                 if msg.args[0] in otherIrc.state.channels:
                     self._addRelayedMsg(msg)
                     otherIrc.queueMsg(msg)
 
     def doPrivmsg(self, irc, msg):
-        if self.started and ircutils.isChannel(msg.args[0]):
+        (channel, text) = msg.args
+        if ircutils.isChannel(channel):
             irc = self._getRealIrc(irc)
-            channel = msg.args[0]
             if channel not in self.registryValue('channels'):
                 return
             if ircutils.isCtcp(msg) and \
-               not 'AWAY' in msg.args[1] and \
-               not 'ACTION' in msg.args[1]:
+               'AWAY' not in text and 'ACTION' not in text:
                 return
-            abbreviation = self.abbreviations[irc]
-            s = self._formatPrivmsg(msg.nick, abbreviation, msg)
+            network = self._getIrcName(irc)
+            s = self._formatPrivmsg(msg.nick, network, msg)
             m = ircmsgs.privmsg(channel, s)
             self._sendToOthers(irc, m)
 
     def doJoin(self, irc, msg):
-        if self.started:
-            irc = self._getRealIrc(irc)
-            channel = msg.args[0]
-            if channel not in self.registryValue('channels'):
-                return
-            abbreviation = self.abbreviations[irc]
-            s = '%s (%s) has joined on %s' % (msg.nick,msg.prefix,abbreviation)
-            m = ircmsgs.privmsg(channel, s)
-            self._sendToOthers(irc, m)
+        irc = self._getRealIrc(irc)
+        channel = msg.args[0]
+        if channel not in self.registryValue('channels'):
+            return
+        network = self._getIrcName(irc)
+        s = '%s (%s) has joined on %s' % (msg.nick, msg.prefix, network)
+        m = ircmsgs.privmsg(channel, s)
+        self._sendToOthers(irc, m)
 
     def doPart(self, irc, msg):
-        if self.started:
-            irc = self._getRealIrc(irc)
-            channel = msg.args[0]
-            if channel not in self.registryValue('channels'):
-                return
-            abbreviation = self.abbreviations[irc]
-            s = '%s (%s) has left on %s' % (msg.nick, msg.prefix, abbreviation)
-            m = ircmsgs.privmsg(channel, s)
-            self._sendToOthers(irc, m)
+        irc = self._getRealIrc(irc)
+        channel = msg.args[0]
+        if channel not in self.registryValue('channels'):
+            return
+        network = self._getIrcName(irc)
+        s = '%s (%s) has left on %s' % (msg.nick, msg.prefix, network)
+        m = ircmsgs.privmsg(channel, s)
+        self._sendToOthers(irc, m)
 
     def doMode(self, irc, msg):
-        if self.started:
-            irc = self._getRealIrc(irc)
-            channel = msg.args[0]
-            if channel not in self.registryValue('channels'):
-                return
-            abbreviation = self.abbreviations[irc]
-            s = 'mode change by %s on %s: %s' % \
-                (msg.nick, abbreviation, ' '.join(msg.args[1:]))
-            m = ircmsgs.privmsg(channel, s)
-            self._sendToOthers(irc, m)
+        irc = self._getRealIrc(irc)
+        channel = msg.args[0]
+        if channel not in self.registryValue('channels'):
+            return
+        network = self._getIrcName(irc)
+        s = 'mode change by %s on %s: %s' % \
+            (msg.nick, network, ' '.join(msg.args[1:]))
+        m = ircmsgs.privmsg(channel, s)
+        self._sendToOthers(irc, m)
 
     def doKick(self, irc, msg):
-        if self.started:
-            irc = self._getRealIrc(irc)
-            channel = msg.args[0]
-            if channel not in self.registryValue('channels'):
-                return
-            abbrev = self.abbreviations[irc]
-            if len(msg.args) == 3:
-                s = '%s was kicked by %s on %s (%s)' % \
-                    (msg.args[1], msg.nick, abbrev, msg.args[2])
-            else:
-                s = '%s was kicked by %s on %s' % \
-                    (msg.args[1], msg.nick, abbrev)
-            m = ircmsgs.privmsg(channel, s)
-            self._sendToOthers(irc, m)
+        irc = self._getRealIrc(irc)
+        channel = msg.args[0]
+        if channel not in self.registryValue('channels'):
+            return
+        network = self._getIrcName(irc)
+        if len(msg.args) == 3:
+            s = '%s was kicked by %s on %s (%s)' % \
+                (msg.args[1], msg.nick, network, msg.args[2])
+        else:
+            s = '%s was kicked by %s on %s' % \
+                (msg.args[1], msg.nick, network)
+        m = ircmsgs.privmsg(channel, s)
+        self._sendToOthers(irc, m)
 
     def doNick(self, irc, msg):
-        if self.started:
-            irc = self._getRealIrc(irc)
-            newNick = msg.args[0]
-            network = self.abbreviations[irc]
-            s = 'nick change by %s to %s on %s' % (msg.nick, newNick, network)
-            for channel in self.registryValue('channels'):
-                if newNick in irc.state.channels[channel].users:
-                    m = ircmsgs.privmsg(channel, s)
-                    self._sendToOthers(irc, m)
+        irc = self._getRealIrc(irc)
+        newNick = msg.args[0]
+        network = self._getIrcName(irc)
+        s = 'nick change by %s to %s on %s' % (msg.nick, newNick, network)
+        for channel in self.registryValue('channels'):
+            if newNick in irc.state.channels[channel].users:
+                m = ircmsgs.privmsg(channel, s)
+                self._sendToOthers(irc, m)
 
     def doTopic(self, irc, msg):
-        if self.started:
-            irc = self._getRealIrc(irc)
-            if msg.nick == irc.nick:
-                return
-            (channel, newTopic) = msg.args
-            if channel not in self.registryValue('channels'):
-                return
-            network = self.abbreviations[irc]
-            if self.registryValue('topicSync', channel):
-                m = ircmsgs.topic(channel, newTopic)
-            else:
-                s = 'topic change by %s on %s: %s' %(msg.nick,network,newTopic)
-                m = ircmsgs.privmsg(channel, s)
-            self._sendToOthers(irc, m)
+        irc = self._getRealIrc(irc)
+        if msg.nick == irc.nick:
+            return
+        (channel, newTopic) = msg.args
+        if channel not in self.registryValue('channels'):
+            return
+        network = self._getIrcName(irc)
+        if self.registryValue('topicSync', channel):
+            m = ircmsgs.topic(channel, newTopic)
+        else:
+            s = 'topic change by %s on %s: %s' % (msg.nick, network, newTopic)
+            m = ircmsgs.privmsg(channel, s)
+        self._sendToOthers(irc, m)
 
     def doQuit(self, irc, msg):
-        if self.started:
-            irc = self._getRealIrc(irc)
-            network = self.abbreviations[irc]
-            if msg.args:
-                s = '%s has quit %s (%s)' % (msg.nick, network, msg.args[0])
-            else:
-                s = '%s has quit %s.' % (msg.nick, network)
-            for channel in self.registryValue('channels'):
-                if msg.nick in self.ircstates[irc].channels[channel].users:
-                    m = ircmsgs.privmsg(channel, s)
-                    self._sendToOthers(irc, m)
+        irc = self._getRealIrc(irc)
+        network = self._getIrcName(irc)
+        if msg.args:
+            s = '%s has quit %s (%s)' % (msg.nick, network, msg.args[0])
+        else:
+            s = '%s has quit %s.' % (msg.nick, network)
+        for channel in self.registryValue('channels'):
+            if msg.nick in self.ircstates[irc].channels[channel].users:
+                m = ircmsgs.privmsg(channel, s)
+                self._sendToOthers(irc, m)
 
     def _isRelayedPrivmsg(self, msg):
         if msg in self.relayedMsgs:
@@ -628,37 +584,22 @@ class Relay(callbacks.Privmsg):
             return True
         else:
             return False
-##         abbreviations = self.abbreviations.values()
-##         rPrivmsg = re.compile(r'<[^@]+@(?:%s)>' % '|'.join(abbreviations))
-##         rAction = re.compile(r'\* [^/]+@(?:%s) ' % '|'.join(abbreviations))
-##         text = ircutils.stripColor(msg.args[1])
-##         return (rPrivmsg.match(text) or \
-##                 rAction.match(text) or \
-##                 'has left on ' in text or \
-##                 'has joined on ' in text or \
-##                 'has quit ' in text or \
-##                 'was kicked by' in text or \
-##                 text.startswith('mode change') or \
-##                 text.startswith('nick change') or \
-##                 text.startswith('topic change'))
 
     def outFilter(self, irc, msg):
-        if not self.started:
-            return msg
         irc = self._getRealIrc(irc)
         if msg.command == 'PRIVMSG':
             if not self._isRelayedPrivmsg(msg):
                 channel = msg.args[0]
                 if channel in self.registryValue('channels'):
-                    abbreviation = self.abbreviations[irc]
-                    s = self._formatPrivmsg(irc.nick, abbreviation, msg)
+                    network = self._getIrcName(irc)
+                    s = self._formatPrivmsg(irc.nick, network, msg)
                     relayMsg = ircmsgs.privmsg(channel, s)
                     self._sendToOthers(irc, relayMsg)
         elif msg.command == 'TOPIC' and len(msg.args) > 1 and \
              self.registryValue('topicSync', msg.args[0]):
             (channel, topic) = msg.args
             if channel in self.registryValue('channels'):
-                for otherIrc in self.ircs.itervalues():
+                for otherIrc in self.ircs:
                     if otherIrc != irc:
                         try:
                             if otherIrc.state.getTopic(channel) != topic:
