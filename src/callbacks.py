@@ -46,7 +46,6 @@ import ircmsgs
 import ircutils
 
 import debug
-import world
 
 ###
 # Privmsg: handles privmsg commands in a standard fashion.
@@ -77,6 +76,18 @@ def canonicalName(command):
     """
     return command.translate(string.ascii, '\t -_').lower()
 
+def reply(msg, s):
+    """Makes a reply to msg with the payload s"""
+    if ircutils.funkyArgument(s):
+        s = repr(s)
+    if ircutils.isChannel(msg.args[0]):
+        m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (msg.nick, s))
+    else:
+        m = ircmsgs.privmsg(msg.nick, s)
+    if len(m) > 450:
+        m = reply(msg, 'My reponse would\'ve been too long.')
+    return m
+        
 class RateLimiter:
     def __init__(self):
         self.lastRequest = {}
@@ -229,16 +240,7 @@ class IrcObjectProxy:
             if isinstance(self.irc, self.__class__):
                 self.irc.reply(msg, s)
             else:
-                if ircutils.funkyArgument(s):
-                    s = repr(s)
-                if ircutils.isChannel(msg.args[0]):
-                    m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (msg.nick, s))
-                else:
-                    m = ircmsgs.privmsg(msg.nick, s)
-                if len(m) > 511 - len(self.irc.prefix):
-                    self.reply(msg, 'My response would\'ve been too long.')
-                else:
-                    self.irc.queueMsg(m)
+                self.irc.queueMsg(reply(msg, s))
         else:
             self.args[self.counter] = s
             self.evalArgs()
@@ -259,6 +261,9 @@ class IrcObjectProxy:
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
+
+##     def __setattr__(self, attr, value):
+##         setattr(self.irc, attr, value)
 
 
 class Privmsg(irclib.IrcCallback):
@@ -311,6 +316,24 @@ class Privmsg(irclib.IrcCallback):
                 IrcObjectProxy(irc, msg, Tokenizer().tokenize(s))
 
 
+class IrcObjectProxyRegexp:
+    def __init__(self, irc):
+        self.irc = irc
+
+    def error(self, msg, s):
+        self.irc.queueMsg(reply(msg, 'Error: ' + s))
+
+    def reply(self, msg, s):
+        self.irc.queueMsg(reply(msg, s))
+
+    def __getattr__(self, attr):
+        print attr
+        return getattr(self.irc, attr)
+
+##     def __setattr__(self, attr, value):
+##         setattr(self.irc, attr, value)
+        
+
 class PrivmsgRegexp(Privmsg):
     """A class to allow a person to create regular expression callbacks.
 
@@ -355,4 +378,5 @@ class PrivmsgRegexp(Privmsg):
                             debug.debugMsg(s)
                     m = r.search(msg.args[1])
                     if m:
+                        irc = IrcObjectProxyRegexp(irc)
                         self.callCommand(value, (irc, msg, m))
