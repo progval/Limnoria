@@ -45,6 +45,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 import supybot.plugins as plugins
+import supybot.registry as registry
 import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
@@ -55,6 +56,12 @@ except ImportError:
                            'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 dbfilename = os.path.join(conf.supybot.directories.data(), 'Dunno.db')
+
+
+conf.registerPlugin('Dunno')
+conf.registerChannelValue(conf.supybot.plugins.Dunno, 'prefixNick',
+    registry.Boolean(True, """Determines whether the bot will prefix the nick
+    of the user giving an invalid command to the "dunno" response."""))
 
 class Dunno(callbacks.Privmsg):
     """This plugin was written initially to work with MoobotFactoids, the two
@@ -89,9 +96,10 @@ class Dunno(callbacks.Privmsg):
                           ORDER BY random()
                           LIMIT 1""")
         if cursor.rowcount != 0:
+            prefixName = self.registryValue('prefixNick', msg.args[0])
             dunno = cursor.fetchone()[0]
             dunno = plugins.standardSubstitute(irc, msg, dunno)
-            irc.reply(dunno, prefixName=False)
+            irc.reply(dunno, prefixName=prefixName)
 
     def add(self, irc, msg, args):
         """<text>
@@ -219,7 +227,9 @@ class Dunno(callbacks.Privmsg):
         """Returns the number of dunnos in the dunno database."""
         cursor = self.db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM dunnos""")
-        irc.reply(cursor.fetchone()[0])
+        num = int(cursor.fetchone()[0])
+        irc.reply('There %s %s in my database.' %
+                  (utils.be(num), utils.nItems('dunno', num)))
 
 
 
