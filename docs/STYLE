@@ -99,15 +99,46 @@ As a corrolary to the above, note that sometimes %f is used, but on
 when floats need to be formatted, e.g., %.2f.
 
 Use the log module to its fullest; when you need to print some values
-to debug, use self.log.debug to do so, and leave those print
-statements in the code (commented out) so they can later be
-re-enabled.  Remember that once code is buggy, it tends to have more
-bugs, and you'll probably need those print statements again.
+to debug, use self.log.debug to do so, and leave those statements in
+the code (commented out) so they can later be re-enabled.  Remember
+that once code is buggy, it tends to have more bugs, and you'll
+probably need those print statements again.
 
-While on the topic of logs, note that we do not use % with logged
-strings; we simple pass the format parameters as additional
-arguments.  The reason is simple: the logging module supports it, and
-it's cleaner (fewer tokens/glyphs) to read.
+While on the topic of logs, note that we do not use % (i.e.,
+str.__mod__) with logged strings; we simple pass the format
+parameters as additional arguments.  The reason is simple: the
+logging module supports it, and it's cleaner (fewer tokens/glyphs) to
+read.
+
+While still on the topic of logs, it's also important to pick the
+appropriate log level for given information.
+  DEBUG:    Appropriate to tell a programmer *how* we're doing
+            something (i.e., debugging printfs, basically).  If
+	    you're trying to figure out why your code doesn't work,
+	    DEBUG is the new printf -- use that, and leave the
+	    statements in your code.
+  INFO:     Appropriate to tell a user *what* we're doing, when what
+            we're doing isn't important for the user to pay attention
+	    to.  A user who likes to keep up with things should enjoy
+	    watching our logging at the INFO level; it shouldn't be
+	    too low-level, but it should give enough information that
+	    it keeps him relatively interested at peak times.
+  WARNING:  Appropriate to tell a user when we're doing something
+            that he really ought to pay attention to.  Users should
+	    see WARNING and think, "Hmm, should I tell the Supybot
+	    developers about this?"  Later, he should decide not to,
+	    but it should give the user a moment to pause and think
+	    about what's actually happening with his bot.
+  ERROR:    Appropriate to tell a user when something has gone wrong.
+            Uncaught exceptions are ERRORs.  Conditions that we
+            absolutely want to hear about should be errors.  Things
+            that should *scare* the user should be errors.
+  CRITICAL: Not really appropriate.  I can think of no absolutely
+            critical issue yet encountered in Supybot; the only
+            possible thing I can imagine is to notify the user that
+            the partition on which Supybot is running has filled up.
+            That would be a CRITICAL condition, but it would also be
+            hard to log :)
 
 All plugins should have test cases written for them.  Even if it
 doesn't actually test anything but just exists, it's good to have the
