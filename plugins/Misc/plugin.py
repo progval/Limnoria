@@ -510,7 +510,7 @@ class Misc(callbacks.Privmsg):
             head = 'The %s plugin' % cb.name()
             author = 'has not been claimed by an author'
             conjunction = 'and'
-            contrib = 'has no contributors listed'
+            contrib = 'has no contributors listed.'
             hasAuthor = False
             hasContribs = False
             if getattr(module, '__author__', None):
@@ -530,7 +530,7 @@ class Misc(callbacks.Privmsg):
                                      len(contribs))
                     hasContribs = True
                 elif hasAuthor:
-                    contrib = 'has no additional contributors listed'
+                    contrib = 'has no additional contributors listed.'
             if hasContribs and not hasAuthor:
                 conjunction = 'but'
             return ' '.join([head, author, conjunction, contrib])
@@ -543,13 +543,13 @@ class Misc(callbacks.Privmsg):
             authorInfo = getattr(supybot.authors, nick, None)
             if not authorInfo:
                 return 'The nick specified (%s) is not a registered ' \
-                       'contributor' % nick
+                       'contributor.' % nick
             fullName = utils.web.mungeEmail(str(authorInfo))
             contributions = []
             if hasattr(module, '__contributors__'):
                 if authorInfo not in module.__contributors__:
                     return 'The %s plugin does not have \'%s\' listed as a ' \
-                           'contributor' % (cb.name(), nick)
+                           'contributor.' % (cb.name(), nick)
                 contributions = module.__contributors__[authorInfo]
             if getattr(module, '__author__', False) == authorInfo:
                 isAuthor = True
@@ -564,17 +564,17 @@ class Misc(callbacks.Privmsg):
             if nonCommands:
                 results.append(format('the %L', nonCommands))
             if results and isAuthor:
-                return format('%s wrote the %s plugin and also contributed %L',
-                              (fullName, cb.name(), results))
+                return format(
+                        '%s wrote the %s plugin and also contributed %L.',
+                        (fullName, cb.name(), results))
             elif results and not isAuthor:
-                return format('%s contributed %L to the %s plugin',
+                return format('%s contributed %L to the %s plugin.',
                               fullName, results, cb.name())
             elif isAuthor and not results:
                 return '%s wrote the %s plugin' % (fullName, cb.name())
-            # XXX Does this ever actually get reached?  If so, the string
-            # formatting needs to be fixed.
+            # XXX Does this ever actually get reached?
             else:
-                return '%s has no listed contributions for the %s plugin %s' %\
+                return '%s has no listed contributions for the %s plugin.' % \
                     (fullName, cb.name())
         # First we need to check and see if the requested plugin is loaded
         module = sys.modules[cb.__class__.__module__]
