@@ -107,9 +107,9 @@ class AutoMode(callbacks.Privmsg):
                     irc.queueMsg(msgmaker(channel, msg.nick))
                     raise Continue # Even if fallthrough, let's only do one.
                 elif not fallthrough:
-                    self.log.info('%s has %s, but supybot.plugins.AutoMode.%s '
-                                  'is not enabled in %s, refusing to fall '
-                                  'through.', msg.prefix, cap, type, channel)
+                    self.log.debug('%s has %s, but supybot.plugins.AutoMode.%s'
+                                   ' is not enabled in %s, refusing to fall '
+                                   'through.', msg.prefix, cap, type, channel)
                     raise Continue
         try:
             do('op')
@@ -132,7 +132,7 @@ class AutoMode(callbacks.Privmsg):
                 schedule.addEvent(unban, time.time()+period)
             irc.queueMsg(ircmsgs.ban(channel, msg.prefix))
             irc.queueMsg(ircmsgs.kick(channel, msg.nick))
-                
+
 
 Class = AutoMode
 
