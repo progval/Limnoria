@@ -759,9 +759,9 @@ class PrivmsgRegexp(Privmsg):
                     debug.msg(s)
         self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
 
-    def callCommand(self, irc, msg, *L):
+    def callCommand(self, method, irc, msg, *L):
         try:
-            Privmsg.callCommand(self, irc, msg, *L)
+            Privmsg.callCommand(self, method, irc, msg, *L)
         except Exception, e:
             debug.recoverableException()
             irc.error(msg, debug.exnToString(e))
@@ -784,7 +784,8 @@ class PrivmsgRegexp(Privmsg):
                     self.rateLimiter.put(msg)
                     msg = self.rateLimiter.get()
                 if msg:
-                    self.callCommand(method, irc, msg, m)
+                    proxy = IrcObjectProxyRegexp(irc)
+                    self.callCommand(method, proxy, msg, m)
 
 
 class PrivmsgCommandAndRegexp(Privmsg):
