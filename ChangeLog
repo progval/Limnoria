@@ -20,6 +20,9 @@
 	* Fixed a bug that would prevent the bot from quitting except via
 	multiple Ctrl-Cs.
 
+	* Fixed some mis-interaction between the Karma plugin and the
+	Infobot plugin.
+
 	* Fixed RSS's announcements.
 
 	* Fixed bug in Later whereby no more than one message could be
