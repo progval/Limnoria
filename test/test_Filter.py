@@ -67,6 +67,9 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
         for s in nicks[:10]: # 10 is probably enough.
             self.assertResponse('rot13 [rot13 %s]' % s, s)
 
+    def testRot13HandlesNonAsciiStuff(self):
+        self.assertNotError('rot13 \xe4')
+
     def testHexlifyUnhexlify(self):
         for s in nicks[:10]: # 10, again, is probably enough.
             self.assertResponse('unhexlify [hexlify %s]' % s, s)
