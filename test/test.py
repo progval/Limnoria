@@ -169,19 +169,19 @@ class PluginTestCase(unittest.TestCase):
         
     def assertResponse(self, query, expectedResponse):
         m = self._feedMsg(query)
-        self.failUnless(m)
+        self.failUnless(m, 'query %r returned None.' % query)
         self.assertEqual(m.args[1], expectedResponse,
                          '%r != %r' % (expectedResponse, m.args[1]))
 
     def assertRegexp(self, query, regexp):
         m = self._feedMsg(query)
-        self.failUnless(m)
+        self.failUnless(m, 'query %r returned None.' % query)
         self.failUnless(re.search(regexp, m.args[1]),
                         '%r does not match %r' % (m.args[1], regexp))
 
     def assertNotRegexp(self, query, regexp):
         m = self._feedMsg(query)
-        self.failUnless(m)
+        self.failUnless(m, 'query %r returned None.' % query)
         self.failUnless(re.search(regexp, m.args[1]) is None,
                         '%r matched %r' % (m.args[1], regexp))
 
@@ -190,7 +190,7 @@ class PluginTestCase(unittest.TestCase):
         total = len(regexps)*self.timeout
         while regexps and time.time() - started < total:
             m = self._feedMsg(query)
-            self.failUnless(m, msg)
+            self.failUnless(m, 'query %r returned None' % query)
             regexp = regexps.pop(0)
             self.failUnless(re.search(regexp, m.args[1]),
                             '%r does not match %r' % (m.args[1], regexp))
@@ -202,7 +202,7 @@ class PluginTestCase(unittest.TestCase):
         while len(responses) < len(expectedResponses) and \
                   time.time() - started > len(expectedResponses)*self.timeout:
             m = self._feedMsg(query)
-            self.failUnless(m, 'query %r timed out' % query)
+            self.failUnless(m, 'query %r returned None' % query)
             responses.append(m)
         self.assertEqual(len(expectedResponses), len(responses))
         for (m, expected) in zip(responses, expectedResponses):
