@@ -116,7 +116,7 @@ class Later(callbacks.Privmsg):
             if maximum and len(notes) >= maximum:
                 raise ValueError
             else:
-                notes.append[(at, whence, text)]
+                notes.append((at, whence, text))
         except KeyError:
             self.notes[nick] = [(at, whence, text)]
         if '?' in nick or '*' in nick and nick not in self.wildcards:
