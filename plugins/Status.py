@@ -46,7 +46,7 @@ from itertools import islice, ifilter, imap
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 

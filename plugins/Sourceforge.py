@@ -47,7 +47,7 @@ import rssparser
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.plugins as plugins
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -125,6 +125,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _regexps =(_resolution, _submitDate, _submitted, _assigned, _priority,
                _status)
     _statusOpt = {'any':100, 'open':1, 'closed':2, 'deleted':3, 'pending':4}
+    _optDict = {'any':'', 'open':'', 'closed':'', 'deleted':'', 'pending':''}
 
     _projectURL = 'http://sourceforge.net/projects/'
     _trackerURL = 'http://sourceforge.net/support/tracker.php?aid='
@@ -230,42 +231,44 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         except webutils.WebError, e:
             raise TrackerError, str(e)
 
-    def bug(self, irc, msg, args):
+    def bug(self, irc, msg, args, id):
         """<id>
 
         Returns a description of the bug with id <id>.  Really, this is
         just a wrapper for the tracker command; it won't even complain if the
         <id> you give isn't a bug.
         """
-        self.tracker(irc, msg, args)
-        
-    def patch(self, irc, msg, args):
+        self.tracker(irc, msg, args, id)
+    bug = wrap(bug, [('id', 'bug')])
+
+    def patch(self, irc, msg, args, id):
         """<id>
 
         Returns a description of the patch with id <id>.  Really, this is
         just a wrapper for the tracker command; it won't even complain if the
         <id> you give isn't a patch.
         """
-        self.tracker(irc, msg, args)
-        
-    def rfe(self, irc, msg, args):
+        self.tracker(irc, msg, args, id)
+    patch = wrap(patch, [('id', 'patch')])
+
+    def rfe(self, irc, msg, args, id):
         """<id>
 
         Returns a description of the rfe with id <id>.  Really, this is
         just a wrapper for the tracker command; it won't even complain if the
         <id> you give isn't an rfe.
         """
-        self.tracker(irc, msg, args)
-        
-    def tracker(self, irc, msg, args):
+        self.tracker(irc, msg, args, id)
+    rfe = wrap(rfe, [('id', 'rfe')])
+
+    def tracker(self, irc, msg, args, id):
         """<id>
 
         Returns a description of the tracker with id <id> and the corresponding
         url.
         """
-        num = privmsgs.getArgs(args)
         try:
-            url = '%s%s' % (self._trackerURL, num)
+            url = '%s%s' % (self._trackerURL, id)
             resp = self._getTrackerInfo(url)
             if resp is None:
                 irc.error('Invalid Tracker page snarfed: %s' % url)
@@ -273,17 +276,15 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply('%s <%s>' % (resp, url))
         except TrackerError, e:
             irc.error(str(e))
+    tracker = wrap(tracker, [('id', 'tracker')])
 
     _trackerLink = {'bugs': re.compile(r'"([^"]+)">Bugs'),
                     'rfes': re.compile(r'"([^"]+)">RFE'),
                     'patches': re.compile(r'"([^"]+)">Patches'),
                    }
-    def _trackers(self, irc, args, msg, tracker):
-        (optlist, rest) = getopt.getopt(args, '', self._statusOpt.keys())
-        project = privmsgs.getArgs(rest, required=0, optional=1)
+    def _trackers(self, irc, args, msg, optlist, project, tracker):
         status = 'open'
         for (option, _) in optlist:
-            option = option.lstrip('-').lower()
             if option in self._statusOpt:
                 status = option
         try:
@@ -307,43 +308,44 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             return
         irc.reply(self._getTrackerList(url))
 
-    def bugs(self, irc, msg, args):
+    def bugs(self, irc, msg, args, optlist, project):
         """[--{any,open,closed,deleted,pending}] [<project>]
 
         Returns a list of the most recent bugs filed against <project>.
         <project> is not needed if there is a default project set.  Search
         defaults to open bugs.
         """
-        self._trackers(irc, args, msg, 'bugs')
+        self._trackers(irc, args, msg, optlist, project, 'bugs')
+    bugs = wrap(bugs, [getopts(_optDict), additional('text', '')])
 
-    def rfes(self, irc, msg, args):
+    def rfes(self, irc, msg, args, optlist, project):
         """[--{any,open,closed,deleted,pending}] [<project>]
 
         Returns a list of the most recent rfes filed against <project>.
         <project> is not needed if there is a default project set.  Search
         defaults to open rfes.
         """
-        self._trackers(irc, args, msg, 'rfes')
+        self._trackers(irc, args, msg, optlist, project, 'rfes')
+    rfes = wrap(rfes, [getopts(_optDict), additional('text', '')])
 
-    def patches(self, irc, msg, args):
+    def patches(self, irc, msg, args, optlist, project):
         """[--{any,open,closed,deleted,pending}] [<project>]
 
         Returns a list of the most recent patches filed against <project>.
         <project> is not needed if there is a default project set.  Search
         defaults to open patches.
         """
-        self._trackers(irc, args, msg, 'patches')
+        self._trackers(irc, args, msg, optlist, project, 'patches')
+    patches = wrap(patches, [getopts(_optDict), additional('text', '')])
 
     _intRe = re.compile(r'(\d+)')
     _percentRe = re.compile(r'([\d.]+%)')
-    def stats(self, irc, msg, args):
+    def stats(self, irc, msg, args, project):
         """[<project>]
 
         Returns the current statistics for <project>.  <project> is not needed
         if there is a default project set.
         """
-        project = privmsgs.getArgs(args, optional=1, required=0)
-        project = project.lower() # To make sure it's the UNIX name.
         url = 'http://sourceforge.net/' \
               'export/rss2_projsummary.php?project=' + project
         results = rssparser.parse(url)
@@ -383,7 +385,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 (x.patchesOpen, x.patchesTotal) = gets(self._intRe, title)
             elif 'Tracker: Feature' in title:
                 (x.rfesOpen, x.rfesTotal) = gets(self._intRe, title)
-                
         irc.reply('%s has %s, '
                   'is %s active (ranked %s), '
                   'has had %s (%s today), '
@@ -396,7 +397,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                    utils.nItems('bug', x.bugsOpen, 'open'), x.bugsTotal,
                    utils.nItems('rfe', x.rfesOpen, 'open'), x.rfesTotal,
                    utils.nItems('patch',x.patchesOpen, 'open'), x.patchesTotal))
-                
+    stats = wrap(stats, ['lowered'])
+
     _totbugs = re.compile(r'Bugs</a>\s+?\( <b>([^<]+)</b>', re.S | re.I)
     def _getNumBugs(self, project):
         text = webutils.getUrl('%s%s' % (self._projectURL, project))
@@ -464,27 +466,26 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         else:
             irc.error('Could not find RFE statistics.')
 
-    def fight(self, irc, msg, args):
-        """[--{bugs,rfes}] [--{open,closed}] <project name> <project name>
+    def fight(self, irc, msg, args, optlist, projects):
+        """[--{bugs,rfes}] [--{open,closed}] <project name> <project name> \
+        [<project name> ...]
 
         Returns the projects, in order, from greatest number of bugs to least.
         Defaults to bugs and open.
         """
         search = self._getNumBugs
         type = 0
-        (optlist, rest) = getopt.getopt(args, '',
-                                        ['bugs', 'rfes', 'open', 'closed'])
         for (option, _) in optlist:
-            if option == '--bugs':
+            if option == 'bugs':
                 search = self._getNumBugs
-            if option == '--rfes':
+            if option == 'rfes':
                 search = self._getNumRfes
-            if option == '--open':
+            if option == 'open':
                 type = 0
-            if option == '--closed':
+            if option == 'closed':
                 type = 1
         results = []
-        for proj in args:
+        for proj in projects:
             num = search(proj)
             if num:
                 results.append((int(num.split('/')[type].split()[0]), proj))
@@ -492,6 +493,8 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         results.reverse()
         s = ', '.join(['\'%s\': %s' % (s, i) for (i, s) in results])
         irc.reply(s)
+    fight = wrap(fight, [getopts({'bugs':'','rfes':'','open':'','closed':''}),
+                         many('text')])
 
     def sfSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/" \
