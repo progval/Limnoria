@@ -44,6 +44,10 @@ import sgmllib
 import textwrap
 import htmlentitydefs
 
+def normalizeWhitespace(s):
+    """Normalizes the whitespace in a string; \s+ becomes one space."""
+    return ' '.join(s.split())
+
 class HtmlToText(sgmllib.SGMLParser):
     """Taken from some eff-bot code on c.l.p."""
     entitydefs = htmlentitydefs.entitydefs
@@ -63,7 +67,7 @@ class HtmlToText(sgmllib.SGMLParser):
 
     def getText(self):
         text = ''.join(self.data).strip()
-        return ' '.join(text.split()) # normalize whitespace
+        return normalizeWhitespace(text)
 
 def htmlToText(s, tagReplace=' '):
     """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
@@ -301,5 +305,6 @@ def be(i):
         return 'is'
     else:
         return 'are'
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -157,5 +157,11 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(utils.unCommaThe('foo bar, the'), 'the foo bar')
         self.assertEqual(utils.unCommaThe('foo bar, The'), 'The foo bar')
         self.assertEqual(utils.unCommaThe('foo bar,the'), 'the foo bar')
+
+    def testNormalizeWhitespace(self):
+        self.assertEqual(utils.normalizeWhitespace('foo   bar'), 'foo bar')
+        self.assertEqual(utils.normalizeWhitespace('foo\nbar'), 'foo bar')
+        self.assertEqual(utils.normalizeWhitespace('foo\tbar'), 'foo bar')
+        
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
