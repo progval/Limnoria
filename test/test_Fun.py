@@ -44,7 +44,7 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
             m = self.getMsg('roulette', frm='someoneElse')
             if m.command == 'PRIVMSG':
                 self.failUnless(self._nonKickRe.search(m.args[1]),
-                                'Got a PRIVMSG without bang|click|spin in it.')
+                                'Got a msg without bang|click|spin: %r' % m)
             elif m.command == 'KICK':
                 sawKick = True
                 self.failUnless('bang' in m.args[2].lower(),

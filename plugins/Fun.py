@@ -47,9 +47,9 @@ from itertools import imap
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import wrap
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
-import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.webutils as webutils
 import supybot.callbacks as callbacks
@@ -83,88 +83,71 @@ class Fun(callbacks.Privmsg):
         """
         irc.reply('pong', prefixName=False)
 
-    def hexip(self, irc, msg, args):
+    def hexip(self, irc, msg, args, ip):
         """<ip>
 
         Returns the hexadecimal IP for that IP.
         """
-        ip = privmsgs.getArgs(args)
-        if not utils.isIP(ip):
-            irc.error('%r is not a valid IP.' % ip)
-            return
         quads = ip.split('.')
         ret = ""
         for quad in quads:
             i = int(quad)
             ret += '%02x' % i
         irc.reply(ret.upper())
+    hexip = wrap(hexip, ['ip'])
 
-    def ord(self, irc, msg, args):
+    def ord(self, irc, msg, args, letter):
         """<letter>
 
         Returns the 8-bit value of <letter>.
         """
-        letter = privmsgs.getArgs(args)
-        if len(letter) != 1:
-            irc.error('Letter must be of length 1 (for obvious reasons)')
-        else:
-            irc.reply(str(ord(letter)))
+        irc.reply(str(ord(letter)))
+    ord = wrap(ord, ['letter'])
 
-    def chr(self, irc, msg, args):
+    def chr(self, irc, msg, args, i):
         """<number>
 
         Returns the character associated with the 8-bit value <number>
         """
         try:
-            i = privmsgs.getArgs(args)
-            if i.startswith('0x'):
-                base = 16
-            elif i.startswith('0b'):
-                base = 2
-                i = i[2:]
-            elif i.startswith('0'):
-                base = 8
-            else:
-                base = 10
-            i = int(i, base)
             irc.reply(chr(i))
         except ValueError:
             irc.error('That number doesn\'t map to an 8-bit character.')
+    chr = wrap(chr, ['int'])
 
-    def encode(self, irc, msg, args):
+    def encode(self, irc, msg, args, encoding, text):
         """<encoding> <text>
 
         Returns an encoded form of the given text; the valid encodings are
         available in the documentation of the Python codecs module:
         <http://www.python.org/doc/lib/node127.html>.
         """
-        encoding, text = privmsgs.getArgs(args, required=2)
         try:
             irc.reply(text.encode(encoding))
         except LookupError:
-            irc.error('There is no such encoding %r' % encoding)
+            irc.errorInvalid('encoding', encoding)
+    encode = wrap(encode, ['something', 'text'])
 
-    def decode(self, irc, msg, args):
+    def decode(self, irc, msg, args, encoding, text):
         """<encoding> <text>
 
         Returns an un-encoded form of the given text; the valid encodings are
         available in the documentation of the Python codecs module:
         <http://www.python.org/doc/lib/node127.html>.
         """
-        encoding, text = privmsgs.getArgs(args, required=2)
         try:
             irc.reply(text.decode(encoding).encode('utf-8'))
         except LookupError:
-            irc.error('There is no such encoding %r' % encoding)
+            irc.errorInvalid('encoding', encoding)
+    decode = wrap(decode, ['something', 'text'])
 
-    def xor(self, irc, msg, args):
+    def xor(self, irc, msg, args, password, text):
         """<password> <text>
 
         Returns <text> XOR-encrypted with <password>.  See
         http://www.yoe.org/developer/xor.html for information about XOR
         encryption.
         """
-        (password, text) = privmsgs.getArgs(args, 2)
         passwordlen = len(password)
         i = 0
         ret = []
@@ -172,56 +155,57 @@ class Fun(callbacks.Privmsg):
             ret.append(chr(ord(c) ^ ord(password[i])))
             i = (i + 1) % passwordlen
         irc.reply(''.join(ret))
+    xor = wrap(xor, ['something', 'text'])
 
-    def mimetype(self, irc, msg, args):
+    def mimetype(self, irc, msg, args, filename):
         """<filename>
 
         Returns the mime type associated with <filename>
         """
-        filename = privmsgs.getArgs(args)
         (type, encoding) = mimetypes.guess_type(filename)
         if type is not None:
             irc.reply(type)
         else:
             s = 'I couldn\'t figure out that filename.'
             irc.reply(s)
+    mimetype = wrap(mimetype, ['something'])
 
-    def md5(self, irc, msg, args):
+    def md5(self, irc, msg, args, text):
         """<text>
 
         Returns the md5 hash of a given string.  Read
         http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more information
         about md5.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(md5.md5(text).hexdigest())
+    md5 = wrap(md5, ['text'])
 
-    def sha(self, irc, msg, args):
+    def sha(self, irc, msg, args, text):
         """<text>
 
         Returns the SHA hash of a given string.  Read
         http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more information
         about SHA.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(sha.sha(text).hexdigest())
+    sha = wrap(sha, ['text'])
 
-    def urlquote(self, irc, msg, args):
+    def urlquote(self, irc, msg, args, text):
         """<text>
 
         Returns the URL quoted form of the text.
         """
-        text = privmsgs.getArgs(args)
         irc.reply(webutils.urlquote(text))
+    urlquote = wrap(urlquote, ['text'])
 
-    def urlunquote(self, irc, msg, args):
+    def urlunquote(self, irc, msg, args, text):
         """<text>
 
         Returns the text un-URL quoted.
         """
-        text = privmsgs.getArgs(args)
         s = webutils.urlunquote(text)
         irc.reply(s)
+    urlunquote = wrap(urlunquote, ['text'])
 
     def coin(self, irc, msg, args):
         """takes no arguments
@@ -232,30 +216,28 @@ class Fun(callbacks.Privmsg):
             irc.reply('heads')
         else:
             irc.reply('tails')
+    coin = wrap(coin)
 
-    _dicere = re.compile(r'(\d+)d(\d+)')
-    def dice(self, irc, msg, args):
+    def dice(self, irc, msg, args, m):
         """<dice>d<sides>
 
         Rolls a die with <sides> number of sides <dice> times.
         For example, 2d6 will roll 2 six-sided dice; 10d10 will roll 10
         ten-sided dice.
         """
-        arg = privmsgs.getArgs(args)
-        m = re.match(self._dicere, arg)
-        if m:
-            (dice, sides) = imap(int, m.groups())
-            if dice > 6:
-                irc.error('You can\'t roll more than 6 dice.')
-            elif sides > 100:
-                irc.error('Dice can\'t have more than 100 sides.')
-            else:
-                L = [0] * dice
-                for i in xrange(dice):
-                    L[i] = random.randrange(1, sides+1)
-                irc.reply(utils.commaAndify([str(x) for x in L]))
+        (dice, sides) = imap(int, m.groups())
+        if dice > 6:
+            irc.error('You can\'t roll more than 6 dice.')
+        elif sides > 100:
+            irc.error('Dice can\'t have more than 100 sides.')
         else:
-            irc.error('Dice must be of the form <dice>d<sides>')
+            L = [0] * dice
+            for i in xrange(dice):
+                L[i] = random.randrange(1, sides+1)
+            irc.reply(utils.commaAndify([str(x) for x in L]))
+    _dicere = re.compile(r'^(\d+)d(\d+)$')
+    dice = wrap(dice, [('matches', _dicere,
+                        'Dice must be of the form <dice>d<sides>')])
 
     def objects(self, irc, msg, args):
         """takes no arguments
@@ -294,42 +276,34 @@ class Fun(callbacks.Privmsg):
                    (len(objs), modules, classes, functions,
                     dicts, lists, tuples, strings, refcounts)
         irc.reply(response)
+    objects = wrap(objects)
 
-    def levenshtein(self, irc, msg, args):
+    def levenshtein(self, irc, msg, args, s1, s2):
         """<string1> <string2>
 
         Returns the levenshtein distance (also known as the "edit distance"
         between <string1> and <string2>)
         """
-        (s1, s2) = privmsgs.getArgs(args, required=2)
         max = self.registryValue('levenshtein.max')
         if len(s1) > max or len(s2) > max:
             irc.error('Levenshtein distance is a complicated algorithm, try '
                       'it with some smaller inputs.')
         else:
             irc.reply(str(utils.distance(s1, s2)))
+    levenshtein = wrap(levenshtein, ['text', 'text'])
 
-    def soundex(self, irc, msg, args):
+    def soundex(self, irc, msg, args, text, length):
         """<string> [<length>]
 
         Returns the Soundex hash to a given length.  The length defaults to
         4, since that's the standard length for a soundex hash.  For unlimited
         length, use 0.
         """
-        (s, length) = privmsgs.getArgs(args, optional=1)
-        if length:
-            try:
-                length = int(length)
-            except ValueError:
-                irc.error('%r isn\'t a valid length.' % length)
-                return
-        else:
-            length = 4
-        irc.reply(utils.soundex(s, length))
+        irc.reply(utils.soundex(text, length))
+    soundex = wrap(soundex, ['text', ('?int', 4)])
 
     # The list of words and algorithm are pulled straight the mozbot
-    # MagicEightBall.bm module.
-    # http://lxr.mozilla.org/mozilla/source/webtools/mozbot/BotModules/MagicEightball.bm
+    # MagicEightBall.bm module: http://tinyurl.com/7ytg7
     _responses = {'positive': ['It is possible.', 'Yes!', 'Of course.', 
                                'Naturally.', 'Obviously.', 'It shall be.',
                                'The outlook is good.', 'It is so.',
@@ -356,42 +330,35 @@ class Fun(callbacks.Privmsg):
             category = 'unknown'
         return random.choice(self._responses[category])
 
-    def eightball(self, irc, msg, args):
+    def eightball(self, irc, msg, args, text):
         """[<question>]
 
         Ask a question and the answer shall be provided.
         """
-        text = privmsgs.getArgs(args, required=0, optional=1)
         if text:
             irc.reply(self._checkTheBall(len(text)))
         else:
             irc.reply(self._checkTheBall(random.randint(0, 2)))
+    eightball = wrap(eightball, ['?text'])
 
     _rouletteChamber = random.randrange(0, 6)
     _rouletteBullet = random.randrange(0, 6)
-    def roulette(self, irc, msg, args):
+    def roulette(self, irc, msg, args, spin):
         """[spin]
 
         Fires the revolver.  If the bullet was in the chamber, you're dead.
         Tell me to spin the chambers and I will.
         """
-        if args:
-            if args[0] != 'spin':
-                raise callbacks.ArgumentError
-            else:
-                self._rouletteBullet = random.randrange(0, 6)
-                irc.reply('*SPIN* Are you feeling lucky?', prefixName=False)
-                return
-        nick = msg.nick
-        channel = msg.args[0]
-        if not ircutils.isChannel(channel):
-            irc.error('This message must be sent in a channel.')
+        if spin:
+            self._rouletteBullet = random.randrange(0, 6)
+            irc.reply('*SPIN* Are you feeling lucky?', prefixName=False)
             return
+        channel = msg.args[0]
         if self._rouletteChamber == self._rouletteBullet:
             self._rouletteBullet = random.randrange(0, 6)
             self._rouletteChamber = random.randrange(0, 6)
             if irc.nick in irc.state.channels[channel].ops:
-                irc.queueMsg(ircmsgs.kick(channel, nick, 'BANG!'))
+                irc.queueMsg(ircmsgs.kick(channel, msg.nick, 'BANG!'))
             else:
                 irc.reply('*BANG* Hey, who put a blank in here?!',
                           prefixName=False)
@@ -400,8 +367,9 @@ class Fun(callbacks.Privmsg):
             irc.reply('*click*')
             self._rouletteChamber += 1
             self._rouletteChamber %= 6
+    roulette = wrap(roulette, ['public', ('?literal', False, 'spin')])
 
-    def monologue(self, irc, msg, args):
+    def monologue(self, irc, msg, args, channel):
         """[<channel>]
 
         Returns the number of consecutive lines you've sent in <channel>
@@ -411,14 +379,19 @@ class Fun(callbacks.Privmsg):
         """
         i = 0
         for m in reversed(irc.state.history):
-            if m.command != 'PRIVMSG' or not m.prefix:
+            if m.command != 'PRIVMSG':
                 continue
-            elif msg.prefix == m.prefix:
+            if not m.prefix:
+                continue
+            if not ircutils.strEqual(m.args[0], channel):
+                continue
+            if msg.prefix == m.prefix:
                 i += 1
             else:
                 break
         iS = utils.nItems('line', i)
         irc.reply('Your current monologue is at least %s long.' % iS)
+    monologue = wrap(monologue, ['channel'])
 
 
 Class = Fun
