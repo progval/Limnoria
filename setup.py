@@ -56,6 +56,7 @@ plugins = [
     'ShrinkUrl',
     'Status',
     'String',
+    'Time',
     'Topic',
     'User',
     'URL',
@@ -122,12 +123,14 @@ packages = ['supybot',
             'supybot.utils',
             'supybot.drivers',
             'supybot.plugins',] + \
-            ['supybot.plugins.'+s for s in plugins]
+            ['supybot.plugins.'+s for s in plugins] + \
+            ['supybot.plugins.Time.dateutil',]
 
 package_dir = {'supybot': 'src',
                'supybot.utils': 'src/utils',
                'supybot.plugins': 'plugins',
-               'supybot.drivers': 'src/drivers',}
+               'supybot.drivers': 'src/drivers',
+               'supybot.plugins.Time.dateutil': 'plugins/Time/dateutil',}
 
 for plugin in plugins:
     package_dir['supybot.plugins.' + plugin] = 'plugins/' + plugin
