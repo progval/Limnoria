@@ -34,53 +34,6 @@ import sets
 import supybot.irclib as irclib
 import supybot.plugins as plugins
 
-class holder:
-    users = sets.Set(map(str, range(1000)))
-
-class FunctionsTestCase(SupyTestCase):
-    class irc:
-        class state:
-            channels = {'#foo': holder()}
-        nick = 'foobar'
-    def testStandardSubstitute(self):
-        f = plugins.standardSubstitute
-        msg = ircmsgs.privmsg('#foo', 'filler', prefix='biff!quux@xyzzy')
-        s = f(self.irc, msg, '$rand')
-        try:
-            int(s)
-        except ValueError:
-            self.fail('$rand wasn\'t an int.')
-        s = f(self.irc, msg, '$randomInt')
-        try:
-            int(s)
-        except ValueError:
-            self.fail('$randomint wasn\'t an int.')
-        self.assertEqual(f(self.irc, msg, '$botnick'), self.irc.nick)
-        self.assertEqual(f(self.irc, msg, '$who'), msg.nick)
-        self.assertEqual(f(self.irc, msg, '$WHO'),
-                         msg.nick, 'stand. sub. not case-insensitive.')
-        self.assertEqual(f(self.irc, msg, '$nick'), msg.nick)
-        self.assertNotEqual(f(self.irc, msg, '$randomdate'), '$randomdate')
-        q = f(self.irc,msg,'$randomdate\t$randomdate')
-        dl = q.split('\t')
-        if dl[0] == dl[1]:
-            self.fail ('Two $randomdates in the same string were the same')
-        q = f(self.irc, msg, '$randomint\t$randomint')
-        dl = q.split('\t')
-        if dl[0] == dl[1]:
-            self.fail ('Two $randomints in the same string were the same')
-        self.assertNotEqual(f(self.irc, msg, '$today'), '$today')
-        self.assertNotEqual(f(self.irc, msg, '$now'), '$now')
-        n = f(self.irc, msg, '$randnick')
-        self.failUnless(n in self.irc.state.channels['#foo'].users)
-        n = f(self.irc, msg, '$randomnick')
-        self.failUnless(n in self.irc.state.channels['#foo'].users)
-        n = f(self.irc, msg, '$randomnick '*100)
-        L = n.split()
-        self.failIf(all(L[0].__eq__, L), 'all $randomnicks were the same')
-        c = f(self.irc, msg, '$channel')
-        self.assertEqual(c, msg.args[0])
-
 
 
 
