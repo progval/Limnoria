@@ -615,7 +615,7 @@ class IrcObjectProxy(RichReplyMethods):
             else:
                 self._callCommand(name, cb)
 
-    def reply(self, s, noLengthCheck=False, prefixName=True,
+    def reply(self, s, noLengthCheck=False, prefixName=None,
               action=None, private=None, notice=None, to=None, msg=None):
         """reply(s) -> replies to msg with s
 
@@ -638,8 +638,11 @@ class IrcObjectProxy(RichReplyMethods):
                'Old code alert: there is no longer a "msg" argument to reply.'
         if msg is None:
             msg = self.msg
+        if prefixName is not None:
+            self.prefixName = prefixName
         if action is not None:
             self.action = self.action or action
+            self.prefixName = False
         if notice is not None:
             self.notice = self.notice or notice
         if private is not None:
@@ -647,7 +650,6 @@ class IrcObjectProxy(RichReplyMethods):
         if to is not None:
             self.to = self.to or to
         # action=True implies noLengthCheck=True and prefixName=False
-        self.prefixName = prefixName and self.prefixName and not self.action
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
         if self.finalEvaled:
             try:
