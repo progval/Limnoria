@@ -43,9 +43,9 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotRegexp('calc [9, 5] + [9, 10]', 'TypeError')
         self.assertError('calc [9, 5] + [9, 10]')
         self.assertNotError('calc degrees(2)')
-# Bug in Python <= 2.3.2.
-##         self.assertNotError('calc log(8,2)')
-##         self.assertNotError('calc log(8,2)')
+
+    def testICalc(self):
+        self.assertResponse('icalc 1^1', '0')
 
     def testCalcNoNameError(self):
         self.assertNotRegexp('calc foobar(x)', 'NameError')
