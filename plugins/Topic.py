@@ -128,7 +128,7 @@ class Topic(callbacks.Privmsg):
         except IndexError:
             irc.error(msg, 'That\'s not a valid index.')
             return
-    gettopic = privmsgs.channel(topicget)
+    gettopic = privmsgs.channel(gettopic)
 
     def changetopic(self, irc, msg, args, channel):
         """[<channel>] <number> <regexp>
