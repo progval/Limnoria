@@ -40,6 +40,7 @@ import supybot.plugins as plugins
 
 import re
 import sys
+import sets
 import time
 from itertools import imap, ifilter
 
@@ -97,6 +98,10 @@ conf.registerChannelValue(conf.supybot.plugins.Relay.channels,
     'joinOnAllNetworks', registry.Boolean(True, """Determines whether the bot
     will always join the channel(s) it relays for on all networks the bot is
     connected to."""))
+conf.registerChannelValue(conf.supybot.plugins.Relay, 'noticeNonPrivmsgs',
+    registry.Boolean(False, """Determines whether the bot will used NOTICEs
+    rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, parts,
+    nicks, quits, modes, etc.)"""))
 
 class Relay(callbacks.Privmsg):
     noIgnore = True
@@ -357,7 +362,7 @@ class Relay(callbacks.Privmsg):
         return s
 
     def _sendToOthers(self, irc, msg):
-        assert msg.command == 'PRIVMSG' or msg.command == 'TOPIC'
+        assert msg.command in ('PRIVMSG', 'NOTICE', 'TOPIC')
         for otherIrc in world.ircs:
             if otherIrc != irc and not otherIrc.zombie:
                 if msg.args[0] in otherIrc.state.channels:
@@ -420,6 +425,25 @@ class Relay(callbacks.Privmsg):
                 m = ircmsgs.privmsg(channel, s)
                 self._sendToOthers(irc, m)
             
+    _noticeCommands = sets.Set([
+        'JOIN',
+        'PART',
+        'QUIT',
+        'NICK',
+        'MODE',
+        'KICK',
+        'TOPIC',
+        'ERROR',
+        ])
+    def _msgmaker(self, target, s):
+        msg = dynamic.msg
+        channel = dynamic.channel
+        if self.registryValue('noticeNonPrivmsgs', dynamic.channel) and \
+           msg.command in self._noticeCommands:
+            return ircmsgs.notice(target, s)
+        else:
+            return ircmsgs.privmsg(target, s)
+            
     def doJoin(self, irc, msg):
         irc = self._getRealIrc(irc)
         channel = msg.args[0]
@@ -431,7 +455,7 @@ class Relay(callbacks.Privmsg):
         else:
             hostmask = ''
         s = '%s%s has joined on %s' % (msg.nick, hostmask, network)
-        m = ircmsgs.privmsg(channel, s)
+        m = self._msgmaker(channel, s)
         self._sendToOthers(irc, m)
 
     def doPart(self, irc, msg):
@@ -445,7 +469,7 @@ class Relay(callbacks.Privmsg):
         else:
             hostmask = ''
         s = '%s%s has left on %s' % (msg.nick, hostmask, network)
-        m = ircmsgs.privmsg(channel, s)
+        m = self._msgmaker(channel, s)
         self._sendToOthers(irc, m)
 
     def doMode(self, irc, msg):
@@ -456,7 +480,7 @@ class Relay(callbacks.Privmsg):
         network = self._getIrcName(irc)
         s = 'mode change by %s on %s: %s' % \
             (msg.nick, network, ' '.join(msg.args[1:]))
-        m = ircmsgs.privmsg(channel, s)
+        m = self._msgmaker(channel, s)
         self._sendToOthers(irc, m)
 
     def doKick(self, irc, msg):
@@ -471,7 +495,7 @@ class Relay(callbacks.Privmsg):
         else:
             s = '%s was kicked by %s on %s' % \
                 (msg.args[1], msg.nick, network)
-        m = ircmsgs.privmsg(channel, s)
+        m = self._msgmaker(channel, s)
         self._sendToOthers(irc, m)
 
     def doNick(self, irc, msg):
@@ -482,7 +506,7 @@ class Relay(callbacks.Privmsg):
         for channel in self.registryValue('channels'):
             if channel in irc.state.channels:
                 if newNick in irc.state.channels[channel].users:
-                    m = ircmsgs.privmsg(channel, s)
+                    m = self._msgmaker(channel, s)
                     self._sendToOthers(irc, m)
 
     def doTopic(self, irc, msg):
@@ -509,7 +533,7 @@ class Relay(callbacks.Privmsg):
                                          channel, otherIrc.network)
         else:
             s = 'topic change by %s on %s: %s' % (msg.nick, network, newTopic)
-            m = ircmsgs.privmsg(channel, s)
+            m = self._msgmaker(channel, s)
             self._sendToOthers(irc, m)
 
     def doQuit(self, irc, msg):
@@ -522,7 +546,7 @@ class Relay(callbacks.Privmsg):
         for channel in self.registryValue('channels'):
             if channel in self.ircstates[irc].channels:
                 if msg.nick in self.ircstates[irc].channels[channel].users:
-                    m = ircmsgs.privmsg(channel, s)
+                    m = self._msgmaker(channel, s)
                     self._sendToOthers(irc, m)
 
     def doError(self, irc, msg):
@@ -530,7 +554,7 @@ class Relay(callbacks.Privmsg):
         network = self._getIrcName(irc)
         s = 'disconnected from %s: %s' % (network, msg.args[0])
         for channel in self.registryValue('channels'):
-            m = ircmsgs.privmsg(channel, s)
+            m = self._msgmaker(channel, s)
             self._sendToOthers(irc, m)
 
     def outFilter(self, irc, msg):
