@@ -227,11 +227,13 @@ class RSS(callbacks.Privmsg):
         return [utils.htmlToText(d['title'].strip()) for d in feed['items']]
 
     def makeFeedCommand(self, name, url):
-        docstring = """takes no arguments
+        docstring = """<number of headlines>
 
-        Reports the titles for %s at the RSS feed <%s>.  RSS feeds are only
-        looked up every supybot.plugins.RSS.waitPeriod seconds, which defaults
-        to 1800 (30 minutes) since that's what most websites prefer.
+        Reports the titles for %s at the RSS feed <%s>.  If
+        <number of headlines> is given, returns only that many headlines.
+        RSS feeds are only looked up every supybot.plugins.RSS.waitPeriod
+        seconds, which defaults to 1800 (30 minutes) since that's what most
+        websites prefer.
         """ % (name, url)
         name = callbacks.canonicalName(name)
         if url not in self.locks:
@@ -288,11 +290,12 @@ class RSS(callbacks.Privmsg):
     announce = privmsgs.checkChannelCapability(announce, 'op')
             
     def rss(self, irc, msg, args):
-        """<url>
+        """<url> [<number of headlines>]
 
         Gets the title components of the given RSS feed.
+        If <number of headlines> is given, return only that many headlines.
         """
-        url = privmsgs.getArgs(args)
+        (url, n) = privmsgs.getArgs(args, optional=1)
         self.log.debug('Fetching %s', url)
         feed = self.getFeed(url)
         if ircutils.isChannel(msg.args[0]):
@@ -303,6 +306,12 @@ class RSS(callbacks.Privmsg):
         if not headlines:
             irc.error('Couldn\'t get RSS feed')
             return
+        if n:
+            try:
+                n = int(n)
+            except ValueError:
+                raise callbacks.Error
+            headlines = headlines[:n]
         headlines = imap(utils.htmlToText, headlines)
         sep = self.registryValue('headlineSeparator', channel)
         irc.reply(sep.join(headlines))
