@@ -581,4 +581,4 @@ if __name__ == '__main__':
     myPrint("""All done!  Your new bot script is %s.  If you're running a *nix,
     you can start your bot script with the command line "./%s".  If you're not
     running a *nix or similar machine, you'll just have to start it like you
-    start all your other Python scripts.""")
+    start all your other Python scripts.""" % (filename, filename))
