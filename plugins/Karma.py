@@ -81,21 +81,38 @@ conf.registerChannelValue(conf.supybot.plugins.Karma, 'allowUnaddressedKarma',
     increase/decrease karma without being addressed."""))
 
 class SqliteKarmaDB(object):
+    def __init__(self, filename):
+        self.dbs = ircutils.IrcDict()
+        self.filename = filename
+
+    def close(self):
+        for db in self.dbs.itervalues():
+            db.close()
+
     def _getDb(self, channel):
-        filename = plugins.makeChannelFilename('Karma.db', channel)
+        try:
+            import sqlite
+        except ImportError:
+            raise callbacks.Error, 'You need to have PySQLite installed to ' \
+                                   'use this plugin.  Download it at ' \
+                                   '<http://pysqlite.sf.net/>'
+        filename = plugins.makeChannelFilename(self.filename, channel)
+        if filename in self.dbs:
+            return self.dbs[filename]
         if os.path.exists(filename):
-            db = sqlite.connect(filename)
-        else:
-            db = sqlite.connect(filename)
-            cursor = db.cursor()
-            cursor.execute("""CREATE TABLE karma (
-                              id INTEGER PRIMARY KEY,
-                              name TEXT,
-                              normalized TEXT UNIQUE ON CONFLICT IGNORE,
-                              added INTEGER,
-                              subtracted INTEGER
-                              )""")
-            db.commit()
+            self.dbs[filename] = sqlite.connect(filename)
+            return self.dbs[filename]
+        db = sqlite.connect(filename)
+        self.dbs[filename] = db
+        cursor = db.cursor()
+        cursor.execute("""CREATE TABLE karma (
+                          id INTEGER PRIMARY KEY,
+                          name TEXT,
+                          normalized TEXT UNIQUE ON CONFLICT IGNORE,
+                          added INTEGER,
+                          subtracted INTEGER
+                          )""")
+        db.commit()
         def p(s1, s2):
             return int(ircutils.nickEqual(s1, s2))
         db.create_function('nickeq', 2, p)
@@ -204,9 +221,8 @@ class SqliteKarmaDB(object):
                           WHERE normalized=%s""", normalized)
         db.commit()
 
-
-def KarmaDB():
-    return SqliteKarmaDB()
+KarmaDB = plugins.DB('Karma',
+                     {'sqlite': SqliteKarmaDB})
 
 class Karma(callbacks.Privmsg):
     callBefore = ('Factoids', 'MoobotFactoids', 'Infobot')
@@ -214,19 +230,22 @@ class Karma(callbacks.Privmsg):
         self.db = KarmaDB()
         super(Karma, self).__init__()
 
+    def die(self):
+        self.db.close()
+
     def _normalizeThing(self, thing):
         assert thing
         if thing[0] == '(' and thing[-1] == ')':
             thing = thing[1:-1]
         return thing
-        
+
     def _respond(self, irc, channel):
         if self.registryValue('response', channel):
             irc.replySuccess()
         else:
             irc.noReply()
         assert irc.msg.repliedTo
-        
+
     def _doKarma(self, irc, channel, thing):
         assert thing[-2:] in ('++', '--')
         if thing.endswith('++'):
@@ -245,7 +264,7 @@ class Karma(callbacks.Privmsg):
             elif thing:
                 self.db.decrement(channel, self._normalizeThing(thing))
                 self._respond(irc, channel)
-    
+
     def tokenizedCommand(self, irc, msg, tokens):
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
@@ -263,7 +282,7 @@ class Karma(callbacks.Privmsg):
                 thing = msg.args[1].rstrip()
                 if thing[-2:] in ('++', '--'):
                     self._doKarma(irc, channel, thing)
-            
+
     def karma(self, irc, msg, args):
         """[<channel>] [<thing> [<thing> ...]]
 

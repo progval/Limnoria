@@ -79,8 +79,9 @@ class NewsRecord(object):
         return s
 
 class SqliteNewsDB(object):
-    def __init__(self):
+    def __init__(self, filename):
         self.dbs = ircutils.IrcDict()
+        self.filename = filename
 
     def close(self):
         for db in self.dbs.itervalues():
@@ -93,7 +94,7 @@ class SqliteNewsDB(object):
             raise callbacks.Error, 'You need to have PySQLite installed to ' \
                                    'use this plugin.  Download it at ' \
                                    '<http://pysqlite.sf.net/>'
-        filename = plugins.makeChannelFilename(channel, 'News.db')
+        filename = plugins.makeChannelFilename(self.filename, channel)
         if filename in self.dbs:
             return self.dbs[filename]
         if os.path.exists(filename):
@@ -170,8 +171,8 @@ class SqliteNewsDB(object):
         cursor.execute("""UPDATE news SET subject=%s, item=%s WHERE id=%s""",
                        newSubject, newItem, id)
 
-def NewsDB():
-    return SqliteNewsDB()
+NewsDB = plugins.DB('News',
+                    {'sqlite': SqliteNewsDB})
 
 class News(callbacks.Privmsg):
     def __init__(self):
