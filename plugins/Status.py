@@ -110,24 +110,38 @@ class Status(callbacks.Privmsg):
 
         Returns some interesting command-related statistics.
         """
-        commands = sets.Set()
-        callbacksPrivmsgs = 0
+        commands = 0
+        callbacksPrivmsg = 0
         for cb in irc.callbacks:
             if isinstance(cb, callbacks.Privmsg) and cb.public:
-                callbacksPrivmsgs += 1
+                if not isinstance(cb, callbacks.PrivmsgRegexp):
+                    callbacksPrivmsg += 1
+                for attr in dir(cb):
+                    if cb.isCommand(attr) and \
+                       attr == callbacks.canonicalName(attr):
+                        commands += 1
+        s = 'I offer a total of %s in %s.  I have processed %s.' % \
+            (utils.nItems(commands, 'command'),
+             utils.nItems(callbacksPrivmsg, 'plugin', 'command-based'),
+             world.commandsProcessed)
+        irc.reply(msg, s)
+
+    def commands(self, irc, msg, args):
+        """takes no arguments
+
+        Returns a list of the commands offered by the bot.
+        """
+        commands = sets.Set()
+        for cb in irc.callbacks:
+            if isinstance(cb, callbacks.Privmsg) and \
+               not isinstance(cb, callbacks.PrivmsgRegexp) and cb.public:
                 for attr in dir(cb):
                     if cb.isCommand(attr) and \
                        attr == callbacks.canonicalName(attr):
                         commands.add(attr)
         commands = list(commands)
         commands.sort()
-        s = 'I offer a total of %s in %s.  ' \
-            'I have processed %s.  My public commands include %s.' % \
-            (utils.nItems(len(commands), 'command'),
-             utils.nItems(callbacksPrivmsgs, 'plugin', 'command-based'),
-             utils.nItems(world.commandsProcessed, 'command', 'individual'),
-             utils.commaAndify(commands))
-        irc.reply(msg, s)
+        irc.reply(msg, utils.commaAndify(commands))
 
     def uptime(self, irc, msg, args):
         """takes no arguments.

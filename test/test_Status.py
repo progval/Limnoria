@@ -45,6 +45,9 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
     def testCmdstats(self):
         self.assertNotError('cmdstats')
 
+    def testCommands(self):
+        self.assertNotError('commands')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
