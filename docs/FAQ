@@ -63,11 +63,6 @@ A: Currently, no. Feel free to make your case to us as to why a
    with you, we'll change it for the next release.
 
 
-Q: How do I make my Supybot connect to multiple servers?
-
-A: Just use the "connect" command in the Owner plugin.  Easy as pie!
-
-
 Q: Can Supybot do factoids?
 
 A: Supybot most certainly can!  In fact, we offer three full-fledged
@@ -112,25 +107,15 @@ A: As of present, we have no automated way to do so.  Strike has
    factoids-related plugins.
 
 
-Q: I found a bug, what do I do?
+Q: Do I really have to use separate databases for each channel?
 
-A: Submit it on Sourceforge through our Sourceforge project page:
-   <http://sourceforge.net/tracker/?group_id=58965&atid=489447>.  If
-   Sourceforge happens to be down when you try to submit your bug,
-   then post it in the "Supybot Developer Discussion" forum at our
-   forums at <http://forums.supybot.org/>.  If that doesn't work,
-   email supybot-bugs@lists.sourceforge.net.  If that doesn't work,
-   email jemfinch@supybot.org.  If that doesn't work, find yourself
-   some carrier pigeons and ... hah!  You thought I was serious!
-   
-   Anyway, when you submit your bug, we'll need several things.  If
-   the bug involved an uncaught exception, we need the traceback
-   (basically the stuff from "Uncaught exception in ..." to the next
-   log entry).  We'd also like to see the commands that caused the
-   bug, or happened around the time you saw the bug.  If the bug
-   involved a database, we'd love to see the database.  Remember, it's
-   always worse to send us too little information in a bug report than
-   too much.
+A: Of course not!  We default to separate databases for each channel
+   because, well, that's what jemfinch always thought was
+   reasonable.  Anyway, if you change the configuration variable
+   supybot.databases.plugins.channelSpecific to False instead of
+   True, for *most* databases, each channel will share the same
+   database (the exceptions are ChannelStats, Herald, Seen, and
+   WordStats, which are inherently rather channel-based).
 
 
 Q: Karma doesn't seem to work for me.
@@ -174,3 +159,31 @@ A: No, there isn't, and there probably never will be.  Commands have
    command, many users would call the command, see that they could
    perform it, and then run the command, thus doubling the activity
    in the channel.  Is that something you want?
+
+
+Q: How do I make my Supybot connect to multiple servers?
+
+A: Just use the "connect" command in the Owner plugin.  Easy as pie!
+
+
+Q: I found a bug, what do I do?
+
+A: Submit it on Sourceforge through our Sourceforge project page:
+   <http://sourceforge.net/tracker/?group_id=58965&atid=489447>.  If
+   Sourceforge happens to be down when you try to submit your bug,
+   then post it in the "Supybot Developer Discussion" forum at our
+   forums at <http://forums.supybot.org/>.  If that doesn't work,
+   email supybot-bugs@lists.sourceforge.net.  If that doesn't work,
+   email jemfinch@supybot.org.  If that doesn't work, find yourself
+   some carrier pigeons and ... hah!  You thought I was serious!
+   
+   Anyway, when you submit your bug, we'll need several things.  If
+   the bug involved an uncaught exception, we need the traceback
+   (basically the stuff from "Uncaught exception in ..." to the next
+   log entry).  We'd also like to see the commands that caused the
+   bug, or happened around the time you saw the bug.  If the bug
+   involved a database, we'd love to see the database.  Remember, it's
+   always worse to send us too little information in a bug report than
+   too much.
+
+
