@@ -49,6 +49,9 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
             else:
                 self.fail('Got something other than a kick or a privmsg.')
         self.failUnless(sawKick, 'Didn\'t get a kick in %s iterations!' % i)
+
+    def testPing(self):
+        self.assertResponse('ping', 'pong')
                 
     def testNoErrors(self):
         self.assertNotError('leet foobar')

@@ -1,3 +1,5 @@
+	* Added the Fun.ping command, because MozBot has it.
+	
 	* Added Note.unsend command, to allow users to "unsend" notes
 	they've sent but whose recipient has not yet read.
 	

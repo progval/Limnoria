@@ -116,6 +116,12 @@ class Fun(callbacks.Privmsg):
         text = ''.join(text.split())
         irc.reply(msg, text)
 
+    def ping(self, irc, msg, args):
+        """takes no arguments
+
+        Checks to see if the bot is alive.
+        """
+        irc.reply(msg, 'pong', prefixName=False)
     def hexip(self, irc, msg, args):
         """<ip>
 
