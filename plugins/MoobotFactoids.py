@@ -186,6 +186,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
 
     def invalidCommand(self, irc, msg, tokens):
         key = ' '.join(tokens)
+        key = key.rstrip('?!')
         if key.startswith('\x01'):
             return
         # Check the factoid db for an appropriate reply
@@ -211,7 +212,15 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             return True
 
     def addFactoid(self, irc, msg, match):
-        r"^(?!no\s+)(.+)\s+is\s+(?!also)(.+)"
+        r"^(.+)\s+(?:is|_is_)\s+(.+)"
+        # First, check and see if the entire message matches a factoid key
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT * FROM factoids WHERE key LIKE %s""",
+                       match.group().rstrip('?! '))
+        if cursor.rowcount != 0:
+            self.invalidCommand(irc, msg, callbacks.tokenize(match.group()))
+            return
+        # Okay, we are REALLY adding stuff
         # Must be registered!
         try:
             id = ircdb.users.getUserId(msg.prefix)
@@ -219,13 +228,16 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, conf.replyNotRegistered)
             return
         key, fact = match.groups()
+        # These are okay, unless there's an _is_ in there, in which case
+        # we split on the leftmost one.
+        if '_is_' in match.group():
+            key, fact = map(str.strip, match.group().split('_is_', 1))
         # Strip the key of punctuation and spaces
-        key = key.strip('?!')
-        cursor = self.db.cursor()
+        key = key.rstrip('?! ')
         # Check and make sure it's not in the DB already
         cursor.execute("""SELECT * FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount != 0:
-            irc.error(msg, "Factoid %r already exists." % key)
+            irc.error(msg, 'Factoid %r already exists.' % key)
             return
         # Otherwise, 
         cursor.execute("""INSERT INTO factoids VALUES

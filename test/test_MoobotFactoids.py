@@ -75,6 +75,12 @@ if sqlite is not None:
             self.assertResponse('MOO', 'foo')
             self.assertResponse('mOo', 'foo')
             self.assertResponse('MoO', 'foo')
+            # Check the "_is_" ability
+            self.assertNotError('delete moo')
+            self.assertNotError('moo _is_ <reply>foo')
+            self.assertResponse('moo', 'foo')
+            self.assertNotError('foo is bar _is_ baz')
+            self.assertResponse('foo is bar', 'foo is bar is baz')
 
         def testFactinfo(self):
             self.assertNotError('moo is <reply>foo')
