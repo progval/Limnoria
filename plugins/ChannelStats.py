@@ -230,7 +230,7 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
         if not ircdb.users.hasUser(name):
             hostmask = irc.state.nickToHostmask(name)
             try:
-                name = irc.users.getUserName(hostmask)
+                name = ircdb.users.getUserName(hostmask)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
                 return
@@ -254,7 +254,7 @@ class ChannelStats(callbacks.Privmsg, ChannelDBHandler):
         if not ircdb.users.hasUser(name):
             hostmask = irc.state.nickToHostmask(name)
             try:
-                name = irc.users.getUserName(hostmask)
+                name = ircdb.users.getUserName(hostmask)
             except KeyError:
                 irc.error(msg, conf.replyNoUser)
                 return
