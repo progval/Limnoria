@@ -46,7 +46,7 @@ import dateutil.parser
 
 import supybot.conf as conf
 import supybot.utils as utils
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -177,6 +177,15 @@ class Time(callbacks.Privmsg):
                 format = self.registryValue('format')
         irc.reply(time.strftime(format, time.localtime(seconds)))
     time = wrap(time, ['channel?', 'nonInt?', ('?int', TIME.time)])
+
+    def elapsed(self, irc, msg, args, seconds):
+        """<seconds>
+
+        Returns a pretty string that is the amount of time represented by
+        <seconds>.
+        """
+        irc.reply(utils.timeElapsed(seconds))
+    elapsed = wrap(elapsed, ['int'])
 
 
 Class = Time
