@@ -453,7 +453,10 @@ def getNow(irc, msg, args, state):
     state.args.append(int(time.time()))
 
 def getCommandName(irc, msg, args, state):
-    state.args.append(callbacks.canonicalName(args.pop(0)))
+    if ' ' in args[0]:
+        irc.errorInvalid('command name', args[0])
+    else:
+        state.args.append(callbacks.canonicalName(args.pop(0)))
 
 def getIp(irc, msg, args, state):
     if utils.isIP(args[0]):

@@ -44,6 +44,7 @@ import sets
 
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -185,35 +186,31 @@ class Alias(callbacks.Privmsg):
         del self.__class__.__call__
         callbacks.Privmsg.__call__(self, irc, msg)
 
-    def lock(self, irc, msg, args):
+    def lock(self, irc, msg, args, name):
         """<alias>
 
         Locks an alias so that no one else can change it.
         """
-        name = privmsgs.getArgs(args)
-        name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
             self.aliases[name][1] = True
             conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(True)
             irc.replySuccess()
         else:
             irc.error('There is no such alias.')
-    lock = privmsgs.checkCapability(lock, 'admin')
+    lock = wrap(lock, [('checkCapability', 'admin'), 'commandName'])
 
-    def unlock(self, irc, msg, args):
+    def unlock(self, irc, msg, args, name):
         """<alias>
 
         Unlocks an alias so that people can define new aliases over it.
         """
-        name = privmsgs.getArgs(args)
-        name = callbacks.canonicalName(name)
         if hasattr(self, name) and self.isCommand(name):
             self.aliases[name][1] = False
             conf.supybot.plugins.Alias.aliases.get(name).locked.setValue(False)
             irc.replySuccess()
         else:
             irc.error('There is no such alias.')
-    unlock = privmsgs.checkCapability(unlock, 'admin')
+    unlock = wrap(unlock, [('checkCapability', 'admin'), 'commandName'])
 
     _invalidCharsRe = re.compile(r'[\[\]\s]')
     def addAlias(self, irc, name, alias, lock=False):
@@ -264,18 +261,16 @@ class Alias(callbacks.Privmsg):
         else:
             raise AliasError, 'There is no such alias.'
 
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, name, alias):
         """<name> <alias>
 
         Defines an alias <name> that executes <alias>.  The <alias>
         should be in the standard "command argument [nestedcommand argument]"
         arguments to the alias; they'll be filled with the first, second, etc.
-        arguments to the alias; they'll be filled with the first, second, etc.
         arguments.  @1, @2 can be used for optional arguments.  $* simply
         means "all remaining arguments," and cannot be combined with optional
         arguments.
         """
-        (name, alias) = privmsgs.getArgs(args, required=2)
         if ' ' not in alias:
             # If it's a single word, they probably want $*.
             alias += ' $*'
@@ -286,13 +281,13 @@ class Alias(callbacks.Privmsg):
             irc.replySuccess()
         except AliasError, e:
             irc.error(str(e))
+    add = wrap(add, ['commandName', 'text'])
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, name):
         """<name>
 
         Removes the given alias, if unlocked.
         """
-        name = privmsgs.getArgs(args)
         try:
             self.removeAlias(name)
             self.log.info('Removing alias %s (from %s)' % (utils.quoted(name),
@@ -300,6 +295,7 @@ class Alias(callbacks.Privmsg):
             irc.replySuccess()
         except AliasError, e:
             irc.error(str(e))
+    remove = wrap(remove, ['commandName'])
 
 
 Class = Alias
