@@ -51,8 +51,8 @@ class FunctionsTest(unittest.TestCase):
         self.failUnless(Alias.findAliasCommand(s, 'foo |%s' % s))
 
     def testFindBiggestDollar(self):
-        self.assertEqual(Alias.findBiggestDollar(''), None)
-        self.assertEqual(Alias.findBiggestDollar('foo'), None)
+        self.assertEqual(Alias.findBiggestDollar(''), 0)
+        self.assertEqual(Alias.findBiggestDollar('foo'), 0)
         self.assertEqual(Alias.findBiggestDollar('$0'), 0)
         self.assertEqual(Alias.findBiggestDollar('$1'), 1)
         self.assertEqual(Alias.findBiggestDollar('$2'), 2)
@@ -109,6 +109,11 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
         self.assertRaises(Alias.AliasError, cb.removeAlias, 'foobar')
         cb.removeAlias('foobar', evenIfFrozen=True)
         self.assertNoResponse('foobar', 2)
+
+    def testOptionalArgs(self):
+        self.assertNotError('alias myrepr "repr @1"')
+        self.assertResponse('myrepr foo', '"foo"')
+        self.assertResponse('myrepr ""', '""')
         
 
 

@@ -108,31 +108,41 @@ def findBiggestDollar(alias):
     if dollars:
         return dollars[-1]
     else:
-        return None
+        return 0
+
+atRe = re.compile(r'@(\d+)')
+def findBiggestAt(alias):
+    ats = atRe.findall(alias)
+    ats = map(int, ats)
+    ats.sort()
+    if ats:
+        return ats[-1]
+    else:
+        return 0
 
 def makeNewAlias(name, alias):
     if findAliasCommand(name, alias):
         raise RecursiveAlias
     doChannel = '$channel' in alias
     biggestDollar = findBiggestDollar(alias)
-    doDollars = bool(biggestDollar)
-    if biggestDollar is not None:
-        biggestDollar = int(biggestDollar)
-    else:
-        biggestDollar = 0
+    biggestAt = findBiggestAt(alias)
     def f(self, irc, msg, args):
         alias_ = alias
         if doChannel:
             channel = privmsgs.getChannel(msg, args)
             alias_ = alias.replace('$channel', channel)
-        if doDollars:
-            args = privmsgs.getArgs(args, needed=biggestDollar)
-            if biggestDollar == 1:
+        if biggestDollar or biggestAt:
+            args = privmsgs.getArgs(args, needed=biggestDollar,
+                                    optional=biggestAt)
+            # Gotta have a tuple.
+            if biggestDollar + biggestAt == 1:
                 args = (args,)
             def replace(m):
                 idx = int(m.group(1))
-                return args[idx-1]
+                return utils.dqrepr(args[idx-1])
             alias_ = dollarRe.sub(replace, alias_)
+            args = args[biggestDollar:]
+            alias_ = atRe.sub(replace, alias_)
         self.Proxy(irc.irc, msg, callbacks.tokenize(alias_))
     f.__doc__ ='<an alias, %s>\n\nAlias for %r' % \
                 (utils.nItems(biggestDollar, 'argument'), alias)
