@@ -164,13 +164,10 @@ class Unix(callbacks.Privmsg):
             irc.error(msg, 'Aspell/ispell can\'t handle spaces in words.')
             return
         self._spellWrite.write(word)
-        self._spellWrite.write('\n')
-        line = self._spellRead.readline()
-
+        self._spellWrite.write('\n') line = self._spellRead.readline() 
         # aspell puts extra whitespace, ignore it
         while line == '\n':
             line = self._spellRead.readline()
-
         # parse the output
         if line[0] in '*+':
             resp = '"%s" may be spelled correctly.' % word
@@ -183,7 +180,6 @@ class Unix(callbacks.Privmsg):
             resp = 'Possible spellings for "%s": %s.' % (word, s)
         else:
             resp = 'Something unexpected was seen in the [ai]spell output.'
-
         irc.reply(msg, resp)
             
 
