@@ -129,10 +129,11 @@ conf.registerGlobalValue(conf.supybot.plugins.Insult, 'foulAdjectives',
     'malodorous', 'penguin-molesting', 'coughed-up', 'hacked-up', 'rump-fed',
     'boil-brained'], """Determines the set of foul words added to the pool of
     adjectives."""))
-
+# XXX Are we going to get overrides like MozBot has?  I.e., if people try to
+# insult Supybot, we'll instead insult them.  The overrides should, of course,
+# be configurable.
 
 class Insult(callbacks.Privmsg):
-
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         
