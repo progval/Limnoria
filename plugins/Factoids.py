@@ -67,7 +67,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE keys (
                           id INTEGER PRIMARY KEY,
-                          key TEXT,
+                          key TEXT UNIQUE ON CONFLICT IGNORE,
                           locked BOOLEAN
                           )""")
         cursor.execute("""CREATE TABLE factoids (
@@ -86,10 +86,16 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         db.commit()
         return db
 
-    def addfactoid(self, irc, msg, args):
-        "[<channel>] (If not sent in the channel itself) <key> <value>"
+    def add(self, irc, msg, args):
+        """[<channel>] <key> as <value>
+
+        Associates <key> with <value>.  <channel> is only necessary if the
+        message isn't sent on the channel itself.
+        """
         channel = privmsgs.getChannel(msg, args)
-        (key, factoid) = privmsgs.getArgs(args, needed=2)
+        (key, as, factoid) = privmsgs.getArgs(args, needed=3)
+        if as != 'as':
+            raise callbacks.ArgumentError
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT id, locked FROM keys WHERE key=%s""", key)
@@ -115,7 +121,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error(msg, 'That factoid is locked.')
         
-    def lookupfactoid(self, irc, msg, args):
+    def lookup(self, irc, msg, args):
         "[<channel>] (If not sent in the channel itself) <key> [<number>]"
         channel = privmsgs.getChannel(msg, args)
         (key, number) = privmsgs.getArgs(args, optional=1)
@@ -136,7 +142,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             factoid = results[number][0]
             irc.reply(msg, '%s/%s: %s' % (key, number, factoid))
             
-    def lockfactoid(self, irc, msg, args):
+    def lock(self, irc, msg, args):
         "[<channel>] (If not sent in the channel itself) <key>"
         channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
@@ -150,7 +156,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error(msg, conf.replyNoCapability % capability)
         
-    def unlockfactoid(self, irc, msg, args):
+    def unlock(self, irc, msg, args):
         "[<channel>] (If not sent in the channel itself) <key>"
         channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
@@ -164,7 +170,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error(msg, conf.replyNoCapability % capability)
 
-    def removefactoid(self, irc, msg, args):
+    def remove(self, irc, msg, args):
         "[<channel>] (If not sent in the channel itself) <key>"
         channel = privmsgs.getChannel(msg, args)
         key = privmsgs.getArgs(args)
