@@ -56,16 +56,17 @@ if sqlite is not None:
             self.assertRegexp('todo 1',
                               'Todo for tester: wash my car \(Added .*?\)')
             # Check that it lists all my tasks when given my name
-            self.assertResponse('todo tester', 'Todo for tester: '
-                              '#1: wash my car')
+            self.assertResponse('todo tester',
+                                'Todo for tester: #1: wash my car')
             # Check pluralization
             self.assertNotError('todo add moo')
-            self.assertRegexp('todo tester', 'Todos for tester: '
-                              '#1: wash my car and #2: moo')
+            self.assertRegexp('todo tester',
+                              'Todos for tester: #1: wash my car and #2: moo')
             # Check error
             self.assertError('todo asfas')
-            self.assertResponse('todo asfas', 'Error: \'asfas\' is not a '
-                                'valid task id or username')
+            self.assertResponse('todo asfas',
+                                'Error: \'asfas\' is not a valid task id or '
+                                'username')
             # Check priority sorting
             self.assertNotError('todo setpriority 1 100')
             self.assertNotError('todo setpriority 2 10')
@@ -84,23 +85,23 @@ if sqlite is not None:
             self.assertRegexp('todo search task*', '#1: task number one')
             self.assertNotError('todo add task number two is much longer than'
                                 ' task number one')
-            self.assertRegexp('todo search task*','#1: task number one and #2:'
-                              ' task number two is much longer than task '
-                              'number...')
+            self.assertRegexp('todo search task*',
+                              '#1: task number one and #2: task number two is '
+                              'much longer than task number...')
             self.assertRegexp('todo search --exact "task number one"',
                               '#1: task number one')
             self.assertError('todo search --regexp s/bustedregex')
-            self.assertRegexp('todo search --regexp m/task/', '#1: task number'
-                              ' one and #2: task number two is much longer '
-                              'than task number...')
+            self.assertRegexp('todo search --regexp m/task/',
+                              '#1: task number one and #2: task number two is '
+                              'much longer than task number...')
 
         def testSetPriority(self):
             self.assertNotError('todo add --priority=1 moo')
-            self.assertRegexp('todo 1', 'moo, priority: 1 \(Added '
-                              'at .*?\)')
+            self.assertRegexp('todo 1',
+                              'moo, priority: 1 \(Added at .*?\)')
             self.assertNotError('setpriority 1 50')
-            self.assertRegexp('todo 1', 'moo, priority: 50 \(Added '
-                              'at .*?\)')
+            self.assertRegexp('todo 1',
+                              'moo, priority: 50 \(Added at .*?\)')
             self.assertNotError('setpriority 1 0')
             self.assertRegexp('todo 1', 'moo \(Added at .*?\)')
 
