@@ -35,6 +35,12 @@ import supybot.ircmsgs as ircmsgs
 
 class ChannelTestCase(ChannelPluginTestCase):
     plugins = ('Channel', 'User')
+
+    def setUp(self):
+        super(ChannelTestCase, self).setUp()
+        self.irc.state.channels[self.channel].addUser('foo')
+        self.irc.state.channels[self.channel].addUser('bar')
+
     def testLobotomies(self):
         self.assertRegexp('lobotomies', 'not.*any')
 
