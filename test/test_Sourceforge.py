@@ -52,40 +52,49 @@ class SourceforgeTest(PluginTestCase, PluginDocumentation):
         self.assertNotError('rfes gaim %s' % n)
 
     def testSnarfer(self):
-        self.assertResponse('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=589953&group_id=58965&atid=489447',
-            'Bug #589953: Logger doesn\'t log QUITs.')
-        self.assertResponse('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=712761&group_id=58965&atid=489450',
-            'Feature Request #712761: PyPI searching and announcements')
-        self.assertResponse('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235',
-            'Patch #540223: update_idle_times patch')
-        self.assertResponse('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=561547&group_id=235&atid=200235',
-            'Support Request #561547: connecting via proxy')
-        self.assertResponse('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=400942&group_id=235&atid=390395',
-            'Plugin #400942: plugins/gen_away.c -- Generate new away msgs on'\
-            ' the fly.')
+        s = r';.*Status.*: \w+;'
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=589953&group_id=58965&atid=489447', s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=712761&group_id=58965&atid=489450', s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=540223&group_id=235&atid=300235', s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=561547&group_id=235&atid=200235', s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=400942&group_id=235&atid=390395', s)
+
+        # test that it works without index.php
+        self.assertNotError('http://sourceforge.net/tracker/?'\
+            'func=detail&aid=540223&group_id=235&atid=300235')
+        # test that it works with www
+        self.assertNotError('http://www.sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=540223&group_id=235&atid=300235')
+        # test that it works with www and without index.php
+        self.assertNotError('http://www.sourceforge.net/tracker/?'\
+            'func=detail&aid=540223&group_id=235&atid=300235')
 
     def testHttpsSnarfer(self):
-        self.assertResponse('https://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=589953&group_id=58965&atid=489447',
-            'Bug #589953: Logger doesn\'t log QUITs.')
-        self.assertResponse('https://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=712761&group_id=58965&atid=489450',
-            'Feature Request #712761: PyPI searching and announcements')
-        self.assertResponse('https://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=540223&group_id=235&atid=300235',
-            'Patch #540223: update_idle_times patch')
-        self.assertResponse('https://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=561547&group_id=235&atid=200235',
-            'Support Request #561547: connecting via proxy')
-        self.assertResponse('http://sourceforge.net/tracker/index.php?'\
-            'func=detail&aid=400942&group_id=235&atid=390395',
-            'Plugin #400942: plugins/gen_away.c -- Generate new away msgs on'\
-            ' the fly.')
+        s = r';.*Status.*: \w+;'
+        self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=589953&group_id=58965&atid=489447', s)
+        self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=712761&group_id=58965&atid=489450', s)
+        self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=540223&group_id=235&atid=300235', s)
+        self.assertRegexp('https://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=561547&group_id=235&atid=200235', s)
+        self.assertRegexp('http://sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=400942&group_id=235&atid=390395', s)
+        # test that it works without index.php
+        self.assertNotError('https://sourceforge.net/tracker/?'\
+            'func=detail&aid=540223&group_id=235&atid=300235')
+        # test that it works with www
+        self.assertNotError('https://www.sourceforge.net/tracker/?'\
+            'func=detail&aid=540223&group_id=235&atid=300235')
+        # test that it works with www and without index.php
+        self.assertNotError('https://www.sourceforge.net/tracker/index.php?'\
+            'func=detail&aid=540223&group_id=235&atid=300235')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

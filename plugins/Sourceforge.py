@@ -81,6 +81,19 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     _hrefOpts = '&set=custom&_assigned_to=0&_status=1&_category=100&'\
         '_group=100&order=artifact_id&sort=DESC'
 
+    _resolution = re.compile(r'<b>Resolution:</b> <a.+?<br>(.+?)</td>', re.I)
+    _getRes = lambda self, s: '%s: %s' % (ircutils.bold('Resolution'),
+        self._resolution.search(s).group(1))
+    _assigned = re.compile(r'<b>Assigned To:</b> <a.+?<br>(.+?)</td>', re.I)
+    _getAssign = lambda self, s: '%s: %s' % (ircutils.bold('Assigned to'), 
+        self._assigned.search(s).group(1))
+    _priority = re.compile(r'<b>Priority:</b> <a.+?<br>(.+?)</td>', re.I)
+    _getPri = lambda self, s: '%s: %s' % (ircutils.bold('Priority'),
+        self._priority.search(s).group(1))
+    _status = re.compile(r'<b>Status:</b> <a.+?<br>(.+?)</td>', re.I)
+    _getStatus = lambda self, s: '%s: %s' % (ircutils.bold('Status'), 
+        self._status.search(s).group(1))
+
     def _formatResp(self, num, text):
         """
         Parses the Sourceforge query to return a list of tuples that
@@ -221,14 +234,23 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         fd = urllib2.urlopen(url)
         s = fd.read()
         fd.close()
+        searches = (self._getStatus, self._getRes, self._getPri,
+            self._getAssign)
         try:
             (num, desc) = self._sfTitle.search(s).groups()
+            resp = [desc]
             linktype = self._linkType.search(s).group(1)
+            for i in searches:
+                try:
+                    resp.append('%s' % i(s))
+                except AttributeError:
+                    pass
             if linktype.endswith('es'):
                 linktype = linktype[:-2]
             else:
                 linktype = linktype[:-1]
-            irc.reply(msg, '%s #%s: %s' % (linktype, num, desc))
+            irc.reply(msg, '%s #%s: %s' % (ircutils.bold(linktype),
+                ircutils.bold(num), '; '.join(resp)))
         except AttributeError, e:
             irc.error(msg, 'That doesn\'t appear to be a proper Sourceforge '\
                 'Tracker page.')
