@@ -237,7 +237,6 @@ buildings = {
 }
 
 class OSU(callbacks.Privmsg):
-    threaded = True
     def email(self, irc, msg, args):
         """<first name> <middle initial> <last name>
 
@@ -261,6 +260,7 @@ class OSU(callbacks.Privmsg):
                 irc.reply('Possible matches: %s' % ', '.join(emails))
         except Exception, e:
             irc.error(utils.exnToString(e))
+    email = privmsgs.thread(email)
 
     def building(self, irc, msg, args):
         """<building abbreviation>
