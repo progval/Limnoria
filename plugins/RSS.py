@@ -57,6 +57,7 @@ import operator
 
 import rssparser
 
+import utils
 import privmsgs
 import callbacks
 
@@ -138,16 +139,18 @@ class RSS(callbacks.Privmsg):
             irc.error(msg, 'Error grabbing RSS feed')
             return
         # check the 'modified' key, if it's there, convert it here first
-        if feed.get('modified'):
-            date = time.asctime(feed['modified'])
+        if 'modified' in feed:
+            seconds = time.mktime(feed['modified'])
+            when = utils.timeElapsed(time.time(), seconds) + ' ago'
         else:
-            date = "unavailable"
+            when = "time unavailable"
         # The rest of the entries are all available in the channel key
-        response = "Title: %s; URL: %s; Description: %s; Last updated: %s" % (
-                info.get('title', 'unavailable').strip(), 
-                info.get('link', 'unavailable').strip(),
-                info.get('description', 'unavailable').strip(),
-                date)
+        response = 'Title: %s;  URL: <%s>;  ' \
+                   'Description: %s;  Last updated %s.' % (
+                       info.get('title', 'unavailable').strip(), 
+                       info.get('link', 'unavailable').strip(),
+                       info.get('description', 'unavailable').strip(),
+                       when)
         irc.reply(msg, ' '.join(response.split()))
 
 
