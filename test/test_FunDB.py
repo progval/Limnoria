@@ -39,14 +39,19 @@ except ImportError:
     sqlite = None
 
 if sqlite is not None:
-    class TestFunDB(PluginTestCase, PluginDocumentation):
+    class TestFunDB(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('FunDB','User','Utilities')
         def setUp(self):
-            PluginTestCase.setUp(self)
+            ChannelPluginTestCase.setUp(self)
             self.prefix = 't3st!bar@foo.com'
-            self.assertNotError('register t3st moo')
-            ircdb.users.getUser('t3st').addCapability('admin')
-            self.assertNotError('fundb config show-ids on')
+            self.nick = 't3st'
+            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
+                                             'register t3st moo',
+                                             prefix=self.prefix))
+            _ = self.irc.takeMsg()
+            #ircdb.users.getUser('t3st').addCapability('admin')
+            ircdb.users.getUser('t3st').addCapability('#test.op')
+            self.assertNotError('fundb config #test show-ids on')
 
         def testAdd(self):
             self.assertError('add l4rt foo')
@@ -129,7 +134,7 @@ if sqlite is not None:
         def testInsult(self):
             self.assertNotError('add insult Fatty McFatty')
             self.assertResponse('insult jemfinch',
-                                'Fatty McFatty (#1)')
+                                'jemfinch: Fatty McFatty (#1)')
             self.assertRegexp('num insult', r'currently 1')
             self.assertNotError('remove insult 1')
             self.assertRegexp('num insult', 'currently 0')

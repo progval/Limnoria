@@ -314,8 +314,8 @@ class FunDB(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
             reply = '%s #%s: Created by %s.' % (table, id, add)
             irc.reply(msg, reply)
 
-    def _formatResponse(self, s, id):
-        if self.configurables.get('show-ids'):
+    def _formatResponse(self, s, id, showids):
+        if showids:
             return '%s (#%s)' % (s, id)
         else:
             return s
@@ -343,7 +343,8 @@ class FunDB(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
             nick = re.sub(r'\bme\b', msg.nick, nick)
             nick = re.sub(r'\bmy\b', '%s\'s' % msg.nick, nick)
             insult = insult.replace('$who', nick)
-            irc.reply(msg, self._formatResponse(insult, id), to=nick)
+            showid = self.configurables.get('show-ids', channel)
+            irc.reply(msg, self._formatResponse(insult, id, showid), to=nick)
 
     def excuse(self, irc, msg, args):
         """[<channel>] [<id>]
@@ -376,7 +377,8 @@ class FunDB(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
             irc.error(msg, 'There are currently no available excuses.')
         else:
             (id, excuse) = cursor.fetchone()
-            irc.reply(msg, self._formatResponse(excuse, id))
+            showid = self.configurables.get('show-ids', channel)
+            irc.reply(msg, self._formatResponse(excuse, id, showid))
 
     def lart(self, irc, msg, args):
         """[<channel>] [<id>] <text> [for <reason>]
@@ -429,7 +431,8 @@ class FunDB(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
             if reason:
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
-            irc.reply(msg, self._formatResponse(s, id), action=True)
+            showid = self.configurables.get('show-ids', channel)
+            irc.reply(msg, self._formatResponse(s, id, showid), action=True)
 
     def praise(self, irc, msg, args):
         """[<channel>] [<id>] <text> [for <reason>]
@@ -481,7 +484,8 @@ class FunDB(callbacks.Privmsg, plugins.Configurable, plugins.ChannelDBHandler):
             if reason:
                 s = '%s for %s' % (s, reason)
             s = s.rstrip('.')
-            irc.reply(msg, self._formatResponse(s, id), action=True)
+            showid = self.configurables.get('show-ids', channel)
+            irc.reply(msg, self._formatResponse(s, id, showid), action=True)
 
 Class = FunDB
 
