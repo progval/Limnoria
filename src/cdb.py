@@ -29,7 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-## from __future__ import generators
+"""
+Database module, similar to dbhash.  Uses a format similar to (if not entirely
+the same as) DJB's CDB <http://cr.yp.to/cdb.html>.
+"""
 
 from fix import *
 
@@ -43,22 +46,27 @@ import cPickle as pickle
 import utils
 
 def hash(s):
+    """DJB's hash function for CDB."""
     h = 5381
     for c in s:
         h = ((h + (h << 5)) ^ ord(c)) & 0xFFFFFFFFL
     return h
 
 def unpack2Ints(s):
+    """Returns two ints unpacked from the binary string s."""
     return struct.unpack('<LL', s)
 
 def pack2Ints(i, j):
+    """Returns a packed binary string from the two ints."""
     return struct.pack('<LL', i, j)
 
 def dump(map, fd=sys.stdout):
+    """Dumps a dictionary-structure in CDB format."""
     for (key, value) in map.iteritems():
         fd.write('+%s,%s:%s->%s\n' % (len(key), len(value), key, value))
 
 def open(filename, mode='r'):
+    """Opens a database; used for compatibility with other database modules."""
     if mode == 'r':
         return Reader(filename)
     elif mode == 'w':
@@ -78,6 +86,7 @@ def open(filename, mode='r'):
         raise ValueError, 'Invalid flag: %s' % mode
 
 def shelf(filename):
+    """Opens a new shelf database object."""
     if os.path.exists(filename):
         return Shelf(filename)
     else:
@@ -106,6 +115,7 @@ def _readKeyValue(fd):
     return (initchar, key, value)
 
 def make(dbFilename, readFilename=None):
+    """Makes a database from the filename, otherwise uses stdin."""
     if readFilename is None:
         readfd = sys.stdin
     else:
@@ -122,6 +132,7 @@ def make(dbFilename, readFilename=None):
 
 
 class Maker(object):
+    """Class for making CDB databases."""
     def __init__(self, filename):
         self.fd = file(filename, 'w')
         self.filename = filename
@@ -133,6 +144,7 @@ class Maker(object):
             self.hashes.append([])
 
     def add(self, key, data):
+        """Adds a key->value pair to the database."""
         h = hash(key)
         hashPointer = h % 256
         startPosition = self.fd.tell()
@@ -142,6 +154,10 @@ class Maker(object):
         self.hashes[hashPointer].append((h, startPosition))
 
     def finish(self):
+        """Finishes the current Maker object.
+
+        Writes the remainder of the database to disk.
+        """
         for i in xrange(256):
             hash = self.hashes[i]
             self.hashPointers[i] = (self.fd.tell(), self._serializeHash(hash))
@@ -168,6 +184,7 @@ class Maker(object):
 
 
 class Reader(utils.IterableMap):
+    """Class for reading from a CDB database."""
     def __init__(self, filename):
         self.filename = filename
         self.fd = file(filename, 'r')
@@ -265,6 +282,7 @@ class Reader(utils.IterableMap):
 
 
 class ReaderWriter(utils.IterableMap):
+    """Uses a journal to pretend that a CDB is writable database."""
     def __init__(self, filename, journalName=None, maxmods=0):
         if journalName is None:
             journalName = filename + '.journal'
@@ -424,7 +442,8 @@ class ReaderWriter(utils.IterableMap):
             return default
 
 
-class Shelf(ReaderWriter, utils.IterableMap):
+class Shelf(ReaderWriter):
+    """Uses pickle to mimic the shelf module."""
     def __getitem__(self, key):
         return pickle.loads(ReaderWriter.__getitem__(self, key))
 
