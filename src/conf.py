@@ -278,12 +278,6 @@ registerGlobalValue(supybot.reply, 'oneToOne',
     safety purposes (so the bot can't possibly flood) it will normally send
     everything in a single message."""))
 
-registerChannelValue(supybot.reply, 'bracketSyntax',
-    registry.Boolean(True, """Supybot allows nested commands. If this option is
-    enabled, users can nest commands using a bracket syntax, for example: 'bot:
-    bar [foo]'.  The matching left/right characters used for nesting commands
-    can be set via the supybot.reply.brackets"""))
-
 class ValidBrackets(registry.OnlySomeStrings):
     validStrings = ('', '[]', '<>', '{}', '()')
 

@@ -74,26 +74,22 @@ class TokenizerTestCase(SupyTestCase):
                          ['foo', 'bar baz', 'quux'])
 
     def testNesting(self):
-        orig = conf.supybot.reply.bracketSyntax()
+        self.assertEqual(tokenize('[]'), [[]])
+        self.assertEqual(tokenize('[foo]'), [['foo']])
+        self.assertEqual(tokenize('[ foo ]'), [['foo']])
+        self.assertEqual(tokenize('foo [bar]'), ['foo', ['bar']])
+        self.assertEqual(tokenize('foo bar [baz quux]'),
+                         ['foo', 'bar', ['baz', 'quux']])
         try:
-            conf.supybot.reply.bracketSyntax.setValue(True)
-            self.assertEqual(tokenize('[]'), [[]])
-            self.assertEqual(tokenize('[foo]'), [['foo']])
-            self.assertEqual(tokenize('[ foo ]'), [['foo']])
-            self.assertEqual(tokenize('foo [bar]'), ['foo', ['bar']])
-            self.assertEqual(tokenize('foo bar [baz quux]'),
-                             ['foo', 'bar', ['baz', 'quux']])
-        finally:
-            conf.supybot.reply.bracketSyntax.setValue(orig)
-        try:
-            conf.supybot.reply.bracketSyntax.setValue(False)
+            orig = conf.supybot.reply.brackets()
+            conf.supybot.reply.brackets.setValue('')
             self.assertEqual(tokenize('[]'), ['[]'])
             self.assertEqual(tokenize('[foo]'), ['[foo]'])
             self.assertEqual(tokenize('foo [bar]'), ['foo', '[bar]'])
             self.assertEqual(tokenize('foo bar [baz quux]'),
                              ['foo', 'bar', '[baz', 'quux]'])
         finally:
-            conf.supybot.reply.bracketSyntax.setValue(orig)
+            conf.supybot.reply.brackets.setValue(orig)
 
     def testError(self):
         self.assertRaises(SyntaxError, tokenize, '[foo') #]
