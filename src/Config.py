@@ -169,6 +169,13 @@ class Config(callbacks.Privmsg):
         configuration value of <name>.  <channel> is only necessary if the
         message isn't sent in the channel itself."""
         channel = privmsgs.getChannel(msg, args)
+        if not args:
+            raise callbacks.ArgumentError
+        wrapper = getWrapper(args[0])
+        if not wrapper.channelValue:
+            irc.error('That configuration variable is not a channel-specific '
+                      'configuration variable.')
+            return
         components = registry.split(args[0])
         components.append(channel)
         args[0] = registry.join(components)
