@@ -49,6 +49,7 @@ import irclib
 import ircmsgs
 import ircutils
 import privmsgs
+import webutils
 import callbacks
 
 class Misc(callbacks.Privmsg):
@@ -207,7 +208,7 @@ class Misc(callbacks.Privmsg):
         """
         try:
             newest = webutils.getUrl('http://supybot.sf.net/version.txt')
-            newest = 'The newest version available online is %s.' % version
+            newest ='The newest version available online is %s.'%newest.strip()
         except webutils.WebError, e:
             self.log.warning('Couldn\'t get website version: %r', e)
             newest = 'I could\'t fetch the newest version ' \
