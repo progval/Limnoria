@@ -303,7 +303,7 @@ class IrcChannelTestCase(unittest.TestCase):
         self.failIf(c.checkIgnored(prefix))
 
 class UsersDBTestCase(unittest.TestCase):
-    filename = 'UsersDBTestCase.conf'
+    filename = os.path.join(conf.confDir, 'UsersDBTestCase.conf')
     def setUp(self):
         try:
             os.remove(self.filename)
@@ -353,7 +353,7 @@ class UsersDBTestCase(unittest.TestCase):
 
 
 class CheckCapabilityTestCase(unittest.TestCase):
-    filename = 'CheckCapabilityTestCase.conf'
+    filename = os.path.join(conf.confDir, 'CheckCapabilityTestCase.conf')
     owner = 'owner!owner@owner'
     nothing = 'nothing!nothing@nothing'
     justfoo = 'justfoo!justfoo@justfoo'
