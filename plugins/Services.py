@@ -207,7 +207,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
 
     def doNick(self, irc, msg):
         nick = self.registryValue('nick')
-        if msg.args[0] == irc.nick:
+        if msg.args[0] == irc.nick and irc.nick == nick:
             self._doIdentify(irc)
         elif ircutils.strEqual(msg.nick, nick):
             irc.sendMsg(ircmsgs.nick(nick))
@@ -240,6 +240,10 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
                 self.log.info('Received "GHOST succeeded" from NickServ.')
                 self.sentGhost = False
                 self.identified = False
+                irc.queueMsg(ircmsgs.nick(nick))
+            elif 'currently' in s and 'isn\'t' in s or 'is not' in s:
+                # The nick isn't online, let's change our nick to it.
+                self.sentGhost = False
                 irc.queueMsg(ircmsgs.nick(nick))
             elif ('registered' in s or 'protected' in s) and \
                ('not' not in s and 'isn\'t' not in s):
