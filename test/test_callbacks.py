@@ -249,6 +249,10 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertRegexp('help first firstcmd', 'First', 0) # no re.I flag.
         self.assertRegexp('help firstrepeat firstcmd', 'FirstRepeat', 0)
 
+    def testDispatcherHelp(self):
+        self.assertNotRegexp('help first', r'\(dispatcher')
+        self.assertNotRegexp('help first', r'%s')
+
     def testDefaultCommand(self):
         self.irc.addCallback(self.First())
         self.irc.addCallback(self.Third())

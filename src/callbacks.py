@@ -41,6 +41,7 @@ how to use them.
 import fix
 
 import re
+import new
 import copy
 import sets
 import time
@@ -577,6 +578,37 @@ class Privmsg(irclib.IrcCallback):
     def __init__(self):
         self.rateLimiter = RateLimiter()
         self.Proxy = IrcObjectProxy
+        canonicalname = canonicalName(self.name())
+        self._original = getattr(self, canonicalname, None)
+        docstring = """<command> [<args> ...]
+        
+        Command dispatcher for %s.  Use 'list %s' to see the commands
+        provided by this plugin.  In most cases this dispatcher command
+        is unnecessary; in cases where more than one plugin defines a given
+        command, use this command to tell the bot which plugin's command to
+        use.""" % (self.name(), self.name())
+        def dispatcher(self, irc, msg, args):
+            def handleBadArgs():
+                if self._original:
+                    self._original(irc, msg, args)
+                else:
+                    raise ArgumentError
+            if args:
+                name = canonicalName(args[0])
+                if self.isCommand(name):
+                    del args[0]
+                    method = getattr(self, name)
+                    method(irc, msg, args)
+                else:
+                    handleBadArgs()
+            else:
+                handleBadArgs()
+        dispatcher = new.function(dispatcher.func_code,globals(),canonicalname)
+        if self._original:
+            dispatcher.__doc__ = self._original.__doc__
+        else:
+            dispatcher.__doc__ = docstring
+        setattr(self.__class__, canonicalname, dispatcher)
 
     def configure(self, irc):
         fakeIrc = ConfigIrcProxy(irc)
