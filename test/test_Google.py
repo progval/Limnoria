@@ -42,6 +42,9 @@ class GoogleTestCase(ChannelPluginTestCase, PluginDocumentation):
                           'lr=lang_en&ie=UTF-8&oe=UTF-8&selm=698f09f8.'
                           '0310132012.738e22fc%40posting.google.com',
                           r'comp\.lang\.python.*question: usage of __slots__')
+        self.assertRegexp('http://groups.google.com/groups?selm=ExDm.'
+                          '8bj.23%40gated-at.bofh.it&oe=UTF-8&output=gplain',
+                          r'linux\.kernel.*NFS client freezes')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

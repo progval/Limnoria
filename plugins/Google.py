@@ -287,7 +287,9 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     googleSnarfer = privmsgs.urlSnarfer(googleSnarfer)
 
     _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
+    _ggPlainThread = re.compile(r'Subject: (.*)')
     _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
+    _ggPlainGroup = re.compile(r'Newsgroups: (.*)')
     def googleGroups(self, irc, msg, match):
         r"http://groups.google.com/[^\s]+"
         if not self.configurables.get('groups-snarfer', channel=msg.args[0]):
@@ -297,7 +299,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         fd = urllib2.urlopen(request)
         text = fd.read()
         fd.close()
-        if match.group(0).find('&prev=/') >= 0:
+        if '&prev=/' in match.group(0):
             path = re.search('view the <a href=([^>]+)>no',text)
             if path is None:
                 return
@@ -308,8 +310,12 @@ class Google(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             fd = urllib2.urlopen(request)
             text = fd.read()
             fd.close()
-        mThread = self._ggThread.search(text)
-        mGroup = self._ggGroup.search(text)
+        if '&output=gplain' not in match.group(0):
+            mThread = self._ggThread.search(text)
+            mGroup = self._ggGroup.search(text)
+        else:
+            mThread = self._ggPlainThread.search(text)
+            mGroup = self._ggPlainGroup.search(text)
         if mThread and mGroup:
             irc.reply(msg, 'Google Groups: %s, %s' % (mGroup.group(1),
                 mThread.group(1)), prefixName = False)
