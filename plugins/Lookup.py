@@ -54,7 +54,7 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load FileLookup')
     print 'This module allows you to define commands that do a simple key'
-    print 'lookup and return some simple value.  It has a command "addlookup"'
+    print 'lookup and return some simple value.  It has a command "add"'
     print 'that takes a command name and a file in conf.dataDir and adds a'
     print 'command with that name that responds with mapping from that file.'
     print 'The file itself should be composed of lines of the form key:value.'
@@ -74,23 +74,23 @@ def configure(onStart, afterConnect, advanced):
             print 'That\'s not a valid file; line #%s is malformed.' % counter
             continue
         command = something('What would you like the command to be?')
-        onStart.append('addlookup %s %s' % (command, filename))
+        onStart.append('lookup add %s %s' % (command, filename))
     
 
 example = utils.wrapLines("""
-<jemfinch> @addlookup areacode areacodes.supyfact
+<jemfinch> @lookup add areacode areacodes.supyfact
 <supybot> jemfinch: The operation succeeded.
 <jemfinch> @areacode 513
 <supybot> jemfinch: SW Ohio: Cincinnati (see split 937; overlay 283 cancelled)
 <jemfinch> @areacode 937
 <supybot> jemfinch: SW Ohio: Dayton (part of what used to be 513)
-<jemfinch> @removelookup areacode
+<jemfinch> @lookup remove areacode
 <supybot> jemfinch: The operation succeeded.
 <jemfinch> @areacode 513
 <jemfinch> (note there is no response; the command doesn't exist anymore)
-<jemfinch> @addlookup areacode areacodes.supyfact
+<jemfinch> @lookup add areacode areacodes.supyfact
 <supybot> jemfinch: The operation succeeded.
-<jemfinch> @addlookup deepthought deepthoughts.supyfact
+<jemfinch> @lookup add deepthought deepthoughts.supyfact
 <supybot> jemfinch: The operation succeeded.
 <jemfinch> (deepthought maps numbers to deep thoughts by Jack Handy; if a lookup isn't given an argument, it'll return a random key: value pair.  That's useful for something like this.)
 <jemfinch> @deepthought
@@ -100,14 +100,14 @@ example = utils.wrapLines("""
 def getDb():
     return sqlite.connect(os.path.join(conf.dataDir, 'FileLookup.db'))
 
-class FileLookup(callbacks.Privmsg):
+class Lookup(callbacks.Privmsg):
     def die(self):
         db = getDb()
         db.commit()
         db.close()
         del db
 
-    def removelookup(self, irc, msg, args):
+    def remove(self, irc, msg, args):
         """<name>
 
         Removes the lookup for <name>.
@@ -125,7 +125,7 @@ class FileLookup(callbacks.Privmsg):
         except sqlite.DatabaseError:
             irc.error(msg, 'No such lookup exists.')
 
-    def addlookup(self, irc, msg, args):
+    def add(self, irc, msg, args):
         """<name> <filename>
 
         Adds a lookup for <name> with the key/value pairs specified in the
@@ -216,6 +216,6 @@ class FileLookup(callbacks.Privmsg):
             irc.reply(msg, '%s: %s' % (key, value))
             
             
-Class = FileLookup
+Class = Lookup
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
