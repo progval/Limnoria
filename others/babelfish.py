@@ -70,7 +70,8 @@ __where = [ re.compile(r'lang=..>([^<]*)</div'),
           ]
 
 __languages = { 'english'   : 'en',
-                'chinese'   : 'zh',
+                'chinese_simple'   : 'zh',
+                'chinese_traditional'   : 'zt',
                 'french'    : 'fr',
                 'german'    : 'de',
                 'italian'   : 'it',
@@ -78,6 +79,9 @@ __languages = { 'english'   : 'en',
                 'korean'    : 'ko',
                 'spanish'   : 'es',
                 'portuguese' : 'pt',
+                'russian'   : 'ru',
+                'greek'     : 'el',
+                'dutch'     : 'nl',
               }
 
 """
