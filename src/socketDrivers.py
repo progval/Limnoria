@@ -134,7 +134,11 @@ class SocketDriver(drivers.IrcDriver):
         
     def reconnect(self, wait=False, reset=True):
         server = '%s:%s' % self.server
-        self.irc.reset()
+        if reset:
+            log.debug('Resetting %s.', self.irc)
+            self.irc.reset()
+        else:
+            log.debug('Not resetting %s.', self.irc)
         if self.connected:
             log.info('Reconnect called on driver for %s.', self.irc)
             self.conn.close()
@@ -145,11 +149,6 @@ class SocketDriver(drivers.IrcDriver):
             log.info('Reconnect to %s waiting.', server)
             self._scheduleReconnect()
             return
-        if reset:
-            log.debug('Resetting %s.', self.irc)
-            self.irc.reset()
-        else:
-            log.debug('Not resetting %s.', self.irc)
         try:
             self.conn = utils.getSocket(self.server[0])
         except socket.error, e:
