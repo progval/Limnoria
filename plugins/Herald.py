@@ -170,7 +170,7 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
         try:
             id = self._getId(userNickHostmask)
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
             return
         self.db.setHerald(id, channel, herald)
         irc.replySuccess()
@@ -188,7 +188,7 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
         try:
             id = self._getId(userNickHostmask)
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
             return
         self.db.delHerald(id, channel)
         irc.replySuccess()

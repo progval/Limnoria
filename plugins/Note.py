@@ -134,7 +134,7 @@ class Note(callbacks.Privmsg):
                 hostmask = irc.state.nickToHostmask(name)
                 toId = ircdb.users.getUserId(hostmask)
             except KeyError:
-                irc.error(conf.replyNoUser)
+                irc.errorNoUser()
                 return
         try:
             fromId = ircdb.users.getUserId(msg.prefix)

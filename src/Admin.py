@@ -244,7 +244,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 ircdb.users.setUser(id, user)
                 irc.replySuccess()
             except KeyError:
-                irc.error(conf.replyNoUser)
+                irc.errorNoUser()
         else:
             s = 'You can\'t add capabilities you don\'t have.'
             irc.error(s)
@@ -262,7 +262,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
                 id = ircdb.users.getUserId(name)
                 user = ircdb.users.getUser(id)
             except KeyError:
-                irc.error(conf.replyNoUser)
+                irc.errorNoUser()
                 return
             try:
                 user.removeCapability(capability)

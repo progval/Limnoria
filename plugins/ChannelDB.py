@@ -400,7 +400,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                     hostmask = irc.state.nickToHostmask(name)
                     name = ircdb.users.getUserId(hostmask)
                 except KeyError:
-                    irc.error(conf.replyNoUser)
+                    irc.errorNoUser()
         else:
             table = 'nick_seen'
             criterion = 'normalized=%s'
@@ -439,7 +439,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                 hostmask = irc.state.nickToHostmask(name)
                 id = ircdb.users.getUserId(hostmask)
             except KeyError:
-                irc.error(conf.replyNoUser)
+                irc.errorNoUser()
                 return
         else:
             id = ircdb.users.getUserId(name)
@@ -544,7 +544,7 @@ class ChannelDB(plugins.ChannelDBHandler,
                     hostmask = irc.state.nickToHostmask(user)
                     id = ircdb.users.getUserId(hostmask)
                 except KeyError:
-                    irc.error(conf.replyNoUser)
+                    irc.errorNoUser()
                     return
             db = self.getDb(channel)
             cursor = db.cursor()

@@ -248,7 +248,7 @@ class Topic(callbacks.Privmsg, configurable.Mixin):
         try:
             senderName = ircdb.users.getUser(msg.prefix).name
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
             return
         if name and name != senderName and \
            not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):

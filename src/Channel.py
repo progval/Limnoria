@@ -411,7 +411,7 @@ class Channel(callbacks.Privmsg):
             ircdb.users.setUser(id, user)
             irc.replySuccess()
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
     addcapability = privmsgs.checkChannelCapability(addcapability,'op')
 
     def removecapability(self, irc, msg, args, channel):
@@ -431,7 +431,7 @@ class Channel(callbacks.Privmsg):
             ircdb.users.setUser(id, user)
             irc.replySuccess()
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
     removecapability = privmsgs.checkChannelCapability(removecapability, 'op')
 
     def setdefaultcapability(self, irc, msg, args, channel):

@@ -187,7 +187,7 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
             return
         try:
             otherId = ircdb.users.getUserId(hostmask)
@@ -218,7 +218,7 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
             return
         if user.checkHostmask(msg.prefix) or user.checkPassword(password):
             try:
@@ -251,7 +251,7 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
             return
         if user.checkPassword(oldpassword):
             user.setPassword(newpassword, hashed=hashed)
@@ -271,13 +271,13 @@ class User(callbacks.Privmsg):
             try:
                 hostmask = irc.state.nickToHostmask(hostmask)
             except KeyError:
-                irc.error(conf.replyNoUser)
+                irc.errorNoUser()
                 return
         try:
             user = ircdb.users.getUser(hostmask)
             irc.reply(user.name)
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
 
     def hostmasks(self, irc, msg, args):
         """[<name>]
@@ -299,7 +299,7 @@ class User(callbacks.Privmsg):
                         user = ircdb.users.getUser(name)
                         irc.reply(repr(user.hostmasks))
                     except KeyError:
-                        irc.error(conf.replyNoUser)
+                        irc.errorNoUser()
             else:
                 irc.reply(repr(user.hostmasks))
         except KeyError:
@@ -319,7 +319,7 @@ class User(callbacks.Privmsg):
             user = ircdb.users.getUser(name)
             irc.reply('[%s]' % ', '.join(user.capabilities))
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
 
     def identify(self, irc, msg, args):
         """<name> <password>
@@ -334,7 +334,7 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(name)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
             return
         if user.checkPassword(password):
             try:
@@ -356,7 +356,7 @@ class User(callbacks.Privmsg):
             id = ircdb.users.getUserId(msg.prefix)
             user = ircdb.users.getUser(id)
         except KeyError:
-            irc.error(conf.replyNoUser)
+            irc.errorNoUser()
             return
         user.unsetAuth()
         ircdb.users.setUser(id, user)
