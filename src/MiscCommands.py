@@ -45,6 +45,7 @@ import textwrap
 import conf
 import debug
 import utils
+import world
 import ircmsgs
 import ircutils
 import privmsgs
@@ -55,7 +56,7 @@ class MiscCommands(callbacks.Privmsg):
         # This exists to be able to respond to attempts to command the bot
         # with a "That's not a command!" if the proper conf.variable is set.
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
-        if conf.replyWhenNotCommand:
+        if conf.replyWhenNotCommand and msg.nick != irc.nick:
             s = callbacks.addressed(irc.nick, msg)
             if s:
                 tokens = callbacks.tokenize(s)
