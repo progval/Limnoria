@@ -75,33 +75,65 @@ def makeDb(filename):
 
 class Infobot(callbacks.PrivmsgRegexp):
     def __init__(self):
+        callbacks.PrivmsgRegexp.__init__(self)
         self.db = makeDb(dbfilename)
-        self.cursor = db.cursor()
+        self.cursor = self.db.cursor()
 
     def getRandomSaying(self, table):
         sql = 'SELECT saying FROM %s ORDER BY random() LIMIT 1' % table
-        cursor.execute(sql)
-        return cursor.fetchone()[0]
+        self.cursor.execute(sql)
+        return self.cursor.fetchone()[0]
+
+    def getFactoid(self, key):
+        self.cursor.execute('SELECT value FROM is_factoids WHERE key=%s', key)
+        if self.cursor.rowcount != 0:
+            statement = self.getRandomSaying('statements')
+            value = self.cursor.fetchone()[0]
+            return '%s %s is %s' % (statement, key, value)
+        self.cursor.execute('SELECT value FROM are_factoids WHERE key=%s', key)
+        if self.cursor.rowcount != 0:
+            statement = self.getRandomSaying('statements')
+            value = self.cursor.fetchone()[0]
+            return '%s %s are %s' % (statement, key, value)
+        raise KeyError, key
 
     def forget(self, irc, msg, match):
-        r"^forget\s+(.+?)\s+about\s+(.+?)[?.! ]*$"
-        pass
+        r"^forget\s+(.+?)[?.! ]*$"
+        key = match.group(1)
+        self.cursor.execute('DELETE FROM is_factoids WHERE key=%s', key)
+        self.cursor.execute('DELETE FROM are_factoids WHERE key=%s', key)
+        irc.reply(msg, self.getRandomSaying('confirms'))
 
     def tell(self, irc, msg, match):
         r"^tell\s+(.+?)\s+about\s+(.+?)[?.! ]*$"
-        pass
-
+        (nick, key) = match.groups()
+        try:
+            s = '%s wants you to know that %s' %(msg.nick,self.getFactoid(key))
+            irc.queueMsg(irmcsgs.privmsg(nick, s)
+        except KeyError:
+            irc.reply(msg, 'I don\'t know anything about %s' % key)
+        
     def factoid(self, irc, msg, match):
         r"^(no[ :,-]+)?(.+?)\s+(was|is|am|were|are)\s+(also\s+)?(.+)$"
         pass
 
     def unknown(self, irc, msg, match):
         r"^(.+?)[?.! ]*$"
-        pass
+        key = match.group(1)
+        try:
+            irc.queueMsg(ircmsgs.privmsg(msg.args[0], self.getFactoid(key)))
+        except KeyError:
+            irc.reply(msg, self.getRandomSaying('dont_knows'))
 
     def info(self, irc, msg, match):
         r"^info$"
-        pass
+        self.cursor.execute("SELECT COUNT(*) FROM is_factoids")
+        numIs = self.cursor.fetchone()[0]
+        self.cursor.execute("SELECT COUNT(*) FROM are_factoids")
+        numAre = self.cursor.fetchone()[0]
+        s = 'I have %s is factoids and %s are factoids' % (numIs, numAre)
+        irc.reply(msg, s)
+                  
 
     
 
