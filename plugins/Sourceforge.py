@@ -60,7 +60,7 @@ def configure(onStart, afterConnect, advanced):
     print 'that match a specific pattern (we call this a snarfer). When'
     print 'supybot sees such a URL, he will parse the web page for'
     print 'information and reply with the results.\n'
-    if yn('Do you want the Sourceforge snarfer enabled by default?') == 'y':
+    if yn('Do you want this snarfer to be enabled by default?') == 'y':
         onStart.append('Sourceforge config tracker-snarfer on')
 
     print 'The bugs and rfes commands of the Sourceforge plugin can be set'
@@ -74,7 +74,14 @@ def configure(onStart, afterConnect, advanced):
         if project:
             onStart.append('Sourceforge config defaultproject %s' % project)
 
-    if yn('Would you like to add sf as an alias to Sourceforge?') == 'y':
+    print 'Sourceforge is quite the word to type, and it may get annoying'
+    print 'typing it all the time because Supybot makes you use the plugin'
+    print 'name to disambiguate calls to ambiguous commands (i.e., the bug'
+    print 'command is in this plugin and the Bugzilla plugin; if both are'
+    print 'loaded, you\'ll have you type "sourceforge bug ..." to get this'
+    print 'bug command).  You may save some time by making an alias for'
+    print '"sourceforge".  We like to make it "sf".'
+    if yn('Would you like to add sf as an alias for Sourceforge?') == 'y':
         if 'load Alias' not in onStart:
             print 'This depends on the Alias module.'
             if yn('Would you like to load the Alias plugin now?') == 'y':
