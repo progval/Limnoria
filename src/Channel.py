@@ -338,7 +338,9 @@ class Channel(callbacks.Privmsg):
             irc.queueMsg(ircmsgs.kick(channel, bannedNick, reason))
             if length > 0:
                 def f():
-                    irc.queueMsg(ircmsgs.unban(channel, banmask))
+                    if channel in irc.state.channels and \
+                       banmask in irc.state.channels[channel].bans:
+                        irc.queueMsg(ircmsgs.unban(channel, banmask))
                 schedule.addEvent(f, time.time() + length)
         if bannedNick == msg.nick:
             doBan()
