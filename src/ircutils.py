@@ -204,7 +204,7 @@ def replyTo(msg):
     else:
         return msg.nick
 
-def privmsgPayload(L, sep, limit=450):
+def privmsgPayload(L, sep, limit=425):
     """Returns a valid privmsg payload given a list of strings and a separator.
 
     Items are popped from the back of the list until the payload is small
@@ -213,7 +213,7 @@ def privmsgPayload(L, sep, limit=450):
     shrinkList(L, sep, limit)
     return sep.join(L)
 
-def shrinkList(L, sep='', limit=450):
+def shrinkList(L, sep='', limit=425):
     """Shrinks a list of strings to a given combined length of limit."""
     length = len(sep)
     while reduce(operator.add, map(length.__add__, map(len, L)), 0)> limit:
