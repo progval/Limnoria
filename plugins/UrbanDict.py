@@ -30,8 +30,8 @@
 ###
 
 """
-Provides an interface to the wonders of UrbanDictionary.com
-'Not appropriate for all audiences'
+Provides an interface to the wonders of UrbanDictionary.com.  This may include
+some offensive definitions.
 """
 
 __revision__ = "$Id$"
@@ -62,15 +62,16 @@ conf.registerPlugin('UrbanDict')
 class UrbanDict(callbacks.Privmsg):
     threaded = True
     callBefore = ['URL']
-
     def callCommand(self, method, irc, msg, *L, **kwargs):
         try:
             super(UrbanDict, self).callCommand(method, irc, msg, *L, **kwargs)
         except webutils.WebError, e:
             irc.error(str(e))
 
-    _wordRE = re.compile('<title>UrbanDictionary.com/(?P<word>.*?)</title>')
-    _defUsageRE = re.compile('<blockquote><p>(?P<definition>.*?)</p><p><i>(?P<usage>.*?)</i></p>', re.MULTILINE | re.DOTALL)
+    _wordRE = re.compile(r'<title>UrbanDictionary.com/(?P<word>.*?)</title>')
+    _defUsageRE = re.compile(r'<blockquote><p>(?P<definition>.*?)</p>'
+                             r'<p><i>(?P<usage>.*?)</i></p>',
+                             re.MULTILINE | re.DOTALL)
     def ud(self, irc, msg, args):
         """[<phrase>]
 
