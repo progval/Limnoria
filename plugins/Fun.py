@@ -124,7 +124,7 @@ class Fun(callbacks.Privmsg):
 
         Returns an encoded form of the given text; the valid encodings are
         available in the documentation of the Python codecs module:
-        <http://www.python.org/doc/lib/node126.html>.
+        <http://www.python.org/doc/lib/node127.html>.
         """
         encoding, text = privmsgs.getArgs(args, required=2)
         try:
@@ -137,7 +137,7 @@ class Fun(callbacks.Privmsg):
 
         Returns an un-encoded form of the given text; the valid encodings are
         available in the documentation of the Python codecs module:
-        <http://www.python.org/doc/lib/node126.html>.
+        <http://www.python.org/doc/lib/node127.html>.
         """
         encoding, text = privmsgs.getArgs(args, required=2)
         try:
