@@ -131,6 +131,7 @@ class FunDB(callbacks.Privmsg):
     def die(self):
         self.db.commit()
         self.db.close()
+        del self.db
 
     def _pluralize(self, string, count, verb=None):
         if verb is None:
@@ -214,7 +215,12 @@ class FunDB(callbacks.Privmsg):
     def dbadd(self, irc, msg, args):
         """<lart|excuse|insult|praise> <text>
 
-        Adds another record to the data referred to in the first argument.
+        Adds another record to the data referred to in the first argument.  For
+        commands that will later respond with an ACTION (lart and praise), $who
+        should be in the message to show who should be larted or praised.  I.e.
+        'dbadd lart slices $who in half with a free AOL cd' would make the bot,
+        when it used that lart against, say, jemfinch, to say '/me slices
+        jemfinch in half with a free AOL cd'
         """
         (table, s) = privmsgs.getArgs(args, needed=2)
         table = table.lower()
