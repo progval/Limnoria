@@ -256,6 +256,18 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     def testEmptySquareBrackets(self):
         self.assertError('echo []')
 
+    def testMaximumNestingDepth(self):
+        original = conf.supybot.commands.nested.maximum()
+        try:
+            conf.supybot.commands.nested.maximum.setValue(3)
+            self.assertResponse('echo foo', 'foo')
+            self.assertResponse('echo [echo foo]', 'foo')
+            self.assertResponse('echo [echo [echo foo]]', 'foo')
+            self.assertResponse('echo [echo [echo [echo foo]]]', 'foo')
+            self.assertError('echo [echo [echo [echo [echo foo]]]]')
+        finally:
+            conf.supybot.commands.nested.maximum.setValue(original)
+
     def testSimpleReply(self):
         self.assertResponse("eval irc.reply('foo')", 'foo')
 
