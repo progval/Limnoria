@@ -301,9 +301,9 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
     def rfes(self, irc, msg, args):
         """[--{any,open,closed,deleted,pending}] [<project>]
 
-        Returns a list of the most recent RFEs filed against <project>.
-        <project> is not needed if there is a default project set.  Search
-        defaults to open RFEs.
+        Returns a list of the most recent Requests For Enhancement (RFEs) 
+        filed against <project>.  <project> is not needed if there is a 
+        default project set.  Search defaults to open RFEs.
         """
         (optlist, rest) = getopt.getopt(args, '', self._statusOpt.keys())
         project = privmsgs.getArgs(rest, required=0, optional=1)
