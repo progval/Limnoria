@@ -362,7 +362,8 @@ class IrcObjectProxy:
                 msgs.reverse()
                 response = msgs.pop()
                 if msgs:
-                    response += ' \x02(more)\x0F'
+                    response += ' \x02(%s)\x0F' % \
+                                utils.nItems(len(msgs), 'message', 'more')
                 mask = msg.prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
                 self.irc.queueMsg(reply(msg, response))

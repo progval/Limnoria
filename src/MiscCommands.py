@@ -217,9 +217,11 @@ class MiscCommands(callbacks.Privmsg):
         """
         userHostmask = msg.prefix.split('!', 1)[1]
         try:
-            chunk = self._mores[userHostmask].pop()
-            if self._mores[userHostmask]:
-                chunk += ' \x02(more)\x0F'
+            L = self._mores[userHostmask]
+            chunk = L.pop()
+            if L:
+                chunk += ' \x02(%s)\x0F' % \
+                         utils.nItems(len(L), 'message', 'more')
             irc.reply(msg, chunk, True)
         except KeyError:
             irc.error(msg, 'You haven\'t asked me a command!')
