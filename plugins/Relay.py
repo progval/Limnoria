@@ -377,6 +377,16 @@ class Relay(callbacks.Privmsg):
         replyIrc.reply(replyMsg, s)
         del self.whois[(irc, nick)]
 
+    def do402(self, irc, msg):
+        if not isinstance(irc, irclib.Irc):
+            irc = irc.getRealIrc()
+        nick = ircutils.toLower(msg.args[1])
+        if (irc, nick) not in self.whois:
+            return
+        (replyIrc, replyMsg, d) = self.whois[(irc, nick)]
+        s = 'There is no %s on %s.' % (nick, self.abbreviations[irc])
+        replyIrc.reply(replyMsg, s)
+
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
         if self.color >= 1:
