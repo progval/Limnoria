@@ -463,7 +463,7 @@ class SeparatedListOf(Value):
     def set(self, s):
         L = self.splitter(s)
         for (i, s) in enumerate(L):
-            v = self.Value(s, 'help does not matter here')
+            v = self.Value(s, '')
             L[i] = v()
         self.setValue(L)
 
