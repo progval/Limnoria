@@ -82,7 +82,7 @@ if clean:
 setup(
     # Metadata
     name='supybot',
-    version='0.79.9999+cvs',
+    version='0.80.0pre1',
     author='Jeremy Fincher',
     url='http://supybot.sf.net/',
     author_email='jemfinch@users.sf.net',

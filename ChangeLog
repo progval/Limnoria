@@ -1,3 +1,7 @@
+2004-09-12 Jeremy Fincher <jemfinch@supybot.org>
+
+	* Version 0.80.0pre1!
+	
 	* Added the facility to supporting several different database
 	implementations in a plugin, allowing the user to specify which
 	databases are supported as well as in what order of preference.

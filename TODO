@@ -1,9 +1,13 @@
 Roughly in order of precedence (the closer to the front of the file,
 the more likely it'll be done before next release):
 
-* Update the database infrastructure to allow other RDBMSes.
+* We need to store the key for channels in the registry and have an
+  easy way for plugins to send joins to channels based on their
+  registry configuration.
 
-* Improved (and perhaps integrated) Services and Enforcer plugins.
+* We need to note when bans expire on a channel and send the unban,
+  that way plugins can use the ircdb ban stuff and not worry about
+  sending or scheduling unbans.
 
 * Filters need to be added to the logs during testing so many logs
   (useless during testing) won't occur.
@@ -12,12 +16,10 @@ the more likely it'll be done before next release):
   compatible with Eggdrop, since we've been replacing many eggdrop
   bots lately.
 
-* Config.list should prefix ChannelValues with #.
-
 * We should be able to set the log level for plugins individually.
 
 * Rbot has a "remind" plugin that seems pretty cool, we should get
-  one as well.
+  one as well.  It might do well as a command in the Later plugin.
 
 * MozBot has a "list" plugin that seems pretty cool, we should get
   one as well.
