@@ -77,5 +77,10 @@ class FunCommandsTest(PluginTestCase, PluginDocumentation):
             i = ord(c)
             self.assertResponse('ord %s' % utils.dqrepr(c), str(i))
 
+    def testScramble(self):
+        s = 'the recalcitrant jamessan tests his scramble function'
+        self.assertNotRegexp('scramble %s' % s, s)
+        s = 'the recalc1trant jam3ssan tests his scramble fun><tion'
+        self.assertNotRegexp('scramble %s' % s, s)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

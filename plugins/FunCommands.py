@@ -480,7 +480,22 @@ class FunCommands(callbacks.Privmsg):
         """
         irc.reply(msg, random.choice(self._eightballs))
 
+    _scrambleRe = re.compile(r'(?:\b|(?![a-zA-Z]))([a-zA-Z])([a-zA-Z]*)'\
+        '([a-zA-Z])(?:\b|(?![a-zA-Z]))')
+    def _subber(self, m):
+        s = list(m.group(2))
+        random.shuffle(s)
+        return '%s%s%s' % (m.group(1), ''.join(s), m.group(3))
 
+    def scramble(self, irc, msg, args):
+        """<text>
+
+        Replies a string whose inner letters are randomly shuffled.
+        """
+        text = privmsgs.getArgs(args)
+        if text is not None:
+            s = self._scrambleRe.sub(self._subber, text)
+            irc.reply(msg, s)
 
 Class = FunCommands
 
