@@ -145,6 +145,7 @@ class GooglePrivmsg(callbacks.Privmsg):
         data = google.doGoogleSearch(searchString, **kwargs)
         meta = data.meta
         categories = [d['fullViewableName'] for d in meta.directoryCategories]
+        categories = [repr(s.replace('_', ' ')) for s in categories]
         if len(categories) > 1:
             categories = ', and '.join([', '.join(categories[:-1]),
                                         categories[-1]])
@@ -158,6 +159,22 @@ class GooglePrivmsg(callbacks.Privmsg):
              meta.estimatedTotalResultsCount,
              meta.searchTime,
              categories and '  Categories include %s.' % categories)
+        irc.reply(msg, s)
+
+    def googlefight(self, irc, msg, args):
+        """<search string> <search string> [<search string> ...]
+
+        Returns the results of each search, in order, from greatest number
+        of results to least.
+        """
+
+        results = []
+        for arg in args:
+            data = google.doGoogleSearch(arg)
+            results.append((data.meta.estimatedTotalResultsCount, arg))
+        results.sort()
+        results.reverse()
+        s = ', '.join(['%r: %s' % (s, i) for (i, s) in results])
         irc.reply(msg, s)
 
     def googlesite(self, irc, msg, args):
