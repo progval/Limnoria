@@ -30,7 +30,11 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+Quotegrabs are like IRC sound bites.  When someone says something funny,
+incriminating, stupid, outrageous, ... anything that might be worth
+remembering, you can grab that quote for that person.  With this plugin, you
+can store many quotes per person and display their most recent quote, as well
+as see who "grabbed" the quote in the first place.
 """
 
 import plugins
