@@ -253,7 +253,7 @@ class Relay(callbacks.Privmsg):
             irc.error(msg, 'I\'m not on that network.')
             return
         otherIrc = self.ircs[network]
-        otherIrc.queueMsg(ircmsgs.whois(nick))
+        otherIrc.queueMsg(ircmsgs.whois(nick, nick))
         self.whois[(otherIrc, nick)] = (irc, msg, {})
 
     def relaycolor(self, irc, msg, args):
@@ -294,6 +294,7 @@ class Relay(callbacks.Privmsg):
             return
         (replyIrc, replyMsg, d) = self.whois[(irc, nick)]
         hostmask = '@'.join(d['311'].args[2:4])
+        user = d['311'].args[-1]
         channels = d['319'].args[-1].split()
         if len(channels) == 1:
             channels = channels[0]
@@ -303,10 +304,12 @@ class Relay(callbacks.Privmsg):
             idle = utils.timeElapsed(d['317'].args[2])
             signon = time.ctime(float(d['317'].args[3]))
         else:
-            idle = signon = '<unknown>'
+            idle = '<unknown>'
+            signon = '<unknown>'
         s = '%s (%s) has been online since %s (idle for %s) and is on %s' % \
-            (nick, hostmask, signon, idle, channels)
+            (user, hostmask, signon, idle, channels)
         replyIrc.reply(replyMsg, s)
+        del self.whois[(replyIrc, nick)]
 
     def _formatPrivmsg(self, nick, network, msg):
         # colorize nicks
