@@ -94,6 +94,7 @@ def loadPluginClass(irc, module, register=None):
                   'a bug with us about this error.'
         else:
             raise
+    cb.classModule = module
     plugin = cb.name()
     public = True
     if hasattr(cb, 'public'):

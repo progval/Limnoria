@@ -1068,6 +1068,7 @@ class PluginMixin(irclib.IrcCallback):
     alwaysCall = ()
     threaded = False
     noIgnore = False
+    classModule = None
     Proxy = IrcObjectProxy
     def __init__(self, irc):
         self.__parent = super(PluginMixin, self)
