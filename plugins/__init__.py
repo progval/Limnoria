@@ -420,7 +420,14 @@ def standardSubstitute(irc, msg, text, env=None):
         return time.ctime(t)
     def randNick():
         if channel != 'somewhere':
-            return random.choice(list(irc.state.channels[channel].users))
+            L = list(irc.state.channels[channel].users)
+            if len(L) > 1:
+                n = msg.nick
+                while n != msg.nick:
+                    n = random.choice(L)
+                return n
+            else:
+                return msg.nick
         else:
             return 'someone'
     ctime = time.ctime()
