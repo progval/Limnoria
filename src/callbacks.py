@@ -447,6 +447,8 @@ class IrcObjectProxy(RichReplyMethods):
         # These use |= or &= based on whether or not they default to True or
         # False.  Those that default to True use &=; those that default to
         # False use |=.
+        assert not isinstance(s, ircmsgs.IrcMsg), \
+               'Old code alert: there is no longer a "msg" argument to reply.'
         msg = self.msg
         self.action |= action
         self.notice |= notice
@@ -581,6 +583,8 @@ class ConfigIrcProxy(RichReplyMethods):
         self.__dict__['irc'] = irc
         
     def reply(self, s, *args, **kwargs):
+        assert not isinstance(s, ircmsgs.IrcMsg), \
+               'Old code alert: there is no longer a "msg" argument to reply.'
         return None
 
     def error(self, s, *args, **kwargs):
@@ -738,6 +742,8 @@ class IrcObjectProxyRegexp(RichReplyMethods):
         self.reply('Error: ' + s, **kwargs)
 
     def reply(self, s, action=False, **kwargs): 
+        assert not isinstance(s, ircmsgs.IrcMsg), \
+               'Old code alert: there is no longer a "msg" argument to reply.'
         if action:
             self.irc.queueMsg(ircmsgs.action(ircutils.replyTo(self.msg), s))
         else:
