@@ -527,7 +527,7 @@ class Irc(IrcCommandDispatcher):
                 self.outstandingPing = True
                 self.queueMsg(ircmsgs.ping(now))
         if msg:
-            log.debug(repr(msg))
+            #log.debug(repr(msg)) # Useless!
             for callback in reviter(self.callbacks):
                 msg = callback.outFilter(self, msg)
                 if msg is None:

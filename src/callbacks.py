@@ -238,7 +238,7 @@ def tokenize(s):
         _lastTokenized = None
         _lastTokenizedResult = None
         raise SyntaxError, str(e)
-    log.debug('tokenize took %s seconds.' % (time.time() - start))
+    #log.debug('tokenize took %s seconds.' % (time.time() - start))
     return copy.deepcopy(_lastTokenizeResult)
 
 def getCommands(tokens):
