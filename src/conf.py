@@ -53,7 +53,6 @@ _pluginsDir = os.path.join(installDir, 'plugins')
 ###
 allowEval = False
 
-
 supybot = registry.Group()
 supybot.setName('supybot')
 

@@ -54,6 +54,12 @@ from cStringIO import StringIO as sio
 
 import utils
 
+###
+# strictRfc: Determines whether the bot will very strictly follow the RCE
+#            or whether it will allow things like @ and . in nicks.
+###
+strictRfc = False
+
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
     p1 = s.find('!')
@@ -104,29 +110,33 @@ def nickEqual(nick1, nick2):
     """Returns True if nick1 == nick2 according to IRC case rules."""
     return toLower(nick1) == toLower(nick2)
 
+
 _nickchars = r'_[]\`^{}|-'
-nickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$' % (re.escape(_nickchars),
-                                                     re.escape(_nickchars)))
-def isCtcp(msg):
-    """Returns whether or not msg is a CTCP message."""
-    return msg.command == 'PRIVMSG' and \
-           msg.args[1].startswith('\x01') and \
-           msg.args[1].endswith('\x01')
+strictNickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$'
+                          % (re.escape(_nickchars), re.escape(_nickchars)))
+_nickchars += '@.'
+nickRe = re.compile(r'^[A-Za-z%s][0-9A-Za-z%s]*$'
+                    % (re.escape(_nickchars), re.escape(_nickchars)))
 
 def isNick(s):
     """Returns True if s is a valid IRC nick."""
-    if re.match(nickRe, s):
-        return True
+    if strictRfc:
+        return bool(strictNickRe.match(s))
     else:
-        return False
+        return bool(nickRe.match(s))
 
 def isChannel(s):
     """Returns True if s is a valid IRC channel name."""
     return (s and s[0] in '#&+!' and len(s) <= 50 and \
             '\x07' not in s and ',' not in s and ' ' not in s)
 
-_match = fnmatch.fnmatchcase
+def isCtcp(msg):
+    """Returns whether or not msg is a CTCP message."""
+    return msg.command == 'PRIVMSG' and \
+           msg.args[1].startswith('\x01') and \
+           msg.args[1].endswith('\x01')
 
+_match = fnmatch.fnmatchcase
 _patternCache = {}
 def _hostmaskPatternEqual(pattern, hostmask):
     """Returns True if hostmask matches the hostmask pattern pattern."""
@@ -162,7 +172,6 @@ def hostmaskPatternEqual(pattern, hostmask):
         b = _hostmaskPatternEqual(pattern, hostmask)
         _hostmaskPatternEqualCache[(pattern, hostmask)] = b
         return b
-
 
 def banmask(hostmask):
     """Returns a properly generic banning hostmask for a hostmask.

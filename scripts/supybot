@@ -134,6 +134,10 @@ if __name__ == '__main__':
                       dest='allowEval',
                       help='Determines whether the bot will '
                            'allow the evaluation of arbitrary Python code.')
+    parser.add_option('', '--strict-rfc', action='store_true',
+                      dest='strictRfc',
+                      help='Determines whether the bot will strictly follow '
+                           'RFC guidelines defining nicks and channels.')
 
     (options, args) = parser.parse_args()
 
@@ -291,8 +295,7 @@ if __name__ == '__main__':
             except ImportError:
                 log.warning('Psyco isn\'t installed, cannot -OO.')
 
-    if options.allowEval:
-        conf.allowEval = True
+    conf.allowEval = options.allowEval
 
     if not os.path.exists(conf.supybot.directories.log()):
         os.mkdir(conf.supybot.directories.log())
@@ -306,6 +309,9 @@ if __name__ == '__main__':
     import drivers
     import callbacks
     import Owner
+
+    import ircutils
+    ircutils.strictRfc = options.strictRfc
 
     irc = irclib.Irc(nick, user, ident, password)
     callback = Owner.Class()
