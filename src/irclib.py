@@ -292,7 +292,7 @@ class IrcState(IrcCommandDispatcher):
         chan.topic = msg.args[1]
 
     def do332(self, irc, msg):
-        chan = self.channels[msg.args[0]]
+        chan = self.channels[msg.args[1]]
         chan.topic = msg.args[2]
 
     def doNick(self, irc, msg):
