@@ -128,7 +128,8 @@ def registerDefaultPlugin(command, plugin):
     command = callbacks.canonicalName(command)
     conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
                              command, registry.String(plugin, ''))
-    conf.supybot.commands.defaultPlugins.get(command).setValue(plugin)
+    # This must be set, or the quotes won't be removed.
+    conf.supybot.commands.defaultPlugins.get(command).set(plugin)
 
 registerDefaultPlugin('ignore', 'Admin')
 registerDefaultPlugin('unignore', 'Admin')
