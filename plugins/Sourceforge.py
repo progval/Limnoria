@@ -1,0 +1,214 @@
+#!/usr/bin/python2.3
+
+###
+# Copyright (c) 2002, Jeremiah Fincher
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   * Redistributions of source code must retain the above copyright notice,
+#     this list of conditions, and the following disclaimer.
+#   * Redistributions in binary form must reproduce the above copyright notice,
+#     this list of conditions, and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#   * Neither the name of the author of this software nor the name of
+#     contributors to this software may be used to endorse or promote products
+#     derived from this software without specific prior written consent.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+###
+
+"""
+Add the module docstring here.  This will be used by the setup.py script.
+"""
+
+import re
+import urllib2
+
+import plugins
+
+import debug
+import utils
+import privmsgs
+import callbacks
+import itertools
+
+
+def configure(onStart, afterConnect, advanced):
+    # This will be called by setup.py to configure this module.  onStart and
+    # afterConnect are both lists.  Append to onStart the commands you would
+    # like to be run when the bot is started; append to afterConnect the
+    # commands you would like to be run when the bot has finished connecting.
+    from questions import expect, anything, something, yn
+    onStart.append('load Sourceforge')
+
+example = utils.wrapLines("""
+09:33:19 <@jamessan|work> @bugs
+09:33:23 < supybot> jamessan|work: Bug #820702: ChannelDB bugs in stats., Bug
+                     #797823: Time reporting errors on win9x, Bug #794330:
+                     Website documentation isn't finished., Bug #708327:
+                     FreeBSD plugin doesn't automatically download the new
+                     INDEX, and Bug #708158: FreeBSD plugin's searchports
+                     doesn't do depends correctly.
+09:33:30 <@jamessan|work> @bugs supybot 797823
+09:33:33 < supybot> jamessan|work: Time reporting errors on win9x
+<http://sourceforge.net/tracker/index.php?func=detail&aid=797823&group_id=58965&atid=489447>
+09:33:37 <@jamessan|work> @bugs gaim
+09:33:46 < supybot> jamessan|work: Bug #821118: MSN Plugin cannot be loaded
+in
+                     0.71, Bug #820961: dock icon doesn't show up with..., Bug
+                     #820879: Cannot connect to a particular irc..., Bug
+                     #820831: &copy; or &reg; render im null, Bug #820776:
+gaim
+                     0.70 segfaults using certain..., Bug #820691: gaim 0.70
+                     fails to start up on..., Bug #820687: MSN duplicating
+                     buddies at signon, Bug (6 more messages)
+09:34:04 <@jamessan|work> @rfes pythoggoras
+09:34:08 < supybot> jamessan|work: RFE #728701: Ability to specify 'themed'
+                     configs at command line, RFE #720757: Improve CLI
+                     interface, RFE #719248: Add config file support, and RFE
+                     #717761: Tracker for adding GUI
+09:34:22 <@jamessan|work> @rfes pythoggoras 720757
+09:34:26 < supybot> jamessan|work: Improve CLI interface
+<http://sourceforge.net/tracker/index.php?func=detail&aid=720757&group_id=75946&atid=545548>
+""")
+
+class Sourceforge(callbacks.Privmsg):
+    threaded = True
+
+    _bugRe = re.compile(r'<td NOWRAP>(\d+)</td><td><a HREF="([^"]+)">'\
+        '([^<]+)</a>', re.I)
+    _bugLink = re.compile(r'"([^"]+)">Bugs')
+    _bugOpts = '&set=custom&_assigned_to=0&_status=1&_category=100&'\
+        '_group=100&order=artifact_id&sort=DESC'
+    def bugs(self, irc, msg, args):
+        """[<project> [<num>]]
+
+        Returns a list of the most recent bugs filed against <project>.
+        Defaults to searching for supybot bugs. If <num> is specified, the bug
+        description and link are retrieved.
+        """
+        (project, bugnum) = privmsgs.getArgs(args, needed=0, optional=2)
+        if not project:
+            project = 'supybot'
+        url = 'http://sourceforge.net/projects/%s' % project
+        try:
+            fd = urllib2.urlopen(url)
+            text = fd.read()
+            fd.close()
+            m = self._bugLink.search(text)
+            if m is None:
+                irc.reply(msg, 'Can\'t find the "Bugs" link.')
+                return
+            else:
+                url = 'http://sourceforge.net%s%s' %\
+                    (utils.htmlToText(m.group(1)), self._bugOpts)
+        except ValueError, e:
+            irc.error(msg, str(e))
+        except HTTPError, e:
+            irc.error(msg, e.msg())
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
+
+        try:
+            fd = urllib2.urlopen(url)
+            text = fd.read()
+            fd.close()
+            if bugnum != '':
+                resp = ['%s <http://sourceforge.net%s>' %\
+                    (utils.htmlToText(bug[2]), utils.htmlToText(bug[1]))\
+                    for bug in itertools.ifilter(\
+                     lambda s: s is not None and bugnum in s,\
+                     self._bugRe.findall(text))]
+                if resp:
+                    irc.reply(msg, resp[0])
+                    return
+            else:
+                resp = ['Bug #%s: %s' % (bug[0], utils.htmlToText(bug[2])) for\
+                    bug in itertools.ifilter(None, self._bugRe.findall(text))]
+                if resp:
+                    if len(resp) > 10:
+                        resp = map(lambda s: utils.ellipsisify(s, 50), resp)
+                    irc.reply(msg, '%s' % utils.commaAndify(resp))
+                    return
+            irc.reply(msg, 'No bugs were found.')
+        except ValueError, e:
+            irc.error(msg, str(e))
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
+
+    _rfeRe = re.compile(r'<td NOWRAP>(\d+)</td><td><a HREF="([^"]+)">'\
+        '([^<]+)</a>', re.I)
+    _rfeLink = re.compile(r'"([^"]+)">RFE')
+    _rfeOpts = '&set=custom&_assigned_to=0&_status=1&_category=100&'\
+        '_group=100&order=artifact_id&sort=DESC'
+    def rfes(self, irc, msg, args):
+        """[<project> [<num>]]
+
+        Returns a list of the most recent rfes filed against <project>.
+        Defaults to searching for supybot rfes. If <num> is specified, the rfe
+        description and link are retrieved.
+        """
+        (project, rfenum) = privmsgs.getArgs(args, needed=0, optional=2)
+        if not project:
+            project = 'supybot'
+        url = 'http://sourceforge.net/projects/%s' % project
+        try:
+            fd = urllib2.urlopen(url)
+            text = fd.read()
+            fd.close()
+            m = self._rfeLink.search(text)
+            if m is None:
+                irc.reply(msg, 'Can\'t find the "RFE" link.')
+                return
+            else:
+                url = 'http://sourceforge.net%s%s' %\
+                    (utils.htmlToText(m.group(1)), self._bugOpts)
+        except ValueError, e:
+            irc.error(msg, str(e))
+        except HTTPError, e:
+            irc.error(msg, e.msg())
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
+
+        try:
+            fd = urllib2.urlopen(url)
+            text = fd.read()
+            fd.close()
+            if rfenum != '':
+                resp = ['%s <http://sourceforge.net%s>' %\
+                    (utils.htmlToText(rfe[2]), utils.htmlToText(rfe[1]))\
+                    for rfe in itertools.ifilter(\
+                     lambda s: s is not None and rfenum in s,\
+                     self._rfeRe.findall(text))]
+                if resp:
+                    irc.reply(msg, resp[0])
+                    return
+            else:
+                resp = ['RFE #%s: %s' % (rfe[0], utils.htmlToText(rfe[2])) for\
+                    rfe in itertools.ifilter(None, self._rfeRe.findall(text))]
+                if resp:
+                    if len(resp) > 10:
+                        resp = map(lambda s: utils.ellipsisify(s, 50), resp)
+                    irc.reply(msg, '%s' % utils.commaAndify(resp))
+                    return
+            irc.reply(msg, 'No rfes were found.')
+        except ValueError, e:
+            irc.error(msg, str(e))
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
+
+Class = Sourceforge
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
