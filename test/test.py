@@ -73,6 +73,7 @@ import irclib
 import drivers
 import ircmsgs
 import ircutils
+import callbacks
 import OwnerCommands
 
 fd = file(os.path.join('test', 'rfc2812.msgs'), 'r')
@@ -255,6 +256,8 @@ class ChannelPluginTestCase(PluginTestCase):
 class PluginDocumentation:
     def testAllCommandsHaveHelp(self):
         for cb in self.irc.callbacks:
+            if isinstance(cb, callbacks.PrivmsgRegexp):
+                continue
             if hasattr(cb, 'isCommand'):
                 for attr in cb.__class__.__dict__:
                     if cb.isCommand(attr):
@@ -262,6 +265,8 @@ class PluginDocumentation:
                                         '%s has no help' % attr)
     def testAllCommandsHaveMorehelp(self):
         for cb in self.irc.callbacks:
+            if isinstance(cb, callbacks.PrivmsgRegexp):
+                continue
             if hasattr(cb, 'isCommand'):
                 for attr in cb.__class__.__dict__:
                     if cb.isCommand(attr):
