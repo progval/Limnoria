@@ -146,7 +146,8 @@ class Config(callbacks.Privmsg):
         """<name> [<value>]
 
         If <value> is given, sets the value of <name> to <value>.  Otherwise,
-        returns the current value of <name>.
+        returns the current value of <name>.  You may omit the leading
+        "supybot." in the name if you so choose.
         """
         if len(args) >= 2:
             self._set(irc, msg, args)
