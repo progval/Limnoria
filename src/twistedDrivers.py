@@ -112,6 +112,9 @@ class SupyReconnectingFactory(ReconnectingClientFactory, drivers.ServersMixin):
         (connector.host, connector.port) = self._getNextServer()
         ReconnectingClientFactory.clientConnectionLost(self, connector, r)
 
+    def startedConnecting(self, connector):
+        drivers.log.connect(self.currentServer)
+
     def buildProtocol(self, addr):
         protocol = ReconnectingClientFactory.buildProtocol(self, addr)
         protocol.irc = self.irc
