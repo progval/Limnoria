@@ -44,6 +44,7 @@ import sys
 import new
 import md5
 import sha
+import this
 import time
 import math
 import cmath
@@ -756,6 +757,15 @@ class FunCommands(callbacks.Privmsg):
         Asks the magic eightball a question.
         """
         irc.reply(msg, random.sample(self._eightballs, 1)[0])
+
+
+    _these = [str(s) for s in this.s.decode('rot13').splitlines() if s]
+    def zen(self, irc, msg, args):
+        """takes no arguments.
+
+        Returns one of the zen of Python statements.
+        """
+        irc.reply(msg, random.sample(self._these, 1)[0])
 
     def dns(self, irc, msg, args):
         """<host|ip>"""

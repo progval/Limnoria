@@ -91,6 +91,9 @@ class FunCommandsTest(PluginTestCase):
         m = self.getMsg('tell #foo [rot13 foobar]')
         self.failUnless(m.args[0] == '#foo')
         self.failUnless('sbbone' in m.args[1])
+
+    def testZen(self):
+        self.assertNotError('zen')
         
     def testDns(self):
         self.assertNotError('dns slashdot.org')
