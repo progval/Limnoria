@@ -225,14 +225,17 @@ def mircColor(s, fg=None, bg=None):
     """Returns s, with the appropriate mIRC color codes applied."""
     if fg is None and bg is None:
         return s
-    fg = mircColors[fg]
+    if fg is None or isinstance(fg, str):
+        fg = mircColors[fg]
     if bg is None:
         return '\x03%s%s\x03' % (fg, s)
     else:
         if isinstance(bg, str):
             bg = mircColors[bg]
         return '\x03%s,%s%s\x03' % (fg, bg, s)
-			  
+
+def canonicalColor(s):
+    return mircColor(s, hash(s) % 14 + 2)
 
 def isValidArgument(s):
     """Returns if s is strictly a valid argument for an IRC message."""
