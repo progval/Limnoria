@@ -71,20 +71,8 @@ class Logger(logging.Logger):
         self.error('Exception id: %s', eId)
         self.error('Exception string: %s', eStrId)
 
-class BetterStreamHandler(logging.StreamHandler):
-    def emit(self, record):
-        msg = self.format(record)
-        if not hasattr(types, "UnicodeType"): #if no unicode support...
-            self.stream.write("%s%s" % (msg, os.linesep))
-        else:
-            try:
-                self.stream.write("%s%s" % (msg, os.linesep))
-            except UnicodeError:
-                self.stream.write("%s%s" % (msg.encode("UTF-8"), os.linesep))
-        self.flush()
 
-
-class StdoutStreamHandler(BetterStreamHandler):
+class StdoutStreamHandler(logging.StreamHandler):
     def disable(self):
         self.setLevel(sys.maxint) # Just in case.
         _logger.removeHandler(self)
@@ -97,7 +85,7 @@ class StdoutStreamHandler(BetterStreamHandler):
     def emit(self, record):
         if conf.supybot.log.stdout() and not conf.daemonized:
             try:
-                BetterStreamHandler.emit(self, record)
+                logging.StreamHandler.emit(self, record)
             except ValueError, e: # Raised if sys.stdout is closed.
                 self.disable()
                 error('Error logging to stdout.  Removing stdout handler.')
