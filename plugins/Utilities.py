@@ -72,7 +72,7 @@ class Utilities(callbacks.Privmsg):
         course, will break out of this command.  <text>, if given, will be
         appended to the end of the success message.
         """
-        text = privmsgs.getArgs(args)
+        text = privmsgs.getArgs(args, required=0, optional=1)
         irc.replySuccess(text)
 
     def last(self, irc, msg, args):
