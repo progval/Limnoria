@@ -216,6 +216,8 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
 
         Does a google search, but only returns the first result.
         """
+        if not args:
+            raise callbacks.ArgumentError
         data = search(self.log, args)
         if data.results:
             url = data.results[0].URL
