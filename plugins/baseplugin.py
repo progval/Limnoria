@@ -55,6 +55,7 @@ class ChannelDBHandler(object):
         for db in self.dbCache.itervalues():
             db.commit()
             db.close()
+            del db
 
 
 
