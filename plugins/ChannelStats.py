@@ -113,8 +113,6 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
             cursor.execute("""CREATE TABLE user_stats (
                               id INTEGER PRIMARY KEY,
                               user_id INTEGER UNIQUE ON CONFLICT IGNORE,
-                              last_seen TIMESTAMP,
-                              last_msg TEXT,
                               smileys INTEGER,
                               frowns INTEGER,
                               chars INTEGER,
@@ -143,19 +141,10 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
                               topics INTEGER,
                               quits INTEGER
                               )""")
-            cursor.execute("""CREATE TABLE nick_seen (
-                              name TEXT,
-                              normalized TEXT UNIQUE ON CONFLICT REPLACE,
-                              last_seen TIMESTAMP,
-                              last_msg TEXT
-                              )""")
             cursor.execute("""INSERT INTO channel_stats
                               VALUES (0, 0, 0, 0, 0, 0,
                                       0, 0, 0, 0, 0, 0)""")
             db.commit()
-        def p(s1, s2):
-            return int(ircutils.nickEqual(s1, s2))
-        db.create_function('nickeq', 2, p)
         return db
 
     def __call__(self, irc, msg):
@@ -192,8 +181,6 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
                               msgs=msgs+1,
                               actions=actions+%s""",
                        smileys, frowns, chars, words, int(isAction))
-        cursor.execute("""INSERT INTO nick_seen VALUES (%s, %s, %s, %s)""",
-                       msg.nick,ircutils.toLower(msg.nick),int(time.time()),s)
         try:
             if self.outFiltering:
                 id = 0
@@ -202,10 +189,10 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
         except KeyError:
             return
         cursor.execute("""INSERT INTO user_stats VALUES (
-                          NULL, %s, 0, 0, 0, 0, 0, 0, 0, 0,
+                          NULL, %s, 0, 0, 0, 0, 0, 0,
                           0, 0, 0, 0, 0, 0, 0)""", id)
         cursor.execute("""UPDATE user_stats SET
-                          last_seen=%s, last_msg=%s, chars=chars+%s,
+                          chars=chars+%s,
                           words=words+%s, msgs=msgs+1,
                           actions=actions+%s, smileys=smileys+%s,
                           frowns=frowns+%s
@@ -315,50 +302,6 @@ class ChannelStats(plugins.ChannelDBHandler, callbacks.Privmsg):
                 except KeyError:
                     pass
                 db.commit()
-
-    def seen(self, irc, msg, args):
-        """[<channel>] [--user] <name>
-
-        Returns the last time <name> was seen and what <name> was last seen
-        saying.  --user will look for user <name> instead of using <name> as
-        a nick (registered users, remember, can be recognized under any number
-        of nicks) <channel> is only necessary if the message isn't sent on the
-        channel itself.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        (optlist, rest) = getopt.getopt(args, '', ['user'])
-        name = privmsgs.getArgs(rest)
-        originalName = name
-        if ('--user', '') in optlist:
-            table = 'user_stats'
-            criterion = 'user_id=%s'
-            try:
-                name = ircdb.users.getUserId(name)
-            except KeyError:
-                try:
-                    hostmask = irc.state.nickToHostmask(name)
-                    name = ircdb.users.getUserId(hostmask)
-                except KeyError:
-                    irc.errorNoUser()
-                    return
-        else:
-            table = 'nick_seen'
-            criterion = 'normalized=%s'
-            name = ircutils.toLower(name)
-        sql = "SELECT last_seen,last_msg FROM %s WHERE %s" % (table,criterion)
-        cursor.execute(sql, name)
-        if cursor.rowcount == 0:
-            irc.reply('I have not seen %s.' % originalName)
-        else:
-            (seen, m) = cursor.fetchone()
-            seen = int(seen)
-            if isinstance(name, int):
-                name = ircdb.users.getUser(int(name)).name
-            s = '%s was last seen here %s ago saying: %s' % \
-                (originalName, utils.timeElapsed(time.time() - seen), m)
-            irc.reply(s)
 
     def stats(self, irc, msg, args):
         """[<channel>] [<name>]
