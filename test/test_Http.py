@@ -74,6 +74,11 @@ class HttpTest(PluginTestCase):
     def testNetcraft(self):
         self.assertNotError('netcraft slashdot.org')
 
+    def testWeather(self):
+        self.assertNotError('weather Columbus, OH')
+        self.assertNotError('weather 43221')
+        self.assertNotError('weather Paris FR')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
