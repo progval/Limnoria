@@ -64,6 +64,25 @@ supybot: help help
 supybot: help list
 supybot: help load
 
+Sometimes more than one plugin will have a given command; for
+instance, the "list" command exists in both the Misc and Config
+plugins (both loaded by default).  List, in this case, defaults to
+the Misc plugin, but you may want to get the help for the list
+command in the Config plugin.  In that case, you'll want to give your
+command like this:
+
+supybot: help config list
+
+Anytime your bot tells you that a given command is defined in several
+plugins, you'll want to use this syntax ("plugin command") to
+disambiguate which plugin's command you wish to call.  For instance,
+if you wanted to call the Config plugin's list command, then you'd
+need to say:
+
+supybot: config list
+
+Rather than just "list".
+
 Speaking of the load command, that's the command you'll use to load
 other plugins.  If you didn't use supybot-wizard, though, you might do
 well to try it before playing around with loading plugins yourself:

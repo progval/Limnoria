@@ -1,0 +1,146 @@
+Q: Why does my bot not recognize me or tell me that I don't have the
+   "owner" capability?
+
+A: Because you're not given it anything to recognize you from!
+   You'll need to identify with the bot ("help identify" to see how
+   that works) or add your hostmask to your user record ("help
+   addhostmask" to see how that works) for it to know that you're
+   you.  You may wish to note that addhostmask can accept a password;
+   rather than identify, you can send the command "addhostmask
+   myOwnerUser [hostmask] myOwnerUserPassword" and the bot will add
+   your current hostmask to your owner user (of course, you should
+   change myOwnerUser and myOwnerUserPassword appropriately for your
+   bot).
+
+
+Q: How do I make my Supybot op my users?
+
+A: First, you'll have to make sure that your users register with the
+   bot.  They can do this with the "register" command.  After they do
+   so, you'll want to add the #channel,op capability to their user.
+   Use the "channel addcapability" command to do this.  After that,
+   your users should be able to use the "op" command to get ops.
+
+   If you want your users to be auto-opped when they join the
+   channel, you'll need to load the Enforcer plugin and turn its
+   autoOp configuration variable on.  Use the "config" command to do
+   so.  Here's an example of how to do these steps:
+
+   <jemfinch|lambda> I'm going to make an example session for giving
+                     you auto-ops, for our FAQ.
+   <dunk1> ah ok ;]
+   <jemfinch|lambda> First, I need you to register with supybot, using
+                     the "register" command (remember to send it in
+                     private).
+   <dunk1> done
+   <jemfinch|lambda> what name are you registered under?
+   <dunk1> dunk1
+   <jemfinch|lambda> ok, cool.
+   <jemfinch|lambda> @channel addcapability dunk1 op
+   <supybot> jemfinch|lambda: The operation succeeded.
+   <jemfinch|lambda> now use the "op" command to get ops.
+   <dunk1> @op
+   --- supybot gives channel operator status to dunk1
+   <dunk1> works!
+   <dunk1> ;]
+   <jemfinch|lambda> @load Enforcer
+   <supybot> jemfinch|lambda: The operation succeeded.
+   <jemfinch|lambda> @config supybot.plugins.Enforcer.autoOp.#supybot On
+   <supybot> jemfinch|lambda: The operation succeeded.
+   <jemfinch|lambda> ok, now cycle the channel (part and then rejoin)
+   <-- dunk1 (dunker@freebsd.nl) has left #supybot
+   --> dunk1 (dunker@freebsd.nl) has joined #supybot
+   --- supybot gives channel operator status to dunk1
+   <jemfinch|lambda> cool, thanks :)
+
+
+
+Q: Can users with the "admin" capability change configuration
+   variables?
+
+A: Currently, no.  Since this is the first release of Supybot that
+   uses the registry, we wanted to stay on the conservative side and
+   require the "owner" capability for changing all
+   non-channel-related configuration variables.  Feel free to make
+   your case to us as to why a certain configuration variable should
+   only require the "admin" capability instead of the "owner"
+   capability, and if we agree with you, we'll change it for the next
+   release.
+
+
+Q: How do I make my Supybot connect to multiple servers?
+
+A: You'll need to use the Relay plugin.  As long as you don't call
+   the "relay join" command, it won't actually do any relaying between
+   channels (even if the bot is on the same channel on different
+   networks).  In order to use the Relay plugin, you'll want to first
+   call the "relay start" command, followed by the "relay connect"
+   command.  These commands are (unfortunately) not persistent at
+   this time, so you'll need to give them to the bot anytime you
+   start it up.  We'll probably have this lack of persistence
+   rectified before the next release.
+
+
+Q: Can Supybot do factoids?
+
+A: Supybot most certainly can!  In fact, we offer two full-fledged
+   factoids-related plugins!
+
+   Factoids (written by jemfinch) is Supybot's original
+   factoids-related plugin.  It offers full integration with Supybot's
+   nested commands as well as a complete 1:n key to factoid ratio,
+   with lookup by individual number.  Factoids also uses
+   a channel-specific database instead of a global database, although
+   in the future it will likely be a configuration option whether to
+   use channel-specific or global databases for such plugins.
+
+   MoobotFactoids (written by Strike) is much more full-featured,
+   offering users the ability to define factoids in a slightly more
+   user-friendly way, as well as parsing factoids to handle <reply>,
+   <action>, "see", and altnerations (defining a factoid "test" as
+   "<reply>(foo|bar|baz)" will make the bot send "foo" or "bar" or
+   "baz" to the channel (without the normal "test is " at the
+   beginning)).  If you're accustomed to Moobot's factoids or
+   Blootbot's factoids, then this is the Factoids plugin for you.
+   Unfortunately, due to the more natural definition syntax (required
+   to be compatible with Moobot) you can't define Factoids with
+   nested commands; you'll have to evaluate the command first and
+   then copy the result into your factoid definition.  MoobotFactoids
+   uses a global database, so the factoids are the same for all
+   channels.
+
+   In the future, we plan to have a compatibility plugin for Infobot,
+   but as of present we've not yet written one.
+
+
+Q: Can I import my Infobot/Blootbot/Moobot factoids into Supybot?
+
+A: As of present, we have no automated way to do so.  Strike has
+   written a few scripts for importing a Moobot database into
+   MoobotFactoids, however, so you'll want to talk to him about
+   helping you with that.  We're certainly happy to help you convert
+   such databases; if you can provide us with such a database
+   exported to a flat file, we can probably do the rest of the work
+   to write a script that imports it into a database for one of our
+   factoids-related plugins.
+
+
+Q: I found a bug, what do I do?
+
+A: Submit it on Sourceforge through our Sourceforge project page:
+   <http://sourceforge.net/tracker/?group_id=58965&atid=489447>.  If
+   Sourceforge happens to be down when you try to submit your bug,
+   then post it in the "Supybot Developer Discussion" forum at our
+   forums at <http://forums.supybot.org/>.  If that doesn't work,
+   email supybot-bugs@lists.sourceforge.net.  If that doesn't work,
+   email jemfinch@supybot.org.  If that doesn't work, find yourself
+   some carrier pigeons and ... hah!  You thought I was serious!
+   
+   Anyway, when you submit your bug, we'll need several things.  If
+   the bug involved an uncaught exception, we need the traceback
+   (basically the stuff from "Uncaught exception in ..." to the next
+   log entry).  We'd also like to see the commands that caused the
+   bug, or happened around the time you saw the bug.  If the bug
+   involved a datase, we'd love to see the database.  Remember, it's
+   always worse to send us too much information in a bug report than
+   too little.
