@@ -458,8 +458,13 @@ class UsersDB(object):
         except KeyError:
             return False
 
+    def __iter__(self):
+        x = ifilter(None, self.users)
+        x.next() # Skip the bot user.
+        return x
+        
     def numUsers(self):
-        return ilen(ifilter(None, self.users))-1 # -1 is for the bot user.
+        return ilen(self)
 
     def setUser(self, id, user):
         """Sets a user (given its id) to the IrcUser given it."""

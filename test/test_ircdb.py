@@ -311,7 +311,7 @@ class UsersDBTestCase(unittest.TestCase):
             pass
         self.users = ircdb.UsersDB(self.filename)
 
-    def testNumUsers(self):
+    def testIterAndNumUsers(self):
         self.assertEqual(self.users.numUsers(), 0)
         (id, u) = self.users.newUser()
         hostmask = 'foo!bar@baz'
