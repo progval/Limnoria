@@ -295,24 +295,6 @@ def replyTo(msg):
     else:
         return msg.nick
 
-def privmsgPayload(L, sep, limit=425):
-    """Returns a valid privmsg payload given a list of strings and a separator.
-
-    Items are popped from the back of the list until the payload is small
-    enough to fit into a single PRIVMSG payload.
-    """
-    shrinkList(L, sep, limit)
-    return sep.join(L)
-
-def shrinkList(L, sep='', limit=425):
-    """Shrinks a list of strings to a given combined length of limit."""
-    length = len(sep)
-    count = 0
-    while reduce(operator.add, map(length.__add__, map(len, L)), 0) > limit:
-        L.pop()
-        count += 1
-    return count
-
 def dccIP(ip):
     """Returns in IP in the proper for DCC."""
     assert isIP(ip), 'argument must be a string ip in xxx.yyy.zzz.www format.'
