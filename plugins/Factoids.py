@@ -384,6 +384,8 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                 db.create_function(predicateName, 1, p)
                 predicateName += 'p'
         for glob in rest:
+            if '*' not in glob and '?' not in glob:
+                glob = '*%s*' % glob
             criteria.append('key LIKE %s')
             formats.append(glob.translate(self._sqlTrans))
         cursor = db.cursor()

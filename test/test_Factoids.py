@@ -93,6 +93,8 @@ if sqlite is not None:
                               'inkedmn.*strike|strike.*inkedmn')
             self.assertRegexp('search *ke*',
                               'inkedmn.*strike|strike.*inkedmn')
+            self.assertRegexp('search ke',
+                              'inkedmn.*strike|strike.*inkedmn')
 
 
         def testNotZeroIndexed(self):
