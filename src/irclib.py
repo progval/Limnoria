@@ -348,17 +348,18 @@ class IrcState(IrcCommandDispatcher):
                     chan.ops.discard(value)
                 elif mode == '+o':
                     chan.ops.add(value)
-                if mode == '-h':
+                elif mode == '-h':
                     chan.halfops.discard(value)
                 elif mode == '+h':
                     chan.halfops.add(value)
-                if mode == '-v':
+                elif mode == '-v':
                     chan.voices.discard(value)
                 elif mode == '+v':
                     chan.voices.add(value)
                 elif mode[-1] in 'beq':
                     pass # We don't need this right now.
                 else:
+                    print '*****', mode
                     modeChar = mode[1]
                     if mode[0] == '+':
                         chan.setMode(modeChar, value)
