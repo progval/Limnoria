@@ -35,6 +35,8 @@ class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('MiscCommands', 'Utilities')
     def testReplyWhenNotCommand(self):
         conf.replyWhenNotCommand = True
+        self.prefix = 'somethingElse!user@host.domain.tld'
+        self.irc.nick = 'foobarlkajdf'
         self.assertRegexp('foo bar baz', 'not.*command')
         self.assertRegexp('foo | bar | baz', 'not.*commands')
         self.assertRegexp('baz [foo] [bar]', 'not.*commands')
