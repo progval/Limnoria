@@ -215,7 +215,7 @@ class Debian(callbacks.Privmsg,
                            'Please try again later.')
             return
         pkgs = self._deblistre.findall(html)
-        self.log.warning(pkgs)
+        #self.log.warning(pkgs)
         if not pkgs:
             irc.reply('No package found for %s (%s)' %
                       (urllib.unquote(package), branch))
@@ -307,8 +307,8 @@ class Debian(callbacks.Privmsg,
         except webutils.WebError, e:
             irc.error(e)
         packages = []
-        self.log.warning(section)
-        self.log.warning(glob)
+        #self.log.warning(section)
+        #self.log.warning(glob)
         for line in fd:
             m = self._newpkgre.search(line)
             if m:
