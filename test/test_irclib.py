@@ -214,7 +214,7 @@ class IrcStateTestCase(unittest.TestCase):
 
     def testDoModeOnlyChannels(self):
         st = irclib.IrcState()
-        self.assert_(st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i')) or 1)
+        st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i'))
 
     """
     def testChannels(self):
