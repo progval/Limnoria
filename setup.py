@@ -49,6 +49,7 @@ plugins = [
     'Math',
     'Network',
     'NickCapture',
+    'Note',
     'Misc',
     'Owner',
     'Praise',
