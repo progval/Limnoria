@@ -36,8 +36,11 @@ Miscellaneous commands.
 from fix import *
 
 import os
+import time
 import getopt
 import pprint
+import smtplib
+import textwrap
 
 import conf
 import debug
@@ -152,14 +155,31 @@ class MiscCommands(callbacks.Privmsg):
                 irc.error(msg, 'That command has no help at all.')
 
     def bug(self, irc, msg, args):
-        """takes no arguments
+        """<description>
 
-        Log a recent bug.  A revent (long) history of the messages received
-        will be logged, so don't abuse this command or you'll have an upset
-        admin to deal with.
+        Reports a bug to a private mailing list supybot-bugs.  <description>
+        will be the subject of the email.  The most recent 10 or so messages
+        the bot receives will be sent in the body of the email.
         """
-        debug.msg(pprint.pformat(irc.state.history), 'normal')
+        description = privmsgs.getArgs(args)
+        messages = pprint.pformat(irc.state.history[-10:])
+        email = textwrap.dedent("""
+        Subject: %s
+        Date: %s
+
+        Bug report for Supybot %s.
+        %s
+        """) % (description, time.ctime(), conf.version, messages)
+        email = email.strip()
+        email = email.replace('\n', '\r\n')
+        debug.printf(`email`)
+        smtp = smtplib.SMTP('mail.sourceforge.net', 25)
+        smtp.sendmail('jemfinch@users.sf.net',
+                      ['supybot-bugs@lists.sourceforge.net'],
+                      email)
+        smtp.quit()
         irc.reply(msg, conf.replySuccess)
+    bug = privmsgs.thread(bug)
 
     def version(self, irc, msg, args):
         """takes no arguments
