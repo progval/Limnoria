@@ -70,7 +70,10 @@ def close(registry, filename, annotated=True):
     helpCache = sets.Set()
     fd = file(filename, 'w')
     for (name, value) in registry.getValues(getChildren=True):
-        if annotated and hasattr(value,'help') and value.help not in helpCache:
+        if annotated and \
+           hasattr(value,'help') and \
+           value.help and \
+           value.help not in helpCache:
             helpCache.add(value.help)
             lines = textwrap.wrap(value.help)
             for (i, line) in enumerate(lines):
@@ -220,7 +223,7 @@ class SeparatedListOf(Value):
 class SpaceSeparatedListOfStrings(SeparatedListOf):
     Value = String
     def splitter(self, s):
-        return s.split(s)
+        return s.split()
     joiner = ' '.join
     
 class CommaSeparatedListOfStrings(SeparatedListOf):
