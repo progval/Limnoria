@@ -80,7 +80,7 @@ class FunctionsTestCase(unittest.TestCase):
 
 
 class CapabilitySetTestCase(unittest.TestCase):
-    def test(self):
+    def testGeneral(self):
         d = ircdb.CapabilitySet()
         self.assertRaises(KeyError, d.check, 'foo')
         d = ircdb.CapabilitySet(('foo',))
@@ -99,24 +99,12 @@ class CapabilitySetTestCase(unittest.TestCase):
         self.assertRaises(KeyError, d.check, '-bar')
         self.assertRaises(KeyError, d.check, 'bar')
 
+    def testReprEval(self):
+        s = ircdb.UserCapabilitySet()
+        s.add('foo')
+        s.add('bar')
+        self.assertEqual(s, eval(repr(s), ircdb.__dict__, ircdb.__dict__))
 
-class UserCapabilitySetTestCase(unittest.TestCase):
-    def testOwnerHasAll(self):
-        d = ircdb.UserCapabilitySet(('owner',))
-        self.failIf(d.check('-foo'))
-        self.failUnless(d.check('foo'))
-
-    def testOwnerIsAlwaysPresent(self):
-        d = ircdb.UserCapabilitySet()
-        self.failUnless('owner' in d)
-        self.failUnless('-owner' in d)
-        self.failIf(d.check('owner'))
-        d.add('owner')
-        self.failUnless(d.check('owner'))
-
-
-
-class CapabilitySetTestCase(unittest.TestCase):
     def testContains(self):
         s = ircdb.CapabilitySet()
         self.failIf('foo' in s)
@@ -160,6 +148,25 @@ class CapabilitySetTestCase(unittest.TestCase):
 
 
 class UserCapabilitySetTestCase(unittest.TestCase):
+    def testOwnerHasAll(self):
+        d = ircdb.UserCapabilitySet(('owner',))
+        self.failIf(d.check('-foo'))
+        self.failUnless(d.check('foo'))
+
+    def testOwnerIsAlwaysPresent(self):
+        d = ircdb.UserCapabilitySet()
+        self.failUnless('owner' in d)
+        self.failUnless('-owner' in d)
+        self.failIf(d.check('owner'))
+        d.add('owner')
+        self.failUnless(d.check('owner'))
+
+    def testReprEval(self):
+        s = ircdb.UserCapabilitySet()
+        s.add('foo')
+        s.add('bar')
+        self.assertEqual(s, eval(repr(s), ircdb.__dict__, ircdb.__dict__))
+
     def testOwner(self):
         s = ircdb.UserCapabilitySet()
         s.add('owner')

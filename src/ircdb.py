@@ -141,13 +141,17 @@ class CapabilitySet(sets.Set):
             raise KeyError, capability
 
     def __repr__(self):
-        return '%s([%r])' % (self.__class__.__name__, ', '.join(self))
+        return '%s([%s])' % (self.__class__.__name__,
+                             ', '.join(map(repr, self)))
 
+antiOwner = makeAntiCapability('owner')
 class UserCapabilitySet(CapabilitySet):
     """A subclass of CapabilitySet to handle the owner capability correctly."""
     def __contains__(self, capability):
         capability = ircutils.toLower(capability)
-        if CapabilitySet.__contains__(self, 'owner'):
+        if capability == 'owner' or capability == antiOwner:
+            return True
+        elif CapabilitySet.__contains__(self, 'owner'):
             return True
         else:
             return CapabilitySet.__contains__(self, capability)
@@ -159,12 +163,12 @@ class UserCapabilitySet(CapabilitySet):
         appropriately.
         """
         capability = ircutils.toLower(capability)
-        if capability == 'owner':
+        if capability == 'owner' or capability == antiOwner:
             if CapabilitySet.__contains__(self, 'owner'):
-                return True
+                return not isAntiCapability(capability)
             else:
-                return False
-        if 'owner' in self:
+                return isAntiCapability(capability)
+        elif CapabilitySet.__contains__(self, 'owner'):
             if isAntiCapability(capability):
                 return False
             else:
