@@ -875,8 +875,8 @@ class Privmsg(irclib.IrcCallback):
     def callCommand(self, method, irc, msg, *L):
         name = method.im_func.func_name
         assert L, 'Odd, nothing in L.  This can\'t happen.'
-        self.log.info('Command %s called with args %s by %s',
-                      name, L[0], msg.prefix)
+        self.log.info('%r called by %s', name, msg.prefix)
+        self.log.debug('args: %s', L[0])
         start = time.time()
         method(irc, msg, *L)
         elapsed = time.time() - start
