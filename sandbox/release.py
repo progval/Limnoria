@@ -37,6 +37,10 @@ if __name__ == '__main__':
         error('Invalid version string: '
               'must be of the form MAJOR.MINOR.PATCHLEVEL.')
 
+    if os.path.exists('supybot'):
+        error('I need to make the directory "supybot" but it already exists.'
+              '  Change to an appropriate directory or rmeove the supybot '
+              'directory to continue.')
     system('cvs -d:ext:%s@cvs.sf.net:/cvsroot/supybot co supybot' % u)
     os.chdir('supybot')
         
@@ -63,20 +67,25 @@ if __name__ == '__main__':
     os.remove('.cvsignore')
 
     os.chdir('..')
-    shutil.move('supybot', 'Supybot-%s' % v)
+    dirname = 'Supybot-%s' % v
+    if os.path.exists(dirname):
+        shutil.rmtree(dirname)
+    shutil.move('supybot', dirname)
 
-    system('tar czvf Supybot-%s.tar.gz Supybot-%s' % (v, v))
-    system('tar cjvf Supybot-%s.tar.bz2 Supybot-%s' % (v, v))
-    system('zip -r Supybot-%s.zip Supybot-%s' % (v, v))
+    system('tar czvf Supybot-%s.tar.gz %s' % (v, dirname))
+    system('tar cjvf Supybot-%s.tar.bz2 %s' % (v, dirname))
+    system('zip -r Supybot-%s.zip %s' % (v, dirname))
 
     ftp = ftplib.FTP('upload.sf.net')
     ftp.login()
     ftp.cwd('incoming')
-    ftp.storbinary('STOR Supybot-%s.tar.gz' % v)
-    ftp.storbinary('STOR Supybot-%s.tar.bz2' % v)
-    ftp.storbinary('STOR Supybot-%s.zip' % v)
+    for filename in ['Supybot-%s.tar.gz',
+                     'Supybot-%s.tar.bz2',
+                     'Supybot-%s.zip']:
+        filename = filename % v
+        print 'Uploading %s to SF.net.' % filename
+        ftp.storbinary('STOR %s' % filename, file(filename))
     ftp.close()
 
-##     fd = file('version.txt', 'w')
-##     fd.write(v+'\n')
-##     fd.close()
+# This is the part where we do our release on Freshmeat using XMLRPC and
+# <gasp> ESR's software to do it: http://freshmeat.net/p/freshmeat-submit/
