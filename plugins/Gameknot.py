@@ -115,6 +115,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     _gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
     _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
     _gkGameTitle = re.compile(r"<p><b>(.*?)\s*</b>&nbsp;\s*<span.*?>\(started")
+    _gkWon = re.compile(r'(\S+)\s+won\s+\((\S+)\s+(\S+)\)')
     def gameknotSnarfer(self, irc, msg, match):
         r"http://(?:www\.)?gameknot.com/chess.pl\?bd=\d+(&r=\d+)?"
         #debug.printf('Got a GK URL from %s' % msg.prefix)
@@ -130,6 +131,19 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             ((wRating, wName), (bRating, bName)) = self._gkPlayer.findall(s)
             wName = ircutils.bold(wName)
             bName = ircutils.bold(bName)
+            if 'to move...' in s:
+                if 'white to move' in s:
+                    toMove = wName + ' to move.'
+                else:
+                    toMove = bName + ' to move.'
+            else:
+                # Game is over.
+                m = self._gkWon.search(s)
+                (winner, loser, reason) = m.groups()
+                if winner == 'white':
+                    toMove = '%s won, %s %s.' % (wName, bName, reason)
+                else:
+                    toMove = '%s won, %s %s.' % (bName, wName, reason)
             (wRating, wWins, wLosses, wDraws) = \
                       self._gkRating.search(wRating).groups()
             (bRating, bWins, bLosses, bDraws) = \
@@ -137,8 +151,8 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             wStats = '%s; W-%s, L-%s, D-%s' % (wRating, wWins, wLosses, wDraws)
             bStats = '%s; W-%s, L-%s, D-%s' % (bRating, bWins, bLosses, bDraws)
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
-              '%s: %s (%s) vs. %s (%s) <%s>' % (
-                gameTitle, wName, wStats, bName, bStats, url)))
+              '%s: %s (%s) vs. %s (%s);  %s  <%s>' % (
+                gameTitle, wName, wStats, bName, bStats, toMove, url)))
         except ValueError:
             irc.queueMsg(ircmsgs.privmsg(msg.args[0],
               'That doesn\'t appear to be a proper Gameknot game.'))
