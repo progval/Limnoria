@@ -45,6 +45,7 @@ class IrcMsgQueueTestCase(unittest.TestCase):
     kick = ircmsgs.kick('#foo', 'PeterB')
     pong = ircmsgs.pong('123')
     ping = ircmsgs.ping('123')
+    topic = ircmsgs.topic('#foo')
     notice = ircmsgs.notice('jemfinch', 'supybot here')
     join = ircmsgs.join('#foo')
     who = ircmsgs.who('#foo')
@@ -77,10 +78,7 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         q.enqueue(self.msg)
         q.enqueue(self.kick)
         self.assertEqual(self.kick, q.dequeue())
-        q.enqueue(self.ping)
-        q.enqueue(self.msg)
         self.assertEqual(self.msg, q.dequeue())
-        self.assertEqual(self.ping, q.dequeue())
         q.enqueue(self.ping)
         q.enqueue(self.msgs[0])
         q.enqueue(self.kick)
@@ -88,9 +86,9 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         q.enqueue(self.mode)
         self.assertEqual(self.kick, q.dequeue())
         self.assertEqual(self.mode, q.dequeue())
+        self.assertEqual(self.ping, q.dequeue())
         self.assertEqual(self.msgs[0], q.dequeue())
         self.assertEqual(self.msgs[1], q.dequeue())
-        self.assertEqual(self.ping, q.dequeue())
 
     def testNoIdenticals(self):
         q = irclib.IrcMsgQueue()
@@ -109,6 +107,13 @@ class IrcMsgQueueTestCase(unittest.TestCase):
         q.enqueue(self.join)
         self.assertEqual(self.join, q.dequeue())
         self.assertEqual(self.who, q.dequeue())
+
+    def testTopicBeforePrivmsg(self):
+        q = irclib.IrcMsgQueue()
+        q.enqueue(self.msg)
+        q.enqueue(self.topic)
+        self.assertEqual(self.topic, q.dequeue())
+        self.assertEqual(self.msg, q.dequeue())
 
 
 class ChannelTestCase(unittest.TestCase):
