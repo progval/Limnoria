@@ -58,6 +58,7 @@ def configure(onStart, afterConnect, advanced):
     onStart.append('load Markov')
 
 class Markov(plugins.ChannelDBHandler, callbacks.Privmsg):
+    threaded = True
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
