@@ -38,9 +38,9 @@ import textwrap
 import traceback
 
 import supybot
-import supybot.src.world
+import supybot.world as world
 
-supybot.src.world.documenting = True
+world.documenting = True
 
 if not os.path.exists('test-conf'):
     os.mkdir('test-conf')
@@ -54,12 +54,12 @@ supybot.directories.log: test-logs
 """)
 fd.close()
 
-import registry
+import supybot.registry as registry
 registry.open(registryFilename)
 
-import conf
-import utils
-import callbacks
+import supybot.conf as conf
+import supybot.utils as utils
+import supybot.callbacks as callbacks
 
 commandDict = {}
 firstChars = {}
@@ -187,9 +187,16 @@ def makePluginDocumentation(pluginWindow):
     <link rel="next" href="%s.html">
     <link rel="previous" href="%s.html">
     ''' % (next, prev)
+    pluginhelp = getattr(module.Class, '__doc__', False)
+    if pluginhelp:
+        pluginhelp = '<div class="pluginhelp">%s</div>' %\
+            cgi.escape(pluginhelp)
+    else:
+        pluginhelp = ''
     fd.write(textwrap.dedent('''
     %s
     <div class="plugintitle">%s</div>
+    %s
     %s
     <div class="mainbody" style="padding: 0;">
     %s
@@ -198,6 +205,7 @@ def makePluginDocumentation(pluginWindow):
     Detailed Help</td></tr>
     ''' % (genHeader(title, meta),
            cgi.escape(module.__doc__ or ""),
+           pluginhelp,
            deprecated,
            genNavbar('../../'))))
     attrs = [x for x in dir(plugin) if plugin.isCommand(x) and not
