@@ -50,6 +50,7 @@ import string
 import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -250,13 +251,11 @@ class Lookup(callbacks.Privmsg):
     def die(self):
         self.db.close()
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, name):
         """<name>
 
         Removes the lookup for <name>.
         """
-        name = privmsgs.getArgs(args)
-        name = callbacks.canonicalName(name)
         if name not in self.lookupDomains:
             irc.error('That\'s not a valid lookup to remove.')
             return
@@ -267,10 +266,10 @@ class Lookup(callbacks.Privmsg):
             irc.replySuccess()
         except dbi.NoRecordError:
             irc.error('No such lookup exists.')
-    remove = privmsgs.checkCapability(remove, 'admin')
+    remove = wrap(remove, [('checkCapability', 'admin'), 'commandName'])
 
     _splitRe = re.compile(r'(?<!\\):')
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, optlist, name, filename):
         """[--nokey] <name> <filename>
 
         Adds a lookup for <name> with the key/value pairs specified in the
@@ -280,17 +279,11 @@ class Lookup(callbacks.Privmsg):
         option is specified, the new lookup will display only the value when
         queried, and will omit the key from the response.
         """
-        opts = ['nokey']
-        (optlist, rest) = getopt.getopt(args, '', opts)
-        (name, filename) = privmsgs.getArgs(rest, required=2)
         nokey = False
         for (option, argument) in optlist:
-            option = option.lstrip('-')
             if option == 'nokey':
                 nokey = True
-        #print 'nokey: %s' % nokey
         name = utils.depluralize(name)
-        name = callbacks.canonicalName(name)
         if hasattr(self, name):
             s = 'I already have a command in this plugin named %s' % name
             irc.error(s)
@@ -304,7 +297,8 @@ class Lookup(callbacks.Privmsg):
         self.addCommand(name)
         self.addRegistryValue(name, filename, nokey)
         irc.replySuccess('Lookup %s added.' % name)
-    add = privmsgs.checkCapability(add, 'admin')
+    add = wrap(add, [('checkCapability', 'admin'), getopts({'nokey':''}),
+                     'commandName', 'filename'])
 
     def addRegistryValue(self, name, filename, nokey = False):
         group = conf.supybot.plugins.Lookup.lookups
@@ -363,12 +357,11 @@ class Lookup(callbacks.Privmsg):
         else:
             irc.error('I don\'t have a domain %s' % name)
 
-    def _lookup(self, irc, msg, args):
+    def _lookup(self, irc, msg, args, name, key):
         """<name> <key>
 
         Looks up the value of <key> in the domain <name>.
         """
-        (name, key) = privmsgs.getArgs(args, optional=1)
         if self.db.checkLookup(name):
             results = []
             if key:
@@ -391,7 +384,7 @@ class Lookup(callbacks.Privmsg):
                     irc.reply('%s' % value)
         else:
             irc.error('I don\'t have a domain %s' % name)
-            return
+    _lookup = wrap(_lookup, ['something', additional('text')])
 
 Class = Lookup
 
