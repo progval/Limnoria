@@ -142,8 +142,7 @@ def makeNewAlias(name, alias):
                         return True
                 return False
             everythingReplace(tokens)
-        Owner = irc.getCallback('Owner')
-        self.Proxy(irc.irc, msg, tokens)
+        self.Proxy(irc, msg, tokens)
     doc ='<an alias, %s>\n\nAlias for <<%s>>' % \
           (utils.nItems('argument', biggestDollar), alias)
     f = utils.changeFunctionName(f, name, doc)
