@@ -140,13 +140,21 @@ class FunCommands(callbacks.Privmsg):
         """
         L = []
         for c in privmsgs.getArgs(args):
+            LL = []
             i = ord(c)
+            counter = 8
             while i:
+                counter -= 1
                 if i & 1:
-                    L.append('1')
+                    LL.append('1')
                 else:
-                    L.append('0')
+                    LL.append('0')
                 i >>= 1
+            while counter:
+                LL.append('0')
+                counter -= 1
+            LL.reverse()
+            L.extend(LL)
         irc.reply(msg, ''.join(L))
         
     def hexlify(self, irc, msg, args):
