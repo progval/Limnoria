@@ -43,9 +43,11 @@ import os
 import re
 import sets
 import time
+import shutil
 import getopt
 import urllib2
 import urlparse
+import itertools
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -94,43 +96,80 @@ class URLDB(object):
         dataDir = conf.supybot.directories.data()
         self.filename = os.path.join(dataDir, '%s-URL.db' % channel)
 
-    def addUrl(self, url, nick):
-        fd = file(self.filename, 'a')
-        fd.write('%s %s\n' % (url, nick))
-        fd.close()
-
-    def numUrls(self):
+    def _getFile(self):
         try:
             fd = file(self.filename)
+            return fd
         except EnvironmentError, e:
             self.log.warning('Couldn\'t open %s: %s',
                              self.filename, utils.exnToString(e))
+        return None
+
+    def _formatRecord(self, url, nick):
+        return '%s %s\n' % (url, nick)
+
+    def addUrl(self, url, nick):
+        fd = file(self.filename, 'a')
+        fd.write(self._formatRecord(url, nick))
+        fd.close()
+
+    def numUrls(self):
+        fd = self._getFile()
+        if fd is None:
             return 0
         try:
             return itertools.ilen(fd)
         finally:
             fd.close()
 
-    def getUrls(self, p):
+    def getUrlsAndNicks(self, p=None):
         L = []
-        try:
-            fd = file(self.filename)
-        except EnvironmentError, e:
-            self.log.warning('Couldn\'t open %s: %s',
-                             self.filename, utils.exnToString(e))
+        fd = self._getFile()
+        if fd is None:
             return []
         try:
-            urls = sets.Set()
             for line in fd:
                 line = line.strip()
                 (url, nick) = line.split()
-                if url not in urls and p(url, nick):
-                    urls.add(url)
-                    L.append(url)
+                if p(url, nick):
+                    L.append((url, nick))
+            seen = sets.Set()
             L.reverse()
+            for (i, (url, nick)) in enumerate(L):
+                if url in seen:
+                    L[i] = None
+                else:
+                    seen.add(url)
+            L = filter(None, L)
             return L
         finally:
             fd.close()
+
+    def getUrls(self, p):
+        return [url for (url, nick) in self.getUrlsAndNicks(p)]
+
+    def vacuum(self):
+        filename = utils.mktemp()
+        out = file(filename, 'w')
+        notAdded = 0
+        urls = self.getUrlsAndNicks(lambda *args: True)
+        urls.reverse()
+        seen = sets.Set()
+        for (i, (url, nick)) in enumerate(urls):
+            if url not in seen:
+                seen.add(url)
+            else:
+                urls[i] = None
+                notAdded += 1
+        for urlNick in urls:
+            if urlNick is not None:
+                out.write(self._formatRecord(*urlNick))
+        out.close()
+        shutil.move(filename, self.filename)
+        self.log.info('Vacuumed %s, removed %s records.',
+                      self.filename, notAdded)
+                
+        
 
 class URL(callbacks.PrivmsgCommandAndRegexp):
     regexps = ['tinyurlSnarfer', 'titleSnarfer']
@@ -254,6 +293,7 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
         """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
+        db.vacuum()
         count = db.numUrls()
         irc.reply('I have %s in my database.' % utils.nItems('URL', count))
 
