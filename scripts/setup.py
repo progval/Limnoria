@@ -219,6 +219,18 @@ if __name__ == '__main__':
                 configVariables['driverModule'] = 'twistedDrivers'
             except:
                 print 'Sorry, twisted doesn\'t seem to be installed.'
+
+        print 'Supybot can allow an owner user to evaluated arbitrary Python '
+        print 'code.  Obviously, this is disabled by default just in case '
+        print 'there happens to be a bug in supybot\'s code. '
+        if yn('Would you like to enable evaluation of arbitrary Python?')=='y':
+            configVariables['allowEval'] = True
+    print 'Supybot can accept a "prefix character" (or many!) to determine '
+    print 'whether or not he\'s being addressed by someone.  For instance, if '
+    print 'his prefixChar is "@", then "@cpustats" has the same effect as '
+    print '"supybot: cpustats".'
+    s = anything('What would you like supybot\'s prefixChar(s) to be?')
+    configVariables['prefixChars'] = s
                 
                 
     template = template.replace('%%configVariables%%',
