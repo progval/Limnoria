@@ -668,6 +668,9 @@ class Databases(registry.SpaceSeparatedListOfStrings):
                 v.insert(0, 'sqlite')
         return v
 
+    def serialize(self):
+        return ' '.join(self.value)
+
 registerGlobalValue(supybot, 'databases',
     Databases([], """Determines what databases are available for use. If this
     value is not configured (that is, if its value is empty) then sane defaults
