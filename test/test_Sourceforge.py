@@ -85,7 +85,7 @@ if network:
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('rfe --open gaim %s' % n)
 
-        '''
+        """
         Just assume pending works since we're not 99% guaranteed to have a
         project that has pending bugs/rfes like we do with the others.
         def testPending(self):
@@ -97,7 +97,7 @@ if network:
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
             self.assertNotError('rfe --pending gaim %s' % n)
-        '''
+        """
 
         def testBugs(self):
             self.assertHelp('bugs')
@@ -127,14 +127,17 @@ if network:
 
         def testDefaultproject(self):
             self.assertHelp('bugs')
-            conf.supybot.plugins.Sourceforge.project.set('supybot')
-            self.assertNotError('bugs')
-            m = self.getMsg('bugs')
-            n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('bug supybot %s' % n)
-            # This should have the same effect as calling 'bug supybot %s'
-            self.assertNotError('bug %s' % n)
-            conf.supybot.plugins.Sourceforge.project.set('')
+            try:
+                original = conf.supybot.plugins.Sourceforge.project()
+                conf.supybot.plugins.Sourceforge.project.set('supybot')
+                self.assertNotError('bugs')
+                m = self.getMsg('bugs')
+                n = re.search('#(\d+)', m.args[1]).group(1)
+                self.assertNotError('bug supybot %s' % n)
+                # This should have the same effect as calling 'bug supybot %s'
+                self.assertNotError('bug %s' % n)
+            finally:
+                conf.supybot.plugins.Sourceforge.project.set(original)
 
         def testSnarfer(self):
             s = r'.*Status.*: \w+'
