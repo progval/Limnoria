@@ -43,6 +43,7 @@ import os.path
 import sqlite
 
 import conf
+import ircdb
 import utils
 import ircmsgs
 import ircutils
@@ -61,19 +62,27 @@ def makeDb(dbfilename, replace=False):
     cursor = db.cursor()
     cursor.execute("""CREATE TABLE insults (
                       id INTEGER PRIMARY KEY,
-                      insult TEXT
+                      insult TEXT, added_by TEXT,
+                      requested_by TEXT,
+                      use_count INTEGER
                       )""")
     cursor.execute("""CREATE TABLE excuses (
                       id INTEGER PRIMARY KEY,
-                      excuse TEXT
+                      excuse TEXT, added_by TEXT,
+                      requested_by TEXT,
+                      use_count INTEGER
                       )""")
     cursor.execute("""CREATE TABLE larts (
                       id INTEGER PRIMARY KEY,
-                      lart TEXT
+                      lart TEXT, added_by TEXT,
+                      requested_by TEXT,
+                      use_count INTEGER
                       )""")
     cursor.execute("""CREATE TABLE praises (
                       id INTEGER PRIMARY KEY,
-                      praise TEXT
+                      praise TEXT, added_by TEXT,
+                      requested_by TEXT,
+                      use_count INTEGER
                       )""")
     cursor.execute("""CREATE TABLE words (
                       id INTEGER PRIMARY KEY,
@@ -123,6 +132,18 @@ class FunDB(callbacks.Privmsg):
         self.db.commit()
         self.db.close()
 
+    def _pluralize(self, string, count, verb=None):
+        if verb is None:
+            if count == 1:
+                return string
+            else:
+                return '%ss' % string
+        else:
+            if count == 1:
+                return ('is', string)
+            else:
+                return ('are', '%ss' % string)
+
     def insult(self, irc, msg, args):
         """<nick>
 
@@ -134,7 +155,14 @@ class FunDB(callbacks.Privmsg):
                           WHERE insult NOT NULL
                           ORDER BY random()
                           LIMIT 1""")
-        (id, insult) = cursor.fetchone()
+        try:
+            (id, insult) = cursor.fetchone()
+        except TypeError:
+            irc.error(msg, 'There are currently no available insults.')
+            return
+        sql = """UPDATE insults SET use_count=use_count+1, requested_by=%s
+                 WHERE id=%s"""
+        cursor.execute(sql, msg.prefix, id)
         if nick.strip() in (irc.nick, 'himself', 'me'):
             insultee = msg.nick
         else:
@@ -174,16 +202,28 @@ class FunDB(callbacks.Privmsg):
                           WHERE excuse NOTNULL
                           ORDER BY random()
                           LIMIT 1""")
-        (id, excuse) = cursor.fetchone()
+        try:
+            (id, excuse) = cursor.fetchone()
+        except TypeError:
+            irc.error(msg, 'There are currently no available excuses.')
+            return
+        sql = """UPDATE excuses SET use_count=use_count+1, requested_by=%s
+                 WHERE id=%s"""
+        cursor.execute(sql, msg.prefix, id)
         irc.reply(msg, '%s (#%s)' % (excuse, id))
 
-    def adddb(self, irc, msg, args):
+    def dbadd(self, irc, msg, args):
         """<lart|excuse|insult|praise> <text>
 
         Adds another record to the data referred to in the first argument.
         """
         (table, s) = privmsgs.getArgs(args, needed=2)
-        table = str.lower(table)
+        table = table.lower()
+        try:
+            name = ircdb.users.getUserName(msg.prefix)
+        except KeyError:
+            irc.error(msg, 'You must register first')
+            return
         if table == "lart" or table == "praise":
             if '$who' not in s:
                 irc.error(msg, 'There must be an $who in the lart/praise '\
@@ -194,8 +234,9 @@ class FunDB(callbacks.Privmsg):
                            (table, utils.commaAndify(self._tables)))
             return
         cursor = self.db.cursor()
-        sql = """INSERT INTO %ss VALUES (NULL, %%s)""" % table
-        cursor.execute(sql, s)
+        sql = """INSERT INTO %ss VALUES (NULL, %%s, %%s, 'nobody',
+                 0)""" % table
+        cursor.execute(sql, s, msg.prefix)
         self.db.commit()
         sql = """SELECT id FROM %ss WHERE %s=%%s""" % (table, table)
         cursor.execute(sql, s)
@@ -203,14 +244,19 @@ class FunDB(callbacks.Privmsg):
         response = [conf.replySuccess,'(%s #%s)' % (table,id)]
         irc.reply(msg, ' '.join(response))
 
-    def removedb(self, irc, msg, args):
+    def dbremove(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
 
         Removes the data, referred to in the first argument, with the id
         number <id> from the database.
         """
         (table, id) = privmsgs.getArgs(args, needed=2)
-        table = str.lower(table)
+        table = table.lower()
+        try:
+            ircdb.users.getUserName(msg.prefix)
+        except KeyError:
+            irc.error(msg, 'You must register first')
+            return
         try:
             id = int(id)
         except ValueError:
@@ -226,14 +272,14 @@ class FunDB(callbacks.Privmsg):
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
-    def numdb(self, irc, msg, args):
+    def dbnum(self, irc, msg, args):
         """<lart|excuse|insult|praise>
 
         Returns the number of records, of the type specified, currently in
         the database.
         """
         table = privmsgs.getArgs(args)
-        table = str.lower(table)
+        table = table.lower()
         if table not in self._tables:
             irc.error(msg, '"%s" is not valid. Valid values include %s' % \
                            (table, utils.commaAndify(self._tables)))
@@ -241,11 +287,15 @@ class FunDB(callbacks.Privmsg):
         cursor = self.db.cursor()
         sql = """SELECT count(*) FROM %ss""" % table
         cursor.execute(sql)
-        total = cursor.fetchone()[0]
-        irc.reply(msg, 'There are currently %s %s in my database' %\
-            (total,table+'s'))
+        try:
+            total = int(cursor.fetchone()[0])
+        except ValueError:
+            irc.error(msg, 'Unexpected response from database')
+        (verb, table) = self._pluralize(table, total, 1)
+        irc.reply(msg, 'There %s currently %s %s in my database' %\
+            (verb, total, table))
 
-    def getdb(self, irc, msg, args):
+    def dbget(self, irc, msg, args):
         """<lart|excuse|insult|praise> <id>
 
         Gets the record with id <id> from the table specified.
@@ -267,7 +317,37 @@ class FunDB(callbacks.Privmsg):
         if cursor.rowcount == 0:
             irc.error(msg, 'There is no such %s.' % table)
         else:
-            irc.reply(msg, cursor.fetchone()[0])
+            reply = cursor.fetchone()[0]
+            irc.reply(msg, reply)
+
+    def dbinfo(self, irc, msg, args):
+        """<lart|excuse|insult|praise> <id>
+
+        Gets the info for the record with id <id> from the table specified.
+        """
+        (table, id) = privmsgs.getArgs(args, needed=2)
+        table = table.lower()
+        try:
+            id = int(id)
+        except ValueError:
+            irc.error(msg, '<id> must be an integer.')
+            return
+        if table not in self._tables:
+            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+                           (table, utils.commaAndify(self._tables)))
+            return
+        cursor = self.db.cursor()
+        sql = """SELECT added_by, requested_by, use_count FROM %ss WHERE
+                 id=%%s""" % table
+        cursor.execute(sql, id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There is no such %s.' % table)
+        else:
+            (add,req,count) = cursor.fetchone()
+            reply = '%s #%s: Created by %s. last requested by %s, requested '\
+                ' a total of %s %s' % (table, id, add, req, count,
+                self._pluralize('time',count))
+            irc.reply(msg, reply)
 
     def lart(self, irc, msg, args):
         """[<channel>] <nick>
@@ -282,13 +362,49 @@ class FunDB(callbacks.Privmsg):
                           WHERE lart NOTNULL
                           ORDER BY random()
                           LIMIT 1""")
-        (id, lart) = cursor.fetchone()
+        try:
+            (id, lart) = cursor.fetchone()
+        except TypeError:
+            irc.error(msg, 'There are currently no available larts.')
+            return
+        sql = """UPDATE larts SET use_count=use_count+1, requested_by=%s
+                 WHERE id=%s"""
+        cursor.execute(sql, msg.prefix, id)
         if nick == irc.nick or nick == 'me':
             lartee = msg.nick
         else:
             lartee = nick
         lart = lart.replace("$who", lartee)
         irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (lart, id)))
+
+    def praise(self, irc, msg, args):
+        """[<channel>] <nick>
+
+        The <channel> argument is only necessary if the message isn't being
+        sent in the channel itself.  Uses a praise on <nick>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        nick = privmsgs.getArgs(args)
+        cursor = self.db.cursor()
+        cursor.execute("""SELECT id, praise FROM praises
+                          WHERE praise NOTNULL
+                          ORDER BY random()
+                          LIMIT 1""")
+        try:
+            (id, praise) = cursor.fetchone()
+        except TypeError:
+            irc.error(msg, 'There are currently no available praises.')
+            return
+        sql = """UPDATE praises SET use_count=use_count+1, requested_by=%s
+                 WHERE id=%s"""
+        cursor.execute(sql, msg.prefix, id)
+        self.db.commit()
+        if nick == irc.nick or nick == 'me':
+            praisee = msg.nick
+        else:
+            praisee = nick
+        praise = praise.replace("$who", praisee)
+        irc.queueMsg(ircmsgs.action(channel, '%s (#%s)' % (praise, id)))
 
     def addword(self, irc, msg, args):
         """<word>
@@ -386,11 +502,15 @@ Class = FunDB
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 3:
-        print 'Usage: %s <words|larts|excuses|insults|zipcodes> file' % \
-              sys.argv[0]
+        print 'Usage: %s <words|larts|excuses|insults|zipcodes> file'\
+              ' [<console>]' % sys.argv[0]
         sys.exit(-1)
     category = sys.argv[1]
     filename = sys.argv[2]
+    if len(sys.argv) == 4:
+        added_by = sys.argv[3]
+    else:
+        added_by = '<console>'
     db = makeDb(dbFilename)
     cursor = db.cursor()
     for line in open(filename, 'r'):
@@ -402,13 +522,22 @@ if __name__ == '__main__':
             addWord(db, line)
         elif category == 'larts':
             if '$who' in line:
-                cursor.execute("""INSERT INTO larts VALUES (NULL, %s)""", line)
+                cursor.execute("""INSERT INTO larts VALUES (NULL, %s,
+                                  %s, nobody, 0)""", line, added_by)
             else:
                 print 'Invalid lart: %s' % line
+        elif category == 'praises':
+            if '$who' in line:
+                cursor.execute("""INSERT INTO praises VALUES (NULL, %s,
+                                  %s, nobody, 0)""", line, added_by)
+            else:
+                print 'Invalid praise: %s' % line
         elif category == 'insults':
-            cursor.execute("""INSERT INTO insults VALUES (NULL, %s)""", line)
+            cursor.execute("""INSERT INTO insults VALUES (NULL, %s, %s,
+                              nobody, 0)""", line, added_by)
         elif category == 'excuses':
-            cursor.execute("""INSERT INTO excuses VALUES (NULL, %s)""", line)
+            cursor.execute("""INSERT INTO excuses VALUES (NULL, %s, %s,
+                              nobody, 0)""", line, added_by)
         elif category == 'zipcodes':
             (zipcode, cityState) = line.split(':')
             if '-' in zipcode:

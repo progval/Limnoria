@@ -34,15 +34,66 @@ from test import *
 class TestFunDB(PluginTestCase):
     plugins = ('FunDB',)
 
-    def testAdddb(self):
-        self.assertError('adddb l4rt foo')
-        self.assertError('adddb lart foo')
-        self.assertNotError('adddb lart jabs $who')
+    def testDbAdd(self):
+        self.assertError('dbadd l4rt foo')
+        self.assertError('dbadd lart foo')
 
-    def testRemovedb(self):
-        self.assertError('removedb l4rt foo')
-        self.assertError('removedb lart foo')
-        self.assertNotError('removedb lart 1')
+    def testDbRemove(self):
+        self.assertError('dbremove l4rt foo')
+        self.assertError('dbremove lart foo')
+
+    def testLart(self):
+        self.assertNotError('dbadd lart jabs $who')
+        self.assertNotError('lart jemfinch')
+        self.assertNotError('dbnum lart')
+        self.assertNotError('dbremove lart 1')
+        self.assertNotError('dbnum lart')
+        self.assertError('lart jemfinch')
+
+    def testExcuse(self):
+        self.assertNotError('dbadd excuse Power failure')
+        self.assertNotError('excuse')
+        self.assertNotError('excuse a few random words')
+        self.assertNotError('dbnum excuse')
+        self.assertNotError('dbremove excuse 1')
+        self.assertNotError('dbnum excuse')
+        self.assertError('excuse')
+
+    def testInsult(self):
+        self.assertNotError('dbadd insult Fatty McFatty')
+        self.assertNotError('insult jemfinch')
+        self.assertNotError('dbnum insult')
+        self.assertNotError('dbremove insult 1')
+        self.assertNotError('dbnum insult')
+        self.assertError('insult jemfinch')
+
+    def testPraise(self):
+        self.assertNotError('dbadd praise pets $who')
+        self.assertNotError('praise jemfinch')
+        self.assertNotError('dbnum praise')
+        self.assertNotError('dbremove praise 1')
+        self.assertNotError('dbnum praise')
+        self.assertError('praise jemfinch')
+
+    def testDbInfo(self):
+        self.assertNotError('dbinfo praise 1')
+        self.assertError('dbinfo fake 1')
+
+    def testDbGet(self):
+        self.assertError('dbget fake 1')
+        self.assertError('dbget lart foo')
+        self.assertNotError('dbadd praise pets $who')
+        self.assertNotError('dbget praise 1')
+        self.assertNotError('dbremove praise 1')
+        self.assertError('dbget praise 1')
+
+    def testDbNum(self):
+        self.assertError('dbnum fake')
+        self.assertError('dbnum 1')
+        self.assertNotError('dbnum praise')
+        self.assertNotError('dbnum lart')
+        self.assertNotError('dbnum excuse')
+        self.assertNotError('dbnum insult')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
