@@ -415,33 +415,6 @@ class Http(callbacks.Privmsg):
                ]
         irc.reply('; '.join(resp))
 
-    def futurama(self, irc, msg, args):
-        """[{bender|fry}]
-
-        Returns a random Bender or Fry (from Futurama) quote from Slashdot's
-        HTTP headers.  If a name is specified, attempts to return a quote
-        specific to that character.
-        """
-        name = privmsgs.getArgs(args, required=0, optional=1)
-        fd = webutils.getUrlFd('http://slashdot.org/')
-        try:
-            if not name:
-                if 'X-Bender' in fd.headers:
-                    irc.reply('<Bender> %s' % fd.headers['X-Bender'])
-                elif 'X-Fry' in fd.headers:
-                    irc.reply('<Fry> %s' % fd.headers['X-Fry'])
-                else:
-                    irc.reply('Slashdot seems to be running low on Futurama '
-                              'quotes.')
-            else:
-                try:
-                    irc.reply('<%s> %s' % (name, fd.headers['X-%s' % name]))
-                except KeyError:
-                    irc.reply('Slashdot seems to be running low on %s quotes' %
-                              name)
-        finally:
-            fd.close()
-
 
 Class = Http
 
