@@ -805,12 +805,13 @@ class FunCommands(callbacks.Privmsg):
             dictionary = '*'
         conn = dictclient.Connection('dict.org')
         definitions = conn.define(dictionary, word)
-        dbs = [ircutils.bold(d.getdb().getname()) for d in definitions]
+        dbs = sets.Set()
         if not definitions:
             irc.reply(msg, 'No definition for %r could be found.' % word)
             return
         L = []
         for d in definitions:
+            dbs.add(ircutils.bold(d.getdb().getname()))
             (db, s) = (d.getdb().getname(), d.getdefstr())
             db = ircutils.bold(db)
             s = utils.normalizeWhitespace(s).rstrip(';.,')
