@@ -4,3 +4,5 @@ code (like our new supybot-newplugin and supybot-test).
 "darcs get http://source.supybot.com/supybot/" for the new Supybot code.
 "darcs get http://source.supybot.com/supybot-plugins/" for plugins that aren't
 included in the official Supybot.
+
+You can get Darcs at http://darcs.net/
