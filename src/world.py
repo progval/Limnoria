@@ -173,8 +173,10 @@ atexit.register(startDying)
 ##################################################
 ##################################################
 ##################################################
-testing = False
 dying = False
+testing = False
+starting = False
+profiling = False
 documenting = False
 
 

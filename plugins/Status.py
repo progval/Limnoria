@@ -58,7 +58,7 @@ conf.registerChannelValue(conf.supybot.plugins.Status.cpu, 'children',
     registry.Boolean(True, """Determines whether the cpu command will list the
     time taken by children as well as the bot's process."""))
 conf.registerChannelValue(conf.supybot.plugins.Status.cpu, 'threads',
-    registry.Boolean(True, """Determines whether the cpu command will provide
+    registry.Boolean(False, """Determines whether the cpu command will provide
     the number of threads spawned and active."""))
 conf.registerChannelValue(conf.supybot.plugins.Status.cpu, 'memory',
     registry.Boolean(True, """Determines whether the cpu command will report
@@ -98,7 +98,23 @@ class Status(callbacks.Privmsg):
         networks.sort()
         networks = ['%s as %s' % (net, utils.commaAndify(nicks))
                     for (net, nicks) in networks]
-        irc.reply('I am connected to %s.' % utils.commaAndify(networks))
+        L = ['I am connected to %s.' % utils.commaAndify(networks)]
+        if world.profiling:
+            L.append('I am current in code profiling mode.')
+        irc.reply('  '.join(L))
+
+    def threads(self, irc, msg, args):
+        """takes no arguments
+
+        Returns the current threads that are active.
+        """
+        threads = [t.getName() for t in threading.enumerate()]
+        threads.sort()
+        s = 'I have spawned %s; %s %s still currently active: %s.' % \
+            (utils.nItems('thread', world.threadsSpawned),
+             utils.nItems('thread', len(threads)), utils.be(len(threads)),
+             utils.commaAndify(threads))
+        irc.reply(s)
 
     def net(self, irc, msg, args):
         """takes no arguments
@@ -156,7 +172,7 @@ class Status(callbacks.Privmsg):
                     finally:
                         r.close()
                 elif sys.platform.startswith('netbsd'):
-                    mem = '%s kB' % os.stat('/proc/%s/mem')[7]
+                    mem = '%s kB' % os.stat('/proc/%s/mem' % pid)[7]
                 response += '  I\'m taking up %s kB of memory.' % mem
             except Exception:
                 self.log.exception('Uncaught exception in cpu.memory:')

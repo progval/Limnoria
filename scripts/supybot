@@ -325,6 +325,7 @@ if __name__ == '__main__':
     if options.profile:
         import hotshot
         profiler = hotshot.Profile('%s-%i.prof' % (nick, time.time()))
+        world.profiling = True
         profiler.run('main()')
     else:
         main()

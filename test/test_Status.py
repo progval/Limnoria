@@ -71,6 +71,9 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('upkeep')
         self.assertNotError('logfile')
 
+    def testThreads(self):
+        self.assertNotError('threads')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
