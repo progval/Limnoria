@@ -297,55 +297,56 @@ def shrinkList(L, sep='', limit=425):
           L.pop()
 
 
-## class nick(str):
-##     """This class does case-insensitive comparison and hashing of nicks."""
-##     def __init__(self, s):
-##         self.original = s
-##         self.lowered = toLower(s)
+class IrcString(str):
+    """This class does case-insensitive comparison and hashing of nicks."""
+    def __init__(self, s):
+        s = str(s)
+        self.original = s
+        self.lowered = toLower(s)
 
-##     def __repr__(self):
-##         return repr(self.original)
+    def __repr__(self):
+        return repr(self.original)
 
-##     def __str__(self):
-##         return str(self.original)
+    def __str__(self):
+        return str(self.original)
     
-##     def __eq__(self, s):
-##         try:
-##             return toLower(s) == self.lowered
-##         except:
-##             return False
+    def __eq__(self, s):
+        try:
+            return toLower(s) == self.lowered
+        except:
+            return False
 
-##     def __hash__(self):
-##         return hash(self.lowered)
+    def __hash__(self):
+        return hash(self.lowered)
 
 
 class IrcDict(dict):
     """Subclass of dict to make key comparison IRC-case insensitive."""
     def __contains__(self, s):
-        return dict.__contains__(self, toLower(s))
+        return dict.__contains__(self, IrcString(s))
     has_key = __contains__
 
     def __setitem__(self, s, v):
-        dict.__setitem__(self, toLower(s), v)
+        dict.__setitem__(self, IrcString(s), v)
 
     def __getitem__(self, s):
-        return dict.__getitem__(self, toLower(s))
+        return dict.__getitem__(self, IrcString(s))
 
     def __delitem__(self, s):
-        dict.__delitem__(self, toLower(s))
+        dict.__delitem__(self, IrcString(s))
 
 class IrcSet(sets.Set):
     def add(self, s):
-        return sets.Set.add(self, toLower(s))
+        return sets.Set.add(self, IrcString(s))
 
     def remove(self, s):
-        return sets.Set.remove(self, toLower(s))
+        return sets.Set.remove(self, IrcString(s))
 
     def discard(self, s):
-        return sets.Set.discard(self, toLower(s))
+        return sets.Set.discard(self, IrcString(s))
 
     def __contains__(self, s):
-        return sets.Set.__contains__(self, toLower(s))
+        return sets.Set.__contains__(self, IrcString(s))
 
     has_key = __contains__
 
