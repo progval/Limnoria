@@ -43,6 +43,7 @@ from itertools import ifilter
 import conf
 import debug
 import utils
+import irclib
 import ircmsgs
 import ircutils
 import privmsgs
@@ -73,56 +74,12 @@ def reload(x=None):
         replyWhenNotCommand = x
 
 class Misc(callbacks.Privmsg):
-    def doPrivmsg(self, irc, msg):
-        # This exists to be able to respond to attempts to command the bot
-        # with a "That's not a command!" if the proper conf.variable is set.
-        callbacks.Privmsg.doPrivmsg(self, irc, msg)
-        notCommands = []
-        ambiguousCommands = {}
-        s = callbacks.addressed(irc.nick, msg)
-        if s:
-            tokens = callbacks.tokenize(s)
-            commands = callbacks.getCommands(tokens)
-            for command in commands:
-                command = callbacks.canonicalName(command)
-                cbs = callbacks.findCallbackForCommand(irc, command)
-                if not cbs:
-                    notCommands.append(command)
-                elif len(cbs) > 1:
-                    ambiguousCommands[command] = [cb.name() for cb in cbs]
-            if ambiguousCommands:
-                if len(ambiguousCommands) == 1: # Common case.
-                    (command, names) = ambiguousCommands.popitem()
-                    names.sort()
-                    s = 'The command %r is available in the %s plugins.  '\
-                        'Please specify the plugin whose command you ' \
-                        'wish to call by using its name as a command ' \
-                        'before calling it.' % \
-                        (command, utils.commaAndify(names))
-                else:
-                    L = []
-                    while ambiguousCommands:
-                        (command, names) = ambiguousCommands.popitem()
-                        names.sort()
-                        L.append('The command %r is available in the %s '
-                                 'plugins' %(command,utils.commaAndify(names)))
-                    s = '%s; please specify from which plugins to ' \
-                        'call these commands.' % '; '.join(L)
-                irc.queueMsg(callbacks.reply(msg, 'Error: ' + s))
-                return
-            if conf.replyWhenNotCommand and msg.nick!=irc.nick and notCommands:
-                for cb in irc.callbacks:
-                    if isinstance(cb, callbacks.PrivmsgRegexp) or \
-                       isinstance(cb, callbacks.PrivmsgCommandAndRegexp):
-                        for (r, _) in cb.res:
-                            if r.search(msg.args[1]):
-                                return
-                        if hasattr(cb, 'addressedRes'):
-                            for (r, _) in cb.addressedRes:
-                                if r.search(s):
-                                    return
-                irc = callbacks.IrcObjectProxyRegexp(irc)
-                replyWhenNotCommand(irc, msg, notCommands)
+    def invalidCommand(self, irc, msg, tokens):
+        if conf.replyWhenNotCommand:
+            irc.error(msg, '%r is not a valid command.' % tokens[0])
+        else:
+            if not isinstance(irc.irc, irclib.Irc):
+                irc.reply(msg, '[%s]' % ' '.join(tokens))
         
     def list(self, irc, msg, args):
         """[--private] [<module name>]

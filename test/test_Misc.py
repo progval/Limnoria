@@ -38,7 +38,11 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
             conf.replyWhenNotCommand = True
             self.prefix = 'somethingElse!user@host.domain.tld'
             self.assertRegexp('foo bar baz', 'not.*command')
-            self.assertRegexp('foo | bar | baz', 'not.*commands')
+            try:
+                conf.enablePipeSyntax = True
+                self.assertRegexp('foo | bar | baz', 'not.*commands')
+            finally:
+                conf.enablePipeSyntax = False
             self.assertRegexp('baz [foo] [bar]', 'not.*commands')
         finally:
             conf.replyWhenNotCommand = False

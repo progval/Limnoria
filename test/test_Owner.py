@@ -84,19 +84,19 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
     def testLoad(self):
         self.assertError('load Owner')
         self.assertError('load owner')
-        self.assertNotError('load Misc')
+        self.assertNotError('load Admin')
         self.assertNotError('list Owner')
 
     def testReload(self):
-        self.assertError('reload Misc')
-        self.assertNotError('load Misc')
-        self.assertNotError('reload Misc')
+        self.assertError('reload Admin')
+        self.assertNotError('load Admin')
+        self.assertNotError('reload Admin')
 
     def testUnload(self):
-        self.assertError('unload Misc')
-        self.assertNotError('load Misc')
-        self.assertNotError('unload Misc')
-        self.assertError('unload Misc')
+        self.assertError('unload Admin')
+        self.assertNotError('load Admin')
+        self.assertNotError('unload Admin')
+        self.assertError('unload Admin')
 
     def testSetconf(self):
         self.assertRegexp('setconf', 'confDir')

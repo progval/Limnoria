@@ -88,8 +88,12 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
-        super(self.__class__, self).doPrivmsg(irc, msg)
-        
+        notCommands = []
+        ambiguousCommands = {}
+        s = callbacks.addressed(irc.nick, msg)
+        if s:
+            callbacks.IrcObjectProxy(irc, msg, callbacks.tokenize(s))
+                                
     def eval(self, irc, msg, args):
         """<expression>
 

@@ -344,6 +344,35 @@ class IrcObjectProxy:
         if not args:
             irc.reply(msg, '[]')
         else:
+            if isinstance(irc, irclib.Irc):
+                # Let's check for {ambiguous,non}Commands.
+                ambiguousCommands = {}
+                commands = getCommands(args)
+                for command in commands:
+                    command = canonicalName(command)
+                    cbs = findCallbackForCommand(irc, command)
+                    if len(cbs) > 1:
+                        ambiguousCommands[command] = [cb.name() for cb in cbs]
+                if ambiguousCommands:
+                    if len(ambiguousCommands) == 1: # Common case.
+                        (command, names) = ambiguousCommands.popitem()
+                        names.sort()
+                        s = 'The command %r is available in the %s plugins.  '\
+                            'Please specify the plugin whose command you ' \
+                            'wish to call by using its name as a command ' \
+                            'before calling it.' % \
+                            (command, utils.commaAndify(names))
+                    else:
+                        L = []
+                        for (command, names) in ambiguousCommands.iteritems():
+                            names.sort()
+                            L.append('The command %r is available in the %s '
+                                     'plugins' %
+                                     (command, utils.commaAndify(names)))
+                        s = '%s; please specify from which plugins to ' \
+                                     'call these commands.' % '; '.join(L)
+                    irc.queueMsg(error(msg, s))
+                    return
             self.irc = irc
             self.msg = msg
             self.args = args
@@ -367,23 +396,31 @@ class IrcObjectProxy:
         self.finalEval()
 
     def finalEval(self):
-        if self.finalEvaled:
-            raise ValueError, 'finalEval called twice.  Odd.'
+        assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
-        originalName = self.args.pop(0)
-        name = canonicalName(originalName)
+        name = canonicalName(self.args[0])
         cbs = findCallbackForCommand(self, name)
         if len(cbs) == 0:
-            self.args.insert(0, originalName)
-            if not isinstance(self.irc, irclib.Irc):
-                # If self.irc is an actual irclib.Irc, then this is the
-                # first command given, and should be ignored as usual.
-                self.reply(self.msg, '[%s]' % ' '.join(self.args))
-                return
-        elif len(cbs) > 1:
-            return # Misc.doPrivmsg will handle this.
+            for cb in self.irc.callbacks:
+                if isinstance(cb, PrivmsgRegexp):
+                    for (r, _) in cb.res:
+                        if r.search(msg.args[1]):
+                            return
+                if isinstance(cb, PrivmsgCommandAndRegexp):
+                    for (r, _) in cb.res:
+                        if r.search(msg.args[1]):
+                            return
+                    for (r, _) in cb.addressedRes:
+                        if r.search(msg.args[1]):
+                            return
+            # Ok, no regexp-based things matched.
+            for cb in self.irc.callbacks:
+                if hasattr(cb, 'invalidCommand'):
+                    cb.invalidCommand(self, self.msg, self.args)
         else:
             try:
+                assert len(cbs) == 1
+                del self.args[0]
                 cb = cbs[0]
                 anticap = ircdb.makeAntiCapability(name)
                 #debug.printf('Checking for %s' % anticap)
@@ -454,22 +491,6 @@ class IrcObjectProxy:
             elif self.action:
                 self.irc.queueMsg(ircmsgs.action(msg.args[0], s))
             else:
-                # The size of a PRIVMSG is:
-                # 1 for the colon
-                # len(prefix)
-                # 1 for the space
-                # 7 for the PRIVMSG
-                # 1 for the space
-                # len(target)
-                # 1 for the space
-                # 1 for the colon
-                # len(payload)
-                # 2 for the \r\n
-                # So non-variable stuff it's 1+1+7+1+1+1+2, or 14
-                # We'll estimate the channel length at 30, and we'll know the
-                # prefix length exactly.  We also might append the string
-                # " (more)" to the end, so that's 7 more characters.
-                # 512 - 51 == 461.
                 s = ircutils.safeArgument(s)
                 allowedLength = 450 - len(self.irc.prefix)
                 msgs = textwrap.wrap(s, allowedLength-30) # -30 is for "nick:"
@@ -689,33 +710,7 @@ class Privmsg(irclib.IrcCallback):
         debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
 
     def doPrivmsg(self, irc, msg, rateLimit=True):
-        s = addressed(irc.nick, msg)
-        #debug.printf('Privmsg.doPrivmsg: s == %r' % s)
-        if s:
-            recipient = msg.args[0]
-            if ircdb.checkIgnored(msg.prefix, recipient):
-                debug.msg('Privmsg.doPrivmsg: ignoring %s.' % msg.prefix)
-                return
-            try:
-                args = tokenize(s)
-            except SyntaxError, e:
-                irc.queueMsg(reply(msg, debug.exnToString(e)))
-                return
-            if args and isinstance(args[0], str):
-                args[0] = canonicalName(args[0])
-                if self.isCommand(args[0]):
-                    if self.handled and args[0] not in self.alwaysCall:
-                        return
-                    if rateLimit:
-                        self.rateLimiter.put(msg)
-                        msg = self.rateLimiter.get()
-                    if msg:
-                        if conf.replyWhenNotCommand:
-                            for command in getCommands(args):
-                                command = canonicalName(command)
-                                if not findCallbackForCommand(irc, command):
-                                    return
-                        self.Proxy(irc, msg, args)
+        pass
 
 
 class IrcObjectProxyRegexp:
@@ -871,7 +866,6 @@ class PrivmsgCommandAndRegexp(Privmsg):
                     if msg:
                         proxy = IrcObjectProxyRegexp(irc)
                         self.callCommand(method,proxy,msg,m,catchErrors=True)
-        Privmsg.doPrivmsg(self, irc, msg, rateLimit=(not fed))
             
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
