@@ -219,6 +219,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.error(msg, conf.replyNotRegistered)
             return
         key, fact = match.groups()
+        # Strip the key of punctuation and spaces
+        key = key.strip('?!')
         cursor = self.db.cursor()
         # Check and make sure it's not in the DB already
         cursor.execute("""SELECT * FROM factoids WHERE key LIKE %s""", key)

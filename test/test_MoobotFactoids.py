@@ -45,6 +45,13 @@ if sqlite is not None:
             self.prefix = 'foo!bar@baz'
             self.assertNotError('register tester moo')
 
+        def testAddFactoid(self):
+            self.assertNotError('moo is foo')
+            # Check stripping punctuation
+            self.assertError('moo!?    is foo') # 'moo' already exists
+            self.assertNotError('foo!?    is foo') 
+            self.assertResponse('foo', 'foo is foo')
+
         def testLiteral(self):
             self.assertError('literal moo') # no factoids yet
             self.assertNotError('moo is <reply>foo')
