@@ -195,17 +195,10 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             self.log.debug('Got 435 without Admin.nick being called.')
 
     def do438(self, irc, msg):
-        """Can't change nick while in +m channel.  Could just be Freenode."""
         irc = self.pendingNickChanges.get(irc, None)
         if irc is not None:
-            channel = msg.args[-1].strip().split()[-1][1:-1]
-            assert hasattr(irc, 'msg')
-            if ircutils.strEqual(irc.msg.args[0], channel):
-                irc.error('I can\'t change nicks, '
-                          '%s is +m and I\'m -v.' % channel, private=True)
-            else:
-                irc.error('I can\'t change nicks, '
-                          'a channel I\'m in is +m and I\'m -v in it.')
+            irc.error('I can\'t change nicks, the server said %s.' %
+                      utils.quoted(msg.args[2]), private=True)
         else:
             self.log.debug('Got 438 without Admin.nick being called.')
 
