@@ -93,7 +93,7 @@ class Notes(DBHandler, callbacks.Privmsg):
     def getUserName(self, userid):
         self.cursor.execute("""SELECT name FROM users
                                WHERE id=%d""" % userid)
-        if self.cursor.rowcount != 0
+        if self.cursor.rowcount != 0:
             results = self.cursor.fetchall()
             return results[0]
         else:
@@ -190,3 +190,5 @@ class Notes(DBHandler, callbacks.Privmsg):
         for (id, from_id) in notes:
             sender = self.getUserName(from_id)
             L.append(r'#%d from %s;;' % (id, sender)
+
+Class = Notes
