@@ -326,6 +326,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             i = int(args[0])
         except (ValueError, IndexError):
             i = 0
+        world.dying = True
         for driver in drivers._drivers.itervalues():
             driver.die()
         for irc in world.ircs[:]:
