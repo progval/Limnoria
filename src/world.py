@@ -47,18 +47,16 @@ import threading
 
 import log
 import conf
+import ircutils
 
-startedAt = 0.0
+startedAt = time.time() # Just in case it doesn't get set later.
 
 mainThread = threading.currentThread()
 
 threadsSpawned = 1 # Starts at one for the initial "thread."
 commandsProcessed = 0
-###
-# End Global Values.
-###
 
-ircs = []
+ircs = [] # A list of all the IRCs.
 
 flushers = [] # A periodic function will flush all these.
 
@@ -86,15 +84,20 @@ def upkeep(): # Function to be run on occasion to do upkeep stuff.
         log.warning('Uncollectable garbage: %s', gc.garbage)
     if 'noflush' not in tempvars:
         flush()
-    log.verbose('Regexp cache size: %s', len(sre._cache))
+    log.debug('Regexp cache size: %s', len(sre._cache))
+    log.debug('Hostmask pattern cache size: %s' % len(ircutils._patternCache))
     log.info('%s upkeep ran.', time.strftime(conf.logTimestampFormat))
     return collected
 
 def makeIrcsDie():
+    """Kills Ircs."""
+    log.info('Assassinating the Irc object council...')
     for irc in ircs[:]:
         irc.die()
 
 def startDying():
+    """Starts dying."""
+    log.info('Begining that long, slow walk into the night...')
     global dying
     dying = True
 
