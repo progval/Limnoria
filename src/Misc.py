@@ -60,6 +60,7 @@ class Misc(callbacks.Privmsg):
             command = tokens and tokens[0] or ''
             irc.error('%r is not a valid command.' % command)
         else:
+            self.log.info('Not replying to %s, not a command.' % tokens[0])
             if not isinstance(irc.irc, irclib.Irc):
                 irc.reply('[%s]' % ' '.join(tokens))
         
