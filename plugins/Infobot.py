@@ -411,7 +411,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             assert self.msg is not None
             msg = self.msg
         self.replied = True
-        irc.reply(plugins.standardSubstitute(irc, msg, s),
+        irc.reply(ircutils.standardSubstitute(irc, msg, s),
                   prefixName=False, action=action, msg=msg)
 
     def confirm(self, irc=None, msg=None):
