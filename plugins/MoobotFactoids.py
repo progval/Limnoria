@@ -335,7 +335,7 @@ class MoobotFactoids(callbacks.Privmsg):
         newfact = plugins.standardSubstitute(irc, msg, newfact)
         return (type, newfact)
 
-    def invalidCommand(self, irc, msg, tokens):
+    def tokenizedCommand(self, irc, msg, tokens):
         if '=~' in tokens:
             self.changeFactoid(irc, msg, tokens)
         elif tokens and tokens[0] in ('no', 'no,'):
@@ -662,7 +662,7 @@ class MoobotFactoids(callbacks.Privmsg):
         elif len(results) == 1 and \
              self.registryValue('showFactoidIfOnlyOneMatch', channel):
             key = results[0][0]
-            self.invalidCommand(irc, msg, [key])
+            self.tokenizedCommand(irc, msg, [key])
         else:
             keys = ['"%s"' % tup[0] for tup in results]
             s = 'Key search for "%s" (%s found): %s' % \
