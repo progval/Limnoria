@@ -352,7 +352,9 @@ supybot.register('flush', registry.Boolean(True, """Determines whether the bot
 will periodically flush data and configuration files to disk.  Generally, the
 only time you'll want to set this to False is when you want to modify those
 configuration files by hand and don't want the bot to flush its current version
-over your modifications."""))
+over your modifications.  Do note that if you change this to False inside the
+bot, your changes won't be flushed.  To make this change permanent, you must
+edit the registry yourself."""))
 
 ###
 # Driver stuff.
