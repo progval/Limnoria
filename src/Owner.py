@@ -156,7 +156,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             command = callbacks.canonicalName(tokens[0])
             try:
                 plugin = conf.supybot.commands.defaultPlugins.get(command)()
-                if plugin:
+                if plugin and plugin != '(Unused)':
                     tokens.insert(0, plugin)
                 else:
                     raise registry.NonExistentRegistryEntry
