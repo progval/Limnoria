@@ -34,6 +34,8 @@ This plugin does weather-related stuff.  It can't change the weather, though,
 so don't get your hopes up.  We just report it.
 """
 
+__revision__ = "$Id"
+
 import plugins
 
 import re
