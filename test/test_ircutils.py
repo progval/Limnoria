@@ -143,6 +143,12 @@ class FunctionsTestCase(unittest.TestCase):
         self.assertEqual(ircutils.separateModes(['+sntl', '100']),
                         [('+s', None),('+n', None),('+t', None),('+l', '100')])
 
+    def testSeparateModesWithoutRequireArguments(self):
+        self.assertEqual(ircutils.separateModes(['+oo-b'], ''),
+                         ['+o', '+o', '-b'])
+        self.assertEqual(ircutils.separateModes('+oo-b', ''),
+                         ['+o', '+o', '-b'])
+
     def testToLower(self):
         self.assertEqual('jemfinch', ircutils.toLower('jemfinch'))
         self.assertEqual('{}|^', ircutils.toLower('[]\\~'))

@@ -161,8 +161,7 @@ def banmask(hostmask):
         else:
             return '*!*@'  + host
 
-_argModes = 'ovhblkqe'
-def separateModes(args):
+def separateModes(args, requireArguments='ovhblkqe'):
     """Separates modelines into single mode change tuples.  Basically, you
     should give it the .args of a MODE IrcMsg.
 
@@ -180,6 +179,9 @@ def separateModes(args):
     >>> separateModes(['+sntl', '100'])
     [('+s', None), ('+n', None), ('+t', None), ('+l', '100')]
     """
+    if not requireArguments:
+        if not isinstance(args, list):
+            args = [args]
     modes = args[0]
     assert modes[0] in '+-', 'Invalid args: %r' % args
     args = list(args[1:])
@@ -191,12 +193,15 @@ def separateModes(args):
             last = modes[index]
             index += 1
         else:
-            if modes[index] in _argModes:
+            if modes[index] in requireArguments:
                 ret.append((last + modes[index], args.pop(0)))
             else:
                 ret.append((last + modes[index], None))
             index += 1
-    return ret
+    if not requireArguments: # Special case
+        return [x for (x, y) in ret]
+    else:
+        return ret
 
 def joinModes(modes):
     """Joins modes of the same form as returned by separateModes."""
