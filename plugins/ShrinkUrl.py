@@ -209,6 +209,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
 
         Returns an ln-s.net version of <url>.
         """
+        url = webutils.urlquote(url)
         if len(url) < 17:
             irc.error('Stop being a lazy-biotch and type the URL yourself.')
             return
@@ -240,6 +241,7 @@ class ShrinkUrl(callbacks.PrivmsgCommandAndRegexp):
 
         Returns a TinyURL.com version of <url>
         """
+        url = webutils.urlquote(url)
         if len(url) < 20:
             irc.error('Stop being a lazy-biotch and type the URL yourself.')
             return
