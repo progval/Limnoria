@@ -298,7 +298,7 @@ class User(callbacks.Privmsg):
             try:
                 hostmask = irc.state.nickToHostmask(hostmask)
             except KeyError:
-                irc.error('I haven\'t seen %s.' % nick, Raise=True)
+                irc.error('I haven\'t seen %s.' % hostmask, Raise=True)
         try:
             user = ircdb.users.getUser(hostmask)
             irc.reply(user.name)
