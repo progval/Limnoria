@@ -196,28 +196,22 @@ class Notes(callbacks.Privmsg):
         self.cursor.execute("""SELECT id, from_id, public, read FROM notes
                                WHERE to_id=%s
                                AND read=0""", senderID)
+        count = cursor.rowcount
         notes = self.cursor.fetchall()
-        self.cursor.execute("""SELECT count(*) FROM notes 
-                               WHERE to_id=%s
-                               AND read=0""", senderID)
-        count = int(self.cursor.fetchone()[0])
-        #debug.printf("count: %s" % count)
         L = []
-        for (id, from_id, public, read) in notes:
-            if not int(read):
-                sender = self.getUserName(from_id)
-                if int(public):
-                    L.append(r'#%s from %s' % (id, sender))
-                else:
-                    L.append(r'#%s (private)' % id)
-        if count > 5:
-            L = string.join(L[:5], ', ')
-            reply = "you have %s unread notes, 5 shown: %s" % (count, L)
+        if count == 0:
+            irc.reply(msg, 'You have no unread notes.')
         else:
-            L = string.join(L, ', ')
-            reply = "you have %s unread notes: %s" % (count, L)
-        #debug.printf(L)
-        irc.reply(msg, reply)
+            for (id, from_id, public, read) in notes:
+                if not int(read):
+                    sender = self.getUserName(from_id)
+                    if int(public):
+                        L.append(r'#%s from %s' % (id, sender))
+                    else:
+                        L.append(r'#%s (private)' % id)
+            while reduce(operator.add, L) + 2*len(L) > 400:
+                L.pop()
+            irc.reply(msg, ', '.join(L))
 
 
 Class = Notes
