@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- encoding: utf-8 -*-
 
 ###
 # Copyright (c) 2003, Daniel DiPaolo
