@@ -172,6 +172,9 @@ class Http(callbacks.Privmsg):
         previous day of a given compny (represented by a stock symbol).
         """
         symbol = privmsgs.getArgs(args)
+        if ' ' in symbol:
+            irc.error('Only one stockquote can be looked up at a time.')
+            return
         url = 'http://finance.yahoo.com/d/quotes.csv?s=%s' \
               '&f=sl1d1t1c1ohgv&e=.csv' % symbol
         quote = webutils.getUrl(url)
