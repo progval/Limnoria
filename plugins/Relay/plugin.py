@@ -344,6 +344,12 @@ class Relay(callbacks.Privmsg):
             irc = self._getRealIrc(irc)
             if channel not in self.registryValue('channels'):
                 return
+            ignores = self.registryValue('ignores', channel)
+            for ignore in ignores:
+                if ircutils.hostmaskPatternEqual(ignore, msg.prefix):
+                    self.log.debug('Refusing to relay %s, ignored by %s.',
+                                   msg.prefix, ignore)
+                    return
             if ircmsgs.isCtcp(msg) and \
                'AWAY' not in text and 'ACTION' not in text:
                 return

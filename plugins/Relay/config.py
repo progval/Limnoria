@@ -44,6 +44,10 @@ def configure(advanced):
     use the 'start' command followed by the 'connect' command.  Use the 'help'
     command to see how these two commands should be used.""")
 
+class Ignores(registry.SpaceSeparatedListOf):
+    List = ircutils.IrcSet
+    Value = conf.ValidHostmask
+    
 class Networks(registry.SpaceSeparatedListOf):
     List = ircutils.IrcSet
     Value = registry.String
@@ -69,10 +73,13 @@ conf.registerChannelValue(Relay, 'punishOtherRelayBots',
 conf.registerGlobalValue(Relay, 'channels',
     conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
     will relay in."""))
-conf.registerChannelValue(Relay.channels,
-    'joinOnAllNetworks', registry.Boolean(True, """Determines whether the bot
+conf.registerChannelValue(Relay.channels, 'joinOnAllNetworks',
+    registry.Boolean(True, """Determines whether the bot
     will always join the channel(s) it relays for on all networks the bot is
     connected to."""))
+conf.registerChannelValue(Relay, 'ignores',
+    Ignores([], """Determines what hostmasks will not be relayed on a
+    channel."""))
 conf.registerChannelValue(Relay, 'noticeNonPrivmsgs',
     registry.Boolean(False, """Determines whether the bot will used NOTICEs
     rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, parts,

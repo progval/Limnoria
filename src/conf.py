@@ -176,6 +176,13 @@ class ValidChannel(registry.String):
         else:
             registry.String.setValue(self, v)
 
+class ValidHostmask(registry.String):
+    """Value must be a valid user hostmask."""
+    def setValue(self, v):
+        if not ircutils.isUserHostmask(v):
+            self.error()
+        super(ValidHostmask, self).setValue(v)
+
 registerGlobalValue(supybot, 'nick',
    ValidNick('supybot', """Determines the bot's default nick."""))
 
