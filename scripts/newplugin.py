@@ -3,6 +3,8 @@
 import os
 import sys
 
+from questions import *
+
 template = '''
 #!/usr/bin/env python
 
@@ -44,8 +46,8 @@ from baseplugin import *
 import privmsgs
 import callbacks
 
-class %s(CHANGE_ME):
-    pass
+class %s(%s):
+    %s
 
 
 Class = %s
@@ -59,9 +61,19 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     name = sys.argv[1]
+    if expect('Do you want a command-based plugin' \
+              ' or a regexp-based plugin?',
+              ['command', 'regexp']) == 'command':
+        className = 'callbacks.Privmsg'
+    else:
+        className = 'callbacks.PrivmsgRegexp'
+    if yn('Does your plugin need to be threaded?') == 'y':
+        threaded = 'threaded = True'
+    else:
+        threaded = 'pass'
 
     fd = file(os.path.join('plugins', name + '.py'), 'w')
-    fd.write(template % (name, name))
+    fd.write(template % (name, className, threaded, name))
     fd.close()
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
