@@ -153,7 +153,7 @@ _logger.setLevel(-1)
 
 if conf.stdoutLogging:
     _stdoutHandler = BetterStreamHandler(sys.stdout)
-    _formatString = '%(name)s: %(levelname)s %(asctime)s %(message)s'
+    _formatString = '%(name)s: %(levelname)s %(message)s'
     _stdoutFormatter = ColorizedFormatter(_formatString)
     _stdoutHandler.setFormatter(_stdoutFormatter)
     _stdoutHandler.setLevel(conf.minimumLogPriority)
