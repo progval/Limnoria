@@ -128,19 +128,19 @@ def unescape(name):
 
 _splitRe = re.compile(r'(?<!\\)\.')
 def split(name):
-    # XXX: This should eventually handle escapes.
     return map(unescape, _splitRe.split(name))
 
 def join(names):
     return '.'.join(map(escape, names))
 
 class Group(object):
+    """A group; it doesn't hold a value unless handled by a subclass."""
     def __init__(self, supplyDefault=False):
         self._name = 'unset'
         self.added = []
         self._children = utils.InsensitivePreservingDict()
         self._lastModified = 0
-        self.supplyDefault = supplyDefault
+        self._supplyDefault = supplyDefault
         OriginalClass = self.__class__
         class X(OriginalClass):
             """This class exists to differentiate those values that have
@@ -164,7 +164,7 @@ class Group(object):
         v = self.__class__(self._default, self.help)
         v.set(s)
         v.__class__ = self.X
-        v.supplyDefault = False
+        v._supplyDefault = False
         v.help = '' # Clear this so it doesn't print a bazillion times.
         self.register(attr, v)
         return v
@@ -172,7 +172,7 @@ class Group(object):
     def __getattr__(self, attr):
         if attr in self._children:
             return self._children[attr]
-        elif self.supplyDefault:
+        elif self._supplyDefault:
             return self.__makeChild(attr, str(self))
         else:
             self.__nonExistentEntry(attr)
@@ -188,7 +188,7 @@ class Group(object):
         if name in _cache and self._lastModified < _lastModified:
             #print '***>', _cache[name]
             self.set(_cache[name])
-        if self.supplyDefault:
+        if self._supplyDefault:
             for (k, v) in _cache.iteritems():
                 if k.startswith(self._name):
                     group = split(k)[-1]
@@ -280,7 +280,7 @@ class Value(Group):
         own setValue."""
         self._lastModified = time.time()
         self.value = v
-        if self.supplyDefault:
+        if self._supplyDefault:
             for (name, v) in self._children.items():
                 if v.__class__ is self.X:
                     self.unregister(name)
@@ -446,8 +446,9 @@ class StringWithSpaceOnRight(String):
         String.setValue(self, v)
 
 class Regexp(Value):
+    """Value must be a valid regular expression."""
     def error(self, e):
-        raise InvalidRegistryValue, 'Invalid regexp: %s' % e
+        raise InvalidRegistryValue, 'Value must be a regexp of the form %s' % e
 
     def set(self, s):
         try:

@@ -93,7 +93,7 @@ def registerGlobalValue(group, name, value):
     return group.register(name, value)
 
 def registerChannelValue(group, name, value):
-    value.supplyDefault = True
+    value._supplyDefault = True
     value.channelValue = True
     return group.register(name, value)
 
@@ -123,7 +123,7 @@ registerGroup(users, 'plugins')
 
 def registerUserValue(group, name, value):
     assert group._name.startswith('users')
-    value.supplyDefault = True
+    value._supplyDefault = True
     group.register(name, value)
 
 class ValidNick(registry.String):
@@ -136,6 +136,21 @@ class ValidNick(registry.String):
 
 class ValidNicks(registry.SpaceSeparatedListOf):
     Value = ValidNick
+
+class ValidNickAllowingPercentS(ValidNick):
+    """Value must be a valid IRC nick, with the possible exception of a %s
+    in it."""
+    def setValue(self, v):
+        # If this works, it's a valid nick, aside from the %s.
+        try:
+            ValidNick.setValue(self, v.replace('%s', ''))
+            # It's valid aside from the %s, we'll let it through.
+            registry.String.setValue(self, v)
+        except registry.InvalidRegistryValue:
+            self.error()
+
+class ValidNicksAllowingPercentS(ValidNicks):
+    Value = ValidNickAllowingPercentS
 
 class ValidChannel(registry.String):
     """Value must be a valid IRC channel name."""
@@ -152,10 +167,12 @@ class ValidChannel(registry.String):
 registerGlobalValue(supybot, 'nick',
    ValidNick('supybot', """Determines the bot's default nick."""))
 
-registerGlobalValue(supybot.nick, 'alternates', ValidNicks([], """Determines
-    what alternative nicks will be used if the primary nick (supybot.nick)
-    isn't available.  If none are given, or if all are taken, the primary nick
-    will be perturbed appropriately until an unused nick is found."""))
+registerGlobalValue(supybot.nick, 'alternates',
+   ValidNicksAllowingPercentS(['%s`', '%s_'], """Determines what alternative
+   nicks will be used if the primary nick (supybot.nick) isn't available.  A
+   %s in this nick is replaced by the value of supybot.nick when used. If no
+   alternates are given, or if all are used, the supybot.nick will be perturbed
+   appropriately until an unused nick is found."""))
 
 registerGlobalValue(supybot, 'ident',
     ValidNick('supybot', """Determines the bot's ident string, if the server

@@ -499,7 +499,10 @@ class Irc(IrcCommandDispatcher):
 
     def _getNextNick(self):
         if self.alternateNicks:
-            return self.alternateNicks.pop(0)
+            nick = self.alternateNicks.pop(0)
+            if '%s' in nick:
+                nick %= conf.supybot.nick()
+            return nick
         else:
             nick = conf.supybot.nick()
             ret = nick
