@@ -355,6 +355,15 @@ class ChannelUserDB(ChannelUserDictionary):
         raise NotImplementedError
 
 
+def getUserName(id):
+    if isinstance(id, int):
+        try:
+            return ircdb.users.getUser(id).name
+        except KeyError:
+            return 'a user that is no longer registered'
+    else:
+        return id
+
 class ChannelIdDatabasePlugin(callbacks.Privmsg):
     class DB(DbiChannelDB):
         class DB(dbi.DB):
@@ -470,10 +479,7 @@ class ChannelIdDatabasePlugin(callbacks.Privmsg):
                            additional(rest('glob'))])
 
     def showRecord(self, record):
-        try:
-            name = ircdb.users.getUser(record.by).name
-        except KeyError:
-            name = 'a user that is no longer registered'
+        name = getUserName(record.by)
         at = time.localtime(record.at)
         timeS = time.strftime(conf.supybot.humanTimestampFormat(), at)
         return '%s #%s: %s (added by %s at %s)' % \

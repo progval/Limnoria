@@ -63,12 +63,7 @@ class QuoteRecord(dbi.Record):
         ]
     def __str__(self):
         format = conf.supybot.humanTimestampFormat()
-        try:
-            user = ircdb.users.getUser(int(self.by)).name
-        except ValueError:
-            user = self.by
-        except KeyError:
-            user = 'a user that is no longer registered'
+        user = plugins.getUserName(self.by)
         return 'Quote %s added by %s at %s.' % \
                (utils.quoted(self.text), user,
                 time.strftime(format, time.localtime(float(self.at))))

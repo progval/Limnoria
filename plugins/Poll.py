@@ -71,12 +71,9 @@ class PollRecord(dbi.Record):
         ]
     def __str__(self):
         format = conf.supybot.humanTimestampFormat()
-        try:
-            user = ircdb.users.getUser(int(self.by)).name
-        except KeyError:
-            user = 'a user that is no longer registered'
+        user = plugins.getUserName(self.by)
         if self.options:
-            options = 'Options: %s' % '; '.join(map(str, self.options))
+            options = 'Options: %s' % '; '.join(self.options)
         else:
             options = 'The poll has no options, yet'
         if self.status:
@@ -84,8 +81,7 @@ class PollRecord(dbi.Record):
         else:
             status = 'closed'
         return 'Poll #%s: %s started by %s. %s.  Poll is %s.' % \
-               (self.id, utils.quoted(self.question), user,
-                options, status)
+               (self.id, utils.quoted(self.question), user, options, status)
 
 class SqlitePollDB(object):
     def __init__(self, filename):

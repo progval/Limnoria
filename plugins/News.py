@@ -61,21 +61,16 @@ class DbiNewsDB(plugins.DbiChannelDB):
 
             def __str__(self):
                 format = conf.supybot.humanTimestampFormat()
-                try:
-                    user = ircdb.users.getUser(int(self.by)).name
-                except ValueError:
-                    user = self.by
-                except KeyError:
-                    user = 'a user that is no longer registered'
-                if int(self.expires) == 0:
+                user = plugins.getUserName(self.by)
+                if self.expires == 0:
                     s = '%s (Subject: "%s", added by %s on %s)' % \
                         (self.text, self.subject, self.by,
-                         time.strftime(format, time.localtime(int(self.at))))
+                         time.strftime(format, time.localtime(self.at)))
                 else:
                     s = '%s (Subject: "%s", added by %s on %s, expires at %s)'
                     s = s  % (self.text, self.subject, user,
-                         time.strftime(format, time.localtime(int(self.at))),
-                         time.strftime(format, time.localtime(int(self.expires))))
+                         time.strftime(format, time.localtime(self.at)),
+                         time.strftime(format, time.localtime(self.expires)))
                 return s
 
         def __init__(self, filename):
