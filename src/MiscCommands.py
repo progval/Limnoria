@@ -88,6 +88,7 @@ class MiscCommands(callbacks.Privmsg):
         lists all commands, not just the public ones.
         """
         (optlist, rest) = getopt.getopt(args, '', ['private'])
+        evenPrivate = False
         for (option, argument) in optlist:
             if option == '--private':
                 evenPrivate = True
@@ -95,7 +96,7 @@ class MiscCommands(callbacks.Privmsg):
         name = name.lower()
         if not name:
             names = [cb.name() for cb in irc.callbacks
-                     if evenPrivate or hasattr(cb, 'public') and cb.public]
+                     if evenPrivate or (hasattr(cb, 'public') and cb.public)]
             names.sort()
             irc.reply(msg, ', '.join(names))
         else:

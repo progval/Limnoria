@@ -71,6 +71,7 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testList(self):
         self.assertNotError('list MiscCommands')
         self.assertNotError('list misccommands')
+        self.assertNotError('list')
         # If Ctcp changes to public, these tests will break.  So if
         # the next assert fails, change the plugin we test for public/private
         # to some other non-public plugin.
