@@ -45,7 +45,6 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('netstats')
 
     def testCpustats(self):
-        self.assertNotError('cpustats')
         try:
             original = world.startedAt
             world.startedAt = time.time()

@@ -164,7 +164,13 @@ class Status(callbacks.Privmsg):
         Returns some interesting CPU-related statistics on the bot.
         """
         (user, system, childUser, childSystem, elapsed) = os.times()
-        timeRunning = time.time() - world.startedAt
+        now = time.time()
+        timeRunning = now - world.startedAt
+        if user+system > timeRunning:
+            irc.error(msg, 'I seem to be running on a platform without an '
+                           'accurate way of determining how long I\'ve been '
+                           'running.')
+            return
         activeThreads = threading.activeCount()
         response = 'I have taken %s seconds of user time and %s seconds of '\
                   'system time, for a total of %s seconds of CPU time.  My '\
