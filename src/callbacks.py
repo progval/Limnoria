@@ -341,49 +341,21 @@ class IrcObjectProxy:
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args):
         #debug.printf('__init__: %s' % args)
+        self.irc = irc
+        self.msg = msg
+        self.args = args
+        self.counter = 0
+        self.action = False
+        self.notice = False
+        self.private = False
+        self.finished = False
+        self.prefixName = True
+        self.noLengthCheck = False
         if not args:
-            irc.reply(msg, '[]')
+            self.finalEvaled = True
+            self._callInvalidCommands()
         else:
-            if isinstance(irc, irclib.Irc):
-                # Let's check for {ambiguous,non}Commands.
-                ambiguousCommands = {}
-                commands = getCommands(args)
-                for command in commands:
-                    command = canonicalName(command)
-                    cbs = findCallbackForCommand(irc, command)
-                    if len(cbs) > 1:
-                        ambiguousCommands[command] = [cb.name() for cb in cbs]
-                if ambiguousCommands:
-                    if len(ambiguousCommands) == 1: # Common case.
-                        (command, names) = ambiguousCommands.popitem()
-                        names.sort()
-                        s = 'The command %r is available in the %s plugins.  '\
-                            'Please specify the plugin whose command you ' \
-                            'wish to call by using its name as a command ' \
-                            'before calling it.' % \
-                            (command, utils.commaAndify(names))
-                    else:
-                        L = []
-                        for (command, names) in ambiguousCommands.iteritems():
-                            names.sort()
-                            L.append('The command %r is available in the %s '
-                                     'plugins' %
-                                     (command, utils.commaAndify(names)))
-                        s = '%s; please specify from which plugins to ' \
-                                     'call these commands.' % '; '.join(L)
-                    irc.queueMsg(error(msg, s))
-                    return
-            self.irc = irc
-            self.msg = msg
-            self.args = args
-            self.counter = 0
-            self.action = False
-            self.notice = False
-            self.private = False
-            self.finished = False
-            self.prefixName = True
             self.finalEvaled = False
-            self.noLengthCheck = False
             world.commandsProcessed += 1
             self.evalArgs()
 
@@ -396,6 +368,13 @@ class IrcObjectProxy:
                 return
         self.finalEval()
 
+    def _callInvalidCommands(self):
+        for cb in self.irc.callbacks:
+            if self.finished:
+                break
+            if hasattr(cb, 'invalidCommand'):
+                cb.invalidCommand(self, self.msg, self.args)
+                
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
@@ -417,11 +396,7 @@ class IrcObjectProxy:
                         if r.search(self.msg.args[1]):
                             return
             # Ok, no regexp-based things matched.
-            for cb in self.irc.callbacks:
-                if self.finished:
-                    break
-                if hasattr(cb, 'invalidCommand'):
-                    cb.invalidCommand(self, self.msg, self.args)
+            self._callInvalidCommands()
         else:
             try:
                 assert len(cbs) == 1

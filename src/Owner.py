@@ -88,11 +88,37 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
 
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.handled = False
-        notCommands = []
-        ambiguousCommands = {}
         s = callbacks.addressed(irc.nick, msg)
         if s:
-            callbacks.IrcObjectProxy(irc, msg, callbacks.tokenize(s))
+            tokens = callbacks.tokenize(s)
+            ambiguousCommands = {}
+            commands = callbacks.getCommands(tokens)
+            for command in commands:
+                command = callbacks.canonicalName(command)
+                cbs = callbacks.findCallbackForCommand(irc, command)
+                if len(cbs) > 1:
+                    ambiguousCommands[command] = [cb.name() for cb in cbs]
+            if ambiguousCommands:
+                if len(ambiguousCommands) == 1: # Common case.
+                    (command, names) = ambiguousCommands.popitem()
+                    names.sort()
+                    s = 'The command %r is available in the %s plugins.  '\
+                        'Please specify the plugin whose command you ' \
+                        'wish to call by using its name as a command ' \
+                        'before calling it.' % \
+                        (command, utils.commaAndify(names))
+                else:
+                    L = []
+                    for (command, names) in ambiguousCommands.iteritems():
+                        names.sort()
+                        L.append('The command %r is available in the %s '
+                                 'plugins' %
+                                 (command, utils.commaAndify(names)))
+                    s = '%s; please specify from which plugins to ' \
+                                 'call these commands.' % '; '.join(L)
+                irc.queueMsg(callbacks.error(msg, s))
+            else:
+                callbacks.IrcObjectProxy(irc, msg, tokens)
                                 
     def eval(self, irc, msg, args):
         """<expression>

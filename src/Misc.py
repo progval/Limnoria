@@ -53,7 +53,8 @@ class Misc(callbacks.Privmsg):
     priority = sys.maxint
     def invalidCommand(self, irc, msg, tokens):
         if conf.replyWhenNotCommand:
-            irc.error(msg, '%r is not a valid command.' % tokens[0])
+            command = tokens and tokens[0] or ''
+            irc.error(msg, '%r is not a valid command.' % command)
         else:
             if not isinstance(irc.irc, irclib.Irc):
                 irc.reply(msg, '[%s]' % ' '.join(tokens))
