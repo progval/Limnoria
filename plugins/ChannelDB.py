@@ -291,7 +291,9 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         else:
             (seen, m) = cursor.fetchone()
             seen = int(seen)
-            s = '%s was last seen here %s ago saying %r' % \
+            if m.startswith('\x01ACTION') and m.endswith('\x01'):
+                m = '* %s%s' % (name, m[7:-1])
+            s = '%s was last seen here %s ago saying %s' % \
                 (name, utils.timeElapsed(time.time() - seen), m)
             irc.reply(msg, s)
 
