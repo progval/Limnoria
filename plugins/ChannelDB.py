@@ -38,6 +38,7 @@ statistics about smileys, actions, characters, and words.
 from baseplugin import *
 
 import re
+import sets
 import time
 
 import sqlite
@@ -57,9 +58,10 @@ smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
 class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
+    regexps = sets.Set(['increaseKarma', 'decreaseKarma'])
     def __init__(self):
         ChannelDBHandler.__init__(self)
-        callbacks.Privmsg.__init__(self)
+        callbacks.PrivmsgCommandAndRegexp.__init__(self)
 
     def makeDb(self, filename):
         if os.path.exists(filename):
@@ -111,7 +113,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         return db
     
     def doPrivmsg(self, irc, msg):
-        callbacks.Privmsg.doPrivmsg(self, irc, msg)
+        callbacks.PrivmsgCommandAndRegexp.doPrivmsg(self, irc, msg)
         if ircutils.isChannel(msg.args[0]):
             (channel, s) = msg.args
             db = self.getDb(channel)
@@ -301,18 +303,20 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
 
     def increaseKarma(self, irc, msg, match):
         r"^(.*?)\+\+"
+        debug.printf('increaseKarma')
         name = match.group(1)
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (0, %s, 1, 0)""", name)
+        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 1, 0)""", name)
         cursor.execute("""UPDATE karma SET added=added+1 WHERE name=%s""",name)
 
     def decreaseKarma(self, irc, msg, match):
         r"^(.*?)--"
+        debug.printf('decreaseKarma')
         name = match.group(1)
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (0, %s, 0, 1)""", name)
+        cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 1)""", name)
         cursor.execute("""UPDATE karma
                           SET subtracted=subtracted+1
                           WHERE name=%s""", name)
