@@ -242,7 +242,9 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
     def load(self, irc, msg, args):
         """<plugin>
 
-        Loads the plugin <plugin> from the plugins/ directory.
+        Loads the plugin <plugin> from any of the directories in
+        conf.pluginDirs; usually this includes the main installed directory
+        and 'plugins' in the current directory.
         """
         name = privmsgs.getArgs(args)
         for cb in irc.callbacks:
