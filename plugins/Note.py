@@ -250,7 +250,7 @@ class Note(callbacks.Privmsg):
                       'is no longer in my user database.', Raise=True)
         id = self.db.send(user.id, note.frm, public, text)
         irc.reply('Note #%s sent to %s.' % (id, target.name))
-    reply = wrap(reply, [('id', 'note'), 'text'])
+    reply = wrap(reply, ['user', ('id', 'note'), 'text'])
 
     def unsend(self, irc, msg, args, user, id):
         """<id>
