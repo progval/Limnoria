@@ -34,25 +34,31 @@ from test import *
 class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('MiscCommands', 'Utilities', 'ChannelDB')
     def testReplyWhenNotCommand(self):
-        conf.replyWhenNotCommand = True
-        self.prefix = 'somethingElse!user@host.domain.tld'
-        self.assertRegexp('foo bar baz', 'not.*command')
-        self.assertRegexp('foo | bar | baz', 'not.*commands')
-        self.assertRegexp('baz [foo] [bar]', 'not.*commands')
-        conf.replyWhenNotCommand = False
+        try:
+            conf.replyWhenNotCommand = True
+            self.prefix = 'somethingElse!user@host.domain.tld'
+            self.assertRegexp('foo bar baz', 'not.*command')
+            self.assertRegexp('foo | bar | baz', 'not.*commands')
+            self.assertRegexp('baz [foo] [bar]', 'not.*commands')
+        finally:
+            conf.replyWhenNotCommand = False
 
     def testNotReplyWhenRegexpsMatch(self):
-        conf.replyWhenNotCommand = True
-        self.prefix = 'somethingElse!user@host.domain.tld'
-        self.assertNoResponse('@coffee++', 2)
-        conf.replyWhenNotCommand = False
+        try:
+            conf.replyWhenNotCommand = True
+            self.prefix = 'somethingElse!user@host.domain.tld'
+            self.assertNoResponse('@coffee++', 2)
+        finally:
+            conf.replyWhenNotCommand = False
 
     def testNotReplyWhenNotCanonicalName(self):
-        conf.replyWhenNotCommand = True
-        self.prefix = 'somethingElse!user@host.domain.tld'
-        self.assertNotRegexp('STrLeN foobar', 'command')
-        self.assertResponse('StRlEn foobar', '6')
-        conf.repylWhenNotCommand = False
+        try:
+            conf.replyWhenNotCommand = True
+            self.prefix = 'somethingElse!user@host.domain.tld'
+            self.assertNotRegexp('STrLeN foobar', 'command')
+            self.assertResponse('StRlEn foobar', '6')
+        finally:
+            conf.repylWhenNotCommand = False
         
     def testHelp(self):
         self.assertNotError('help list')
