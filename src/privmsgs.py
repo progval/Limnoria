@@ -29,15 +29,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Includes various accessories for callbacks.Privmsg based callbacks.
+"""
+
 from fix import *
 
 import new
 
 import conf
-import debug
-import world
 import ircdb
-import ircmsgs
 import ircutils
 import callbacks
 
