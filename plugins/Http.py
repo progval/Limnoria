@@ -489,6 +489,7 @@ class Http(callbacks.Privmsg):
                 stable = version.strip()
             elif 'latest beta' in name:
                 beta = version.strip()
+        fd.close()
         irc.reply(msg, 'The latest stable kernel is %s; ' \
                        'the latest beta kernel is %s.' % (stable, beta))
 
