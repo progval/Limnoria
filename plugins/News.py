@@ -76,7 +76,7 @@ be a lot more detailed. (Subject: "Another test news item", added by Strike on
 07:12 PM, September 12, 2003, expires at 08:36 PM, September 12, 2003)
 """)
 
-class ChannelNews(plugins.ChannelDBHandler, callbacks.Privmsg):
+class News(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
@@ -273,6 +273,6 @@ class ChannelNews(plugins.ChannelDBHandler, callbacks.Privmsg):
 
 
                     
-Class = ChannelNews
+Class = News
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
