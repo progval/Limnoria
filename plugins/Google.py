@@ -135,12 +135,20 @@ class LicenseKey(registry.String):
     def setValue(self, s):
         if s and len(s) != 32:
             raise registry.InvalidRegistryValue, 'Invalid Google license key.'
-        if s:
-            registry.String.setValue(self, s)
-            google.setLicense(self.value)
-        if not s:
-            registry.String.setValue(self, '')
-            google.setLicense(self.value)
+        try:
+            if s:
+                registry.String.setValue(self, s)
+                google.setLicense(self.value)
+            if not s:
+                registry.String.setValue(self, '')
+                google.setLicense(self.value)
+        except AttributeError:
+            raise callbacks.Error, 'It appears that the initial import of ' \
+                                   'out underlying google.py module has ' \
+                                   'failed.  Once the cause of that problem ' \
+                                   'has been diagnosed and fixed, the bot ' \
+                                   'will need to be restarted in order to ' \
+                                   'load this plugin.'
 
 class Language(registry.OnlySomeStrings):
     validStrings = ['lang_' + s for s in 'ar zh-CN zh-TW cs da nl en et fi fr '
