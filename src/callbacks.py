@@ -546,7 +546,6 @@ _repr = repr
 class IrcObjectProxy(RichReplyMethods):
     "A proxy object to allow proper nested of commands (even threaded ones)."
     def __init__(self, irc, msg, args, nested=0):
-        log.verbose('IrcObjectProxy.__init__: %s' % args)
         assert isinstance(args, list), 'Args should be a list, not a string.'
         self.irc = irc
         self.msg = msg
@@ -603,13 +602,10 @@ class IrcObjectProxy(RichReplyMethods):
         self.finalEval()
 
     def _callTokenizedCommands(self):
-        log.verbose('Calling tokenizedCommands.')
         for cb in self.irc.callbacks:
             if hasattr(cb, 'tokenizedCommand'):
-                log.verbose('Trying to call %s.tokenizedCommand.', cb.name())
                 self._callTokenizedCommand(cb)
                 if self.msg.repliedTo:
-                    log.verbose('Done calling tokenizedCommands: %s.',cb.name())
                     return
 
     def _callTokenizedCommand(self, cb):

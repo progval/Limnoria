@@ -135,8 +135,6 @@ class Services(callbacks.Privmsg):
         disabled = self.registryValue('disabledNetworks')
         if irc.network in disabled or \
            irc.state.supported.get('NETWORK', '') in disabled:
-            self.log.verbose('Ignoring message from %s, %s is disabled.',
-                             irc, irc.network)
             return
         self.__parent.__call__(irc, msg)
         nick = self._getNick()

@@ -52,9 +52,6 @@ deadlyExceptions = [KeyboardInterrupt, SystemExit]
 ###
 testing = False
 
-VERBOSE = 1
-logging.addLevelName(VERBOSE, 'VERBOSE')
-
 class Formatter(logging.Formatter):
     _fmtConf = staticmethod(lambda : conf.supybot.log.format())
     def formatTime(self, record, datefmt=None):
@@ -86,9 +83,6 @@ class Logger(logging.Logger):
         self.error('Exception id: %s', eId)
         # The traceback should be sufficient if we want it.
         # self.error('Exception string: %s', eStrId)
-
-    def verbose(self, *args, **kwargs):
-        self.log(VERBOSE, *args, **kwargs)
 
     def _log(self, level, msg, args, exc_info=None):
         msg = format(msg, *args)
@@ -208,7 +202,7 @@ class ValidLogLevel(registry.String):
         return level
 
 class LogLevel(ValidLogLevel):
-    """Invalid log level.  Value must be either VERBOSE, DEBUG, INFO, WARNING,
+    """Invalid log level.  Value must be either DEBUG, INFO, WARNING,
     ERROR, or CRITICAL."""
     def setValue(self, v):
         ValidLogLevel.setValue(self, v)
@@ -226,7 +220,7 @@ conf.registerGlobalValue(conf.supybot.log, 'format',
     its logging module."""))
 conf.registerGlobalValue(conf.supybot.log, 'level',
     LogLevel(logging.INFO, """Determines what the minimum priority level logged
-    will be.  Valid values are VERBOSE, DEBUG, INFO, WARNING, ERROR,
+    will be.  Valid values are DEBUG, INFO, WARNING, ERROR,
     and CRITICAL, in order of increasing priority."""))
 conf.registerGlobalValue(conf.supybot.log, 'statistics',
     ValidLogLevel(-1, """Determines what level statistics reporting
@@ -274,7 +268,6 @@ conf.registerGlobalValue(conf.supybot.log.plugins, 'format',
 
 # These just make things easier.
 debug = _logger.debug
-verbose = _logger.verbose
 info = _logger.info
 warning = _logger.warning
 error = _logger.error

@@ -48,7 +48,7 @@ supybot.directories.conf: test-conf
 supybot.directories.log: test-logs
 supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
-supybot.log.level: VERBOSE
+supybot.log.level: DEBUG
 supybot.log.format: %(levelname)s %(message)s
 supybot.log.plugins.individualLogfiles: False
 supybot.protocols.irc.throttleTime: 0
