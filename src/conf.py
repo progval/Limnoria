@@ -95,10 +95,13 @@ def registerChannelValue(group, name, value):
     value.supplyDefault = True
     return group.register(name, value)
 
-def registerPlugin(name, currentValue=None):
-    registerGlobalValue(supybot.plugins, name,
+def registerPlugin(name, currentValue=None, public=True):
+    group = registerGlobalValue(supybot.plugins, name,
         registry.Boolean(False, """Determines whether this plugin is loaded by
         default.""", showDefault=False))
+    registerGlobalValue(group, 'public',
+        registry.Boolean(public, """Determines whether this plugin is
+        publicly visible."""))
     if currentValue is not None:
         supybot.plugins.get(name).setValue(currentValue)
     return registerGroup(users.plugins, name)

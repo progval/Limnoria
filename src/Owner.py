@@ -107,10 +107,7 @@ def loadPluginClass(irc, module, register=None):
     public = True
     if hasattr(cb, 'public'):
         public = cb.public
-    conf.registerPlugin(name, register)
-    conf.supybot.plugins.get(name).register('public',
-        registry.Boolean(public, """Determines whether this plugin is
-        publically visible."""))
+    conf.registerPlugin(name, register, public)
     assert not irc.getCallback(name)
     irc.addCallback(cb)
     return cb
