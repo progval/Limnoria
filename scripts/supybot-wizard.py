@@ -9,6 +9,7 @@ import sys
 import pydoc
 import pprint
 import socket
+import optparse
 import textwrap
 
 import ansi
@@ -127,18 +128,10 @@ def myPrint(s, unformatted=True):
     print textwrap.fill(s)
     print
 
-def upgradeFromFormerBotscript(filename):
-    pass
-    #botscript = __import__(filename)
-    ### Eh, just don't forget this.
-
 def main():
-    ### Remember to do some optparse stuff here.  Especially we need to
-    ### remember to be able to upgrade from another created botscript.
-
-    ## these will be overridden by either the former botscript or the the
-    ## answers given by the user.  But we need them here to avoid the evil
-    ## UnboundLocalError.
+    parser = optparse.OptionParser(usage='Usage: %prog [options]',
+                                   version='Supybot %s' % conf.version)
+    (options, args) = parser.parse_args()
     nick = ''
     user = ''
     ident = ''
