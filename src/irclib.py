@@ -296,7 +296,7 @@ class IrcState(IrcCommandDispatcher):
         chan.topic = msg.args[2]
 
     def doNick(self, irc, msg):
-        newNick = nick(msg.args[0])
+        newNick = ircutils.nick(msg.args[0])
         oldNick = msg.nick
         try:
             if msg.user and msg.host:
