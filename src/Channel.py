@@ -60,11 +60,15 @@ conf.registerChannelValue(conf.supybot.plugins.Channel, 'alwaysRejoin',
 
 class Channel(callbacks.Privmsg):
     def haveOps(self, irc, channel, what):
-        if irc.nick in irc.state.channels[channel].ops:
-            return True
-        else:
-            irc.error('How can I %s?  I\'m not opped in %s.' % (what, channel))
-            return False
+        try:
+            if irc.nick in irc.state.channels[channel].ops:
+                return True
+            else:
+                irc.error('How can I %s?  I\'m not opped in %s.' %
+                          (what, channel))
+                return False
+        except KeyError:
+            irc.error('I don\'t seem to be in %s.' % channel)
 
     def doKick(self, irc, msg):
         channel = msg.args[0]
