@@ -46,7 +46,10 @@ class CommandsTestCase(SupyTestCase):
         state = myspec(irc, self.msg, given)
         self.assertEqual(state.args, expected,
                          'Expected %r, got %r' % (expected, state.args))
-        
+
+    def testEmptySpec(self):
+        self.assertState([], [], [])
+
     def testSpecInt(self):
         self.assertState(['int'], ['1'], [1])
         self.assertState(['int', 'int', 'int'], ['1', '2', '3'], [1, 2, 3])
@@ -81,7 +84,7 @@ class CommandsTestCase(SupyTestCase):
     def testAny(self):
         self.assertState([any('int')], ['1', '2', '3'], [[1, 2, 3]])
         self.assertState([None, any('int')], ['1', '2', '3'], ['1', [2, 3]])
-        
+
 ##     def testAny(self):
 ##         self.assertState([None, any('int'), None],
 ##                          ['foo', 'bar'],
@@ -92,7 +95,7 @@ class CommandsTestCase(SupyTestCase):
         self.assertState(spec, ['1', '2', '3'], [[1, 2, 3]])
         self.assertRaises(callbacks.Error,
                           self.assertState, spec, [], ['asdf'])
-        
+
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
