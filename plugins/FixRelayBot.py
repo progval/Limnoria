@@ -51,11 +51,10 @@ class FixRelayBot(irclib.IrcCallback):
             if m:
                 #debug.printf('Regexp matched: %r, %r, %r' % m.groups())
                 nick = m.group(1)
-                network = m.group(2)
                 host = random.random()*100
                 newprefix = ircutils.joinHostmask(nick, nick, host)
                 msg = ircmsgs.IrcMsg(command='PRIVMSG', prefix=newprefix,
-                                     args=(msg.args[0], m.group(3)))
+                                     args=(msg.args[0], m.group(2)))
         return msg
 
 
