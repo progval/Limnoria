@@ -317,7 +317,7 @@ class Services(privmsgs.CapabilityCheckingPrivmsg):
         elif ('owned by someone else' in s) or \
              ('nickname is registered and protected' in s) or \
              ('nick belongs to another user' in s):
-            # freenode, arstechnica
+            # freenode, arstechnica, chatjunkies
             # oftc, zirc.org
             # sorcery
             self.log.info('Received "Registered nick" from NickServ.')
