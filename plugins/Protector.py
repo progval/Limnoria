@@ -41,7 +41,10 @@ __contributors__ = {}
 
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.ircdb as ircdb
 import supybot.plugins as plugins
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -59,14 +62,6 @@ Protector = conf.registerPlugin('Protector')
 conf.registerChannelValue(Protector, 'enable',
     registry.Boolean(True, """Determines whether this plugin is enabled in a
     given channel."""))
-conf.registerChannelValue(Protector, 'takeRevenge',
-    registry.Boolean(True, """Determines whether the bot will take revenge on
-    people who do things it doesn't like (somewhat like 'bitch mode' in other
-    IRC bots)."""))
-conf.registerChannelValue(Protector.takeRevenge, 'onOps',
-    registry.Boolean(False, """Determines whether the bot will take revenge
-    even on ops (people with the #channel,op capability) who violate the
-    channel configuration."""))
 
 class ImmuneNicks(conf.ValidNicks):
     List = ircutils.IrcSet
@@ -96,19 +91,23 @@ class Protector(callbacks.Privmsg):
             self.log.debug('%s is an op on %s, it has %s.',
                            hostmask, channel, cap)
             return True
+        if ircutils.strEqual(hostmask, irc.prefix):
+            return True
         return False
-        
+
     def isProtected(self, irc, channel, hostmask):
         cap = ircdb.makeChannelCapability(channel, 'protected')
         if ircdb.checkCapability(msg.prefix, cap):
             self.log.debug('%s is protected on %s, it has %s.',
                            hostmask, channel, cap)
             return True
+        if ircutils.strEqual(hostmask, irc.prefix):
+            return True
         return False
 
-    def takeRevenge(self, irc, msg, reason):
-        pass
-
+    def demote(self, channel, nick):
+        irc.queueMsg(ircmsgs.deop(channel, nick))
+        
     def __call__(self, irc, msg):
         if not msg.args:
             self.log.debug('Ignoring %r, no msg.args.', msg, irc)
@@ -125,7 +124,41 @@ class Protector(callbacks.Privmsg):
             super(Protector, self).__call__(irc, msg)
 
     def doMode(self, irc, msg):
-        pass
+        channel = msg.args[0]
+        chanOp = ircdb.makeChannelCapability(channel, 'op')
+        chanVoice = ircdb.makeChannelCapability(channel, 'voice')
+        chanhalfop = ircdb.makeChannelCapability(channel, 'halfop')
+        for (mode, value) in ircutils.separateModes(msg.args[1:]):
+            if not value:
+                # XXX We should check whether this person has the right to do
+                #     a mode change like this.
+                continue
+            if ircutils.strEqual(value, msg.nick):
+                # We allow someone to mode themselves to oblivion.
+                continue
+            if irc.isNick(value):
+                hostmask = irc.state.nickToHostmask(value)
+                if mode == '+o':
+                    if not self.isOp(irc, channel, hostmask):
+                        irc.queueMsg(ircmsgs.deop(channel, value))
+                elif mode == '+h':
+                    if not ircdb.checkCapability(hostmask, chanHalfOp):
+                         irc.queueMsg(ircmsgs.dehalfop(channel, value))
+                elif mode == '+v':
+                    if not ircdb.checkCapability(hostmask, chanVoice):
+                        irc.queueMsg(ircmsgs.devoice(channel, value))
+                elif mode == '-o':
+                    if ircdb.checkCapability(hostmask, chanOp):
+                        irc.queueMsg(ircmsgs.op(channel, value))
+                elif mode == '-h':
+                    if ircdb.checkCapability(hostmask, chanOp):
+                        irc.queueMsg(ircmsgs.halfop(channel, value))
+                elif mode == '-v':
+                    if ircdb.checkCapability(hostmask, chanOp):
+                        irc.queueMsg(ircmsgs.voice(channel, value))
+            else: # Must be a hostmask.
+                # Handle bans.
+                pass
 
     def doKick(self, irc, msg):
         channel = msg.args[0]
@@ -136,15 +169,13 @@ class Protector(callbacks.Privmsg):
                 irc.queueMsg(ircmsgs.join(channel))
                 return # We can't revenge because we won't have ops on rejoin.
             hostmask = irc.state.nickToHostmask(nick)
-            if self.isProtected(channel, hostmask):
+            if self.isProtected(irc, channel, hostmask):
                 self.log.info('%s was kicked from %s and is protected; '
                               'inviting back.', hostmask, channel)
                 irc.queueMsg(ircmsgs.invite(nick, channel))
                 protected.append(nick)
-        if protected:
-            self.takeRevenge(irc, msg, '%s %s protected.' %
-                                       (utils.commaAndify(protected),
-                                        utils.be(len(protected))))
+        if not self.isOp(irc, channel, msg.prefix):
+            self.demote(channel, msg.nick)
             
 
 Class = Protector
