@@ -37,6 +37,7 @@ import sets
 import types
 import textwrap
 
+import fix
 import utils
 
 class RegistryException(Exception):
@@ -65,14 +66,20 @@ def open(filename):
         _cache[key.lower()] = value
 
 def close(registry, filename, annotated=True):
+    first = True
+    helpCache = sets.Set()
     fd = file(filename, 'w')
     for (name, value) in registry.getValues(getChildren=True):
-        if annotated and hasattr(value, 'help'):
+        if annotated and hasattr(value,'help') and value.help not in helpCache:
+            helpCache.add(value.help)
             lines = textwrap.wrap(value.help)
             for (i, line) in enumerate(lines):
                 lines[i] = '# %s\n' % line
             lines.insert(0, '###\n')
-            lines.insert(0, '\n')
+            if first:
+                first = False
+            else:
+                lines.insert(0, '\n')
             lines.append('###\n')
             fd.writelines(lines)
         fd.write('%s: %s\n' % (name, value))
@@ -210,13 +217,17 @@ class SeparatedListOf(Value):
     def __str__(self):
         return self.joiner(self.value)
         
-
+class SpaceSeparatedListOfStrings(SeparatedListOf):
+    Value = String
+    def splitter(self, s):
+        return s.split(s)
+    joiner = ' '.join
+    
 class CommaSeparatedListOfStrings(SeparatedListOf):
     Value = String
     def splitter(self, s):
         return re.split(r'\s*,\s*', s)
-    def joiner(self, L):
-        return ','.join(L)
+    joiner = ', '.join
     
 class CommaSeparatedSetOfStrings(CommaSeparatedListOfStrings):
     def setValue(self, v):

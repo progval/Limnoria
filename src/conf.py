@@ -72,12 +72,20 @@ def registerGlobalValue(group, name, value):
     group.register(name, value)
 
 class ValidNick(registry.String):
-    def set(self, s):
-        original = getattr(self, 'value', self.default)
-        registry.String.set(self, s)
-        if not ircutils.isNick(self.value):
-            self.value = original
-            raise registry.InvalidRegistryValue, 'Value must be a valid nick.'
+    def setValue(self, v):
+        if not ircutils.isNick(v):
+            raise registry.InvalidRegistryValue, \
+                  'Value must be a valid IRC nick.'
+        else:
+            registry.String.setValue(self, v)
+
+class ValidChannel(registry.String):
+    def setValue(self, v):
+        if not ircutils.isChannel(v):
+            raise registry.InvalidRegistryValue, \
+                  'Value must be a valid IRC channel name.'
+        else:
+            registry.String.setValue(self, v)
 
 supybot.register('nick', ValidNick('supybot',
 """Determines the bot's nick."""))
@@ -95,9 +103,14 @@ be sent to the server if it requires one."""))
 supybot.register('server', registry.String('irc.freenode.net', """Determines
 what server the bot connects to."""))
 
-supybot.register('channels', registry.CommaSeparatedListOfStrings(['#supybot'],
-"""Determines what channels the bot will join when it connects to the server.
-"""))
+class SpaceSeparatedListOfChannels(registry.SeparatedListOf):
+    Value = ValidChannel
+    def splitter(self, s):
+        return s.split()
+    joiner = ' '.join
+
+supybot.register('channels', SpaceSeparatedListOfChannels(['#supybot'], """
+Determines what channels the bot will join when it connects to the server."""))
 
 supybot.registerGroup('databases')
 supybot.databases.registerGroup('users')
@@ -126,13 +139,11 @@ Refer to the Python documentation for the time module to see valid formatting
 characteres for time formats."""))
 
 class IP(registry.String):
-    def set(self, s):
-        original = getattr(self, 'value', self.default)
-        registry.String.set(self, s)
-        if self.value: # Empty string is alright.
-            if not (utils.isIP(self.value) or utils.isIPV6(self.value)):
-                raise registry.InvalidRegistryValue, \
-                      'Value must be a valid IP.'
+    def setValue(self, v):
+        if v and not (utils.isIP(v) or utils.isIPV6(v)):
+            raise registry.InvalidRegistryValue, 'Value must be a valid IP.'
+        else:
+            registry.String.setValue(self, v)
         
 supybot.register('externalIP', IP('', """A string that is the external IP of
 the bot.  If this is the empty string, the bot will attempt to find out its IP

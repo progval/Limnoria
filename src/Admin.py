@@ -62,7 +62,18 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         self.joins = {}
 
     def do376(self, irc, msg):
-        irc.queueMsg(ircmsgs.joins(conf.supybot.channels()))
+        channels = conf.supybot.channels()
+        utils.sortBy(lambda s: ',' not in s, channels)
+        keys = []
+        chans = []
+        for channel in channels:
+            if ',' in channel:
+                (channel, key) = channel.split(',', 1)
+                chans.append(channel)
+                keys.append(key)
+            else:
+                chans.append(channel)
+        irc.queueMsg(ircmsgs.joins(channels, keys))
     do422 = do377 = do376
         
     def do471(self, irc, msg):
@@ -128,6 +139,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         keys = []
         channels = []
         for channel in args:
+            original = channel
             if ',' in channel:
                 (channel, key) = channel.split(',', 1)
                 channels.insert(0, channel)
@@ -137,6 +149,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             if not ircutils.isChannel(channel):
                 irc.error('%r is not a valid channel.' % channel)
                 return
+            conf.supybot.channels().append(original)
         irc.queueMsg(ircmsgs.joins(channels, keys))
         for channel in channels:
             self.joins[channel] = (irc, msg)
@@ -164,7 +177,11 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
 
         Changes the bot's nick to <nick>."""
         nick = privmsgs.getArgs(args)
-        irc.queueMsg(ircmsgs.nick(nick))
+        if ircutils.isNick(nick):
+            conf.supybot.nick.setValue(nick)
+            irc.queueMsg(ircmsgs.nick(nick))
+        else:
+            irc.error('That\'s not a valid nick.')
 
     def part(self, irc, msg, args):
         """<channel> [<channel> ...]
@@ -178,6 +195,9 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             if arg not in irc.state.channels:
                 irc.error('I\'m not currently in %s' % arg)
                 return
+        for arg in args:
+            if arg in conf.supybot.channels():
+                conf.supybot.channels().remove(arg)
         irc.queueMsg(ircmsgs.parts(args, msg.nick))
 
     def disable(self, irc, msg, args):
