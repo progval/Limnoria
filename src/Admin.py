@@ -132,6 +132,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         if channel not in irc.state.channels:
             if conf.supybot.alwaysJoinOnInvite() or \
                ircdb.checkCapability(msg.prefix, 'admin'):
+                self.log.info('Invited to %s by %s', channel, msg.prefix)
                 irc.queueMsg(ircmsgs.join(channel))
                 conf.supybot.channels().add(channel)
     
