@@ -149,10 +149,26 @@ class FunCommands(callbacks.Privmsg):
     def base(self, irc, msg, args):
         """<base> <number>
 
-        Converts to base <base> the number <number>
+        Converts from base <base> the number <number>
         """
         (base, number) = privmsgs.getArgs(args, needed=2)
         irc.reply(msg, str(long(number, int(base))))
+
+    def binary(self, irc, msg, args):
+        """<text>
+
+        Returns the binary representation of <text>.
+        """
+        L = []
+        for c in privmsgs.getArgs(args):
+            i = ord(c)
+            while i:
+                if i & 1:
+                    L.append('1')
+                else:
+                    L.append('0')
+                i >>= 1
+        irc.reply(msg, ''.join(L))
         
     def hexlify(self, irc, msg, args):
         "<text>; turn string into a hexstring."
