@@ -65,6 +65,7 @@ class AsyncoreDriver(asynchat.async_chat, drivers.ServersMixin):
         self.irc = irc
         self.irc.driver = self # Necessary because of the way we reconnect.
         self.buffer = ''
+        self.scheduled = False
         self.set_terminator('\n')
         try:
             server = self._getNextServer()
