@@ -30,7 +30,7 @@
 ###
 
 import fix
-from structures import queue, RingBuffer
+from structures import queue, smallqueue, RingBuffer
 
 import copy
 import sets
@@ -137,9 +137,9 @@ class IrcMsgQueue(object):
 
     def reset(self):
         """Clears the queue."""
-        self.highpriority = queue()
-        self.normal = queue()
-        self.lowpriority = queue()
+        self.highpriority = smallqueue()
+        self.normal = smallqueue()
+        self.lowpriority = smallqueue()
         self.msgs = sets.Set()
 
     def enqueue(self, msg):
@@ -400,7 +400,7 @@ class Irc(object):
         self.queue = IrcMsgQueue()
         self._nickmods = copy.copy(conf.nickmods)
         self.lastTake = 0
-        self.fastqueue = queue()
+        self.fastqueue = smallqueue()
         self.lastping = time.time()
         self.outstandingPing = False
         self.driver = None # The driver should set this later.
