@@ -214,7 +214,10 @@ class Markov(callbacks.Privmsg):
             return m.args[1].split()
 
     def doPrivmsg(self, irc, msg):
-        channel = msg.args[0]
+        if not conf.supybot.databases.plugins.channelSpecific():
+            channel = conf.supybot.databases.plugins.channelSpecific.channel()
+        else:
+            channel = msg.args[0]
         if irc.isChannel(channel):
             canSpeak = False
             now = time.time()
