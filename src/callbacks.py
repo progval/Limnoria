@@ -492,6 +492,10 @@ class PrivmsgRegexp(Privmsg):
 
 
 class PrivmsgCommandAndRegexp(Privmsg):
+    """Same as Privmsg, except allows the user to also include regexp-based
+    callbacks.  All regexp-based callbacks must be specified in a sets.Set
+    (or list) attribute "regexps".
+    """
     flags = re.I
     regexps = sets.Set()
     def __init__(self):
