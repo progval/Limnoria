@@ -316,7 +316,8 @@ class User(callbacks.Privmsg):
             user = ircdb.users.getUser(msg.prefix)
             if name:
                 if name != user.name and not user.checkCapability('owner'):
-                    irc.error('You may only retrieve your own hostmasks.')
+                    irc.error('You may only retrieve your own hostmasks.',
+                              Raise=True)
                 else:
                     try:
                         user = ircdb.users.getUser(name)

@@ -344,7 +344,7 @@ def getSeenNick(irc, msg, args, state, errmsg=None):
     except KeyError:
         if errmsg is None:
             errmsg = 'I haven\'t seen %s.' % args[0]
-        irc.error(errmsg)
+        irc.error(errmsg, Raise=True)
 
 def getChannel(irc, msg, args, state):
     if args and irc.isChannel(args[0]):
