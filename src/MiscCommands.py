@@ -55,6 +55,7 @@ class MiscCommands(callbacks.Privmsg):
             names = [cb.__class__.__name__
                      for cb in irc.callbacks
                      if hasattr(cb, 'public') and cb.public]
+            names.sort()
             irc.reply(msg, ', '.join(names))
         else:
             for cb in irc.callbacks:
@@ -65,6 +66,7 @@ class MiscCommands(callbacks.Privmsg):
                     commands = [x for x in cls.__dict__
                                 if cb.isCommand(x) and \
                                 hasattr(getattr(cb, x), '__doc__')]
+                    commands.sort()
                     irc.reply(msg, ', '.join(commands))
                     return
             irc.error(msg, 'There is no module named %s, ' \
