@@ -47,16 +47,6 @@ import ircmsgs
 import ircutils
 import privmsgs
 import callbacks
-import configurable
-
-
-def configure(onStart, afterConnect, advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
-    from questions import expect, anything, something, yn
-    onStart.append('load Herald')
 
 
 class HeraldDB(object):
@@ -100,21 +90,22 @@ class HeraldDB(object):
         del self.heralds[(id, channel)]
 
 
-class Herald(callbacks.Privmsg, configurable.Mixin):
-    configurables = configurable.Dictionary(
-        [('heralding', configurable.BoolType, True,
-          """Determines whether messages will be sent to the channel when
-             a recognized user joins; basically enables or disables the
-             plugin."""),
-         ('throttle-time', configurable.PositiveIntType, 600,
-          """Determines the minimum number of seconds between heralds."""),
-         ('throttle-after-part', configurable.IntType, 60,
-          """Determines the minimum number of seconds after parting that the
-          bot will not herald the person when he or she rejoins."""),]
-    )
+conf.registerPlugin('Herald')
+conf.registerChannelValue(conf.supybot.plugins.Herald, 'heralding',
+    registry.Boolean(True, """Determines whether messages will be sent to the
+    channel when a recognized user joins; basically enables or disables the
+    plugin."""))
+conf.registerChannelValue(conf.supybot.plugins.Herald, 'throttleTime',
+    registry.PositiveInteger(600, """Determines the minimum number of seconds
+    between heralds."""))
+conf.registerChannelValue(conf.supybot.plugins.Herald, 'throttleTimeAfterPart',
+    registry.PositiveInteger(60, """Determines the minimum number of seconds
+    after parting that the bot will not herald the person when he or she
+    rejoins."""))
+
+class Herald(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        configurable.Mixin.__init__(self)
         self.db = HeraldDB()
         self.lastParts = {}
         self.lastHerald = {}
@@ -122,21 +113,20 @@ class Herald(callbacks.Privmsg, configurable.Mixin):
     def die(self):
         self.db.close()
         callbacks.Privmsg.die(self)
-        configurable.Mixin.die(self)
 
     def doJoin(self, irc, msg):
         channel = msg.args[0]
-        if self.configurables.get('heralding', channel):
+        if self.registryValue('heralding', channel):
             try:
                 id = ircdb.users.getUserId(msg.prefix)
                 herald = self.db.getHerald(id, channel)
             except KeyError:
                 return
             now = time.time()
-            throttle = self.configurables.get('throttle-time', channel)
+            throttle = self.registryValue('throttleTime', channel)
             if now - self.lastHerald.get((id, channel), 0) > throttle:
                 if (id, channel) in self.lastParts:
-                   i = self.configurables.get('throttle-after-part', channel) 
+                   i = self.registryValue('throttleTimeAfterPart', channel) 
                    if now - self.lastParts[(id, channel)] < i:
                        return
                 self.lastHerald[(id, channel)] = now
