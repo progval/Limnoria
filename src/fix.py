@@ -36,11 +36,11 @@ Fixes stuff that Python should have but doesn't.
 """
 
 import sys
-import string
 
 if 'others' not in sys.path:
     sys.path.insert(0, 'others')
 
+import string
 string.ascii = string.maketrans('', '')
 
 def ignore(*args, **kwargs):
@@ -54,58 +54,6 @@ def catch(f, *args, **kwargs):
     except:
         return None
 
-
-class IterableMap(object):
-    """Define .iteritems() in a class and subclass this to get the other iters.
-    """
-    def iteritems(self):
-        raise NotImplementedError
-
-    def iterkeys(self):
-        for (key, _) in self.iteritems():
-            yield key
-
-    def itervalues(self):
-        for (_, value) in self.iteritems():
-            yield value
-
-    def items(self):
-        return list(self.iteritems())
-
-    def keys(self):
-        return list(self.iterkeys())
-
-    def values(self):
-        return list(self.itervalues())
-
-    def __len__(self):
-        ret = 0
-        for _ in self.iteritems():
-            ret += 1
-        return ret
-
-    def __nonzero__(self):
-        for _ in self.iteritems():
-            return True
-        return False
-
-def mktemp(suffix=''):
-    """Gives a decent random string, suitable for a filename."""
-    import sha
-    import md5
-    import time
-    import random
-    r = random.Random()
-    m = md5.md5(suffix)
-    r.seed(time.time())
-    s = str(r.getstate())
-    for x in xrange(0, random.randrange(400), random.randrange(1, 5)):
-        m.update(str(x))
-        m.update(s)
-        m.update(str(time.time()))
-        s = m.hexdigest()
-    return sha.sha(s + str(time.time())).hexdigest() + suffix
-
 def reviter(L):
     """Iterates through a list in reverse."""
     for i in xrange(len(L) - 1, -1, -1):
@@ -118,12 +66,15 @@ def window(L, size):
     for i in xrange(len(L) - (size-1)):
         yield L[i:i+size]
 
+import itertools
 def ilen(iterator):
     """Returns the length of an iterator."""
     i = 0
     for _ in iterator:
         i += 1
     return i
+itertools.ilen = ilen
+del ilen
 
 def group(seq, groupSize, noneFill=True):
     """Groups a given sequence into sublists of length groupSize."""
@@ -146,32 +97,6 @@ def group(seq, groupSize, noneFill=True):
         ret.append(L)
     return ret
 
-def itersplit(iterable, isSeparator, yieldEmpty=False):
-    """Splits an iterator based on a predicate isSeparator."""
-    acc = []
-    for element in iterable:
-        if isSeparator(element):
-            if acc or yieldEmpty:
-                yield acc
-            acc = []
-        else:
-            acc.append(element)
-    if acc or yieldEmpty:
-        yield acc
-
-def flatten(seq, strings=False):
-    """Flattens a list of lists into a single list.  See the test for examples.
-    """
-    for elt in seq:
-        if not strings and type(elt) == str or type(elt) == unicode:
-            yield elt
-        else:
-            try:
-                for x in flatten(elt):
-                    yield x
-            except TypeError:
-                yield elt
-
 def partition(p, L):
     """Partitions a list L based on a predicate p.  Returns a (yes,no) tuple"""
     no = []
@@ -182,11 +107,6 @@ def partition(p, L):
         else:
             no.append(elt)
     return (yes, no)
-
-def flip((x, y)):
-    """Flips a two-tuple around.  (x, y) becomes (y, x)."""
-    return (y, x)
-
 
 def any(p, seq):
     """Returns true if any element in seq satisfies predicate p."""

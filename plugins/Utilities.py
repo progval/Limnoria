@@ -95,7 +95,6 @@ class Utilities(callbacks.Privmsg):
         Joins all the arguments together with <separator>.
         """
         sep = args.pop(0)
-        args = flatten(map(callbacks.tokenize, args))
         irc.reply(msg, sep.join(args))
 
     def strtranslate(self, irc, msg, args):

@@ -176,5 +176,64 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(utils.nItems(2, 'tool', 'crazy'), '2 crazy tools')
         self.assertEqual(utils.nItems(2, 'tool'), '2 tools')
 
+    def testItersplit(self):
+        from utils import itersplit
+        L = [1, 2, 3] * 3
+        s = 'foo bar baz'
+        self.assertEqual(list(itersplit(lambda x: x == 3, L)),
+                         [[1, 2], [1, 2], [1, 2]])
+        self.assertEqual(list(itersplit(lambda x: x == 3, L, yieldEmpty=True)),
+                         [[1, 2], [1, 2], [1, 2], []])
+        self.assertEqual(list(itersplit(lambda x: x, [])), [])
+        self.assertEqual(list(itersplit(lambda c: c.isspace(), s)),
+                         map(list, s.split()))
+        self.assertEqual(list(itersplit('for'.__eq__, ['foo', 'for', 'bar'])),
+                         [['foo'], ['bar']])
+        self.assertEqual(list(itersplit('for'.__eq__,
+                                        ['foo','for','bar','for', 'baz'], 1)),
+                         [['foo'], ['bar', 'for', 'baz']])
+
+    def testIterableMap(self):
+        class alist(utils.IterableMap):
+            def __init__(self):
+                self.L = []
+
+            def __setitem__(self, key, value):
+                self.L.append((key, value))
+
+            def iteritems(self):
+                for (k, v) in self.L:
+                    yield (k, v)
+        AL = alist()
+        self.failIf(AL)
+        AL[1] = 2
+        AL[2] = 3
+        AL[3] = 4
+        self.failUnless(AL)
+        self.assertEqual(AL.items(), [(1, 2), (2, 3), (3, 4)])
+        self.assertEqual(list(AL.iteritems()), [(1, 2), (2, 3), (3, 4)])
+        self.assertEqual(AL.keys(), [1, 2, 3])
+        self.assertEqual(list(AL.iterkeys()), [1, 2, 3])
+        self.assertEqual(AL.values(), [2, 3, 4])
+        self.assertEqual(list(AL.itervalues()), [2, 3, 4])
+        self.assertEqual(len(AL), 3)
+
+    def testFlatten(self):
+        def lflatten(seq):
+            return list(utils.flatten(seq))
+        self.assertEqual(lflatten([]), [])
+        self.assertEqual(lflatten([1]), [1])
+        self.assertEqual(lflatten(range(10)), range(10))
+        twoRanges = range(10)*2
+        twoRanges.sort()
+        self.assertEqual(lflatten(zip(range(10), range(10))), twoRanges)
+        self.assertEqual(lflatten([1, [2, 3], 4]), [1, 2, 3, 4])
+        self.assertEqual(lflatten([[[[[[[[[[]]]]]]]]]]), [])
+        self.assertEqual(lflatten([1, [2, [3, 4], 5], 6]), [1, 2, 3, 4, 5, 6])
+        self.assertRaises(TypeError, lflatten, 1)
+
+
+
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

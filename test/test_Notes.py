@@ -29,19 +29,19 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-
 from test import *
+
+import utils
 
 class NotesTestCase(PluginTestCase):
     plugins = ('Notes',)
-    
     def testSendnote(self):
         self.assertNotError('sendnote inkedmn test')
-        self.assertError('sendnote %s %s' % (mktemp(), mktemp()))
+        self.assertError('sendnote alsdkjfasldk foo')
     
     def testNote(self):
         # self.assertNotError('note 1')
-        self.assertError('note %s' % mktemp())
+        self.assertError('note blah')
 
     def testNotes(self):
         self.assertNotError('notes')

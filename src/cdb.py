@@ -40,6 +40,7 @@ import struct
 import os.path
 import cPickle as pickle
 
+import utils
 
 def hash(s):
     h = 5381
@@ -166,7 +167,7 @@ class Maker(object):
             self.fd.write(pack2Ints(hashPos, hashLen))
 
 
-class Reader(IterableMap):
+class Reader(utils.IterableMap):
     def __init__(self, filename):
         self.filename = filename
         self.fd = file(filename, 'r')
@@ -263,7 +264,7 @@ class Reader(IterableMap):
     __getitem__ = find
 
 
-class ReaderWriter(IterableMap):
+class ReaderWriter(utils.IterableMap):
     def __init__(self, filename, journalName=None, maxmods=0):
         if journalName is None:
             journalName = filename + '.journal'
@@ -315,7 +316,7 @@ class ReaderWriter(IterableMap):
         except IOError:
             pass
         if removals or adds:
-            tempfilename = mktemp('.db')
+            tempfilename = utils.mktemp('.db')
             maker = Maker(tempfilename)
             cdb = Reader(self.filename)
             for (key, value) in cdb.iteritems():
@@ -423,7 +424,7 @@ class ReaderWriter(IterableMap):
             return default
 
 
-class Shelf(ReaderWriter, IterableMap):
+class Shelf(ReaderWriter, utils.IterableMap):
     def __getitem__(self, key):
         return pickle.loads(ReaderWriter.__getitem__(self, key))
 

@@ -18,6 +18,7 @@ import threading
 import cdb
 import conf
 import debug
+import utils
 import world
 import ircutils
 
@@ -104,7 +105,7 @@ class PeriodicFileDownloader(object):
 
     def _downloadFile(self, filename, url, f):
         infd = urllib2.urlopen(url)
-        newFilename = mktemp()
+        newFilename = utils.mktemp()
         outfd = file(newFilename, 'wb')
         start = time.time()
         s = infd.read(4096)

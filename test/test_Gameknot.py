@@ -31,11 +31,13 @@
 
 from test import *
 
+import utils
+
 class GameknotTestCase(PluginTestCase):
     plugins = ('Gameknot',)
     def testGkstats(self):
         self.assertNotError('gkstats jemfinch')
-        self.assertError('gkstats %s' % mktemp())
+        self.assertError('gkstats %s' % utils.mktemp())
 
     def testUrlSnarfer(self):
         self.assertNotError('http://gameknot.com/chess.pl?bd=1019508')
@@ -47,11 +49,11 @@ class GameknotTestCase(PluginTestCase):
 
     def testSnarfer(self):
         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-                          '\x02ddipaolo\x02 won')
+                          '\x02ddipaolo\x0f won')
         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
-                          '\x02chroniqueur\x02 resigned')
+                          '\x02chroniqueur\x0f resigned')
         self.assertRegexp('http://gameknot.com/chess.pl?bd=955432',
-                          '\x02ddipaolo\x02 lost')
+                          '\x02ddipaolo\x0f lost')
 
 
 

@@ -32,6 +32,8 @@
 
 from test import *
 
+import itertools
+
 class FunctionsTest(unittest.TestCase):
     def testCatch(self):
         def f():
@@ -65,58 +67,6 @@ class FunctionsTest(unittest.TestCase):
         self.assertRaises(ValueError, wwindow, [], 0)
         self.assertRaises(ValueError, wwindow, [], -1)
 
-    def testItersplit(self):
-        L = [1, 2, 3] * 3
-        s = 'foo bar baz'
-        self.assertEqual(list(itersplit(L, lambda x: x == 3)),
-                         [[1, 2], [1, 2], [1, 2]])
-        self.assertEqual(list(itersplit(L, lambda x: x == 3, True)),
-                         [[1, 2], [1, 2], [1, 2], []])
-        self.assertEqual(list(itersplit([], lambda x: x)), [])
-        self.assertEqual(list(itersplit(s, lambda c: c.isspace())),
-                         map(list, s.split()))
-        self.assertEqual(list(itersplit(['foo', 'for', 'bar'], 'for'.__eq__)),
-                         [['foo'], ['bar']])
-
-    def testIterableMap(self):
-        class alist(IterableMap):
-            def __init__(self):
-                self.L = []
-
-            def __setitem__(self, key, value):
-                self.L.append((key, value))
-
-            def iteritems(self):
-                for (k, v) in self.L:
-                    yield (k, v)
-        AL = alist()
-        self.failIf(AL)
-        AL[1] = 2
-        AL[2] = 3
-        AL[3] = 4
-        self.failUnless(AL)
-        self.assertEqual(AL.items(), [(1, 2), (2, 3), (3, 4)])
-        self.assertEqual(list(AL.iteritems()), [(1, 2), (2, 3), (3, 4)])
-        self.assertEqual(AL.keys(), [1, 2, 3])
-        self.assertEqual(list(AL.iterkeys()), [1, 2, 3])
-        self.assertEqual(AL.values(), [2, 3, 4])
-        self.assertEqual(list(AL.itervalues()), [2, 3, 4])
-        self.assertEqual(len(AL), 3)
-
-    def testFlatten(self):
-        def lflatten(seq):
-            return list(flatten(seq))
-        self.assertEqual(lflatten([]), [])
-        self.assertEqual(lflatten([1]), [1])
-        self.assertEqual(lflatten(range(10)), range(10))
-        twoRanges = range(10)*2
-        twoRanges.sort()
-        self.assertEqual(lflatten(zip(range(10), range(10))), twoRanges)
-        self.assertEqual(lflatten([1, [2, 3], 4]), [1, 2, 3, 4])
-        self.assertEqual(lflatten([[[[[[[[[[]]]]]]]]]]), [])
-        self.assertEqual(lflatten([1, [2, [3, 4], 5], 6]), [1, 2, 3, 4, 5, 6])
-        self.assertRaises(TypeError, lflatten, 1)
-
     def testAny(self):
         self.failUnless(any(lambda i: i == 0, range(10)))
         self.failIf(any(None, range(1)))
@@ -126,8 +76,17 @@ class FunctionsTest(unittest.TestCase):
         self.failIf(all(lambda i: i == 0, range(10)))
         self.failUnless(any(lambda i: i % 2, range(2)))
         self.failIf(any(lambda i: i % 2 == 0, [1, 3, 5]))
-                        
-        
+
+    def testPartition(self):
+        L = range(10)
+        def even(i):
+            return not(i % 2)
+        (yes, no) = partition(even, L)
+        self.assertEqual(yes, [0, 2, 4, 6, 8])
+        self.assertEqual(no, [1, 3, 5, 7, 9])
+
+    def testIlen(self):
+        self.assertEqual(itertools.ilen(iter(range(10))), 10)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

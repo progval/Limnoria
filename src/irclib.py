@@ -39,6 +39,7 @@ import atexit
 
 import conf
 import debug
+import utils
 import world
 import ircdb
 import ircmsgs
@@ -472,7 +473,8 @@ class Irc(object):
                     u.addHostmask(msg.prefix)
                     ircdb.users.setUser(self.nick, u)
             else:
-                u = ircdb.IrcUser(capabilities=['owner'], password=mktemp(),
+                u = ircdb.IrcUser(capabilities=['owner'],
+                                  password=utils.mktemp(),
                                   hostmasks=[msg.prefix])
                 ircdb.users.setUser(self.nick, u)
                 atexit.register(lambda: catch(ircdb.users.delUser(self.nick)))
