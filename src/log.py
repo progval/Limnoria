@@ -49,9 +49,7 @@ deadlyExceptions = [KeyboardInterrupt, SystemExit]
 
 class Formatter(logging.Formatter):
     def formatTime(self, record, datefmt=None):
-        if datefmt is None:
-            datefmt = conf.supybot.log.timestampFormat()
-        return logging.Formatter.formatTime(self, record, datefmt)
+        return timestamp(record.created)
 
     def formatException(self, (E, e, tb)):
         for exn in deadlyExceptions:
@@ -174,7 +172,11 @@ def timestamp(when=None):
     if when is None:
         when = time.time()
     format = conf.supybot.log.timestampFormat()
-    return time.strftime(format, time.localtime(when))
+    t = time.localtime(when)
+    if format:
+        return time.strftime(format, t)
+    else:
+        return str(int(time.mktime(t)))
 
 def firewall(f, errorHandler=None):
     def logException(self, s=None):
@@ -255,7 +257,9 @@ stdout (if enabled) will be colorized with ANSI color."""))
 conf.supybot.log.register('timestampFormat',
 registry.String('[%d-%b-%Y %H:%M:%S]',
 """Determines the format string for timestamps in logfiles.  Refer to the
-Python documentation for the time module to see what formats are accepted."""))
+Python documentation for the time module to see what formats are accepted.
+If you set this variable to the empty string, times will be logged in a
+simple seconds-since-epoch format."""))
 if not os.path.exists(conf.supybot.directories.log()):
     os.mkdir(conf.supybot.directories.log(), 0755)
 
