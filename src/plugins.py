@@ -356,16 +356,20 @@ class Configurable(object):
         if not name:
             irc.reply(msg, utils.commaAndify(self.configurables.names()))
             return
-        if not value:
-            help = self.configurables.help(name)
-            value = self.configurables.get(name, channel=channel)
-            irc.reply(msg, '%s: %s  (Current value: %r)' % (name, help, value))
-            return
         try:
-            self.configurables.set(name, value, channel)
-            irc.reply(msg, conf.replySuccess)
-        except ConfigurableTypeError, e:
-            irc.error(msg, str(e))
+            if not value:
+                help = self.configurables.help(name)
+                value = self.configurables.get(name, channel=channel)
+                s = '%s: %s  (Current value: %r)' % (name, help, value)
+                irc.reply(msg, s)
+                return
+            try:
+                self.configurables.set(name, value, channel)
+                irc.reply(msg, conf.replySuccess)
+            except ConfigurableTypeError, e:
+                irc.error(msg, str(e))
+        except KeyError:
+            irc.error(msg, 'There is no config variable %r' % name)
         
 
 _randomnickRe = re.compile(r'\$randomnick', re.I)
