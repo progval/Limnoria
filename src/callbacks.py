@@ -574,12 +574,6 @@ class IrcObjectProxy(RichReplyMethods):
                 self.irc.queueMsg(reply(self.msg, s))
         self.finished = True
 
-    def killProxy(self):
-        """Kills this proxy object and all its parents."""
-        if not isinstance(self.irc, irclib.Irc):
-            self.irc.killProxy()
-        self.__dict__ = {}
-
     def getRealIrc(self):
         """Returns the real irclib.Irc object underlying this proxy chain."""
         if isinstance(self.irc, irclib.Irc):
