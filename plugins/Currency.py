@@ -134,7 +134,7 @@ class Currency(callbacks.Privmsg):
         if '.' not in resp[0] and 'e' not in resp[0]:
             resp[0] = '%s.00' % resp[0]
         irc.reply(' '.join(resp))
-    yahoo = wrap(yahoo, [optional(float, 1.0), 'lowered', 'to', 'lowered'])
+    yahoo = wrap(yahoo, [optional('float', 1.0), 'lowered', 'to', 'lowered'])
 
 conf.registerPlugin('Currency')
 conf.registerChannelValue(conf.supybot.plugins.Currency, 'command',
