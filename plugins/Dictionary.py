@@ -54,7 +54,7 @@ def configure(onStart, afterConnect, advanced):
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load Dict')
+    onStart.append('load Dictionary')
     print 'The default dictd server is dict.org.'
     if yn('Would you like to specify a dictd server?') == 'y':
         server = something('What server?')
@@ -69,7 +69,7 @@ example = utils.wrapLines("""
 <supybot> jemfinch: foldoc
 """)
 
-class Dict(callbacks.Privmsg):
+class Dictionary(callbacks.Privmsg):
     threaded = True
     dictServer = 'dict.org'
     def __init__(self):
@@ -146,6 +146,6 @@ class Dict(callbacks.Privmsg):
         irc.reply(msg, s)
 
 
-Class = Dict
+Class = Dictionary
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

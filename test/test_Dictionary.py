@@ -31,17 +31,8 @@
 
 from test import *
 
-class DictTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Dict', 'MiscCommands')
-    def testHelps(self):
-        self.assertNotError('list Dict')
-        self.assertNotError('syntax dict')
-        self.assertNotError('help dict')
-        self.assertNotError('syntax dictionaries')
-        self.assertNotError('help dictionaries')
-        self.assertNotError('syntax randomdictionary')
-        self.assertNotError('help randomdictionary')
-
+class DictionaryTestCase(PluginTestCase, PluginDocumentation):
+    plugins = ('Dictionary', 'MiscCommands')
     def testDict(self):
         self.assertNotError('dict slash')
         self.assertNotRegexp('dict web1913 slash', 'foldoc')
