@@ -250,9 +250,9 @@ class Todo(callbacks.Privmsg):
         """[--{regexp,exact}=<value>] [<glob>]
 
         Searches the keyspace for tasks matching <glob>.  If --regexp is given,
-        it associated value is taken as a regexp and matched against the tasks;
-        if --exact is given, its associated value is taken as an exact string
-        to match against the task.
+        its associated value is taken as a regexp and matched against the
+        tasks; if --exact is given, its associated value is taken as an exact
+        string to match against the tasks.
         """
         try:
             id = ircdb.users.getUserId(msg.prefix)
