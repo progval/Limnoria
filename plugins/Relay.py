@@ -31,13 +31,6 @@
 
 """
 Handles relaying between networks.
-
-Commands include:
-  startrelay
-  relayconnect
-  relaydisconnect
-  relayjoin
-  relaypart
 """
 
 from baseplugin import *
@@ -250,7 +243,7 @@ class Relay(callbacks.Privmsg):
             if channel not in self.channels:
                 return
             abbreviation = self.abbreviations[irc]
-            s = '%s has joined on %s' % (msg.nick, abbreviation)
+            s = '%s (%s) has joined on %s' % (msg.nick,msg.prefix,abbreviation)
             for otherIrc in self.ircs.itervalues():
                 if otherIrc != irc:
                     if channel in otherIrc.state.channels:
@@ -264,7 +257,7 @@ class Relay(callbacks.Privmsg):
             if channel not in self.channels:
                 return
             abbreviation = self.abbreviations[irc]
-            s = '%s has left on %s' % (msg.nick, abbreviation)
+            s = '%s (%s) has left on %s' % (msg.nick, msg.prefix, abbreviation)
             for otherIrc in self.ircs.itervalues():
                 if otherIrc != irc:
                     if channel in otherIrc.state.channels:
@@ -277,8 +270,8 @@ class Relay(callbacks.Privmsg):
             channel = msg.args[0]
             if channel in self.channels:
                 abbreviation = self.abbreviations[irc]
-                s = 'mode change by %s on %s/%s %s' % \
-                    (msg.nick, channel, abbreviation, ' '.join(msg.args[1:]))
+                s = 'mode change by %s on %s: %s' % \
+                    (msg.nick, abbreviation, ' '.join(msg.args[1:]))
                 for otherIrc in self.ircs.itervalues():
                     if otherIrc != irc:
                         otherIrc.queueMsg(ircmsgs.privmsg(channel, s))
@@ -301,9 +294,9 @@ class Relay(callbacks.Privmsg):
                 irc = irc.getRealIrc()
             network = self.abbreviations[irc]
             if len(msg.args) > 0:
-                s = '%s/%s has quit (%s)' % (msg.nick, network, msg.args[0])
+                s = '%s has quit %s (%s)' % (msg.nick, network, msg.args[0])
             else:
-                s = '%s/%s has quit.' % (msg.nick, network)
+                s = '%s has quit %s.' % (msg.nick, network)
             for channel in self.channels:
                 if msg.nick in self.ircstates[irc].channels[channel].users:
                     for otherIrc in self.ircs.itervalues():
