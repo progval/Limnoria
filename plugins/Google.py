@@ -35,9 +35,10 @@ Acceses Google for various things.
 
 from baseplugin import *
 
+import re
 import time
 import getopt
-import operator
+import urllib2
 
 import google
 
@@ -170,6 +171,35 @@ class GooglePrivmsgRegexp(callbacks.PrivmsgRegexp):
         data = google.doGoogleSearch(match.group(1), safeSearch=1)
         url = data.results[0].URL
         irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg), url))
+
+    _ggThread = re.compile(r'<br>Subject: ([^<]+)<br>')
+    _ggGroup = re.compile(r'Newsgroups: <a[^>]+>([^<]+)</a>')
+    def googlegroups(self, irc, msg, match):
+        r"http://groups.google.com/[^\s]+"
+        request = urllib2.Request(match.group(0), headers=\
+          {'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 4.0)'})
+        fd = urllib2.urlopen(request)
+        text = fd.read()
+        fd.close()
+        if match.group(0).find('&prev=/') >= 0:
+            path = re.search('view the <a href=([^>]+)>no',text)
+            url = 'http://groups.google.com'
+            request = urllib2.Request('%s%s' % (url,path.group(1)),
+              headers={'User-agent': 'Mozilla/4.0 (compatible; MSIE 5.5;' 
+              'Windows NT 4.0)'})
+            fd = urllib2.urlopen(request)
+            text = fd.read()
+            fd.close()
+        mThread = self._ggThread.search(text)
+        mGroup = self._ggGroup.search(text)
+        if mThread and mGroup:
+            irc.queueMsg(ircmsgs.privmsg(ircutils.replyTo(msg),
+              'Google Groups: %s, %s' % (mGroup.group(1), mThread.group(1))))
+        else:
+            irc.queueMsg(ircmsgs.privmsg(msg.args[0],
+              'That doesn\'t appear to be a proper Google Groups page.'))
+
+
 
 class Google(callbacks.Combine):
     classes = [GooglePrivmsg, GooglePrivmsgRegexp]
