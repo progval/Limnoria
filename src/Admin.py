@@ -50,6 +50,7 @@ import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
+import supybot.commands as commands
 import supybot.privmsgs as privmsgs
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
@@ -173,15 +174,13 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         Returns the channels the bot is on.  Must be given in private, in order
         to protect the secrecy of secret channels.
         """
-        if ircutils.isChannel(msg.args[0]):
-            irc.errorRequiresPrivacy()
-            return
         L = irc.state.channels.keys()
         if L:
             utils.sortBy(ircutils.toLower, L)
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('I\'m not currently in any channels.')
+    channels = commands.wrap(channels, wrappers=['private'], noExtra=True)
 
     def do484(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
@@ -219,32 +218,25 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             except KeyError:
                 self.log.debug('Got NICK without Admin.nick being called.')
 
-    def nick(self, irc, msg, args):
+    def nick(self, irc, msg, args, nick):
         """[<nick>]
 
         Changes the bot's nick to <nick>.  If no nick is given, returns the
         bot's current nick.
         """
-        nick = privmsgs.getArgs(args, required=0, optional=1)
         if nick:
-            if ircutils.isNick(nick):
-                if 'nicklen' in irc.state.supported:
-                    if len(nick) > irc.state.supported['nicklen']:
-                        irc.error('That nick is too long for this server.')
-                        return
-                conf.supybot.nick.setValue(nick)
-                irc.queueMsg(ircmsgs.nick(nick))
-                self.pendingNickChanges[irc.getRealIrc()] = irc
-            else:
-                irc.errorInvalid('nick', nick)
+            conf.supybot.nick.setValue(nick)
+            irc.queueMsg(ircmsgs.nick(nick))
+            self.pendingNickChanges[irc.getRealIrc()] = irc
         else:
             irc.reply(irc.nick)
+    nick = commands.wrap(nick, optional=['nick'])
 
     def part(self, irc, msg, args):
         """<channel> [<channel> ...] [<reason>]
 
-        Tells the bot to part the whitespace-separated list of channels
-        you give it.  If <reason> is specified, use it as the part message.
+        Tells the bot to part the list of channels you give it.  If <reason>
+        is specified, use it as the part message.
         """
         if not args:
             args = [msg.args[0]]
@@ -283,7 +275,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         if not inAtLeastOneChannel:
             irc.replySuccess()
 
-    def addcapability(self, irc, msg, args):
+    def addcapability(self, irc, msg, args, user, capability):
         """<name|hostmask> <capability>
 
         Gives the user specified by <name> (or the user to whom <hostmask>
@@ -302,54 +294,40 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         # can only give out capabilities they have themselves (which will
         # depend on supybot.capabilities and its child default) but generally
         # means they can't mess with channel capabilities.
-        (name, capability) = privmsgs.getArgs(args, required=2)
-        if capability == 'owner':
+        if ircutils.strEqual(capability, 'owner'):
             irc.error('The "owner" capability can\'t be added in the bot.  '
                       'Use the supybot-adduser program (or edit the '
                       'users.conf file yourself) to add an owner capability.')
             return
-        if ircdb.checkCapability(msg.prefix, capability) or \
-           '-' in capability:
-            try:
-                id = ircdb.users.getUserId(name)
-            except KeyError:
-                irc.errorNoUser()
-                return
-            user = ircdb.users.getUser(id)
+        if ircdb.isAntiCapability(capability) or \
+           ircdb.checkCapability(msg.prefix, capability):
             user.addCapability(capability)
             ircdb.users.setUser(id, user)
             irc.replySuccess()
         else:
-            s = 'You can\'t add capabilities you don\'t have.'
-            irc.error(s)
+            irc.error('You can\'t add capabilities you don\'t have.')
+    addcapability = commands.wrap(addcapability, ['otherUser', 'lowered'])
 
-    def removecapability(self, irc, msg, args):
+    def removecapability(self, irc, msg, args, user, capability):
         """<name|hostmask> <capability>
 
         Takes from the user specified by <name> (or the user to whom
         <hostmask> currently maps) the specified capability <capability>
         """
-        (name, capability) = privmsgs.getArgs(args, 2)
         if ircdb.checkCapability(msg.prefix, capability) or \
            ircdb.isAntiCapability(capability):
             try:
-                id = ircdb.users.getUserId(name)
-                user = ircdb.users.getUser(id)
-            except KeyError:
-                irc.errorNoUser()
-                return
-            try:
                 user.removeCapability(capability)
-                ircdb.users.setUser(id, user)
+                ircdb.users.setUser(user.id, user)
                 irc.replySuccess()
             except KeyError:
                 irc.error('That user doesn\'t have that capability.')
-                return
         else:
             s = 'You can\'t remove capabilities you don\'t have.'
             irc.error(s)
+    removecapability = commands.wrap(removecapability, ['otherUser','lowered'])
 
-    def ignore(self, irc, msg, args):
+    def ignore(self, irc, msg, args, hostmask, expires):
         """<hostmask|nick> [<expires>]
 
         Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
@@ -359,46 +337,24 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         3600.  If no <expires> is given, the ignore will never automatically
         expire.
         """
-        (nickOrHostmask, expires) = privmsgs.getArgs(args, optional=1)
-        if ircutils.isUserHostmask(nickOrHostmask):
-            hostmask = nickOrHostmask
-        else:
-            try:
-                hostmask = irc.state.nickToHostmask(nickOrHostmask)
-            except KeyError:
-                irc.error('I can\'t find a hostmask for %s.' % nickOrHostmask)
-                return
         if expires:
-            try:
-                expires = int(float(expires))
-                expires += int(time.time())
-            except ValueError:
-                irc.errorInvalid('number of seconds', expires, Raise=True)
-        else:
-            expires = 0
+            expires += time.time()
         ircdb.ignores.add(hostmask, expires)
         irc.replySuccess()
+    ignore = commands.wrap(ignore, ['hostmask'], [('int', 0)])
 
-    def unignore(self, irc, msg, args):
+    def unignore(self, irc, msg, args, hostmask):
         """<hostmask|nick>
 
         Ignores <hostmask> or, if a nick is given, ignores whatever hostmask
         that nick is currently using.
         """
-        arg = privmsgs.getArgs(args)
-        if ircutils.isUserHostmask(arg):
-            hostmask = arg
-        else:
-            try:
-                hostmask = irc.state.nickToHostmask(arg)
-            except KeyError:
-                irc.error('I can\'t find a hostmask for %s' % arg)
-                return
         try:
             ircdb.ignores.remove(hostmask)
             irc.replySuccess()
         except KeyError:
             irc.error('%s wasn\'t in the ignores database.' % hostmask)
+    unignore = commands.wrap(unignore, ['hostmask'])
 
     def ignores(self, irc, msg, args):
         """takes no arguments
@@ -410,6 +366,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(utils.commaAndify(imap(repr, ircdb.ignores.hostmasks)))
         else:
             irc.reply('I\'m not currently globally ignoring anyone.')
+    ignores = commands.wrap(ignores, noExtra=True)
 
 
 Class = Admin
