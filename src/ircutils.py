@@ -43,6 +43,8 @@ import sets
 import string
 import fnmatch
 import operator
+import random
+import time
 
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
@@ -367,6 +369,24 @@ class IrcSet(sets.Set):
 
     has_key = __contains__
 
+def standardsubsttext(irc, msg, text):
+    """Do the standard set of substitutions on text, and return it"""
+    nochannel = False
+    try:
+        channel = privmsgs.getChannel(msg, None)
+    except:
+        nochannel = True
+    if nochannel:
+        text = text.replace("$randomnick", 'anyone')
+    else:
+        text = text.replace("$randomnick",
+                random.choice(irc.state.channels[channel].users._data.keys()))
+    t = pow(2,30)*random.random()+time.time()/4.0 
+    text = text.replace("$randomdate", time.ctime(t))
+    text = text.replace("$who", msg.nick)
+    text = text.replace("$botnick", irc.nick)
+    text = text.replace("$today", time.ctime())
+    return text
 
 if __name__ == '__main__':
     import sys, doctest
