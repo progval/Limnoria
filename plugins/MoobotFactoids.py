@@ -470,6 +470,42 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         """
         self._lock(irc, msg, args, False)
 
+    _mostCount = 10
+    # _mostDict is maps the requested statsitic to the set of commands that
+    # need to be done to generate the response. Each tuple consists of 5
+    # items. These are:
+    #   1) the SQL used to retrieve the information,
+    #   2) the format string for the list of 'most' items
+    #   3) a lambda expression which returns a tuple of the items from
+    #      cursor.fetchall(). This tuple contains the items that will be used
+    #      in the string supplied in 2).
+    #   4) the format string that will be at the head of the irc.reply message
+    #   5) the word which describes what we are generating statistics about.
+    #      This will be used in the string from 4)
+    _mostDict = {'popular':
+                    ("""SELECT key,requested_count FROM factoids WHERE
+                        requested_count > 0 ORDER by requested_count DESC
+                        LIMIT %s""",
+                     '%s (%s)',
+                     lambda c: [(t[0], t[1]) for t in c],
+                     'Top %s %s: %s',
+                     'factoid'),
+                 'authored':
+                    ("""SELECT count(key),created_by FROM factoids GROUP BY
+                        created_by ORDER BY created_by DESC LIMIT %s""",
+                     '%s (%s)',
+                     lambda c: [(ircdb.users.getUser(t[1]).name, t[0]) for t
+                        in c],
+                     'Top %s %s: %s',
+                     'author'),
+                'recent':
+                    ("""SELECT key FROM factoids ORDER by created_at DESC LIMIT
+                        %s""",
+                     '%s',
+                     lambda c: [t[0] for t in c],
+                     '%s latest %s: %s',
+                     'factoid')
+               }
     def most(self, irc, msg, args):
         """<popular|authored|recent>
 
@@ -477,45 +513,19 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         most frequently requested factoids.  <authored> lists the author with
         the most factoids.  <recent> lists the most recently created factoids.
         """
-        key = privmsgs.getArgs(args,needed=1)
-        key = key.lower()
-        if key == 'popular':
-            key = 'requested_count'
+        arg = privmsgs.getArgs(args,needed=1)
+        arg = arg.lower()
+        if arg in self._mostDict:
+            args = self._mostDict[arg]
             cursor = self.db.cursor()
-            cursor.execute("""SELECT key,%s FROM factoids WHERE requested_count
-                              > 0 ORDER by %s DESC LIMIT 10""" % (key, key))
+            cursor.execute(args[0] % self._mostCount)
             if cursor.rowcount == 0:
                 irc.reply(msg, 'I can\'t find any factoids.')
             else:
-                popular = ['%s (%s)' % (t[0], t[1]) for t in cursor.fetchall()]
-                l = len(popular)
-                irc.reply(msg, 'Top %s %s: %s' % (l, utils.pluralize(l,
-                    'factoid'), utils.commaAndify(popular)))
-        elif key == 'authored':
-            key = 'created_by'
-            cursor = self.db.cursor()
-            cursor.execute("""SELECT count(key),%s FROM factoids GROUP BY %s
-                              ORDER BY %s DESC LIMIT 10""" % (key, key, key))
-            if cursor.rowcount == 0:
-                irc.reply(msg, 'I can\'t find any factoids.')
-            else:
-                author = ['%s (%s)' % (ircdb.users.getUser(t[1]).name, t[0])
-                          for t in cursor.fetchall()]
-                l = len(author)
-                irc.reply(msg, 'Top %s %s: %s' % (l, utils.pluralize(l,
-                    'author'), utils.commaAndify(author)))
-        elif key == 'recent':
-            key = 'created_at'
-            cursor = self.db.cursor()
-            cursor.execute("""SELECT key FROM factoids ORDER by %s DESC LIMIT
-                              10""" % key)
-            if cursor.rowcount == 0:
-                irc.reply(msg, 'I can\'t find any factoids.')
-            else:
-                recent = ['%s' % t[0] for t in cursor.fetchall()]
-                l = len(recent)
-                irc.reply(msg, '%s latest %s: %s' % (l, utils.pluralize(l,
-                    'factoid'), utils.commaAndify(recent)))
+                resp = [args[1] % t for t in args[2](cursor.fetchall())]
+                l = len(resp)
+                irc.reply(msg, args[3] % (l, utils.pluralize(l, args[4]),
+                    utils.commaAndify(resp)))
         else:
             raise callbacks.ArgumentError
 
