@@ -35,12 +35,12 @@ class DictTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Dict', 'MiscCommands')
     def testHelps(self):
         self.assertNotError('list Dict')
+        self.assertNotError('syntax dict')
         self.assertNotError('help dict')
-        self.assertNotError('morehelp dict')
+        self.assertNotError('syntax dictionaries')
         self.assertNotError('help dictionaries')
-        self.assertNotError('morehelp dictionaries')
+        self.assertNotError('syntax randomdictionary')
         self.assertNotError('help randomdictionary')
-        self.assertNotError('morehelp randomdictionary')
 
     def testDict(self):
         self.assertNotError('dict slash')

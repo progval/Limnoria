@@ -70,8 +70,8 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Alias', 'FunCommands', 'Utilities', 'MiscCommands')
     def testAliasHelp(self):
         self.assertNotError('alias slashdot foo')
-        self.assertNotRegexp('help slashdot', 'None')
-        self.assertResponse('morehelp slashdot', "Alias for 'foo'")
+        self.assertNotRegexp('syntax slashdot', 'None')
+        self.assertRegexp('help slashdot', "Alias for 'foo'")
         
     def testSimpleAlias(self):
         pi = '3.1456926535897932384626433832795028841971693'

@@ -259,7 +259,7 @@ class PluginDocumentation:
                 for attr in cb.__class__.__dict__:
                     if cb.isCommand(attr):
                         self.failUnless(getattr(cb, attr).__doc__,
-                                        '%s has no help' % attr)
+                                        '%s has no syntax' % attr)
     def testAllCommandsHaveMorehelp(self):
         for cb in self.irc.callbacks:
             if isinstance(cb, callbacks.PrivmsgRegexp):
@@ -270,7 +270,7 @@ class PluginDocumentation:
                         command = getattr(cb, attr)
                         helps = command.__doc__
                         self.failUnless(helps and len(helps.splitlines()) >= 3,
-                                        '%s has no morehelp' % attr)
+                                        '%s has no help' % attr)
 
     def testPluginHasDocumentation(self):
         for cb in self.irc.callbacks:
