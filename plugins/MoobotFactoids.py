@@ -164,12 +164,10 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                          # definition of what the key is (i.e., "foo is bar")
         newfact = pickOptions(fact)
         if newfact.startswith("<reply>"):
-            newfact = newfact.replace("<reply>", "", 1)
-            newfact = newfact.strip()
+            newfact = newfact[7:].strip()
             type = "reply"
         elif newfact.startswith("<action>"):
-            newfact = newfact.replace("<action>", "", 1)
-            newfact = newfact.strip()
+            newfact = newfact[8:].strip()
             type = "action"
         newfact = plugins.standardSubstitute(irc, msg, newfact)
         return (type, newfact)
