@@ -131,7 +131,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
         if not self.configurables.get('snarfer', channel=msg.args[0]):
             return
         url = match.group(0)
-        debug.printf(url)
+        #debug.printf(url)
         self._getResponse(irc, msg, url, snarf=True)
     ebaySnarfer = privmsgs.urlSnarfer(ebaySnarfer)
 
