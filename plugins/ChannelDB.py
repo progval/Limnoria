@@ -77,7 +77,7 @@ smileyre = re.compile('|'.join(map(re.escape, smileys)))
 frownre = re.compile('|'.join(map(re.escape, frowns)))
 
 class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
-    regexps = sets.Set(['increaseKarma', 'decreaseKarma'])
+    addressedRegexps = sets.Set(['increaseKarma', 'decreaseKarma'])
     def __init__(self):
         plugins.ChannelDBHandler.__init__(self)
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
@@ -365,20 +365,16 @@ class ChannelDB(plugins.ChannelDBHandler, callbacks.PrivmsgCommandAndRegexp):
             irc.reply(msg, s)
             
     def increaseKarma(self, irc, msg, match):
-        r"^(.)(\S+)\+\+$"
-        (first, name) = match.groups()
-        if first not in conf.prefixChars:
-            return
+        r"^(\S+)\+\+$"
+        name = match.group(1)
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
         cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
         cursor.execute("""UPDATE karma SET added=added+1 WHERE name=%s""",name)
 
     def decreaseKarma(self, irc, msg, match):
-        r"^(.)(\S+)--$"
-        (first, name) = match.groups()
-        if first not in conf.prefixChars:
-            return
+        r"^(\S+)--$"
+        name = match.group(1)
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
         cursor.execute("""INSERT INTO karma VALUES (NULL, %s, 0, 0)""", name)
