@@ -35,16 +35,32 @@ Babelfish-related commands.
 
 __revision__ = "$Id$"
 
-import plugins
-
 import random
 from itertools import imap
 
 import babelfish
 
+import conf
 import utils
 import privmsgs
+import registry
 import callbacks
+
+class Languages(registry.OnlySomeStrings):
+    validStrings = tuple(map(str.capitalize, babelfish.available_languages))
+    normalize = staticmethod(str.capitalize)
+
+class SpaceSeparatedListOfLanguages(registry.SeparatedListOf):
+    Value = Languages
+    def splitter(self, s):
+        return s.split()
+    joiner = ' '.join
+        
+conf.registerPlugin('Babelfish')
+conf.registerChannelValue(conf.supybot.plugins.Babelfish, 'disabledLanguages',
+    SpaceSeparatedListOfLanguages([], """Determines which languages are
+    unavailable for translation; valid input is a list of languages separated
+    by spaces."""))
 
 class Babelfish(callbacks.Privmsg):
     threaded = True
@@ -59,6 +75,16 @@ class Babelfish(callbacks.Privmsg):
     for language in babelfish.available_languages:
         _abbrevs[language] = language
 
+    def _getLang(self, fromLang, toLang):
+        fromLang = self._abbrevs[fromLang.lower()]
+        toLang = self._abbrevs[toLang.lower()]
+        disabled = map(str.lower, self.registryValue('disabledLanguages'))
+        if fromLang in disabled:
+            fromLang = None
+        if toLang in disabled:
+            toLang = None
+        return (fromLang, toLang)
+        
     def languages(self, irc, msg, args):
         """takes no arguments
 
@@ -75,8 +101,11 @@ class Babelfish(callbacks.Privmsg):
             args.pop(1)
         (fromLang, toLang, text) = privmsgs.getArgs(args, required=3)
         try:
-            fromLang = self._abbrevs[fromLang.lower()]
-            toLang = self._abbrevs[toLang.lower()]
+            (fromLang, toLang) = self._getLang(fromLang, toLang)
+            if not fromLang or not toLang:
+                irc.error('I do not speak %s.' % utils.commaAndify(
+                                self.registryValue('disabledLanguages')))
+                return
             translation = babelfish.translate(text, fromLang, toLang)
             irc.reply(translation)
         except (KeyError, babelfish.LanguageNotAvailableError), e:
@@ -98,10 +127,13 @@ class Babelfish(callbacks.Privmsg):
         """
         (fromLang, toLang, text) = privmsgs.getArgs(args, required=3)
         try:
-            fromLang = self._abbrevs[fromLang.lower()]
-            toLang = self._abbrevs[toLang.lower()]
+            (fromLang, toLang) = self._getLang(fromLang, toLang)
             if fromLang != 'english' and toLang != 'english':
                 irc.error('One language must be English.')
+                return
+            if not fromLang or not toLang:
+                irc.error('I do not speak %s.' % utils.commaAndify(
+                                self.registryValue('disabledLanguages')))
                 return
             translations = babelfish.babelize(text, fromLang, toLang)
             irc.reply(translations[-1])
@@ -123,12 +155,11 @@ class Babelfish(callbacks.Privmsg):
         """
         allowEnglish = privmsgs.getArgs(args, required=0, optional=1)
         language = random.choice(babelfish.available_languages)
-        while not allowEnglish and language == 'English':
+        disabled = self.registryValue('disabledLanguages')
+        while not allowEnglish and language == 'English' and\
+                language not in disabled:
             language = random.choice(babelfish.available_languages)
         irc.reply(language)
-
-    
-
 
 Class = Babelfish
 

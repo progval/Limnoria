@@ -1,3 +1,6 @@
+	* Added supybot.plugins.Babelfish.disabledLanguages, to disable
+	certain languages from being translated/spoken.
+
 	* Added supybot.reply.maximumMores, to give users the ability to
 	set the maximum number of "more" chunks replies will generate.
 	

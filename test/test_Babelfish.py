@@ -49,6 +49,25 @@ if network:
         def testRandomlanguage(self):
             self.assertNotError('randomlanguage')
 
+        def testDisabledLanguages(self):
+            dl = conf.supybot.plugins.Babelfish.disabledLanguages
+            try:
+                orig = dl()
+                dl.set("")
+                self.assertResponse('translate sp en hola', 'hello')
+                dl.set("Spanish")
+                self.assertRegexp('translate sp en hola', 'forbidden')
+                self.assertRegexp('translate en sp hola', 'forbidden')
+                dl.set("Spanish Italian")
+                self.assertRegexp('translate sp en hola', 'forbidden')
+                self.assertRegexp('translate en it hello', 'forbidden')
+                self.assertRegexp('translate en it [translate sp en hola]',
+                    'forbidden')
+                dl.set("")
+                self.assertResponse('translate en it hello', 'ciao')
+            finally:
+                dl.set(' '.join(orig))
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
