@@ -419,7 +419,7 @@ class Misc(callbacks.Privmsg):
                 predicates['in'] = f
             elif option == '--with':
                 def f(m, arg=arg):
-                    return arg in m.args[1]
+                    return arg.lower() in m.args[1].lower()
                 predicates.setdefault('with', []).append(f)
             elif option == '--regexp':
                 try:
