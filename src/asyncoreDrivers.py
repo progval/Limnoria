@@ -234,6 +234,7 @@ if conf.telnetEnable and __name__ != '__main__':
     except NameError:
         _listener = ReplListener()
 
+Driver = AsyncoreDriver
 
 if __name__ == '__main__':
     ReplListener()
