@@ -433,6 +433,20 @@ class FunCommands(callbacks.Privmsg):
         (s1, s2) = privmsgs.getArgs(args, needed=2)
         irc.reply(msg, str(utils.distance(s1, s2)))
 
+    def soundex(self, irc, msg, args):
+        """<string> [<length>]
+
+        Returns the Soundex hash to a given length.  The length defaults to
+        4, since that's the standard length for a soundex hash.  For unlimited
+        length, use 0.
+        """
+        (s, length) = privmsgs.getArgs(args, optional=1)
+        if length:
+            length = int(length)
+        else:
+            length = 4
+        irc.reply(msg, utils.soundex(s, length))
+
     modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
     def pydoc(self, irc, msg, args):
         """<python function>

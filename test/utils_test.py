@@ -77,3 +77,21 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(d['ab'], 'abc')
         self.assertEqual(d['fool'], 'fool')
         self.assertEqual(d['foo'], 'foo')
+
+    def testSoundex(self):
+        L = [('Euler', 'E460'),
+             ('Ellery', 'E460'),
+             ('Gauss', 'G200'),
+             ('Ghosh', 'G200'),
+             ('Hilbert', 'H416'),
+             ('Heilbronn', 'H416'),
+             ('Knuth', 'K530'),
+             ('Kant', 'K530'),
+             ('Lloyd', 'L300'),
+             ('Ladd', 'L300'),
+             ('Lukasiewicz', 'L222'),
+             ('Lissajous', 'L222')]
+        for (name, key) in L:
+            soundex = utils.soundex(name)
+            self.assertEqual(soundex, key,
+                             '%s was %s, not %s' % (name, soundex, key))

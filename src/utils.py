@@ -37,6 +37,7 @@ from __future__ import generators
 
 from fix import *
 
+import string
 import sgmllib
 import htmlentitydefs
 
@@ -173,6 +174,23 @@ def distance(s, t):
                 cost = 1
             d[i][j] = min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost)
     return d[n][m]
-    
+
+_soundextrans = string.maketrans(string.ascii_uppercase,
+                                 '01230120022455012623010202')
+_notUpper = string.ascii.translate(string.ascii, string.ascii_uppercase)
+def soundex(s, length=4):
+    assert s
+    s = s.upper() # Make everything uppercase.
+    firstChar = s[0] # Save the first character.
+    s = s.translate(string.ascii, _notUpper) # Delete non-letters.
+    s = s.translate(_soundextrans) # Convert to soundex numbers.
+    s = s.lstrip(s[0]) # Remove all repeated first characters.
+    L = [firstChar]
+    for c in s:
+        if c != L[-1]:
+            L.append(c)
+    L = [c for c in L if c != '0'] + ['0', '0', '0']
+    s = ''.join(L)
+    return length and s[:length] or s
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
