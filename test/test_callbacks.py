@@ -196,6 +196,10 @@ class FunctionsTestCase(SupyTestCase):
         try:
             original = conf.supybot.reply.whenNotAddressed()
             conf.supybot.reply.whenNotAddressed.setValue(True)
+            # need to recreate the msg objects since the old ones have already
+            # been tagged
+            msg1 = ircmsgs.privmsg('#foo', '@bar')
+            msg2 = ircmsgs.privmsg('#foo', 'bar')
             self.assertEqual(callbacks.addressed('blah', msg1), 'bar')
             self.assertEqual(callbacks.addressed('blah', msg2), 'bar')
         finally:
@@ -204,6 +208,9 @@ class FunctionsTestCase(SupyTestCase):
     def testAddressedWithMultipleNicks(self):
         msg = ircmsgs.privmsg('#foo', 'bar: baz')
         self.assertEqual(callbacks.addressed('bar', msg), 'baz')
+        # need to recreate the msg objects since the old ones have already
+        # been tagged
+        msg = ircmsgs.privmsg('#foo', 'bar: baz')
         self.assertEqual(callbacks.addressed('biff', msg, nicks=['bar']),
                          'baz')
 
@@ -219,7 +226,7 @@ class FunctionsTestCase(SupyTestCase):
                                              whenAddressedByNickAtEnd=True,
                                              prefixChars='@'),
                          'echo foo')
-            
+
 
     def testReply(self):
         prefix = 'foo!bar@baz'

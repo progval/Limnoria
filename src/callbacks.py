@@ -64,7 +64,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 
-def addressed(nick, msg, prefixChars=None, nicks=None,
+def _addressed(nick, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,
               whenAddressedByNickAtEnd=None):
     """If msg is addressed to 'name', returns the portion after the address.
@@ -143,6 +143,15 @@ def addressed(nick, msg, prefixChars=None, nicks=None,
         return payload
     else:
         return ''
+
+def addressed(nick, msg, **kwargs):
+    payload = msg.addressed
+    if payload is not None:
+        return payload
+    else:
+        payload = _addressed(nick, msg, **kwargs)
+        msg.tag('addressed', payload)
+        return payload
 
 def canonicalName(command):
     """Turn a command into its canonical form.
@@ -261,7 +270,7 @@ class Tokenizer(object):
             self.validChars = self.validChars.translate(string.ascii, '|')
         self.quotes = quotes
         self.validChars = self.validChars.translate(string.ascii, quotes)
-        
+
 
     def _handleToken(self, token):
         if token[0] == token[-1] and token[0] in self.quotes:
@@ -692,7 +701,7 @@ class IrcObjectProxy(RichReplyMethods):
                 if len(important) == 1:
                     return important
         return cbs
-            
+
     def finalEval(self):
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
@@ -1147,7 +1156,7 @@ class Privmsg(irclib.IrcCallback):
             return getHelp(command)
         else:
             return 'The %s command has no help.' % utils.quoted(name)
-        
+
     def registryValue(self, name, channel=None, value=True):
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
@@ -1364,10 +1373,6 @@ class PrivmsgCommandAndRegexp(Privmsg):
         if msg.isError:
             self.log.debug('%s not running due to msg.isError.', self.name())
             return
-        for (r, name) in self.res:
-            for m in r.finditer(msg.args[1]):
-                proxy = self.Proxy(irc, msg)
-                self.callCommand(name, proxy, msg, m, catchErrors=True)
         s = addressed(irc.nick, msg)
         if s:
             for (r, name) in self.addressedRes:
@@ -1376,6 +1381,10 @@ class PrivmsgCommandAndRegexp(Privmsg):
                 for m in r.finditer(s):
                     proxy = self.Proxy(irc, msg)
                     self.callCommand(name, proxy, msg, m, catchErrors=True)
+        for (r, name) in self.res:
+            for m in r.finditer(msg.args[1]):
+                proxy = self.Proxy(irc, msg)
+                self.callCommand(name, proxy, msg, m, catchErrors=True)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
