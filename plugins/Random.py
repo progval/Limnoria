@@ -120,7 +120,7 @@ class Random(callbacks.Privmsg):
         sample = self.rng.sample(items, n)
         sample.sort()
         irc.reply(utils.commaAndify(sample))
-    sample = wrap(sample, ['int', many('something')])
+    sample = wrap(sample, ['int', many('anything')])
 
     def diceroll(self, irc, msg, args, n):
         """[<number of sides>]
