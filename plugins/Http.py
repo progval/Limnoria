@@ -58,6 +58,25 @@ class FreshmeatException(Exception):
 
 class Http(callbacks.Privmsg):
     threaded = True
+
+    _titleRe = re.compile(r'<title>(.*)</title>')
+    def title(self, irc, msg, args):
+        """<url>
+
+        Returns the HTML <title>...</title> of a URL.
+        """
+        url = privmsgs.getArgs(args)
+        try:
+            fd = urllib2.urlopen(url)
+            text = fd.read()
+            m = self._titleRe.search(text)
+            if m is not None:
+                irc.reply(msg, m.group(1))
+            else:
+                irc.reply(msg, 'That URL appears to have no HTML title.')
+        except Exception, e:
+            irc.error(msg, debug.exnToString(e))
+
     _fmProject = re.compile('<projectname_full>([^<]+)</projectname_full>')
     _fmVersion = re.compile('<latest_version>([^<]+)</latest_version>')
     _fmVitality = re.compile('<vitality_percent>([^<]+)</vitality_percent>')
@@ -86,10 +105,10 @@ class Http(callbacks.Privmsg):
               'and a popularity of %s, is in version %s.' % \
               (project, lastupdated, vitality, popularity, version))
         except FreshmeatException, e:
-            irc.reply(msg, debug.exnToString(e))
+            irc.error(msg, debug.exnToString(e))
         except Exception, e:
             debug.recoverableException()
-            irc.reply(msg, debug.exnToString(e))
+            irc.error(msg, debug.exnToString(e))
 
     def stockquote(self, irc, msg, args):
         """<company symbol>
@@ -105,7 +124,7 @@ class Http(callbacks.Privmsg):
             quote = fd.read()
             fd.close()
         except Exception, e:
-            irc.reply(msg, debug.exnToString(e))
+            irc.error(msg, debug.exnToString(e))
             return
         data = quote.split(',')
         #debug.printf(data) # debugging
@@ -139,6 +158,7 @@ class Http(callbacks.Privmsg):
             fd.close()
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
+            return
         text = html.split('<P>\n', 2)[1]
         text = text.replace('.\n', '.  ')
         text = text.replace('\n', ' ')
