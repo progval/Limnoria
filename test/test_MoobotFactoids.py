@@ -131,7 +131,7 @@ if sqlite is not None:
             self.assertError('moo =~ s/moo/')
 
         def testListkeys(self):
-            self.assertResponse('listkeys *', 'No keys matching \'*\' found.')
+            self.assertResponse('listkeys %', 'No keys matching \'%\' found.')
             self.assertNotError('moo is <reply>moo')
             self.assertResponse('listkeys moo', 'Key search for \'moo\' '
                               '(1 found): \'moo\'')
@@ -140,15 +140,15 @@ if sqlite is not None:
             # Throw in a bunch more
             for i in range(10):
                 self.assertNotError('moo%s is <reply>moo' % i)
-            self.assertRegexp('listkeys moo*', '^Key search for \'moo\*\' '
+            self.assertRegexp('listkeys moo', '^Key search for \'moo\' '
                               '\(11 found\): (\'moo\d*\', )+and \'moo9\'$')
             self.assertNotError('foo is bar')
-            self.assertRegexp('listkeys *', '^Key search for \'\*\' '
+            self.assertRegexp('listkeys %', '^Key search for \'\%\' '
                               '\(12 found\): \'foo\', (\'moo\d*\', )+and '
                               '\'moo9\'$')
             # Check quoting
             self.assertNotError('foo\' is bar')
-            self.assertResponse('listkeys foo*', 'Key search for \'foo*\' '
+            self.assertResponse('listkeys foo', 'Key search for \'foo\' '
                                 '(2 found): \'foo\' and "foo\'"')
 
         def testListvalues(self):
