@@ -293,7 +293,6 @@ class Unix(callbacks.Privmsg):
                 r.close()
                 w.close()
                 inst.wait()
-                commandError()
         else:
             irc.error('I couldn\'t find the wtf command on this system.  '
                       'If it is installed on this system, reconfigure the '
