@@ -159,7 +159,7 @@ class Google(callbacks.PrivmsgCommandAndRegexp, configurable.Mixin):
             title = utils.htmlToText(result.title.encode('utf-8'))
             url = result.URL
             if title:
-                results.append('\x02%s\x0F: <%s>' % (title, url))
+                results.append('%s: <%s>' % (ircutils.bold(title), url))
             else:
                 results.append(url)
         if not results:
