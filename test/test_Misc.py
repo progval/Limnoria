@@ -32,7 +32,7 @@
 from testsupport import *
 
 class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
-    plugins = ('Misc', 'Utilities', 'Gameknot', 'Ctcp')
+    plugins = ('Misc', 'Utilities', 'Gameknot', 'Ctcp', 'Dict')
     def testAction(self):
         self.assertAction('action moos', 'moos')
         self.assertAction('action','')
@@ -90,6 +90,9 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testListNoIncludeDispatcher(self):
         self.assertNotRegexp('list Misc', 'misc')
+
+    def testListIncludesDispatcherIfThereIsAnOriginalCommand(self):
+        self.assertRegexp('list Dict', r'\bdict\b')
 
     def testVersion(self):
         self.assertNotError('version')

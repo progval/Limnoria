@@ -91,7 +91,7 @@ class Misc(callbacks.Privmsg):
                 commands = []
                 for s in dir(cb):
                     if cb.isCommand(s) and \
-                       s != name and \
+                       (s != name or cb._original) and \
                        s == callbacks.canonicalName(s):
                         method = getattr(cb, s)
                         if hasattr(method, '__doc__') and method.__doc__:
