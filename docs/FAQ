@@ -1,7 +1,7 @@
 Q: Why does my bot not recognize me or tell me that I don't have the
    "owner" capability?
 
-A: Because you're not given it anything to recognize you from!
+A: Because you've not given it anything to recognize you from!
    You'll need to identify with the bot ("help identify" to see how
    that works) or add your hostmask to your user record ("help
    addhostmask" to see how that works) for it to know that you're you.
@@ -70,7 +70,7 @@ A: Just use the "connect" command in the Owner plugin.  Easy as pie!
 
 Q: Can Supybot do factoids?
 
-A: Supybot most certainly can!  In fact, we offer two full-fledged
+A: Supybot most certainly can!  In fact, we offer three full-fledged
    factoids-related plugins!
 
    Factoids (written by jemfinch) is Supybot's original
