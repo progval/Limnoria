@@ -226,7 +226,11 @@ class Http(callbacks.Privmsg):
             (city, state, country) = headData.groups()
         else:
             headData = self._interregex.search(html)
-            (city, state) = headData.groups()
+	    if headData:
+	        (city, state) = headData.groups()
+	    else:
+	        irc.error(msg, 'No such location could be found.')
+		return
 
         temp = self._tempregex.search(html).group(1)
         conds = self._condregex.search(html).group(1)
