@@ -39,6 +39,7 @@ import os
 import sets
 from itertools import imap
 
+import conf
 import utils
 import plugins
 import privmsgs
@@ -67,7 +68,10 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
         [('simple-output', configurable.BoolType, False,
           """Determines whether the bot will output shorter versions of the
           karma output when requesting a single thing's karma. (example: 'foo:
-          1')""")]
+          1')"""),
+         ('karma-response', configurable.BoolType, False,
+          """Determines whether the bot will reply with a success message when
+          something's karma is increased or decreased."""),]
     )
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
@@ -219,6 +223,8 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
         cursor.execute("""UPDATE karma
                           SET added=added+1
                           WHERE normalized=%s""", normalized)
+        if self.configurables.get('karma-response', msg.args[0]):
+            irc.reply(msg, conf.replySuccess)
 
     def decreaseKarma(self, irc, msg, match):
         r"^(\S+)--(|\s+)$"
@@ -231,6 +237,8 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
         cursor.execute("""UPDATE karma
                           SET subtracted=subtracted+1
                           WHERE normalized=%s""", normalized)
+        if self.configurables.get('karma-response', msg.args[0]):
+            irc.reply(msg, conf.replySuccess)
 
 
 Class = Karma

@@ -95,6 +95,11 @@ if sqlite is not None:
             self.assertResponse('karma foo', 'foo: 1')
             self.assertNoResponse('bar--', 2)
             self.assertResponse('karma bar', 'bar: -1')
+
+        def testKarmaOutputConfigurable(self):
+            self.assertNoResponse('foo++', 2)
+            self.assertNotError('karma config karma-response on')
+            self.assertNotError('foo++')
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
