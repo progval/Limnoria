@@ -54,8 +54,8 @@ import supybot.callbacks as callbacks
 # Now, to setup the registry.
 ###
 
-class InvalidRegistryName(callbacks.Error):
-    pass
+#class InvalidRegistryName(callbacks.Error):
+#    pass
 
 def getWrapper(name):
     parts = registry.split(name)
@@ -65,8 +65,11 @@ def getWrapper(name):
     while parts:
         try:
             group = group.get(parts.pop(0))
-        except registry.NonExistentRegistryEntry:
-            raise InvalidRegistryName, name
+        # We'll catch registry.InvalidRegistryName and re-raise it here so
+        # that we have a useful error message for the user.
+        except (registry.NonExistentRegistryEntry,
+                registry.InvalidRegistryName):
+            raise registry.InvalidRegistryName, name
     return group
 
 def getCapability(name):
@@ -97,12 +100,13 @@ if os.name == 'posix':
 class Config(callbacks.Privmsg):
     def callCommand(self, name, irc, msg, *L, **kwargs):
         #XXX For some reason, that confuses jamessan, InvalidRegistryName
-        #    is not really being caught here, but it is caught if we
-        #    attempt to catch it in the individual command methods.
+        #    is not really being caught here, but registry.InvalidRegistryName
+        #    is.  So, we'll just re-raise registry.InvalidRegsitryName instead
+        #    of using Config.InvalidRegistryName
         try:
             super(Config, self).callCommand(name, irc, msg, *L, **kwargs)
-        except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0])
+        except registry.InvalidRegistryName, e:
+            irc.errorInvalid('configuration variable', str(e))
         except registry.InvalidRegistryValue, e:
             irc.error(str(e))
 
@@ -133,10 +137,7 @@ class Config(callbacks.Privmsg):
         configuration <group>.  Subgroups are indicated by a preceding @.
         """
         name = privmsgs.getArgs(args)
-        try:
-            L = self._list(name)
-        except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
+        L = self._list(name)
         if L:
             irc.reply(utils.commaAndify(L))
         else:
@@ -167,13 +168,10 @@ class Config(callbacks.Privmsg):
         returns the current value of <name>.  You may omit the leading
         "supybot." in the name if you so choose.
         """
-        try:
-            if len(args) >= 2:
-                self._set(irc, msg, args)
-            else:
-                self._get(irc, msg, args)
-        except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
+        if len(args) >= 2:
+            self._set(irc, msg, args)
+        else:
+            self._get(irc, msg, args)
 
     def channel(self, irc, msg, args):
         """[<channel>] <name> [<value>]
@@ -186,10 +184,7 @@ class Config(callbacks.Privmsg):
         if not args:
             raise callbacks.ArgumentError
         args[0] = self._canonicalizeName(args[0])
-        try:
-            wrapper = getWrapper(args[0])
-        except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
+        wrapper = getWrapper(args[0])
         if not wrapper.channelValue:
             irc.error('That configuration variable is not a channel-specific '
                       'configuration variable.')
@@ -243,10 +238,7 @@ class Config(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args)
         name = self._canonicalizeName(name)
-        try:
-            wrapper = getWrapper(name)
-        except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
+        wrapper = getWrapper(name)
         if hasattr(wrapper, 'help'):
             s = wrapper.help
             if hasattr(wrapper, 'value') and not wrapper._private:
@@ -262,10 +254,7 @@ class Config(callbacks.Privmsg):
         """
         name = privmsgs.getArgs(args)
         name = self._canonicalizeName(name)
-        try:
-            wrapper = getWrapper(name)
-        except InvalidRegistryName, e:
-            irc.errorInvalid('configuration variable', e.args[0], Raise=True)
+        wrapper = getWrapper(name)
         v = wrapper.__class__(wrapper._default, '')
         irc.reply(str(v))
 

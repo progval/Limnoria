@@ -66,6 +66,12 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertNotError('config default '
                             'supybot.replies.genericNoCapability')
 
+    def testConfigErrors(self):
+        self.assertRegexp('config supybot.replies.', 'not a valid')
+        self.assertRegexp('config supybot.repl', 'not a valid')
+        self.assertRegexp('config supybot.reply.withNickPrefix 123',
+                          'True or False')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
