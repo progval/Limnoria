@@ -181,7 +181,7 @@ class Notes(callbacks.Privmsg):
                 irc.reply(msg, newnote)
             else:
                 msg = self.makePrivate(msg)
-                irc.reply(msg, newnote)
+                irc.queueMsg(ircmsgs.privmsg(msg.nick, newnote))
             #debug.printf("setting note to read=true")
             self.setAsRead(noteid)
         else:
