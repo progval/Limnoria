@@ -32,11 +32,6 @@
 """
 A complete messaging system that allows users to leave 'notes' for other
 users that can be retrieved later.
-
-Commands include:
-  sendnote
-  note
-  notes
 """
 
 from baseplugin import *
