@@ -148,17 +148,23 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     googlelicensekey = privmsgs.checkCapability(googlelicensekey, 'admin')
 
     def google(self, irc, msg, args):
-        """<search string> [--{language,restrict,safe,filter}=<value>]
+        """<search string> [--{language,restrict}=<value>] [--{safe,similar}]
 
         Searches google.com for the given string.  As many results as can fit
-        are included.  Use options to set different values for the options
-        Google accepts.
+        are included.  --language accepts a language abbreviation; --restrict
+        restricts the results to certain classes of things; --similar tells
+        Google not to filter similar results.
         """
         (optlist, rest) = getopt.getopt(args, '', ['language=', 'restrict=',
-                                                   'safe=', 'filter='])
+                                                   'safe', 'similar'])
         kwargs = {'language': 'lang_en', 'safeSearch': 1}
         for (option, argument) in optlist:
-            kwargs[option[2:]] = argument
+            if option == '--safe':
+                kwargs['safeSearch'] = True
+            elif option == '--similar':
+                kwargs['filter'] = False
+            else:
+                kwargs[option[2:]] = argument
         searchString = privmsgs.getArgs(rest)
         data = search(searchString, **kwargs)
         irc.reply(msg, self.formatData(data))
