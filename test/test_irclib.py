@@ -212,6 +212,10 @@ class IrcStateTestCase(unittest.TestCase):
         st.addMsg(self.irc, ircmsgs.dehalfop('#foo', 'bar'))
         self.failIf('bar' in st.channels['#foo'].halfops)
 
+    def testDoModeOnlyChannels(self):
+        st = irclib.IrcState()
+        self.assert_(st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i')) or 1)
+
     """
     def testChannels(self):
         channel =

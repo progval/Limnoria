@@ -268,20 +268,22 @@ class IrcState(IrcCommandDispatcher):
                 self.channels[channel] = chan
 
     def doMode(self, irc, msg):
-        chan = self.channels[msg.args[0]]
-        for (mode, nick) in ircutils.separateModes(msg.args[1:]):
-            if mode == '-o':
-                chan.ops.discard(nick)
-            elif mode == '+o':
-                chan.ops.add(nick)
-            if mode == '-h':
-                chan.halfops.discard(nick)
-            elif mode == '+h':
-                chan.halfops.add(nick)
-            if mode == '-v':
-                chan.voices.discard(nick)
-            elif mode == '+v':
-                chan.voices.add(nick)
+        channel = msg.args[0]
+        if ircutils.isChannel(channel):
+            chan = self.channels[channel]
+            for (mode, nick) in ircutils.separateModes(msg.args[1:]):
+                if mode == '-o':
+                    chan.ops.discard(nick)
+                elif mode == '+o':
+                    chan.ops.add(nick)
+                if mode == '-h':
+                    chan.halfops.discard(nick)
+                elif mode == '+h':
+                    chan.halfops.add(nick)
+                if mode == '-v':
+                    chan.voices.discard(nick)
+                elif mode == '+v':
+                    chan.voices.add(nick)
 
     def do353(self, irc, msg):
         (_, _, channel, users) = msg.args
