@@ -464,44 +464,50 @@ class IrcUserCreator(Creator):
             raise ValueError, 'Unexpected user command on line %s.' % lineno
         IrcUserCreator.id = int(rest)
 
-    def name(self, rest, lineno):
+    def _checkId(self):
         if self.id is None:
-            raise ValueError, 'Unexpected user description without id.'
+            raise ValueError, 'Unexpected user description without user.'
+
+    def name(self, rest, lineno):
+        self._checkId()
         self.u.name = rest
 
     def ignore(self, rest, lineno):
-        if self.id is None:
-            raise ValueError, 'Unexpected user description without id.'
+        self._checkId()
         self.u.ignore = bool(eval(rest))
 
     def secure(self, rest, lineno):
-        if self.id is None:
-            raise ValueError, 'Unexpected user description without id.'
+        self._checkId()
         self.u.secure = bool(eval(rest))
 
     def hashed(self, rest, lineno):
-        if self.id is None:
-            raise ValueError, 'Unexpected user description without id.'
+        self._checkId()
         self.u.hashed = bool(eval(rest))
 
     def password(self, rest, lineno):
-        if self.id is None:
-            raise ValueError, 'Unexpected user description without id.'
+        self._checkId()
         self.u.password = rest
 
     def hostmask(self, rest, lineno):
-        if self.id is None:
-            raise ValueError, 'Unexpected user description without id.'
+        self._checkId()
         self.u.hostmasks.append(rest)
 
     def capability(self, rest, lineno):
-        if self.id is None:
-            raise ValueError, 'Unexpected user description without id.'
+        self._checkId()
         self.u.capabilities.add(rest)
 
     def finish(self):
         if self.u.name:
-            self.users.setUser(self.id, self.u)
+            try:
+                self.users.setUser(self.id, self.u)
+            except DuplicateHostmask:
+                log.error('Hostmasks for %s collided with another user\'s.  '
+                          'Resetting hostmasks for %s.', self.u.name)
+                # Some might argue that this is arbitrary, and perhaps it is.
+                # But we've got to do *something*, so we'll show some deference
+                # to our lower-numbered users.
+                self.u.hostmasks[:] = []
+                self.users.setUser(self.id, self.u)
             IrcUserCreator.id = None
 
 class IrcChannelCreator(Creator):
@@ -516,30 +522,29 @@ class IrcChannelCreator(Creator):
             raise ValueError, 'Unexpected channel command on line %s' % lineno
         IrcChannelCreator.name = rest
 
-    def lobotomized(self, rest, lineno):
+    def _checkId(self):
         if self.name is None:
             raise ValueError, 'Unexpected channel description without channel.'
+
+    def lobotomized(self, rest, lineno):
+        self._checkId()
         self.c.lobotomized = bool(eval(rest))
 
     def defaultallow(self, rest, lineno):
-        if self.name is None:
-            raise ValueError, 'Unexpected channel description without channel.'
+        self._checkId()
         self.c.defaultAllow = bool(eval(rest))
 
     def capability(self, rest, lineno):
-        if self.name is None:
-            raise ValueError, 'Unexpected channel description without channel.'
+        self._checkId()
         self.c.capabilities.add(rest)
 
     def ban(self, rest, lineno):
-        if self.name is None:
-            raise ValueError, 'Unexpected channel description without channel.'
+        self._checkId()
         (pattern, expiration) = rest
         self.c.bans[pattern] = int(float(expiration))
 
     def ignore(self, rest, lineno):
-        if self.name is None:
-            raise ValueError, 'Unexpected channel description without channel.'
+        self._checkId()
         (pattern, expiration) = rest.split()
         self.c.ignores[pattern] = int(float(expiration))
 
@@ -548,6 +553,9 @@ class IrcChannelCreator(Creator):
             self.channels.setChannel(self.name, self.c)
             IrcChannelCreator.name = None
 
+
+class DuplicateHostmask(ValueError):
+    pass
 
 class UsersDictionary(utils.IterableMap):
     """A simple serialized-to-file User Database."""
@@ -644,7 +652,7 @@ class UsersDictionary(utils.IterableMap):
                     for (id, hostmask) in ids.iteritems():
                         log.error('Removing %r from user %s.', hostmask, id)
                         self.users[id].removeHostmask(hostmask)
-                    raise ValueError, 'Ids %r matched.' % ids
+                    raise DuplicateHostmask, 'Ids %r matched.' % ids
         else: # Not a hostmask, must be a name.
             s = s.lower()
             try:
@@ -664,6 +672,9 @@ class UsersDictionary(utils.IterableMap):
             # Must be a string.  Get the UserId first.
             id = self.getUserId(id)
         u = self.users[id]
+        while isinstance(u, int):
+            id = u
+            u = self.users[id]
         u.id = id
         return u
 
@@ -703,8 +714,7 @@ class UsersDictionary(utils.IterableMap):
         self.nextId = max(self.nextId, id)
         try:
             if self.getUserId(user.name) != id:
-                s = '%s is someone else\'s hostmask.' % user.name
-                raise ValueError, s
+                raise DuplicateHostmask, hostmask
         except KeyError:
             pass
         for hostmask in user.hostmasks:
@@ -712,14 +722,15 @@ class UsersDictionary(utils.IterableMap):
                 if i == id:
                     continue
                 elif u.checkHostmask(hostmask):
-                    s = '%s is someone else\'s hostmask.' % hostmask
-                    user.removeHostmask(hostmask)
-                    raise ValueError, s
+                    # We used to remove the hostmask here, but it's not
+                    # appropriate for us both to remove the hostmask and to
+                    # raise an exception.  So instead, we'll raise an
+                    # exception, but be nice and give the offending hostmask
+                    # back at the same time.
+                    raise DuplicateHostmask, hostmask
                 for otherHostmask in u.hostmasks:
                     if ircutils.hostmaskPatternEqual(hostmask, otherHostmask):
-                        user.removeHostmask(hostmask)
-                        s = '%s is someone else\'s hostmask.' % hostmask
-                        raise ValueError, s
+                        raise DuplicateHostmask, hostmask
         self.invalidateCache(id)
         self.users[id] = user
         self.flush()
