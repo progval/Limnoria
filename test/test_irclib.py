@@ -101,9 +101,7 @@ class IrcMsgQueueTestCase(unittest.TestCase):
 class ChannelTestCase(unittest.TestCase):
     def testPickleCopy(self):
         c = irclib.Channel()
-        for name in c.__slots__:
         c1 = pickle.loads(pickle.dumps(c))
-        for name in c1.__slots__:
         self.assertEqual(pickle.loads(pickle.dumps(c)), c)
 
     def testAddUser(self):
