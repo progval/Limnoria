@@ -43,6 +43,7 @@ import sqlite
 
 import conf
 import ircdb
+import ircutils
 import privmsgs
 import callbacks
 
@@ -93,11 +94,11 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         factoid = ' '.join(args[i:])
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT id, locked FROM keys WHERE key=%s""", key)
+        cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s", key)
         if cursor.rowcount == 0:
             cursor.execute("""INSERT INTO keys VALUES (NULL, %s, 0)""", key)
             db.commit()
-            cursor.execute("""SELECT id, locked FROM keys WHERE key=%s""", key)
+            cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s",key)
         (id, locked) = map(int, cursor.fetchone())
         capability = ircdb.makeChannelCapability(channel, 'factoids')
         if not locked:
@@ -128,7 +129,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         db = self.getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT factoids.fact FROM factoids, keys WHERE
-                          keys.key=%s AND factoids.key_id=keys.id
+                          keys.key LIKE %s AND factoids.key_id=keys.id
                           ORDER BY factoids.id
                           LIMIT 20""", key)
         if cursor.rowcount == 0:
@@ -160,7 +161,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'factoids')
         if ircdb.checkCapability(msg.prefix, capability):
             cursor = db.cursor()
-            cursor.execute("""UPDATE keys SET locked = 1 WHERE key=%s""", key)
+            cursor.execute("UPDATE keys SET locked=1 WHERE key LIKE %s", key)
             db.commit()
             irc.reply(msg, conf.replySuccess)
         else:
@@ -179,7 +180,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         capability = ircdb.makeChannelCapability(channel, 'factoids')
         if ircdb.checkCapability(msg.prefix, capability):
             cursor = db.cursor()
-            cursor.execute("""UPDATE keys SET locked = 0 WHERE key=%s""", key)
+            cursor.execute("UPDATE keys SET locked=0 WHERE key LIKE %s",key)
             db.commit()
             irc.reply(msg, conf.replySuccess)
         else:
@@ -194,7 +195,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        if args[-1].isdigit:
+        if args[-1].isdigit():
             number = int(args.pop())
         else:
             number = None
@@ -205,14 +206,14 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             cursor = db.cursor()
             cursor.execute("""SELECT keys.id, factoids.id
                               FROM keys, factoids
-                              WHERE key=%s AND
+                              WHERE key LIKE %s AND
                                     factoids.key_id=keys.id""", key)
             if cursor.rowcount == 0:
                 irc.error(msg, 'There is no such factoid.')
             elif cursor.rowcount == 1:
                 (id, _) = cursor.fetchone()
                 cursor.execute("""DELETE FROM factoids WHERE key_id=%s""", id)
-                cursor.execute("""DELETE FROM keys WHERE key=%s""", key)
+                cursor.execute("""DELETE FROM keys WHERE key LIKE %s""", key)
                 db.commit()
                 irc.reply(msg, conf.replySuccess)
             else:
@@ -244,12 +245,14 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         cursor = db.cursor()
         cursor.execute("""SELECT fact, key_id FROM factoids
                           ORDER BY random()
-                          LIMIT 1""")
+                          LIMIT 10""")
         if cursor.rowcount != 0:
-            (factoid, keyId) = cursor.fetchone()
-            cursor.execute("""SELECT key FROM keys WHERE id=%s""", keyId)
-            key = cursor.fetchone()[0]
-            irc.reply(msg, '%s: %s' % (key, factoid))
+            L = []
+            for (factoid, id) in cursor.fetchall():
+                cursor.execute("""SELECT key FROM keys WHERE id=%s""", id)
+                (key,) = cursor.fetchone()
+                L.append('"%s": %s' % (ircutils.bold(key), factoid))
+            irc.reply(msg, ircutils.privmsgPayload(L, '; ', 400))
         else:
             irc.error(msg, 'I couldn\'t find a factoid.')
 
@@ -264,7 +267,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         key = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT id, locked FROM keys WHERE key=%s""", key)
+        cursor.execute("SELECT id, locked FROM keys WHERE key LIKE %s", key)
         if cursor.rowcount == 0:
             irc.error(msg, 'No factoid matches that key.')
             return
