@@ -197,7 +197,7 @@ class Todo(callbacks.Privmsg):
         cursor.execute("""SELECT id FROM todo 
                           WHERE added_at=%s AND userid=%s""", now, id)
         todoId = cursor.fetchone()[0]
-        irc.reply(msg, '%s (Todo #%s added)' % (conf.replySuccess, todoId)))
+        irc.reply(msg, '%s (Todo #%s added)' % (conf.replySuccess, todoId))
 
     def remove(self, irc, msg, args):
         """<task id>
