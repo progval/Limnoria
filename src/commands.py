@@ -518,6 +518,7 @@ def contextify(spec):
 class context(object):
     def __init__(self, spec):
         self.args = ()
+        self.spec = spec # for repr
         if isinstance(spec, tuple):
             assert spec, 'tuple spec must not be empty.'
             self.args = spec[1:]
@@ -530,7 +531,12 @@ class context(object):
             self.converter = getConverter(spec)
 
     def __call__(self, irc, msg, args, state):
+        log.debug('args before %r: %r', self, args)
         self.converter(irc, msg, args, state, *self.args)
+        log.debug('args after %r: %r', self, args)
+
+    def __repr__(self):
+        return '<%s for %s>' % (self.__class__.__name__, self.spec)
 
 class additional(context):
     def __init__(self, spec, default=None):
@@ -575,6 +581,7 @@ class getopts(context):
     """The empty string indicates that no argument is taken; None indicates
     that there is no converter for the argument."""
     def __init__(self, getopts):
+        self.spec = getopts # for repr
         self.getopts = {}
         self.getoptL = []
         for (name, spec) in getopts.iteritems():
@@ -584,21 +591,27 @@ class getopts(context):
             else:
                 self.getoptL.append(name + '=')
                 self.getopts[name] = contextify(spec)
+        log.debug('getopts: %r', self.getopts)
+        log.debug('getoptL: %r', self.getoptL)
 
     def __call__(self, irc, msg, args, state):
-        (optlist, args) = getopt.getopt(args, '', self.getoptL)
+        log.debug('args before %r: %r', self, args)
+        (optlist, rest) = getopt.getopt(args, '', self.getoptL)
         getopts = []
         for (opt, arg) in optlist:
             opt = opt[2:] # Strip --
+            log.debug('opt: %r, arg: %r', opt, arg)
             context = self.getopts[opt]
             if context is not None:
                 st = state.essence()
-                context(irc, msg, args, st)
+                context(irc, msg, [arg], st)
                 assert len(st.args) == 1
                 getopts.append((opt, st.args[0]))
             else:
                 getopts.append((opt, True))
         state.args.append(getopts)
+        args[:] = rest
+        log.debug('args after %r: %r', self, args)
                 
 
 
