@@ -30,10 +30,9 @@
 ###
 
 """
-Moobot factoid compatibility module.  Overrides the replyWhenNotCommand
-behavior so that when someone addresses the bot with anything other than a
-command, it checks the factoid database for a key that matches what was said
-and if nothing is found, responds with an entry from the "dunno" database.
+Moobot factoid compatibility module.  Moobot's factoids were originally
+designed to emulate Blootbot's factoids, so in either case, you should find
+this plugin comfortable.
 """
 
 import supybot
@@ -63,12 +62,6 @@ import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 import supybot.Owner as Owner
-
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 allchars = string.maketrans('', '')
 class OptionList(object):
@@ -130,8 +123,16 @@ conf.registerChannelValue(conf.supybot.plugins.MoobotFactoids,
     when the 'most' command is called."""))
 
 class SqliteMoobotDB(object):
+    def __init__(self, filename):
+        self.filename = filename
     def _getDb(self, channel):
-        filename = plugins.makeChannelFilename(channel, 'MoobotFactoids.db')
+        try:
+            import sqlite
+        except ImportError:
+            raise callbacks.Error, \
+                  'You need to have PySQLite installed to use this ' \
+                  'plugin.  Download it at <http://pysqlite.sf.net/>'
+        filename = plugins.makeChannelFilename(self.filename, channel)
         if os.path.exists(filename):
             db = sqlite.connect(filename)
         else:
@@ -276,11 +277,11 @@ class SqliteMoobotDB(object):
         else:
             return cursor.fetchall()
 
-    def getKeysByAuthor(self, channel, author_id):
+    def getKeysByAuthor(self, channel, authorId):
         db = self._getDb(channel)
         cursor = db.cursor()
         cursor.execute("""SELECT key FROM factoids WHERE created_by=%s
-                          ORDER BY key""", author_id)
+                          ORDER BY key""", authorId)
         if cursor.rowcount == 0:
             return None
         else:
@@ -306,218 +307,182 @@ class SqliteMoobotDB(object):
         else:
             return cursor.fetchall()
 
-def MoobotDB():
-    return SqliteMoobotDB()
+MoobotDB = plugins.DB('MoobotFactoids', {'sqlite': SqliteMoobotDB})
 
-class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
+# We define our own getChannel so we can set raiseError=False in one place.
+def getChannel(msg, args=()):
+    return privmsgs.getChannel(msg, args, raiseError=False)
+
+class MoobotFactoids(callbacks.Privmsg):
     callBefore = ['Dunno']
-    addressedRegexps = ['changeFactoid', 'augmentFactoid',
-                        'replaceFactoid', 'addFactoid']
     def __init__(self):
         self.db = MoobotDB()
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
+        super(MoobotFactoids, self).__init__()
 
+    _replyTag = '<reply>'
+    _actionTag = '<action>'
     def _parseFactoid(self, irc, msg, fact):
-        type = "define"  # Default is to just spit the factoid back as a
+        type = 'define'  # Default is to just spit the factoid back as a
                          # definition of what the key is (i.e., "foo is bar")
         newfact = pickOptions(fact)
-        if newfact.startswith("<reply>"):
-            newfact = newfact[7:]
-            type = "reply"
-        elif newfact.startswith("<action>"):
-            newfact = newfact[8:]
-            type = "action"
+        if newfact.startswith(self._replyTag):
+            newfact = newfact[len(self._replyTag):]
+            type = 'reply'
+        elif newfact.startswith(self._actionTag):
+            newfact = newfact[len(self._actionTag):]
+            type = 'action'
         newfact = newfact.strip()
         newfact = plugins.standardSubstitute(irc, msg, newfact)
         return (type, newfact)
 
-    def randomfactoid(self, irc, msg, args):
-        """takes no arguments
-
-        Displays a random factoid (along with its key) from the database.
-        """
-        channel = privmsgs.getChannel(msg, args)
-        tup = self.db.randomFactoid(channel)
-        if tup is None:
-            irc.error('No factoids in the database.')
-        else:
-            irc.reply('"%s" is "%s"' % tup)
-
     def invalidCommand(self, irc, msg, tokens):
-        key = ' '.join(tokens)
-        key = key.rstrip('?!')
-        channel = privmsgs.getChannel(msg, list(msg.args))
-        # ignore ACTIONs
-        if key.startswith('\x01'):
-            return
-        # Check the factoid db for an appropriate reply
-        fact = self.db.getFactoid(channel, key)
-        if not fact:
-            return False
+        if '=~' in tokens:
+            self.changeFactoid(irc, msg, tokens)
+        elif tokens and tokens[0] in ('no', 'no,'):
+            self.replaceFactoid(irc, msg, tokens)
+        elif ['is', 'also'] in window(tokens, 2):
+            self.augmentFactoid(irc, msg, tokens)
         else:
-            # getFactoid returns "all results", so we need to extract the
-            # first one
-            fact = fact[0]
-            # Update the requested count/requested by for this key
-            hostmask = msg.prefix
-            self.db.updateRequest(channel, key, hostmask)
-            # Now actually get the factoid and respond accordingly
-            (type, text) = self._parseFactoid(irc, msg, fact)
-            if type == "action":
-                irc.reply(text, action=True)
-            elif type == "reply":
-                irc.reply(text, prefixName=False)
-            elif type == "define":
-                irc.reply("%s is %s" % (key, text), prefixName=False)
+            key = ' '.join(tokens)
+            key = self._sanitizeKey(key)
+            channel = getChannel(msg)
+            fact = self.db.getFactoid(channel, key)
+            if fact:
+                self.db.updateRequest(channel, key, msg.prefix)
+                # getFactoid returns "all results", so we need to extract the
+                # first one.
+                fact = fact[0]
+                # Update the requested count/requested by for this key
+                hostmask = msg.prefix
+                # Now actually get the factoid and respond accordingly
+                (type, text) = self._parseFactoid(irc, msg, fact)
+                if type == 'action':
+                    irc.reply(text, action=True)
+                elif type == 'reply':
+                    irc.reply(text, prefixName=False)
+                elif type == 'define':
+                    irc.reply('%s is %s' % (key, text), prefixName=False)
+                else:
+                    assert False, 'Spurious type from _parseFactoid'
             else:
-                irc.error("Spurious type from _parseFactoid.")
-            return True
+                if 'is' in tokens or '_is_' in tokens:
+                    self.addFactoid(irc, msg, tokens)
 
-    # XXX It looks like all these could be converted to use invalidCommand
-    # instead, which would then also allow nested commands.  Strike may want
-    # to consider that implementation method.
-    def addFactoid(self, irc, msg, match):
+    def _getUserId(self, prefix):
+        try:
+            return ircdb.users.getUserId(prefix)
+        except KeyError:
+            irc.errorNotRegistered(Raise=True)
+
+    def _sanitizeKey(self, key):
+        return key.rstrip('!? ')
+    
+    def _checkNotLocked(self, irc, channel, key):
+        if self.db.locked(channel, key):
+            irc.error('Factoid "%s" is locked.' % key, Raise=True)
+
+    def _getFactoid(self, channel, key):
+        fact = self.db.getFactoid(channel, key)
+        if fact is not None:
+            return fact
+        else:
+            irc.error('Factoid "%s" not found.' % key, Raise=True)
+
+    def _getKeyAndFactoid(self, tokens):
+        if '_is_' in tokens:
+            p = '_is_'.__eq__
+        elif 'is' in tokens:
+            p = 'is'.__eq__
+        else:
+            s = 'Invalid tokens for {add,change}Factoid: %r' % tokens
+            raise ValueError, s
+        (key, newfact) = map(' '.join, utils.itersplit(p, tokens, maxsplit=1))
+        key = self._sanitizeKey(key)
+        return (key, newfact)
+        
+    def addFactoid(self, irc, msg, tokens):
         r"^(?!\x01)(.+?)\s+(?:is|_is_)\s+(.+)"
         # First, check and see if the entire message matches a factoid key
-        channel = privmsgs.getChannel(msg, list(msg.args))
-        key = match.group().rstrip('?! ')
-        fact = self.db.getFactoid(channel, key)
-        # If it exists, call invalidCommand to display it
-        if fact:
-            self.invalidCommand(irc, msg, callbacks.tokenize(match.group()))
-            return
-        # Okay, we are REALLY adding stuff
-        # Must be registered!
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        key, newfact = match.groups()
-        # These are okay, unless there's an _is_ in there, in which case
-        # we split on the leftmost one.
-        if '_is_' in match.group():
-            key, newfact = imap(str.strip, match.group().split('_is_', 1))
-        # Strip the key of punctuation and spaces
-        key = key.rstrip('?! ')
+        channel = getChannel(msg)
+        id = self._getUserId(msg.prefix)
+        (key, fact) = self._getKeyAndFactoid(tokens)
         # Check and make sure it's not in the DB already
-        fact = self.db.getFactoid(channel, key)
-        if fact:
-            irc.error('Factoid "%s" already exists.' % key)
-            return
-        # Otherwise,
-        self.db.addFactoid(channel, key, newfact, id)
+        if self.db.getFactoid(channel, key):
+            irc.error('Factoid "%s" already exists.' % key, Raise=True)
+        self.db.addFactoid(channel, key, fact, id)
         irc.replySuccess()
 
-    def changeFactoid(self, irc, msg, match):
+    def changeFactoid(self, irc, msg, tokens):
         r"(.+)\s+=~\s+(.+)"
-        # Must be registered!
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        key, regexp = match.groups()
-        channel = privmsgs.getChannel(msg, list(msg.args))
+        id = self._getUserId(msg.prefix)
+        (key, regexp) = map(' '.join,
+                            utils.itersplit('=~'.__eq__, tokens, maxsplit=1))
+        channel = getChannel(msg)
         # Check and make sure it's in the DB
-        fact = self.db.getFactoid(channel, key)
-        if not fact:
-            irc.error('Factoid "%s" not found.' % key)
-            return
-        # No dice if it's locked, no matter who it is
-        locked = self.db.locked(channel, key)
-        if locked:
-            irc.error('Factoid "%s" is locked.' % key)
-            return
+        fact = self._getFactoid(channel, key)
+        self._checkNotLocked(irc, channel, key)
         # It's fair game if we get to here
         try:
             r = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            irc.error('Invalid regexp: "%s"' % regexp)
-            return
+            irc.errorInvalid('regexp', regexp, Raise=True)
         fact = fact[0]
         new_fact = r(fact)
         self.db.updateFactoid(channel, key, new_fact, id)
         irc.replySuccess()
 
-    def augmentFactoid(self, irc, msg, match):
+    def augmentFactoid(self, irc, msg, tokens):
         r"(.+?) is also (.+)"
         # Must be registered!
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        key, new_text = match.groups()
-        channel = privmsgs.getChannel(msg, list(msg.args))
-        fact = self.db.getFactoid(channel, key)
-        # Check and make sure it's in the DB
-        if not fact:
-            irc.error('Factoid "%s" not found.' % key)
-            return
-        # No dice if it's locked, no matter who it is
-        locked = self.db.locked(channel, key)
-        if locked:
-            irc.error('Factoid "%s" is locked.' % key)
-            return
+        id = self._getUserId(msg.prefix)
+        pairs = list(window(tokens, 2))
+        isAlso = pairs.index(['is', 'also'])
+        key = ' '.join(tokens[:isAlso])
+        new_text = ' '.join(tokens[isAlso+2:])
+        channel = getChannel(msg)
+        fact = self._getFactoid(channel, key)
+        self._checkNotLocked(irc, channel, key)
         # It's fair game if we get to here
         fact = fact[0]
         new_fact = "%s, or %s" % (fact, new_text)
         self.db.updateFactoid(channel, key, new_fact, id)
         irc.replySuccess()
 
-    def replaceFactoid(self, irc, msg, match):
+    def replaceFactoid(self, irc, msg, tokens):
         r"^no,?\s+(.+?)\s+is\s+(.+)"
         # Must be registered!
-        try:
-            id = ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        key, new_fact = match.groups()
-        # These are okay, unless there's an _is_ in there, in which case
-        # we split on the leftmost one.
-        if '_is_' in match.group():
-            key, new_fact = imap(str.strip, match.group().split('_is_', 1))
-            key = key.split(' ', 1)[1]  # Take out everything to first space
-        # Check and make sure it's in the DB
-        channel = privmsgs.getChannel(msg, list(msg.args))
-        fact = self.db.getFactoid(channel, key)
-        if not fact:
-            irc.error('Factoid "%s" not found.' % key)
-            return
-        # No dice if it's locked, no matter who it is
-        locked = self.db.locked(channel, key)
-        if locked:
-            irc.error('Factoid "%s" is locked.' % key)
-            return
-        # It's fair game if we get to here
+        channel = getChannel(msg)
+        id = self._getUserId(msg.prefix)
+        del tokens[0] # remove the "no,"
+        (key, fact) = self._getKeyAndFactoid(tokens)
+        _ = self._getFactoid(channel, key) # Complains if not already in db.
+        self._checkNotLocked(irc, channel, key)
         self.db.removeFactoid(channel, key)
-        self.db.addFactoid(channel, key, new_fact, id)
+        self.db.addFactoid(channel, key, fact, id)
         irc.replySuccess()
 
     def literal(self, irc, msg, args):
-        """<factoid key>
+        """[<channel>] <factoid key>
 
         Returns the literal factoid for the given factoid key.  No parsing of
-        the factoid value is done as it is with normal retrieval.
+        the factoid value is done as it is with normal retrieval.  <channel>
+        is only necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        key = privmsgs.getArgs(args, required=1)
-        fact = self.db.getFactoid(channel, key)
-        if not fact:
-            irc.error('No such factoid: "%s"' % key)
-        else:
-            fact = fact[0]
-            irc.reply(fact)
+        channel = getChannel(msg, args)
+        key = privmsgs.getArgs(args)
+        fact = self._getFactoid(channel, key)
+        fact = fact[0]
+        irc.reply(fact)
 
     def factinfo(self, irc, msg, args):
-        """<factoid key>
+        """[<channel>] <factoid key>
 
         Returns the various bits of info on the factoid for the given key.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        key = privmsgs.getArgs(args, required=1)
+        channel = getChannel(msg, args)
+        key = privmsgs.getArgs(args)
         # Start building the response string
         s = key + ": "
         # Next, get all the info and build the response piece by piece
@@ -564,8 +529,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.errorNotRegistered()
             return
         self.log.debug('id: %s' % id)
-        channel = privmsgs.getChannel(msg, args)
-        key = privmsgs.getArgs(args, required=1)
+        channel = getChannel(msg, args)
+        key = privmsgs.getArgs(args)
         info = self.db.getFactinfo(channel, key)
         if not info:
             irc.error('No such factoid: "%s"' % key)
@@ -587,7 +552,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             else:
                 s = "unlock"
             irc.error("Cannot %s someone else's factoid unless you "
-                           "are an admin." % s)
+                      "are an admin." % s)
             return
         # Okay, we're done, ready to lock/unlock
         if locking:
@@ -597,101 +562,109 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         irc.replySuccess()
 
     def lock(self, irc, msg, args):
-        """<factoid key>
+        """[<channel>] <factoid key>
 
         Locks the factoid with the given factoid key.  Requires that the user
-        be registered and have created the factoid originally.
+        be registered and have created the factoid originally.  <channel> is
+        only necessary if the message isn't sent in the channel itself.
         """
         self._lock(irc, msg, args, True)
 
     def unlock(self, irc, msg, args):
-        """<factoid key>
+        """[<channel>] <factoid key>
 
         Unlocks the factoid with the given factoid key.  Requires that the
-        user be registered and have locked the factoid.
+        user be registered and have locked the factoid.  <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
         self._lock(irc, msg, args, False)
 
-    class MostException(Exception):
-        pass
-
     def most(self, irc, msg, args):
-        """<popular|authored|recent>
+        """[<channel>] {popular|authored|recent}
 
-        Lists the most <popular|authored|recent> factoids.  <popular> lists the
-        most frequently requested factoids.  <authored> lists the author with
-        the most factoids.  <recent> lists the most recently created factoids.
+        Lists the most {popular|authored|recent} factoids.  "popular" lists the
+        most frequently requested factoids.  "authored" lists the author with
+        the most factoids.  "recent" lists the most recently created factoids.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
-        channel = privmsgs.getChannel(msg, args)
+        channel = getChannel(msg, args)
         arg = privmsgs.getArgs(args)
         arg = arg.capitalize()
         method = getattr(self, '_most%s' % arg, None)
         if method is None:
             raise callbacks.ArgumentError
         limit = self.registryValue('mostCount', channel)
-        irc.reply(method(channel, limit))
+        method(irc, channel, limit)
 
-    def _mostAuthored(self, channel, limit):
+    def _mostAuthored(self, irc, channel, limit):
         results = self.db.mostAuthored(channel, limit)
         L = ['%s (%s)' % (ircdb.users.getUser(t[0]).name, int(t[1]))
              for t in results]
-        return 'Most prolific %s: %s' % \
-               (utils.pluralize('author', len(L)), utils.commaAndify(L))
+        if L:
+            irc.reply('Most prolific %s: %s' %
+                      (utils.pluralize('author', len(L)),utils.commaAndify(L)))
+        else:
+            irc.error('There are no factoids in my database.')
 
-    def _mostRecent(self, channel, limit):
+    def _mostRecent(self, irc, channel, limit):
         results = self.db.mostRecent(channel, limit)
         L = ['"%s"' % t[0] for t in results]
-        return '%s: %s' % \
-               (utils.nItems('factoid', len(L), between='latest'),
-                utils.commaAndify(L))
+        if L:
+            irc.reply('%s: %s' %
+                      (utils.nItems('factoid', len(L), between='latest'),
+                       utils.commaAndify(L)))
+        else:
+            irc.error('There are no factoids in my database.')
 
-    def _mostPopular(self, channel, limit):
+    def _mostPopular(self, irc, channel, limit):
         results = self.db.mostPopular(channel, limit)
-        if not results:
-            raise self.MostException, 'No factoids have been requested.'
         L = ['"%s" (%s)' % (t[0], t[1]) for t in results]
-        return 'Top %s: %s' % \
-               (utils.nItems('factoid', len(L), between='requested'),
-                utils.commaAndify(L))
+        if L:
+            irc.reply('Top %s: %s' %
+                      (utils.nItems('factoid', len(L), between='requested'),
+                       utils.commaAndify(L)))
+        else:
+            irc.error('No factoids have been requested from my database.')
 
     def listauth(self, irc, msg, args):
-        """<author name>
+        """[<channel>] <author name>
 
         Lists the keys of the factoids with the given author.  Note that if an
         author has an integer name, you'll have to use that author's id to use
-        this function (so don't use integer usernames!).
+        this function (so don't use integer usernames!).  <channel> is only
+        necessary if the message isn't sent in the channel itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        author = privmsgs.getArgs(args, required=1)
+        channel = getChannel(msg, args)
+        author = privmsgs.getArgs(args)
         try:
             id = ircdb.users.getUserId(author)
         except KeyError:
-            irc.error("No such user: %r" % author)
-            return
+            irc.errorNoUser(name=author, Raise=True)
         results = self.db.getKeysByAuthor(channel, id)
         if not results:
             irc.reply('No factoids by "%s" found.' % author)
             return
-        keys = ['"%s"' % tup[0] for tup in results]
+        keys = ['"%s"' % t[0] for t in results]
         s = 'Author search for "%s" (%s found): %s' % \
             (author, len(keys), utils.commaAndify(keys))
         irc.reply(s)
 
     def listkeys(self, irc, msg, args):
-        """<text>
+        """[<channel>] <text>
 
         Lists the keys of the factoids whose key contains the provided text.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        search = privmsgs.getArgs(args, required=1)
-        # Don't error if we aren't in a channel, private messages are okay
-        channel = privmsgs.getChannel(msg, args, raiseError=False)
+        channel = getChannel(msg, args)
+        search = privmsgs.getArgs(args)
         glob = '%' + search + '%'
         results = self.db.getKeysByGlob(channel, glob)
         if not results:
             irc.reply('No keys matching "%s" found.' % search)
         elif len(results) == 1 and \
-        self.registryValue('showFactoidIfOnlyOneMatch', channel):
+             self.registryValue('showFactoidIfOnlyOneMatch', channel):
             key = results[0][0]
             self.invalidCommand(irc, msg, [key])
         else:
@@ -701,12 +674,14 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             irc.reply(s)
 
     def listvalues(self, irc, msg, args):
-        """<text>
+        """[<channel>] <text>
 
         Lists the keys of the factoids whose value contains the provided text.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
-        channel = privmsgs.getChannel(msg, args)
-        search = privmsgs.getArgs(args, required=1)
+        channel = getChannel(msg, args)
+        search = privmsgs.getArgs(args)
         glob = '%' + search + '%'
         results = self.db.getKeysByValueGlob(channel, glob)
         if not results:
@@ -718,35 +693,28 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         irc.reply(s)
 
     def delete(self, irc, msg, args):
-        """<factoid key>
+        """[<channel>] <factoid key>
 
-        Deletes the factoid with the given key.
+        Deletes the factoid with the given key.  <channel> is only necessary
+        if the message isn't sent in the channel itself.
         """
-        # Must be registered to use this
-        try:
-            ircdb.users.getUserId(msg.prefix)
-        except KeyError:
-            irc.errorNotRegistered()
-            return
-        channel = privmsgs.getChannel(msg, args)
-        key = privmsgs.getArgs(args, required=1)
-        fact = self.db.getFactoid(channel, key)
-        if not fact:
-            irc.error('No such factoid: "%s"' % key)
-            return
-        locked = self.db.locked(channel, key)
-        if locked:
-            irc.error("Factoid is locked, cannot remove.")
-            return
+        channel = getChannel(msg, args)
+        key = privmsgs.getArgs(args)
+        _ = self._getUserId(msg.prefix)
+        _ = self._getFactoid(channel, key)
+        self._checkNotLocked(irc, channel, key)
         self.db.removeFactoid(channel, key)
         irc.replySuccess()
 
+    # XXX What the heck?  Why are there two definitions of randomfactoid?
     def randomfactoid(self, irc, msg, args):
-        """takes no arguments
+        """[<channel>]
 
         Displays a random factoid (along with its key) from the database.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
-        channel = privmsgs.getChannel(msg, args)
+        channel = getChannel(msg, args)
         results = self.db.randomFactoid(channel)
         if not results:
             irc.error('No factoids in the database.')

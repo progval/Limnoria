@@ -32,6 +32,8 @@
 
 from testsupport import *
 
+import supybot.ircutils as ircutils
+
 try:
     import sqlite
 except ImportError:
@@ -70,7 +72,7 @@ if sqlite is not None:
         def setUp(self):
             ChannelPluginTestCase.setUp(self)
             # Create a valid user to use
-            self.prefix = 'foo!bar@baz'
+            self.prefix = 'mf!bar@baz'
             self.irc.feedMsg(ircmsgs.privmsg(self.nick, 'register tester moo',
                                              prefix=self.prefix))
             m = self.irc.takeMsg() # Response to register.
@@ -85,9 +87,11 @@ if sqlite is not None:
             self.assertResponse('bar', 'moo is moo')
             # Check substitution
             self.assertNotError('who is <reply>$who')
-            self.assertResponse('who', 'foo')
+            self.assertResponse('who', ircutils.nickFromHostmask(self.prefix))
             # Check that actions ("\x01ACTION...") don't match
-            self.assertNoResponse('\x01ACTION is doing something\x01', 3)
+            m = ircmsgs.action(self.channel, 'is doing something')
+            self.irc.feedMsg(m)
+            self.assertNoResponse(' ', 1)
 
         def testLiteral(self):
             self.assertError('literal moo') # no factoids yet
@@ -123,34 +127,28 @@ if sqlite is not None:
             self.assertNotError('moo is <reply>foo')
             self.assertRegexp('factinfo moo', '^moo: Created by tester on.*$')
             self.assertNotError('moo')
-            self.assertRegexp('factinfo moo',
-                              '^moo: Created by tester on'
-                              '.*?\. Last requested by foo!bar@baz on .*?, '
-                              'requested 1 time.$')
+            self.assertRegexp('factinfo moo', self.prefix + '.*1 time')
             self.assertNotError('moo')
-            self.assertRegexp('factinfo moo',
-                              '^moo: Created by tester on'
-                              '.*?\. Last requested by foo!bar@baz on .*?, '
-                              'requested 2 times.$')
+            self.assertRegexp('factinfo moo', self.prefix + '.*2 times')
             self.assertNotError('moo =~ s/foo/bar/')
             self.assertRegexp('factinfo moo',
                               '^moo: Created by tester on'
                               '.*?\. Last modified by tester on .*?\. '
-                              'Last requested by foo!bar@baz on .*?, '
-                              'requested 2 times.$')
+                              'Last requested by %s on .*?, '
+                              'requested 2 times.$' % self.prefix)
             self.assertNotError('lock moo')
             self.assertRegexp('factinfo moo',
                               '^moo: Created by tester on'
                               '.*?\. Last modified by tester on .*?\. '
-                              'Last requested by foo!bar@baz on .*?, '
+                              'Last requested by %s on .*?, '
                               'requested 2 times. '
-                              'Locked by tester on .*\.$')
+                              'Locked by tester on .*\.$' % self.prefix)
             self.assertNotError('unlock moo')
             self.assertRegexp('factinfo moo',
                               '^moo: Created by tester on'
                               '.*?\. Last modified by tester on .*?\. '
-                              'Last requested by foo!bar@baz on .*?, '
-                              'requested 2 times.$')
+                              'Last requested by %s on .*?, '
+                              'requested 2 times.$' % self.prefix)
             # Make sure I solved this bug
             # Check and make sure all the other stuff is reset
             self.assertNotError('foo is bar')
@@ -172,15 +170,16 @@ if sqlite is not None:
                                   '^moo: Created by tester on'
                                   '.*?\. Locked by tester on .*?\.')
                 # switch user
+                original = self.prefix
                 self.prefix = 'moo!moo@moo'
-                self.assertNotError('register nottester moo')
+                self.assertNotError('register nottester moo', private=True)
                 self.assertError('unlock moo')
                 self.assertRegexp('factinfo moo',
                                   '^moo: Created by tester on'
                                   '.*?\. Locked by tester on .*?\.')
                 # switch back
-                self.prefix = 'foo!bar@baz'
-                self.assertNotError('identify tester moo')
+                self.prefix = original
+                self.assertNotError('identify tester moo', private=True)
                 self.assertNotError('unlock moo')
                 self.assertRegexp('factinfo moo',
                                   '^moo: Created by tester on.*?\.')
@@ -200,14 +199,10 @@ if sqlite is not None:
         def testMost(self):
             userPrefix1 = 'moo!bar@baz'; userNick1 = 'moo'
             userPrefix2 = 'boo!bar@baz'; userNick2 = 'boo'
-            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
-                                             'register %s bar' % userNick1,
-                                             prefix=userPrefix1))
-            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
-                                             'register %s bar' % userNick2,
-                                             prefix=userPrefix2))
-            _ = self.irc.takeMsg()
-            _ = self.irc.takeMsg()
+            self.assertNotError('register %s bar' % userNick1,
+                                frm=userPrefix1, private=True)
+            self.assertNotError('register %s bar' % userNick2,
+                                frm=userPrefix2, private=True)
             # Check an empty database
             self.assertError('most popular')
             self.assertError('most authored')
