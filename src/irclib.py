@@ -280,7 +280,7 @@ class Irc(object):
         self._nickmods = copy.copy(conf.nickmods)
         self.state = IrcState()
         self.queue = IrcMsgQueue()
-        self.fastqueue = []
+        self.fastqueue = queue()
         self.lastping = time.time()
         self.lastTake = 0
         self.driver = None # The driver should set this later.
@@ -291,7 +291,7 @@ class Irc(object):
         self._nickmods = copy.copy(conf.nickmods)
         self.state.reset()
         self.queue.reset()
-        self.fastqueue = []
+        self.fastqueue = queue()
         self.queue.enqueueMsg(ircmsgs.user(self.user, self.ident))
         self.queue.enqueueMsg(ircmsgs.nick(self.nick))
         for callback in self.callbacks:
@@ -316,13 +316,13 @@ class Irc(object):
         self.queue.enqueueMsg(msg)
 
     def sendMsg(self, msg):
-        self.fastqueue.append(msg)
+        self.fastqueue.enqueue(msg)
 
     def takeMsg(self):
         now = time.time()
         msg = None
         if self.fastqueue:
-            msg = self.fastqueue.pop(0)
+            msg = self.fastqueue.dequeue()
         elif not self.queue.empty():
             if now - self.lastTake <= conf.throttleTime:
                 debug.debugMsg('Irc.takeMsg throttling.', 'verbose')
