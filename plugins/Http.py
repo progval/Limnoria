@@ -304,6 +304,7 @@ class Http(callbacks.Privmsg):
             fd.close()
             if 'was not found' in html:
                 irc.error(msg, 'No such location could be found.')
+                return
             headData = self._cityregex.search(html)
             if headData:
                 (city, state, country) = headData.groups()
@@ -324,7 +325,7 @@ class Http(callbacks.Privmsg):
         except urllib2.URLError:
             irc.error(msg, 'I couldn\'t open the search page.')
         except Exception, e:
-            debug.recoverableError()
+            debug.recoverableException()
             irc.error(msg, debug.exnToString(e))
 
     _geekquotere = re.compile('<p class="qt">(.*?)</p>')

@@ -78,7 +78,7 @@ class HttpTest(PluginTestCase):
         self.assertNotError('weather Columbus, OH')
         self.assertNotError('weather 43221')
         self.assertNotRegexp('weather Paris, FR', 'Virginia')
-
+        self.assertError('weather alsdkfjasdl, asdlfkjsadlfkj')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
