@@ -125,46 +125,36 @@ def timeElapsed(elapsed, short=False, leadingZeroes=False, years=True,
     etc. will be printed; the others determine what larger time periods should
     be used.
     """
+    ret = []
     def format(s, i):
         if short:
-            return '%s%s' % (i, s[0])
+            ret.append('%s%s' % (i, s[0]))
         else:
-            return nItems(s, i)
+            if leadingZeroes or ret or i:
+                ret.append(nItems(s, i))
     elapsed = int(elapsed)
     assert years or weeks or days or \
            hours or minutes or seconds, 'One flag must be True'
-    ret = []
     if years:
-        yrs, elapsed = elapsed // 31536000, elapsed % 31536000
-        if leadingZeroes or yrs:
-            if yrs:
-                leadingZeroes = True
-            ret.append(format('year', yrs))
+        (yrs, elapsed) = (elapsed // 31536000, elapsed % 31536000)
+        format('year', yrs)
     if weeks:
-        wks, elapsed = elapsed // 604800, elapsed % 604800
-        if leadingZeroes or wks:
-            if wks:
-                leadingZeroes = True
-            ret.append(format('week', wks))
+        (wks, elapsed) = (elapsed // 604800, elapsed % 604800)
+        format('week', wks)
     if days:
-        ds, elapsed = elapsed // 86400, elapsed % 86400
-        if leadingZeroes or ds:
-            if ds:
-                leadingZeroes = True
-            ret.append(format('day', ds))
+        (ds, elapsed) = (elapsed // 86400, elapsed % 86400)
+        format('day', ds)
     if hours:
-        hrs, elapsed = elapsed // 3600, elapsed % 3600
-        if leadingZeroes or hrs:
-            if hrs:
-                leadingZeroes = True
-            ret.append(format('hour', hrs))
+        (hrs, elapsed) = (elapsed // 3600, elapsed % 3600)
+        format('hour', hrs)
     if minutes or seconds:
-        mins, secs = elapsed // 60, elapsed % 60
+        (mins, secs) = (elapsed // 60, elapsed % 60)
         if leadingZeroes or mins:
-            ret.append(format('minute', mins))
+            format('minute', mins)
         if seconds:
-            ret.append(format('second', secs))
-    if len(ret) == 0:
+            leadingZeroes = True
+            format('second', secs)
+    if not ret:
         raise ValueError, 'Time difference not great enough to be noted.'
     if short:
         return ' '.join(ret)

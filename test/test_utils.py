@@ -81,7 +81,8 @@ class UtilsTest(SupyTestCase):
         self.assertEqual('try', f('tries'))
 
     def testTimeElapsed(self):
-        self.assertRaises(ValueError, utils.timeElapsed, 0, 0, seconds=False)
+        self.assertRaises(ValueError, utils.timeElapsed, 0,
+                          leadingZeroes=False, seconds=False)
         then = 0
         now = 0
         for now, expected in [(0, '0 seconds'),
