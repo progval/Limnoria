@@ -82,7 +82,7 @@ class URLSnarfer(callbacks.Privmsg, ChannelDBHandler):
         db.commit()
         return db
 
-    _urlRe = re.compile(r"((?:ftp|http)://\S+)", re.I)
+    _urlRe = re.compile(r"(\S+://\S+)", re.I)
     def doPrivmsg(self, irc, msg):
         callbacks.Privmsg.doPrivmsg(self, irc, msg)
         channel = msg.args[0]
