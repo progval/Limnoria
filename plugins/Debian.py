@@ -253,11 +253,10 @@ class Debian(callbacks.Privmsg,
                 arg = '_%s.' % arg
                 archPredicate = lambda s, arg=arg: (arg in s)
         predicates.append(archPredicate)
-        globs = privmsgs.getArgs(rest)
+        globs = privmsgs.getArgs(rest).split()
         for glob in globs:
-            if '?' not in glob and '*' not in glob:
-                glob = '*%s*' % glob
-            predicates.append(lambda s: fnmatch.fnmatch(s, glob))
+            glob = glob.replace('*', '.*').replace('?', '.?')
+            predicates.append(re.compile(r'.*%s.*' % glob).search)
         packages = []
         try:
             fd = webutils.getUrlFd('http://incoming.debian.org/')
@@ -268,7 +267,7 @@ class Debian(callbacks.Privmsg,
             m = self._incomingRe.search(line)
             if m:
                 name = m.group(1)
-                if all(lambda p: p(name), predicates):
+                if all(None, imap(lambda p: p(name), predicates)):
                     realname = rsplit(name, '_', 1)[0]
                     packages.append(realname)
         if len(packages) == 0:
