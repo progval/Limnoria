@@ -129,6 +129,10 @@ class FunctionsTestCase(unittest.TestCase):
         for msg in msgs:
             self.failUnless(ircmsgs.isAction(msg))
 
+    def testIsActionFalseWhenNoSpaces(self):
+        msg = ircmsgs.IrcMsg('PRIVMSG #foo :\x01ACTIONfoobar\x01')
+        self.failIf(ircmsgs.isAction(msg))
+
     def testUnAction(self):
         s = 'foo bar baz'
         msg = ircmsgs.action('#foo', s)

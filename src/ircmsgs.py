@@ -210,9 +210,11 @@ class IrcMsg(object):
 
 def isAction(msg):
     """A predicate returning true if the PRIVMSG in question is an ACTION"""
-    return msg.command == 'PRIVMSG' and \
-           msg.args[1].startswith('\x01ACTION') and \
-           msg.args[1].endswith('\x01')
+    if msg.command == 'PRIVMSG' and msg.args[1].endswith('\x01'):
+        L = msg.args[1].split(None, 1)
+        return len(L) == 2 and L[0] == '\x01ACTION'
+    else:
+        return False
 
 _unactionre = re.compile(r'^\x01ACTION (.*)\x01$')
 def unAction(msg):
