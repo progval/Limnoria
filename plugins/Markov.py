@@ -107,7 +107,7 @@ class DbmMarkovDB(object):
                 isFirst=False, isLast=False):
         db = self._getDb(channel)
         combined = self._combine(first, second)
-        if combined in db: # EW!
+        if db.has_key(combined): # EW!
             db[combined] = ' '.join([db[combined], follower])
         else:
             db[combined] = follower
@@ -201,6 +201,8 @@ class Markov(callbacks.Privmsg):
     def tokenize(self, m):
         if ircmsgs.isAction(m):
             return ircmsgs.unAction(m).split()
+        elif ircmsgs.isCtcp(m):
+            return []
         else:
             return m.args[1].split()
 
@@ -211,6 +213,9 @@ class Markov(callbacks.Privmsg):
             words.insert(0, '\n')
             words.insert(0, '\n')
             words.append('\n')
+            # This shouldn't happen often (CTCP messages being the possible exception)
+            if not words or len(words) == 3:
+                return
             def doPrivmsg(db):
                 for (first, second, follower) in window(words, 3):
                     db.addPair(channel, first, second, follower)
@@ -308,3 +313,5 @@ class Markov(callbacks.Privmsg):
 
 
 Class = Markov
+
+# vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
