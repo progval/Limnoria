@@ -67,7 +67,15 @@ import imp
 import conf
 import ircdb
 sys.path.insert(0, conf.pluginDir)
+import socket
 if __name__ == '__main__':
+    ###
+    # First things first.
+    ###
+    if ny('Are you an advanced Supybot/IRC user?') == 'y':
+        advanced = True
+    else:
+        advanced = False
     ###
     # Basic stuff.
     ###
@@ -75,13 +83,20 @@ if __name__ == '__main__':
     if not name.endswith('.conf'):
         name += '.conf'
     configfd = file(os.path.join(conf.confDir, name), 'w')
-    server = anything('What server would you like to connect to?')
+    server = ''
+    while not server:
+        server = anything('What server would you like to connect to?')
+        try:
+            socket.gethostbyname(server)
+        except:
+            print 'Sorry, but I couldn\'t find that server.'
+            server = ''
     if ny('Does that server require connection on a non-standard port?')=='y':
         server = ':'.join(server, anything('What port is that?'))
     configfd.write('Server: %s\n' % server)
     nick = anything('What nick would you like the bot to use?')
     configfd.write('Nick: %s\n' % nick)
-    if ny('Would you like to set a user/ident?') == 'y':
+    if advanced and ny('Would you like to set a user/ident?') == 'y':
         user = anything('What user would you like the bot to use?')
         configfd.write('User: %s\n' % user)
         ident = anything('What ident would you like the bot to use?')
@@ -116,7 +131,7 @@ if __name__ == '__main__':
     ###
     preConnect = 'Would you like any commands to run ' \
                  'before the bot connects to the server?'
-    while yn(preConnect) == 'y':
+    while advanced and yn(preConnect) == 'y':
         preConnect = 'Would you like any other commands ' \
                      'to run before the bot connects to the server?'
         configfd.write(anything('What command?'))
@@ -127,7 +142,7 @@ if __name__ == '__main__':
         configfd.write('join %s\n' % channels)
     postConnect = 'Would you like any commands to run ' \
                   'when the bot is finished connecting to the server?'
-    while yn(postConnect) == 'y':
+    while advanced and yn(postConnect) == 'y':
         postConnect = 'Would you like any other commands to run ' \
                       'when the bot is finished connecting to the server?'
         configfd.write(anything('What command?'))
