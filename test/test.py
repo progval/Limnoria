@@ -192,7 +192,7 @@ class PluginTestCase(unittest.TestCase):
 
     def assertNoResponse(self, query, timeout=None):
         m = self._feedMsg(query, timeout)
-        self.failIf(m)
+        self.failIf(m, 'Unexpected response: %s' % msg.args[1])
         
     def assertResponse(self, query, expectedResponse):
         m = self._feedMsg(query)
