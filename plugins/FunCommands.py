@@ -153,6 +153,12 @@ example = utils.wrapLines("""
 <supybot> 204.152.189.116
 <jemfinch> @zen
 <supybot> jemfinch: Beautiful is better than ugly.
+<jemfinch> @dict socket
+<supybot> jemfinch: foldoc, wn, and web1913 responded, 1 shown: wn: socket n 1: a bony hollow into which a structure fits 2: receptacle where something (a pipe or probe or end of a bone) is inserted 3: a receptacle into which an electric device can be inserted
+<jemfinch> @dict foldoc socket
+<supybot> jemfinch: Chopped: foldoc: socket <networking> The {Berkeley Unix} mechansim for creating a virtual connection between processes. Sockets interface {Unix}'s {standard I/O} with its {network} communication facilities. They can be of two types, stream (bi-directional) or {datagram} (fixed length destination-addressed messages). The socket library function socket() creates a communications end-point or socket and ret
+<jemfinch> @whois ohio-state.edu
+<supybot> jemfinch: ohio-state.edu <http://www.educause.edu/edudomain> is active; registered 18-aug-1987, updated 19-aug-2003, expires 18-aug-2004.
 """)
 
 class FunCommands(callbacks.Privmsg):
