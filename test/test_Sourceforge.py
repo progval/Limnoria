@@ -34,56 +34,47 @@ import re
 from testsupport import *
 
 if network:
-    class SourceforgeTest(ChannelPluginTestCase, PluginDocumentation):
+    class SourceforgeTest(ChannelPluginTestCase):
         plugins = ('Sourceforge',)
-        def testBug(self):
-            self.assertHelp('bug')
-            m = self.getMsg('bugs gaim')
-            self.failUnless(m, 'No response from Sourceforge.')
-            n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('bug gaim %s' % n)
-            self.assertError('bug gaim')
-            self.assertRegexp('bug lkadf 9', 'find the Bugs')
-
         def testAny(self):
             m = self.getMsg('bugs --any gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('bug --any gaim %s' % n)
+            self.assertNotError('tracker %s' % n)
             m = self.getMsg('rfes --any gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('rfe --any gaim %s' % n)
+            self.assertNotError('tracker %s' % n)
 
         def testClosed(self):
             m = self.getMsg('bugs --closed gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('bug --closed gaim %s' % n)
+            self.assertNotError('tracker %s' % n)
             m = self.getMsg('rfes --closed gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('rfe --closed gaim %s' % n)
+            self.assertNotError('tracker %s' % n)
 
         def testDeleted(self):
             m = self.getMsg('bugs --deleted gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('bug --deleted gaim %s' % n)
+            self.assertNotError('tracker %s' % n)
             m = self.getMsg('rfes --deleted gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('rfe --deleted gaim %s' % n)
+            self.assertNotError('tracker %s' % n)
 
         def testOpen(self):
             m = self.getMsg('bugs --open gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('bug --open gaim %s' % n)
+            self.assertNotError('tracker %s' % n)
             m = self.getMsg('rfes --open gaim')
             self.failUnless(m, 'No response from Sourceforge.')
             n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('rfe --open gaim %s' % n)
+            self.assertNotError('tracker %s' % n)
 
         def testBugs(self):
             self.assertHelp('bugs')
@@ -96,14 +87,6 @@ if network:
                 self.assertNotError('bugs')
             finally:
                 conf.supybot.plugins.Sourceforge.defaultProject.set(original)
-
-        def testRfe(self):
-            m = self.getMsg('rfes gaim')
-            self.failUnless(m, 'No response from Sourceforge.')
-            n = re.search('#(\d+)', m.args[1]).group(1)
-            self.assertNotError('rfe gaim %s' % n)
-            self.assertError('rfe gaim')
-            self.assertRegexp('rfe lakdf 9', 'find the RFEs')
 
         def testRfes(self):
             self.assertHelp('rfes')
@@ -118,18 +101,22 @@ if network:
                 conf.supybot.plugins.Sourceforge.defaultProject.set(original)
 
         def testDefaultproject(self):
-            self.assertHelp('bugs')
             try:
                 original = conf.supybot.plugins.Sourceforge.defaultProject()
-                conf.supybot.plugins.Sourceforge.defaultProject.set('supybot')
+                conf.supybot.plugins.Sourceforge.defaultProject.setValue('supybot')
                 self.assertNotError('bugs')
-                m = self.getMsg('bugs')
-                n = re.search('#(\d+)', m.args[1]).group(1)
-                self.assertNotError('bug supybot %s' % n)
-                # This should have the same effect as calling 'bug supybot %s'
-                self.assertNotError('bug %s' % n)
+                conf.supybot.plugins.Sourceforge.defaultProject.setValue('')
+                self.assertHelp('bugs')
             finally:
                 conf.supybot.plugins.Sourceforge.defaultProject.set(original)
+
+        def testTracker(self):
+            bug = r'Bug.*Status.*: \w+'
+            rfe = r'Feature Request.*Status.*: \w+'
+            self.assertRegexp('tracker 589953', bug)
+            self.assertRegexp('tracker 712761', rfe)
+            self.assertRegexp('tracker 721761', 'Timo Hoenig')
+            self.assertRegexp('tracker 851239', 'Nobody/Anonymous')
 
         def testSnarfer(self):
             s = r'.*Status.*: \w+'

@@ -108,13 +108,15 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
                 '&_group=100&order=artifact_id&sort=DESC'
     _resolution=re.compile(r'<b>(Resolution):</b> <a.+?<br>(.+?)</td>',_reopts)
     _assigned=re.compile(r'<b>(Assigned To):</b> <a.+?<br>(.+?)</td>', _reopts)
-    _submitted = re.compile(r'<b>(Submitted By):</b><br>([^<]+)</td>', _reopts)
+    _submitted = re.compile(r'<b>(Submitted By):</b><br>([^-]+) - '
+                            r'(?:nobody|<a href)', _reopts)
     _priority = re.compile(r'<b>(Priority):</b> <a.+?<br>(.+?)</td>', _reopts)
     _status = re.compile(r'<b>(Status):</b> <a.+?<br>(.+?)</td>', _reopts)
     _regexps =(_resolution, _assigned, _submitted, _priority, _status)
     _statusOpt = {'any':100, 'open':1, 'closed':2, 'deleted':3, 'pending':4}
 
     _projectURL = 'http://sourceforge.net/projects/'
+    _trackerURL = 'https://sourceforge.net/support/tracker.php?aid='
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
         self.__class__.sf = self.__class__.sourceforge
@@ -159,16 +161,49 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         except webutils.WebError, e:
             raise callbacks.Error, str(e)
         
-    def _getTrackerInfo(self, irc, msg, url, num):
+    _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
+    _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
+    _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
+    def _getTrackerInfo(self, url):
         try:
-            text = webutils.getUrl(url)
-            head = '%s <http://sourceforge.net%s>'
-            resp = [head % match for match in self._formatResp(text,num)]
-            if resp:
-                irc.reply(resp[0])
-                return
-            irc.errorPossibleBug('No Trackers were found.')
+            s = webutils.getUrl(url)
+            self.log.warning(s)
+            resp = []
+            head = ''
+            m = self._linkType.search(s)
+            n = self._sfTitle.search(s)
+            if m and n:
+                linktype = m.group(1)
+                linktype = utils.depluralize(linktype)
+                (num, desc) = n.groups()
+                head = '%s #%s:' % (ircutils.bold(linktype), num)
+                resp.append(desc)
+            else:
+                return None
+            for r in self._regexps:
+                m = r.search(s)
+                if m:
+                    resp.append('%s: %s' % self._bold(m.groups()))
+            return '%s #%s: %s' % (ircutils.bold(linktype), ircutils.bold(num),
+                                   '; '.join(resp))
         except webutils.WebError, e:
+            raise TrackerError, str(e)
+
+    def tracker(self, irc, msg, args):
+        """<num>
+
+        Returns a description of the tracker with Tracker id <num> and the
+        corresponding Tracker url.
+        """
+        num = privmsgs.getArgs(args)
+        try:
+            url = '%s%s' % (self._trackerURL, num)
+            resp = self._getTrackerInfo(url)
+            if resp is None:
+                irc.error('Invalid Tracker page snarfed: %s' % url)
+            else:
+                irc.reply(resp)
+        except TrackerError, e:
             irc.error(str(e))
 
     _bugLink = re.compile(r'"([^"]+)">Bugs')
@@ -225,38 +260,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         else:
             irc.error('Could not find bug statistics.')
 
-    def bug(self, irc, msg, args):
-        """[--{any,open,closed,deleted,pending}] [<project>] <num>
-
-        Returns a description of the bug with Tracker id <num> and the 
-        corresponding Tracker URL.  <project> is not needed if there is a
-        default project set. Search defaults to open bugs.
-        """
-        (optlist, rest) = getopt.getopt(args, '', self._statusOpt.keys())
-        (project, bugnum) = privmsgs.getArgs(rest, optional=1)
-        status = 'open'
-        for (option, _) in optlist:
-            option = option.lstrip('-').lower()
-            if option in self._statusOpt:
-                status = option
-        if not bugnum:
-            try:
-                int(project)
-            except ValueError:
-                irc.error('"%s" is not a proper bugnumber.' % project)
-                return
-            bugnum = project
-            project = self.registryValue('defaultProject', msg.args[0])
-            if not project:
-                raise callbacks.ArgumentError
-        try:
-            url = self._getTrackerURL(project, self._bugLink, status)
-            #self.log.warning(url)
-        except TrackerError, e:
-            irc.error('%s.  I can\'t find the Bugs link.' % e)
-            return
-        self._getTrackerInfo(irc, msg, url, bugnum)
-
     _rfeLink = re.compile(r'"([^"]+)">RFE')
     def rfes(self, irc, msg, args):
         """[--{any,open,closed,deleted,pending}] [<project>]
@@ -310,40 +313,6 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
         else:
             irc.error('Could not find RFE statistics.')
 
-    def rfe(self, irc, msg, args):
-        """[--{any,open,closed,deleted,pending}] [<project>] <num>
-
-        Returns a description of the bug with Tracker id <num> and the 
-        corresponding Tracker URL. <project> is not needed if there is a 
-        default project set. Search defaults to open RFEs.
-        """
-        (optlist, rest) = getopt.getopt(args, '', self._statusOpt.keys())
-        (project, rfenum) = privmsgs.getArgs(rest, optional=1)
-        status = 'open'
-        for (option, _) in optlist:
-            option = option.lstrip('-').lower()
-            if option in self._statusOpt:
-                status = option
-        if not rfenum:
-            try:
-                int(project)
-            except ValueError:
-                irc.error('"%s" is not a proper rfenumber.' % project)
-                return
-            rfenum = project
-            project = self.registryValue('defaultProject', msg.args[0])
-            if not project:
-                raise callbacks.ArgumentError
-        try:
-            url = self._getTrackerURL(project, self._rfeLink, status)
-        except TrackerError, e:
-            irc.error('%s.  I can\'t find the RFEs link.' % e)
-            return
-        self._getTrackerInfo(irc, msg, url, rfenum)
-
-    _bold = lambda self, m: (ircutils.bold(m[0]),) + m[1:]
-    _sfTitle = re.compile(r'Detail:(\d+) - ([^<]+)</title>', re.I)
-    _linkType = re.compile(r'(\w+ \w+|\w+): Tracker Detailed View', re.I)
     def sfSnarfer(self, irc, msg, match):
         r"https?://(?:www\.)?(?:sourceforge|sf)\.net/tracker/" \
         r".*\?(?:&?func=detail|&?aid=\d+|&?group_id=\d+|&?atid=\d+){4}"
@@ -351,26 +320,12 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp):
             return
         try:
             url = match.group(0)
-            s = webutils.getUrl(url)
-            resp = []
-            head = ''
-            m = self._linkType.search(s)
-            n = self._sfTitle.search(s)
-            if m and n:
-                linktype = m.group(1)
-                linktype = utils.depluralize(linktype)
-                (num, desc) = n.groups()
-                head = '%s #%s:' % (ircutils.bold(linktype), num)
-                resp.append(desc)
-            else:
+            resp = self._getTrackerInfo(url)
+            if resp is None:
                 self.log.warning('Invalid Tracker page snarfed: %s', url)
-            for r in self._regexps:
-                m = r.search(s)
-                if m:
-                    resp.append('%s: %s' % self._bold(m.groups()))
-            irc.reply('%s #%s: %s' % (ircutils.bold(linktype),
-                ircutils.bold(num), '; '.join(resp)), prefixName = False)
-        except webutils.WebError, e:
+            else:
+                irc.reply(resp, prefixName=False)
+        except TrackerError, e:
             self.log.warning(str(e))
     sfSnarfer = privmsgs.urlSnarfer(sfSnarfer)
 

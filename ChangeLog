@@ -1,3 +1,7 @@
+	* Replaced Sourceforge.{rfe,bug} with Sourceforge.tracker, which
+	can query any tracker type (not just RFEs and bugs) and responds
+	with more information, a la trackerSnarfer.
+
 	* Added supybot.log.individualPluginLogfiles, which determines
 	whether plugin logs will be logged to their individual logfiles
 	in addition to the misc.log logfile.
