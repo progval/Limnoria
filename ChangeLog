@@ -1,0 +1,52 @@
+2003-10-05  Jeremy Fincher  <jfincher@functor>
+
+	* Version 0.73.0!
+
+	* Changed the initial character of anti capabilities to '-'
+	instead of '!'.  '!' can be the initial character in a channel
+	name, and so any command using getChannel and accepting a
+	capability as its first argument (several in ChannelCommands) will
+	have difficulties (the channel then *must* be specified since
+	getChannel will consider !capability to be a channel name).  Note
+	that this means you'll need to either remove and re-create or edit
+	your config files to change ! to - in capabilities.
+
+	* Removed the "cvsup" command; it's been useless since we had a
+	global install, and can only serve to confuse.
+
+	* Added a "private" command to MiscCommands to allow users to
+	specify that a response should be made in private.
+
+	* Added a "secure" flag to user database records that *requires*
+	that one of the user's hostmasks match if the user is to be
+	recognized.  This flag may be set with the "setsecure" command.
+
+	* Added a convert command to the Math plugin.  More conversions
+	are necessary, if anyone's interested in doing it.
+
+	* Fixed the pydoc command to allow access to standard Python
+	modules that are shared libraries rather than pure Python code.
+
+	* Added a "Python" plugin and moved FunCommands.{pydoc,zen} to
+	it.
+
+	* Fixed the supybot- scripts to use optparse so they now
+	accept many command line options (but most importantly, the --help
+	option :))
+
+	* Added a debincoming command to the Debian plugin; it searches
+	the available packages at http://incoming.debian.org/
+
+	* Moved the "bug" command from MiscCommands to AdminCommands in 
+	order to prevent possible abuse.
+
+	* Changed ChannelDB.seen to default to using nicks; a --user 
+	option can be passed to use the old behavior.  Note that this
+	means you'll have to update your ChannelDB database; use this
+	SQL statement to do so:
+	    CREATE TABLE nick_seen (
+	    name TEXT UNIQUE ON CONFLICT REPLACE,
+	    last_seen TIMESTAMP,
+	    last_msg TEXT
+	    );
+	
