@@ -366,7 +366,7 @@ class SocketTimeout(registry.PositiveInteger):
 supybot.register('defaultSocketTimeout', SocketTimeout(10, """Determines what
 the default timeout for socket objects will be.  This means that *all* sockets
 will timeout when this many seconds has gone by (unless otherwise modified by
-the author of the code that uses the sockets).""")
+the author of the code that uses the sockets)."""))
 
 ###
 # Driver stuff.
