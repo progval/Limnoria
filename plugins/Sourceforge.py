@@ -154,7 +154,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
             else:
                 return 'http://sourceforge.net%s%s' % (utils.htmlToText(
                     m.group(1)), self._hrefOpts)
-        except webutils.WebException, e:
+        except webutils.WebError, e:
             raise callbacks.Error, str(e)
 
     def _getTrackerList(self, url):
@@ -168,7 +168,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 return '%s' % utils.commaAndify(resp)
             raise callbacks.Error, 'No Trackers were found. (%s)' %\
                 conf.replyPossibleBug
-        except webutils.WebException, e:
+        except webutils.WebError, e:
             raise callbacks.Error, e.msg()
         
     def _getTrackerInfo(self, irc, msg, url, num):
@@ -181,7 +181,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 return
             irc.error(msg, 'No Trackers were found. (%s)' %
                 conf.replyPossibleBug)
-        except webutils.WebException, e:
+        except webutils.WebError, e:
             irc.error(msg, e.msg())
 
     _bugLink = re.compile(r'"([^"]+)">Bugs')
@@ -317,7 +317,7 @@ class Sourceforge(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                     resp.append('%s: %s' % self._bold(m.groups()))
             irc.reply(msg, '%s #%s: %s' % (ircutils.bold(linktype),
                 ircutils.bold(num), '; '.join(resp)), prefixName = False)
-        except webutils.WebException, e:
+        except webutils.WebError, e:
             self.log.warning(str(e))
     sfSnarfer = privmsgs.urlSnarfer(sfSnarfer)
 

@@ -36,22 +36,23 @@ import fix
 import socket
 import urllib2
 
-class WebException(Exception):
+class WebError(Exception):
     pass
 
 def getUrlFd(url):
+    """Gets a file-like object for a url."""
     try:
         fd = urllib2.urlopen(url)
         return fd
     except socket.error, e:
         if e.args[0] == 111:
-            raise WebException, 'Connection refused.'
+            raise WebError, 'Connection refused.'
         elif e.args[0] in (110, 10060):
-            raise WebException, 'Connection timed out.'
+            raise WebError, 'Connection timed out.'
         else:
-            raise WebException, str(e)
+            raise WebError, str(e)
     except (urllib2.HTTPError, urllib2.URLError), e:
-        raise WebException, str(e)
+        raise WebError, str(e)
     
 def getUrl(url, size=None):
     """Gets a page.  Returns a string that is the page gotten."""
