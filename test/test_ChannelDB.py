@@ -38,11 +38,25 @@ except ImportError:
 
 if sqlite is not None:
     class ChannelDBTestCase(ChannelPluginTestCase, PluginDocumentation):
-        plugins = ('ChannelDB', 'MiscCommands')
+        plugins = ('ChannelDB', 'MiscCommands', 'UserCommands')
+        def setUp(self):
+            ChannelPluginTestCase.setUp(self)
+            self.prefix = 'foo!bar@baz'
+            self.nick = 'foo'
+            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
+                                             'register foo bar',
+                                             prefix=self.prefix))
+            _ = self.irc.takeMsg()
+            
         def test(self):
             self.assertNotError('channelstats')
             self.assertNotError('channelstats')
             self.assertNotError('channelstats')
+
+        def testStats(self):
+            self.assertError('stats %s' % self.nick)
+            self.assertNotError('stats %s' % self.nick)
+            self.assertNotError('stats %s' % self.nick.upper())
 
         def testNoKeyErrorEscapeFromSeen(self):
             self.assertRegexp('seen asldfkjasdlfkj', 'I have not seen')
