@@ -1,3 +1,6 @@
+	* Added Filter.colorstrip, an outfilter that strips all color
+	codes from messages.
+
 	* Added supybot.plugins.BadWords.{replaceMethod, nastyChars,
 	simpleReplacement, requireWordBoundaries}; see the associated
 	help strings to find out what they do.
