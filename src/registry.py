@@ -53,7 +53,7 @@ class InvalidRegistryValue(RegistryException):
 class NonExistentRegistryEntry(RegistryException):
     pass
 
-_cache = {}
+_cache = utils.InsensitivePreservingDict()
 _lastModified = 0
 def open(filename):
     """Initializes the module by loading the registry file into memory."""
@@ -66,35 +66,34 @@ def open(filename):
             (key, value) = re.split(r':\s*', line, 1)
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line #%s' % (i+1)
-        _cache[key.lower()] = value
+        _cache[key] = value
     _lastModified = time.time()
 
-def close(registry, filename, annotated=True):
+def close(registry, filename, annotated=True, helpOnceOnly=False):
     first = True
     helpCache = sets.Set()
     fd = file(filename, 'w')
     for (name, value) in registry.getValues(getChildren=True):
-        if annotated and \
-           hasattr(value,'help') and \
-           value.help and value.help not in helpCache:
-            helpCache.add(value.help)
-            lines = textwrap.wrap(value.help)
-            for (i, line) in enumerate(lines):
-                lines[i] = '# %s\n' % line
-            lines.insert(0, '###\n')
-            if first:
-                first = False
-            else:
-                lines.insert(0, '\n')
-            lines.append('#\n')
-            try:
-                original = value.value
-                value.value = value.default
-                lines.append('# Default value: %s\n' % value)
-            finally:
-                value.value = original
-            lines.append('###\n')
-            fd.writelines(lines)
+        if annotated and hasattr(value,'help') and value.help:
+            if not helpOnceOnly or value.help not in self.helpCache:
+                helpCache.add(value.help)
+                lines = textwrap.wrap(value.help)
+                for (i, line) in enumerate(lines):
+                    lines[i] = '# %s\n' % line
+                lines.insert(0, '###\n')
+                if first:
+                    first = False
+                else:
+                    lines.insert(0, '\n')
+                lines.append('#\n')
+                try:
+                    original = value.value
+                    value.value = value.default
+                    lines.append('# Default value: %s\n' % value)
+                finally:
+                    value.value = original
+                lines.append('###\n')
+                fd.writelines(lines)
         fd.write('%s: %s\n' % (name, value))
     fd.close()
 
@@ -103,8 +102,7 @@ class Group(object):
     def __init__(self, supplyDefault=False):
         self.name = 'unset'
         self.added = []
-        self.children = {}
-        self.originals = {}
+        self.children = utils.InsensitivePreservingDict()
         self._lastModified = 0
         self.supplyDefault = supplyDefault
         OriginalClass = self.__class__
@@ -128,18 +126,17 @@ class Group(object):
         v.set(s)
         v.__class__ = self.X
         v.supplyDefault = False
+        v.help = '' # Clear this so it doesn't print a bazillion times.
         self.register(attr, v)
         return v
 
     def __getattr__(self, attr):
-        original = attr
-        attr = attr.lower()
         if attr in self.children:
             return self.children[attr]
         elif self.supplyDefault:
-            return self.__makeChild(original, str(self))
+            return self.__makeChild(attr, str(self))
         else:
-            self.__nonExistentEntry(original)
+            self.__nonExistentEntry(attr)
             
     def get(self, attr):
         # Not getattr(self, attr) because some nodes might have groups that
@@ -148,9 +145,8 @@ class Group(object):
 
     def setName(self, name):
         self.name = name
-        lowered = name.lower()
-        if lowered in _cache and self._lastModified < _lastModified:
-            self.set(_cache[lowered])
+        if name in _cache and self._lastModified < _lastModified:
+            self.set(_cache[name])
         if self.supplyDefault:
             for (k, v) in _cache.iteritems():
                 if k.startswith(self.name):
@@ -158,29 +154,24 @@ class Group(object):
                     self.__makeChild(group, v)
     
     def register(self, name, node=None):
-        original = name
-        name = name.lower()
         if node is None:
             node = Group()
         if name not in self.children: # XXX Is this right?
             self.children[name] = node
-            self.added.append(original)
-            self.originals[name] = original
-            fullname = '%s.%s' % (self.name, original)
+            self.added.append(name)
+            fullname = '%s.%s' % (self.name, name)
             node.setName(fullname)
 
     def unregister(self, name):
-        original = name
-        name = name.lower()
         try:
             del self.children[name]
-            self.added.remove(original)
+            self.added.remove(name)
         except KeyError:
-            self.__nonExistentEntry(original)
+            self.__nonExistentEntry(name)
 
     def getValues(self, getChildren=False, fullNames=True):
         L = []
-        for name in map(str.lower, self.added):
+        for name in self.added:
             node = self.children[name]
             if hasattr(node, 'value'):
                 if node.__class__ is not self.X:
@@ -225,8 +216,8 @@ class Value(Group):
     # This is simply prettier than naming this function get(self)
     def __call__(self):
         if _lastModified > self._lastModified:
-            if self.name.lower() in _cache:
-                self.set(_cache[self.name.lower()])
+            if self.name in _cache:
+                self.set(_cache[self.name])
         return self.value
 
 class Boolean(Value):
