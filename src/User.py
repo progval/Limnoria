@@ -67,7 +67,7 @@ class User(callbacks.Privmsg):
             if option == 'capability':
                 def p(u, cap=arg):
                     try:
-                        return u.checkCapability(cap)
+                        return u._checkCapability(cap)
                     except KeyError:
                         return False
                 predicates.append(p)
@@ -116,7 +116,7 @@ class User(callbacks.Privmsg):
                              'Hostmasks are not valid usernames.', Raise=True)
         try:
             u = ircdb.users.getUser(msg.prefix)
-            if u.checkCapability('owner'):
+            if u._checkCapability('owner'):
                 addHostmask = False
             else:
                 irc.error('Your hostmask is already registered to %s' % u.name)
@@ -140,7 +140,7 @@ class User(callbacks.Privmsg):
         """
         try:
             caller = ircdb.users.getUser(msg.prefix)
-            isOwner = caller.checkCapability('owner')
+            isOwner = caller._checkCapability('owner')
         except KeyError:
             caller = None
             isOwner = False
@@ -213,7 +213,7 @@ class User(callbacks.Privmsg):
             except KeyError:
                 irc.error(conf.supybot.replies.incorrectAuthentication(),
                           Raise=True)
-            if not u.checkCapability('owner'):
+            if not u._checkCapability('owner'):
                 irc.error(conf.supybot.replies.incorrectAuthentication(),
                           Raise=True)
         try:
@@ -241,7 +241,7 @@ class User(callbacks.Privmsg):
         if not user.checkPassword(password) and \
            not user.checkHostmask(msg.prefix):
             u = ircdb.users.getUser(msg.prefix)
-            if not u.checkCapability('owner'):
+            if not u._checkCapability('owner'):
                 irc.error(conf.supybot.replies.incorrectAuthentication())
                 return
         try:
@@ -270,7 +270,7 @@ class User(callbacks.Privmsg):
         """
         u = ircdb.users.getUser(msg.prefix)
         if user.checkPassword(password) or \
-           (u.checkCapability('owner') and not u == user):
+           (u._checkCapability('owner') and not u == user):
             user.setPassword(newpassword)
             ircdb.users.setUser(user)
             irc.replySuccess()
@@ -419,9 +419,9 @@ class User(callbacks.Privmsg):
             users += 1
             hostmasks += len(user.hostmasks)
             try:
-                if user.checkCapability('owner'):
+                if user._checkCapability('owner'):
                     owners += 1
-                elif user.checkCapability('admin'):
+                elif user._checkCapability('admin'):
                     admins += 1
             except KeyError:
                 pass
