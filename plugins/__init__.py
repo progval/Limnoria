@@ -219,6 +219,39 @@ class ChannelDBHandler(object):
         gc.collect()
 
 
+class DbiChannelDB(object):
+    """This just handles some of the general stuff for Channel DBI databases.
+    Check out plugins/Dunno.py for an example of how to use this."""
+    def __init__(self, filename):
+        self.filename = filename
+        self.dbs = ircutils.IrcDict()
+
+    def _getDb(self, channel):
+        filename = makeChannelFilename(self.filename, channel)
+        try:
+            db = self.dbs[channel]
+        except KeyError:
+            db = self.DB(filename)
+            self.dbs[channel] = db
+        return db
+
+    def close(self):
+        for db in self.dbs.itervalues():
+            db.close()
+
+    def flush(self):
+        for db in self.dbs.itervalues():
+            db.flush()
+
+    def __getattr__(self, attr):
+        def _getDbAndDispatcher(channel, *args, **kwargs):
+            db = self._getDb(channel)
+            return getattr(db, attr)(*args, **kwargs)
+        return _getDbAndDispatcher
+        
+
+# XXX This should eventually be gotten rid of in favor of some dbi thing.  At
+# the very least, it ought to get an interface much closer to dbi.DB.
 class ChannelUserDictionary(UserDict.DictMixin):
     IdDict = dict
     def __init__(self):
