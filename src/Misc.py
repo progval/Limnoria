@@ -166,13 +166,20 @@ class Misc(callbacks.Privmsg):
         returning a list of the commands containing that string.
         """
         s = privmsgs.getArgs(args)
+        commands = {}
         L = []
         for cb in irc.callbacks:
             if isinstance(cb, callbacks.Privmsg) and \
                not isinstance(cb, callbacks.PrivmsgRegexp):
                 for attr in dir(cb):
                     if s in attr and cb.isCommand(attr):
-                        L.append(callbacks.canonicalName(attr))
+                        commands.setdefault(attr, []).append(cb.name())
+        for (key, names) in commands.iteritems():
+            if len(names) == 1:
+                L.append(key)
+            else:
+                for name in names:
+                    L.append('%s %s' % (name, key))
         L.sort()
         irc.reply(msg, utils.commaAndify(L))
 
