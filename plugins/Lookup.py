@@ -104,6 +104,7 @@ class Lookup(callbacks.Privmsg):
             irc.reply(msg, conf.replySuccess)
         except sqlite.DatabaseError:
             irc.error(msg, 'No such lookup exists.')
+
     def addlookup(self, irc, msg, args):
         """<name> <filename>
 
@@ -120,7 +121,7 @@ class Lookup(callbacks.Privmsg):
             cb = irc.getCallback('Alias')
             if cb is not None:
                 try:
-                    cb.addAlias(irc, name, 'lookup %s $1' % name, freeze=True)
+                    cb.addAlias(irc, name, 'lookup %s @1' % name, freeze=True)
                 except sys.modules[cb.__module__].AliasError, e:
                     pass
             irc.reply(msg, conf.replySuccess)
@@ -146,7 +147,7 @@ class Lookup(callbacks.Privmsg):
             cb = irc.getCallback('Alias')
             if cb is not None:
                 try:
-                    cb.addAlias(irc, name, 'lookup %s $1' % name, freeze=True)
+                    cb.addAlias(irc, name, 'lookup %s @1' % name, freeze=True)
                 except sys.modules[cb.__module__].AliasError, e:
                     irc.error(msg, str(e))
                     return
@@ -157,25 +158,39 @@ class Lookup(callbacks.Privmsg):
 
         Looks up the value of <key> in the domain <name>.
         """
-        (name, key) = privmsgs.getArgs(args, needed=2)
+        (name, key) = privmsgs.getArgs(args, optional=1)
         db = getDb()
         cursor = db.cursor()
-        sql = """SELECT value FROM %s WHERE key LIKE %%s""" % name
-        try:
-            cursor.execute(sql, key)
-        except sqlite.DatabaseError, e:
-            if 'no such table' in str(e):
-                irc.error(msg, 'I don\'t have a domain %s' % name)
+        if key:
+            sql = """SELECT value FROM %s WHERE key LIKE %%s""" % name
+            try:
+                cursor.execute(sql, key)
+            except sqlite.DatabaseError, e:
+                if 'no such table' in str(e):
+                    irc.error(msg, 'I don\'t have a domain %s' % name)
+                else:
+                    irc.error(msg, str(e))
+                return
+            if cursor.rowcount == 0:
+                irc.reply(msg, 'I couldn\'t find %s in %s' % (key, name))
+            elif cursor.rowcount == 1:
+                irc.reply(msg, cursor.fetchone()[0])
             else:
-                irc.error(msg, str(e))
-            return
-        if cursor.rowcount == 0:
-            irc.reply(msg, 'I couldn\'t find %s in %s' % (key, name))
-        elif cursor.rowcount == 1:
-            irc.reply(msg, cursor.fetchone()[0])
+                values = [t[0] for t in cursor.fetchall()]
+                irc.reply(msg, '%s could be %s' % (key, ', or '.join(values)))
         else:
-            values = [t[0] for t in cursor.fetchall()]
-            irc.reply(msg, '%s could be %s' % (key, ', or '.join(values)))
+            sql = """SELECT key, value FROM %s
+                     ORDER BY random() LIMIT 1""" % name
+            try:
+                cursor.execute(sql)
+            except sqlite.DatabaseError, e:
+                if 'no such table' in str(e):
+                    irc.error(msg, 'I don\'t have a domain %r' % name)
+                else:
+                    irc.error(msg, str(e))
+                return
+            (key, value) = cursor.fetchone()
+            irc.reply(msg, '%s: %s' % (key, value))
             
             
 
