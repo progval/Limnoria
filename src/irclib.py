@@ -201,9 +201,11 @@ class IrcMsgQueue(object):
 # status of various modes (especially ops/halfops/voices) in channels, etc.
 ###
 class ChannelState(object):
-    __slots__ = ('users', 'ops', 'halfops', 'voices', 'topic', 'modes')
+    __slots__ = ('users', 'ops', 'halfops',
+                 'voices', 'topic', 'modes', 'created')
     def __init__(self):
         self.topic = ''
+        self.created = 0
         self.users = ircutils.IrcSet()
         self.ops = ircutils.IrcSet()
         self.halfops = ircutils.IrcSet()
@@ -425,6 +427,12 @@ class IrcState(IrcCommandDispatcher):
             elif mode[0] == '-' and mode[1] not in 'ovh':
                 chan.unsetMode(modeChar)
 
+    def do329(self, irc, msg):
+        # This is the last part of an empty mode.
+        channel = msg.args[1]
+        chan = self.channels[channel]
+        chan.created = int(msg.args[2])
+
     def doPart(self, irc, msg):
         for channel in msg.args[0].split(','):
             chan = self.channels[channel]
@@ -504,6 +512,7 @@ class Irc(IrcCommandDispatcher):
         self.driver = None # The driver should set this later.
         self._setNonResettingVariables()
         self._queueConnectMessages()
+        self.startedSync = ircutils.IrcDict()
 
     def reset(self):
         """Resets the Irc object.  Called when the driver reconnects."""
@@ -511,6 +520,7 @@ class Irc(IrcCommandDispatcher):
         self.state.reset()
         self.queue.reset()
         self.fastqueue.reset()
+        self.startedSync.clear()
         for callback in self.callbacks:
             callback.reset()
         self._queueConnectMessages()
@@ -626,7 +636,6 @@ class Irc(IrcCommandDispatcher):
                 self.outstandingPing = True
                 self.queueMsg(ircmsgs.ping(now))
         if msg:
-            #log.debug(repr(msg)) # Useless!
             for callback in reversed(self.callbacks):
                 msg = callback.outFilter(self, msg)
                 if msg is None:
@@ -640,6 +649,11 @@ class Irc(IrcCommandDispatcher):
                 msg._len =  len(str(msg))
             self.state.addMsg(self, msg)
             log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
+            if msg.command == 'JOIN':
+                channels = msg.args[0].split(',')
+                for channel in channels:
+                    # Let's make this more accurate.
+                    self.startedSync[channel] = time.time()
             return msg
         elif self.zombie:
             # We kill the driver here so it doesn't continue to try to
@@ -681,8 +695,22 @@ class Irc(IrcCommandDispatcher):
     def doJoin(self, msg):
         if msg.nick == self.nick:
             channel = msg.args[0]
-            self.queueMsg(ircmsgs.who(channel))
-            self.queueMsg(ircmsgs.mode(channel))
+            self.queueMsg(ircmsgs.who(channel)) # Ends with 315.
+            self.queueMsg(ircmsgs.mode(channel)) # Ends with 329.
+            self.startedSync[channel] = time.time()
+
+    def do315(self, msg):
+        channel = msg.args[1]
+        popped = False
+        if channel in self.startedSync:
+            now = time.time()
+            started = self.startedSync.pop(channel)
+            elapsed = now - started
+            log.info('Join to %s on %s synced in %s seconds.',
+                     channel, self.network, elapsed)
+            popped = True
+        if popped and not self.startedSync:
+            log.info('Finished syncing all joined channels.')
 
     def doError(self, msg):
         """Handles ERROR messages."""
