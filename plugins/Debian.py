@@ -36,8 +36,6 @@ This is a module to contain Debian-specific commands.
 __revision__ = "$Id$"
 __author__ = "James Vega (jamessan) <jamessan@users.sf.net>"
 
-import supybot.plugins as plugins
-
 import re
 import gzip
 import sets
@@ -47,13 +45,16 @@ import socket
 import urllib
 import fnmatch
 import os.path
-from itertools import imap, ifilter
 
-import supybot.registry as registry
+import BeautifulSoup
+
+from itertools import imap, ifilter
 
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.plugins as plugins
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.webutils as webutils
 import supybot.callbacks as callbacks
 
@@ -184,7 +185,7 @@ class Debian(callbacks.Privmsg,
 
     _debreflags = re.DOTALL | re.IGNORECASE
     _debbrre = re.compile(r'<li><a href[^>]+>(.*?)</a> \(', _debreflags)
-    _debverre = re.compile(r'<br>(?:\d+:)?(\S+):', _debreflags)
+    _debverre = re.compile(r'<br>((?:\d+:)?\S+):', _debreflags)
     _deblistre = re.compile(r'<h3>Package ([^<]+)</h3>(.*?)</ul>', _debreflags)
     _debBranches = ('stable', 'testing', 'unstable', 'experimental')
     def version(self, irc, msg, args):
@@ -235,12 +236,22 @@ class Debian(callbacks.Privmsg,
         else:
             for pkg in pkgs:
                 pkgMatch = pkg[0]
-                brMatch = self._debbrre.findall(pkg[1])
-                verMatch = self._debverre.findall(pkg[1])
-                if pkgMatch and brMatch and verMatch:
-                    versions = zip(brMatch, verMatch)
-                    for version in versions:
-                        s = '%s (%s)' % (pkgMatch, ': '.join(version))
+                soup = BeautifulSoup.BeautifulSoup()
+                soup.feed(pkg[1])
+                liBranches = soup.fetch('li')
+                branches = []
+                versions = []
+                def branchVers(br):
+                    vers = [b.next.string.strip() for b in br]
+                    return [rsplit(v, ':', 1)[0] for v in vers]
+                for li in liBranches:
+                    branches.append(li.first('a').string)
+                    versions.append(branchVers(li.fetch('br')))
+                if branches and versions:
+                    for pairs in  zip(branches, versions):
+                        branch = pairs[0]
+                        ver = ', '.join(pairs[1])
+                        s = '%s (%s)' % (pkgMatch, ': '.join([branch, ver]))
                         responses.append(s)
             resp = '%s matches found: %s' % \
                    (len(responses), '; '.join(responses))
