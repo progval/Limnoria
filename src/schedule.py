@@ -29,24 +29,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+"""
+Schedule plugin with a subclass of drivers.IrcDriver in order to be run as a
+Supybot driver.
+"""
+
 from fix import *
 
 import time
 import heapq
 
 import drivers
-
-## class RTuple(tuple):
-##     def __lt__(self, other):
-##         return not tuple.__lt__(self, other)
-##     def __gt__(self, other):
-##         return not tuple.__gt__(self, other)
-##     def __ge__(self, other):
-##         return not tuple.__ge__(self, other)
-##     def __le__(self, other):
-##         return not tuple.__le__(self, other)
-##     def __cmp__(self, other):
-##         return -1*tuple.__cmp__(self, other)
 
 class mytuple(tuple):
     def __cmp__(self, other):
@@ -61,6 +54,10 @@ class mytuple(tuple):
         return self[0] >= other[0]
 
 class Schedule(drivers.IrcDriver):
+    """An IrcDriver to handling scheduling of events.
+
+    Events, in this case, are functions accepting no arguments.
+    """
     def __init__(self):
         drivers.IrcDriver.__init__(self)
         self.schedule = []
@@ -68,6 +65,10 @@ class Schedule(drivers.IrcDriver):
         self.counter = 0
 
     def addEvent(self, f, t, name=None):
+        """Schedules an event f to run at time t.
+
+        name must be hashable and not an int.
+        """
         if name is None:
             name = self.counter
             self.counter += 1
@@ -79,11 +80,13 @@ class Schedule(drivers.IrcDriver):
         heapq.heappush(self.schedule, mytuple((t, name)))
 
     def removeEvent(self, name):
+        """Removes the event with the given name from the schedule."""
         del self.events[name]
         heapq.heappop(self.schedule)
         self.schedule = [(t, n) for (t, n) in self.schedule if n != name]
 
     def addPeriodicEvent(self, f, t, name=None):
+        """Adds a periodic event that is called every t seconds."""
         def wrapper():
             f()
             self.addEvent(wrapper, time.time() + t, name)
