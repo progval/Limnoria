@@ -118,7 +118,14 @@ class MiscTestCase(ChannelPluginTestCase):
         # Test ability to list contributors
         self.assertNotError('contributors Misc')
         # Test ability to list contributions
-        self.assertNotError('contributors Misc skorobeus')
+        # Verify that when a single command contribution has been made,
+        # the word "command" is properly not pluralized.
+        # Note: This will break if the listed person ever makes more than
+        # one contribution to the Misc plugin
+        self.assertRegexp('contributors Misc skorobeus', 'command')
+        # Test handling of pluralization of "command" when person has
+        # contributed more than one command to the plugin.
+        # -- Need to create this case, check it with the regexp 'commands'
         # Test handling of invalid plugin
         self.assertRegexp('contributors InvalidPlugin', 
             'No such plugin')
