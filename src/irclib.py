@@ -611,10 +611,11 @@ class Irc(IrcCommandDispatcher):
 
     def do433(self, msg):
         """Handles 'nickname already in use' messages."""
-        newNick = self._getNextNick()
-        assert newNick != self.nick, 'self._getNextNick() returned same nick.'
-        log.info('Got 433: %s is in use.  Trying %s.', self.nick, newNick)
-        self.sendMsg(ircmsgs.nick(newNick))
+        if not self.afterConnect:
+            newNick = self._getNextNick()
+            assert newNick != self.nick
+            log.info('Got 433: %s is in use.  Trying %s.', self.nick, newNick)
+            self.sendMsg(ircmsgs.nick(newNick))
     do432 = do433 # 432: Erroneous nickname.
 
     def doJoin(self, msg):
