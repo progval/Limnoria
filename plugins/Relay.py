@@ -525,6 +525,14 @@ class Relay(callbacks.Privmsg):
                     m = ircmsgs.privmsg(channel, s)
                     self._sendToOthers(irc, m)
 
+    def doError(self, irc, msg):
+        irc = self._getRealIrc(irc)
+        network = self._getIrcName(irc)
+        s = 'disconnected from %s (%s)' % (network, msg.args[0])
+        for channel in self.registryValue('channels'):
+            m = ircmsgs.privmsg(channel, s)
+            self._sendToOthers(irc, m)
+
     def outFilter(self, irc, msg):
         irc = self._getRealIrc(irc)
         if msg.command == 'PRIVMSG':
