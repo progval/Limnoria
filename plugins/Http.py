@@ -260,6 +260,7 @@ class Http(callbacks.Privmsg):
             irc.error(msg, debug.exnToString(e))
 
     _geekquotere = re.compile('<p class="qt">(.*?)</p>')
+    _mlgeekquotere = re.compile('<p class="qt">(.*?)</p>', re.M | re.DOTALL)
     def geekquote(self, irc, msg, args):
         """[<multiline>]
 
@@ -276,7 +277,7 @@ class Http(callbacks.Privmsg):
         html = fd.read()
         fd.close()
         if multiline:
-            m = self._geekquotere.search(html, re.M)
+            m = self._mlgeekquotere.search(html)
         else:
             m = self._geekquotere.search(html)
         if m is None:
