@@ -323,7 +323,7 @@ class OwnerCommands(CapabilityCheckingPrivmsg):
             irc.addCallback(callback)
             irc.reply(msg, conf.replySuccess)
         else:
-            irc.error(msg, 'There was no callback %s' % name)
+            irc.error(msg, 'There was no callback %s.' % name)
         
     def unload(self, irc, msg, args):
         """<callback name>
