@@ -78,13 +78,16 @@ class Status(callbacks.Privmsg):
 
         Returns some interesting network-related statistics.
         """
-        elapsed = time.time() - self.connected[irc.getRealIrc()]
+        try:
+            elapsed = time.time() - self.connected[irc.getRealIrc()]
+            timeElapsed = utils.timeElapsed(elapsed)
+        except KeyError:
+            timeElapsed = 'an indeterminate amount of time'
         irc.reply('I have received %s messages for a total of %s bytes.  '
                   'I have sent %s messages for a total of %s bytes.  '
                   'I have been connected to this network for %s.' %
                   (self.recvdMsgs, self.recvdBytes,
-                   self.sentMsgs, self.sentBytes,
-                   utils.timeElapsed(elapsed)))
+                   self.sentMsgs, self.sentBytes, timeElapsed))
 
     def cpu(self, irc, msg, args):
         """takes no arguments
