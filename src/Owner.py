@@ -102,7 +102,14 @@ def loadPluginModule(name, ignoreDeprecation=False):
 
 def loadPluginClass(irc, module, register=None):
     """Loads the plugin Class from the given module into the given irc."""
-    cb = module.Class()
+    try:
+        cb = module.Class()
+    except AttributeError:
+        raise callbacks.Error, 'This plugin module doesn\'t have a "Class" ' \
+                               'attribute to specify which plugin should be ' \
+                               'instantiated.  If you didn\'t write this ' \
+                               'plugin, but received it with Supybot, file ' \
+                               'a bug with us about this error.'
     name = cb.name()
     public = True
     if hasattr(cb, 'public'):
