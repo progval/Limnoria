@@ -59,13 +59,6 @@ class PythonTestCase(PluginTestCase, PluginDocumentation):
     def testAspnRecipes(self):
         self.assertRegexp('http://aspn.activestate.com/ASPN/Cookbook/Python/'\
             'Recipe/230113', 'Implementation of sets using sorted lists')
-
-    def testToggle(self):
-        self.assertHelp('python toggle')
-        self.assertRegexp('python toggle aspn', '\(aspn: (?:Off|On)\)')
-        self.assertRegexp('python toggle aspn off', '\(aspn: Off\)')
-        self.assertRegexp('python toggle aspn off', '\(aspn: Off\)')
-        self.assertRegexp('python toggle aspn on', '\(aspn: On\)')
         
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

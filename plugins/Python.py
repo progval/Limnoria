@@ -70,15 +70,16 @@ def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
     onStart.append('load Python')
 
-class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
+class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
     modulechars = '%s%s%s' % (string.ascii_letters, string.digits, '_.')
     threaded = True
     regexps = ['aspnRecipes']
-    toggles = plugins.ToggleDictionary({'ASPN' : True})
-
-    def __init__(self):
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        plugins.Toggleable.__init__(self)
+    configurables = plugins.ConfigurableDictionary(
+        [('aspn-snarfer', plugins.ConfigurableTypes.bool, True,
+          """Determines whether the ASPN Python recipe snarfer is enabled.  If
+          so, it will message the channel with the name of the recipe when it
+          sees an ASPN Python recipe link on the channel.""")]
+    )
 
     def pydoc(self, irc, msg, args):
         """<python function>
@@ -174,7 +175,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
     _bold = lambda self, g: (ircutils.bold(g[0]),) + g[1:]
     def aspnRecipes(self, irc, msg, match):
         r"http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/\d+"
-        if not self.toggles.get('ASPN', channel=msg.args[0]):
+        if not self.configurables.get('aspn-snarfer', channel=msg.args[0]):
             return
         url = match.group(0)
         fd = urllib2.urlopen(url)
@@ -188,6 +189,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp, plugins.Toggleable):
         if resp:
             #debug.printf('; '.join(resp))
             irc.reply(msg, '; '.join(resp), prefixName = False)
+    aspnRecipes = privmsgs.urlSnarfer(aspnRecipes)
             
 
 Class = Python
