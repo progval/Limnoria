@@ -100,21 +100,24 @@ class FunctionsTestCase(unittest.TestCase):
         nick = 'foobar'
     def testStandardSubstitute(self):
         msg = ircmsgs.privmsg('#foo', 'filler', prefix='biff!quux@xyzzy')
-        s = plugins.standardSubstitute(self.irc, msg, '$randomint')
-        try:
-            int(s)
-        except ValueError:
-            self.fail('$randomnick wasn\'t an int.')
         s = plugins.standardSubstitute(self.irc, msg, '$randomInt')
         try:
             int(s)
         except ValueError:
-            self.fail('$randomnick wasn\'t an int.')
+            self.fail('$randomint wasn\'t an int.')
         self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$botnick'),
                          self.irc.nick)
         self.assertEqual(plugins.standardSubstitute(self.irc, msg, '$who'),
                          msg.nick)
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$randomdate'))
+        q = plugins.standardSubstitute(self.irc, msg, '$randomdate\t$randomdate')
+        dl = q.split('\t')
+        if dl[0] == dl[1]:
+            self.fail ('Two $randomdates in the same string were the same')
+        q = plugins.standardSubstitute(self.irc, msg, '$randomint\t$randomint')
+        dl = q.split('\t')
+        if dl[0] == dl[1]:
+            self.fail ('Two $randomints in the same string were the same')
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$today'))
         self.assert_(plugins.standardSubstitute(self.irc, msg, '$now'))
         n = plugins.standardSubstitute(self.irc, msg, '$randomnick')

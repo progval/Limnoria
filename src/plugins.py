@@ -316,6 +316,13 @@ _whoRe = re.compile ("\$who", re.I)
 _botnickRe = re.compile("\$botnick", re.I)
 _todayRe = re.compile("\$today", re.I)
 _nowRe = re.compile("\$now", re.I)
+def randInt(m):
+    return str(random.randint(-1000, 1000))
+
+def randDate(m):
+    t = pow(2,30)*random.random()+time.time()/4.0 
+    return time.ctime(t)
+
 def standardSubstitute(irc, msg, text):
     """Do the standard set of substitutions on text, and return it"""
     if ircutils.isChannel(msg.args[0]):
@@ -327,9 +334,8 @@ def standardSubstitute(irc, msg, text):
         text = _randomnickRe.sub(user, text)
     else:
         text = _randomnickRe.sub('anyone', text)
-    t = pow(2,30)*random.random()+time.time()/4.0 
-    text = _randomdateRe.sub(time.ctime(t), text)
-    text = _randomintRe.sub(str(random.randint(-1000, 1000)), text)
+    text = _randomdateRe.sub(randDate, text)
+    text = _randomintRe.sub(randInt, text)
     text = _whoRe.sub(msg.nick, text)
     text = _botnickRe.sub(irc.nick, text)
     text = _todayRe.sub(time.ctime(), text)
