@@ -38,6 +38,7 @@ Commands include:
   googlebsd
   googlemac
   googlespell
+  googlelicensekey
 """
 
 from baseplugin import *
@@ -90,7 +91,11 @@ class Google(callbacks.Privmsg):
             return '%s %s' % (' ;; '.join(results), time)
 
     def googlelicensekey(self, irc, msg, args):
-        """<key>"""
+        """<key>
+
+        Sets the Google license key for using Google's Web Services API.  This
+        is necessary before you can do any searching with this module.
+        """
         key = privmsgs.getArgs(args)
         google.setLicense(key)
         irc.reply(msg, conf.replySuccess)
