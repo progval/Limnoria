@@ -43,37 +43,56 @@ except ImportError:
 if sqlite is not None:
     class PollTestCase(ChannelPluginTestCase, PluginDocumentation):
         plugins = ('Poll', 'User')
-        def testNew(self):
-            #self.assertError('poll new Is this a question?')
+        def setUp(self):
+            ChannelPluginTestCase.setUp(self)
             self.prefix = 'foo!bar@baz'
-            self.assertNotError('register foo bar')
-            self.assertRegexp('poll new Is this a question?', '(poll #1)')
-            self.assertNotError('poll vote 1 Yes')
-            self.assertError('poll vote 1 Yes')
-            self.assertNotError('poll vote 1 No')
-            self.assertError('poll vote 1 No')
-            self.prefix = 'not!me@anymore'
-            self.assertError('poll vote 1 Yes')
-            self.prefix = 'foo!bar@baz'
-            self.assertNotError('poll close 1')
-            self.assertError('poll vote 1 Yes')
-            self.assertNotError('poll open 1')
-            self.assertNotError('poll vote 1 Yes')
+            self.nick = 'foo'
+            self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick,
+                                             'register foo bar',
+                                             prefix=self.prefix))
+            _ = self.irc.takeMsg()
 
         def testOpen(self):
-            self.assertNotError('poll open 1')
-            self.assertError('poll open blah')
+            self.assertRegexp('poll open Foo?', '(poll #1)')
 
         def testClose(self):
+            self.assertRegexp('poll open Foo?', '(poll #1)')
             self.assertNotError('poll close 1')
             self.assertError('poll close blah')
+            self.assertError('poll close 2')
+
+        def testAdd(self):
+            self.assertNotError('poll open Foo?')
+            self.assertNotError('poll add 1 moo')
+            self.assertError('poll add 2 moo')
 
         def testVote(self):
-            self.assertHelp('poll vote 1 blah')
+            self.assertNotError('poll open Foo?')
+            self.assertNotError('poll add 1 moo')
+            self.assertNotError('poll vote 1 1')
+            self.assertError('poll vote 1 2')
             self.assertError('poll vote blah Yes')
+            self.assertError('poll vote 2 blah')
 
         def testResults(self):
+            self.assertNotError('poll open Foo?')
+            self.assertNotError('poll add 1 moo')
+            self.assertNotError('poll vote 1 1')
             self.assertError('poll results blah')
+            self.assertRegexp('poll results 1', 'moo: 1')
+
+        def testList(self):
+            self.assertNotError('poll open Foo?')
+            self.assertRegexp('poll list', '#1: \'Foo\?\'')
+            self.assertNotError('poll open Foo 2?')
+            self.assertRegexp('poll list', '#1: \'Foo\?\'.*#2: \'Foo 2\?\'')
+
+        def testOptions(self):
+            self.assertNotError('poll open Foo?')
+            self.assertNotError('poll add 1 moo')
+            self.assertNotError('poll add 1 bar')
+            self.assertNotError('poll add 1 baz')
+            self.assertRegexp('poll options 1', 'moo.*bar.*baz')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
