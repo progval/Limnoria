@@ -291,10 +291,11 @@ class Karma(callbacks.PrivmsgCommandAndRegexp):
         """
         name = privmsgs.getArgs(args)
         self.db.clear(channel, name)
+        irc.replySuccess()
     clear = privmsgs.checkChannelCapability(clear, 'op')
 
     def increaseKarma(self, irc, msg, match):
-        r"^(\S+)\+\+(|\s+)$"
+        r"^(\S+)\+\+(?:\s+)?$"
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
@@ -307,7 +308,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp):
             irc.replySuccess()
 
     def decreaseKarma(self, irc, msg, match):
-        r"^(\S+)--(|\s+)$"
+        r"^(\S+)--(?:\s+)?$"
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
