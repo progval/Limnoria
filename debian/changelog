@@ -1,3 +1,33 @@
+supybot (0.80.0pre1-1) unstable; urgency=high
+
+  * New upstream
+  * Urgency high because it still fixes previous bugs.
+
+ -- James Vega <vega.james@gmail.com>  Mon, 13 Sep 2004 09:32:00 -0400
+
+supybot (0.79.9999-1) unstable; urgency=high
+
+  * New upstream
+  * Urgency high because it still fixes previous bugs.
+
+ -- James Vega <vega.james@gmail.com>  Mon,  6 Sep 2004 15:40:13 -0400
+
+supybot (0.79.999-1) unstable; urgency=high
+
+  * New upstream
+  * Urgency high because of a bug in the Ebay plugin that would hang
+    the bot.
+
+ -- James Vega <vega.james@gmail.com>  Tue, 31 Aug 2004 21:58:59 -0400
+
+supybot (0.79.99-1) unstable; urgency=high
+
+  * New upstream
+  * Urgency high as 0.79.9 had a serious bug in src/callbacks.py
+  * Added a watch file
+
+ -- James Vega <vega.james@gmail.com>  Mon, 30 Aug 2004 09:20:48 -0400
+
 supybot (0.79.9-1) unstable; urgency=high
 
   * New upstream (Closes: #268311)

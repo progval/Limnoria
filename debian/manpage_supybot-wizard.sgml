@@ -106,6 +106,14 @@ manpage.1: manpage.sgml
           </para>
         </listitem>
       </varlistentry>
+      <varlistentry>
+        <term><option>--no-network</option></term>
+        <listitem>
+          <para>Determines whether the wizard will be allowed to run
+            without a network connection.
+          </para>
+        </listitem>
+      </varlistentry>
     </variablelist>
   </refsect1>
   <refsect1>
