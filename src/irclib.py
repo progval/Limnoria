@@ -282,7 +282,7 @@ class Irc(object):
         self.queue = IrcMsgQueue()
         self.fastqueue = queue()
         self.lastping = time.time()
-        self.lastpong = time.time()+60
+        self.outstandingPongs = set()
         self.lastTake = 0
         self.driver = None # The driver should set this later.
         self.queue.enqueue(ircmsgs.user(self.user, self.ident))
@@ -330,8 +330,8 @@ class Irc(object):
             else:
                 self.lastTake = now
                 msg = self.queue.dequeue()
-        elif self.lastping - self.lastpong > 180:
-            # Our ping hasn't be responded to.
+        elif len(self.outstandingPongs) > 2:
+            # Our pings hasn't be responded to.
             if hasattr(self.driver, 'scheduleReconnect'):
                 self.driver.scheduleReconnect()
             self.driver.die()
@@ -340,6 +340,8 @@ class Irc(object):
                 debug.msg('Irc.takeMsg throttling.', 'verbose')
             else:
                 self.lastping = now
+                now = str(int(now))
+                self.outstandingPongs.add(now)
                 msg = ircmsgs.ping(str(int(now)))
         if msg:
             for callback in self.callbacks:
@@ -399,7 +401,7 @@ class Irc(object):
                 ircdb.users.setUser(self.nick, u)
                 atexit.register(lambda: catch(ircdb.users.delUser(self.nick)))
         elif msg.command == 'PONG':
-            self.lastpong = time.time()
+            self.outstandingPongs.remove(msg.args[1])
         elif msg.command == 'ERROR':
             if msg.args[0].startswith('Closing Link'):
                 if hasattr(self.driver, 'scheduleReconnect'):
