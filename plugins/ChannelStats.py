@@ -60,12 +60,6 @@ import privmsgs
 import registry
 import callbacks
 
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
-
 # I should write/copy a generalized proxy at some point.
 class Smileys(registry.Value):
     def set(self, s):
