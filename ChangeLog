@@ -1,3 +1,5 @@
+	* Added Channel.mode, to set the mode in the channel.
+	
 	* Added a new plugin, Format, which offers several commands for
 	formatting strings on IRC.  Moved several commands from to it
 	from the Utilities plugin.

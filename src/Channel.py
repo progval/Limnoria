@@ -65,6 +65,16 @@ class Channel(callbacks.Privmsg):
             if self.registryValue('alwaysRejoin', channel):
                 irc.sendMsg(ircmsgs.join(channel)) # Fix for keys.
 
+    def mode(self, irc, msg, args, channel):
+        """[<channel>] <mode> [<arg> ...]
+
+        Sets the mode in <channel> to <mode>, sending the arguments given.
+        """
+        if not args:
+            raise callbacks.ArgumentError
+        irc.queueMsg(ircmsgs.mode(channel, args))
+    mode = privmsgs.checkChannelCapability(mode, 'op')
+
     def op(self, irc, msg, args, channel):
         """[<channel>] [<nick> ...]
 
