@@ -505,43 +505,44 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             (author, len(keys), utils.commaAndify(keys))
         irc.reply(msg, s)
 
-    _sqlTrans = string.maketrans('*?', '%_')
     def listkeys(self, irc, msg, args):
-        """<glob>
+        """<text>
 
-        Lists the keys of the factoids whose key matches the provided glob.
+        Lists the keys of the factoids whose key contains the provided text.
         """
-        glob = privmsgs.getArgs(args, needed=1)
+        search = privmsgs.getArgs(args, needed=1)
+        glob = '%' + search + '%'
         cursor = self.db.cursor()
         cursor.execute("""SELECT key FROM factoids
                           WHERE key LIKE %s
                           ORDER BY key""",
-                          glob.translate(self._sqlTrans))
+                          glob)
         if cursor.rowcount == 0:
-            irc.reply(msg, "No keys matching %r found." % glob)
+            irc.reply(msg, "No keys matching %r found." % search)
             return
         keys = [repr(tup[0]) for tup in cursor.fetchall()]
         s = "Key search for %r (%d found): %s" % \
-            (glob, len(keys), utils.commaAndify(keys))
+            (search, len(keys), utils.commaAndify(keys))
         irc.reply(msg, s)
 
     def listvalues(self, irc, msg, args):
-        """<glob>
+        """<text>
 
-        Lists the keys of the factoids whose value matches the provided glob.
+        Lists the keys of the factoids whose value contains the provided text.
         """
-        glob = privmsgs.getArgs(args, needed=1)
+        search = privmsgs.getArgs(args, needed=1)
+        glob = '%' + search + '%'
         cursor = self.db.cursor()
         cursor.execute("""SELECT key FROM factoids
                           WHERE fact LIKE %s
                           ORDER BY key""",
-                          glob.translate(self._sqlTrans))
+                          glob)
         if cursor.rowcount == 0:
-            irc.reply(msg, "No values matching %r found." % glob)
+            irc.reply(msg, "No values matching %r found." % search)
             return
         keys = [repr(tup[0]) for tup in cursor.fetchall()]
         s = "Value search for %r (%d found): %s" % \
-            (glob, len(keys), utils.commaAndify(keys))
+            (search, len(keys), utils.commaAndify(keys))
         irc.reply(msg, s)
 
     def delete(self, irc, msg, args):
@@ -574,7 +575,8 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         """<text>
 
         Adds <text> as a "dunno" to be used as a random response when no
-        command or factoid key matches.
+        command or factoid key matches.  Can optionally contain '$who', which
+        will be replaced by the user's name when the dunno is displayed.
         """
         # Must be registered to use this
         try:
