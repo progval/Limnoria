@@ -93,7 +93,8 @@ class RecursiveAlias(Exception):
     pass
 
 def findAliasCommand(s, alias):
-    r = re.compile(r'(^|\[)\s*%s' % re.escape(s))
+    s = re.escape(s)
+    r = re.compile(r'(?:(^|\[)\s*%s|\|\s*%s)' % (s, s))
     return bool(r.search(alias))
 
 dollarRe = re.compile(r'\$(\d+)')

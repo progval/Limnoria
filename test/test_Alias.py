@@ -47,6 +47,8 @@ class FunctionsTest(unittest.TestCase):
         self.failUnless(Alias.findAliasCommand(s, '[ %s]' % s))
         self.failUnless(Alias.findAliasCommand(s, 'foo bar [%s]' % s))
         self.failUnless(Alias.findAliasCommand(s, 'foo bar [ %s]' % s))
+        self.failUnless(Alias.findAliasCommand(s, 'foo | %s' % s))
+        self.failUnless(Alias.findAliasCommand(s, 'foo |%s' % s))
 
     def testFindBiggestDollar(self):
         self.assertEqual(Alias.findBiggestDollar(''), None)
