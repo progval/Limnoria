@@ -93,7 +93,9 @@ class Relay(callbacks.Privmsg):
         network = privmsgs.getArgs(args)
         otherIrc = self.ircs[network]
         otherIrc.driver.die()
-        otherIrc.die()
+        del self.ircs[network]
+        world.ircs.remove(otherIrc)
+        del abbreviations[network]
         irc.reply(msg, conf.replySuccess)
     relaydisconnect = privmsgs.checkCapability(relaydisconnect, 'owner')
 
