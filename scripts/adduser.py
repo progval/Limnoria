@@ -29,7 +29,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 import sys
-sys.path.insert(0, 'src')
+
+if 'src' not in sys.path:
+    sys.path.insert(0, 'src')
+
 from fix import *
 from questions import *
 

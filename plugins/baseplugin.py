@@ -2,8 +2,10 @@
 
 import sys
 
-sys.path.insert(0, 'src')
-sys.path.insert(0, 'others')
+if 'sys' not in sys.path:
+    sys.path.insert(0, 'src')
+if 'others' not in sys.path:
+    sys.path.insert(0, 'others')
 
 from fix import *
 

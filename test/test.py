@@ -30,13 +30,16 @@
 ###
 
 import sys
-sys.path.insert(0, 'src')
-sys.path.insert(0, 'test')
-sys.path.insert(0, 'plugins')
-
+if 'src' not in sys.path:
+    sys.path.insert(0, 'src')
+if 'test' not in sys.path:
+    sys.path.insert(0, 'test')
 
 import conf
 conf.dataDir = 'test-data'
+
+if conf.pluginDir not in sys.path:
+    sys.path.insert(0, conf.pluginDir)
 
 from fix import *
 

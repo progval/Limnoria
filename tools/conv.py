@@ -5,7 +5,10 @@ Converts from a "key => value\n" format to a cdb database.
 """
 
 import sys
-sys.path.insert(0, 'src')
+
+if 'src' not in sys.path:
+    sys.path.insert(0, 'src')
+
 import re
 
 import cdb

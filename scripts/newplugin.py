@@ -2,7 +2,9 @@
 
 import os
 import sys
-sys.path.insert(0, 'src')
+
+if 'src' not in sys.path:
+    sys.path.insert(0, 'src')
 
 from questions import *
 
