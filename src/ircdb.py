@@ -577,6 +577,8 @@ class UsersDictionary(utils.IterableMap):
                 fd.close()
             else:
                 log.warning('UsersDictionary.flush called with no filename.')
+        else:
+            log.debug('Not flushing UsersDictionary becuase of noFlush.')
 
     def close(self):
         self.flush()
@@ -633,7 +635,9 @@ class UsersDictionary(utils.IterableMap):
         if not isinstance(id, int):
             # Must be a string.  Get the UserId first.
             id = self.getUserId(id)
-        return self.users[id]
+        u = self.users[id]
+        u.id = id
+        return u
 
     def hasUser(self, id):
         """Returns the database has a user given its id, name, or hostmask."""
@@ -688,8 +692,7 @@ class UsersDictionary(utils.IterableMap):
                         raise ValueError, s
         self.invalidateCache(id)
         self.users[id] = user
-        # This shouldn't happen; we flush automatically every once in awhile.
-        #self.flush()
+        self.flush()
 
     def delUser(self, id):
         """Removes a user from the database."""
@@ -711,6 +714,7 @@ class UsersDictionary(utils.IterableMap):
         id = self.nextId
         self.users[id] = user
         self.flush()
+        user.id = id
         return (id, user)
 
 
@@ -747,6 +751,8 @@ class ChannelsDictionary(utils.IterableMap):
                 fd.close()
             else:
                 log.warning('ChannelsDictionary.flush without self.filename.')
+        else:
+            log.debug('Not flushing ChannelsDictionary because of noFlush.')
 
     def close(self):
         self.flush()
