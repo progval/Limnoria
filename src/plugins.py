@@ -83,7 +83,10 @@ class DBHandler(object):
         self.cachedDb = None
 
     def makeFilename(self):
-        return self.name + self.suffix
+        if self.name.endswith(self.suffix):
+            return self.name
+        else:
+            return self.name + self.suffix
 
     def makeDb(self, filename):
         raise NotImplementedError
