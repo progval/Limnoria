@@ -54,6 +54,10 @@ class HttpTest(PluginTestCase, PluginDocumentation):
                             'http://www.space.com/scienceastronomy/'
                             'jupiter_dark_spot_031023.html',
                             'Mystery Spot on Jupiter Baffles Astronomers')
+        # Checks for @title not-working correctly
+        self.assertResponse('title '\
+            'http://www.catb.org/~esr/jargon/html/F/entry/foo.html',
+            'foo')
 
     def testGeekquote(self):
         self.assertNotError('geekquote')
