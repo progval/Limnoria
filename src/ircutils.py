@@ -106,6 +106,8 @@ def toLower(s, casemapping=None):
 
 def strEqual(nick1, nick2):
     """Returns True if nick1 == nick2 according to IRC case rules."""
+    assert isinstance(nick1, basestring) 
+    assert isinstance(nick2, basestring)
     return toLower(nick1) == toLower(nick2)
 
 nickEqual = strEqual
