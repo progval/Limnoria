@@ -136,6 +136,7 @@ class Math(callbacks.Privmsg):
             return str(x)
         text = self._mathRe.sub(handleMatch, text)
         try:
+            self.log.info('evaluating %r from %s' % (text, msg.prefix))
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(msg, self._complexToString(x))
         except OverflowError:
@@ -222,12 +223,16 @@ class Math(callbacks.Privmsg):
             irc.error(msg, '%s is not a valid number.' % n)
             return
         try:
-            u1 = eval(unit1.lower(), self._convertEnv, self._convertEnv)
+            unit1 = unit1.lower()
+            self.log.info('evaluating %r from %s' % (unit1, msg.prefix))
+            u1 = eval(unit1, self._convertEnv, self._convertEnv)
         except:
             irc.error(msg, '%s is not a valid units expression.' % unit1)
             return
         try:
-            u2 = eval(unit2.lower(), self._convertEnv, self._convertEnv)
+            unit2 = unit2.lower()
+            self.log.info('evaluating %r from %s' % (unit2, msg.prefix))
+            u2 = eval(unit2, self._convertEnv, self._convertEnv)
         except:
             irc.error(msg, '%s is not a valid units expression.' % unit2)
             return
