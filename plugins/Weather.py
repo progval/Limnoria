@@ -379,6 +379,7 @@ class Weather(callbacks.Privmsg):
 
     _wunderUrl = 'http://mobile.wunderground.com/cgi-bin/' \
                  'findweather/getForecast?query='
+    _wunderSevere = re.compile(r'font color=#ff0000>([^<]+)<', re.I)
     _wunderLoc = re.compile(r'Page (.+?) Forecast</title>', re.I | re.S)
     _wunderMultiLoc = re.compile(r'<a href="([^"]+)', re.I | re.S)
     def wunder(self, irc, msg, args, loc):
@@ -388,6 +389,10 @@ class Weather(callbacks.Privmsg):
         """
         url = '%s%s' % (self._wunderUrl, urllib.quote(loc))
         text = webutils.getUrl(url)
+        severe = ''
+        m = self._wunderSevere.search(text)
+        if m:
+            severe = ircutils.bold('  %s' % m.group(1))
         if 'Search not found' in text:
             self._noLocation()
         if 'Click on a city name' in text:
@@ -463,8 +468,18 @@ class Weather(callbacks.Privmsg):
                 resp.append('Wind: %s at %s %s.' % tuple(info['Wind'].split()))
             except (ValueError, TypeError):
                 pass
+            try:
+                (chill, deg, unit) = info['Dew Point'].split()
+                if convert:
+                    chill = self._getTemp(int(chill), deg, unit, msg.args[0])
+                else:
+                    dew = deg.join((chill, unit))
+                resp.append('Windchill: %s.' % chill)
+            except (ValueError, TypeError):
+                pass
             resp.append('Pressure: %s.' % info['Pressure'])
             resp.append('Visibility: %s.' % info['Visibility'])
+            resp.append(severe)
             resp = map(utils.htmlToText, resp)
             irc.reply(' '.join(resp))
         else:
