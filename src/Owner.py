@@ -449,12 +449,19 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             irc.queueMsg(m)
 
     def quit(self, irc, msg, args):
-        """takes no arguments
+        """[<text>]
 
-        Exits the bot.
+        Exits the bot with the QUIT message <text>.  If <text> is not given,
+        your nick will be substituted.
         """
+        text = privmsgs.getArgs(args, required=0, optional=1)
+        if not text:
+            text = msg.nick
+        m = ircmsgs.quit(text)
         world.upkeep()
-        world.ircs[:] = []
+        for irc in world.ircs:
+            irc.queueMsg(m)
+            irc.die()
 
     def flush(self, irc, msg, args):
         """takes no arguments

@@ -402,7 +402,9 @@ class IrcState(IrcCommandDispatcher):
     def doQuit(self, irc, msg):
         for channel in self.channels.itervalues():
             channel.removeUser(msg.nick)
-        del self.nicksToHostmasks[msg.nick]
+        if msg.nick in self.nicksToHostmasks:
+            # If we're quitting, it may not be.
+            del self.nicksToHostmasks[msg.nick]
 
     def doTopic(self, irc, msg):
         if len(msg.args) == 1:
@@ -449,6 +451,7 @@ class Irc(IrcCommandDispatcher):
                              '254', '255', '265', '266', '372', '375', '376',
                              '333', '353', '332', '366', '005'])
     def __init__(self, network, callbacks=None):
+        self.zombie = False
         world.ircs.append(self)
         self.network = network
         if callbacks is None:
@@ -542,11 +545,17 @@ class Irc(IrcCommandDispatcher):
 
     def queueMsg(self, msg):
         """Queues a message to be sent to the server."""
-        self.queue.enqueue(msg)
+        if not self.zombie:
+            self.queue.enqueue(msg)
+        else:
+            self.log.warning('Refusing to queue %r; I\'m a zombie.', msg)
 
     def sendMsg(self, msg):
         """Queues a message to be sent to the server *immediately*"""
-        self.fastqueue.enqueue(msg)
+        if not self.zombie:
+            self.fastqueue.enqueue(msg)
+        else:
+            self.log.warning('Refusing to send %r; I\'m a zombie.', msg)
 
     def takeMsg(self):
         """Called by the IrcDriver; takes a message to be sent."""
@@ -590,7 +599,10 @@ class Irc(IrcCommandDispatcher):
             log.debug('Outgoing message: ' + str(msg).rstrip('\r\n'))
             return msg
         else:
-            return None
+            if self.zombie:
+                self._reallyDie()
+            else:
+                return None
 
     def do002(self, msg):
         """Logs the ircd version."""
@@ -714,6 +726,9 @@ class Irc(IrcCommandDispatcher):
             world.debugFlush()
 
     def die(self):
+        self.zombie = True
+
+    def _reallyDie(self):
         """Makes the Irc object die.  Dead."""
         log.info('Irc object for %s dying.' % self.server)
         if self in world.ircs:
