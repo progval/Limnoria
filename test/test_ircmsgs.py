@@ -157,6 +157,12 @@ class FunctionsTestCase(unittest.TestCase):
                          [('+b', bans[0]), ('+b', bans[1]),
                           ('+e', exceptions[0])])
 
+    def testUnban(self):
+        channel = '#supybot'
+        ban = 'foo!bar@baz'
+        self.assertEqual(str(ircmsgs.unban(channel, ban)),
+                         'MODE %s -b :%s\r\n' % (channel, ban))
+
     def testJoin(self):
         channel = '#osu'
         key = 'michiganSucks'
