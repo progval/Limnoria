@@ -216,12 +216,23 @@ class MiscCommands(callbacks.Privmsg):
             irc.error(msg, 'There is no such command %s' % command)
 
     def more(self, irc, msg, args):
-        """takes no arguments
+        """[<nick>]
 
         If the last command was truncated due to IRC message length
         limitations, returns the next chunk of the result of the last command.
+        If <nick> is given, return the continuation of the last command from
+        <nick> instead of the person sending this message.
         """
-        userHostmask = msg.prefix.split('!', 1)[1]
+        nick = privmsgs.getArgs(args, needed=0, optional=1)
+        if nick:
+            try:
+                hostmask = irc.state.nickToHostmask(nick)
+                userHostmask = hostmask.split('!', 1)[1]
+            except KeyError:
+                irc.error(msg, 'Sorry, I can\'t find a hostmask for %s' % nick)
+                return
+        else:
+            userHostmask = msg.prefix.split('!', 1)[1]
         try:
             L = self._mores[userHostmask]
             chunk = L.pop()
