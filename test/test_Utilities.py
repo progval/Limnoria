@@ -79,4 +79,8 @@ class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
     def testReNoEscapingUnpackListOfWrongSize(self):
         self.assertNotRegexp('re foo bar baz', 'unpack list of wrong size')
 
+    def testReBug850931(self):
+        self.assertResponse('re s/\b(\w+)\b/\1./g foo bar baz',
+                            'foo. bar. baz.')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
