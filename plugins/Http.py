@@ -384,6 +384,7 @@ class Http(callbacks.Privmsg):
             text = webutils.getUrl(url)
         except webutils.WebError, e:
             irc.error(str(e))
+            return
         if 'daily usage limit' in text:
             irc.error('I have exceeded the site\'s daily usage limit.')
             return
