@@ -1,3 +1,8 @@
+	* Added the KeepAlive plugin, to send useless keepalive messages
+	to someone every some period.  It's mostly just because we
+	noticed that MozBot had one, and we couldn't allow ourselves to
+	be outdone.
+	
 	* Changed the URL plugin to use flatfiles rather than SQLite
 	database.  Also reduced the functionality of the last command by
 	removing some options that no one ever really used, and removed
