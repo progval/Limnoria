@@ -55,13 +55,6 @@ def configure(advanced):
     from questions import expect, anything, something, yn
     conf.registerPlugin('Debug', True)
 
-def getTracer(fd):
-    def tracer(frame, event, _):
-        if event == 'call':
-            code = frame.f_code
-            print >>fd, '%s: %s' % (code.co_filename, code.co_name)
-    return tracer
-
 
 class Debug(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
@@ -104,7 +97,7 @@ class Debug(privmsgs.CapabilityCheckingPrivmsg):
             fd = file(filename, 'a')
         else:
             fd = sys.stdout
-        sys.settrace(getTracer(fd))
+        sys.settrace(utils.callTracer(fd))
         irc.replySuccess()
 
     def unsettrace(self, irc, msg, args):

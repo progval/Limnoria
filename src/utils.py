@@ -490,7 +490,6 @@ def saltHash(password, salt=None, hash='sha'):
 def safeEval(s, namespace={'True': True, 'False': False, 'None': None}):
     """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
     without unsafely using eval()."""
-    #print s, '::', stackTrace()
     try:
         node = compiler.parse(s)
     except SyntaxError, e:
@@ -704,21 +703,6 @@ def mungeEmailForWeb(s):
     s = s.replace('.', ' DOT ')
     return s
 
-def stackTrace(frame=None, compact=True):
-    if frame is None:
-        frame = sys._getframe()
-    if compact:
-        L = []
-        while frame:
-            lineno = frame.f_lineno
-            funcname = frame.f_code.co_name
-            filename = os.path.basename(frame.f_code.co_filename)
-            L.append('[%s|%s|%s]' % (filename, funcname, lineno))
-            frame = frame.f_back
-        return textwrap.fill(' '.join(L))
-    else:
-        return traceback.format_stack(frame)
-
 class AtomicFile(file):
     """Used for files that need to be atomically written -- i.e., if there's a
     failure, the original file remains, unmodified.  mode must be 'w' or 'wb'"""
@@ -772,6 +756,35 @@ def transactionalFile(*args, **kwargs):
     # This exists so it can be replaced by a function that provides the tmpDir.
     # We do that replacement in conf.py.
     return AtomicFile(*args, **kwargs)
+
+def stackTrace(frame=None, compact=True):
+    if frame is None:
+        frame = sys._getframe()
+    if compact:
+        L = []
+        while frame:
+            lineno = frame.f_lineno
+            funcname = frame.f_code.co_name
+            filename = os.path.basename(frame.f_code.co_filename)
+            L.append('[%s|%s|%s]' % (filename, funcname, lineno))
+            frame = frame.f_back
+        return textwrap.fill(' '.join(L))
+    else:
+        return traceback.format_stack(frame)
+
+def callTracer(fd=None, basename=True):
+    if fd is None:
+        fd = sys.stdout
+    def tracer(frame, event, _):
+        if event == 'call':
+            code = frame.f_code
+            lineno = frame.f_lineno
+            funcname = code.co_name
+            filename = code.co_filename
+            if basename:
+                filename = os.path.basename(filename)
+            print >>fd, '%s: %s(%s)' % (filename, funcname, lineno)
+    return tracer
 
 if __name__ == '__main__':
     import doctest

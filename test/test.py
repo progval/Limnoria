@@ -70,10 +70,13 @@ conf.supybot.flush.setValue(False)
 import supybot.fix as fix
 
 import re
+import sys
 import glob
+import atexit
 import os.path
 import unittest
 
+import supybot.utils as utils
 import supybot.world as world
 
 class path(str):
@@ -123,6 +126,8 @@ if __name__ == '__main__':
                       help='Causes the network-based tests not to run.')
     parser.add_option('', '--noplugins', action='store_true', default=False,
                       help='Causes the plugin tests not to run.')
+    parser.add_option('', '--trace', action='store_true', default=False,
+                      help='Traces all calls made.')
     (options, args) = parser.parse_args()
     if not args:
         if options.noplugins:
@@ -142,6 +147,13 @@ if __name__ == '__main__':
 
     if options.timeout:
         PluginTestCase.timeout = options.timeout
+
+    if options.trace:
+        traceFilename = conf.supybot.directories.log.dirize('trace.log')
+        fd = file(traceFilename, 'w')
+        sys.settrace(utils.callTracer(fd))
+        atexit.register(fd.close)
+        atexit.register(lambda : sys.settrace(None))
 
     if options.plugindirs:
         options.plugindirs.reverse()
