@@ -96,6 +96,7 @@ class IrcMsg(object):
             else:
                 self.args = ()
         elif s: # Must be using a string.
+            self._str = s
             if s[0] == ':':
                 self.prefix, s = s[1:].split(None, 1)
             else:
