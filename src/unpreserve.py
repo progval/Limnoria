@@ -32,8 +32,10 @@
 __revision__ = "$Id$"
 
 class Reader(object):
-    def __init__(self, Creator):
+    def __init__(self, Creator, *args, **kwargs):
         self.Creator = Creator
+        self.args = args
+        self.kwargs = kwargs
         self.creator = None
         self.modifiedCreator = False
         self.indent = None
@@ -58,7 +60,7 @@ class Reader(object):
                 # New indentation level.
                 if self.creator is not None:
                     self.creator.finish()
-                self.creator = self.Creator()
+                self.creator = self.Creator(*self.args, **self.kwargs)
                 self.modifiedCreator = False
                 self.indent = indent
             (command, rest) = s.split(None, 1)
