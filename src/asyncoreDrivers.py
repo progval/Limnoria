@@ -63,17 +63,19 @@ class AsyncoreRunnerDriver(drivers.IrcDriver):
 
 
 class AsyncoreDriver(asynchat.async_chat, object):
-    def __init__(self, irc):
+    def __init__(self, irc, servers=()):
         asynchat.async_chat.__init__(self)
         self.irc = irc
         self.buffer = ''
-        self.servers = ()
+        self.servers = servers 
         self.networkGroup = conf.supybot.networks.get(self.irc.network)
         self.set_terminator('\n')
         # XXX: Use utils.getSocket.
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.connect(self._getNextServer())
+            server = self._getNextServer()
+            log.info('Connecting to %s.', self.currentServer)
+            self.connect(server)
         except socket.error, e:
             log.warning('Error connecting to %s: %s', self.currentServer, e)
             self.reconnect(wait=True)
@@ -101,7 +103,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
                      self.currentServer, whenS)
         def makeNewDriver():
             self.irc.reset()
-            driver = self.__class__(self.irc)
+            driver = self.__class__(self.irc, servers=self.servers)
         schedule.addEvent(makeNewDriver, when)
 
     def writable(self):
