@@ -82,6 +82,7 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.failIf(self.irc.getCallback(name).public)
         self.assertNotRegexp('list', name)
         self.assertRegexp('list --private', name)
+        self.assertNotRegexp('list OwnerCommands', '_exec')
 
     def testVersion(self):
         self.assertNotError('version')

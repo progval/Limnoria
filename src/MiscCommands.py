@@ -115,8 +115,9 @@ class MiscCommands(callbacks.Privmsg):
                        not issubclass(cls, callbacks.PrivmsgRegexp) and \
                        issubclass(cls, callbacks.Privmsg):
                     commands = [x for x in dir(cls)
-                                if cb.isCommand(x) and \
-                                hasattr(getattr(cb, x), '__doc__')]
+                                if cb.isCommand(x) and
+                                hasattr(getattr(cb, x), '__doc__') and
+                                callbacks.canonicalName(x) == x]
                     commands.sort()
                     irc.reply(msg, ', '.join(commands))
                     return
