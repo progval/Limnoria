@@ -34,19 +34,29 @@ from testsupport import *
 if network:
     class WeatherTest(PluginTestCase, PluginDocumentation):
         plugins = ('Weather',)
-        def testWeather(self):
-            self.assertNotError('weather Columbus, OH')
-            self.assertNotError('weather 43221')
-            self.assertNotRegexp('weather Paris, FR', 'Virginia')
-            self.assertError('weather alsdkfjasdl, asdlfkjsadlfkj')
-            self.assertNotError('weather London, uk')
-            self.assertNotError('weather London, UK')
-            self.assertNotError('weather Munich, de')
-            self.assertNotError('weather Tucson, AZ')
-            self.assertError('weather hell')
+        def testHam(self):
+            self.assertNotError('ham Columbus, OH')
+            self.assertNotError('ham 43221')
+            self.assertNotRegexp('ham Paris, FR', 'Virginia')
+            self.assertError('ham alsdkfjasdl, asdlfkjsadlfkj')
+            self.assertNotError('ham London, uk')
+            self.assertNotError('ham London, UK')
+            self.assertNotError('ham Munich, de')
+            self.assertNotError('ham Tucson, AZ')
+            self.assertError('ham hell')
+
+        def testCnn(self):
+            self.assertNotError('cnn Columbus, OH')
+            self.assertNotError('cnn 43221')
+            self.assertNotRegexp('cnn Paris, FR', 'Virginia')
+            self.assertError('cnn alsdkfjasdl, asdlfkjsadlfkj')
+            self.assertNotError('cnn London, uk')
+            self.assertNotError('cnn London, UK')
+            self.assertNotError('cnn Munich, de')
+            self.assertNotError('cnn Tucson, AZ')
 
         def testNoEscapingWebError(self):
-            self.assertNotRegexp('weather "buenos aires"', 'WebError')
+            self.assertNotRegexp('ham "buenos aires"', 'WebError')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
