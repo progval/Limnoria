@@ -124,7 +124,7 @@ class Http(callbacks.Privmsg):
 
     _gkrating = re.compile(r'<font color="#FFFF33">(\d+)</font>')
     _gkgames = re.compile(r's:&nbsp;&nbsp;</td><td class=sml>(\d+)</td></tr>')
-    _gkrecord = re.compile(r'percentile(\d+), [^%]+%(\d+), [^%]+%(\d+)')
+    _gkrecord = re.compile(r'"#FFFF00">[^"]+">(\d+)[^"]+">(\d+)[^"]+">(\d+)')
     _gkteam = re.compile('Team:([^\s]+)')
     _gkseen = re.compile('seen on GK:  ([^\n]+)')
     def gkstats(self, irc, msg, args):
@@ -138,13 +138,19 @@ class Http(callbacks.Privmsg):
             rating = self._gkrating.search(profile).group(1)
             games = self._gkgames.search(profile).group(1)
             profile = stripHtml(profile)
-            team = self._gkteam.search(profile).group(1)
             seen = self._gkseen.search(profile).group(1)
             (w, l, d) = self._gkrecord.search(profile).groups()
-            irc.reply(msg, '%s (team %s) is rated %s and has %s active games '
-                           'and a record of W-%s, L-%s, D-%s.  ' \
+            if profile.find('Team:') >= 0:
+                team = self._gkteam.search(profile).group(1)
+                irc.reply(msg, '%s (team %s) is rated %s and has %s active '
+                           'games and a record of W-%s, L-%s, D-%s.  ' \
                            '%s was last seen on Gameknot %s' % \
                            (name, team, rating, games, w, l, d, name, seen))
+            else:
+                irc.reply(msg, '%s is rated %s and has %s active games '
+                           'and a record of W-%s, L-%s, D-%s.  ' \
+                           '%s was last seen on Gameknot %s' % \
+                           (name, rating, games, w, l, d, name, seen))
         except AttributeError:
             if profile.find('User %s not found!' % name) != -1:
                 irc.error(msg, 'No user %s exists.')
