@@ -508,8 +508,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         the default quit message (supybot.plugins.Owner.quitMsg) will be used.
         If there is no default quitMsg set, your nick will be used.
         """
-        if not text:
-            text = self.registryValue('quitMsg') or msg.nick
+        text = text or self.registryValue('quitMsg') or msg.nick
         irc.noReply()
         m = ircmsgs.quit(text)
         world.upkeep()
