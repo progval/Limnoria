@@ -124,26 +124,27 @@ def isCtcp(msg):
            msg.args[1].startswith('\x01') and \
            msg.args[1].endswith('\x01')
 
-_match = fnmatch.fnmatchcase
 _patternCache = {}
 def _hostmaskPatternEqual(pattern, hostmask):
     """Returns True if hostmask matches the hostmask pattern pattern."""
     try:
         return _patternCache[pattern](hostmask) is not None
     except KeyError:
+        # We make our own regexps, rather than use fnmatch, because fnmatch's
+        # case-insensitivity is not IRC's case-insensitity.
         fd = sio()
         for c in pattern:
             if c == '*':
                 fd.write('.*')
             elif c == '?':
                 fd.write('.')
-            elif c == '[' or c == '{':
+            elif c in '[{':
                 fd.write('[[{]')
-            elif c == '}' or c == ']':
+            elif c in '}]':
                 fd.write(r'[}\]]')
-            elif c == '|' or c == '\\':
+            elif c in '|\\':
                 fd.write(r'[|\\]')
-            elif c == '^' or c == '~':
+            elif c in '^~':
                 fd.write('[~^]')
             else:
                 fd.write(re.escape(c))
