@@ -199,6 +199,15 @@ supybot.register('bracketSyntax', registry.Boolean(True, """Supybot allows
 nested commands. If this option is enabled users can nest commands using a
 bracket syntax, for example: 'bot: bar [foo]'."""))
 
+class ValidBrackets(registry.OnlySomeStrings):
+    validStrings = ('[]', '<>', '{}', '()')
+    
+supybot.register('brackets', ValidBrackets('[]', """Supybot allows you to
+specify what brackets are used for your nested commands.  Valid sets of
+brackets include [], <>, and {} ().  [] has strong historical motivation, as
+well as being the brackets that don't require shift.  <> or () might be
+slightly superior because they cannot occur in a nick."""))
+
 supybot.register('pipeSyntax', registry.Boolean(False, """Supybot allows
 nested commands. Enabling this option will allow nested commands with a syntax
 similar to UNIX pipes, for example: 'bot: foo | bar'."""))

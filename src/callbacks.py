@@ -175,6 +175,9 @@ class Tokenizer:
     def __init__(self, tokens=''):
         # Add a '|' to tokens to have the pipe syntax.
         self.validChars = self.validChars.translate(string.ascii, tokens)
+        if len(tokens) >= 2:
+            self.left = tokens[0]
+            self.right = tokens[1]
 
     def _handleToken(self, token):
         if token[0] == token[-1] and token[0] in self.quotes:
@@ -187,10 +190,10 @@ class Tokenizer:
         while True:
             token = lexer.get_token()
             if not token:
-                raise SyntaxError, 'Missing "]".'
-            elif token == ']':
+                raise SyntaxError, 'Missing "%s".' % self.right
+            elif token == self.right:
                 return ret
-            elif token == '[':
+            elif token == self.left:
                 ret.append(self._insideBrackets(lexer))
             else:
                 ret.append(self._handleToken(token))
@@ -214,10 +217,10 @@ class Tokenizer:
                 ends.append(args)
                 args = []
             elif conf.supybot.bracketSyntax():
-                if token == '[':
+                if token == self.left:
                     args.append(self._insideBrackets(lexer))
-                elif token == ']':
-                    raise SyntaxError, 'Spurious "]".'
+                elif token == self.right:
+                    raise SyntaxError, 'Spurious "%s".' % self.right
                 else:
                     args.append(self._handleToken(token))
             else:
@@ -241,7 +244,7 @@ def tokenize(s):
             _lastTokenized = s
             tokens = ''
             if conf.supybot.bracketSyntax():
-                tokens = '[]'
+                tokens = conf.supybot.brackets()
             if conf.supybot.pipeSyntax():
                 tokens = '%s|' % tokens
             _lastTokenizeResult = Tokenizer(tokens).tokenize(s)

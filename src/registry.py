@@ -296,6 +296,16 @@ class String(Value):
         except ValueError: # This catches utils.safeEval(s) errors too.
             raise InvalidRegistryValue, '%r is not a string.' % s
 
+class OnlySomeStrings(String):
+    validStrings = ()
+    def setValue(self, s):
+        if s in self.validStrings:
+            String.setValue(self, s)
+        else:
+            raise InvalidRegistryValue, \
+                  '%r is not a valid value.  Valid values include %s.' % \
+                  (utils.commaAndify(map(repr, self.validStrings)))
+
 class NormalizedString(String):
     def set(self, s):
         s = utils.normalizeWhitespace(s.strip())
