@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-'''
+"""
 ansi.py
 
 ANSI Terminal Interface
@@ -37,8 +37,6 @@ ANSI Terminal Interface
 Color Usage:
   print RED + 'this is red' + RESET
   print BOLD + GREEN + WHITEBG + 'this is bold green on white' + RESET
-
-Commands:
   def move(new_x, new_y): 'Move cursor to new_x, new_y'
   def moveUp(lines): 'Move cursor up # of lines'
   def moveDown(lines): 'Move cursor down # of lines'
@@ -48,7 +46,7 @@ Commands:
   def restore(): 'Restores cursor position'
   def clear(): 'Clears screen and homes cursor'
   def clrtoeol(): 'Clears screen to end of line'
-'''
+"""
 
 ################################
 # C O L O R  C O N S T A N T S #
