@@ -75,6 +75,9 @@ conf.registerChannelValue(conf.supybot.plugins.Herald, 'default',
     registry.String('', """Sets the default herald to use.  If a user has a
     personal herald specified, that will be used instead.  If set to the empty
     string, the default herald will be disabled."""))
+conf.registerChannelValue(conf.supybot.plugins.Herald.default, 'notice',
+    registry.Boolean(True, """Determines whether the default herald will be
+    sent as a NOTICE instead of a PRIVMSG."""))
 conf.registerChannelValue(conf.supybot.plugins.Herald.default, 'public',
     registry.Boolean(False, """Determines whether the default herald will be
     sent publicly."""))
@@ -107,10 +110,13 @@ class Herald(callbacks.Privmsg):
                 default = self.registryValue('default', channel)
                 if default:
                     default = plugins.standardSubstitute(irc, msg, default)
+                    msgmaker = ircmsgs.privmsg
+                    if self.registryValue('default.notice', channel):
+                        msgmaker = ircmsgs.notice
                     target = msg.nick
                     if self.registryValue('default.public', channel):
                         target = channel
-                    irc.queueMsg(ircmsgs.privmsg(target, default))
+                    irc.queueMsg(msgmaker(target, default))
                 return
             now = time.time()
             throttle = self.registryValue('throttleTime', channel)
