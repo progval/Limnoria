@@ -41,6 +41,8 @@ __contributors__ = {}
 
 import supybot.plugins as plugins
 
+import time
+
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.privmsgs as privmsgs
@@ -92,7 +94,7 @@ class Time(callbacks.Privmsg):
                 seconds += i
         irc.reply(str(seconds))
 
-    def at(self, irc, msg, args):
+    def _at(self, irc, msg, args):
         """<time string>
 
         Returns the number of seconds since epoch <time string> is.
@@ -101,7 +103,7 @@ class Time(callbacks.Privmsg):
         """
         s = privmsgs.getArgs(args)
 
-    def until(self, irc, msg, args):
+    def _until(self, irc, msg, args):
         """<time string>
 
         Returns the number of seconds until <time string>.
@@ -114,7 +116,7 @@ class Time(callbacks.Privmsg):
         Returns the ctime for <seconds since epoch>, or the current ctime if
         no <seconds since epoch> is given.
         """
-        seconds = privmsgs.getArgs(args)
+        seconds = privmsgs.getArgs(args, required=0, optional=1)
         if seconds:
             try:
                 seconds = float(seconds)
