@@ -206,6 +206,8 @@ class RSS(callbacks.Privmsg):
         self.locks[url].release()
 
     def getFeed(self, url):
+        def error(s):
+            return {'items': [{'title': s}]}
         try:
             # This is the most obvious place to acquire the lock, because a
             # malicious user could conceivably flood the bot with rss commands
@@ -218,13 +220,15 @@ class RSS(callbacks.Privmsg):
                 except sgmllib.SGMLParseError:
                     self.log.exception('Uncaught exception from rssparser:')
                     raise callbacks.Error, 'Invalid (unparseable) RSS feed.'
+                except socket.timeout:
+                    return error('Timeout downloading feed.')
                 self.cachedFeeds[url] = results
                 self.lastRequest[url] = time.time()
             try:
                 return self.cachedFeeds[url]
             except KeyError:
                 self.lastRequest[url] = 0
-                return {'items': [{'title': 'Unable to download feed.'}]}
+                return error('Unable to download feed.')
         finally:
             self.releaseLock(url)
 
