@@ -83,7 +83,11 @@ class ValidNick(registry.String):
 
 class ValidChannel(registry.String):
     def setValue(self, v):
-        if not ircutils.isChannel(v):
+        if ',' in v:
+            (channel, _) = v.split(',', 1)
+        else:
+            channel = v
+        if not ircutils.isChannel(channel):
             raise registry.InvalidRegistryValue, \
                   'Value must be a valid IRC channel name.'
         else:
