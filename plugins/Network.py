@@ -110,7 +110,8 @@ class Network(callbacks.Privmsg):
         otherIrc.die()
         conf.supybot.networks().discard(otherIrc.network)
         if otherIrc != irc:
-            irc.replySuccess('Disconnection to %s initiated.' % otherIrc.network)
+            irc.replySuccess('Disconnection to %s initiated.' %
+                             otherIrc.network)
     disconnect = wrap(disconnect, ['owner', 'networkIrc', additional('text')])
 
     def reconnect(self, irc, msg, args, otherIrc, quitMsg):
