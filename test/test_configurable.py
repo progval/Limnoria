@@ -46,6 +46,7 @@ class DictionaryTestCase(unittest.TestCase):
         t.set('foo', False, '#foo')
         self.assertEqual(t.get('foo', '#foo'), False)
         self.assertEqual(t.get('foo'), True)
+        self.assertEqual(t.getChannels('foo'), {'#foo': False})
         self.assertRaises(KeyError, t.set, 'bar', True)
         self.assertRaises(KeyError, t.set, 'bar', True, '#foo')
         t.set('f-o-o', False)
