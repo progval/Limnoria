@@ -208,6 +208,8 @@ class queue(object):
         return 'queue([%s])' % ', '.join(map(repr, self))
 
     def __getitem__(self, oidx):
+        if len(self) == 0:
+            raise IndexError, 'queue index out of range'
         if type(oidx) == types.SliceType:
             L = []
             for i in xrange(*sliceIndices(oidx, len(self))):
@@ -223,6 +225,8 @@ class queue(object):
                 return self.back[(idx-len(self.front))]
         
     def __setitem__(self, oidx, value):
+        if len(self) == 0:
+            raise IndexError, 'queue index out of range'
         if type(oidx) == types.SliceType:
             range = xrange(*sliceIndices(oidx, len(self)))
             if len(range) != len(value):
