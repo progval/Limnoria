@@ -113,16 +113,20 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
 
-    if not args or len(args) > 1:
-        parser.error() 
-
-    registryFilename = args.pop()
-    try:
-        registry.open(registryFilename)
-    except registry.InvalidRegistryFile, e:
-        sys.stderr.write(str(e))
-        sys.stderr.write('\n')
-        sys.exit(-1)
+    if len(args) > 1:
+        parser.error()
+    elif not args:
+        print 'No registry file given; starting with a clean slate.'
+        print 'Output registry will be written to registry.conf.'
+        registryFilename = 'registry.conf'
+    else:
+        registryFilename = args.pop()
+        try:
+            registry.open(registryFilename)
+        except registry.InvalidRegistryFile, e:
+            sys.stderr.write(str(e))
+            sys.stderr.write('\n')
+            sys.exit(-1)
 
     import log
     import conf
