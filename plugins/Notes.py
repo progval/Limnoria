@@ -42,20 +42,16 @@ import privmsgs
 import callbacks
 import ircutils
 
-class Notes(DBHandler, callbacks.Privmsg):
+class Notes(callbacks.Privmsg):
     
     def __init__(self):
-        DBHandler.__init__(self)
         callbacks.Privmsg.__init__(self)
         self.filename = os.path.join(conf.dataDir, 'Notes.db')
         if os.path.exists(self.filename):
             self.db = sqlite.connect(self.filename)
             self.cursor = self.db.cursor()
-            print "makeDB not called"
         else:
             self.makeDB()
-            print "makeDB called"
-
 
     def makeDB(self):
         "create Notes database and tables"
@@ -74,28 +70,24 @@ class Notes(DBHandler, callbacks.Privmsg):
                                public BOOLEAN,
                                note TEXT
                                )""")
-        self.cursor.execute("""CREATE INDEX users_username 
-                               ON users (name)""")
+        self.cursor.execute("""CREATE INDEX users_username ON users (name)""")
         self.db.commit()
    
     def _addUser(self, username):
         "not callable from channel, used to add users to database"
-        self.cursor.execute("""INSERT INTO users
-                               VALUES (NULL,'%s')""" % username)
+        self.cursor.execute('INSERT INTO users VALUES (NULL,%s)' % username)
         self.db.commit()
         
     def getUserID(self, username):
-        self.cursor.execute("""SELECT id FROM users 
-                               where name='%s'""" % username)
+        self.cursor.execute('SELECT id FROM users where name=%s' % username)
         if self.cursor.rowcount != 0:
             results = self.cursor.fetchall()
             return results[0]
         else: # this should NEVER happen
-            return "ERROR LOOKING UP USERID"
+            assert False
 
     def getUserName(self, userid):
-        self.cursor.execute("""SELECT name FROM users
-                               WHERE id=%d""" % userid)
+        self.cursor.execute('SELECT name FROM users WHERE id=%s' % userid)
         if self.cursor.rowcount != 0:
             results = self.cursor.fetchall()
             return results[0]
@@ -105,9 +97,7 @@ class Notes(DBHandler, callbacks.Privmsg):
     def setNoteUnread(self, irc, msg, args):
         "set a note as unread"
         noteid = privmsgs.getArgs(args) 
-        self.cursor.execute("""UPDATE notes
-                               SET read='False'
-                               where id = %d""" % int(noteid))
+        self.cursor.execute('UPDATE notes SET read=False where id=%s'% noteid)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)    
     
@@ -122,15 +112,19 @@ class Notes(DBHandler, callbacks.Privmsg):
             n = irc.state.nickToHostmask(name)
             recipient = ircdb.users.getUserName(n)
         self._addUser(sender)
+        print "added sender: %s" % sender
         self._addUser(recipient)
+        print "added recipient: %s" % recipient
         senderID = self.getUserID(sender)
+        print "senderID: %s" % senderID
         recipID = self.getUserID(recipient)
-        if ircutils.isChannel(msg.args[0]): public = "True"
-        else: public = "False"
+        print "recipID: %s" % recipID
+        if ircutils.isChannel(msg.args[0]): public = True
+        else: public = False
         self.cursor.execute("""INSERT INTO notes VALUES 
-                               (NULL, %d, %d, %d, %s, %s, %s)""", 
-                               int(senderID), int(recipID), time.time(),
-                               'False', public, note)
+                               (NULL, %s, %s, %s, %s, %s, %s)""", 
+                               senderID, recipID, int(time.time()),
+                               False, public, note)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
