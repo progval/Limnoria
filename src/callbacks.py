@@ -91,11 +91,14 @@ def canonicalName(command):
     """
     return command.translate(string.ascii, '\t -_').lower()
 
-def reply(msg, s):
+def reply(msg, s, prefixName=True):
     """Makes a reply to msg with the payload s"""
     s = ircutils.safeArgument(s)
     if ircutils.isChannel(msg.args[0]):
-        m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (msg.nick, s))
+        if prefixName:
+            m = ircmsgs.privmsg(msg.args[0], '%s: %s' % (msg.nick, s))
+        else:
+            m = ircmsgs.privmsg(msg.args[0], s)
     else:
         m = ircmsgs.privmsg(msg.nick, s)
     return m
@@ -281,6 +284,8 @@ class IrcObjectProxy:
             self.args = args
             self.counter = 0
             self.finalEvaled = False
+            self.prefixName = True
+            self.noLengthCheck = False
             world.commandsProcessed += 1
             self.evalArgs()
 
@@ -345,12 +350,14 @@ class IrcObjectProxy:
             debug.recoverableException()
             self.error(self.msg, debug.exnToString(e))
 
-    def reply(self, msg, s, noLengthCheck=False):
+    def reply(self, msg, s, noLengthCheck=False, prefixName=True):
+        self.noLengthCheck |= noLengthCheck
+        self.prefixName &= prefixName
         if self.finalEvaled:
             if isinstance(self.irc, self.__class__):
-                self.irc.reply(msg, s, noLengthCheck)
-            elif noLengthCheck:
-                self.irc.queueMsg(reply(msg, s))
+                self.irc.reply(msg, s, self.noLengthCheck, self.prefixName)
+            elif self.noLengthCheck:
+                self.irc.queueMsg(reply(msg, s, self.prefixName))
             else:
                 # The size of a PRIVMSG is:
                 # 1 for the colon
@@ -378,7 +385,7 @@ class IrcObjectProxy:
                                 utils.nItems(len(msgs), 'message', 'more')
                 mask = msg.prefix.split('!', 1)[1]
                 Privmsg._mores[mask] = msgs
-                self.irc.queueMsg(reply(msg, response))
+                self.irc.queueMsg(reply(msg, response, self.prefixName))
         else:
             self.args[self.counter] = s
             self.evalArgs()
@@ -433,8 +440,8 @@ class CommandThread(threading.Thread):
             start = time.time()
             threading.Thread.run(self)
             elapsed = time.time() - start
-            debug.msg('%s took %s seconds.' % \
-                      (self.commandName, elapsed), 'verbose')
+            debug.msg('%s.%s took %s seconds.' % \
+                      (self.className, self.commandName, elapsed), 'verbose')
         except (getopt.GetoptError, ArgumentError):
             if hasattr(self.command, '__doc__'):
                 help = self.command.__doc__.splitlines()[0]
@@ -543,7 +550,8 @@ class Privmsg(irclib.IrcCallback):
             f(irc, msg, args)
             elapsed = time.time() - start
             funcname = f.im_func.func_name
-            debug.msg('%s took %s seconds' % (funcname, elapsed), 'verbose')
+            debug.msg('%s.%s took %s seconds' % \
+                      (f.im_class.__name__, funcname, elapsed), 'verbose')
 
     _r = re.compile(r'^([^\s[]+)(?:\[|\s+|$)')
     def doPrivmsg(self, irc, msg):
