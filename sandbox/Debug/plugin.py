@@ -44,7 +44,6 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 from supybot.commands import *
-import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 def getTracer(fd):

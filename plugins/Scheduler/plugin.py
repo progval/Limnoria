@@ -33,7 +33,6 @@ import time
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.privmsgs as privmsgs
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
 
