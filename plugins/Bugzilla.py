@@ -48,7 +48,7 @@ from htmlentitydefs import entitydefs as entities
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.plugins as plugins
-from supybot.commands import wrap
+from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -98,7 +98,7 @@ conf.registerChannelValue(conf.supybot.plugins.Bugzilla, 'snarfTarget',
 
 class Bugzillae(registry.SpaceSeparatedListOfStrings):
     List = ircutils.IrcSet
-    
+
 conf.registerGlobalValue(conf.supybot.plugins.Bugzilla, 'bugzillae',
     Bugzillae([], """Determines what bugzillae will be added to the bot when it
     starts."""))
@@ -147,7 +147,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         query.append('ctype=csv')
         return query
 
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, name, url, description):
         """<name> <url> [<description>]
 
         Add a bugzilla <url> to the list of defined bugzillae. <name>
@@ -156,7 +156,6 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         <description> is the common name for the bugzilla and will
         be listed with the bugzilla query; if not given, it defaults to <name>.
         """
-        (name, url, description) = privmsgs.getArgs(args,required=2,optional=1)
         if not description:
             description = name
         if url[-1] == '/':
@@ -165,14 +164,14 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         registerBugzilla(name, url, description)
         self.shorthand = utils.abbrev(self.db.keys())
         irc.replySuccess()
+    add = wrap(add, ['text', 'url', additional('text')])
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, name):
         """<abbreviation>
 
         Remove the bugzilla associated with <abbreviation> from the list of
         defined bugzillae.
         """
-        name = privmsgs.getArgs(args)
         try:
             name = self.shorthand[name]
             del self.db[name]
@@ -182,14 +181,14 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         except KeyError:
             s = self.registryValue('replyNoBugzilla', msg.args[0])
             irc.error(s % name)
+    remove = wrap(remove, ['text'])
 
-    def list(self, irc,  msg, args):
+    def list(self, irc,  msg, args, name):
         """[<abbreviation>]
 
         List defined bugzillae. If <abbreviation> is specified, list the
         information for that bugzilla.
         """
-        name = privmsgs.getArgs(args, required=0, optional=1)
         if name:
             try:
                 name = self.shorthand[name]
@@ -205,10 +204,11 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply(utils.commaAndify(L))
             else:
                 irc.reply('I have no defined bugzillae.')
+    list = wrap(list, [additional('text')])
 
     def bugzSnarf(self, irc, msg, match):
         r"""\bbug\b(?:id|ids|#)?\s+(?:id|ids|#)?(?P<bug>\d+)"""
-      
+
         snarfTarget = self.registryValue('snarfTarget')
         if not snarfTarget:
             return
@@ -304,18 +304,16 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         u.close()
         return bugs
 
-    def search(self, irc, msg, args):
+    def search(self, irc, msg, args, optlist, name, searchstr):
         """[--keywords=<keyword>] <bugzilla name> <search string in desc>
 
         Look for bugs with <search string in the desc>, also matching
         <keywords>. <keywords> can be statuses, severities, priorities, or
         resolutions, separated by commas"""
         keywords = None
-        (optlist, rest) = getopt.getopt(args, '', ['keywords='])
         for (option, arguments) in optlist:
-            if option == '--keywords':
+            if option == 'keywords':
                 keywords = arguments.split(',')
-        (name,searchstr)= privmsgs.getArgs(rest, required=2)
         if not keywords:
             keywords = ['UNCONFIRMED', 'NEW', 'ASSIGNED', 'REOPENED']
         query = self.keywords2query(keywords)
@@ -339,13 +337,13 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
             (utils.nItems('bug', len(bugs)), searchstr,
              ' AND '.join(keywords), utils.commaAndify(map(str, bugids)))
         irc.reply(s)
+    search = wrap(search, [getopts({'keywords':'text'}), 'text', 'text'])
 
-    def bug(self, irc, msg, args):
+    def bug(self, irc, msg, args, name, number):
         """<abbreviation> <number>
 
         Look up bug <number> in the bugzilla associated with <abbreviation>.
         """
-        (name, number) = privmsgs.getArgs(args, required=2)
         try:
             name = self.shorthand[name]
             (url, description) = self.db[name]
@@ -371,6 +369,7 @@ class Bugzilla(callbacks.PrivmsgCommandAndRegexp):
         report['summary'] = self._mk_summary_string(summary, bold)
         s = '%(zilla)s bug #%(id)s: %(title)s %(summary)s %(url)s' % report
         irc.reply(s)
+    bug = wrap(bug, ['text', ('id', 'bug')])
 
     def _mk_summary_string(self, summary, bold):
         L = []

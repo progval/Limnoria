@@ -30,7 +30,7 @@
 from testsupport import *
 
 if network:
-    class BugzillaTest(PluginTestCase, PluginDocumentation):
+    class BugzillaTest(ChannelPluginTestCase):
         plugins = ('Bugzilla',)
         def testBug(self):
             self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
@@ -44,25 +44,31 @@ if network:
 
         def testSearch(self):
             self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
-            self.assertNotError('search gcc alpha')
-            self.assertNotError('search --keywords=fixed gcc alpha')
+            self.assertNotError('bugzilla search gcc alpha')
+            self.assertNotError('bugzilla search --keywords=fixed gcc alpha')
 
         def testConfigBugzillaSnarfer(self):
-            self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
-            conf.supybot.plugins.bugzilla.bugSnarfer.setValue(False)
-            self.assertNoResponse(
+            try:
+                self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
+                conf.supybot.plugins.bugzilla.bugSnarfer.setValue(False)
+                self.assertSnarfNoResponse(
                             'http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
-            conf.supybot.plugins.bugzilla.bugSnarfer.setValue(True)
-            self.assertNotError(
+                conf.supybot.plugins.bugzilla.bugSnarfer.setValue(True)
+                self.assertSnarfNotError(
                             'http://gcc.gnu.org/bugzilla/show_bug.cgi?id=5')
+            finally:
+                conf.supybot.plugins.bugzilla.bugSnarfer.setValue(False)
 
         def testConfigBugSnarfer(self):
-            self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
-            conf.supybot.plugins.bugzilla.snarfTarget.setValue('gcc')
-            conf.supybot.plugins.bugzilla.bugSnarfer.setValue(False)
-            self.assertNoResponse('blah blah bug 5')
-            conf.supybot.plugins.bugzilla.bugSnarfer.setValue(True)
-            self.assertNotError('blah blah bug 5')
+            try:
+                self.assertNotError('add gcc http://gcc.gnu.org/bugzilla gcc')
+                conf.supybot.plugins.bugzilla.snarfTarget.setValue('gcc')
+                conf.supybot.plugins.bugzilla.bugSnarfer.setValue(False)
+                self.assertNoResponse('blah blah bug 5')
+                conf.supybot.plugins.bugzilla.bugSnarfer.setValue(True)
+                self.assertNotError('blah blah bug 5')
+            finally:
+                conf.supybot.plugins.bugzilla.bugSnarfer.setValue(False)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
