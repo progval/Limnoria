@@ -91,13 +91,14 @@ class Channel(callbacks.Privmsg):
     voice = privmsgs.checkChannelCapability(voice, 'voice')
 
     def deop(self, irc, msg, args, channel):
-        """[<channel>] <nick> [<nick> ...]
+        """[<channel>] [<nick> ...]
 
         If you have the #channel.op capability, this will remove operator
-        privileges from all the nicks given.
+        privileges from all the nicks given.  If no nicks are given, removes
+        operator privileges from the person sending the message.
         """
         if not args:
-            raise callbacks.ArgumentError
+            args.append(msg.nick)
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.deops(channel, args))
         else:
@@ -105,13 +106,14 @@ class Channel(callbacks.Privmsg):
     deop = privmsgs.checkChannelCapability(deop, 'op')
     
     def dehalfop(self, irc, msg, args, channel):
-        """[<channel>] <nick> [<nick> ...]
+        """[<channel>] [<nick> ...]
 
         If you have the #channel.op capability, this will remove half-operator
-        privileges from all the nicks given.
+        privileges from all the nicks given.  If no nicks are given, removes
+        half-operator privileges from the person sending the message.
         """
         if not args:
-            raise callbacks.ArgumentError
+            args.append(msg.nick)
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.dehalfops(channel, args))
         else:
@@ -119,13 +121,14 @@ class Channel(callbacks.Privmsg):
     dehalfop = privmsgs.checkChannelCapability(dehalfop, 'op')
     
     def devoice(self, irc, msg, args, channel):
-        """[<channel>] <nick> [<nick> ...]
+        """[<channel>] [<nick> ...]
 
         If you have the #channel.op capability, this will remove voice from all
-        the nicks given.
+        the nicks given.  If no nicks are given, removes voice from the person
+        sending the message.
         """
         if not args:
-            raise callbacks.ArgumentError
+            args.append(msg.nick)
         if irc.nick in irc.state.channels[channel].ops:
             irc.queueMsg(ircmsgs.devoices(channel, args))
         else:
