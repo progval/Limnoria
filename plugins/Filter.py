@@ -78,7 +78,7 @@ class Filter(callbacks.Privmsg):
 
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary', 'lithp',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
-                       'supa1337']
+                       'supa1337', 'colorstrip']
     def outfilter(self, irc, msg, args, channel):
         """[<channel>] [<command>]
         
@@ -343,6 +343,14 @@ class Filter(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         L = [self._color(c) for c in text]
         irc.reply(''.join(L))
+
+    def colorstrip(self, irc, msg, args):
+        """<text>
+
+        Returns <text> stripped of all color codes.
+        """
+        text = privmsgs.getArgs(args)
+        irc.reply(ircutils.unColor(text))
 
     def jeffk(self, irc, msg, args):
         """<text>

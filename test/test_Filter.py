@@ -81,6 +81,11 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotRegexp('colorize foobar', r'\s+')
         self.assertRegexp('colorize foobar', r'\x03')
 
+    _strings = ('Supybot pwns!', '123456', 'A string with \x02bold\x15')
+    def testColorstrip(self):
+        for s in self._strings:
+            self.assertResponse('colorstrip [colorize %s]' % s, s)
+
     def testOutfilter(self):
         s = self.nick.encode('rot13')
         self.assertNotError('outfilter rot13')
@@ -102,7 +107,5 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
         self.failUnless(ircmsgs.isAction(m))
         s = ircmsgs.unAction(m)
         self.assertEqual(s, 'sbbone')
-        
-        
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

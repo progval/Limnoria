@@ -176,12 +176,23 @@ class FunctionsTestCase(SupyTestCase):
                          ['+be-l', plusB[1], plusE[1]])
 
     def testUnColor(self):
+        self.assertEqual(ircutils.unColor('\x02bold\x0302,04foo\x03bar\x0f'),
+                                          '\x02boldfoobar\x0f')
         self.assertEqual(ircutils.unColor('\x03foo\x03'), 'foo')
         self.assertEqual(ircutils.unColor('\x03foo\x0F'), 'foo')
         self.assertEqual(ircutils.unColor('\x0312foo\x03'), 'foo')
         self.assertEqual(ircutils.unColor('\x0312,14foo\x03'), 'foo')
+        self.assertEqual(ircutils.unColor('\x03,14foo\x03'), 'foo')
+        self.assertEqual(ircutils.unColor('\x03,foo\x03'), ',foo')
+        # These tests aren't going to pass until I decide how to handle
+        # stripping of \x0f.  We don't want to just rampantly remove \x0f
+        # because it may be a clear code from some other formatting.  Leaving
+        # it in doesn't adversely affect anything, so for now I'm not removing
+        # it.
         self.assertEqual(ircutils.unColor('\x0312foo\x0F'), 'foo')
         self.assertEqual(ircutils.unColor('\x0312,14foo\x0F'), 'foo')
+        self.assertEqual(ircutils.unColor('\x03,14foo\x0F'), 'foo')
+        self.assertEqual(ircutils.unColor('\x03,foo\x0F'), ',foo')
 
     def testDccIpStuff(self):
         def randomIP():

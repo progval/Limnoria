@@ -315,7 +315,7 @@ def canonicalColor(s, bg=False, shift=0):
     else:
         return (fg, None)
 
-_unColorRe = re.compile('(?:\x03\\d{1,2},\\d{1,2})|\x03\\d{1,2}|\x03|\x0F')
+_unColorRe = re.compile(r'\x03(?:\d{1,2},\d{1,2}|\d{1,2}|,\d{1,2}|)')
 def unColor(s):
     """Removes the color from a string."""
     return _unColorRe.sub('', s)
