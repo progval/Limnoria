@@ -233,7 +233,6 @@ class Network(callbacks.Privmsg):
         only necessary if the network is different than the network the command
         is sent on.
         """
-        otherIrc = self._getIrc(network)
         # The double nick here is necessary because single-nick WHOIS only works
         # if the nick is on the same server (*not* the same network) as the user
         # giving the command.  Yeah, it made me say wtf too.
