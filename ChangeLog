@@ -18,6 +18,11 @@
 	
 	* Added a ranking to ChannelDB.wordstats.
 	
+	* Added Karma.most for determining various "mosts" in the Karma
+	database.
+	
+	* Added User.list command to list registered users.
+	
 	* Added 'roulette' command to Fun plugin.
 	
 	* Added a Channel.lobotomies command to list the channels in which
@@ -34,17 +39,12 @@
 	
 	* Fixed Http.freshmeat for projects with a space in their names.
 	
-	* Added Karma.most for determining various "mosts" in the Karma
-	database.
-	
 	* Changed RSS so RSS feed commands may be added while the bot is
 	running, and so added RSS feed commands are in the RSS plugin.
 	
 	* Changed Lookup so added lookups are added in the Lookup plugin
 	itself so there's no dependency on Alias, and so loaded lookups
 	can be seen via 'list Lookup'.
-	
-	* Added User.list command to list registered users.
 	
 	* Fixed bug #850931 as well as several other minor bugs in
 	Utilities.re.
