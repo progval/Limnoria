@@ -443,7 +443,7 @@ class RichReplyMethodsTestCase(PluginTestCase):
 
 
 class WithPrivateNoticeTestCase(ChannelPluginTestCase):
-    plugins = ()
+    plugins = ('Utilities',)
     class WithPrivateNotice(callbacks.Privmsg):
         def normal(self, irc, msg, args):
             irc.reply('should be with private notice')
@@ -488,6 +488,18 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
             self.failUnless(ircutils.isChannel(m.args[0]))
         finally:
             conf.supybot.reply.withNoticeWhenPrivate.setValue(orig)
+
+    def testWithNoticeWhenPrivateNotChannel(self):
+        original = conf.supybot.reply.withNoticeWhenPrivate()
+        try:
+            conf.supybot.reply.withNoticeWhenPrivate.setValue(True)
+            m = self.assertNotError("eval irc.reply('y',to='x',private=True)")
+            self.failUnless(m.command == 'NOTICE')
+            m = self.getMsg(' ')
+            m = self.assertNotError("eval irc.reply('y',to='#x',private=True)")
+            self.failIf(m.command == 'NOTICE')
+        finally:
+            conf.supybot.reply.withNoticeWhenPrivate.setValue(original)
 
 
 
