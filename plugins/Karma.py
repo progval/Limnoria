@@ -57,13 +57,13 @@ conf.registerPlugin('Karma')
 conf.registerChannelValue(conf.supybot.plugins.Karma, 'simpleOutput',
     registry.Boolean(False, """Determines whether the bot will output shorter
     versions of the karma output when requesting a single thing's karma."""))
-conf.registerChannelValue(conf.supybot.plugins.Karma, 'karmaResponse',
+conf.registerChannelValue(conf.supybot.plugins.Karma, 'response',
     registry.Boolean(False, """Determines whether the bot will reply with a
     success message when something's karma is incrneased or decreased."""))
-conf.registerChannelValue(conf.supybot.plugins.Karma, 'karmaRankingDisplay',
+conf.registerChannelValue(conf.supybot.plugins.Karma, 'rankingDisplay',
     registry.Integer(3, """Determines how many highest/lowest karma things are
     shown when karma is called with no arguments."""))
-conf.registerChannelValue(conf.supybot.plugins.Karma, 'karmaMostDisplay',
+conf.registerChannelValue(conf.supybot.plugins.Karma, 'mostDisplay',
     registry.Integer(25, """Determines how many karma things are shown when
     the most command is called.'"""))
 
@@ -154,7 +154,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                 irc.reply('I didn\'t know the karma for any '
                                'of those things.')
         else: # No name was given.  Return the top/bottom N karmas.
-            limit = self.registryValue('karmaRankingDisplay', channel)
+            limit = self.registryValue('rankingDisplay', channel)
             cursor.execute("""SELECT name, added-subtracted
                               FROM karma
                               ORDER BY added-subtracted DESC
@@ -192,7 +192,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                 orderby = 'added+subtracted'
             sql = "SELECT name, %s FROM karma ORDER BY %s DESC LIMIT %s" % \
                   (orderby, orderby,
-                   self.registryValue('karmaMostDisplay', channel))
+                   self.registryValue('mostDisplay', channel))
             db = self.getDb(channel)
             cursor = db.cursor()
             cursor.execute(sql)
@@ -215,7 +215,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
         cursor.execute("""UPDATE karma
                           SET added=added+1
                           WHERE normalized=%s""", normalized)
-        if self.registryValue('karmaResponse', msg.args[0]):
+        if self.registryValue('response', msg.args[0]):
             irc.replySuccess()
 
     def decreaseKarma(self, irc, msg, match):
@@ -229,7 +229,7 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
         cursor.execute("""UPDATE karma
                           SET subtracted=subtracted+1
                           WHERE normalized=%s""", normalized)
-        if self.registryValue('karmaResponse', msg.args[0]):
+        if self.registryValue('response', msg.args[0]):
             irc.replySuccess()
 
 

@@ -69,30 +69,37 @@ if sqlite is not None:
                               'Karma for \'MoO\'.*increased 1.*total.*1')
 
         def testKarmaRankingDisplayConfigurable(self):
-            self.assertNotError('karma config karma-response on')
-            self.assertNotError('foo++')
-            self.assertNotError('foo++')
-            self.assertNotError('foo++')
-            self.assertNotError('foo++')
-            self.assertNotError('bar++')
-            self.assertNotError('bar++')
-            self.assertNotError('bar++')
-            self.assertNotError('baz++')
-            self.assertNotError('baz++')
-            self.assertNotError('quux++')
-            self.assertNotError('xuuq--')
-            self.assertNotError('zab--')
-            self.assertNotError('zab--')
-            self.assertNotError('rab--')
-            self.assertNotError('rab--')
-            self.assertNotError('rab--')
-            self.assertNotError('oof--')
-            self.assertNotError('oof--')
-            self.assertNotError('oof--')
-            self.assertNotError('oof--')
-            self.assertRegexp('karma', 'foo.*bar.*baz.*oof.*rab.*zab')
-            self.assertNotError('karma config karma-ranking-display 4')
-            self.assertRegexp('karma', 'foo.*bar.*baz.*quux')
+            try:
+                orig = conf.supybot.plugins.Karma.response()
+                conf.supybot.plugins.Karma.response.setValue(True)
+                self.assertNotError('foo++')
+                self.assertNotError('foo++')
+                self.assertNotError('foo++')
+                self.assertNotError('foo++')
+                self.assertNotError('bar++')
+                self.assertNotError('bar++')
+                self.assertNotError('bar++')
+                self.assertNotError('baz++')
+                self.assertNotError('baz++')
+                self.assertNotError('quux++')
+                self.assertNotError('xuuq--')
+                self.assertNotError('zab--')
+                self.assertNotError('zab--')
+                self.assertNotError('rab--')
+                self.assertNotError('rab--')
+                self.assertNotError('rab--')
+                self.assertNotError('oof--')
+                self.assertNotError('oof--')
+                self.assertNotError('oof--')
+                self.assertNotError('oof--')
+                self.assertRegexp('karma', 'foo.*bar.*baz.*oof.*rab.*zab')
+                original = conf.supybot.plugins.Karma.rankingDisplay()
+                conf.supybot.plugins.Karma.rankingDisplay.setValue(4)
+                self.assertRegexp('karma', 'foo.*bar.*baz.*quux')
+            finally:
+                conf.supybot.plugins.Karma.response.setValue(orig)
+                conf.supybot.plugins.Karma.rankingDisplay.setValue(original)
+                
 
         def testMost(self):
             self.assertError('most increased')
@@ -116,16 +123,24 @@ if sqlite is not None:
             self.assertRegexp('karma most decreased', 'foo.*bar')
 
         def testSimpleOutput(self):
-            self.assertNotError('karma config simple-output on')
-            self.assertNoResponse('foo++', 2)
-            self.assertResponse('karma foo', 'foo: 1')
-            self.assertNoResponse('bar--', 2)
-            self.assertResponse('karma bar', 'bar: -1')
+            try:
+                orig = conf.supybot.plugins.Karma.simpleOutput()
+                conf.supybot.plugins.Karma.simpleOutput.setValue(True)
+                self.assertNoResponse('foo++', 2)
+                self.assertResponse('karma foo', 'foo: 1')
+                self.assertNoResponse('bar--', 2)
+                self.assertResponse('karma bar', 'bar: -1')
+            finally:
+                conf.supybot.plugins.Karma.simpleOutput.setValue(orig)
 
         def testKarmaOutputConfigurable(self):
             self.assertNoResponse('foo++', 2)
-            self.assertNotError('karma config karma-response on')
-            self.assertNotError('foo++')
+            try:
+                orig = conf.supybot.plugins.Karma.response()
+                conf.supybot.plugins.Karma.response.setValue(True)
+                self.assertNotError('foo++')
+            finally:
+                conf.supybot.plugins.Karma.response.setValue(orig)
 
         def testKarmaMostDisplayConfigurable(self):
             self.assertNoResponse('foo++', 1)
@@ -137,10 +152,15 @@ if sqlite is not None:
             self.assertNoResponse('foo--', 1)
             self.assertNoResponse('foo--', 1)
             self.assertNoResponse('foo--', 1)
-            self.assertNotError('karma config karma-most-display 1')
-            self.assertRegexp('karma most active', '(?!bar)')
-            self.assertNotError('karma config karma-most-display 25')
-            self.assertRegexp('karma most active', 'bar')
+            try:
+                orig = conf.supybot.plugins.Karma.mostDisplay()
+                conf.supybot.plugins.Karma.mostDisplay.setValue(1)
+                self.assertRegexp('karma most active', '(?!bar)')
+                conf.supybot.plugins.Karma.mostDisplay.setValue(25)
+                self.assertRegexp('karma most active', 'bar')
+            finally:
+                conf.supybot.plugins.Karma.mostDisplay.setValue(orig)
+                
 
         def testIncreaseKarmaWithNickNotCallingInvalidCommand(self):
             self.assertNoResponse('%s: foo++' % self.irc.nick, 3)
