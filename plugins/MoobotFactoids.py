@@ -409,8 +409,9 @@ class MoobotFactoids(callbacks.Privmsg):
         elif 'is' in tokens:
             p = 'is'.__eq__
         else:
-            s = 'Invalid tokens for {add,change}Factoid: %s' % \
-                utils.quoted(tokens)
+            self.log.debug('Invalid tokens for {add,replace}Factoid: %s.',
+                           tokens)
+            s = 'Missing an \'is\' or \'_is_\'.'
             raise ValueError, s
         (key, newfact) = map(' '.join, utils.itersplit(p, tokens, maxsplit=1))
         key = self._sanitizeKey(key)
@@ -420,7 +421,10 @@ class MoobotFactoids(callbacks.Privmsg):
         # First, check and see if the entire message matches a factoid key
         channel = plugins.getChannel(msg.args[0])
         id = self._getUserId(irc, msg.prefix)
-        (key, fact) = self._getKeyAndFactoid(tokens)
+        try:
+            (key, fact) = self._getKeyAndFactoid(tokens)
+        except ValueError, e:
+            irc.error(str(e), Raise=True)
         # Check and make sure it's not in the DB already
         if self.db.getFactoid(channel, key):
             irc.error('Factoid "%s" already exists.' % key, Raise=True)
@@ -466,7 +470,10 @@ class MoobotFactoids(callbacks.Privmsg):
         channel = plugins.getChannel(msg.args[0])
         id = self._getUserId(irc, msg.prefix)
         del tokens[0] # remove the "no,"
-        (key, fact) = self._getKeyAndFactoid(tokens)
+        try:
+            (key, fact) = self._getKeyAndFactoid(tokens)
+        except ValueError, e:
+            irc.error(str(e), Raise=True)
         _ = self._getFactoid(irc, channel, key)
         self._checkNotLocked(irc, channel, key)
         self.db.removeFactoid(channel, key)
