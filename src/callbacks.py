@@ -300,9 +300,10 @@ class IrcObjectProxy:
                     self.reply(self.msg, '[%s]' % ' '.join(self.args))
         except ArgumentError:
             if hasattr(command, '__doc__'):
-                self.reply(self.msg, command.__doc__.splitlines()[0])
+                s = '%s %s' % (name, command.__doc__.splitlines()[0])
             else:
-                self.reply(self.msg, 'Invalid arguments.')
+                s = 'Invalid arguments for %s.' % name
+            self.reply(self.msg, s)
         except (SyntaxError, Error), e:
             self.reply(self.msg, debug.exnToString(e))
         except Exception, e:
@@ -365,7 +366,12 @@ class CommandThread(threading.Thread):
             debug.msg('%s took %s seconds.' % \
                       (self.commandName, elapsed), 'verbose')
         except ArgumentError:
-            self.irc.reply(self.msg, self.command.__doc__.splitlines()[0])
+            if hasattr(self.command, '__doc__'):
+                help = self.command.__doc__.splitlines()[0]
+                s = '%s %s' % (self.commandName, help)
+            else:
+                s = 'Invalid arguments for %s.' % self.commandName
+            self.irc.reply(self.msg, s)
         except (SyntaxError, Error), e:
             self.irc.reply(self.msg, debug.exnToString(e))
         except Exception, e:
