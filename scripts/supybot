@@ -86,7 +86,7 @@ def main():
                     continue
             else:
                 interrupted = True
-                log.info('Exiting due to Ctrl-C at console.  '
+                log.info('Exiting due to Ctrl-C.  '
                          'If the bot doesn\'t exit within a few seconds, '
                          'feel free to press Ctrl-C again to make it exit '
                          'without flushing its message queues.')
