@@ -58,7 +58,8 @@ def genHeader(title, meta=''):
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>%s</title>
-    <link rel="stylesheet" type="text/css" href="http://supybot.sourceforge.net/css/supybot.css">
+    <link rel="stylesheet" type="text/css"
+          href="http://supybot.sourceforge.net/css/supybot.css">
     %s
     <body><div>
     """ % (title, meta)
@@ -87,12 +88,12 @@ def prepIndex():
     directory = os.path.join('docs', 'plugins')
     if not os.path.exists(directory):
         os.mkdir(directory)
-    fd = file(os.path.join(directory, 'plugins.html'), 'w')
-    fd.write(textwrap.dedent("""
+    fd = file(os.path.join('docs', 'plugins.html'), 'w')
+    fd.write(textwrap.dedent('''
         %s
         <div class="maintitle">Supybot Plugin Documentation Index</div>
         <br />
-        """ % genHeader('Supybot Plugin Documentation')))
+        ''' % genHeader('Supybot Plugin Documentation')))
     fd.close()
 
 def makePluginDocumentation(pluginWindow):
@@ -112,23 +113,22 @@ def makePluginDocumentation(pluginWindow):
     directory = os.path.join('docs', 'plugins')
     if not os.path.exists(directory):
         os.mkdir(directory)
-    id = file(os.path.join(directory, 'plugins.html'), 'a')
-    id.write(textwrap.dedent("""
-    <strong><a href="%s.html">%s</a></strong> 
-    """ % (pluginName, cpluginName)))
+    id = file(os.path.join('docs', 'plugins.html'), 'a')
+    id.write('<strong><a href="%s.html">%s</a></strong>\n' %
+             (pluginName, cpluginName))
     fd = file(os.path.join(directory,'%s.html' % pluginName), 'w')
     title = 'Documentation for the %s plugin for Supybot' % pluginName
-    meta = """
+    meta = '''
     <link rel="home" title="Plugin Documentation Index" href="index.html">
-    <link rel="next" href="%s.html">
-    <link rel="previous" href="%s.html">
-    """ % (next, prev)
-    fd.write(textwrap.dedent("""
+    <link rel="next" href="plugins/%s.html">
+    <link rel="previous" href="plugins/%s.html">
+    ''' % (next, prev)
+    fd.write(textwrap.dedent('''
     %s
     <div class="plugintitle">%s</div><br /><table>
     <tr id="headers"><td>Command</td><td>Args</td><td>
     Detailed Help</td></tr>
-    """) % (genHeader(title, meta), cgi.escape(module.__doc__ or "")))
+    ''' % (genHeader(title, meta), cgi.escape(module.__doc__ or ""))))
     attrs = [x for x in dir(plugin) if plugin.isCommand(x) and not
              x.startswith('_')]
     id.write('(%s)<br />\n' % ', '.join(attrs))
@@ -151,37 +151,26 @@ def makePluginDocumentation(pluginWindow):
             help = cgi.escape(help)
             morehelp = cgi.escape(morehelp)
             trClass = trClasses[trClass]
-            fd.write(textwrap.dedent("""
+            fd.write(textwrap.dedent('''
             <tr class="%s" name="%s" id="%s"><td>%s</td><td>%s</td>
             <td class="detail">%s</td></tr>
-            """) % (trClass, attr, attr, attr, help, morehelp))
-    fd.write(textwrap.dedent("""
-    </table>
-    """))
-    if hasattr(module, 'example'):
-        s = module.example.encode('string-escape')
-        s = s.replace('\\n', '\n')
-        s = s.replace("\\'", "'")
-        fd.write(textwrap.dedent("""
-        <h2><p>Here's an example session with this plugin:</p></h2>
-        <pre>
-        %s
-        </pre>
-        """) % cgi.escape(s))
-    fd.write(textwrap.dedent("""
+            ''' % (trClass, attr, attr, attr, help, morehelp)))
+    fd.write('</table>\n')
+    fd.write(textwrap.dedent('''
     </div>
     <div style="text-align: center;">
     <br />
-    <a href="%s.html">&lt;- %s</a> | <a href="plugins.html">Plugin Index</a> |
+    <a href="plugins/%s.html">&lt;- %s</a> |
+    <a href="plugins.html">Plugin Index</a> |
     <a href="../index.html">Home</a> | <a href="commands.html">Command Index
-    </a> | <a href="%s.html">%s -&gt;</a>
+    </a> | <a href="plugins/%s.html">%s -&gt;</a>
     %s
-    """ % (prev, cprev, next, cnext, genFooter())))
+    ''' % (prev, cprev, next, cnext, genFooter())))
     fd.close()
     id.close()
 
 def finishIndex():
-    directory = os.path.join('docs', 'plugins')
+    directory = 'docs'
     if not os.path.exists(directory):
         os.mkdir(directory)
     fd = file(os.path.join(directory, 'plugins.html'), 'a')
@@ -192,16 +181,16 @@ def makeCommandsIndex():
     from string import ascii_lowercase
     global commandDict
     global firstChars
-    directory = os.path.join('docs', 'plugins')
+    directory = 'docs'
     if not os.path.exists(directory):
         os.mkdir(directory)
     fd = file(os.path.join(directory, 'commands.html'), 'w')
     title = 'Supybot Commands Index'
-    fd.write(textwrap.dedent("""
+    fd.write(textwrap.dedent('''
     %s
     <div class="maintitle">%s</div><br />
     <div class="whitebox" style="text-align: center;">
-    """ % (genHeader(title), title)))
+    ''' % (genHeader(title), title)))
     commands = [c for c in commandDict.iterkeys()]
     commands.sort()
     for i in ascii_lowercase:
@@ -211,6 +200,7 @@ def makeCommandsIndex():
             fd.write('%s ' % i.capitalize())
     firstChars.clear()
     fd.write('</div>\n<br />')
+    pluginLink = '<a href="plugins/%s.html#%s">%s</a>'
     for command in commands:
         c = command[0]
         if c not in firstChars:
@@ -222,9 +212,9 @@ def makeCommandsIndex():
                      (c, c, c.capitalize()))
         plugins = commandDict[command]
         plugins.sort()
-        fd.write('<strong>%s</strong>   (%s)<br />\n' % (command,
-                 ', '.join(['<a href="%s.html#%s">%s</a>' % (p,command,p)
-                            for p in plugins])))
+        fd.write('<strong>%s</strong>   (%s)<br />\n' %
+                 (command,
+                  ', '.join([pluginLink % (p,command,p) for p in plugins])))
     fd.write('\n</div>')
     fd.write(textwrap.dedent(genFooter()))
     fd.close()
