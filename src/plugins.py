@@ -151,7 +151,8 @@ class PeriodicFileDownloader(object):
             toFilename = os.path.join(conf.dataDir, filename)
             if os.name == 'nt':
                 # Windows, grrr...
-                os.remove(toFilename)
+                if os.path.exists(toFilename):
+                    os.remove(toFilename)
             os.rename(newFilename, toFilename)
         else:
             start = time.time()
