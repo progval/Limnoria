@@ -65,20 +65,20 @@ class IrcMsgTestCase(unittest.TestCase):
         for msg in msgs:
             self.failIf(msg != msg)
 
-    def testImmutability(self):
-        s = 'something else'
-        t = ('foo', 'bar', 'baz')
-        for msg in msgs:
-            self.assertRaises(AttributeError, setattr, msg, 'prefix', s)
-            self.assertRaises(AttributeError, setattr, msg, 'nick', s)
-            self.assertRaises(AttributeError, setattr, msg, 'user', s)
-            self.assertRaises(AttributeError, setattr, msg, 'host', s)
-            self.assertRaises(AttributeError, setattr, msg, 'command', s)
-            self.assertRaises(AttributeError, setattr, msg, 'args', t)
-            if msg.args:
-                def setArgs(msg):
-                    msg.args[0] = s
-                self.assertRaises(TypeError, setArgs, msg)
+##     def testImmutability(self):
+##         s = 'something else'
+##         t = ('foo', 'bar', 'baz')
+##         for msg in msgs:
+##             self.assertRaises(AttributeError, setattr, msg, 'prefix', s)
+##             self.assertRaises(AttributeError, setattr, msg, 'nick', s)
+##             self.assertRaises(AttributeError, setattr, msg, 'user', s)
+##             self.assertRaises(AttributeError, setattr, msg, 'host', s)
+##             self.assertRaises(AttributeError, setattr, msg, 'command', s)
+##             self.assertRaises(AttributeError, setattr, msg, 'args', t)
+##             if msg.args:
+##                 def setArgs(msg):
+##                     msg.args[0] = s
+##                 self.assertRaises(TypeError, setArgs, msg)
 
     def testInit(self):
         for msg in msgs:

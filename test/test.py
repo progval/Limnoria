@@ -51,7 +51,10 @@ fd = file(os.path.join('test', 'rfc2812.msgs'), 'r')
 rawmsgs = [line.strip() for line in fd]
 fd.close()
 
-msgs = [ircmsgs.IrcMsg(s) for s in rawmsgs]
+msgs = []
+for s in rawmsgs:
+    print s
+    msgs.append(ircmsgs.IrcMsg(s))
 
 nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
          'alb','d0rt','jemfinch','StyxAlso','fors','deltab','gd',
