@@ -151,7 +151,7 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
             return s
 
     def geekSnarfer(self, irc, msg, match):
-        r'http://(?:www\.)?(?P<site>bash\.org|qdb\.us)/\?(?P<id>\d+)'
+        r'http://(?:www\.)?(?P<site>bash\.org|qdb\.us)/\??(?P<id>\d+)'
         if not self.registryValue('geekSnarfer', msg.args[0]):
             return
         id = match.groupdict()['id']
