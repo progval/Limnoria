@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 import os
 import sys
+import time
 import sqlite
 
 import supybot.dbi as dbi
 import supybot.conf as conf
+import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.plugins.Lart as Lart
 import supybot.plugins.Praise as Praise
@@ -22,11 +24,12 @@ def main():
         sys.exit(1)
     sqldb = sys.argv[1]
     channel = sys.argv[2]
-    if not ircutils.isChannel(channel):
-        print '%s is an invalid channel name.'
-        sys.exit(1)
-    if len(sys.argv) >= 4:
+    botname = 'an unkown user'
+    if len(sys.argv) == 4:
         botname = sys.argv[3]
+    if not ircutils.isChannel(channel):
+        print '%s is an invalid channel name.' % channel
+        sys.exit(1)
     if not os.path.exists(sqldb):
         print 'Unable to open %s' % sqldb
         sys.exit(1)
@@ -49,13 +52,15 @@ def main():
                     by = entry[2]
                     if by is None:
                         by = botname
-                    plugin.add(channel, table, text, by)
+                    plugin.add(channel, time.time(), by, text)
                     success += 1
                 except dbi.Error:
                     failed += 1
     print '%s/%s entries successfully added.  %s failed.' % (success, total,
                                                              failed)
-    print 'Dbs are at: %s' % ', '.join((praises.filename, larts.filename))
+    pfile = plugins.makeChannelFilename(praises.filename, channel)
+    lfile = plugins.makeChannelFilename(larts.filename, channel)
+    print 'Dbs are at: %s' % ', '.join((pfile, lfile))
     db.close()
     praises.close()
     larts.close()
