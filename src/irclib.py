@@ -735,7 +735,7 @@ class Irc(IrcCommandDispatcher):
         return not (self == other)
 
     def __str__(self):
-        return 'Irc object for server %s' % self.server
+        return 'Irc object for %s' % self.network
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
