@@ -92,7 +92,7 @@ class IrcCallback(object):
 class IrcMsgQueue(object):
     """Class for a queue of IrcMsgs.  Eventually, it should be smart.
     """
-    #__slots__ = ('msgs', 'queue')
+    __slots__ = ('msgs', 'queue')
     def __init__(self):
         self.reset()
 
@@ -125,7 +125,7 @@ class IrcMsgQueue(object):
 # status of various modes (especially ops/halfops/voices) in channels, etc.
 ###
 class Channel(object):
-    #__slots__ = ('users', 'ops', 'halfops', 'voices')
+    __slots__ = ('users', 'ops', 'halfops', 'voices', 'topic')
     def __init__(self):
         self.topic = ''
         self.users = set()
@@ -142,7 +142,7 @@ class Channel(object):
 class IrcState(object):
     """Maintains state of the Irc connection.  Should also become smarter.
     """
-    #__slots__ = ('history', 'nicksToHostmasks', 'channels')
+    __slots__ = ('history', 'nicksToHostmasks', 'channels')
     def __init__(self):
         self.reset()
 
@@ -150,13 +150,6 @@ class IrcState(object):
         self.history = []
         self.nicksToHostmasks = {}
         self.channels = {}
-
-        #    def __getstate__(self):
-        #        return [getattr(self, s) for s in self.__slots__]
-        #
-        #    def __setstate__(self, state):
-        #        for (name, value) in zipiter(self.__slots__, state):
-        #            setattr(name, value)
 
     def copy(self):
         ret = self.__class__()
@@ -169,7 +162,7 @@ class IrcState(object):
         if len(self.history) > conf.minHistory + 10:
             del self.history[:10]
         self.history.append(msg)
-        if ircutils.isUserHostmask(msg.prefix):
+        if ircutils.isUserHostmask(msg.prefix) and not msg.command == 'NICK':
             self.nicksToHostmasks[msg.nick] = msg.prefix
         if msg.command == '352': # Response to a WHO command.
             (nick, user, host) = (msg.args[2], msg.args[5], msg.args[3])
@@ -226,9 +219,16 @@ class IrcState(object):
             chan.topic = msg.args[2]
         elif msg.command == 'NICK':
             newNick = msg.args[0]
+            try:
+                del self.nicksToHostmasks[msg.nick]
+                newHostmask = ircutils.joinHostmask(newNick,msg.user,msg.host)
+                self.nicksToHostmasks[newNick] = newHostmask
+            except KeyError:
+                debug.printf('%s not in nicksToHostmask' % msg.nick)
             for channel in self.channels.itervalues():
-                chan = self.channels[channel]
-                for s in (chan.users, chan.ops, chan.halfops, chan.voices):
+                for s in (channel.users, channel.ops,
+                          channel.halfops, channel.voices):
+                    #debug.printf(s)
                     if msg.nick in s:
                         s.remove(msg.nick)
                         s.add(newNick)
