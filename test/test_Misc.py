@@ -126,7 +126,7 @@ class MiscTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotError('logfilesize')
 
     def testPlugin(self):
-        self.assertResponse('plugin plugin', 'Misc')
+        self.assertResponse('plugin plugin', 'Misc.')
 
     def testTell(self):
         m = self.getMsg('tell foo [plugin tell]')
