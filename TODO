@@ -1,11 +1,21 @@
 Roughly in order of precedence (the closer to the front of the file,
 the more likely it'll be done before next release):
 
-Update the database infrastructure to allow other RDBMSes.
+* Update the database infrastructure to allow other RDBMSes.
 
 Improved (and perhaps integrated) Services and Enforcer plugins.
 
 To be done as soon as someone with the necessary expertise is found to
 help us:
 
-Finish the Infobot plugin.
+* Finish the Infobot plugin.
+
+Hard problems that won't get done until someone really wants to have
+some fun:
+
+* Redundant relaying -- having more than one bot handle relaying,
+  where a secondary one will automatically take over if the first
+  becomes incapacitated.
+
+* Have the bot detect when other bots are in the channel responding
+  to the same prefix character, and do something based on that.
