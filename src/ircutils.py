@@ -199,7 +199,7 @@ def banmask(hostmask):
             return '*!*@'  + host
 
 _plusRequireArguments = 'ovhblkqe'
-_minusRequireArguments = 'ocvbkqe'
+_minusRequireArguments = 'ovhbkqe'
 def separateModes(args):
     """Separates modelines into single mode change tuples.  Basically, you
     should give it the .args of a MODE IrcMsg.
