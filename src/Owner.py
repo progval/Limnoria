@@ -100,7 +100,7 @@ def loadPluginModule(name, ignoreDeprecation=False):
             log.warning('Deprecated plugin loaded: %s', name)
         else:
             raise Deprecated, 'Attempted to load deprecated plugin %s' % \
-                utils.quoted(name)
+                              utils.quoted(name)
     if module.__name__ in sys.modules:
         sys.modules[module.__name__] = module
     linecache.checkcache()
@@ -329,7 +329,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                         # This is debug because each log logs its beginning.
                         self.log.debug('Loading %s.' % name)
                         try:
-                            m = loadPluginModule(name)
+                            m = loadPluginModule(name, ignoreDeprecation=True)
                             loadPluginClass(irc, m)
                         except callbacks.Error, e:
                             # This is just an error message.
