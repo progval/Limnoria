@@ -434,6 +434,12 @@ def getUrl(irc, msg, args, state):
     else:
         irc.errorInvalid('url', args[0])
 
+def getHttpUrl(irc, msg, args, state):
+    if webutils.urlRe.match(args[0]) and args[0].startswith('http://'):
+        state.args.append(args.pop(0))
+    else:
+        irc.errorInvalid('http url', args[0])
+
 def getNow(irc, msg, args, state):
     state.args.append(int(time.time()))
 
@@ -494,6 +500,7 @@ wrappers = ircutils.IrcDict({
     'color': getIrcColor,
     'now': getNow,
     'url': getUrl,
+    'httpUrl': getHttpUrl,
     'float': getFloat,
     'nonInt': getNonInt,
     'positiveInt': getPositiveInt,
