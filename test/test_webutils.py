@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2004, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,55 +29,19 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-__revision__ = "$Id$"
+from testsupport import *
 
-import fix
+import webutils
 
-import re
-import socket
-import urllib2
-import urlparse
 
-class WebError(Exception):
-    pass
+class WebutilsTestCase(unittest.TestCase):
+    def testGetDomain(self):
+        self.assertEqual(webutils.getDomain('http://slashdot.org/foo/bar.exe'),
+                         'slashdot.org')
 
-urlRe = re.compile(r"(\w+://[^\])>\s]+)", re.I)
-
-REFUSED = 'Connection refused.'
-TIMED_OUT = 'Connection timed out.'
-RESET_BY_PEER = 'Connection reset by peer.'
-
-def getUrlFd(url):
-    """Gets a file-like object for a url."""
-    try:
-        fd = urllib2.urlopen(url)
-        return fd
-    except socket.timeout, e:
-        raise WebError, TIMED_OUT
-    except socket.error, e:
-        if e.args[0] == 111:
-            raise WebError, REFUSED
-        elif e.args[0] in (110, 10060):
-            raise WebError, TIMED_OUT
-        elif e.args[0] == 104:
-            raise WebError, RESET_BY_PEER
-        else:
-            raise WebError, str(e)
-    except (urllib2.HTTPError, urllib2.URLError), e:
-        raise WebError, str(e)
-    
-def getUrl(url, size=None):
-    """Gets a page.  Returns a string that is the page gotten."""
-    fd = getUrlFd(url)
-    if size is None:
-        text = fd.read()
-    else:
-        text = fd.read(size)
-    fd.close()
-    return text
-
-def getDomain(url):
-    return urlparse.urlparse(url)[1]
+    def testGetUrlWithSize(self):
+        url = 'http://slashdot.org/'
+        self.failUnless(len(webutils.getUrl(url, 1024)) == 1024)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
