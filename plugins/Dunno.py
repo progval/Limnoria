@@ -40,6 +40,7 @@ __author__ = "Daniel DiPaolo (Strike) <ddipaolo@users.sf.net>"
 
 import os
 import csv
+import sets
 import time
 import random
 import itertools
