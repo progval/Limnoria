@@ -193,7 +193,7 @@ class Config(callbacks.Privmsg):
         wrapper = getWrapper(name)
         if hasattr(wrapper, 'value'):
             if not wrapper._private:
-                irc.reply(str(wrapper))
+                irc.reply(str(wrapper) or ' ')
             else:
                 capability = getCapability(name)
                 if ircdb.checkCapability(msg.prefix, capability):
