@@ -37,6 +37,19 @@ import utils
 
 class FunTest(ChannelPluginTestCase, PluginDocumentation):
     plugins = ('Fun',)
+    def testRoulette(self):
+        sawKick = False
+        for i in xrange(100):
+            m = self.getMsg('roulette')
+            if m.command == 'PRIVMSG':
+                self.failUnless('click' in m.args[1].lower())
+            elif m.command == 'KICK':
+                sawKick = True
+                self.failUnless('bang' in m.args[2].lower())
+            else:
+                self.fail('Got something other than a kick or a privmsg.')
+        self.failUnless(sawKick, 'Didn\'t get a kick in %s iterations!' % i)
+                
     def testNoErrors(self):
         self.assertNotError('leet foobar')
         self.assertNotError('lithp meghan sweeney')
