@@ -752,6 +752,8 @@ registerGlobalValue(supybot.databases.users, 'allowUnregistration',
     registry.Boolean(False, """Determines whether the bot will allow users to
     unregister their users.  This can wreak havoc with already-existing
     databases, so by default we don't allow it.  Enable this at your own risk.
+    (Do also note that this does not prevent the owner of the bot from using
+    the unregister command.)
     """))
 registerGlobalValue(supybot.databases.users, 'hash',
     registry.Boolean(True, """Determines whether the passwords in the user

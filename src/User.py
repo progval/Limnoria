@@ -141,21 +141,24 @@ class User(callbacks.Privmsg):
         Unregisters <name> from the user database.  If the user giving this
         command is an owner user, the password is not necessary.
         """
-        if conf.supybot.databases.users.allowUnregistration():
-            if not user.checkPassword(password):
-                try:
-                    user = ircdb.users.getUser(msg.prefix)
-                except KeyError:
-                    user = None
-                if not user or not user.checkCapability('owner'):
-                    irc.error(conf.supybot.replies.incorrectAuthentication())
+        try:
+            caller = ircdb.users.getUser(msg.prefix)
+            isOwner = caller.checkCapability('owner')
+        except KeyError:
+            caller = None
+        if not conf.supybot.databases.users.allowUnregistration():
+            if not caller or not isOwner:
+                self.log.warning('%s tried to unregister user %s.',
+                                 msg.prefix, user.name)
+                irc.error('This command has been disabled.  You\'ll have to '
+                          'ask the owner of this bot to unregister your user.')
+        if isOwner or user.checkPassword(password):
             ircdb.users.delUser(user.id)
             irc.replySuccess()
         else:
-            irc.error('This command has been disabled.  You\'ll have to ask '
-                      'the owner of this bot to unregister your user.')
+            irc.error(conf.supybot.replies.incorrectAuthentication())
     unregister = wrap(unregister, ['private', 'otherUser',
-                                   additional('something', '')])
+                                   additional('anything')])
 
     def changename(self, irc, msg, args, user, newname, password):
         """<name> <new name> [<password>]
