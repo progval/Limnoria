@@ -178,11 +178,19 @@ def makeCommandsIndex():
     <link rel="stylesheet" type="text/css" href="supybot.css">
     <body><div>
     <h2>Supybot Commands Index</h2>
-    <strong>Command</strong>   (Plugins)<br><br>
+    <strong>Command</strong>   (Plugins)<br>
     """))
     commands = [c for c in commandDict.iterkeys()]
     commands.sort()
+    alphas = []
     for command in commands:
+        char = command[0]
+        if char in alphas:
+            pass
+        else:
+            alphas.append(char)
+            fd.write('<h2 id="%s" style="text-decoration:underline">%s'\
+                     '</h2>\n' % (char, char.capitalize()))
         plugins = commandDict[command]
         plugins.sort()
         fd.write('<strong>%s</strong>   (%s)<br>\n' % (command,
