@@ -358,6 +358,7 @@ class IrcObjectProxy:
                         self.error(self.msg, s, private=True)
                         return
                 command = getattr(cb, name)
+                Privmsg.handled = True
                 if cb.threaded:
                     t = CommandThread(cb.callCommand, command,
                                       self, self.msg, self.args)
@@ -738,26 +739,22 @@ class PrivmsgCommandAndRegexp(Privmsg):
                 raise
 
     def doPrivmsg(self, irc, msg):
-        handled = False
         for (r, method) in self.res:
             name = method.__name__
-            if handled and name not in self.alwaysCall:
-                continue
             for m in r.finditer(msg.args[1]):
                 proxy = IrcObjectProxyRegexp(irc)
                 self.callCommand(method, proxy, msg, m, catchErrors=True)
-                handled = True
         if not Privmsg.handled:
             s = addressed(irc.nick, msg)
             if s:
                 for (r, method) in self.addressedRes:
                     name = method.__name__
-                    if handled and name not in self.alwaysCall:
+                    if Privmsg.handled and name not in self.alwaysCall:
                         continue
                     for m in r.finditer(s):
                         proxy = IrcObjectProxyRegexp(irc)
                         self.callCommand(method,proxy,msg,m,catchErrors=True)
-                        handled = True
+                        Privmsg.handled = True
             
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
