@@ -212,10 +212,11 @@ if not hasattr(Exception, '_original__init__'):
         self.__revision__ = getattr(callerModule, '__revision__', None)
         self._original__init__(*args, **kwargs)
     Exception.__init__ = __init__
-    
-    
+
+
+g = globals()
 for name in exported:
-    __builtins__[name] = globals()[name]
+    __builtins__[name] = g[name]
 
 
 
