@@ -132,6 +132,7 @@ class Geekquote(callbacks.PrivmsgCommandAndRegexp):
         except webutils.WebError, e:
             self.log.info('%s server returned the error: %s' % \
                     (site, webutils.strError(e)))
+        s = None
         for item in self._gkREDict[site].finditer(html):
             s = item.groupdict()['text']
             s = self._joiner.join(s.splitlines())
