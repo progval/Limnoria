@@ -144,6 +144,7 @@ class Notes(callbacks.Privmsg):
             name = ircdb.users.getUserName(msg.prefix)
         except KeyError:
             callbacks.Privmsg.doPrivmsg(self, irc, msg)
+            return
         cursor = self.db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM notes, users
                           WHERE users.name=%s AND
@@ -205,7 +206,7 @@ class Notes(callbacks.Privmsg):
             sender = ircdb.users.getUserName(msg.prefix)
             senderId = self.getUserId(sender)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(msg, conf.replyNotRegistered)
             return
         cursor = self.db.cursor()
         cursor.execute("""SELECT notes.note, notes.to_id, notes.from_id,
@@ -240,7 +241,7 @@ class Notes(callbacks.Privmsg):
         try:
             sender = ircdb.users.getUserName(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(msg, conf.replyNotRegistered)
             return
         cursor = self.db.cursor()
         cursor.execute("""SELECT notes.id, notes.from_id,
@@ -272,7 +273,7 @@ class Notes(callbacks.Privmsg):
         try:
             sender = ircdb.users.getUserName(msg.prefix)
         except KeyError:
-            irc.error(msg, conf.replyNoUser)
+            irc.error(msg, conf.replyNotRegistered)
             return
         cursor = self.db.cursor()
         cursor.execute("""SELECT notes.id FROM users, notes
