@@ -721,6 +721,9 @@ class Irc(IrcCommandDispatcher):
         if self in world.ircs:
             for cb in self.callbacks:
                 cb.die()
+            # If we shared our list of callbacks, this ensures that cb.die() is
+            # only called once for each callback.
+            self.callbacks[:] = []
             world.ircs.remove(self)
         else:
             log.warning('Irc object killed twice.')
