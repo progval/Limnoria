@@ -168,7 +168,7 @@ class Weather(callbacks.Privmsg):
         conds = self._condregex.search(html)
         if conds:
             conds = conds.group(1)
-        self.log.warning(repr(self._chillregex))
+        chill = self._chillregex.search(html)
         if chill:
             #self.log.warning(chill.groups())
             chill = chill.group(1)
