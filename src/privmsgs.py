@@ -159,51 +159,50 @@ class UrlSnarfThread(threading.Thread):
         threading.Thread.__init__(self, *args, **kwargs)
         self.setDaemon(True)
 
+    def run(self):
+        try:
+            super(UrlSnarfThread, self).run()
+        finally:
+            # This was acquired in newf in urlSnarfer.
+            _snarfLock.release()
+            
+
 class SnarfQueue(ircutils.FloodQueue):
+    timeout = conf.supybot.snarfThrottle
     def key(self, channel):
         return channel
 
-    def getTimeout(self):
-        return conf.supybot.snarfThrottle()
-
 _snarfed = SnarfQueue()
 
-class SnarfIrc(object):
-    def __init__(self, irc, channel, url):
-        self.irc = irc
-        self.url = url
-        self.channel = channel
-
-    def reply(self, *args, **kwargs):
-        _snarfed.enqueue(self.channel, self.url)
-        self.irc.reply(*args, **kwargs)
-
-    def __getattr__(self, attr):
-        return getattr(self.irc, attr)
-
+_snarfLock = threading.Lock()
 def urlSnarfer(f):
     """Protects the snarfer from loops and whatnot."""
     def newf(self, irc, msg, match, *L, **kwargs):
-        if msg.repliedTo:
-            self.log.debug('Not calling snarfer, msg is already repliedTo.')
-            return
+        _snarfLock.acquire()
+        url = match.group(0)
         channel = msg.args[0]
         if not ircutils.isChannel(channel):
             return
-        c = ircdb.channels.getChannel(channel)
-        if c.lobotomized:
-            self.log.info('Refusing to snarf in %s: lobotomized.', channel)
+        if ircdb.channels.getChannel(channel).lobotomized:
+            self.log.info('Not snarfing in %s: lobotomized.', channel)
             return
-        url = match.group(0)
         if _snarfed.has(channel, url):
-            self.log.info('Refusing to snarf %s, already snarfed.', url)
+            self.log.info('Throttling snarf of %s in %s.', url, channel)
             return
-        irc = SnarfIrc(irc, channel, url)
+        _snarfed.enqueue(channel, url)
+        def doSnarf():
+            try:
+                if msg.repliedTo:
+                    self.log.debug('Not snarfing, msg is already repliedTo.')
+                    return
+                f(self, irc, msg, match, *L, **kwargs)
+            finally:
+                _snarfLock.release()
         if threading.currentThread() is not world.mainThread:
-            f(self, irc, msg, match, *L, **kwargs)
+            doSnarf()
         else:
             L = list(L)
-            t = UrlSnarfThread(target=f,args=[self,irc,msg,match]+L,url=url)
+            t = UrlSnarfThread(target=doSnarf, url=url)
             t.start()
     newf = utils.changeFunctionName(newf, f.func_name, f.__doc__)
     return newf

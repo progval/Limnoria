@@ -311,6 +311,10 @@ class TimeoutQueue(object):
         self.queue = queue
         self.timeout = timeout
 
+    def __repr__(self):
+        return '%s(timeout=%r, queue=%r)' % (self.__class__.__name__,
+                                             self.timeout, self.queue)
+
     def _getTimeout(self):
         if callable(self.timeout):
             return self.timeout()

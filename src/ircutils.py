@@ -533,7 +533,13 @@ class FloodQueue(object):
             return self.queues[key]
         except KeyError:
             if insert:
-                q = structures.TimeoutQueue(self.getTimeout)
+                # python--
+                # instancemethod.__repr__ calls the instance.__repr__, which
+                # means that our __repr__ calls self.queues.__repr__, which
+                # calls structures.TimeoutQueue.__repr__, which calls
+                # getTimeout.__repr__, which calls our __repr__, which calls...
+                getTimeout = lambda : self.getTimeout()
+                q = structures.TimeoutQueue(getTimeout)
                 self.queues[key] = q
                 return q
             else:
