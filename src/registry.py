@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002, Jeremiah Fincher
+# Copyright (c) 2004, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ class NonExistentRegistryEntry(RegistryException):
 
 class Value(object):
     def __init__(self, default, help):
-        self.help = help
+        self.help = utils.normalizeWhitespace(help)
         self.value = default
 
     def set(self, s):
@@ -107,6 +107,10 @@ class Group(object):
         self.__dict__['children'] = {}
         self.__dict__['originals'] = {}
 
+    def __nonExistentEntry(self, attr):
+        s = '%s is not a valid entry in %s' % (attr, self.name)
+        raise NonExistentRegistryEntry, s
+
     def __getattr__(self, attr):
         original = attr
         attr = attr.lower()
@@ -115,8 +119,7 @@ class Group(object):
         elif attr in self.children:
             return self.children[attr]
         else:
-            s = '%s is not a valid attribute of %s' % (original, self.name)
-            raise NonExistentRegistryEntry, s
+            self.__nonExistentEntry(original)
             
     def __setattr__(self, attr, s):
         original = attr
@@ -126,11 +129,20 @@ class Group(object):
         elif attr in self.children and hasattr(self.children[attr], 'set'):
             self.children[attr].set(s)
         else:
-            s = '%s is not a valid attribute of %s' % (original, self.name)
-            raise NonExistentRegistryEntry, s
+            self.__nonExistentEntry(original)
 
     def get(self, attr):
         return self.__getattr__(attr)
+
+    def help(self, attr):
+        original = attr
+        attr = attr.lower()
+        if attr in self.values:
+            return self.values[attr].help
+        elif attr in self.children and hasattr(self.children[attr], 'help'):
+            return self.children[attr].help
+        else:
+            self.__nonExistentEntry(original)
     
     def setName(self, name):
         self.__dict__['name'] = name
@@ -144,7 +156,7 @@ class Group(object):
         if name in self.values:
             value.set(str(self.values[name]))
         self.values[name] = value
-        self.originals[original] = name
+        self.originals[name] = original
 
     def registerGroup(self, name, group=None):
         original = name
@@ -155,7 +167,7 @@ class Group(object):
             group.__dict__['values'] = self.children[name].values
             group.__dict__['children'] = self.children[name].children
         self.children[name] = group
-        self.originals[original] = group
+        self.originals[name] = original
         group.setName('%s.%s' % (self.name, name))
 
     def getValues(self):
@@ -175,6 +187,7 @@ class GroupWithDefault(Group):
     def __init__(self, value):
         Group.__init__(self)
         self.__dict__['value'] = value
+        self.__dict__['help'] = value.help
         
     def __getattr__(self, attr):
         try:
@@ -186,8 +199,9 @@ class GroupWithDefault(Group):
         try:
             Group.__setattr__(self, attr, s)
         except NonExistentRegistryEntry:
-            self.values[attr] = copy.copy(self.value)
-            self.values[attr].set(s)
+            v = copy.copy(self.value)
+            v.set(s)
+            self.register(attr, v)
 
     def set(self, *args):
         if len(args) == 1:
@@ -220,6 +234,9 @@ if __name__ == '__main__':
 
     for (k, v) in supybot.getValues():
         print '%s: %s' % (k, v)
+
+    print supybot.help('throttleTime')
+    print supybot.plugins.topic.help('separator')
     
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
