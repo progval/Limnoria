@@ -363,7 +363,7 @@ class Relay(callbacks.Privmsg):
             channels = d['319'].args[-1].split()
             channels[0] = 'is on ' + channels[0]
         else:
-            channels = ['isn\'t on any channels.']
+            channels = ['isn\'t on any channels']
         for (i, channel) in enumerate(channels):
             if channel[0] == '@':
                 channels[i] = 'is an op on %s' % channel[1:]
