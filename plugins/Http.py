@@ -278,9 +278,6 @@ class Http(callbacks.Privmsg):
         fd = urllib2.urlopen(url)
         html = fd.read()
         fd.close()
-        fd = file('%s.netcraft' % hostname, 'w')
-        fd.write(html)
-        fd.close()
         m = self._netcraftre.search(html)
         if m:
             html = m.group(1)
