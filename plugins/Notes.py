@@ -42,6 +42,7 @@ import privmsgs
 import callbacks
 import ircutils
 import debug
+import ircmsgs
 
 class Notes(callbacks.Privmsg):
     
@@ -98,8 +99,8 @@ class Notes(callbacks.Privmsg):
     def makePrivate(self, msg):
         args = list(msg.args)
         args[0] = msg.nick
-        msg.args = tuple(args)
-        return msg
+        return ircmsgs.IrcMsg(command = msg.command, prefix = msg.prefix,
+                              args = tuple(args))
     
 #    def setNoteUnread(self, irc, msg, args):
 #        "set a note as unread"
