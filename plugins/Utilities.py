@@ -156,7 +156,6 @@ class Utilities(callbacks.Privmsg):
         commands = map(callbacks.canonicalName, commands)
         tokens = callbacks.tokenize(text)
         allTokens = commands + tokens
-        print '***', allTokens
         self.Proxy(irc, msg, allTokens)
     apply = wrap(apply, ['something', many('anything')])
 
