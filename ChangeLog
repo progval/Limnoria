@@ -1,3 +1,6 @@
+	* Added conf.supybot.plugins.Karma.allowSelfRating, which determines
+	whether users are allowed to adjust the karma of their current nick.
+
 	* Added --nolimit option to Misc.last, which causes it to return all
 	matches that are in the history.
 

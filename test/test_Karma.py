@@ -99,7 +99,6 @@ if sqlite is not None:
             finally:
                 conf.supybot.plugins.Karma.response.setValue(orig)
                 conf.supybot.plugins.Karma.rankingDisplay.setValue(original)
-                
 
         def testMost(self):
             self.assertError('most increased')
@@ -133,6 +132,21 @@ if sqlite is not None:
             finally:
                 conf.supybot.plugins.Karma.simpleOutput.setValue(orig)
 
+        def testSelfRating(self):
+            nick = self.nick
+            try:
+                orig = conf.supybot.plugins.Karma.allowSelfRating()
+                conf.supybot.plugins.Karma.allowSelfRating.setValue(False)
+                self.assertNoResponse('%s++' % nick, 2)
+                self.assertResponse('karma %s' % nick,
+                                    '%s has no karma.' % nick)
+                conf.supybot.plugins.Karma.allowSelfRating.setValue(True)
+                self.assertNoResponse('%s++' % nick, 2)
+                self.assertRegexp('karma %s' % nick,
+                              'Karma for \'%s\'.*increased 1.*total.*1' % nick)
+            finally:
+                conf.supybot.plugins.Karma.allowSelfRating.setValue(orig)
+
         def testKarmaOutputConfigurable(self):
             self.assertNoResponse('foo++', 2)
             try:
@@ -160,11 +174,11 @@ if sqlite is not None:
                 self.assertRegexp('karma most active', 'bar')
             finally:
                 conf.supybot.plugins.Karma.mostDisplay.setValue(orig)
-                
+
 
         def testIncreaseKarmaWithNickNotCallingInvalidCommand(self):
             self.assertNoResponse('%s: foo++' % self.irc.nick, 3)
-        
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

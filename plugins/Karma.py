@@ -66,6 +66,9 @@ conf.registerChannelValue(conf.supybot.plugins.Karma, 'rankingDisplay',
 conf.registerChannelValue(conf.supybot.plugins.Karma, 'mostDisplay',
     registry.Integer(25, """Determines how many karma things are shown when
     the most command is called.'"""))
+conf.registerChannelValue(conf.supybot.plugins.Karma, 'allowSelfRating',
+    registry.Boolean(False, """Determines whether users can adjust the karma
+    of their nick."""))
 
 class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
     addressedRegexps = ['increaseKarma', 'decreaseKarma']
@@ -215,11 +218,14 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                 irc.error('I have no karma for this channel.')
         except KeyError:
             raise callbacks.ArgumentError
-        
+
     def increaseKarma(self, irc, msg, match):
         r"^(\S+)\+\+(|\s+)$"
         name = match.group(1)
         normalized = name.lower()
+        if not self.registryValue('allowSelfRating', msg.args[0]):
+            if normalized == msg.nick.lower():
+                return
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
         cursor.execute("""INSERT INTO karma VALUES (NULL, %s, %s, 0, 0)""",
@@ -234,6 +240,9 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
         r"^(\S+)--(|\s+)$"
         name = match.group(1)
         normalized = name.lower()
+        if not self.registryValue('allowSelfRating', msg.args[0]):
+            if normalized == msg.nick.lower():
+                return
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
         cursor.execute("""INSERT INTO karma VALUES (NULL, %s, %s, 0, 0)""",
