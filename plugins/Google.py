@@ -144,7 +144,7 @@ class LicenseKey(registry.String):
                 google.setLicense(self.value)
         except AttributeError:
             raise callbacks.Error, 'It appears that the initial import of ' \
-                                   'out underlying google.py module has ' \
+                                   'our underlying google.py module has ' \
                                    'failed.  Once the cause of that problem ' \
                                    'has been diagnosed and fixed, the bot ' \
                                    'will need to be restarted in order to ' \
