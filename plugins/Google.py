@@ -46,6 +46,7 @@ import utils
 import ircmsgs
 import privmsgs
 import callbacks
+import structures
 
 def configure(onStart, afterConnect, advanced):
     from questions import expect, anything, something, yn
@@ -75,7 +76,7 @@ class GooglePrivmsg(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         self.total = 0
         self.totalTime = 0
-        self.last24hours = queue()
+        self.last24hours = structures.queue()
 
     def _searched(self, data):
         now = time.time()
