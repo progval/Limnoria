@@ -427,18 +427,18 @@ class Http(callbacks.Privmsg):
         try:
             if not name:
                 if 'X-Bender' in fd.headers:
-                    return '<Bender> %s' % fd.headers['X-Bender']
+                    irc.reply('<Bender> %s' % fd.headers['X-Bender'])
                 elif 'X-Fry' in fd.headers:
-                    return '<Fry> %s' % fd.headers['X-Fry']
+                    irc.reply('<Fry> %s' % fd.headers['X-Fry'])
                 else:
-                    return 'Slashdot seems to be running low on Futurama ' \
-                           'quotes.'
+                    irc.reply('Slashdot seems to be running low on Futurama '
+                              'quotes.')
             else:
                 try:
-                    return '<%s> %s' % (name, fd.headers['X-%s' % name])
+                    irc.reply('<%s> %s' % (name, fd.headers['X-%s' % name]))
                 except KeyError:
-                    return 'Slashdot seems to be running low on %s quotes' %\
-                           name
+                    irc.reply('Slashdot seems to be running low on %s quotes' %
+                              name)
         finally:
             fd.close()
 
