@@ -181,12 +181,12 @@ def getNonInt(irc, msg, args, state, type='non-integer value'):
     except ValueError:
         state.args.append(args.pop(0))
 
-def getFloat(irc, msg, args, state):
+def getFloat(irc, msg, args, state, type='floating point number'):
     try:
         state.args.append(float(args[0]))
         del args[0]
     except ValueError:
-        irc.errorInvalid('floating point number', args[0])
+        irc.errorInvalid(type, args[0])
 
 def getPositiveInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
@@ -195,6 +195,11 @@ def getPositiveInt(irc, msg, args, state, *L):
 def getNonNegativeInt(irc, msg, args, state, *L):
     getInt(irc, msg, args, state,
             p=lambda i: i>=0, type='non-negative integer', *L)
+
+def getIndex(irc, msg, args, state):
+    getInt(irc, msg, args, state, type='index')
+    if state.args[-1] > 0:
+        state.args[-1] -= 1
 
 def getId(irc, msg, args, state, kind=None):
     type = 'id'
@@ -464,10 +469,18 @@ def getPlugin(irc, msg, args, state, require=True):
     else:
         state.args.append(None)
 
+def getIrcColor(irc, msg, args, state):
+    if args[0] in ircutils.mircColors:
+        state.args.append(ircutils.mircColors[args.pop(0)])
+    else:
+        irc.errorInvalid('irc color')
+
 wrappers = ircutils.IrcDict({
     'id': getId,
     'ip': getIp,
     'int': getInt,
+    'index': getIndex,
+    'color': getIrcColor,
     'now': getNow,
     'url': getUrl,
     'float': getFloat,
@@ -557,7 +570,7 @@ class context(object):
             self.converter = getConverter(spec)
 
     def __call__(self, irc, msg, args, state):
-        if not state.types and args:
+        if args and not (state.types or state.allowExtra):
             # We're the last context/type, we should combine the remaining
             # arguments into one string.
             args[:] = [' '.join(args)]
@@ -720,6 +733,10 @@ class Spec(object):
 _decorators = decorators
 def wrap(f, specList=[], decorators=None, **kw):
     spec = Spec(specList, **kw)
+    # XXX This is a hack, but it's just a workaround until I know the right way
+    #     to fix this problem.
+    if decorators is not None and 'urlSnarfer' in decorators:
+        kw['allowExtra'] = True
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
         f(self, irc, msg, args, *state.args, **state.kwargs)
