@@ -165,6 +165,25 @@ Q: How do I make my Supybot connect to multiple servers?
 A: Just use the "connect" command in the Owner plugin.  Easy as pie!
 
 
+Q: I've edited my configuration file, but my Supybot doesn't notice
+   the changes!  Even if I restart it, it doesn't see them.  What's
+   the deal?
+
+A: Supybot won't reload its configuration files unless you tell it
+   to.  In addition, when Supybot exits (and periodically while it
+   runs) it flushes its configuration file to disk.  The safest way
+   to avoid problems with configuration file edits is simply to exit
+   the bot before editing the configuration file(s).  If you don't
+   wish to do that, however, you can edit the file, save the changes,
+   and tell the bot to reload its configuration, either via the
+   reload command in the Config plugin, or by sending the bot a
+   SIGHUP.  There is a brief period in this whole sequence where the
+   bot can flush its configuration to disk after you write your
+   changes, but we even have something to fix that: set the
+   configuration variable supybot.flush to False, and then reload the
+   configuration.
+
+
 Q: I found a bug, what do I do?
 
 A: Submit it on Sourceforge through our Sourceforge project page:
