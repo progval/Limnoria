@@ -42,11 +42,12 @@ import world
 import ircutils
 
 def fromChannelCapability(capability):
+    assert isChannelCapability(capability)
     return capability.split('.', 1)
 
 def isChannelCapability(capability):
     if '.' in capability:
-        (channel, capability) = fromChannelCapability(capability)
+        (channel, capability) = capability.split('.', 1)
         return ircutils.isChannel(channel)
     else:
         return False
@@ -66,23 +67,102 @@ def makeAntiCapability(capability):
     else:
         return '!' + capability
 
+def unAntiCapability(capability):
+    assert isAntiCapability(capability)
+    if isChannelCapability(capability):
+        (channel, capability) = fromChannelCapability(capability)
+        return '.'.join((channel, capability[1:]))
+    else:
+        return capability[1:]
+
+def invertCapability(capability):
+    if isAntiCapability(capability):
+        return unAntiCapability(capability)
+    else:
+        return makeAntiCapability(capability)
+
 _normal = string.maketrans('\r\n', '  ')
 def normalize(s):
     return s.translate(_normal)
 
 
+class CapabilitySet(set):
+    def __init__(self, capabilities=()):
+        set.__init__(self)
+        for capability in capabilities:
+            self.add(capability)
+
+    def add(self, capability):
+        capability = ircutils.toLower(capability)
+        inverted = invertCapability(capability)
+        if set.__contains__(self, inverted):
+            set.remove(self, inverted)
+        set.add(self, capability)
+
+    def remove(self, capability):
+        capability = ircutils.toLower(capability)
+        set.remove(self, capability)
+
+    def __contains__(self, capability):
+        capability = ircutils.toLower(capability)
+        if set.__contains__(self, capability):
+            return True
+        if set.__contains__(self, invertCapability(capability)):
+            return True
+        else:
+            return False
+
+    def check(self, capability):
+        capability = ircutils.toLower(capability)
+        if set.__contains__(self, capability):
+            return True
+        elif set.__contains__(self, invertCapability(capability)):
+            return False
+        else:
+            raise KeyError, capability
+
+    def repr(self):
+        return '%s([%r])' % (self.__class__.__name__, ', '.join(self))
+
+class UserCapabilitySet(CapabilitySet):
+    def __contains__(self, capability):
+        capability = ircutils.toLower(capability)
+        if CapabilitySet.__contains__(self, 'owner'):
+            return True
+        else:
+            return CapabilitySet.__contains__(self, capability)
+
+    def check(self, capability):
+        capability = ircutils.toLower(capability)
+        if capability == 'owner':
+            if CapabilitySet.__contains__(self, 'owner'):
+                return True
+            else:
+                return False
+        if 'owner' in self:
+            if isAntiCapability(capability):
+                return False
+            else:
+                return True
+        else:
+            return CapabilitySet.check(self, capability)
+
+    def add(self, capability):
+        capability = ircutils.toLower(capability)
+        assert capability != '!owner', '"!owner" disallowed.'
+        CapabilitySet.add(self, capability)
+        
 class IrcUser(object):
     """This class holds the capabilities and authentications for a user.
     """
     def __init__(self, ignore=False, password='', auth=None,
-                 capabilities=None, hostmasks=None):
+                 capabilities=(), hostmasks=None):
         self.auth = auth # The (time, hostmask) a user authenticated under.
         self.ignore = ignore # A boolean deciding if the person is ignored.
         self.password = password # password (plaintext? hashed?)
-        self.capabilities = set()
-        if capabilities is not None:
-            for capability in capabilities:
-                self.capabilities.add(capability)
+        self.capabilities = UserCapabilitySet()
+        for capability in capabilities:
+            self.capabilities.add(capability)
         if hostmasks is None:
             self.hostmasks = [] # A list of hostmasks used for recognition
         else:
@@ -102,20 +182,13 @@ class IrcUser(object):
             self.capabilities.remove(capability)
 
     def checkCapability(self, capability):
-        if 'owner' in self.capabilities:
-            if isAntiCapability(capability):
-                return False
-            else:
-                return True
-        elif self.ignore:
+        if self.ignore:
             if isAntiCapability(capability):
                 return True
             else:
                 return False
-        elif capability in self.capabilities:
-            return True
         else:
-            return False
+            return self.capabilities.check(capability)
 
     def setPassword(self, password):
         self.password = password
@@ -177,10 +250,9 @@ class IrcChannel(object):
         else:
             self.ignores = ignores
         if capabilities is None:
-            self.capabilities = set()
+            self.capabilities = CapabilitySet()
         else:
             self.capabilities = capabilities
-
         for capability in self.defaultOff:
             if capability not in self.capabilities:
                 self.capabilities.add(makeAntiCapability(capability))
@@ -222,13 +294,10 @@ class IrcChannel(object):
 
     def checkCapability(self, capability):
         if capability in self.capabilities:
-            return True
-        if isAntiCapability(capability):
-            return not self.defaultAllow
+            return self.capabilities.check(capability)
         else:
-            anticapability = makeAntiCapability(capability)
-            if anticapability in self.capabilities:
-                return False
+            if isAntiCapability(capability):
+                return not self.defaultAllow
             else:
                 return self.defaultAllow
 
@@ -421,74 +490,53 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
         return False
 
 def checkCapability(hostmask, capability, users=users, channels=channels):
-    """checkCapability(hostmask, recipient, capability) -> True/False
-
-    Checks if the user represented by hostmask has capability with recipient.
-    """
-    ###
-    # This is a hard function to write correctly.
-    #
-    # Basically, we want to return whether or not a user has a certain
-    # capability in a given channel.  This should be easy, but the various
-    # different cases are all hard to get right.
-
     if world.startup:
-        # Are we in special startup mode?
         if isAntiCapability(capability):
             return False
         else:
             return True
     try:
         u = users.getUser(hostmask)
-    except KeyError: # the user isn't in the database.
-        # First, check to see if we're asking for a channel capability:
+    except KeyError:
         if isChannelCapability(capability):
-            # If it is, we'll check the channel.
+            (channel, capability) = fromChannelCapability(capability)
             try:
-                (channel, capability) = fromChannelCapability(capability)
-            except ValueError: # unpack list of wrong size
-                debug.msg('Invalid channel capability in checkCapability')
-                return False   # stupid, invalid capability.
-            # Now, go fetch the channel and check to see what it thinks about
-            # said capability.
-            c = channels.getChannel(channel)
-            # Channels have their own defaults, so we can just directly return
-            # what the channel has to say about the capability.
-            return c.checkCapability(capability)
-        else: # It's not a channel capability.
-            # If it's not a channel, then the only thing we have to go by is
-            # conf.defaultCapabilities.
-            return (capability in conf.defaultCapabilities)
-    # Good, the user exists.
-    # First, we check to see if it's an owner -- if it is, it should have all
-    # capabilities and should not have any negative capabilities.
-    if u.checkCapability('owner'):
-        if isAntiCapability(capability):
+                c = channels.getChannel(channel)
+                if capability in c.capabilities:
+                    return c.checkCapability(capability)
+                else:
+                    return c.defaultAllow
+            except KeyError:
+                pass
+        if capability in conf.defaultCapabilities:
+            return True
+        elif invertCapability(capability) in conf.defaultCapabilities:
             return False
         else:
-            return True
-    # Now, we need to check if it's a channel capability or not.
-    if isChannelCapability(capability):
-        # First check to see if the user has the capability already; if so,
-        # it can be returned without checking the channel.
-        if u.checkCapability(capability):
-            return True
-        else:
-            # User doesn't have the capability.  Check the channel.
+            return conf.defaultAllow
+    if capability in u.capabilities:
+        return u.checkCapability(capability)
+    else:
+        if isChannelCapability(capability):
+            (channel, capability) = fromChannelCapability(capability)
             try:
-                (channel, capability) = fromChannelCapability(capability)
-            except ValueError:
-                debug.msg('Invalid channel capability in checkCapability')
-                return False # stupid, invalid capability.
-            c = channels.getChannel(channel)
-            # And return the channel's opinion.
-            return c.checkCapability(capability)
-    else: # It's not a channel capability.
-        # Just check the user.
-        try:
-            return u.checkCapability(capability)
-        except KeyError:
-            return (capability in conf.defaultCapabilities)
+                c = channels.getChannel(channel)
+                if capability in c.capabilities:
+                    return c.checkCapability(capability)
+                else:
+                    return c.defaultAllow
+            except KeyError:
+                pass
+        if capability in conf.defaultCapabilities:
+            return True
+        elif invertCapability(capability) in conf.defaultCapabilities:
+            return False
+        else:
+            return conf.defaultAllow
+        
+        
+        
+                
 
 def checkCapabilities(hostmask, capabilities, requireAll=False):
     """Checks that a user has capabilities in a list.
