@@ -180,6 +180,8 @@ class MiscCommands(callbacks.Privmsg):
                                    (command, simplehelp))
             else:
                 irc.error(msg, 'That command has no help at all.')
+        else:
+            irc.error(msg, 'There is no such command %s.' % command)
 
     def bug(self, irc, msg, args):
         """<description>
