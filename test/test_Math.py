@@ -47,12 +47,18 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
 ##         self.assertNotError('calc log(8,2)')
 ##         self.assertNotError('calc log(8,2)')
 
+    def testCalcNoNameError(self):
+        self.assertNotRegexp('calc foobar(x)', 'NameError')
+        
     def testRpn(self):
         self.assertResponse('rpn 5 2 +', '7')
         self.assertResponse('rpn 1 2 3 +', 'Stack: [1, 5]')
         self.assertResponse('rpn 1 dup', 'Stack: [1, 1]')
         self.assertResponse('rpn 2 3 4 + -', str(2-7))
         self.assertNotError('rpn 2 degrees')
+
+    def testRpmNoSyntaxError(self):
+        self.assertNotRegexp('rpn 2 3 foobar', 'SyntaxError')
         
     def testConvert(self):
         self.assertResponse('convert 1 m to cm', '100.0 cm')

@@ -152,6 +152,8 @@ class Math(callbacks.Privmsg):
             irc.error(msg, 'Go get scanez, this is a *real* math problem!')
         except TypeError:
             irc.error(msg, 'Something in there wasn\'t a valid number.')
+        except NameError, e:
+            irc.error(msg, '%s is not a defined function.' % str(e).split()[1])
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
 
@@ -194,7 +196,11 @@ class Math(callbacks.Privmsg):
                     arg2 = stack.pop()
                     arg1 = stack.pop()
                     s = '%s%s%s' % (arg1, arg, arg2)
-                    stack.append(eval(s, self._mathEnv, self._mathEnv))
+                    try:
+                        stack.append(eval(s, self._mathEnv, self._mathEnv))
+                    except SyntaxError:
+                        irc.error(msg, '%r is not a defined function.' % arg)
+                        return
         if len(stack) == 1:
             irc.reply(msg, str(self._complexToString(complex(stack[0]))))
         else:
