@@ -82,6 +82,7 @@ class Notes(callbacks.Privmsg):
                                from_id INTEGER,
                                to_id INTEGER,
                                added_at TIMESTAMP,
+                               notified BOOLEAN,
                                read BOOLEAN,
                                public BOOLEAN,
                                note TEXT
@@ -111,7 +112,9 @@ class Notes(callbacks.Privmsg):
 
     def setAsRead(self, noteid):
         "Changes a message's 'read' value to true in the notes table."
-        self.cursor.execute('UPDATE notes SET read=1 WHERE id=%s', noteid)
+        self.cursor.execute("""UPDATE notes
+                               SET read=1, notified=1
+                               WHERE id=%s""", noteid)
         self.db.commit()
 
     def die(self):
@@ -139,9 +142,9 @@ class Notes(callbacks.Privmsg):
         else: 
             public = 0 
         self.cursor.execute("""INSERT INTO notes VALUES 
-                               (NULL, %s, %s, %s, %s, %s, %s)""", 
+                               (NULL, %s, %s, %s, 0, 0, %s, %s)""", 
                                senderID, recipID, int(time.time()),
-                               0, public, note)
+                               public, note)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
 
