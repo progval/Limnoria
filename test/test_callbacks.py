@@ -256,7 +256,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     def testErrorPrivateKwarg(self):
         try:
             original = conf.supybot.reply.errorInPrivate()
-            conf.supybot.reply.errorInPrivate.set('False')
+            conf.supybot.reply.errorInPrivate.setValue(False)
             m = self.getMsg("eval irc.error('foo', private=True)")
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:

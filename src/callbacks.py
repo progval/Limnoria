@@ -124,13 +124,26 @@ def canonicalName(command):
     return command.translate(string.ascii, special).lower() + reAppend
 
 def reply(msg, s, prefixName=True, private=None,
-          notice=None, to=None, action=None):
+          notice=None, to=None, action=None, error=False):
     # Ok, let's make the target:
     target = ircutils.replyTo(msg)
+    def getConfig(wrapper):
+        if ircutils.isChannel(target):
+            return wrapper.get(target)()
+        else:
+            return wrapper()
+    if ircutils.isChannel(target):
+        channel = target
+    else:
+        channel = None
     if notice is None:
-        notice = conf.supybot.reply.withNotice()
+        notice = getConfig(conf.supybot.reply.withNotice)
     if private is None:
-        private = conf.supybot.reply.inPrivate()
+        private = getConfig(conf.supybot.reply.inPrivate)
+    if error:
+        notice = getConfig(conf.supybot.reply.errorWithNotice) or notice
+        private = getConfig(conf.supybot.reply.errorInPrivate) or private
+        s = 'Error: ' + s
     if private:
         prefixName = False
         if to is None:
@@ -158,13 +171,10 @@ def reply(msg, s, prefixName=True, private=None,
     # Finally, we'll return the actual message.
     return msgmaker(target, s)
 
-def error(msg, s, private=None, notice=None, **kwargs):
+def error(msg, s, **kwargs):
     """Makes an error reply to msg with the appropriate error payload."""
-    if notice is None:
-        notice = conf.supybot.reply.errorWithNotice()
-    if private is None:
-        private = conf.supybot.reply.errorInPrivate()
-    return reply(msg, 'Error: ' + s, private=private, notice=notice, **kwargs)
+    kwargs['error'] = True
+    return reply(msg, s, **kwargs)
 
 def getHelp(method, name=None):
     if name is None:
@@ -693,10 +703,11 @@ class IrcObjectProxy(RichReplyMethods):
             else:
                 self.irc.queueMsg(error(self.msg, s, **kwargs))
         else:
-            # No argument, let's raise ArgumentError.
             if self.commandMethod is not None:
                 # We can recurse here because it only gets called once.
                 self.error(formatArgumentError(self.commandMethod), **kwargs)
+            else:
+                raise ArgumentError # We shouldn't get here, but just in case.
         self.finished = True
 
     def getRealIrc(self):

@@ -89,10 +89,12 @@ def registerGroup(Group, name, group=None):
     return Group.register(name, group)
 
 def registerGlobalValue(group, name, value):
+    value.channelValue = False
     return group.register(name, value)
 
 def registerChannelValue(group, name, value):
     value.supplyDefault = True
+    value.channelValue = True
     return group.register(name, value)
 
 def registerPlugin(name, currentValue=None, public=True):
@@ -246,7 +248,10 @@ registerChannelValue(supybot, 'prefixChars',
 
 class DefaultCapabilities(registry.SpaceSeparatedListOfStrings):
     List = ircutils.IrcSet
-    def setValue(self, v):
+    # We use a keyword argument trick here to prevent eval'ing of code that
+    # changes allowDefaultOwner from affecting this.  It's not perfect, but
+    # it's still an improvement, raising the bar for potential crackers.
+    def setValue(self, v, allowDefaultOwner=allowDefaultOwner):
         registry.SpaceSeparatedListOfStrings.setValue(self, v)
         if '-owner' not in self.value and not allowDefaultOwner:
             print '*** You must run supybot with the --allow-default-owner'
@@ -348,11 +353,14 @@ registerChannelValue(supybot.reply, 'noCapabilityError',
     users to understand the underlying security system preventing them from
     running certain commands."""))
 
-registerChannelValue(supybot.reply, 'withPrivateNotice',
+registerChannelValue(supybot.reply, 'inPrivate',
+    registry.Boolean(False, """Determines whether the bot will reply privately
+    when replying in a channel, rather than replying to the whole channel."""))
+
+registerChannelValue(supybot.reply, 'withNotice',
     registry.Boolean(False, """Determines whether the bot will reply with a
-    private notice to users rather than sending a message to a channel.
-    Private notices are particularly nice because they don't generally cause
-    IRC clients to open a new query window."""))
+    notice when replying in a channel, rather than replying with a privmsg as
+    normal."""))
 
 # XXX: User value.
 registerGlobalValue(supybot.reply, 'withNoticeWhenPrivate',
