@@ -389,7 +389,6 @@ registerGlobalValue(supybot, 'alwaysJoinOnInvite',
     a channel if the user inviting it has the 'admin' capability (or if it's
     explicitly told to join the channel using the Admin.join command)"""))
 
-# XXX: ChannelValue-ishness is not respected for this yet.
 registerChannelValue(supybot.reply, 'showSimpleSyntax',
     registry.Boolean(False, """Supybot normally replies with the full help
     whenever a user misuses a command.  If this value is set to True, the bot

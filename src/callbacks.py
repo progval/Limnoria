@@ -368,11 +368,11 @@ def findCallbackForCommand(irc, name):
                     L.append(callback)
     return L
 
-def formatArgumentError(method, name=None, channel=None):
+def formatArgumentError(method, name=None):
     if name is None:
         name = method.__name__
     if hasattr(method, '__doc__') and method.__doc__:
-        if conf.get(conf.supybot.reply.showSimpleSyntax, channel):
+        if conf.get(conf.supybot.reply.showSimpleSyntax, dynamic.channel):
             return getSyntax(method, name=name)
         else:
             return getHelp(method, name=name)
@@ -1080,6 +1080,11 @@ class Privmsg(irclib.IrcCallback):
         setattr(self.__class__, canonicalname, dispatcher)
 
     def __call__(self, irc, msg):
+        # This is for later dynamic scoping.
+        if msg.args and irc.isChannel(msg.args[0]):
+            channel = msg.args[0]
+        else:
+            channel = None
         if msg.command == 'PRIVMSG':
             if self.noIgnore or not ircdb.checkIgnored(msg.prefix,msg.args[0]):
                 self.__parent.__call__(irc, msg)
