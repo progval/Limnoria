@@ -128,3 +128,30 @@ SQL statements in code should put SQL words in ALL CAPS:
 """SELECT quote FROM quotes ORDER BY random() LIMIT 1""".  This makes
 SQL significantly easier to read.
 
+Common variable names:
+  L => an arbitrary list.
+  t => an arbitrary tuple.
+  x => an arbitrary float.
+  s => an arbitrary string.
+  f => an arbitrary function.
+  p => an arbitrary predicate.
+  i,n => an arbitrary integer.
+  cb => an arbitrary callback.
+  db => a database handle.
+  fd => a file-like object.
+  msg => an ircmsgs.IrcMsg object.
+  irc => an irclib.Irc object (or proxy)
+  nick => a string that is an IRC nick.
+  channel => a string that is an IRC channel.
+  hostmask => a string that is a user's IRC prefix.
+When the semantic functionality (that is, the "meaning" of a variable
+is obvious from context, one of these names should be used.  This
+just makes it easier for people reading our code to know what a
+variable represents without scouring the surrounding code.
+
+Multiple variable assignments should always be surrounded with
+parentheses -- i.e., if you're using the partition function, then
+your assignment statement should look like
+(good, bad) = partition(p, L).  The parentheses make it obvious that
+you're doing a multiple assignment, and that's important because I
+hate reading code and wondering where a variable came from.
