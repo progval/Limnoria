@@ -449,7 +449,7 @@ class SpaceSeparatedListOfStrings(SeparatedListOf):
     def splitter(self, s):
         return s.split()
     joiner = ' '.join
-    
+
 class CommaSeparatedListOfStrings(SeparatedListOf):
     Value = String
     def splitter(self, s):
