@@ -72,6 +72,11 @@ conf.registerChannelValue(conf.supybot.plugins.Factoids,
     'showFactoidIfOnlyOneMatch', registry.Boolean(True, """Determines whether
     the bot will reply with the single matching factoid if only one factoid
     matches when using the search command."""))
+conf.registerChannelValue(conf.supybot.plugins.Factoids,
+    'replyWhenInvalidCommand', registry.Boolean(True,  """Determines whether
+    the bot will reply to invalid commands by searching for a factoid;
+    basically making the whatis unnecessary when you want all factoids for a
+    given key."""))
 
 class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
     def __init__(self):
@@ -148,6 +153,42 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
         else:
             irc.error('That factoid is locked.')
 
+    def _lookupFactoid(self, channel, key):
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT factoids.fact FROM factoids, keys
+                          WHERE keys.key LIKE %s AND factoids.key_id=keys.id
+                          ORDER BY factoids.id
+                          LIMIT 20""", key)
+        return [t[0] for t in cursor.fetchall()]
+
+    def _replyFactoids(self, irc, key, factoids, number=0):
+        if factoids:
+            if number:
+                try:
+                    irc.reply(factoids[number-1])
+                except IndexError:
+                    irc.error('That\'s not a valid number for that key.')
+                    return
+            else:
+                factoidsS = []
+                counter = 1
+                for factoid in factoids:
+                    factoidsS.append('(#%s) %s' % (counter, factoid))
+                    counter += 1
+                irc.replies(factoidsS, prefixer='%r could be ' % key,
+                            joiner=', or ', onlyPrefixFirst=True)
+        else:
+            irc.error('No factoid matches that key.')
+
+    def invalidCommand(self, irc, msg, tokens):
+        if ircutils.isChannel(msg.args[0]):
+            channel = msg.args[0]
+            if self.registryValue('replyWhenInvalidCommand', channel):
+                key = ' '.join(tokens)
+                factoids = self._lookupFactoid(channel, key)
+                self._replyFactoids(irc, key, factoids)
+
     def whatis(self, irc, msg, args):
         """[<channel>] <key> [<number>]
 
@@ -169,29 +210,8 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
                 return
         else:
             number = 0
-        db = self.getDb(channel)
-        cursor = db.cursor()
-        cursor.execute("""SELECT factoids.fact FROM factoids, keys WHERE
-                          keys.key LIKE %s AND factoids.key_id=keys.id
-                          ORDER BY factoids.id
-                          LIMIT 20""", key)
-        if cursor.rowcount == 0:
-            irc.error('No factoid matches that key.')
-        else:
-            if not number:
-                factoids = []
-                counter = 1
-                for result in cursor.fetchall():
-                    factoids.append('(#%s) %s' % (counter, result[0]))
-                    counter += 1
-                irc.replies(factoids, prefixer='%r could be ' % key,
-                            joiner=', or ', onlyPrefixFirst=True)
-            else:
-                try:
-                    irc.reply(cursor.fetchall()[number-1][0])
-                except IndexError:
-                    irc.error('That\'s not a valid number for that key.')
-                    return
+        factoids = self._lookupFactoid(channel, key)
+        self._replyFactoids(irc, key, factoids, number)
 
     def lock(self, irc, msg, args):
         """[<channel>] <key>

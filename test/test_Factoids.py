@@ -146,6 +146,10 @@ if sqlite is not None:
                 conf.supybot.plugins.Factoids. \
                     showFactoidIfOnlyOneMatch.setValue(True)
 
+        def testInvalidCommand(self):
+            self.assertNotError('learn foo as bar')
+            self.assertRegexp('foo', 'bar')
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
