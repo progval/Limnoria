@@ -56,8 +56,8 @@ def configure(advanced):
     chanserv = something('What is your ChanServ named?', default='ChanServ')
     nickserv = something('What is your NickServ named?', default='NickServ')
     conf.supybot.plugins.Services.nick.setValue(nick)
-    conf.supybot.plugins.Services.password.setValue(password)
     conf.supybot.plugins.Services.NickServ.setValue(nickserv)
+    conf.supybot.plugins.Services.NickServ.password.setValue(password)
     conf.supybot.plugins.Services.ChanServ.setValue(chanserv)
 
 class ValidNickOrEmptyString(registry.String):
