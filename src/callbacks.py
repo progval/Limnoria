@@ -725,15 +725,23 @@ class PrivmsgCommandAndRegexp(Privmsg):
     (or list) attribute "regexps".
     """
     flags = re.I
-    regexps = sets.Set()
+    regexps = () # Use sets.Set() in your own callbacks.
+    addressedRegexps = () # Ditto on the sets.Sets() idea.
     def __init__(self):
         Privmsg.__init__(self)
         self.res = []
+        self.addressedRes = []
         for name in self.regexps:
             method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
             self.res.append((r, method))
+        for name in self.addressedRegexps:
+            method = getattr(self, name)
+            r = re.compile(method.__doc__, self.flags)
+            self.addressedRes.append((r, method))
         self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
+        self.addressedRes.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__,
+                                                              m2.__name__))
 
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
@@ -747,6 +755,17 @@ class PrivmsgCommandAndRegexp(Privmsg):
                     msg = self.rateLimiter.get()
                 if msg:
                     self.callCommand(method, IrcObjectProxyRegexp(irc), msg, m)
+        s = addressed(irc.nick, msg)
+        if s:
+            for (r, method) in self.addressedRes:
+                for m in r.finditer(s):
+                    if not fed:
+                        fed = True
+                        self.rateLimiter.put(msg)
+                        msg = self.rateLimiter.get()
+                    if msg:
+                        proxy = IrcObjectProxyRegexp(irc)
+                        self.callCommand(method, proxy, msg, m)
         Privmsg.doPrivmsg(self, irc, msg, rateLimit=(not fed))
             
 

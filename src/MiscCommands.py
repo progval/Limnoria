@@ -75,6 +75,10 @@ class MiscCommands(callbacks.Privmsg):
                         for (r, _) in cb.res:
                             if r.search(msg.args[1]):
                                 return
+                        if hasattr(cb, 'addressedRes'):
+                            for (r, _) in cb.addressedRes:
+                                if r.search(s):
+                                    return
                 notCommands = []
                 tokens = callbacks.tokenize(s)
                 for command in callbacks.getCommands(tokens):
