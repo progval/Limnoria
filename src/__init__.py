@@ -56,6 +56,8 @@ class authors(object): # This is basically a bag.
     skorobeus = Author('Kevin Murphy', 'Skorobeus', 'skoro@skoroworld.com')
     inkedmn = Author('Brett Kelly', 'inkedmn', 'inkedmn@users.sf.net')
     bwp = Author('Brett Phipps', 'bwp', 'phippsb@gmail.com')
+    bear = Author('Mike Taylor', 'bear', 'bear@code-bear.com')
+    grantbow = Author('Grant Bowman', 'Grantbow', 'grantbow@grantbow.com')
     unknown = Author('Unknown author', 'unknown', 'unknown@supybot.org')
 
     # Let's be somewhat safe about this.
