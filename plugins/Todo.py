@@ -113,7 +113,8 @@ class Todo(callbacks.Privmsg):
                 try:
                     userid = ircdb.users.getUserId(arg)
                 except KeyError:
-                    irc.error('%r is not a valid task id or username' % arg)
+                    irc.error(msg,
+                              '%r is not a valid task id or username' % arg)
                     return
         # Everything needs a cursor, might as well plop it outside
         if not userid and not taskid:
