@@ -28,27 +28,74 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 ###
+
 import supybot
 
 from fix import *
 from questions import *
 
+import sys
+import optparse
+
+import conf
+import debug
 import ircdb
 
-if __name__ == '__main__':
-    prompt = 'Would you like to add a user?'
-    while yn(prompt) == 'y':
-        name = anything('What is the user\'s name?')
-        password = anything('What is %s\'s password?' % name)
+debug.minimumPriority = 'high'
+
+def main():
+    parser = optparse.OptionParser(usage='Usage: %prog [options]',
+                                   version='supybot %s' % conf.version)
+    parser.add_option('-u', '--username', action='store', default='',
+                      dest='name',
+                      help='username for the user.')
+    parser.add_option('-p', '--password', action='store', default='',
+                      dest='password',
+                      help='password for the user.')
+    parser.add_option('-c', '--capability', action='append',
+                      dest='capabilities', metavar='CAPABILITY',
+                      help='capability the user should have; '
+                           'this option may be given multiple times.')
+
+    (options, args) = parser.parse_args()
+    if not options.name:
+        name = something('What is the user\'s name?')
+    else:
+        name = options.name
+
+    if not options.password:
+        password = something('What is %s\'s password?' % name)
+    else:
+        password = options.password
+
+    if not options.capabilities:
         capabilities = []
         prompt = 'Would you like to give %s a capability?' % name
         while yn(prompt) == 'y':
             capabilities.append(anything('What capability?'))
             prompt = 'Would you like to give %s another capability?' % name
-        (id, user) = ircdb.users.newUser()
-        user.name = name
-        user.setPassword(password)
-        for capability in capabilities:
-            user.addCapability(capability)
-        ircdb.users.setUser(id, user)
-        prompt = 'Would you like to add another user?'
+    else:
+        capabilities = options.capabilities
+
+    try:
+        # First, let's check to see if the user is already in the database.
+        _ = ircdb.users.getUser(name)
+        # Uh oh.  That user already exists; otherwise we'd have KeyError'ed.
+        sys.stderr.write('That user already exists.  Try another name.\n')
+        sys.exit(-1)
+    except KeyError:
+        # Good.  No such user exists.  We'll pass.
+        pass
+    (id, user) = ircdb.users.newUser()
+    user.name = name
+    user.setPassword(password)
+    for capability in capabilities:
+        user.addCapability(capability)
+    ircdb.users.setUser(id, user)
+    print 'User %s added.' % name
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
