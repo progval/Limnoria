@@ -39,9 +39,10 @@ class WebutilsTestCase(SupyTestCase):
         self.assertEqual(webutils.getDomain('http://slashdot.org/foo/bar.exe'),
                          'slashdot.org')
 
-    def testGetUrlWithSize(self):
-        url = 'http://slashdot.org/'
-        self.failUnless(len(webutils.getUrl(url, 1024)) == 1024)
+    if network:
+        def testGetUrlWithSize(self):
+            url = 'http://slashdot.org/'
+            self.failUnless(len(webutils.getUrl(url, 1024)) == 1024)
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
