@@ -33,6 +33,13 @@ from test import *
 
 class MiscCommandsTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('MiscCommands', 'Utilities')
+    def testReplyWhenNotCommand(self):
+        conf.replyWhenNotCommand = True
+        self.assertRegexp('foo bar baz', 'not.*command')
+        self.assertRegexp('foo | bar | baz', 'not.*commands')
+        self.assertRegexp('baz [foo] [bar]', 'not.*commands')
+        conf.replyWhenNotCommand = False
+        
     def testHelp(self):
         self.assertNotError('help list')
         self.assertNotError('help help')

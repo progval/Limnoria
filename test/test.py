@@ -37,6 +37,7 @@ if 'test' not in sys.path:
 
 import conf
 conf.dataDir = 'test-data'
+conf.replyWhenNotCommand = False
 
 from fix import *
 

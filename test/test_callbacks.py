@@ -128,6 +128,17 @@ class FunctionsTestCase(unittest.TestCase):
                                          '%s: foo' % channelMsg.nick),
                          callbacks.reply(channelMsg, 'foo'))
 
+    def testGetCommands(self):
+        self.assertEqual(callbacks.getCommands(['foo']), ['foo'])
+        self.assertEqual(callbacks.getCommands(['foo', 'bar']), ['foo'])
+        self.assertEqual(callbacks.getCommands(['foo', ['bar', 'baz']]),
+                         ['foo', 'bar'])
+        self.assertEqual(callbacks.getCommands(['foo', 'bar', ['baz']]),
+                         ['foo', 'baz'])
+        self.assertEqual(callbacks.getCommands(['foo', ['bar'], ['baz']]),
+                         ['foo', 'bar', 'baz'])
+        
+
 class PrivmsgTestCase(PluginTestCase):
     plugins = ('Utilities',)
     def testEmptySquareBrackets(self):

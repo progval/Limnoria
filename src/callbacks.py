@@ -262,6 +262,14 @@ def tokenize(s):
     debug.msg('tokenize took %s seconds.' % (time.time() - start), 'verbose')
     return args
 
+def getCommands(tokens):
+    L = []
+    if tokens and isinstance(tokens, list):
+        L.append(tokens[0])
+        for elt in tokens:
+            L.extend(getCommands(elt))
+    return L
+
 def findCallbackForCommand(irc, commandName):
     """Given a command name and an Irc object, returns the callback that
     command is in.  Returns None if there is no callback with that command."""

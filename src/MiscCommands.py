@@ -51,6 +51,26 @@ import privmsgs
 import callbacks
 
 class MiscCommands(callbacks.Privmsg):
+    def doPrivmsg(self, irc, msg):
+        # This exists to be able to respond to attempts to command the bot
+        # with a "That's not a command!" if the proper conf.variable is set.
+        callbacks.Privmsg.doPrivmsg(self, irc, msg)
+        if conf.replyWhenNotCommand:
+            s = callbacks.addressed(irc.nick, msg)
+            if s:
+                tokens = callbacks.tokenize(s)
+                notCommands = []
+                for command in callbacks.getCommands(tokens):
+                    if not callbacks.findCallbackForCommand(irc, command):
+                        notCommands.append(command)
+                if notCommands:
+                    if len(notCommands) == 1:
+                        s = '%r is not a command.' % notCommands[0]
+                    else:
+                        s = '%s are not commands' % \
+                            utils.commaAndify(notCommands)
+                    irc.queueMsg(callbacks.reply(msg, s))
+        
     def list(self, irc, msg, args):
         """[<module name>]
 

@@ -85,6 +85,13 @@ throttleTime = 1.0
 allowEval = False
 
 ###
+# replyWhenNotCommand: True if you want the bot reply when someone apparently
+#                      addresses him but there is no command.  Otherwise he'll
+#                      just remain silent.
+###
+replyWhenNotCommand = True
+
+###
 # defaultCapabilities: Capabilities allowed to everyone by default.  You almost
 #                      certainly want to have !owner and !admin in here.
 ###
