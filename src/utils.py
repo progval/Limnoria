@@ -677,13 +677,13 @@ class AtomicFile(file):
 
     Opens the file in 'w' mode."""
     def __init__(self, filename, allowEmptyOverwrite=False, tmpDir=None):
-        self.filename = filename
+        self.filename = os.path.abspath(filename)
         self.rolledback = False
         self.allowEmptyOverwrite = allowEmptyOverwrite
-        self.tempFilename = '%s.%s' % (filename, mktemp())
+        self.tempFilename = '%s.%s' % (self.filename, mktemp())
         if tmpDir is not None:
             tempFilename = os.path.dirname(self.tempFilename)
-            self.tempFilename = os.path.join(tmpDir, tempFilename)
+            self.tempFilename = os.path.join(tmpDir, self.tempFilename)
         super(self.__class__, self).__init__(self.tempFilename, 'w')
 
     def rollback(self):
