@@ -34,6 +34,7 @@ Plugin for handling basic Karma stuff for a channel.
 """
 
 import os
+import sets
 from itertools import imap
 
 import sqlite
@@ -78,11 +79,13 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
         return db
 
     def karma(self, irc, msg, args):
-        """[<channel>] [<text>]
+        """[<channel>] [<thing> [<thing> ...]]
 
-        Returns the karma of <text>.  If <text> is not given, returns the top
-        three and bottom three karmas. <channel> is only necessary if the
-        message isn't sent on the channel itself.
+        Returns the karma of <text>.  If <thing> is not given, returns the top
+        three and bottom three karmas.  If one <thing> is given, returns the
+        details of its karma; if more than one <thing> is given, returns the
+        total karma of each of the the things. <channel> is only necessary if
+        the message isn't sent on the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         db = self.getDb(channel)
@@ -104,15 +107,25 @@ class Karma(callbacks.PrivmsgCommandAndRegexp, plugins.ChannelDBHandler):
                      subtracted, utils.pluralize(subtracted, 'time'), total)
                 irc.reply(msg, s)
         elif len(args) > 1:
-            normalizedArgs = imap(str.lower, args)
-            criteria = ' OR '.join(['normalized=%s'] * len(args))
+            normalizedArgs = sets.Set(imap(str.lower, args))
+            criteria = ' OR '.join(['normalized=%s'] * len(normalizedArgs))
             sql = """SELECT name, added-subtracted
                      FROM karma WHERE %s
                      ORDER BY added-subtracted DESC""" % criteria
             cursor.execute(sql, *normalizedArgs)
             if cursor.rowcount > 0:
-                s = utils.commaAndify(['%s: %s' % (n, t)
-                                       for (n,t) in cursor.fetchall()])
+                L = []
+                for (n, t) in cursor.fetchall():
+                    L.append('%s: %s' % (n, t))
+                    normalizedArgs.remove(n.lower())
+                if normalizedArgs:
+                    if len(normalizedArgs) == 1:
+                        L.append('%s has no karma' % normalizedArgs.pop())
+                    else:
+                        LL = list(normalizedArgs)
+                        LL.sort()
+                        L.append('%s have no karma' % utils.commaAndify(LL))
+                s = utils.commaAndify(L)
                 irc.reply(msg, s + '.')
             else:
                 irc.reply(msg, 'I didn\'t know the karma for any '

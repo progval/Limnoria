@@ -60,6 +60,7 @@ if sqlite is not None:
             self.assertRegexp('karma FOO BAR FOOBAR', '.*foo.*foobar.*bar.*')
             self.assertRegexp('karma FOO BAR FOOBAR',
                               '.*FOO.*foobar.*BAR.*', flags=0)
+            self.assertRegexp('karma foo bar foobar asdfjkl', 'asdfjkl')
             # Test case-insensitive
             self.assertNoResponse('MOO++', 2)
             self.assertRegexp('karma moo',
