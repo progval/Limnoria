@@ -103,15 +103,11 @@ class IrcHandler(logging.Handler):
 class IrcFormatter(log.Formatter):
     def formatException(self, (E, e, tb)):
         L = [utils.exnToString(e), '::']
-        while tb:
-            lineno = tb.tb_lineno
-            code = tb.tb_frame.f_code
-            function = code.co_name
-            filename = os.path.basename(code.co_filename)
-            L.append('[%s|%s|%s]' % (filename, function, lineno))
-            tb = tb.tb_next
+        frames = utils.stackTrace(frame=tb.tb_frame, compact=True).split()
+        frames.reverse()
+        L.extend(frames)
         del tb
-        while sum(imap(len, L)) > 425:
+        while sum(imap(len, L)) > 350:
             L.pop()
         return ' '.join(L)
 
@@ -119,9 +115,8 @@ class IrcFormatter(log.Formatter):
 class ColorizedIrcFormatter(IrcFormatter):
     def formatException(self, (E, e, tb)):
         if conf.supybot.plugins.LogToIrc.colorized():
-            return ircutils.mircColor(IrcFormatter.formatException(self,
-                                                                   (E, e, tb)),
-                                      fg='red')
+            s = IrcFormatter.formatException(self, (E, e, tb))
+            return ircutils.mircColor(s, fg='red')
         else:
             return IrcFormatter.formatException(self, (E, e, tb))
 
