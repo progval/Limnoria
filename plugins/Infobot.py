@@ -171,9 +171,9 @@ class Infobot(callbacks.PrivmsgRegexp):
         r"^info$"
         cursor = self.db.cursor()
         cursor.execute("SELECT COUNT(*) FROM is_factoids")
-        numIs = cursor.fetchone()[0]
+        numIs = int(cursor.fetchone()[0])
         cursor.execute("SELECT COUNT(*) FROM are_factoids")
-        numAre = cursor.fetchone()[0]
+        numAre = int(cursor.fetchone()[0])
         s = 'I have %s is factoids and %s are factoids' % (numIs, numAre)
         irc.reply(s)
 

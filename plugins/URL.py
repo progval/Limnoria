@@ -309,8 +309,9 @@ class URL(callbacks.PrivmsgCommandAndRegexp,
         cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM urls""")
         (count,) = cursor.fetchone()
+        count = int(count)
         irc.reply('I have %s %s in my database.' %
-                  (count, int(count) == 1 and 'URL' or 'URLs'))
+                  (count, count == 1 and 'URL' or 'URLs'))
 
     def last(self, irc, msg, args):
         """[<channel>] [--{from,with,at,proto,near}=<value>] --{nolimit,fancy}
