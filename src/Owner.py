@@ -261,7 +261,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     names = [cb.name() for cb in cbs]
                     srcs = [name for name in names if name in self._srcPlugins]
                     if len(srcs) == 1:
-                        tokens.insert(0, srcs[0])
+                        if callbacks.canonicalName(name) != command:
+                            # We don't insert the dispatcher name here because
+                            # it's handled later.  Man, this stuff is a mess.
+                            tokens.insert(0, srcs[0])
                     elif command not in map(callbacks.canonicalName, names):
                         ambiguousCommands[command] = names
             for elt in tokens:

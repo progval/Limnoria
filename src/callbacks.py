@@ -510,8 +510,7 @@ class IrcObjectProxy(RichReplyMethods):
             self.commandMethod = command
             try:
                 cb.callCommand(command, self, self.msg, self.args)
-            except (getopt.GetoptError, ArgumentError), e:
-                self.log.debug('ArgumentError: %s', utils.exnToString(e))
+            except (getopt.GetoptError, ArgumentError):
                 self.reply(formatArgumentError(command, name=name))
             except CannotNest, e:
                 if not isinstance(self.irc, irclib.Irc):
@@ -534,7 +533,6 @@ class IrcObjectProxy(RichReplyMethods):
         name = canonicalName(self.args[0])
         cbs = findCallbackForCommand(self, name)
         if len(cbs) == 0:
-            # No callbacks have the command.  So we do our invalidCommand stuff.
             for cb in self.irc.callbacks:
                 if isinstance(cb, PrivmsgRegexp):
                     for (r, m) in cb.res:
@@ -557,10 +555,7 @@ class IrcObjectProxy(RichReplyMethods):
             # Ok, no regexp-based things matched.
             self._callInvalidCommands()
         else:
-            # At least one callback had the command.
             if len(cbs) > 1:
-                # Let's first see if there are any callbacks with the same name
-                # as the command; they get priority.
                 for cb in cbs:
                     if canonicalName(cb.name()) == name:
                         del self.args[0]
@@ -841,7 +836,6 @@ class Privmsg(irclib.IrcCallback):
         given command, use this command to tell the bot which plugin's command
         to use.""" % (myName, myName, myName)
         def dispatcher(self, irc, msg, args):
-            self.log.debug('Dispatcher called with args: %s.', args)
             def handleBadArgs():
                 if self._original:
                     self._original(irc, msg, args)
@@ -850,7 +844,9 @@ class Privmsg(irclib.IrcCallback):
                     cb.help(irc, msg, [self.name()])
             if args:
                 name = canonicalName(args[0])
-                if self.isCommand(name):
+                if name == canonicalName(self.name()):
+                    handleBadArgs()
+                elif self.isCommand(name):
                     cap = checkCommandCapability(msg, self, name)
                     if cap:
                         irc.errorNoCapability(cap)
