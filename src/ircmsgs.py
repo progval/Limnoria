@@ -41,7 +41,7 @@ import ircutils
 class IrcMsg(object):
     """Class to represent an IRC message.
     """
-#    __slots__ = ('_args', '_command', '_host', '_nick', '_prefix', '_user')
+    #__slots__ = ('_args', '_command', '_host', '_nick', '_prefix', '_user')
     def __init__(self, s='', command='', args=None, prefix='', msg=None):
         if msg:
             prefix = msg.prefix
@@ -325,4 +325,5 @@ def whois(nick):
 
 def invite(channel, user):
     return IrcMsg(command='INVITE', args=(channel, user))
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
