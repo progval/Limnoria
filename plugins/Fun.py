@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ###
-# Copyright (c) 2002-2004, Jeremiah Fincher, Grant Bowman, et alii
+# Copyright (c) 2002-2004, Jeremiah Fincher
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 Provides a multitude of fun, useless commands.
 """
 
-__revision__ = "$Id$"
+__revision__ = '$Id$'
 
 import supybot.plugins as plugins
 
@@ -42,8 +42,6 @@ import re
 import sys
 import md5
 import sha
-import time
-import string
 import random
 import urllib
 import inspect
@@ -331,8 +329,6 @@ class Fun(callbacks.Privmsg):
             length = 4
         irc.reply(utils.soundex(s, length))
 
-
-
     # The list of words and algorithm are pulled straight the mozbot
     # MagicEightBall.bm module.
     _responses = {'positive': ['It is possible.', 'Yes!', 'Of course.', 
@@ -370,7 +366,7 @@ class Fun(callbacks.Privmsg):
         if text:
             irc.reply(self._checkTheBall(len(text)))
         else:
-            irc.reply(self._checkTheBall(random.randrange(0, 3)))
+            irc.reply(self._checkTheBall(random.randint(0, 2)))
 
     _rouletteChamber = random.randrange(0, 6)
     _rouletteBullet = random.randrange(0, 6)
