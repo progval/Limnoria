@@ -196,7 +196,7 @@ class Notes(callbacks.Privmsg):
         self.cursor.execute("""SELECT id, from_id, public, read FROM notes
                                WHERE to_id=%s
                                AND read=0""", senderID)
-        count = cursor.rowcount
+        count = self.cursor.rowcount
         notes = self.cursor.fetchall()
         L = []
         if count == 0:
