@@ -578,6 +578,9 @@ class Privmsg(irclib.IrcCallback):
                 if msg:
                     try:
                         args = tokenize(s)
+                        for command in getCommands(args):
+                            if not findCallbackForCommand(irc, command):
+                                return
                         self.Proxy(irc, msg, args)
                     except SyntaxError, e:
                         irc.queueMsg(reply(msg, debug.exnToString(e)))
@@ -669,6 +672,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
             method = getattr(self, name)
             r = re.compile(method.__doc__, self.flags)
             self.res.append((r, method))
+        self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
 
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
