@@ -454,13 +454,14 @@ class FunCommands(callbacks.Privmsg):
                   ' of system time for a total of %s seconds of CPU time.  ' \
                   'I\'ve taken a total of %s%% of this computer\'s time.  ' \
                   'Out of %s spawned %s, I have %s active.  ' \
-                  'I have processed %s commands.' %\
+                  'I have processed %s %s.' %\
                     (user, system, user + system,
                      childUser, childSystem, childUser + childSystem,
                      (user+system+childUser+childSystem)/timeRunning,
                      world.threadsSpawned,
                      world.threadsSpawned == 1 and 'thread' or 'threads',
-                     threads, world.commandsProcessed)
+                     threads, world.commandsProcessed,
+                     world.commandProcessed == 1 and 'command' or 'commands')
         irc.reply(msg, response)
 
     def uptime(self, irc, msg, args):
