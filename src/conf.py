@@ -509,6 +509,9 @@ class ValidQuotes(registry.Value):
         if [c for c in v if c not in '"`\'']:
             self.error()
         super(ValidQuotes, self).setValue(v)
+
+    def __str__(self):
+        return str(self.value)
                     
 registerChannelValue(supybot.commands, 'quotes',
     ValidQuotes('"', """Determines what characters are valid for quoting
