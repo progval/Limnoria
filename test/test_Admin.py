@@ -36,12 +36,20 @@ import conf
 class AdminTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Admin',)
     def testChannels(self):
+        def getAfterJoinMessages():
+            m = self.irc.takeMsg()
+            self.assertEqual(m.command, 'MODE')
+            m = self.irc.takeMsg()
+            self.assertEqual(m.command, 'WHO')
         self.assertRegexp('channels', 'not.*in any')
         self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
+        getAfterJoinMessages()
         self.assertRegexp('channels', '#foo')
         self.irc.feedMsg(ircmsgs.join('#bar', prefix=self.prefix))
+        getAfterJoinMessages()
         self.assertRegexp('channels', '#bar and #foo')
         self.irc.feedMsg(ircmsgs.join('#Baz', prefix=self.prefix))
+        getAfterJoinMessages()
         self.assertRegexp('channels', '#bar, #Baz, and #foo')
 
     def testIgnoreUnignore(self):
@@ -100,18 +108,23 @@ class AdminTestCase(PluginTestCase, PluginDocumentation):
         self.assertEqual(m.args[1], 'key2,key1')
 
     def testPart(self):
+        def getAfterJoinMessages():
+            m = self.irc.takeMsg()
+            self.assertEqual(m.command, 'MODE')
+            m = self.irc.takeMsg()
+            self.assertEqual(m.command, 'WHO')
         self.assertError('part #foo')
         self.assertRegexp('part #foo', 'currently')
-        _ = self.getMsg('join #foo') # get the JOIN.
-        _ = self.getMsg(' ') # get the WHO.
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
+        getAfterJoinMessages()
         self.assertError('part #foo #bar')
         m = self.getMsg('part #foo')
         self.assertEqual(m.command, 'PART')
         self.assertEqual(m.args[0], '#foo')
-        _ = self.getMsg('join #foo #bar') # get the JOIN.
-        _ = self.getMsg(' ') # get the WHO.
-        # vvv(won't send this because there was no server response.)
-        # _ = self.getMsg(' ') # get the WH0.
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
+        getAfterJoinMessages()
+        self.irc.feedMsg(ircmsgs.join('#bar', prefix=self.prefix))
+        getAfterJoinMessages()
         m = self.getMsg('part #foo #bar')
         self.assertEqual(m.command, 'PART')
         self.assertEqual(m.args[0], '#foo,#bar')
