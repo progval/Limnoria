@@ -507,6 +507,16 @@ def main():
               'addressed but given a non-command?') == 'y':
             configVariables['replyWhenNotCommand'] = False
 
+        # replyWithPrivateNotice
+        myPrint("""When a user sends a command to the bot from within a
+        channel, the bot, by default, also responds to that channel. In some
+        rather busy channels this might be considered spam, especially if the
+        command returns several lines in its result. In this case you may want
+        to notice the user instead.""")
+        if yn('Would you like the bot to notice replies to users in private'
+              'when a command is executed in a channel?') == 'y':
+            configVariables['replyWithPrivateNotice'] = True
+
         myPrint("""Here in supybot-developer world, we really like Python.  In
         fact, we like it so much we just couldn't do without the ability to
         have our bots evaluate arbitrary Python code.  Of course, we are aware

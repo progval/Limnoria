@@ -93,6 +93,12 @@ allowEval = False
 replyWhenNotCommand = True
 
 ###
+# replyWithPrivateNotice: True if replies to a user in a channel should be
+#                         noticed to that user instead of sent to the channel
+#                         itself.
+replyWithPrivateNotice = False
+
+###
 # requireRegistration: Oftentimes a plugin will want to record who added or
 #                      changed or messed with it last.  Supybot's user database
 #                      is an excellent way to determine who exactly someone is.

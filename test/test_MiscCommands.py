@@ -132,7 +132,10 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
     def testPrivate(self):
         m = self.getMsg('private [list]')
         self.failIf(ircutils.isChannel(m.args[0]))
-        
+    
+    def testNotice(self):
+        m = self.getMsg('notice [list]')
+        self.assertEqual(m.command, 'NOTICE')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -371,6 +371,14 @@ class MiscCommands(callbacks.Privmsg):
         text = privmsgs.getArgs(args)
         irc.reply(msg, text, private=True)
 
+    def notice(self, irc, msg, args):
+        """<text>
+
+        Replies with <text> in a private notice.  Use nested commands to your
+        benefit here.
+        """
+        text = privmsgs.getArgs(args)
+        irc.reply(msg, text, notice=True)
 
 
 Class = MiscCommands
