@@ -189,7 +189,7 @@ class ChannelDBHandler(object):
 
 class DbiChannelDB(object):
     """This just handles some of the general stuff for Channel DBI databases.
-    Check out plugins/Dunno.py for an example of how to use this."""
+    Check out ChannelIdDatabasePlugin for an example of how to use this."""
     def __init__(self, filename):
         self.filename = filename
         self.dbs = ircutils.IrcDict()
@@ -218,8 +218,6 @@ class DbiChannelDB(object):
         return _getDbAndDispatcher
 
 
-# XXX This should eventually be gotten rid of in favor of some dbi thing.  At
-# the very least, it ought to get an interface much closer to dbi.DB.
 class ChannelUserDictionary(UserDict.DictMixin):
     IdDict = dict
     def __init__(self):
