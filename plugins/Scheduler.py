@@ -53,7 +53,7 @@ class Scheduler(callbacks.Privmsg):
         callbacks.Privmsg.__init__(self)
         self.events = {}
 
-    def _makeCommandFunction(self, irc, msg, command):
+    def _makeCommandFunction(self, irc, msg, command, remove=True)
         """Makes a function suitable for scheduling from command."""
         tokens = callbacks.tokenize(command)
         Owner = irc.getCallback('Owner')
@@ -61,7 +61,8 @@ class Scheduler(callbacks.Privmsg):
         if ambiguous:
             raise callbacks.Error, callbacks.ambiguousReply(ambiguous)
         def f():
-            del self.events[f.eventId]
+            if remove:
+                del self.events[f.eventId]
             self.Proxy(irc.irc, msg, tokens)
         return f
 
@@ -129,7 +130,7 @@ class Scheduler(callbacks.Privmsg):
         except ValueError:
             pass
         self.events[name] = command 
-        f = self._makeCommandFunction(irc, msg, command)
+        f = self._makeCommandFunction(irc, msg, command, remove=False)
         id = schedule.addPeriodicEvent(f, seconds, name)
         assert id == name
         # We don't reply because the command runs immediately.
