@@ -79,7 +79,7 @@ conf.registerUserValue(conf.users.plugins.Note, 'notifyWithNotice',
 
 class Ignores(registry.SpaceSeparatedListOfStrings):
     List = ircutils.IrcSet
-    
+
 conf.registerUserValue(conf.users.plugins.Note, 'ignores', Ignores([], ''))
 
 class NoteDb(plugins.DBHandler):
@@ -102,7 +102,7 @@ class NoteDb(plugins.DBHandler):
                               )""")
             db.commit()
         return db
-        
+
 class Note(callbacks.Privmsg):
     def __init__(self):
         callbacks.Privmsg.__init__(self)
@@ -158,11 +158,11 @@ class Note(callbacks.Privmsg):
             return ircdb.users.getUserId(name)
         else:
             try:
-                hostmask = irc.state.nickToHosmtask(name)
+                hostmask = irc.state.nickToHostmask(name)
                 return ircdb.users.getUserId(hostmask)
             except KeyError:
                 return None
-        
+
     def send(self, irc, msg, args):
         """<recipient>,[<recipient>,[...]] <text>
 
@@ -193,7 +193,7 @@ class Note(callbacks.Privmsg):
                     badnames.append(name)
             irc.errorNoUser(name=utils.commaAndify(badnames, And='or'))
             return
-        
+
         for name in names:
             if senderName in self.userValue('ignores', name):
                 badnames.append(name)
@@ -245,7 +245,7 @@ class Note(callbacks.Privmsg):
                 irc.error('That note has been read already.')
         else:
             irc.error('That note wasn\'t sent by you.')
-            
+
 
     def note(self, irc, msg, args):
         """<note id>
@@ -325,7 +325,7 @@ class Note(callbacks.Privmsg):
             irc.replySuccess()
         except KeyError:
             irc.errorNoUser()
-            
+
     def list(self, irc, msg, args):
         """[--{old,sent}] [--{from,to} <user>]
 
