@@ -225,16 +225,20 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
             irc.error(msg, conf.replyNoCapability % capability)
 
     def unlearn(self, irc, msg, args):
-        """[<channel>] <key> [<number>]
+        """[<channel>] <key> [<number>|*]
 
         Removes the factoid <key> from the factoids database.  If there are
         more than one factoid with such a key, a number is necessary to
-        determine which one should be removed.  <channel> is only necessary if
+        determine which one should be removed.  A * can be used to remove all
+        factoids associated with a key.  <channel> is only necessary if
         the message isn't sent in the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
         if args[-1].isdigit():
             number = int(args.pop())
+        elif args[-1] == '*':
+            del args[-1]
+            number = True
         else:
             number = None
         key = privmsgs.getArgs(args)
@@ -248,7 +252,7 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
                                     factoids.key_id=keys.id""", key)
             if cursor.rowcount == 0:
                 irc.error(msg, 'There is no such factoid.')
-            elif cursor.rowcount == 1:
+            elif cursor.rowcount == 1 or number is True:
                 (id, _) = cursor.fetchone()
                 cursor.execute("""DELETE FROM factoids WHERE key_id=%s""", id)
                 cursor.execute("""DELETE FROM keys WHERE key LIKE %s""", key)
@@ -267,7 +271,8 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
                     irc.reply(msg, conf.replySuccess)
                 else:
                     irc.error(msg, '%s factoids have that key.  ' \
-                                   'Please specify which one to remove.' % \
+                                   'Please specify which one to remove, ' \
+                                   'or use * to designate all of them.' % \
                                    cursor.rowcount)
         else:
             irc.error(msg, conf.replyNoCapability % capability)
