@@ -75,7 +75,7 @@ if __name__ == '__main__':
                          'INTERFACES', 'OVERVIEW', 'PLUGIN-EXAMPLE',
                          'plugins', 'plugins.html', 'STYLE'),
                }
-    system('python sandbox/generate-plugin-documentation.py')
+    system('python tools/generate-plugin-documentation.py')
     pwd = os.getcwd()
     os.chmod('docs/plugins', 0775)
     sh = 'tar rf %s/docs.tar %%s' % pwd
