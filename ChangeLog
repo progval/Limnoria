@@ -1,3 +1,8 @@
+2003-10-07  Jeremy Fincher  <jfincher@functor>
+
+	* Changed the "whois" command in the Network plugin to "internic"
+	instead.
+
 2003-10-05  Jeremy Fincher  <jemfinch@users.sf.net>
 
 	* Version 0.73.0!
