@@ -103,6 +103,7 @@ def processConfigFile(filename):
             return
         nick = d['nick']
         server = d['server']
+        password = d['password']
         if server.find(':') != -1:
             (server, port) = server.split(':', 1)
             try:
@@ -114,7 +115,7 @@ def processConfigFile(filename):
             server = (server, 6667)
         user = d['user'] or nick
         ident = d['ident'] or nick
-        irc = irclib.Irc(nick, user, ident)
+        irc = irclib.Irc(nick, user, ident, password)
         for Class in privmsgs.standardPrivmsgModules:
             irc.addCallback(Class())
         world.startup = True

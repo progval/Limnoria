@@ -74,6 +74,9 @@ if __name__ == '__main__':
     if ny('Does that server require connection on a non-standard port?')=='y':
         server = ':'.join(server, anything('What port is that?'))
     configfd.write('Server: %s\n' % server)
+    if ny('Does the server require a password to connect?') == 'y':
+        password = anything('What password would you like the bot to use?')
+        configfd.write('Pass: ' + password)
     nick = anything('What nick would you like the bot to use?')
     configfd.write('Nick: %s\n' % nick)
     if advanced and ny('Would you like to set a user/ident?') == 'y':
