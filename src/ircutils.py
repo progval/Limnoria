@@ -151,9 +151,12 @@ def banmask(hostmask):
     assert isUserHostmask(hostmask)
     host = hostFromHostmask(hostmask)
     if isIP(host):
-        return ('*!*@%s.*' % host[:host.rfind('.')])
+        return '*!*@%s.*' % host[:host.rfind('.')]
     else:
-        return ('*!*@*%s' % host[host.find('.'):])
+        if '.' in host:
+            return '*!*@*%s' % host[host.find('.'):]
+        else:
+            return '*!*@'  + host
 
 _argModes = 'ovhblkqe'
 def separateModes(args):

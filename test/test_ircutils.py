@@ -125,12 +125,13 @@ class FunctionsTestCase(unittest.TestCase):
         self.failIf(ircutils.isNick('8foo'))
         self.failIf(ircutils.isNick('10'))
 
-    def banmask(self):
+    def testBanmask(self):
         for msg in msgs:
             if ircutils.isUserHostmask(msg.prefix):
                 self.failUnless(ircutils.hostmaskPatternEqual
                                 (ircutils.banmask(msg.prefix),
                                  msg.prefix))
+        self.assertEqual(ircutils.banmask('foobar!user@host'), '*!*@host')
 
     def testSeparateModes(self):
         self.assertEqual(ircutils.separateModes(['+ooo', 'x', 'y', 'z']),
