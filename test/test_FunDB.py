@@ -104,5 +104,12 @@ class TestFunDB(PluginTestCase, PluginDocumentation):
         self.assertNotError('dbnum excuse')
         self.assertNotError('dbnum insult')
 
+    def testDbChange(self):
+        self.assertNotError('dbadd praise teaches $who perl')
+        self.assertNotError('dbchange praise 1 s/perl/python/')
+        self.assertResponse('praise #foo jemfinch', '\x01ACTION teaches'\
+            ' jemfinch python (#1)\x01')
+        self.assertNotError('dbremove praise 1')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

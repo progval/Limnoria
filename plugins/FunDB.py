@@ -302,7 +302,7 @@ class FunDB(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, 'You must give a numeric id.')
+            irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
             irc.error(msg, '"%s" is not valid. Valid values include %s' % \
@@ -313,6 +313,50 @@ class FunDB(callbacks.Privmsg):
         cursor.execute(sql, id)
         self.db.commit()
         irc.reply(msg, conf.replySuccess)
+
+    def dbchange(self, irc, msg, args):
+        """<lart|excuse|insult|praise> <id> <regexp>
+
+        Changes the data, referred to in the first argument, with the id
+        number <id> according to the regular expression <regexp>. <id> is the
+        zero-based index into the db; <regexp> is a regular expression of the
+        form s/regexp/replacement/flags.
+        """
+        (table, id, regexp) = privmsgs.getArgs(args, needed=3)
+        table = table.lower()
+        try:
+            ircdb.users.getUser(msg.prefix).name
+        except KeyError:
+            irc.error(msg, conf.replyNotRegistered)
+            return
+        try:
+            id = int(id)
+        except ValueError:
+            irc.error(msg, 'The <id> argument must be an integer.')
+            return
+        if table not in self._tables:
+            irc.error(msg, '"%s" is not valid. Valid values include %s' % \
+                           (table, utils.commaAndify(self._tables)))
+            return
+        try:
+            replacer = utils.perlReToReplacer(regexp)
+        except ValueError, e:
+            irc.error(msg, 'The regexp wasn\'t valid: %s' % e.args[0])
+        except re.error, e:
+            irc.error(msg, debug.exnToString(e))
+            return
+        cursor = self.db.cursor()
+        sql = """SELECT %s FROM %ss WHERE id=%%s""" % (table, table)
+        cursor.execute(sql, id)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'There is no such %s.' % table)
+        else:
+            old_entry = cursor.fetchone()[0]
+            new_entry = replacer(old_entry)
+            sql = """UPDATE %ss SET %s=%%s WHERE id=%%s""" % (table, table)
+            cursor.execute(sql, new_entry, id)
+            self.db.commit()
+            irc.reply(msg, conf.replySuccess)
 
     def dbnum(self, irc, msg, args):
         """<lart|excuse|insult|praise>
@@ -346,7 +390,7 @@ class FunDB(callbacks.Privmsg):
         try:
             id = int(id)
         except ValueError:
-            irc.error(msg, '<id> must be an integer.')
+            irc.error(msg, 'The <id> argument must be an integer.')
             return
         if table not in self._tables:
             irc.error(msg, '"%s" is not valid. Valid values include %s' % \
