@@ -1024,23 +1024,18 @@ class UserCommands(callbacks.Privmsg):
             return
 
     def unidentify(self, irc, msg, args):
-        """<name> <password>
+        """takes no arguments
 
-        Un-identifies the user as <name>.
+        Un-identifies the user.
         """
-        (name, password) = getArgs(args, 2)
-        self._checkNotChannel(irc, msg)
         try:
-            u = ircdb.users.getUser(name)
+            u = ircdb.users.getUser(msg.prefix)
         except KeyError:
             irc.error(msg, conf.replyNoUser)
             return
-        if u.checkPassword(password):
-            u.unsetAuth()
-            ircdb.users.setUser(name, u)
-            irc.reply(msg, conf.replySuccess)
-        else:
-            irc.error(msg, conf.replyIncorrectAuth)
+        u.unsetAuth()
+        ircdb.users.setUser(name, u)
+        irc.reply(msg, conf.replySuccess)
 
     def whoami(self, irc, msg, args):
         """takes no arguments.
