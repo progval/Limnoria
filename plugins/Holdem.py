@@ -47,7 +47,12 @@ __contributors__ = {}
 # Allow the "sit" command to have specified a stack size, subtracting it from
 #  the bankroll.
 # Write a command to allow Owner users to give a person money.
-# Re-expand the commands using forwarder so they can have better help. 
+# Re-expand the commands using forwarder so they can have better help.
+# Have tables in each channel be entirely configurable.
+# Have the bot automatically start the next hand if people are seated.
+# Improve the "you've bet X already" to say something cooler when X is 0.
+# Have a slight pause before sending the "foo, it's your turn to bet" message,
+#  and if the user replies before then, don't send it.
 ###
 
 import sets
@@ -346,6 +351,7 @@ class Table(object):
         if bucket:
             self.foldedBuckets.append(bucket)
         del self.hands[player]
+        self.public('%s folds.' % player.name())
         self.checkEndOfRound()
 
     def check(self, player):
