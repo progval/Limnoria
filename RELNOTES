@@ -1,3 +1,15 @@
+Since we not support separate network entries, the old supybot.server
+configuration variable won't work.  To fix this, add these lines to
+your configuration:
+
+    supybot.networks.default: <network>
+    supybot.networks.<network>.server <server>
+    supybot.networks.<network>.password <password>
+
+Where <network> is the name of the network you're connecting to,
+<server> is the old supybot.server, and <password> is the old
+supybot.password.
+
 Since we support multiple networks and multiple servers now, the
 --server option has been removed from scripts/supybot, as has the
 --password option.
