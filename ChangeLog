@@ -1,9 +1,32 @@
+2003-12-12 Jeremy Fincher <jemfinch@supybot.org>
+
+	* Version 0.76.1!  The birthday release!
+	
+	* Fixed a bug in irclib.py that could cause the bot to loop,
+	connecting and disconnecting from the server because it didn't
+	think the server responded to its PING.
+	
+	* Fixed a bug in the Services implementation that could cause
+	the bot to continually loop, connecting and disconnecting from the
+	server.
+	
 	* Fixed Misc.help to follow the same default plugin rules that the
 	rest of the bot follows.
-	
-	* Added Lookup.search for searching the various loaded lookups.
 
-	* Updated Todo.remove to allow removing multiple taskids
+	* Added better error reporting to Admin.join, so the various error
+	conditions that might make the bot incapable of joining a channel
+	will be reported.
+	
+	* Updated RootWarner to be configurable, offering each channel the
+	ability to define whether or not people who IRC as root will be
+	warned, what that warning will be, and whether or not they should
+	be kicked.
+	
+	* Added a configurable 'topic-sync' to the Relay plugin to
+	determine whether the topics of the two channels should be kept
+	synchronized.
+
+	* Added Lookup.search for searching the various loaded lookups.
 
 	* Added Topic.reorder, a new command for reordering the topics in a
         specific manner.
@@ -11,13 +34,23 @@
 	* Added Topic.list, a new command for listing the topics in a
 	channel (mostly in order to help out with Topic.reorder :))
 
-	* Added Http.extension, a new command to retrieve file extension in
-        formation from filext.com.
+	* Added Http.extension, a new command to retrieve file extension
+	information from filext.com.
+
+	* Updated Todo.remove to allow removing multiple taskids
 
 	* Updated Relay.whois to include a user's away status and identified
         state, if the server supports it.
 
+	* Added utils.sorted, which does what list.sorted will do when 2.4
+	is released.
+	
+	* Added ircutils.isCtcp, for determining whether or not a message
+	is a CTCP message.
+	
 2003-12-6  Jeremy Fincher  <jemfinch@supybot.org>
+	
+	* Version 0.76.0!
 	
 	* Added a "trusted" capability that defaults to off (-trusted) and
 	is required for Utilities.re (with which it's possible to DoS the

@@ -1,3 +1,9 @@
+Version 0.76.1
+
+Almost entirely bugfixes, just some minor (and some less minor) bugs
+that need to get in before we really start hacking on the next
+version.  Should be *entirely* compatible with 0.76.0.
+
 Version 0.76.0
 
 Major bugfix release.  A great number of bugs fixed.  This is the last
