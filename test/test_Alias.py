@@ -101,6 +101,11 @@ class AliasTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotError('alias mytell "tell $channel $1"')
         self.assertNotError('mytell #foo bugs')
         self.assertNoResponse('blah blah blah', 2)
+
+    def testAddAlias(self):
+        cb = self.irc.getCallback('Alias')
+        cb.addAlias(self.irc, 'foobar', 'rot13 foobar')
+        self.assertResponse('foobar', 'sbbone')
         
 
 

@@ -89,7 +89,10 @@ example = utils.wrapLines("""
 <supybot> jemfinch: Alias for 'rsstitles http://slashdot.org/slashdot.rss'
 """)
 
-class RecursiveAlias(Exception):
+class AliasError(Exception):
+    pass
+
+class RecursiveAlias(AliasError):
     pass
 
 def findAliasCommand(s, alias):
@@ -170,6 +173,24 @@ class Alias(callbacks.Privmsg):
             irc.error(msg, 'There is no such alias.')
     unfreeze = privmsgs.checkCapability(unfreeze, 'admin')
 
+    def addAlias(self, irc, name, alias, freeze=False):
+        realName = callbacks.canonicalName(name)
+        if name != realName:
+            raise AliasError,'That name isn\'t valid.  Try %r instead'%realName
+        name = realName
+        cb = callbacks.findCallbackForCommand(irc, name)
+        if cb is not None and cb != self:
+            raise AliasError, 'A command with that name already exists.'
+        if name in self.frozen:
+            raise AliasError, 'That alias is frozen.'
+        try:
+            f = makeNewAlias(name, alias)
+        except RecursiveAlias:
+            raise AliasError, 'You can\'t define a recursive alias.'
+        setattr(self.__class__, name, f)
+        if freeze:
+            self.frozen.add(name)
+
     def alias(self, irc, msg, args):
         """<name> <alias commands>
 
@@ -179,28 +200,11 @@ class Alias(callbacks.Privmsg):
         itself; for instance ...
         """
         (name, alias) = privmsgs.getArgs(args, needed=2)
-        realName = callbacks.canonicalName(name)
-        if name != realName:
-            irc.error(msg, 'That name isn\'t valid.  Try %r instead.' %\
-                realName)
-            return
-        else:
-            name = realName
-        cb = irc.findCallback(name)
-        if cb is not None and cb != self:
-            irc.error(msg, 'A command with that name already exists.')
-            return
-        if name in self.frozen:
-            irc.error(msg, 'That alias is frozen.')
-            return
         try:
-            f = makeNewAlias(name, alias)
-        except RecursiveAlias:
-            irc.error(msg, 'You can\'t define a recursive alias.')
-            return
-        setattr(self.__class__, name, f)
-        irc.reply(msg, conf.replySuccess)
-
+            self.addAlias(irc, name, alias)
+            irc.reply(msg, conf.replySuccess)
+        except AliasError, e:
+            irc.error(msg, str(e))
 
     def unalias(self, irc, msg, args):
         """<name>
