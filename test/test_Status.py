@@ -31,6 +31,8 @@
 
 from test import *
 
+import sys
+
 import world
 
 class StatusTestCase(PluginTestCase, PluginDocumentation):
@@ -51,6 +53,9 @@ class StatusTestCase(PluginTestCase, PluginDocumentation):
             self.assertError('cpustats')
             world.startedAt = 0
             self.assertNotError('cpustats')
+            for s in ['linux', 'freebsd', 'openbsd', 'netbsd']:
+                if sys.platform.startswith(s):
+                    self.assertRegexp('cpustats', 'kB')
         finally:
             world.startedAt = original
     def testUptime(self):

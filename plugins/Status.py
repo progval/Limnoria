@@ -174,17 +174,41 @@ class Status(callbacks.Privmsg):
                            'running.')
             return
         activeThreads = threading.activeCount()
-        response = 'I have taken %s seconds of user time and %s seconds of '\
-                  'system time, for a total of %s seconds of CPU time.  My '\
-                  'children have taken %s seconds of user time and %s seconds'\
-                  ' of system time for a total of %s seconds of CPU time.  ' \
-                  'I\'ve taken a total of %s%% of this computer\'s time.  ' \
-                  'Out of %s I have %s active.  ' % \
+        response = ('I have taken %.2f seconds of user time and %.2f seconds '
+                    'of system time, for a total of %.2f seconds of CPU '
+                    'time.  My children have taken %.2f seconds of user time '
+                    'and %.2f seconds of system time for a total of %.2f '
+                    'seconds of CPU time. I\'ve taken a total of %.2f%% of '
+                    'this computer\'s time. Out of %s I have %s active.' % 
                     (user, system, user + system,
                      childUser, childSystem, childUser + childSystem,
                      (user+system+childUser+childSystem)/timeRunning,
                      utils.nItems(world.threadsSpawned, 'thread', 'spawned'),
-                     activeThreads)
+                     activeThreads))
+        mem = None
+        pid = os.getpid()
+        try:
+            if sys.platform.startswith('linux'):
+                mem = 0
+                fd = file('/proc/%s/status' % pid)
+                for line in fd:
+                    if line.startswith('VmSize'):
+                        line = line.rstrip()
+                        mem = int(line.split()[1])
+                        break
+                assert mem, 'Format changed in /proc/<pid>/status'
+            elif sys.platform.startswith('netbsd'):
+                mem = os.stat('/proc/%s/mem')[7]
+            elif sys.platform.startswith('freebsd') or \
+                 sys.platform.startswith('openbsd'):
+                r = os.popen('/bin/ps -l -p %s' % pid)
+                line = r.readline()
+                line = line.strip()
+                r.close()
+                mem = int(line.split()[20])
+            response += '  I\'m taking up %s kB of memory.' % mem
+        except Exception, e:
+            debug.msg(debug.exnToString(e))
         irc.reply(msg, response)
 
     def cmdstats(self, irc, msg, args):
