@@ -33,6 +33,8 @@
 Simple utility functions.
 """
 
+from __future__ import generators
+
 from fix import *
 
 import sgmllib
