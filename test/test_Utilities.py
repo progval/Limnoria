@@ -54,6 +54,9 @@ class UtilitiesTestCase(PluginTestCase):
         m = self.getMsg('status cpu')
         self.assertResponse('echo "%s"' % m.args[1], m.args[1])
 
+    def testEchoDollarOneRepliesDollarOne(self):
+        self.assertResponse('echo $1', '$1')
+
     def testEchoStandardSubstitute(self):
         self.assertNotRegexp('echo $nick', r'\$')
 
