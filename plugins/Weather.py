@@ -34,7 +34,7 @@ This plugin does weather-related stuff.  It can't change the weather, though,
 so don't get your hopes up.  We just report it.
 """
 
-__revision__ = "$Id"
+__revision__ = "$Id$"
 
 import plugins
 
@@ -91,6 +91,13 @@ class Weather(callbacks.Privmsg):
         channel = None
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
+        if not args:
+            s = self.userValue('lastLocation', msg.prefix)
+            if s:
+                args = [s]
+        else:
+            location = privmsgs.getArgs(args)
+            self.setUserValue(msg.prefix, 'lastLocation', location)
         realCommandName = self.registryValue('command', channel)
         realCommand = getattr(self, realCommandName)
         realCommand(irc, msg, args)
@@ -345,6 +352,9 @@ conf.registerChannelValue(conf.supybot.plugins.Weather, 'convert',
     registry.Boolean(True, """Determines whether the weather commands will
     automatically convert weather units to the unit specified in
     supybot.plugins.Weather.temperatureUnit."""))
+
+conf.registerUserValue(conf.users.plugins.Weather, 'lastLocation',
+    registry.String('', ''))
 
 Class = Weather
 
