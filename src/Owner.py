@@ -299,7 +299,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         def eval(self, irc, msg, args):
             """<expression>
 
-            Evaluates <expression> and returns its value.
+            Evaluates <expression> (which should be a Python expression) and
+            returns its value.  If an exception is raised, reports the
+            exception.
             """
             if conf.allowEval:
                 s = privmsgs.getArgs(args)
