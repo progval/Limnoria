@@ -52,17 +52,12 @@ import privmsgs
 import callbacks
 
 
-def configure(onStart, afterConnect, advanced):
-    # This will be called by setup.py to configure this module.  onStart and
-    # afterConnect are both lists.  Append to onStart the commands you would
-    # like to be run when the bot is started; append to afterConnect the
-    # commands you would like to be run when the bot has finished connecting.
+def configure(advanced):
     from questions import expect, anything, something, yn
-    onStart.append('load Dict')
     print 'The default dictd server is dict.org.'
-    if yn('Would you like to specify a dictd server?') == 'y':
+    if yn('Would you like to specify a different dictd server?') == 'y':
         server = something('What server?')
-        onStart.append('dict config server %s' % server)
+        conf.supybot.plugins.Dict.server.set(server)
 
 replyTimeout = 'Timeout on the dictd server.'
 
