@@ -47,7 +47,7 @@
 ###
 
 """
-Attempt to port Infobot's nickometer command from Perl. This plugin
+A port of Infobot's nickometer command from Perl. This plugin
 provides one command (called nickometer) which will tell you how 'lame'
 an IRC nick is. It's an elitist hacker thing, but quite fun.
 """
