@@ -90,16 +90,16 @@ class Http(callbacks.Privmsg):
         Returns a Deep Thought by Jack Handey.
         """
         url = 'http://www.tremorseven.com/aim/deepaim.php?job=view'
-        thought = ' ' * 512
         now = time.time()
+        thought = None
         while self.deepthoughtq and now - self.deepthoughtq[0][0] > 86400:
             s = self.deepthoughtq.dequeue()[1]
             self.deepthoughts.remove(s)
-        while len(thought) > 430 or thought in self.deepthoughts:
+        while thought is None or thought in self.deepthoughts:
             fd = urllib2.urlopen(url)
             s = fd.read()
             thought = s.split('<br>')[2]
-            thought = ' '.join(thought.split())
+            thought = utils.normalizeWhitespace(thought)
         self.deepthoughtq.enqueue((now, thought))
         self.deepthoughts.add(thought)
         irc.reply(msg, thought)
