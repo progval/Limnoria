@@ -67,6 +67,7 @@ class MiscCommandsTestCase(ChannelPluginTestCase, PluginDocumentation):
 
     def testHelp(self):
         self.assertNotError('help list')
+        self.assertNotError('help @list')
         self.assertNotError('help syntax')
         self.assertRegexp('help help', r'^\x02\(help')
         self.assertError('help morehelp')

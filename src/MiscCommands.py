@@ -174,6 +174,8 @@ class MiscCommands(callbacks.Privmsg):
         argument list given by the command 'syntax'.
         """
         command = callbacks.canonicalName(privmsgs.getArgs(args))
+        # Users might expect "@help @list" to work.
+        command = command.lstrip(conf.prefixChars) 
         cb = callbacks.findCallbackForCommand(irc, command)
         if cb:
             method = getattr(cb, command)
