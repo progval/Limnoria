@@ -111,7 +111,7 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp, plugins.Configurable):
                 wp = 100. * w / (w + l + d) # win percent
                 lp = 100. * l / (w + l + d) # loss percent
                 dp = 100. * d / (w + l + d) # draw percent
-            except ValueError:
+            except (ValueError, ZeroDivisionError):
                 w = w
                 wp = 0.
                 l = l
