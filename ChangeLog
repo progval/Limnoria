@@ -1,3 +1,6 @@
+	* Added --nolimit option to Misc.last, which causes it to return all
+	matches that are in the history.
+
 	* Added conf.supybot.plugins.Herald.defaultHerald, which provides
 	a default herald to use for unregistered users.  Herald.default was
 	also added as a friendly interface to managing the defaultHerald.

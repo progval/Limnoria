@@ -406,9 +406,10 @@ class Misc(callbacks.Privmsg):
         match.  By default, the current channel is searched.
         """
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
-                                                   'with=', 'regexp='])
-                                                   
+                                                   'with=', 'regexp=',
+                                                   'nolimit'])
         predicates = {}
+        nolimit = False
         if ircutils.isChannel(msg.args[0]):
             predicates['in'] = lambda m: m.args[0] == msg.args[0]
         for (option, arg) in optlist:
@@ -436,18 +437,27 @@ class Misc(callbacks.Privmsg):
                 except ValueError, e:
                     irc.error(str(e))
                     return
+            elif option == '--nolimit':
+                nolimit = True
         iterable = ifilter(self._validLastMsg, reversed(irc.state.history))
         iterable.next() # Drop the first message.
         predicates = list(utils.flatten(predicates.itervalues()))
+        resp = []
         for m in iterable:
             for predicate in predicates:
                 if not predicate(m):
                     break
             else:
-                irc.reply(ircmsgs.prettyPrint(m))
-                return
-        irc.error('I couldn\'t find a message matching that criteria in '
-                  'my history of %s messages.' % len(irc.state.history))
+                if nolimit:
+                    resp.append(ircmsgs.prettyPrint(m))
+                else:
+                    irc.reply(ircmsgs.prettyPrint(m))
+                    return
+        if not resp:
+            irc.error('I couldn\'t find a message matching that criteria in '
+                      'my history of %s messages.' % len(irc.state.history))
+        else:
+            irc.reply(utils.commaAndify(resp))
 
     def seconds(self, irc, msg, args):
         """[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]
