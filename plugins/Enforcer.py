@@ -104,7 +104,7 @@ conf.registerChannelValue(conf.supybot.plugins.Enforcer.takeRevenge, 'onOps',
     revenge on ops (people with the #channel,op capability) who violate the
     channel configuration."""))
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'cycleToGetOps',
-    registry.Boolean(True, """Determines whether the bot will cycle the channel
+    registry.Boolean(False, """Determines whether the bot will cycle the channel
     if it doesn't have ops and there's no one else in the channel."""))
 # This is a network value, not a channel value.
 conf.registerChannelValue(conf.supybot.plugins.Enforcer, 'ChanServ',
