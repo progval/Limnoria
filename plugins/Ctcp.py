@@ -40,10 +40,9 @@ import os
 import sys
 import time
 
-sys.path.append(os.pardir)
-
 import supybot.conf as conf
 import supybot.utils as utils
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -143,7 +142,7 @@ class Ctcp(callbacks.PrivmsgCommandAndRegexp):
             if version == 'VERSION':
                 self.versions.setdefault(payload, []).append(msg.nick)
         
-    def version(self, irc, msg, args):
+    def version(self, irc, msg, args, channel, optlist):
         """[<channel>] [--nicks]
 
         Sends a CTCP VERSION to <channel>, returning the various
@@ -154,10 +153,9 @@ class Ctcp(callbacks.PrivmsgCommandAndRegexp):
         """
         self.versions = ircutils.IrcDict()
         nicks = False
-        while '--nicks' in args:
-            nicks = True
-            args.remove('--nicks')
-        channel = privmsgs.getChannel(msg, args)
+        for (option, arg) in optlist:
+            if option == 'nicks':
+                nicks = True
         irc.queueMsg(ircmsgs.privmsg(channel, '\x01VERSION\x01'))
         def doReply():
             if self.versions:
@@ -174,6 +172,7 @@ class Ctcp(callbacks.PrivmsgCommandAndRegexp):
                 irc.reply('I received no version responses.')
         wait = self.registryValue('versionWait')
         schedule.addEvent(doReply, time.time()+wait)
+    version = wrap(version, ['channel', getopts({'nicks':''})])
 
 Class = Ctcp
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
