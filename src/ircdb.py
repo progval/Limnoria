@@ -253,7 +253,10 @@ class IrcUser(object):
 
     def setAuth(self, hostmask):
         """Sets a user's authenticated hostmask.  This times out in 1 hour."""
-        self.auth = (time.time(), hostmask)
+        if self.checkHostmask(hostmask, useAuth=False) or not self.secure:
+            self.auth = (time.time(), hostmask)
+        else:
+            raise ValueError, 'secure flag set, unmatched hostmask'
 
     def unsetAuth(self):
         """Unsets a use's authenticated hostmask."""
