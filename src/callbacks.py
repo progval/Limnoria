@@ -89,8 +89,8 @@ def reply(msg, s):
     return m
         
 class RateLimiter:
+    lastRequest = {}
     def __init__(self):
-        self.lastRequest = {}
         self.limited = []
         self.unlimited = []
 
@@ -110,6 +110,7 @@ class RateLimiter:
         if not self.limit(msg):
             self.unlimited.append(msg)
         else:
+            debug.printf('Limiting message from %s' % msg.prefix)
             self.limited.append(msg)
 
     def limit(self, msg, penalize=True):
@@ -227,7 +228,6 @@ class IrcObjectProxy:
         self.finalEvaled = True
         name = self.args.pop(0)
         callback = self.findCallback(name)
-        # Use the old Irc object.
         try:
             callback.callCommand(getattr(callback, name), 
                                  (self, self.msg, self.args))
@@ -246,7 +246,7 @@ class IrcObjectProxy:
             self.evalArgs()
 
     def error(self, msg, s):
-        self.reply(msg, 'Error: ' + s)
+        raise Error, s
 
     def killProxy(self):
         if not isinstance(self.irc, irclib.Irc):
@@ -262,22 +262,30 @@ class IrcObjectProxy:
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
 
-##     def __setattr__(self, attr, value):
-##         setattr(self.irc, attr, value)
 
+class IrcObjectProxyThreaded(IrcObjectProxy):
+    def error(self, msg, s):
+        self.reply(msg, 'Error: ' + s)
 
+        
 class Privmsg(irclib.IrcCallback):
     """Base class for all Privmsg handlers."""
     threaded = False
     public = True
     def __init__(self):
         self.rateLimiter = RateLimiter()
+        if self.threaded:
+            self.Proxy = IrcObjectProxyThreaded
+        else:
+            self.Proxy = IrcObjectProxy
 
     def __call__(self, irc, msg):
-        self.rateLimiter.put(msg)
+        irclib.IrcCallback.__call__(self, irc, msg)
+        # Now, if there's anything in the rateLimiter...
         msg = self.rateLimiter.get()
         if msg:
-            irclib.IrcCallback.__call__(self, irc, msg)
+            s = addressed(irc.nick, msg)
+            self.Proxy(irc, msg, Tokenizer().tokenize(s))
 
     def isCommand(self, methodName):
         # This function is ugly, but I don't want users to call methods like
@@ -313,7 +321,9 @@ class Privmsg(irclib.IrcCallback):
                 return
             m = self._r.match(s)
             if m and self.isCommand(canonicalName(m.group(1))):
-                IrcObjectProxy(irc, msg, Tokenizer().tokenize(s))
+                self.rateLimiter.put(msg)
+                msg = self.rateLimiter.get()
+                self.Proxy(irc, msg, Tokenizer().tokenize(s))
 
 
 class IrcObjectProxyRegexp:
@@ -321,7 +331,7 @@ class IrcObjectProxyRegexp:
         self.irc = irc
 
     def error(self, msg, s):
-        self.irc.queueMsg(reply(msg, 'Error: ' + s))
+        raise Error, s
 
     def reply(self, msg, s):
         self.irc.queueMsg(reply(msg, s))
@@ -330,9 +340,11 @@ class IrcObjectProxyRegexp:
         print attr
         return getattr(self.irc, attr)
 
-##     def __setattr__(self, attr, value):
-##         setattr(self.irc, attr, value)
-        
+
+class IrcObjectProxyRegexpThreaded(IrcObjectProxyRegexp):
+    def error(self, msg, s):
+        self.irc.queueMsg(reply(msg, 'Error: ' + s))
+
 
 class PrivmsgRegexp(Privmsg):
     """A class to allow a person to create regular expression callbacks.
@@ -353,30 +365,32 @@ class PrivmsgRegexp(Privmsg):
     threaded = False # Again, like Privmsg...
     def __init__(self):
         Privmsg.__init__(self)
-        self.recache = {}
+        if self.threaded:
+            self.Proxy = IrcObjectProxyRegexpThreaded
+        else:
+            self.Proxy = IrcObjectProxyRegexp
+        self.res = []
+        #for name, value in self.__class__.__dict__.iteritems():
+        for name, value in self.__class__.__dict__.items():
+            value = getattr(self, name)
+            if name[0] != '_' and inspect.ismethod(value) and \
+               inspect.getargs(value.im_func.func_code) == \
+               (['self', 'irc', 'msg', 'match'], None, None):
+                try:
+                    r = re.compile(value.__doc__)
+                    self.res.append((r, value))
+                except sre_constants.error, e:
+                    s = '%s.%s has an invalid regexp %s: %s' % \
+                        (self.__class__.__name__, name,
+                         value.__doc__, debug.exnToString(e))
+                    debug.debugMsg(s)
 
     def doPrivmsg(self, irc, msg):
-        #for name, value in self.__class__.__dict__.iteritems():
-        self.rateLimiter.put(msg)
-        msg = self.rateLimiter.get()
-        if msg:
-            for name, value in self.__class__.__dict__.items():
-                value = getattr(self, name)
-                if name[0] != '_' and inspect.ismethod(value) and \
-                   inspect.getargs(value.im_func.func_code) == \
-                   (['self', 'irc', 'msg', 'match'], None, None):
-                    try:
-                        r = self.recache[value.__doc__]
-                    except KeyError:
-                        try:
-                            r = re.compile(value.__doc__)
-                            self.recache[value.__doc__] = r
-                        except sre_constants.error, e:
-                            s = '%s.%s has an invalid regexp %s: %s' % \
-                                (self.__class__.__name__, name,
-                                 value.__doc__, debug.exnToString(e))
-                            debug.debugMsg(s)
-                    m = r.search(msg.args[1])
-                    if m:
-                        irc = IrcObjectProxyRegexp(irc)
-                        self.callCommand(value, (irc, msg, m))
+        for (r, method) in self.res:
+            m = r.search(msg.args[1])
+            if m:
+                self.rateLimiter.put(msg)
+                msg = self.rateLimiter.get()
+                if msg:
+                    irc = IrcObjectProxyRegexp(irc)
+                    self.callCommand(method, (irc, msg, m))
