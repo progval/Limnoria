@@ -110,7 +110,7 @@ class IrcMsg(object):
         if ircutils.isUserHostmask(self.prefix):
             (self.nick,self.user,self.host)=ircutils.splitHostmask(self.prefix)
         else:
-            (self.nick, self.user, self.host) = ('', '', '')
+            (self.nick, self.user, self.host) = (self.prefix,)*3
         self.args = tuple(self.args)
             
     def __str__(self):
@@ -186,11 +186,11 @@ class IrcMsg(object):
     def __setstate__(self, s):
         self.__init__(s)
 
-try:
-    import _ircmsg
-    IrcMsg = _ircmsg.IrcMsg
-except:
-    pass
+## try:
+##     import _ircmsg
+##     IrcMsg = _ircmsg.IrcMsg
+## except:
+##     pass
 
 
 def isAction(msg):
