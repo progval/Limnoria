@@ -35,7 +35,7 @@ import conf
 import Owner
 
 class OwnerTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Utilities', 'Relay', 'Network')
+    plugins = ('Utilities', 'Relay', 'Network', 'Admin', 'Channel')
     def testDefaultPlugin(self):
         self.assertError('whois osu.edu')
         self.assertNotError('defaultplugin whois network')
@@ -56,6 +56,9 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
             self.assertError('eval 100')
         finally:
             conf.allowEval = originalConfAllowEval
+
+    def testSrcAmbiguity(self):
+        self.assertError('addcapability foo bar')
 
     def testExec(self):
         try:
@@ -92,22 +95,22 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
     def testLoad(self):
         self.assertError('load Owner')
         self.assertError('load owner')
-        self.assertNotError('load Admin')
+        self.assertNotError('load Alias')
         self.assertNotError('list Owner')
 
     def testReload(self):
-        self.assertError('reload Admin')
-        self.assertNotError('load Admin')
-        self.assertNotError('reload Admin')
-        self.assertNotError('reload ADMIN')
+        self.assertError('reload Alias')
+        self.assertNotError('load Alias')
+        self.assertNotError('reload ALIAS')
+        self.assertNotError('reload ALIAS')
 
     def testUnload(self):
-        self.assertError('unload Admin')
-        self.assertNotError('load Admin')
-        self.assertNotError('unload Admin')
-        self.assertError('unload Admin')
-        self.assertNotError('load ADMIN')
-        self.assertNotError('unload ADMIN')
+        self.assertError('unload Foobar')
+        self.assertNotError('load Alias')
+        self.assertNotError('unload Alias')
+        self.assertError('unload Alias')
+        self.assertNotError('load ALIAS')
+        self.assertNotError('unload ALIAS')
 
     def testSetconf(self):
         self.assertRegexp('setconf', 'confDir')

@@ -97,10 +97,9 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 cbs = callbacks.findCallbackForCommand(irc, command)
                 if len(cbs) > 1:
                     names = [cb.name() for cb in cbs]
-                    for name in names:
-                        if name in self._srcPlugins:
-                            tokens.insert(0, name)
-                            break
+                    srcs = [name for name in names if name in self._srcPlugins]
+                    if len(srcs) == 1:
+                        tokens.insert(0, srcs[0])
                     else:
                         ambiguousCommands[command] = names
             for elt in tokens:
