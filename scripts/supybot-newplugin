@@ -81,14 +81,17 @@ template = '''
 Add the module docstring here.  This will be used by the setup.py script.
 """
 
+import supybot
+
 __revision__ = "$%s$"
-__author__ = ''
+__author__ = supybot.authors.unknown
 
 import supybot.plugins as plugins
 
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.privmsgs as privmsgs
+import supybot.registry as registry
 import supybot.callbacks as callbacks
 
 
