@@ -155,7 +155,8 @@ class Unix(callbacks.Privmsg):
 
         Returns the current pid of the process for this Supybot.
         """
-        irc.reply(str(os.getpid()))
+        irc.reply(str(os.getpid()), private=True)
+    pid = privmsgs.checkCapability(pid, 'owner')
 
     _cryptre = re.compile(r'[./0-9A-Za-z]')
     def crypt(self, irc, msg, args):
