@@ -160,7 +160,7 @@ class SqliteKarmaDB(object):
                           WHERE normalized=%s""", normalized)
         db.commit()
         
-    def decrement(self, channel, thing):
+    def decrement(self, channel, name):
         db = self._getDb(channel)
         cursor = db.cursor()
         normalized = name.lower()
