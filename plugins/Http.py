@@ -302,6 +302,8 @@ class Http(callbacks.Privmsg):
             fd = urllib2.urlopen(url)
             html = fd.read()
             fd.close()
+            if 'was not found' in html:
+                irc.error(msg, 'No such location could be found.')
             headData = self._cityregex.search(html)
             if headData:
                 (city, state, country) = headData.groups()
@@ -319,11 +321,11 @@ class Http(callbacks.Privmsg):
                 irc.reply(msg, s)
             else:
                 irc.error(msg, 'The format of the page was odd.')
-                
         except urllib2.URLError:
             irc.error(msg, 'I couldn\'t open the search page.')
-        except:
-            irc.error(msg, 'The format of the page was odd.')
+        except Exception, e:
+            debug.recoverableError()
+            irc.error(msg, debug.exnToString(e))
 
     _geekquotere = re.compile('<p class="qt">(.*?)</p>')
     def geekquote(self, irc, msg, args):
