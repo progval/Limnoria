@@ -171,7 +171,7 @@ def urlSnarfer(f):
         url = match.group(0)
         if any(lambda t: t[0] == url and t[1] == msg.args[0], q) and \
                not world.testing:
-            debug.msg('Refusing to snarf %s.')
+            debug.msg('Refusing to snarf %s.' % url)
         else:
             q.enqueue((url, msg.args[0], now))
             if self.threaded:
