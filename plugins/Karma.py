@@ -62,7 +62,8 @@ class Karma(callbacks.PrivmsgCommandAndRegexp,
     configurables = plugins.ConfigurableDictionary(
         [('simple-output', plugins.ConfigurableBoolType, False,
           """Determines whether the bot will output shorter versions of the
-          karma output when requesting a single thing's karma.""")]
+          karma output when requesting a single thing's karma. (example: 'foo:
+          1')""")]
     )
     def __init__(self):
         callbacks.PrivmsgCommandAndRegexp.__init__(self)
