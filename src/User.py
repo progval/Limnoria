@@ -323,13 +323,13 @@ class User(callbacks.Privmsg):
             try:
                 hostmask = irc.state.nickToHostmask(hostmask)
             except KeyError:
-                irc.errorNoUser()
+                irc.reply('I couldn\'t find %s in my user database.' %hostmask)
                 return
         try:
             user = ircdb.users.getUser(hostmask)
             irc.reply(user.name)
         except KeyError:
-            irc.errorNoUser()
+            irc.reply('I couldn\'t find %s in my user database.' % hostmask)
 
     def hostmasks(self, irc, msg, args):
         """[<name>]
