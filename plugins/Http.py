@@ -147,16 +147,20 @@ class Http(callbacks.Privmsg):
         r'<td valign="top" align="right"><strong><font face="arial">'\
         r'(.*?)</font></strong></td>', re.IGNORECASE)
     # States
-    _realStates = sets.Set(['ak', 'al', 'ar', 'ca', 'co', 'ct', 'dc',
-                            'de', 'fl', 'ga', 'hi', 'ia', 'id', 'il',
-                            'in', 'ks', 'ky', 'la', 'ma', 'md', 'me',
-                            'mi', 'mn', 'mo', 'ms', 'mt', 'nc', 'nd',
-                            'ne', 'nh', 'nj', 'nm', 'nv', 'ny', 'oh',
-                            'ok', 'or', 'pa', 'ri', 'sc', 'sd', 'tn',
-                            'tx', 'ut', 'va', 'vt', 'wa', 'wi', 'wv', 'wy'])
+    _realStates = sets.Set(['ak', 'al', 'ar', 'az', 'ca', 'co', 'ct', 
+    			    'dc', 'de', 'fl', 'ga', 'hi', 'ia', 'id',
+			    'il', 'in', 'ks', 'ky', 'la', 'ma', 'md',
+			    'me', 'mi', 'mn', 'mo', 'ms', 'mt', 'nc',
+			    'nd', 'ne', 'nh', 'nj', 'nm', 'nv', 'ny',
+			    'oh', 'ok', 'or', 'pa', 'ri', 'sc', 'sd',
+			    'tn', 'tx', 'ut', 'va', 'vt', 'wa', 'wi',
+			    'wv', 'wy'])
     # Provinces.  (Province being a metric state measurement mind you. :D)
     _fakeStates = sets.Set(['ab', 'bc', 'mb', 'nb', 'nf', 'ns', 'nt',
                            'nu', 'on', 'pe', 'qc', 'sk', 'yk'])
+    # Certain countries are expected to use a standard abbreviation
+    # The weather we pull uses weird codes.  Map obvious ones here.
+    _countryMap = {'uk': 'gb'}
     def weather(self, irc, msg, args):
         """<US zip code> <US/Canada city, state> <Foreign city, country>
 
@@ -186,11 +190,23 @@ class Http(callbacks.Privmsg):
             else:
                 country = state
                 state = ''
+	    if country in self._countryMap.keys():
+	        country = self._countryMap[country]
             url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
                   'pass=&dpp=&forecast=zandh&config=&'\
                   'place=%s&state=%s&country=%s' % \
                   (city, state, country)
             #debug.printf(url)
+	    html = getPage(url)
+	    if 'was not found' in html:
+	        url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
+		      'pass=&dpp=&forecast=zandh&config=&'\
+		      'place=%s&state=&country=%s' % \
+		      (city, state)
+		html = getPage(url)
+		if 'was not found' in html:
+		    irc.error(msg, 'No such location could be found.')
+		    return
 
         #We received a single argument.  Zipcode or station id.
         else:
@@ -199,12 +215,11 @@ class Http(callbacks.Privmsg):
             zip = zip.lower().split()
             url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
                   'config=&forecast=zandh&pands=%s&Submit=GO' % args[0]
-
-        #debug.printf(url)
-        html = getPage(url)
-        if 'was not found' in html:
-            irc.error(msg, 'No such location could be found.')
-            return
+            html = getPage(url)
+	    if 'was not found' in html:
+	        irc.error(msg, 'No such location could be found.')
+		return
+		
         headData = self._cityregex.search(html)
         if headData:
             (city, state, country) = headData.groups()
