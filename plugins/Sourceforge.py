@@ -83,11 +83,16 @@ def configure(advanced):
               "sourceforge".  We like to make it "sf".""")
     if yn('Would you like to add sf as an alias for Sourceforge?',
           default=True):
-        if not conf.supybot.plugins.Alias():
+        hasAlias = False
+        for (name, _) in conf.supybot.plugins.getValues(fullNames=False):
+            if name == 'Alias':
+                hasAlias = True
+        if not hasAlias:
             output('This depends on the Alias module.')
             if yn('Would you like to load the Alias plugin now?',
                   default=True):
                 conf.registerPlugin('Alias', True)
+                conf.registerGroup(conf.supybot.plugins.Alias, 'aliases')
             else:
                 output('Then I can\'t add such an alias.')
                 return
