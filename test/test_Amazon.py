@@ -34,7 +34,7 @@ from testsupport import *
 LICENSE_KEY = 'AMAZONS_NOT_CHECKING_KEYS'
 
 if LICENSE_KEY != 'INITIAL_NON_LICENSE_KEY' and network:
-    class AmazonTestCase(PluginTestCase, PluginDocumentation):
+    class AmazonTestCase(PluginTestCase):
         plugins = ('Amazon',)
         def setUp(self):
             PluginTestCase.setUp(self)

@@ -109,8 +109,11 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                         results[v] = getattr(results[v], k[:-1], 'unknown')
                     if not isinstance(results[v], basestring):
                         results[v] = utils.commaAndify(results[v])
-                if bold and bold_item in results:
-                    results[bold_item] = ircutils.bold(results[bold_item])
+                if bold_item in results:
+                    if bold:
+                        results[bold_item] = ircutils.bold(results[bold_item])
+                    else:
+                        results[bold_item] = '"%s"' % results[bold_item]
                 if not url:
                     results['url'] = ''
                 else:
@@ -146,7 +149,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s", written by %(author)s; published by ' \
+        s = '%(title)s, written by %(author)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
         try:
             book = amazon.searchByKeyword(isbn)
@@ -180,7 +183,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s", written by %(author)s; published by ' \
+        s = '%(title)s, written by %(author)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
         try:
             books = amazon.searchByKeyword(keyword)
@@ -220,7 +223,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released ' \
+        s = '%(title)s (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
         try:
             videos = amazon.searchByKeyword(keyword, product_line=product)
@@ -253,7 +256,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s"; price: %(price)s%(url)s'
+        s = '%(title)s; price: %(price)s%(url)s'
         try:
             item = amazon.searchByASIN(asin)
             bold = self.registryValue('bold', msg.args[0])
@@ -288,7 +291,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" %(manufacturer)s; price: %(price)s%(url)s'
+        s = '%(title)s %(manufacturer)s; price: %(price)s%(url)s'
         try:
             item = amazon.searchByUPC(upc)
             bold = self.registryValue('bold', msg.args[0])
@@ -321,7 +324,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s", written by %(author)s; published by ' \
+        s = '%(title)s, written by %(author)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
         try:
             books = amazon.searchByAuthor(author)
@@ -420,7 +423,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" (%(media)s), by %(artist)s; published by ' \
+        s = '%(title)s (%(media)s), by %(artist)s; published by ' \
             '%(publisher)s; price: %(price)s%(url)s'
         try:
             items = amazon.searchByArtist(artist, product_line=product)
@@ -461,7 +464,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released ' \
+        s = '%(title)s (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
         try:
             items = amazon.searchByActor(actor, product_line=product)
@@ -502,7 +505,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s" (%(media)s), rated %(mpaa)s; released ' \
+        s = '%(title)s (%(media)s), rated %(mpaa)s; released ' \
             '%(date)s; published by %(publisher)s; price: %(price)s%(url)s'
         try:
             items = amazon.searchByDirector(director, product_line=product)
@@ -542,7 +545,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'URL' : 'url'
                   }
-        s = '"%(title)s"; price: %(price)s%(url)s'
+        s = '%(title)s; price: %(price)s%(url)s'
         try:
             items = amazon.searchByManufacturer(manufacturer,
                                                 product_line=product)
@@ -572,7 +575,7 @@ class Amazon(callbacks.PrivmsgCommandAndRegexp):
                    'OurPrice' : 'price',
                    'Artists' : 'artist',
                   }
-        s = '"%(title)s"; %(artist)s; %(author)s; %(mpaa)s; %(media)s; '\
+        s = '%(title)s; %(artist)s; %(author)s; %(mpaa)s; %(media)s; '\
             '%(date)s; %(publisher)s; price: %(price)s'
         try:
             item = amazon.searchByASIN(match)
