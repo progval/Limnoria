@@ -321,6 +321,7 @@ class UsersDictionary(object):
         s = fd.read()
         fd.close()
         Set = sets.Set
+        ignore(Set) # Make PyChecker happy.
         self.dict = eval(normalize(s))
         self.cache = {} # hostmasks to nicks.
         self.revcache = ircutils.IrcDict() # nicks to hostmasks.
