@@ -197,7 +197,10 @@ class Fun(callbacks.Privmsg):
         <http://www.python.org/doc/lib/node126.html>.
         """
         encoding, text = privmsgs.getArgs(args, required=2)
-        irc.reply(msg, text.encode(encoding))
+        try:
+            irc.reply(msg, text.encode(encoding))
+        except LookupError:
+            irc.error(msg, 'There is no such encoding %r' % encoding)
 
     def decode(self, irc, msg, args):
         """<encoding> <text>
@@ -207,7 +210,10 @@ class Fun(callbacks.Privmsg):
         <http://www.python.org/doc/lib/node126.html>.
         """
         encoding, text = privmsgs.getArgs(args, required=2)
-        irc.reply(msg, text.decode(encoding).encode('utf-8'))
+        try:
+            irc.reply(msg, text.decode(encoding).encode('utf-8'))
+        except LookupError:
+            irc.error(msg, 'There is no such encoding %r' % encoding)
 
     def hexlify(self, irc, msg, args):
         """<text>

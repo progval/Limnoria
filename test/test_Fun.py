@@ -108,6 +108,12 @@ class FunTest(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotRegexp('colorize foobar', r'\s+')
         self.assertRegexp('colorize foobar', r'\x03')
 
+    def testEncodeDecode(self):
+        s = 'the recalcitrant jamessan tests his scramble function'
+        self.assertNotRegexp('encode aldkfja foobar', 'LookupError')
+        self.assertNotRegexp('decode asdflkj foobar', 'LookupError')
+        self.assertResponse('decode zlib [encode zlib %s]' % s, s)
+
     def testoutfilter(self):
         s = self.nick.encode('rot13')
         self.assertNotError('outfilter rot13')
