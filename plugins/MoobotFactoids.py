@@ -161,7 +161,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
         db.close()
         del db
 
-    def parseFactoid(self, irc, msg, fact):
+    def _parseFactoid(self, irc, msg, fact):
         type = "define"  # Default is to just spit the factoid back as a
                          # definition of what the key is (i.e., "foo is bar")
         newfact = pickOptions(fact)
@@ -186,6 +186,21 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           hostmask, int(time.time()), key)
         db.commit()
 
+    def randomfactoid(self, irc, msg, args):
+        """<takes no arguments>
+
+        Displays a random factoid (along with its key) from the database.
+        """
+        db = self.dbHandler.getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT fact, key FROM factoids 
+                          ORDER BY random() LIMIT 1""")
+        if cursor.rowcount == 0:
+            irc.error(msg, 'No factoids in the database.')
+            return
+        (fact, key) = cursor.fetchone()
+        irc.reply(msg, "%r is %r" % (key, fact))
+
     def invalidCommand(self, irc, msg, tokens):
         key = ' '.join(tokens)
         key = key.rstrip('?!')
@@ -203,7 +218,7 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             hostmask = msg.prefix
             self.updateFactoidRequest(key, hostmask)
             # Now actually get the factoid and respond accordingly
-            (type, text) = self.parseFactoid(irc, msg, fact)
+            (type, text) = self._parseFactoid(irc, msg, fact)
             if type == "action":
                 irc.reply(msg, text, action=True)
             elif type == "reply":
@@ -211,16 +226,22 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
             elif type == "define":
                 irc.reply(msg, "%s is %s" % (key, text), prefixName=False)
             else:
-                irc.error(msg, "Spurious type from parseFactoid.")
+                irc.error(msg, "Spurious type from _parseFactoid.")
             return True
 
     def addFactoid(self, irc, msg, match):
         r"^(.+?)\s+(?:is|_is_)\s+(.+)"
+        # Check and see if there is a command that matches this that didn't
+        # get caught due to nesting
+#        cb = callbacks.findCallbackForCommand(irc, msg)
+#        if cb:
+#            irc.reply(msg, irc.getHelp(cb[0].config))
+#            return
         # First, check and see if the entire message matches a factoid key
         db = self.dbHandler.getDb()
         cursor = db.cursor()
-        cursor.execute("""SELECT * FROM factoids WHERE key LIKE %s""",
-                       match.group().rstrip('?! '))
+        key = match.group().rstrip('?! ')
+        cursor.execute("""SELECT * FROM factoids WHERE key LIKE %s""", key)
         if cursor.rowcount != 0:
             self.invalidCommand(irc, msg, callbacks.tokenize(match.group()))
             return
@@ -578,6 +599,10 @@ class MoobotFactoids(callbacks.PrivmsgCommandAndRegexp):
                           glob)
         if cursor.rowcount == 0:
             irc.reply(msg, "No keys matching %r found." % search)
+            return
+        elif cursor.rowcount == 1:
+            key = cursor.fetchone()[0]
+            self.invalidCommand(irc, msg, [key])
             return
         keys = [repr(tup[0]) for tup in cursor.fetchall()]
         s = "Key search for %r (%s found): %s" % \

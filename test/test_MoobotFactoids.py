@@ -226,8 +226,8 @@ if sqlite is not None:
         def testListkeys(self):
             self.assertResponse('listkeys %', 'No keys matching \'%\' found.')
             self.assertNotError('moo is <reply>moo')
-            self.assertResponse('listkeys moo',
-                                'Key search for \'moo\' (1 found): \'moo\'')
+            # If only one key, it should respond with the factoid
+            self.assertResponse('listkeys moo', 'moo')
             self.assertResponse('listkeys foo', 'No keys matching \'foo\' '
                                 'found.')
             # Throw in a bunch more
