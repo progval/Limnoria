@@ -46,7 +46,7 @@ class RootWarner(irclib.IrcCallback):
               'Don\'t IRC as root -- it\'s very possible that there is a '\
               'security flaw in latent in your irc client (remember the '\
               'BitchX format string vulnerabilities of days past?) and if '\
-              'You\'re IRCing as root, your entire box could be compromised.'))
+              'you\'re IRCing as root, your entire box could be compromised.'))
 
 
 Class = RootWarner
