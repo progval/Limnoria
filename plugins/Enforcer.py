@@ -43,6 +43,15 @@ import privmsgs
 import ircutils
 import callbacks
 
+def configure(onStart, afterConnect, advanced):
+    onStart.append('load Enforcer')
+    chanserv = something('What\'s the name of ChanServ on your network?')
+    if yn('Do you want the bot to take revenge on rule breakers?') == 'y':
+        revenge = True
+    else:
+        revenge = False
+    onStart.append('startenforcer %s %s' % (chanserv, revenge))
+
 ###
 # Enforcer: Enforces capabilities on JOIN, MODE, KICK, etc.
 ###
@@ -50,13 +59,11 @@ _chanCap = ircdb.makeChannelCapability
 class Enforcer(callbacks.Privmsg):
     started = False
     def startenforcer(self, irc, msg, args):
-        """[<CHANSERV> <revenge> <topicPrefix>]"""
+        """[<CHANSERV> <revenge>]"""
         self.topics = {}
-        (chanserv, revenge, topicPrefix) = \
-                   privmsgs.getArgs(args, needed=0, optional=3)
+        (chanserv, revenge) = privmsgs.getArgs(args, needed=0, optional=2)
         self.chanserv = chanserv or 'ChanServ'
         self.started = True
-        self.topicPrefix = topicPrefix
         revenge = revenge.capitalize()
         if revenge == 'True' or revenge == '':
             self.revenge = True
@@ -97,11 +104,6 @@ class Enforcer(callbacks.Privmsg):
                 irc.queueMsg(ircmsgs.kick(channel, msg.nick,
                                       conf.replyNoCapability % \
                                       _chanCap(channel, 'topic')))
-        elif not topic.startswith(self.topicPrefix):
-            irc.queueMsg(ircmsgs.topic(channel, self.topicPrefix + topic))
-            if self.revenge:
-                irc.queueMsg(ircmsgs.kick(channel, msg.nick,
-                  'Topics must begin with the prefix "%s"' % self.topicPrefix))
         else:
             self.topics[channel] = msg.args[1]
 
