@@ -110,10 +110,8 @@ class Quotes(ChannelDBHandler, callbacks.Privmsg):
             ret = cursor.fetchall()
             if ret:
                 irc.reply(msg, ret[0][0])
-                return
             else:
                 irc.reply(msg, "That quote doesn't exist.")
-                return
         except ValueError: # It's not an int.
             r = re.compile(value, re.I)
             def p(s):
