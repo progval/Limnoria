@@ -126,5 +126,10 @@ def all(p, seq):
             return False
     return True
 
+def rsplit(s, sep=None, maxsplit=-1):
+    L = s[::-1].split(sep, maxsplit)
+    L.reverse()
+    return [s[::-1] for s in L]
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

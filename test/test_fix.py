@@ -88,5 +88,12 @@ class FunctionsTest(unittest.TestCase):
     def testIlen(self):
         self.assertEqual(itertools.ilen(iter(range(10))), 10)
 
+    def testRsplit(self):
+        self.assertEqual(rsplit('foo bar baz'), 'foo bar baz'.split())
+        self.assertEqual(rsplit('foo bar baz', maxsplit=1),
+                         ['foo bar', 'baz']) 
+        self.assertEqual(rsplit('foo        bar baz', maxsplit=1),
+                         ['foo        bar', 'baz'])
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
