@@ -25,45 +25,42 @@ A: First, you'll have to make sure that your users register with the
    configuration variable on.  Use the "config" command to do so.
    Here's an example of how to do these steps:
 
-   <jemfinch|lambda> I'm going to make an example session for giving
-                     you auto-ops, for our FAQ.
+   <jemfinch> I'm going to make an example session for giving
+              you auto-ops, for our FAQ.
    <dunk1> ah ok ;]
-   <jemfinch|lambda> First, I need you to register with supybot, using
-                     the "register" command (remember to send it in
-                     private).
+   <jemfinch> First, I need you to register with supybot, using
+              the "register" command (remember to send it in
+              private).
    <dunk1> done
-   <jemfinch|lambda> what name are you registered under?
+   <jemfinch> what name are you registered under?
    <dunk1> dunk1
-   <jemfinch|lambda> ok, cool.
-   <jemfinch|lambda> @channel addcapability dunk1 op
-   <supybot> jemfinch|lambda: The operation succeeded.
-   <jemfinch|lambda> now use the "op" command to get ops.
+   <jemfinch> ok, cool.
+   <jemfinch> @channel addcapability dunk1 op
+   <supybot> jemfinch: The operation succeeded.
+   <jemfinch> now use the "op" command to get ops.
    <dunk1> @op
    --- supybot gives channel operator status to dunk1
    <dunk1> works!
    <dunk1> ;]
-   <jemfinch|lambda> @load Enforcer
-   <supybot> jemfinch|lambda: The operation succeeded.
-   <jemfinch|lambda> @config supybot.plugins.Enforcer.autoOp.#supybot On
-   <supybot> jemfinch|lambda: The operation succeeded.
-   <jemfinch|lambda> ok, now cycle the channel (part and then rejoin)
+   <jemfinch> @load Enforcer
+   <supybot> jemfinch: The operation succeeded.
+   <jemfinch> @config channel supybot.plugins.Enforcer.autoOp On
+   <supybot> jemfinch: The operation succeeded.
+   <jemfinch> ok, now cycle the channel (part and then rejoin)
    <-- dunk1 (dunker@freebsd.nl) has left #supybot
    --> dunk1 (dunker@freebsd.nl) has joined #supybot
    --- supybot gives channel operator status to dunk1
-   <jemfinch|lambda> cool, thanks :)
+   <jemfinch> cool, thanks :)
 
 
 
 Q: Can users with the "admin" capability change configuration
    variables?
 
-A: Currently, no.  Since this is the first release of Supybot that
-   uses the registry, we wanted to stay on the conservative side and
-   require the "owner" capability for changing all non-channel-related
-   configuration variables.  Feel free to make your case to us as to
-   why a certain configuration variable should only require the
-   "admin" capability instead of the "owner" capability, and if we
-   agree with you, we'll change it for the next release.
+A: Currently, no. Feel free to make your case to us as to why a 
+   certain configuration variable should only require the "admin"
+   capability instead of the "owner" capability, and if we agree
+   with you, we'll change it for the next release.
 
 
 Q: How do I make my Supybot connect to multiple servers?
@@ -106,8 +103,9 @@ A: Supybot most certainly can!  In fact, we offer two full-fledged
    the result into your factoid definition.  MoobotFactoids uses a
    global database, so the factoids are the same for all channels.
 
-   In the future, we plan to have a compatibility plugin for Infobot,
-   but as of present we've not yet written one.
+   Infobot (written by jamessan) is used for Infobot compatibility;
+   if you still want the basic functionality of Infobot, this is the
+   plugin to use.
 
 
 Q: Can I import my Infobot/Blootbot/Moobot factoids into Supybot?
@@ -159,11 +157,11 @@ A: Take a look at "help <alias you added>".  If the alias the bot has
    evaluated.  For instance, if you're adding an alias to give you a
    link to your homepage, you need to say:
 
-   alias add mylink "strconcat http://my.host.com/ [urlquote $1]"
+   alias add mylink "format concat http://my.host.com/ [urlquote $1]"
 
    and not:
 
-   alias add mylink strconcat http://my.host.com/ [urlquote $1]
+   alias add mylink format concat http://my.host.com/ [urlquote $1]
 
    The first version works; the second version will always return the
    same url.
