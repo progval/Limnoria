@@ -60,3 +60,9 @@ Whenever joining more than two strings, use string interpolation, not addition:
   s = ''.join(x, y, z) # Best, but not as general.
 This has to do with efficiency; the intermediate string x+y is made (and thus
 copied) before x+y+z is made, so it's less efficient.
+
+Use the debug module to its fullest; when you need to print some values to
+debug, use debug.printf to do so, and leave those print statements in the code
+(perhaps commented out) so they can later be re-enabled.  Remember that once
+code is buggy, it tends to have more bugs, and you'll probably need those print
+statements again.
