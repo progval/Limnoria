@@ -205,6 +205,14 @@ class IrcStateTestCase(SupyTestCase):
         nick = 'nick'
         prefix = 'nick!user@host'
     irc = FakeIrc()
+    def testAddMsgRemovesOpsProperly(self):
+        st = irclib.IrcState()
+        st.channels['#foo'] = irclib.ChannelState()
+        st.channels['#foo'].ops.add('bar')
+        m = ircmsgs.mode('#foo', ('-o', 'bar'))
+        st.addMsg(self.irc, m)
+        self.failIf('bar' in st.channels['#foo'].ops)
+
     def testHistory(self):
         oldconfmaxhistory = conf.supybot.protocols.irc.maxHistoryLength()
         conf.supybot.protocols.irc.maxHistoryLength.setValue(10)
