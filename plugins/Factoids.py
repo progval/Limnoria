@@ -172,15 +172,16 @@ class Factoids(ChannelDBHandler, callbacks.Privmsg):
         if cursor.rowcount == 0:
             irc.error(msg, 'No factoid matches that key.')
         else:
-            counter = 0
             factoids = []
+            counter = 0
             for result in cursor.fetchall():
                 factoids.append('(#%s) %s' % (counter, result[0]))
                 counter += 1
             totalResults = len(factoids)
             if ircutils.shrinkList(factoids, ', or ', 400):
-                s = '%s could be %s (%s results shown out of %s)' % \
-                    (key, ', or '.join(factoids), counter-1, totalResults)
+                s = '%s could be %s (%s shown out of %s)' % \
+                    (key, ', or '.join(factoids),
+                     utils.nItems(len(factoids), 'result'), totalResults)
             else:
                 s = '%s could be %s' % (key, ', or '.join(factoids))
             irc.reply(msg, s)
