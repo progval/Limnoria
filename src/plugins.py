@@ -205,33 +205,45 @@ class ConfigurableDictionary(object):
     def __init__(self, seq):
         self.helps = {}
         self.types = {}
-        self.channels = {None: {}}
+        self.defaults = {}
+        self.originalNames = []
+        self.channels = ircutils.IrcDict()
         for (name, type, default, help) in seq:
-            self.helps[name] = help
+            self.originalNames.append(name)
+            name = callbacks.canonicalName(name)
+            self.helps[name] = utils.normalizeWhitespace(help)
             self.types[name] = type
-            self.channels[None][name] = default
+            self.defaults[name] = default
+        self.originalNames.sort()
 
     def get(self, name, channel=None):
-        try:
+        name = callbacks.canonicalName(name)
+        if channel is not None:
             return self.channels[channel][name]
-        except KeyError:
-            return self.channels[None][name]
+        else:
+            return self.defaults[name]
 
     def set(self, name, value, channel=None):
-        d = self.channels.setdefault(channel, {})
-        d[name] = self.types[name](value)
+        name = callbacks.canonicalName(name)
+        if channel is not None:
+            d = self.channels.setdefault(channel, {})
+            d[name] = self.types[name](value)
+        else:
+            self.defaults[name] = self.types[name](value)
 
     def help(self, name):
+        name = callbacks.canonicalName(name)
         return self.helps[name]
 
     def names(self):
-        L = self.helps.keys()
-        L.sort()
-        return L
+        return self.originalNames
 
     # XXX: Make persistent.
 
-class ConfigurableTypes(object):
+class ConfigurableTypeError(TypeError):
+    pass
+
+class _ConfigurableTypes(object):
     def bool(self, s):
         s = s.lower()
         if s in ('true', 'enable', 'on'):
@@ -240,8 +252,8 @@ class ConfigurableTypes(object):
             return False
         else:
             s = 'Value must be one of on/off/true/false/enable/disable.'
-            raise ValueError, s
-        
+            raise ConfigurableTypeError, s
+ConfigurableTypes = _ConfigurableTypes()
 
 class Configurable(object):
     """A mixin class to provide a "config" command that can be consistent
@@ -266,8 +278,15 @@ class Configurable(object):
         """
         try:
             channel = privmsgs.getChannel(msg, args)
+            capability = ircdb.makeChannelCapability(channel, 'op')
         except callbacks.ArgumentError:
+            raise
+        except callbacks.Error:
             channel = None
+            capability = 'admin'
+        if not ircdb.checkCapability(msg.prefix, capability):
+            irc.error(msg, conf.replyNoCapability % capability)
+            return
         (name, value) = privmsgs.getArgs(args, needed=0, optional=2)
         if not name:
             irc.reply(msg, utils.commaAndify(self.configurables.names()))
@@ -280,8 +299,8 @@ class Configurable(object):
         try:
             self.configurables.set(name, value, channel)
             irc.reply(msg, conf.replySuccess)
-        except Exception, e:
-            irc.error(msg, debug.exnToString(e))
+        except ConfigurableTypeError, e:
+            irc.error(msg, str(e))
         
             
 

@@ -36,6 +36,21 @@ import sets
 import irclib
 import plugins
 
+class ConfigurableDictionaryTestCase(unittest.TestCase):
+    def test(self):
+        t = plugins.ConfigurableDictionary([('foo', bool, False, 'bar')])
+        self.assertEqual(t.help('foo'), 'bar')
+        self.assertRaises(KeyError, t.help, 'bar')
+        self.assertEqual(t.get('foo'), False)
+        t.set('foo', True)
+        self.assertEqual(t.get('foo'), True)
+        t.set('foo', False, '#foo')
+        self.assertEqual(t.get('foo', '#foo'), False)
+        self.assertEqual(t.get('foo'), True)
+        self.assertRaises(KeyError, t.set, 'bar', True)
+        self.assertRaises(KeyError, t.set, 'bar', True, '#foo')
+
+
 class ToggleDictionaryTestCase(unittest.TestCase):
     def test(self):
         t = plugins.ToggleDictionary({'foo': True})
