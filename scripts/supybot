@@ -120,6 +120,7 @@ def main():
     log.info('Total CPU time taken: %s seconds.', user+system)
     log.info('No more Irc objects, exiting.')
 
+version = '0.80.0pre2'
 if __name__ == '__main__':
     ###
     # Options:
@@ -130,7 +131,7 @@ if __name__ == '__main__':
     # --connect (commands to run afterConnect)
     # --config (configuration values)
     parser = optparse.OptionParser(usage='Usage: %prog [options] configFile',
-                                   version='supybot 0.80.0pre2')
+                                   version='supybot %s' % version)
     parser.add_option('-P', '--profile', action='store_true', dest='profile',
                       help='enables profiling')
     parser.add_option('-O', action='count', dest='optimize',

@@ -79,10 +79,11 @@ if clean:
             print 'Couldn\'t remove former installation: %s' % e
             sys.exit(-1)
 
+version = '0.80.0pre2'
 setup(
     # Metadata
     name='supybot',
-    version='0.80.0pre2',
+    version=version,
     author='Jeremy Fincher',
     url='http://supybot.sf.net/',
     author_email='jemfinch@users.sf.net',
