@@ -69,13 +69,13 @@ class AsyncoreDriver(asynchat.async_chat, object):
         try:
             self.connect(self.server)
         except socket.error, e:
-            log.warning('Error connecting to %s: %s', self.irc.server, e)
+            log.warning('Error connecting to %s: %s', self.server[0], e)
             self.reconnect(wait=True)
 
     def scheduleReconnect(self):
         when = log.timestamp(time.time()+60)
         if not world.dying:
-            log.info('Scheduling reconnect to %s at %s', self.irc.server, when)
+            log.info('Scheduling reconnect to %s at %s', self.server[0], when)
         def makeNewDriver():
             self.irc.reset()
             driver = self.__class__(self.server, self.irc)

@@ -155,7 +155,7 @@ class SocketDriver(drivers.IrcDriver):
                          'check for %s', when)
                 schedule.addEvent(self._checkAndWriteOrReconnect, when)
             else:
-                log.warning('Error connecting to %s: %s', self.irc.server, e)
+                log.warning('Error connecting to %s: %s', self.server[0], e)
                 self.reconnect(wait=True)
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
@@ -168,7 +168,7 @@ class SocketDriver(drivers.IrcDriver):
             self.connected = True
             self.reconnectWaitPeriodsIndex = 0
         else:
-            log.warning('Error connecting to %s: Timed out.', self.irc.server)
+            log.warning('Error connecting to %s: Timed out.', self.server[0])
             self.reconnect()
             
     def _scheduleReconnect(self):
