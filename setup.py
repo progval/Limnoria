@@ -31,6 +31,7 @@
 
 plugins = [
     'Admin',
+    'AutoMode',
     'Babelfish',
     'Channel',
     'Config',
