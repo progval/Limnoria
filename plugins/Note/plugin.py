@@ -217,7 +217,7 @@ class Note(callbacks.Plugin):
             irc.error('The user who sent you that note '
                       'is no longer in my user database.', Raise=True)
         id = self.db.send(user.id, note.frm, public, text)
-        irc.reply('Note #%s sent to %s.' % (id, target.name))
+        irc.reply(format('Note #%i sent to %s.', id, target.name))
     reply = wrap(reply, ['user', ('id', 'note'), 'text'])
 
     def unsend(self, irc, msg, args, user, id):
@@ -275,12 +275,12 @@ class Note(callbacks.Plugin):
         if note.public or not ircutils.isChannel(msg.args[0]):
             if sent:
                 sender = plugins.getUserName(note.to)
-                return '#%s to %s' % (note.id, sender)
+                return format('#%i to %s', note.id, sender)
             else:
                 sender = plugins.getUserName(note.frm)
-                return '#%s from %s' % (note.id, sender)
+                return format('#%i from %s', note.id, sender)
         else:
-            return '#%s (private)' % note.id
+            return format('#%i (private)', note.id)
 
     def search(self, irc, msg, args, user, optlist, glob):
         """[--{regexp} <value>] [--sent] [<glob>]
