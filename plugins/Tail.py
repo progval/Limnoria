@@ -40,6 +40,7 @@ import supybot.plugins as plugins
 
 import supybot.conf as conf
 import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -94,13 +95,13 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
     def die(self):
         for fd in self.files.values():
             fd.close()
-            
+
     def _add(self, filename):
         fd = file(filename)
         fd.seek(0, 2) # 0 bytes, offset from the end of the file.
         self.files[filename] = fd
         self.registryValue('files').add(filename)
-        
+
     def _send(self, irc, filename, text):
         targets = self.registryValue('targets')
         if self.registryValue('bold'):
@@ -108,8 +109,11 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
         notice = self.registryValue('notice')
         payload = '%s: %s' % (filename, text)
         for target in targets:
-            irc.reply(payload, to=target, notice=notice)
-            
+            msgmaker = ircmsgs.privmsg
+            if notice and not ircutils.isChannel(target):
+                msgmaker = ircmsgs.notice
+            irc.sendMsg(msgmaker(target, payload))
+
     def add(self, irc, msg, args):
         """<filename>
 
@@ -137,7 +141,7 @@ class Tail(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         except KeyError:
             irc.error('I\'m not currently announcing %s.' % filename)
-        
+
 
 Class = Tail
 
