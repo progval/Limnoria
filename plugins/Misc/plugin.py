@@ -146,10 +146,9 @@ class Misc(callbacks.Plugin):
         L = []
         for cb in irc.callbacks:
             if isinstance(cb, callbacks.Plugin):
-                for attr in dir(cb):
-                    if s in attr and cb.isCommand(attr):
-                        if attr == callbacks.canonicalName(attr):
-                            commands.setdefault(attr, []).append(cb.name())
+                for command in cb.listCommands():
+                    if s in command:
+                        commands.setdefault(command, []).append(cb.name())
         for (key, names) in commands.iteritems():
             if len(names) == 1:
                 L.append(key)
@@ -163,41 +162,27 @@ class Misc(callbacks.Plugin):
             irc.reply('No appropriate commands were found.')
     apropos = wrap(apropos, ['lowered'])
 
-    def help(self, irc, msg, args, cb, command):
+    def help(self, irc, msg, args, command):
         """[<plugin>] [<command>]
 
         This command gives a useful description of what <command> does.
         <plugin> is only necessary if the command is in more than one plugin.
         """
-        def getHelp(cb):
-            if hasattr(cb, 'isCommand'):
-                if cb.isCommand(command):
-                    irc.reply(cb.getCommandHelp(command))
-                else:
-                    irc.error('There is no %s command in the %s plugin.' %
-                              (command, cb.name()))
-            else:
-                irc.error('The %s plugin exists, but has no commands.' %
-                          cb.name())
-        if cb:
-            if command:
-                getHelp(cb)
-            else:
-                irc.reply(cb.getCommandHelp(cb.name()))
-        elif command:
-            cbs = irc.findCallbackForCommand(command)
+        (maxL, cbs) = irc.findCallbacksForArgs(command)
+        if maxL == command:
             if not cbs:
-                irc.error('There is no command %s.' % command)
+                irc.error(format('There is no command %q.',
+                                 callbacks.formatCommand(command)))
             elif len(cbs) > 1:
                 names = sorted([cb.name() for cb in cbs])
                 irc.error(format('That command exists in the %L plugins.  '
                                  'Please specify exactly which plugin command '
                                  'you want help with.', names))
             else:
-                getHelp(cbs[0])
+                irc.reply(cbs[0].getCommandHelp(command))
         else:
-            raise callbacks.ArgumentError
-    help = wrap(help, [optional(('plugin', False)), additional('commandName')])
+            irc.reply(cbs[0].getCommandHelp(command))
+    help = wrap(help, [many('something')])
 
     def hostmask(self, irc, msg, args, nick):
         """[<nick>]
