@@ -85,7 +85,7 @@ class Plugin(callbacks.Plugin):
                 irc.reply(format('The %q command is available in the %L %s.',
                                  command, L, plugin))
         else:
-            irc.error('There is no command %q', command)
+            irc.error('There is no command %q.', command)
     plugin = wrap(plugin, [many('something')])
 
     def author(self, irc, msg, args, cb):
