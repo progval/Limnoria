@@ -57,7 +57,7 @@ import webutils
 import callbacks
 
 
-def configure(onStart):
+def configure(advanced):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
     # like to be run when the bot is started; append to afterConnect the
@@ -133,6 +133,8 @@ class Debian(callbacks.Privmsg,
         if rest:
             glob = rest.pop()
             regexp = fnmatch.translate(glob.lstrip('/'))
+            regexp = regexp.rstrip('$')
+            regexp += ".* "
         try:
             re_obj = re.compile(regexp, re.I)
         except re.error, e:
