@@ -80,6 +80,7 @@ try:
             else:
                 Connection.commit(self, *args, **kwargs)
     sqlite.Connection = MyConnection
+    del Connection.__del__
 except ImportError:
     pass
 
