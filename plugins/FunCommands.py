@@ -810,12 +810,12 @@ class FunCommands(callbacks.Privmsg):
             irc.reply(msg, 'No definition for %r could be found.' % word)
             return
         L = []
-        utils.sortBy(lambda d: len(d.getdefstr()), definitions)
         for d in definitions:
             (db, s) = (d.getdb().getname(), d.getdefstr())
             db = ircutils.bold(db)
             s = utils.normalizeWhitespace(s).rstrip(';.,')
             L.append('%s: %s' % (db, s))
+        utils.sortBy(len, L)
         ircutils.shrinkList(L, '; ')
         if not L:
             irc.reply(msg, 'No definitions small enough to fit into an IRC ' \
