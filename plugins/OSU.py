@@ -30,7 +30,8 @@
 ###
 
 """
-Add the module docstring here.  This will be used by the setup.py script.
+Commands specific to OSU;
+(The Ohio State University, <http://www.ohio-state.edu/>)
 """
 
 from baseplugin import *
@@ -53,8 +54,8 @@ def configure(onStart, afterConnect, advanced):
 class OSU(callbacks.Privmsg):
     threaded = True
     def osuemail(self, irc, msg, args):
-        """<first name>.<middle initial>.<last name>"""
-        s = ''.join(args)
+        """<first name> <middle initial> <last name>"""
+        s = '.'.join(args)
         url = 'http://www.ohio-state.edu/cgi-bin/inquiry2.cgi?keyword=%s' % s
         try:
             fd = urllib2.urlopen(url)
