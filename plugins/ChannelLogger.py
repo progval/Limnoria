@@ -61,6 +61,23 @@ conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'noLogPrefix',
     registry.String('[nolog]', """Determines what string a message should be
     prefixed with in order not to be logged.  If you don't want any such
     prefix, just set it to the empty string."""))
+conf.registerChannelValue(conf.supybot.plugins.ChannelLogger, 'rotateLogs',
+    registry.Boolean(False, """Determines whether the bot will automatically
+    rotate the logs for this channel."""))
+conf.registerChannelValue(conf.supybot.plugins.ChannelLogger,
+    'filenameTimestamp', registry.String('%d-%a-%Y', """Determines how to
+    represent the timestamp used for the filename in rotated logs.  When this
+    timestamp changes, the old logfiles will be closed and a new one started.
+    The format characters for the timestamp are in the time.strftime docs at
+    python.org."""))
+
+class FakeLog(object):
+    def flush(self):
+        return
+    def close(self):
+        return
+    def write(self, s):
+        return
 
 class ChannelLogger(callbacks.Privmsg):
     def __init__(self):
@@ -73,8 +90,8 @@ class ChannelLogger(callbacks.Privmsg):
     def die(self):
         for log in self.logs.itervalues():
             log.close()
-        if self.flush in world.flushers:
-            world.flushers.remove(self.flush)
+        world.flushers = [x for x in world.flushers
+                          if hasattr(x, 'im_class') and x.im_class == self]
 
     def __call__(self, irc, msg):
         try:
@@ -90,9 +107,10 @@ class ChannelLogger(callbacks.Privmsg):
     def reset(self):
         for log in self.logs.itervalues():
             log.close()
-        self.logs = ircutils.IrcDict()
+        self.logs.clear()
 
     def flush(self):
+        self.checkLogNames()
         try:
             for log in self.logs.itervalues():
                 log.flush()
@@ -100,18 +118,38 @@ class ChannelLogger(callbacks.Privmsg):
             if e.args[0] != 'I/O operation on a closed file':
                 self.log.exception('Odd exception:')
 
+    def logNameTimestamp(self, channel):
+        format = self.registryValue('filenameTimestamp', channel)
+        return time.strftime(format)
+
+    def getLogName(self, channel):
+        if self.registryValue('rotateLogs', channel):
+            return '%s.%s.log' % (channel, self.logNameTimestamp(channel))
+        else:
+            return '%s.log' % channel
+
+    def checkLogNames(self):
+        for (channel, log) in self.logs.items():
+            if self.registryValue('rotateLogs', channel):
+                name = self.getLogName(channel)
+                if name != log.name:
+                    log.close()
+                    del self.logs[channel]
+
     def getLog(self, channel):
+        self.checkLogNames()
         if channel in self.logs:
             return self.logs[channel]
         else:
             try:
                 logDir = conf.supybot.directories.log()
-                log = file(os.path.join(logDir, '%s.log' % channel), 'a')
+                name = self.getLogName(channel)
+                log = file(os.path.join(logDir, name), 'a')
                 self.logs[channel] = log
                 return log
             except IOError:
                 self.log.exception('Error opening log:')
-                return StringIO()
+                return FakeLog()
 
     def timestamp(self, log):
         format = conf.supybot.log.timestampFormat()

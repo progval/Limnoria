@@ -72,6 +72,7 @@ class BetterStreamHandler(logging.StreamHandler):
                 self.stream.write("%s\n" % msg.encode("UTF-8"))
         self.flush()
 
+
 class StdoutStreamHandler(BetterStreamHandler):
     def emit(self, record):
         if conf.supybot.log.stdout():
@@ -89,25 +90,6 @@ class BetterFileHandler(logging.FileHandler):
             except UnicodeError:
                 self.stream.write("%s\n" % msg.encode("UTF-8"))
         self.flush()
-
-
-class DailyRotatingHandler(BetterFileHandler):
-    def __init__(self, *args):
-        self.lastRollover = time.localtime()
-        BetterFileHandler.__init__(self, *args)
-        
-    def emit(self, record):
-        now = time.localtime()
-        if now[2] != self.lastRollover[2]:
-            self.doRollover()
-        self.lastRollover = now
-        BetterFileHandler.emit(self, record)
-        
-    def doRollover(self):
-        self.stream.close()
-        extension = time.strftime('%d-%b-%Y', self.lastRollover)
-        os.rename(self.baseFilename, '%s.%s' % (self.baseFilename, extension))
-        self.stream = file(self.baseFilename, 'w')
 
 
 class ColorizedFormatter(Formatter):
