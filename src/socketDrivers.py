@@ -41,6 +41,7 @@ import fix
 
 import time
 import atexit
+import select
 import socket
 from itertools import imap
 
@@ -139,23 +140,40 @@ class SocketDriver(drivers.IrcDriver):
             self.conn.connect(self.server)
             self.conn.settimeout(conf.supybot.drivers.poll())
         except socket.error, e:
-            if e.args[0] != 115:
-                log.warning('Error connecting to %s: %s', self.irc.server, e)
+            if e.args[0] == 115:
+                now = time.time()
+                when = now + 60
+                log.info('Connection in progress, scheduling connectedness '
+                         'check for %s', when)
+                schedule.addEvent(self._checkAndWriteOrReconnect, when)
+            else:
+                log.warning('Error connecting to %s: %s',
+                            self.irc.server, e.args[1])
                 self.reconnect(wait=True)
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
         
-    def die(self):
-        log.info('Driver for %s dying.', self.irc)
-        self.conn.close()
-        # self.irc.die() Kill off the ircs yourself, jerk!
-
+    def _checkAndWriteOrReconnect(self):
+        (_, w, _) = select.select([], [self.conn], [], 0)
+        if w:
+            log.info('Socket is writable, it might be connected.')
+            self.connected = True
+            self.reconnectWaitPeriodsIndex = 0
+        else:
+            log.warning('Error connecting to %s: Timed out.', self.irc.server)
+            self.reconnect()
+            
     def _scheduleReconnect(self):
         when = time.time() + self.reconnectWaits[self.reconnectWaitsIndex]
         when = log.timestamp(when)
         if not world.dying:
             log.info('Scheduling reconnect to %s at %s', self.server, when)
         schedule.addEvent(self.reconnect, when)
+
+    def die(self):
+        log.info('Driver for %s dying.', self.irc)
+        self.conn.close()
+        # self.irc.die() Kill off the ircs yourself, jerk!
 
     def name(self):
         return '%s%s' % (self.__class__.__name__, self.server)
