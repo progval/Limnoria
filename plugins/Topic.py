@@ -111,7 +111,7 @@ class Topic(callbacks.Privmsg):
         except ValueError:
             irc.error(msg, 'The argument must be a valid integer.')
             return
-        topics = irc.state.getTopic(channel).split(self.topicSeparator)
+        topics = irc.state.getTopic(msg.args[0]).split(self.topicSeparator)
         try:
             irc.reply(msg, topics[i])
         except IndexError:
