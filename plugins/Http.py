@@ -57,6 +57,12 @@ class FreshmeatException(Exception):
 class Http(callbacks.Privmsg):
     threaded = True
     _titleRe = re.compile(r'<title>(.*?)</title>', re.I | re.S)
+    def callCommand(self, method, irc, msg, *L):
+        try:
+            callbacks.Privmsg.callCommand(self, method, irc, msg, *L)
+        except webutils.WebException, e:
+            irc.error(msg, str(e))
+            
     def title(self, irc, msg, args):
         """<url>
 
