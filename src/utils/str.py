@@ -38,8 +38,9 @@ import textwrap
 
 import supybot.structures as structures
 
-curry = new.instancemethod
+from iter import all, any
 
+curry = new.instancemethod
 chars = string.maketrans('', '')
 
 def rsplit(s, sep=None, maxsplit=-1):
@@ -327,29 +328,67 @@ def toBool(s):
     else:
         raise ValueError, 'Invalid string for toBool: %s' % quoted(s)
 
+# Replace me!
+def timestamp(t):
+    return time.ctime(t)
+
+_formatRe = re.compile('%([bfhiLnpqst%])')
 def format(s, *args, **kwargs):
-    kwargs.setdefault('decimalSeparator', decimalSeparator)
-    kwargs.setdefault('thousandsSeparator', thousandsSeparator)
+    """w00t.
+
+    %: literal %.
+    i: integer
+    s: string
+    f: float
+    b: form of the verb 'to be' (takes an int)
+    h: form of the verb 'to have' (takes an int)
+    L: commaAndify (takes a list of strings)
+    p: pluralize (takes a string)
+    q: quoted (takes a string)
+    n: nItems (takes a 2-tuple of (n, item) or a 3-tuple of (n, between, item))
+    t: time, formated (takes an int)
+    """
     args = list(args)
-    args.reverse() # For more efficiency popping.
+    args.reverse() # For more efficient popping.
     def sub(match):
         char = match.group(1)
-        if char == 's': # Plain string.
+        if char == 's':
             return str(args.pop())
-        elif char == 'i': # Integer
+        elif char == 'i':
             # XXX Improve me!
             return str(args.pop())
-        elif char == 'f': # Float
+        elif char == 'f':
             # XXX Improve me!
             return str(args.pop())
-        elif char == 'b': # form of the verb 'to be'
+        elif char == 'b':
             return be(args.pop())
-        elif char == 'h': # form of the verb 'to have'
+        elif char == 'h':
             return has(args.pop())
-        elif char == 'L': # commaAndify the list.
+        elif char == 'L':
             return commaAndify(args.pop())
+        elif char == 'p':
+            return pluralize(args.pop())
+        elif char == 'q':
+            return quoted(args.pop())
+        elif char == 'n':
+            t = args.pop()
+            if not isinstance(t, (tuple, list)):
+                raise ValueError, 'Invalid value for %%n in format: %s' % t
+            if len(t) == 2:
+                return nItems(*t)
+            elif len(t) == 3:
+                return nItems(t[0], t[2], between=t[1])
+            else:
+                raise ValueError, 'Invalid value for %%n in format: %s' % t
+        elif char == 't':
+            return timestamp(args.pop())
+        elif char == '%':
+            return '%'
         else:
-            assert False, 'Invalid char in sub (in format).'
-    return _formatRe.sub(sub, s)
+            raise ValueError, 'Invalid char in sub (in format).'
+    try:
+        return _formatRe.sub(sub, s)
+    except IndexError:
+        raise ValueError, 'Extra format chars in format spec: %r' % s
             
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

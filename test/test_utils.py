@@ -417,5 +417,13 @@ class WebTest(SupyTestCase):
             url = 'http://slashdot.org/'
             self.failUnless(len(utils.web.getUrl(url, 1024)) == 1024)
 
+class FormatTestCase(SupyTestCase):
+    def testNormal(self):
+        format = utils.str.format
+        self.assertEqual(format('I have %n of fruit: %L.', (3, 'kind'),
+                                ['apples', 'oranges', 'watermelon']),
+                         'I have 3 kinds of fruit: '
+                         'apples, oranges, and watermelon.')
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 

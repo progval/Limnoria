@@ -281,6 +281,11 @@ registerChannelValue(supybot.reply.format, 'time',
     for human reading should be formatted. Refer to the Python documentation
     for the time module to see valid formatting characters for time
     formats."""))
+def timestamp(t):
+    t = time.localtime(t)
+    format = conf.get(supybot.reply.format.time, dynamic.channel)
+    return time.strftime(format, t)
+utils.str.timestamp = timestamp
 
 registerGroup(supybot.reply.format.time, 'elapsed')
 registerChannelValue(supybot.reply.format.time.elapsed, 'short',
