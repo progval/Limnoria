@@ -9,6 +9,9 @@
 
 	* Fixed a bug in supybot-wizard when adding the Owner user.
 
+	* Fixed a bug in Note, when attempting to list notes sent to an
+	unregistered user.
+
 
 2005-01-16 James Vega <jamessan@supybot.com>
 
