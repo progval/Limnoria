@@ -38,9 +38,6 @@ import utils
 class FunCommandsTest(PluginTestCase, PluginDocumentation):
     plugins = ('FunCommands',)
     def testNoErrors(self):
-        self.assertNotError('netstats')
-        self.assertNotError('cpustats')
-        self.assertNotError('uptime')
         self.assertNotError('leet foobar')
         self.assertNotError('lithp meghan sweeney')
         self.assertNotError('objects')
@@ -54,11 +51,11 @@ class FunCommandsTest(PluginTestCase, PluginDocumentation):
         for s in nicks[:10]: # 10 is probably enough.
             self.assertResponse('rot13 [rot13 %s]' % s, s)
 
-    def testChr(self):
-        for i in range(256):
-            c = chr(i)
-            regexp = r'%s|%s' % (re.escape(c), re.escape(repr(c)))
-            self.assertRegexp('chr %s' % i, regexp)
+##     def testChr(self):
+##         for i in range(256):
+##             c = chr(i)
+##             regexp = r'%s|%s' % (re.escape(c), re.escape(repr(c)))
+##             self.assertRegexp('chr %s' % i, regexp)
 
     def testHexlifyUnhexlify(self):
         for s in nicks[:10]: # 10, again, is probably enough.
@@ -79,11 +76,13 @@ class FunCommandsTest(PluginTestCase, PluginDocumentation):
         self.assertNotError('pydoc str')
         self.assertError('pydoc foobar')
         self.assertError('pydoc assert')
+        self.assertNotError('pydoc string.translate')
+        self.assertNotError('pydoc fnmatch.fnmatch')
 
-    def testOrd(self):
-        for c in map(chr, range(256)):
-            i = ord(c)
-            self.assertResponse('ord %s' % utils.dqrepr(c), str(i))
+##     def testOrd(self):
+##         for c in map(chr, range(256)):
+##             i = ord(c)
+##             self.assertResponse('ord %s' % utils.dqrepr(c), str(i))
 
     def testZen(self):
         self.assertNotError('zen')

@@ -69,9 +69,7 @@ import callbacks
 
 example = utils.wrapLines("""
 <jemfinch> @list FunCommands
-<supybot> base, binary, chr, coin, cpustats, decode, dice, dns, encode, hexlify, kernel, last, lastfrom, leet, levenshtein, lithp, md5, mimetype, netstats, objects, ord, pydoc, rot13, sha, soundex, unhexlify, uptime, urlquote, urlunquote, xor
-<jemfinch> @netstats
-<supybot> I have received 211 messages for a total of 19535 bytes.  I have sent 109 messages for a total of 8672 bytes.
+<supybot> base, binary, chr, coin, decode, dice, dns, encode, hexlify, kernel, last, lastfrom, leet, levenshtein, lithp, md5, mimetype, objects, ord, pydoc, rot13, sha, soundex, unhexlify, urlquote, urlunquote, xor
 <jemfinch> @ord A
 <supybot> 65
 <jemfinch> @chr 65
@@ -121,10 +119,6 @@ example = utils.wrapLines("""
 <supybot> 25, 97, 85, and 93
 <jemfinch> @leet All your base are belong to us!!
 <supybot> 411 y0ur b453 4r3 b310ng +0 uz!!
-<jemfinch> @cpustats
-<supybot> I have taken 5.4 seconds of user time and 0.29 seconds of system time, for a total of 5.69 seconds of CPU time.  My children have taken 0.0 seconds of user time and 0.0 seconds of system time for a total of 0.0 seconds of CPU time.  I've taken a total of 0.00329929635973% of this computer's time.  Out of 2 spawned threads, I have 1 active.
-<jemfinch> @uptime
-<supybot> I have been running for 28 minutes and 47 seconds.
 <jemfinch> @objects
 <supybot> I have 24941 objects: 234 modules, 716 classes, 5489 functions, 1656 dictionaries, 827 lists, and 14874 tuples (and a few other different types).  I have a total of 119242 references.
 <jemfinch> @levenshtein supybot supbot
@@ -147,35 +141,6 @@ example = utils.wrapLines("""
 """)
 
 class FunCommands(callbacks.Privmsg):
-    priority = 98 # Really just to test.
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
-        self.sentMsgs = 0
-        self.recvdMsgs = 0
-        self.sentBytes = 0
-        self.recvdBytes = 0
-
-    def inFilter(self, irc, msg):
-        self.recvdMsgs += 1
-        self.recvdBytes += len(str(msg))
-        return msg
-
-    def outFilter(self, irc, msg):
-        self.sentMsgs += 1
-        self.sentBytes += len(str(msg))
-        return msg
-
-    def netstats(self, irc, msg, args):
-        """takes no arguments
-
-        Returns some interesting network-related statistics.
-        """
-        irc.reply(msg,
-                   'I have received %s messages for a total of %s bytes.  '\
-                   'I have sent %s messages for a total of %s bytes.' %\
-                   (self.recvdMsgs, self.recvdBytes,
-                    self.sentMsgs, self.sentBytes))
-
     def hexip(self, irc, msg, args):
         """<ip>
 
@@ -444,38 +409,6 @@ class FunCommands(callbacks.Privmsg):
         s = s.translate(self._leettrans)
         irc.reply(msg, s)
 
-    def cpustats(self, irc, msg, args):
-        """takes no arguments
-
-        Returns some interesting CPU-related statistics on the bot.
-        """
-        (user, system, childUser, childSystem, elapsed) = os.times()
-        timeRunning = time.time() - world.startedAt
-        activeThreads = threading.activeCount()
-        response ='I have taken %s seconds of user time and %s seconds of '\
-                  'system time, for a total of %s seconds of CPU time.  My '\
-                  'children have taken %s seconds of user time and %s seconds'\
-                  ' of system time for a total of %s seconds of CPU time.  ' \
-                  'I\'ve taken a total of %s%% of this computer\'s time.  ' \
-                  'Out of %s I have %s active.  ' \
-                  'I have processed %s.' %\
-                    (user, system, user + system,
-                     childUser, childSystem, childUser + childSystem,
-                     (user+system+childUser+childSystem)/timeRunning,
-                     utils.nItems(world.threadsSpawned, 'thread', 'spawned'),
-                     activeThreads,
-                     utils.nItems(world.commandsProcessed, 'command'))
-        irc.reply(msg, response)
-
-    def uptime(self, irc, msg, args):
-        """takes no arguments.
-
-        Returns the amount of time the bot has been running.
-        """
-        response = 'I have been running for %s.' % \
-                   utils.timeElapsed(time.time() - world.startedAt)
-        irc.reply(msg, response)
-
 
     def objects(self, irc, msg, args):
         """takes no arguments.
@@ -545,29 +478,41 @@ class FunCommands(callbacks.Privmsg):
             return
         if '.' in funcname:
             parts = funcname.split('.')
-            module = '.'.join(parts[:-1])
-            if module not in __builtins__ and module not in sys.modules:
-                path = os.path.dirname(os.__file__)
-                for name in parts[:-1]:
-                    try:
-                        info = imp.find_module(name, path)
-                        newmodule = imp.load_module(name, *info)
-                        path = newmodule.__path__
-                        info[1].close()
-                    except ImportError:
-                        irc.error(msg, 'No such module %s exists.' % module)
-                        return
-        try:
-            s = eval(funcname + '.__doc__')
-            s = s.replace('\n\n', '. ')
-            s = ' '.join(s.split())
-        except (SyntaxError, NameError):
-            irc.error(msg, 'No such function exists.')
-            return
-        except AttributeError:
-            irc.error(msg, 'That function has no documentation.')
-            return
-        irc.reply(msg, s)
+            functionName = parts.pop()
+            path = os.path.dirname(os.__file__)
+            for name in parts:
+                try:
+                    info = imp.find_module(name, [path])
+                    newmodule = imp.load_module(name, *info)
+                    path = os.path.dirname(newmodule.__file__)
+                    info[0].close()
+                except ImportError:
+                    irc.error(msg, 'No such module %s exists.' % module)
+                    return
+            if hasattr(newmodule, functionName):
+                f = getattr(newmodule, functionName)
+                if hasattr(f, '__doc__'):
+                    s = f.__doc__.replace('\n\n', '. ')
+                    s = utils.normalizeWhitespace(s)
+                    irc.reply(msg, s)
+                else:
+                    irc.error(msg, 'That function has no documentation.')
+            else:
+                irc.error(msg, 'That function doesn\'t exist.')
+        else:
+            try:
+                f = __builtins__[funcname]
+                if hasattr(f, '__doc__'):
+                    s = f.__doc__.replace('\n\n', '. ')
+                    s = utils.normalizeWhitespace(s)
+                    irc.reply(msg, s)
+                else:
+                    irc.error(msg, 'That function has no documentation.')
+            except SyntaxError:
+                irc.error(msg, 'That\'s not a function!')
+            except KeyError:
+                irc.error(msg, 'That function doesn\'t exist.')
+                
 
     _eightballs = (
         'outlook not so good.',
