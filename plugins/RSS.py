@@ -121,6 +121,7 @@ class RSS(callbacks.Privmsg):
                     oldheadlines = self.getHeadlines(oldresults)
                 except KeyError:
                     oldheadlines = []
+                # TODO: This should be threaded.
                 newresults = self.getFeed(url)
                 newheadlines = self.getHeadlines(newresults)
                 for headline in oldheadlines:
