@@ -31,9 +31,13 @@
 
 from testsupport import *
 
+import random
 import itertools
 
 class FunctionsTest(SupyTestCase):
+    def testRandomChoice(self):
+        self.assertRaises(IndexError, random.choice, {})
+        
     def testReversed(self):
         L = range(10)
         revL = list(reversed(L))

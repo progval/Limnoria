@@ -49,7 +49,7 @@ string.ascii = string.maketrans('', '')
 import random
 _choice = random.choice
 def choice(iterable):
-    if isinstance(iterable, list):
+    if isinstance(iterable, (list, tuple)):
         return _choice(iterable)
     else:
         n = 1
