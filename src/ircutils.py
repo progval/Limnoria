@@ -222,11 +222,17 @@ class nick(str):
 class IrcDict(dict):
     def __contains__(self, s):
         return dict.__contains__(self, toLower(s))
+    has_key = __contains__
+
     def __setitem__(self, s, v):
         dict.__setitem__(self, toLower(s), v)
+
     def __getitem__(self, s):
         return dict.__getitem__(self, toLower(s))
-    has_key = __contains__
+
+    def __delitem__(self, s):
+        dict.__delitem__(self, toLower(s))
+
 
 if __name__ == '__main__':
     import sys, doctest

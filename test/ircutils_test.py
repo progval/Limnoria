@@ -137,9 +137,19 @@ class FunctionsTestCase(unittest.TestCase):
         modes = [plusB, plusE, minusL]
         self.assertEqual(ircutils.joinModes(modes),
                          ['+be-l', plusB[1], plusE[1]])
-
-
 class IrcDictTestCase(unittest.TestCase):
+    def test(self):
+        d = ircutils.IrcDict()
+        d['#FOO'] = 'bar'
+        self.assertEqual(d['#FOO'], 'bar')
+        self.assertEqual(d['#Foo'], 'bar')
+        self.assertEqual(d['#foo'], 'bar')
+        del d['#fOO']
+        d['jemfinch{}'] = 'bar'
+        self.assertEqual(d['jemfinch{}'], 'bar')
+        self.assertEqual(d['jemfinch[]'], 'bar')
+        self.assertEqual(d['JEMFINCH[]'], 'bar')
+
     def testContains(self):
         d = ircutils.IrcDict()
         d['#FOO'] = None
