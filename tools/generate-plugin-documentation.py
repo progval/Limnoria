@@ -44,7 +44,7 @@ conf.dataDir = 'test-data'
 conf.confDir = 'test-conf'
 conf.logDir = 'test-log'
 
-import debug
+import utils
 import callbacks
 
 commandDict = {}
@@ -283,7 +283,7 @@ def genPlugins():
                     plugin = module.Class()
                 except Exception, e:
                     print '%s could not be loaded: %s' % (filename,
-                                                          debug.exnToString(e))
+                                                          utils.exnToString(e))
                     continue
                 if isinstance(plugin, callbacks.Privmsg) and not \
                    isinstance(plugin, callbacks.PrivmsgRegexp):
