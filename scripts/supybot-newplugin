@@ -186,9 +186,8 @@ def main():
         if name.endswith('.py'):
             name = name[:-3]
 
-    python = os.path.normpath(sys.executable)
     fd = file(name + '.py', 'w')
-    fd.write(template % (python, 'Id', name, name, className, threaded, name))
+    fd.write(template % ('Id', name, name, className, threaded, name))
     fd.close()
     print 'Your new plugin template is %s.py.' % name
 
