@@ -277,7 +277,7 @@ class Http(callbacks.Privmsg):
         #We received a single argument.  Zipcode or station id.
         else:
             zip = privmsgs.getArgs(args)
-            zip = zip.replace(',','')  
+            zip = zip.replace(',', '')  
             zip = zip.lower().split()
             url = 'http://www.hamweather.net/cgi-bin/hw3/hw3.cgi?'\
                   'config=&forecast=zandh&pands=%s&Submit=GO' % args[0]

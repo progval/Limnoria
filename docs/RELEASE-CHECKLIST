@@ -9,6 +9,7 @@ Upload the archives to upload.sf.net, add to the release on SF.net.
 Announce the release in a News item on SF.net.
 Announce the release on Freshmeat.net.
 Announce the release on PyPI via "python setup.py register".
+Announce the release on the forums.
 Add a topic to #supybot announcing the release.
 Make a release-MAJOR_MINOR_PATCHLEVEL tag.  (cvs tag ...)
 Make a release-MAJOR_MINOR_PATCHLEVEL-branch branch tag.  (cvs tag -b ...)
