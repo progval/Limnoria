@@ -81,6 +81,7 @@ class Http(callbacks.Privmsg):
         except webutils.WebError, e:
             irc.error(msg, str(e))
             
+    _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
     def doctype(self, irc, msg, args):
         """<url>
 
@@ -93,9 +94,9 @@ class Http(callbacks.Privmsg):
             return
         try:
             s = webutils.getUrl(url, size=self.maxSize)
-            if 'DOCTYPE' in s and '\n' in s:
-                line = s.splitlines()[0]
-                s = utils.normalizeWhitespace(line.strip())
+            m = self._doctypeRe.search(s)
+            if m:
+                s = utils.normalizeWhitespace(m.group(0))
                 irc.reply(msg, '%s has the following doctype: %s' % (url, s))
             else:
                 irc.reply(msg, '%s has no specified doctype.' % url)

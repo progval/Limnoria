@@ -40,6 +40,8 @@ class HttpTest(PluginTestCase, PluginDocumentation):
     def testDoctype(self):
         self.assertError('doctype ftp://ftp.cdrom.com/pub/linux')
         self.assertNotError('doctype http://www.slashdot.org/')
+        m = self.getMsg('doctype http://moobot.sf.net/')
+        self.failUnless(m.args[1].endswith('>'))
 
     def testSize(self):
         self.assertError('size ftp://ftp.cdrom.com/pub/linux')
