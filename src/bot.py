@@ -110,8 +110,19 @@ def processConfigFile(filename):
         for Class in privmsgs.standardPrivmsgModules:
             irc.addCallback(Class())
         world.startup = True
-        lines = m.get_payload().splitlines()
-        (startup, after376) = filter(None,itersplit(lines,lambda s: not s))[:2]
+        text = m.get_payload()
+        while 1:
+            # Gotta remove all extra newlines.
+            newtext = text.replace('\n\n\n', '\n\n')
+            if newtext == text:
+                text = newtext
+                break
+            else:
+                text = newtext
+        lines = text.splitlines()
+        print lines
+        print tuple(itersplit(lines, lambda s: not s, True))
+        (startup, after376) = tuple(itersplit(lines,lambda s: not s, True))
         #debug.printf('startup: %r' % startup)
         #debug.printf('after376: %r' % after376)
         for line in filter(None, startup):
