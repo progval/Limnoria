@@ -73,6 +73,13 @@ if not isinstance(configVariables, basestring):
     for (name, value) in configVariables.iteritems():
         setattr(conf, name, value)
 
+if not os.path.exists(conf.dataDir):
+    os.mkdir(conf.dataDir)
+if not os.path.exists(conf.logDir):
+    os.mkdir(conf.logDir)
+if not os.path.exists(conf.confDir):
+    os.mkdir(conf.confDir)
+    
 import debug
 
 if not isinstance(debugVariables, basestring):
