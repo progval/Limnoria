@@ -59,9 +59,9 @@ def thread(f):
     """Makes sure a command spawns a thread when called."""
     def newf(self, irc, msg, args, *L, **kwargs):
         if world.isMainThread():
-            t = callbacks.CommandThread(target=irc._callCommand,
-                                        args=(f.func_name, self),
-                                        kwargs=kwargs)
+            targetArgs = (self.callingCommand, irc, msg, args) + tuple(L)
+            t = callbacks.CommandThread(target=self._callCommand,
+                                        args=targetArgs, kwargs=kwargs)
             t.start()
         else:
             f(self, irc, msg, args, *L, **kwargs)

@@ -47,7 +47,7 @@ class Ctcp(callbacks.PluginRegexp):
         self.ignores = ircutils.IrcDict()
         self.floods = ircutils.FloodQueue(60)
 
-    def callCommand(self, method, irc, msg, *args, **kwargs):
+    def callCommand(self, command, irc, msg, *args, **kwargs):
         if conf.supybot.abuse.flood.ctcp():
             now = time.time()
             for (ignore, expiration) in self.ignores.items():
@@ -65,7 +65,7 @@ class Ctcp(callbacks.PluginRegexp):
                 ignoreMask = '*!%s@%s' % (msg.user, msg.host)
                 self.ignores[ignoreMask] = now + expires
                 return
-        self.__parent.callCommand(method, irc, msg, *args, **kwargs)
+        self.__parent.callCommand(command, irc, msg, *args, **kwargs)
         
     def _reply(self, irc, msg, s):
         s = '\x01%s\x01' % s

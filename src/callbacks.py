@@ -884,12 +884,12 @@ class CommandThread(world.SupyThread):
     """
     def __init__(self, target=None, args=(), kwargs={}):
         self.command = args[0]
-        self.__parent = super(CommandThread, self)
-        self.method = self.cb.getCommandMethod(self.command)
+        self.cb = target.im_self
         threadName = 'Thread #%s (for %s.%s)' % (world.threadsSpawned,
-                                                 target.im_self.name(),
+                                                 self.cb.name(),
                                                  self.command)
-        log.debug('Spawning thread %s' % threadName)
+        log.debug('Spawning thread %s (args: %r)', threadName, args)
+        self.__parent = super(CommandThread, self)
         self.__parent.__init__(target=target, name=threadName,
                                args=args, kwargs=kwargs)
         self.setDaemon(True)
@@ -1016,15 +1016,24 @@ class Commands(object):
         commands.sort()
         return commands
     
-    def callCommand(self, method, irc, msg, *args, **kwargs):
+    def callCommand(self, command, irc, msg, *args, **kwargs):
+        method = self.getCommandMethod(command)
         method(irc, msg, *args, **kwargs)
 
     def _callCommand(self, command, irc, msg, *args, **kwargs):
-        method = self.getCommandMethod(command)
+        if command is None:
+            assert self.callingCommand, \
+                   'Received command=None without self.callingCommand.'
+            command = self.callingCommand
         self.log.info('%s called by %s.', command, msg.prefix)
         try:
-            self.callCommand(method, irc, msg, *args, **kwargs)
+            try:
+                self.callingCommand = command
+                self.callCommand(command, irc, msg, *args, **kwargs)
+            finally:
+                self.callingCommand = None
         except (getopt.GetoptError, ArgumentError):
+            method = self.getCommandMethod(command)
             irc.reply(formatArgumentError(method, name=command))
         except (SyntaxError, Error), e:
             self.log.debug('Error return: %s', utils.exnToString(e))

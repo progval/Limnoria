@@ -76,9 +76,9 @@ class ShrinkUrl(callbacks.PluginRegexp):
     def die(self):
         self.db.close()
 
-    def callCommand(self, method, irc, msg, *args, **kwargs):
+    def callCommand(self, command, irc, msg, *args, **kwargs):
         try:
-            self.__parent.callCommand(method, irc, msg, *args, **kwargs)
+            self.__parent.callCommand(command, irc, msg, *args, **kwargs)
         except utils.web.Error, e:
             irc.error(str(e))
 
