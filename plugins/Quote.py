@@ -64,5 +64,5 @@ class Quote(plugins.ChannelIdDatabasePlugin):
     random = wrap(random, ['channeldb'])
 
 
-Class = Quotes
+Class = Quote
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
