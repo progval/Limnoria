@@ -456,8 +456,8 @@ class Misc(callbacks.Privmsg):
         was sent to; --on requires a network the message was sent on; --with
         requires some string that had to be in the message; --regexp requires
         a regular expression the message must i match; --nolimit returns all
-        the messages that can be found.  By default, the current channel is
-        searched.
+        the messages that can be found.  By default, the channel this command is
+        given in is searched.
         """
         predicates = {}
         nolimit = False
@@ -492,7 +492,7 @@ class Misc(callbacks.Privmsg):
                     else:
                         return arg.search(m.args[1])
                 predicates.setdefault('regexp', []).append(f)
-            elif option == '--nolimit':
+            elif option == 'nolimit':
                 nolimit = True
         iterable = ifilter(self._validLastMsg, reversed(irc.state.history))
         iterable.next() # Drop the first message.
