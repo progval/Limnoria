@@ -213,6 +213,18 @@ class IrcStateTestCase(SupyTestCase):
         st.addMsg(self.irc, m)
         self.failIf('bar' in st.channels['#foo'].ops)
 
+    def testNickChangesChangeChannelUsers(self):
+        st = irclib.IrcState()
+        st.channels['#foo'] = irclib.ChannelState()
+        st.channels['#foo'].addUser('@bar')
+        self.failUnless('bar' in st.channels['#foo'].users)
+        self.failUnless(st.channels['#foo'].isOp('bar'))
+        st.addMsg(self.irc, ircmsgs.IrcMsg(':bar!asfd@asdf.com NICK baz'))
+        self.failIf('bar' in st.channels['#foo'].users)
+        self.failIf(st.channels['#foo'].isOp('bar'))
+        self.failUnless('baz' in st.channels['#foo'].users)
+        self.failUnless(st.channels['#foo'].isOp('baz'))
+
     def testHistory(self):
         oldconfmaxhistory = conf.supybot.protocols.irc.maxHistoryLength()
         conf.supybot.protocols.irc.maxHistoryLength.setValue(10)
