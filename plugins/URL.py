@@ -80,10 +80,9 @@ def configure(onStart, afterConnect, advanced):
     # like to be run when the bot is started; append to afterConnect the
     # commands you would like to be run when the bot has finished connecting.
     from questions import expect, anything, something, yn
-    onStart.append('load URLSnarfer')
+    onStart.append('load URL')
 
-class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg,
-                 plugins.Toggleable):
+class URL(callbacks.Privmsg, plugins.Toggleable, plugins.ChannelDBHandler):
     toggles = plugins.ToggleDictionary({'tinysnarf':True,
                                         'tinyreply':True})
     _maxUrlLen = 46
@@ -164,8 +163,7 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg,
             self.nextMsgs.setdefault(key, []).append((url, added))
         db.commit()
 
-    _tinyRe = re.compile(r'23 characters:\n<blockquote>(http://tinyurl.com/\w{4})'\
-        '</blockquote>')
+    _tinyRe = re.compile(r'(http://tinyurl.com/\w{4})</blockquote>')
     def _getTinyUrl(self, url, cmd=False):
         try:
             fd = urllib2.urlopen('http://tinyurl.com/create.php?url=%s' % url)
@@ -191,7 +189,7 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg,
         #debug.printf((id, url, added, addedBy))
         return '#%s: %s' % (id, self._formatUrl(url, added, addedBy))
 
-    def randomurl(self, irc, msg, args):
+    def random(self, irc, msg, args):
         """[<channel>]
 
         Returns a random URL from the URL database.  <channel> is only required
@@ -209,7 +207,7 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg,
         else:
             irc.reply(msg, self._formatUrlWithId(*cursor.fetchone()))
 
-    def tinyurl(self, irc, msg, args):
+    def tiny(self, irc, msg, args):
         """<url>
 
         Returns a TinyURL.com version of <url>
@@ -225,7 +223,7 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg,
         else:
             irc.reply(msg, url)
 
-    def geturl(self, irc, msg, args):
+    def get(self, irc, msg, args):
         """[<channel>] <id>
 
         Gets the URL with id <id> from the URL database for <channel>.
@@ -243,7 +241,7 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg,
         else:
             irc.reply(msg, self._formatUrl(*cursor.fetchone()))
 
-    def numurls(self, irc, msg, args):
+    def num(self, irc, msg, args):
         """[<channel>]
 
         Returns the number of URLs in the URL database.  <channel> is only
@@ -257,17 +255,7 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg,
         irc.reply(msg, 'I have %s %s in my database.' % \
                   (count, int(count) == 1 and 'URL' or 'URLs'))
 
-    def lasturls(self, irc, msg, args):
-        """[<channel>] [--{from,with,at,proto,near}=<value>]
-
-        Uses arguments in the same way as lasturl; acts as if lasturl was given
-        the --nolimit option.
-        """
-        if '--nolimit' not in args:
-            args.append('--nolimit')
-        self.lasturl(irc, msg, args)
-
-    def lasturl(self, irc, msg, args):
+    def last(self, irc, msg, args):
         """[<channel>] [--{from,with,at,proto,near}=<value>] --{nolimit,fancy}
 
         Gives the last URL matching the given criteria.  --from is from whom
@@ -342,6 +330,6 @@ class URLSnarfer(plugins.ChannelDBHandler, callbacks.Privmsg,
             irc.reply(msg, s)
 
 
-Class = URLSnarfer
+Class = URL
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

@@ -72,60 +72,60 @@ except ImportError:
     sqlite = None
 
 if sqlite is not None:
-    class URLSnarferTestCase(ChannelPluginTestCase, PluginDocumentation):
-        plugins = ('URLSnarfer',)
+    class URLTestCase(ChannelPluginTestCase, PluginDocumentation):
+        plugins = ('URL',)
         def test(self):
             self.assertNotError('toggle tinyreply off')
             self.assertNotError('toggle tinysnarf off')
             counter = 0
-            self.assertNotError('randomurl')
+            self.assertNotError('url random')
             for url in urls:
-                self.assertRegexp('numurls', str(counter))
+                self.assertRegexp('url num', str(counter))
                 self.feedMsg(url)
                 counter += 1
-                self.assertNotError('geturl %s' % counter)
+                self.assertNotError('url get %s' % counter)
 
-            self.assertRegexp('numurls', str(counter))
-            self.assertRegexp('lasturl', re.escape(urls[-1]))
-            self.assertRegexp('lasturl --proto https', re.escape(urls[-3]))
-            self.assertRegexp('lasturl --at gameknot.com', re.escape(urls[-2]))
-            self.assertRegexp('lasturl --with dhcp', re.escape(urls[-4]))
-            self.assertRegexp('lasturl --from alsdkjf', '^No')
-            self.assertNotError('randomurl')
+            self.assertRegexp('url num', str(counter))
+            self.assertRegexp('url last', re.escape(urls[-1]))
+            self.assertRegexp('url last --proto https', re.escape(urls[-3]))
+            self.assertRegexp('url last --at gameknot.com', re.escape(urls[-2]))
+            self.assertRegexp('url last --with dhcp', re.escape(urls[-4]))
+            self.assertRegexp('url last --from alsdkjf', '^No')
+            self.assertNotError('url random')
 
         def testDefaultNotFancy(self):
-            self.assertNotError('toggle tinyreply off')
-            self.assertNotError('toggle tinysnarf off')
+            self.assertNotError('url toggle tinyreply off')
+            self.assertNotError('url toggle tinysnarf off')
             self.feedMsg(urls[0])
-            self.assertResponse('lasturl', urls[0])
+            self.assertResponse('url last', urls[0])
 
         def testAction(self):
-            self.assertNotError('toggle tinyreply off')
-            self.assertNotError('toggle tinysnarf off')
+            self.assertNotError('url toggle tinyreply off')
+            self.assertNotError('url toggle tinysnarf off')
             self.irc.feedMsg(ircmsgs.action(self.channel, urls[1]))
-            self.assertNotRegexp('lasturl', '\\x01')
+            self.assertNotRegexp('url last', '\\x01')
 
         def testTinyurl(self):
-            self.assertNotError('toggle tinyreply on')
-            self.assertNotError('toggle tinysnarf off')
-            self.assertRegexp('tinyurl http://sourceforge.net/tracker/?'\
+            self.assertNotError('url toggle tinyreply on')
+            self.assertNotError('url toggle tinysnarf off')
+            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'\
                 'func=add&group_id=58965&atid=489447',
                 r'http://tinyurl.com/\w{4}')
-            self.assertNotError('toggle tinysnarf on')
-            self.assertRegexp('tinyurl http://sourceforge.net/tracker/?'\
+            self.assertNotError('url toggle tinysnarf on')
+            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'\
                 'func=add&group_id=58965&atid=489447',
                 r'http://tinyurl.com/\w{4}')
             self.assertNotError('toggle tinyreply off')
-            self.assertRegexp('tinyurl http://sourceforge.net/tracker/?'\
+            self.assertRegexp('url tiny http://sourceforge.net/tracker/?'\
                 'func=add&group_id=58965&atid=489447',
                 r'http://tinyurl.com/\w{4}')
 
         def testTinysnarf(self):
-            self.assertNotError('toggle tinyreply off')
-            self.assertNotError('toggle tinysnarf on')
+            self.assertNotError('url toggle tinyreply off')
+            self.assertNotError('url toggle tinysnarf on')
             self.assertNoResponse('http://sourceforge.net/tracker/?'\
                 'func=add&group_id=58965&atid=489447')
-            self.assertNotError('toggle tinyreply on')
+            self.assertNotError('url toggle tinyreply on')
             self.assertRegexp('http://sourceforge.net/tracker/?'\
                 'func=add&group_id=58965&atid=489447',
                 r'TinyURL: http://tinyurl.com/\w{4}')
