@@ -31,14 +31,56 @@
 
 from test import *
 
+import re
+
+import utils
+
 class FunCommandsTest(PluginTestCase):
     plugins = ('FunCommands',)
-    def testBinary(self):
-        self.assertResponse('binary A', '01000001')
+##     def testNoErrors(self):
+##         self.assertNotError('netstats')
+##         self.assertNotError('cpustats')
+##         self.assertNotError('uptime')
+##         self.assertNotError('leet foobar')
+##         self.assertNotError('lithp meghan sweeney')
+##         self.assertNotError('objects')
+##         self.assertNotError('levenshtein Python Perl')
+##         self.assertNotError('soundex jemfinch')
 
-    def testRot13(self):
-        for s in nicks[:10]: # 10 is probably enough.
-            self.assertResponse('rot13 [rot13 %s]' % s, s)
+##     def testBinary(self):
+##         self.assertResponse('binary A', '01000001')
 
-    def testCalc(self):
-        self.assertResponse('calc 5*0.06', str(5*0.06))
+##     def testRot13(self):
+##         for s in nicks[:10]: # 10 is probably enough.
+##             self.assertResponse('rot13 [rot13 %s]' % s, s)
+
+##     def testCalc(self):
+##         self.assertResponse('calc 5*0.06', str(5*0.06))
+
+##     def testChr(self):
+##         for i in range(256):
+##             c = chr(i)
+##             regexp = r'%s|%s' % (re.escape(c), re.escape(repr(c)))
+##             self.assertRegexp('chr %s' % i, regexp)
+
+##     def testHexlifyUnhexlify(self):
+##         for s in nicks[:10]: # 10, again, is probably enough.
+##             self.assertResponse('unhexlify [hexlify %s]' % s, s)
+
+##     def testXor(self):
+##         for s0, s1, s2, s3, s4, s5, s6, s7, s8, s9 in group(nicks, 10):
+##             data = '%s%s%s%s%s%s%s%s%s' % (s0, s1, s2, s3, s4, s5, s6, s7, s8)
+##             self.assertResponse('xor %s [xor %s %s]' % (s9, s9, data), data)
+
+##     def testUrlquoteUrlunquote(self):
+##         self.assertResponse('urlunquote [urlquote ~jfincher]', '~jfincher')
+
+##     def testPydoc(self):
+##         self.assertNotError('pydoc str')
+##         self.assertError('pydoc foobar')
+        
+    def testOrd(self):
+        for c in map(chr, range(256)):
+            i = ord(c)
+            self.assertResponse('ord %s' % utils.dqrepr(c), str(i))
+

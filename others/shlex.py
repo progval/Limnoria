@@ -136,7 +136,10 @@ class shlex:
             elif self.state in self.quotes:
                 self.token = self.token + nextchar
                 if nextchar == '\\':
-                    self.backslash = True
+                    if self.backslash:
+                        self.backslash = False
+                    else:
+                        self.backslash = True
                 else:
                     if not self.backslash and nextchar == self.state:
                         self.state = ' '

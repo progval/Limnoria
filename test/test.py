@@ -36,6 +36,7 @@ sys.path.insert(0, 'plugins')
 
 from fix import *
 
+import re
 import sys
 import glob
 import time
@@ -53,8 +54,10 @@ fd.close()
 
 msgs = []
 for s in rawmsgs:
-    print s
-    msgs.append(ircmsgs.IrcMsg(s))
+    try:
+        msgs.append(ircmsgs.IrcMsg(s))
+    except:
+        print 'IrcMsg constructor failed: %r' % s
 
 nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
          'alb','d0rt','jemfinch','StyxAlso','fors','deltab','gd',
@@ -104,35 +107,47 @@ class PluginTestCase(unittest.TestCase):
         response = self.irc.takeMsg()
         while response is None and time.time() - fed < self.timeout:
             response = self.irc.takeMsg()
-        self.failUnless(response)
         return response
+
+    def feedMsg(self, query):
+        """Just feeds it a message, that's all."""
+        self.irc.feedMsg(ircmsgs.privmsg(self.nick, query, prefix=self.prefix))
 
     # These assertError/assertNoError are somewhat fragile.  The proper way to
     # do them would be to use a proxy for the irc object and intercept .error.
     # But that would be hard, so I don't bother.  When this breaks, it'll get
     # fixed, but not until then.
     def assertError(self, query):
-        msg = self._feedMsg(query)
-        self.failUnless(msg.args[1].startswith('Error:'))
+        m = self._feedMsg(query)
+        self.failUnless(m, msg)
+        self.failUnless(m.args[1].startswith('Error:'), '%r errored' % query)
 
     def assertNotError(self, query):
-        msg = self._feedMsg(query)
-        self.failIf(msg.args[1].startswith('Error:'))
+        m = self._feedMsg(query)
+        self.failUnless(m, msg)
+        self.failIf(m.args[1].startswith('Error:'), '%r errored' % query)
 
     def assertResponse(self, query, expectedResponse):
-        msg = self._feedMsg(query)
-        self.assertEqual(msg.args[1], expectedResponse)
+        m = self._feedMsg(query)
+        self.failUnless(m, msg)
+        self.assertEqual(m.args[1], expectedResponse,
+                         '%r != %r' % (expectedResponse, m.args[1]))
 
     def assertRegexp(self, query, regexp):
-        msg = self._feedMsg(query)
-        self.failUnless(re.search(regexp, msg.args[1]))
+        m = self._feedMsg(query)
+        self.failUnless(m, msg)
+        self.failUnless(re.search(regexp, m.args[1]),
+                        '%r does not match %r' % (m.args[1], regexp))
 
     def assertRegexps(self, query, regexps):
         started = time.time()
         total = len(expectedResponses)*self.timeout
         while expectedResponses and time.time() - started < total:
-            msg = self._feedMsg(query)
-            self.failUnless(re.search(expectedResponses.pop(0), msg.args[1]))
+            m = self._feedMsg(query)
+            self.failUnless(m, msg)
+            regepx = expectedResponses.pop(0)
+            self.failUnless(re.search(regexp, m.args[1]),
+                            '%r does not match %r' % (m.args[1], regexp))
         self.failIf(time.time() - started > total)
 
     def assertResponses(self, query, expectedResponses):
@@ -140,12 +155,12 @@ class PluginTestCase(unittest.TestCase):
         started = time.time()
         while len(responses) < len(expectedResponses) and \
                   time.time() - started > len(expectedResponses)*self.timeout:
-            msg = self._feedMsg(query)
-            self.failUnless(msg)
-            responses.append(msg)
+            m = self._feedMsg(query)
+            self.failUnless(m, 'query %r timed out' % query)
+            responses.append(m)
         self.assertEqual(len(expectedResponses), len(responses))
-        for (msg, expected) in zip(responses, expectedResponses):
-            self.assertEqual(msg.args[1], expected)
+        for (m, expected) in zip(responses, expectedResponses):
+            self.assertEqual(m.args[1], expected)
             
     
 if __name__ == '__main__':

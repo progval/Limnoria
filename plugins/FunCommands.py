@@ -425,11 +425,11 @@ class FunCommands(callbacks.Privmsg):
             i = long(literal, 8)
             return '%s%s.0' % (previous, i)
         text = self._mathHex.sub(hex2float, text)
-        debug.printf('After unhexing: %r' % text)
+        #debug.printf('After unhexing: %r' % text)
         text = self._mathOctal.sub(oct2float, text)
-        debug.printf('After unocting: %r' % text)
+        #debug.printf('After unocting: %r' % text)
         text = self._mathInt.sub(r'\1.0', text)
-        debug.printf('After uninting: %r' % text)
+        #debug.printf('After uninting: %r' % text)
         try:
             x = complex(eval(text, self._mathEnv, self._mathEnv))
             irc.reply(msg, self._complexToString(x))
@@ -611,9 +611,11 @@ class FunCommands(callbacks.Privmsg):
             s = s.replace('\n\n', '. ')
             s = ' '.join(s.split())
         except NameError:
-            s = 'No such function exists.'
+            irc.error(msg, 'No such function exists.')
+            return
         except AttributeError:
-            s = 'That function has no documentation.'
+            irc.error(msg, 'That function has no documentation.')
+            return
         irc.reply(msg, s)
                 
 

@@ -32,6 +32,7 @@
 from test import *
 
 import conf
+import utils
 import ircmsgs
 import callbacks
 
@@ -41,6 +42,15 @@ tokenize = callbacks.tokenize
 class TokenizerTestCase(unittest.TestCase):
     def testEmpty(self):
         self.assertEqual(tokenize(''), [])
+
+    def testNullCharacter(self):
+        self.assertEqual(tokenize(utils.dqrepr('\0')), ['\0'])
+
+    def testSingleDQInDQString(self):
+        self.assertEqual(tokenize('"\\""'), ['"'])
+
+    def testDQsWithBackslash(self):
+        self.assertEqual(tokenize('"\\\\"'), ["\\"])
 
     def testSingleWord(self):
         self.assertEqual(tokenize('foo'), ['foo'])

@@ -195,7 +195,7 @@ class Tokenizer:
         ret = []
         while True:
             token = lexer.get_token()
-            if token == '':
+            if not token:
                 raise SyntaxError, 'Missing "]"'
             elif token == ']':
                 return ret
@@ -213,7 +213,8 @@ class Tokenizer:
         args = []
         while True:
             token = lexer.get_token()
-            if token == '':
+            #debug.printf(repr(token))
+            if not token:
                 break
             elif token == '[':
                 args.append(self.insideBrackets(lexer))
