@@ -122,9 +122,9 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
                     if hasattr(obj, '__doc__'):
                         irc.reply(normalize(obj.__doc__))
                     else:
-                        irc.reply('%s has no documentation' % name)
+                        irc.reply('%s has no documentation.' % name)
                 else:
-                    s = '%s has no method %s' % (moduleName, funcName)
+                    s = '%s has no method %s.' % (moduleName, funcName)
                     irc.reply(s)
             elif moduleName:
                 newmodule = getModule(moduleName)
@@ -139,7 +139,7 @@ class Python(callbacks.PrivmsgCommandAndRegexp):
                         else:
                             irc.error('%s has no documentation.' % name)
                     else:
-                        s = '%s has no function %s' % (moduleName, funcName)
+                        s = '%s has no function %s.' % (moduleName, funcName)
                         irc.error(s)
         else:
             if name in sys.modules:

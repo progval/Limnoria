@@ -425,7 +425,7 @@ class RichReplyMethods(object):
 
     def errorNoCapability(self, capability, s='', Raise=False, **kwargs):
         if isinstance(capability, basestring): # checkCommandCapability!
-            log.warning('Denying %s for lacking %r capability',
+            log.warning('Denying %s for lacking %r capability.',
                         self.msg.prefix, capability)
             if not self._getConfig(conf.supybot.reply.noCapabilityError):
                 v = self._getConfig(conf.supybot.replies.noCapability)
@@ -433,7 +433,7 @@ class RichReplyMethods(object):
                 self._error(s, Raise, **kwargs)
         else:
             log.warning('Denying %s for some unspecified capability '
-                        '(or a default)', self.msg.prefix)
+                        '(or a default).', self.msg.prefix)
             v = self._getConfig(conf.supybot.replies.genericNoCapability)
             self._error(self.__makeReply(v, s), Raise, **kwargs)
 
@@ -506,9 +506,9 @@ class IrcObjectProxy(RichReplyMethods):
             return
         log.debug('Calling invalidCommands.')
         for cb in self.irc.callbacks:
-            log.debug('Trying to call %s.invalidCommand' % cb.name())
+            log.debug('Trying to call %s.invalidCommand.' % cb.name())
             if self.finished:
-                log.debug('Finished calling invalidCommand: %s', cb.name())
+                log.debug('Finished calling invalidCommand: %s.', cb.name())
                 return
             if hasattr(cb, 'invalidCommand'):
                 cb.invalidCommand(self, self.msg, self.args)
@@ -645,7 +645,7 @@ class IrcObjectProxy(RichReplyMethods):
                     maximumMores = conf.supybot.reply.mores.maximum()
                     maximumLength = allowedLength * maximumMores
                     if len(s) > maximumLength:
-                        log.warning('Truncating to %s bytes from %s bytes',
+                        log.warning('Truncating to %s bytes from %s bytes.',
                                     maximumLength, len(s))
                         s = s[:maximumLength]
                     if len(s) < allowedLength or conf.supybot.reply.truncate():
@@ -817,12 +817,12 @@ class Privmsg(irclib.IrcCallback):
     __metaclass__ = log.MetaFirewall
     __firewalled__ = {'isCommand': None,
                       'invalidCommand': None} # Eventually callCommand.
-    threaded = False
     public = True
-    alwaysCall = ()
-    noIgnore = False
     handled = False
     errored = False
+    alwaysCall = ()
+    threaded = False
+    noIgnore = False
     Proxy = IrcObjectProxy
     commandArgs = ['self', 'irc', 'msg', 'args']
     # This must be class-scope, so all plugins use the same one.

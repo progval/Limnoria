@@ -188,7 +188,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
                           WHERE nickeq(nick, %s)
                           ORDER BY id DESC LIMIT 1""", nick)
         if cursor.rowcount == 0:
-            irc.error('I couldn\'t find a matching quotegrab for %s'%nick)
+            irc.error('I couldn\'t find a matching quotegrab for %s.' % nick)
         else:
             text = cursor.fetchone()[0]
             irc.reply(text)
@@ -208,7 +208,7 @@ class QuoteGrabs(plugins.ChannelDBHandler, callbacks.Privmsg):
                           WHERE nick LIKE %s
                           ORDER BY id ASC""", nick)
         if cursor.rowcount == 0:
-            irc.error('I couldn\'t find any quotegrabs for %s' % nick)
+            irc.error('I couldn\'t find any quotegrabs for %s.' % nick)
         else:
             l = []
             for (id, quote) in cursor.fetchall():

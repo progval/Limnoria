@@ -247,7 +247,7 @@ class OSU(callbacks.Privmsg):
             elif len(emails) == 1:
                 irc.reply(emails[0])
             else:
-                irc.reply('Possible matches: %s' % ', '.join(emails))
+                irc.reply('Possible matches: %s.' % ', '.join(emails))
         except Exception, e:
             irc.error(utils.exnToString(e))
     email = privmsgs.thread(email)
