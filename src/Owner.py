@@ -190,7 +190,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
         for (name, s) in registry._cache.iteritems():
             if name.startswith('supybot.plugins'):
                 try:
-                    (_, _, name) = name.split('.')
+                    (_, _, name) = registry.split(name)
                 except ValueError: # unpack list of wrong size.
                     continue
                 if name == name.lower(): # This can't be right.
@@ -198,7 +198,7 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                 conf.registerPlugin(name)
             if name.startswith('supybot.commands.defaultPlugins'):
                 try:
-                    (_, _, _, name) = name.split('.')
+                    (_, _, _, name) = registry.split(name)
                 except ValueError: # unpack list of wrong size.
                     continue
                 registerDefaultPlugin(name, s)

@@ -56,7 +56,7 @@ class InvalidRegistryName(callbacks.Error):
     pass
 
 def getWrapper(name):
-    parts = name.split('.')
+    parts = registry.split(name)
     if not parts or parts[0] not in ('supybot', 'users'):
         raise InvalidRegistryName, name
     group = getattr(conf, parts.pop(0))
@@ -69,7 +69,7 @@ def getWrapper(name):
 
 def getCapability(name):
     capability = 'owner' # Default to requiring the owner capability.
-    parts = name.split('.')
+    parts = registry.split(name)
     while parts:
         part = parts.pop()
         if ircutils.isChannel(part):
