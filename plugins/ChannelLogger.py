@@ -110,8 +110,8 @@ class ChannelLogger(callbacks.Privmsg):
     def __init__(self):
         self.__parent = super(ChannelLogger, self)
         self.__parent.__init__()
-        self.lastMsg = None
-        self.laststate = None
+        self.lastMsgs = {}
+        self.lastStates = {}
         self.logs = {}
         world.flushers.append(self.flush)
 
@@ -124,20 +124,24 @@ class ChannelLogger(callbacks.Privmsg):
 
     def __call__(self, irc, msg):
         try:
-            if msg.args and irc.isChannel(msg.args[0]):
-                super(self.__class__, self).__call__(irc, msg)
-            if self.lastMsg:
-                self.laststate.addMsg(irc, self.lastMsg)
-            else:
-                self.laststate = irc.state.copy()
+            # I don't know why I put this in, but it doesn't work, because it
+            # doesn't call doNick or doQuit.
+            # if msg.args and irc.isChannel(msg.args[0]):
+            super(self.__class__, self).__call__(irc, msg)
+            if irc in self.lastMsgs:
+                if irc not in self.lastStates:
+                    self.lastStates[irc] = irc.state.copy()
+                self.lastStates[irc].addMsg(irc, self.lastMsgs[irc])
         finally:
             # We must make sure this always gets updated.
-            self.lastMsg = msg
+            self.lastMsgs[irc] = msg
 
     def reset(self):
         for log in self._logs():
             log.close()
         self.logs.clear()
+        self.lastMsgs.clear()
+        self.lastStates.clear()
 
     def _logs(self):
         for logs in self.logs.itervalues():
@@ -296,7 +300,7 @@ class ChannelLogger(callbacks.Privmsg):
                    '*** %s changes topic to "%s"\n' % (msg.nick, msg.args[1]))
 
     def doQuit(self, irc, msg):
-        for (channel, chan) in self.laststate.channels.iteritems():
+        for (channel, chan) in self.lastStates[irc].channels.iteritems():
             if msg.nick in chan.users:
                 self.doLog(irc, channel, '*** %s has quit IRC\n' % msg.nick)
 
