@@ -278,11 +278,10 @@ class Irc(object):
         for (i, cb) in enumerate(self.callbacks):
             if cb.name() == name:
                 toRemove.append(i)
-        if toRemove:
-            for i in reviter(range(len(self.callbacks))):
-                if toRemove and toRemove[-1] == i:
-                    toRemove.pop()
-                    ret.append(self.callbacks.pop(i))
+        for i in reviter(range(len(self.callbacks))):
+            if toRemove and toRemove[-1] == i:
+                toRemove.pop()
+                ret.append(self.callbacks.pop(i))
         return ret
 
     def queueMsg(self, msg):
@@ -312,6 +311,10 @@ class Irc(object):
             for callback in self.callbacks:
                 #debug.printf(repr(msg))
                 msg = callback.outFilter(self, msg)
+                if msg is None:
+                    s = 'outFilter %s returned None' % callbacks.name()
+                    debug.debugMsg(s)
+                    return None
             self.state.addMsg(self,ircmsgs.IrcMsg(msg=msg, prefix=self.prefix))
             s = '%s  %s' % (time.strftime(conf.timestampFormat), msg)
             debug.debugMsg(s, 'low')
