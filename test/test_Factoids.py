@@ -89,20 +89,22 @@ if sqlite is not None:
             self.assertNotError('learn inkedmn as another of my developers')
             self.assertNotError('learn jamessan as a developer of much python')
             self.assertNotError('learn bwp as author of my weather command')
-            self.assertRegexp('search --regexp /.w./', 'bwp')
-            self.assertRegexp('search --regexp /^.+i/',
+            self.assertRegexp('factoids search --regexp /.w./', 'bwp')
+            self.assertRegexp('factoids search --regexp /^.+i/',
                               'jemfinch.*strike')
-            self.assertNotRegexp('search --regexp /^.+i/', 'inkedmn')
-            self.assertRegexp('search --regexp m/j/ --regexp m/ss/','jamessan')
-            self.assertRegexp('search --regexp m/^j/ *ss*', 'jamessan')
-            self.assertRegexp('search --regexp /^j/',
+            self.assertNotRegexp('factoids search --regexp /^.+i/', 'inkedmn')
+            self.assertRegexp('factoids search --regexp m/j/ --regexp m/ss/',
+                              'jamessan')
+            self.assertRegexp('factoids search --regexp m/^j/ *ss*',
+                              'jamessan')
+            self.assertRegexp('factoids search --regexp /^j/',
                               'jemfinch.*jamessan')
-            self.assertRegexp('search j*', 'jemfinch.*jamessan')
-            self.assertRegexp('search *ke*',
+            self.assertRegexp('factoids search j*', 'jemfinch.*jamessan')
+            self.assertRegexp('factoids search *ke*',
                               'inkedmn.*strike|strike.*inkedmn')
-            self.assertRegexp('search ke',
+            self.assertRegexp('factoids search ke',
                               'inkedmn.*strike|strike.*inkedmn')
-            self.assertRegexp('search jemfinch',
+            self.assertRegexp('factoids search jemfinch',
                               'my primary author')
 
         def testWhatisOnNumbers(self):
