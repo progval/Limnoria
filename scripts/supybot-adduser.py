@@ -34,12 +34,12 @@ import supybot
 from fix import *
 from questions import *
 
+import os
 import sys
 import optparse
 
 import conf
 import debug
-import ircdb
 
 debug.minimumPriority = 'high'
 
@@ -56,6 +56,11 @@ def main():
                       dest='capabilities', metavar='CAPABILITY',
                       help='capability the user should have; '
                            'this option may be given multiple times.')
+    filename = os.path.join(conf.confDir, conf.userfile)
+    parser.add_option('-f', '--filename', action='store', default=filename,
+                      dest='filename',
+                      help='filename of your users.conf; '
+                           'defaults to %s' % filename)
 
     (options, args) = parser.parse_args()
     if not options.name:
@@ -76,6 +81,10 @@ def main():
             prompt = 'Would you like to give %s another capability?' % name
     else:
         capabilities = options.capabilities
+
+    conf.confDir = os.path.dirname(options.filename)
+    conf.userfile = os.path.basename(options.filename)
+    import ircdb
 
     try:
         # First, let's check to see if the user is already in the database.
