@@ -401,7 +401,7 @@ class Irc(IrcCommandDispatcher):
     """
     _nickSetters = sets.Set(['001', '002', '003', '004', '250', '251', '252',
                              '254', '255', '265', '266', '372', '375', '376',
-                             '333', '353', '332', '366'])
+                             '333', '353', '332', '366', '005'])
     def __init__(self, nick, user='', ident='', password='', callbacks=None):
         world.ircs.append(self)
         self.nick = nick
@@ -417,6 +417,7 @@ class Irc(IrcCommandDispatcher):
         self.queue = IrcMsgQueue()
         self._nickmods = copy.copy(conf.nickmods)
         self.lastTake = 0
+        self.server = None
         self.fastqueue = smallqueue()
         self.lastping = time.time()
         self.outstandingPing = False
@@ -430,6 +431,7 @@ class Irc(IrcCommandDispatcher):
         """Resets the Irc object.  Useful for handling reconnects."""
         self.state.reset()
         self.queue.reset()
+        self.server = None
         self.lastping = time.time()
         self.outstandingPing = False
         self.fastqueue = queue()
@@ -529,6 +531,9 @@ class Irc(IrcCommandDispatcher):
         else:
             return None
 
+    def do001(self, msg):
+        pass
+    
     def doPing(self, msg):
         """Handles PING messages."""
         self.sendMsg(ircmsgs.pong(msg.args[0]))
@@ -597,9 +602,13 @@ class Irc(IrcCommandDispatcher):
             user.addHostmask(msg.prefix)
             user.setPassword(utils.mktemp())
             ircdb.users.setUser(0, user)
-            
-        if msg.command in self._nickSetters and msg.args[0] != self.nick:
-            self.nick = msg.args[0]
+
+        # This keeps our nick and server attributes updated.
+        if msg.command in self._nickSetters:
+            if msg.args[0] != self.nick:
+                self.nick = msg.args[0]
+            if msg.prefix != self.server:
+                self.server = msg.prefix
 
         # Now update the IrcState object.
         try:
@@ -612,8 +621,8 @@ class Irc(IrcCommandDispatcher):
             try:
                 m = callback.inFilter(self, msg)
                 if not m:
-                    debugmsg = '%s.inFilter returned None' % callback.name()
-                    debug.msg(debugmsg)
+                    s = '%s.inFilter returned None' % callback.name()
+                    debug.msg(s)
                     return
                 msg = m
             except:
