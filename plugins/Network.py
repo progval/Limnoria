@@ -80,7 +80,7 @@ class Network(callbacks.Privmsg):
                 else:
                     irc.reply(msg, ip)
             except socket.error:
-                irc.error(msg, 'Host not found.')
+                irc.reply(msg, 'Host not found.')
 
     _tlds = sets.Set(['com', 'net', 'edu'])
     def whois(self, irc, msg, args):
