@@ -31,11 +31,14 @@
 
 import supybot
 
+import logging
+
 import conf
 conf.dataDir = 'test-data'
 conf.confDir = 'test-conf'
 conf.logDir = 'test-log'
 conf.replyWhenNotCommand = False
+conf.minimumLogPriority = logging.CRITICAL
 
 import fix
 
