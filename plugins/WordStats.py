@@ -59,6 +59,8 @@ conf.registerChannelValue(conf.supybot.plugins.WordStats,
 
 nonAlphaNumeric = filter(lambda s: not s.isalnum(), string.ascii)
 
+WordDict = utils.InsensitivePreservingDict
+
 class WordStatsDB(plugins.ChannelUserDB):
     def __init__(self, *args, **kwargs):
         self.channelWords = ircutils.IrcDict()
@@ -71,19 +73,18 @@ class WordStatsDB(plugins.ChannelUserDB):
         return L
 
     def deserialize(self, channel, id, L):
-        d = {}
+        d = WordDict()
         for s in L:
             (word, count) = s.split(':')
             count = int(count)
             d[word] = count
             if channel not in self.channelWords:
-                self.channelWords[channel] = {}
+                self.channelWords[channel] = WordDict()
             self.channelWords[channel].setdefault(word, 0)
             self.channelWords[channel][word] += count
         return d
     
     def getWordCount(self, channel, id, word):
-        word = word.lower()
         return self[channel, id][word]
 
     def getUserWordCounts(self, channel, id):
@@ -102,14 +103,13 @@ class WordStatsDB(plugins.ChannelUserDB):
     def getNumUsers(self, channel):
         i = 0
         for ((chan, _), _) in self.iteritems():
-            if chan == channel:
+            if ircutils.nickEqual(chan, channel):
                 i += 1
         return i
 
     def getTopUsers(self, channel, word, n):
-        word = word.lower()
         L = [(id, d[word]) for ((chan, id), d) in self.iteritems()
-             if channel == chan and word in d]
+             if ircutils.nickEqual(channel, chan) and word in d]
         utils.sortBy(lambda (_, i): i, L)
         L = L[-n:]
         L.reverse()
@@ -125,21 +125,19 @@ class WordStatsDB(plugins.ChannelUserDB):
         raise KeyError
 
     def addWord(self, channel, word):
-        word = word.lower()
         if channel not in self.channelWords:
             self.channelWords[channel] = {}
         self.channelWords[channel][word] = 0
         for ((chan, id), d) in self.iteritems():
-            if channel == chan:
+            if ircutils.nickEqual(chan, channel):
                 if word not in d:
                     d[word] = 0
 
     def delWord(self, channel, word):
-        word = word.lower()
         if word in self.channelWords[channel]:
             del self.channelWords[channel][word]
         for ((chan, id), d) in self.iteritems():
-            if channel == chan:
+            if ircutils.nickEqual(chan, channel):
                 if word in d:
                     del d[word]
             
@@ -157,6 +155,7 @@ class WordStatsDB(plugins.ChannelUserDB):
         if channel not in self.channelWords:
             self.channelWords[channel] = {}
         for word in self.channelWords[channel]:
+            word = word.lower()
             for msgword in msgwords:
                 if msgword == word:
                     self.channelWords[channel][word] += 1
@@ -196,7 +195,6 @@ class WordStats(callbacks.Privmsg):
         if word.strip(nonAlphaNumeric) != word:
             irc.error('<word> must not contain non-alphanumeric chars.')
             return
-        word = word.lower()
         self.db.addWord(channel, word)
         irc.replySuccess()
 
@@ -265,7 +263,7 @@ class WordStats(callbacks.Privmsg):
                 irc.reply(s)
             else:
                 irc.error('%s has never said %r.' % (user, word))
-        elif arg1 in self.db.getWords(channel):
+        elif arg1 in WordDict.fromkeys(self.db.getWords(channel)):
             word = arg1
             total = self.db.getTotalWordCount(channel, word)
             n = self.registryValue('rankingDisplay', channel)
@@ -283,11 +281,11 @@ class WordStats(callbacks.Privmsg):
                     rank = None
                 try:
                     username = ircdb.users.getUser(userid).name
+                    L.append('%s: %s' % (username, count))
                 except KeyError:
-                    irc.error('Odd, I have a user in my WordStats database '
-                              'that doesn\'t exist in the user database.')
-                    return
-                L.append('%s: %s' % (username, count))
+                    self.log.warning('Odd, I have a user in my WordStats '
+                                     'database that doesn\'t exist in my '
+                                     'user database: #%s.', userid)
             ret = 'Top %s (out of a total of %s seen):' % \
                   (utils.nItems(ers, len(L)), utils.nItems(repr(word), total))
             users = self.db.getNumUsers(channel)

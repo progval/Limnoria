@@ -591,6 +591,13 @@ class InsensitivePreservingDict(UserDict.DictMixin, object):
         if dict is not None:
             self.update(dict)
 
+    def fromkeys(cls, keys, s=None, dict=None, key=None):
+        d = cls(dict=dict, key=key)
+        for key in keys:
+            d[key] = s
+        return d
+    fromkeys = classmethod(fromkeys)
+    
     def __getitem__(self, k):
         return self.data[self.key(k)][1]
 
