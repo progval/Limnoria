@@ -503,16 +503,25 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
 
     def confirm(self, irc=None, msg=None):
         if self.registryValue('personality'):
-            self.reply(self.db.getConfirm(), irc=irc, msg=msg)
+            s = self.db.getConfirm()
         else:
-            assert self.irc is not None
-            self.reply(conf.supybot.replies.success())
+            s = conf.supybot.replies.success()
+        self.reply(s, irc=irc, msg=msg)
+
+    def missing(self, fact, irc=None, msg=None):
+        if msg is None:
+            assert self.msg is not None
+            msg = self.msg
+        self.reply('I didn\'t have anything matching %s, %s.' %
+                   (utils.quoted(fact), msg.nick),
+                   irc=irc, msg=msg)
 
     def dunno(self, irc=None, msg=None):
         if self.registryValue('personality'):
-            self.reply(self.db.getDunno(), irc=irc, msg=msg)
+            s = self.db.getDunno()
         else:
-            self.reply(self.registryValue('boringDunno'), irc=irc, msg=msg)
+            s = self.registryValue('boringDunno')
+        self.reply(s, irc=irc, msg=msg)
 
     def factoid(self, key, irc=None, msg=None, dunno=True, prepend='',
                 isAre=None):
@@ -568,10 +577,16 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 s = prepend + s
                 self.reply(s, irc=irc, msg=msg)
 
-    def normalize(self, s):
+    _iAm = (re.compile(r'^i am ', re.I), '%s is ')
+    _my = (re.compile(r'^my ', re.I), '%s\'s ')
+    _your = (re.compile(r'^your ', re.I), '%s\'s ')
+    def normalize(self, s, bot, nick):
         s = ircutils.stripFormatting(s)
         s = s.strip() # After stripFormatting for formatted spaces.
         s = utils.normalizeWhitespace(s)
+        s = self._iAm[0].sub(self._iAm[1] % nick, s)
+        s = self._my[0].sub(self._my[1] % nick, s)
+        s = self._your[0].sub(self._your[1] % bot, s)
         contractions = [('what\'s', 'what is'), ('where\'s', 'where is'),
                         ('who\'s', 'who is'), ('wtf\'s', 'wtf is'),]
         for (contraction, replacement) in contractions:
@@ -593,7 +608,10 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 return
             # For later dynamic scoping
             channel = plugins.getChannel(msg.args[0])
-            payload = self.normalize(msg.args[1])
+            s = callbacks.addressed(irc.nick, msg)
+            payload = self.normalize(s or msg.args[1], irc.nick, msg.nick)
+            if s:
+                msg.tag('addressed', payload)
             msg = ircmsgs.IrcMsg(args=(msg.args[0], payload), msg=msg)
             self.__parent.doPrivmsg(irc, msg)
         finally:
@@ -622,9 +640,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 pass
         if deleted:
             self.confirm()
-        else:
-            # XXX: Should this be genericified?
-            self.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
+        elif msg.addressed:
+            self.missing(fact, irc=irc, msg=msg)
 
     def doForce(self, irc, msg, match):
         r"^no,\s+(\w+,\s+)?(.+?)\s+(?<!\\)(was|is|am|were|are)\s+(.+?)[?!. ]*$"
@@ -647,18 +664,27 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         isAre = isAre.lower()
         if self.added:
             return
+        channel = dynamic.channel
         if isAre in ('was', 'is', 'am'):
-            if self.db.hasIs(dynamic.channel, key):
+            if self.db.hasIs(channel, key):
+                oldValue = self.db.getIs(channel, key)
+                if oldValue.lower() == value.lower():
+                    self.reply('I already had it that way, %s.' % msg.nick)
+                    return
                 self.log.debug('Forcing %s to %s.',
                                utils.quoted(key), utils.quoted(value))
                 self.added = True
-                self.db.setIs(dynamic.channel, key, value)
+                self.db.setIs(channel, key, value)
         else:
-            if self.db.hasAre(dynamic.channel, key):
+            if self.db.hasAre(channel, key):
+                oldValue = self.db.getAre(channel, key)
+                if oldValue.lower() == value.lower():
+                    self.reply('I already had it that way, %s.' % msg.nick)
+                    return
                 self.log.debug('Forcing %s to %s.',
                                utils.quoted(key), utils.quoted(value))
                 self.added = True
-                self.db.setAre(dynamic.channel, key, value)
+                self.db.setAre(channel, key, value)
         self.confirm()
 
     def doChange(self, irc, msg, match):
@@ -684,8 +710,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         if changed:
             self.confirm()
         else:
-            # XXX: Should this be genericified?
-            self.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
+            self.missing(fact, irc=irc, msg=msg)
 
     def doUnknown(self, irc, msg, match):
         r"^(.+?)\s*(\?[?!. ]*)?$"
@@ -718,22 +743,18 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             return
         if isAre in ('was', 'is', 'am'):
             if self.db.hasIs(dynamic.channel, key):
+                oldValue = self.db.getIs(dynamic.channel, key)
+                if oldValue.lower() == value.lower():
+                    self.reply('I already had it that way, %s.' % msg.nick)
+                    return
                 if also:
                     self.log.debug('Adding %s to %s.',
                                    utils.quoted(key), utils.quoted(value))
-                    value = '%s or %s' % (self.db.getIs(dynamic.channel, key),
-                                          value)
-                elif not msg.addressed:
-                    value = self.db.getIs(dynamic.channel, key)
-                    if initialIs.get(key) != value:
-                        self.reply('... but %s is %s, %s ...' %
-                                   (key, value, msg.nick), substitute=False)
-                        return
+                    value = '%s or %s' % (oldValue, value)
                 elif msg.addressed:
-                    value = self.db.getIs(dynamic.channel, key)
                     if initialIs.get(key) != value:
-                        self.reply('But %s is %s, %s.' %
-                                   (key, value, msg.nick), substitute=False)
+                        self.reply('... but %s is %s ...' %
+                                   (key, oldValue), substitute=False)
                         return
                 else:
                     self.log.debug('Already have a %s key.',
@@ -743,22 +764,18 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.db.setIs(dynamic.channel, key, value)
         else:
             if self.db.hasAre(dynamic.channel, key):
+                oldValue = self.db.getAre(dynamic.channel, key)
+                if oldValue.lower() == value.lower():
+                    self.reply('I already had it that way, %s.' % msg.nick)
+                    return
                 if also:
                     self.log.debug('Adding %s to %s.',
                                    utils.quoted(key), utils.quoted(value))
-                    value = '%s or %s' % (self.db.getAre(dynamic.channel, key),
-                                          value)
-                elif not msg.addressed:
-                    value = self.db.getAre(dynamic.channel, key)
-                    if initialAre.get(key) != value:
-                        self.reply('... but %s are %s, %s ...' %
-                                   (key, value, msg.nick), substitute=False)
-                        return
+                    value = '%s or %s' % (oldValue, value)
                 elif msg.addressed:
-                    value = self.db.getAre(dynamic.channel, key)
                     if initialAre.get(key) != value:
-                        self.reply('But %s are %s, %s.' %
-                                   (key, value, msg.nick), substitute=False)
+                        self.reply('... but %s are %s ...' %
+                                   (key, oldValue), substitute=False)
                         return
                 else:
                     self.log.debug('Already have a %s key.',

@@ -46,12 +46,33 @@ class InfobotTestCase(ChannelPluginTestCase):
             self.assertSnarfNoResponse('foo is at http://bar.com/', 2)
             self.assertRegexp('infobot stats', '1 modification')
             self.assertRegexp('infobot status', '1 modification')
-            self.assertSnarfRegexp('foo?', r'http://bar.com/')
+            self.assertSnarfRegexp('foo?', r'foo.*is.*http://bar.com/')
             self.assertSnarfNoResponse('foo is at http://baz.com/', 2)
             self.assertSnarfNotRegexp('foo?', 'baz')
             m = self.getMsg('bar is at http://foo.com/')
             self.failUnless(self._endRe.sub('', m.args[1]) in confirms)
             self.assertRegexp('bar?', r'bar.*is.*http://foo.com/')
+        finally:
+            ibot.unaddressed.snarfDefinitions.setValue(learn)
+            ibot.unaddressed.answerQuestions.setValue(answer)
+
+    def testNormalize(self):
+        learn = ibot.unaddressed.snarfDefinitions()
+        answer = ibot.unaddressed.answerQuestions()
+        try:
+            ibot.unaddressed.snarfDefinitions.setValue(True)
+            ibot.unaddressed.answerQuestions.setValue(True)
+            self.assertSnarfNoResponse('foo is at http://bar.com/', 2)
+            self.assertSnarfRegexp('what\'s foo?', r'foo.*is.*http://bar.com/')
+            self.assertSnarfRegexp('wtf\'s foo?', r'foo.*is.*http://bar.com/')
+            self.assertSnarfRegexp('who\'s foo?', r'foo.*is.*http://bar.com/')
+            self.assertSnarfRegexp('where\'s foo?',r'foo.*is.*http://bar.com/')
+            self.assertSnarfNoResponse('i am a tool', 2)
+            self.assertRegexp('%s?' % self.nick, r'is.*tool')
+            self.assertSnarfNoResponse('my bot is a tool', 2)
+            self.assertRegexp('%s\'s bot?' % self.nick, r'is.*tool')
+            self.assertSnarfNoResponse('your name is weird', 2)
+            self.assertRegexp('%s\'s name?' % self.irc.nick, r'is.*weird')
         finally:
             ibot.unaddressed.snarfDefinitions.setValue(learn)
             ibot.unaddressed.answerQuestions.setValue(answer)
@@ -91,7 +112,7 @@ class InfobotTestCase(ChannelPluginTestCase):
         try:
             ibot.unaddressed.answerQuestions.setValue(True)
             self.assertSnarfNoResponse('foo is bar')
-            self.assertSnarfRegexp('foo?', 'bar')
+            self.assertSnarfRegexp('foo?', 'foo.*is.*bar')
             ibot.unaddressed.answerQuestions.setValue(False)
             self.assertSnarfNoResponse('foo?', 2)
         finally:
@@ -104,9 +125,9 @@ class InfobotTestCase(ChannelPluginTestCase):
             ibot.unaddressed.answerQuestions.setValue(True)
             ibot.unaddressed.snarfDefinitions.setValue(True)
             self.assertSnarfNoResponse('forums are good')
-            self.assertSnarfRegexp('forums?', 'good')
+            self.assertSnarfRegexp('forums?', r'forums.*are.*good')
             self.assertNotError('no, forums are evil')
-            self.assertSnarfRegexp('forums?', 'evil')
+            self.assertSnarfRegexp('forums?', r'forums.*.are.*evil')
         finally:
             ibot.unaddressed.answerQuestions.setValue(answer)
             ibot.unaddressed.snarfDefinitions.setValue(learn)
@@ -129,15 +150,15 @@ class InfobotTestCase(ChannelPluginTestCase):
             ibot.unaddressed.answerQuestions.setValue(answer)
             ibot.unaddressed.snarfDefinitions.setValue(learn)
 
-#    def testNoKarmaDunno(self):
-#        self.assertNoResponse('foo++')
+    def testNoKarmaDunno(self):
+        self.assertNoResponse('foo++')
 
     def testPredefinedFactoids(self):
         self.assertSnarfNoResponse('what?', 3)
         self.assertRegexp('roses?', 'roses are red')
 
     def testAddressedQuestions(self):
-        self.assertNotError('hi is <reply>Hello, $who.')
+        self.assertSnarfNoResponse('hi is <reply>Hello, $who.')
         self.assertSnarfNoResponse('hi')
         self.assertRegexp('hi', 'Hello')
 
