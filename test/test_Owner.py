@@ -101,9 +101,9 @@ class OwnerTestCase(PluginTestCase, PluginDocumentation):
     def testSetconf(self):
         self.assertRegexp('setconf', 'confDir')
         self.assertNotRegexp('setconf', 'allowEval')
-        self.assertResponse('setconf confDir', 'confDir is a string.')
-        self.assertResponse('setconf whackyConfOption',
-                            'Error: That conf variable doesn\'t exist.')
+        self.assertResponse('setconf confDir',
+                            'confDir is a string (%s).' % conf.confDir)
+        self.assertError('setconf whackyConfOption')
         try:
             originalConfAllowEval = conf.allowEval
             conf.allowEval = False

@@ -185,17 +185,17 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
                     setattr(conf, name, value)
                     irc.reply(msg, conf.replySuccess)
         elif name:
-            typetable = {'mystr': 'string',
-            'mybool': 'boolean',
-            'float': 'float'}
-            
+            typeNames = {conf.mystr: 'string',
+                         conf.mybool: 'boolean',
+                         float: 'float'}
             try:
-                vtype = conf.types[name].__name__
+                type = typeNames[conf.types[name]]
             except KeyError:
-                irc.error(msg, 'That conf variable doesn\'t exist.')
+                irc.error(msg, 'That configuration variable doesn\'t exist.')
                 return
             try:
-                irc.reply(msg, '%s is a %s.' % (name, typetable[vtype]))
+                value = getattr(conf, name)
+                irc.reply(msg, '%s is a %s (%s).' % (name, type, value))
             except KeyError:
                 irc.error(msg, '%s is of an unknown type.' % name)
         else:
