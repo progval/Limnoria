@@ -1,9 +1,12 @@
+	* Updated Seen.seen to accept no arguments and return the last
+	message spoken by anyone.
+
 	* Updated the Herald plugin to use the standard substitute until
 	we get it updated to use commands as heralds instead of plain
 	strings.
-	
+
 	* Updated echo to use the standard substitute on its reply.
-	
+
 	* Updated Network.whois so that it can now retrieve
 	information on all domains.
 
@@ -17,12 +20,12 @@
 	* Updated standard replies (such as supybot.replies.success, etc.)
 	to use the standard substitute (such as $nick, $who, $channel,
 	etc.) in their text.
-	
+
 	* Fixed snarfers to respect lobotomies.
-	
+
 	* Fixed Admin.join not to add the channel to the supybot.channels
 	registry entry if joining the channel wasn't successful.
-	
+
 2004-02-20  Jeremy Fincher  <jemfinch@supybot.org>
 
 	* Version 0.77.0!
@@ -31,73 +34,73 @@
 	something much more readable and user-editable.  Be sure, if
 	you're upgrading, to run tools/ircdbConvert.py on your user and
 	channel databases *BEFORE* installing the new version.
-	
+
 	* Updated almost every document we have, and added a
 	GETTING_STARTED document.  Yay!
-	
+
 	* Added several new options for Channel.kban: --exact, --nick,
 	--user, --host, for more flexibility in determining what the
 	banmask is.
-	
+
 	* Added a Scheduler plugin for scheduling events to occur at
 	specific times.
 
 	* Added a Herald plugin for announcing to the channel the arrival
 	of certain users.
-	
+
 	* Changed the reply method of the irc object given to plugins not
 	to require a msg object.
-	
+
 	* Added inter-factoid references for MoobotFactoids.  Simply
 	define a factoid as "see <factoid-key>" (and nothing else) and it
 	will automatically go pick up the value for that factoid and
 	display it in its place.  Sort of a "symlink" for MoobotFactoids.
-	
+
 	* Added the ability to reply to factoids without the "whatis" in
 	the Factoids plugin.  Now, you can use "@foo" instead of "@whatis
 	foo".
-	
+
 	* Added --{from,to} and --sent options to Note.sent.
 
 	* Changed Note.get to simply be "note".  Instead of "note get
 	145", you should use "note 145".
-	
+
 	* Changed channel capabilities to use a comma to separate the
 	channel from the capability instead of a period.  This is because
 	channels can include periods (but not commas) and since we now
 	allow "plugin.command" capabilities, there's no way to know
 	whether a given dot is separating the channel from the capability
 	or the plugin from the command.
-	
+
 	* Removed Admin.setprefixchar, since it's unneeded with the new
 	configuration.
-	
+
 	* Removed Status.bestuptime, since it was buggy and no one felt
 	like maintaining it.
-	
+
 	* Added Http.cyborg, a fun little command for getting cyborg
 	abbreviations for names.
-	
+
 	* Added Sourceforge.totalbugs and Sourceforge.totalrfes
 
 	* Removed Owner.{set,unset} since they matter not.
-	
+
 	* Made the smileys and frowns configurable in ChannelDB.
 
 	* Added a vast array of new configurables -- check out the various
 	config commands in Configurable plugins to see.
-	
+
 	* Added better error reporting for Admin.join, explaining to the
 	user if the bot can't join the channel.
-	
+
 	* Added a title-snarfer to the URL plugin.
-	
+
 	* Added Relay.command, a command for sending commands to the bot
 	on a different network.
-	
+
 	* Added Bugzilla.search, a new command for searching a bugzilla
 	installation
-	 
+
 	* Added an INVITE handler in Admin, allowing users with the admin
 	capability to INVITE the bot to a channel.  There's also a config
 	variable, alwaysJoinOnInvite, that will cause the bot to join
@@ -106,10 +109,10 @@
 
 	* Added conf.requireChannelCommandsToBeSentInChannel for requiring
 	all channel-related commands to be sent in the channel.
-	
+
 	* Added conf.followIdentificationThroughNickChanges for having the
 	bot update user's identified hostmask when they change nicks.
-	
+
 	* Added conf.replyWhenNotAddressed, a configuration variable for
 	having the bot always attempt to parse a message as a command.
 
@@ -119,34 +122,34 @@
 	* Added conf.replyWithNickPrefix, a configuration variable for
 	having the bot not prefix the nick of the person giving a command
 	to the reply.
-	
+
 	* Changed all "zegrep" stuff to "zgrep -e" stuff, since zegrep is
 	on fewer platforms than zgrep.
 
 2003-12-12 Jeremy Fincher <jemfinch@supybot.org>
 
 	* Version 0.76.1!  The birthday release!
-	
+
 	* Fixed a bug in irclib.py that could cause the bot to loop,
 	connecting and disconnecting from the server because it didn't
 	think the server responded to its PING.
-	
+
 	* Fixed a bug in the Services implementation that could cause
 	the bot to continually loop, connecting and disconnecting from the
 	server.
-	
+
 	* Fixed Misc.help to follow the same default plugin rules that the
 	rest of the bot follows.
 
 	* Added better error reporting to Admin.join, so the various error
 	conditions that might make the bot incapable of joining a channel
 	will be reported.
-	
+
 	* Updated RootWarner to be configurable, offering each channel the
 	ability to define whether or not people who IRC as root will be
 	warned, what that warning will be, and whether or not they should
 	be kicked.
-	
+
 	* Added a configurable 'topic-sync' to the Relay plugin to
 	determine whether the topics of the two channels should be kept
 	synchronized.
@@ -169,110 +172,110 @@
 
 	* Added utils.sorted, which does what list.sorted will do when 2.4
 	is released.
-	
+
 	* Added ircutils.isCtcp, for determining whether or not a message
 	is a CTCP message.
-	
+
 2003-12-6  Jeremy Fincher  <jemfinch@supybot.org>
-	
+
 	* Version 0.76.0!
-	
+
 	* Added a "trusted" capability that defaults to off (-trusted) and
 	is required for Utilities.re (with which it's possible to DoS the
 	bot) and for the new Math.icalc (with which it is trivially
 	possible to DoS the bot).
-	
+
 	* Added Math.icalc, a new command for doing integer arithmetic.
 	It requires the "trusted" capability.
-	
+
 	* Added the Fun.ping command, because MozBot has it.
-	
+
 	* Added Note.unsend command, to allow users to "unsend" notes
 	they've sent but whose recipient has not yet read.
-	
+
 	* Added Channel.{deop,devoice,dehalfop,kick}.
-	
+
 	* Added Http.size and Http.doctype and Http.headers to retrieve
 	various meta-information on URLs.
-	
+
 	* Added a ranking to ChannelDB.wordstats.
-	
+
 	* Added Karma.most for determining various "mosts" in the Karma
 	database.
-	
+
 	* Added User.list command to list registered users.
-	
+
 	* Added 'roulette' command to Fun plugin.
-	
+
 	* Added a Channel.lobotomies command to list the channels in which
 	the bot is lobotomized.
-	
+
 	* Added a swap function to Math.rpn.
 
 	* Changed the name of User.changeusername to User.changename.
-	
+
 	* Changed the logging infrastructure significantly; each plugin
 	now has its own logger (and thus logfile), in addition to being
 	logged in the main logfile.
-	
+
 	* Fixed bug in which the bot wouldn't rejoin channels after a
 	reconnect.  Thank the Lord for tcpkill :)
-	
+
 	* Fixed Http.freshmeat for projects with a space in their names.
-	
+
 	* Changed RSS so RSS feed commands may be added while the bot is
 	running, and so added RSS feed commands are in the RSS plugin.
-	
+
 	* Changed Lookup so added lookups are added in the Lookup plugin
 	itself so there's no dependency on Alias, and so loaded lookups
 	can be seen via 'list Lookup'.
-	
+
 	* Fixed bug #850931 as well as several other minor bugs in
 	Utilities.re.
-	
+
 	* Fixed bug #851254, Factoids.whatis didn't work on numeric keys.
 
 	* Added the ability to turn on/off the showing of ids in FunDB
 	excuse/insult/praise/lart.
-	
+
 	* Added the to= keyword argument to the various reply functions to
 	you can specify a target to send the message to.
-	
+
 	* Changed socketDrivers to allow more time (10x more, to be exact)
 	for connecting to the network than for the normal read.
-	
+
 	* Fixed a bug in Http.weather that would cause an ugly error
 	message for a command like "weather hell".
-	
+
 	* Added the number of strings to the Fun.object output.
-	
+
 	* Fixed bug in RSS.configure; no aliases could be added.
-	
+
 	* Changed Alias.freeze to Alias.lock.
-	
+
 	* Fixed sorting in Status' uptime database.
-	
+
 	* Updated the Gameknot tests for expired games, and updated the
 	Gameknot plugin to handle such links in its snarfer.
-	
+
 	* Added a 'server' attribute to Irc objects to unify the way to
 	access such information.
-	
+
 	* Added revision command for finding out the revision of the files
 	in a running bot; also added __revision__ strings so CVS would be 
 	happy to keep such information for us :)
-	
+
 	* Fixed bug #848475 -- bad error message from regexp-expecting
 	commands.
-	
+
 	* Stopped listing the plugin dispatcher command in the list of
 	commands for that plugin.
-	
+
 	* Fixed bug in Gameknot.gkstats when retrieving the stats for
 	users who haven't yet played a game.
 
 	* Added a numUsers() method to ircdb.UsersDB (ircdb.users).
-	
+
 2003-11-18  Jeremy Fincher  <jemfinch@users.sf.net>
 
 	* Changed commands so that plugins no longer have to make sure
@@ -297,7 +300,7 @@
 
 	* Added the ability for users to specify that their passwords
 	should be hashed on disk.
-	
+
 	* Added MoobotFactoids plugin for moobot-style factoids (which are
 	meant to mimic blootbot-style factoids).  People used to
 	traditional IRC bot factoids plugins will probably find this
@@ -312,7 +315,7 @@
 
 	* Added Bugzilla module for accessing various data in Bugzilla
 	pages.
-	
+
 	* Added QuoteGrabs module which allows people to grab interesting
 	quotes from other people and store them in the bot for later retrieval
 	(also optionally have the bot randomly snarf quotes).
@@ -325,7 +328,7 @@
 
 	* Changed FundB to allow accessing excuses, larts, and praises by
 	id.
-	
+
 	* Added substitutions for 'me' and 'my' in insult/praise/lart.
 
 	* Added 'change' and 'old' commands for News.
@@ -349,10 +352,10 @@
 
 	* Removed the Moobot plugin (the commands were moved to the Fun
 	plugin or dropped entirely).
-	
+
 	* Removed all example strings from plugins.  To be replaced with an
 	automated process later.
-	
+
 	* Converted several plugins to the new Configurable plugin type
 	Plugins modified include Bugzilla, ChannelDB, Dict, Ebay,
 	Enforcer, Gameknot, Google, Python, Relay, and URL (formerly
@@ -363,7 +366,7 @@
 
 	* Changed Http.geekquote to use multiline geekquotes (and removed
 	the option to do so, since it's now the default).
-	
+
 	* Added a --id switch to geekquote to pick a specific geekquote.
 
 	* Changed most commands in News to require the 'news' capability.
@@ -390,13 +393,13 @@
 
 	* Changed the name of the "bug" command in the AdminCommands
 	plugin to "reportbug" instead.
-	
+
 	* Added QUIT stat-keeping to ChannelDB.
-	
+
 	* Removed the OwnerCommands.say command; it wasn't useful enough,
 	and is so easily written that anyone can have it back if they want
 	it.
-	
+
 	* Changed OwnerCommands.load (and reload) to be case-insensitive,
 	so "load funcommands" works just as well as "load FunCommands".
 
@@ -445,9 +448,9 @@
 	which existed prior to the addition of more, and aren't needed
 	anymore.
 
-	
+
 2003-10-12  Jeremy Fincher  <jemfinch@users.sf.net>
-	
+
 	* Version 0.73.1!
 
 	* Fixed a bug in Math.{calc,rpn} where certain functions
@@ -457,7 +460,7 @@
 	* Added an optional "key" argument to ChannelCommands.cycle.
 
 	* Fixed bolding in supybot-wizard.py.
-	
+
 	* Fixed handling of the secure flag by ircdb.IrcUser.setAuth;
 	previously it didn't prevent someone with an unmatched hostmask
 	from identifying.
@@ -503,7 +506,7 @@
 	* Version 0.73.0!
 
 	* Added the News plugin, news handling for channels.
-	
+
 	* Changed the initial character of anti capabilities to '-'
 	instead of '!'.  '!' can be the initial character in a channel
 	name, and so any command using getChannel and accepting a
@@ -552,4 +555,4 @@
 	    last_seen TIMESTAMP,
 	    last_msg TEXT
 	    );
-	
+

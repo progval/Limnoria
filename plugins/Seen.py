@@ -78,6 +78,7 @@ class SeenDB(plugins.ChannelUserDB):
     def update(self, channel, nickOrId, saying):
         seen = time.time()
         self[channel, nickOrId] = (seen, saying)
+        self[channel, '<last>'] = (seen, saying)
 
     def seen(self, channel, nickOrId):
         return self[channel, nickOrId]
@@ -111,34 +112,43 @@ class Seen(callbacks.Privmsg):
                 pass # Not in the database.
         
     def seen(self, irc, msg, args):
-        """[<channel>] [--user] <name>
+        """[<channel>] [--user] [<name>]
 
         Returns the last time <name> was seen and what <name> was last seen
         saying.  --user will look for user <name> instead of using <name> as
         a nick (registered users, remember, can be recognized under any number
         of nicks) <channel> is only necessary if the message isn't sent on the
-        channel itself.
+        channel itself.  If <name> is not specified, the last person that was
+        seen and their message will be returned.
         """
         channel = privmsgs.getChannel(msg, args)
         (optlist, rest) = getopt.getopt(args, '', ['user'])
-        name = privmsgs.getArgs(rest)
-        nickOrId = name
-        if ('--user', '') in optlist:
-            try:
-                nickOrId = ircdb.users.getUserId(name)
-            except KeyError:
+        name = privmsgs.getArgs(rest, required=0, optional=1)
+        if name:
+            nickOrId = name
+            if ('--user', '') in optlist:
                 try:
-                    hostmask = irc.state.nickToHostmask(name)
-                    nickOrId = ircdb.users.getUserId(hostmask)
+                    nickOrId = ircdb.users.getUserId(name)
                 except KeyError:
-                    irc.errorNoUser()
-                    return
-        try:
-            (when, said) = self.db.seen(channel, nickOrId)
-            irc.reply('%s was last seen here %s ago saying: %s' % 
-                      (name, utils.timeElapsed(time.time()-when), said))
-        except KeyError:
-            irc.reply('I have not seen %s.' % name)
+                    try:
+                        hostmask = irc.state.nickToHostmask(name)
+                        nickOrId = ircdb.users.getUserId(hostmask)
+                    except KeyError:
+                        irc.errorNoUser()
+                        return
+            try:
+                (when, said) = self.db.seen(channel, nickOrId)
+                irc.reply('%s was last seen here %s ago saying: %s' % 
+                          (name, utils.timeElapsed(time.time()-when), said))
+            except KeyError:
+                irc.reply('I have not seen %s.' % name)
+        else:
+            try:
+                (when, said) = self.db.seen(channel, '<last>')
+                irc.reply('Someone was last seen here %s ago saying: %s' %
+                          (utils.timeElapsed(time.time()-when), said))
+            except KeyError:
+                irc.reply('I have never seen anyone.')
 
 
 Class = Seen

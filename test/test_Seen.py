@@ -51,6 +51,7 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.assertNotRegexp('seen asldfkjasdlfkj', 'KeyError')
 
     def testSeen(self):
+        self.assertNotError('seen')
         self.assertNotError('list')
         self.assertNotError('seen %s' % self.nick)
         m = self.assertNotError('seen %s' % self.nick.upper())
