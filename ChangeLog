@@ -1,24 +1,21 @@
 2003-11-18  Jeremy Fincher  <jemfinch@users.sf.net>
 
+	* Renamed numerous plugins: OwnerCommands became Owner,
+	AdminCommands became Admin, ChannelCommands became Channel,
+	MiscCommands became Misc, UserCommands became User, URLSnarfer
+	became URL, Notes became Note, FunCommands became Fun, IMDB became
+	Movies, and Aliases became Alias.
+
 	* Added QuoteGrabs module which allows people to grab interesting
 	quotes from other people and store them in the bot for later retrieval
 	(also optionally have the bot randomly snarf quotes).
 
-	* Renamed URLSnarfer plugin to just URL.
-	
 	* Removed TwistedCommands plugin to the sandbox; the one command
 	it provided (dict) is now better provided in the Dict plugin.
 
-	* Renamed Notes plugin to just Note.
-
-	* Renamed FunCommands plugin to just Fun.
-
-	* Removed the Moobot plugin (either moved the commands to the Fun
-	plugin or dropped them entirely).
+	* Removed the Moobot plugin (the commands were moved to the Fun
+	plugin or dropped entirely).
 	
-	* Added Movies plugin which searches IMDb (www.imdb.com) for movie
-	info.
-
 	* Added Ebay plugin for snarfing eBay URLs as well as getting info on
 	certain auctions.
 
