@@ -243,7 +243,8 @@ if __name__ == '__main__':
     prepIndex()
     plugins = [p for p in genPlugins()]
     plugins.sort()
-    plugins = [(None,)] + plugins + [(None,)]
+    plugins.insert(0, None)
+    plugins.append(None)
     for pluginWindow in window(plugins, 3):
         makePluginDocumentation(pluginWindow)
     finishIndex()
