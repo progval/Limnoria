@@ -289,7 +289,7 @@ conf.registerGlobalValue(conf.supybot.log, 'stdout',
     registry.Boolean(True, """Determines whether the bot will log to
     stdout."""))
 conf.registerGlobalValue(conf.supybot.log, 'individualPluginLogfiles',
-    registry.Boolean(True, """Determines whether the bot will separate plugin
+    registry.Boolean(False, """Determines whether the bot will separate plugin
     logs into their own individual logfiles."""))
 
 class BooleanRequiredFalseOnWindows(registry.Boolean):
