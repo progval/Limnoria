@@ -163,7 +163,7 @@ class Quakenet(privmsgs.CapabilityCheckingPrivmsg):
 
         Sends <text> to Q.
         """
-        self._sendToQ(text)
+        self._sendToQ(irc, text)
         irc.noReply()
     q = wrap(q, ['isQuakeNet', 'text'])
 
