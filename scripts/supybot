@@ -59,11 +59,11 @@ import textwrap
 started = time.time()
 
 import supybot
+import supybot.utils as utils
 import supybot.registry as registry
 
 def main():
     import supybot.conf as conf
-    import supybot.utils as utils
     import supybot.world as world
     import supybot.drivers as drivers
     import supybot.schedule as schedule
@@ -279,7 +279,13 @@ if __name__ == '__main__':
     irc = irclib.Irc(network=defaultNetwork)
     callback = Owner.Class()
     irc.addCallback(callback)
-    driver = drivers.newDriver(irc)
+    try:
+        driver = drivers.newDriver(irc)
+    except Exception, e:
+        log.error(utils.normalizeWhitespace("""I couldn't create a network
+        driver for connecting to IRC.  The specific error was this: %s"""),
+        utils.exnToString(e))
+        sys.exit(-1)
 
     if options.debug:
         for (name, module) in sys.modules.iteritems():
