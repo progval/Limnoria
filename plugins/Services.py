@@ -109,13 +109,13 @@ conf.registerChannelValue(conf.supybot.plugins.Services.ChanServ, 'voice',
 
 class Services(privmsgs.CapabilityCheckingPrivmsg):
     """This plugin handles dealing with Services on networks that provide them.
-    Basically, you should use the "password" command to tell the bot what nick
-    to identify with using what password.  You can use the password command
-    multiple times if your bot has multiple nicks registered.  Also, be sure
-    to configure the NickServ and ChanServ configuration variables to match the
-    NickServ and ChanServ nicks on your network.  Other commands
-    such as identify, getops, etc. should not be necessary if the bot is
-    properly configured."""
+    Basically, you should use the "password" command to tell the bot a nick to
+    identify with and what password to use to identify with that nick.  You can
+    use the password command multiple times if your bot has multiple nicks
+    registered.  Also, be sure to configure the NickServ and ChanServ
+    configuration variables to match the NickServ and ChanServ nicks on your
+    network.  Other commands such as identify, getops, etc. should not be
+    necessary if the bot is properly configured."""
     capability = 'admin'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
