@@ -216,10 +216,7 @@ class SqliteLookupDB(object):
         else:
             return cursor.fetchall()
         
-LookupDB = plugins.DB('Lookup',
-                        {'sqlite': SqliteLookupDB,
-                        }
-                     )
+LookupDB = plugins.DB('Lookup', {'sqlite': SqliteLookupDB,})
 
 class Lookup(callbacks.Privmsg):
     def __init__(self):
@@ -314,7 +311,8 @@ class Lookup(callbacks.Privmsg):
         group = conf.supybot.plugins.Lookup.lookups
         conf.registerGlobalValue(group, name, registry.String(filename, ''))
         #print 'nokey: %s' % nokey
-        conf.registerGlobalValue(group.get(name), 'nokey', registry.Boolean(nokey, ''))
+        conf.registerGlobalValue(group.get(name), 'nokey',
+                                 registry.Boolean(nokey, ''))
 
     def delRegistryValues(self, name):
         group = conf.supybot.plugins.Lookup.lookups
