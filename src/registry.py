@@ -45,6 +45,22 @@ class InvalidRegistryValue(RegistryException):
 class NonExistentRegistryEntry(RegistryException):
     pass
 
+cache = {}
+def open(filename):
+    """Initializes the module by loading the registry file into memory."""
+    cache.clear()
+    fd = utils.nonCommentNonEmptyLines(file(filename))
+    for line in fd:
+        line = line.rstrip()
+        (key, value) = line.split(': ', 1)
+        cache[key] = value
+
+def close(registry, filename):
+    fd = file(filename, 'w')
+    for (name, value) in registry.getValues(askChildren=True):
+        fd.write('%s: %s\n' % (name, value))
+    fd.close()
+        
 class Value(object):
     def __init__(self, default, help):
         self.help = utils.normalizeWhitespace(help)
@@ -157,6 +173,10 @@ class Group(object):
             value.set(str(self.values[name]))
         self.values[name] = value
         self.originals[name] = original
+        if cache:
+            fullname = '%s.%s' % (self.name, name)
+            if fullname in cache:
+                value.set(cache[fullname])
 
     def registerGroup(self, name, group=None):
         original = name
@@ -168,18 +188,22 @@ class Group(object):
             group.__dict__['children'] = self.children[name].children
         self.children[name] = group
         self.originals[name] = original
-        group.setName('%s.%s' % (self.name, name))
+        fullname = '%s.%s' % (self.name, name)
+        group.setName(fullname)
+        if cache and fullname in cache:
+            group.set(cache[fullname])
 
-    def getValues(self):
+    def getValues(self, askChildren=False):
         L = []
         items = self.values.items()
         items.sort()
         for (name, value) in items:
             L.append(('%s.%s' % (self.getName(), name), str(value)))
-        items = self.children.items()
-        items.sort()
-        for (_, child) in items:
-            L.extend(child.getValues())
+        if askChildren:
+            items = self.children.items()
+            items.sort()
+            for (_, child) in items:
+                L.extend(child.getValues(askChildren))
         return L
         
 
@@ -188,6 +212,11 @@ class GroupWithDefault(Group):
         Group.__init__(self)
         self.__dict__['value'] = value
         self.__dict__['help'] = value.help
+        
+    def __makeChild(self, attr, s):
+        v = copy.copy(self.value)
+        v.set(s)
+        self.register(attr, v)
         
     def __getattr__(self, attr):
         try:
@@ -199,9 +228,14 @@ class GroupWithDefault(Group):
         try:
             Group.__setattr__(self, attr, s)
         except NonExistentRegistryEntry:
-            v = copy.copy(self.value)
-            v.set(s)
-            self.register(attr, v)
+            self.__makeChild(attr, s)
+
+    def setName(self, name):
+        Group.setName(self, name)
+        for (k, v) in cache.iteritems():
+            if k.startswith(self.name):
+                (_, group) = rsplit(k, '.', 1)
+                self.__makeChild(group, v)
 
     def set(self, *args):
         if len(args) == 1:
@@ -211,8 +245,8 @@ class GroupWithDefault(Group):
             (attr, s) = args
             self.__setattr__(attr, s)
 
-    def getValues(self):
-        L = Group.getValues(self)
+    def getValues(self, askChildren=False):
+        L = Group.getValues(self, askChildren)
         L.insert(0, (self.getName(), str(self.value)))
         return L
 
@@ -233,6 +267,13 @@ if __name__ == '__main__':
     supybot.plugins.topic.separator.set(' <> ')
 
     for (k, v) in supybot.getValues():
+        print '%s: %s' % (k, v)
+
+    print
+    print 'Asking children'
+    print
+
+    for (k, v) in supybot.getValues(askChildren=True):
         print '%s: %s' % (k, v)
 
     print supybot.help('throttleTime')
