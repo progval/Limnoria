@@ -202,6 +202,22 @@ class Http(callbacks.Privmsg):
         quote = ' // '.join(quote.splitlines())
         irc.reply(quote)
 
+    _cyborgRe = re.compile(r'<p class="mediumheader">(.*?)</p>', re.I)
+    def cyborg(self, irc, msg, args):
+        """<name>
+
+        Returns a cyborg acronym for <name> from <http://www.cyborgname.com/>.
+        """
+        name = privmsgs.getArgs(args)
+        name = urllib.quote(name)
+        url = 'http://www.cyborgname.com/cyborger.cgi?acronym=%s' % name
+        html = webutils.getUrl(url)
+        m = self._cyborgRe.search(html)
+        if m:
+            irc.reply(m.group(1))
+        else:
+            irc.errorPossibleBug('No cyborg name returned.')
+        
     _acronymre = re.compile(r'valign="middle" width="7\d%" bgcolor="[^"]+">'
                             r'(?:<b>)?([^<]+)')
     def acronym(self, irc, msg, args):
