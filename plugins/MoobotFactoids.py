@@ -79,7 +79,12 @@ class OptionList(object):
             if not token:
                 raise SyntaxError, 'Missing ")"'
             elif token == ')':
-                return ret
+                if len(ret) > 1:
+                    return ret
+                elif len(ret) == 1:
+                        return '(%s)' % ret[0]
+                else:
+                    return '()'
             elif token == '(':
                 ret.append(self._insideParens(lexer))
             elif token == '|':

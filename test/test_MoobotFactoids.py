@@ -37,6 +37,14 @@ except ImportError:
     sqlite = None
 
 if sqlite is not None:
+    MoobotFactoids = Owner.loadPluginModule('MoobotFactoids')
+    class OptionListTestCase(unittest.TestCase):
+        def testEmptyParens(self):
+            self.assertEqual(MoobotFactoids.tokenize('()'), ['()'])
+
+        def testNoBarParens(self):
+            self.assertEqual(MoobotFactoids.tokenize('(foo)'), ['(foo)'])
+
     class FactoidsTestCase(PluginTestCase, PluginDocumentation):
         plugins = ('MoobotFactoids', 'User', 'Utilities')
         def setUp(self):
