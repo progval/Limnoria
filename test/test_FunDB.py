@@ -50,12 +50,14 @@ if sqlite is not None:
 
         def testLart(self):
             self.assertNotError('dbadd lart jabs $who')
+            self.assertRegexp('lart', '^lart [--id=<id>]')
             self.assertResponse('lart jemfinch for being dumb',
                 '\x01ACTION jabs jemfinch for being dumb (#1)\x01')
             self.assertResponse('lart jemfinch',
                 '\x01ACTION jabs jemfinch (#1)\x01')
             self.assertNotError('dbnum lart')
             self.assertNotError('dbadd lart shoots $who')
+            self.assertRegexp('lart --id=1', '^lart [--id=<id>]')
             self.assertResponse('lart --id=1 jemfinch',
                 '\x01ACTION jabs jemfinch (#1)\x01')
             self.assertResponse('lart --id=2 jemfinch for being dumb',
@@ -87,12 +89,14 @@ if sqlite is not None:
 
         def testPraise(self):
             self.assertNotError('dbadd praise pets $who')
+            self.assertRegexp('praise', '^praise [--id=<id>]')
             self.assertResponse('praise jemfinch for being him',
                 '\x01ACTION pets jemfinch for being him (#1)\x01')
             self.assertResponse('praise jemfinch',
                 '\x01ACTION pets jemfinch (#1)\x01')
             self.assertNotError('dbnum praise')
             self.assertNotError('dbadd praise gives $who a cookie')
+            self.assertRegexp('praise --id=1', '^praise [--id=<id>]')
             self.assertResponse('praise --id=1 jemfinch',
                 '\x01ACTION pets jemfinch (#1)\x01')
             self.assertResponse('praise --id=2 jemfinch for being him',

@@ -383,6 +383,7 @@ class FunDB(callbacks.Privmsg):
         number <id> from the database when <id> is given.
         """
         (optlist, rest) = getopt.getopt(args, '', ['id='])
+        privmsgs.getArgs(rest)
         try:
             (nick, reason) = map(' '.join,
                              utils.itersplit('for'.__eq__, rest, 1))
@@ -430,6 +431,7 @@ class FunDB(callbacks.Privmsg):
         praise number <id> from the database when <id> is given.
         """
         (optlist, rest) = getopt.getopt(args, '', ['id='])
+        privmsgs.getArgs(rest)
         try:
             (nick, reason) = map(' '.join,
                              utils.itersplit('for'.__eq__, rest, 1))
