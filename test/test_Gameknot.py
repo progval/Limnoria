@@ -48,6 +48,8 @@ class GameknotTestCase(PluginTestCase):
     def testSnarfer(self):
         self.assertRegexp('http://gameknot.com/chess.pl?bd=907498',
                           '\x02ddipaolo\x02 won')
+        self.assertRegexp('http://gameknot.com/chess.pl?bd=955432',
+                          '\x02ddipaolo\x02 lost')
 
 
 

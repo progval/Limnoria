@@ -115,7 +115,8 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
     _gkPlayer = re.compile(r"popd\('(Rating[^']+)'\).*?>([^<]+)<")
     _gkRating = re.compile(r": (\d+)[^:]+:<br>(\d+)[^,]+, (\d+)[^,]+, (\d+)")
     _gkGameTitle = re.compile(r"<p><b>(.*?)\s*</b>&nbsp;\s*<span.*?>\(started")
-    _gkWon = re.compile(r'>(\S+)\s+won\s+\((\S+)\s+(\S+)\)')
+    _gkWon = re.compile(r'>(\S+)\s+won')
+    _gkReason = re.compile(r'won\s+\(\S+\s+(\S+)\)')
     def gameknotSnarfer(self, irc, msg, match):
         r"http://(?:www\.)?gameknot.com/chess.pl\?bd=\d+(&r=\d+)?"
         #debug.printf('Got a GK URL from %s' % msg.prefix)
@@ -139,8 +140,12 @@ class Gameknot(callbacks.PrivmsgCommandAndRegexp):
             else:
                 # Game is over.
                 m = self._gkWon.search(s)
-                (winner, loser, reason) = m.groups()
-                debug.printf((winner, loser, reason))
+                winner = m.group(1)
+                m = self._gkReason.match(s)
+                if m:
+                    reason = m.group(1)
+                else:
+                    reason = 'lost'
                 if winner == 'white':
                     toMove = '%s won, %s %s.' % (wName, bName, reason)
                 else:
