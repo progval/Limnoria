@@ -76,23 +76,25 @@ if __name__ == '__main__':
     name = anything('What should the name of the plugin be?')
     if name.endswith('.py'):
         name = name[:-3]
-    print 'Supybot offers two major types of plugins: command-based and '
-    print 'regexp-based.  Command-based plugins are the kind of plugins '
-    print 'you\'ve seen most when you\'ve used supybot.  They\'re also the '
-    print 'most featureful and easiest to write.  Commands can be nested, '
-    print 'for instance, whereas regexp-based callbacks can\'t do nesting.'
-    print
-    print 'That doesn\'t mean that you\'ll never want regexp-based callbacks.'
-    print 'They offer a flexibility that command-based callbacks don\'t offer;'
-    print 'however, they don\'t tie into the whole system as well.'
-    print
-    print 'If you need to combine a command-based callback with some'
-    print 'regexp-based methods, you can do so by subclassing '
-    print 'callbacks.PrivmsgCommandAndRegexp and then adding a class-level '
-    print 'attribute "regexps" that is a sets.Set of methods that are '
-    print 'regexp-based.  But you\'ll have to do that yourself after this '
-    print 'wizard is finished :)'
-    print
+    print textwrap.fill(textwrap.dedent("""
+    Supybot offers two major types of plugins: command-based and
+    regexp-based.  Command-based plugins are the kind of plugins
+    you've seen most when you've used supybot.  They're also the
+    most featureful and easiest to write.  Commands can be nested, 
+    for instance, whereas regexp-based callbacks can't do nesting.
+    
+    That doesn't mean that you'll never want regexp-based callbacks.
+    They offer a flexibility that command-based callbacks don't offer;
+    however, they don't tie into the whole system as well.
+    
+    If you need to combine a command-based callback with some
+    regexp-based methods, you can do so by subclassing
+    callbacks.PrivmsgCommandAndRegexp and then adding a class-level
+    attribute "regexps" that is a sets.Set of methods that are
+    regexp-based.  But you'll have to do that yourself after this
+    wizard is finished :)
+    """).strip())
+   
     if expect('Do you want a command-based plugin' \
               ' or a regexp-based plugin?',
               ['command', 'regexp']) == 'command':
