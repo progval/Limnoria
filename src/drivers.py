@@ -37,14 +37,11 @@ __revision__ = "$Id$"
 
 import supybot.fix as fix
 
-import re
-import os
 import sys
 import time
 
 import supybot.log as supylog
 import supybot.conf as conf
-import supybot.ansi as ansi
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
 
