@@ -120,7 +120,7 @@ class Http(callbacks.Privmsg):
                 irc.reply('%s is %s bytes long.' % (url, len(s)))
             else:
                 irc.reply('The server didn\'t tell me how long %s is '
-                          'but it\'s longer than %s bytes.' % (url, size)
+                          'but it\'s longer than %s bytes.' % (url, size))
 
     def title(self, irc, msg, args):
         """<url>
