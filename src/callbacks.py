@@ -849,7 +849,7 @@ class IrcObjectProxy(RichReplyMethods):
                     response = msgs.pop()
                     if msgs:
                         n = ircutils.bold('(%s)')
-                        n %= format('%n', (len(msgs), 'message', 'more'))
+                        n %= format('%n', (len(msgs), 'more', 'message'))
                         response = '%s %s' % (response, n)
                     prefix = msg.prefix
                     if self.to and ircutils.isNick(self.to):

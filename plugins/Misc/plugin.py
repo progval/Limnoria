@@ -296,7 +296,7 @@ class Misc(callbacks.Plugin):
             L = irc._mores[userHostmask]
             chunk = L.pop()
             if L:
-                chunk += format(' \x02(%n)\x0F', (len(L), 'message', 'more'))
+                chunk += format(' \x02(%n)\x0F', (len(L), 'more', 'message'))
             irc.reply(chunk, True)
         except KeyError:
             irc.error('You haven\'t asked me a command; perhaps you want '
