@@ -85,30 +85,29 @@ class FunCommands(callbacks.Privmsg):
                    (self.recvdMsgs, self.recvdBytes,
                     self.sentMsgs, self.sentBytes))
 
-	def ord(self, irc, msg, args):
-		"""<letter>
+    def ord(self, irc, msg, args):
+        """<letter>
 
-		Returns the 8-bit value of <letter>.
-		"""
-		letter = privmsgs.getArgs(args)
-		if len(letter) != 1:
-			irc.error(msg, 'Letter must be of length 1 (for obvious reasons)')
-		else:
-			i = ord(letter)
-			irc.reply(msg, str(i))
+        Returns the 8-bit value of <letter>.
+        """
+        letter = privmsgs.getArgs(args)
+        if len(letter) != 1:
+            irc.error(msg, 'Letter must be of length 1 (for obvious reasons)')
+        else:
+            i = ord(letter)
+            irc.reply(msg, str(i))
 
-	def chr(self, irc, msg, args):
-		"""<number>
+    def chr(self, irc, msg, args):
+        """<number>
 
-		Returns the character associated with the 8-bit value <number>
-		"""
-		try:
-			i = int(privmsgs.getArgs(args))
-			irc.reply(msg, chr(i))
-		except ValueError:
-			irc.error(msg, 'That number doesn\'t map to an 8-bit character.')
-					
-				
+        Returns the character associated with the 8-bit value <number>
+        """
+        try:
+            i = int(privmsgs.getArgs(args))
+            irc.reply(msg, chr(i))
+        except ValueError:
+            irc.error(msg, 'That number doesn\'t map to an 8-bit character.')
+                
     def hexlify(self, irc, msg, args):
         "<text>; turn string into a hexstring."
         text = privmsgs.getArgs(args)
