@@ -76,6 +76,13 @@ if sqlite is not None:
             self.assertError('learn foo bar baz') # No 'as'
             self.assertError('learn foo bar') # No 'as'
 
+        def testChangeFactoid(self):
+            self.assertNotError('learn foo as bar')
+            self.assertNotError('change foo 1 s/bar/baz/')
+            self.assertRegexp('whatis foo', 'baz')
+            self.assertError('change foo 2 s/bar/baz/')
+            self.assertError('change foo 0 s/bar/baz/')
+
         def testSearchFactoids(self):
             self.assertNotError('learn jemfinch as my primary author')
             self.assertNotError('learn strike as a cool guy working on me')

@@ -351,6 +351,44 @@ class Factoids(plugins.ChannelDBHandler, callbacks.Privmsg):
              utils.nItems(counter, 'factoid'), factoids)
         irc.reply(msg, s)
 
+    def change(self, irc, msg, args):
+        """[<channel>] <key> <number> <regexp>
+
+        Changes the factoid #<number> associated with <key> according to
+        <regexp>.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        (key, number, regexp) = privmsgs.getArgs(args, needed=3)
+        try:
+            replacer = utils.perlReToReplacer(regexp)
+        except ValueError, e:
+            irc.error(msg, 'Invalid regexp: %s' % e)
+            return
+        try:
+            number = int(number)
+            if number <= 0:
+                raise ValueError
+        except ValueError:
+            irc.error(msg, 'Invalid key id.')
+            return
+        db = self.getDb(channel)
+        cursor = db.cursor()
+        cursor.execute("""SELECT factoids.id, factoids.fact
+                          FROM keys, factoids
+                          WHERE keys.key LIKE %s AND
+                                keys.id=factoids.key_id""", key)
+        if cursor.rowcount == 0:
+            irc.error(msg, 'I couldn\'t find any key %r' % key)
+            return
+        elif cursor.rowcount < number:
+            irc.error(msg, 'That\'s not a valid key id.')
+            return
+        (id, fact) = cursor.fetchall()[number-1]
+        newfact = replacer(fact)
+        cursor.execute("UPDATE factoids SET fact=%s WHERE id=%s", newfact, id)
+        db.commit()
+        irc.reply(msg, conf.replySuccess)
+
     _sqlTrans = string.maketrans('*?', '%_')
     def search(self, irc, msg, args):
         """[<channel>] [--{regexp,exact}=<value>] [<glob>]
