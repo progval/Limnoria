@@ -1,0 +1,16 @@
+These are things not to be forgotten when making a Supybot release:
+
+Update the version in conf.py.
+Update the version in setup.py.
+Remove CVS directories from the tarball.
+Create .tar.gz, .tar.bz2, and .zip archives.
+Add the release to the supybot package in SF.net.
+Upload the archives to upload.sf.net, add to the release on SF.net.
+Announce the release in a News item on SF.net.
+Announce the release on Freshmeat.net.
+Announce the release on PyPI via "python setup.py register".
+Add a topic to #supybot announcing the release.
+Make a release-MAJOR_MINOR_PATCHLEVEL tag.  (cvs tag ...)
+Make a release-MAJOR_MINOR_PATCHLEVEL branch tag.  (cvs tag -b ...)
+
+
