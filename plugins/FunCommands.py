@@ -727,6 +727,35 @@ class FunCommands(callbacks.Privmsg):
         irc.queueMsg(ircmsgs.privmsg(target, s))
         raise callbacks.CannotNest
 
+    _eightballs = [
+        'outlook not so good.',
+        'my reply is no.',
+        'don\'t count on it.',
+        'you may rely on it.',
+        'ask again later.',
+        'most likely.',
+        'cannot predict now.',
+        'yes.',
+        'yes, most definitely.',
+        'better not tell you now.',
+        'it is certain.',
+        'very doubtful.',
+        'it is decidedly so.',
+        'concentrate and ask again.',
+        'signs point to yes.',
+        'my sources say no.',
+        'without a doubt.',
+        'reply hazy, try again.',
+        'as I see it, yes.',
+        ]
+        
+    def eightball(self, irc, msg, args):
+        """[<question>]
+
+        Asks the magic eightball a question.
+        """
+        irc.reply(msg, random.sample(self._eightballs, 1)[0])
+
     def dns(self, irc, msg, args):
         """<host|ip>"""
         host = privmsgs.getArgs(args)
