@@ -756,12 +756,16 @@ class PrivmsgCommandAndRegexp(Privmsg):
         self.res.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__, m2.__name__))
         self.addressedRes.sort(lambda (r1, m1), (r2, m2): cmp(m1.__name__,
                                                               m2.__name__))
-    def callCommand(self, f, irc, msg, *L):
+
+    def callCommand(self, f, irc, msg, *L, **kwargs):
         try:
             Privmsg.callCommand(self, f, irc, msg, *L)
         except Exception, e:
-            irc.error(msg, debug.exnToString(e))
-            debug.recoverableException()
+            if 'catchErrors' in kwargs and kwargs['catchErrors']:
+                irc.error(msg, debug.exnToString(e))
+                debug.recoverableException()
+            else:
+                raise
 
     def doPrivmsg(self, irc, msg):
         if ircdb.checkIgnored(msg.prefix, msg.args[0]):
@@ -775,7 +779,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
                     msg = self.rateLimiter.get()
                 if msg:
                     proxy = IrcObjectProxyRegexp(irc)
-                    self.callCommand(method, proxy, msg, m)
+                    self.callCommand(method, proxy, msg, m, catchErrors=True)
         s = addressed(irc.nick, msg)
         if s:
             for (r, method) in self.addressedRes:
@@ -786,7 +790,7 @@ class PrivmsgCommandAndRegexp(Privmsg):
                         msg = self.rateLimiter.get()
                     if msg:
                         proxy = IrcObjectProxyRegexp(irc)
-                        self.callCommand(method, proxy, msg, m)
+                        self.callCommand(method,proxy,msg,m,catchErrors=True)
         Privmsg.doPrivmsg(self, irc, msg, rateLimit=(not fed))
             
 

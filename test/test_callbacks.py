@@ -100,7 +100,6 @@ class TokenizerTestCase(unittest.TestCase):
             conf.enablePipeSyntax = False
         
 
-
 class FunctionsTestCase(unittest.TestCase):
     def testCanonicalName(self):
         self.assertEqual('foo', callbacks.canonicalName('foo'))
@@ -153,11 +152,18 @@ class FunctionsTestCase(unittest.TestCase):
                          ['foo', 'baz'])
         self.assertEqual(callbacks.getCommands(['foo', ['bar'], ['baz']]),
                          ['foo', 'bar', 'baz'])
+
+    def testTokenize(self):
+        self.assertEqual(callbacks.tokenize(''), [])
+        self.assertEqual(callbacks.tokenize('foo'), ['foo'])
+        self.assertEqual(callbacks.tokenize('foo'), ['foo'])
+        self.assertEqual(callbacks.tokenize('bar [baz]'), ['bar', ['baz']])
         
 
 class PrivmsgTestCase(ChannelPluginTestCase):
     plugins = ('Utilities', 'OwnerCommands')
     conf.allowEval = True
+    timeout = 2
     def testEmptySquareBrackets(self):
         self.assertResponse('echo []', '[]')
 
@@ -195,6 +201,65 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         finally:
             conf.errorReplyPrivate = originalConfErrorReplyPrivate
             
+    # Now for stuff not based on the plugins.
+    class First(callbacks.Privmsg):
+        def firstcmd(self, irc, msg, args):
+            """First"""
+            irc.reply(msg, 'foo')
+
+    class Second(callbacks.Privmsg):
+        def secondcmd(self, irc, msg, args):
+            """Second"""
+            irc.reply(msg, 'bar')
+
+    class FirstRepeat(callbacks.Privmsg):
+        def firstcmd(self, irc, msg, args):
+            """FirstRepeat"""
+            irc.reply(msg, 'baz')
+
+    class Third(callbacks.Privmsg):
+        def third(self, irc, msg, args):
+            """Third"""
+            irc.reply(msg, ' '.join(args))
+
+    def testDispatching(self):
+        self.irc.addCallback(self.First())
+        self.irc.addCallback(self.Second())
+        self.assertResponse('firstcmd', 'foo')
+        self.assertResponse('secondcmd', 'bar')
+        self.assertResponse('first firstcmd', 'foo')
+        self.assertResponse('second secondcmd', 'bar')
+
+    def testAmbiguousError(self):
+        self.irc.addCallback(self.First())
+        self.irc.addCallback(self.FirstRepeat())
+        self.assertError('firstcmd')
+        self.assertNotRegexp('firstcmd', '(foo.*baz|baz.*foo)')
+        self.assertResponse('first firstcmd', 'foo')
+        self.assertResponse('firstrepeat firstcmd', 'baz')
+        self.assertError('help firstcmd')
+        self.assertRegexp('help first firstcmd', 'First', 0) # no re.I flag.
+        self.assertRegexp('help firstrepeat firstcmd', 'FirstRepeat', 0)
+        self.assertResponse('syntax first firstcmd', 'firstcmd First')
+        self.assertResponse('syntax firstrepeat firstcmd',
+                            'firstcmd FirstRepeat')
+
+    def testDefaultCommand(self):
+        self.irc.addCallback(self.First())
+        self.irc.addCallback(self.Third())
+        self.assertError('first blah')
+        self.assertResponse('third foo bar baz', 'foo bar baz')
+
+
+class PrivmsgCommandAndRegexpTestCase(PluginTestCase):
+    plugins = ('Utilities',) # Gotta put something.
+    class PCAR(callbacks.PrivmsgCommandAndRegexp):
+        def test(self, irc, msg, args):
+            "<foo>"
+            raise callbacks.ArgumentError
+    def testNoEscapingArgumentError(self):
+        self.irc.addCallback(self.PCAR())
+        self.assertResponse('test', 'test <foo>')
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
