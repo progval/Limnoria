@@ -45,7 +45,6 @@ import utils
 import world
 import ircutils
 import unpreserve
-from structures import PersistentDictionary
 
 def fromChannelCapability(capability):
     """Returns a (channel, capability) tuple from a channel capability."""
@@ -403,7 +402,7 @@ class IrcChannel(object):
         
 
 class Creator(object):
-    def command(self, command, rest, lineno):
+    def badCommand(self, command, rest, lineno):
         raise ValueError, 'Invalid command on line %s: %s' % (lineno, command)
     
 class IrcUserCreator(Creator):

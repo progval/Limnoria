@@ -68,7 +68,7 @@ class Reader(object):
                 command = getattr(self.creator, command)
                 command(rest, lineno)
             else:
-                self.creator.command(command, rest, lineno)
+                self.creator.badCommand(command, rest, lineno)
         if self.modifiedCreator:
             self.creator.finish()
 
