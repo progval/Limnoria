@@ -80,7 +80,9 @@ class SocketDriver(drivers.IrcDriver):
                 # (11, 'Resource temporarily unavailable') raised if connect
                 # hasn't finished yet.
                 if e.args[0] != 11:
-                    raise
+                    s = 'Disconnect from %s: %s' % (self.server, e.args[1])
+                    debug.msg(s, 'normal')
+                    self.die()
         
     def run(self):
         #debug.methodNamePrintf(self, 'run')
