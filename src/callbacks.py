@@ -337,7 +337,7 @@ def checkCommandCapability(msg, cb, command):
         checkCapability(antiCommand)
         checkCapability(antiPluginCommand)
         checkAtEnd = [command, pluginCommand]
-        default = conf.supybot.defaultAllow()
+        default = conf.supybot.capabilities.default()
         if ircutils.isChannel(msg.args[0]):
             channel = msg.args[0]
             checkCapability(ircdb.makeChannelCapability(channel, antiCommand))

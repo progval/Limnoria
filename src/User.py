@@ -471,10 +471,10 @@ class User(callbacks.Privmsg):
             irc.errorNoUser()
             return
         list = False
-        while '--list' in args:
-            # XXX: Case-sensitive.
-            list = True
-            args.remove('--list')
+        (optlist, args) = getopt.getopt(args, '', ['list'])
+        for (option, arg) in optlist:
+            if option == '--list':
+                list = True
         if len(args) >= 2:
             # We're setting.
             pass

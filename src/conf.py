@@ -257,7 +257,10 @@ class DefaultCapabilities(registry.SpaceSeparatedListOfStrings):
             print '*** in your configuration file before start the bot.'
             self.value.add('-owner')
 
-registerGlobalValue(supybot, 'defaultCapabilities',
+###
+# supybot.capabilities
+###
+registerGlobalValue(supybot, 'capabilities',
     DefaultCapabilities(['-owner', '-admin', '-trusted'], """These are the
     capabilities that are given to everyone by default.  If they are normal
     capabilities, then the user will have to have the appropriate
@@ -266,35 +269,10 @@ registerGlobalValue(supybot, 'defaultCapabilities',
     to override these capabilities.  See docs/CAPABILITIES if you don't
     understand why these default to what they do."""))
 
-registerGlobalValue(supybot, 'defaultAllow',
+registerGlobalValue(supybot.capabilities, 'default',
     registry.Boolean(True, """Determines whether the bot by default will allow
-    users to run commands.  If this is disabled, a user will have to explicitly
+    users to have a capability.  If this is disabled, a user must explicitly
     have the capability for whatever command he wishes to run."""))
-
-registerGlobalValue(supybot, 'defaultIgnore',
-    registry.Boolean(False, """Determines whether the bot will ignore
-    unregistered users by default.  Of course, that'll make it particularly
-    hard for those users to register with the bot, but that's your problem to
-    solve."""))
-
-registerGlobalValue(supybot, 'humanTimestampFormat',
-    registry.String('%I:%M %p, %B %d, %Y', """Determines how timestamps printed
-    for human reading should be formatted. Refer to the Python documentation
-    for the time module to see valid formatting characteres for time
-    formats."""))
-
-class IP(registry.String):
-    """Value must be a valid IP."""
-    def setValue(self, v):
-        if v and not (utils.isIP(v) or utils.isIPV6(v)):
-            self.error()
-        else:
-            registry.String.setValue(self, v)
-
-registerGlobalValue(supybot, 'externalIP',
-   IP('', """A string that is the external IP of the bot.  If this is the empty
-   string, the bot will attempt to find out its IP dynamically (though
-   sometimes that doesn't work, hence this variable)."""))
 
 ###
 # Reply/error tweaking.
@@ -409,7 +387,7 @@ registerGlobalValue(supybot, 'alwaysJoinOnInvite',
     a channel if the user inviting it has the 'admin' capability (or if it's
     explicitly told to join the channel using the Admin.join command)"""))
 
-# XXX: ChannelValue not respected for this.
+# XXX: ChannelValue-ishness is not respected for this yet.
 registerChannelValue(supybot.reply, 'showSimpleSyntax',
     registry.Boolean(False, """Supybot normally replies with the full help
     whenever a user misuses a command.  If this value is set to True, the bot
@@ -657,6 +635,31 @@ registerGlobalValue(supybot.protocols.http, 'proxy',
 ###
 # Especially boring stuff.
 ###
+registerGlobalValue(supybot, 'defaultIgnore',
+    registry.Boolean(False, """Determines whether the bot will ignore
+    unregistered users by default.  Of course, that'll make it particularly
+    hard for those users to register with the bot, but that's your problem to
+    solve."""))
+
+registerGlobalValue(supybot, 'humanTimestampFormat',
+    registry.String('%I:%M %p, %B %d, %Y', """Determines how timestamps printed
+    for human reading should be formatted. Refer to the Python documentation
+    for the time module to see valid formatting characteres for time
+    formats."""))
+
+class IP(registry.String):
+    """Value must be a valid IP."""
+    def setValue(self, v):
+        if v and not (utils.isIP(v) or utils.isIPV6(v)):
+            self.error()
+        else:
+            registry.String.setValue(self, v)
+
+registerGlobalValue(supybot, 'externalIP',
+   IP('', """A string that is the external IP of the bot.  If this is the empty
+   string, the bot will attempt to find out its IP dynamically (though
+   sometimes that doesn't work, hence this variable)."""))
+
 class SocketTimeout(registry.PositiveInteger):
     """Value must be an integer greater than supybot.drivers.poll and must be
     greater than or equal to 1."""

@@ -170,7 +170,7 @@ class Config(callbacks.Privmsg):
         name = self._canonicalizeName(name)
         wrapper = getWrapper(name)
         if hasattr(wrapper, 'value'):
-            if not wrapper.private:
+            if not wrapper._private:
                 irc.reply(str(wrapper))
             else:
                 capability = getCapability(name)

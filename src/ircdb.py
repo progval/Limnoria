@@ -926,12 +926,13 @@ def _checkCapabilityForUnknownUser(capability, users=users, channels=channels):
                 return _x(capability, c.defaultAllow)
         except KeyError:
             pass
-    if capability in conf.supybot.defaultCapabilities():
+    defaultCapabilities = conf.supybot.capabilities()
+    if capability in defaultCapabilities:
         return True
-    elif invertCapability(capability) in conf.supybot.defaultCapabilities():
+    elif invertCapability(capability) in defaultCapabilities:
         return False
     else:
-        return _x(capability, conf.supybot.defaultAllow())
+        return _x(capability, conf.supybot.capabilities.default())
 
 def checkCapability(hostmask, capability, users=users, channels=channels):
     """Checks that the user specified by name/hostmask has the capabilty given.
@@ -967,13 +968,13 @@ def checkCapability(hostmask, capability, users=users, channels=channels):
                 return c.checkCapability(capability)
             else:
                 return _x(capability, c.defaultAllow)
-        defaultCapabilities = conf.supybot.defaultCapabilities()
+        defaultCapabilities = conf.supybot.capabilities()
         if capability in defaultCapabilities:
             return True
         elif invertCapability(capability) in defaultCapabilities:
             return False
         else:
-            return _x(capability, conf.supybot.defaultAllow())
+            return _x(capability, conf.supybot.capabilities.default())
 
 
 def checkCapabilities(hostmask, capabilities, requireAll=False):

@@ -479,9 +479,9 @@ class CheckCapabilityTestCase(IrcdbTestCase):
 
     def testNothing(self):
         self.assertEqual(self.checkCapability(self.nothing, self.cap),
-                         conf.supybot.defaultAllow())
+                         conf.supybot.capabilities.default())
         self.assertEqual(self.checkCapability(self.nothing, self.anticap),
-                         not conf.supybot.defaultAllow())
+                         not conf.supybot.capabilities.default())
 
     def testJustFoo(self):
         self.failUnless(self.checkCapability(self.justfoo, self.cap))
@@ -527,11 +527,11 @@ class CheckCapabilityTestCase(IrcdbTestCase):
         u.setAuth(self.securefoo)
         self.users.setUser(id, u)
         try:
-            originalConfDefaultAllow = conf.supybot.defaultAllow()
-            conf.supybot.defaultAllow.set('False')
+            originalConfDefaultAllow = conf.supybot.capabilities.default()
+            conf.supybot.capabilities.default.set('False')
             self.failIf(self.checkCapability('a' + self.securefoo, self.cap))
         finally:
-            conf.supybot.defaultAllow.set(str(originalConfDefaultAllow))
+            conf.supybot.capabilities.default.set(str(originalConfDefaultAllow))
 
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

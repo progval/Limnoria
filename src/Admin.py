@@ -308,9 +308,8 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
 
         # Thus, the owner capability can't be given in the bot.  Admin users
         # can only give out capabilities they have themselves (which will
-        # depend on both conf.supybot.defaultAllow and
-        # conf.supybot.defaultCapabilities), but generally means they can't
-        # mess with channel capabilities.
+        # depend on supybot.capabilities and its child default) but generally
+        # means they can't mess with channel capabilities.
         (name, capability) = privmsgs.getArgs(args, required=2)
         if capability == 'owner':
             irc.error('The "owner" capability can\'t be added in the bot.  '

@@ -96,7 +96,7 @@ def close(registry, filename, annotated=True, helpOnceOnly=False):
                         lines.append('#\n')
                         try:
                             original = value.value
-                            value.value = value.default
+                            value.value = value._default
                             lines.append('# Default value: %s\n' % value)
                         finally:
                             value.value = original
@@ -121,7 +121,7 @@ def join(names):
 
 class Group(object):
     def __init__(self, supplyDefault=False):
-        self.name = 'unset'
+        self._name = 'unset'
         self.added = []
         self.children = utils.InsensitivePreservingDict()
         self._lastModified = 0
@@ -142,11 +142,11 @@ class Group(object):
         raise ValueError, 'Groups have no value.'
 
     def __nonExistentEntry(self, attr):
-        s = '%s is not a valid entry in %s' % (attr, self.name)
+        s = '%s is not a valid entry in %s' % (attr, self._name)
         raise NonExistentRegistryEntry, s
 
     def __makeChild(self, attr, s):
-        v = self.__class__(self.default, self.help)
+        v = self.__class__(self._default, self.help)
         v.set(s)
         v.__class__ = self.X
         v.supplyDefault = False
@@ -168,12 +168,12 @@ class Group(object):
         return self.__getattr__(attr)
 
     def setName(self, name):
-        self.name = name
+        self._name = name
         if name in _cache and self._lastModified < _lastModified:
             self.set(_cache[name])
         if self.supplyDefault:
             for (k, v) in _cache.iteritems():
-                if k.startswith(self.name):
+                if k.startswith(self._name):
                     group = split(k)[-1]
                     try:
                         self.__makeChild(group, v)
@@ -189,7 +189,7 @@ class Group(object):
         if name not in self.children: # XXX Is this right?
             self.children[name] = node
             self.added.append(name)
-            fullname = join([self.name, name])
+            fullname = join([self._name, name])
             node.setName(fullname)
         return node
 
@@ -212,7 +212,7 @@ class Group(object):
             node = self.children[name]
             if hasattr(node, 'value') or hasattr(node, 'help'):
                 if node.__class__ is not self.X:
-                    L.append((node.name, node))
+                    L.append((node._name, node))
             if getChildren:
                 L.extend(node.getValues(getChildren, fullNames))
         if not fullNames:
@@ -226,8 +226,8 @@ class Value(Group):
     def __init__(self, default, help,
                  private=False, showDefault=True, **kwargs):
         Group.__init__(self, **kwargs)
-        self.default = default
-        self.private = private
+        self._default = default
+        self._private = private
         self.showDefault = showDefault
         self.help = utils.normalizeWhitespace(help.strip())
         self.setValue(default)
@@ -241,7 +241,7 @@ class Value(Group):
         raise InvalidRegistryValue, utils.normalizeWhitespace(s)
 
     def setName(self, *args):
-        if self.name == 'unset':
+        if self._name == 'unset':
             self._lastModified = 0
         Group.setName(self, *args)
         self._lastModified = time.time()
@@ -270,8 +270,8 @@ class Value(Group):
     # This is simply prettier than naming this function get(self)
     def __call__(self):
         if _lastModified > self._lastModified:
-            if self.name in _cache:
-                self.set(_cache[self.name])
+            if self._name in _cache:
+                self.set(_cache[self._name])
         return self.value
 
 class Boolean(Value):
