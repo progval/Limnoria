@@ -56,7 +56,7 @@ class HtmlToText(sgmllib.SGMLParser):
 
     def getText(self):
         text = ''.join(self.data).strip()
-        return ''.join(text.split()) # normalize whitespace
+        return ' '.join(text.split()) # normalize whitespace
 
 def htmlToText(s):
     x = HtmlToText()
