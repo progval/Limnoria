@@ -487,6 +487,13 @@ registerGlobalValue(supybot, 'flush',
     permanent, you must edit the registry yourself."""))
 
 ###
+# supybot.commands.  For stuff relating to commands.
+###
+registerGroup(supybot, 'commands')
+# supybot.commands.disabled moved to callbacks for canonicalName.
+
+
+###
 # supybot.drivers.  For stuff relating to Supybot's drivers (duh!)
 ###
 registerGroup(supybot, 'drivers')
