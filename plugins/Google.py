@@ -109,6 +109,7 @@ def search(log, queries, **kwargs):
         conf.supybot.plugins.Google.state.searches.setValue(searches)
         time = conf.supybot.plugins.Google.state.time() + data.meta.searchTime
         conf.supybot.plugins.Google.state.time.setValue(time)
+        last24hours.enqueue(None)
         return data
     except socket.error, e:
         if e.args[0] == 110:
@@ -190,16 +191,16 @@ conf.registerGlobalValue(conf.supybot.plugins.Google.state, 'time',
     registry.Float(0.0, """Used to keep the total amount of time Google has
     spent searching for this bot.  You shouldn't modify this."""))
 
-searches = conf.supybot.plugins.Google.state.searches()
+last24hours = structures.TimeoutQueue(86400)
 totalTime = conf.supybot.plugins.Google.state.time()
+searches = conf.supybot.plugins.Google.state.searches()
 
 class Google(callbacks.PrivmsgCommandAndRegexp):
     threaded = True
     callBefore = ['URL']
     regexps = ['googleSnarfer', 'googleGroups']
     def __init__(self):
-        callbacks.PrivmsgCommandAndRegexp.__init__(self)
-        self.last24hours = structures.TimeoutQueue(86400)
+        super(Google, self).__init__()
         google.setLicense(self.registryValue('licenseKey'))
 
     _colorGoogles = {}
@@ -230,7 +231,6 @@ class Google(callbacks.PrivmsgCommandAndRegexp):
     def formatData(self, data, bold=True, max=0):
         if isinstance(data, basestring):
             return data
-        self.last24hours.enqueue(None)
         t = 'Search took %s seconds' % data.meta.searchTime
         results = []
         if max:
