@@ -124,6 +124,7 @@ if __name__ == '__main__':
                       'when the bot is finished connecting to the server?'
         configfd.write(anything('What command?'))
         configfd.write('\n')
+    configfd.write('\n')
     configfd.close()
 
     ###
