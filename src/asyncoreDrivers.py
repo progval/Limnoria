@@ -69,7 +69,7 @@ class AsyncoreDriver(asynchat.async_chat, object):
         try:
             self.connect(self.server)
         except socket.error, e:
-            log.warning('Error connecting to %s: %s',self.irc.server,e.args[1])
+            log.warning('Error connecting to %s: %s', self.irc.server, e)
             self.reconnect(wait=True)
 
     def scheduleReconnect(self):

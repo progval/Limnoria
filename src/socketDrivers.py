@@ -115,7 +115,7 @@ class SocketDriver(drivers.IrcDriver):
         except socket.error, e:
             # Same as with _sendIfMsgs.
             if e.args[0] != 11:
-                log.warning('Disconnect from %s: %s', self.server, e.args[1])
+                log.warning('Disconnect from %s: %s', self.server, e)
                 self.reconnect(wait=True)
             return
         self._sendIfMsgs()
@@ -140,8 +140,7 @@ class SocketDriver(drivers.IrcDriver):
             self.conn.settimeout(conf.supybot.drivers.poll())
         except socket.error, e:
             if e.args[0] != 115:
-                log.warning('Error connecting to %s: %s',
-                            self.irc.server, e.args[1])
+                log.warning('Error connecting to %s: %s', self.irc.server, e)
                 self.reconnect(wait=True)
         self.connected = True
         self.reconnectWaitPeriodsIndex = 0
