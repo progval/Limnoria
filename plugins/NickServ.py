@@ -62,10 +62,11 @@ class NickServ(privmsgs.CapabilityCheckingPrivmsg):
                                                                 needed=2, 
                                                                 optional=1)
         self.nickserv = nickserv or 'NickServ'
+        self.sentGhost = False
         self._ghosted = re.compile('%s.*killed' % self.nick)
         irc.reply(msg, conf.replySuccess)
 
-    _owned = re.compile('nick.*(?:(?<!not)(?:registered|protected|owned))')
+    _owned = re.compile('nick.*(?<!not)(?:registered|protected|owned)')
     def doNotice(self, irc, msg):
         if self.nickserv:
             if msg.nick == self.nickserv:
@@ -73,6 +74,8 @@ class NickServ(privmsgs.CapabilityCheckingPrivmsg):
                     # NickServ told us the nick is registered.
                     identify = 'IDENTIFY %s' % self.password
                     irc.queueMsg(ircmsgs.privmsg(self.nickserv, identify))
+                elif msg.args[1].find('recognized') != -1:
+                    self.sentGhost = False
                 elif self._ghosted.search(msg.args[1]):
                     # NickServ told us the nick has been ghost-killed.
                     irc.queueMsg(ircmsgs.nick(self.nick))
@@ -80,10 +83,12 @@ class NickServ(privmsgs.CapabilityCheckingPrivmsg):
     def __call__(self, irc, msg):
         callbacks.Privmsg.__call__(self, irc, msg)
         if self.nickserv:
-            if irc.nick != self.nick:
+            if irc.nick != self.nick and not self.sentGhost:
                 ghost = 'GHOST %s %s' % (self.nick, self.password)
                 irc.queueMsg(ircmsgs.privmsg(self.nickserv, ghost))
+                self.sentGhost = True
 
 
 Class = NickServ
+
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
