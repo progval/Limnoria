@@ -33,7 +33,7 @@ Infobot compatibility, for the parts that we don't support already.
 
 import supybot
 
-deprecated = True
+#deprecated = True
 
 __revision__ = "$Id$"
 __author__ = supybot.authors.jemfinch
@@ -50,6 +50,7 @@ import supybot.dbi as dbi
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
+from supybot.commands import *
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
@@ -58,21 +59,27 @@ import supybot.callbacks as callbacks
 
 
 conf.registerPlugin('Infobot')
-conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'personality',
+conf.registerChannelValue(conf.supybot.plugins.Infobot, 'personality',
     registry.Boolean(True, """Determines whether the bot will respond with
     personable (Infobot-like) responses rather than its standard messages."""))
-conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'boringDunno',
+conf.registerChannelValue(conf.supybot.plugins.Infobot, 'boringDunno',
     registry.String('Dunno.', """Determines what boring dunno should be given
     if supybot.plugins.Infobot.personality is False."""))
-conf.registerGlobalValue(conf.supybot.plugins.Infobot,
-    'snarfUnaddressedDefinitions', registry.Boolean(True, """Determines whether
-    the bot will snarf definitions given in the channel that weren't directly
-    addressed to it.  Of course, no confirmation will be given if the bot isn't
-    directly addressed."""))
-conf.registerGlobalValue(conf.supybot.plugins.Infobot,
-    'answerUnaddressedQuestions', registry.Boolean(True, """Determines whether
-    the bot will answer questions that weren't directly addressed to it.  Of
-    course, if it doesn't have an answer, it will remain silent."""))
+
+conf.registerGroup(conf.supybot.plugins.Infobot, 'unaddressed')
+conf.registerChannelValue(conf.supybot.plugins.Infobot.unaddressed,
+    'snarfDefinitions', registry.Boolean(True, """Determines whether the bot
+    will snarf definitions given in the channel that weren't directly
+    addressed to it.  Of course, no confirmation will be given if the bot
+    isn't directly addressed."""))
+conf.registerChannelValue(conf.supybot.plugins.Infobot.unaddressed,
+    'answerQuestions', registry.Boolean(True, """Determines whether the bot
+    will answer questions that weren't directly addressed to it.  Of course,
+    if it doesn't have an answer, it will remain silent."""))
+conf.registerChannelValue(conf.supybot.plugins.Infobot.unaddressed,
+    'replyExistingFactoid', registry.Boolean(False, """Determines whether the
+    bot will announce that a factoid already exists when it sees a definition
+    for a pre-existing factoid."""))
 
 def configure(advanced):
     # This will be called by setup.py to configure this module.  Advanced is
@@ -128,94 +135,131 @@ initialAre = {'who': NORESPONSE,
 
 class PickleInfobotDB(object):
     def __init__(self, filename):
-        self._changes = 0
-        self._responses = 0
         self.filename = filename
-        try:
-            fd = file(self.filename)
-        except EnvironmentError:
-            self._is = utils.InsensitivePreservingDict()
-            self._are = utils.InsensitivePreservingDict()
-            for (k, v) in initialIs.iteritems():
-                self.setIs(k, v)
-            for (k, v) in initialAre.iteritems():
-                self.setAre(k, v)
-            self._changes = 0
-        else:
-            try:
-                (self._is, self._are) = pickle.load(fd)
-            except cPickle.UnpicklingError, e:
-                raise dbi.InvalidDBError, str(e)
+        self.dbs = ircutils.IrcDict()
+        self.changes = ircutils.IrcDict()
+        self.responses = ircutils.IrcDict()
 
-    def flush(self):
-        fd = utils.transactionalFile(self.filename, 'wb')
-        pickle.dump((self._is, self._are), fd)
-        fd.close()
+    def _getDb(self, channel):
+        filename = plugins.makeChannelFilename(self.filename, channel)
+        if filename in self.dbs:
+            pass
+        elif os.path.exists(filename):
+            fd = file(filename)
+            try:
+                (Is, Are) = pickle.load(fd)
+                self.dbs[filename] = (Is, Are)
+                self.changes[filename] = 0
+                self.responses[filename] = 0
+            except cPickle.UnpicklingError, e:
+                fd.close()
+                raise dbi.InvalidDBError, str(e)
+            fd.close()
+        else:
+            self.dbs[filename] = (utils.InsensitivePreservingDict(),
+                                  utils.InsensitivePreservingDict())
+            for (k, v) in initialIs.iteritems():
+                self.setIs(channel, k, v)
+            for (k, v) in initialAre.iteritems():
+                self.setAre(channel, k, v)
+            self.changes[filename] = 0
+            self.responses[filename] = 0
+        return (self.dbs[filename], filename)
+
+    def flush(self, db=None, filename=None):
+        if db is None and filename is None:
+            for (filename, db) in self.dbs.iteritems():
+                fd = utils.transactionalFile(filename, 'wb')
+                pickle.dump(db, fd)
+                fd.close()
+        else:
+            fd = utils.transactionalFile(filename, 'wb')
+            pickle.dump(db, fd)
+            fd.close()
+            self.dbs[filename] = db
 
     def close(self):
         self.flush()
 
-    def changeIs(self, factoid, replacer):
+    def incChanges(self):
+        filename = dynamic.filename
+        print '*** self.changes: %s' % self.changes
+        self.changes[filename] += 1
+
+    def incResponses(self):
+        self.responses[dynamic.filename] += 1
+
+    def changeIs(self, channel, factoid, replacer):
+        ((Is, Are), filename) = self._getDb(channel)
         try:
-            old = self._is[factoid]
+            old = Is[factoid]
         except KeyError:
             raise dbi.NoRecordError
         if replacer is not None:
-            self._is[factoid] = replacer(old)
-            self.flush()
-            self._changes += 1
+            Is[factoid] = replacer(old)
+            self.flush((Is, Are), filename)
+            self.incChanges()
 
-    def getIs(self, factoid):
-        ret = self._is[factoid]
-        self._responses += 1
+    def getIs(self, channel, factoid):
+        ((Is, Are), filename) = self._getDb(channel)
+        ret = Is[factoid]
+        self.incResponses()
         return ret
 
-    def setIs(self, fact, oid):
-        self._is[fact] = oid
-        self.flush()
-        self._changes += 1
+    def setIs(self, channel, key, value):
+        ((Is, Are), filename) = self._getDb(channel)
+        Is[key] = value
+        self.flush((Is, Are), filename)
+        self.incChanges()
 
-    def delIs(self, factoid):
+    def delIs(self, channel, factoid):
+        ((Is, Are), filename) = self._getDb(channel)
         try:
-            del self._is[factoid]
+            Is.pop(factoid)
         except KeyError:
             raise dbi.NoRecordError
-        self.flush()
-        self._changes += 1
+        self.flush((Is, Are), filename)
+        self.incChanges()
 
-    def hasIs(self, factoid):
-        return factoid in self._is
+    def hasIs(self, channel, factoid):
+        ((Is, Are), _) = self._getDb(channel)
+        return factoid in Is
 
-    def changeAre(self, factoid, replacer):
+    def changeAre(self, channel, factoid, replacer):
+        ((Is, Are), filename) = self._getDb(channel)
         try:
-            old = self._are[factoid]
+            old = Are[factoid]
         except KeyError:
             raise dbi.NoRecordError
         if replacer is not None:
-            self._are[factoid] = replacer(old)
-            self._changes += 1
-            self.flush()
+            Are[factoid] = replacer(old)
+            self.flush((Is, Are), filename)
+            self.incChanges()
 
-    def getAre(self, factoid):
-        ret = self._are[factoid]
-        self._responses += 1
+    def getAre(self, channel, factoid):
+        ((Is, Are), filename) = self._getDb(channel)
+        ret = Are[factoid]
+        self.incResponses()
         return ret
 
-    def hasAre(self, factoid):
-        return factoid in self._are
+    def hasAre(self, channel, factoid):
+        ((Is, Are), _) = self._getDb(channel)
+        return factoid in Are
 
-    def setAre(self, fact, oid):
-        self._are[fact] = oid
-        self.flush()
-        self._changes += 1
+    def setAre(self, channel, key, value):
+        ((Is, Are), filename) = self._getDb(channel)
+        Are[key] = value
+        self.flush((Is, Are), filename)
+        self.incChanges()
 
-    def delAre(self, factoid):
+    def delAre(self, channel, factoid):
+        ((Is, Are), filename) = self._getDb(channel)
         try:
-            del self._are[factoid]
+            Are.pop(factoid)
         except KeyError:
             raise dbi.NoRecordError
-        self.flush()
-        self._changes += 1
+        self.flush((Is, Are), filename)
+        self.incChanges()
 
     def getDunno(self):
         return random.choice(dunnos) + random.choice(ends)
@@ -223,33 +267,46 @@ class PickleInfobotDB(object):
     def getConfirm(self):
         return random.choice(confirms) + random.choice(ends)
 
-    def getChangeCount(self):
-        return self._changes
+    def getChangeCount(self, channel):
+        (_, filename) = self._getDb(channel)
+        return self.changes[filename]
 
-    def getResponseCount(self):
-        return self._responses
+    def getResponseCount(self, channel):
+        (_, filename) = self._getDb(channel)
+        return self.responses[filename]
 
-    def getNumFacts(self):
-        return len(self._are.keys()) + len(self._is.keys())
+    def getNumFacts(self, channel):
+        ((Is, Are), _) = self._getDb(channel)
+        return len(Are.keys()) + len(Is.keys())
 
 class SqliteInfobotDB(object):
     def __init__(self, filename):
+        self.filename = filename
+        self.dbs = ircutils.IrcDict()
+        self.changes = ircutils.IrcDict()
+        self.responses = ircutils.IrcDict()
+
+    def _getDb(self, channel):
         try:
             import sqlite
         except ImportError:
             raise callbacks.Error, 'You need to have PySQLite installed to '\
                                    'use this plugin.  Download it at '\
                                    '<http://pysqlite.sf.net/>'
-        self._changes = 0
-        self._responses = 0
-        self.filename = filename
         try:
-            if os.path.exists(self.filename):
-                self.db = sqlite.connect(self.filename)
-                return self.db
-            #else:
-            self.db = sqlite.connect(self.filename)
-            cursor = self.db.cursor()
+            filename = plugins.makeChannelFilename(self.filename, channel)
+            if filename not in self.changes:
+                self.changes[filename] = 0
+            if filename not in self.responses:
+                self.responses[filename] = 0
+            if filename in self.dbs:
+                return (self.dbs[filename], filename)
+            if os.path.exists(filename):
+                self.dbs[filename] = sqlite.connect(filename)
+                return (self.dbs[filename], filename)
+            db = sqlite.connect(filename)
+            self.dbs[filename] = db
+            cursor = db.cursor()
             cursor.execute("""CREATE TABLE isFacts (
                               key TEXT UNIQUE ON CONFLICT REPLACE,
                               value TEXT
@@ -258,20 +315,31 @@ class SqliteInfobotDB(object):
                               key TEXT UNIQUE ON CONFLICT REPLACE,
                               value TEXT
                               );""")
-            self.db.commit()
+            db.commit()
             for (k, v) in initialIs.iteritems():
-                self.setIs(k, v)
+                self.setIs(channel, k, v)
             for (k, v) in initialAre.iteritems():
-                self.setAre(k, v)
-            self._changes = 0
+                self.setAre(channel, k, v)
+            self.changes[filename] = 0
+            self.responses[filename] = 0
+            return (db, filename)
         except sqlite.DatabaseError, e:
             raise dbi.InvalidDBError, str(e)
 
     def close(self):
-        self.db.close()
+        for db in self.dbs.itervalues():
+            db.close()
+        self.dbs.clear()
 
-    def changeIs(self, factoid, replacer):
-        cursor = self.db.cursor()
+    def incChanges(self):
+        self.changes[dynamic.filename] += 1
+
+    def incResponses(self):
+        self.changes[dynamic.filename] += 1
+
+    def changeIs(self, channel, factoid, replacer):
+        (db, filename) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""SELECT value FROM isFacts WHERE key=%s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
@@ -279,37 +347,42 @@ class SqliteInfobotDB(object):
         if replacer is not None:
             cursor.execute("""UPDATE isFacts SET value=%s WHERE key=%s""",
                            replacer(old), factoid)
-            self.db.commit()
-            self._changes += 1
+            db.commit()
+            self.incChanges()
 
-    def getIs(self, factoid):
-        cursor = self.db.cursor()
+    def getIs(self, channel, factoid):
+        (db, filename) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""SELECT value FROM isFacts WHERE key=%s""", factoid)
         ret = cursor.fetchone()[0]
-        self._responses += 1
+        self.incResponses()
         return ret
 
-    def setIs(self, fact, oid):
-        cursor = self.db.cursor()
+    def setIs(self, channel, fact, oid):
+        (db, filename) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""INSERT INTO isFacts VALUES (%s, %s)""", fact, oid)
-        self.db.commit()
-        self._changes += 1
+        db.commit()
+        self.incChanges()
 
-    def delIs(self, factoid):
-        cursor = self.db.cursor()
+    def delIs(self, channel, factoid):
+        (db, filename) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""DELETE FROM isFacts WHERE key=%s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
-        self.db.commit()
-        self._changes += 1
+        db.commit()
+        self.incChanges()
 
-    def hasIs(self, factoid):
-        cursor = self.db.cursor()
+    def hasIs(self, channel, factoid):
+        (db, _) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""SELECT * FROM isFacts WHERE key=%s""", factoid)
         return cursor.rowcount == 1
 
-    def changeAre(self, factoid, replacer):
-        cursor = self.db.cursor()
+    def changeAre(self, channel, factoid, replacer):
+        (db, filename) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""SELECT value FROM areFacts WHERE key=%s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
@@ -317,32 +390,36 @@ class SqliteInfobotDB(object):
         if replacer is not None:
             cursor.execute("""UPDATE areFacts SET value=%s WHERE key=%s""",
                            replacer(old), factoid)
-            self.db.commit()
-            self._changes += 1
+            db.commit()
+            self.incChanges()
 
-    def getAre(self, factoid):
-        cursor = self.db.cursor()
+    def getAre(self, channel, factoid):
+        (db, filename) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""SELECT value FROM areFacts WHERE key=%s""", factoid)
         ret = cursor.fetchone()[0]
-        self._responses += 1
+        self.incResponses()
         return ret
 
-    def setAre(self, fact, oid):
-        cursor = self.db.cursor()
+    def setAre(self, channel, fact, oid):
+        (db, filename) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""INSERT INTO areFacts VALUES (%s, %s)""", fact, oid)
-        self.db.commit()
-        self._changes += 1
+        db.commit()
+        self.incChanges()
 
-    def delAre(self, factoid):
-        cursor = self.db.cursor()
+    def delAre(self, channel, factoid):
+        (db, filename) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""DELETE FROM areFacts WHERE key=%s""", factoid)
         if cursor.rowcount == 0:
             raise dbi.NoRecordError
-        self.db.commit()
-        self._changes += 1
+        db.commit()
+        self.incChanges()
 
-    def hasAre(self, factoid):
-        cursor = self.db.cursor()
+    def hasAre(self, channel, factoid):
+        (db, _) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""SELECT * FROM areFacts WHERE key=%s""", factoid)
         return cursor.rowcount == 1
 
@@ -352,14 +429,23 @@ class SqliteInfobotDB(object):
     def getConfirm(self):
         return random.choice(confirms) + random.choice(ends)
 
-    def getChangeCount(self):
-        return self._changes
+    def getChangeCount(self, channel):
+        (_, filename) = self._getDb(channel)
+        try:
+            return self.changes[filename]
+        except KeyError:
+            return 0
 
-    def getResponseCount(self):
-        return self._responses
+    def getResponseCount(self, channel):
+        (_, filename) = self._getDb(channel)
+        try:
+            return self.responses[filename]
+        except KeyError:
+            return 0
 
-    def getNumFacts(self):
-        cursor = self.db.cursor()
+    def getNumFacts(self, channel):
+        (db, _) = self._getDb(channel)
+        cursor = db.cursor()
         cursor.execute("""SELECT COUNT(*) FROM areFacts""")
         areFacts = int(cursor.fetchone()[0])
         cursor.execute("""SELECT COUNT(*) FROM isFacts""")
@@ -375,34 +461,32 @@ class Dunno(Exception):
     pass
 
 class Infobot(callbacks.PrivmsgCommandAndRegexp):
-    regexps = ['doForget', 'doChange', 'doFactoid', 'doUnknown']
+    regexps = ['doForce', 'doForget', 'doFactoid', 'doUnknown']
+    addressedRegexps = ['doForce', 'doForget', 'doChange', 'doFactoid', 'doUnknown']
     def __init__(self):
         self.__parent = super(Infobot, self)
         self.__parent.__init__()
-        try:
-            self.db = InfobotDB()
-        except Exception:
-            self.log.exception('Error loading %s:', self.filename)
-            raise # So it doesn't get loaded without its database.
+        self.db = InfobotDB()
         self.irc = None
         self.msg = None
-        self.force = False
         self.replied = True
-        self.badForce = False
-        self.addressed = False
-        self.calledDoPrivmsg = False
+        self.changed = False
+        self.added = False
 
     def die(self):
         self.__parent.die()
         self.db.close()
 
+    def reset(self):
+        self.db.close()
+
     def _error(self, s):
-        if self.addressed:
+        if msg.addressed:
             self.irc.error(s)
         else:
             self.log.warning(s)
 
-    def reply(self, s, irc=None, msg=None, action=False):
+    def reply(self, s, irc=None, msg=None, action=False, substitute=True):
         if self.replied:
             self.log.debug('Already replied, not replying again.')
             return
@@ -413,8 +497,9 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             assert self.msg is not None
             msg = self.msg
         self.replied = True
-        irc.reply(ircutils.standardSubstitute(irc, msg, s),
-                  prefixName=False, action=action, msg=msg)
+        if substitute:
+            s = ircutils.standardSubstitute(irc, msg, s)
+        irc.reply(s, prefixName=False, action=action, msg=msg)
 
     def confirm(self, irc=None, msg=None):
         if self.registryValue('personality'):
@@ -429,26 +514,40 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         else:
             self.reply(self.registryValue('boringDunno'), irc=irc, msg=msg)
 
-    def factoid(self, key, irc=None, msg=None, dunno=True, prepend=''):
+    def factoid(self, key, irc=None, msg=None, dunno=True, prepend='',
+                isAre=None):
         if irc is None:
             assert self.irc is not None
             irc = self.irc
         if msg is None:
             assert self.msg is not None
             msg = self.msg
-        isAre = None
+        if isAre is not None:
+            isAre = isAre.lower()
+        channel = dynamic.channel
         try:
-            if self.db.hasIs(key):
-                isAre = 'is'
-                value = self.db.getIs(key)
-            elif self.db.hasAre(key):
-                isAre = 'are'
-                value = self.db.getAre(key)
+            if isAre is None:
+                if self.db.hasIs(channel, key):
+                    isAre = 'is'
+                    value = self.db.getIs(channel, key)
+                elif self.db.hasAre(channel, key):
+                    isAre = 'are'
+                    value = self.db.getAre(channel, key)
+            elif isAre == 'is':
+                if not self.db.hasIs(channel, key):
+                    isAre = None
+                else:
+                    value = self.db.getIs(channel, key)
+            elif isAre == 'are':
+                if not self.db.hasAre(channel, key):
+                    isAre = None
+                else:
+                    value = self.db.getAre(channel, key)
         except dbi.InvalidDBError, e:
             self._error('Unable to access db: %s' % e)
             return
         if isAre is None:
-            if self.addressed:
+            if msg.addressed:
                 if dunno:
                     self.dunno(irc=irc, msg=msg)
                 else:
@@ -481,72 +580,28 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         return s
 
     _forceRe = re.compile(r'^no[,: -]+', re.I)
-    _karmaRe = re.compile(r'^(?:\S+|\(.+\))(?:\+\+|--)(?:\s+)?$')
+    _karmaRe = re.compile(r'(?:\+\+|--)(?:\s+)?$')
     def doPrivmsg(self, irc, msg):
-        if msg.repliedTo:
-            self.log.debug('Returning early from doPrivmsg: msg.repliedTo.')
-            return
-        if ircmsgs.isCtcp(msg):
-            self.log.debug('Returning early from doPrivmsg: isCtcp(msg).')
-            return
-        if self.calledDoPrivmsg:
-            self.log.debug('Returning early from doPrivmsg: calledDoPrivmsg.')
-            self.calledDoPrivmsg = False
-            return
         try:
-            maybeAddressed = callbacks.addressed(irc.nick, msg,
-                                                 whenAddressedByNick=True)
-            if maybeAddressed:
-                self.addressed = True
-                payload = maybeAddressed
-            else:
-                payload = msg.args[1]
-            if self._karmaRe.search(payload):
-                self.log.debug('Not snarfing a karma adjustment.')
+            if msg.repliedTo:
+                self.replied = True
+            if ircmsgs.isCtcp(msg):
+                self.log.debug('Returning early from doPrivmsg: isCtcp(msg).')
                 return
-            payload = self.normalize(payload)
-            maybeForced = self._forceRe.sub('', payload)
-            if maybeForced != payload:
-                self.force = True
-                # Infobot requires that forces have the form "no, botname, ..."
-                # We think that's stupid to require the bot name if the bot is
-                # being directly addressed. The following makes sure both
-                # "botname: no, botname, ..." and "botname: no, ..." work the
-                # same and non-addressed forms require the bots nick.
-                nick = irc.nick.lower()
-                if not self.addressed:
-                    if not maybeForced.lower().startswith(nick):
-                        self.badForce = True
-                        self.force = False
-                if maybeForced.lower().startswith(nick):
-                    maybeForced = maybeForced[len(nick):].lstrip(', ')
-                payload = maybeForced
-            # Let's make sure we dump out of Infobot if the privmsg is an
-            # actual command otherwise we could get multiple responses.
-            if self.addressed and '=~' not in payload:
-                payload += '?'
-            if payload.endswith(irc.nick):
-                self.addressed = True
-                payload = payload[:-len(irc.nick)]
-                payload = payload.strip(', ') # Strip punctuation before nick.
-                payload += '?' # So doUnknown gets called.
-            if not payload.strip():
-                self.log.debug('Bailing since we received an empty msg.')
+            if self._karmaRe.search(msg.args[1]):
+                self.log.debug('Returning early from doPrivmsg: karma.')
                 return
+            # For later dynamic scoping
+            channel = plugins.getChannel(msg.args[0])
+            payload = self.normalize(msg.args[1])
             msg = ircmsgs.IrcMsg(args=(msg.args[0], payload), msg=msg)
             self.__parent.doPrivmsg(irc, msg)
         finally:
-            self.force = False
             self.replied = False
-            self.badForce = False
-            self.addressed = False
-
-    def tokenizedCommand(self, irc, msg, tokens):
-        self.doPrivmsg(irc, msg)
-        self.calledDoPrivmsg = True
+            self.changed = False
+            self.added = False
 
     def callCommand(self, name, irc, msg, *L, **kwargs):
-        #print '***', name, utils.stackTrace()
         try:
             self.irc = irc
             self.msg = msg
@@ -561,7 +616,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         deleted = False
         for method in [self.db.delIs, self.db.delAre]:
             try:
-                method(fact)
+                method(dynamic.channel, fact)
                 deleted = True
             except dbi.NoRecordError:
                 pass
@@ -571,6 +626,41 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             # XXX: Should this be genericified?
             self.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
 
+    def doForce(self, irc, msg, match):
+        r"^no,\s+(\w+,\s+)?(.+?)\s+(?<!\\)(was|is|am|were|are)\s+(.+?)[?!. ]*$"
+        (nick, key, isAre, value) = match.groups()
+        if not msg.addressed:
+            if nick is None:
+                self.log.debug('Not forcing because we weren\'t addressed and '
+                               'payload wasn\'t of the form: no, irc.nick, ..')
+                return
+            nick = nick.rstrip(' \t,')
+            if not ircutils.nickEqual(nick, irc.nick):
+                self.log.debug('Not forcing because the regexp nick didn\'t '
+                               'match our nick.')
+                return
+        else:
+            if nick is not None:
+                stripped = nick.rstrip(' \t,')
+                if not ircutils.nickEqual(stripped, irc.nick):
+                    key = nick + key
+        isAre = isAre.lower()
+        if self.added:
+            return
+        if isAre in ('was', 'is', 'am'):
+            if self.db.hasIs(dynamic.channel, key):
+                self.log.debug('Forcing %s to %s.',
+                               utils.quoted(key), utils.quoted(value))
+                self.added = True
+                self.db.setIs(dynamic.channel, key, value)
+        else:
+            if self.db.hasAre(dynamic.channel, key):
+                self.log.debug('Forcing %s to %s.',
+                               utils.quoted(key), utils.quoted(value))
+                self.added = True
+                self.db.setAre(dynamic.channel, key, value)
+        self.confirm()
+
     def doChange(self, irc, msg, match):
         r"^(.+)\s+=~\s+(.+)$"
         (fact, regexp) = match.groups()
@@ -578,16 +668,17 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         try:
             r = utils.perlReToReplacer(regexp)
         except ValueError, e:
-            if self.addressed:
-                irc.error('Invalid regexp: %s' % regexp)
-                return
+            if msg.addressed:
+                irc.errorInvalid('regexp', regexp)
             else:
                 self.log.debug('Invalid regexp: %s' % regexp)
                 return
+        if self.changed:
+            return
         for method in [self.db.changeIs, self.db.changeAre]:
             try:
-                method(fact, r)
-                changed = True
+                method(dynamic.channel, fact, r)
+                self.changed = True
             except dbi.NoRecordError:
                 pass
         if changed:
@@ -597,10 +688,16 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             self.reply('I\'ve never heard of %s, %s!' % (fact, msg.nick))
 
     def doUnknown(self, irc, msg, match):
-        r"^(.+?)\s*\?[?!. ]*$"
-        key = match.group(1)
-        if self.addressed or self.registryValue('answerUnaddressedQuestions'):
-            # Does the dunno'ing for us itself.
+        r"^(.+?)\s*(\?[?!. ]*)?$"
+        (key, question) = match.groups()
+        if not msg.addressed:
+            if question is None:
+                self.log.debug('Not answering question since we weren\'t '
+                               'addressed and there was no question mark.')
+                return
+            if self.registryValue('unaddressed.answerQuestions'):
+                self.factoid(key, prepend=random.choice(starts))
+        else:
             self.factoid(key, prepend=random.choice(starts))
 
     def doFactoid(self, irc, msg, match):
@@ -609,75 +706,81 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         key = key.replace('\\', '')
         if key.lower() in ('where', 'what', 'who', 'wtf'):
             # It's a question.
-            if self.addressed or \
-               self.registryValue('answerUnaddressedQuestions'):
-                self.factoid(value, prepend=random.choice(starts))
+            if msg.addressed or \
+               self.registryValue('unaddressed.answerQuestions'):
+                self.factoid(value, isAre=isAre, prepend=random.choice(starts))
             return
-        if not self.addressed and \
-           not self.registryValue('snarfUnaddressedDefinitions'):
+        if not msg.addressed and \
+           not self.registryValue('unaddressed.snarfDefinitions'):
             return
         isAre = isAre.lower()
+        if self.added:
+            return
         if isAre in ('was', 'is', 'am'):
-            if self.db.hasIs(key):
+            if self.db.hasIs(dynamic.channel, key):
                 if also:
                     self.log.debug('Adding %s to %s.',
                                    utils.quoted(key), utils.quoted(value))
-                    value = '%s or %s' % (self.db.getIs(key), value)
-                elif self.force:
-                    self.log.debug('Forcing %s to %s.',
-                                   utils.quoted(key), utils.quoted(value))
-                elif self.badForce:
-                    value = self.db.getIs(key)
-                    self.reply('... but %s is %s, %s ...' % (key, value,
-                                                             msg.nick))
-                    return
-                elif self.addressed:
-                    value = self.db.getIs(key)
-                    self.reply('But %s is %s, %s.' % (key, value, msg.nick))
-                    return
+                    value = '%s or %s' % (self.db.getIs(dynamic.channel, key),
+                                          value)
+                elif not msg.addressed:
+                    value = self.db.getIs(dynamic.channel, key)
+                    if initialIs.get(key) != value:
+                        self.reply('... but %s is %s, %s ...' %
+                                   (key, value, msg.nick), substitute=False)
+                        return
+                elif msg.addressed:
+                    value = self.db.getIs(dynamic.channel, key)
+                    if initialIs.get(key) != value:
+                        self.reply('But %s is %s, %s.' %
+                                   (key, value, msg.nick), substitute=False)
+                        return
                 else:
                     self.log.debug('Already have a %s key.',
                                    utils.quoted(key))
                     return
-            self.db.setIs(key, value)
+            self.added = True
+            self.db.setIs(dynamic.channel, key, value)
         else:
-            if self.db.hasAre(key):
+            if self.db.hasAre(dynamic.channel, key):
                 if also:
                     self.log.debug('Adding %s to %s.',
                                    utils.quoted(key), utils.quoted(value))
-                    value = '%s or %s' % (self.db.getAre(key), value)
-                elif self.force:
-                    self.log.debug('Forcing %s to %s.',
-                                   utils.quoted(key), utils.quoted(value))
-                elif self.badForce:
-                    value = self.db.getAre(key)
-                    self.reply('... but %s are %s, %s ...' % (key, value,
-                                                              msg.nick))
-                    return
-                elif self.addressed:
-                    value = self.db.getAre(key)
-                    self.reply('But %s are %s, %s.' % (key, value, msg.nick))
-                    return
+                    value = '%s or %s' % (self.db.getAre(dynamic.channel, key),
+                                          value)
+                elif not msg.addressed:
+                    value = self.db.getAre(dynamic.channel, key)
+                    if initialAre.get(key) != value:
+                        self.reply('... but %s are %s, %s ...' %
+                                   (key, value, msg.nick), substitute=False)
+                        return
+                elif msg.addressed:
+                    value = self.db.getAre(dynamic.channel, key)
+                    if initialAre.get(key) != value:
+                        self.reply('But %s are %s, %s.' %
+                                   (key, value, msg.nick), substitute=False)
+                        return
                 else:
                     self.log.debug('Already have a %s key.',
                                    utils.quoted(key))
                     return
-            self.db.setAre(key, value)
-        if self.addressed or self.force:
+            self.added = True
+            self.db.setAre(dynamic.channel, key, value)
+        if msg.addressed:
             self.confirm()
 
-    def stats(self, irc, msg, args):
+    def stats(self, irc, msg, args, channel):
         """takes no arguments
 
         Returns the number of changes and requests made to the Infobot database
         since the plugin was loaded.
         """
-        changes = self.db.getChangeCount()
-        responses = self.db.getResponseCount()
+        changes = self.db.getChangeCount(channel)
+        responses = self.db.getResponseCount(channel)
         now = time.time()
         diff = int(now - world.startedAt)
         mode = {True: 'optional', False: 'require'}
-        answer = self.registryValue('answerUnaddressedQuestions')
+        answer = self.registryValue('unaddressed.answerQuestions')
         irc.reply('Since %s, there %s been %s and %s. I have been awake for %s'
                   ' this session, and currently reference %s. Addressing is in'
                   ' %s mode.' % (time.ctime(world.startedAt),
@@ -685,32 +788,30 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                                  utils.nItems('modification', changes),
                                  utils.nItems('question', responses),
                                  utils.timeElapsed(int(now - world.startedAt)),
-                                 utils.nItems('factoid',self.db.getNumFacts()),
+                                 utils.nItems('factoid',
+                                              self.db.getNumFacts(channel)),
                                  mode[answer]))
+    stats = wrap(stats, ['channeldb'])
     status=stats
 
-    def tell(self, irc, msg, args):
+    def tell(self, irc, msg, args, channel, nick, _, factoid):
         """<nick> [about] <factoid>
 
         Tells <nick> about <factoid>.
         """
-        if len(args) < 2:
-            raise callbacks.ArgumentError
-        if args[1] == 'about':
-            del args[1]
-        (nick, factoid) = privmsgs.getArgs(args, required=2)
         try:
             hostmask = irc.state.nickToHostmask(nick)
         except KeyError:
             irc.error('I haven\'t seen %s, I\'ll let you '
-                      'do the telling.' % nick)
-            return
+                      'do the telling.' % nick, Raise=True)
         newmsg = ircmsgs.privmsg(irc.nick, factoid+'?', prefix=hostmask)
         try:
             prepend = '%s wants you to know that ' % msg.nick
             self.factoid(factoid, msg=newmsg, prepend=prepend)
         except Dunno:
             self.dunno()
+    tell = wrap(tell, ['channeldb', 'something',
+                       optional(('literal', 'about')), 'text'])
 
 
 Class = Infobot
