@@ -54,6 +54,7 @@ signal.signal(signal.SIGTERM, signalHandler)
 
 import time
 import optparse
+import textwrap
 
 started = time.time()
 
@@ -181,8 +182,12 @@ if __name__ == '__main__':
             registry.open(registryFilename)
             shutil.copy(registryFilename, registryFilename + '.bak')
         except registry.InvalidRegistryFile, e:
-            sys.stderr.write(str(e))
+            s = '%s in %s.  ' % (e, registryFilename)
+            s += 'Please fix this error and start Supybot again.'
+            s = textwrap.fill(s)
+            sys.stderr.write(s)
             sys.stderr.write(os.linesep)
+            raise
             sys.exit(-1)
         except EnvironmentError, e:
             sys.stderr.write(str(e))
