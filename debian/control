@@ -1,16 +1,15 @@
 Source: supybot
 Section: net
 Priority: optional
-Maintainer: Jonathan Hseu <vomjom@debian.org>
-Build-Depends: debhelper (>= 4.0.0), python (>= 2.3), python-dev (>= 2.3)
-Standards-Version: 3.6.0
+Maintainer: James Vega <vega.james@gmail.com>
+Build-Depends: debhelper (>= 4.1.0), python (>= 2.3), python-dev (>= 2.3), docbook-to-man (>= 2.0.0)
+Standards-Version: 3.6.1.0
 
 Package: supybot
 Architecture: all
 Depends: ${python:Depends}
-Recommends: python-sqlite
-Suggests: python-twisted
-Description: A robust and user friendly Python IRC bot.
+Suggests: python-twisted, python-sqlite
+Description: robust and user friendly Python IRC bot
  Supybot is a robust (it doesn't crash), user friendly (it's easy
  to configure) and programmer friendly (plugins are *extremely*
  easy to write) Python IRC bot.  It aims to be an adequate

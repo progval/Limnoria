@@ -1,6 +1,33 @@
-supybot (0.76.1-1) unstable; urgency=low
+supybot (0.79.9-1) unstable; urgency=high
+
+  * New upstream (Closes: #268311)
+  * New maintainer: James Vega <vega.james@gmail.com>
+  * Urgency high to get the RC fix into Sarge (hopefully)
+  * debian/control:
+    + Downgrade Recommends: python-sqlite to Suggests: python-sqlite
+    + Update Build-Depends: cdbs, debhelper (>= 4.1.0)
+    + Bump Standard-Version to 3.6.1.0, no changes necessary
+  * Convert to cdbs
+
+ -- James Vega <vega.james@gmail.com>  Thu, 26 Aug 2004 17:28:03 -0400
+
+supybot (0.77.2-1) unstable; urgency=low
+
+  * New upstream
+
+ -- Jonathan Hseu <vomjom@debian.org>  Sun, 18 Apr 2004 02:58:25 -0500
+
+supybot (0.77.1-1) unstable; urgency=low
+
+  * New upstream
+  * Add python-dev as a build-dep (closes: Bug#242953)
+
+ -- Jonathan Hseu <vomjom@debian.org>  Sat, 10 Apr 2004 13:06:38 -0500
+
+supybot (0.77.0-1) unstable; urgency=low
 
   * Initial Release.
+  * Paste LICENSE file into copyright
 
- -- Jonathan Hseu <vomjom@debian.org>  Tue,  3 Feb 2004 21:45:46 -0600
+ -- Jonathan Hseu <vomjom@debian.org>  Tue, 10 Mar 2004 00:59:46 -0600
 
