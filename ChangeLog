@@ -1,3 +1,5 @@
+	* Added User.list command to list registered users.
+	
 	* Fixed bug #850931 as well as several other minor bugs in
 	Utilities.re.
 	

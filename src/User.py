@@ -39,6 +39,7 @@ import fix
 
 import getopt
 import string
+import fnmatch
 from itertools import imap, ifilter
 
 import conf
