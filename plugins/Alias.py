@@ -134,9 +134,6 @@ def makeNewAlias(name, alias):
         if '$channel' in alias:
             channel = privmsgs.getChannel(msg, args)
             alias_ = alias_.replace('$channel', channel)
-        if not (biggestDollar or biggestAt or wildcard):
-            irc.reply(msg, alias_)
-            return
         if not wildcard and biggestDollar or biggestAt:
             args = privmsgs.getArgs(args, needed=biggestDollar,
                                     optional=biggestAt)

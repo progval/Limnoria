@@ -73,11 +73,6 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNotRegexp('syntax slashdot', 'None')
         self.assertRegexp('help slashdot', "Alias for 'foo'")
         
-    def testSimpleAlias(self):
-        pi = '3.1456926535897932384626433832795028841971693'
-        self.assertNotError('alias pi %s' % pi)
-        self.assertResponse('pi', pi)
-
     def testDollars(self):
         self.assertNotError('alias rot26 "rot13 [rot13 $1]"')
         self.assertResponse('rot26 foobar', 'foobar')
@@ -112,16 +107,16 @@ class AliasTestCase(ChannelPluginTestCase, PluginDocumentation):
         self.assertNoResponse('blah blah blah', 2)
 
     def testChannel(self):
-        self.assertNotError('alias channel $channel')
+        self.assertNotError('alias channel echo $channel')
         self.assertResponse('channel', self.channel)
 
     def testNick(self):
-        self.assertNotError('alias sendingnick $nick')
+        self.assertNotError('alias sendingnick "echo $nick"')
         self.assertResponse('sendingnick', self.nick)
 
     def testAddRemoveAlias(self):
         cb = self.irc.getCallback('Alias')
-        cb.addAlias(self.irc, 'foobar', 'sbbone', freeze=True)
+        cb.addAlias(self.irc, 'foobar', 'echo sbbone', freeze=True)
         self.assertResponse('foobar', 'sbbone')
         self.assertRaises(Alias.AliasError, cb.removeAlias, 'foobar')
         cb.removeAlias('foobar', evenIfFrozen=True)
