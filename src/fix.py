@@ -216,7 +216,9 @@ if not hasattr(Exception, '_original__init__'):
 import atexit
 def _replace_original__init__():
     Exception.__init__ = Exception._original__init__
-atexit.register(_replace_original__init__)g = globals()
+atexit.register(_replace_original__init__)
+
+g = globals()
 
 for name in exported:
     __builtins__[name] = g[name]
