@@ -1,3 +1,5 @@
+	* Added multiple recipient support for notes.
+	
 	* Added BadWords.list, to list the bad words currently being
 	censored by the bot.
 	
