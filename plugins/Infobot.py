@@ -470,7 +470,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         self.db = InfobotDB()
         self.irc = None
         self.msg = None
-        self.replied = True
         self.changed = False
         self.added = False
 
@@ -481,14 +480,17 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     def reset(self):
         self.db.close()
 
-    def _error(self, s):
+    def error(self, s):
+        if msg.repliedTo:
+            self.log.debug('Already replied, not replying again.')
+            return
         if msg.addressed:
             self.irc.error(s)
         else:
             self.log.warning(s)
 
     def reply(self, s, irc=None, msg=None, action=False, substitute=True):
-        if self.replied:
+        if msg.repliedTo:
             self.log.debug('Already replied, not replying again.')
             return
         if irc is None:
@@ -497,7 +499,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         if msg is None:
             assert self.msg is not None
             msg = self.msg
-        self.replied = True
         if substitute:
             s = ircutils.standardSubstitute(irc, msg, s)
         irc.reply(s, prefixName=False, action=action, msg=msg)
@@ -557,7 +558,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                 self.log.debug('Returning early: Got a bad isAre value.')
                 return
         except dbi.InvalidDBError, e:
-            self._error('Unable to access db: %s' % e)
+            self.error('Unable to access db: %s' % e)
             return
         if isAre is None:
             if msg.addressed:
@@ -602,8 +603,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
     _karmaRe = re.compile(r'(?:\+\+|--)(?:\s+)?$')
     def doPrivmsg(self, irc, msg):
         try:
-            if msg.repliedTo:
-                self.replied = True
             if ircmsgs.isCtcp(msg):
                 self.log.debug('Returning early from doPrivmsg: isCtcp(msg).')
                 return
@@ -619,7 +618,6 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             msg = ircmsgs.IrcMsg(args=(msg.args[0], payload), msg=msg)
             self.__parent.doPrivmsg(irc, msg)
         finally:
-            self.replied = False
             self.changed = False
             self.added = False
 
