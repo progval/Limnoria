@@ -44,10 +44,11 @@ class ToggleDictionaryTestCase(unittest.TestCase):
         self.assertEqual(t.get('foo', '#baz'), True)
         t.toggle('foo', channel='#baz')
         self.assertEqual(t.get('foo', '#baz'), False)
+        self.assertRaises(ValueError, t.toggle, 'foo', value='lak')
 
     def test__init__(self):
         self.assertRaises(TypeError, plugins.ToggleDictionary.__init__)
-        self.assertRaises(ValueError, plugins.ToggleDictionary.__init__, {})
+        self.assertRaises(ValueError, plugins.ToggleDictionary, {})
 
     def testToggle(self):
         t = plugins.ToggleDictionary({'foo': True})
@@ -56,15 +57,14 @@ class ToggleDictionaryTestCase(unittest.TestCase):
         self.assertEqual(t.get('bar'), False)
 
     def testToString(self):
-        t = plugins.ToggleDictionary({'foo': True})
-        self.assertEqual(t.toString(), '(foo: On)')
-        t.toggle('foo')
-        self.assertEqual(t.toString(), '(foo: Off)')
-        t.toggle('bar', value=True)
-        self.assertEqual(t.toString(), '(bar: On, foo: Off)')
-        t.toggle('baz', value=True)
-        self.assertEqual(t.toString(), '(bar: On, baz: On, foo: Off)')
-        t.toggle('baz', channel='#foo')
+        t = plugins.ToggleDictionary({'foo': True, 'bar': False})
+        self.assertEqual(t.toString(), '(bar: Off; foo: On)')
+        t.toggle('foo', channel='#foo')
+        self.assertEqual(t.toString(), '(bar: Off; foo: On)')
         self.assertEqual(t.toString(channel='#foo'),
-                         '(bar: On, baz: Off, foo: Off)')
+                        '(bar: Off; foo: Off)')
+        t.toggle('bar', value=True)
+        self.assertEqual(t.toString(), '(bar: On; foo: On)')
+        self.assertEqual(t.toString(channel='#foo'),
+                        '(bar: Off; foo: Off)')
         

@@ -46,7 +46,7 @@ import utils
 import world
 import ircutils
 
-__all__ = ['ChannelDBHandler', 'PeriodicFileDownloader']
+__all__ = ['ChannelDBHandler', 'PeriodicFileDownloader', 'ToggleDictionary']
 
 class ChannelDBHandler(object):
     """A class to handle database stuff for individual channels transparently.
@@ -188,5 +188,42 @@ class PeriodicFileDownloader(object):
             t.start()
             world.threadsSpawned += 1
         
+class ToggleDictionary(object):
+    """I am ToggleDictionary! Hear me roar!
+    """
+    def __init__(self, toggles):
+        if toggles.keys() == []:
+            raise ValueError
+        self.toggles = {}
+        self.toggles['Default'] = toggles
+
+    def get(self, key, channel='Default'):
+        if channel != 'Default':
+            try:
+                return self.toggles[channel][key]
+            except KeyError:
+                return self.toggles['Default'][key]
+        else:
+            return self.toggles[channel][key]
+
+    def toggle(self, key, value=None, channel='Default'):
+        if value is not None and value != True and value != False:
+            raise ValueError
+        if not self.toggles.has_key(channel):
+            self.toggles[channel] = self.toggles['Default'].copy()
+        if value is None:
+            self.toggles[channel][key] = not self.toggles[channel][key]
+        else:
+            self.toggles[channel][key] = value
+
+    def toString(self, channel='Default'):
+        resp = []
+        for k,v in self.toggles[channel].iteritems():
+            if v:
+                resp.append('%s: On' % k)
+            else:
+                resp.append('%s: Off' % k)
+        resp.sort()
+        return '(%s)' % '; '.join(resp)
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
