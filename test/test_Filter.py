@@ -87,7 +87,7 @@ class FilterTest(ChannelPluginTestCase, PluginDocumentation):
     _strings = ('Supybot pwns!', '123456', 'A string with \x02bold\x15')
     def testColorstrip(self):
         for s in self._strings:
-            self.assertResponse('colorstrip [colorize %s]' % s, s)
+            self.assertResponse('stripcolor [colorize %s]' % s, s)
 
     def testOutfilter(self):
         s = self.nick.encode('rot13')
