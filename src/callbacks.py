@@ -527,9 +527,6 @@ class IrcObjectProxy(RichReplyMethods):
         log.debug('Calling invalidCommands.')
         for cb in self.irc.callbacks:
             log.debug('Trying to call %s.invalidCommand.' % cb.name())
-            if self.finished:
-                log.debug('Finished calling invalidCommand: %s.', cb.name())
-                return
             if hasattr(cb, 'invalidCommand'):
                 try:
                     # I think I took out this try/except block because we
@@ -537,6 +534,10 @@ class IrcObjectProxy(RichReplyMethods):
                     # other classes won't have firewalled it.  Better safe
                     # than sorry, I say.
                     cb.invalidCommand(self, self.msg, self.args)
+                    if self.finished:
+                        log.debug('Finished calling invalidCommand: %s.',
+                                  cb.name())
+                        return
                 except Exception, e:
                     log.exception('Uncaught exception in %s.invalidCommand',
                                   cb.name())
