@@ -693,7 +693,7 @@ def mungeEmailForWeb(s):
     s = s.replace('.', ' DOT ')
     return s
 
-def stackTrace(frame=None, compact=False):
+def stackTrace(frame=None, compact=True):
     if frame is None:
         frame = sys._getframe()
     if compact:
