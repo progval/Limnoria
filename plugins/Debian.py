@@ -40,7 +40,7 @@ import gzip
 import sets
 import getopt
 import popen2
-#import urllib
+import urllib
 import fnmatch
 import os.path
 import urllib2
@@ -80,10 +80,10 @@ def configure(onStart, afterConnect, advanced):
 
 example = utils.wrapLines("""
 <jemfinch> @list Debian
-<supybot> debfile, debversion, usepythonzegrep
+<supybot> debfile, debian, debincoming, debversion, usepythonzegrep
 <jemfinch> @debversion python
 <supybot> Total matches: 3, shown: 3.   python 2.1.3-3.2 (stable),  python 2.2.3-3 (testing),  python 2.3-4 (unstable)
-<jemfinch> @debfile /usr/bin/python
+<jemfinch> @debfile --exact /usr/bin/python
 <supybot> python/python, devel/crystalspace-dev, python/python1.5, python/python2.1, python/python2.1-popy, python/python2.2, python/python2.2-popy, python/python2.3, python/python2.3-popy, devel/sloccount, graphics/pythoncad, mail/pms
 """)
 
@@ -188,12 +188,15 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
         Returns the current version(s) of a Debian package in the given branch
         (if any, otherwise all available ones are displayed).
         """
+        if not args:
+            raise callbacks.ArgumentError
         if args and args[0] in self._debBranches:
             branch = args.pop(0)
         else:
             branch = 'all'
         if not args:
             irc.error(msg, 'You must give a package name.')
+            return
         responses = []
         numberOfPackages = 0
         package = privmsgs.getArgs(args)
