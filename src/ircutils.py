@@ -157,12 +157,12 @@ def separateModes(args):
 def bold(s):
     return "\x02%s\x02" % s
 
-def validArgument(s):
+def isValidArgument(s):
     return '\r' not in s and '\n' not in s and '\x00' not in s
 
 notFunky = string.printable+'\x02'
 def safeArgument(s):
-    if validArgument(s) and s.translate(string.ascii, notFunky) == '':
+    if isValidArgument(s) and s.translate(string.ascii, notFunky) == '':
         return s
     else:
         return repr(s)

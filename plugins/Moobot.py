@@ -162,7 +162,7 @@ class Moobot(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         s = base64.encodestring(text).strip()
-        if ircutils.validArgument(s):
+        if ircutils.isValidArgument(s):
             irc.reply(msg, s)
         else:
             irc.error(msg, 'Base64 requires a newline in that string. '\
@@ -176,7 +176,7 @@ class Moobot(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         s = base64.decodestring(text)
-        if ircutils.validArgument(s):
+        if ircutils.isValidArgument(s):
             irc.reply(msg, s)
         else:
             irc.error(msg, 'I can\'t send \\n, \\r, or \\0.')
