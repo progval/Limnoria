@@ -45,6 +45,7 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 import supybot.ircmsgs as ircmsgs
+from supybot.commands import wrap
 import supybot.ircutils as ircutils
 import supybot.privmsgs as privmsgs
 import supybot.registry as registry
@@ -131,7 +132,7 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
             s = msg.args[1]
             s = ircutils.stripFormatting(s)
             s = self.regexp.sub(self.sub, s)
-            msg = ircmsgs.privmsg(msg.args[0], s)
+            msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
 
     def makeRegexp(self, iterable):
@@ -152,27 +153,30 @@ class BadWords(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('I\'m not currently censoring any bad words.')
+    list = wrap(list)
 
-    def add(self, irc, msg, args):
+    def add(self, irc, msg, args, words):
         """<word> [<word> ...]
 
         Adds all <word>s to the list of words the bot isn't to say.
         """
         set = self.words()
-        set.update(args)
+        set.update(words)
         self.words.setValue(set)
         irc.replySuccess()
+    add = wrap(add, ['something+'])
 
-    def remove(self, irc, msg, args):
+    def remove(self, irc, msg, args, words):
         """<word> [<word> ...]
 
         Removes a <word>s from the list of words the bot isn't to say.
         """
         set = self.words()
-        for word in args:
+        for word in words:
             set.discard(word)
         self.words.setValue(set)
         irc.replySuccess()
+    remove = wrap(remove, ['something+'])
 
 
 Class = BadWords
