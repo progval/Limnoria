@@ -641,6 +641,10 @@ class Owner(privmsgs.CapabilityCheckingPrivmsg):
             s = '%s is not a valid command in the %s plugin.' % (name, plugin)
             irc.error(s)
             return
+        if hasattr(cb, name):
+            irc.error('The %s plugin already has an attribute named %s.' %
+                      (plugin, name))
+            return
         method = getattr(cb.__class__, command)
         setattr(cb.__class__, name, method)
         delattr(cb.__class__, command)
