@@ -121,6 +121,22 @@ if sqlite is not None:
             self.assertNotError('learn foo as bar')
             self.assertNotRegexp('info foo', '2 factoids')
 
+        def testConfigurable(self):
+            self.assertError('learn foo is bar')
+            self.assertNotError('learn foo as bar')
+            self.assertRegexp('whatis foo', 'bar')
+            self.assertNotError('factoids config learn-separator is')
+            self.assertError('learn bar as baz')
+            self.assertNotError('learn bar is baz')
+            self.assertRegexp('whatis bar', 'baz')
+
+            # show-factoid-if-only-one-match
+            m1 = self.assertNotError('factoids search m/foo|bar/')
+            q = 'factoids config show-factoid-if-only-one-match Off'
+            self.assertNotError(q)
+            m2 = self.assertNotError('factoids search m/foo/')
+            self.failUnless(m1.args[1].startswith(m2.args[1]))
+
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
