@@ -46,6 +46,11 @@ class MathTestCase(PluginTestCase, PluginDocumentation):
         self.assertNotRegexp('calc [9, 5] + [9, 10]', 'TypeError')
         self.assertError('calc [9, 5] + [9, 10]')
         self.assertNotError('calc degrees(2)')
+        self.assertNotError('calc (2 * 3) - 2*(3*4)')
+        self.assertNotError('calc (3) - 2*(3*4)')
+        self.assertNotError('calc (1600 * 1200) - 2*(1024*1280)')
+        self.assertNotError('calc 3-2*4')
+        self.assertNotError('calc (1600 * 1200)-2*(1024*1280)')
 
     def testICalc(self):
         self.assertResponse('icalc 1^1', '0')
