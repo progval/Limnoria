@@ -164,12 +164,9 @@ class Status(callbacks.Plugin):
         commands = 0
         callbacksPlugin = 0
         for cb in irc.callbacks:
-            if isinstance(cb, callbacks.Plugin) and cb.public:
+            if isinstance(cb, callbacks.Plugin):
                 callbacksPlugin += 1
-                for attr in dir(cb):
-                    if cb.isCommand(attr) and \
-                       attr == callbacks.canonicalName(attr):
-                        commands += 1
+                commands += len(cb.listCommands())
         s = format('I offer a total of %n in %n.  I have processed %n.',
                    (commands, 'command'),
                    (callbacksPlugin, 'command-based', 'plugin'),
@@ -184,14 +181,10 @@ class Status(callbacks.Plugin):
         """
         commands = set()
         for cb in irc.callbacks:
-            if isinstance(cb, callbacks.Plugin) and cb.public:
-                for attr in dir(cb):
-                    if cb.isCommand(attr) and \
-                       attr == callbacks.canonicalName(attr):
-                        commands.add(attr)
-        commands = list(commands)
-        commands.sort()
-        irc.reply(format('%L', commands))
+            if isinstance(cb, callbacks.Plugin):
+                for command in cb.listCommands():
+                    commands.add(command)
+        irc.reply(format('%L', sorted(commands)))
     commands = wrap(commands)
 
     def uptime(self, irc, msg, args):
