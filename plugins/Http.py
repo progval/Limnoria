@@ -183,6 +183,7 @@ class Http(callbacks.Privmsg):
         if text:
             irc.reply(msg, text)
         else:
+            search = urllib.unquote(search)
             s = 'There appears to be no definition for %s.' % search
             irc.reply(msg, s)
 
