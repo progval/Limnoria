@@ -178,6 +178,7 @@ class Group(object):
             self.added.append(name)
             fullname = '%s.%s' % (self.name, name)
             node.setName(fullname)
+        return node
 
     def unregister(self, name):
         try:
