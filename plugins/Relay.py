@@ -87,6 +87,8 @@ def configure(onStart, afterConnect, advanced):
     while yn('Would like to relay between any more channels?') == 'y':
         channel = anything('What channel?')
         afterConnect.append('relayjoin %s' % channel)
+    if yn('Would you like to use color to distinguish between nicks?') == 'y':
+        afterConnect.append('relaycolor 2')
 
 
 class Relay(callbacks.Privmsg):
