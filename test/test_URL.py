@@ -73,6 +73,7 @@ class URLTestCase(ChannelPluginTestCase, PluginDocumentation):
                           re.escape(urls[-1]))
         self.assertRegexp('url last --with dhcp', re.escape(urls[-3]))
         self.assertRegexp('url last --from alsdkjf', '^No')
+        self.assertRegexp('url last --without game', 'sourceforge')
         #self.assertNotError('url random')
 
     def testDefaultNotFancy(self):

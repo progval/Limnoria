@@ -153,14 +153,15 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
     stats = wrap(stats, ['channeldb'])
 
     def last(self, irc, msg, args, optlist, channel):
-        """[<channel>] [--{from,with,near,proto}=<value>] --nolimit
+        """[<channel>] [--{from,with,without,near,proto}=<value>] --nolimit
 
         Gives the last URL matching the given criteria.  --from is from whom
         the URL came; --proto is the protocol the URL used; --with is something
-        inside the URL; --near is something in the same message as the URL; If
-        --nolimit is given, returns all the URLs that are found. to just the
-        URL.  <channel> is only necessary if the message isn't sent in the
-        channel itself.
+        inside the URL; --without is something that should not be in the URL;
+        --near is something in the same message as the URL; If --nolimit is
+        given, returns all the URLs that are found. to just the URL.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
         """
         predicates = []
         f = None
@@ -174,6 +175,9 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
             elif option == 'with':
                 def f(record, arg=arg):
                     return arg in record.url
+            elif option == 'without':
+                def f(record, arg=arg):
+                    return arg not in record.url
             elif option == 'proto':
                 def f(record, arg=arg):
                     return record.url.startswith(arg)
@@ -202,7 +206,8 @@ class URL(callbacks.PrivmsgCommandAndRegexp):
                                               'with': 'text',
                                               'near': 'text',
                                               'proto': 'text',
-                                              'nolimit': '',})
+                                              'nolimit': '',
+                                              'without': 'text',})
 
 
 Class = URL
