@@ -156,12 +156,15 @@ example = utils.wrapLines("""
 """)
 
 class FunCommands(callbacks.Privmsg):
+    dictServer = 'dict.org'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
         self.sentMsgs = 0
         self.recvdMsgs = 0
         self.sentBytes = 0
         self.recvdBytes = 0
+        conn = dictclient.Connection(self.dictServer)
+        self.dictdbs = sets.Set(conn.getdbdescs().iterkeys())
 
     def inFilter(self, irc, msg):
         self.recvdMsgs += 1
@@ -621,7 +624,7 @@ class FunCommands(callbacks.Privmsg):
         irc.reply(msg, response)
 
     def last(self, irc, msg, args):
-        """[--{from,in,to,with,regexp}] <args>
+        """[--{from,in,to,with,regexp,nodecorate}] <args>
 
         Returns the last message matching the given criteria.  --from requires
         a nick from whom the message came; --in and --to require a channel the
@@ -630,12 +633,15 @@ class FunCommands(callbacks.Privmsg):
         """
 
         (optlist, rest) = getopt.getopt(args, '', ['from=', 'in=', 'to=',
-                                                   'with=', 'regexp='])
-        undecorated = False
+                                                   'with=', 'regexp=',
+                                                   'fancy'])
+        fancy = False
         predicates = []
         for (option, arg) in optlist:
             option = option.strip('-')
-            if option == 'from':
+            if option == 'fancy':
+                fancy = True
+            elif option == 'from':
                 predicates.append(lambda m, arg=arg: m.nick == arg)
             elif option == 'in' or option == 'to':
                 if not ircutils.isChannel(arg):
@@ -662,10 +668,10 @@ class FunCommands(callbacks.Privmsg):
                 if not predicate(m):
                     break
             else:
-                if undecorated:
-                    irc.reply(msg, m.args[1])
-                else:
+                if fancy:
                     irc.reply(msg, ircmsgs.prettyPrint(m))
+                else:
+                    irc.reply(msg, m.args[1])
                 return
         irc.error(msg, 'I couldn\'t find a message matching that criteria.')
 
@@ -798,15 +804,24 @@ class FunCommands(callbacks.Privmsg):
                 irc.error(msg, 'Host not found.')
     dns = privmsgs.thread(dns)
 
+    def dictionaries(self, irc, msg, args):
+        """takes no arguments.
+
+        Returns the dictionaries valid for the dict command.
+        """
+        irc.reply(msg, utils.commaAndify(self.dictdbs))
+
     def dict(self, irc, msg, args):
-        """<word> [<dictionary>]
+        """[<dictionary>] <word>
 
         Looks up the definition of <word> on dict.org's dictd server.
         """
-        (word, dictionary) = privmsgs.getArgs(args, optional=1)
-        if not dictionary:
+        if args[0] in self.dictdbs:
+            dictionary = args.pop(0)
+        else:
             dictionary = '*'
-        conn = dictclient.Connection('dict.org')
+        word = privmsgs.getArgs(args)
+        conn = dictclient.Connection(self.dictServer)
         definitions = conn.define(dictionary, word)
         dbs = sets.Set()
         if not definitions:
@@ -824,10 +839,12 @@ class FunCommands(callbacks.Privmsg):
         ircutils.shrinkList(L, '; ')
         if not L:
             irc.reply(msg, 'Chopped: %s' % originalFirst[:400])
-        else:
+        elif dictionary == '*':
             s = '%s responded, %s shown: %s' % \
                 (utils.commaAndify(dbs), len(L), '; '.join(L))
             irc.reply(msg, s)
+        else:
+            irc.reply('; '.join(L))
     dict = privmsgs.thread(dict)
 
 

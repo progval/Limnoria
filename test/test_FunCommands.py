@@ -101,6 +101,10 @@ class FunCommandsTest(PluginTestCase):
 
     def testDict(self):
         self.assertNotError('dict slash')
+        self.assertNotRegexp('dict web1913 slash', 'foldoc')
+
+    def testDictionaries(self):
+        self.assertNotError('dictionaries')
 
     
 
