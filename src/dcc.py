@@ -2,7 +2,7 @@
 # You need a copyright notice here, azaroth.
 
 # You might do well to put links to the documentation you're basing this on
-# here.
+# here.  Then other people can help maintain it more easily.
 
 import os
 import time
