@@ -29,11 +29,51 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import os
+import time
+
 from test import *
 
 class DebianTestCase(PluginTestCase, PluginDocumentation):
     plugins = ('Debian',)
+    timeout = 100
+    cleanDataDir = False
+    fileDownloaded = False
 
+    def setUp(self, nick='test'):
+        PluginTestCase.setUp(self)
+        try:
+            if os.path.exists(os.path.join(conf.dataDir, 'Contents-i386.gz')):
+                pass
+            else:
+                print
+                print "Dowloading files, this may take awhile"
+                while not os.path.exists(os.path.join(conf.dataDir,
+                    'Contents-i386.gz')):
+                    time.sleep(1)
+                print "Download complete"
+                print "Starting test ..."
+                self.fileDownloaded = True
+        except KeyboardInterrupt:
+            pass
+
+    def testDebversion(self):
+        self.assertNotError('debversion')
+        self.assertRegexp('debversion lakjdfad', r'^No package.*\(all\)')
+        self.assertRegexp('debversion unstable alkdjfad',
+            r'^No package.*\(unstable\)')
+        self.assertRegexp('debversion gaim',
+            r'Total matches:.*gaim.*\(stable\)')
+        self.assertError('debversion unstable')
+
+    def testDebfile(self):
+        if not self.fileDownloaded:
+            pass
+        self.assertNotError('debfile')
+        self.assertRegexp('debfile --exact bin/gaim', r'net/gaim')
+
+    def testDebincoming(self):
+        self.assertNotError('debincoming')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
 
