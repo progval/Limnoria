@@ -80,8 +80,7 @@ class Ignores(registry.SpaceSeparatedListOfStrings):
 
 conf.registerUserValue(conf.users.plugins.Note, 'ignores', Ignores([], ''))
 
-class NoteRecord(object):
-    __metaclass__ = dbi.Record
+class NoteRecord(dbi.Record):
     __fields__ = [
         'frm',
         'to',

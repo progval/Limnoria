@@ -48,8 +48,7 @@ import supybot.privmsgs as privmsgs
 import supybot.callbacks as callbacks
 
 
-class NewsRecord(object):
-    __metaclass__ = dbi.Record
+class NewsRecord(dbi.Record):
     __fields__ = [
         'subject',
         'text',
@@ -119,6 +118,8 @@ class SqliteNewsDB(object):
                        subject, text, added_at, expires, by)
         db.commit()
 
+    # XXX This should change only to support id, and the old functionality
+    # should move out to another method.
     def get(self, channel, id=None, old=False):
         db = self._getDb(channel)
         cursor = db.cursor()

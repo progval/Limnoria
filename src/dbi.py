@@ -300,7 +300,12 @@ class DB(object):
                 yield record
 
     def random(self):
+        # XXX This can be optimized not to deserialize each record.
         return random.choice(self)
+
+    def size(self):
+        # XXX Likewise as above.
+        return ilen(self)
 
     def flush(self):
         self.map.flush()
@@ -314,63 +319,47 @@ Mappings = {
     }
 
 
-class Record(type):
-    """__fields should be a list of two-tuples, (name, converter) or
-    (name, (converter, default))."""
-    def __new__(cls, clsname, bases, dict):
-        defaults = {}
-        converters = {}
-        fields = []
-        for name in dict['__fields__']:
+class Record(object):
+    def __init__(self, id=None, **kwargs):
+        if id is not None:
+            assert isinstance(id, int), 'id must be an integer.'
+        self.id = id
+        self.fields = []
+        self.defaults = {}
+        self.converters = {}
+        for name in self.__fields__:
             if isinstance(name, tuple):
                 (name, spec) = name
             else:
                 spec = utils.safeEval
-            assert name != 'convert' and name != 'id'
-            fields.append(name)
+            assert name != 'id'
+            self.fields.append(name)
             if isinstance(spec, tuple):
                 (converter, default) = spec
             else:
                 converter = spec
                 default = None
-            defaults[name] = default
-            converters[name] = converter
-        del dict['__fields__']
+            self.defaults[name] = default
+            self.converters[name] = converter
+        seen = sets.Set()
+        for (name, value) in kwargs.iteritems():
+            assert name in self.fields, 'name must be a record value.'
+            seen.add(name)
+            setattr(self, name, value)
+        for name in self.fields:
+            if name not in seen:
+                setattr(self, name, self.defaults[name])
 
-        def __init__(self, id=None, convert=False, **kwargs):
-            if id is not None:
-                assert isinstance(id, int), 'id must be an integer.'
-            self.id = id
-            set = sets.Set()
-            for (name, value) in kwargs.iteritems():
-                assert name in fields, 'name must be a record value.'
-                set.add(name)
-                if convert:
-                    setattr(self, name, converters[name](value))
-                else:
-                    setattr(self, name, value)
-            for name in fields:
-                if name not in set:
-                    setattr(self, name, defaults[name])
+    def serialize(self):
+        return csv.join([repr(getattr(self, name)) for name in self.fields])
 
-        def serialize(self):
-            return csv.join([repr(getattr(self, name)) for name in fields])
-
-        def deserialize(self, s):
-            unseenRecords = sets.Set(fields)
-            for (name, strValue) in zip(fields, csv.split(s)):
-                setattr(self, name, converters[name](strValue))
-                unseenRecords.remove(name)
-            for name in unseenRecords:
-                setattr(self, record, defaults[record])
-        
-        dict['__init__'] = __init__
-        dict['serialize'] = serialize
-        dict['deserialize'] = deserialize
-        return type.__new__(cls, clsname, bases, dict)
-    
-                
-            
+    def deserialize(self, s):
+        unseenRecords = sets.Set(self.fields)
+        for (name, strValue) in zip(self.fields, csv.split(s)):
+            setattr(self, name, self.converters[name](strValue))
+            unseenRecords.remove(name)
+        for name in unseenRecords:
+            setattr(self, record, self.defaults[record])
 
     
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:

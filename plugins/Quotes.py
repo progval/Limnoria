@@ -53,8 +53,7 @@ conf.registerGlobalValue(conf.supybot.plugins.Quotes, 'requireRegistration',
     registry.Boolean(False, """Determines whether the bot should require people
     trying to use this plugin to be registered."""))
 
-class QuoteRecord(object):
-    __metaclass__ = dbi.Record
+class QuoteRecord(dbi.Record):
     __fields__ = [
         'at',
         'by',
@@ -136,6 +135,10 @@ class SqliteQuotesDB(object):
         (id, by, at, text) = cursor.fetchone()
         return QuoteRecord(id, by=by, at=int(at), text=text)
 
+    # XXX This needs to be modified to accept a predicate, and the creation of
+    # the predicate moved to the plugin.  One plugin, many database
+    # implementations -- we don't want to burden every database implementation
+    # to do all this work.
     def search(self, channel, **kwargs):
         criteria = []
         formats = []

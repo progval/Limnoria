@@ -67,8 +67,7 @@ conf.registerChannelValue(conf.supybot.plugins.Project, 'default',
     registry.String('', """Determines what the default project for this channel
     is."""))
 
-class Record(object):
-    __metaclass__ = dbi.Record
+class Record(dbi.Record):
     __fields__ = [
         'desc',
         'by',

@@ -52,8 +52,7 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-class FunDBRecord(object):
-    __metaclass__ = dbi.Record
+class FunDBRecord(dbi.Record):
     __fields__ = [
         'by',
         'text',
