@@ -49,10 +49,10 @@ class InvalidRegistryValue(RegistryException):
 class NonExistentRegistryEntry(RegistryException):
     pass
 
-cache = {}
+_cache = {}
 def open(filename):
     """Initializes the module by loading the registry file into memory."""
-    cache.clear()
+    _cache.clear()
     fd = utils.nonCommentNonEmptyLines(file(filename))
     for (i, line) in enumerate(fd):
         line = line.rstrip('\r\n')
@@ -60,7 +60,7 @@ def open(filename):
             (key, value) = line.split(': ', 1)
         except ValueError:
             raise InvalidRegistryFile, 'Error unpacking line #%s' % (i+1)
-        cache[key.lower()] = value
+        _cache[key.lower()] = value
 
 def close(registry, filename):
     fd = file(filename, 'w')
@@ -212,10 +212,10 @@ class Group(object):
         name = name.lower()
         self.values[name] = value
         self.originals[name] = original
-        if cache:
+        if _cache:
             fullname = '%s.%s' % (self.name, name)
-            if fullname in cache:
-                value.set(cache[fullname])
+            if fullname in _cache:
+                value.set(_cache[fullname])
 
     def registerGroup(self, name, group=None):
         original = name
@@ -228,8 +228,8 @@ class Group(object):
         self.originals[name] = original
         fullname = '%s.%s' % (self.name, name)
         group.setName(fullname)
-        if cache and fullname in cache:
-            group.set(cache[fullname])
+        if _cache and fullname in _cache:
+            group.set(_cache[fullname])
 
     def getValues(self, getChildren=False):
         L = []
@@ -288,7 +288,7 @@ class GroupWithDefault(GroupWithValue):
 
     def setName(self, name):
         GroupWithValue.setName(self, name)
-        for (k, v) in cache.iteritems():
+        for (k, v) in _cache.iteritems():
             if k.startswith(self.name):
                 (_, group) = rsplit(k, '.', 1)
                 self.__makeChild(group, v)
