@@ -270,12 +270,21 @@ class Relay(callbacks.Privmsg):
         self.Proxy(otherIrc, msg, args)
     command = privmsgs.checkCapability(command, 'admin')
 
-    def nicks(self, irc, msg, args):
-        """[<channel>] (only if not sent in the channel itself.)
+    def networks(self, irc, msg, args):
+        """takes no arguments
 
-        The <channel> argument is only necessary if the message isn't sent on
-        the channel itself.  Returns the nicks of the people in the channel on
-        the various networks the bot is connected to.
+        Returns the networks to which the bot is currently connected.
+        """
+        L = ['%s: %s' % (irc.network, irc.server) for irc in self.ircs]
+        utils.sortBy(str.lower, L)
+        irc.reply(utils.commaAndify(L))
+        
+    def nicks(self, irc, msg, args):
+        """[<channel>]
+
+        Returns the nicks of the people in the channel on the various networks
+        the bot is connected to.  <channel> is only necessary if the message
+        isn't sent on the channel itself.
         """
         realIrc = self._getRealIrc(irc)
         channel = privmsgs.getChannel(msg, args)
