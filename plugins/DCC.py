@@ -37,10 +37,13 @@ import plugins
 
 import socket
 import textwrap
+import threading
 
+import debug
 import utils
 import world
 import ircmsgs
+import ircutils
 import privmsgs
 import callbacks
 
@@ -74,11 +77,7 @@ class DCC(callbacks.Privmsg):
                 sock.settimeout(60)
                 host = ircutils.hostFromHostmask(irc.prefix)
                 ip = socket.gethostbyname(host)
-                i = 0
-                x = 256*256*256
-                for quad in ip.split('.'):
-                    i += int(quad)*x
-                    x /= 256
+                i = ircutils.dccIP(ip)
                 sock.bind((host, 0))
                 port = sock.getsockname()[1]
                 debug.msg('DCC CHAT port opened at (%s, %s)' % (host, port),
