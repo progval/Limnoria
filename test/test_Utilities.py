@@ -32,7 +32,7 @@
 from test import *
 
 class UtilitiesTestCase(PluginTestCase, PluginDocumentation):
-    plugins = ('Utilities', 'FunCommands')
+    plugins = ('Utilities', 'Status')
     def testIgnore(self):
         self.assertNoResponse('ignore foo bar baz', 1)
 
