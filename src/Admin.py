@@ -49,8 +49,8 @@ import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
+from supybot.commands import wrap
 import supybot.ircutils as ircutils
-import supybot.commands as commands
 import supybot.privmsgs as privmsgs
 import supybot.schedule as schedule
 import supybot.callbacks as callbacks
@@ -181,7 +181,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(utils.commaAndify(L))
         else:
             irc.reply('I\'m not currently in any channels.')
-    channels = commands.wrap(channels, ['private'], noExtra=True)
+    channels = wrap(channels, ['private'], noExtra=True)
 
     def do484(self, irc, msg):
         irc = self.pendingNickChanges.get(irc, None)
@@ -231,7 +231,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             self.pendingNickChanges[irc.getRealIrc()] = irc
         else:
             irc.reply(irc.nick)
-    nick = commands.wrap(nick, ['?nick'])
+    nick = wrap(nick, ['?nick'])
 
     def part(self, irc, msg, args):
         """<channel> [<channel> ...] [<reason>]
@@ -307,7 +307,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         else:
             irc.error('You can\'t add capabilities you don\'t have.')
-    addcapability = commands.wrap(addcapability, ['otherUser', 'lowered'])
+    addcapability = wrap(addcapability, ['otherUser', 'lowered'])
 
     def removecapability(self, irc, msg, args, user, capability):
         """<name|hostmask> <capability>
@@ -326,7 +326,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
         else:
             s = 'You can\'t remove capabilities you don\'t have.'
             irc.error(s)
-    removecapability = commands.wrap(removecapability, ['otherUser','lowered'])
+    removecapability = wrap(removecapability, ['otherUser','lowered'])
 
     def ignore(self, irc, msg, args, hostmask, expires):
         """<hostmask|nick> [<expires>]
@@ -342,7 +342,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             expires += time.time()
         ircdb.ignores.add(hostmask, expires)
         irc.replySuccess()
-    ignore = commands.wrap(ignore, ['hostmask', ('?int', 0)])
+    ignore = wrap(ignore, ['hostmask', ('?int', 0)])
 
     def unignore(self, irc, msg, args, hostmask):
         """<hostmask|nick>
@@ -355,7 +355,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.replySuccess()
         except KeyError:
             irc.error('%s wasn\'t in the ignores database.' % hostmask)
-    unignore = commands.wrap(unignore, ['hostmask'])
+    unignore = wrap(unignore, ['hostmask'])
 
     def ignores(self, irc, msg, args):
         """takes no arguments
@@ -367,7 +367,7 @@ class Admin(privmsgs.CapabilityCheckingPrivmsg):
             irc.reply(utils.commaAndify(imap(repr, ircdb.ignores.hostmasks)))
         else:
             irc.reply('I\'m not currently globally ignoring anyone.')
-    ignores = commands.wrap(ignores, noExtra=True)
+    ignores = wrap(ignores, noExtra=True)
 
 
 Class = Admin
