@@ -152,7 +152,7 @@ class Topic(callbacks.Privmsg):
             irc.error(msg, conf.replyNoUser)
             return
         if name != senderName and \
-           not ircdb.checkCapabilities(msg.prfix, ('op', 'admin')):
+           not ircdb.checkCapabilities(msg.prefix, ('op', 'admin')):
             irc.error(msg, 'You can only modify your own topics.')
             return
         newTopic = self.topicFormatter % (replacer(topic), name)
