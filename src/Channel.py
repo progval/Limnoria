@@ -39,6 +39,7 @@ __revision__ = "$Id$"
 import fix
 
 import time
+import getopt
 from itertools import imap
 
 import conf
@@ -168,18 +169,29 @@ class Channel(callbacks.Privmsg):
     kick = privmsgs.checkChannelCapability(kick, 'op')
 
     def kban(self, irc, msg, args):
-        """[<channel>] <nick> [<number of seconds to ban>]
+        """[<channel>] <nick> [<seconds>] [--{exact,nick,user,host}]
 
         If you have the #channel.op capability, this will kickban <nick> for
         as many seconds as you specify, or else (if you specify 0 seconds or
         don't specify a number of seconds) it will ban the person indefinitely.
+        --exact bans only the exact hostmask; --nick bans just the nick;
+        --user bans just the user, and --host bans just the host.  You can
+        combine these options as you choose.
         <channel> is only necessary if the message isn't sent in the channel
         itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        (bannedNick, length) = privmsgs.getArgs(args, optional=1)
+        (optlist, rest) = getopt.getopt(args, '', ['exact', 'nick',
+                                                   'user', 'host'])
+        print 'rest:', rest
+        (bannedNick, length) = privmsgs.getArgs(rest, optional=1)
+        print 'length:', length
         # Check that they're not trying to make us kickban ourself.
-        if bannedNick == irc.nick:
+        if not ircutils.isNick(bannedNick):
+            self.log.warning('%r tried to kban a non nick: %r',
+                             msg.prefix, bannedNick)
+            raise callbacks.ArgumentError
+        elif bannedNick == irc.nick:
             self.log.warning('%r tried to make me kban myself.', msg.prefix)
             irc.error(msg, 'I cowardly refuse to kickban myself.')
             return
@@ -194,7 +206,24 @@ class Channel(callbacks.Privmsg):
             irc.error(msg, 'I haven\'t seen %s.' % bannedNick)
             return
         capability = ircdb.makeChannelCapability(channel, 'op')
-        banmask = ircutils.banmask(bannedHostmask)
+        if optlist:
+            (nick, user, host) = ircutils.splitHostmask(bannedHostmask)
+            bnick = '*'
+            buser = '*'
+            bhost = '*'
+            for (option, _) in optlist:
+                if option == '--nick':
+                    bnick = nick
+                elif option == '--user':
+                    buser = user
+                elif option == '--host':
+                    bhost = host
+                elif option == '--exact':
+                    (bnick, buser, bhost) = \
+                                   ircutils.splitHostmask(bannedHostmask)
+            banmask = ircutils.joinHostmask(bnick, buser, bhost)
+        else:
+            banmask = ircutils.banmask(bannedHostmask)
         # Check (again) that they're not trying to make us kickban ourself.
         if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
             if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
