@@ -43,7 +43,7 @@ if sqlite is not None:
     ibot = conf.supybot.plugins.Infobot
 
     class InfobotTestCase(ChannelPluginTestCase):
-        plugins = ('Infobot',)
+        plugins = ('Infobot', 'Karma')
         _endRe = re.compile(r'!|, \S+\.|\.')
         def testIsSnarf(self):
             learn = ibot.snarfUnaddressedDefinitions()
@@ -135,5 +135,8 @@ if sqlite is not None:
             finally:
                 ibot.answerUnaddressedQuestions.setValue(answer)
                 ibot.snarfUnaddressedDefinitions.setValue(learn)
+
+        def testNoKarmaDunno(self):
+            self.assertNoResponse('foo++')
 
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
