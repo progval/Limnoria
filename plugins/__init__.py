@@ -104,7 +104,9 @@ class NoSuitableDatabase(Exception):
         
     def __str__(self):
         return 'No suitable databases were found.  Suitable databases ' \
-               'include %s.' % utils.commaAndify(self.suitable)
+               'include %s.  If you have one of these databases installed, ' \
+               'make sure it is listed in the supybot.databases ' \
+               'configuration variable.' % utils.commaAndify(self.suitable)
 
 def DB(filename, types):
     filename = conf.supybot.directories.data.dirize(filename)
@@ -156,7 +158,6 @@ class DBHandler(object):
 
 
 def makeChannelFilename(filename, channel=None, dirname=None):
-    # ??? This may not be right.
     filename = os.path.basename(filename)
     if channel is None or \
        not conf.get(conf.supybot.databases.plugins.channelSpecific, channel):
