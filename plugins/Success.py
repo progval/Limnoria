@@ -54,31 +54,7 @@ conf.registerChannelValue(conf.supybot.plugins.Success, 'prefixNick',
     registry.Boolean(True, """Determines whether the bot will prefix the nick
     of the user giving an invalid command to the success response."""))
 
-class DbiSuccessDB(plugins.DbiChannelDB):
-    class DB(dbi.DB):
-        class Record(dbi.Record):
-            __fields__ = [
-                'at',
-                'by',
-                'text',
-                ]
-        def __init__(self, filename):
-            # We use self.__class__ here because apparently DB isn't in our
-            # scope.  python--
-            self.__parent = super(self.__class__, self)
-            self.__parent.__init__(filename)
-
-        def add(self, text, by, at):
-            return self.__parent.add(self.Record(at=at, by=by, text=text))
-
-        def change(self, id, f):
-            dunno = self.get(id)
-            dunno.text = f(dunno.text)
-            self.set(id, dunno)
-
-SuccessDB = plugins.DB('Success', {'flat': DbiSuccessDB})
-
-class Success(callbacks.Privmsg):
+class Success(plugins.ChannelIdDatabasePlugin):
     """This plugin was written initially to work with MoobotFactoids, the two
     of them to provide a similar-to-moobot-and-blootbot interface for factoids.
     Basically, it replaces the standard 'Error: <X> is not a valid command.'
@@ -88,7 +64,6 @@ class Success(callbacks.Privmsg):
         self.__parent = super(Success, self)
         self.__parent.__init__()
         self.target = None
-        self.db = SuccessDB()
         pluginSelf = self
         self.originalClass = conf.supybot.replies.success.__class__
         class MySuccessClass(self.originalClass):
@@ -111,7 +86,6 @@ class Success(callbacks.Privmsg):
         conf.supybot.replies.success.__class__ = MySuccessClass
 
     def die(self):
-        self.db.close()
         self.__parent.die()
         conf.supybot.replies.success.__class__ = self.originalClass
 
@@ -120,101 +94,6 @@ class Success(callbacks.Privmsg):
         # so this seems like the only way to do it.
         self.target = msg.args[0]
         return msg
-
-    def add(self, irc, msg, args, user, at, channel, text):
-        """[<channel>] <text>
-
-        Adds <text> as a "success" to be used as a random response when a
-        success message is needed.  Can optionally contain '$who', which
-        will be replaced by the user's name when the dunno is displayed.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
-        """
-        id = self.db.add(channel, text, user.id, at)
-        irc.replySuccess('Success #%s added.' % id)
-    add = wrap(add, ['user', 'now', 'channeldb', 'text'])
-
-    def remove(self, irc, msg, args, channel, id, user):
-        """[<channel>] <id>
-
-        Removes success with the given <id>.  <channel> is only necessary if the
-        message isn't sent in the channel itself.
-        """
-        # Must be registered to use this
-        try:
-            success = self.db.get(channel, id)
-            if user.id != success.by:
-                cap = ircdb.makeChannelCapability(channel, 'op')
-                if not ircdb.users.checkCapability(cap):
-                    irc.errorNoCapability(cap)
-            self.db.remove(channel, id)
-            irc.replySuccess()
-        except KeyError:
-            irc.error('No success has id #%s.' % id)
-    remove = wrap(remove, ['channeldb', ('id', 'success'), 'user'])
-
-    def search(self, irc, msg, args, channel, text):
-        """[<channel>] <text>
-
-        Search for success containing the given text.  Returns the ids of the
-        successes with the text in them.  <channel> is only necessary if the
-        message isn't sent in the channel itself.
-        """
-        def p(success):
-            return text.lower() in success.text.lower()
-        ids = [str(success.id) for success in self.db.select(channel, p)]
-        if ids:
-            s = 'Success search for %s (%s found): %s.' % \
-                (utils.quoted(text), len(ids), utils.commaAndify(ids))
-            irc.reply(s)
-        else:
-            irc.reply('No successes found matching that search criteria.')
-    search = wrap(search, ['channeldb', 'text'])
-
-    def get(self, irc, msg, args, channel, id):
-        """[<channel>] <id>
-
-        Display the text of the success with the given id.  <channel> is only
-        necessary if the message isn't sent in the channel itself.
-        """
-        try:
-            success = self.db.get(channel, id)
-            name = ircdb.users.getUser(success.by).name
-            at = time.localtime(success.at)
-            timeStr = time.strftime(conf.supybot.humanTimestampFormat(), at)
-            irc.reply("Success #%s: %s (added by %s at %s)" % \
-                      (id, utils.quoted(success.text), name, timeStr))
-        except KeyError:
-            irc.error('No success found with that id.')
-    get = wrap(get, ['channeldb', ('id', 'success')])
-
-    def change(self, irc, msg, args, user, channel, id, replacer):
-        """[<channel>] <id> <regexp>
-
-        Alters the success with the given id according to the provided regexp.
-        <channel> is only necessary if the message isn't sent in the channel
-        itself.
-        """
-        try:
-            self.db.change(channel, id, replacer)
-            irc.replySuccess()
-        except KeyError:
-            irc.error('There is no success #%s.' % id)
-    change = wrap(change, ['user', 'channeldb',
-                           ('id', 'success'), 'regexpReplacer'])
-
-
-    def stats(self, irc, msg, args, channel):
-        """[<channel>]
-
-        Returns the number of successes in the success database.  <channel> is
-        only necessary if the message isn't sent in the channel itself.
-        """
-        num = self.db.size(channel)
-        irc.reply('There %s %s in my database.' %
-                  (utils.be(num), utils.nItems('success', num)))
-    stats = wrap(stats, ['channeldb'])
-
 
 
 Class = Success

@@ -31,6 +31,8 @@
 Provides fun commands that require a database to operate.
 """
 
+deprecated = True
+
 __revision__ = "$Id$"
 
 import supybot.plugins as plugins

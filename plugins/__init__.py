@@ -40,15 +40,18 @@ import math
 import sets
 import time
 import random
+import fnmatch
 import os.path
 import UserDict
 import threading
 
-import supybot.cdb as cdb
 import supybot.log as log
+import supybot.dbi as dbi
 import supybot.conf as conf
+import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.world as world
+from supybot.commands import *
 import supybot.ircutils as ircutils
 import supybot.webutils as webutils
 import supybot.callbacks as callbacks
@@ -194,7 +197,7 @@ class ChannelDBHandler(object):
 
     def makeDb(self, filename):
         """Override this to create your databases."""
-        return cdb.shelf(filename)
+        raise NotImplementedError
 
     def getDb(self, channel):
         """Use this to get a database for a specific channel."""
@@ -352,12 +355,173 @@ class ChannelUserDB(ChannelUserDictionary):
         raise NotImplementedError
 
 
-## class ChannelIdDatabasePlugin(callbacks.Privmsg):
-##     def __init__(self):
-##         # XXX Register configuration variables.
-##         self.__parent = super(ChannelIdDatabasePlugin, self)
-##         self.__parent.__init__(self)
-##         self.db = self.DB()
+class ChannelIdDatabasePlugin(callbacks.Privmsg):
+    class DB(DbiChannelDB):
+        class DB(dbi.DB):
+            class Record(dbi.Record):
+                __fields__ = [
+                    'at',
+                    'by',
+                    'text'
+                    ]
+            def add(self, at, by, text, **kwargs):
+                record = self.Record(at=at, by=by, text=text, **kwargs)
+                return super(self.__class__, self).add(record)
+
+    def __init__(self):
+        self.__parent = super(ChannelIdDatabasePlugin, self)
+        self.__parent.__init__()
+        self.db = DB(self.name(), {'flat': self.DB})()
+
+    def die(self):
+        self.db.close()
+        self.__parent.die()
+
+    def getCommandHelp(self, name):
+        help = self.__parent.getCommandHelp(name)
+        help = help.replace('$Types', utils.pluralize(self.name()))
+        help = help.replace('$Type', self.name())
+        help = help.replace('$types', utils.pluralize(self.name().lower()))
+        help = help.replace('$type', self.name().lower())
+        return help
+
+    def noSuchRecord(self, irc, channel, id):
+        irc.error('There is no %s with id #%s in my database for %s.' %
+                  (self.name(), id, channel))
+
+    def checkChangeAllowed(self, irc, msg, channel, user, record):
+        if user.id == record.by:
+            return True
+        cap = ircdb.makeChannelCapability(channel, 'op')
+        if ircdb.checkCapability(msg.prefix, cap):
+            return True
+        irc.errorNoCapability(cap)
+        
+    def addValidator(self, irc, text):
+        """This should irc.error or raise an exception if text is invalid."""
+        pass
+
+    def add(self, irc, msg, args, user, channel, text):
+        """[<channel>] <text>
+
+        Adds <text> to the $type database for <channel>.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        at = time.time()
+        self.addValidator(irc, text)
+        if text is not None:
+            id = self.db.add(channel, at, user.id, text)
+            irc.replySuccess('%s #%s added.' % (self.name(), id))
+    add = wrap(add, ['user', 'channeldb', 'text'])
+
+    def remove(self, irc, msg, args, user, channel, id):
+        """[<channel>] <id>
+
+        Removes the $type with id <id> from the $type database for <channel>.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        try:
+            record = self.db.get(channel, id)
+            self.checkChangeAllowed(irc, msg, channel, user, record)
+            self.db.remove(channel, id)
+            irc.replySuccess()
+        except KeyError:
+            self.noSuchRecord(irc, channel, id)
+    remove = wrap(remove, ['user', 'channeldb', 'id'])
+
+    def searchSerializeRecord(self, record):
+        text = utils.quoted(utils.ellipsisify(record.text, 50))
+        return '#%s: %s' % (record.id, text)
+
+    def search(self, irc, msg, args, channel, optlist, glob):
+        """[<channel>] [--{regexp,by} <value>] [<glob>]
+
+        Searches for $types matching the criteria given. XXX
+        """
+        predicates = []
+        def p(record):
+            for predicate in predicates:
+                if not predicate(record):
+                    return False
+            return True
+
+        for (opt, arg) in optlist:
+            if opt == 'by':
+                predicates.append(lambda r, arg=arg: r.by == arg.id)
+            elif opt == 'regexp':
+                predicates.append(lambda r, arg=arg: arg.search(r.text))
+        if glob:
+            # XXX Case sensitive.
+            predicates.append(lambda r: fnmatch.fnmatch(r.text, glob))
+        L = []
+        for record in self.db.select(channel, p):
+            L.append(self.searchSerializeRecord(record))
+        if L:
+            L.sort()
+            irc.reply(utils.commaAndify(L))
+        else:
+            irc.reply('No matching %s were found.' %
+                      utils.pluralize(self.name().lower()))
+    search = wrap(search, ['channeldb',
+                           getopts({'by': 'otherUser',
+                                    'regexp': 'regexpMatcher'}),
+                           additional(rest('glob'))])
+
+    def showRecord(self, record):
+        try:
+            name = ircdb.users.getUser(record.by).name
+        except KeyError:
+            name = 'a user that is no longer registered'
+        at = time.localtime(record.at)
+        timeS = time.strftime(conf.supybot.humanTimestampFormat(), at)
+        return '%s #%S: %s (added by %s at %s)' % \
+               (self.name(), record.id, utils.quoted(record.text), name, timeS)
+
+    def get(self, irc, msg, args, channel, id):
+        """[<channel>] <id>
+
+        Gets the $type with id <id> from the $type database for <channel>.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        try:
+            record = self.db.get(channel, id)
+            irc.reply(self.showRecord(record))
+        except KeyError:
+            self.noSuchRecord(irc, channel, id)
+    get = wrap(get, ['channeldb', 'id'])
+
+    def change(self, irc, msg, args, user, channel, id, replacer):
+        """[<channel>] <id> <regexp>
+
+        Changes the $type with id <id> according to the regular expression
+        <regexp>.  <channel> is only necessary if the message isn't sent in the
+        channel itself.
+        """
+        try:
+            record = self.db.get(channel, id)
+            self.checkChangeAllowed(irc, msg, channel, user, record)
+            record.text = replacer(record.text)
+            self.db.set(channel, id, record)
+            irc.replySuccess()
+        except KeyError:
+            self.noSuchRecord(irc, channel, id)
+    change = wrap(change, ['user', 'channeldb', 'id', 'regexpReplacer'])
+
+    def stats(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Returns the number of $types in the database for <channel>.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        n = self.db.size(channel)
+        irc.reply('There %s %s in my database.' %
+                  (utils.be(n), utils.nItems(self.name().lower(), n)))
+    stats = wrap(stats, ['channeldb'])
+
 
 class PeriodicFileDownloader(object):
     """A class to periodically download a file/files.

@@ -31,6 +31,8 @@
 Maintains a Quotes database for each channel.
 """
 
+deprecated = True
+
 __revision__ = "$Id$"
 
 import re
