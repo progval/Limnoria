@@ -83,7 +83,11 @@ class AsyncoreDriver(asynchat.async_chat, object):
 
     def writable(self):
         while self.connected:
-            m = self.irc.takeMsg()
+            try:
+                m = self.irc.takeMsg()
+            except Exception, e:
+                log.exception('Uncaught exception in irclib.Irc.takeMsg:')
+                return
             if m:
                 self.push(str(m))
             else:
