@@ -45,6 +45,7 @@ class DictTestCase(PluginTestCase, PluginDocumentation):
     def testDict(self):
         self.assertNotError('dict slash')
         self.assertNotRegexp('dict web1913 slash', 'foldoc')
+        self.assertNotError('dict ""')
 
     def testDictionaries(self):
         self.assertNotError('dictionaries')

@@ -197,7 +197,7 @@ class Connection:
             if code != 151:
                 break
 
-            resultword, resultdb = re.search('^"(.+)" (\S+)', text).groups()
+            resultword, resultdb = re.search('^"(.*)" (\S+)', text).groups()
             defstr = self.get100block()
             retval.append(Definition(self, self.getdbobj(resultdb),
                                      resultword, defstr))
