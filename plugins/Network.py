@@ -282,7 +282,7 @@ class Network(callbacks.Privmsg):
         now = time.time()
         if irc in self._latency:
             (replyIrc, when) = self._latency.pop(irc)
-            replyIrc.reply('%s seconds.' % (now-when))
+            replyIrc.reply('%.2f seconds.' % (now-when))
 
     def latency(self, irc, msg, args):
         """[<network>]
@@ -293,7 +293,7 @@ class Network(callbacks.Privmsg):
         """
         network = self._getNetwork(irc, args)
         otherIrc = self._getIrc(network)
-        otherIrc.queueMsg(ircmsgs.ping('Latency check.'))
+        otherIrc.queueMsg(ircmsgs.ping('Latency check (from %s).' % msg.nick))
         self._latency[otherIrc] = (irc, time.time())
         
     # XXX join
