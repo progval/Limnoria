@@ -95,10 +95,10 @@ def loadPluginClass(irc, module):
     irc.addCallback(callback)
 
 conf.registerGroup(conf.supybot, 'commands')
-conf.registerGroup(conf.supybot.commands, 'defaultPlugins',
-    registry.GroupWithDefault(registry.String('(Unused)', """Determines what
-    commands have default plugins set, and which plugins are set to be the
-    default for each of those commands.""")))
+conf.registerGlobalValue(conf.supybot.commands, 'defaultPlugins',
+    registry.String('(Unused)', """Determines what commands have default
+    plugins set, and which plugins are set to be the default for each of
+    those commands."""))
 conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,
                          'list', registry.String('Misc', ''))
 conf.registerGlobalValue(conf.supybot.commands.defaultPlugins,

@@ -57,21 +57,20 @@ supybot = registry.Group()
 supybot.setName('supybot')
 
 def registerPlugin(name, currentValue=None):
-    supybot.plugins.registerGroup(
-        name,
-        registry.GroupWithValue(registry.Boolean(False, """Determines whether
-        this plugin is loaded by default.""")))
+    supybot.plugins.register(name, registry.Boolean(False, """Determines
+    whether this plugin is loaded by default."""))
     if currentValue is not None:
-        supybot.plugins.getChild(name).setValue(currentValue)
+        supybot.plugins.get(name).setValue(currentValue)
 
 def registerChannelValue(group, name, value):
-    group.registerGroup(name, registry.GroupWithDefault(value))
+    value.supplyDefault = True
+    group.register(name, value)
 
 def registerGlobalValue(group, name, value):
-    group.registerGroup(name, registry.GroupWithValue(value))
+    group.register(name, value)
 
-def registerGroup(group, name, Group=None):
-    group.registerGroup(name, Group)
+def registerGroup(Group, name, group=None):
+    Group.register(name, group)
 
 class ValidNick(registry.String):
     def setValue(self, v):
@@ -98,12 +97,12 @@ supybot.register('ident', ValidNick('supybot',
 supybot.register('user', registry.String('supybot', """Determines the user
 the bot sends to the server."""))
 
-supybot.register('password', registry.String('', """Determines the password to
-be sent to the server if it requires one."""))
-
 # TODO: Make this check for validity.
 supybot.register('server', registry.String('irc.freenode.net', """Determines
 what server the bot connects to."""))
+
+supybot.register('password', registry.String('', """Determines the password to
+be sent to the server if it requires one."""))
 
 class SpaceSeparatedListOfChannels(registry.SeparatedListOf):
     Value = ValidChannel
@@ -114,9 +113,9 @@ class SpaceSeparatedListOfChannels(registry.SeparatedListOf):
 supybot.register('channels', SpaceSeparatedListOfChannels(['#supybot'], """
 Determines what channels the bot will join when it connects to the server."""))
 
-supybot.registerGroup('databases')
-supybot.databases.registerGroup('users')
-supybot.databases.registerGroup('channels')
+supybot.register('databases')
+supybot.databases.register('users')
+supybot.databases.register('channels')
 supybot.databases.users.register('filename', registry.String('users.conf', """
 Determines what filename will be used for the users database.  This file will
 go into the directory specified by the supybot.directories.conf
@@ -126,7 +125,7 @@ supybot.databases.channels.register('filename',registry.String('channels.conf',
 will go into the directory specified by the supybot.directories.conf
 variable."""))
                                                                 
-supybot.registerGroup('directories')
+supybot.register('directories')
 supybot.directories.register('conf', registry.String('conf', """
 Determines what directory configuration data is put into."""))
 supybot.directories.register('data', registry.String('data', """
@@ -175,7 +174,7 @@ bytes."""))
 ###
 # Reply/error tweaking.
 ###
-supybot.registerGroup('reply')
+supybot.register('reply')
 supybot.reply.register('oneToOne', registry.Boolean(True, """Determines whether
 the bot will send multi-message replies in a single messsage or in multiple
 messages.  For safety purposes (so the bot can't possibly flood) it will
@@ -261,7 +260,7 @@ why these default to what they do."""))
 ###
 # Replies
 ###
-supybot.registerGroup('replies')
+supybot.register('replies')
 
 registerChannelValue(supybot.replies, 'error',
     registry.NormalizedString("""An error has occurred and has been logged.
@@ -379,7 +378,7 @@ there are no prefix characters set, it just uses its nick."""))
 ###
 # Driver stuff.
 ###
-supybot.registerGroup('drivers')
+supybot.register('drivers')
 supybot.drivers.register('poll', registry.Float(1.0, """Determines the default
 length of time a driver should block waiting for input."""))
 
@@ -407,7 +406,7 @@ you to integrate with asyncore-based applications.  twistedDrivers is very
 stable and simple, and if you've got Twisted installed, is probably your best
 bet."""))
 
-supybot.registerGroup('plugins') # This will be used by plugins, but not here.
+supybot.register('plugins') # This will be used by plugins, but not here.
 
 ###############################
 ###############################

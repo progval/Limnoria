@@ -93,11 +93,113 @@ def close(registry, filename, annotated=True):
     fd.close()
 
 
-class Value(object):
-    def __init__(self, default, help):
+class Group(object):
+    def __init__(self, supplyDefault=False):
+        self.name = 'unset'
+        self.added = []
+        self.children = {}
+        self.originals = {}
+        self._lastModified = 0
+        self.supplyDefault = supplyDefault
+        OriginalClass = self.__class__
+        class X(OriginalClass):
+            """This class exists to differentiate those values that have
+            been changed from their default from those that haven't."""
+            def set(self, *args):
+                self.__class__ = OriginalClass
+                self.set(*args)
+            def setValue(self, *args):
+                self.__class__ = OriginalClass
+                self.setValue(*args)
+        self.X = X
+
+    def __nonExistentEntry(self, attr):
+        s = '%s is not a valid entry in %s' % (attr, self.name)
+        raise NonExistentRegistryEntry, s
+
+    def __normalizeAttr(self, attr):
+        return attr.lower()
+
+    def __makeChild(self, attr, s):
+        v = self.__class__(self.default, self.help)
+        v.set(s)
+        v.__class__ = self.X
+        v.supplyDefault = False
+        self.register(attr, v)
+        return v
+
+    def __getattr__(self, attr):
+        original = attr
+        attr = self.__normalizeAttr(attr)
+        if attr in self.children:
+            return self.children[attr]
+        elif self.supplyDefault:
+            return self.__makeChild(original, str(self))
+        else:
+            self.__nonExistentEntry(original)
+            
+    def get(self, attr):
+        # Not getattr(self, attr) because some nodes might have groups that
+        # are named the same as their methods.
+        return self.__getattr__(attr)
+
+    def setName(self, name):
+        self.name = name
+        if name in _cache and self._lastModified < _lastModified:
+            self.set(_cache[name.lower()])
+        if self.supplyDefault:
+            for (k, v) in _cache.iteritems():
+                if k.startswith(self.name):
+                    (_, group) = rsplit(k, '.', 1)
+                    self.__makeChild(group, v)
+    
+    def register(self, name, node=None):
+        original = name
+        name = self.__normalizeAttr(name)
+        if node is None:
+            node = Group()
+        if name not in self.children: # XXX Is this right?
+            self.children[name] = node
+            self.added.append(original)
+            self.originals[name] = original
+            fullname = '%s.%s' % (self.name, original)
+            node.setName(fullname)
+
+    def unregister(self, name):
+        original = name
+        name = self.__normalizeAttr(name)
+        try:
+            del self.children[name]
+            self.added.remove(original)
+        except KeyError:
+            self.__nonExistentEntry(original)
+
+    def getValues(self, getChildren=False, fullNames=True):
+        L = []
+        for name in map(self.__normalizeAttr, self.added):
+            node = self.children[name]
+            if hasattr(node, 'value'):
+                if node.__class__ is not self.X:
+                    L.append((node.name, node))
+            if getChildren:
+                L.extend(node.getValues(getChildren, fullNames))
+        if not fullNames:
+            L = [(rsplit(s, '.', 1)[1], node) for (s, node) in L]
+        return L
+
+
+class Value(Group):
+    def __init__(self, default, help, **kwargs):
+        Group.__init__(self, **kwargs)
         self.default = default
         self.help = utils.normalizeWhitespace(help.strip())
         self.setValue(default)
+
+    def setName(self, *args):
+        if self.name == 'unset':
+            self._lastModified = 0
+        Group.setName(self, *args)
+        self._lastModified = time.time()
 
     def set(self, s):
         """Override this with a function to convert a string to whatever type
@@ -118,8 +220,9 @@ class Value(object):
 
     # This is simply prettier than naming this function get(self)
     def __call__(self):
-        # TODO: Check _lastModified to see if stuff needs to be reloaded from
-        # the _cache.
+        if _lastModified > self._lastModified:
+            if self.name in _cache:
+                self.set(_cache[self.name.lower()])
         return self.value
 
 class Boolean(Value):
@@ -274,157 +377,9 @@ class CommaSeparatedListOfStrings(SeparatedListOf):
 class CommaSeparatedSetOfStrings(CommaSeparatedListOfStrings):
     List = sets.Set
 
-class Group(object):
-    def __init__(self):
-        self.name = 'unset'
-        self.values = {}
-        self.children = {}
-        self.originals = {}
-
-    def __nonExistentEntry(self, attr):
-        s = '%s is not a valid entry in %s' % (attr, self.name)
-        raise NonExistentRegistryEntry, s
-
-    def __getattr__(self, attr):
-        original = attr
-        attr = attr.lower()
-        if attr in self.values:
-            return self.values[attr]
-        elif attr in self.children:
-            return self.children[attr]
-        else:
-            self.__nonExistentEntry(original)
-            
-    def get(self, attr):
-        return self.__getattr__(attr)
-    
-    def getChild(self, attr):
-        return self.children[attr.lower()]
-
-    def setName(self, name):
-        self.name = name
-
-    def getName(self):
-        return self.name
-
-    def register(self, name, value):
-        original = name
-        name = name.lower()
-        self.values[name] = value
-        self.originals[name] = original
-        if _cache:
-            fullname = '%s.%s' % (self.name, name)
-            if fullname in _cache:
-                value.set(_cache[fullname])
-
-    def registerGroup(self, name, group=None):
-        original = name
-        name = name.lower()
-        if name in self.children:
-            return # Ignore redundant group inserts.
-        if group is None:
-            group = Group()
-        self.children[name] = group
-        self.originals[name] = original
-        fullname = '%s.%s' % (self.name, name)
-        group.setName(fullname)
-        if _cache and fullname in _cache:
-            group.set(_cache[fullname])
-
-    def getValues(self, getChildren=False, fullNames=True):
-        L = []
-        items = self.values.items()
-        # If getChildren=True, the group will insert itself into its getValues.
-        if not getChildren: 
-            for (name, child) in self.children.items():
-                if hasattr(child, 'value'):
-                    items.append((name, child))
-        utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
-        for (name, value) in items:
-            if fullNames:
-                name = '%s.%s' % (self.getName(), self.originals[name])
-            else:
-                name = self.originals[name]
-            L.append((name, value))
-        if getChildren:
-            items = self.children.items()
-            utils.sortBy(lambda (k, _): (k.lower(), len(k), k), items)
-            for (_, child) in items:
-                L.extend(child.getValues(getChildren, fullNames))
-        return L
-        
-
-class GroupWithValue(Group):
-    def __init__(self, value):
-        Group.__init__(self)
-        self.value = value
-        self.help = value.help
-        self.default = value.default
-
-    def set(self, s):
-        self.value.set(s)
-
-    def setValue(self, v):
-        self.value.setValue(v)
-
-    def __call__(self):
-        return self.value()
-
-    def __str__(self):
-        return str(self.value)
-
-    def getValues(self, getChildren=False, fullNames=True):
-        L = Group.getValues(self, getChildren, fullNames)
-        if getChildren:
-            L.insert(0, (self.getName(), self))
-        return L
-
-
-class GroupWithDefault(GroupWithValue):
-    def __init__(self, value):
-        class X(value.__class__):
-            """This class exists to differentiate those values that have been
-            changed from their default to those that haven't."""
-            def set(self, *args):
-                self.__class__ = value.__class__
-                self.set(*args)
-            def setValue(self, *args):
-                self.__class__ = value.__class__
-                self.setValue(*args)
-        self.X = X
-        GroupWithValue.__init__(self, value)
-        
-    def __makeChild(self, attr, s):
-        #print '***', attr, ':', repr(s)
-        v = copy.copy(self.value)
-        v.set(s)
-        v.__class__ = self.X
-        self.register(attr, v)
-        return v
-
-    def __getattr__(self, attr):
-        try:
-            v = GroupWithValue.__getattr__(self, attr)
-            if v.__class__ is self.X:
-                raise NonExistentRegistryEntry 
-        except NonExistentRegistryEntry:
-            v = self.__makeChild(attr, str(self))
-        return v
-
-    def setName(self, name):
-        GroupWithValue.setName(self, name)
-        for (k, v) in _cache.iteritems():
-            if k.startswith(self.name):
-                (_, group) = rsplit(k, '.', 1)
-                self.__makeChild(group, v)
-
-    def getValues(self, getChildren=False, fullNames=True):
-        L = GroupWithValue.getValues(self, getChildren, fullNames)
-        L = [v for v in L if v[1].__class__ is not self.X]
-        return L
-
 
 if __name__ == '__main__':
+#if 1:
     import sys
     sys.setrecursionlimit(40)
     supybot = Group()
@@ -432,20 +387,18 @@ if __name__ == '__main__':
     supybot.register('throttleTime', Float(1, """Determines the minimum
     number of seconds the bot will wait between sending messages to the server.
     """))
-    supybot.registerGroup('plugins')
-    supybot.plugins.registerGroup('topic')
-    supybot.plugins.topic.registerGroup('separator',
-      GroupWithDefault(StringSurroundedBySpaces(' || ',
-      'Determines what separator the bot uses to separate topic entries.')))
+    supybot.register('plugins')
+    supybot.plugins.register('topic')
+    supybot.plugins.topic.register('separator',
+      StringSurroundedBySpaces(' || ', """Determines what separator the bot
+      uses to separate topic entries.""", supplyDefault=True))
     supybot.plugins.topic.separator.get('#supybot').set(' |||| ')
     supybot.plugins.topic.separator.set(' <> ')
 
     supybot.throttleTime.set(10)
 
-    supybot.registerGroup('log')
-    supybot.log.registerGroup('stdout',
-                              GroupWithValue(Boolean(False,
-                                                     """Help for stdout.""")))
+    supybot.register('log')
+    supybot.log.register('stdout', Boolean(False, """Help for stdout."""))
     supybot.log.stdout.register('colorized', Boolean(False,
                                                      'Help colorized'))
     supybot.log.stdout.setValue(True)

@@ -193,7 +193,7 @@ class LogLevel(registry.Value):
 conf.supybot.directories.register('log', registry.String('logs', """Determines
 what directory the bot will store its logfiles in."""))
 
-conf.supybot.registerGroup('log')
+conf.supybot.register('log')
 conf.supybot.log.register('level', LogLevel(logging.INFO,
 """Determines what the minimum priority level logged will be.  Valid values are
 DEBUG, INFO, WARNING, ERROR, and CRITICAL, in order of increasing
@@ -207,9 +207,9 @@ Determines whether highly detailed tracebacks will be logged.  While more
 informative (and thus more useful for debugging) they also take a significantly
 greater amount of space in the logs.  Hopefully, however, such uncaught
 exceptions aren't very common."""))
-conf.supybot.log.registerGroup('stdout',
-registry.GroupWithValue(registry.Boolean(True, """Determines whether the bot
-will log to stdout.""")))
+conf.supybot.log.register('stdout',
+    registry.Boolean(True, """Determines whether the bot will log to
+    stdout."""))
 
 class BooleanRequiredFalseOnWindows(registry.Boolean):
     def set(self, s):
