@@ -50,7 +50,6 @@ import ircutils
 import callbacks
 
 import Owner
-import Misc
 
 nicks = ['fatjim','scn','moshez','LordVan','MetaCosm','pythong','fishfart',
          'alb','d0rt','jemfinch','StyxAlso','fors','deltab','gd',
@@ -125,12 +124,12 @@ class PluginTestCase(unittest.TestCase):
         self.irc = irclib.Irc(nick)
         while self.irc.takeMsg():
             pass
-        _ = Owner.loadPluginClass(self.irc, Owner)
-        _ = Owner.loadPluginClass(self.irc, Misc)
+        OwnerModule = Owner.loadPluginModule('Owner')
+        MiscModule = OwnerModule.loadPluginModule('Misc')
+        _ = OwnerModule.loadPluginClass(self.irc, OwnerModule)
+        _ = OwnerModule.loadPluginClass(self.irc, MiscModule)
         if isinstance(self.plugins, str):
-            if self.plugins not in ('Owner', 'Misc'):
-                module = Owner.loadPluginModule(self.plugins)
-                cb = Owner.loadPluginClass(self.irc, module)
+            self.plugins = [self.plugins]
         else:
             for name in self.plugins:
                 if name not in ('Owner', 'Misc'):
