@@ -97,31 +97,59 @@ class UserCapabilitySetTestCase(unittest.TestCase):
         
 
 class CapabilitySetTestCase(unittest.TestCase):
-    def test(self):
+    def testContains(self):
         s = ircdb.CapabilitySet()
+        self.failIf('foo' in s)
+        self.failIf('!foo' in s)
         s.add('foo')
         self.failUnless('foo' in s)
+        self.failUnless('!foo' in s)
+        s.remove('foo')
+        self.failIf('foo' in s)
         self.failIf('!foo' in s)
-        s.add('!bar')
-        self.failUnless('!bar' in s)
-        self.failIf('bar' in s)
-        self.assertRaises(KeyError, s.check, 'baz')
-        self.assertRaises(KeyError, s.check, '!baz')
-        s.remove('!bar')
-        self.assertRaises(KeyError, s.check, '!bar')
-        self.assertRaises(KeyError, s.check, 'bar')
+        s.add('!foo')
+        self.failUnless('foo' in s)
+        self.failUnless('!foo' in s)
+            
+    def testCheck(self):
+        s = ircdb.CapabilitySet()
+        self.assertRaises(KeyError, s.check, 'foo')
+        self.assertRaises(KeyError, s.check, '!foo')
+        s.add('foo')
+        self.failUnless(s.check('foo'))
+        self.failIf(s.check('!foo'))
         s.remove('foo')
         self.assertRaises(KeyError, s.check, 'foo')
         self.assertRaises(KeyError, s.check, '!foo')
+        s.add('!foo')
+        self.failIf(s.check('foo'))
+        self.failUnless(s.check('!foo'))
+        s.remove('!foo')
+        self.assertRaises(KeyError, s.check, 'foo')
+        self.assertRaises(KeyError, s.check, '!foo')
+
+    def testAdd(self):
+        s = ircdb.CapabilitySet()
+        s.add('foo')
+        s.add('!foo')
+        self.failIf(s.check('foo'))
+        self.failUnless(s.check('!foo'))
+        s.add('foo')
+        self.failUnless(s.check('foo'))
+        self.failIf(s.check('!foo'))
+        
 
 class UserCapabilitySetTestCase(unittest.TestCase):
-    def test(self):
+    def testOwner(self):
         s = ircdb.UserCapabilitySet()
         s.add('owner')
+        self.failUnless('foo' in s)
+        self.failUnless('!foo' in s)
         self.failUnless(s.check('owner'))
         self.failIf(s.check('!owner'))
         self.failIf(s.check('!foo'))
         self.failUnless(s.check('foo'))
+
 
 class IrcUserTestCase(unittest.TestCase):
     def testCapabilities(self):
