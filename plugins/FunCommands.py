@@ -52,7 +52,6 @@ import string
 import random
 import urllib
 import inspect
-import binascii
 import telnetlib
 import threading
 import mimetypes
@@ -281,7 +280,7 @@ class FunCommands(callbacks.Privmsg):
         composed of the hexadecimal value of each character in the string
         """
         text = privmsgs.getArgs(args)
-        irc.reply(msg, binascii.hexlify(text))
+        irc.reply(msg, text.encode('hex_codec'))
 
     def unhexlify(self, irc, msg, args):
         """<hexstring>
@@ -291,8 +290,7 @@ class FunCommands(callbacks.Privmsg):
         """
         text = privmsgs.getArgs(args)
         try:
-            s = binascii.unhexlify(text)
-            irc.reply(msg, s)
+            irc.reply(msg, text.decode('hex_codec'))
         except TypeError:
             irc.error(msg, 'Invalid input.')
 
