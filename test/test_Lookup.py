@@ -64,6 +64,7 @@ if sqlite:
             self.assertResponse('test your mom', 'my mom')
             self.assertError('test something not in there')
             self.assertResponse('test foo:bar', 'baz')
+            self.assertHelp('help test')
             self.assertNotError('lookup remove test')
             try:
                 original = conf.replyWhenNotCommand

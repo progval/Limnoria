@@ -193,7 +193,8 @@ class PluginTestCase(unittest.TestCase):
         m = self._feedMsg(query)
         if m is None:
             raise TimeoutError, query
-        self.failUnless(lastGetHelp in m.args[1])
+        self.failUnless(lastGetHelp in m.args[1],
+                        '%s is not the help (%s)' % (m.args[1], lastGetHelp))
 
     def assertNoResponse(self, query, timeout=None):
         m = self._feedMsg(query, timeout)

@@ -49,7 +49,6 @@ import utils
 import privmsgs
 import callbacks
 
-
 def configure(onStart, afterConnect, advanced):
     # This will be called by setup.py to configure this module.  onStart and
     # afterConnect are both lists.  Append to onStart the commands you would
@@ -157,8 +156,19 @@ class Lookup(callbacks.Privmsg):
         def f(self, irc, msg, args):
             args.insert(0, name)
             self._lookup(irc, msg, args)
+        db = getDb()
+        cursor = db.cursor()
+        cursor.execute("""SELECT COUNT(*) FROM %s""" % name)
+        rows = cursor.fetchone()[0]
+        docstring = """[<key>]
+
+        If <key> is given, looks up <key> in the %s database.  Otherwise,
+        returns a random key: value pair from the database.  There are
+        %s in the database.
+        """ % (name, utils.nItems(rows, name))
         f = types.FunctionType(f.func_code, f.func_globals,
                                f.func_name, closure=f.func_closure)
+        f.__doc__ = docstring
         setattr(self.__class__, name, f)
 
     def _lookup(self, irc, msg, args):
