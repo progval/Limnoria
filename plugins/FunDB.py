@@ -130,7 +130,7 @@ class FunDB(callbacks.Privmsg):
     """
     Contains the 'fun' commands that require a database.  Currently includes
     database-backed commands for crossword puzzle solving, anagram searching,
-    larting, excusing, and insulting.
+    larting, praising, excusing, and insulting.
     """
     _tables = sets.Set(['lart', 'insult', 'excuse', 'praise'])
     def __init__(self):
