@@ -55,6 +55,13 @@ class TestFunDB(ChannelPluginTestCase, PluginDocumentation):
         self.assertError('remove l4rt foo')
         self.assertError('remove lart foo')
 
+    def testSearch(self):
+        # 'fundb search' because otherwise it thinks it's 'config search'
+        self.assertError('fundb search l4rt foo')
+        self.assertError('fundb search lart foo')
+        self.assertNotError('add lart foo $who')
+        self.assertNotError('fundb search lart foo')
+
     def testLart(self):
         self.assertNotError('add lart jabs $who')
         self.assertHelp('lart')

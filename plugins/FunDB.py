@@ -109,6 +109,10 @@ class DbiFunDBDB(object):
     def size(self, channel, type):
         db = self._getDb(channel, type)
         return itertools.ilen(db)
+    
+    def search(self, channel, type, p):
+        db = self._getDb(channel, type)
+        return db.select(p)
 
 FunDBDB = plugins.DB('FunDB',
                      {'flat': DbiFunDBDB})
@@ -125,12 +129,13 @@ class FunDB(callbacks.Privmsg):
     """
     _types = ('insult', 'lart', 'praise')
     def __init__(self):
-        super(FunDB, self).__init__()
+        self.__parent = super(FunDB, self)
+        self.__parent.__init__()
         self.db = FunDBDB()
 
     def die(self):
         self.db.close()
-        super(FunDB, self).die()
+        self.__parent.die()
 
     def _getBy(self, by):
         try:
@@ -139,7 +144,8 @@ class FunDB(callbacks.Privmsg):
             return by
 
     def _validType(self, irc, type, error=True):
-        if type not in self._types:
+        lowerTypes = [t.lower() for t in self._types]
+        if type.lower() not in lowerTypes:
             if error:
                 irc.error('%r is not a valid type.  Valid types include %s.' %
                           (type, utils.commaAndify(self._types)))
@@ -209,6 +215,26 @@ class FunDB(callbacks.Privmsg):
             irc.replySuccess()
         except KeyError:
             irc.error('There is no %s with that id.' % type)
+
+    def search(self, irc, msg, args):
+        """[<channel>] <lart|insult|praise> <text>
+
+        Searches the database specified for <text>, and returns the records
+        with matching ids as well as a snippet of the text of each record.
+        """
+        channel = privmsgs.getChannel(msg, args)
+        (type, text) = privmsgs.getArgs(args, required=2)
+        if not self._validType(irc, type):
+            return
+        def p(record):
+            return text in record.text
+        results = self.db.search(channel, type, p)
+        L = ['#%s: %s' % (record.id, utils.ellipsisify(record.text, 50)) \
+             for record in results]
+        if not L:
+            irc.error('There is no %s containing that text.' % type)
+        else:
+            irc.reply(utils.commaAndify(L))
 
     def change(self, irc, msg, args):
         """[<channel>] <lart|insult|praise> <id> <regexp>
