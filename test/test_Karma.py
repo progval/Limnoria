@@ -62,9 +62,9 @@ if sqlite is not None:
             # Test case-insensitive
             self.assertNoResponse('MOO++', 2)
             self.assertRegexp('karma moo',
-                              'Karma for \'moo\'.*increased 1.*total.*1')
+                              'Karma for [\'"]moo[\'"].*increased 1.*total.*1')
             self.assertRegexp('karma MoO',
-                              'Karma for \'MoO\'.*increased 1.*total.*1')
+                              'Karma for [\'"]MoO[\'"].*increased 1.*total.*1')
 
         def testKarmaRankingDisplayConfigurable(self):
             try:
@@ -141,7 +141,7 @@ if sqlite is not None:
                 conf.supybot.plugins.Karma.allowSelfRating.setValue(True)
                 self.assertNoResponse('%s++' % nick, 2)
                 self.assertRegexp('karma %s' % nick,
-                              'Karma for \'%s\'.*increased 1.*total.*1' % nick)
+                      'Karma for [\'"]%s[\'"].*increased 1.*total.*1' % nick)
             finally:
                 conf.supybot.plugins.Karma.allowSelfRating.setValue(orig)
 
