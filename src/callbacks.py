@@ -63,6 +63,7 @@ import supybot.irclib as irclib
 import supybot.plugins as plugins
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
+import supybot.registry as registry
 
 def addressed(nick, msg, prefixChars=None, whenAddressedByNick=None):
     """If msg is addressed to 'name', returns the portion after the address.
