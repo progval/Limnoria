@@ -284,25 +284,27 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         message isn't sent on the channel itself.
         """
         channel = privmsgs.getChannel(msg, args)
-        text = privmsgs.getArgs(args)
+        name = privmsgs.getArgs(args)
         db = self.getDb(channel)
         cursor = db.cursor()
-        cursor.execute("""SELECT karma FROM karma WHERE name=%s""", text)
+        cursor.execute("""SELECT added, subtracted
+                          FROM karma
+                          WHERE name=%s""", name)
         if cursor.rowcount == 0:
-            irc.reply(msg, '%s has no karma.')
+            irc.reply(msg, '%s has no karma.' % name)
         else:
-            (id, added, subtracted) = cursor.fetchone()
+            (added, subtracted) = cursor.fetchone()
             total = added - subtracted
             irc.reply(msg, '%s\'s karma has been increased %s times ' \
                            'and decreased %s times for a total karma of %s' % \
-                      (text, added, subtracted, total))
+                      (name, added, subtracted, total))
 
     def increaseKarma(self, irc, msg, match):
         r"^(.*?)\+\+"
         name = match.group(1)
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (0, 1, 0)""")
+        cursor.execute("""INSERT INTO karma VALUES (0, %s, 1, 0)""", name)
         cursor.execute("""UPDATE karma SET added=added+1 WHERE name=%s""",name)
 
     def decreaseKarma(self, irc, msg, match):
@@ -310,7 +312,7 @@ class ChannelDB(callbacks.PrivmsgCommandAndRegexp, ChannelDBHandler):
         name = match.group(1)
         db = self.getDb(msg.args[0])
         cursor = db.cursor()
-        cursor.execute("""INSERT INTO karma VALUES (0, 0, 1)""")
+        cursor.execute("""INSERT INTO karma VALUES (0, %s, 0, 1)""", name)
         cursor.execute("""UPDATE karma
                           SET subtracted=subtracted+1
                           WHERE name=%s""", name)
