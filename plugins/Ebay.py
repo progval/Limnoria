@@ -36,7 +36,6 @@ Accesses eBay.com for various things
 import re
 import sets
 import getopt
-import urllib2
 
 __revision__ = "$Id$"
 
@@ -49,6 +48,7 @@ import utils
 import plugins
 import ircutils
 import privmsgs
+import webutils
 import callbacks
 
 
@@ -112,7 +112,7 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
             return
         url = 'http://cgi.ebay.com/ws/eBayISAPI.dll?ViewItem&item=%s' % item
         try:
-            irc.reply(self._getResponse(url))
+            irc.reply('%s <%s>' % (self._getResponse(url), url))
         except EbayError, e:
             irc.reply(str(e))
 
@@ -130,10 +130,8 @@ class Ebay(callbacks.PrivmsgCommandAndRegexp):
 
     def _getResponse(self, url):
         try:
-            fd = urllib2.urlopen(url)
-            s = fd.read()
-            fd.close()
-        except urllib2.HTTPError, e:
+            s = webutils.getUrl(url)
+        except webutils.WebError, e:
             raise EbayError, str(e)
         resp = []
         m = self._invalid.search(s)
