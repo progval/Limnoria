@@ -39,6 +39,7 @@ __revision__ = "$Id$"
 __author__ = supybot.authors.jemfinch
 __contributors__ = {}
 
+import time
 
 import supybot.conf as conf
 import supybot.utils as utils
