@@ -1,3 +1,12 @@
+	* Added a new plugin, Tail, which will tail logfiles and send the
+	new lines to a configurable list of targets.
+	
+	* Added Config.channel, for getting/setting channel configuration
+	variables.
+	
+	* Fixed the problem with channels with dots or colons in them
+	raising exceptions whenever the registry was accessed.
+	
 	* Changed Fun.roulette to use a 6-barrel revolver.
 	
 	* Changed Bugzilla to use the registry, rather than a custom
