@@ -2,42 +2,6 @@ Ok, so you've decided to try out Supybot.  That's great!  The more
 people who use Supybot, the more people can submit bugs and help us to
 make it the best IRC bot in the world :)
 
-First things first: Supybot *requires* Python 2.3.  There ain't no
-getting around it.  If you're a Python developer, you probably know
-how superior 2.3 is to previous incarnations.  If you're not, just
-think about the difference between a bowl of plain vanilla ice cream
-and a banana split.  Or something like that.  Either way, *We're*
-Python developers and we like banana splits.
-
-So what do you do?  First thing you'll want to do is run (with
-root/admin privileges) "python setup.py install".  This will install
-Supybot globally.  If you need to install locally for whatever reason,
-see the addendum near the end of this document.   You'll then have
-several new programs installed where Python scripts are normally
-installed on your system (/usr/bin or /usr/local/bin are common on
-UNIX systems; C:\Python23\Scripts is a common place on Windows; and
-(watch out, this is a long one :))
-/System/Library/Frameworks/Python.framework/Versions/2.3/bin is a
-common place on MacOS X.).  The two that might be of particular
-interest to you, the new user, are "supybot" and "supybot-wizard".
-The former ("supybot") is the script to run an actual bot; the latter
-("supybot-wizard") is an in-depth wizard that provides a nice user
-interface for creating configuration files for your bot.  We'd prefer
-you to the use supybot-wizard, but if you're in a hurry or don't feel
-like being asked many questions, just run supybot with no arguments
-and it'll ask you only the questions necessary to run a bot.
-
-So after running either of those two programs, you've got a nice
-registry file handy.  If you're not satisfied with your answers to any
-of the questions you were asked, feel free to run the program again
-until you're satisfied with all your answers.  Once you're satisfied,
-though, run the "supybot" program with the registry file you created
-as an argument.  This will start the bot; unless you turned off
-logging to stdout, you'll see some nice log messages describing what
-the bot is doing at any particular moment; it may pause for a
-significant amount of time after saying "Connecting to ..." while the
-server tries to check its ident.
-
 Ok, so let's assume your bot connected to the server fine and joined
 the channels you told it to join.  For now we'll assume you named your
 bot "supybot" (you probably didn't, but it'll make it much clearer in
