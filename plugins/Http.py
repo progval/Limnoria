@@ -61,6 +61,7 @@ class Http(callbacks.Privmsg):
         try:
             fd = urllib2.urlopen(url)
             text = fd.read()
+            fd.close()
             if text.startswith('Error'):
                 raise FreshmeatException, text
             project = self._fmProject.search(text).group(1)
@@ -88,6 +89,7 @@ class Http(callbacks.Privmsg):
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
         text = fd.read()
+        fd.close()
         text = self._htmlTag.sub('', text)
         lines = text.splitlines()
         sent = False
@@ -105,7 +107,9 @@ class Http(callbacks.Privmsg):
         url = 'http://finance.yahoo.com/d/quotes.csv?s=%s'\
               '&f=sl1d1t1c1ohgv&e=.csv' % symbol
         try:
-            quote = urllib2.urlopen(url).read()
+            fd = urllib2.urlopen(url)
+            quote = fd.read()
+            fd.close()
         except Exception, e:
             irc.reply(msg, debug.exnToString(e))
             return
@@ -127,7 +131,9 @@ class Http(callbacks.Privmsg):
         search = '+'.join(args)
         url = 'http://foldoc.doc.ic.ac.uk/foldoc/foldoc.cgi?query=%s' % search
         try:
-            html = urllib2.urlopen(url).read()
+            fd = urllib2.urlopen(url)
+            html = fd.read()
+            fd.close()
         except Exception, e:
             irc.error(msg, debug.exnToString(e))
         text = html.split('<P>\n', 2)[1]
@@ -144,7 +150,9 @@ class Http(callbacks.Privmsg):
         name = privmsgs.getArgs(args)
         gkprofile = 'http://www.gameknot.com/stats.pl?%s' % name
         try:
-            profile = urllib2.urlopen(gkprofile).read()
+            fd = urllib2.urlopen(gkprofile)
+            profile = fd.read()
+            fd.close()
             rating = self._gkrating.search(profile).group(1)
             games = self._gkgames.search(profile).group(1)
             profile = stripHtml(profile)
@@ -152,10 +160,10 @@ class Http(callbacks.Privmsg):
             irc.reply(msg, '%s is rated %s and has %s active games; '
                            'W-%s, L-%s, D-%s' % (name, rating, games, w, l, d))
         except AttributeError:
-			if profile.find('User %s not found!' % name) != -1:
-				irc.error(msg, 'No user %s exists.')
-			else:
-				irc.error(msg, 'The format of the page was odd.')
+            if profile.find('User %s not found!' % name) != -1:
+                irc.error(msg, 'No user %s exists.')
+            else:
+                irc.error(msg, 'The format of the page was odd.')
         except urllib2.URLError:
             irc.error(msg, 'Couldn\'t connect to gameknot.com.')
 
