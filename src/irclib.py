@@ -592,6 +592,19 @@ class Irc(IrcCommandDispatcher):
             self.prefix = ircutils.joinHostmask(self.nick, user, domain)
             self.prefix = intern(self.prefix)
             log.info('Changing user 0 hostmask to %r' % self.prefix)
+        elif conf.followIdentificationThroughNickChanges:
+            try:
+                id = ircdb.users.getUserId(msg.prefix)
+                u = ircdb.users.getUser(id)
+            except KeyError:
+                return
+            if u.auth:
+                (_, user, host) = ircutils.splitHostmask(msg.prefix)
+                newhostmask = ircutils.joinHostmask(msg.args[0], user, host)
+                log.info('Following identification for %s: %s -> %s',
+                         u.name, u.auth[1], newhostmask)
+                u.auth = (u.auth[0], newhostmask)
+                ircdb.users.setUser(id, u)
 
     def feedMsg(self, msg):
         """Called by the IrcDriver; feeds a message received."""

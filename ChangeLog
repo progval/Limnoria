@@ -1,3 +1,9 @@
+	* Added conf.followIdentificationThroughNickChanges for having the
+	bot update user's identified hostmask when they change nicks.
+	
+	* Added conf.replyWhenNotAddressed, a configuration variable for
+	having the bot always attempt to parse a message as a command.
+	
 	* Added Relay.command, a command for sending commands to the bot
 	on a different network.
 	

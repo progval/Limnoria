@@ -160,6 +160,14 @@ replyWhenNotAddressed = False
 requireRegistration = False
 
 ###
+# followIdentificationThroughNickChanges: By default the bot will simply
+#                                         unidentify someone when he changes
+#                                         his nick.  Setting this to True will
+#                                         cause the bot to track such changes.
+###
+followIdentificationThroughNickChanges = False
+
+###
 # enablePipeSyntax: Supybot allows nested commands; generally, commands are
 #                   nested via [square brackets].  Supybot can also use a
 #                   syntax more similar to Unix pipes.  What would be (and
@@ -356,6 +364,7 @@ types = {
     'detailedTracebacks': mybool,
     'driverModule': mystr,
     'showOnlySyntax': mybool,
+    'followIdentificationThroughNickChanges': mybool
 }
 
 if os.name == 'nt':
