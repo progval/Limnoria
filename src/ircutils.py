@@ -287,6 +287,7 @@ def isValidArgument(s):
 notFunky = string.ascii[32:]+'\x02\x03\x0F\x16\x1F'
 def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
+    assert not isinstance(s, unicode),'Unicode strings are not allowed in IRC.'
     if isValidArgument(s) and s.translate(string.ascii, notFunky) == '':
         return s
     else:
