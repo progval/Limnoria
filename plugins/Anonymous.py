@@ -94,6 +94,7 @@ class Anonymous(callbacks.Privmsg):
             irc.error('That channel has set its capabilities so as to '
                       'disallow the use of this plugin.')
             return
+        self.log.info('Saying %r in %s due to %s.', text, channel, msg.prefix)
         irc.queueMsg(ircmsgs.privmsg(channel, text))
 
 
