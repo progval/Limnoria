@@ -89,7 +89,7 @@ class Filter(callbacks.Privmsg):
                     filtercommand(myIrc, msg, [s])
                     s = myIrc.s
                 if ircmsgs.isAction(msg):
-                    msg = ircmsgs.action(msg.args[0], s)
+                    msg = ircmsgs.action(msg.args[0], s, msg=msg)
                 else:
                     msg = ircmsgs.IrcMsg(msg=msg, args=(msg.args[0], s))
         return msg
