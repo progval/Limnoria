@@ -287,7 +287,10 @@ class UsersDictionary(object):
         else:
             name = s
         self.resetCache(name)
-        del self.dict[name]
+        try:
+            del self.dict[name]
+        except KeyError:
+            pass
 
     def getUserName(self, s):
         assert ircutils.isUserHostmask(s), 'string must be a hostmask'
