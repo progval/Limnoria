@@ -47,7 +47,7 @@ pluginFiles = glob.glob(os.path.join('plugins', '*.py'))
 setup(
     # Metadata
     name='supybot',
-    version='0.76.1',
+    version='0.77.0',
     url='http://supybot.sf.net/',
     author='Jeremy Fincher',
     author_email='jemfinch@users.sf.net',
@@ -91,6 +91,4 @@ setup(
     )
 
 
-
 # vim:set shiftwidth=4 tabstop=8 expandtab textwidth=78:
-
