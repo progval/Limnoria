@@ -40,6 +40,7 @@ import gzip
 import sets
 import getopt
 import popen2
+import socket
 import urllib
 import fnmatch
 import os.path
@@ -200,6 +201,12 @@ class Debian(callbacks.Privmsg, plugins.PeriodicFileDownloader):
         except urllib2.HTTPError, e:
             irc.error(msg, 'I couldn\'t reach the search page (%s).' % e)
             return
+        except socket.error, e:
+            if e.args[0] == 110:
+                irc.error(msg, 'Connection timed out to packages.debian.org.')
+                return
+            else:
+                raise
         m = self._debnumpkgsre.search(html)
         if m:
             numberOfPackages = m.group(1)
