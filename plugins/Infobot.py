@@ -56,11 +56,6 @@ import supybot.privmsgs as privmsgs
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 
-try:
-    import sqlite
-except ImportError:
-    raise callbacks.Error, 'You need to have PySQLite installed to use this ' \
-                           'plugin.  Download it at <http://pysqlite.sf.net/>'
 
 conf.registerPlugin('Infobot')
 conf.registerGlobalValue(conf.supybot.plugins.Infobot, 'personality',
@@ -96,7 +91,15 @@ dunnos = ['Dunno',
           'No idea',
           'I don\'t know',
           'I have no idea',
-          'I don\'t have a clue',]
+          'I don\'t have a clue',
+          'Bugger all, I dunno',
+          'Wish I knew',]
+starts = ['It has been said that ',
+          'I guess ',
+          '',
+          'hmm... ',
+          'Rumor has it ',
+          'Somebody said ',]
 confirms = ['10-4',
             'Okay',
             'Got it',
@@ -226,11 +229,23 @@ class PickleInfobotDB(object):
 
 class SqliteInfobotDB(object):
     def __init__(self):
+        try:
+            import sqlite
+        except ImportError:
+            raise callbacks.Error, 'You need to have PySQLite installed to '\
+                                   'use this plugin.  Download it at '\
+                                   '<http://pysqlite.sf.net/>'
         self._changes = 0
         self._responses = 0
         self.db = None
 
     def _getDb(self):
+        try:
+            import sqlite
+        except ImportError:
+            raise callbacks.Error, 'You need to have PySQLite installed to '\
+                                   'use this plugin.  Download it at '\
+                                   '<http://pysqlite.sf.net/>'
         if self.db is not None:
             return self.db
         try:
@@ -598,7 +613,8 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
         r"^(.+?)\s*\?[?!. ]*$"
         key = match.group(1)
         if self.addressed or self.registryValue('answerUnaddressedQuestions'):
-            self.factoid(key) # Does the dunno'ing for us itself.
+            # Does the dunno'ing for us itself.
+            self.factoid(key, prepend=random.choice(starts))
 
     def invalidCommand(self, irc, msg, tokens):
             irc.finished = True
@@ -611,7 +627,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
             # It's a question.
             if self.addressed or \
                self.registryValue('answerUnaddressedQuestions'):
-                self.factoid(value)
+                self.factoid(value, prepend=random.choice(starts))
             return
         if not self.addressed and \
            not self.registryValue('snarfUnaddressedDefinitions'):
@@ -657,7 +673,7 @@ class Infobot(callbacks.PrivmsgCommandAndRegexp):
                     self.log.debug('Already have a %r key.', key)
                     return
             self.db.setAre(key, value)
-        if self.addressed or self.force or also:
+        if self.addressed or self.force:
             self.confirm()
 
     def stats(self, irc, msg, args):
