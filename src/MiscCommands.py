@@ -36,6 +36,7 @@ Miscellaneous commands.
 from fix import *
 
 import os
+import sys
 import time
 import getopt
 import pprint
@@ -114,10 +115,10 @@ class MiscCommands(callbacks.Privmsg):
             irc.error(msg, 'There is no plugin named %s, ' \
                            'or that plugin has no commands.' % name)
 
-    def help(self, irc, msg, args):
+    def syntax(self, irc, msg, args):
         """<command>
 
-        Gives the help for a specific command.  To find commands,
+        Gives the syntax for a specific command.  To find commands,
         use the 'list' command to go see the commands offered by a plugin.
         The 'list' command by itself will show you what plugins have commands.
         """
@@ -131,44 +132,37 @@ class MiscCommands(callbacks.Privmsg):
             if hasattr(method, '__doc__') and method.__doc__ is not None:
                 doclines = method.__doc__.strip().splitlines()
                 help = doclines.pop(0)
-                if doclines:
-                    s = '%s %s (for more help use the morehelp command)'
-                else:
-                    s = '%s %s'
-                irc.reply(msg, s % (command, help))
+                irc.reply(msg, '%s %s' % (command, help))
             else:
-                irc.reply(msg, 'That command exists, but has no help.')
+                irc.reply(msg, 'That command exists, '
+                               'but has no syntax description.')
         else:
             cb = irc.getCallback(command)
             if cb:
+                s = ''
                 if hasattr(cb, '__doc__') and cb.__doc__ is not None:
-                    doclines = cb.__doc__.strip().splitlines()
-                    help = ' '.join(map(str.strip, doclines))
-                    if not help.endswith('.'):
-                        help += '.'
-                    help += '  Use the list command to see what commands ' \
-                            'this plugin supports.'
-                    irc.reply(msg, help)
+                    s = cb.__doc__
                 else:
-                    module = __import__(cb.__module__)
+                    module = sys.modules[cb.__module__]
                     if hasattr(module, '__doc__') and module.__doc__:
-                        doclines = module.__doc__.strip().splitlines()
-                        help = ' '.join(map(str.strip, doclines))
-                        if not help.endswith('.'):
-                            help += '.'
-                        help += '  Use the list command to see what ' \
-                                'commands this plugin supports.'
-                        irc.reply(msg, help)
-                    else:
-                        irc.error(msg, 'That plugin has no help.')
+                        s = module.__doc__
+                if s:
+                    s = ' '.join(map(str.strip, s.splitlines()))
+                    if not s.endswith('.'):
+                        s += '.'
+                    s += '  Use the list command to see what commands this ' \
+                         'plugin supports.'
+                else:
+                    s = 'That plugin has no help description.'
+                irc.reply(msg, s)
             else:
                 irc.error(msg, 'There is no such command or plugin.')
 
-    def morehelp(self, irc, msg, args):
+    def help(self, irc, msg, args):
         """<command>
 
-        This command gives more help than is provided by the simple argument
-        list given by the command 'help'.
+        This command gives a much more useful description than the simple
+        argument list given by the command 'syntax'.
         """
         command = callbacks.canonicalName(privmsgs.getArgs(args))
         cb = irc.findCallback(command)
@@ -177,17 +171,19 @@ class MiscCommands(callbacks.Privmsg):
             if hasattr(method, '__doc__') and method.__doc__ is not None:
                 doclines = method.__doc__.splitlines()
                 simplehelp = doclines.pop(0)
+                simplehelp = '(%s %s)' % (command, simplehelp)
                 if doclines:
                     doclines = filter(None, doclines)
                     doclines = map(str.strip, doclines)
                     help = ' '.join(doclines)
-                    irc.reply(msg, help)
+                    s = '%s    %s' % (ircutils.bold(simplehelp),help)
+                    irc.reply(msg, s)
                 else:
-                    irc.reply(msg, 'That command has no more help.  '\
-                                   'The original help is this: %s %s' % \
+                    irc.reply(msg, 'That command has no help.  '\
+                                   'The syntax is this: %s %s' % \
                                    (command, simplehelp))
             else:
-                irc.error(msg, 'That command has no help at all.')
+                irc.error(msg, '%s has no help or syntax description.'%command)
         else:
             irc.error(msg, 'There is no such command %s.' % command)
 
