@@ -805,9 +805,9 @@ class ChannelSpecific(registry.Boolean):
             return False
         lchannel = channel
         while hasLinkChannel(lchannel):
+            lchannel = get(channelSpecific.link, lchannel)
             if lchannel not in channels:
                 channels.append(lchannel)
-                lchannel = get(channelSpecific.link, lchannel)
             else:
                 # Found a cyclic link.  We'll just use the current channel
                 lchannel = channel
