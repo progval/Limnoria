@@ -464,7 +464,11 @@ class IrcState(IrcCommandDispatcher):
     def doMode(self, irc, msg):
         channel = msg.args[0]
         if ircutils.isChannel(channel): # There can be user modes, as well.
-            chan = self.channels[channel] # ??? Do we need to catch KeyError?
+            try:
+                chan = self.channels[channel]
+            except KeyError:
+                chan = ChannelState()
+                self.channels[channel] = chan
             chan.doMode(msg)
 
     def do324(self, irc, msg):
