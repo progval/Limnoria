@@ -146,7 +146,7 @@ class PluginTestCase(SupyTestCase):
             irc._reallyDie()
         # Set conf variables appropriately.
         conf.supybot.reply.whenAddressedBy.chars.setValue('@')
-        conf.supybot.reply.detailedErrors.setValue(True)
+        conf.supybot.reply.error.detailed.setValue(True)
         conf.supybot.reply.whenNotCommand.setValue(True)
         self.myVerbose = world.myVerbose
         def rmFiles(dir):

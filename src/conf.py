@@ -308,26 +308,24 @@ registerChannelValue(supybot.reply, 'whenNotCommand',
     error message when it is addressed but not given a valid command.  If this
     value is False, the bot will remain silent."""))
 
-registerGlobalValue(supybot.reply, 'detailedErrors',
+registerGroup(supybot.reply, 'error')
+registerGlobalValue(supybot.reply.error, 'detailed',
     registry.Boolean(False, """Determines whether error messages that result
     from bugs in the bot will show a detailed error message (the uncaught
     exception) or a generic error message."""))
-
-registerChannelValue(supybot.reply, 'errorInPrivate',
+registerChannelValue(supybot.reply.error, 'inPrivate',
     registry.Boolean(False, """Determines whether the bot will send error
     messages to users in private.  You might want to do this in order to keep
     channel traffic to minimum.  This can be used in combination with
     supybot.reply.errorWithNotice."""))
-
-registerChannelValue(supybot.reply, 'errorWithNotice',
+registerChannelValue(supybot.reply.error, 'withNotice',
     registry.Boolean(False, """Determines whether the bot will send error
     messages to users via NOTICE instead of PRIVMSG.  You might want to do this
     so users can ignore NOTICEs from the bot and not have to see error
     messages; or you might want to use it in combination with
     supybot.reply.errorInPrivate so private errors don't open a query window
     in most IRC clients."""))
-
-registerChannelValue(supybot.reply, 'noCapabilityError',
+registerChannelValue(supybot.reply.error, 'noCapability',
     registry.Boolean(False, """Determines whether the bot will send an error
     message to users who attempt to call a command for which they do not have
     the necessary capability.  You may wish to make this True if you don't want

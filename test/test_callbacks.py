@@ -307,31 +307,31 @@ class PrivmsgTestCase(ChannelPluginTestCase):
 
     def testErrorPrivateKwarg(self):
         try:
-            original = conf.supybot.reply.errorInPrivate()
-            conf.supybot.reply.errorInPrivate.setValue(False)
+            original = conf.supybot.reply.error.inPrivate()
+            conf.supybot.reply.error.inPrivate.setValue(False)
             m = self.getMsg("eval irc.error('foo', private=True)")
             self.failUnless(m, 'No message returned.')
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:
-            conf.supybot.reply.errorInPrivate.setValue(original)
+            conf.supybot.reply.error.inPrivate.setValue(original)
 
     def testErrorNoArgumentIsArgumentError(self):
         self.assertHelp('eval irc.error()')
 
     def testErrorWithNotice(self):
         try:
-            original = conf.supybot.reply.errorWithNotice()
-            conf.supybot.reply.errorWithNotice.setValue(True)
+            original = conf.supybot.reply.error.withNotice()
+            conf.supybot.reply.error.withNotice.setValue(True)
             m = self.getMsg("eval irc.error('foo')")
             self.failUnless(m, 'No message returned.')
             self.failUnless(m.command == 'NOTICE')
         finally:
-            conf.supybot.reply.errorWithNotice.setValue(original)
+            conf.supybot.reply.error.withNotice.setValue(original)
 
     def testErrorReplyPrivate(self):
         try:
-            original = str(conf.supybot.reply.errorInPrivate)
-            conf.supybot.reply.errorInPrivate.set('False')
+            original = str(conf.supybot.reply.error.inPrivate)
+            conf.supybot.reply.error.inPrivate.set('False')
             # If this doesn't raise an error, we've got a problem, so the next
             # two assertions shouldn't run.  So we first check that what we
             # expect to error actually does so we don't go on a wild goose
@@ -340,11 +340,11 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             self.assertError(s)
             m = self.getMsg(s)
             self.failUnless(ircutils.isChannel(m.args[0]))
-            conf.supybot.reply.errorInPrivate.set('True')
+            conf.supybot.reply.error.inPrivate.set('True')
             m = self.getMsg(s)
             self.failIf(ircutils.isChannel(m.args[0]))
         finally:
-            conf.supybot.reply.errorInPrivate.set(original)
+            conf.supybot.reply.error.inPrivate.set(original)
 
     # Now for stuff not based on the plugins.
     class First(callbacks.Privmsg):

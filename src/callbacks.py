@@ -176,8 +176,8 @@ def reply(msg, s, prefixName=None, private=None,
     if prefixName is None:
         prefixName = conf.get(conf.supybot.reply.withNickPrefix, channel)
     if error:
-        notice =conf.get(conf.supybot.reply.errorWithNotice, channel) or notice
-        private=conf.get(conf.supybot.reply.errorInPrivate, channel) or private
+        notice =conf.get(conf.supybot.reply.error.withNotice, channel) or notice
+        private=conf.get(conf.supybot.reply.error.inPrivate, channel) or private
         s = 'Error: ' + s
     if private:
         prefixName = False
@@ -486,10 +486,11 @@ class RichReplyMethods(object):
         if isinstance(capability, basestring): # checkCommandCapability!
             log.warning('Denying %s for lacking %s capability.',
                         self.msg.prefix, utils.quoted(capability))
-            if not self._getConfig(conf.supybot.reply.noCapabilityError):
+            if not self._getConfig(conf.supybot.reply.error.noCapability):
                 v = self._getConfig(conf.supybot.replies.noCapability)
                 s = self.__makeReply(v % capability, s)
                 return self._error(s, **kwargs)
+            # XXX We should log that we're *not* giving a capability error.
         else:
             log.warning('Denying %s for some unspecified capability '
                         '(or a default).', self.msg.prefix)
@@ -649,7 +650,7 @@ class IrcObjectProxy(RichReplyMethods):
             except Exception, e:
                 cb.log.exception('Uncaught exception in %s.%s:',
                                  cb.name(), name)
-                if conf.supybot.reply.detailedErrors():
+                if conf.supybot.reply.error.detailed():
                     return self.error(utils.exnToString(e))
                 else:
                     return self.replyError()
