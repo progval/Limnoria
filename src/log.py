@@ -90,6 +90,10 @@ class Logger(logging.Logger):
     def verbose(self, *args, **kwargs):
         self.log(VERBOSE, *args, **kwargs)
 
+    def _log(self, level, msg, args, exc_info=None):
+        msg = format(msg, *args)
+        logging.Logger._log(self, level, msg, (), exc_info=exc_info)
+
 
 class StdoutStreamHandler(logging.StreamHandler):
     def disable(self):
