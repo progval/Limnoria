@@ -123,15 +123,15 @@ class Notes(callbacks.Privmsg):
         cursor.execute("""SELECT COUNT(*) FROM notes, users
                           WHERE users.name=%s AND
                                 notes.to_id=users.id AND
-                                read=0""", name)
-        unread = int(cursor.fetchone()[0])
+                                notified=0""", name)
+        unnotified = int(cursor.fetchone()[0])
+        if unnotified == 0:
+            return
         cursor.execute("""SELECT COUNT(*) FROM notes, users
                           WHERE users.name=%s AND
                                 notes.to_id=users.id AND
-                                notified=0""", name)
-        unnotified = int(cursor.fetchone()[0])
-        if unnotified != 0:
-            return
+                                read=0""", name)
+        unread = int(cursor.fetchone()[0])
         s = 'You have %s unread note%s ' \
             '%s that I haven\'t told you about before now..' % \
             (unread, unread == 1 and ';' or 's;', unnotified)
