@@ -53,7 +53,7 @@ class OwnerCommands(privmsgs.CapabilityCheckingPrivmsg):
     capability = 'owner'
     def __init__(self):
         callbacks.Privmsg.__init__(self)
-        setattr(self.__class__, 'exec', self._exec)
+        setattr(self.__class__, 'exec', self.__class__._exec)
 
     def eval(self, irc, msg, args):
         """<expression>
