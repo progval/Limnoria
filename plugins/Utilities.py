@@ -130,6 +130,7 @@ class Utilities(callbacks.Privmsg):
         total = 0
         for arg in args:
             total += len(arg)
+        total += len(args)-1 # spaces between the arguments.
         irc.reply(msg, str(total))
 
     def repr(self, irc, msg, args):

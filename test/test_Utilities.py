@@ -55,6 +55,7 @@ class UtilitiesTestCase(PluginTestCase):
 
     def testStrlen(self):
         self.assertResponse('strlen %s' % ('s'*10), '10')
+        self.assertResponse('strlen a b', '3')
 
     def testRepr(self):
         self.assertResponse('repr foo bar baz', '"foo bar baz"')
