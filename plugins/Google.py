@@ -89,7 +89,7 @@ def configure(onStart, afterConnect, advanced):
             if yn('Do you want the Google Groups link snarfer enabled by '\
                 'default?') == 'n':
                 onStart.append('Google togglesnarfer groups off')
-            if yn('Do you want the Google search snarfer enabled by default?')
+            if yn('Do you want the Google search snarfer enabled by default?')\
                 == 'y':
                 onStart.append('Google togglesnarfer search on')
     else:
