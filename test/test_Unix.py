@@ -42,6 +42,7 @@ if os.name == 'posix':
                               'not find')
             self.assertNotError('spell Strizzike')
             self.assertError('spell foo bar baz')
+            self.assertError('spell -')
 
         def testErrno(self):
             self.assertRegexp('errno 12', '^ENOMEM')

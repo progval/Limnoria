@@ -41,10 +41,11 @@ import pwd
 import sys
 import crypt
 import errno
+import popen2
 import random
+import select
 import string
 import struct
-import popen2
 
 
 import privmsgs
@@ -169,11 +170,18 @@ class Unix(callbacks.Privmsg):
         """
         # We are only checking the first word
         word = privmsgs.getArgs(args)
+        if word and word[0] in '*&@+-~#!%^':
+            irc.error(msg, 'Initial spell metacharacters aren\'t allowed.')
+            return
         if ' ' in word:
-            irc.error(msg, 'Aspell/ispell can\'t handle spaces in words.')
+            irc.error(msg, 'Spaces aren\'t allowed in the word.')
             return
         self._spellWrite.write(word)
         self._spellWrite.write('\n')
+        (r, _, _) = select.select([self._spellRead], [], [], 0.1)
+        if not r:
+            irc.error(msg, 'The spell command did not respond to %r' % word)
+            return
         line = self._spellRead.readline()
         # aspell puts extra whitespace, ignore it
         while line == '\n':
