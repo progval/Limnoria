@@ -67,7 +67,7 @@ class Topic(callbacks.Privmsg):
     topicSeparator = ' || '
     topicFormatter = '%s (%s)'
     topicUnformatter = re.compile('(.*) \((\S+)\)')
-    def addtopic(self, irc, msg, args, channel):
+    def add(self, irc, msg, args, channel):
         """[<channel>] <topic>
 
         Adds <topic> to the topics for <channel>.  <channel> is only necessary
@@ -90,9 +90,9 @@ class Topic(callbacks.Privmsg):
         else:
             newTopic = formattedTopic
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
-    addtopic = privmsgs.checkChannelCapability(addtopic, 'topic')
+    add = privmsgs.checkChannelCapability(add, 'topic')
 
-    def shuffletopic(self, irc, msg, args, channel):
+    def shuffle(self, irc, msg, args, channel):
         """[<channel>]
 
         Shuffles the topics in <channel>.  <channel> is only necessary if the
@@ -106,9 +106,9 @@ class Topic(callbacks.Privmsg):
             random.shuffle(topics)
             newtopic = self.topicSeparator.join(topics)
         irc.queueMsg(ircmsgs.topic(channel, newtopic))
-    shuffletopic = privmsgs.checkChannelCapability(shuffletopic, 'topic')
+    shuffle = privmsgs.checkChannelCapability(shuffle, 'topic')
 
-    def gettopic(self, irc, msg, args, channel):
+    def get(self, irc, msg, args, channel):
         """[<channel>] <number>
 
         Returns topic number <number> from <channel>.  <number> is a one-based
@@ -129,9 +129,9 @@ class Topic(callbacks.Privmsg):
         except IndexError:
             irc.error(msg, 'That\'s not a valid topic.')
             return
-    gettopic = privmsgs.channel(gettopic)
+    get = privmsgs.channel(get)
 
-    def changetopic(self, irc, msg, args, channel):
+    def change(self, irc, msg, args, channel):
         """[<channel>] <number> <regexp>
 
         Changes the topic number <number> on <channel> according to the regular
@@ -178,9 +178,9 @@ class Topic(callbacks.Privmsg):
         topics.insert(number, newTopic)
         newTopic = self.topicSeparator.join(topics)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
-    changetopic = privmsgs.checkChannelCapability(changetopic, 'topic')
+    change = privmsgs.checkChannelCapability(change, 'topic')
 
-    def removetopic(self, irc, msg, args, channel):
+    def remove(self, irc, msg, args, channel):
         """[<channel>] <number>
 
         Removes topic <number> from the topic for <channel>  Topics are
@@ -217,7 +217,7 @@ class Topic(callbacks.Privmsg):
             return
         newTopic = self.topicSeparator.join(topics)
         irc.queueMsg(ircmsgs.topic(channel, newTopic))
-    removetopic = privmsgs.checkChannelCapability(removetopic, 'topic')
+    remove = privmsgs.checkChannelCapability(remove, 'topic')
 
 
 Class = Topic

@@ -36,27 +36,27 @@ class TopicTestCase(PluginTestCase, PluginDocumentation):
     def testAddtopic(self):
         _ = self.getMsg('join #foo')
         _ = self.getMsg(' ') # Get the WHO.
-        m = self.getMsg('addtopic #foo foo')
+        m = self.getMsg('topic add #foo foo')
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], '#foo')
         self.assertEqual(m.args[1], 'foo (test)')
-        m = self.getMsg('addtopic #foo bar')
+        m = self.getMsg('topic add #foo bar')
         self.assertEqual(m.command, 'TOPIC')
         self.assertEqual(m.args[0], '#foo')
 
     def testChangetopic(self):
         _ = self.getMsg('join #foo')
         _ = self.getMsg(' ')
-        _ = self.getMsg('addtopic #foo foo')
-        _ = self.getMsg('addtopic #foo bar')
-        _ = self.getMsg('addtopic #foo baz')
-        self.assertRegexp('changetopic #foo -1 s/baz/biff/',
+        _ = self.getMsg('topic add #foo foo')
+        _ = self.getMsg('topic add #foo bar')
+        _ = self.getMsg('topic add #foo baz')
+        self.assertRegexp('topic change #foo -1 s/baz/biff/',
                           r'foo.*bar.*biff')
-        self.assertRegexp('changetopic #foo 2 s/bar/baz/',
+        self.assertRegexp('topic change #foo 2 s/bar/baz/',
                           r'foo.*baz.*biff')
-        self.assertRegexp('changetopic #foo 1 s/foo/bar/',
+        self.assertRegexp('topic change #foo 1 s/foo/bar/',
                           r'bar.*baz.*biff')
-        self.assertRegexp('changetopic #foo -2 s/baz/bazz/',
+        self.assertRegexp('topic change #foo -2 s/baz/bazz/',
                           r'bar.*bazz.*biff')
 
 
